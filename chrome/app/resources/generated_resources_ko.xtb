@@ -1793,6 +1793,7 @@
 <translation id="2234827758954819389">개인 정보 보호 가이드</translation>
 <translation id="2234876718134438132">동기화 및 Google 서비스</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
+<translation id="2236949375853147973">내 활동</translation>
 <translation id="2238379619048995541">주파수 상태 데이터</translation>
 <translation id="2240582393605484605">이 기기에만 저장된 데이터는 기존 프로필에 그대로 유지됩니다.</translation>
 <translation id="2241053333139545397">여러 웹사이트의 데이터를 읽고 변경</translation>
@@ -5418,6 +5419,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4773122030389014189">'<ph name="GROUP_NAME" />' 탭 그룹 공유</translation>
 <translation id="4773253008034797668">로컬 네트워크의 모든 기기에 연결하도록 허용됨</translation>
 <translation id="477548766361111120">확장 프로그램이 이 사이트를 읽고 변경하도록 허용</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> 동안의 데이터 삭제됨</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> 기기가 연결되었습니다</translation>
 <translation id="4776594120007763294">나중에 읽을 페이지를 추가하려면 버튼을 클릭하세요</translation>
 <translation id="4777458362738635055">기기의 다른 사용자가 이 네트워크를 사용할 수 있음</translation>
@@ -5763,6 +5765,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5016305686459575361">휴대전화를 연결하면 다음 작업을 할 수 있습니다</translation>
 <translation id="5016491575926936899">컴퓨터에서 문자 메시지를 보내고, 인터넷 연결을 공유하고, 대화 알림에 답장을 보내고, 휴대전화로 <ph name="DEVICE_TYPE" /> 기기의 잠금을 해제할 수 있습니다.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">기본 노드 주석 파일 다운로드 중</translation>
+<translation id="5017529052065664584">지난 15분</translation>
 <translation id="5018207570537526145">확장 프로그램 웹사이트 열기</translation>
 <translation id="5018526990965779848">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="5019487038187875030">macOS에서 가져온 인증서 보기</translation>
@@ -8063,7 +8066,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6694462491298752106">내장 터치패드가 사용 중지되었습니다</translation>
 <translation id="6694634756612002311">공유 관리</translation>
 <translation id="6697172646384837537">비밀번호를 가져와 저장할 위치 선택</translation>
-<translation id="6697492270171225480">페이지를 찾을 수 없을 때 비슷한 페이지 제안 표시</translation>
 <translation id="6697690052557311665">공유하려면 Files 앱에서 마우스 오른쪽 버튼으로 폴더를 클릭한 다음 'Linux와 공유'를 선택하세요.</translation>
 <translation id="6698810901424468597"><ph name="WEBSITE_1" /> 및 <ph name="WEBSITE_2" />의 데이터를 읽고 변경</translation>
 <translation id="6700093763382332031">셀룰러 SIM 잠금</translation>
@@ -11446,7 +11448,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9043264199499366189">ChromeOS Flex 시스템 이벤트 구독</translation>
 <translation id="9044646465488564462">네트워크 연결 실패: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">읽기 목록을 새 측면 패널로 이동했습니다. 여기에서 사용해 보세요.</translation>
-<translation id="9045430190527754450">사용자가 접속하려는 페이지의 웹 주소를 Google에 전송</translation>
 <translation id="9048745018038487540">모든 글꼴 선택</translation>
 <translation id="9050666287014529139">암호</translation>
 <translation id="905145695813415387">'<ph name="LOCAL_FOLDER" />' 폴더가 이 기기에만 저장됩니다. 이 폴더를 '<ph name="LOCAL_FOLDER" />' 폴더로 이동하면 다른 기기에서 더 이상 액세스할 수 없습니다</translation>

@@ -1755,7 +1755,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3961148744525529027">Hárok obslužného nástroja platieb je dopoly otvorený</translation>
 <translation id="3962859241508114581">Predchádzajúca stopa</translation>
 <translation id="3963721102035795474">Režim čítačky</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Žiadne}=1{Z 1 webu }few{Z # webov }many{Z # webu }other{Z # webov }}</translation>
 <translation id="3965672182149944205">Chcete adresu uložiť?</translation>
 <translation id="3966044442021752214">Bezpečnosť služby</translation>
 <translation id="3969869202926863008">Prístup k miestnej sieti</translation>

@@ -1781,6 +1781,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2234827758954819389">Vodič za privatnost</translation>
 <translation id="2234876718134438132">Sinhronizacija i Google usluge</translation>
 <translation id="2235344399760031203">Kolačići treće strane su blokirani</translation>
+<translation id="2236949375853147973">Moje aktivnosti</translation>
 <translation id="2238379619048995541">Podaci o stanju frekvencije</translation>
 <translation id="2240582393605484605">Podaci koji se čuvaju samo na ovom uređaju ostaće na postojećem profilu</translation>
 <translation id="2241053333139545397">Čitanje i menjanje podataka na više veb-sajtova</translation>
@@ -5407,6 +5408,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4773122030389014189">Delite grupu kartica <ph name="GROUP_NAME" /></translation>
 <translation id="4773253008034797668">Dozvoljeno je povezivanje sa bilo kojim uređajem na lokalnoj mreži</translation>
 <translation id="477548766361111120">Dozvolite dodatku da čita i menja ovaj sajt</translation>
+<translation id="4775646243557794597">Period <ph name="TIME_PERIOD" /> je izbrisan</translation>
 <translation id="4776311127346151860">Uređaj <ph name="DEVICE_NAME" /> je povezan</translation>
 <translation id="4776594120007763294">Kliknite na dugme da biste dodali stranicu i čitali je kasnije</translation>
 <translation id="4777458362738635055">Drugi korisnici ovog uređaja mogu da koriste ovu mrežu</translation>
@@ -5752,6 +5754,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5016305686459575361">Ako povežete telefon, možete:</translation>
 <translation id="5016491575926936899">Možete da šaljete SMS-ove sa računara, delite internet vezu, odgovarate na obaveštenja o konverzaciji i otključate <ph name="DEVICE_TYPE" /> pomoću telefona.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Preuzimaju se fajlovi sa komentarima o glavnom čvoru</translation>
+<translation id="5017529052065664584">Poslednjih 15 minuta</translation>
 <translation id="5018207570537526145">Otvori veb-sajta dodatka</translation>
 <translation id="5018526990965779848">Šaljite podatke o korišćenju i dijagnostičke podatke. Pomozite nam da vam pružimo bolji doživljaj Android-a tako što ćete automatski slati podatke o dijagnostici, uređaju i korišćenju aplikacija Google-u. To doprinosi održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. Ako uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu.</translation>
 <translation id="5019487038187875030">Pregledajte uvezene sertifikate iz MacOS-a</translation>
@@ -8061,7 +8064,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6694462491298752106">Ugrađeni tačped je onemogućen</translation>
 <translation id="6694634756612002311">Upravljaj deljenjem</translation>
 <translation id="6697172646384837537">Izaberite gde želite da uvezete lozinke</translation>
-<translation id="6697492270171225480">Prikazuj predloge za slične stranice kada neka stranica ne može da se pronađe</translation>
 <translation id="6697690052557311665">Da biste delili, kliknite desnim tasterom na folder u aplikaciji Files, pa izaberite „Deli sa Linux-om“.</translation>
 <translation id="6698810901424468597">Čitanje i menjanje podataka na <ph name="WEBSITE_1" /> i <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Zaključavanje SIM-a za mobilnu mrežu</translation>
@@ -11448,7 +11450,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9043264199499366189">Praćenje događaja iz ChromeOS Flex sistema</translation>
 <translation id="9044646465488564462">Povezivanje sa mrežom nije uspelo: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lista za čitanje je premeštena u novu bočnu tabelu. Isprobajte ovde.</translation>
-<translation id="9045430190527754450">Šalje Google-u veb-adresu stranice kojoj pokušavate da pristupite</translation>
 <translation id="9048745018038487540">Izaberi sve fontove</translation>
 <translation id="9050666287014529139">Pristupna fraza</translation>
 <translation id="905145695813415387">Folder <ph name="LOCAL_FOLDER" /> je sačuvan samo na ovom uređaju. Ako premestite ovaj folder u <ph name="LOCAL_FOLDER" />, više ga nećete dobijati na drugim uređajima.</translation>

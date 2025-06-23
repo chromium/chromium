@@ -129,7 +129,6 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="1521774566618522728">Heute aktiv</translation>
 <translation id="153446405401665083">Neue Chrome-Version verfügbar</translation>
 <translation id="1540012742443808215">Adressleiste derzeit oben</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 Lesezeichen ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto <ph name="ACCOUNT_EMAIL" />.}other{# Lesezeichen sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Zahlungsmethoden und Adressen werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.
 Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Wenn du dein Google-Konto verwalten möchtest, tippe auf die Schaltfläche "Konto verwalten"</translation>
@@ -144,7 +143,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> verwenden</translation>
 <translation id="160275202205869636">Bei aktivierten Optionen kannst du die entsprechenden Daten in deinem Google-Konto nutzen und speichern. Bei Deaktivierung werden sie nur auf diesem Gerät gespeichert.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ausgewähltes Element entfernen}other{# ausgewählte Elemente entfernen}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 Lesezeichen und andere Elemente sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto <ph name="ACCOUNT_EMAIL" />.}other{# Lesezeichen und andere Elemente sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1639239467298939599">Wird geladen</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">Du siehst dir momentan eine Offlinekopie dieser Seite vom <ph name="CREATION_TIME" /> an</translation>
@@ -477,7 +475,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="316694332262407393">Chrome wird hier bereits ausgeführt.</translation>
 <translation id="3167258285411721858">Du kannst die mobile Website für <ph name="HOST_NAME" /> anfordern</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 Passwort und andere Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto <ph name="ACCOUNT_EMAIL" />.}other{# Passwörter und andere Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Erfolgsmessung bei Anzeigen</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" />, Tabgruppe</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
@@ -894,7 +891,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="506254248375231072">Keine Tabs</translation>
 <translation id="5062960805900435602">Hinweis zur Passwortzusammenführung geschlossen</translation>
 <translation id="5075939510584558547">Ohne Verschlüsselung speichern</translation>
-<translation id="5082172173036123513">Wenn ein Fenster 6 Monate inaktiv war, wird es endgültig gelöscht.</translation>
 <translation id="5085038751173179818">Melde dich bei dieser Website und in Chrome an, um deine Lesezeichen und mehr auf allen deinen Geräten abzurufen</translation>
 <translation id="5091199029769593641">Bald wirst du beim Öffnen eines neuen Tabs „<ph name="SITE_NAME" />“-Artikel sehen. Websites, denen du folgst, werden in deinem Google-Konto gespeichert. Du kannst sie in den Discover-Einstellungen verwalten.</translation>
 <translation id="509429900233858213">Ein Fehler ist aufgetreten.</translation>
@@ -1155,7 +1151,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht darauf basiert, welche Websites du zuvor besucht hast. Viele Websites erfassen weiterhin deine Browserdaten und verwenden sie, um beispielsweise die Sicherheit zu verbessern oder Inhalte, Werbeanzeigen und Empfehlungen bereitzustellen und Statistiken für Berichte zu erstellen.</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
 <translation id="6251449557817521191">Hier kannst du dir den Chrome-Verlauf ansehen</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 Element wird nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto <ph name="ACCOUNT_EMAIL" />.}other{# Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="6254139308321626268">Du siehst gerade eine PDF‑Datei</translation>
 <translation id="6255809143828972562">Die Tools von Chrome helfen dir, sicher zu surfen und deine Daten zu schützen</translation>
 <translation id="6264376385120300461">Trotzdem herunterladen</translation>
@@ -1420,7 +1415,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7293429513719260019">Sprache auswählen</translation>
 <translation id="729975465115245577">Auf deinem Gerät befindet sich keine App zum Speichern der Passwortdatei.</translation>
 <translation id="7304072650267745798">Dein Android-Gerät verfügt möglicherweise über eine ähnliche Einstellung. Wenn diese Einstellung in Chrome und auf deinem Android-Gerät aktiviert ist, können Unternehmen möglicherweise die Effektivität von Werbung auf den von dir besuchten Websites und in den von dir verwendeten Apps analysieren.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 Passwort wird nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto <ph name="ACCOUNT_EMAIL" />.}other{# Passwörter werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7304873321153398381">Offline. Chrome kann deine Passwörter nicht prüfen.</translation>
 <translation id="7313188324932846546">Zum Einrichten der Synchronisierung tippen</translation>
 <translation id="7314734791127433392">Passwörter können nicht geprüft werden</translation>
@@ -1633,7 +1627,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="813082847718468539">Website-Informationen anzeigen</translation>
 <translation id="8135406045838672858">Heruntergeladene PDFs werden automatisch mit <ph name="APP_NAME" /> geöffnet</translation>
 <translation id="8137562778192957619">Du musst dir dieses Passwort nicht merken. Es wird im Google Passwortmanager gespeichert.</translation>
-<translation id="8146563639948412265">Du kannst insgesamt bis zu <ph name="MAX_WINDOW_COUNT" /> Fenster haben. Wenn du ein Fenster wiederherstellen möchtest, schließe <ph name="WINDOW_COUNT" /> aktive(s) oder inaktive(s) Fenster.</translation>
 <translation id="8152331954420209374">Zu Lens</translation>
 <translation id="8163820386638255770">Bestätige deine Identität, um Passwörter in deinem Google-Konto zu verwenden und zu speichern</translation>
 <translation id="8186512483418048923">Noch <ph name="FILES" /> Dateien</translation>
@@ -1873,7 +1866,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="9169507124922466868">Navigationsverlauf ist halb geöffnet</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Du siehst deinen Verlauf auf allen synchronisierten Geräten und kannst dort weitermachen, wo du vorher aufgehört hast</translation>
-<translation id="9191906083913361689">Du kannst diese Elemente auch in deinen Lesezeichen, in deiner Leseliste oder im Passwortmanager sehen und verwalten</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Zuletzt geprüft: vor 1 Minute}other{Zuletzt geprüft: vor # Minuten}}</translation>
 <translation id="9204021776105550328">Werden gelöscht</translation>
 <translation id="9204836675896933765">Noch 1 Datei</translation>

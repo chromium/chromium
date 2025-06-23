@@ -129,7 +129,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1521774566618522728">오늘 사용</translation>
 <translation id="153446405401665083">Chrome의 새 버전을 사용할 수 있습니다.</translation>
 <translation id="1540012742443808215">현재 주소 표시줄이 상단에 있음</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{북마크 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}other{북마크 #개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}}</translation>
 <translation id="1544084554881119930">결제 수단 및 주소는 암호화되지 않습니다. Chrome 방문 기록은 동기화되지 않습니다.
 암호를 아는 사람만 암호화된 내 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="1544826120773021464">Google 계정을 관리하려면 '계정 관리' 버튼을 탭하세요.</translation>
@@ -144,7 +143,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 계정으로 <ph name="SITE_ETLD_PLUS_ONE" /> 사이트를 사용하세요</translation>
 <translation id="160275202205869636">이 설정을 사용하도록 설정하면 Google 계정을 통해 데이터를 사용하고 저장할 수 있습니다. 사용 중지하면 데이터가 이 기기에만 저장됩니다.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{선택한 1개 항목 삭제}other{선택한 #개 항목 삭제}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{북마크 1개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}other{북마크 #개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}}</translation>
 <translation id="1639239467298939599">로드 중</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" />에 작성된 이 페이지의 오프라인 사본을 보는 중입니다.</translation>
@@ -477,7 +475,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="316694332262407393">Chrome이 이미 실행 중입니다.</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" />의 모바일 사이트를 요청할 수 있습니다.</translation>
 <translation id="3169472444629675720">디스커버</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{비밀번호 1개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}other{비밀번호 #개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}}</translation>
 <translation id="3187472288455401631">광고 측정</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> 탭 그룹</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
@@ -894,7 +891,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="506254248375231072">탭 없음</translation>
 <translation id="5062960805900435602">비밀번호 병합 관련 업데이트 종료됨</translation>
 <translation id="5075939510584558547">암호화 없이 저장</translation>
-<translation id="5082172173036123513">창의 비활성 상태가 6개월 동안 지속되면 영구적으로 삭제됩니다.</translation>
 <translation id="5085038751173179818">이 사이트 및 Chrome에 로그인하여 모든 기기에서 북마크 등을 사용하세요</translation>
 <translation id="5091199029769593641">곧 새 탭을 열 때 <ph name="SITE_NAME" /> 스토리가 표시됩니다. 내가 팔로우하는 사이트는 Google 계정에 저장되며 디스커버 설정에서 관리할 수 있습니다.</translation>
 <translation id="509429900233858213">오류가 발생했습니다.</translation>
@@ -1155,7 +1151,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 예를 들어 어떤 웹사이트는 사용자가 방문한 다른 웹사이트를 기반으로 하지 않는 광고를 표시하여 이 요청에 응답할 수 있습니다. 그러나 대부분의 웹사이트에서는 보안을 개선하거나 웹사이트에 콘텐츠, 광고, 권장사항 등을 제공하거나 보고서 통계를 생성하기 위해 사용자의 인터넷 사용 기록을 계속 수집하고 사용합니다.</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6251449557817521191">여기에서 Chrome 방문 기록 보기</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{항목 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}other{항목 #개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}}</translation>
 <translation id="6254139308321626268">PDF 파일을 보는 중</translation>
 <translation id="6255809143828972562">Chrome의 도구로 안전하게 탐색하고 제어할 수 있습니다</translation>
 <translation id="6264376385120300461">무시하고 다운로드</translation>
@@ -1420,7 +1415,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7293429513719260019">언어 선택</translation>
 <translation id="729975465115245577">기기에 비밀번호 파일을 저장할 수 있는 앱이 없습니다.</translation>
 <translation id="7304072650267745798">Android 기기에 비슷한 설정이 포함되어 있을 수 있습니다. Chrome과 Android 기기에서 이 설정을 사용 설정하면 사용자가 방문하는 웹사이트와 사용하는 앱에서 광고 효과를 측정할 수 있습니다.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{비밀번호 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}other{비밀번호 #개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}}</translation>
 <translation id="7304873321153398381">오프라인 상태입니다. Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="7313188324932846546">동기화를 설정하려면 탭하세요.</translation>
 <translation id="7314734791127433392">비밀번호를 확인할 수 없음</translation>
@@ -1633,7 +1627,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="813082847718468539">사이트 정보 보기</translation>
 <translation id="8135406045838672858">다운로드한 PDF가 <ph name="APP_NAME" /> 앱에서 자동으로 열립니다</translation>
 <translation id="8137562778192957619">비밀번호를 기억하지 않아도 됩니다. 비밀번호가 Google 비밀번호 관리자에 저장됩니다</translation>
-<translation id="8146563639948412265">최대 <ph name="MAX_WINDOW_COUNT" />개의 창을 열 수 있습니다. 창을 복원하려면 활성 또는 비활성 창 <ph name="WINDOW_COUNT" />개를 닫으세요.</translation>
 <translation id="8152331954420209374">렌즈로 이동</translation>
 <translation id="8163820386638255770">Google 계정에서 비밀번호를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
 <translation id="8186512483418048923">파일 <ph name="FILES" />개가 남았습니다.</translation>
@@ -1873,7 +1866,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9169507124922466868">탐색 기록이 절반 높이로 열림</translation>
 <translation id="918419812064856259">Chrome 베타</translation>
 <translation id="9190276265094487094">동기화된 모든 기기에 방문 기록이 유지되므로 전에 하던 작업을 이어서 할 수 있습니다.</translation>
-<translation id="9191906083913361689">북마크, 읽기 목록, 비밀번호 관리자에서도 이러한 항목을 보고 관리할 수 있습니다.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1분 전에 확인됨}other{#분 전에 확인됨}}</translation>
 <translation id="9204021776105550328">삭제 중</translation>
 <translation id="9204836675896933765">파일 1개가 남았습니다.</translation>

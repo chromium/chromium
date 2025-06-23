@@ -129,7 +129,6 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="153446405401665083">En ny version af Chrome er tilgængelig</translation>
 <translation id="1540012742443808215">Adresselinjen vises i øjeblikket øverst</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bogmærke gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}one{# bogmærke gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}other{# bogmærker gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Betalingsmetoder og adresser krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.
 Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Tryk på knappen "Administrer konto" for at administrere din Google-konto</translation>
@@ -144,7 +143,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1598163867407640634">Brug <ph name="SITE_ETLD_PLUS_ONE" /> hos <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Når denne indstilling er aktiveret, kan du bruge og gemme data på din Google-konto. Når indstillingen er deaktiveret, gemmes data kun på denne enhed.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Fjern 1 valgt element}one{Fjern # valgt element}other{Fjern # valgte elementer}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 bogmærke og andre elementer er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}one{# bogmærke og andre elementer er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}other{# bogmærker og andre elementer er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1639239467298939599">Indlæser</translation>
 <translation id="1641113438599504367">Beskyttet browsing</translation>
 <translation id="164269334534774161">Du ser en offlinekopi af denne side fra <ph name="CREATION_TIME" /></translation>
@@ -477,7 +475,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="316694332262407393">Chrome kører allerede her.</translation>
 <translation id="3167258285411721858">Du kan anmode om mobilwebsitet for <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 adgangskode og andre elementer er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}one{# adgangskode og andre elementer er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}other{# adgangskoder og andre elementer er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Annoncemåling</translation>
 <translation id="3189635831478931757">Fanegruppe: <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
@@ -894,7 +891,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="506254248375231072">Der er ingen faner</translation>
 <translation id="5062960805900435602">Opdatering om fletning af adgangskoder er lukket</translation>
 <translation id="5075939510584558547">Gem uden kryptering</translation>
-<translation id="5082172173036123513">Inaktive vinduer slettes permanent efter 6 måneders inaktivitet.</translation>
 <translation id="5085038751173179818">Log ind på dette website og i Chrome for at få adgang til dine bogmærker og meget mere på alle dine enheder</translation>
 <translation id="5091199029769593641">Du får snart vist historier fra <ph name="SITE_NAME" />, når du åbner en ny fane. De websites, du følger, gemmes på din Google-konto. Du kan administrere dem i indstillingerne for Discover.</translation>
 <translation id="509429900233858213">Der opstod en fejl.</translation>
@@ -1155,7 +1151,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, som ikke er baseret på andre websites, du har besøgt. Mange websites vil fortsat indsamle og bruge browserdata til f.eks. at forbedre sikkerheden, til at levere indhold, annoncer og anbefalinger og til at generere rapporteringsstatistik.</translation>
 <translation id="6247557882553405851">Google Adgangs­kode­admin­istrator</translation>
 <translation id="6251449557817521191">Se din Chrome-historik her</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 element er kun gemt på denne enhed. Hvis du vil bruge det på dine andre enheder, skal du gemme det på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}one{# element er kun gemt på denne enhed. Hvis du vil bruge det på dine andre enheder, skal du gemme det på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}other{# elementer er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="6254139308321626268">Du får vist en PDF-fil</translation>
 <translation id="6255809143828972562">Med værktøjer fra Chrome kan du søge sikkert på nettet og bevare styringen</translation>
 <translation id="6264376385120300461">Download alligevel</translation>
@@ -1420,7 +1415,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7293429513719260019">Vælg sprog</translation>
 <translation id="729975465115245577">Der er ikke nogen app på din enhed, hvor filen med adgangskoder kan gemmes.</translation>
 <translation id="7304072650267745798">Din Android-enhed har muligvis en lignende indstilling. Hvis denne indstilling er aktiveret i Chrome og på din Android-enhed, kan en virksomhed måle effektiviteten af en annonce på de websites, du besøger, og i de apps, du bruger.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 adgangskode er kun gemt på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}one{# adgangskode er kun gemt på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}other{# adgangskoder er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7304873321153398381">Offline. Chrome kan ikke tjekke dine adgangskoder.</translation>
 <translation id="7313188324932846546">Tryk for at konfigurere synkronisering</translation>
 <translation id="7314734791127433392">Kan ikke tjekke adgangskoder</translation>
@@ -1633,7 +1627,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="813082847718468539">Se websiteoplysninger</translation>
 <translation id="8135406045838672858">Downloadede PDF-filer åbnes automatisk med <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Du behøver ikke at huske denne adgangskode. Den gemmes i Google Adgangs­kode­admin­istrator.</translation>
-<translation id="8146563639948412265">Du kan have op til <ph name="MAX_WINDOW_COUNT" /> vinduer i alt. Hvis du vil gendanne et vindue, skal du lukke <ph name="WINDOW_COUNT" /> aktive eller inaktive vinduer.</translation>
 <translation id="8152331954420209374">Gå til Lens</translation>
 <translation id="8163820386638255770">Verificer din identitet for at bruge og gemme adgangskoder på din Google-konto</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> filer tilbage</translation>
@@ -1873,7 +1866,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9169507124922466868">Navigationshistorikken er åbnet halvt</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Din historik er på alle synkroniserede enheder, så du kan fortsætte med det, du var i gang med</translation>
-<translation id="9191906083913361689">Du kan også se og administrere disse elementer i dine bogmærker, på din læseliste eller via Adgangs­kode­admin­istrator</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tjekket for 1 minut siden}one{Tjekket for # minut siden}other{Tjekket for # minutter siden}}</translation>
 <translation id="9204021776105550328">Sletter</translation>
 <translation id="9204836675896933765">1 fil tilbage</translation>

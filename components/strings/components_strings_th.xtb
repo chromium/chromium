@@ -1761,7 +1761,6 @@
 <translation id="3961148744525529027">แผ่นงานของเครื่องจัดการการชำระเงินเปิดอยู่ครึ่งเดียว</translation>
 <translation id="3962859241508114581">แทร็กก่อนหน้า</translation>
 <translation id="3963721102035795474">โหมดนักอ่าน</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{ไม่มี}=1{จากเว็บไซต์ 1 แห่ง }other{จากเว็บไซต์ #  แห่ง }}</translation>
 <translation id="3965672182149944205">บันทึกที่อยู่ไหม</translation>
 <translation id="3966044442021752214">ความปลอดภัยของผลิตภัณฑ์</translation>
 <translation id="3969869202926863008">การเข้าถึงเครือข่ายภายใน</translation>

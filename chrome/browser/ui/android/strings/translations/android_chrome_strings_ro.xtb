@@ -129,7 +129,6 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="1521774566618522728">Activ astăzi</translation>
 <translation id="153446405401665083">Este disponibilă o nouă versiune Chrome</translation>
 <translation id="1540012742443808215">Bara de adrese este în partea de sus</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{Un marcaj se salvează numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul Google <ph name="ACCOUNT_EMAIL" />.}few{# marcaje se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}other{# de marcaje se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Metodele de plată și adresele nu vor fi criptate. Istoricul de navigare din Chrome nu se va sincroniza.
 Numai un utilizator care deține expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Pentru a gestiona contul Google, atinge butonul „Gestionează contul”</translation>
@@ -144,7 +143,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1598163867407640634">Folosește <ph name="SITE_ETLD_PLUS_ONE" /> cu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Când opțiunea este activată, folosești și salvezi date în Contul Google. Când este dezactivată, datele sunt salvate numai pe acest dispozitiv.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Elimină un element selectat}few{Elimină # elemente selectate}other{Elimină # de elemente selectate}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{Un marcaj și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}few{# marcaje și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}other{# de marcaje și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
 <translation id="1641113438599504367">Navigare sigură</translation>
 <translation id="164269334534774161">Se afișează o versiune offline a acestei pagini de pe <ph name="CREATION_TIME" /></translation>
@@ -477,7 +475,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="316694332262407393">Chrome rulează deja aici.</translation>
 <translation id="3167258285411721858">Poți solicita site-ul mobil pentru <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{O parolă și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}few{# parole și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}other{# de parole și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Cuantificarea anunțurilor</translation>
 <translation id="3189635831478931757">Grupul de file <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Marcată</translation>
@@ -894,7 +891,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="506254248375231072">Nicio filă</translation>
 <translation id="5062960805900435602">Informarea despre îmbinarea parolelor se închide</translation>
 <translation id="5075939510584558547">Salvează fără criptare</translation>
-<translation id="5082172173036123513">Ferestrele inactive se șterg definitiv după șase luni de inactivitate.</translation>
 <translation id="5085038751173179818">Conectează-te la acest site și la Chrome pentru a accesa marcajele și multe altele de pe toate dispozitivele tale</translation>
 <translation id="5091199029769593641">În curând vei vedea articole de la <ph name="SITE_NAME" /> când deschizi o filă nouă. Site-urile pe care le urmărești sunt salvate în contul tău Google. Le poți gestiona din setările Discover.</translation>
 <translation id="509429900233858213">A apărut o eroare.</translation>
@@ -1155,7 +1151,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 De exemplu, unele site-uri pot răspunde la această solicitare afișând anunțuri care nu se bazează pe alte site-uri accesate de tine. Numeroase site-uri vor culege și vor utiliza în continuare datele de navigare. De exemplu, pentru a îmbunătăți securitatea, pentru a oferi conținut, anunțuri și recomandări și pentru a genera statistici de raportare.</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>
 <translation id="6251449557817521191">Consultă istoricul Chrome aici</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{Un element se salvează numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul Google <ph name="ACCOUNT_EMAIL" />.}few{# elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}other{# de elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="6254139308321626268">Se afișează un fișier PDF</translation>
 <translation id="6255809143828972562">Cu instrumentele din Chrome, navighezi în siguranță și deții controlul</translation>
 <translation id="6264376385120300461">Descarcă oricum</translation>
@@ -1420,7 +1415,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7293429513719260019">Selectează limba</translation>
 <translation id="729975465115245577">Dispozitivul nu are o aplicație pentru stocarea fișierului parolelor.</translation>
 <translation id="7304072650267745798">Dispozitivul tău Android poate avea o setare similară. Dacă această setare este activată în Chrome și pe dispozitivul Android, o companie poate măsura eficiența unui anunț pe site-urile pe care le accesezi și în aplicațiile pe care le folosești.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{O parolă se salvează numai pe acest dispozitiv. Pentru a o folosi pe celelalte dispozitive, salveaz-o în Contul Google <ph name="ACCOUNT_EMAIL" />.}few{# parole se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}other{# de parole se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7304873321153398381">Offline. Chrome nu îți poate verifica parolele.</translation>
 <translation id="7313188324932846546">Atinge pentru a configura sincronizarea</translation>
 <translation id="7314734791127433392">Nu se pot verifica parolele</translation>
@@ -1633,7 +1627,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="813082847718468539">Afișează informațiile privind site-ul</translation>
 <translation id="8135406045838672858">Fișierele PDF descărcate se deschid automat cu <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Nu va trebui să reții parola. Ea se va salva în Managerul de parole Google.</translation>
-<translation id="8146563639948412265">Poți deschide maximum <ph name="MAX_WINDOW_COUNT" /> ferestre. Pentru a restabili o fereastră, închide <ph name="WINDOW_COUNT" /> ferestre active sau inactive.</translation>
 <translation id="8152331954420209374">Accesează Lens</translation>
 <translation id="8163820386638255770">Confirmă-ți identitatea pentru a folosi și a salva parole în Contul Google</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fișiere rămase</translation>
@@ -1873,7 +1866,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="9169507124922466868">Istoricul de navigare este pe jumătate deschis</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Istoricul apare pe toate dispozitivele tale sincronizate. Astfel, poți continua ceea ce făceai.</translation>
-<translation id="9191906083913361689">Poți și să vezi și să gestionezi aceste elemente în marcaje, în lista de lecturi sau în managerul de parole.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A rulat acum un minut}few{A rulat acum # minute}other{A rulat acum # de minute}}</translation>
 <translation id="9204021776105550328">Se șterge</translation>
 <translation id="9204836675896933765">1 fișier rămas</translation>

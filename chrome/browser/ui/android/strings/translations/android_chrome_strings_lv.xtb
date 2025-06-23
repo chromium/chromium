@@ -129,7 +129,6 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas i
 <translation id="1521774566618522728">Aktīvs šodien</translation>
 <translation id="153446405401665083">Ir pieejama jauna pārlūka Chrome versija.</translation>
 <translation id="1540012742443808215">Adreses josla pašlaik atrodas augšdaļā</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{Viena grāmatzīme ir saglabāta tikai šajā ierīcē. Lai varētu to izmantot citās ierīcēs, saglabājiet to Google kontā (<ph name="ACCOUNT_EMAIL" />).}zero{# grāmatzīmes ir saglabātas tikai šajā ierīcē. Lai varētu tās izmantot citās ierīcēs, saglabājiet tās Google kontā (<ph name="ACCOUNT_EMAIL" />).}one{# grāmatzīme ir saglabāta tikai šajā ierīcē. Lai varētu tās izmantot citās ierīcēs, saglabājiet tās Google kontā (<ph name="ACCOUNT_EMAIL" />).}other{# grāmatzīmes ir saglabātas tikai šajā ierīcē. Lai varētu tās izmantot citās ierīcēs, saglabājiet tās Google kontā (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">Maksājumu veidi un adreses netiks šifrēti. Pārlūkā Chrome saglabātā pārlūkošanas vēsture netiks sinhronizēta.
 Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze. Ieejas frāze netiek sūtīta uzņēmumam Google, un uzņēmums Google to neuzglabā. Ja esat aizmirsis ieejas frāzi vai vēlaties mainīt šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus savā kontā<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Lai pārvaldītu savu Google kontu, pieskarieties pogai “Konta pārvaldība”</translation>
@@ -144,7 +143,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="1598163867407640634">Izmantojiet vietni <ph name="SITE_ETLD_PLUS_ONE" /> ar <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kontu</translation>
 <translation id="160275202205869636">Ja šis iestatījums ir ieslēgts, varat izmantot un saglabāt datus savā Google kontā. Ja tas ir izslēgts, dati tiek saglabāti tikai šajā ierīcē.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Noņemt 1 atlasīto vienumu}zero{Noņemt # atlasītos vienumus}one{Noņemt # atlasīto vienumu}other{Noņemt # atlasītos vienumus}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{Viena grāmatzīme un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos Google kontā (<ph name="ACCOUNT_EMAIL" />).}zero{# grāmatzīmes un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos Google kontā (<ph name="ACCOUNT_EMAIL" />).}one{# grāmatzīme un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos Google kontā (<ph name="ACCOUNT_EMAIL" />).}other{# grāmatzīmes un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos Google kontā (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1639239467298939599">Notiek ielāde</translation>
 <translation id="1641113438599504367">Droša pārlūkošana</translation>
 <translation id="164269334534774161">Jūs skatāt šīs lapas bezsaistes kopiju, kas tika izveidota šādā datumā: <ph name="CREATION_TIME" /></translation>
@@ -477,7 +475,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="316694332262407393">Šajā ierīcē jau darbojas pārlūks Chrome.</translation>
 <translation id="3167258285411721858">Varat pieprasīt vietnes <ph name="HOST_NAME" /> versiju mobilajām ierīcēm.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 parole un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos savā Google kontā (<ph name="ACCOUNT_EMAIL" />).}zero{# paroles un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos savā Google kontā (<ph name="ACCOUNT_EMAIL" />).}one{# parole un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos savā Google kontā (<ph name="ACCOUNT_EMAIL" />).}other{# paroles un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos savā Google kontā (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="3187472288455401631">Reklāmu novērtēšana</translation>
 <translation id="3189635831478931757">Ciļņu grupa “<ph name="GROUP_TITLE" />”</translation>
 <translation id="3207960819495026254">Atzīmēts kā grāmatzīme</translation>
@@ -894,7 +891,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="506254248375231072">Nav ciļņu</translation>
 <translation id="5062960805900435602">Brīdinājums par paroļu sapludināšanu ir aizvērts</translation>
 <translation id="5075939510584558547">Saglabāšana bez šifrēšanas</translation>
-<translation id="5082172173036123513">Neaktīvie logi tiek neatgriezeniski dzēsti pēc 6 mēnešu neaktivitātes.</translation>
 <translation id="5085038751173179818">Pierakstieties šajā vietnē un pārlūkā Chrome, lai visās savās ierīcēs iegūtu savas grāmatzīmes un citu saturu.</translation>
 <translation id="5091199029769593641">Drīzumā, atverot jaunu cilni, būs redzami raksti no vietnes <ph name="SITE_NAME" />. Vietnes, kurām sekojat, tiek saglabātas jūsu Google kontā. Varat tās pārvaldīt Discover iestatījumu sadaļā.</translation>
 <translation id="509429900233858213">Radās kļūda.</translation>
@@ -1155,7 +1151,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums reklāmas, kuru pamatā nav citas jūsu apmeklētās vietnes. Tomēr daudzas vietnes vāks un izmantos jūsu pārlūkošanas datus, piemēram, lai uzlabotu drošību, nodrošinātu saturu, reklāmas un ieteikumus un ģenerētu pārskatu statistiku.</translation>
 <translation id="6247557882553405851">Google paroļu pārvaldnieks</translation>
 <translation id="6251449557817521191">Skatīt savu Chrome vēsturi šeit</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 vienums ir saglabāts tikai šajā ierīcē. Lai varētu to izmantot citās ierīcēs, saglabājiet to savā Google kontā (<ph name="ACCOUNT_EMAIL" />).}zero{# vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos savā Google kontā (<ph name="ACCOUNT_EMAIL" />).}one{# vienums ir saglabāts tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos savā Google kontā (<ph name="ACCOUNT_EMAIL" />).}other{# vienumi ir saglabāti tikai šajā ierīcē. Lai varētu tos izmantot citās ierīcēs, saglabājiet tos savā Google kontā (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="6254139308321626268">Jūs skatāt PDF failu.</translation>
 <translation id="6255809143828972562">Izmantojot Chrome rīkus, varat droši pārlūkot saturu un pārvaldīt jums pieejamās iespējas.</translation>
 <translation id="6264376385120300461">Tomēr lejupielādēt</translation>
@@ -1420,7 +1415,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7293429513719260019">Atlasīt valodu</translation>
 <translation id="729975465115245577">Ierīcē nav lietotnes, kurā uzglabāt paroļu failu.</translation>
 <translation id="7304072650267745798">Android ierīcē var būt līdzīgs iestatījums. Ja pārlūkā Chrome un jūsu Android ierīcē šis iestatījums ir ieslēgts, iespējams, uzņēmumi var izvērtēt reklāmas efektivitāti jūsu apmeklētajās tīmekļa vietnēs un izmantotajās lietotnēs.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 parole ir saglabāta tikai šajā ierīcē. Lai varētu to izmantot citās ierīcēs, saglabājiet to savā Google kontā (<ph name="ACCOUNT_EMAIL" />).}zero{# paroles ir saglabātas tikai šajā ierīcē. Lai varētu tās izmantot citās ierīcēs, saglabājiet tās savā Google kontā (<ph name="ACCOUNT_EMAIL" />).}one{# parole ir saglabāta tikai šajā ierīcē. Lai varētu tās izmantot citās ierīcēs, saglabājiet tās savā Google kontā (<ph name="ACCOUNT_EMAIL" />).}other{# paroles ir saglabātas tikai šajā ierīcē. Lai varētu tās izmantot citās ierīcēs, saglabājiet tās savā Google kontā (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="7304873321153398381">Bezsaistē. Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles.</translation>
 <translation id="7313188324932846546">Pieskarieties, lai iestatītu sinhronizāciju</translation>
 <translation id="7314734791127433392">Nevar pārbaudīt paroles</translation>
@@ -1633,7 +1627,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="813082847718468539">Skatīt informāciju par vietni</translation>
 <translation id="8135406045838672858">Lejupielādētie PDF faili automātiski tiks atvērti lietotnē <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Jums nebūs jāatceras šī parole. Tā tiks saglabāta Google paroļu pārvaldniekā.</translation>
-<translation id="8146563639948412265">Maksimālais logu skaits, ko varat atvērt, ir <ph name="MAX_WINDOW_COUNT" />. Lai atjaunotu kādu logu, aizveriet aktīvos vai neaktīvos logus (<ph name="WINDOW_COUNT" />).</translation>
 <translation id="8152331954420209374">Pāriet uz Lens</translation>
 <translation id="8163820386638255770">Lai izmantotu un saglabātu paroles savā Google kontā, apstipriniet savu identitāti</translation>
 <translation id="8186512483418048923">Atlikuši faili: <ph name="FILES" /></translation>
@@ -1873,7 +1866,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="9169507124922466868">Navigācijas vēsture ir atvērta līdz pusei.</translation>
 <translation id="918419812064856259">Chrome beta versija</translation>
 <translation id="9190276265094487094">Jūsu vēsture būs pieejama visās sinhronizētajās ierīcēs, tāpēc varēsiet turpināt iesākto.</translation>
-<translation id="9191906083913361689">Šos vienumus varat arī skatīt un pārvaldīt savās grāmatzīmēs, lasīšanas sarakstā vai paroļu pārvaldniekā.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Pārbaudīts: pirms 1 minūtes}zero{Pārbaudīts: pirms # minūtēm}one{Pārbaudīts: pirms # minūtes}other{Pārbaudīts: pirms # minūtēm}}</translation>
 <translation id="9204021776105550328">Notiek dzēšana</translation>
 <translation id="9204836675896933765">Atlicis 1 fails</translation>

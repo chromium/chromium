@@ -1784,6 +1784,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2234827758954819389">Konfidencialitātes ceļvedis</translation>
 <translation id="2234876718134438132">Sinhronizēšana un Google pakalp.</translation>
 <translation id="2235344399760031203">Trešo pušu sīkfaili ir bloķēti</translation>
+<translation id="2236949375853147973">Manas darbības</translation>
 <translation id="2238379619048995541">Dati par frekvences stāvokli</translation>
 <translation id="2240582393605484605">Dati, kas ir saglabāti tikai šajā ierīcē, paliks esošajā profilā.</translation>
 <translation id="2241053333139545397">Lasīt un mainīt jūsu datus vairākās vietnēs</translation>
@@ -5404,6 +5405,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4773122030389014189">Ciļņu grupas “<ph name="GROUP_NAME" />” kopīgošana</translation>
 <translation id="4773253008034797668">Drīkst izveidot savienojumu ar jebkuru ierīci jūsu lokālajā tīklā</translation>
 <translation id="477548766361111120">Atļaut paplašinājumam lasīt un mainīt šo vietni</translation>
+<translation id="4775646243557794597">Tika izdzēsts šāds laika periods: <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> ir pievienota</translation>
 <translation id="4776594120007763294">Lai pievienotu lapu, ko vēlaties lasīt vēlāk, noklikšķiniet uz pogas</translation>
 <translation id="4777458362738635055">Citi šīs ierīces lietotāji var izmantot šo tīklu</translation>
@@ -5749,6 +5751,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5016305686459575361">Izveidojot savienojumu ar tālruni, jums ir pieejamas tālāk norādītās iespējas.</translation>
 <translation id="5016491575926936899">Varat sūtīt īsziņas no datora, koplietot interneta savienojumu, atbildēt uz sarunu paziņojumiem un atbloķēt savu <ph name="DEVICE_TYPE" /> ierīci ar tālruni.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Notiek galvenā mezgla anotāciju failu lejupielāde…</translation>
+<translation id="5017529052065664584">Pēdējās 15 minūtes</translation>
 <translation id="5018207570537526145">Atvērt paplašinājuma vietni</translation>
 <translation id="5018526990965779848">Lietojuma un diagnostikas datu sūtīšana. Palīdziet uzlabot Android lietošanas pieredzi, automātiski nosūtot diagnostikas, ierīces un lietotņu lietojuma datus uzņēmumam Google. Šī informācija palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Ja ir ieslēgts iestatījums “papildu darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti jūsu Google kontā.</translation>
 <translation id="5019487038187875030">Skatīt no operētājsistēmas MacOS importētos sertifikātus</translation>
@@ -8049,7 +8052,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6694462491298752106">Iebūvētais skārienpaliktnis ir atspējots</translation>
 <translation id="6694634756612002311">Pārvaldīt kopīgošanu</translation>
 <translation id="6697172646384837537">Atlasiet, kur importēt paroles</translation>
-<translation id="6697492270171225480">Ja lapu neizdotas atrast, rāda ieteikumus par līdzīgām lapām</translation>
 <translation id="6697690052557311665">Lai koplietotu mapi, lietotnē Faili noklikšķiniet ar peles labo pogu uz mapes un pēc tam atlasiet vienumu “Koplietot ar sistēmu Linux”.</translation>
 <translation id="6698810901424468597">Lasīt un mainīt jūsu datus vietnēs <ph name="WEBSITE_1" /> un <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Mobilā tīkla SIM kartes bloķēšana</translation>
@@ -11433,7 +11435,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9043264199499366189">Abonēt ChromeOS Flex sistēmas notikumus</translation>
 <translation id="9044646465488564462">Neizdevās izveidot savienojumu ar tīklu: <ph name="DETAILS" />.</translation>
 <translation id="9045160989383249058">Lasīšanas saraksts tagad ir atrodams jaunajā sānu panelī. Izmēģiniet šeit.</translation>
-<translation id="9045430190527754450">Sūta Google serveriem tās lapas tīmekļa adresi, kuru mēģināt sasniegt.</translation>
 <translation id="9048745018038487540">Atlasīt visus fontus</translation>
 <translation id="9050666287014529139">Ieejas frāze</translation>
 <translation id="905145695813415387">Mape “<ph name="LOCAL_FOLDER" />” ir saglabāta tikai šajā ierīcē. Ja šo mapi pārvietosiet uz mapi “<ph name="LOCAL_FOLDER" />”, tā vairs nebūs pieejama citās jūsu ierīcēs.</translation>

@@ -1759,7 +1759,6 @@
 <translation id="3961148744525529027">La feuille du module de traitement du paiement est ouverte à moitié</translation>
 <translation id="3962859241508114581">Chanson précédente</translation>
 <translation id="3963721102035795474">Mode Lecteur</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Aucun}=1{À partir de 1 site }one{À partir de # site }other{À partir de # sites }}</translation>
 <translation id="3965672182149944205">Enregistrer l'adresse?</translation>
 <translation id="3966044442021752214">Sécurité du produit</translation>
 <translation id="3969869202926863008">Accès au réseau local</translation>

@@ -1781,6 +1781,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2234827758954819389">Maxfiylik qoʻllanmasi</translation>
 <translation id="2234876718134438132">Sinxronizatsiya va Google xizmatlari</translation>
 <translation id="2235344399760031203">Tashqi cookie fayllar bloklandi</translation>
+<translation id="2236949375853147973">Harakatlarim</translation>
 <translation id="2238379619048995541">Protsessorning turli chastotadagi faoliyati ma’lumotlari</translation>
 <translation id="2240582393605484605">Faqat shu qurilmada saqlangan maʼlumotlar joriy profilda saqlanib qoladi</translation>
 <translation id="2241053333139545397">Bir nechta saytlardagi ma’lumotlarni ko‘rish va o‘zgartirish</translation>
@@ -5406,6 +5407,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4773122030389014189">“<ph name="GROUP_NAME" />” varaqlar guruhini ulashish</translation>
 <translation id="4773253008034797668">Mahalliy tarmoqdagi istalgan qurilmaga ulanishi mumkin</translation>
 <translation id="477548766361111120">Kengaytmaga bu saytni oʻqish va oʻzgartirishga ruxsat berish</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> oʻchirib tashlandi</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> ulandi</translation>
 <translation id="4776594120007763294">Sahifani keyinroq oʻqish uchun tugma ustiga bosing</translation>
 <translation id="4777458362738635055">Bu qurilmadagi boshqa foydalanuvchilar tarmoqdan foydalanishlari mumkin</translation>
@@ -5750,6 +5752,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5016305686459575361">Telefonni ulash orqali bularni bajarish mumkin:</translation>
 <translation id="5016491575926936899">Kompyuterdan SMS yuborish, internet aloqangizni ulashish va chatlarda xabarlarga javob yozishingiz mumkin. Shuningdek, telefon yordamida <ph name="DEVICE_TYPE" /> qurilmasining qulfini ochishingiz ham mumkin.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Asosiy tugun izoh fayllari yuklab olinmoqda</translation>
+<translation id="5017529052065664584">Oxirgi 15 daqiqa</translation>
 <translation id="5018207570537526145">Kengaytma saytini ochish</translation>
 <translation id="5018526990965779848">Foydalanish statistikasi va diagnostika axborotini yuborish. Diagnostika hamda qurilma va ilovadan foydalanish statistikasini Google kompaniyasiga avtomatik yuborish orqali Androidni yaxshilashga yordam bering. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Agar Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilsa, bu maʼlumotlar Google hisobingizda saqlanadi.</translation>
 <translation id="5019487038187875030">MacOSdan import qilingan sertifikatlarni koʻrish</translation>
@@ -8050,7 +8053,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6694462491298752106">Ichki sensorli panel oʻchirildi</translation>
 <translation id="6694634756612002311">Ulashuvni boshqarish</translation>
 <translation id="6697172646384837537">Parollar qayerdan import qilinishini tanlang</translation>
-<translation id="6697492270171225480">Sahifa topilmaganda, unga o‘xshash sahifalar taklif qilinsin</translation>
 <translation id="6697690052557311665">Fayllar ilovasida jild ustida sichqonchaning oʻng tugmasini bosing va “Linux bilan ulashish” bandini tanlang.</translation>
 <translation id="6698810901424468597"><ph name="WEBSITE_1" /> va <ph name="WEBSITE_2" /> saytlaridagi ma’lumotlarni ko‘rish va o‘zgartirish</translation>
 <translation id="6700093763382332031">SIM karta bloklangan</translation>
@@ -11430,7 +11432,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="9043264199499366189">ChromeOS Flex tizim hodisalariga obuna boʻlish</translation>
 <translation id="9044646465488564462">Tarmoqqa ulanmadi: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Mutolaa roʻyxatingiz yangi yon panelga koʻchdi. Bu yerda sinang.</translation>
-<translation id="9045430190527754450">Kiritilgan sayt manzili Google serverlariga yuboriladi</translation>
 <translation id="9048745018038487540">Barcha shriftlarni tanlash</translation>
 <translation id="9050666287014529139">Kodli ibora</translation>
 <translation id="905145695813415387"><ph name="LOCAL_FOLDER" /> faqat shu qurilmada saqlanadi. <ph name="LOCAL_FOLDER" /> jildiga olsangiz, bu jildga boshqa qurilmalardan kira olmaysiz.</translation>

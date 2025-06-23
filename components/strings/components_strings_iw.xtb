@@ -1759,7 +1759,6 @@
 <translation id="3961148744525529027">גיליון פרטי התשלום פתוח בחצי גובה המסך</translation>
 <translation id="3962859241508114581">הטראק הקודם</translation>
 <translation id="3963721102035795474">מצב קורא</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{ללא}=1{מאתר אחד }one{מ-# אתרים }two{משני אתרים }other{מ-# אתרים }}</translation>
 <translation id="3965672182149944205">לשמור את הכתובת?</translation>
 <translation id="3966044442021752214">בטיחות המוצר</translation>
 <translation id="3969869202926863008">גישה לרשת המקומית</translation>
@@ -4603,7 +4602,7 @@ Del</translation>
 <translation id="8811470563853401328">לשמור את הכתובת בחשבון?</translation>
 <translation id="8811725516933141693">‏אפשר להקליד ‎@gemini כדי להתכתב עם Gemini</translation>
 <translation id="8813277370772331957">אני רוצה לקבל תזכורת אחר כך</translation>
-<translation id="8814547618907885931">הצגת כל טבלאות ההשוואה</translation>
+<translation id="8814547618907885931">צפייה בכל טבלאות ההשוואה</translation>
 <translation id="8814707942599948500">‏מעטפה – C8</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לעדכן את דפדפן Chrome בהגדרות Chrome</translation>
 <translation id="8820817407110198400">סימניות</translation>

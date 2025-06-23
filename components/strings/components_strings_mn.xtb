@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">Үнэ хяналтын мэдэгдэл</translation>
 <translation id="21613918653299710">Онлайн зургийн цомгууд</translation>
 <translation id="2161656808144014275">Текст</translation>
+<translation id="2162435186600002085">Үндсэн толгой хэсгийн лого</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> дээр одоо <ph name="CURRENT_PRICE" /> байна</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> үг үсгийн алдаатай бичигдсэн эсэхийг шалгана уу.</translation>
 <translation id="2166049586286450108">Админы бүрэн хандалт</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">Паспорт нэмэх</translation>
 <translation id="2400271059665846158">Google Wallet дахь лояалти картаа удирдана уу</translation>
 <translation id="2400600116338235695">Цуваа портуудад холбогдохыг хүсэх боломжтой</translation>
+<translation id="240450251994300576">Хоёрдогч толгой хэсгийн лого</translation>
 <translation id="2404884497378469141">Файлуудаа дахин хуулж үзнэ үү</translation>
 <translation id="2413155254802890957">Хуучин</translation>
 <translation id="2413528052993050574">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; хамгаалалтын сертификат хүчингүй болсон байж болзошгүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтон саад учруулж байж болох юм.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">PDF-с текст задалж байна...</translation>
 <translation id="2628224721443278970">Microsoft OneDrive-т нэвтрэх</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-н серверийн IP хаяг олдсонгүй.</translation>
+<translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> дээрээс хайхын тулд @ гэж шивнэ үү</translation>
 <translation id="2639739919103226564">Статус:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Даавуу (хагас гялгар)</translation>
@@ -1760,7 +1763,6 @@
 <translation id="3961148744525529027">Төлбөр хариуцагчийн хүснэгт хагас нээлттэй байна</translation>
 <translation id="3962859241508114581">Өмнөх бичлэг</translation>
 <translation id="3963721102035795474">Уншигчийн горим</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Байхгүй}=1{1 сайтаас }other{# сайтаас }}</translation>
 <translation id="3965672182149944205">Хаягийг хадгалах уу?</translation>
 <translation id="3966044442021752214">Бүтээгдэхүүний аюулгүй байдал</translation>
 <translation id="3969869202926863008">Дотоод сүлжээний хандалт</translation>
@@ -2268,6 +2270,7 @@
 <translation id="4827283332383516812">Картыг устгах</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" />-г сонгосон</translation>
 <translation id="4831993743164297314">Зураг хэвлэх цаас</translation>
+<translation id="4832388034239846146">Табын бүлэг хуваалцахын тулд Chrome-г шинэчилнэ үү</translation>
 <translation id="483241715238664915">Сануулгыг асаах</translation>
 <translation id="4832961164064927107">BBQ, мах шарах</translation>
 <translation id="4834250788637067901">Google Pay-г ашиглаж буй төлбөрийн хэрэгсэл, санал болон хаяг</translation>
@@ -2975,6 +2978,7 @@
 <translation id="6043357981274314628">Дууссан!</translation>
 <translation id="6044573915096792553">Хэмжээ12</translation>
 <translation id="6045164183059402045">Байршуулах загвар</translation>
+<translation id="6046892054959167494">Хайхын тулд <ph name="SEARCH_AGGREGATOR_KEYWORD" /> гэж шивэх эсвэл <ph name="SEARCH_AGGREGATOR_SHORT_NAME" />-г хүснэ үү</translation>
 <translation id="6047927260846328439">Энэ агуулга танаар программ суулгуулах эсвэл таны хувийн мэдээллийг авах зорилгоор таныг мэхэлж болзошгүй. <ph name="BEGIN_LINK" />Ямартай ч харуулна уу<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Дугтуй B4</translation>
 <translation id="6049488691372270142">Цаасны гаралт</translation>

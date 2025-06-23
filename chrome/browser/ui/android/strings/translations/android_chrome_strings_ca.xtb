@@ -129,7 +129,6 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1521774566618522728">Actiu avui</translation>
 <translation id="153446405401665083">Hi ha una versió nova de Chrome disponible</translation>
 <translation id="1540012742443808215">Actualment la barra d'adreces és a la part superior</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 adreça d'interès s'ha desat només en aquest dispositiu. Per utilitzar-la als teus altres dispositius, desa-la al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}other{# adreces d'interès s'han desat només en aquest dispositiu. Per utilitzar-les als teus altres dispositius, desa-les al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Les formes de pagament i les adreces no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.
 Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Per gestionar el teu Compte de Google, toca el botó Gestiona el compte</translation>
@@ -144,7 +143,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1598163867407640634">Utilitza <ph name="SITE_ETLD_PLUS_ONE" /> amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Quan l'opció està activada, utilitza i desa les dades al teu Compte de Google. Quan està desactivada, les dades només es desen en aquest dispositiu.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Suprimeix 1 element seleccionat}other{Suprimeix # elements seleccionats}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 adreça d'interès i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als teus altres dispositius, desa'ls al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}other{# adreces d'interès i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als teus altres dispositius, desa'ls al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
 <translation id="1641113438599504367">Navegació segura</translation>
 <translation id="164269334534774161">Es mostra una còpia sense connexió d'aquesta pàgina creada el dia <ph name="CREATION_TIME" /></translation>
@@ -477,7 +475,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="316694332262407393">Chrome ja s'està executant aquí.</translation>
 <translation id="3167258285411721858">Pots sol·licitar el lloc web per a mòbils de <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 contrasenya i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als teus altres dispositius, desa'ls al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}other{# contrasenyes i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als teus altres dispositius, desa'ls al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Mesurament d'anuncis</translation>
 <translation id="3189635831478931757">Grup de pestanyes <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">S'ha afegit a les adreces d'interès.</translation>
@@ -894,7 +891,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="506254248375231072">No hi ha cap pestanya</translation>
 <translation id="5062960805900435602">L'actualització sobre la combinació de contrasenyes s'ha tancat</translation>
 <translation id="5075939510584558547">Desa sense encriptació</translation>
-<translation id="5082172173036123513">Les finestres inactives se suprimeixen permanentment després de 6 mesos d'inactivitat.</translation>
 <translation id="5085038751173179818">Inicia la sessió en aquest lloc web i a Chrome per accedir a les teves adreces d'interès i més contingut en tots els teus dispositius</translation>
 <translation id="5091199029769593641">Aviat, quan obris una pestanya nova, veuràs històries de: <ph name="SITE_NAME" />. Els llocs web que segueixes es desen al teu Compte de Google. Pots gestionar-los a la configuració de Discover.</translation>
 <translation id="509429900233858213">S'ha produït un error.</translation>
@@ -1155,7 +1151,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud mostrant-te anuncis que no estiguin basats en altres llocs web que hagis visitat. Molts llocs web continuaran recopilant i utilitzant les teves dades de navegació (per exemple, per millorar la seguretat, per proporcionar contingut, anuncis i recomanacions i per generar estadístiques).</translation>
 <translation id="6247557882553405851">Gestor de contrasenyes de Google</translation>
 <translation id="6251449557817521191">Consulta l'historial de Chrome aquí</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 element s'ha desat només en aquest dispositiu. Per utilitzar-lo als teus altres dispositius, desa'l al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}other{# elements s'han desat només en aquest dispositiu. Per utilitzar-los als teus altres dispositius, desa'ls al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="6254139308321626268">Estàs veient un fitxer PDF</translation>
 <translation id="6255809143828972562">Amb les eines de Chrome, pots navegar de manera segura i mantenir el control</translation>
 <translation id="6264376385120300461">Baixa igualment</translation>
@@ -1420,7 +1415,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7293429513719260019">Selecciona l'idioma</translation>
 <translation id="729975465115245577">El dispositiu no té cap aplicació per emmagatzemar el fitxer de contrasenyes.</translation>
 <translation id="7304072650267745798">És possible que el teu dispositiu Android inclogui una opció de configuració similar. Si aquesta opció està activada a Chrome i al teu dispositiu Android, les empreses podrien mesurar l'efectivitat d'un anunci als llocs web que visites i a les aplicacions que fas servir.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 contrasenya s'ha desat només en aquest dispositiu. Per utilitzar-la als teus altres dispositius, desa-la al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}other{# contrasenyes s'han desat només en aquest dispositiu. Per utilitzar-les als teus altres dispositius, desa-les al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7304873321153398381">No tens connexió. Chrome no pot comprovar les teves contrasenyes.</translation>
 <translation id="7313188324932846546">Toca per configurar la sincronització</translation>
 <translation id="7314734791127433392">No es poden comprovar les contrasenyes</translation>
@@ -1633,7 +1627,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="813082847718468539">Mostra la informació del lloc web</translation>
 <translation id="8135406045838672858">Els PDF baixats s'obren automàticament amb <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes de Google.</translation>
-<translation id="8146563639948412265">Pots tenir fins a <ph name="MAX_WINDOW_COUNT" /> finestres en total. Per restaurar-ne una, tanca <ph name="WINDOW_COUNT" /> finestres actives o inactives.</translation>
 <translation id="8152331954420209374">Ves a Lens</translation>
 <translation id="8163820386638255770">Per utilitzar i desar contrasenyes al teu Compte de Google, verifica la teva identitat</translation>
 <translation id="8186512483418048923">Queden <ph name="FILES" /> fitxers</translation>
@@ -1873,7 +1866,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="9169507124922466868">L'historial de navegació està obert fins a la meitat</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Tindràs l'historial en tots els dispositius sincronitzats perquè puguis continuar el que estaves fent</translation>
-<translation id="9191906083913361689">També pots veure i gestionar aquests elements a les adreces d'interès, a la llista de lectura o al gestor de contrasenyes</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{S'ha comprovat fa 1 minut}other{S'ha comprovat fa # minuts}}</translation>
 <translation id="9204021776105550328">S'està suprimint</translation>
 <translation id="9204836675896933765">Queda 1 fitxer</translation>

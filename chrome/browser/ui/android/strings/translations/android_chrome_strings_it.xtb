@@ -129,7 +129,6 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1521774566618522728">Attivo oggi</translation>
 <translation id="153446405401665083">È disponibile una nuova versione di Chrome</translation>
 <translation id="1540012742443808215">Al momento la barra degli indirizzi è in alto</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 preferito è salvato soltanto su questo dispositivo. Per usarlo sugli altri tuoi dispositivi, salvalo nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}other{# preferiti sono salvati soltanto su questo dispositivo. Per usarli sugli altri tuoi dispositivi, salvali nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">I metodi di pagamento e gli indirizzi non verranno criptati. La cronologia di navigazione di Chrome non verrà sincronizzata.
 Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google o memorizzata da Google. Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Per gestire il tuo Account Google, tocca il pulsante "Gestisci account"</translation>
@@ -144,7 +143,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1598163867407640634">Utilizza <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Quando l'opzione è attiva, utilizza e salva i dati nel tuo Account Google. Se è disattivata, i dati vengono salvati solo su questo dispositivo.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Rimuovi 1 elemento selezionato}other{Rimuovi # elementi selezionati}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 preferito e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri tuoi dispositivi, salvali nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}other{# preferiti e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri tuoi dispositivi, salvali nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1639239467298939599">Caricamento</translation>
 <translation id="1641113438599504367">Navigazione sicura</translation>
 <translation id="164269334534774161">È visualizzata una copia offline di questa pagina del giorno <ph name="CREATION_TIME" /></translation>
@@ -477,7 +475,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="316694332262407393">Chrome è già in esecuzione qui.</translation>
 <translation id="3167258285411721858">Puoi richiedere il sito mobile di <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Feed personalizzato</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 password e altri elementi sono stati salvati solo su questo dispositivo. Per usarli su altri dispositivi, salvali nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}other{# password e altri elementi sono stati salvati solo su questo dispositivo. Per usarli su altri dispositivi, salvali nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Misurazione degli annunci</translation>
 <translation id="3189635831478931757">Gruppo di schede <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
@@ -894,7 +891,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="506254248375231072">Nessuna scheda</translation>
 <translation id="5062960805900435602">Aggiornamento sull'unione delle password chiuso</translation>
 <translation id="5075939510584558547">Salva senza crittografia</translation>
-<translation id="5082172173036123513">Le finestre inattive vengono eliminate definitivamente dopo 6 mesi di inattività.</translation>
 <translation id="5085038751173179818">Accedi a questo sito e a Chrome per trovare i tuoi preferiti e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="5091199029769593641">A breve vedrai storie di <ph name="SITE_NAME" /> quando aprirai una nuova scheda. I siti che segui vengono salvati nel tuo Account Google. Puoi gestirli nelle impostazioni di Discover.</translation>
 <translation id="509429900233858213">Si è verificato un errore.</translation>
@@ -1155,7 +1151,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annunci non basati su altri siti web visitati. Molti siti web continueranno tuttavia a raccogliere e a utilizzare i dati di navigazione, ad esempio per aumentare la sicurezza, fornire contenuti, annunci e consigli, nonché per generare statistiche sui rapporti.</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
 <translation id="6251449557817521191">Visualizza qui la cronologia di Chrome</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 elemento è stato salvato solo su questo dispositivo. Per usarlo sugli altri tuoi dispositivi, salvalo nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}other{# elementi sono stati salvati solo su questo dispositivo. Per usarli su altri dispositivi, salvali nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="6254139308321626268">Stai visualizzando un file PDF</translation>
 <translation id="6255809143828972562">Con gli strumenti di Chrome puoi navigare in sicurezza e tenere tutto sotto controllo</translation>
 <translation id="6264376385120300461">Scarica comunque</translation>
@@ -1420,7 +1415,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7293429513719260019">Seleziona lingua</translation>
 <translation id="729975465115245577">Il tuo dispositivo non ha un'app per archiviare il file di password.</translation>
 <translation id="7304072650267745798">Il tuo dispositivo Android potrebbe includere un'impostazione simile. Se questa impostazione è attiva in Chrome e sul tuo dispositivo Android, un'azienda potrebbe essere in grado di misurare l'efficacia di un annuncio sui siti web che visiti e nelle app che utilizzi.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 password è stata salvata solo su questo dispositivo. Per usarla su altri dispositivi, salvala nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}other{# password sono state salvate solo su questo dispositivo. Per usarle su altri dispositivi, salvale nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7304873321153398381">Offline. Chrome non può controllare le tue password.</translation>
 <translation id="7313188324932846546">Tocca per configurare la sincronizzazione</translation>
 <translation id="7314734791127433392">Impossibile controllare le password</translation>
@@ -1633,7 +1627,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="813082847718468539">Visualizza informazioni sul sito</translation>
 <translation id="8135406045838672858">I PDF scaricati si aprono automaticamente con <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password di Google.</translation>
-<translation id="8146563639948412265">Puoi avere fino a <ph name="MAX_WINDOW_COUNT" /> finestre in totale. Per ripristinare una finestra, chiudi <ph name="WINDOW_COUNT" /> finestre attive o inattive.</translation>
 <translation id="8152331954420209374">Vai a Lens</translation>
 <translation id="8163820386638255770">Verifica la tua identità per usare e salvare le password nel tuo Account Google</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> file rimanenti</translation>
@@ -1873,7 +1866,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9169507124922466868">La cronologia di navigazione è aperta fino a metà</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">La tua cronologia sarà disponibile su tutti i dispositivi sincronizzati per poter continuare ciò che stavi facendo</translation>
-<translation id="9191906083913361689">Puoi visualizzare e gestire questi elementi anche nei preferiti, nell'elenco di lettura o in Gestore delle password</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Eseguito 1 minuto fa}other{Eseguito # minuti fa}}</translation>
 <translation id="9204021776105550328">Eliminazione in corso…</translation>
 <translation id="9204836675896933765">1 file rimanente</translation>

@@ -1761,7 +1761,6 @@
 <translation id="3961148744525529027">Лист с обработчиком платежа открыт на половину высоты</translation>
 <translation id="3962859241508114581">Предыдущий трек</translation>
 <translation id="3963721102035795474">Режим чтения</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Нет}=1{С 1 сайта }one{С # сайта }few{С # сайтов }many{С # сайтов }other{С # сайта }}</translation>
 <translation id="3965672182149944205">Сохранить адрес?</translation>
 <translation id="3966044442021752214">О безопасности</translation>
 <translation id="3969869202926863008">Доступ к локальной сети</translation>

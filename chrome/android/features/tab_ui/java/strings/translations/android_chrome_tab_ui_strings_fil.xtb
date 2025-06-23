@@ -197,7 +197,6 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Ginawa <ph name="NUM_MONTHS_ONE" /> buwan ang nakalipas}one{Ginawa <ph name="NUM_MONTHS_MANY" /> buwan ang nakalipas}other{Ginawa <ph name="NUM_MONTHS_MANY" /> na buwan ang nakalipas}}</translation>
 <translation id="8813708480179818649">Alisin ang tab sa grupo</translation>
 <translation id="8820741577754260431">Tingnan ang mga pagbaba ng presyo sa iyong mga tab</translation>
-<translation id="883379923675618699">Awtomatikong isinasara ng Chrome ang mga item sa seksyon ng mga hindi aktibong item na hindi mo nagamit sa loob ng 3 buwan. Puwede mo itong i-off ngayon o anumang oras sa Mga Setting.</translation>
 <translation id="8887921976452567404">Puwedeng mabuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at sa seksyong Mga grupo ng tab.</translation>
 <translation id="8915916167043355778">Isara lahat</translation>
 <translation id="9090098097337832354">Isinara ang impormasyon tungkol sa store na ito</translation>

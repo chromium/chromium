@@ -1783,6 +1783,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2234827758954819389">Privaatsusjuhend</translation>
 <translation id="2234876718134438132">Sünkroonimine ja Google'i teen.</translation>
 <translation id="2235344399760031203">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
+<translation id="2236949375853147973">Minu tegevused</translation>
 <translation id="2238379619048995541">Sageduse oleku andmed</translation>
 <translation id="2240582393605484605">Andmed, mis on salvestatud ainult sellele seadmele, jäävad olemasolevale profiilile</translation>
 <translation id="2241053333139545397">Andmete lugemine ja muutmine mitmel veebisaidil</translation>
@@ -5409,6 +5410,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4773122030389014189">Vahelehegrupi „<ph name="GROUP_NAME" />“ jagamine</translation>
 <translation id="4773253008034797668">Lubatud luua ühendus mis tahes seadmega teie kohalikus võrgus</translation>
 <translation id="477548766361111120">Luba laiendusel seda saiti lugeda ja muuta</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> on kustutatud</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> on ühendatud</translation>
 <translation id="4776594120007763294">Lehe lisamiseks hiljem lugemiseks klõpsake nupul</translation>
 <translation id="4777458362738635055">Teised selle seadme kasutajad saavad seda võrku kasutada</translation>
@@ -5754,6 +5756,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5016305686459575361">Ühendades oma telefoni, saate teha järgmist.</translation>
 <translation id="5016491575926936899">Saate tekstsõnumeid arvutist saata, internetiühendust jagada, vestluse märguannetele vastata ja telefoniga oma seadme (<ph name="DEVICE_TYPE" />) avada.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Põhisõlme märgistamise failide allalaadimine</translation>
+<translation id="5017529052065664584">Viimased 15 minutit</translation>
 <translation id="5018207570537526145">Ava laienduse veebisait</translation>
 <translation id="5018526990965779848">Kasutus- ja diagnostikaandmete saatmine. Aidake täiustada Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. See aitab parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on sisse lülitatud, võidakse need andmed salvestada teie Google'i kontole.</translation>
 <translation id="5019487038187875030">MacOS-ist imporditud sertifikaatide vaatamine</translation>
@@ -8054,7 +8057,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6694462491298752106">Sisseehitatud puuteplaat on keelatud</translation>
 <translation id="6694634756612002311">Halda jagamist</translation>
 <translation id="6697172646384837537">Valige, kuhu oma paroolid importida</translation>
-<translation id="6697492270171225480">Kui lehte ei leita, kuvatakse sarnaste lehtede soovitusi</translation>
 <translation id="6697690052557311665">Jagamiseks paremklõpsake rakenduses Failid soovitud kaustal ja valige käsk „Jaga Linuxiga”.</translation>
 <translation id="6698810901424468597">Andmete lugemine ja muutmine veebisaidil <ph name="WEBSITE_1" /> ja <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Mobiilsidevõrgu SIM-kaardi lukk</translation>
@@ -11440,7 +11442,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="9043264199499366189">Tellige ChromeOS Flexi süsteemisündmused</translation>
 <translation id="9044646465488564462">Võrguga ühenduse loomine ebaõnnestus: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lugemisloend teisaldati külgpaneelile. Proovige seda siin.</translation>
-<translation id="9045430190527754450">Saadab Google'ile teie soovitud lehe veebiaadressi.</translation>
 <translation id="9048745018038487540">Vali kõik fondid</translation>
 <translation id="9050666287014529139">Parool</translation>
 <translation id="905145695813415387">„<ph name="LOCAL_FOLDER" />“ on salvestatud ainult sellesse seadmesse. Kui teisaldate selle kausta kausta „<ph name="LOCAL_FOLDER" />“, ei saa te seda enam teistesse seadmetesse.</translation>

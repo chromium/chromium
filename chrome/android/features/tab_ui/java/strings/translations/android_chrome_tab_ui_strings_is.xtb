@@ -197,7 +197,6 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Búinn til fyrir <ph name="NUM_MONTHS_ONE" /> mánuði}one{Búinn til fyrir <ph name="NUM_MONTHS_MANY" /> mánuði}other{Búinn til fyrir <ph name="NUM_MONTHS_MANY" /> mánuðum}}</translation>
 <translation id="8813708480179818649">Fjarlægja flipa úr hóp</translation>
 <translation id="8820741577754260431">Sjá verðlækkanir á flipum</translation>
-<translation id="883379923675618699">Chrome lokar sjálfkrafa flipum í óvirka hlutanum sem hafa ekki verið notaðir í þrjá mánuði. Þú getur slökkt á þessu núna eða síðar í stillingunum.</translation>
 <translation id="8887921976452567404">Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“.</translation>
 <translation id="8915916167043355778">Loka öllu</translation>
 <translation id="9090098097337832354">Upplýsingum um þessa verslun lokað</translation>

@@ -6030,25 +6030,6 @@ Als de waarde is ingesteld op Waar of niet is ingesteld, kunnen geselecteerde do
 
 Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</translation>
 <translation id="5377606826822211923">Het gebruik van Android-apps van niet-vertrouwde bronnen beheren voor de gebruiker</translation>
-<translation id="5377826248281933035">Dit beleid biedt een lijst met sites die gebruikers snel kunnen zoeken met snelkoppelingen in de adresbalk. Gebruikers kunnen een zoekopdracht starten door de snelkoppeling of @snelkoppeling (bijvoorbeeld @werk), gevolgd door de spatiebalk of Tab, in de adresbalk te typen.
-
-De volgende velden zijn vereist voor elke site: <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />.
-
-Het veld <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" /> komt overeen met de naam van de site of zoekmachine die aan de gebruiker wordt getoond in de adresbalk.
-
-Het veld <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> kan gewone woorden en tekens bevatten, maar mag geen spaties bevatten of beginnen met het symbool @. Snelkoppelingen moeten ook uniek zijn.
-
-Voor elke invoer geeft het veld <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> de URL aan van de zoekmachine die tijdens een zoekopdracht met het bijbehorende zoekwoord wordt gebruikt. De URL moet de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten. Deze tekenreeks wordt tijdens de zoekopdracht vervangen door de zoektermen van de gebruiker. Ongeldige invoer en vermeldingen met dubbele snelkoppelingen worden genegeerd.
-
-Items voor Zoekopdrachten op site die zijn ingesteld als aanbevolen, worden weergegeven in de adresbalk als de gebruiker '@' typt. Er kunnen maximaal 3 items als aanbevolen worden geselecteerd.
-
-Gebruikers kunnen items voor Zoekopdrachten op site die zijn ingesteld via het beleid, niet bewerken of uitzetten. Ze kunnen wel nieuwe snelkoppelingen voor dezelfde URL toevoegen. Daarnaast kunnen gebruikers geen nieuwe items voor Zoekopdrachten op site maken met een snelkoppeling die eerder via dit beleid is gemaakt.
-
-Als er een conflict is met een snelkoppeling die de gebruiker eerder heeft gemaakt, krijgt de gebruikersinstelling voorrang. Gebruikers kunnen de optie die door het beleid is gemaakt nog wel activeren door '@' in de zoekbalk te typen. Als de gebruiker bijvoorbeeld 'werk' al heeft gedefinieerd als snelkoppeling naar URL1 en het beleid de optie 'werk' definieert als snelkoppeling naar URL2, wordt er een zoekopdracht naar URL1 gestart als de gebruiker 'werk' in de zoekbalk typt, maar wordt er naar URL2 gezocht als de gebruiker '@werk' in de zoekbalk typt.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="537786648513450280">Het gebruik van Android-apps van niet-vertrouwde bronnen beheren voor het apparaat</translation>
 <translation id="5378885577701865339">De functie voor gedeeld klembord uitzetten</translation>
 <translation id="538108065117008131"><ph name="PRODUCT_FRAME_NAME" /> toestaan de volgende soorten content te verwerken.</translation>
@@ -10074,13 +10055,6 @@ Alle sets die in het beleid worden vermeld, moeten geldige gehelen van gerelatee
 In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
-<translation id="8213475033260328041">Kies ervoor om de betreffende gegevens van <ph name="PRODUCT_NAME" /> op te slaan in een specifieke geografische locatie.
-
-Als je dit beleid niet instelt of instelt op <ph name="DATA_REGION_SETTING_NO_PREFERENCE_OPTION_NAME" /> (waarde 0), kunnen de betreffende gegevens worden opgeslagen in elke geografische locatie (of meerdere).
-
-Als je dit beleid instelt op <ph name="DATA_REGION_SETTING_UNITED_STATES_OPTION_NAME" /> (waarde 1), worden de betreffende gegevens opgeslagen in de Verenigde Staten.
-
-Als je dit beleid instelt op <ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" /> (waarde 2), worden de betreffende gegevens opgeslagen in Europa.</translation>
 <translation id="8213770777756919897">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Als dit beleid is ingesteld, specificeert het de actie die worden ondernomen door <ph name="PRODUCT_OS_NAME" /> als de gebruiker inactief is gedurende de tijdsduur die is opgegeven door de inactieve vertraging. Dit kan afzonderlijk worden geconfigureerd.

@@ -693,6 +693,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2157640075051554492">Arifa za ufuatiliaji wa bei</translation>
 <translation id="21613918653299710">Matunzio ya Picha Mtandaoni</translation>
 <translation id="2161656808144014275">Maandishi</translation>
+<translation id="2162435186600002085">Nembo Msingi ya Kijajuu</translation>
 <translation id="2162620598375156287">Bei ya sasa ni <ph name="CURRENT_PRICE" /> kwenye <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Angalia iwapo kuna kosa la hijai kwenye <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Idhini Kamili ya Kufikia ya Msimamizi</translation>
@@ -851,6 +852,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2400263725572336749">Weka maelezo ya pasipoti</translation>
 <translation id="2400271059665846158">Dhibiti kadi zako za kutuza uaminifu kwenye Pochi ya Google</translation>
 <translation id="2400600116338235695">Inaweza kuomba ruhusa ya kuunganisha kwenye milango ya kutuma biti za data kwa mfululizo</translation>
+<translation id="240450251994300576">Nembo ya Ziada ya Kijajuu</translation>
 <translation id="2404884497378469141">Jaribu kunakili faili zako tena</translation>
 <translation id="2413155254802890957">Ya zamani</translation>
 <translation id="2413528052993050574">Seva hii haikuweza kuthibitisha kuwa ni <ph name="DOMAIN" />; huenda cheti chake cha usalama kimebatilishwa. Hii inaweza kusababishwa na usanidi usiofaa au mvamizi kuingilia muunganisho wako.</translation>
@@ -981,6 +983,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2627847595568876492">Inadondoa maandishi kwenye PDF...</translation>
 <translation id="2628224721443278970">Ingia katika akaunti ya Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Haikupata anwani ya IP ya seva ya <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Andika @ ili utafute kwenye <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Hali:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Kitambaa (Mng'ao Nusu)</translation>
@@ -1759,7 +1762,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3961148744525529027">Laha la kidhibiti cha malipo limefunguliwa nusu</translation>
 <translation id="3962859241508114581">Wimbo Uliotangulia</translation>
 <translation id="3963721102035795474">Hali ya Usomaji</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Hamna}=1{Kutoka kwenye tovuti 1 }other{Kutoka kwenye tovuti # }}</translation>
 <translation id="3965672182149944205">Ungependa kuhifadhi anwani?</translation>
 <translation id="3966044442021752214">Usalama wa bidhaa</translation>
 <translation id="3969869202926863008">Ufikiaji wa mtandao wa karibu</translation>
@@ -2267,6 +2269,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4827283332383516812">Futa kadi</translation>
 <translation id="4830443836091007686">Umechagua vipengee <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Karatasi ya Kiweka Picha</translation>
+<translation id="4832388034239846146">Sasisha Chrome ili utume vikundi vya vichupo</translation>
 <translation id="483241715238664915">Washa maonyo</translation>
 <translation id="4832961164064927107">Kubanika na Kuchoma Nyama</translation>
 <translation id="4834250788637067901">Njia za kulipa, ofa na anwani zinazotumia Google Pay</translation>
@@ -2974,6 +2977,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6043357981274314628">Imekamilika!</translation>
 <translation id="6044573915096792553">Ukubwa wa 12</translation>
 <translation id="6045164183059402045">Kiolezo cha kuweka karatasi</translation>
+<translation id="6046892054959167494">Andika <ph name="SEARCH_AGGREGATOR_KEYWORD" /> ili utafute au uulize<ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Maudhui haya yanaweza kukuhadaa kusakinisha programu au kuonyesha maelezo yako ya binafsi. <ph name="BEGIN_LINK" />Onyesha tu<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Bahasha ya ukubwa wa B4</translation>
 <translation id="6049488691372270142">Utumaji wa ukurasa</translation>

@@ -1783,6 +1783,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2234827758954819389">Guide sur la confidentialité</translation>
 <translation id="2234876718134438132">Services Google/Synchronisation</translation>
 <translation id="2235344399760031203">Cookies tiers bloqués</translation>
+<translation id="2236949375853147973">Mon activité</translation>
 <translation id="2238379619048995541">Données sur l'état de fréquence</translation>
 <translation id="2240582393605484605">Les données enregistrées uniquement sur cet appareil resteront dans le profil existant</translation>
 <translation id="2241053333139545397">Accéder aux données de plusieurs sites et les modifier</translation>
@@ -5403,6 +5404,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4773122030389014189">Partager le groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">Autorisés à se connecter à n'importe quel appareil sur votre réseau local</translation>
 <translation id="477548766361111120">Autoriser l'extension à lire et modifier ce site</translation>
+<translation id="4775646243557794597">Suppression réussie sur la période suivante : <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> a été connecté(e)</translation>
 <translation id="4776594120007763294">Pour ajouter une page à lire plus tard, cliquez sur le bouton</translation>
 <translation id="4777458362738635055">Les autres utilisateurs de cet appareil peuvent utiliser ce réseau</translation>
@@ -5747,6 +5749,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5016305686459575361">En connectant votre téléphone, vous pouvez faire ce qui suit :</translation>
 <translation id="5016491575926936899">Vous pouvez envoyer des SMS depuis votre ordinateur, partager votre connexion Internet, répondre à une conversation depuis une notification et déverrouiller votre <ph name="DEVICE_TYPE" /> avec votre téléphone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Télécharger les fichiers d'annotations du nœud principal</translation>
+<translation id="5017529052065664584">15 dernières minutes</translation>
 <translation id="5018207570537526145">Ouvrir le site Web de l'extension</translation>
 <translation id="5018526990965779848">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de votre expérience sur Android en envoyant automatiquement à Google des données liées à l'utilisation de votre appareil et des applications, ainsi que des données de diagnostic. Ces informations nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires tels que les développeurs Android. Si vous avez activé le paramètre "Activité additionnelle sur le Web et les applications", ces données peuvent être enregistrées dans votre compte Google.</translation>
 <translation id="5019487038187875030">Afficher les certificats importés depuis macOS</translation>
@@ -8049,7 +8052,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6694462491298752106">Le pavé tactile intégré est désactivé</translation>
 <translation id="6694634756612002311">Gérer le partage</translation>
 <translation id="6697172646384837537">Sélectionnez l'emplacement d'importation de vos mots de passe</translation>
-<translation id="6697492270171225480">Afficher des suggestions de pages similaires lorsqu'une page est introuvable</translation>
 <translation id="6697690052557311665">Pour partager un dossier, faites un clic droit sur le dossier concerné dans l'application Fichiers, puis sélectionnez "Partager avec Linux".</translation>
 <translation id="6698810901424468597">Accéder aux données des sites <ph name="WEBSITE_1" /> et <ph name="WEBSITE_2" />, et les modifier</translation>
 <translation id="6700093763382332031">Verrouillage de la carte SIM sur mobile</translation>
@@ -11433,7 +11435,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="9043264199499366189">Abonnez-vous aux événements système ChromeOS Flex</translation>
 <translation id="9044646465488564462">Échec de la connexion au réseau : <ph name="DETAILS" />.</translation>
 <translation id="9045160989383249058">Votre liste de lecture a été déplacée vers le nouveau panneau latéral. Faites un essai.</translation>
-<translation id="9045430190527754450">Envoie l'adresse Web de la page que vous essayez d'ouvrir à Google</translation>
 <translation id="9048745018038487540">Sélectionner toutes les polices</translation>
 <translation id="9050666287014529139">Phrase secrète</translation>
 <translation id="905145695813415387">"<ph name="LOCAL_FOLDER" />" n'est enregistré que sur cet appareil. Si vous déplacez ce dossier dans "<ph name="LOCAL_FOLDER" />", vous n'y aurez plus accès sur vos autres appareils.</translation>

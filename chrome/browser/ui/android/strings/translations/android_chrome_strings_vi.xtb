@@ -129,7 +129,6 @@
 <translation id="1521774566618522728">Hoạt động hôm nay</translation>
 <translation id="153446405401665083">Đã có phiên bản Chrome mới</translation>
 <translation id="1540012742443808215">Thanh địa chỉ hiện đang ở trên cùng</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 dấu trang chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}other{# dấu trang chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="1544084554881119930">Địa chỉ và phương thức thanh toán sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
 Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Để quản lý Tài khoản Google của bạn, hãy nhấn vào nút "Quản lý tài khoản"</translation>
@@ -144,7 +143,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1598163867407640634">Sử dụng <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Khi bật, tính năng tương ứng sẽ sử dụng và lưu dữ liệu trong Tài khoản Google của bạn. Khi tắt, dữ liệu sẽ chỉ được lưu vào thiết bị này.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Xóa 1 mục đã chọn}other{Xóa # mục đã chọn}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 dấu trang và các mục khác chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}other{# dấu trang và các mục khác chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="1639239467298939599">Đang tải</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
 <translation id="164269334534774161">Bạn đang xem bản sao ngoại tuyến của trang này từ <ph name="CREATION_TIME" /></translation>
@@ -477,7 +475,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="316694332262407393">Chrome hiện đang chạy trên trang này.</translation>
 <translation id="3167258285411721858">Bạn có thể yêu cầu trang web dành cho thiết bị di động cho <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Khám phá</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 mật khẩu và các dữ liệu khác chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}other{# mật khẩu và các dữ liệu khác chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="3187472288455401631">Đo lường quảng cáo</translation>
 <translation id="3189635831478931757">Nhóm thẻ <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Đóng cửa sổ hiện tại?</translation>
@@ -898,7 +895,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="506254248375231072">Không có thẻ nào</translation>
 <translation id="5062960805900435602">Thông tin cập nhật về việc hợp nhất mật khẩu đã đóng</translation>
 <translation id="5075939510584558547">Lưu mà không mã hoá</translation>
-<translation id="5082172173036123513">Các cửa sổ không hoạt động sẽ bị xoá vĩnh viễn sau 6 tháng không hoạt động.</translation>
 <translation id="5085038751173179818">Đăng nhập vào trang web này và Chrome để sử dụng dấu trang và các nội dung khác trên tất cả thiết bị của bạn</translation>
 <translation id="5091199029769593641">Bạn sẽ sớm thấy các tin bài của <ph name="SITE_NAME" /> khi mở một thẻ mới. Các trang web bạn theo dõi sẽ được lưu trong tài khoản Google của bạn. Bạn có thể quản lý các trang web đó trong phần cài đặt Khám phá.</translation>
 <translation id="509429900233858213">Đã xảy ra lỗi.</translation>
@@ -1161,7 +1157,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cách hiển thị cho bạn các quảng cáo không dựa trên các trang web khác mà bạn đã truy cập. Nhiều trang web sẽ vẫn thu thập và sử dụng dữ liệu duyệt web của bạn — ví dụ: để tăng cường bảo mật, cung cấp nội dung, quảng cáo và đề xuất, đồng thời tạo số liệu thống kê báo cáo.</translation>
 <translation id="6247557882553405851">Trình quản lý mật khẩu</translation>
 <translation id="6251449557817521191">Xem Nhật ký duyệt web trên Chrome tại đây</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 mục chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}other{# mục chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="6254139308321626268">Bạn đang xem một tệp PDF</translation>
 <translation id="6255809143828972562">Với các công cụ của Chrome, bạn có thể duyệt web an toàn và luôn nắm quyền kiểm soát</translation>
 <translation id="6264376385120300461">Vẫn tải xuống</translation>
@@ -1427,7 +1422,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7293429513719260019">Chọn ngôn ngữ</translation>
 <translation id="729975465115245577">Thiết bị của bạn không có ứng dụng để lưu trữ tệp mật khẩu.</translation>
 <translation id="7304072650267745798">Thiết bị Android của bạn có thể có chế độ cài đặt tương tự. Nếu bạn bật chế độ cài đặt này trong Chrome và trên thiết bị Android, một công ty có thể đo lường mức độ hiệu quả của quảng cáo trên những trang web bạn truy cập và ứng dụng bạn dùng.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 mật khẩu chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}other{# mật khẩu chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="7304873321153398381">Không có kết nối mạng. Chrome không thể kiểm tra mật khẩu của bạn.</translation>
 <translation id="7313188324932846546">Nhấn để thiết lập quá trình đồng bộ hóa</translation>
 <translation id="7314734791127433392">Không thể kiểm tra mật khẩu</translation>
@@ -1641,7 +1635,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="813082847718468539">Xem thông tin trang web</translation>
 <translation id="8135406045838672858">Các tệp PDF đã tải xuống sẽ tự động mở bằng <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Bạn không cần ghi nhớ mật khẩu này. Mật khẩu này sẽ được lưu vào Trình quản lý mật khẩu của Google.</translation>
-<translation id="8146563639948412265">Tổng số cửa sổ tối đa được phép là <ph name="MAX_WINDOW_COUNT" />. Để khôi phục một cửa sổ, hãy đóng <ph name="WINDOW_COUNT" /> cửa sổ đang hoạt động hoặc không hoạt động.</translation>
 <translation id="8152331954420209374">Chuyển đến Ống kính</translation>
 <translation id="8163820386638255770">Xác minh danh tính của bạn để lưu mật khẩu vào Tài khoản Google và sử dụng các mật khẩu đó</translation>
 <translation id="8186512483418048923">Còn lại <ph name="FILES" /> tệp</translation>
@@ -1882,7 +1875,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9169507124922466868">Lịch sử di chuyển đang mở ở nửa dưới màn hình</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Bạn sẽ thấy nhật ký duyệt web trên tất cả những thiết bị đã đồng bộ hoá, nhờ vậy bạn có thể tiếp tục những việc bạn đang làm</translation>
-<translation id="9191906083913361689">Bạn cũng có thể xem và quản lý các dữ liệu này trong phần dấu trang, danh sách đọc hoặc trình quản lý mật khẩu</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Đã kiểm tra 1 phút trước}other{Đã kiểm tra # phút trước}}</translation>
 <translation id="9204021776105550328">Đang xoá</translation>
 <translation id="9204836675896933765">Còn lại 1 tệp</translation>

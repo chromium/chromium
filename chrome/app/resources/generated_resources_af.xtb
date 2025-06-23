@@ -1792,6 +1792,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2234827758954819389">Privaatheidgids</translation>
 <translation id="2234876718134438132">Sinkronisering en Google-dienste</translation>
 <translation id="2235344399760031203">Derdepartywebkoekies word geblokkeer</translation>
+<translation id="2236949375853147973">My aktiwiteit</translation>
 <translation id="2238379619048995541">Frekwensie-toestanddata</translation>
 <translation id="2240582393605484605">Data wat net op hierdie toestel gestoor word, sal in die bestaande profiel bly</translation>
 <translation id="2241053333139545397">Lees en verander jou data op 'n hele aantal webwerwe</translation>
@@ -5417,6 +5418,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4773122030389014189">Deel “<ph name="GROUP_NAME" />”-oortjiegroep</translation>
 <translation id="4773253008034797668">Mag aan enige toestel op jou plaaslike netwerk koppel</translation>
 <translation id="477548766361111120">Laat uitbreiding toe om hierdie werf te lees en te verander</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> uitgevee</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> is gekoppel</translation>
 <translation id="4776594120007763294">Klik die knoppie om 'n bladsy by te voeg om later te lees</translation>
 <translation id="4777458362738635055">Ander gebruikers van hierdie toestel kan hierdie netwerk gebruik</translation>
@@ -5762,6 +5764,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5016305686459575361">Jy kan die volgende doen deur jou foon te koppel:</translation>
 <translation id="5016491575926936899">Jy kan SMS'e van jou rekenaar af stuur, jou internetverbinding deel, op gesprekkennisgewings antwoord, en jou <ph name="DEVICE_TYPE" /> met jou foon ontsluit.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Laai tans die hoofnodus se annotasielêers af</translation>
+<translation id="5017529052065664584">Afgelope 15 minute</translation>
 <translation id="5018207570537526145">Maak uitbreidingwebwerf oop</translation>
 <translation id="5018526990965779848">Stuur gebruik- en diagnostiese data. Help om jou Android-ervaring beter te maak deur diagnostiese, toestel- en programgebruikdata outomaties na Google toe te stuur. Dit sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. As jou bykomende Web- en App-aktiwiteit-instelling aangeskakel is, kan hierdie data in jou Google-rekening gestoor word.</translation>
 <translation id="5019487038187875030">Bekyk ingevoerde sertifikate van MacOS af</translation>
@@ -8063,7 +8066,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6694462491298752106">Ingeboude raakpaneel is gedeaktiveer</translation>
 <translation id="6694634756612002311">Bestuur deling</translation>
 <translation id="6697172646384837537">Kies waar jy jou wagwoorde wil invoer</translation>
-<translation id="6697492270171225480">Wys voorstelle vir soortgelyke bladsye wanneer 'n bladsy nie gevind kan word nie</translation>
 <translation id="6697690052557311665">Regsklik op 'n vouer in Lêers-app en kies dan "Deel met Linux" as jy wil deel.</translation>
 <translation id="6698810901424468597">Lees en verander jou data op <ph name="WEBSITE_1" /> en <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Sellulêre SIM-slot</translation>
@@ -11444,7 +11446,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9043264199499366189">Teken in op ChromeOS Flex-stelselgebeure</translation>
 <translation id="9044646465488564462">Kon nie aan die netwerk koppel nie: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Jou leeslys het na die nuwe kantpaneel toe geskuif. Probeer dit hier.</translation>
-<translation id="9045430190527754450">Stuur die webadres van die bladsy wat jy tans in Google probeer bereik</translation>
 <translation id="9048745018038487540">Kies alle lettertipes</translation>
 <translation id="9050666287014529139">Wagfrase</translation>
 <translation id="905145695813415387">“<ph name="LOCAL_FOLDER" />” word net op hierdie toestel gestoor. As jy hierdie vouer na “<ph name="LOCAL_FOLDER" />” skuif, sal jy dit nie meer op jou ander toestelle kry nie.</translation>

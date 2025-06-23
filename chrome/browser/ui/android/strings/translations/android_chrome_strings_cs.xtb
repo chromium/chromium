@@ -129,7 +129,6 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="1521774566618522728">Aktivní dnes</translation>
 <translation id="153446405401665083">K dispozici je nová verze Chromu</translation>
 <translation id="1540012742443808215">Adresní řádek je aktuálně nahoře</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 záložka je uložená jen na tomto zařízení. Pokud ji chcete používat v jiných zařízeních, uložte ji do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}few{# záložky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}many{# záložky je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}other{# záložek je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Platební metody a adresy nebudou šifrovány. Historie prohlížení v Chromu se nebude synchronizovat.
 Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Chcete-li spravovat svůj účet Google, klepněte na tlačítko Spravovat účet</translation>
@@ -144,7 +143,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1598163867407640634">Používejte web <ph name="SITE_ETLD_PLUS_ONE" /> pomocí služby <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Když je tato možnost zapnutá, používají a ukládají se data ve vašem účtu Google. Když je vypnutá, ukládají se data pouze do tohoto zařízení.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstranit jednu vybranou položku}few{Odstranit # vybrané položky}many{Odstranit # vybrané položky}other{Odstranit # vybraných položek}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 záložka a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}few{# záložky a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}many{# záložky a dalších položek je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}other{# záložek a dalších položek je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1639239467298939599">Načítání</translation>
 <translation id="1641113438599504367">Bezpečné prohlížení</translation>
 <translation id="164269334534774161">Prohlížíte si offline kopii této stránky z <ph name="CREATION_TIME" /></translation>
@@ -477,7 +475,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="316694332262407393">Chrome už je spuštěný.</translation>
 <translation id="3167258285411721858">Můžete požádat o web <ph name="HOST_NAME" /> pro mobily</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 heslo a další položky jsou uloženy pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}few{# hesla a další položky jsou uloženy pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}many{# hesla a další položky je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}other{# hesel a dalších položek je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Měření reklam</translation>
 <translation id="3189635831478931757">Skupina karet <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Přidáno do záložek</translation>
@@ -894,7 +891,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="506254248375231072">Žádné karty</translation>
 <translation id="5062960805900435602">Oznámení o sloučení hesel je zavřeno</translation>
 <translation id="5075939510584558547">Uložit bez šifrování</translation>
-<translation id="5082172173036123513">Neaktivní okna se po 6 měsících neaktivity trvale smažou.</translation>
 <translation id="5085038751173179818">Když se na tento web a do Chromu přihlásíte, budete mít své záložky a další položky k dispozici na všech svých zařízeních</translation>
 <translation id="5091199029769593641">Brzy se vám po otevření nové karty začnou zobrazovat články z webu <ph name="SITE_NAME" />. Weby, které sledujete, se ukládají do vašeho účtu Google. Můžete je spravovat v nastavení funkce Objevit.</translation>
 <translation id="509429900233858213">Došlo k chybě.</translation>
@@ -1155,7 +1151,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 Některé weby mohou například na tento požadavek reagovat tak, že vám zobrazí reklamy, které nejsou založeny na ostatních navštívených webových stránkách. Řada webů bude i nadále shromažďovat vaše údaje o prohlížení a používat je například ke zlepšení zabezpečení, poskytování obsahu, reklam a doporučení a ke generování statistik pro přehledy.</translation>
 <translation id="6247557882553405851">Správce hesel Google</translation>
 <translation id="6251449557817521191">Zde si můžete prohlédnout svou historii Chromu</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 položka je uložena pouze na tomto zařízení. Pokud ji chcete používat v jiných zařízeních, uložte ji do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}few{# položky jsou uloženy pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}many{# položky je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}other{# položek je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="6254139308321626268">Prohlížíte si soubor PDF</translation>
 <translation id="6255809143828972562">S nástroji v prohlížeči Chrome budete při procházení v bezpečí a budete mít vše pod kontrolou</translation>
 <translation id="6264376385120300461">Přesto stáhnout</translation>
@@ -1420,7 +1415,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7293429513719260019">Zvolte jazyk</translation>
 <translation id="729975465115245577">V zařízení není žádná aplikace, pomocí které by soubor s hesly bylo možné uložit.</translation>
 <translation id="7304072650267745798">Zařízení Android může obsahovat podobné nastavení. Pokud je toto nastavení zapnuto v Chromu a na vašem zařízení Android, společnosti mohou měřit efektivitu reklamy na webech, které navštěvujete, a v aplikacích, které používáte.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 heslo je uloženo pouze na tomto zařízení. Pokud ji chcete používat v jiných zařízeních, uložte ji do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}few{# hesla jsou uložena pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}many{# hesla je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}other{# hesel je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7304873321153398381">Offline. Chrome nemůže zkontrolovat vaše hesla.</translation>
 <translation id="7313188324932846546">Klepnutím nastavíte synchronizaci</translation>
 <translation id="7314734791127433392">Hesla nelze zkontrolovat</translation>
@@ -1633,7 +1627,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="813082847718468539">Zobrazit informace o stránkách</translation>
 <translation id="8135406045838672858">Stažené soubory PDF se automaticky otevírají pomocí aplikace <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel Google.</translation>
-<translation id="8146563639948412265">Můžete mít celkem až tento počet oken: <ph name="MAX_WINDOW_COUNT" />. Pokud některé okno chcete obnovit, zavřete tento počet aktivních nebo neaktivních oken: <ph name="WINDOW_COUNT" />.</translation>
 <translation id="8152331954420209374">Přejít do prostředí Lens</translation>
 <translation id="8163820386638255770">Pokud chcete používat a ukládat hesla ve svém účtu Google, ověřte svou totožnost</translation>
 <translation id="8186512483418048923">Zbývající soubory: <ph name="FILES" /></translation>
@@ -1873,7 +1866,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="9169507124922466868">Historie navigace je otevřená na půlce</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Ve všech synchronizovaných zařízeních budete mít historii, takže budete moci pokračovat v tom, co jste dělali</translation>
-<translation id="9191906083913361689">Tyto položky můžete zobrazit a spravovat také v záložkách, seznamu četby nebo správci hesel</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Zkontrolováno před 1 minutou}few{Zkontrolováno před # minutami}many{Zkontrolováno před # minuty}other{Aktualizováno před # minutami}}</translation>
 <translation id="9204021776105550328">Mazání</translation>
 <translation id="9204836675896933765">Zbývá 1 soubor</translation>

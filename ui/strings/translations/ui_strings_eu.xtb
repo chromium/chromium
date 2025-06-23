@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{Duela egun bat}other{Duela # egun}}</translation>
 <translation id="1181037720776840403">Kendu</translation>
 <translation id="1243314992276662751">Kargatu</translation>
+<translation id="1253734725326687145">Ukipen-eremua gora eta eskuinera eraman da. Sakatu hau.</translation>
 <translation id="1266864766717917324">Ezin izan da partekatu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Saiatu testua zati txikiagotan partekatzen.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
 <translation id="24452542372838207">Zabaldu jakinarazpena</translation>
 <translation id="2445449901874883781">Erabili dentsitate handia</translation>
+<translation id="2448407890032181691">Ukipen-eremua behera eta eskuinera eraman da. Sakatu hau.</translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
 <translation id="2497284189126895209">Fitxategi guztiak</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">Fitxa</translation>
 <translation id="5613020302032141669">Ezkerrera gezia</translation>
 <translation id="5633029987065897167">Hutsik</translation>
+<translation id="5651438382973553530">Ukipen-eremua behera eta ezkerrera eraman da. Sakatu hau.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktibo gaur}=1{Aktibo duela egun bat}other{Aktibo duela # egun}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 egun eta }other{# egun eta }}</translation>

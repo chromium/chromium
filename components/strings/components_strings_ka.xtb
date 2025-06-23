@@ -1762,7 +1762,6 @@
 <translation id="3961148744525529027">გადახდების დამმუშავებლის გვერდი ნახევრადგახსნილია</translation>
 <translation id="3962859241508114581">წინა ჩანაწერი</translation>
 <translation id="3963721102035795474">წამკითხველის რეჟიმი</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{არცერთი}=1{1 საიტიდან }other{# საიტიდან }}</translation>
 <translation id="3965672182149944205">გსურთ, შეინახოთ მისამართი?</translation>
 <translation id="3966044442021752214">პროდუქტის უსაფრთხოება</translation>
 <translation id="3969869202926863008">ლოკალურ ქსელზე წვდომა</translation>

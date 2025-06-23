@@ -197,7 +197,6 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Criado há <ph name="NUM_MONTHS_ONE" /> mês}one{Criado há <ph name="NUM_MONTHS_MANY" /> mês}other{Criado há <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
 <translation id="8813708480179818649">Remover guia do grupo</translation>
 <translation id="8820741577754260431">Ver reduções no preço nas suas guias</translation>
-<translation id="883379923675618699">O Chrome fecha automaticamente os itens da seção "Inativas" que você não usa há três meses. Você pode desativar esse recurso agora ou a qualquer momento nas configurações.</translation>
 <translation id="8887921976452567404">Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias".</translation>
 <translation id="8915916167043355778">Fechar todas</translation>
 <translation id="9090098097337832354">As informações sobre a loja estão fechadas</translation>

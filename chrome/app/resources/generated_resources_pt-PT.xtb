@@ -1783,6 +1783,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2234827758954819389">Guia de privacidade</translation>
 <translation id="2234876718134438132">Sincronização e serviços Google</translation>
 <translation id="2235344399760031203">Os cookies de terceiros estão bloqueados</translation>
+<translation id="2236949375853147973">A minha atividade</translation>
 <translation id="2238379619048995541">Dados do estado de frequência</translation>
 <translation id="2240582393605484605">Os dados guardados apenas neste dispositivo vão permanecer no perfil existente</translation>
 <translation id="2241053333139545397">Ler e alterar os seus dados em vários Sites</translation>
@@ -5411,6 +5412,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4773122030389014189">Partilhe o grupo de separadores "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">Com autorização para fazer ligação aos dispositivos na sua rede local</translation>
 <translation id="477548766361111120">Permitir que a extensão leia e altere este site</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> eliminados</translation>
 <translation id="4776311127346151860">O dispositivo <ph name="DEVICE_NAME" /> foi ligado</translation>
 <translation id="4776594120007763294">Para adicionar uma página para ler mais tarde, clique no botão</translation>
 <translation id="4777458362738635055">Outros utilizadores deste dispositivo podem utilizar esta rede</translation>
@@ -5756,6 +5758,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5016305686459575361">Ao ligar o telemóvel, pode:</translation>
 <translation id="5016491575926936899">Pode enviar mensagens de texto a partir do computador, partilhar a ligação à Internet, responder a notificações de conversas e desbloquear o <ph name="DEVICE_TYPE" /> com o telemóvel.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">A transferir ficheiros de anotações do nó principal</translation>
+<translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5018207570537526145">Abrir o Website da extensão</translation>
 <translation id="5018526990965779848">Envie dados de utilização e diagnóstico. Ajude a melhorar a experiência Android ao enviar automaticamente dados de diagnóstico, de utilização do dispositivo e das apps para a Google. Deste modo, ajudará a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google.</translation>
 <translation id="5019487038187875030">Veja os certificados importados do MacOS</translation>
@@ -8063,7 +8066,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6694462491298752106">O touchpad incorporado está desativado</translation>
 <translation id="6694634756612002311">Gerir partilha</translation>
 <translation id="6697172646384837537">Selecione para onde quer importar as suas palavras-passe</translation>
-<translation id="6697492270171225480">Mostrar sugestões de páginas semelhantes se não for possível encontrar uma página</translation>
 <translation id="6697690052557311665">Para partilhar, clique com o botão direito do rato numa pasta na aplicação Ficheiros e selecione "Partilhar com Linux".</translation>
 <translation id="6698810901424468597">Ler e alterar os seus dados em <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Bloqueio do SIM de rede móvel</translation>
@@ -11451,7 +11453,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9043264199499366189">Subscrever eventos do sistema ChromeOS Flex</translation>
 <translation id="9044646465488564462">Não foi possível ligar à rede: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">A sua lista de leitura foi movida para o novo painel lateral. Experimente-a aqui.</translation>
-<translation id="9045430190527754450">Envia o endereço Web da página a que está a tentar aceder para a Google.</translation>
 <translation id="9048745018038487540">Selecionar todos os tipos de letra</translation>
 <translation id="9050666287014529139">Frase de acesso</translation>
 <translation id="905145695813415387">A pasta "<ph name="LOCAL_FOLDER" />" está guardada apenas neste dispositivo. Se mover esta pasta para "<ph name="LOCAL_FOLDER" />", deixa de a ter nos seus outros dispositivos.</translation>

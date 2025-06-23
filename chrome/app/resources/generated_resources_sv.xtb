@@ -1792,6 +1792,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2234827758954819389">Integritetsguide</translation>
 <translation id="2234876718134438132">Synk och Googles tjänster</translation>
 <translation id="2235344399760031203">Cookies från tredje part har blockerats</translation>
+<translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2238379619048995541">Data för frekvenstillstånd</translation>
 <translation id="2240582393605484605">Data som sparas enbart på den här enheten finns kvar i den befintliga profilen</translation>
 <translation id="2241053333139545397">Läs och ändra dina uppgifter på ett antal webbplatser</translation>
@@ -5417,6 +5418,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4773122030389014189">Dela flikgruppen <ph name="GROUP_NAME" /></translation>
 <translation id="4773253008034797668">Får ansluta till enheter i det lokala nätverket</translation>
 <translation id="477548766361111120">Tillåt att tillägget läser och ändrar den här webbplatsen</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> har raderats</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> har anslutits</translation>
 <translation id="4776594120007763294">Klicka på knappen nedan om du vill lägga till en sida att läsa senare</translation>
 <translation id="4777458362738635055">Andra användare på enheten kan använda det här nätverket</translation>
@@ -5762,6 +5764,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5016305686459575361">Om du ansluter telefonen kan du göra följande:</translation>
 <translation id="5016491575926936899">Du kan skicka sms från datorn, dela internetanslutning, svara på aviseringar om konversationer och låsa upp <ph name="DEVICE_TYPE" /> med telefonen.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Laddar ned kommentarsfiler för huvudnod</translation>
+<translation id="5017529052065664584">De senaste 15 minuterna</translation>
 <translation id="5018207570537526145">Öppna webbplatsen för tillägget</translation>
 <translation id="5018526990965779848">Skicka diagnostik- och användningsdata. Hjälp till att göra Android bättre genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera. Viss samlad data används även till att förbättra appar från Google och Googles partner, till exempel Android-utvecklare. Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot.</translation>
 <translation id="5019487038187875030">Visa importerade certifikat från MacOS</translation>
@@ -8062,7 +8065,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6694462491298752106">Den inbyggda styrplattan är inaktiverad</translation>
 <translation id="6694634756612002311">Hantera delning</translation>
 <translation id="6697172646384837537">Välj var du vill importera dina lösenord</translation>
-<translation id="6697492270171225480">Visa förslag på liknande sidor om en sida inte hittas</translation>
 <translation id="6697690052557311665">Om du vill dela en mapp klickar du på den i appen Filer och väljer Dela med Linux.</translation>
 <translation id="6698810901424468597">Läs och ändra dina uppgifter på <ph name="WEBSITE_1" /> och <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Lås för SIM-kortet</translation>
@@ -11445,7 +11447,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9043264199499366189">Prenumerera på systemhändelser för ChromeOS Flex</translation>
 <translation id="9044646465488564462">Det gick inte att ansluta till nätverket: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Läslistan har flyttats till den nya sidopanelen. Testa här.</translation>
-<translation id="9045430190527754450">Skickar webbadresserna till sidor som du försöker nå till Google</translation>
 <translation id="9048745018038487540">Välj alla teckensnitt</translation>
 <translation id="9050666287014529139">Lösenfras</translation>
 <translation id="905145695813415387"><ph name="LOCAL_FOLDER" /> sparas endast på den här enheten. Om du flyttar den här mappen till <ph name="LOCAL_FOLDER" /> ser du den inte längre på dina andra enheter.</translation>

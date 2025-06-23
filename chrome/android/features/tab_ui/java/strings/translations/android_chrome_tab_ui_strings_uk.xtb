@@ -197,7 +197,6 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Створено <ph name="NUM_MONTHS_ONE" /> місяць тому}one{Створено <ph name="NUM_MONTHS_MANY" /> місяць тому}few{Створено <ph name="NUM_MONTHS_MANY" /> місяці тому}many{Створено <ph name="NUM_MONTHS_MANY" /> місяців тому}other{Створено <ph name="NUM_MONTHS_MANY" /> місяця тому}}</translation>
 <translation id="8813708480179818649">Вилучити вкладку з групи</translation>
 <translation id="8820741577754260431">Переглядайте зниження цін на вкладках</translation>
-<translation id="883379923675618699">Chrome автоматично закриває об’єкти в розділі "Неактивні вкладки", які ви не використовували протягом 3 місяців. Ви можете будь-коли вимкнути цю функцію в налаштуваннях.</translation>
 <translation id="8887921976452567404">Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок".</translation>
 <translation id="8915916167043355778">Закрити всі</translation>
 <translation id="9090098097337832354">Інформацію про цей магазин закрито</translation>

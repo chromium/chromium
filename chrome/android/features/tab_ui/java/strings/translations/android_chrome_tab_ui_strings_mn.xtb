@@ -17,6 +17,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> минутын өмнө үүсгэсэн}other{<ph name="NUM_MINS_MANY" /> минутын өмнө үүсгэсэн}}</translation>
 <translation id="1499635324672558517">Бүх Нууцлалтай табыг хаах уу?</translation>
 <translation id="1501480321619201731">Бүлгийг устгах</translation>
+<translation id="1553638665176794706">{TABS_COUNT,plural, =1{Идэвхгүй <ph name="TABS_COUNT_ONE" /> зүйл}other{Идэвхгүй <ph name="TABS_COUNT_MANY" /> зүйл}}</translation>
 <translation id="1555130319947370107">Цэнхэр</translation>
 <translation id="161042844686301425">Шар хөх өнгө</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> табыг бүлэглэсэн</translation>
@@ -68,6 +69,7 @@
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> шинэ таб}other{<ph name="MANY_ADDED" /> шинэ таб}}</translation>
 <translation id="3613492231657284463">Идэвхгүй табуудыг нуух харилцах цонх</translation>
 <translation id="3619255692378312441">Хандалтыг удирдах</translation>
+<translation id="3649471731638882002">{TAB_COUNT,plural, =1{Зүйлийг хаах}other{Зүйлсийг хаах}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Хуваалцах хүснэгтийн урьдчилсан үзэлтийн өнгөц зураг.</translation>
 <translation id="3810973564298564668">удирдах</translation>
@@ -80,6 +82,7 @@
 <translation id="4159784952369912983">Нил ягаан</translation>
 <translation id="427987768447457592">Шинэ табын бүлэг</translation>
 <translation id="4371591986692297148">Идэвхгүй</translation>
+<translation id="4429658455677831355">{TAB_COUNT,plural, =1{Зүйлийг сэргээх}other{Зүйлсийг сэргээх}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> хоногийн өмнө шинэчилсэн}other{<ph name="NUM_DAYS_MANY" /> хоногийн өмнө шинэчилсэн}}</translation>
 <translation id="4686942373615810936">Дөнгөж сая үүсгэсэн</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 хоногийн дараа хаах}other{<ph name="DAY_COUNT_MANY" /> хоногийн дараа хаах}}</translation>
@@ -197,7 +200,6 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> сарын өмнө үүсгэсэн}other{<ph name="NUM_MONTHS_MANY" /> сарын өмнө үүсгэсэн}}</translation>
 <translation id="8813708480179818649">Табыг бүлгээс хасна</translation>
 <translation id="8820741577754260431">Табууд дээрх үнэ бууралтыг хараарай</translation>
-<translation id="883379923675618699">Chrome таны 3 сарын хугацаанд ашиглаагүй идэвхгүй харилцан үйлдэл дэх зүйлийг автоматаар хаана. Та хүссэн үедээ үүнийг Тохиргооноос унтраах боломжтой.</translation>
 <translation id="8887921976452567404">Та хаасан таб, бүлгээ Саяхны табын хэсэг, Табын бүлгийн хэсгээс дахин нээх боломжтой.</translation>
 <translation id="8915916167043355778">Бүгдийг хаах</translation>
 <translation id="9090098097337832354">Энэ дэлгүүрийн талаарх мэдээллийг хаасан</translation>
@@ -206,4 +208,5 @@
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб, <ph name="COLOR_NAME" /> өнгөтэй табын бүлгийг дэлгэнэ үү.}other{<ph name="TABS_COUNT_MANY" /> таб, <ph name="COLOR_NAME" /> өнгөтэй табын бүлгийг дэлгэнэ үү.}}</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="992256792861109788">Ягаан</translation>
+<translation id="994514002078791059">{TAB_COUNT,plural, =1{Идэвхгүй 1 зүйлийг хаах уу?}other{Идэвхгүй <ph name="TAB_COUNT_MANY" /> зүйлийг хаах уу?}}</translation>
 </translationbundle>

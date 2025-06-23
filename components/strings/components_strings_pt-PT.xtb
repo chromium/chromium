@@ -1762,7 +1762,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3961148744525529027">A página do controlador do pagamento está aberta até meio.</translation>
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3963721102035795474">Modo de leitor</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Nenhum}=1{De 1 site }other{De # sites }}</translation>
 <translation id="3965672182149944205">Guardar a morada?</translation>
 <translation id="3966044442021752214">Segurança do produto</translation>
 <translation id="3969869202926863008">Acesso à rede local</translation>

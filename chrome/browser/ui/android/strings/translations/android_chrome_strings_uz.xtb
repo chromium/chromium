@@ -129,7 +129,6 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="1521774566618522728">Bugun onlayn edi</translation>
 <translation id="153446405401665083">Chromening yangi versiyasi chiqdi</translation>
 <translation id="1540012742443808215">Manzillar qatorida tepada joylangan</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 ta bukmark faqat shu qurilmada saqlangan. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}other{# ta bukmark faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}}</translation>
 <translation id="1544084554881119930">Toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Google hisobingizni boshqarish uchun “Hisobni boshqarish” tugmasini bosing</translation>
@@ -144,7 +143,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bilan <ph name="SITE_ETLD_PLUS_ONE" /> ishlatish</translation>
 <translation id="160275202205869636">Yoniq boʻlsa, maʼlumotlar Google hisobida saqlanadi va ishlatiladi Oʻchiq boʻlsa, maʼlumotlar faqat shu qurilmada saqlanadi.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Tanlangan 1 ta elementni olib tashlash}other{Tanlangan # ta elementni olib tashlash}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 ta bukmark va boshqa obyektlar faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}other{# ta bukmark va boshqa obyektlar faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}}</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
 <translation id="164269334534774161">Ushbu sahifaning <ph name="CREATION_TIME" /> sanasida saqlangan oflayn nusxasini ko‘ryapsiz.</translation>
@@ -477,7 +475,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="316694332262407393">Chrome allaqachon ishga tushgan.</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> saytining mobil versiyasini talab qilish mumkin</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 ta parol va boshqa obyektlar faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}other{# ta parol va boshqa obyektlar faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}}</translation>
 <translation id="3187472288455401631">Reklamalarni baholash</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> varaqlar guruhi</translation>
 <translation id="3207960819495026254">Xatcho‘plarga qo‘shildi</translation>
@@ -894,7 +891,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="506254248375231072">Varaqlar ochilmagan</translation>
 <translation id="5062960805900435602">Parollarni birlashtirish haqidagi xabar yopildi</translation>
 <translation id="5075939510584558547">Shifrlamay saqlash</translation>
-<translation id="5082172173036123513">Nofaol oynalar 6 oy ochilmaganidan keyin avtomatik oʻchiriladi.</translation>
 <translation id="5085038751173179818">Bukmarklar va boshqalarni barcha qurilmalarda olish uchun bu sayt va Chromega Google hisobingizdan kiring</translation>
 <translation id="5091199029769593641">Tez orada yangi varaq ochilganda <ph name="SITE_NAME" /> hikoyalari chiqadi. Kuzatuvdagi saytlar Google hisobingizda saqlanadi. Ularni Discover sozlamalari orqali boshqarish mumkin.</translation>
 <translation id="509429900233858213">Xatolik yuz berdi.</translation>
@@ -1155,7 +1151,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda reklama e’lonlari ko‘rsatilishi mumkin. Boshqa saytlar esa brauzer faoliyati haqidagi ma’lumotlarni (m-n, xavfsizlikni mustahkamlash, kontent ko‘rsatish, reklama taqdimoti, statistik hisobotlar yasash kabi) to‘plashda va bu ma’lumotlardan foydalanishda davom etmoqda.</translation>
 <translation id="6247557882553405851">Google Parollar menejeri</translation>
 <translation id="6251449557817521191">Chrome tarixi shu yerda chiqadi</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 ta obyekt faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}other{# ta obyekt faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}}</translation>
 <translation id="6254139308321626268">Bu — PDF fayl</translation>
 <translation id="6255809143828972562">Chrome vositalari yordamida xavfsiz kezishingiz va nazoratni ushlab turishingiz mumkin</translation>
 <translation id="6264376385120300461">Baribir yuklab olish</translation>
@@ -1420,7 +1415,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7293429513719260019">Til tanlash</translation>
 <translation id="729975465115245577">Qurilmangizda parollarni saqlovchi ilova yo‘q.</translation>
 <translation id="7304072650267745798">Android qurilmangiz ham xuddi shunday funksiyaga ega boʻlishi mumkin. Agar siz bu sozlamani Chrome va Android qurilmangizda yoqsangiz, kompaniyalar siz tashrif buyurgan saytlar va foydalanadigan ilovalardagi reklamalar unumdorligini oʻlchashi mumkin.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 ta parol faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}other{# ta parol faqat bu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}}</translation>
 <translation id="7304873321153398381">Oflayn. Chrome parollaringizni tekshira olmadi.</translation>
 <translation id="7313188324932846546">Sinxronizatsiyani sozlash uchun bosing</translation>
 <translation id="7314734791127433392">Parollar tekshirilmadi</translation>
@@ -1633,7 +1627,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="813082847718468539">Sayt haqidagi ma’lumotlar</translation>
 <translation id="8135406045838672858">Yuklab olingan PDF fayllar avtomatik <ph name="APP_NAME" /> ilovasida ochiladi</translation>
 <translation id="8137562778192957619">Bu parolni eslab qolishingiz shart emas. U Google Parollar menejeri xotirasida saqlanadi.</translation>
-<translation id="8146563639948412265">Maksimum <ph name="MAX_WINDOW_COUNT" /> ta oyna ochish mumkin. Oynani tiklash uchun faol (<ph name="WINDOW_COUNT" />) yoki nofaol oynalarni yoping.</translation>
 <translation id="8152331954420209374">Lensni ochish</translation>
 <translation id="8163820386638255770">Parollarni Google hisobiga saqlashda va ulardan foydalanish uchun shaxsingizni tasdiqlang</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ta fayl qoldi</translation>
@@ -1873,7 +1866,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="9169507124922466868">Sahifalar tarixi yarim hajmda ochildi</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Brauzer tarixingiz barcha qurilmalaringizda sinxronlanadi va ishni qolgan joyingizdan davom ettira olasiz</translation>
-<translation id="9191906083913361689">Shuningdek, siz bukmarklar, saqlangan sahifalar va parollar menejeriga saqlangan maʼlumotlarni koʻrishingiz va boshqarishingiz mumkin.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 daqiqa oldin tekshirilgan}other{# daqiqa oldin tekshirilgan}}</translation>
 <translation id="9204021776105550328">Oʻchirilmoqda</translation>
 <translation id="9204836675896933765">1 fayl qoldi</translation>

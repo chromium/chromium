@@ -1784,6 +1784,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2234827758954819389">Sprievodca ochranou súkromia</translation>
 <translation id="2234876718134438132">Synchronizácia a služby Googlu</translation>
 <translation id="2235344399760031203">Súbory cookie tretích strán sú blokované</translation>
+<translation id="2236949375853147973">Moja aktivita</translation>
 <translation id="2238379619048995541">Údaje stavu frekvencie</translation>
 <translation id="2240582393605484605">Údaje uložené iba v tomto zariadení zostanú v existujúcom profile</translation>
 <translation id="2241053333139545397">Čítanie a úprava údajov na rôznych weboch</translation>
@@ -5406,6 +5407,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4773122030389014189">Zdieľanie skupiny kariet <ph name="GROUP_NAME" /></translation>
 <translation id="4773253008034797668">Môžu sa pripojiť k akémukoľvek zariadeniu vo vašej miestnej sieti</translation>
 <translation id="477548766361111120">Povoliť rozšíreniu čítať a meniť tento web</translation>
+<translation id="4775646243557794597">Dáta z obdobia <ph name="TIME_PERIOD" /> boli odstránené</translation>
 <translation id="4776311127346151860">Zariadenie <ph name="DEVICE_NAME" /> bolo pripojené</translation>
 <translation id="4776594120007763294">Ak chcete pridať stránku na čítanie neskôr, kliknite na tlačidlo</translation>
 <translation id="4777458362738635055">Ostatní používatelia tohto zariadenia môžu túto sieť používať</translation>
@@ -5750,6 +5752,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5016305686459575361">Po pripojení telefónu budete mať k dispozícii:</translation>
 <translation id="5016491575926936899">Môžete odosielať textové správy z počítača, zdieľať internetové pripojenie, odpovedať na upozornenia na konverzácie a odomykať telefónom zariadenie <ph name="DEVICE_TYPE" />.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Sťahujú sa súbory s anotáciami hlavného uzla</translation>
+<translation id="5017529052065664584">Posledných 15 minút</translation>
 <translation id="5018207570537526145">Otvoriť web rozšírenia</translation>
 <translation id="5018526990965779848">Odosielanie údajov o využití a diagnostiky. Pomôžte zlepšiť prostredie Androidu automatickým odosielaním diagnostík a údajov o používaní zariadenia a aplikácií do Googlu. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie zlepšenia. Niektoré súhrnné údaje tiež pomôžu aplikáciám Google a partnerom, ako napríklad vývojárom pre Android. Ak aktivujete ďalšiu aktivitu na internete a v aplikáciách, tieto údaje sa uložia vo vašom účte Google.</translation>
 <translation id="5019487038187875030">Zobraziť certifikáty importované zo systému MacOS</translation>
@@ -8053,7 +8056,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6694462491298752106">Vstavaný touchpad je deaktivovaný</translation>
 <translation id="6694634756612002311">Spravovať zdieľanie</translation>
 <translation id="6697172646384837537">Vybrať, kam sa majú importovať vaše heslá</translation>
-<translation id="6697492270171225480">Zobraziť návrhy podobných stránok, keď sa stránka nedá nájsť</translation>
 <translation id="6697690052557311665">Ak chcete priečinok zdieľať, v aplikácii Súbory naň kliknite pravým tlačidlom a potom vyberte položku Zdieľať so systémom Linux.</translation>
 <translation id="6698810901424468597">Čítanie a úprava údajov na weboch <ph name="WEBSITE_1" /> a <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Zámka mobilnej SIM karty</translation>
@@ -11437,7 +11439,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9043264199499366189">Prihlásiť sa na odber udalostí systému ChromeOS Flex</translation>
 <translation id="9044646465488564462">Nepodarilo sa pripojiť k sieti: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Čitateľský zoznam bol presunutý na nový bočný panel. Vyskúšajte ho tu.</translation>
-<translation id="9045430190527754450">Odošle Googlu webovú adresu stránky, na ktorú sa pokúšate prejsť</translation>
 <translation id="9048745018038487540">Vybrať všetky písma</translation>
 <translation id="9050666287014529139">Prístupová fráza</translation>
 <translation id="905145695813415387">Priečinok <ph name="LOCAL_FOLDER" /> je uložený iba v tomto zariadení. Ak ho presuniete do priečinka <ph name="LOCAL_FOLDER" />, už ho nebudete mať k dispozícii vo svojich ďalších zariadeniach.</translation>

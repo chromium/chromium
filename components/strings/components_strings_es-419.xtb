@@ -1760,7 +1760,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3961148744525529027">La hoja del controlador de pagos está abierta a la mitad</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963721102035795474">Modo de lectura</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Ninguno}=1{De 1 sitio }other{De # sitios }}</translation>
 <translation id="3965672182149944205">¿Quieres guardar la dirección?</translation>
 <translation id="3966044442021752214">Seguridad del producto</translation>
 <translation id="3969869202926863008">Acceso a la red local</translation>

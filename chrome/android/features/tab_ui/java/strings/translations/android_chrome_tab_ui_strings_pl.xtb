@@ -197,7 +197,6 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Utworzono <ph name="NUM_MONTHS_ONE" /> miesiąc temu}few{Utworzono <ph name="NUM_MONTHS_MANY" /> miesiące temu}many{Utworzono <ph name="NUM_MONTHS_MANY" /> miesięcy temu}other{Utworzono <ph name="NUM_MONTHS_MANY" /> miesiąca temu}}</translation>
 <translation id="8813708480179818649">Usuń kartę z grupy</translation>
 <translation id="8820741577754260431">Pokazuj obniżki cen na kartach</translation>
-<translation id="883379923675618699">Chrome automatycznie zamyka elementy w sekcji nieaktywnych, których nie używasz od 3 miesięcy. Możesz wyłączyć tę funkcję teraz lub w dowolnym momencie w Ustawieniach.</translation>
 <translation id="8887921976452567404">Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart.</translation>
 <translation id="8915916167043355778">Zamknij wszystko</translation>
 <translation id="9090098097337832354">Informacje o tym sklepie zostały zamknięte</translation>

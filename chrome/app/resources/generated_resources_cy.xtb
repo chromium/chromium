@@ -1795,6 +1795,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2234827758954819389">Canllaw Preifatrwydd</translation>
 <translation id="2234876718134438132">Cysoni a gwasanaethau Google</translation>
 <translation id="2235344399760031203">Mae cwcis trydydd parti yn cael eu rhwystro</translation>
+<translation id="2236949375853147973">Fy Ngweithgarwch</translation>
 <translation id="2238379619048995541">Data Cyflwr Amlder</translation>
 <translation id="2240582393605484605">Bydd data sy'n cael eu cadw ar y ddyfais hon yn unig yn aros yn y proffil presennol</translation>
 <translation id="2241053333139545397">Darllen a newid eich data ar nifer o wefannau</translation>
@@ -5420,6 +5421,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4773122030389014189">Rhannu grŵp tabiau "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">Caniateir i chi gysylltu ag unrhyw ddyfais ar eich rhwydwaith lleol</translation>
 <translation id="477548766361111120">Caniatáu i estyniad ddarllen a newid y wefan hon</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> wedi'i ddileu</translation>
 <translation id="4776311127346151860">Mae <ph name="DEVICE_NAME" /> wedi'i gysylltu</translation>
 <translation id="4776594120007763294">I ychwanegu tudalen i'w darllen yn nes ymlaen, cliciwch y botwm</translation>
 <translation id="4777458362738635055">Gall defnyddwyr eraill y ddyfais hon ddefnyddio'r rhwydwaith hwn</translation>
@@ -5765,6 +5767,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5016305686459575361">Trwy gysylltu eich ffôn, gallwch:</translation>
 <translation id="5016491575926936899">Gallwch anfon negeseuon testun o'ch cyfrifiadur, rhannu eich cysylltiad rhyngrwyd, ymateb i hysbysiadau negeseuon a datgloi eich <ph name="DEVICE_TYPE" /> gyda'ch ffôn.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Wrthi'n lawrlwytho ffeiliau anodi prif nodau</translation>
+<translation id="5017529052065664584">Y 15 munud diwethaf</translation>
 <translation id="5018207570537526145">Agor gwefan yr estyniad</translation>
 <translation id="5018526990965779848">Anfon data defnydd a diagnostig. Helpwch i wella'ch profiad Android drwy anfon data diagnostig, dyfais a defnydd apiau yn awtomatig at Google. Bydd hyn yn helpu sefydlogrwydd system ac ap a gwelliannau eraill. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android. Os caiff eich gosodiad Gweithgarwch ar y We ac Apiau ychwanegol ei droi ymlaen, gellir cadw'r data hyn i'ch Cyfrif Google.</translation>
 <translation id="5019487038187875030">Gweld tystysgrifau a fewnforiwyd o MacOS</translation>
@@ -8073,7 +8076,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6694462491298752106">Mae'r pad cyffwrdd integredig wedi'i analluogi</translation>
 <translation id="6694634756612002311">Rheoli rhannu</translation>
 <translation id="6697172646384837537">Dewiswch ble i fewnforio eich cyfrineiriau</translation>
-<translation id="6697492270171225480">Dangos awgrymiadau ar gyfer tudalennau tebyg pan na ellir dod o hyd i dudalen</translation>
 <translation id="6697690052557311665">I rannu, de-gliciwch ar ffolder yn yr ap Files, yna dewiswch "Rhannu â Linux".</translation>
 <translation id="6698810901424468597">Darllen a newid eich data ar <ph name="WEBSITE_1" /> a <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Clo SIM rhwydwaith symudol</translation>
@@ -11459,7 +11461,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="9043264199499366189">Tanysgrifio i ddigwyddiadau system ChromeOS Flex</translation>
 <translation id="9044646465488564462">Wedi methu â chysylltu â'r rhwydwaith: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Mae eich rhestr ddarllen wedi symud i'r panel ochr newydd. Rhowch gynnig arni yma.</translation>
-<translation id="9045430190527754450">Yn anfon cyfeiriad gwe'r dudalen rydych yn ceisio ei chyrraedd at Google</translation>
 <translation id="9048745018038487540">Dewis pob ffont</translation>
 <translation id="9050666287014529139">Cyfrinymadrodd</translation>
 <translation id="905145695813415387">Mae "<ph name="LOCAL_FOLDER" />" wedi'i chadw i'r ddyfais hon yn unig. Os byddwch yn symud y ffolder hon i "<ph name="LOCAL_FOLDER" />", ni fydd ar gael ar eich dyfeisiau eraill mwyach.</translation>

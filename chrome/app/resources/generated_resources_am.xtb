@@ -1790,6 +1790,7 @@
 <translation id="2234827758954819389">የግላዊነት መመሪያ</translation>
 <translation id="2234876718134438132">ማመሳሰል እና የGoogle አገልግሎቶች</translation>
 <translation id="2235344399760031203">የሦስተኛ ወገን ኩኪዎች ታግደዋል</translation>
+<translation id="2236949375853147973">የእኔ እንቅስቃሴ</translation>
 <translation id="2238379619048995541">የተደጋጋሚነት ሁኔታ ውሂብ</translation>
 <translation id="2240582393605484605">በዚህ መሣሪያ ላይ ብቻ የተቀመጠ ውሂብ ነባር መገለጫ ውስጥ ይቆያል</translation>
 <translation id="2241053333139545397">ውሂብዎን በተወሰኑ ድር ጣቢያዎች ላይ ያነብባል እና ይቀይራል</translation>
@@ -5411,6 +5412,7 @@
 <translation id="4773122030389014189">የ«<ph name="GROUP_NAME" />» የትር ቡድንን ያጋሩ</translation>
 <translation id="4773253008034797668">በእርስዎ አከባቢያዊ አውታረ መረብ ከማንኛውም መሣሪያ ጋር ለመገናኘት ይፈቀዳል</translation>
 <translation id="477548766361111120">ቅጥያ ይህን ጣቢያ እንዲያነብ እና እንዲለውጥ ፍቀድ</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> ተሰርዟል</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> ተገናኝቷል</translation>
 <translation id="4776594120007763294">በኋላ የሚነበብ ገጽን ለማከል አዝራሩን ጠቅ ያድርጉ</translation>
 <translation id="4777458362738635055">ሌሎች የዚህ መሣሪያ ተጠቃሚዎች ይህን አውታረ መረብ መጠቀም ይችላሉ</translation>
@@ -5756,6 +5758,7 @@
 <translation id="5016305686459575361">ስልክዎን በማገናኘት የሚከተሉትን ማድረግ ይችላሉ፡-</translation>
 <translation id="5016491575926936899">ከኮምፒዩተርዎ ሆነው መልዕክትን መላክ፣ የበይነመረብ ግንኙነትዎን ማጋራት፣ ለውይይት ማሳወቂያዎች መልስ መስጠት እና የእርስዎን <ph name="DEVICE_TYPE" /> በስልክዎ መክፈት ይችላሉ።<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">የዋና አንጓ ማብራሪያ ፋይሎችን በማውረድ ላይ</translation>
+<translation id="5017529052065664584">ያለፉት 15 ደቂቃዎች</translation>
 <translation id="5018207570537526145">የቅጥያ ድር ጣቢያን ክፈት</translation>
 <translation id="5018526990965779848">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ በራስ-ሰር ወደ በራስ-ሰር ወደ Google በመላክ የAndroid ተሞክሮዎ እንዲሻሻል ያግዙ። ይህ የሥርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። የእርስዎ የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ቅንብር በርቶ ከሆነ ይህ ውሂብ በGoogle መለያዎ ላይ ሊቀመጥ ይችላል።</translation>
 <translation id="5019487038187875030">ከMacOS የመጡ የዕውቅና ማረጋገጫዎችን አሳይ</translation>
@@ -8058,7 +8061,6 @@
 <translation id="6694462491298752106">አብሮገነብ የመዳሰሻ ሰሌዳ ተሰናክሏል</translation>
 <translation id="6694634756612002311">ማጋራትን አስተዳድር</translation>
 <translation id="6697172646384837537">የእርስዎ የይለፍ ቃላት ወዴት እንደሚመጡ ይምረጡ</translation>
-<translation id="6697492270171225480">አንድ ገፅ ሊገኝ ካልቻለ የተመሳሳይ ገጾች የአስተያየት ጥቆማዎችን አሳይ</translation>
 <translation id="6697690052557311665">ለማጋራት በፋይሎች መተግበሪያው ውስጥ አንድ አቃፊን በቀኝ ጠቅ ያድርጉ፣ ከዚያ «ለLinux አጋራ»ን ይምረጡ።</translation>
 <translation id="6698810901424468597">ውሂብዎን በ<ph name="WEBSITE_1" /> እና <ph name="WEBSITE_2" /> ላይ ያነብባል እና ይቀይራል</translation>
 <translation id="6700093763382332031">የተንቀሳቃሽ ስልክ ሲም ቁልፍ</translation>
@@ -11447,7 +11449,6 @@ nil</translation>
 <translation id="9043264199499366189">ለChromeOS Flex ስርዓት ክስተቶች ለደንበኝነት ይመዝገቡ</translation>
 <translation id="9044646465488564462">ከአውታረ መረብ ጋር መገናኘት አልተሳካም፦ <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">የንባብ ዝርዝርዎ ወደ አዲሱ የጎን ፓነል ተዛውሯል። እዚህ ይሞክሩት።</translation>
-<translation id="9045430190527754450">ለመድረስ እየሞከሩት ያለው የገጽ ድር አድራሻ ወደ Google ይልካል</translation>
 <translation id="9048745018038487540">ሁሉንም ቅርጸ-ቁምፊዎችን ይምረጡ</translation>
 <translation id="9050666287014529139">የይለፍ ሐረግ</translation>
 <translation id="905145695813415387">«<ph name="LOCAL_FOLDER" />» በዚሀ መሣሪያ ላይ ብቻ ተቀምጧል። ይህን አቃፊ ወደ «<ph name="LOCAL_FOLDER" />» ካንቀሳቀሱት ከእንግዲህ በሌሎቹ መሣሪያዎችዎ ላይ አያገኙትም።</translation>

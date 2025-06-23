@@ -1767,7 +1767,6 @@
 <translation id="3961148744525529027">Վճարման մշակման թերթը կիսով չափ բացված է</translation>
 <translation id="3962859241508114581">Նախորդ կատարումը</translation>
 <translation id="3963721102035795474">Ընթերցողի ռեժիմ</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Ոչինչ չկա}=1{1 կայքից }one{# կայքից }other{# կայքից }}</translation>
 <translation id="3965672182149944205">Պահե՞լ հասցեն</translation>
 <translation id="3966044442021752214">Պրոդուկտի անվտանգությունը</translation>
 <translation id="3969869202926863008">Լոկալ ցանցի հասանելիություն</translation>

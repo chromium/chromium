@@ -129,7 +129,6 @@
 <translation id="1521774566618522728">Өнөөдөр идэвхтэй</translation>
 <translation id="153446405401665083">Chrome-н шинэ хувилбар бэлэн байна</translation>
 <translation id="1540012742443808215">Хаяг оруулах хэсэг одоогоор дээд талд байна</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 хавчуургыг зөвхөн энэ төхөөрөмжид хадгалсан. Уг хавчуургыг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}other{# хавчуургыг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="1544084554881119930">Төлбөрийн хэрэгсэл болон хаягуудыг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.
 Зөвхөн таны нэвтрэх үгтэй хэн нэгэн шифрлэгдсэн өгөгдлийг тань унших боломжтой. Нэвтрэх үгийг Google-д илгээдэггүй эсвэл хадгалдаггүй. Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл <ph name="BEGIN_LINK" />бүртгэлийнхээ Chrome-н өгөгдлийг арилгана уу<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Google бүртгэлээ удирдахын тулд "Бүртгэлээ удирдах" товчлуур дээр товшино уу</translation>
@@ -144,7 +143,6 @@
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" />-г <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р ашиглаарай</translation>
 <translation id="160275202205869636">Асаалттай үед таны Google Бүртгэлийн өгөгдлийг ашиглаж, үүнд хадгалдаг. Унтраалттай үед өгөгдлийг зөвхөн энэ төхөөрөмжид хадгалдаг.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Сонгосон 1 зүйлийг устгах}other{Сонгосон # зүйлийг устгах}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 хавчуурга болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}other{# хавчуурга болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
 <translation id="1641113438599504367">Аюулгүй хайлт</translation>
 <translation id="164269334534774161">Та энэ хуудасны офлайн хуулбарыг <ph name="CREATION_TIME" />-с харж байна</translation>
@@ -477,9 +475,9 @@
 <translation id="316694332262407393">Энд Chrome аль хэдийн ажиллаж байна.</translation>
 <translation id="3167258285411721858">Та <ph name="HOST_NAME" />-н мобайл сайтыг хүсэх боломжтой</translation>
 <translation id="3169472444629675720">Олох</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 нууц үг болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалдаг. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}other{# нууц үг болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалдаг. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="3187472288455401631">Зарын хэмжилт</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> табын бүлэг</translation>
+<translation id="3200536777393523575">Одоогийн цонхоо хаах уу?</translation>
 <translation id="3207960819495026254">Хавчуурга хадгалагдсан</translation>
 <translation id="3208584281581115441">Одоо шалгах</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" />-г устгасан</translation>
@@ -724,6 +722,7 @@
 <translation id="4351244548802238354">Харилцах цонхыг хаах</translation>
 <translation id="4352287748243729941"><ph name="PROVIDER" />-н нууц үгээ ашиглах уу?</translation>
 <translation id="4355272626458588338">Та хавчуурга нэмснээр чухал хуудас руугаа буцаж очих боломжтой</translation>
+<translation id="4356503491090073318">Картын дугаар*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Гялс харах аюулгүй байдал</translation>
 <translation id="4378154925671717803">Утас</translation>
@@ -741,6 +740,7 @@
 <translation id="4425140285732600465">Үнийг хянаж байна. Аль нэг сайт дээр үнэ буурсан тохиолдолд сэрэмжлүүлэг аваарай.</translation>
 <translation id="4425173294238317796">Нэвтрэх түлхүүрийн баталгаажуулалт</translation>
 <translation id="442518031075347249">Та цаашид виртуал картаа Google Pay-тэй ашиглах боломжгүй болно. <ph name="BEGIN_LINK1" />Виртуал картын талаар нэмэлт мэдээлэл авах<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> болон өөр <ph name="TAB_COUNT_ONE" /> табыг хаана}other{<ph name="TAB_TITLE" /> болон өөр <ph name="TAB_COUNT_MANY" /> табыг хаана}}</translation>
 <translation id="4426508677408162512">Бүх хавчуурга</translation>
 <translation id="4430277756566635951">Одоогоор <ph name="EMAIL" />-г сонгосон. Бүртгэл сонгоно уу.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> чихтэй хуудсыг хаах</translation>
@@ -876,6 +876,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4987271110129728827">Тухайн хуудсыг олох боломжгүй. Зөв бичсэн эсэхээ шалгах эсвэл веб хайлтыг туршина уу.</translation>
 <translation id="4988526792673242964">Хуудас</translation>
 <translation id="4991110219272367918">Вебсайтыг зөвшөөрөх эсвэл зөвшөөрөхгүй байх сонголтыг хаасан</translation>
+<translation id="4996042648402406470">Авах</translation>
 <translation id="4996095658297597226">Санал болгосон нууц үгийг ашиглах уу?</translation>
 <translation id="5001388021414335527">Энэ сайтыг энд дагана уу</translation>
 <translation id="5004416275253351869">Google-н ашиглалт удирдлага</translation>
@@ -894,7 +895,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="506254248375231072">Таб байхгүй</translation>
 <translation id="5062960805900435602">Нууц үг нэгтгэх талаарх шинэчлэлтийг хаасан</translation>
 <translation id="5075939510584558547">Шифрлэлтгүйгээр хадгалах</translation>
-<translation id="5082172173036123513">Идэвхгүй цонхыг 6 сарын турш идэвхгүй байсны дараа бүрмөсөн устгадаг.</translation>
 <translation id="5085038751173179818">Хавчуурга, бусад зүйлээ бүх төхөөрөмждөө авахын тулд энэ сайт, Chrome-д нэвтэрнэ үү</translation>
 <translation id="5091199029769593641">Удахгүй та шинэ таб нээх үедээ <ph name="SITE_NAME" />-с стори харна. Таны дагадаг сайтуудыг Google бүртгэлд тань хадгалдаг. Та тэдгээрийг Discover-н тохиргоонд удирдах боломжтой.</translation>
 <translation id="509429900233858213">Алдаа гарлаа.</translation>
@@ -927,10 +927,12 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5210286577605176222">Өмнөх табад очих</translation>
 <translation id="5210365745912300556">Табыг хаах</translation>
 <translation id="5215957675041756913">Өгөгдөл, бүртгэлээ хянах</translation>
+<translation id="5218324087477576825">Картын дугаар, оруулах шаардлагатай</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="SEPARATOR" /> Та сүүлийн үед зочлоогүй тул Chrome эдгээр зөвшөөрлийг хассан</translation>
 <translation id="5222676887888702881">Гарах</translation>
 <translation id="5226378907213531272">Та машиныг ашиглах бүрдээ дэлгэцийнхээ түгжээг тайлна</translation>
 <translation id="5227554086496586518">Хайлтын илэрцүүдийг харахын тулд товшино уу</translation>
+<translation id="5229736206150093143">Хамгийн сүүлийн үеийн илэрц</translation>
 <translation id="5233638681132016545">Шинэ таб</translation>
 <translation id="5235196193381275927">Нэвтрэх үед алдаа гарлаа</translation>
 <translation id="5246093389635966745">Засах самбарын товчлол</translation>
@@ -1155,7 +1157,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 Жишээ нь: зарим веб хуудас тухайн хүсэлтэд таны өмнө нь зочилж байсан бусад веб хуудаснаас хамаарахгүйгээр зар сурталчилгаа үзүүлэх замаар хариу өгч болно. Ихэнх веб хуудас нь аюулгүй байдлыг сайжруулах, веб хуудасны мэдээлэл, зар, зөвлөгөөг харуулах, мөн тайлагнах статистик мэдээлэл гаргах зорилгоор таны хөтчийн мэдээллийг цуглуулан ашиглаж магадгүй.</translation>
 <translation id="6247557882553405851">Google-н Нууц үгний менежер</translation>
 <translation id="6251449557817521191">Chrome-н түүхээ эндээс харна уу</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 зүйлийг зөвхөн энэ төхөөрөмжид хадгалдаг. Үүнийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}other{# зүйлийг зөвхөн энэ төхөөрөмжид хадгалдаг. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="6254139308321626268">Та PDF файл үзэж байна</translation>
 <translation id="6255809143828972562">Chrome-н хэрэгслийн тусламжтайгаар та аюулгүй үзэх, хяналтыг гартаа байлгах боломжтой</translation>
 <translation id="6264376385120300461">Ямартай ч татах</translation>
@@ -1286,6 +1287,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="676305334223455055">Сонирхолдоо үндэслэн контент авахын тулд нэвтэрнэ үү</translation>
 <translation id="6764137532716892442">Шинэ үйл ажиллагаатай хуваалцсан <ph name="GROUP_TITLE" /> табын бүлэг</translation>
 <translation id="6767294960381293877">Таб хуваалцах төхөөрөмжийн жагсаалтыг хагас өндрөөр нээлээ.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{Нууцлалтай <ph name="INCOGNITO_TAB_COUNT" /> таб болон өөр <ph name="TAB_COUNT_ONE" /> табыг хаана}other{Нууцлалтай <ph name="INCOGNITO_TAB_COUNT" /> таб болон өөр <ph name="TAB_COUNT_MANY" /> табыг хаана}}</translation>
 <translation id="6785476624617658922">Chrome болон ChromeOS-н үйлчилгээний нэмэлт нөхцөл</translation>
 <translation id="6786747875388722282">Өргөтгөлүүд</translation>
 <translation id="6795633245022906657">Шинэ табыг шуурхай нээгээрэй. Энэ товчлолыг засахын тулд Тохиргоо руу очно уу.</translation>
@@ -1420,7 +1422,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7293429513719260019">Хэл сонгох</translation>
 <translation id="729975465115245577">Таны төхөөрөмжид нууц үгийн файлыг хадгалах апп байхгүй байна.</translation>
 <translation id="7304072650267745798">Таны Android төхөөрөмж төстэй тохиргоог агуулж болно. Хэрэв энэ тохиргоог Chrome-д болон таны Android төхөөрөмжид асаасан бол компани таны зочилсон вебсайт, ашигласан аппууд дээрх зарын үр ашигтай байдлыг хэмжих боломжтой байж магадгүй.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 нууц үгийг зөвхөн энэ төхөөрөмжид хадгалдаг. Үүнийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}other{# нууц үгийг зөвхөн энэ төхөөрөмжид хадгалдаг. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="7304873321153398381">Офлайн. Chrome таны нууц үгийг шалгах боломжгүй байна.</translation>
 <translation id="7313188324932846546">Синкийг тохируулахын тулд товшино уу</translation>
 <translation id="7314734791127433392">Нууц үгийг шалгах боломжгүй</translation>
@@ -1582,6 +1583,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7965838025086216108">Та дурын төхөөрөмж дээр хадгалсан нууц үгнүүдийг ашиглах боломжтой. Тэдгээрийг <ph name="ACCOUNT" />-д зориулж Google Password Manager-т хадгалдаг.</translation>
 <translation id="7968014550143838305">Унших жагсаалтад нэмсэн</translation>
 <translation id="7968982339740310781">Дэлгэрэнгүй мэдээлэл харах</translation>
+<translation id="7969391000881506217">Хүчинтэй хугацаа*</translation>
 <translation id="7971136598759319605">1 өдрийн өмнө идэвхтэй</translation>
 <translation id="7975379999046275268">Хуудсыг урьдчилан үзэх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Таныг өгөгдлийн зөрчилд алдагдсан нууц үгийг ашигласан тохиолдолд танд сануулна.</translation>
@@ -1633,7 +1635,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="813082847718468539">Сайтын мэдээллийг үзэх</translation>
 <translation id="8135406045838672858">Татсан PDF-үүдийг автоматаар <ph name="APP_NAME" />-р нээнэ</translation>
 <translation id="8137562778192957619">Та энэ нууц үгийг санах шаардлагагүй болно. Үүнийг Google Password Manager-т хадгална.</translation>
-<translation id="8146563639948412265">Та нийт <ph name="MAX_WINDOW_COUNT" /> хүртэлх цонхтой байж болно. Цонх сэргээхийн тулд идэвхтэй, идэвхгүй <ph name="WINDOW_COUNT" /> цонхыг хаана уу.</translation>
 <translation id="8152331954420209374">Lens рүү очих</translation>
 <translation id="8163820386638255770">Google Бүртгэлдээ нууц үгнүүд ашиглах болон хадгалахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> файл үлдсэн</translation>
@@ -1741,6 +1742,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" />-г хасах уу?</translation>
 <translation id="8570677896027847510">Файлыг аюулгүйгээр татах боломжгүй</translation>
 <translation id="8571213806525832805">Сүүлийн 4 долоо хоног</translation>
+<translation id="8580435650274205305">Хүчинтэй хугацаа, оруулах шаардлагатай</translation>
 <translation id="8582529315803410153">Та бусад төхөөрөмжийн табаа эндээс олно</translation>
 <translation id="8585103689515290060">Автоматаар бөглөх хэсгийн үйлчилгээ</translation>
 <translation id="859046281437143747">Бусад сонголт товчлуураас үнэ хянаарай</translation>
@@ -1873,7 +1875,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9169507124922466868">Навигацын түүхийг хагас нээлээ</translation>
 <translation id="918419812064856259">Chrome Бета</translation>
 <translation id="9190276265094487094">Таны синк хийсэн бүх төхөөрөмж дээр таны түүхийг хадгална. Ингэснээр та хийж байсан зүйлээ үргэлжлүүлэх боломжтой</translation>
-<translation id="9191906083913361689">Та мөн эдгээр зүйлийг хавчуурга, унших жагсаалт, нууц үгний менежертээ харах болон удирдах боломжтой</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 минутын өмнө шалгасан}other{# минутын өмнө шалгасан}}</translation>
 <translation id="9204021776105550328">Устгаж байна</translation>
 <translation id="9204836675896933765">1 файл үлдсэн</translation>

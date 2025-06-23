@@ -1781,6 +1781,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2234827758954819389">Guía de privacidade</translation>
 <translation id="2234876718134438132">Servizos de Google e sincronización</translation>
 <translation id="2235344399760031203">Bloqueáronse as cookies de terceiros</translation>
+<translation id="2236949375853147973">A miña actividade</translation>
 <translation id="2238379619048995541">Datos do estado da frecuencia</translation>
 <translation id="2240582393605484605">Os datos que se garden só neste dispositivo permanecerán no perfil que xa teñas</translation>
 <translation id="2241053333139545397">Ler e cambiar os teus datos en varios sitios web</translation>
@@ -5406,6 +5407,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4773122030389014189">Compartir o grupo de pestanas "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">Permiso concedido para conectarse a calquera dispositivo da túa rede local</translation>
 <translation id="477548766361111120">Permitir que a extensión lea e modifique este sitio</translation>
+<translation id="4775646243557794597">Eliminouse o seguinte período: <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860">Conectouse <ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">Se queres engadir unha páxina para ler máis adiante, fai clic no botón</translation>
 <translation id="4777458362738635055">Os demais usuarios deste dispositivo poden usar esta rede</translation>
@@ -5751,6 +5753,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5016305686459575361">Se conectas o teléfono, poderás usar as seguintes funcións:</translation>
 <translation id="5016491575926936899">Podes enviar mensaxes de texto desde o ordenador, compartir a conexión a Internet, responder cando recibas notificacións de conversas e desbloquear o dispositivo <ph name="DEVICE_TYPE" /> co teléfono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Descargando ficheiros de anotación do nó principal</translation>
+<translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5018207570537526145">Abrir sitio web da extensión</translation>
 <translation id="5018526990965779848">Enviar datos de uso e diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a túa experiencia en Android. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa Conta de Google.</translation>
 <translation id="5019487038187875030">Ver os certificados importados de macOS</translation>
@@ -8048,7 +8051,6 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6694462491298752106">O panel táctil integrado está desactivado</translation>
 <translation id="6694634756612002311">Xestionar uso compartido</translation>
 <translation id="6697172646384837537">Seleccionar onde queres importar os contrasinais</translation>
-<translation id="6697492270171225480">Mostrar suxestións de páxinas similares cando non se atope unha páxina</translation>
 <translation id="6697690052557311665">Para compartir contidos, fai clic co botón dereito do rato nun cartafol da aplicación Ficheiros e, a continuación, selecciona Compartir con Linux.</translation>
 <translation id="6698810901424468597">Ler e cambiar os teus datos en <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Bloqueo da SIM do móbil</translation>
@@ -11429,7 +11431,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="9043264199499366189">Subscribirse aos eventos do sistema ChromeOS Flex</translation>
 <translation id="9044646465488564462">Erro ao conectar coa rede: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">A túa lista de lectura trasladouse ao novo panel lateral. Próbaa aquí.</translation>
-<translation id="9045430190527754450">Envía a Google o enderezo web da páxina á que tentas acceder</translation>
 <translation id="9048745018038487540">Seleccionar todos os tipos de letra</translation>
 <translation id="9050666287014529139">Frase de acceso</translation>
 <translation id="905145695813415387">"<ph name="LOCAL_FOLDER" />" está gardado só neste dispositivo. Se o moves a "<ph name="LOCAL_FOLDER" />", xa non poderás acceder a el desde outros dispositivos que teñas.</translation>

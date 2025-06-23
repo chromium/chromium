@@ -1793,6 +1793,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2234827758954819389">Gabay sa Privacy</translation>
 <translation id="2234876718134438132">Sync at mga serbisyo ng Google</translation>
 <translation id="2235344399760031203">Bina-block ang third-party na cookies</translation>
+<translation id="2236949375853147973">Aking Aktibidad</translation>
 <translation id="2238379619048995541">Data ng Estado ng Dalas</translation>
 <translation id="2240582393605484605">Mananatili sa kasalukuyang profile ang data na naka-save lang sa device na ito</translation>
 <translation id="2241053333139545397">Basahin at baguhin ang iyong data sa ilang website</translation>
@@ -5418,6 +5419,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4773122030389014189">I-share ang grupo ng tab na “<ph name="GROUP_NAME" />”</translation>
 <translation id="4773253008034797668">Pinapayagang kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="477548766361111120">Payagan ang extension na basahin at baguhin ang site na ito</translation>
+<translation id="4775646243557794597">Na-delete ang <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860">Nakakonekta na ang <ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">Para magdagdag ng page na babasahin sa ibang pagkakataon, i-click ang button</translation>
 <translation id="4777458362738635055">Magagamit ng iba pang user ng device na ito ang network na ito</translation>
@@ -5763,6 +5765,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5016305686459575361">Sa pamamagitan ng pagkonekta ng iyong telepono, magagawa mo ang sumusunod:</translation>
 <translation id="5016491575926936899">Magagawa mong mag-text mula sa iyong computer, ibahagi ang koneksyon mo sa internet, sumagot sa mga notification sa pag-uusap, at i-unlock ang iyong <ph name="DEVICE_TYPE" /> gamit ang telepono mo.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Dina-download ang mga file ng annotation ng pangunahing node</translation>
+<translation id="5017529052065664584">Nakalipas na 15 minuto</translation>
 <translation id="5018207570537526145">Buksan ang website ng extension</translation>
 <translation id="5018526990965779848">Magpadala ng data ng paggamit at diagnostic. Tumulong sa pagpapaganda ng iyong karanasan sa Android sa pamamagitan ng awtomatikong pagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang iyong karagdagang setting ng Aktibidad sa Web at App, posibleng ma-save ang data na ito sa Google Account mo.</translation>
 <translation id="5019487038187875030">Tingnan ang mga in-import na certificate mula sa MacOS</translation>
@@ -8065,7 +8068,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6694462491298752106">Naka-disable ang built-in na touchpad</translation>
 <translation id="6694634756612002311">Pamahalaan ang pag-share</translation>
 <translation id="6697172646384837537">Piliin kung saan mag-i-import ng iyong mga password</translation>
-<translation id="6697492270171225480">Magpakita ng mga mungkahi para sa mga katulad na page kapag hindi mahanap ang isang page</translation>
 <translation id="6697690052557311665">Para magbahagi, mag-right click ng folder sa Files app, pagkatapos, piliin ang "Ibahagi sa Linux."</translation>
 <translation id="6698810901424468597">Basahin at baguhin ang iyong data sa <ph name="WEBSITE_1" /> at <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Lock ng Cellular SIM</translation>
@@ -11451,7 +11453,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9043264199499366189">Mag-subscribe sa mga ChromeOS Flex system event</translation>
 <translation id="9044646465488564462">Nabigong kumonekta sa network: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Inilipat ang iyong listahan ng babasahin sa bagong panel sa gilid. Subukan ito rito.</translation>
-<translation id="9045430190527754450">Ipinapadala sa Google ang address ng web ng page na sinusubukan mong puntahan</translation>
 <translation id="9048745018038487540">Piliin ang lahat ng font</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="905145695813415387">Naka-save lang ang “<ph name="LOCAL_FOLDER" />” sa device na ito. Kung ililipat mo ang folder na ito sa “<ph name="LOCAL_FOLDER" />,” hindi mo na ito makukuha sa iyong iba pang device.</translation>

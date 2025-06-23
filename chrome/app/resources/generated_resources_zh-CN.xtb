@@ -1775,6 +1775,7 @@
 <translation id="2234827758954819389">隐私保护指南</translation>
 <translation id="2234876718134438132">同步功能和 Google 服务</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
+<translation id="2236949375853147973">我的活动记录</translation>
 <translation id="2238379619048995541">频率状态数据</translation>
 <translation id="2240582393605484605">仅保存在此设备上的数据将保留在现有资料中</translation>
 <translation id="2241053333139545397">读取和更改您在一些网站上的数据</translation>
@@ -5393,6 +5394,7 @@
 <translation id="4773122030389014189">分享标签页分组“<ph name="GROUP_NAME" />”</translation>
 <translation id="4773253008034797668">允许连接到本地网络上的任何设备</translation>
 <translation id="477548766361111120">允许扩展程序读取和更改此网站的数据</translation>
+<translation id="4775646243557794597">已删除<ph name="TIME_PERIOD" />内的浏览记录</translation>
 <translation id="4776311127346151860">已连接<ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">如需添加某个页面以供日后阅读，请点击此按钮</translation>
 <translation id="4777458362738635055">此设备的其他用户可以使用该网络</translation>
@@ -5737,6 +5739,7 @@
 <translation id="5016305686459575361">连接手机后，您可以畅享以下功能：</translation>
 <translation id="5016491575926936899">您可以在计算机上收发短信、共享互联网连接、回复对话通知，还可以用手机解锁 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /><ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">正在下载主要节点标注文件</translation>
+<translation id="5017529052065664584">过去 15 分钟</translation>
 <translation id="5018207570537526145">打开扩展程序网站</translation>
 <translation id="5018526990965779848">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您的 Android 使用体验。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 账号中。</translation>
 <translation id="5019487038187875030">查看从 MacOS 导入的证书</translation>
@@ -8033,7 +8036,6 @@
 <translation id="6694462491298752106">内置触控板已停用</translation>
 <translation id="6694634756612002311">管理共享设置</translation>
 <translation id="6697172646384837537">选择所需的密码导入位置</translation>
-<translation id="6697492270171225480">找不到相应网页时，显示有关类似网页的建议</translation>
 <translation id="6697690052557311665">要想共享，请右键点击“文件”应用中的相应文件夹，然后选择“与 Linux 共享”。</translation>
 <translation id="6698810901424468597">读取和更改您在<ph name="WEBSITE_1" />和<ph name="WEBSITE_2" />上的数据</translation>
 <translation id="6700093763382332031">移动网络 SIM 卡锁定</translation>
@@ -11416,7 +11418,6 @@
 <translation id="9043264199499366189">订阅 ChromeOS Flex 系统事件</translation>
 <translation id="9044646465488564462">无法连接到网络：<ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">您的阅读清单已移至新增的侧边栏中。点击这里即可试用。</translation>
-<translation id="9045430190527754450">将您尝试访问的网页的网址发送至 Google</translation>
 <translation id="9048745018038487540">选择所有字体</translation>
 <translation id="9050666287014529139">密码</translation>
 <translation id="905145695813415387">“<ph name="LOCAL_FOLDER" />”仅会保存到此设备上。如果您将此文件夹移至“<ph name="LOCAL_FOLDER" />”，您将无法再在其他设备上获取它。</translation>

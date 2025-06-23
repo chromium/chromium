@@ -1793,6 +1793,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2234827758954819389">Guia de privacidade</translation>
 <translation id="2234876718134438132">Serviços do Google e de sincronização</translation>
 <translation id="2235344399760031203">Cookies de terceiros foram bloqueados</translation>
+<translation id="2236949375853147973">Minha atividade</translation>
 <translation id="2238379619048995541">Dados do estado de frequência</translation>
 <translation id="2240582393605484605">Os dados salvos apenas neste dispositivo vão continuar no perfil atual</translation>
 <translation id="2241053333139545397">Ler e alterar seus dados em vários websites</translation>
@@ -5418,6 +5419,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4773122030389014189">Compartilhar o grupo de guias "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">Podem se conectar a qualquer dispositivo na sua rede local</translation>
 <translation id="477548766361111120">Permitir que a extensão leia e modifique este site</translation>
+<translation id="4775646243557794597">Período excluído – <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> conectado</translation>
 <translation id="4776594120007763294">Para adicionar uma página à lista, clique no botão</translation>
 <translation id="4777458362738635055">Outros usuários do dispositivo podem usar a rede</translation>
@@ -5763,6 +5765,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5016305686459575361">Ao conectar o smartphone, você pode:</translation>
 <translation id="5016491575926936899">Você pode enviar mensagens de texto pelo computador, compartilhar sua conexão de Internet, responder a notificações de conversa e desbloquear seu <ph name="DEVICE_TYPE" /> com o smartphone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Baixando os arquivos de anotações do nó principal</translation>
+<translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5018207570537526145">Abrir o site da extensão</translation>
 <translation id="5018526990965779848">Envie dados de uso e diagnóstico. Ajude a melhorar sua experiência com o Android enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e nossos parceiros, como os desenvolvedores Android. Se a configuração "Atividade na Web e de apps adicional" estiver ativada, esses dados poderão ser salvos na sua Conta do Google.</translation>
 <translation id="5019487038187875030">Ver certificados importados do MacOS</translation>
@@ -8066,7 +8069,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6694462491298752106">O touchpad integrado está desativado</translation>
 <translation id="6694634756612002311">Gerenciar compartilhamento</translation>
 <translation id="6697172646384837537">Selecione o local de importação das senhas</translation>
-<translation id="6697492270171225480">Mostrar sugestões de páginas semelhantes quando uma página não for encontrada</translation>
 <translation id="6697690052557311665">Para compartilhar, clique com o botão direito do mouse no app Arquivos e selecione "Compartilhar com o Linux".</translation>
 <translation id="6698810901424468597">Ler e alterar seus dados em <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Bloqueio do chip da rede celular</translation>
@@ -11450,7 +11452,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9043264199499366189">Inscreva-se em eventos do sistema ChromeOS Flex</translation>
 <translation id="9044646465488564462">Falha na conexão à rede: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">A Lista de leitura foi movida para o novo painel lateral. Faça um teste.</translation>
-<translation id="9045430190527754450">Envia ao Google o endereço da Web da página que você está tentando acessar</translation>
 <translation id="9048745018038487540">Selecionar todas as fontes</translation>
 <translation id="9050666287014529139">Senha</translation>
 <translation id="905145695813415387">"<ph name="LOCAL_FOLDER" />" foi salva apenas neste dispositivo. Se ela for movida para "<ph name="LOCAL_FOLDER" />", não vai mais aparecer nos seus outros dispositivos.</translation>

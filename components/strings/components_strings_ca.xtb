@@ -1759,7 +1759,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3961148744525529027">El full del gestor de pagaments està obert fins a la meitat</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963721102035795474">Mode de lector</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Cap}=1{D'1 lloc }other{De # llocs }}</translation>
 <translation id="3965672182149944205">Vols desar l'adreça?</translation>
 <translation id="3966044442021752214">Seguretat del producte</translation>
 <translation id="3969869202926863008">Accés a la xarxa local</translation>

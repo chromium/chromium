@@ -1786,6 +1786,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2234827758954819389">Personvernveiledning</translation>
 <translation id="2234876718134438132">Synkronisering og Google-tjenester</translation>
 <translation id="2235344399760031203">Informasjonskapsler fra tredjeparter er blokkert</translation>
+<translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2238379619048995541">Data om frekvenstilstand</translation>
 <translation id="2240582393605484605">Data som bare er lagret på denne enheten, blir værende i den eksisterende profilen</translation>
 <translation id="2241053333139545397">lese og endre opplysningene dine på mange nettsteder</translation>
@@ -5409,6 +5410,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4773122030389014189">Del fanegruppen «<ph name="GROUP_NAME" />»</translation>
 <translation id="4773253008034797668">Nettsteder som får lov til å koble til enheter på det lokale nettverket</translation>
 <translation id="477548766361111120">La utvidelsen lese og endre dette nettstedet</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> er slettet</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> er tilkoblet</translation>
 <translation id="4776594120007763294">For å legge til en side for senere lesning, klikk på knappen</translation>
 <translation id="4777458362738635055">Andre brukere av denne enheten kan bruke dette nettverket</translation>
@@ -5753,6 +5755,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5016305686459575361">Når du kobler til telefonen, kan du gjøre følgende:</translation>
 <translation id="5016491575926936899">Du kan sende tekstmeldinger fra datamaskinen, dele internettilkoblingen, svare på samtalevarsler og låse opp <ph name="DEVICE_TYPE" /> med telefonen.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Laster ned kommentarfiler for hovednoden</translation>
+<translation id="5017529052065664584">De siste 15 minuttene</translation>
 <translation id="5018207570537526145">Åpne nettstedet for utvidelsen</translation>
 <translation id="5018526990965779848">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen din bedre ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din.</translation>
 <translation id="5019487038187875030">Se importerte sertifikater fra macOS</translation>
@@ -8051,7 +8054,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6694462491298752106">Den innebygde styreflaten er slått av</translation>
 <translation id="6694634756612002311">Administrer deling</translation>
 <translation id="6697172646384837537">Velg hvor du vil importere passordene dine til</translation>
-<translation id="6697492270171225480">Viser forslag for lignende sider når en side ikke kan finnes</translation>
 <translation id="6697690052557311665">For å dele en mappe, høyreklikk på den i Filer-appen og velg «Del med Linux».</translation>
 <translation id="6698810901424468597">lese og endre opplysningene dine på <ph name="WEBSITE_1" /> og <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Mobil-SIM-lås</translation>
@@ -11434,7 +11436,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9043264199499366189">Abonner på ChromeOS Flex-systemhendelser</translation>
 <translation id="9044646465488564462">Kunne ikke koble til nettverket: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Leselisten din er flyttet til det nye sidepanelet. Prøv det her.</translation>
-<translation id="9045430190527754450">Sender Google nettadressen til siden du prøver å åpne</translation>
 <translation id="9048745018038487540">Velg alle skrifttyper</translation>
 <translation id="9050666287014529139">Passordfrase</translation>
 <translation id="905145695813415387">«<ph name="LOCAL_FOLDER" />» er bare lagret på denne enheten. Hvis du flytter denne mappen til «<ph name="LOCAL_FOLDER" />», mister du tilgang til den på de andre enhetene dine.</translation>

@@ -129,7 +129,6 @@ W <ph name="BEGIN_LINK2" />usługach Google<ph name="END_LINK2" /> znajdziesz w
 <translation id="1521774566618522728">Aktywność: dzisiaj</translation>
 <translation id="153446405401665083">Dostępna jest nowa wersja Chrome</translation>
 <translation id="1540012742443808215">Pasek adresu jest obecnie na górze</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 zakładka została zapisana tylko na tym urządzeniu. Aby używać jej na innych urządzeniach, zapisz ją na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}few{# zakładki zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}many{# zakładek zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}other{# zakładki zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Formy płatności i adresy nie będą zaszyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
 Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazowe. Nie jest ono wysyłane do Google ani tam przechowywane. Jeśli je zapomnisz lub postanowisz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Aby zarządzać kontem Google, kliknij przycisk „Zarządzaj kontem”</translation>
@@ -144,7 +143,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="1598163867407640634">Korzystaj z witryny <ph name="SITE_ETLD_PLUS_ONE" />, używając: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Gdy opcja jest włączona, możesz używać danych i zapisywać je na swoim koncie Google. Gdy jest wyłączona, dane są zapisywane tylko na tym urządzeniu.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Usuń 1 wybrany element}few{Usuń # wybrane elementy}many{Usuń # wybranych elementów}other{Usuń # wybranego elementu}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 zakładka i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}few{# zakładki i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}many{# zakładek i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}other{# zakładki i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
 <translation id="1641113438599504367">Bezpieczne przeglądanie</translation>
 <translation id="164269334534774161">Oglądasz kopię offline tej strony z <ph name="CREATION_TIME" /></translation>
@@ -477,7 +475,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="316694332262407393">Przeglądarka Chrome jest już uruchomiona.</translation>
 <translation id="3167258285411721858">Możesz poprosić o wyświetlenie <ph name="HOST_NAME" /> w wersji mobilnej</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 hasło i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}few{# hasła i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}many{# haseł i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}other{# hasła i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Pomiar skuteczności reklam</translation>
 <translation id="3189635831478931757">Grupa kart (<ph name="GROUP_TITLE" />)</translation>
 <translation id="3207960819495026254">Dodano do zakładek</translation>
@@ -894,7 +891,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="506254248375231072">Brak kart</translation>
 <translation id="5062960805900435602">Powiadomienie o scalaniu haseł zostało zamknięte</translation>
 <translation id="5075939510584558547">Zapisz bez szyfrowania</translation>
-<translation id="5082172173036123513">Nieaktywne okna są trwale usuwane po 6 miesiącach braku aktywności.</translation>
 <translation id="5085038751173179818">Zaloguj się na tej stronie i w Chrome, aby mieć dostęp do zakładek i innych opcji na wszystkich swoich urządzeniach</translation>
 <translation id="5091199029769593641">Już niedługo po otwarciu nowej karty będziesz widzieć relacje ze strony <ph name="SITE_NAME" />. Strony, które obserwujesz, są zapisywane na Twoim koncie Google. Możesz nimi zarządzać w ustawieniach kart Discover.</translation>
 <translation id="509429900233858213">Wystąpił błąd.</translation>
@@ -1155,7 +1151,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy bez związku ze stronami odwiedzonymi przez Ciebie wcześniej. Wiele stron będzie nadal gromadzić dane przeglądania i używać ich na przykład do poprawy bezpieczeństwa, pokazywania treści, reklam i rekomendacji oraz do generowania statystyk.</translation>
 <translation id="6247557882553405851">Menedżer haseł Google</translation>
 <translation id="6251449557817521191">Tutaj możesz wyświetlić historię Chrome</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 element został zapisany tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz go na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}few{# elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}many{# elementów zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}other{# elementu zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="6254139308321626268">Wyświetlasz plik PDF</translation>
 <translation id="6255809143828972562">Dzięki narzędziom Chrome możesz bezpiecznie przeglądać internet i mieć nad wszystkim kontrolę</translation>
 <translation id="6264376385120300461">Pobierz mimo to</translation>
@@ -1420,7 +1415,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7293429513719260019">Wybierz język</translation>
 <translation id="729975465115245577">Na urządzeniu nie ma aplikacji umożliwiającej zapisanie pliku z hasłami.</translation>
 <translation id="7304072650267745798">Twoje urządzenie z Androidem może mieć podobne ustawienie. Jeśli jest ono włączone w Chrome i na urządzeniu z Androidem, firma może mierzyć skuteczność reklam w odwiedzanych przez Ciebie witrynach i w aplikacjach, z których korzystasz.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 hasło zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}few{# hasła zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}many{# haseł zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}other{# hasła zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7304873321153398381">Offline. Chrome nie może sprawdzić Twoich haseł.</translation>
 <translation id="7313188324932846546">Kliknij, by skonfigurować synchronizację</translation>
 <translation id="7314734791127433392">Nie udało się sprawdzić haseł</translation>
@@ -1633,7 +1627,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8135406045838672858">Pobrane pliki PDF otwierają się automatycznie w aplikacji <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Nie musisz zapamiętywać tego hasła. Zapisze je Menedżer haseł Google.</translation>
-<translation id="8146563639948412265">Maksymalna dozwolona liczba okien: <ph name="MAX_WINDOW_COUNT" />. Aby przywrócić okno, zamknij okna aktywne i nieaktywne (<ph name="WINDOW_COUNT" />)</translation>
 <translation id="8152331954420209374">Przejdź do Obiektywu</translation>
 <translation id="8163820386638255770">Potwierdź swoją tożsamość, aby móc zapisywać hasła na koncie Google i ich używać</translation>
 <translation id="8186512483418048923">Pozostałe pliki: <ph name="FILES" /></translation>
@@ -1873,7 +1866,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="9169507124922466868">Historia nawigacji jest otwarta w połowie</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Będziesz mieć dostęp do swojej historii na wszystkich zsynchronizowanych urządzeniach, aby możliwe było kontynuowanie przerwanych działań</translation>
-<translation id="9191906083913361689">Elementy te możesz też wyświetlać i zarządzać nimi w zakładkach, na liście Do przeczytania i w Menedżerze haseł</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Sprawdzano minutę temu}few{Sprawdzano # minuty temu}many{Sprawdzano # minut temu}other{Sprawdzano # minuty temu}}</translation>
 <translation id="9204021776105550328">Usuwam</translation>
 <translation id="9204836675896933765">Pozostał jeden plik</translation>

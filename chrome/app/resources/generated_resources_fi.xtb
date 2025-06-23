@@ -1791,6 +1791,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2234827758954819389">Yksityisyysopas</translation>
 <translation id="2234876718134438132">Synkronointi ja Googlen palvelut</translation>
 <translation id="2235344399760031203">Kolmannen osapuolen evästeet on estetty</translation>
+<translation id="2236949375853147973">Omat tapahtumat</translation>
 <translation id="2238379619048995541">Kellotaajuuden tilan tiedot</translation>
 <translation id="2240582393605484605">Data, joka on tallennettu vain tälle laitteelle, säilyy nykyisessä profiilissa</translation>
 <translation id="2241053333139545397">lukea ja muuttaa tietojasi useilla eri sivustoilla</translation>
@@ -5413,6 +5414,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4773122030389014189">Jaa välilehtiryhmä "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">Saa yhdistää mihin tahansa paikallisessa verkossa olevaan laitteeseen</translation>
 <translation id="477548766361111120">Salli laajennuksen lukea sivustoa ja tehdä siihen muutoksia</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> poistettu</translation>
 <translation id="4776311127346151860">Yhdistetty (<ph name="DEVICE_NAME" />)</translation>
 <translation id="4776594120007763294">Voit lisätä sivun myöhempää lukemista varten painamalla painiketta</translation>
 <translation id="4777458362738635055">Muut laitteen käyttäjät voivat käyttää tätä verkkoa</translation>
@@ -5758,6 +5760,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5016305686459575361">Kun yhdistät puhelimesi, seuraavat asiat onnistuvat:</translation>
 <translation id="5016491575926936899">Voit lähettää tekstiviestejä tietokoneelta, jakaa internetyhteyden, vastata keskusteluilmoituksiin ja avata lukituksen (<ph name="DEVICE_TYPE" />) puhelimella.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Ladataan pääsolmun merkintätiedostoja</translation>
+<translation id="5017529052065664584">Viimeiset 15 minuuttia</translation>
 <translation id="5018207570537526145">Avaa laajennussivusto</translation>
 <translation id="5018526990965779848">Lähetä käyttö- ja diagnostiikkadataa. Auta parantamaan Android-käyttökokemusta lähettämällä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Datan avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, kuten Android-kehittäjille. Jos olet laittanut päälle muun verkko- ja sovellustoiminnan asetuksen, tätä dataa voidaan tallentaa Google-tilillesi.</translation>
 <translation id="5019487038187875030">Katso MacOS:stä tuodut varmenteet</translation>
@@ -8058,7 +8061,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6694462491298752106">Sisäänrakennettu kosketuslevy on poistettu käytöstä</translation>
 <translation id="6694634756612002311">Muuta jakamisvalintoja</translation>
 <translation id="6697172646384837537">Valitse, minne salasanat tuodaan</translation>
-<translation id="6697492270171225480">Näytä ehdotuksia samankaltaisista sivuista, kun sivua ei löydy</translation>
 <translation id="6697690052557311665">Jaa kansio klikkaamalla sitä hiiren kakkospainikkeella Tiedostot-sovelluksessa ja valitsemalla Jaa Linuxilla.</translation>
 <translation id="6698810901424468597">lukea ja muuttaa tietojasi sivustoissa <ph name="WEBSITE_1" /> ja <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Mobiiliyhteyden SIM-lukitus</translation>
@@ -11440,7 +11442,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9043264199499366189">Tilaa ChromeOS Flexin järjestelmätapahtumat</translation>
 <translation id="9044646465488564462">Yhteyden muodostaminen verkkoon epäonnistui: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lukulistasi on siirretty uuteen sivupaneeliin. Kokeile sitä täällä.</translation>
-<translation id="9045430190527754450">Lähettää Googlelle etsimäsi sivun verkko-osoitteen</translation>
 <translation id="9048745018038487540">Valitse kaikki fontit</translation>
 <translation id="9050666287014529139">Tunnuslause</translation>
 <translation id="905145695813415387">"<ph name="LOCAL_FOLDER" />" tallennetaan vain tälle laitteelle. Jos siirrät kansion kohtaan "<ph name="LOCAL_FOLDER" />", et enää saa pääsyä siihen muilla laitteillasi.</translation>

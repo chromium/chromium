@@ -1791,6 +1791,7 @@
 <translation id="2234827758954819389">המדריך בנושא פרטיות</translation>
 <translation id="2234876718134438132">‏סנכרון ושירותי Google</translation>
 <translation id="2235344399760031203">‏קובצי cookie של צד שלישי חסומים</translation>
+<translation id="2236949375853147973">הפעילות שלי</translation>
 <translation id="2238379619048995541">נתוני מצב תדירות</translation>
 <translation id="2240582393605484605">נתונים שנשמרים רק במכשיר הזה יישארו בפרופיל הקיים</translation>
 <translation id="2241053333139545397">לקרוא ולשנות את הנתונים שלך במספר אתרים</translation>
@@ -5417,6 +5418,7 @@
 <translation id="4773122030389014189">שיתוף קבוצת הכרטיסיות '<ph name="GROUP_NAME" />'</translation>
 <translation id="4773253008034797668">יש הרשאה להתחבר לכל מכשיר ברשת המקומית</translation>
 <translation id="477548766361111120">מתן הרשאה לתוסף לקרוא את האתר הזה ולשנות אותו</translation>
+<translation id="4775646243557794597">בוצעה מחיקה של <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860">המכשיר <ph name="DEVICE_NAME" /> חובר</translation>
 <translation id="4776594120007763294">כדי להוסיף דף לקריאה במועד מאוחר יותר, לוחצים על הכפתור</translation>
 <translation id="4777458362738635055">משתמשים אחרים במכשיר הזה יכולים להשתמש ברשת הזו</translation>
@@ -5762,6 +5764,7 @@
 <translation id="5016305686459575361">כשמחברים את הטלפון, אפשר:</translation>
 <translation id="5016491575926936899">יש לך אפשרות לשלוח הודעות טקסט מהמחשב, לשתף את חיבור האינטרנט, להגיב להתראות על שיחות ולבטל את הנעילה של <ph name="DEVICE_TYPE" /> באמצעות הטלפון.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">מתבצעת הורדה של קובצי הרישומים של הצומת הראשי</translation>
+<translation id="5017529052065664584">15 הדקות האחרונות</translation>
 <translation id="5018207570537526145">פתיחת אתר התוסף</translation>
 <translation id="5018526990965779848">‏שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים. כדי לתרום לשיפור חוויית השימוש ב-Android, אפשר לשלוח אל Google באופן אוטומטי נתוני אבחון, נתוני מכשיר ונתוני שימוש באפליקציות. הנתונים האלה יעזרו לשמור על היציבות של המערכת ושל האפליקציות ולבצע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לשפר את האפליקציות של Google וכן יעזרו לשותפים של Google, כמו מפתחים של Android. אם הופעלה ההגדרה 'פעילות באתרי אינטרנט ובאפליקציות נוספים', ייתכן שהנתונים יישמרו בחשבון Google שלך.</translation>
 <translation id="5019487038187875030">‏הצגת אישורים שיובאו מ-MacOS</translation>
@@ -8066,7 +8069,6 @@
 <translation id="6694462491298752106">לוח המגע המובנה מושבת</translation>
 <translation id="6694634756612002311">ניהול אפשרויות השיתוף</translation>
 <translation id="6697172646384837537">יש לבחור את היעד לייבוא הסיסמאות</translation>
-<translation id="6697492270171225480">הצגת הצעות לדפים דומים אם דף מסוים לא נמצא</translation>
 <translation id="6697690052557311665">‏כדי לשתף, יש ללחוץ לחיצה ימנית על תיקייה באפליקציית הקבצים, ולאחר מכן לבחור "שיתוף עם Linux".</translation>
 <translation id="6698810901424468597">לקרוא ולשנות את הנתונים שלך ב-<ph name="WEBSITE_1" /> וב-<ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">‏נעילת כרטיס ה-SIM הסלולרי</translation>
@@ -11452,7 +11454,6 @@
 <translation id="9043264199499366189">‏הרשמה לאירועי מערכת של ChromeOS Flex</translation>
 <translation id="9044646465488564462">ההתחברות לרשת נכשלה: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">רשימת הקריאה שלך עברה לחלונית הצדדית החדשה. כאן לוחצים כדי לפתוח אותה.</translation>
-<translation id="9045430190527754450">‏שליחת כתובת האינטרנט של הדף שאליו ניסית להגיע אל Google</translation>
 <translation id="9048745018038487540">בחירת כל הגופנים</translation>
 <translation id="9050666287014529139">ביטוי סיסמה</translation>
 <translation id="905145695813415387">התיקייה "<ph name="LOCAL_FOLDER" />" שמורה רק במכשיר הזה. אם התיקייה הזו תועבר אל "<ph name="LOCAL_FOLDER" />", היא לא תהיה זמינה יותר במכשירים האחרים שלך.</translation>

@@ -200,7 +200,6 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> か月前に作成}other{<ph name="NUM_MONTHS_MANY" /> か月前に作成}}</translation>
 <translation id="8813708480179818649">グループからタブを削除</translation>
 <translation id="8820741577754260431">タブで値下げ情報を確認します</translation>
-<translation id="883379923675618699">3 か月間使用されていないセクションのアイテムを自動的に終了します。この設定は [設定] でいつでもオフにできます。</translation>
 <translation id="8887921976452567404">閉じたタブとグループは、[最近使ったタブ] と [タブグループ] で再度開くことができます。</translation>
 <translation id="8915916167043355778">すべて閉じる</translation>
 <translation id="9090098097337832354">このショップに関する情報は非表示になっています</translation>

@@ -1779,6 +1779,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2234827758954819389">Udhëzuesi i privatësisë</translation>
 <translation id="2234876718134438132">Sinkron. dhe "Shërbimet e Google"</translation>
 <translation id="2235344399760031203">Kukit e palëve të treta janë bllokuar</translation>
+<translation id="2236949375853147973">Aktiviteti im</translation>
 <translation id="2238379619048995541">Të dhënat e gjendjes së frekuencës</translation>
 <translation id="2240582393605484605">Të dhënat që ruhen vetëm në këtë pajisje do të mbeten në profilin ekzistues</translation>
 <translation id="2241053333139545397">Lexo dhe ndrysho të dhënat e tua në një numër uebsajtesh</translation>
@@ -5400,6 +5401,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4773122030389014189">Ndaj grupin e skedave "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">Lejohen të lidhen me çdo pajisje në rrjetin tënd lokal</translation>
 <translation id="477548766361111120">Lejo që shtesa të lexojë dhe të ndryshojë këtë sajt</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> u fshi</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> është lidhur</translation>
 <translation id="4776594120007763294">Për të shtuar një faqe për ta lexuar më vonë, kliko te butoni</translation>
 <translation id="4777458362738635055">Përdoruesit e tjerë të kësaj pajisjeje mund të përdorin këtë rrjet</translation>
@@ -5744,6 +5746,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5016305686459575361">Duke lidhur telefonin, mund të bësh sa më poshtë:</translation>
 <translation id="5016491575926936899">Mund të dërgosh mesazhe me tekst nga kompjuteri yt, të ndash lidhjen tënde të internetit, t'u përgjigjesh njoftimeve të bisedës dhe ta shkyçësh <ph name="DEVICE_TYPE" /> me telefonin tënd.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Po shkarkohen skedarët e shënimeve të nyjës kryesore</translation>
+<translation id="5017529052065664584">15 minutat e fundit</translation>
 <translation id="5018207570537526145">Hap uebsajtin e shtesës</translation>
 <translation id="5018526990965779848">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo me përmirësimin e përvojës sate të Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar, këto të dhëna mund të ruhen në "Llogarinë tënde të Google".</translation>
 <translation id="5019487038187875030">Shiko certifikatat e importuara nga MacOS</translation>
@@ -8043,7 +8046,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6694462491298752106">Blloku i integruar me prekje është çaktivizuar</translation>
 <translation id="6694634756612002311">Menaxho ndarjen</translation>
 <translation id="6697172646384837537">Zgjidh se ku do t'i importosh fjalëkalimet e tua</translation>
-<translation id="6697492270171225480">Lejo sugjerimet për faqet e ngjashme kur nuk mund të gjendet një faqe</translation>
 <translation id="6697690052557311665">Për ta ndarë, kliko me të djathtën mbi një dosje tek aplikacioni "Skedarët", më pas zgjidh "Ndaj me Linux".</translation>
 <translation id="6698810901424468597">Lexo dhe ndrysho të dhënat e tua në <ph name="WEBSITE_1" /> dhe <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Kyçja e kartës celulare SIM</translation>
@@ -11423,7 +11425,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9043264199499366189">Abonohu për ngjarjet e sistemit ChromeOS Flex</translation>
 <translation id="9044646465488564462">Dështoi lidhja me rrjetin: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lista jote e leximit është zhvendosur në panelin e ri anësor. Provoje këtu.</translation>
-<translation id="9045430190527754450">Dërgon adresat e uebit në faqen që po përpiqesh të arrish në Google</translation>
 <translation id="9048745018038487540">Zgjidh të gjitha fontet</translation>
 <translation id="9050666287014529139">Shprehje kalimi</translation>
 <translation id="905145695813415387">"<ph name="LOCAL_FOLDER" />" është ruajtur vetëm në këtë pajisje. Nëse e zhvendos këtë dosje te "<ph name="LOCAL_FOLDER" />", nuk do ta marrësh më në pajisjet e tua të tjera.</translation>

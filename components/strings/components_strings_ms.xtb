@@ -1763,7 +1763,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3961148744525529027">Helaian pengendali pembayaran dibuka separuh</translation>
 <translation id="3962859241508114581">Lagu Sebelumnya</translation>
 <translation id="3963721102035795474">Mod Pembaca</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Tiada}=1{Daripada 1 tapak }other{Daripada # tapak }}</translation>
 <translation id="3965672182149944205">Simpan alamat?</translation>
 <translation id="3966044442021752214">Keselamatan produk</translation>
 <translation id="3969869202926863008">Akses rangkaian setempat</translation>
@@ -2032,6 +2031,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4372948949327679948">Nilai <ph name="VALUE_TYPE" /> yang dijangka.</translation>
 <translation id="437620492464254965">Pintu &amp; Tingkap</translation>
 <translation id="4377125064752653719">Anda cuba untuk mencapai <ph name="DOMAIN" />, tetapi sijil yang diberi pelayan telah dibatalkan oleh pengeluarnya. Ini bermakna bahawa bukti kelayakan keselamatan yang diberi pelayan sememangnya tidak harus dipercayai. Anda mungkin berkomunikasi dengan penyerang.</translation>
+<translation id="4377869186417956230">Tukar kepada semua kad kesetiaan di bawah item menu ini.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Mulai sekarang, simpan fail anda pada storan awan</translation>
@@ -3149,6 +3149,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6326947323444967009">Tetapkan Chrome sebagai penyemak imbas lalai sistem dalam tetapan iOS</translation>
 <translation id="6327065120806001832">akses rangkaian setempat</translation>
 <translation id="6328639280570009161">Cuba lumpuhkan ramalan rangkaian</translation>
+<translation id="6334834493885103305">Kini anda boleh membayar secara ansuran menggunakan Affirm, Zip atau Klarna</translation>
 <translation id="6335029926534404762">Kasut Sukan</translation>
 <translation id="6336948221660696475">VR tidak dibenarkan</translation>
 <translation id="6337133576188860026">Mengosongkan kurang daripada <ph name="SIZE" />. Sesetengah tapak mungkin dimuatkan dengan lebih perlahan pada lawatan anda yang seterusnya.</translation>
@@ -4072,6 +4073,7 @@ Butiran tambahan:
 <translation id="7878562273885520351">Kata laluan anda mungkin terjejas</translation>
 <translation id="7881044256965445977">Menemukan dan menyambung kepada mana-mana peranti pada rangkaian setempat anda</translation>
 <translation id="7882421473871500483">Coklat</translation>
+<translation id="7885670691503039914">Anda akan mendapat makluman e-mel jika harga turun pada mana-mana laman. Halaman ini akan disimpan pada folder penanda halaman <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Pilih kategori topik yang luas yang boleh digunakan untuk memeribadikan iklan</translation>
 <translation id="7887683347370398519">Semak CVC anda dan cuba lagi</translation>
 <translation id="7887885240995164102">Akses mod gambar dalam gambar</translation>
@@ -4667,6 +4669,7 @@ Butiran tambahan:
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
 <translation id="8932102934695377596">Jam anda di belakang</translation>
 <translation id="893332455753468063">Tambahkan Nama</translation>
+<translation id="8938242527120341116">Penapis kandungan peranti anda menyekat <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">Pentadbir anda telah membenarkan <ph name="APP_NAME" /> untuk mengumpulkan data diagnostik untuk meningkatkan pengalaman produk. Lihat <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> untuk mendapatkan maklumat lanjut.</translation>
 <translation id="8943282376843390568">Hijau pucuk pisang</translation>
 <translation id="8949410982325929394">Nada</translation>
@@ -4872,6 +4875,7 @@ Butiran tambahan:
 <translation id="963837307749850257">Semua pengguna</translation>
 <translation id="964050462028070434">Urus Kata Laluan dan Kunci Laluan…</translation>
 <translation id="969892804517981540">Binaan Rasmi</translation>
+<translation id="97054401902912338">Ketahui penapis kandungan dengan lebih lanjut</translation>
 <translation id="973788791897303708">Kumpulan tab ini penuh</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Tiada}=1{1 item}other{# item}}</translation>
 <translation id="976522784004777030">5 x 8 in</translation>

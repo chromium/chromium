@@ -1791,6 +1791,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2234827758954819389">Adatvédelmi útmutató</translation>
 <translation id="2234876718134438132">Szinkronizálás és Google</translation>
 <translation id="2235344399760031203">A harmadik felektől származó cookie-k le vannak tiltva</translation>
+<translation id="2236949375853147973">Saját tevékenységek</translation>
 <translation id="2238379619048995541">Órajel állapotadatai</translation>
 <translation id="2240582393605484605">A csak erre az eszközre mentett adatok a meglévő profilban maradnak</translation>
 <translation id="2241053333139545397">Adatainak olvasása és módosítása bizonyos webhelyeken</translation>
@@ -5415,6 +5416,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4773122030389014189">„<ph name="GROUP_NAME" />” lapcsoport megosztása</translation>
 <translation id="4773253008034797668">Csatlakozhat a helyi hálózaton lévő bármelyik eszközhöz</translation>
 <translation id="477548766361111120">A bővítmény olvashatja és módosíthatja a webhelyet</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> törölve</translation>
 <translation id="4776311127346151860">Sikeresen csatlakoztatva lett a következő: <ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">Az oldal későbbi olvasásra való elmentéséhez kattintson a gombra.</translation>
 <translation id="4777458362738635055">Az eszköz többi felhasználója használhatja ezt a hálózatot</translation>
@@ -5760,6 +5762,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5016305686459575361">Telefonja csatlakoztatásával a következőkre van lehetősége:</translation>
 <translation id="5016491575926936899">Számítógépről küldhet SMS-t, megoszthatja az internetkapcsolatot, válaszolhat a beszélgetések értesítéseire, és feloldhatja <ph name="DEVICE_TYPE" /> eszköze zárolását a telefonjával.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="5017250179386090956">Fő csomóponti annotációs fájlok letöltése…</translation>
+<translation id="5017529052065664584">Elmúlt 15 perc</translation>
 <translation id="5018207570537526145">Bővítmény webhelyének megnyitása</translation>
 <translation id="5018526990965779848">Használati és diagnosztikai adatok küldése. Segítsen az Android-élmény továbbfejlesztésében azzal, hogy automatikusan diagnosztikai, valamint eszköz- és alkalmazáshasználati adatokat küld a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat az Ön Google-fiókjába is mentheti.</translation>
 <translation id="5019487038187875030">macOS-ről importált tanúsítványok megtekintése</translation>
@@ -8061,7 +8064,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6694462491298752106">A beépített érintőpad le van tiltva</translation>
 <translation id="6694634756612002311">Megosztás kezelése</translation>
 <translation id="6697172646384837537">Válassza ki, hogy hová szeretné importálni a jelszavakat</translation>
-<translation id="6697492270171225480">Hasonló oldalakra vonatkozó javaslatok megjelenítése, ha az oldal nem található</translation>
 <translation id="6697690052557311665">A megosztáshoz jobb egérgombbal kattintson a mappára a Fájlok alkalmazásban, majd válassza a „Megosztás a Linuxszal” lehetőséget.</translation>
 <translation id="6698810901424468597">Adatainak olvasása és módosítása itt: <ph name="WEBSITE_1" /> és <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Mobilos SIM zárolása</translation>
@@ -11443,7 +11445,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="9043264199499366189">Feliratkozás a ChromeOS Flex rendszereseményeire</translation>
 <translation id="9044646465488564462">Nem sikerült csatlakozni a hálózathoz: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Az olvasólistája átkerült az új oldalsó panelre. Itt kipróbálhatja.</translation>
-<translation id="9045430190527754450">Elküldi az elérni kívánt oldal internetcímét a Google-nak</translation>
 <translation id="9048745018038487540">Az összes betűtípus kiválasztása</translation>
 <translation id="9050666287014529139">Összetett jelszó</translation>
 <translation id="905145695813415387">A(z) „<ph name="LOCAL_FOLDER" />” csak ezen az eszközön kerül mentésre. Ha áthelyezi ezt a mappát a(z) „<ph name="LOCAL_FOLDER" />” mappába, akkor a többi eszközén már nem fog tudni hozzáférni.</translation>

@@ -129,7 +129,6 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="1521774566618522728">Ma volt aktív</translation>
 <translation id="153446405401665083">Rendelkezésre áll a Chrome új verziója</translation>
 <translation id="1540012742443808215">A címsáv jelenleg felül van</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 könyvjelzőt csak erre az eszközre ment a rendszer. Annak érdekében, hogy a többi eszközén is használható legyen, mentse Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}other{# könyvjelzőt csak erre az eszközre ment a rendszer. Annak érdekében, hogy a többi eszközén is használhatók legyenek, mentse őket Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">A fizetési módok és a címek nem lesznek titkosítva. A Chrome böngészési előzményei nem lesznek szinkronizálva.
 Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Google-fiókjának kezeléséhez koppintson a „Fiók kezelése” gombra</translation>
@@ -144,7 +143,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1598163867407640634">Használja a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyet a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Bekapcsolva: a rendszer használja a Google-fiókjában lévő adatokat, és ment oda újakat. Kikapcsolva: a rendszer csak az eszközre menti az adatokat.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 kijelölt elem eltávolítása}other{# kijelölt elem eltávolítása}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 könyvjelzőt és egyéb elemeket csak erre az eszközre ment a rendszer. Annak érdekében, hogy a többi eszközén is használhatók legyenek, mentse őket Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}other{# könyvjelzőt és egyéb elemeket csak erre az eszközre ment a rendszer. Annak érdekében, hogy a többi eszközén is használhatók legyenek, mentse őket Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1639239467298939599">Betöltés</translation>
 <translation id="1641113438599504367">Biztonságos Böngészés</translation>
 <translation id="164269334534774161">Jelenleg az oldal <ph name="CREATION_TIME" />-i dátummal mentett offline példányát tekinti meg</translation>
@@ -477,7 +475,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="316694332262407393">A Chrome már most is fut.</translation>
 <translation id="3167258285411721858">Kérheti mobilwebhely megjelenítését a következőhöz: <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 jelszót és egyéb elemeket csak erre az eszközre ment a rendszer. Annak érdekében, hogy a többi eszközén is használható legyen, mentse Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}other{# jelszót és egyéb elemeket csak erre az eszközre ment a rendszer. Annak érdekében, hogy a többi eszközén is használhatók legyenek, mentse őket Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="3187472288455401631">Hirdetésmérés</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> lapcsoport</translation>
 <translation id="3207960819495026254">Könyvjelző rögzítve</translation>
@@ -894,7 +891,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="506254248375231072">Nincs lap</translation>
 <translation id="5062960805900435602">A jelszóegyesítési frissítés le van zárva.</translation>
 <translation id="5075939510584558547">Mentés titkosítás nélkül</translation>
-<translation id="5082172173036123513">Az inaktív ablakok 6 hónapos inaktivitás után véglegesen törlődnek.</translation>
 <translation id="5085038751173179818">Jelentkezzen be erre a webhelyre és a Chrome-ba, hogy az összes eszközén hozzáférhessen könyvjelzőihez és még sok minden máshoz</translation>
 <translation id="5091199029769593641">Új lap megnyitásakor hamarosan látni fogja a(z) <ph name="SITE_NAME" /> webhely történeteit. A követett webhelyeket a Google-fiókjába menti a rendszer. A Discover beállításaiban kezelheti őket.</translation>
 <translation id="509429900233858213">Hiba történt.</translation>
@@ -1155,7 +1151,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jelenítenek meg, amelyek nem a már felkeresett egyéb webhelyeken alapulnak. Számos webhely ilyenkor is gyűjti és felhasználja a böngészési adatokat (például a biztonság növelése, továbbá tartalom, hirdetések és ajánlatok biztosítása, valamint jelentésekhez használt statisztika előállítása céljából).</translation>
 <translation id="6247557882553405851">Google Jelszókezelő</translation>
 <translation id="6251449557817521191">Itt tekintheti meg Chrome-előzményeit</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 elemet csak erre az eszközre ment a rendszer. Annak érdekében, hogy a többi eszközén is használható legyen, mentse Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}other{# elemet csak erre az eszközre ment a rendszer. Annak érdekében, hogy a többi eszközén is használhatók legyenek, mentse őket Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="6254139308321626268">Jelenleg PDF-fájlt tekint meg</translation>
 <translation id="6255809143828972562">A Chrome eszközeivel biztonságosan böngészhet, és kézben tarthatja az irányítást</translation>
 <translation id="6264376385120300461">Letöltés mindenképpen</translation>
@@ -1420,7 +1415,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7293429513719260019">Nyelv kiválasztása</translation>
 <translation id="729975465115245577">Az eszközön nincs olyan alkalmazás, amely tárolni tudja a jelszavakat tartalmazó fájlt.</translation>
 <translation id="7304072650267745798">Előfordulhat, hogy Android-eszköze is rendelkezik hasonló beállítással. Ha ez a beállítás be van kapcsolva a Chrome-ban és Android-eszközén, akkor a vállalatok képesek lehetnek az egyes hirdetések hatékonyságának mérésére az Ön által felkeresett webhelyeken és az Ön által használt alkalmazásokban.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 jelszót csak erre az eszközre ment a rendszer. Annak érdekében, hogy a többi eszközén is használható legyen, mentse Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}other{# jelszót csak erre az eszközre ment a rendszer. Annak érdekében, hogy a többi eszközén is használhatók legyenek, mentse őket Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="7304873321153398381">Offline. A Chrome nem tudja ellenőrizni a jelszavakat.</translation>
 <translation id="7313188324932846546">Koppintson a szinkronizálás beállításához</translation>
 <translation id="7314734791127433392">Nem lehet ellenőrizni a jelszavakat</translation>
@@ -1633,7 +1627,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="813082847718468539">Az oldalinformációk megtekintése</translation>
 <translation id="8135406045838672858">A letöltött PDF-fájlok automatikusan a következő alkalmazással nyílnak meg: <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Nem kell megjegyeznie a jelszót. A rendszer a Google Jelszókezelőbe menti.</translation>
-<translation id="8146563639948412265">Legfeljebb <ph name="MAX_WINDOW_COUNT" /> ablak lehet nyitva. Ablak visszaállításához zárjon be <ph name="WINDOW_COUNT" /> aktív vagy inaktív ablakot.</translation>
 <translation id="8152331954420209374">Ugrás a Lenshez</translation>
 <translation id="8163820386638255770">Jelszavai Google-fiókjában való használatához és tárolásához igazolja személyazonosságát</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fájl maradt</translation>
@@ -1873,7 +1866,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="9169507124922466868">Félmagasságban megnyitott navigációs előzmények</translation>
 <translation id="918419812064856259">Chrome Béta</translation>
 <translation id="9190276265094487094">Előzményeihez az összes szinkronizált eszközén hozzáférhet, így ott folytathatja a böngészést, ahol abbahagyta</translation>
-<translation id="9191906083913361689">Ezeket az elemeket a könyvjelzők között, az olvasólistában és a jelszókezelőben is megtekintheti és kezelheti.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 perce ellenőrizve}other{# perce ellenőrizve}}</translation>
 <translation id="9204021776105550328">Törlés</translation>
 <translation id="9204836675896933765">1 fájl maradt</translation>

@@ -129,7 +129,6 @@ Ga naar <ph name="BEGIN_LINK2" />Google-services<ph name="END_LINK2" /> voor mee
 <translation id="1521774566618522728">Vandaag actief</translation>
 <translation id="153446405401665083">Nieuwe versie van Chrome beschikbaar</translation>
 <translation id="1540012742443808215">Adresbalk staat op dit moment bovenaan</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bookmark wordt alleen op dit apparaat opgeslagen. Als je de bookmark op je andere apparaten wilt gebruiken, sla je deze op in je Google-account <ph name="ACCOUNT_EMAIL" />.}other{# bookmarks worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Betaalmethoden en adressen worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.
 Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet gestuurd naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Tik op de knop 'Account beheren' om je Google-account te beheren</translation>
@@ -144,7 +143,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> gebruiken met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Als dit aanstaat, kun je gegevens gebruiken en opslaan in je Google-account. Staat dit uit, dan worden gegevens alleen opgeslagen op dit apparaat.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 geselecteerd item verwijderen}other{# geselecteerde items verwijderen}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 bookmark en andere items worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account <ph name="ACCOUNT_EMAIL" />.}other{# bookmarks en andere items worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1639239467298939599">Laden</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">Je bekijkt een offline exemplaar van deze pagina van <ph name="CREATION_TIME" /></translation>
@@ -477,7 +475,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="316694332262407393">Chrome is hier al actief.</translation>
 <translation id="3167258285411721858">Je kunt de mobiele site opvragen voor <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 wachtwoord en andere items worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account, <ph name="ACCOUNT_EMAIL" />.}other{# wachtwoorden en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Advertentiemeting</translation>
 <translation id="3189635831478931757">Tabbladgroep <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Je huidige venster sluiten?</translation>
@@ -898,7 +895,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="506254248375231072">Geen tabbladen</translation>
 <translation id="5062960805900435602">Update over samenvoegen van wachtwoorden is gesloten</translation>
 <translation id="5075939510584558547">Opslaan zonder versleuteling</translation>
-<translation id="5082172173036123513">Inactieve vensters worden na 6 maanden inactiviteit definitief verwijderd.</translation>
 <translation id="5085038751173179818">Log in op deze site en bij Chrome om onder andere je bookmarks op al je apparaten te gebruiken</translation>
 <translation id="5091199029769593641">Binnenkort zie je artikelen van <ph name="SITE_NAME" /> als je een nieuw tabblad opent. Sites die je volgt, worden opgeslagen in je Google-account. Je kunt ze beheren in de instellingen van Discover.</translation>
 <translation id="509429900233858213">Er is een fout opgetreden.</translation>
@@ -1161,7 +1157,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken die niet zijn gebaseerd op andere websites die je hebt bezocht. Toch blijven veel websites je browsegegevens nog verzamelen en gebruiken, bijvoorbeeld om de beveiliging te verbeteren, om content, services, advertenties en aanbevelingen te leveren en om rapportagestatistieken te genereren.</translation>
 <translation id="6247557882553405851">Google Wachtwoordmanager</translation>
 <translation id="6251449557817521191">Bekijk hier je Chrome-geschiedenis</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 item wordt alleen op dit apparaat opgeslagen. Als je dit wilt gebruiken op je andere apparaten, sla je het op in je Google-account, <ph name="ACCOUNT_EMAIL" />.}other{# items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="6254139308321626268">Je bekijkt een pdf-bestand</translation>
 <translation id="6255809143828972562">Met tools van Chrome kun je beveiligd browsen en de controle behouden</translation>
 <translation id="6264376385120300461">Toch downloaden</translation>
@@ -1427,7 +1422,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7293429513719260019">Taal selecteren</translation>
 <translation id="729975465115245577">Je apparaat bevat geen app om het wachtwoordbestand in op te slaan.</translation>
 <translation id="7304072650267745798">Je Android-apparaat kan een vergelijkbare instelling hebben. Als deze instelling aanstaat in Chrome en op je Android-apparaat, kan een bedrijf misschien de effectiviteit van een advertentie meten op websites die je bezoekt en in apps die je gebruikt.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 wachtwoord wordt alleen op dit apparaat opgeslagen. Als je dit wilt gebruiken op je andere apparaten, sla je het op in je Google-account, <ph name="ACCOUNT_EMAIL" />.}other{# wachtwoorden worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7304873321153398381">Offline. Chrome kan je wachtwoorden niet checken.</translation>
 <translation id="7313188324932846546">Tik om synchronisatie in te stellen</translation>
 <translation id="7314734791127433392">Kan wachtwoorden niet checken</translation>
@@ -1641,7 +1635,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="813082847718468539">Sitegegevens bekijken</translation>
 <translation id="8135406045838672858">Gedownloade pdf's worden automatisch geopend met <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Je hoeft dit wachtwoord niet te onthouden. Het wordt opgeslagen in Google Wachtwoordmanager.</translation>
-<translation id="8146563639948412265">Je kunt in totaal maximaal <ph name="MAX_WINDOW_COUNT" /> vensters hebben. Als je een venster wilt herstellen, sluit je <ph name="WINDOW_COUNT" /> actieve of inactieve vensters.</translation>
 <translation id="8152331954420209374">Naar Lens</translation>
 <translation id="8163820386638255770">Bevestig dat jij het bent om wachtwoorden in je Google-account te gebruiken en op te slaan</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> bestanden over</translation>
@@ -1882,7 +1875,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="9169507124922466868">Navigatiegeschiedenis is half geopend</translation>
 <translation id="918419812064856259">Chrome Bèta</translation>
 <translation id="9190276265094487094">Je krijgt je geschiedenis op al je gesynchroniseerde apparaten, zodat je kunt doorgaan met waar je mee bezig was</translation>
-<translation id="9191906083913361689">Je kunt deze items ook bekijken en beheren in je bookmarks, leeslijst of wachtwoordmanager</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 minuut geleden gecheckt}other{# minuten geleden gecheckt}}</translation>
 <translation id="9204021776105550328">Verwijderen</translation>
 <translation id="9204836675896933765">1 bestand over</translation>

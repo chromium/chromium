@@ -129,7 +129,6 @@
 <translation id="1521774566618522728">Aktivno danes</translation>
 <translation id="153446405401665083">Na voljo je nova različica Chroma</translation>
 <translation id="1540012742443808215">Naslovna vrstica je trenutno na vrhu</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 zaznamek je shranjen samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}one{# zaznamek je shranjen samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}two{# zaznamka sta shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}few{# zaznamki so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}other{# zaznamkov je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Plačilna sredstva in naslovi ne bodo šifrirani. Zgodovina brskanja v Chromu se ne bo sinhronizirala.
 Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Če želite upravljati račun Google, se dotaknite gumba »Upravljanje računa«</translation>
@@ -144,7 +143,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1598163867407640634">Uporabite <ph name="SITE_ETLD_PLUS_ONE" /> z računom pri ponudniku <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Če je ta možnost vklopljena, uporabljate in shranjujete podatke v računu Google. Če je izklopljena, se podatki shranjujejo samo v tej napravi.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstranitev 1 izbranega elementa}one{Odstranitev # izbranega elementa}two{Odstranitev # izbranih elementov}few{Odstranitev # izbranih elementov}other{Odstranitev # izbranih elementov}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 geslo in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}one{# geslo in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}two{# gesli in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}few{# gesla in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}other{# gesel in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1639239467298939599">Nalaganje</translation>
 <translation id="1641113438599504367">Varno brskanje</translation>
 <translation id="164269334534774161">Ogledujete si kopijo te strani brez povezave z dne <ph name="CREATION_TIME" /></translation>
@@ -477,7 +475,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="316694332262407393">Chrome se že izvaja tu.</translation>
 <translation id="3167258285411721858">Za <ph name="HOST_NAME" /> lahko zahtevate spletno mesto za mobilne naprave.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 geslo in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}one{# geslo in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}two{# gesli in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}few{# gesla in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}other{# gesel in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Merjenje oglasov</translation>
 <translation id="3189635831478931757">Skupina zavihkov <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Dodano med zaznamke</translation>
@@ -894,7 +891,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="506254248375231072">Ni zavihkov</translation>
 <translation id="5062960805900435602">Obvestilo o združevanju gesel je zaprto</translation>
 <translation id="5075939510584558547">Shrani brez šifriranja</translation>
-<translation id="5082172173036123513">Nedejavna okna se trajno izbrišejo po 6 mesecih nedejavnosti.</translation>
 <translation id="5085038751173179818">Prijavite se na tem spletnem mestu in v Chromu, če želite dostopati do zaznamkov in drugega v vseh napravah</translation>
 <translation id="5091199029769593641">Kmalu bodo prikazane novice s spletnega mesta <ph name="SITE_NAME" />, ko boste odprli nov zavihek. Spletna mesta, ki jih spremljate, se shranijo v računu Google. Upravljate jih lahko v nastavitvah Odkrivanja.</translation>
 <translation id="509429900233858213">Napaka.</translation>
@@ -1155,7 +1151,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažejo oglase, ki ne temeljijo na drugih spletnih mestih, ki ste jih obiskali. Veliko spletnih mest bo še vedno zbiralo in uporabljalo vaše podatke o brskanju, na primer za izboljšanje varnosti, zagotavljanje vsebine, oglasov in priporočil ter za pridobivanje statističnih podatkov za poročanje.</translation>
 <translation id="6247557882553405851">Googlov upravitelj gesel</translation>
 <translation id="6251449557817521191">Tukaj si lahko ogledate zgodovino uporabe Chroma</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 element je shranjen samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}one{# element je shranjen samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}two{# elementa sta shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}few{# elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}other{# elementov je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="6254139308321626268">Ogledujete si datoteko PDF</translation>
 <translation id="6255809143828972562">S Chromovimi orodji lahko varno brskate in imate nadzor</translation>
 <translation id="6264376385120300461">Vseeno prenesi</translation>
@@ -1420,7 +1415,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7293429513719260019">Izbira jezika</translation>
 <translation id="729975465115245577">V napravi ni aplikacije za shranjevanje datoteke z gesli.</translation>
 <translation id="7304072650267745798">Naprava Android morda vsebuje podobno nastavitev. Če je ta nastavitev vklopljena v Chromu in napravi Android, lahko podjetje meri uspešnost oglasa na spletnih mestih, ki jih obiščete, in v aplikacijah, ki jih uporabljate.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}one{# geslo je shranjeno samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}two{# gesli sta shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}few{# gesla so shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}other{# gesel je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7304873321153398381">Brez povezave. Chrome ne more preveriti vaših gesel.</translation>
 <translation id="7313188324932846546">Dotaknite se, če želite nastaviti sinhronizacijo.</translation>
 <translation id="7314734791127433392">Gesel ni mogoče preveriti</translation>
@@ -1633,7 +1627,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="813082847718468539">Ogled podatkov o mestu</translation>
 <translation id="8135406045838672858">Prenesene datoteke PDF se samodejno odprejo z aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Tega gesla si vam ne bo treba zapomniti. Shranjeno bo v Googlovem upravitelju gesel.</translation>
-<translation id="8146563639948412265">Skupno imate lahko največ toliko oken: <ph name="MAX_WINDOW_COUNT" />. Če želite obnoviti okno, zaprite toliko aktivnih ali neaktivnih oken: <ph name="WINDOW_COUNT" />.</translation>
 <translation id="8152331954420209374">Odpiranje Lensa</translation>
 <translation id="8163820386638255770">Če želite v računu Google uporabljati in shranjevati gesla, potrdite, da ste to vi</translation>
 <translation id="8186512483418048923">Še toliko datotek: <ph name="FILES" /></translation>
@@ -1873,7 +1866,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="9169507124922466868">Zgodovina krmarjenja je napol odprta</translation>
 <translation id="918419812064856259">Chrome beta</translation>
 <translation id="9190276265094487094">Zgodovino si boste lahko ogledali v vseh sinhroniziranih napravah, da boste lahko nadaljevali, kar ste počeli.</translation>
-<translation id="9191906083913361689">Te elemente si lahko ogledate in jih upravljate tudi v zaznamkih, na bralnem seznamu ali v upravitelju gesel</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Preverjeno pred 1 minuto}one{Preverjeno pred # minuto}two{Preverjeno pred # minutama}few{Preverjeno pred # minutami}other{Preverjeno pred # minutami}}</translation>
 <translation id="9204021776105550328">Brisanje</translation>
 <translation id="9204836675896933765">Še 1 datoteka</translation>

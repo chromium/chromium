@@ -1762,7 +1762,6 @@
 <translation id="3961148744525529027">支払いハンドラのシートが半分開いています</translation>
 <translation id="3962859241508114581">前の曲</translation>
 <translation id="3963721102035795474">リーダーモード</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{なし}=1{1 件のサイトから}other{# 件のサイトから}}</translation>
 <translation id="3965672182149944205">住所を保存しますか？</translation>
 <translation id="3966044442021752214">製品の安全性</translation>
 <translation id="3969869202926863008">ローカル ネットワークへのアクセス</translation>

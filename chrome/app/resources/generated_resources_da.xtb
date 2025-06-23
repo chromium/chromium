@@ -1794,6 +1794,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2234827758954819389">Privatlivsguide</translation>
 <translation id="2234876718134438132">Synkronisering og Google-tjenester</translation>
 <translation id="2235344399760031203">Tredjepartscookies er blokeret</translation>
+<translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2238379619048995541">Data for frekvenstilstand</translation>
 <translation id="2240582393605484605">Data, der kun er gemt på denne enhed, forbliver på den eksisterende profil</translation>
 <translation id="2241053333139545397">Læse og redigere dine data på en række websites</translation>
@@ -5419,6 +5420,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4773122030389014189">Del fanegruppen "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">Har tilladelse til at oprette tilknytning til enheder på dit lokale netværk</translation>
 <translation id="477548766361111120">Giv udvidelsen tilladelse til at læse og ændre dette website</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> er slettet</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> er blevet forbundet</translation>
 <translation id="4776594120007763294">Klik på knappen for at tilføje en side, du vil læse senere</translation>
 <translation id="4777458362738635055">Andre brugere af denne enhed kan bruge dette netværk</translation>
@@ -5764,6 +5766,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5016305686459575361">Når du forbinder din telefon, kan du:</translation>
 <translation id="5016491575926936899">Du kan sende sms-beskeder fra din computer, dele din internetforbindelse, svare i samtalenotifikationer og låse din <ph name="DEVICE_TYPE" /> op med din telefon.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Downloader annoteringsfilerne for den primære node</translation>
+<translation id="5017529052065664584">De seneste 15 minutter</translation>
 <translation id="5018207570537526145">Åbn udvidelsens website</translation>
 <translation id="5018526990965779848">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre din Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Visse aggregerede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto.</translation>
 <translation id="5019487038187875030">Se importerede certifikater fra MacOS</translation>
@@ -8066,7 +8069,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6694462491298752106">Den indbyggede touchplade er deaktiveret</translation>
 <translation id="6694634756612002311">Administrer deling</translation>
 <translation id="6697172646384837537">Vælg, hvor dine adgangskoder skal importeres til</translation>
-<translation id="6697492270171225480">Se forslag til lignende sider, når en side ikke kan findes</translation>
 <translation id="6697690052557311665">Hvis du vil dele, skal du højreklikke på en mappe i appen Filer og derefter vælge "Del med Linux".</translation>
 <translation id="6698810901424468597">Læse og redigere dine data på <ph name="WEBSITE_1" /> og <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">SIM-lås til mobilnetværk</translation>
@@ -11450,7 +11452,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9043264199499366189">Abonner på ChromeOS Flex-systemhændelser</translation>
 <translation id="9044646465488564462">Det var ikke muligt at oprette forbindelse til netværket: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Din læseliste er blevet flyttet til det nye sidepanel. Prøv det her.</translation>
-<translation id="9045430190527754450">Sender webadressen på den side, du forsøger at åbne, til Google</translation>
 <translation id="9048745018038487540">Vælg alle skrifttyper</translation>
 <translation id="9050666287014529139">Adgangssætning</translation>
 <translation id="905145695813415387">"<ph name="LOCAL_FOLDER" />" gemmes kun på denne enhed. Hvis du flytter denne mappe til "<ph name="LOCAL_FOLDER" />", kan du ikke længere tilgå den på dine andre enheder.</translation>

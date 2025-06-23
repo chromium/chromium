@@ -1783,6 +1783,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2234827758954819389">Guía de privacidad</translation>
 <translation id="2234876718134438132">Sincronización y servicios de Google</translation>
 <translation id="2235344399760031203">Se han bloqueado las cookies de terceros</translation>
+<translation id="2236949375853147973">Mi Actividad</translation>
 <translation id="2238379619048995541">Datos de estado de frecuencia</translation>
 <translation id="2240582393605484605">Los datos que se guarden solo en este dispositivo se mantendrán en este perfil</translation>
 <translation id="2241053333139545397">Leer y modificar tus datos en una serie de sitios web</translation>
@@ -5410,6 +5411,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4773122030389014189">Compartir el grupo de pestañas <ph name="GROUP_NAME" /></translation>
 <translation id="4773253008034797668">Pueden conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="477548766361111120">Permitir que la extensión lea y modifique este sitio</translation>
+<translation id="4775646243557794597">Periodo eliminado: <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> se ha conectado</translation>
 <translation id="4776594120007763294">Para añadir una página a la lista y leerla más tarde, haz clic en el botón</translation>
 <translation id="4777458362738635055">Otros usuarios de este dispositivo pueden usar la red</translation>
@@ -5754,6 +5756,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5016305686459575361">Si conectas tu teléfono, podrás acceder a estas funciones:</translation>
 <translation id="5016491575926936899">Puedes enviar mensajes de texto desde tu ordenador, compartir tu conexión a Internet, responder a notificaciones de conversaciones y desbloquear tu <ph name="DEVICE_TYPE" /> con el teléfono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Descargando archivos de anotaciones del nodo principal</translation>
+<translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5018207570537526145">Abrir sitio web de la extensión</translation>
 <translation id="5018526990965779848">Envía datos de uso y diagnóstico. Contribuye a mejorar tu experiencia de Android enviando automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos servirán para aumentar la estabilidad de las aplicaciones y del sistema y realizar otras mejoras. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android. Si la opción Actividad en la Web y en Aplicaciones adicional está activada, es posible que estos datos se guarden en tu cuenta de Google.</translation>
 <translation id="5019487038187875030">Ver certificados importados de macOS</translation>
@@ -8059,7 +8062,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6694462491298752106">El panel táctil integrado está inhabilitado</translation>
 <translation id="6694634756612002311">Gestionar uso compartido</translation>
 <translation id="6697172646384837537">Selecciona dónde importar las contraseñas</translation>
-<translation id="6697492270171225480">Mostrar sugerencias de páginas similares cuando no se encuentre una página</translation>
 <translation id="6697690052557311665">Para compartir una carpeta, haz clic en ella con el botón derecho en la aplicación Archivos y selecciona Compartir con Linux.</translation>
 <translation id="6698810901424468597">Leer y modificar tus datos en <ph name="WEBSITE_1" /> y <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Bloqueo de la SIM del móvil</translation>
@@ -11447,7 +11449,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9043264199499366189">Suscribirse a eventos del sistema ChromeOS Flex</translation>
 <translation id="9044646465488564462">Error al establecer conexión con la red: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Tu lista de lectura se ha movido al nuevo panel lateral. Pruébala.</translation>
-<translation id="9045430190527754450">Envía la dirección web de la página a la que intentas acceder a Google</translation>
 <translation id="9048745018038487540">Seleccionar todas las fuentes</translation>
 <translation id="9050666287014529139">Frase de contraseña</translation>
 <translation id="905145695813415387">"<ph name="LOCAL_FOLDER" />" solo se guarda en este dispositivo. Si mueves esta carpeta a "<ph name="LOCAL_FOLDER" />", dejará de estar disponible en tus otros dispositivos.</translation>

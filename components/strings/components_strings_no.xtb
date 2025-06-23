@@ -1759,7 +1759,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3961148744525529027">Arket for betalingsbehandling er halvveis åpnet</translation>
 <translation id="3962859241508114581">Forrige spor</translation>
 <translation id="3963721102035795474">Lesermodus</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Ingen}=1{Fra 1 nettsted }other{Fra # nettsteder }}</translation>
 <translation id="3965672182149944205">Vil du lagre adressen?</translation>
 <translation id="3966044442021752214">Produktsikkerhet</translation>
 <translation id="3969869202926863008">Lokal nettverkstilgang</translation>

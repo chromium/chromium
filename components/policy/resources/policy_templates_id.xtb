@@ -6332,25 +6332,6 @@ Jika nilai disetel ke benar (true) atau tidak disetel, pengajar tertentu dapat m
 
 Jika disetel ke salah (false), pengajar tidak dapat mengakses fitur ini.</translation>
 <translation id="5377606826822211923">Mengontrol penggunaan aplikasi Android dari sumber yang tidak tepercaya untuk pengguna</translation>
-<translation id="5377826248281933035">Kebijakan ini menyediakan daftar situs yang dapat ditelusuri dengan cepat oleh pengguna menggunakan pintasan di kolom URL. Pengguna dapat memulai penelusuran dengan mengetik pintasan atau @pintasan (mis. @kerja), diikuti dengan Spasi atau Tab, di kolom URL.
-
-Kolom berikut wajib diisi untuk setiap situs: <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />.
-
-Kolom <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" /> sesuai dengan nama situs atau mesin telusur yang akan ditampilkan kepada pengguna di kolom URL.
-
-<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> dapat berisi kata dan karakter biasa, tetapi tidak boleh menyertakan spasi atau diawali dengan simbol @. Pintasan juga harus unik.
-
-Untuk setiap entri, kolom <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> menentukan URL mesin telusur yang digunakan saat melakukan penelusuran dengan kata kunci yang sesuai. URL harus menyertakan string <ph name="SEARCH_TERM_MARKER" />, yang diganti di kueri dengan istilah penelusuran pengguna. Entri yang tidak valid dan entri dengan pintasan duplikat akan diabaikan.
-
-Entri penelusuran situs yang dikonfigurasi sebagai unggulan ditampilkan di kolom URL saat pengguna mengetik "@". Anda dapat memilih maksimal tiga entri sebagai unggulan.
-
-Pengguna tidak dapat mengedit atau menonaktifkan entri penelusuran situs yang disetel oleh kebijakan, tetapi mereka dapat menambahkan pintasan baru untuk URL yang sama. Selain itu, pengguna tidak dapat membuat entri penelusuran situs baru dengan pintasan yang sebelumnya dibuat melalui kebijakan ini.
-
-Jika terjadi konflik dengan pintasan yang sebelumnya dibuat oleh pengguna, setelan pengguna akan lebih diprioritaskan. Namun, pengguna tetap dapat memicu opsi yang dibuat oleh kebijakan tersebut dengan mengetik "@" di kotak penelusuran. Misalnya, jika pengguna telah menetapkan "kerja" sebagai pintasan ke URL1 dan kebijakan menetapkan "kerja" sebagai pintasan ke URL2, mengetik "kerja" di kotak penelusuran akan memicu penelusuran ke URL1, tetapi mengetik "@kerja" di kotak penelusuran akan memicu penelusuran ke URL2.
-
-Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="537786648513450280">Mengontrol penggunaan aplikasi Android dari sumber yang tidak tepercaya untuk perangkat</translation>
 <translation id="5378885577701865339">Nonaktifkan fitur papan klip bersama</translation>
 <translation id="538108065117008131">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten berikut.</translation>
@@ -10576,13 +10557,6 @@ Semua set yang disediakan oleh kebijakan harus berupa Set Situs Terkait yang val
 Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
-<translation id="8213475033260328041">Memilih untuk menyimpan data yang dicakup dari <ph name="PRODUCT_NAME" /> di lokasi geografis tertentu.
-
-Jika kebijakan ini tidak disetel atau disetel ke <ph name="DATA_REGION_SETTING_NO_PREFERENCE_OPTION_NAME" /> (nilai 0), data yang dicakup dapat disimpan di lokasi geografis mana pun.
-
-Jika kebijakan ini disetel ke <ph name="DATA_REGION_SETTING_UNITED_STATES_OPTION_NAME" /> (nilai 1), data yang dicakup akan disimpan di Amerika Serikat.
-
-Jika kebijakan ini disetel ke <ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" /> (nilai 2), data yang dicakup akan disimpan di Eropa.</translation>
 <translation id="8213770777756919897">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Jika ditetapkan, kebijakan ini akan menentukan tindakan yang diambil <ph name="PRODUCT_OS_NAME" /> saat pengguna tetap tidak beraktivitas selama durasi waktu yang ditentukan oleh penundaan waktu tidak ada aktivitas, yang dapat dikonfigurasi secara terpisah.

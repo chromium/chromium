@@ -1784,6 +1784,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2234827758954819389">Průvodce ochranou soukromí</translation>
 <translation id="2234876718134438132">Synchronizace a služby Google</translation>
 <translation id="2235344399760031203">Soubory cookie třetích stran jsou blokovány</translation>
+<translation id="2236949375853147973">Moje aktivita</translation>
 <translation id="2238379619048995541">Data o stavu frekvence</translation>
 <translation id="2240582393605484605">Data, která jsou uložená jen na tomhle zařízení, zůstanou ve stávajícím profilu</translation>
 <translation id="2241053333139545397">Čtení a úprava dat na různých webech</translation>
@@ -5403,6 +5404,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4773122030389014189">Sdílení skupiny karet <ph name="GROUP_NAME" /></translation>
 <translation id="4773253008034797668">Povolení připojovat se k zařízením v místní síti</translation>
 <translation id="477548766361111120">Povolit rozšíření číst a měnit tento web</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> – smazáno</translation>
 <translation id="4776311127346151860">Zařízení <ph name="DEVICE_NAME" /> bylo připojeno</translation>
 <translation id="4776594120007763294">Kliknutím na tlačítko přidáte stránku, kterou si později chcete přečíst</translation>
 <translation id="4777458362738635055">Tuto síť mohou používat ostatní uživatelé tohoto zařízení</translation>
@@ -5747,6 +5749,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5016305686459575361">Po připojení telefonu budete moci:</translation>
 <translation id="5016491575926936899">Pomocí telefonu můžete odesílat textové zprávy z počítače, sdílet připojení k internetu, odpovídat na oznámení o konverzaci a odemykat <ph name="DEVICE_TYPE" />.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Stahování souborů s poznámkami k hlavnímu uzlu</translation>
+<translation id="5017529052065664584">Posledních 15 minut</translation>
 <translation id="5018207570537526145">Otevřít web rozšíření</translation>
 <translation id="5018526990965779848">Odesílat údaje o využití a diagnostice. Pomozte se zlepšením prostředí Android tím, že budete do Googlu automaticky odesílat diagnostická data a údaje o využití zařízení a aplikací. Tyto údaje nám pomohou se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Pokud je zapnuto dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do vašeho účtu Google.</translation>
 <translation id="5019487038187875030">Zobrazit certifikáty importované z MacOS</translation>
@@ -8047,7 +8050,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6694462491298752106">Vestavěný touchpad je vypnutý</translation>
 <translation id="6694634756612002311">Spravovat sdílení</translation>
 <translation id="6697172646384837537">Vyberte, kam chcete hesla importovat</translation>
-<translation id="6697492270171225480">Zobrazovat návrhy podobných stránek, když stránku nelze najít</translation>
 <translation id="6697690052557311665">Složku můžete sdílet tak, že na ni v aplikaci Soubory kliknete pravým tlačítkem a poté vyberete Sdílet s Linuxem.</translation>
 <translation id="6698810901424468597">Čtení a úprava dat na webu <ph name="WEBSITE_1" /> a <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Zámek mobilní SIM karty</translation>
@@ -11430,7 +11432,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="9043264199499366189">Odebírat události systému ChromeOS Flex</translation>
 <translation id="9044646465488564462">Připojení k síti se nezdařilo: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Seznam četby byl přesunut na nový postranní panel. Vyzkoušejte si to zde.</translation>
-<translation id="9045430190527754450">Odesílá do Googlu webovou adresu stránky, na kterou se pokoušíte přejít</translation>
 <translation id="9048745018038487540">Vybrat všechna písma</translation>
 <translation id="9050666287014529139">Heslová fráze</translation>
 <translation id="905145695813415387">Složka <ph name="LOCAL_FOLDER" /> je uložená jen na tomto zařízení. Pokud ji přesunete do složky <ph name="LOCAL_FOLDER" />, už ji nebudete mít na ostatních zařízeních.</translation>

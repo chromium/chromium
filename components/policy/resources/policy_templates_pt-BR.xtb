@@ -6318,25 +6318,6 @@ Se o valor for "true" ou não for definido, alguns docentes poderão adicionar l
 
 Se o valor for "false", os usuários não poderão acessar o recurso.</translation>
 <translation id="5377606826822211923">Controla, no lugar do usuário, o uso de apps Android de fontes não confiáveis</translation>
-<translation id="5377826248281933035">Esta política oferece uma lista de sites em que o usuário pode pesquisar rapidamente usando atalhos na barra de endereço. É possível iniciar uma pesquisa digitando o atalho ou @atalho (por exemplo, @trabalho) seguido da barra de espaço ou tecla Tab na barra de endereço.
-
-Os campos a seguir são obrigatórios para cada site: <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> e <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />.
-
-O campo <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" /> corresponde ao nome do site ou do mecanismo de pesquisa que será mostrado ao usuário na barra de endereço.
-
-O <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> pode incluir palavras e caracteres simples, mas não pode incluir espaços nem começar com o símbolo @. Os atalhos também precisam ser exclusivos.
-
-Para cada entrada, o campo <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> especifica o URL do mecanismo de pesquisa usado durante uma pesquisa com a palavra-chave correspondente. O URL precisa incluir a string <ph name="SEARCH_TERM_MARKER" />, que é substituída na consulta pelos termos de pesquisa do usuário. Entradas inválidas e com atalhos duplicados são ignoradas.
-
-As entradas da pesquisa no site configuradas como em destaque aparecem na barra de endereço quando o usuário digita "@". Até três entradas podem ser selecionadas para ficar em destaque.
-
-Não é possível editar ou desativar entradas de pesquisa no site definidas pela política, mas o usuário pode adicionar novos atalhos para o mesmo URL. Além disso, não é possível criar novas entradas de pesquisa no site com um atalho criado anteriormente por esta política.
-
-Em caso de conflito com um atalho criado anteriormente pelo usuário, a configuração do usuário tem prioridade. No entanto, ainda é possível acionar a opção criada pela política digitando "@" na barra de pesquisa. Por exemplo, se o usuário já definiu "trabalho" como um atalho para URL1, e a política define "trabalho" como um atalho para URL2, digitar "trabalho" na barra de pesquisa aciona uma pesquisa para URL1, mas digitar "@trabalho" aciona uma pesquisa para URL2.
-
-No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="537786648513450280">Controla, no lugar do dispositivo, o uso de apps Android de fontes não confiáveis</translation>
 <translation id="5378885577701865339">Desativar a área de transferência compartilhada</translation>
 <translation id="538108065117008131">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> lide com os seguintes tipos de conteúdo.</translation>
@@ -10554,13 +10535,6 @@ um erro será gerado.
 No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
-<translation id="8213475033260328041">Escolha se quer armazenar os dados cobertos do <ph name="PRODUCT_NAME" /> em uma localização geográfica específica.
-
-Se a política não for definida ou for definida como <ph name="DATA_REGION_SETTING_NO_PREFERENCE_OPTION_NAME" /> (valor 0), os dados cobertos poderão ser armazenados em qualquer localização geográfica.
-
-Se a política for definida como <ph name="DATA_REGION_SETTING_UNITED_STATES_OPTION_NAME" /> (valor 1), os dados cobertos serão armazenados nos Estados Unidos.
-
-Se a política for definida como <ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" /> (valor 2), os dados cobertos serão armazenados na Europa.</translation>
 <translation id="8213770777756919897">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Quando esta política é definida, ela especifica a ação que o <ph name="PRODUCT_OS_NAME" /> executa quando o usuário permanece inativo pelo período definido pelo tempo de inatividade, que pode ser configurado separadamente.

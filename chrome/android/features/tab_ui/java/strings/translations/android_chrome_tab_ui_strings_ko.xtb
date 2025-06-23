@@ -197,7 +197,6 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" />개월 전 생성됨}other{<ph name="NUM_MONTHS_MANY" />개월 전 생성됨}}</translation>
 <translation id="8813708480179818649">그룹에서 탭 삭제</translation>
 <translation id="8820741577754260431">탭에서 가격 인하를 확인합니다.</translation>
-<translation id="883379923675618699">Chrome에서 3개월 동안 사용하지 않은 비활성 섹션의 항목을 자동으로 닫습니다. 지금 또는 언제든지 설정에서 이 기능을 사용 중지할 수 있습니다.</translation>
 <translation id="8887921976452567404">닫은 탭 및 그룹은 최근 탭 섹션과 탭 그룹 섹션에서 다시 열 수 있습니다.</translation>
 <translation id="8915916167043355778">모두 닫기</translation>
 <translation id="9090098097337832354">매장에 관한 정보가 닫힘</translation>

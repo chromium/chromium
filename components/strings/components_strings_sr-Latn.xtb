@@ -1762,7 +1762,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3961148744525529027">Stranica obrađivača plaćanja je poluotvorena</translation>
 <translation id="3962859241508114581">Prethodna pesma</translation>
 <translation id="3963721102035795474">Režim čitaoca</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{None}=1{Sa 1 sajta }one{Sa # sajta }few{Sa # sajta }other{Sa # sajtova }}</translation>
 <translation id="3965672182149944205">Želite da sačuvate adresu?</translation>
 <translation id="3966044442021752214">Bezbednost proizvoda</translation>
 <translation id="3969869202926863008">Pristup lokalnoj mreži</translation>

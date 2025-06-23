@@ -1759,7 +1759,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3961148744525529027">Ödeme işleyici sayfası yarım olarak açıldı</translation>
 <translation id="3962859241508114581">Önceki Parça</translation>
 <translation id="3963721102035795474">Okuyucu Modu</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Yok}=1{1 siteden }other{# siteden }}</translation>
 <translation id="3965672182149944205">Adres kaydedilsin mi?</translation>
 <translation id="3966044442021752214">Ürün güvenliği</translation>
 <translation id="3969869202926863008">Yerel ağ erişimi</translation>

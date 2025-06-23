@@ -129,7 +129,6 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="1521774566618522728">Activo hoy</translation>
 <translation id="153446405401665083">Hay una nueva versión de Chrome disponible</translation>
 <translation id="1540012742443808215">La barra de direcciones está en la parte superior</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 marcador está guardado solo en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}other{# marcadores están guardados solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">Los métodos de pago y las direcciones no se cifrarán. El historial de navegación de Chrome no se sincronizará.
 Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Para gestionar tu cuenta de Google, toca el botón Gestionar cuenta</translation>
@@ -144,7 +143,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1598163867407640634">Usar <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Si está activado, usa y guarda los datos en tu cuenta de Google. Si está desactivado, los datos solo se guardan en este dispositivo.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 marcador y otros elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}other{# marcadores y otros elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="164269334534774161">Estás viendo una copia sin conexión de esta página del <ph name="CREATION_TIME" /></translation>
@@ -477,7 +475,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="316694332262407393">Chrome ya se está ejecutando.</translation>
 <translation id="3167258285411721858">Puedes solicitar el sitio web móvil de <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 contraseña y otros elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}other{# contraseñas y otros elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3189635831478931757">Grupo de pestañas <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">¿Cerrar la ventana actual?</translation>
@@ -898,7 +895,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="506254248375231072">No hay pestañas</translation>
 <translation id="5062960805900435602">La actualización sobre la fusión de contraseñas está cerrada</translation>
 <translation id="5075939510584558547">Guardar sin cifrado</translation>
-<translation id="5082172173036123513">Las ventanas inactivas se eliminan de forma permanente después de 6 meses de inactividad.</translation>
 <translation id="5085038751173179818">Inicia sesión en este sitio y en Chrome para acceder a tus marcadores y a más cosas en todos tus dispositivos</translation>
 <translation id="5091199029769593641">Pronto verás historias de <ph name="SITE_NAME" /> cuando abras una pestaña nueva. Los sitios que sigues se guardan en tu cuenta de Google. Puedes gestionarlos en los ajustes de Discover.</translation>
 <translation id="509429900233858213">Se ha producido un error.</translation>
@@ -1161,7 +1157,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anuncios no basados en otros sitios web que hayas visitado. Muchos sitios web seguirán recopilando y utilizando tus datos de navegación (por ejemplo, para mejorar la seguridad, para proporcionar contenido, anuncios y recomendaciones, o para generar estadísticas de informes).</translation>
 <translation id="6247557882553405851">Gestor de contraseñas de Google</translation>
 <translation id="6251449557817521191">Consulta tu historial de Chrome aquí</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 elemento solo se guarda en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}other{# elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="6254139308321626268">Estás viendo un archivo PDF</translation>
 <translation id="6255809143828972562">Las herramientas de Chrome te permiten navegar de forma segura y mantener el control</translation>
 <translation id="6264376385120300461">Descargar de todos modos</translation>
@@ -1428,7 +1423,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="729975465115245577">Tu dispositivo no tiene ninguna aplicación para almacenar el archivo de contraseñas.</translation>
 <translation id="7304072650267745798">Es posible que tu dispositivo Android tenga una opción similar. Si esta opción está activada en Chrome y en tu dispositivo Android, una empresa podría medir la eficacia de un anuncio en los sitios web que visitas y las aplicaciones que usas.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 contraseña solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}other{# contraseñas se guardan solo en este dispositivo. Para usarlas en tus otros dispositivos, guárdalas en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="7304873321153398381">Sin conexión. Chrome no puede comprobar tus contraseñas.</translation>
 <translation id="7313188324932846546">Toca para configurar la sincronización</translation>
 <translation id="7314734791127433392">No se pueden comprobar las contraseñas</translation>
@@ -1642,7 +1636,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="813082847718468539">Ver información del sitio</translation>
 <translation id="8135406045838672858">Los PDFs descargados se abren automáticamente con <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">No tendrás que recordar esta contraseña. Se guardará en el Gestor de contraseñas de Google.</translation>
-<translation id="8146563639948412265">Puedes tener hasta <ph name="MAX_WINDOW_COUNT" /> ventanas en total. Para restaurar una ventana, cierra <ph name="WINDOW_COUNT" /> ventanas activas o inactivas.</translation>
 <translation id="8152331954420209374">Ir a Lens</translation>
 <translation id="8163820386638255770">Para usar y guardar contraseñas en tu cuenta de Google, verifica tu identidad</translation>
 <translation id="8186512483418048923">Archivos restantes: <ph name="FILES" /></translation>
@@ -1883,7 +1876,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="9169507124922466868">El historial de navegación está medio abierto</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Tendrás tu historial en todos tus dispositivos sincronizados y podrás continuar con lo que estabas haciendo</translation>
-<translation id="9191906083913361689">También puedes ver y gestionar estos elementos en tus marcadores, la lista de lectura o el Gestor de contraseñas</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Comprobado hace 1 minuto}other{Comprobado hace # minutos}}</translation>
 <translation id="9204021776105550328">Eliminando</translation>
 <translation id="9204836675896933765">1 archivo restante</translation>

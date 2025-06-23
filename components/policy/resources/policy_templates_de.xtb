@@ -6062,25 +6062,6 @@ Wenn der Wert auf „true“ gesetzt oder nicht konfiguriert ist, können ausgew
 
 Ist er auf „false“ gesetzt, können sie nicht auf die Funktion zugreifen.</translation>
 <translation id="5377606826822211923">Nutzung von Android-Apps aus nicht vertrauenswürdigen Quellen kontrollieren</translation>
-<translation id="5377826248281933035">Mit dieser Richtlinie wird eine Liste von Websites bereitgestellt, auf denen Nutzer mithilfe von Kürzeln in der Adressleiste schnell suchen können. Nutzer können eine Suche starten, indem sie das Kürzel oder @Kürzel (z. B. @Arbeit), gefolgt von einem Leerzeichen oder Tabulatorzeichen, in die Adressleiste eingeben.
-
-Die folgenden Felder sind für jede Website Pflichtfelder: „<ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />“, „<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />“ und „<ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />“.
-
-Das Feld „<ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />“ entspricht dem Namen der Website oder der Suchmaschine, der dem Nutzer in der Adressleiste angezeigt werden soll.
-
-„<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />“ kann einfache Wörter und Zeichen enthalten, darf jedoch keine Leerzeichen enthalten und nicht mit dem @‑Symbol beginnen. Kürzel müssen außerdem eindeutig sein.
-
-Durch das Feld „<ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />“ wird für jeden Eintrag die URL der Suchmaschine angegeben, die bei einer Suchanfrage mit dem entsprechenden Suchbegriff verwendet wird. Die URL muss den String <ph name="SEARCH_TERM_MARKER" /> enthalten, der während des Suchvorgangs durch die Suchbegriffe des Nutzers ersetzt wird. Ungültige Einträge und Einträge mit doppelten Kürzeln werden ignoriert.
-
-Websitesucheinträge, bei denen das Feld „featured“ auf „true“ gesetzt wurde, werden in der Adressleiste angezeigt, wenn der Nutzer „@“ eingibt. Es können bis zu drei Einträge als „featured“ ausgewählt werden.
-
-Nutzer können die durch die Richtlinie festgelegten Websitesucheinträge nicht bearbeiten oder deaktivieren. Sie können jedoch neue Kürzel für dieselbe URL hinzufügen. Außerdem können Nutzer keine neuen Websitesucheinträge mit einem zuvor über diese Richtlinie erstellten Kürzel erstellen.
-
-Bei Konflikten mit einem zuvor vom Nutzer erstellten Kürzel hat die Nutzereinstellung Vorrang. Nutzer können die von der Richtlinie erstellte Option jedoch trotzdem auslösen, indem sie „@“ in der Suchleiste eingeben. Wenn der Nutzer beispielsweise „Arbeit“ bereits als Kürzel für URL1 definiert hat und die Richtlinie „Arbeit“ als Kürzel für URL2 definiert, löst die Eingabe von „Arbeit“ in der Suchleiste eine Suche nach URL1 aus, aber die Eingabe von „@Arbeit“ in der Suchleiste eine Suche nach URL2.
-
-Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
-
-Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="537786648513450280">Nutzung von Android-Apps aus nicht vertrauenswürdigen Quellen für das Gerät konfigurieren</translation>
 <translation id="5378885577701865339">Die Funktion „Geteilte Zwischenablage“ deaktivieren</translation>
 <translation id="538108065117008131">Verarbeitung der folgenden Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
@@ -10097,13 +10078,6 @@ Alle in dieser Richtlinie angegebenen Gruppen müssen gültige Gruppen ähnliche
 Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
 
 Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
-<translation id="8213475033260328041">Du kannst festlegen, dass deine abgedeckten Daten von <ph name="PRODUCT_NAME" /> an einem bestimmten geografischen Standort gespeichert werden.
-
-Ist die Richtlinie auf „<ph name="DATA_REGION_SETTING_NO_PREFERENCE_OPTION_NAME" />“ (Wert 0) gesetzt oder nicht konfiguriert, können abgedeckte Daten an beliebigen geografischen Standorten gespeichert werden.
-
-Ist die Richtlinie auf „<ph name="DATA_REGION_SETTING_UNITED_STATES_OPTION_NAME" />“ (Wert 1) gesetzt, werden abgedeckte Daten in den USA gespeichert.
-
-Ist die Richtlinie auf „<ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" />“ (Wert 2) gesetzt, werden abgedeckte Daten in Europa gespeichert.</translation>
 <translation id="8213770777756919897">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwende stattdessen die Richtlinie "<ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />".
 
           Ist diese Richtlinie konfiguriert, wird damit festgelegt, was <ph name="PRODUCT_OS_NAME" /> tun soll, wenn der Nutzer für die Dauer der Inaktivitätsverzögerung inaktiv bleibt. Diese kann gesondert konfiguriert werden.

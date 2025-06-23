@@ -201,7 +201,6 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creado hace <ph name="NUM_MONTHS_ONE" /> mes}other{Creado hace <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
 <translation id="8813708480179818649">Quitar pestaña del grupo</translation>
 <translation id="8820741577754260431">Consulta las bajadas de precio en las pestañas</translation>
-<translation id="883379923675618699">Chrome cierra automáticamente los elementos de la sección Inactivas que no hayas usado durante 3 meses. Puedes desactivar esta opción ahora o en cualquier momento en la configuración.</translation>
 <translation id="8887921976452567404">Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupos de pestañas.</translation>
 <translation id="8915916167043355778">Cerrar todo</translation>
 <translation id="9090098097337832354">Información sobre esta tienda cerrada</translation>

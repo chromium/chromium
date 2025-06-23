@@ -1567,6 +1567,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3641116835972736297">Amerikai futball</translation>
 <translation id="3642196846309122856">Próbálja meg ismét letölteni a fájlokat</translation>
 <translation id="3642638418806704195">Alkalmazás:</translation>
+<translation id="3644768007456662469">Fizetési elem ikonja</translation>
 <translation id="3646643500201740985">Hirdetések teljesítményének mérése</translation>
 <translation id="3647286794400715637">Minden egyes URL-karakterláncnak 1 vagy 2 URL-címet kell tartalmaznia.</translation>
 <translation id="3647400963805615193">Chrome-tipp elvetése gomb. Az elvetéshez nyomja le az Enter billentyűt, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -1756,7 +1757,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3961148744525529027">A fizetési információkat tartalmazó munkalap félmagasságban van megnyitva</translation>
 <translation id="3962859241508114581">Előző szám</translation>
 <translation id="3963721102035795474">Olvasási mód</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Nincs}=1{ 1 webhelyről }other{# webhelyről }}</translation>
 <translation id="3965672182149944205">Menti a címet?</translation>
 <translation id="3966044442021752214">Termékbiztonság</translation>
 <translation id="3969869202926863008">Hozzáférés helyi hálózaton</translation>

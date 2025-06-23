@@ -197,7 +197,6 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creat acum <ph name="NUM_MONTHS_ONE" /> lună}few{Creat acum <ph name="NUM_MONTHS_MANY" /> luni}other{Creat acum <ph name="NUM_MONTHS_MANY" /> de luni}}</translation>
 <translation id="8813708480179818649">Elimină fila din grup</translation>
 <translation id="8820741577754260431">Vezi scăderile de prețuri din file</translation>
-<translation id="883379923675618699">Chrome închide automat elementele din secțiunea inactivă pe care nu le-ai folosit timp de trei luni. Poți dezactiva această opțiune acum sau oricând din Setări.</translation>
 <translation id="8887921976452567404">Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file.</translation>
 <translation id="8915916167043355778">Închide-le pe toate</translation>
 <translation id="9090098097337832354">Informațiile despre magazin închise</translation>

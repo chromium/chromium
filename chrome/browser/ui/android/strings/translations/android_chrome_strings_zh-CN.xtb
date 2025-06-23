@@ -129,7 +129,6 @@
 <translation id="1521774566618522728">今天曾有活动</translation>
 <translation id="153446405401665083">有新版 Chrome 可用</translation>
 <translation id="1540012742443808215">地址栏目前位于顶部</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{有 1 个书签只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}other{有 # 个书签只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}}</translation>
 <translation id="1544084554881119930">付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
 只有知道您口令的人能读取您的加密数据。该口令不会发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="1544826120773021464">要管理您的 Google 账号，请点按“管理账号”按钮</translation>
@@ -144,7 +143,6 @@
 <translation id="1598163867407640634">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">当此设置处于开启状态时，系统会将数据保存在您的 Google 账号中并使用这些数据。当此设置处于关闭状态时，数据只会保存在此设备上。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 个所选项}other{移除 # 个所选项}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{有 1 个书签和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}other{有 # 个书签和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}}</translation>
 <translation id="1639239467298939599">正在加载</translation>
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="164269334534774161">您目前浏览的是此网页的离线副本（创建时间：<ph name="CREATION_TIME" />）</translation>
@@ -477,7 +475,6 @@
 <translation id="316694332262407393">Chrome 已在此处运行。</translation>
 <translation id="3167258285411721858">您可以请求访问 <ph name="HOST_NAME" /> 的移动网站</translation>
 <translation id="3169472444629675720">探索</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{有 1 个密码和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}other{有 # 个密码和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}}</translation>
 <translation id="3187472288455401631">广告效果衡量</translation>
 <translation id="3189635831478931757">“<ph name="GROUP_TITLE" />”标签页分组</translation>
 <translation id="3207960819495026254">已加书签</translation>
@@ -894,7 +891,6 @@
 <translation id="506254248375231072">没有任何标签页</translation>
 <translation id="5062960805900435602">已关闭关于密码合并的更新</translation>
 <translation id="5075939510584558547">直接保存，不加密</translation>
-<translation id="5082172173036123513">非活跃窗口在处于不活跃状态达 6 个月后会被永久删除。</translation>
 <translation id="5085038751173179818">登录此网站和 Chrome 即可获取您在所有设备上保存的书签及其他信息</translation>
 <translation id="5091199029769593641">不久之后，当打开新标签页时，您将看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 账号中。您可在“探索”设置中管理它们。</translation>
 <translation id="509429900233858213">出现错误。</translation>
@@ -1155,7 +1151,6 @@
 例如：某些网站在收到该请求后，可能会向您展示相应的广告（这些广告并不是根据您访问过的其他网站而展示的）。许多网站仍会出于一些目的收集并使用您的浏览数据，例如，为了提高安全性，为了提供相关内容、广告和推荐内容，以及为了生成报告统计信息。</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
 <translation id="6251449557817521191">在此处查看您的 Chrome 历史记录</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{有 1 项内容只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}other{有 # 项内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}}</translation>
 <translation id="6254139308321626268">您正在查看 PDF 文件</translation>
 <translation id="6255809143828972562">借助 Chrome 中的工具，您可以安全地浏览并掌控个人数据的安全</translation>
 <translation id="6264376385120300461">仍然下载</translation>
@@ -1418,7 +1413,6 @@
 <translation id="7293429513719260019">选择语言</translation>
 <translation id="729975465115245577">您的设备上没有可以存储密码文件的应用。</translation>
 <translation id="7304072650267745798">您的 Android 设备可能包含类似的设置。如果您在 Chrome 中和 Android 设备上开启了这项设置，相关公司或许就能在您访问的网站和使用的应用中衡量广告的效果。</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{有 1 个密码只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}other{有 # 个密码只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}}</translation>
 <translation id="7304873321153398381">设备已离线。Chrome 无法检查您的密码。</translation>
 <translation id="7313188324932846546">点按即可设置同步</translation>
 <translation id="7314734791127433392">无法检查密码</translation>
@@ -1631,7 +1625,6 @@
 <translation id="813082847718468539">查看网站信息</translation>
 <translation id="8135406045838672858">下载的 PDF 文件会自动使用“<ph name="APP_NAME" />”打开</translation>
 <translation id="8137562778192957619">您不需要记住此密码。系统会将它保存到 Google 密码管理工具中。</translation>
-<translation id="8146563639948412265">您最多可以打开 <ph name="MAX_WINDOW_COUNT" /> 个窗口。如需恢复某个窗口，请关闭 <ph name="WINDOW_COUNT" /> 个活跃窗口或非活跃窗口。</translation>
 <translation id="8152331954420209374">开启智能镜头</translation>
 <translation id="8163820386638255770">如要将密码保存在您的 Google 账号中并使用这些密码，请验证是您本人在操作</translation>
 <translation id="8186512483418048923">还剩 <ph name="FILES" /> 个文件</translation>
@@ -1871,7 +1864,6 @@
 <translation id="9169507124922466868">导航历史记录在下半屏中显示</translation>
 <translation id="918419812064856259">Chrome Beta 版</translation>
 <translation id="9190276265094487094">您将能够在所有已同步的设备上查看您的历史记录，以继续执行先前未完成的操作</translation>
-<translation id="9191906083913361689">您也可在书签、阅读清单或密码管理工具中查看和管理这些内容</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 分钟前检查过}other{# 分钟前检查过}}</translation>
 <translation id="9204021776105550328">正在删除</translation>
 <translation id="9204836675896933765">还剩 1 个文件</translation>

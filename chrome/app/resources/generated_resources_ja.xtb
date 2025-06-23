@@ -1780,6 +1780,7 @@
 <translation id="2234827758954819389">プライバシー ガイド</translation>
 <translation id="2234876718134438132">同期と Google サービス</translation>
 <translation id="2235344399760031203">サードパーティの Cookie がブロックされています</translation>
+<translation id="2236949375853147973">マイ アクティビティ</translation>
 <translation id="2238379619048995541">周波数状態データ</translation>
 <translation id="2240582393605484605">このデバイスにのみ保存されているデータは、既存のプロフィールに残ります</translation>
 <translation id="2241053333139545397">多数のウェブサイト上にある自分のデータの読み取りと変更</translation>
@@ -5398,6 +5399,7 @@
 <translation id="4773122030389014189">「<ph name="GROUP_NAME" />」タブグループを共有</translation>
 <translation id="4773253008034797668">ローカル ネットワーク上のデバイスへの接続を許可するサイト</translation>
 <translation id="477548766361111120">拡張機能にこのサイトの読み取りと変更を許可する</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" />の閲覧履歴データを削除しました</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> を接続しました</translation>
 <translation id="4776594120007763294">ページを追加して後で読むには、ボタンをクリックしてください</translation>
 <translation id="4777458362738635055">このデバイスの他のユーザーもこのネットワークを使用できます</translation>
@@ -5742,6 +5744,7 @@
 <translation id="5016305686459575361">スマートフォンを接続すると、次のことができます。</translation>
 <translation id="5016491575926936899">パソコンからメッセージを送信したり、インターネット接続を共有したり、チャットの通知に返信したり、スマートフォンから <ph name="DEVICE_TYPE" /> のロックを解除したりできます。<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">メインノードのアノテーション ファイルをダウンロードしています</translation>
+<translation id="5017529052065664584">過去 15 分間</translation>
 <translation id="5018207570537526145">拡張機能のウェブサイトを開く</translation>
 <translation id="5018526990965779848">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
 <translation id="5019487038187875030">MacOS からインポートした証明書を表示する</translation>
@@ -8043,7 +8046,6 @@
 <translation id="6694462491298752106">内蔵タッチパッドがオフになりました</translation>
 <translation id="6694634756612002311">共有の管理</translation>
 <translation id="6697172646384837537">パスワードをインポートする場所を選択してください</translation>
-<translation id="6697492270171225480">ページが見つからない場合に類似のページを候補として表示する</translation>
 <translation id="6697690052557311665">共有するには、ファイルアプリ内でフォルダを右クリックし、[Linux と共有] を選択します。</translation>
 <translation id="6698810901424468597"><ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 上にある自分のデータの読み取りと変更</translation>
 <translation id="6700093763382332031">モバイル SIM ロック</translation>
@@ -11426,7 +11428,6 @@
 <translation id="9043264199499366189">ChromeOS Flex のシステム イベントに登録する</translation>
 <translation id="9044646465488564462">ネットワークに接続できませんでした: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">リーディング リストは新しいサイドパネルに移動しました。こちらをお使いください。</translation>
-<translation id="9045430190527754450">アクセスしようとしているページのウェブアドレスを Google に送信します</translation>
 <translation id="9048745018038487540">フォントをすべて選択</translation>
 <translation id="9050666287014529139">パスフレーズ</translation>
 <translation id="905145695813415387">「<ph name="LOCAL_FOLDER" />」は、このデバイスのみに保存されます。このフォルダを「<ph name="LOCAL_FOLDER" />」に移動すると、他のデバイスからはアクセスできなくなります。</translation>

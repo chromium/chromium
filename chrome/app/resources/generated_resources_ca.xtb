@@ -1782,6 +1782,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2234827758954819389">Guia de privadesa</translation>
 <translation id="2234876718134438132">Sincronització i serveis de Google</translation>
 <translation id="2235344399760031203">Les galetes de tercers estan bloquejades</translation>
+<translation id="2236949375853147973">La meva activitat</translation>
 <translation id="2238379619048995541">Dades de l'estat de freqüència</translation>
 <translation id="2240582393605484605">Les dades que només s'han desat en aquest dispositiu es conservaran al perfil actual</translation>
 <translation id="2241053333139545397">Llegir i modificar les dades d'una sèrie de llocs web</translation>
@@ -5401,6 +5402,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4773122030389014189">Comparteix el grup de pestanyes "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">Amb permís per connectar-se a qualsevol dispositiu de la teva xarxa local</translation>
 <translation id="477548766361111120">Permet que l'extensió llegeixi i canviï aquest lloc web</translation>
+<translation id="4775646243557794597">S'ha suprimit: <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860">S'ha connectat <ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">Si vols afegir una pàgina per llegir-la més tard, fes clic al botó</translation>
 <translation id="4777458362738635055">Els altres usuaris d'aquest dispositiu poden utilitzar aquesta xarxa</translation>
@@ -5745,6 +5747,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5016305686459575361">En connectar el telèfon, podràs:</translation>
 <translation id="5016491575926936899">Pots enviar missatges de text des de l'ordinador, compartir la connexió a Internet, respondre a les notificacions de conversa i desbloquejar el dispositiu <ph name="DEVICE_TYPE" /> amb el telèfon.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">S'estan baixant els fitxers d'anotacions del node principal</translation>
+<translation id="5017529052065664584">Últims 15 minuts</translation>
 <translation id="5018207570537526145">Obre el lloc web de l'extensió</translation>
 <translation id="5018526990965779848">Envia dades d'ús i de diagnòstic. Ajuda a millorar la teva experiència a Android enviant automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Si tens activada l'opció Activitat al web i en aplicacions addicional, és possible que aquestes dades es desin al teu Compte de Google.</translation>
 <translation id="5019487038187875030">Mostra els certificats importats de macOS</translation>
@@ -8043,7 +8046,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6694462491298752106">El ratolí tàctil integrat està desactivat</translation>
 <translation id="6694634756612002311">Gestiona la compartició</translation>
 <translation id="6697172646384837537">Selecciona on vols importar les contrasenyes</translation>
-<translation id="6697492270171225480">Mostra suggeriments de pàgines similars quan no se'n trobi una</translation>
 <translation id="6697690052557311665">Per compartir una carpeta de l'aplicació Fitxers, fes-hi clic amb el botó dret i selecciona Comparteix amb Linux.</translation>
 <translation id="6698810901424468597">Llegir i modificar les dades dels llocs web <ph name="WEBSITE_1" /> i <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Bloqueig de la SIM mòbil</translation>
@@ -11427,7 +11429,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="9043264199499366189">Subscriure's a esdeveniments del sistema ChromeOS Flex</translation>
 <translation id="9044646465488564462">Hi ha hagut un error en connectar amb la xarxa: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">La teva llista de lectura s'ha mogut al nou tauler lateral. Prova-ho aquí.</translation>
-<translation id="9045430190527754450">Envia a Google l'adreça web de la pàgina que estàs provant de visitar</translation>
 <translation id="9048745018038487540">Selecciona tots els tipus de lletra</translation>
 <translation id="9050666287014529139">Frase de contrasenya</translation>
 <translation id="905145695813415387">La carpeta <ph name="LOCAL_FOLDER" /> només es desa en aquest dispositiu. Si la mous a <ph name="LOCAL_FOLDER" />, ja no hi podràs accedir des dels teus altres dispositius.</translation>

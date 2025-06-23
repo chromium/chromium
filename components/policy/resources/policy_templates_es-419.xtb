@@ -6322,25 +6322,6 @@ Si el valor se establece como verdadero o no se establece, los profesores selecc
 
 Si se establece como falsa, no podrán acceder a la función.</translation>
 <translation id="5377606826822211923">Controla la forma en que el usuario usa las apps para Android de fuentes no confiables</translation>
-<translation id="5377826248281933035">Esta política proporciona una lista de sitios en los que los usuarios pueden buscar rápidamente con atajos en la barra de direcciones. Para iniciar una búsqueda, los usuarios pueden escribir el atajo o @atajo (p. ej., @trabajo), seguido de la barra espaciadora o Tab en la barra de direcciones.
-
-Los siguientes campos son obligatorios para cada sitio: <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />.
-
-El campo <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" /> corresponde al nombre del sitio o del motor de búsqueda que se mostrará al usuario en la barra de direcciones.
-
-<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> puede incluir palabras y caracteres simples, pero no puede incluir espacios ni comenzar con el símbolo @. Los atajos también deben ser únicos.
-
-Para cada entrada, el campo <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> especifica la URL del motor de búsqueda utilizado durante una búsqueda con la palabra clave correspondiente. La URL debe incluir la cadena <ph name="SEARCH_TERM_MARKER" />, que se reemplazará en la búsqueda por los términos del usuario. Se ignoran las entradas no válidas y las entradas con atajos duplicados.
-
-Las entradas de búsquedas en el sitio configuradas como destacadas se muestran en la barra de direcciones cuando el usuario escribe "@". Se pueden seleccionar hasta tres entradas como destacadas.
-
-Los usuarios no pueden editar ni inhabilitar las entradas de búsquedas en el sitio establecidas por la política, pero pueden agregar nuevos atajos para la misma URL. Además, los usuarios no podrán crear nuevas entradas de búsquedas en el sitio con un atajo creado anteriormente con esta política.
-
-En caso de conflicto con un atajo creado anteriormente por el usuario, tiene prioridad la configuración del usuario. Sin embargo, los usuarios aún pueden activar la opción creada por la política escribiendo "@" en la barra de búsqueda. Por ejemplo, si el usuario ya definió "trabajo" como atajo a URL1 y la política define "trabajo" como atajo a URL2, al escribir "trabajo" en la barra de búsqueda se activará una búsqueda en URL1, pero si escribe "@trabajo" en la barra de búsqueda, se activará una búsqueda en URL2.
-
-En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="537786648513450280">Controla la forma en que se usan las apps para Android de fuentes no confiables</translation>
 <translation id="5378885577701865339">Inhabilitar la función de portapapeles compartido</translation>
 <translation id="538108065117008131">Permitir que <ph name="PRODUCT_FRAME_NAME" /> maneje los siguientes tipos de contenido.</translation>
@@ -10571,13 +10552,6 @@ producirá un error.
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
-<translation id="8213475033260328041">Elige almacenar los datos cubiertos de <ph name="PRODUCT_NAME" /> en una ubicación geográfica específica.
-
-Si no estableces esta política o la estableces como <ph name="DATA_REGION_SETTING_NO_PREFERENCE_OPTION_NAME" /> (valor 0), es posible que se almacenen los datos cubiertos en cualquier ubicación geográfica.
-
-Si estableces la política como <ph name="DATA_REGION_SETTING_UNITED_STATES_OPTION_NAME" /> (valor 1), los datos cubiertos se almacenarán en Estados Unidos.
-
-Si estableces esta política como <ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" /> (valor 2), los datos cubiertos se almacenarán en Europa.</translation>
 <translation id="8213770777756919897">Ten en cuenta que esta política es obsoleta y se quitará en la versión 85 de <ph name="PRODUCT_OS_NAME" />. En su lugar, utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Cuando se configura esta política, se especifica la acción que realizará<ph name="PRODUCT_OS_NAME" /> si no hay intervención del usuario durante el período de la demora de inactividad, que se puede configurar de forma independiente.

@@ -1792,6 +1792,7 @@
 <translation id="2234827758954819389">私隱權指南</translation>
 <translation id="2234876718134438132">同步處理和 Google 服務</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
+<translation id="2236949375853147973">我的活動</translation>
 <translation id="2238379619048995541">頻率狀態數據</translation>
 <translation id="2240582393605484605">只儲存在此裝置上的資料會保留在現有設定檔中</translation>
 <translation id="2241053333139545397">讀取及變更您在多個網站上的資料</translation>
@@ -5411,6 +5412,7 @@
 <translation id="4773122030389014189">分享「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="4773253008034797668">允許連線至區域網絡上的任何裝置</translation>
 <translation id="477548766361111120">允許擴充程式讀取並變更此網站</translation>
+<translation id="4775646243557794597">已刪除<ph name="TIME_PERIOD" />的資料</translation>
 <translation id="4776311127346151860">連接咗<ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">如要新增頁面以便稍後閱讀，請按一下按鈕</translation>
 <translation id="4777458362738635055">此裝置的其他使用者可使用此網絡</translation>
@@ -5755,6 +5757,7 @@
 <translation id="5016305686459575361">連結手機後，你可以：</translation>
 <translation id="5016491575926936899">您可從電腦發短訊、分享互聯網連線、回覆對話通知，以及使用手機解鎖 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">正在下載主節點註釋檔案</translation>
+<translation id="5017529052065664584">過去 15 分鐘</translation>
 <translation id="5018207570537526145">開啟擴充程式網站</translation>
 <translation id="5018526990965779848">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您的 Android 使用體驗。這可協助改善系統及應用程式的穩定性及其他功能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至您的 Google 帳戶。</translation>
 <translation id="5019487038187875030">查看從 MacOS 匯入的憑證</translation>
@@ -8051,7 +8054,6 @@
 <translation id="6694462491298752106">內置觸控板已停用</translation>
 <translation id="6694634756612002311">管理共用設定</translation>
 <translation id="6697172646384837537">揀密碼匯入位置</translation>
-<translation id="6697492270171225480">找不到網頁時，顯示類似的網頁建議</translation>
 <translation id="6697690052557311665">如要共用項目，請在「檔案」應用程式中的資料夾上按一下右鍵，然後選取 [與 Linux 共用]。</translation>
 <translation id="6698810901424468597">讀取及變更您在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 網站上的資料</translation>
 <translation id="6700093763382332031">流動網絡 SIM 卡鎖定</translation>
@@ -11427,7 +11429,6 @@
 <translation id="9043264199499366189">訂閱 ChromeOS Flex 系統事件</translation>
 <translation id="9044646465488564462">無法連線至網絡：<ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">閱讀清單已移動至新的側面板。按這裡即可試用。</translation>
-<translation id="9045430190527754450">將您嘗試瀏覽的網頁網址傳送至 Google</translation>
 <translation id="9048745018038487540">選取所有字型</translation>
 <translation id="9050666287014529139">複雜密碼</translation>
 <translation id="905145695813415387">「<ph name="LOCAL_FOLDER" />」只會儲存至此裝置。如果將此資料夾移至「<ph name="LOCAL_FOLDER" />」，就無法在其他裝置上存取。</translation>

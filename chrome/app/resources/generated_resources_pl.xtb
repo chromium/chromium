@@ -1783,6 +1783,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2234827758954819389">Przewodnik po prywatności</translation>
 <translation id="2234876718134438132">Synchronizacja i usługi Google</translation>
 <translation id="2235344399760031203">Pliki cookie innych firm są blokowane</translation>
+<translation id="2236949375853147973">Moja aktywność</translation>
 <translation id="2238379619048995541">Dane o stanie częstotliwości</translation>
 <translation id="2240582393605484605">Dane zapisane tylko na tym urządzeniu pozostaną w dotychczasowym profilu</translation>
 <translation id="2241053333139545397">Odczytywanie i modyfikowanie Twoich danych na wielu stronach</translation>
@@ -5386,6 +5387,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4773122030389014189">Udostępnij grupę kart „<ph name="GROUP_NAME" />”</translation>
 <translation id="4773253008034797668">Zezwolono na łączenie się z dowolnym urządzeniem w sieci lokalnej</translation>
 <translation id="477548766361111120">Zezwól rozszerzeniu na odczyt i zmianę tej witryny</translation>
+<translation id="4775646243557794597">Usunięto dane z <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860">Urządzenie <ph name="DEVICE_NAME" /> zostało podłączone</translation>
 <translation id="4776594120007763294">Aby dodać stronę, którą chcesz przeczytać później, kliknij ten przycisk</translation>
 <translation id="4777458362738635055">Inni użytkownicy tego urządzenia mogą używać tej sieci</translation>
@@ -5730,6 +5732,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5016305686459575361">Dzięki połączeniu telefonu możesz:</translation>
 <translation id="5016491575926936899">Możesz teraz pisać SMS-y na komputerze, udostępniać swoje połączenie z internetem, odpowiadać na powiadomienia o rozmowach i odblokowywać urządzenie <ph name="DEVICE_TYPE" /> telefonem.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Pobieram pliki z adnotacjami głównego węzła</translation>
+<translation id="5017529052065664584">Ostatnie 15 minut</translation>
 <translation id="5018207570537526145">Otwórz stronę rozszerzeń</translation>
 <translation id="5018526990965779848">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida, wysyłając automatycznie do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
 <translation id="5019487038187875030">Wyświetl certyfikaty zaimportowane z macOS</translation>
@@ -8032,7 +8035,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6694462491298752106">Wbudowany touchpad jest wyłączony</translation>
 <translation id="6694634756612002311">Zarządzaj udostępnianiem</translation>
 <translation id="6697172646384837537">Wybierz, gdzie chcesz zaimportować hasła</translation>
-<translation id="6697492270171225480">Gdy nie można odnaleźć strony, pokazuj sugestie podobnych stron</translation>
 <translation id="6697690052557311665">Aby udostępnić folder, kliknij go prawym przyciskiem myszy w aplikacji Pliki, a potem kliknij „Udostępnij Linuksowi”.</translation>
 <translation id="6698810901424468597">Odczytywanie i modyfikowanie Twoich danych na: <ph name="WEBSITE_1" /> i <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Blokada SIM sieci komórkowej</translation>
@@ -11410,7 +11412,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9043264199499366189">Subskrybuj zdarzenia systemowe w ChromeOS Flex</translation>
 <translation id="9044646465488564462">Nie udało się połączyć z siecią: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Twoja lista Do przeczytania została przeniesiona do nowego panelu bocznego. Aby ją zobaczyć, kliknij tutaj.</translation>
-<translation id="9045430190527754450">Wysyła do Google adres internetowy strony, którą próbujesz otworzyć</translation>
 <translation id="9048745018038487540">Zaznacz wszystkie czcionki</translation>
 <translation id="9050666287014529139">Hasło</translation>
 <translation id="905145695813415387">Folder „<ph name="LOCAL_FOLDER" />” został zapisany tylko na tym urządzeniu. Jeśli przeniesiesz go do folderu „<ph name="LOCAL_FOLDER" />”, nie będzie on już dostępny na innych urządzeniach.</translation>

@@ -1759,7 +1759,6 @@
 <translation id="3961148744525529027">Аркуш обробника платежу відкрито на половину висоти</translation>
 <translation id="3962859241508114581">Попередня композиція</translation>
 <translation id="3963721102035795474">Режим перегляду</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Немає}=1{З 1 сайту }one{З # сайту }few{З # сайтів }many{З # сайтів }other{З # сайту }}</translation>
 <translation id="3965672182149944205">Зберегти адресу?</translation>
 <translation id="3966044442021752214">Безпека продукту</translation>
 <translation id="3969869202926863008">Доступ до локальної мережі</translation>

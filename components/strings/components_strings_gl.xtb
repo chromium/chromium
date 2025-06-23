@@ -1759,7 +1759,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3961148744525529027">A folla do controlador de pagos está medio aberta</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963721102035795474">Modo de lector</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Ningún}=1{De 1 sitio }other{De # sitios }}</translation>
 <translation id="3965672182149944205">Queres gardar o enderezo?</translation>
 <translation id="3966044442021752214">Seguranza do produto</translation>
 <translation id="3969869202926863008">Acceso á rede local</translation>

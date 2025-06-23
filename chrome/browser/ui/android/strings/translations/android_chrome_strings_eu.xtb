@@ -129,7 +129,6 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="1521774566618522728">Aktibo gaur</translation>
 <translation id="153446405401665083">Chrome-ren bertsio berri bat erabilgarri dago</translation>
 <translation id="1540012742443808215">Une honetan, helbide-barra goian dago</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 laster-marka gailu honetan soilik gorde da. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}other{# laster-marka gailu honetan soilik gorde dira. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">Ordainketa-metodoak eta helbideak ez dira enkriptatuko. Chrome-ko arakatze-historia ez da sinkronizatuko.
 Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Google-ko kontua kudeatzeko, sakatu "Kudeatu kontua" botoia</translation>
@@ -144,7 +143,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1598163867407640634">Erabili <ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
 <translation id="160275202205869636">Aktibatuta badago, datuak Google-ko kontuan erabiltzen eta gordetzen dira. Desaktibatuta badago, datuak gailu honetan soilik gordetzen dira.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Kendu hautatutako elementua}other{Kendu hautatutako # elementuak}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 laster-marka eta beste elementu batzuk gailu honetan soilik gorde dira. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}other{# laster-marka eta beste elementu batzuk gailu honetan soilik gorde dira. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
 <translation id="1641113438599504367">Arakatze segurua</translation>
 <translation id="164269334534774161">Orri honen konexiorik gabeko kopia ikusten ari zara (kopiaren data: <ph name="CREATION_TIME" />)</translation>
@@ -477,7 +475,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="316694332262407393">Chrome abian da dagoeneko.</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> webgunearen mugikorretarako bertsioa eska dezakezu</translation>
 <translation id="3169472444629675720">Ezagutu</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 pasahitz eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}other{# pasahitz eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="3187472288455401631">Iragarkien neurketa</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> fitxa taldea</translation>
 <translation id="3207960819495026254">Laster-marka gisa gordea</translation>
@@ -894,7 +891,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="506254248375231072">Fitxarik ez</translation>
 <translation id="5062960805900435602">Pasahitzen bateratzeari buruzko informazio eguneratua itxi da</translation>
 <translation id="5075939510584558547">Gorde enkriptatu gabe</translation>
-<translation id="5082172173036123513">6 hilabetez inaktibo dauden leihoak betiko ezabatzen dira.</translation>
 <translation id="5085038751173179818">Hasi saioa webgune honetan eta Chrome-n, zure laster-markak eta bestelako elementuak gailu guztietan eduki ditzazun</translation>
 <translation id="5091199029769593641">Laster, <ph name="SITE_NAME" /> webguneko istorioak ikusiko dituzu fitxa berri bat irekitzean. Jarraitzaile zaituzten webguneak Google-ko kontuan gordetzen dira. Discover-en ezarpenetan kudea ditzakezu webgune horiek.</translation>
 <translation id="509429900233858213">Errore bat gertatu da.</translation>
@@ -1155,7 +1151,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita erantzun lezakete webgune batzuek. Dena den, webgune askok arakatze-datuak bilduko dituzte, besteak beste, segurtasuna hobetzeko; edukia, iragarkiak eta gomendioak hornitzeko; eta txostenak egiteko estatistikak sortzeko.</translation>
 <translation id="6247557882553405851">Google-ren Pasahitz-kudeatzailea</translation>
 <translation id="6251449557817521191">Ikusi Chrome-ko historia hemen</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 elementu gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}other{# elementu gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="6254139308321626268">PDF fitxategi bat ari zara ikusten</translation>
 <translation id="6255809143828972562">Chrome-ren tresnekin, segurtasunez araka dezakezu, eta dena kontrolpean eduki</translation>
 <translation id="6264376385120300461">Deskargatu halere</translation>
@@ -1420,7 +1415,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7293429513719260019">Hautatu hizkuntza</translation>
 <translation id="729975465115245577">Gailuak ez du pasahitzen fitxategia gordetzeko aplikaziorik.</translation>
 <translation id="7304072650267745798">Baliteke Android-eko gailuak antzeko ezarpen bat izatea. Chrome-n eta Android-eko gailuan ezarpen hori aktibatuta badaukazu, erabiltzen dituzun webgune eta aplikazioetan agertzen diren iragarkien eraginkortasuna neurtu ahal izango dute enpresek.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 pasahitz gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}other{# pasahitz gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="7304873321153398381">Konexiorik gabe. Chrome-k ezin ditu egiaztatu pasahitzak.</translation>
 <translation id="7313188324932846546">Sakatu hau sinkronizazioa konfiguratzeko</translation>
 <translation id="7314734791127433392">Ezin dira egiaztatu pasahitzak</translation>
@@ -1633,7 +1627,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="813082847718468539">Ikusi webgunearen informazioa</translation>
 <translation id="8135406045838672858">Deskargatutako PDFak <ph name="APP_NAME" /> bidez irekitzen dira automatikoki</translation>
 <translation id="8137562778192957619">Ez duzu pasahitza gogoratu beharko. Google-ren Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
-<translation id="8146563639948412265">Guztira <ph name="MAX_WINDOW_COUNT" /> leiho eduki ditzakezu gehienez. Leiho bat leheneratzeko, itxi <ph name="WINDOW_COUNT" /> leiho aktibo edo inaktibo.</translation>
 <translation id="8152331954420209374">Joan Lens-era</translation>
 <translation id="8163820386638255770">Pasahitzak Google-ko kontuan gordetzeko eta erabiltzeko, egiaztatu zeu zarela</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fitxategi gelditzen dira</translation>
@@ -1873,7 +1866,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="9169507124922466868">Nabigazio-historia erdi irekita dago</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Sinkronizatutako gailu guztietan ikusi ahalko duzu historia, egiten ari zinenari berrekiteko</translation>
-<translation id="9191906083913361689">Elementu hauek laster-marketan, irakurketa-zerrendan edo pasahitz-kudeatzailean ere ikusi eta kudea ditzakezu</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Duela minutu bat egiaztatu du}other{Duela # minutu egiaztatu du}}</translation>
 <translation id="9204021776105550328">Ezabatzen</translation>
 <translation id="9204836675896933765">1 fitxategi gelditzen da</translation>

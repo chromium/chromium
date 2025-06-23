@@ -1779,6 +1779,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2234827758954819389">Datenschutz-Leitfaden</translation>
 <translation id="2234876718134438132">Synchronisierung und Google-Dienste</translation>
 <translation id="2235344399760031203">Drittanbieter-Cookies werden blockiert</translation>
+<translation id="2236949375853147973">Meine Aktivitäten</translation>
 <translation id="2238379619048995541">Daten für aktiven Zustand</translation>
 <translation id="2240582393605484605">Daten, die nur auf diesem Gerät gespeichert werden, bleiben im vorhandenen Profil</translation>
 <translation id="2241053333139545397">Eigene Daten auf verschiedenen Websites lesen und ändern</translation>
@@ -5399,6 +5400,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4773122030389014189">Tabgruppe „<ph name="GROUP_NAME" />“ freigeben</translation>
 <translation id="4773253008034797668">Dürfen eine Verbindung zu beliebigen Geräten in deinem lokalen Netzwerk herstellen</translation>
 <translation id="477548766361111120">Erweiterung erlauben, diese Website zu lesen und zu ändern</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> gelöscht</translation>
 <translation id="4776311127346151860">„<ph name="DEVICE_NAME" />“ wurde verbunden</translation>
 <translation id="4776594120007763294">Wenn du eine Seite zum späteren Lesen hinzufügen möchtest, klicke auf die Schaltfläche</translation>
 <translation id="4777458362738635055">Andere Nutzer dieses Geräts können dieses Netzwerk verwenden</translation>
@@ -5743,6 +5745,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5016305686459575361">Wenn du dein Smartphone verbindest, kannst du Folgendes tun:</translation>
 <translation id="5016491575926936899">Du kannst SMS von deinem Computer senden, deine Internetverbindung teilen, auf Unterhaltungsbenachrichtigungen antworten und dein <ph name="DEVICE_TYPE" /> mit deinem Smartphone entsperren.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Dateien zur Annotation von Hauptknoten werden heruntergeladen</translation>
+<translation id="5017529052065664584">Letzte 15 Minuten</translation>
 <translation id="5018207570537526145">Erweiterungs-Website öffnen</translation>
 <translation id="5018526990965779848">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Du kannst uns helfen, Android zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google nützlich, beispielsweise Android-Entwickler. Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert.</translation>
 <translation id="5019487038187875030">Aus macOS importierte Zertifikate ansehen</translation>
@@ -8039,7 +8042,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6694462491298752106">Integriertes Touchpad ist deaktiviert</translation>
 <translation id="6694634756612002311">Freigaben verwalten</translation>
 <translation id="6697172646384837537">Auswählen, wo deine Passwörter importiert werden sollen</translation>
-<translation id="6697492270171225480">Vorschläge für ähnliche Seiten anzeigen, wenn eine Seite nicht gefunden werden kann</translation>
 <translation id="6697690052557311665">Zur Freigabe eines Ordners klicke ihn in der App "Dateien" mit der rechten Maustaste an und wähle "Mit Linux teilen" aus.</translation>
 <translation id="6698810901424468597">Eigene Daten auf <ph name="WEBSITE_1" /> und <ph name="WEBSITE_2" /> lesen und ändern</translation>
 <translation id="6700093763382332031">Sperre für SIM-Karte</translation>
@@ -11422,7 +11424,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="9043264199499366189">ChromeOS Flex-Systemereignisse abonnieren</translation>
 <translation id="9044646465488564462">Fehler beim Herstellen einer Verbindung mit dem Netzwerk: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Deine Leseliste wurde in die neue Seitenliste verschoben. Hier kannst du die Funktion testen.</translation>
-<translation id="9045430190527754450">Die Webadresse der Seite, die du aufrufen möchtest, wird an Google gesendet</translation>
 <translation id="9048745018038487540">Alle Schriftarten auswählen</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="905145695813415387">„<ph name="LOCAL_FOLDER" />“ ist nur auf diesem Gerät gespeichert. Wenn du diesen Ordner in den Ordner „<ph name="LOCAL_FOLDER" />“ verschiebst, ist er auf deinen anderen Geräten nicht mehr verfügbar.</translation>

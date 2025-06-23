@@ -1792,6 +1792,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2234827758954819389">Panduan Privasi</translation>
 <translation id="2234876718134438132">Sinkronisasi dan layanan Google</translation>
 <translation id="2235344399760031203">Cookie pihak ketiga diblokir</translation>
+<translation id="2236949375853147973">Aktivitas Saya</translation>
 <translation id="2238379619048995541">Data Status Frekuensi</translation>
 <translation id="2240582393605484605">Data yang hanya disimpan di perangkat ini akan tetap berada di profil yang sudah ada</translation>
 <translation id="2241053333139545397">Membaca dan mengubah data Anda di sejumlah situs web</translation>
@@ -5417,6 +5418,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4773122030389014189">Bagikan grup tab “<ph name="GROUP_NAME" />”</translation>
 <translation id="4773253008034797668">Diizinkan terhubung ke perangkat apa pun di jaringan lokal Anda</translation>
 <translation id="477548766361111120">Izinkan ekstensi membaca dan mengubah situs ini</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> dihapus</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> telah terhubung</translation>
 <translation id="4776594120007763294">Klik tombol guna menambahkan halaman untuk dibaca nanti</translation>
 <translation id="4777458362738635055">Pengguna lain di perangkat ini dapat menggunakan jaringan ini</translation>
@@ -5762,6 +5764,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5016305686459575361">Dengan menghubungkan ponsel, Anda dapat:</translation>
 <translation id="5016491575926936899">Anda dapat mengirim SMS dari komputer, membagikan koneksi internet, membalas notifikasi percakapan, dan membuka kunci <ph name="DEVICE_TYPE" /> dengan ponsel Anda.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Mendownload file anotasi node utama</translation>
+<translation id="5017529052065664584">15 menit terakhir</translation>
 <translation id="5018207570537526145">Buka situs ekstensi</translation>
 <translation id="5018526990965779848">Kirimkan data penggunaan dan diagnostik. Bantu tingkatkan pengalaman penggunaan Android dengan mengirimkan data diagnostik, perangkat, dan penggunaan aplikasi ke Google secara otomatis. Data ini akan membantu meningkatkan performa sistem, stabilitas aplikasi, dan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan, data ini dapat disimpan ke Akun Google Anda.</translation>
 <translation id="5019487038187875030">Lihat sertifikat yang diimpor dari MacOS</translation>
@@ -8062,7 +8065,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6694462491298752106">Touchpad bawaan dinonaktifkan</translation>
 <translation id="6694634756612002311">Kelola pembagian</translation>
 <translation id="6697172646384837537">Pilih tempat untuk mengimpor sandi Anda</translation>
-<translation id="6697492270171225480">Tampilkan saran untuk halaman yang serupa jika halaman tidak dapat ditemukan</translation>
 <translation id="6697690052557311665">Untuk berbagi, klik kanan pada folder di aplikasi Files, lalu pilih "Share with Linux".</translation>
 <translation id="6698810901424468597">Membaca dan mengubah data Anda di <ph name="WEBSITE_1" /> dan <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Kunci SIM Seluler</translation>
@@ -11444,7 +11446,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9043264199499366189">Berlangganan peristiwa sistem ChromeOS Flex</translation>
 <translation id="9044646465488564462">Gagal menyambung ke jaringan: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Daftar bacaan Anda telah dipindahkan ke panel samping yang baru. Coba di sini.</translation>
-<translation id="9045430190527754450">Mengirimkan alamat web halaman yang ingin Anda buka ke Google</translation>
 <translation id="9048745018038487540">Pilih semua font</translation>
 <translation id="9050666287014529139">Frasa sandi</translation>
 <translation id="905145695813415387">“<ph name="LOCAL_FOLDER" />” hanya disimpan ke perangkat ini. Jika Anda memindahkan folder ini ke “<ph name="LOCAL_FOLDER" />”, Anda tidak akan lagi melihatnya di perangkat lain.</translation>

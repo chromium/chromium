@@ -197,7 +197,6 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{创建时间：<ph name="NUM_MONTHS_ONE" /> 个月前}other{创建时间：<ph name="NUM_MONTHS_MANY" /> 个月前}}</translation>
 <translation id="8813708480179818649">从分组中移除标签页</translation>
 <translation id="8820741577754260431">查看您打开的标签页上的降价商品</translation>
-<translation id="883379923675618699">Chrome 会自动关闭“闲置”部分中 3 个月内未曾使用的标签页。您可以现在关闭此功能，也可以随时在“设置”中进行关闭。</translation>
 <translation id="8887921976452567404">您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。</translation>
 <translation id="8915916167043355778">全部关闭</translation>
 <translation id="9090098097337832354">此商店的相关信息已关闭</translation>

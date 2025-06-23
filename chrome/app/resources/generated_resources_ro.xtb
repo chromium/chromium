@@ -1783,6 +1783,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2234827758954819389">Ghid privind confidențialitatea</translation>
 <translation id="2234876718134438132">Sincronizarea și serviciile Google</translation>
 <translation id="2235344399760031203">Cookie-urile terță parte sunt blocate</translation>
+<translation id="2236949375853147973">Activitatea mea</translation>
 <translation id="2238379619048995541">Date pentru starea activă</translation>
 <translation id="2240582393605484605">Datele salvate numai pe acest dispozitiv vor rămâne în profilul existent</translation>
 <translation id="2241053333139545397">Citește și modifică datele de pe o serie de site-uri</translation>
@@ -5404,6 +5405,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4773122030389014189">Trimite grupul de file <ph name="GROUP_NAME" /></translation>
 <translation id="4773253008034797668">Au permisiunea de a se conecta la orice dispozitiv din rețeaua locală</translation>
 <translation id="477548766361111120">Permite extensiei să citească și să modifice acest site</translation>
+<translation id="4775646243557794597">S-au șters datele din <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> s-a conectat</translation>
 <translation id="4776594120007763294">Dă clic pe buton pentru a adăuga o pagină de citit mai târziu</translation>
 <translation id="4777458362738635055">Alți utilizatori ai dispozitivului pot folosi această rețea</translation>
@@ -5748,6 +5750,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5016305686459575361">După conectarea telefonului, poți să faci acțiunile de mai jos.</translation>
 <translation id="5016491575926936899">Poți să trimiți mesaje text de pe computer, să permiți accesul la conexiunea de internet, să răspunzi la notificări privind conversațiile și să deblochezi <ph name="DEVICE_TYPE" /> cu telefonul.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Se descarcă fișierele cu adnotări pentru nodurile principale</translation>
+<translation id="5017529052065664584">Ultimele 15 minute</translation>
 <translation id="5018207570537526145">Deschide site-ul extensiei</translation>
 <translation id="5018526990965779848">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android trimițând automat la Google date privind diagnosticarea și utilizarea dispozitivelor și a aplicațiilor. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google.</translation>
 <translation id="5019487038187875030">Vezi certificatele importate din macOS</translation>
@@ -8049,7 +8052,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6694462491298752106">Touchpadul încorporat este dezactivat</translation>
 <translation id="6694634756612002311">Gestionează permiterea accesului</translation>
 <translation id="6697172646384837537">Selectează unde dorești să imporți parolele</translation>
-<translation id="6697492270171225480">Afișează sugestii pentru pagini similare atunci când o pagină nu poate fi găsită</translation>
 <translation id="6697690052557311665">Pentru a trimite, dă clic dreapta pe un dosar din aplicația Files, apoi selectează „Trimite cu Linux”.</translation>
 <translation id="6698810901424468597">Citește și modifică datele de pe <ph name="WEBSITE_1" /> și <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Blocarea cardului SIM pentru rețeaua mobilă</translation>
@@ -11433,7 +11435,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9043264199499366189">Abonează-te la evenimentele de sistem ChromeOS Flex</translation>
 <translation id="9044646465488564462">Conectarea la rețea nu s-a realizat: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lista de lecturi s-a mutat într-un panou lateral nou. Încearcă-l aici.</translation>
-<translation id="9045430190527754450">Trimite la Google adresa web a paginii pe care încerci să o accesezi</translation>
 <translation id="9048745018038487540">Selectează toate fonturile</translation>
 <translation id="9050666287014529139">Expresie de acces</translation>
 <translation id="905145695813415387"><ph name="LOCAL_FOLDER" /> se salvează numai pe acest dispozitiv. Dacă muți dosarul în <ph name="LOCAL_FOLDER" />, nu îl vei mai putea accesa pe celelalte dispozitive.</translation>

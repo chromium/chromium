@@ -1778,6 +1778,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2234827758954819389">Məxfilik Bələdçisi</translation>
 <translation id="2234876718134438132">Sinxronizasiya və Google xidmətləri</translation>
 <translation id="2235344399760031203">Üçüncü tərəf kukiləri bloklanıb</translation>
+<translation id="2236949375853147973">Fəaliyyətim</translation>
 <translation id="2238379619048995541">Tezlik Statusu Datası</translation>
 <translation id="2240582393605484605">Yalnız bu cihazda saxlanılan data mövcud profildə qalacaq</translation>
 <translation id="2241053333139545397">Datanızı çoxsaylı cihazlarda oxuyun və dəyişin</translation>
@@ -5401,6 +5402,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4773122030389014189">"<ph name="GROUP_NAME" />" tab qrupunu paylaşın</translation>
 <translation id="4773253008034797668">Lokal şəbəkənizdəki istənilən cihaza qoşulmaq icazəsi verilib</translation>
 <translation id="477548766361111120">Artırmaya bu saytı oxumaq və dəyişmək icazəsi verin</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> silindi</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> qoşulub</translation>
 <translation id="4776594120007763294">Daha sonra oxumaq məqsədilə bir səhifə əlavə etmək üçün düyməni basın</translation>
 <translation id="4777458362738635055">Bu cihazın digər istifadəçiləri şəbəkədən istifadə edə bilər</translation>
@@ -5746,6 +5748,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5016305686459575361">Telefonu qoşaraq aşağıdakıları edə bilərsiniz:</translation>
 <translation id="5016491575926936899">Kompüterdən mesaj yaza, internet bağlantısını paylaşa, söhbət bildirişinə cavab yaza və <ph name="DEVICE_TYPE" /> cihazını telefonunuz ilə kiliddən çıxara bilərsiniz.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Əsas düyün annotasiya faylları endirilir</translation>
+<translation id="5017529052065664584">Son 15 dəqiqə</translation>
 <translation id="5018207570537526145">Artırma veb səhifəsini açın</translation>
 <translation id="5018526990965779848">İstifadə və diaqnostika datasını göndərin. Diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik olaraq Google'a göndərməklə Android təcrübənizi təkmilləşdirməyə kömək edin. Bu, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Bəzi ümumiləşdirilmiş məlumatlar Google tətbiqlərinə və Android developerləri kimi partnyorlara da kömək edəcək. Əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabınızda yadda saxlanıla bilər.</translation>
 <translation id="5019487038187875030">MacOS-dən import edilmiş sertifikatlara baxın</translation>
@@ -8044,7 +8047,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6694462491298752106">Daxili taçped deaktiv edilib</translation>
 <translation id="6694634756612002311">Paylaşımı idarə edin</translation>
 <translation id="6697172646384837537">Parollarınızı haraya import edəcəyinizi seçin</translation>
-<translation id="6697492270171225480">Səhifə tapılmadığı zaman oxşar səhifələr üçün təklifləri göstərin</translation>
 <translation id="6697690052557311665">Paylaşmaq üçün Fayl tətbiqindəki qovluğun üzərində sağa klikləyin və "Linux ilə paylaşın" seçimini edin.</translation>
 <translation id="6698810901424468597"><ph name="WEBSITE_1" /> və <ph name="WEBSITE_2" /> üzərində olan datanızı oxuyun və dəyişin</translation>
 <translation id="6700093763382332031">Mobil SİM kart kilidi</translation>
@@ -11423,7 +11425,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="9043264199499366189">ChromeOS Flex sistem hadisələrinə abunə olun</translation>
 <translation id="9044646465488564462"><ph name="DETAILS" /> şəbəkəsinə qoşulmaq uğursuz oldu</translation>
 <translation id="9045160989383249058">Oxu siyahınız yeni yan panelə keçirilib. Burada sınayın.</translation>
-<translation id="9045430190527754450">Google'a daxil olduğunuz səhifənin veb ünvanını göndərir</translation>
 <translation id="9048745018038487540">Bütün şriftləri seçin</translation>
 <translation id="9050666287014529139">Parol ifadəsi</translation>
 <translation id="905145695813415387">"<ph name="LOCAL_FOLDER" />" yalnız bu cihazda yadda saxlanılır. Bu qovluğu "<ph name="LOCAL_FOLDER" />" qovluğuna köçürsəniz, artıq onu digər cihazlarınızda əldə edə bilməyəcəksiniz.</translation>

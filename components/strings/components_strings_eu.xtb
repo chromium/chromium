@@ -1755,7 +1755,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3961148744525529027">Ordainketa kudeatzeko orria erdi irekita dago</translation>
 <translation id="3962859241508114581">Aurreko pista</translation>
 <translation id="3963721102035795474">Irakurgailu modua</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Bat ere ez}=1{1 webgunetatik }other{# webgunetatik }}</translation>
 <translation id="3965672182149944205">Helbidea gorde nahi duzu?</translation>
 <translation id="3966044442021752214">Produktuaren segurtasuna</translation>
 <translation id="3969869202926863008">Sare lokalerako sarbidea</translation>
@@ -2103,11 +2102,13 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4530347922939905757">Testu-mezua</translation>
 <translation id="4531477351494678589">Txartel birtualaren zenbakia:</translation>
 <translation id="4535523368173457420">Bilatzaile hauek asko erabiltzen dira zure lurraldean, eta ausaz zerrendatzen dira</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{Duela urtebete sortua}other{Duela {NUM_YEARS} urte sortua}}</translation>
 <translation id="4541810033354695636">errealitate areagotua</translation>
 <translation id="4542971377163063093">6. erretilua</translation>
 <translation id="4543072026714825470">Hurrengoan bizkorrago ordaintzeko, gorde txartela eta fakturazio-helbidea Google-ko kontuan</translation>
 <translation id="454441086898495030"><ph name="SET" /> taulan gehitu nahi duzu?</translation>
 <translation id="4546730006268514143">Transferitzeko denbora-muga gainditu da</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{Duela egun bat sortua}other{Duela {NUM_DAYS} egun sortua}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Pantailaren blokeoa darabilzu pasahitzen eremuak betetzeko</translation>
 <translation id="4557573143631562971">Etxe-aseguruak</translation>
@@ -2904,6 +2905,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5938153366081463283">Gehitu txartel birtual bat</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Iritzi independenteen webguneetatik (adibidez, Trustpilot, ScamAdviser eta Google) dator informazio hau. AAk sortzen ditu laburpenak.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{Duela minutu bat sortua}other{Duela {NUM_MINS} minutu sortua}}</translation>
 <translation id="5944297261866530437">Ehuna (oso distiratsua)</translation>
 <translation id="5950901984834744590">Bizar-labanak eta bizarra kentzeko makinak</translation>
 <translation id="5951495562196540101">Ezin da kontsumitzaile-kontuarekin erregistratu (paketatutako lizentzia eskuragarri).</translation>
@@ -4067,6 +4069,7 @@ Xehetasun gehiago:
 <translation id="7894280532028510793">Behar bezala idatzita badago, <ph name="BEGIN_LINK" />exekutatu sare-diagnostikoak<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">18 cm × 23 cm-ko gutun-azala</translation>
 <translation id="7905064834449738336">Pasahitz bat erabiltzen duzunean, Chromium-ek sarean argitaratu den ala ez jakinarazten dizu. Horretarako, pasahitzak eta erabiltzaile-izenak enkriptatzen ditu inork irakurri ezin ditzan, ezta Google-k ere.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{Duela ordubete sortua}other{Duela {NUM_HOURS} ordu sortua}}</translation>
 <translation id="7908648876066812348">Txartel birtuala aktibatzen</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ko segurtasun-egiaztapenen orrira joateko, ezarpenetan, sakatu tabuladorea eta, ondoren, Sartu</translation>
 <translation id="791107458486222637">Emaitza berregiten</translation>
@@ -4202,6 +4205,7 @@ Xehetasun gehiago:
 <translation id="8134058435519644366">Langileen hautapena eta langilez hornitzea</translation>
 <translation id="8135546115396015134">ezkerrera egiteko tekla</translation>
 <translation id="8137456439814903304">Energia eta hornidura publikoko zerbitzuak</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{Duela hilabete sortua}other{Duela {NUM_MONTHS} hilabete sortua}}</translation>
 <translation id="8148608574971654810">PDF bertsioa:</translation>
 <translation id="8149426793427495338">Inaktibo geratu da ordenagailua.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> orriko fitxategia ezin da irakurri. Agian kendu egin da, beste norabait eraman da edo bere baimenek atzitzea galarazten dute.</translation>

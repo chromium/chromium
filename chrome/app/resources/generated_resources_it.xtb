@@ -1782,6 +1782,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2234827758954819389">Guida alla privacy</translation>
 <translation id="2234876718134438132">Sincronizzazione e servizi Google</translation>
 <translation id="2235344399760031203">I cookie di terze parti sono bloccati</translation>
+<translation id="2236949375853147973">Le mie attività</translation>
 <translation id="2238379619048995541">Dati sullo stato di frequenza</translation>
 <translation id="2240582393605484605">I dati salvati solo su questo dispositivo rimarranno nel profilo esistente.</translation>
 <translation id="2241053333139545397">Leggere e modificare i tuoi dati su una serie di siti web</translation>
@@ -5404,6 +5405,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4773122030389014189">Condividi il gruppo di schede "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">Possono connettersi a qualsiasi dispositivo sulla rete locale</translation>
 <translation id="477548766361111120">Consenti all'estensione di leggere e modificare questo sito</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> di dati eliminati</translation>
 <translation id="4776311127346151860">Connessione di <ph name="DEVICE_NAME" /> stabilita</translation>
 <translation id="4776594120007763294">Per aggiungere una pagina da leggere in un secondo momento, fai clic sul pulsante</translation>
 <translation id="4777458362738635055">Altri utenti del dispositivo possono usare questa rete</translation>
@@ -5748,6 +5750,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5016305686459575361">Collegando lo smartphone puoi:</translation>
 <translation id="5016491575926936899">Puoi inviare SMS dal computer, condividere la connessione a Internet, rispondere a notifiche delle conversazioni e sbloccare <ph name="DEVICE_TYPE" /> con il telefono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Download dei file di annotazioni del nodo principale in corso…</translation>
+<translation id="5017529052065664584">Ultimi 15 minuti</translation>
 <translation id="5018207570537526145">Apri sito web dell'estensione</translation>
 <translation id="5018526990965779848">Invia dati diagnostici e sull'utilizzo. Contribuisci a migliorare la tua esperienza Android tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google.</translation>
 <translation id="5019487038187875030">Visualizza i certificati importati da MacOS</translation>
@@ -8045,7 +8048,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6694462491298752106">Il touchpad integrato è disattivato</translation>
 <translation id="6694634756612002311">Gestisci condivisione</translation>
 <translation id="6697172646384837537">Seleziona dove importare le password</translation>
-<translation id="6697492270171225480">Mostra suggerimenti per pagine simili quando una pagina non viene trovata</translation>
 <translation id="6697690052557311665">Per condividere, fai clic con il tasto destro su una cartella nell'app File, quindi seleziona "Condividi con Linux".</translation>
 <translation id="6698810901424468597">Leggere e modificare i tuoi dati su <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Blocco SIM rete mobile</translation>
@@ -11428,7 +11430,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9043264199499366189">Abbonati agli eventi di sistema ChromeOS Flex</translation>
 <translation id="9044646465488564462">Connessione alla rete non riuscita: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Il tuo elenco di lettura è passato al nuovo riquadro laterale. Provalo qui.</translation>
-<translation id="9045430190527754450">Invia a Google l'indirizzo web della pagina a cui stai tentando di accedere</translation>
 <translation id="9048745018038487540">Seleziona tutti i caratteri</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="905145695813415387">La cartella "<ph name="LOCAL_FOLDER" />" è salvata solo su questo dispositivo. Se sposti questa cartella in "<ph name="LOCAL_FOLDER" />", non la vedrai più sugli altri dispositivi.</translation>

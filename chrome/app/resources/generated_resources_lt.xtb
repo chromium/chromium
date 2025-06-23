@@ -1796,6 +1796,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2234827758954819389">Privatumo vadovas</translation>
 <translation id="2234876718134438132">Sinchron. ir „Google“ paslaugos</translation>
 <translation id="2235344399760031203">Trečiųjų šalių slapukai užblokuoti</translation>
+<translation id="2236949375853147973">Mano veikla</translation>
 <translation id="2238379619048995541">Dažnumo būsenos duomenys</translation>
 <translation id="2240582393605484605">Duomenys, išsaugoti tik šiame įrenginyje, liks esamame profilyje</translation>
 <translation id="2241053333139545397">Skaityti ir keisti duomenis keliose svetainėse</translation>
@@ -5425,6 +5426,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4773122030389014189">Skirtukų grupės „<ph name="GROUP_NAME" />“ bendrinimas</translation>
 <translation id="4773253008034797668">Leidžiama prisijungti prie bet kurio įrenginio vietiniame tinkle</translation>
 <translation id="477548766361111120">Leisti plėtiniui skaityti ir keisti šią svetainę</translation>
+<translation id="4775646243557794597">Ištrinta: <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860">„<ph name="DEVICE_NAME" />“ susietas</translation>
 <translation id="4776594120007763294">Jei norite pridėti puslapį, kad galėtumėte skaityti vėliau, spustelėkite mygtuką</translation>
 <translation id="4777458362738635055">Kiti šio įrenginio naudotojai gali naudoti šį tinklą</translation>
@@ -5770,6 +5772,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5016305686459575361">Susieję telefoną galite atlikti toliau nurodytus veiksmus.</translation>
 <translation id="5016491575926936899">Galite siųsti teksto pranešimą iš kompiuterio, bendrinti interneto ryšį, atsakyti į pokalbių pranešimus ir užrakinti „<ph name="DEVICE_TYPE" />“ telefonu.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Atsisiunčiami pagrindinio mazgo anotacijų failai</translation>
+<translation id="5017529052065664584">Pastarosios penkiolika minučių</translation>
 <translation id="5018207570537526145">Atidaryti plėtinio svetainę</translation>
 <translation id="5018526990965779848">Siųskite naudojimo ir diagnostikos duomenis. Padėkite tobulinti „Android“ funkcijas automatiškai siųsdami „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Jei papildomas Žiniatinklio ir programų veiklos nustatymas įjungtas, šie duomenys gali būti išsaugoti „Google“ paskyroje.</translation>
 <translation id="5019487038187875030">Peržiūrėti iš „MacOS“ importuotus sertifikatus</translation>
@@ -8083,7 +8086,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6694462491298752106">Įtaisyta jutiklinė dalis išjungta</translation>
 <translation id="6694634756612002311">Tvarkyti bendrinimą</translation>
 <translation id="6697172646384837537">Pasirinkite, kur norite importuoti slaptažodžius</translation>
-<translation id="6697492270171225480">Rodyti panašių puslapių pasiūlymus, kai nepavyksta rasti puslapio</translation>
 <translation id="6697690052557311665">Jei norite bendrinti, dešiniuoju pelės klavišu spustelėkite aplanką Failų programoje, tada pasirinkite „Share with Linux“.</translation>
 <translation id="6698810901424468597">Skaityti ir keisti duomenis <ph name="WEBSITE_1" /> ir <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Mobiliojo ryšio SIM kortelės užraktas</translation>
@@ -11471,7 +11473,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="9043264199499366189">Prenumeruoti „ChromeOS Flex“ sistemos įvykius</translation>
 <translation id="9044646465488564462">Nepavyko prisijungti prie tinklo: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Skaitymo sąrašas perkeltas į naują šoninį skydelį. Išbandykite čia.</translation>
-<translation id="9045430190527754450">Siunčia puslapio, kurį bandote pasiekti, žiniatinklio adresą „Google“</translation>
 <translation id="9048745018038487540">Pasirinkti visus šriftus</translation>
 <translation id="9050666287014529139">Slaptafrazė</translation>
 <translation id="905145695813415387">„<ph name="LOCAL_FOLDER" />“ išsaugotas tik šiame įrenginyje. Jei perkelsite šį aplanką į „<ph name="LOCAL_FOLDER" />“, nebegausite jo kituose įrenginiuose.</translation>

@@ -197,7 +197,6 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Luotu <ph name="NUM_MONTHS_ONE" /> kuukausi sitten}other{Luotu <ph name="NUM_MONTHS_MANY" /> kuukautta sitten}}</translation>
 <translation id="8813708480179818649">Poista välilehti ryhmästä</translation>
 <translation id="8820741577754260431">Katso hinnanalennukset välilehdiltä</translation>
-<translation id="883379923675618699">Chrome sulkee automaattisesti ei-aktiivisen osion kohteet, joita et ole käyttänyt kolmeen kuukauteen. Voit laittaa tämän pois päältä nyt tai milloin tahansa asetuksista.</translation>
 <translation id="8887921976452567404">Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista.</translation>
 <translation id="8915916167043355778">Sulje kaikki</translation>
 <translation id="9090098097337832354">"Tietoja tästä kaupasta" suljettu</translation>

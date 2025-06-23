@@ -1793,6 +1793,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2234827758954819389">Hướng dẫn về quyền riêng tư</translation>
 <translation id="2234876718134438132">Đồng bộ hoá và các dịch vụ của Google</translation>
 <translation id="2235344399760031203">Đã chặn các cookie bên thứ ba</translation>
+<translation id="2236949375853147973">Hoạt động của tôi</translation>
 <translation id="2238379619048995541">Dữ liệu trạng thái tần suất</translation>
 <translation id="2240582393605484605">Dữ liệu mà bạn chỉ lưu trên thiết bị này sẽ vẫn nằm trong hồ sơ hiện tại</translation>
 <translation id="2241053333139545397">Đọc và thay đổi dữ liệu của bạn trên một số trang web</translation>
@@ -5422,6 +5423,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4773122030389014189">Chia sẻ nhóm thẻ "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">Được phép kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn</translation>
 <translation id="477548766361111120">Cho phép tiện ích đọc và thay đổi trang web này</translation>
+<translation id="4775646243557794597">Đã xoá <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> đã được kết nối</translation>
 <translation id="4776594120007763294">Để thêm một trang để đọc vào lúc khác, hãy nhấp vào nút</translation>
 <translation id="4777458362738635055">Những người dùng khác trên thiết bị này có thể sử dụng mạng này</translation>
@@ -5767,6 +5769,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5016305686459575361">Khi kết nối điện thoại, bạn có thể:</translation>
 <translation id="5016491575926936899">Bạn có thể nhắn tin từ máy tính, chia sẻ kết nối Internet, trả lời các thông báo về cuộc trò chuyện và mở khoá <ph name="DEVICE_TYPE" /> bằng điện thoại của bạn.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Đang tải tệp chú thích cho nút chính xuống</translation>
+<translation id="5017529052065664584">15 phút qua</translation>
 <translation id="5018207570537526145">Mở trang web của tiện ích</translation>
 <translation id="5018526990965779848">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Giúp cải thiện trải nghiệm Android của bạn bằng cách tự động gửi dữ liệu chẩn đoán, dữ liệu về mức sử dụng ứng dụng và thiết bị cho Google. Những thông tin này sẽ giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Nếu bạn bật tùy chọn cài đặt Hoạt động trên web và ứng dụng bổ sung, thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn.</translation>
 <translation id="5019487038187875030">Xem các chứng chỉ được nhập từ MacOS</translation>
@@ -8073,7 +8076,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6694462491298752106">Bàn di chuột tích hợp sẵn đang tắt</translation>
 <translation id="6694634756612002311">Quản lý hoạt động chia sẻ</translation>
 <translation id="6697172646384837537">Chọn vị trí cần nhập mật khẩu</translation>
-<translation id="6697492270171225480">Hiển thị phần đề xuất các trang tương tự khi không tìm thấy một trang</translation>
 <translation id="6697690052557311665">Để chia sẻ, hãy nhấp chuột phải vào một thư mục trong ứng dụng Files rồi chọn "Chia sẻ với Linux".</translation>
 <translation id="6698810901424468597">Đọc và thay đổi dữ liệu của bạn trên <ph name="WEBSITE_1" /> và <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Khóa SIM di động</translation>
@@ -11460,7 +11462,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9043264199499366189">Đăng ký các sự kiện của hệ thống ChromeOS Flex</translation>
 <translation id="9044646465488564462">Không kết nối được với mạng: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Danh sách đọc của bạn đã chuyển sang bảng điều khiển bên mới. Hãy thử tại đây.</translation>
-<translation id="9045430190527754450">Gửi cho Google địa chỉ web của trang mà bạn đang cố gắng truy cập</translation>
 <translation id="9048745018038487540">Chọn tất cả phông chữ</translation>
 <translation id="9050666287014529139">Cụm mật khẩu</translation>
 <translation id="905145695813415387">"<ph name="LOCAL_FOLDER" />" chỉ được lưu vào thiết bị này. Nếu chuyển thư mục này sang "<ph name="LOCAL_FOLDER" />", bạn sẽ không còn thấy thư mục này trên các thiết bị khác của mình.</translation>

@@ -1759,7 +1759,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3961148744525529027">List rutine za obravnavo plačil je napol odprt</translation>
 <translation id="3962859241508114581">Prejšnja skladba</translation>
 <translation id="3963721102035795474">Način bralnika</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Brez}=1{1 spletno mesto }one{# spletno mesto }two{# spletni mesti }few{# spletna mesta }other{# spletnih mest }}</translation>
 <translation id="3965672182149944205">Želite shraniti naslov?</translation>
 <translation id="3966044442021752214">Varnost izdelka</translation>
 <translation id="3969869202926863008">Dostop v lokalnem omrežju</translation>

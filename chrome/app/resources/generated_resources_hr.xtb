@@ -1784,6 +1784,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2234827758954819389">Vodič za privatnost</translation>
 <translation id="2234876718134438132">Sinkronizacija i Googleove usluge</translation>
 <translation id="2235344399760031203">Blokirani su kolačići treće strane</translation>
+<translation id="2236949375853147973">Moja aktivnost</translation>
 <translation id="2238379619048995541">Podaci o stanju učestalosti</translation>
 <translation id="2240582393605484605">Podaci koji se spremaju samo na ovaj uređaj ostat će na postojećem profilu</translation>
 <translation id="2241053333139545397">čitati i mijenjati vaše podatke na više web-lokacija</translation>
@@ -5406,6 +5407,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4773122030389014189">Podijelite grupu kartica <ph name="GROUP_NAME" /></translation>
 <translation id="4773253008034797668">Dopušteno je povezivanje s bilo kojim uređajem na vašoj lokalnoj mreži</translation>
 <translation id="477548766361111120">Dopusti proširenju da čita i mijenja ovu web-lokaciju</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> izbrisan</translation>
 <translation id="4776311127346151860">Povezan je uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">Da biste dodali stranicu koju ćete kasnije čitati, kliknite gumb</translation>
 <translation id="4777458362738635055">Drugi korisnici ovog uređaja mogu upotrebljavati tu mrežu</translation>
@@ -5750,6 +5752,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5016305686459575361">Povezivanjem telefona možete sljedeće:</translation>
 <translation id="5016491575926936899">Možete slati SMS-ove s računala, dijeliti internetsku vezu, odgovarati na obavijesti o razgovorima i otključavati uređaj <ph name="DEVICE_TYPE" /> pomoću svojeg telefona.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Preuzimanje datoteka sa zabilješkama glavnog čvora</translation>
+<translation id="5017529052065664584">Posljednjih 15 minuta</translation>
 <translation id="5018207570537526145">Otvori web-lokaciju proširenja</translation>
 <translation id="5018526990965779848">Slanje podataka o upotrebi i dijagnostici. Pomognite poboljšati Android automatskim slanjem dijagnostičkih podataka te podataka o upotrebi uređaja i aplikacija Googleu. Ti podaci pomoći će poboljšati stabilnost sustava, aplikacija i drugo. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Ako je uključena dodatna aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na vaš Google račun.</translation>
 <translation id="5019487038187875030">Prikaz uvezenih certifikata iz MacOS-a</translation>
@@ -8050,7 +8053,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6694462491298752106">Ugrađena dodirna podloga je onemogućena</translation>
 <translation id="6694634756612002311">Upravljanje dijeljenjem</translation>
 <translation id="6697172646384837537">Odaberite gdje će se uvesti vaše zaporke</translation>
-<translation id="6697492270171225480">Prikaži prijedloge za slične stranice kada se stranica ne može pronaći</translation>
 <translation id="6697690052557311665">Da biste dijelili mapu, kliknite je desnom tipkom u aplikaciji Datoteke, a zatim odaberite "Dijeli s Linuxom".</translation>
 <translation id="6698810901424468597">čitati i mijenjati vaše podatke na web-lokacijama <ph name="WEBSITE_1" /> i <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Zaključavanje SIM-a mobilne mreže</translation>
@@ -11435,7 +11437,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="9043264199499366189">Pretplata na događaje sustava ChromeOS Flex</translation>
 <translation id="9044646465488564462">Povezivanje s mrežom nije uspjelo: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Vaš popis za čitanje premješten je na novu bočnu ploču. Isprobajte ga ovdje.</translation>
-<translation id="9045430190527754450">Googleu se šalje web-adresa stranice koju pokušavate otvoriti.</translation>
 <translation id="9048745018038487540">Odaberi sve fontove</translation>
 <translation id="9050666287014529139">Zaporka</translation>
 <translation id="905145695813415387">Mapa <ph name="LOCAL_FOLDER" /> sprema se samo na ovaj uređaj. Ako tu mapu premjestite u mapu <ph name="LOCAL_FOLDER" />, više joj nećete moći pristupiti na drugim uređajima.</translation>

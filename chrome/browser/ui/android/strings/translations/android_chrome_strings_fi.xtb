@@ -129,7 +129,6 @@ Siirry <ph name="BEGIN_LINK2" />Googlen palveluihin<ph name="END_LINK2" />, jos 
 <translation id="1521774566618522728">Aktiivinen tänään</translation>
 <translation id="153446405401665083">Chromen uusi versio on saatavilla</translation>
 <translation id="1540012742443808215">Osoitepalkki on yläreunassa</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 kirjanmerkki tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}other{# kirjanmerkkiä tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">Maksutapoja ja osoitteita ei salata. Chromen selaushistoriaa ei synkronoida.
 Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Voit ylläpitää Google-tiliäsi napauttamalla Ylläpidä tiliä ‑painiketta</translation>
@@ -144,7 +143,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1598163867407640634">Käytä sovellusta <ph name="SITE_ETLD_PLUS_ONE" /> kumppanin <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kanssa</translation>
 <translation id="160275202205869636">Kun tämä on päällä, voit tallentaa dataa Google-tilille ja käyttää sitä. Kun asetus on pois päältä, data tallennetaan vain tälle laitteelle.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Poista 1 valittu kohde}other{Poista # valittua kohdetta}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 kirjanmerkki ja muita kohteita tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}other{# kirjanmerkkiä ja muita kohteita tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1639239467298939599">Ladataan</translation>
 <translation id="1641113438599504367">Selaussuoja</translation>
 <translation id="164269334534774161">Katselet sivun offline-kopiota, joka luotiin <ph name="CREATION_TIME" />.</translation>
@@ -477,7 +475,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="316694332262407393">Chrome on jo käynnissä täällä.</translation>
 <translation id="3167258285411721858">Voit pyytää mobiilisivustoa osoitteesta <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 salasana ja muita kohteita tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}other{# salasanaa ja muita kohteita tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="3187472288455401631">Mainosten mittaus</translation>
 <translation id="3189635831478931757">Välilehtiryhmä <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Kirjanmerkeissä</translation>
@@ -894,7 +891,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="506254248375231072">Ei välilehtiä</translation>
 <translation id="5062960805900435602">Ilmoitus salasanojen yhdistämisestä on suljettu</translation>
 <translation id="5075939510584558547">Tallenna ilman salausta</translation>
-<translation id="5082172173036123513">Käyttämättömät ikkunat poistetaan pysyvästi, kun ne ovat olleet käyttämättöminä kuusi kuukautta.</translation>
 <translation id="5085038751173179818">Kirjaudu tälle sivustolle ja Chromeen, niin voit käyttää kirjanmerkkejä ja muita asetuksia kaikilla laitteillasi</translation>
 <translation id="5091199029769593641">Näet pian tarinoita täältä avatessasi uuden välilehden: <ph name="SITE_NAME" />. Seuraamasi sivustot tallennetaan Google-tilillesi. Voit ylläpitää niitä Discoverin asetuksissa.</translation>
 <translation id="509429900233858213">Tapahtui virhe.</translation>
@@ -1155,7 +1151,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämällä sinulle mainoksia, jotka eivät perustu muihin vierailemiisi verkkosivustoihin. Monet sivustot keräävät ja käyttävät silti edelleen selaustietojasi – esimerkiksi turvallisuuden parantamiseen, sisällön, mainosten ja suositusten tarjoamiseen sekä raportointitilastojen luomiseen.</translation>
 <translation id="6247557882553405851">Googlen Salasanojen ylläpito</translation>
 <translation id="6251449557817521191">Täällä näet Chrome-historiasi</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 kohde tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}other{# kohdetta tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="6254139308321626268">Katselet PDF-tiedostoa</translation>
 <translation id="6255809143828972562">Chromen työkaluilla voit selata turvallisesti ja pitää ohjat omissa käsissäsi</translation>
 <translation id="6264376385120300461">Lataa silti</translation>
@@ -1420,7 +1415,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7293429513719260019">Valitse kieli</translation>
 <translation id="729975465115245577">Laitteella ei ole sovellusta, johon salasanatiedoston voisi tallentaa.</translation>
 <translation id="7304072650267745798">Android-laitteellasi voi olla vastaava asetus. Jos asetus on päällä Chromessa ja Android-laitteella, yritys voi pystyä mittaamaan mainoksen tehokkuutta kaikilla verkkosivustoilla ja käyttämissäsi sovelluksissa.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 salasana tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}other{# salasanaa tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="7304873321153398381">Offline-tilassa. Chrome ei voi tarkistaa salasanojasi.</translation>
 <translation id="7313188324932846546">Ota synkronointi käyttöön napauttamalla</translation>
 <translation id="7314734791127433392">Salasanojen tarkistaminen ei onnistu</translation>
@@ -1633,7 +1627,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="813082847718468539">Näytä sivuston tiedot</translation>
 <translation id="8135406045838672858">Ladatut PDF-tiedostot avautuvat automaattisesti sovelluksella <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Google Salasanoihin.</translation>
-<translation id="8146563639948412265">Voit avata enintään <ph name="MAX_WINDOW_COUNT" /> ikkunaa. Jos haluat palauttaa ikkunan, sulje <ph name="WINDOW_COUNT" /> aktiivista tai ei-aktiivista ikkunaa.</translation>
 <translation id="8152331954420209374">Siirry Lensiin</translation>
 <translation id="8163820386638255770">Salasanojen käyttö ja tallennus Google-tilillä edellyttää, että vahvistat henkilöllisyytesi</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> tiedostoa jäljellä</translation>
@@ -1873,7 +1866,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="9169507124922466868">Navigointihistoria on puoliksi auki</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Historia löytyy kaikilta synkronoiduilta laitteilta, joten voit jatkaa samasta kohdasta</translation>
-<translation id="9191906083913361689">Voit katsella ja ylläpitää näitä kohteita myös kirjanmerkeissä, lukulistalla tai Salasanoissa.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tarkistettu 1 minuutti sitten}other{Tarkistettu # minuuttia sitten}}</translation>
 <translation id="9204021776105550328">Poistetaan</translation>
 <translation id="9204836675896933765">1 tiedosto jäljellä</translation>

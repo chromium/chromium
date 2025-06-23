@@ -6063,25 +6063,6 @@ Si la règle est définie sur "True" ou n'est pas configurée, les enseignants s
 
 Si la règle est définie sur "False", les enseignants ne peuvent pas accéder à cette fonctionnalité.</translation>
 <translation id="5377606826822211923">Contrôler l'accès par l'utilisateur aux applications Android provenant de sources non approuvées</translation>
-<translation id="5377826248281933035">Cette règle liste des sites sur lesquels les utilisateurs peuvent effectuer des recherches rapides à l'aide de raccourcis dans la barre d'adresse. Les utilisateurs peuvent lancer une recherche en saisissant dans la barre d'adresse le raccourci ou raccourci précédé du caractère @ (par exemple, @travail), puis en appuyant sur la barre d'espace ou la touche de tabulation.
-
-Les champs suivants sont obligatoires pour chaque site : <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />.
-
-Le champ <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" /> correspond au nom du site ou du moteur de recherche à présenter à l'utilisateur dans la barre d'adresse.
-
-<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> peut contenir des mots et des caractères bruts, mais il ne peut pas contenir d'espaces ni commencer par le symbole @. Les raccourcis doivent également être uniques.
-
-Pour chaque entrée, le champ <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> indique l'URL du moteur de recherche utilisé lors d'une recherche avec le mot clé correspondant. L'URL doit inclure la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée dans la requête par les termes de recherche de l'utilisateur. Les entrées non valides et celles comportant des raccourcis en double sont ignorées.
-
-Les entrées de recherche sur site configurées comme mises en avant sont affichées dans la barre d'adresse quand l'utilisateur saisit "@". Jusqu'à trois entrées peuvent être sélectionnées comme mises en avant.
-
-L'utilisateur ne peut pas modifier ni désactiver les entrées de recherche sur site définies par la règle, mais il peut ajouter des raccourcis pour la même URL. De plus, il ne peut pas créer d'entrées de recherche sur site avec un raccourci créé précédemment à l'aide de cette règle.
-
-En cas de conflit avec un raccourci que l'utilisateur a créé précédemment, le paramètre de l'utilisateur prévaut. Toutefois, l'utilisateur peut toujours déclencher l'option créée par la règle en saisissant le caractère @ dans la barre de recherche. Par exemple, si l'utilisateur a déjà défini "travail" comme raccourci vers l'URL1 et que la règle définit "travail" comme raccourci vers l'URL2, saisir "travail" dans la barre de recherche déclenchera une recherche sur l'URL1, mais saisir "@travail" dans la barre de recherche déclenchera une recherche sur l'URL2.
-
-Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="537786648513450280">Contrôler l'accès de l'appareil aux applications Android provenant de sources non approuvées</translation>
 <translation id="5378885577701865339">Désactiver la fonctionnalité de presse-papiers partagé</translation>
 <translation id="538108065117008131">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenus suivants.</translation>
@@ -10120,13 +10101,6 @@ Tous les ensembles que cette règle fournit doivent être des ensembles de sites
 Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
-<translation id="8213475033260328041">Permet de stocker les données couvertes de <ph name="PRODUCT_NAME" /> dans une région spécifique.
-
-Si cette règle n'est pas configurée ou qu'elle est définie sur <ph name="DATA_REGION_SETTING_NO_PREFERENCE_OPTION_NAME" /> (valeur 0), les données couvertes peuvent être stockées dans n'importe quelle région.
-
-Si cette règle est définie sur <ph name="DATA_REGION_SETTING_UNITED_STATES_OPTION_NAME" /> (valeur 1), les données couvertes sont stockées aux États-Unis.
-
-Si cette règle est définie sur <ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" /> (valeur 2), les données couvertes sont stockées en Europe.</translation>
 <translation id="8213770777756919897">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
 
           Si cette règle est configurée, <ph name="PRODUCT_OS_NAME" /> met en œuvre l'action à effectuer en cas d'inactivité de l'utilisateur (laquelle peut être définie séparément) au terme du délai d'inactivité de l'utilisateur.

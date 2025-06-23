@@ -1795,6 +1795,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2234827758954819389">Vodnik po zasebnosti</translation>
 <translation id="2234876718134438132">Sinhronizacija in Googlove storitve</translation>
 <translation id="2235344399760031203">Piškotki tretjih oseb so blokirani</translation>
+<translation id="2236949375853147973">Moja dejavnost</translation>
 <translation id="2238379619048995541">Podatki o stanju frekvence</translation>
 <translation id="2240582393605484605">Podatki, shranjeni samo v tej napravi, bodo ostali v obstoječem profilu</translation>
 <translation id="2241053333139545397">Branje in spreminjanje vaših podatkov na več spletnih mestih</translation>
@@ -5420,6 +5421,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4773122030389014189">Deljenje skupine zavihkov »<ph name="GROUP_NAME" />«</translation>
 <translation id="4773253008034797668">Dovoljeno je vzpostavljanje povezav s katero koli napravo v lokalnem omrežju</translation>
 <translation id="477548766361111120">Dovoli, da razširitev bere in spreminja to spletno mesto</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> – izbrisano</translation>
 <translation id="4776311127346151860">Naprava <ph name="DEVICE_NAME" /> je povezana</translation>
 <translation id="4776594120007763294">Če želite dodati stran za poznejše branje, kliknite gumb.</translation>
 <translation id="4777458362738635055">Drugi uporabniki te naprave lahko uporabljajo to omrežje.</translation>
@@ -5765,6 +5767,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5016305686459575361">Če povežete telefon, imate te možnosti:</translation>
 <translation id="5016491575926936899">Iz računalnika lahko pošiljate sporočila SMS, delite internetno povezavo, odgovarjate na obvestila v pogovorih in odklenete napravo <ph name="DEVICE_TYPE" /> s telefonom.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Prenašanje datotek z obvestili glavnega vozlišča</translation>
+<translation id="5017529052065664584">Zadnjih 15 minut</translation>
 <translation id="5018207570537526145">Odpri spletno mesto razširitve</translation>
 <translation id="5018526990965779848">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Pomagajte izboljšati izkušnjo z Androidom s samodejnim pošiljanjem diagnostičnih podatkov ter podatkov o uporabi naprave in aplikacij Googlu. Te podatke uporabljamo za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. Če ste vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v vašem računu Google.</translation>
 <translation id="5019487038187875030">Ogled uvoženih potrdil iz sistema macOS</translation>
@@ -8073,7 +8076,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6694462491298752106">Vgrajena sledilna ploščica je onemogočena</translation>
 <translation id="6694634756612002311">Upravljaj deljenje</translation>
 <translation id="6697172646384837537">Izberite, kam želite uvoziti gesla.</translation>
-<translation id="6697492270171225480">Prikaz predlogov za podobne strani, ko strani ni mogoče najti</translation>
 <translation id="6697690052557311665">Če želite deliti, z desno tipko miške kliknite mapo v aplikaciji Datoteke, nato izberite »Deljenje z Linuxom«.</translation>
 <translation id="6698810901424468597">Branje in spreminjanje vaših podatkov na spletnih mestih <ph name="WEBSITE_1" /> in <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Zaklepanje kartice SIM za mobilno omrežje</translation>
@@ -11459,7 +11461,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9043264199499366189">Naročanje na dogodke v sistemu ChromeOS Flex</translation>
 <translation id="9044646465488564462">Z omrežjem se ni bilo mogoče povezati: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Vaš bralni seznam je premaknjen v novo stransko podokno. Preizkusite.</translation>
-<translation id="9045430190527754450">Pošlje spletni naslov strani, ki jo želite odpreti, Googlu</translation>
 <translation id="9048745018038487540">Izberi vse pisave</translation>
 <translation id="9050666287014529139">Geslo</translation>
 <translation id="905145695813415387">Mapa »<ph name="LOCAL_FOLDER" />« je shranjena samo v tej napravi. Če jo premaknete v mapo »<ph name="LOCAL_FOLDER" />«, do nje ne morete dostopati v drugih napravah.</translation>

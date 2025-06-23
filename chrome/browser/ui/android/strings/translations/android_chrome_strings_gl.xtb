@@ -129,7 +129,6 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="1521774566618522728">Dispositivo activo hoxe</translation>
 <translation id="153446405401665083">Hai unha versión de Chrome máis recente</translation>
 <translation id="1540012742443808215">A barra de enderezos está actualmente na parte superior</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{Hai 1 marcador gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}other{Hai # marcadores gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">Os enderezos e os métodos de pago non se encriptarán. Tampouco se sincronizará o historial de navegación de Chrome.
 Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase de acceso. Google non recibirá nin almacenará a frase de acceso. Se a esqueces ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Para xestionar a túa conta de Google, toca o botón Xestionar conta</translation>
@@ -144,7 +143,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1598163867407640634">Usa <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Se esta opción está activada, podes utilizar e gardar os datos na túa Conta de Google. Cando está desactivada, os datos gárdanse só no dispositivo.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{Hai 1 marcador e outros elementos gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}other{Hai # marcadores e outros elementos gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="164269334534774161">Estás vendo unha copia sen conexión desta páxina creada o <ph name="CREATION_TIME" /></translation>
@@ -477,7 +475,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="316694332262407393">Chrome xa se está executando aquí.</translation>
 <translation id="3167258285411721858">Podes solicitar o sitio para móbiles para o anfitrión <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{Hai 1 contrasinal e outros elementos gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}other{Hai # contrasinais e outros elementos gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3189635831478931757">Grupo de pestanas <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
@@ -894,7 +891,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="506254248375231072">Ningunha pestana</translation>
 <translation id="5062960805900435602">A actualización sobre a combinación de contrasinais está pechada</translation>
 <translation id="5075939510584558547">Gardar sen encriptación</translation>
-<translation id="5082172173036123513">As ventás inactivas elimínanse de maneira permanente despois de seis meses sen actividade.</translation>
 <translation id="5085038751173179818">Inicia sesión neste sitio e en Chrome para acceder aos teus marcadores e a máis contido en todos os teus dispositivos</translation>
 <translation id="5091199029769593641">Pronto se che mostrarán historias de <ph name="SITE_NAME" /> cando abras unha pestana nova. Os sitios que segues gárdanse na túa conta de Google. Podes xestionalos na configuración de Discover.</translation>
 <translation id="509429900233858213">Produciuse un erro.</translation>
@@ -1155,7 +1151,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche anuncios que non estean baseados noutros sitios web que visitases. Moitos sitios web seguirán recompilando e utilizando os teus datos de navegación para, por exemplo, mellorar a seguranza, fornecer contido, anuncios e recomendacións e para crear estatísticas de informes.</translation>
 <translation id="6247557882553405851">Xestor de contrasinais de Google</translation>
 <translation id="6251449557817521191">Consulta o historial de Chrome aquí</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{Hai 1 elemento gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}other{Hai # elementos gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="6254139308321626268">Estás vendo un ficheiro PDF</translation>
 <translation id="6255809143828972562">Coas ferramentas de Chrome, podes navegar de maneira segura e manter o control</translation>
 <translation id="6264376385120300461">Descargar de todos os modos</translation>
@@ -1420,7 +1415,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="729975465115245577">O dispositivo non ten unha aplicación para almacenar o ficheiro de contrasinais.</translation>
 <translation id="7304072650267745798">Talvez o teu dispositivo Android inclúa unha opción de configuración similar. Se esta opción está activada en Chrome e no teu dispositivo Android, é posible que unha empresa poida medir a eficacia dos anuncios nos sitios web que visites e nas aplicacións que uses.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{Hai 1 contrasinal gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}other{Hai # contrasinais gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="7304873321153398381">Estás sen conexión. Chrome non puido comprobar os teus contrasinais.</translation>
 <translation id="7313188324932846546">Toca para configurar a sincronización</translation>
 <translation id="7314734791127433392">Non se puideron comprobar os contrasinais</translation>
@@ -1633,7 +1627,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="813082847718468539">Consulta a información do sitio</translation>
 <translation id="8135406045838672858">Os PDF descargados abriranse automaticamente con <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google.</translation>
-<translation id="8146563639948412265">Podes ter ata <ph name="MAX_WINDOW_COUNT" /> ventás. Para restaurar unha, pecha <ph name="WINDOW_COUNT" /> ventás activas ou inactivas.</translation>
 <translation id="8152331954420209374">Ir a Lens</translation>
 <translation id="8163820386638255770">Para usar e gardar os contrasinais na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="8186512483418048923">Quedan <ph name="FILES" /> ficheiros</translation>
@@ -1873,7 +1866,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="9169507124922466868">O historial de navegación abriuse ata a metade</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Terás o teu historial en todos os dispositivos sincronizados, de tal xeito que poidas continuar co que estabas facendo</translation>
-<translation id="9191906083913361689">Tamén podes ver e xestionar estes elementos nos marcadores, na lista de lectura ou no xestor de contrasinais</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A comprobación realizouse hai 1 minuto}other{A comprobación realizouse hai # minutos}}</translation>
 <translation id="9204021776105550328">Eliminando</translation>
 <translation id="9204836675896933765">Queda 1 ficheiro</translation>

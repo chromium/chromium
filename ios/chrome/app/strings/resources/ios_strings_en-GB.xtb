@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Sharing failed because you are not connected to the network.</translation>
 <translation id="1668001730617725852">Open in new tab group</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> to <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">You can now open Google Lens from your address bar and search anything that you see</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="169048873465870056">Remove tab and delete group?</translation>
 <translation id="1698090540708020240">Import passwords…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">The account <ph name="USER_EMAIL" /> is managed by <ph name="HOSTED_DOMAIN" />, which may be able to view some information. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">new item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> accounts using same password</translation>
+<translation id="205013082884273671">Search anything on your screen</translation>
 <translation id="2054044186557130763">Sign in as <ph name="NAME" /> <ph name="EMAIL" />, managed by your organisation.</translation>
 <translation id="2059166748188874810">Municipality</translation>
 <translation id="2060638295449304809">This address is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="USER_EMAIL" /></translation>
@@ -459,6 +461,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2819667972867209401">When on, data is saved in your Google Account. When off, data is saved only to this device and is deleted if you sign out.</translation>
 <translation id="2827760117436553203">Keep data separate?</translation>
 <translation id="2829172210806130158">Search your screen</translation>
+<translation id="2831109159746537587">Try circling or tapping the picture to search</translation>
 <translation id="2834399722155632105">3. Tap Password options</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Time</translation>

@@ -1762,7 +1762,6 @@
 <translation id="3961148744525529027">Страница обрађивача плаћања је полуотворена</translation>
 <translation id="3962859241508114581">Претходна песма</translation>
 <translation id="3963721102035795474">Режим читаоца</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{None}=1{Са 1 сајта }one{Са # сајта }few{Са # сајта }other{Са # сајтова }}</translation>
 <translation id="3965672182149944205">Желите да сачувате адресу?</translation>
 <translation id="3966044442021752214">Безбедност производа</translation>
 <translation id="3969869202926863008">Приступ локалној мрежи</translation>

@@ -129,7 +129,6 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="1521774566618522728">Aktif hari ini</translation>
 <translation id="153446405401665083">Chrome versi baru telah tersedia</translation>
 <translation id="1540012742443808215">Kolom URL saat ini berada di atas</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bookmark hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan bookmark di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}other{# bookmark hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan bookmark di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Metode pembayaran dan alamat tidak akan dienkripsi. Histori penjelajahan dari Chrome tidak akan disinkronkan.
 Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi Anda. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Untuk mengelola akun Google Anda, ketuk tombol "Kelola akun"</translation>
@@ -144,7 +143,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1598163867407640634">Gunakan <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Jika diaktifkan, data akan digunakan dan disimpan di Akun Google Anda. Jika dinonaktifkan, data hanya disimpan di perangkat ini.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Hapus 1 item yang dipilih}other{Hapus # item yang dipilih}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 bookmark dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan bookmark dan item lainnya di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}other{# bookmark dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan bookmark dan item lainnya di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1639239467298939599">Memuat</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">Anda melihat salinan offline halaman ini dari <ph name="CREATION_TIME" /></translation>
@@ -477,7 +475,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="316694332262407393">Chrome sudah berjalan di sini.</translation>
 <translation id="3167258285411721858">Anda dapat meminta situs seluler untuk <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 sandi dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi dan item lainnya di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}other{# sandi dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi dan item lainnya di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Pengukuran iklan</translation>
 <translation id="3189635831478931757">Grup tab <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Diberi bookmark</translation>
@@ -894,7 +891,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="506254248375231072">Tidak ada tab</translation>
 <translation id="5062960805900435602">Pembaruan terkait penggabungan sandi ditutup</translation>
 <translation id="5075939510584558547">Simpan tanpa enkripsi</translation>
-<translation id="5082172173036123513">Jendela yang tidak aktif akan dihapus secara permanen setelah tidak aktif selama 6 bulan.</translation>
 <translation id="5085038751173179818">Login ke situs ini dan Chrome untuk mendapatkan bookmark Anda dan lainnya di semua perangkat</translation>
 <translation id="5091199029769593641">Sebentar lagi, Anda akan melihat cerita dari <ph name="SITE_NAME" /> saat membuka tab baru. Situs yang Anda ikuti akan disimpan di Akun Google Anda. Anda dapat mengelolanya di setelan Discover.</translation>
 <translation id="509429900233858213">Terjadi error.</translation>
@@ -1155,7 +1151,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangkan iklan yang tidak berdasarkan pada data kunjungan Anda ke situs web lainnya. Banyak situs web masih akan mengumpulkan dan menggunakan data penjelajahan Anda — misalnya, untuk meningkatkan keamanan, menyediakan konten, iklan, dan saran, serta untuk membuat statistik pelaporan.</translation>
 <translation id="6247557882553405851">Pengelola Sandi Google</translation>
 <translation id="6251449557817521191">Lihat Histori Chrome Anda di sini</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 item hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan item di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}other{# item hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan item di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="6254139308321626268">Anda sedang melihat file PDF</translation>
 <translation id="6255809143828972562">Dengan alat dari Chrome, Anda dapat menjelajah dengan aman dan tetap memegang kendali</translation>
 <translation id="6264376385120300461">Tetap download</translation>
@@ -1420,7 +1415,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7293429513719260019">Pilih bahasa</translation>
 <translation id="729975465115245577">Perangkat Anda tidak memiliki aplikasi untuk menyimpan file sandi.</translation>
 <translation id="7304072650267745798">Perangkat Android Anda mungkin menyertakan setelan serupa. Jika setelan ini diaktifkan di Chrome dan di perangkat Android Anda, perusahaan iklan mungkin dapat mengukur keefektifan iklan di semua situs yang Anda buka dan aplikasi yang Anda gunakan.</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}other{# sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7304873321153398381">Offline. Chrome tidak dapat memeriksa sandi Anda.</translation>
 <translation id="7313188324932846546">Ketuk untuk menyiapkan sinkronisasi</translation>
 <translation id="7314734791127433392">Tidak dapat memeriksa sandi</translation>
@@ -1633,7 +1627,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="813082847718468539">Lihat informasi situs</translation>
 <translation id="8135406045838672858">PDF hasil download akan otomatis dibuka dengan <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Anda tidak perlu mengingat sandi ini. Sandi akan disimpan ke Pengelola Sandi Google.</translation>
-<translation id="8146563639948412265">Anda dapat membuka jendela hingga <ph name="MAX_WINDOW_COUNT" />. Untuk memulihkan jendela, tutup <ph name="WINDOW_COUNT" /> jendela aktif atau tidak aktif.</translation>
 <translation id="8152331954420209374">Buka Lens</translation>
 <translation id="8163820386638255770">Untuk menggunakan dan menyimpan sandi di Akun Google Anda, verifikasi diri Anda</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> file tersisa</translation>
@@ -1873,7 +1866,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="9169507124922466868">Histori navigasi terbuka setengah</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Histori Anda akan tersedia di semua perangkat yang disinkronkan, sehingga Anda dapat melanjutkan kegiatan Anda</translation>
-<translation id="9191906083913361689">Anda juga dapat melihat dan mengelola item ini di bookmark, daftar bacaan, atau pengelola sandi</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Diperiksa 1 menit yang lalu}other{Diperiksa # menit yang lalu}}</translation>
 <translation id="9204021776105550328">Menghapus</translation>
 <translation id="9204836675896933765">1 file tersisa</translation>

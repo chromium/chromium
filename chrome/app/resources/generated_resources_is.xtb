@@ -1793,6 +1793,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2234827758954819389">Leiðbeiningar um persónuvernd</translation>
 <translation id="2234876718134438132">Samstilling og þjónusta Google</translation>
 <translation id="2235344399760031203">Lokað er á fótspor frá þriðju aðilum</translation>
+<translation id="2236949375853147973">Mín virkni</translation>
 <translation id="2238379619048995541">Gögn um tíðnistöðu</translation>
 <translation id="2240582393605484605">Gögn sem eru aðeins vistuð í þessu tæki verða áfram tiltæk á núverandi prófíl</translation>
 <translation id="2241053333139545397">Lesa og breyta gögnunum þínum á mörgum vefsvæðum</translation>
@@ -5418,6 +5419,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4773122030389014189">Deildu flipahópnum „<ph name="GROUP_NAME" />“</translation>
 <translation id="4773253008034797668">Mega tengjast hvaða tæki sem er á staðarnetinu þínu</translation>
 <translation id="477548766361111120">Leyfa viðbótum að lesa og breyta þessu vefsvæði</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> eytt</translation>
 <translation id="4776311127346151860">Búið er að tengja <ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">Smelltu á hnappinn til að bæta við síðu til að lesa síðar</translation>
 <translation id="4777458362738635055">Aðrir notendur tækisins geta notað þetta netkerfi</translation>
@@ -5763,6 +5765,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5016305686459575361">Með því að tengja símann geturðu:</translation>
 <translation id="5016491575926936899">Þú getur sent skilaboð úr tölvunni, deilt nettengingunni þinni, svarað samtalstilkynningum og opnað <ph name="DEVICE_TYPE" /> með símanum þínum.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="5017250179386090956">Sækir textaskýringarskrár aðalhnúts</translation>
+<translation id="5017529052065664584">Síðustu 15 mínútur</translation>
 <translation id="5018207570537526145">Opna vefsvæði viðbótar</translation>
 <translation id="5018526990965779848">Senda notkunar- og greiningargögn. Hjálpaðu okkur að bæta Android fyrir þig með því að senda sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta mun stuðla að stöðugleika kerfa og forrita og öðrum endurbótum. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Ef kveikt er á ítarlegri vef- og forritavirkni geta þessi gögn verið vistuð á Google reikningnum þínum.</translation>
 <translation id="5019487038187875030">Skoða innflutt vottorð úr MacOS</translation>
@@ -8065,7 +8068,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6694462491298752106">Slökkt er á innbyggðum snertifleti</translation>
 <translation id="6694634756612002311">Stjórna deilingu</translation>
 <translation id="6697172646384837537">Veldu hvar þú vilt flytja aðgangsorðin inn</translation>
-<translation id="6697492270171225480">Birta tillögur að svipuðum síðum þegar síða finnst ekki</translation>
 <translation id="6697690052557311665">Hægrismelltu á möppu í Files forritinu og veldu „Deila með Linux“ til að deila.</translation>
 <translation id="6698810901424468597">Lesa og breyta gögnunum þínum á <ph name="WEBSITE_1" /> og <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">SIM-lás farsímakerfis</translation>
@@ -11447,7 +11449,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9043264199499366189">Gerast áskrifandi að ChromeOS Flex-kerfisatvikum</translation>
 <translation id="9044646465488564462">Mistókst að tengjast netinu: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Leslistinn þinn var færður yfir í nýja hliðargluggann. Prófaðu hann hér.</translation>
-<translation id="9045430190527754450">Sendir veffang síðunnar sem þú reynir að opna til Google</translation>
 <translation id="9048745018038487540">Velja allar leturgerðir</translation>
 <translation id="9050666287014529139">Aðgangsorð</translation>
 <translation id="905145695813415387">„<ph name="LOCAL_FOLDER" />“ er eingöngu vistuð í þessu tæki. Ef þú flytur möppuna yfir í „<ph name="LOCAL_FOLDER" />“ geturðu ekki nálgast hana lengur í hinum tækjunum þínum.</translation>

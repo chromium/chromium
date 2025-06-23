@@ -129,7 +129,6 @@
 <translation id="1521774566618522728">上次使用時間：今天</translation>
 <translation id="153446405401665083">Chrome 已推出新版本</translation>
 <translation id="1540012742443808215">網址列目前位於頂端</translation>
-<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{這 1 個書籤只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}other{這 # 個書籤只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}}</translation>
 <translation id="1544084554881119930">系統將不會加密付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。
 只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="1544826120773021464">如要管理你的 Google 帳戶，請輕觸 [管理帳戶] 按鈕</translation>
@@ -144,7 +143,6 @@
 <translation id="1598163867407640634">透過 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">開啟時，可在 Google 帳戶中使用及儲存資料。關閉後，資料只會儲存到這部裝置。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 個選取的項目}other{移除 # 個選取的項目}}</translation>
-<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{這 1 個書籤和其他項目只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}other{這 # 個書籤和其他項目只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}}</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="164269334534774161">您目前瀏覽的是這個網頁的離線複本 (建立時間：<ph name="CREATION_TIME" />)</translation>
@@ -477,7 +475,6 @@
 <translation id="316694332262407393">Chrome 已在執行中。</translation>
 <translation id="3167258285411721858">你可以要求 <ph name="HOST_NAME" /> 顯示行動版網站</translation>
 <translation id="3169472444629675720">探索</translation>
-<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 個密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}other{# 個密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}}</translation>
 <translation id="3187472288455401631">廣告評估功能</translation>
 <translation id="3189635831478931757">「<ph name="GROUP_TITLE" />」分頁群組</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
@@ -894,7 +891,6 @@
 <translation id="506254248375231072">沒有任何分頁</translation>
 <translation id="5062960805900435602">已關閉密碼合併相關更新</translation>
 <translation id="5075939510584558547">不加密直接儲存</translation>
-<translation id="5082172173036123513">視窗閒置 6 個月後就會永久刪除。</translation>
 <translation id="5085038751173179818">登入這個網站和 Chrome，即可在所有裝置上存取書籤和其他設定。</translation>
 <translation id="5091199029769593641">不久後，你就會在開啟新分頁時看到「<ph name="SITE_NAME" />」的網路故事。你追蹤的網站會儲存在 Google 帳戶中，你可以在「探索」設定中管理這些網站。</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
@@ -1155,7 +1151,6 @@
 舉例來說，部分網站可能會以顯示廣告的方式回應這類要求，而這些廣告並非根據您所造訪的其他網站記錄而產生。許多網站仍會收集您的瀏覽資料，並將這些資料用於下列目的：提高網站安全性、在網站上提供更相關的內容、廣告和推薦項目，以及產生報告統計資料。</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6251449557817521191">這裡會顯示 Chrome 歷史記錄</translation>
-<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 個項目只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}other{# 個項目只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}}</translation>
 <translation id="6254139308321626268">目前查看的是 PDF 檔案</translation>
 <translation id="6255809143828972562">Chrome 提供各種實用工具，你可以放心瀏覽網路，掌控一切設定</translation>
 <translation id="6264376385120300461">仍要下載</translation>
@@ -1420,7 +1415,6 @@
 <translation id="7293429513719260019">選取語言</translation>
 <translation id="729975465115245577">你的裝置沒有可儲存密碼檔案的應用程式。</translation>
 <translation id="7304072650267745798">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置上開啟了這項設定，廣告技術公司或許就能在你造訪的網站和使用的應用程式上評估廣告成效。</translation>
-<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 組密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}other{# 組密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}}</translation>
 <translation id="7304873321153398381">你目前處於離線狀態，因此 Chrome 無法檢查你的密碼。</translation>
 <translation id="7313188324932846546">輕觸即可設定同步功能</translation>
 <translation id="7314734791127433392">無法檢查密碼</translation>
@@ -1633,7 +1627,6 @@
 <translation id="813082847718468539">查看網站資訊</translation>
 <translation id="8135406045838672858">自動使用「<ph name="APP_NAME" />」開啟下載的 PDF</translation>
 <translation id="8137562778192957619">你不需要記住這組密碼，系統會將密碼儲存至 Google 密碼管理工具中。</translation>
-<translation id="8146563639948412265">最多可以開啟 <ph name="MAX_WINDOW_COUNT" /> 個視窗。如要還原視窗，請先關閉 <ph name="WINDOW_COUNT" /> 個使用中或閒置視窗。</translation>
 <translation id="8152331954420209374">開啟智慧鏡頭</translation>
 <translation id="8163820386638255770">如要將密碼儲存到 Google 帳戶，或使用帳戶中的密碼，請驗證身分</translation>
 <translation id="8186512483418048923">還剩 <ph name="FILES" /> 個檔案</translation>
@@ -1873,7 +1866,6 @@
 <translation id="9169507124922466868">已在畫面下半部顯示瀏覽記錄</translation>
 <translation id="918419812064856259">Chrome Beta 版</translation>
 <translation id="9190276265094487094">所有已同步的裝置上都會有你的歷史記錄，方便你繼續執行先前的工作</translation>
-<translation id="9191906083913361689">你也可以在書籤、閱讀清單或密碼管理工具中查看及管理這些項目</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{已在 1 分鐘前檢查}other{已在 # 分鐘前檢查}}</translation>
 <translation id="9204021776105550328">刪除中</translation>
 <translation id="9204836675896933765">還剩 1 個檔案</translation>
