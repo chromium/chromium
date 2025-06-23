@@ -23,12 +23,21 @@ import java.util.Objects;
 class TouchToFillPaymentMethodProperties {
     static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("visible");
+    static final PropertyModel.WritableIntPropertyKey CURRENT_SCREEN =
+            new PropertyModel.WritableIntPropertyKey("current_screen");
     public static final PropertyModel.ReadableObjectPropertyKey<ModelList> SHEET_ITEMS =
             new PropertyModel.ReadableObjectPropertyKey("sheet_items");
     static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
             new PropertyModel.ReadableObjectPropertyKey<>("dismiss_handler");
 
-    static final PropertyKey[] ALL_KEYS = {VISIBLE, SHEET_ITEMS, DISMISS_HANDLER};
+    static final PropertyKey[] ALL_KEYS = {VISIBLE, CURRENT_SCREEN, SHEET_ITEMS, DISMISS_HANDLER};
+
+    // Identifies different screens that can be dynamically displayed by the payments TTF bottom
+    // sheet.
+    @interface ScreenId {
+        // The initial bottom sheet screen which offers the user to fill data into the form.
+        int HOME_SCREEN = 0;
+    }
 
     @interface ItemType {
         // The header at the top of the touch to fill sheet.

@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -28,6 +29,7 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLoca
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.TEXT_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.APPLY_DEACTIVATED_STYLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.FIRST_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ITEM_COLLECTION_INFO;
@@ -56,6 +58,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.NON_TRANSFORMING_LOYALTY_CARD_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.ON_LOYALTY_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.ALL_TERMS_LABEL_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
@@ -337,6 +340,7 @@ public class TouchToFillPaymentMethodViewTest {
                     mTouchToFillPaymentMethodModel =
                             new PropertyModel.Builder(TouchToFillPaymentMethodProperties.ALL_KEYS)
                                     .with(VISIBLE, false)
+                                    .with(CURRENT_SCREEN, HOME_SCREEN)
                                     .with(SHEET_ITEMS, new ModelList())
                                     .with(DISMISS_HANDLER, mDismissCallback)
                                     .build();
@@ -348,6 +352,13 @@ public class TouchToFillPaymentMethodViewTest {
                             mTouchToFillPaymentMethodView,
                             TouchToFillPaymentMethodViewBinder::bindTouchToFillPaymentMethodView);
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testInitializesHomeScreen() {
+        assertNotNull(mTouchToFillPaymentMethodView.getSheetItemListView());
+        assertNotNull(mTouchToFillPaymentMethodView.getSheetItemListView().getAdapter());
     }
 
     @Test
@@ -1082,7 +1093,9 @@ public class TouchToFillPaymentMethodViewTest {
     }
 
     private RecyclerView getCreditCardSuggestions() {
-        return mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.sheet_item_list);
+        return mTouchToFillPaymentMethodView
+                .getContentView()
+                .findViewById(R.id.touch_to_fill_payment_method_home_screen);
     }
 
     private TextView getSuggestionMainTextAt(int index) {

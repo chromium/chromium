@@ -78,6 +78,7 @@ android_resources("java_resources") {
     "java/res/layout/touch_to_fill_header_item.xml",
     "java/res/layout/touch_to_fill_list_item.xml",
     "java/res/layout/touch_to_fill_more_passkeys_item.xml",
+    "java/res/layout/touch_to_fill_sheet.xml",
     "java/res/values/dimens.xml",
   ]
 }

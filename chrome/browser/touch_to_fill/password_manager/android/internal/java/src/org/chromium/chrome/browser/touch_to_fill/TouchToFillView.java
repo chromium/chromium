@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.touch_to_fill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.common.ItemDividerBase;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillViewBase;
@@ -26,6 +29,7 @@ import java.util.Set;
  * credentials. It is a View in this Model-View-Controller component and doesn't inherit but holds
  * Android Views.
  */
+@NullMarked
 class TouchToFillView extends TouchToFillViewBase {
     private static class HorizontalDividerItemDecoration extends ItemDividerBase {
         HorizontalDividerItemDecoration(Context context) {
@@ -56,7 +60,7 @@ class TouchToFillView extends TouchToFillViewBase {
 
         @Override
         protected boolean containsFillButton(RecyclerView parent) {
-            int itemCount = parent.getAdapter().getItemCount();
+            int itemCount = assumeNonNull(parent.getAdapter()).getItemCount();
             // The button will be above the footer if it's present.
             return itemCount > 1
                     && parent.getAdapter().getItemViewType(itemCount - 2) == ItemType.FILL_BUTTON;
@@ -76,6 +80,7 @@ class TouchToFillView extends TouchToFillViewBase {
                         LayoutInflater.from(context).inflate(R.layout.touch_to_fill_sheet, null),
                 true);
 
+        setSheetItemListView(getContentView().findViewById(R.id.sheet_item_list));
         getSheetItemListView().addItemDecoration(new HorizontalDividerItemDecoration(context));
     }
 

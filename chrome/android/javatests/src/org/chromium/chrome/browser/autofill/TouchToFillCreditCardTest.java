@@ -15,7 +15,7 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCred
 import static org.chromium.chrome.test.R.id.first_line_label;
 import static org.chromium.chrome.test.R.id.main_text;
 import static org.chromium.chrome.test.R.id.minor_text;
-import static org.chromium.chrome.test.R.id.sheet_item_list;
+import static org.chromium.chrome.test.R.id.touch_to_fill_payment_method_home_screen;
 
 import android.view.View;
 import android.widget.TextView;
@@ -159,7 +159,9 @@ public class TouchToFillCreditCardTest {
     }
 
     private RecyclerView getItemsList() {
-        return mActivityTestRule.getActivity().findViewById(sheet_item_list);
+        return mActivityTestRule
+                .getActivity()
+                .findViewById(touch_to_fill_payment_method_home_screen);
     }
 
     private void verifyCardSuggestionIsCorrectlyDisplayed(View cardSuggestionItemLayout) {

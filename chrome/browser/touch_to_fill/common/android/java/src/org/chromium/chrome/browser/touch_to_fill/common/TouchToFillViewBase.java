@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.touch_to_fill.common;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.view.View;
@@ -40,8 +41,13 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private final RelativeLayout mContentView;
     private final DetailScreenScrollListener mScrollListener;
+    private final boolean mSuppressCollectionA11y;
     private @Nullable Callback<Integer> mDismissHandler;
-    private final RecyclerView mSheetItemListView;
+    // Current scrollable surface on the screen that is updated whenever the user navigates between
+    // the screens in the bottom sheets. For example, loyalty cards are displayed on 2 screens in
+    // the bottom sheet. The home screen displays only affiliated loyalty cards and the second
+    // screen displays all loyalty cards of a user.
+    private @Nullable RecyclerView mSheetItemListView;
 
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
@@ -66,14 +72,14 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
                     super.onSheetStateChanged(newState, reason);
                     if (newState == BottomSheetController.SheetState.FULL) {
                         // The list of items should be scrollable in full state.
-                        mSheetItemListView.suppressLayout(false);
+                        assumeNonNull(mSheetItemListView).suppressLayout(false);
                     } else if (newState == BottomSheetController.SheetState.HALF
                             && mScrollListener.isScrolledToTop()) {
                         // The list of items should not be scrollable when the sheet transitions
                         // into half state if it's scrolled to the top. If the list is currently
                         // scrolled away from the top, it should stay scrolled in half state until
                         // the user scrolls to the top.
-                        mSheetItemListView.suppressLayout(true);
+                        assumeNonNull(mSheetItemListView).suppressLayout(true);
                     }
                     if (newState != BottomSheetController.SheetState.HIDDEN) return;
                     // This is a fail-safe for cases where onSheetClosed isn't triggered.
@@ -128,7 +134,30 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
             Boolean suppressCollectionA11y) {
         mBottomSheetController = bottomSheetController;
         mContentView = contentView;
-        mSheetItemListView = getContentView().findViewById(R.id.sheet_item_list);
+        mContentView.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
+
+        mScrollListener = new DetailScreenScrollListener(mBottomSheetController);
+        mSuppressCollectionA11y = suppressCollectionA11y;
+
+        // Apply RTL layout changes.
+        int layoutDirection =
+                LocalizationUtils.isLayoutRtl()
+                        ? View.LAYOUT_DIRECTION_RTL
+                        : View.LAYOUT_DIRECTION_LTR;
+        mContentView.setLayoutDirection(layoutDirection);
+    }
+
+    @Override
+    public View getContentView() {
+        return mContentView;
+    }
+
+    public void setSheetItemListAdapter(RecyclerView.Adapter adapter) {
+        assumeNonNull(mSheetItemListView).setAdapter(assertNonNull(adapter));
+    }
+
+    public void setSheetItemListView(RecyclerView sheetItemListView) {
+        mSheetItemListView = assertNonNull(sheetItemListView);
 
         mSheetItemListView.setLayoutManager(
                 new LinearLayoutManager(
@@ -143,32 +172,12 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
                             RecyclerView.Recycler recycler,
                             RecyclerView.State state,
                             AccessibilityNodeInfoCompat info) {
-                        if (!suppressCollectionA11y) {
+                        if (!mSuppressCollectionA11y) {
                             super.onInitializeAccessibilityNodeInfo(recycler, state, info);
                         }
                     }
                 });
-
-        mContentView.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
-
-        // Apply RTL layout changes.
-        int layoutDirection =
-                LocalizationUtils.isLayoutRtl()
-                        ? View.LAYOUT_DIRECTION_RTL
-                        : View.LAYOUT_DIRECTION_LTR;
-        mContentView.setLayoutDirection(layoutDirection);
-
-        mScrollListener = new DetailScreenScrollListener(mBottomSheetController);
         mSheetItemListView.addOnScrollListener(mScrollListener);
-    }
-
-    @Override
-    public View getContentView() {
-        return mContentView;
-    }
-
-    public void setSheetItemListAdapter(RecyclerView.Adapter adapter) {
-        mSheetItemListView.setAdapter(adapter);
     }
 
     /**
@@ -206,7 +215,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
      * @return the full state height in pixels. Never 0. Can theoretically exceed the screen height.
      */
     protected @Px int getMaximumSheetHeightPx() {
-        if (mSheetItemListView.getAdapter() == null) {
+        if (assumeNonNull(mSheetItemListView).getAdapter() == null) {
             // TODO(crbug.com/40843561): Assert this condition in setVisible. Should never happen.
             return BottomSheetContent.HeightMode.DEFAULT;
         }
@@ -227,7 +236,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
      * @return the half state height in pixels. Never 0. Can theoretically exceed the screen height.
      */
     protected @Px int getDesiredSheetHeightPx() {
-        if (mSheetItemListView.getAdapter() == null) {
+        if (assumeNonNull(mSheetItemListView).getAdapter() == null) {
             // TODO(crbug.com/40843561): Assert this condition in setVisible. Should never happen.
             return BottomSheetContent.HeightMode.DEFAULT;
         }
@@ -246,7 +255,8 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
     }
 
     private @Px int getSheetItemListHeightWithMarginsPx(boolean showOnlyInitialItems) {
-        assert mSheetItemListView.getMeasuredHeight() > 0 : "Sheet item list hasn't been measured.";
+        assert assumeNonNull(mSheetItemListView).getMeasuredHeight() > 0
+                : "Sheet item list hasn't been measured.";
         @Px int totalHeight = 0;
         int visibleItems = 0;
         for (int posInSheet = 0; posInSheet < mSheetItemListView.getChildCount(); posInSheet++) {
@@ -288,9 +298,11 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
         mContentView.measure(
                 View.MeasureSpec.makeMeasureSpec(getInsetDisplayWidthPx(), MeasureSpec.AT_MOST),
                 MeasureSpec.UNSPECIFIED);
-        mSheetItemListView.measure(
-                View.MeasureSpec.makeMeasureSpec(getInsetDisplayWidthPx(), MeasureSpec.AT_MOST),
-                MeasureSpec.UNSPECIFIED);
+        assumeNonNull(mSheetItemListView)
+                .measure(
+                        View.MeasureSpec.makeMeasureSpec(
+                                getInsetDisplayWidthPx(), MeasureSpec.AT_MOST),
+                        MeasureSpec.UNSPECIFIED);
     }
 
     private @Px int getInsetDisplayWidthPx() {
@@ -299,14 +311,16 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
     }
 
     private boolean isListedItem(View childInSheetView) {
-        int posInAdapter = mSheetItemListView.getChildAdapterPosition(childInSheetView);
+        int posInAdapter =
+                assumeNonNull(mSheetItemListView).getChildAdapterPosition(childInSheetView);
         assumeNonNull(mSheetItemListView.getAdapter());
         return listedItemTypes()
                 .contains(mSheetItemListView.getAdapter().getItemViewType(posInAdapter));
     }
 
     private boolean isFooterItem(View childInSheetView) {
-        int posInAdapter = mSheetItemListView.getChildAdapterPosition(childInSheetView);
+        int posInAdapter =
+                assumeNonNull(mSheetItemListView).getChildAdapterPosition(childInSheetView);
         assumeNonNull(mSheetItemListView.getAdapter());
         return mSheetItemListView.getAdapter().getItemViewType(posInAdapter) == footerItemType();
     }
@@ -364,6 +378,6 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public RecyclerView getSheetItemListView() {
-        return mSheetItemListView;
+        return assertNonNull(mSheetItemListView);
     }
 }

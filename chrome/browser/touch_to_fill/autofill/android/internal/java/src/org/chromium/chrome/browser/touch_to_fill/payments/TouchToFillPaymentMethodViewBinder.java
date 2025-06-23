@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.TEXT_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.APPLY_DEACTIVATED_STYLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.CARD_IMAGE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.FIRST_LINE_LABEL;
@@ -111,7 +112,11 @@ class TouchToFillPaymentMethodViewBinder {
                 view.destroy();
             }
         } else if (propertyKey == SHEET_ITEMS) {
+            // SHEET_ITEMS and CURRENT_SCREEN properties are always updated together.
+            view.setCurrentScreen(model.get(CURRENT_SCREEN));
             TouchToFillPaymentMethodCoordinator.setUpCardItems(model, view);
+        } else if (propertyKey == CURRENT_SCREEN) {
+            // Intentionally ignored.
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

@@ -177,6 +177,13 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
+    public void testInitializesHomeScreen() {
+        assertNotNull(mTouchToFillView.getSheetItemListView());
+        assertNotNull(mTouchToFillView.getSheetItemListView().getAdapter());
+    }
+
+    @Test
+    @MediumTest
     public void testVisibilityChangedByModel() {
         // After setting the visibility to true, the view should exist and be visible.
         ThreadUtils.runOnUiThreadBlocking(
