@@ -11,9 +11,9 @@
 #include <string_view>
 
 #include "base/apple/foundation_util.h"
+#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/timer/timer.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_change_notifier.h"
 
@@ -132,15 +132,15 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac
       std::unique_ptr<DataTransferEndpoint> data_src,
       NSPasteboard* pasteboard,
       uint32_t privacy_types);
-  void CheckClipboardForChanges();
+  void ClipboardChanged();
 
   // Mapping of OS-provided sequence number to a unique token.
   mutable struct {
     NSInteger sequence_number;
     ClipboardSequenceNumberToken token;
   } clipboard_sequence_;
-  std::unique_ptr<base::RepeatingTimer> clipboard_polling_timer_;
-  bool monitoring_clipboard_changes_ = false;
+
+  base::CallbackListSubscription clipboard_change_subscription_;
   NSInteger last_known_sequence_number_ = 0;
 };
 

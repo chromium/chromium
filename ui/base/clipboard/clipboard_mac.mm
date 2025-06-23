@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback_list.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "ui/base/clipboard/clipboard_mac.h"
 
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
@@ -22,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
+#include "base/mac/pasteboard_changed_observation.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
@@ -38,6 +38,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/clipboard_mac.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
@@ -50,11 +51,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
 #include "url/gurl.h"
-
-namespace {
-// Clipboard polling interval in milliseconds.
-const int64_t kClipboardPollingIntervalMs = 500;
-}  // namespace
 
 namespace ui {
 
@@ -131,35 +127,24 @@ ClipboardMac::~ClipboardMac() {
   if (ClipboardMonitor::GetInstance()->GetNotifier() == this) {
     ClipboardMonitor::GetInstance()->SetNotifier(nullptr);
   }
-  if (monitoring_clipboard_changes_) {
+  if (clipboard_change_subscription_) {
     StopNotifying();
   }
 }
 
 void ClipboardMac::StartNotifying() {
-  if (!monitoring_clipboard_changes_) {
-    DCHECK(!clipboard_polling_timer_);
-    // Initialize `last_known_sequence_number_` to the current pasteboard state
-    // to prevent `CheckClipboardForChanges` from firing a notification if the
-    // clipboard hasn't changed since monitoring started.
-    last_known_sequence_number_ = [GetPasteboard() changeCount];
-    // Update `clipboard_sequence_` to the current state.
-    GetSequenceNumber(ClipboardBuffer::kCopyPaste);
-
-    // macOS doesn't provide a clipboard-changed notification. The only way to
-    // detect clipboard changes is by polling.
-    clipboard_polling_timer_ = std::make_unique<base::RepeatingTimer>();
-    clipboard_polling_timer_->Start(
-        FROM_HERE, base::Milliseconds(kClipboardPollingIntervalMs), this,
-        &ClipboardMac::CheckClipboardForChanges);
-    monitoring_clipboard_changes_ = true;
+  if (!clipboard_change_subscription_) {
+    // Unretained is safe because the subscription's lifetime is scoped to the
+    // lifetime of this object.
+    clipboard_change_subscription_ =
+        base::RegisterPasteboardChangedCallback(base::BindRepeating(
+            &ClipboardMac::ClipboardChanged, base::Unretained(this)));
   }
 }
 
 void ClipboardMac::StopNotifying() {
-  if (monitoring_clipboard_changes_) {
-    clipboard_polling_timer_.reset();
-    monitoring_clipboard_changes_ = false;
+  if (clipboard_change_subscription_) {
+    clipboard_change_subscription_ = base::CallbackListSubscription();
   }
 }
 
@@ -529,7 +514,7 @@ void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
   // which will then update `last_known_sequence_number_` and
   // `clipboard_sequence_`, and subsequently call
   // `NotifyClipboardDataChanged`. This avoids redundant notifications.
-  if (!monitoring_clipboard_changes_) {
+  if (!clipboard_change_subscription_) {
     ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
   }
 }
@@ -667,8 +652,8 @@ void ClipboardMac::WriteBitmapInternal(const SkBitmap& bitmap,
   [pasteboard writeObjects:@[ image ]];
 }
 
-void ClipboardMac::CheckClipboardForChanges() {
-  NSInteger current_sequence_number = [GetPasteboard() changeCount];
+void ClipboardMac::ClipboardChanged() {
+  NSInteger current_sequence_number = GetPasteboard().changeCount;
   if (current_sequence_number != last_known_sequence_number_) {
     last_known_sequence_number_ = current_sequence_number;
     // Update clipboard_sequence_ to reflect the new number and generate a new
