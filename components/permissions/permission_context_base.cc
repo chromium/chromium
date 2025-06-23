@@ -657,7 +657,7 @@ void PermissionContextBase::NotifyPermissionSet(
     bool is_final_decision) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Must exist since permission requests must be initiated from an RFH
+  // Note that rfh may be null, see crbug.com/426909787.
   auto* rfh = content::RenderFrameHost::FromID(
       request_data.id.global_render_frame_host_id());
 
@@ -678,7 +678,7 @@ void PermissionContextBase::NotifyPermissionSet(
     UpdateTabContext(request_data.id, request_data.requesting_origin,
                      decision == PermissionDecision::kAllow ||
                          decision == PermissionDecision::kAllowThisTime);
-    if (decision == PermissionDecision::kAllow) {
+    if (rfh && decision == PermissionDecision::kAllow) {
       PermissionUmaUtil::RecordPermissionsUsageSourceAndPolicyConfiguration(
           content_settings_type_, rfh);
     }

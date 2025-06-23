@@ -177,6 +177,8 @@ class PermissionContextBase : public content_settings::Observer {
   }
 
  protected:
+  // Retrieves the current permission status. |render_frame_host| may be
+  // nullptr.
   virtual base::Value GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
