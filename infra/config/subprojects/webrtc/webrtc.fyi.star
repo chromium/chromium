@@ -153,40 +153,6 @@ builder(
 )
 
 builder(
-    name = "WebRTC Chromium FYI Android Builder (dbg)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium_webrtc_tot",
-            apply_configs = ["android"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "base_config",
-            apply_configs = [
-                "dcheck",
-                "mb",
-                "android",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-webrtc",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder",
-            "android_with_static_analysis",
-            "debug_static_builder",
-            "remoteexec",
-            "arm",
-        ],
-    ),
-    targets = targets.bundle(),
-)
-
-builder(
     name = "WebRTC Chromium FYI Android Builder ARM64 (dbg)",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -218,50 +184,6 @@ builder(
         ],
     ),
     targets = targets.bundle(),
-)
-
-builder(
-    name = "WebRTC Chromium FYI Android Tests (dbg)",
-    parent = "WebRTC Chromium FYI Android Builder (dbg)",
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium_webrtc_tot",
-            apply_configs = ["android"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "base_config",
-            apply_configs = [
-                "dcheck",
-                "mb",
-                "android",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-webrtc",
-    ),
-    targets = targets.bundle(
-        targets = [
-            "webrtc_chromium_simple_gtests",
-        ],
-        mixins = [
-            "panther_on_14",
-        ],
-        per_test_modifications = {
-            "content_browsertests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter",
-                ],
-            ),
-        },
-    ),
-    targets_settings = targets.settings(
-        os_type = targets.os_type.ANDROID,
-    ),
 )
 
 builder(

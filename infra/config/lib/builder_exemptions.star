@@ -627,10 +627,8 @@ exempted_from_description_builders = {
         "WebRTC Chromium Win10 Tester",
     ]),
     "webrtc.fyi": set([
-        "WebRTC Chromium FYI Android Builder (dbg)",
         "WebRTC Chromium FYI Android Builder ARM64 (dbg)",
         "WebRTC Chromium FYI Android Builder",
-        "WebRTC Chromium FYI Android Tests (dbg)",
         "WebRTC Chromium FYI Android Tests ARM64 (dbg)",
         "WebRTC Chromium FYI Linux Builder (dbg)",
         "WebRTC Chromium FYI Linux Builder",
@@ -1093,9 +1091,7 @@ exempted_from_contact_builders = {
     ],
     "webrtc.fyi": [
         "WebRTC Chromium FYI Android Builder",
-        "WebRTC Chromium FYI Android Builder (dbg)",
         "WebRTC Chromium FYI Android Builder ARM64 (dbg)",
-        "WebRTC Chromium FYI Android Tests (dbg)",
         "WebRTC Chromium FYI Android Tests ARM64 (dbg)",
         "WebRTC Chromium FYI Linux Builder",
         "WebRTC Chromium FYI Linux Builder (dbg)",
