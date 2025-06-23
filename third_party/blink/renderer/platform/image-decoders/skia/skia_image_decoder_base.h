@@ -95,6 +95,11 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
   // an image embedded in a middle of another data stream - one specific example
   // is PNG images embedded inside ICO or BMP images.
   const wtf_size_t reading_offset_ = 0;
+
+  // Number of a frame for which calling `SkCodec::incrementalDecode` is okay.
+  // Set after calling `SkCodec::startIncrementalDecode` and reset after
+  // `SkCodec::incrementalDecode` succeeds or encounters a non-resumable error.
+  std::optional<wtf_size_t> already_started_frame_;
 };
 
 }  // namespace blink
