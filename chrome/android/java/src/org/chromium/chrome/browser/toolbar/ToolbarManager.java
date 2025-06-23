@@ -374,7 +374,7 @@ public class ToolbarManager
     private final FormFieldFocusedSupplier mFormFieldFocusedSupplier =
             new FormFieldFocusedSupplier();
     private final View mProgressBarContainer;
-    private @Nullable ObservableSupplier<Integer> mBookmarkBarHeightSupplier;
+    private @Nullable Supplier<Integer> mBookmarkBarHeightSupplier;
     private boolean mInTabSwitcherTransition;
     private final boolean mIsNewTabPageCustomizationToolbarButtonEnabled;
 
@@ -3216,12 +3216,12 @@ public class ToolbarManager
     }
 
     /**
-     * Sets the supplier which provides the current height of the bookmark bar.
+     * Sets a Supplier which provides the current height of the bookmark bar when read.
      *
-     * @param bookmarkBarHeightSupplier the supplier which provides the current height.
+     * @param bookmarkBarHeightSupplier the Supplier to fetch the current height.
      */
     public void setBookmarkBarHeightSupplier(
-            @Nullable ObservableSupplier<Integer> bookmarkBarHeightSupplier) {
+            @Nullable Supplier<Integer> bookmarkBarHeightSupplier) {
         mBookmarkBarHeightSupplier = bookmarkBarHeightSupplier;
     }
 

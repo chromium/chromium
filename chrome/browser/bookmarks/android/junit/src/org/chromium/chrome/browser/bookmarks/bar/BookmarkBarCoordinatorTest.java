@@ -10,6 +10,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -40,7 +41,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Criteria;
@@ -79,8 +79,7 @@ public class BookmarkBarCoordinatorTest {
 
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private FaviconHelperJni mFaviconHelperJni;
-    @Mock private Callback<Integer> mHeightChangeCallback;
-    @Mock private Callback<Integer> mHeightSupplierObserver;
+    @Mock private Callback<Void> mHeightChangeCallback;
     @Mock private ImageServiceBridgeJni mImageServiceBridgeJni;
     @Mock private Profile mProfile;
     @Mock private Tab mCurrentTab;
@@ -223,29 +222,24 @@ public class BookmarkBarCoordinatorTest {
     @SmallTest
     public void testOnBookmarkBarHeightChanged() {
         // Verify initial state.
-        ObservableSupplier<Integer> heightSupplier = mCoordinator.getHeightSupplier();
-        assertEquals("Verify initial state.", 0, heightSupplier.get().intValue());
+        assertEquals("Verify initial state.", 0, mCoordinator.getHeight());
 
         // NOTE: the `mHeightChangeCallback` is expected to have been registered for observation
         // during `mCoordinator` construction and notified of initial height via posted task.
         onActivity(
                 activity -> {
-                    verify(mHeightChangeCallback).onResult(mView.getHeight());
-                    verifyNoMoreInteractions(mHeightSupplierObserver);
+                    verify(mHeightChangeCallback).onResult(null);
                 });
-
-        // Register another observer explicitly.
-        heightSupplier.addObserver(mHeightSupplierObserver);
 
         // Verify state after height-changing layout.
         final var rect = new Rect(1, 2, 3, 4);
+        clearInvocations(mHeightChangeCallback);
         mView.layout(rect.left, rect.top, rect.right, rect.bottom);
         assertEquals(
                 "Verify state after height-changing layout.",
                 rect.height(),
-                heightSupplier.get().intValue());
-        verify(mHeightChangeCallback).onResult(rect.height());
-        verify(mHeightSupplierObserver).onResult(rect.height());
+                mCoordinator.getHeight());
+        verify(mHeightChangeCallback).onResult(null);
 
         // Verify state after height-consistent layout.
         rect.top += 1;
@@ -254,12 +248,8 @@ public class BookmarkBarCoordinatorTest {
         assertEquals(
                 "Verify state after height-consistent layout.",
                 rect.height(),
-                heightSupplier.get().intValue());
+                mCoordinator.getHeight());
         verifyNoMoreInteractions(mHeightChangeCallback);
-        verifyNoMoreInteractions(mHeightSupplierObserver);
-
-        // Clean up.
-        heightSupplier.removeObserver(mHeightSupplierObserver);
     }
 
     @Test

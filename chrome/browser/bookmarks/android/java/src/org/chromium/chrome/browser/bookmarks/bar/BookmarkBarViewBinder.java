@@ -24,9 +24,7 @@ class BookmarkBarViewBinder {
      * @param key the key for the property in the model for which to update the bookmark bar.
      */
     public static void bind(PropertyModel model, BookmarkBar view, PropertyKey key) {
-        if (key == BookmarkBarProperties.HEIGHT_CHANGE_CALLBACK) {
-            view.setHeightChangeCallback(model.get(BookmarkBarProperties.HEIGHT_CHANGE_CALLBACK));
-        } else if (key == BookmarkBarProperties.OVERFLOW_BUTTON_CLICK_CALLBACK) {
+        if (key == BookmarkBarProperties.OVERFLOW_BUTTON_CLICK_CALLBACK) {
             view.setOverflowButtonClickCallback(
                     model.get(BookmarkBarProperties.OVERFLOW_BUTTON_CLICK_CALLBACK));
         } else if (key == BookmarkBarProperties.OVERFLOW_BUTTON_VISIBILITY) {

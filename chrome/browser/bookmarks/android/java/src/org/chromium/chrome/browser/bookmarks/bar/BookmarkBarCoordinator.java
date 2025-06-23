@@ -46,13 +46,15 @@ public class BookmarkBarCoordinator implements TopControlLayer, BookmarkBarVisib
     private final BookmarkBarMediator mMediator;
     private final BookmarkBar mView;
     private final TopControlsStacker mTopControlsStacker;
+    private final Callback<@Nullable Void> mHeightChangeCallback;
+    private final View.OnLayoutChangeListener mOnLayoutChangeListener;
 
     /**
      * Constructs the bookmark bar coordinator.
      *
      * @param activity The activity which is hosting the bookmark bar.
      * @param browserControlsStateProvider The state provider for browser controls.
-     * @param heightChangeCallback A callback to notify of bookmark bar height change events.
+     * @param heightChangeCallback A callback to notify owner of bookmark bar height changes.
      * @param profileSupplier The supplier for the currently active profile.
      * @param viewStub The stub used to inflate the bookmark bar.
      * @param currentTab The current tab if it exists.
@@ -63,7 +65,7 @@ public class BookmarkBarCoordinator implements TopControlLayer, BookmarkBarVisib
     public BookmarkBarCoordinator(
             Activity activity,
             BrowserControlsStateProvider browserControlsStateProvider,
-            Callback<Integer> heightChangeCallback,
+            Callback<@Nullable Void> heightChangeCallback,
             ObservableSupplier<Profile> profileSupplier,
             ViewStub viewStub,
             @Nullable Tab currentTab,
@@ -71,6 +73,16 @@ public class BookmarkBarCoordinator implements TopControlLayer, BookmarkBarVisib
             ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
             TopControlsStacker topControlsStacker) {
         mView = (BookmarkBar) viewStub.inflate();
+        mHeightChangeCallback = heightChangeCallback;
+        mOnLayoutChangeListener =
+                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    final int oldHeight = oldBottom - oldTop;
+                    final int newHeight = bottom - top;
+                    if (newHeight != oldHeight) {
+                        mHeightChangeCallback.onResult(null);
+                    }
+                };
+        mView.addOnLayoutChangeListener(mOnLayoutChangeListener);
 
         // Bind view/model for 'All Bookmarks' button.
         final var allBookmarksButtonModel =
@@ -105,7 +117,7 @@ public class BookmarkBarCoordinator implements TopControlLayer, BookmarkBarVisib
                         activity,
                         allBookmarksButtonModel,
                         browserControlsStateProvider,
-                        heightChangeCallback,
+                        this::getHeight,
                         itemsModel,
                         mBookmarkBarItemsLayoutManager.getItemsOverflowSupplier(),
                         model,
@@ -124,14 +136,7 @@ public class BookmarkBarCoordinator implements TopControlLayer, BookmarkBarVisib
         mTopControlsStacker.removeControl(this);
         mItemsAdapter.destroy();
         mMediator.destroy();
-        mView.destroy();
-    }
-
-    /**
-     * @return The supplier which provides the current height of the bookmark bar.
-     */
-    public ObservableSupplier<Integer> getHeightSupplier() {
-        return mMediator.getHeightSupplier();
+        mView.removeOnLayoutChangeListener(mOnLayoutChangeListener);
     }
 
     /**
@@ -172,7 +177,7 @@ public class BookmarkBarCoordinator implements TopControlLayer, BookmarkBarVisib
 
     @Override
     public int getHeight() {
-        return getHeightSupplier().get();
+        return mView.getHeight();
     }
 
     @Override

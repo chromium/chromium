@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -15,7 +13,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
@@ -50,8 +48,7 @@ class BookmarkBarMediator
     private final Activity mActivity;
     private final PropertyModel mAllBookmarksButtonModel;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final Callback<Integer> mHeightChangeCallback;
-    private final ObservableSupplierImpl<Integer> mHeightSupplier;
+    private final Supplier<Integer> mHeightSupplier;
     private final ModelList mItemsModel;
     private final ObservableSupplier<Boolean> mItemsOverflowSupplier;
     private final Callback<Boolean> mItemsOverflowSupplierObserver;
@@ -71,7 +68,7 @@ class BookmarkBarMediator
      * @param activity The activity which is hosting the bookmark bar.
      * @param allBookmarksButtonModel The model for the 'All Bookmarks' button.
      * @param browserControlsStateProvider The state provider for browser controls.
-     * @param heightChangeCallback A callback to notify of bookmark bar height change events.
+     * @param heightSupplier A Supplier to fetch the height of the bookmark bar view.
      * @param itemsModel The model for the items which are rendered within the bookmark bar.
      * @param itemsOverflowSupplier The supplier for the current state of items overflow.
      * @param currentTab The current tab if it exists.
@@ -82,7 +79,7 @@ class BookmarkBarMediator
             Activity activity,
             PropertyModel allBookmarksButtonModel,
             BrowserControlsStateProvider browserControlsStateProvider,
-            Callback<Integer> heightChangeCallback,
+            Supplier<Integer> heightSupplier,
             ModelList itemsModel,
             ObservableSupplier<Boolean> itemsOverflowSupplier,
             PropertyModel model,
@@ -110,10 +107,7 @@ class BookmarkBarMediator
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
 
-        // NOTE: Height will be updated when binding the `HEIGHT_CHANGE_CALLBACK` property.
-        mHeightSupplier = new ObservableSupplierImpl<>(0);
-        mHeightChangeCallback = heightChangeCallback;
-        mHeightSupplier.addObserver(mHeightChangeCallback);
+        mHeightSupplier = heightSupplier;
 
         mItemsModel = itemsModel;
 
@@ -122,7 +116,6 @@ class BookmarkBarMediator
         mItemsOverflowSupplier.addObserver(mItemsOverflowSupplierObserver);
 
         mModel = model;
-        mModel.set(BookmarkBarProperties.HEIGHT_CHANGE_CALLBACK, mHeightSupplier::set);
         mModel.set(
                 BookmarkBarProperties.OVERFLOW_BUTTON_CLICK_CALLBACK, this::onOverflowButtonClick);
         mModel.set(BookmarkBarProperties.OVERFLOW_BUTTON_VISIBILITY, View.INVISIBLE);
@@ -143,7 +136,6 @@ class BookmarkBarMediator
     public void destroy() {
         mAllBookmarksButtonModel.set(BookmarkBarButtonProperties.CLICK_CALLBACK, null);
         mBrowserControlsStateProvider.removeObserver(this);
-        mHeightSupplier.removeObserver(mHeightChangeCallback);
         mItemsOverflowSupplier.removeObserver(mItemsOverflowSupplierObserver);
 
         if (mImageFetcher != null) {
@@ -156,15 +148,7 @@ class BookmarkBarMediator
             mItemsProvider = null;
         }
 
-        mModel.set(BookmarkBarProperties.HEIGHT_CHANGE_CALLBACK, null);
         mProfileSupplier.removeObserver(mProfileSupplierObserver);
-    }
-
-    /**
-     * @return the supplier which provides the current height of the bookmark bar.
-     */
-    public ObservableSupplier<Integer> getHeightSupplier() {
-        return mHeightSupplier;
     }
 
     // BookmarkBarItemsProvider.Observer implementation.
@@ -374,8 +358,7 @@ class BookmarkBarMediator
         // top browser controls.
         mModel.set(
                 BookmarkBarProperties.TOP_MARGIN,
-                mBrowserControlsStateProvider.getTopControlsHeight()
-                        - assumeNonNull(mHeightSupplier.get()));
+                mBrowserControlsStateProvider.getTopControlsHeight() - mHeightSupplier.get());
     }
 
     private void updateVisibility() {

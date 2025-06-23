@@ -103,7 +103,7 @@ public class BookmarkBarRenderTest {
                             new BookmarkBarCoordinator(
                                     activity,
                                     mBrowserControlsManager,
-                                    /* heightChangeCallback= */ (h) -> {},
+                                    /* heightChangeCallback= */ result -> {},
                                     /* profileSupplier= */ new ObservableSupplierImpl<>(),
                                     viewStub,
                                     mCurrentTab,
