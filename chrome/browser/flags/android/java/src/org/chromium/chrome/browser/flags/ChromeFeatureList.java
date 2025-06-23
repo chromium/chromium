@@ -1158,7 +1158,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sAndroidDumpOnScrollWithoutResource =
             newMutableFlagWithSafeDefault(ANDROID_DUMP_ON_SCROLL_WITHOUT_RESOURCE, false);
     public static final MutableFlagWithSafeDefault sAndroidNativePagesInNewTab =
-            newMutableFlagWithSafeDefault(ANDROID_NATIVE_PAGES_IN_NEW_TAB, false);
+            newMutableFlagWithSafeDefault(ANDROID_NATIVE_PAGES_IN_NEW_TAB, true);
     public static final MutableFlagWithSafeDefault sAndroidPinnedTabs =
             newMutableFlagWithSafeDefault(ANDROID_PINNED_TABS, false);
     public static final MutableFlagWithSafeDefault
