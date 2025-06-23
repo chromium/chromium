@@ -104,7 +104,27 @@ void VirtualCardEnrollmentManager::InitVirtualCardEnroll(
         get_details_for_enrollment_response_details,
     PrefService* user_prefs,
     RiskAssessmentFunction risk_assessment_function) {
-  // If there is any ongoing enrollment, override it.
+  // Check if we should continue existing downstream enrollment, and if so early
+  // return but don't reset the state.
+  if (ShouldContinueExistingDownstreamEnrollment(
+          credit_card, virtual_card_enrollment_source)) {
+    // If enrollment details have been received, run the callback immediately.
+    if (enroll_response_details_received_) {
+      std::move(virtual_card_enrollment_fields_loaded_callback)
+          .Run(&state_.virtual_card_enrollment_fields);
+    } else {
+      // If downstream enrollment has started, but we haven't
+      // received the enrollment details, the
+      // `virtual_card_enrollment_fields_loaded_callback_` will be invoked later
+      // when we receive the response.
+      virtual_card_enrollment_fields_loaded_callback_ =
+          std::move(virtual_card_enrollment_fields_loaded_callback);
+    }
+    return;
+  }
+
+  // Proceed with normal enrollment flow.
+  // Reset ongoing enrollment if there is any.
   Reset();
 
   // If at strike limit, exit enrollment flow.
@@ -403,6 +423,33 @@ void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled() {
     AddStrikeToBlockOfferingVirtualCardEnrollment(base::NumberToString(
         state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
   Reset();
+}
+
+bool VirtualCardEnrollmentManager::ShouldContinueExistingDownstreamEnrollment(
+    const CreditCard& credit_card,
+    VirtualCardEnrollmentSource virtual_card_enrollment_source) {
+  // If feature is disabled, we won't start downstream enrollment preflight call
+  // early.
+  if (!base::FeatureList::IsEnabled(
+          features::
+              kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
+    return false;
+  }
+
+  if (virtual_card_enrollment_source !=
+      VirtualCardEnrollmentSource::kDownstream) {
+    return false;
+  }
+
+  bool downstream_enrollment_has_started =
+      state_.virtual_card_enrollment_fields.credit_card == credit_card &&
+      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
+          VirtualCardEnrollmentSource::kDownstream;
+  if (!downstream_enrollment_has_started) {
+    return false;
+  }
+
+  return true;
 }
 
 void VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard(

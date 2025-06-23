@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/webauthn_callback_types.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -351,6 +352,24 @@ void CreditCardAccessManager::FetchCreditCard(
         record_type == CreditCard::RecordType::kVirtualCard
             ? PaymentsRpcCardType::kVirtualCard
             : PaymentsRpcCardType::kServerCard);
+  }
+
+  // If the to-be-unmasked card is a virtual card eligible card (this also
+  // implicitly checks the RecordType to be masked server card), send the
+  // virtual card enrollment preflight call early.
+  auto* virtual_card_enrollment_manager =
+      payments_autofill_client().GetVirtualCardEnrollmentManager();
+  if (card->virtual_card_enrollment_state() ==
+          CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible &&
+      virtual_card_enrollment_manager &&
+      base::FeatureList::IsEnabled(
+          features::
+              kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
+    // Set empty callback as we need to wait for form submission & card
+    // extraction from the form, before we start the next step.
+    virtual_card_enrollment_manager->InitVirtualCardEnroll(
+        *card, VirtualCardEnrollmentSource::kDownstream,
+        /*virtual_card_enrollment_fields_loaded_callback=*/base::DoNothing());
   }
 
   // If card has been previously unmasked, use cached data.

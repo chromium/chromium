@@ -271,8 +271,20 @@ class VirtualCardEnrollmentManager {
   // Cancels the entire Virtual Card enrollment process.
   void OnVirtualCardEnrollmentBubbleCancelled();
 
+  // If downstream enrollment has been started, continue the flow. Return
+  // boolean to indicate whether we do so or instead start the normal enrollment
+  // flow.
+  virtual bool ShouldContinueExistingDownstreamEnrollment(
+      const CreditCard& credit_card,
+      VirtualCardEnrollmentSource virtual_card_enrollment_source);
+
  private:
   friend class VirtualCardEnrollmentManagerTest;
+  FRIEND_TEST_ALL_PREFIXES(
+      DownstreamEnrollmentEarlyPreflightCallCallbackParamTest,
+      InvokedAfterEnrollDetailsReceived);
+  FRIEND_TEST_ALL_PREFIXES(DownstreamEnrollmentEarlyPreflightCallParamTest,
+                           ShouldContinueExistingDownstreamEnrollment);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            OnDidGetDetailsForEnrollResponse);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,

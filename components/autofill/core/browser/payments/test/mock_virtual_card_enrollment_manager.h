@@ -32,6 +32,12 @@ class MockVirtualCardEnrollmentManager
        VirtualCardEnrollmentManager::RiskAssessmentFunction
            risk_assessment_function),
       (override));
+
+  MOCK_METHOD(bool,
+              ShouldContinueExistingDownstreamEnrollment,
+              (const CreditCard& credit_card,
+               VirtualCardEnrollmentSource virtual_card_enrollment_source),
+              (override));
 };
 
 }  // namespace autofill

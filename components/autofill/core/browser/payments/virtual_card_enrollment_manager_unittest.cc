@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -9,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
@@ -22,6 +24,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/payments/test/mock_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
@@ -903,6 +906,132 @@ TEST_P(DownstreamLatencyMetricsTest, LatencySinceDownstream) {
   histogram_tester.ExpectTimeBucketCount(
       "Autofill.VirtualCardEnrollBubble.LatencySinceDownstream",
       base::Minutes(1), card_unmasked_from_cache() ? 0 : 1);
+}
+
+class DownstreamEnrollmentEarlyPreflightCallParamTest
+    : public VirtualCardEnrollmentManagerTest,
+      public ::testing::WithParamInterface<
+          std::tuple<bool, VirtualCardEnrollmentSource, bool>> {
+ public:
+  DownstreamEnrollmentEarlyPreflightCallParamTest() {
+    feature_list_.InitWithFeatureState(
+        features::
+            kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment,
+        experiment_enabled());
+  }
+
+  // Whether the experiment to support multiple requests in downstream
+  // enrollment is enabled.
+  bool experiment_enabled() const { return std::get<0>(GetParam()); }
+
+  // The source of the enrollment.
+  VirtualCardEnrollmentSource source() const { return std::get<1>(GetParam()); }
+
+  // Whether downstream enrollment for this VirtualCardEnrollmentManager
+  // instance has started or not.
+  bool downstream_enrollment_has_started() const {
+    return std::get<2>(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    VirtualCardEnrollmentManagerTest,
+    DownstreamEnrollmentEarlyPreflightCallParamTest,
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Values(VirtualCardEnrollmentSource::kUpstream,
+                          VirtualCardEnrollmentSource::kDownstream,
+                          VirtualCardEnrollmentSource::kSettingsPage),
+        ::testing::Bool()));
+
+// Tests that ShouldContinueExistingDownstreamEnrollment should return correct
+// values.
+TEST_P(DownstreamEnrollmentEarlyPreflightCallParamTest,
+       ShouldContinueExistingDownstreamEnrollment) {
+  CreditCard card = test::GetMaskedServerCard();
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
+  auto* virtual_card_enrollment_process_state =
+      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
+  if (downstream_enrollment_has_started()) {
+    virtual_card_enrollment_process_state->virtual_card_enrollment_fields
+        .credit_card = card;
+    virtual_card_enrollment_process_state->virtual_card_enrollment_fields
+        .virtual_card_enrollment_source =
+        VirtualCardEnrollmentSource::kDownstream;
+  }
+
+  bool expected = experiment_enabled() &&
+                  source() == VirtualCardEnrollmentSource::kDownstream &&
+                  downstream_enrollment_has_started();
+  EXPECT_EQ(expected,
+            virtual_card_enrollment_manager_
+                ->ShouldContinueExistingDownstreamEnrollment(card, source()));
+}
+
+class DownstreamEnrollmentEarlyPreflightCallCallbackParamTest
+    : public VirtualCardEnrollmentManagerTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  // Whether enroll details have been received from the server, when the card
+  // extraction from the form happens.
+  bool enroll_details_received() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    VirtualCardEnrollmentManagerTest,
+    DownstreamEnrollmentEarlyPreflightCallCallbackParamTest,
+    ::testing::Bool());
+
+// Tests that callback should be invoked at the right time.
+TEST_P(DownstreamEnrollmentEarlyPreflightCallCallbackParamTest,
+       InvokedAfterEnrollDetailsReceived) {
+  auto mock_manager = NiceMock<MockVirtualCardEnrollmentManager>(
+      &payments_data_manager(), &payments_network_interface(),
+      autofill_client_.get());
+
+  // SetUpOnDidGetDetailsForEnrollResponse call configures the card art image,
+  // so it should be called before the first InitVirtualCardEnroll to set up the
+  // VirtualCardEnrollmentProcessState properly.
+  const TestLegalMessageLine google_legal_message =
+      TestLegalMessageLine("google_test_legal_message");
+  const TestLegalMessageLine issuer_legal_message =
+      TestLegalMessageLine("issuer_test_legal_message");
+  payments::GetDetailsForEnrollmentResponseDetails response =
+      std::move(SetUpOnDidGetDetailsForEnrollResponse(
+          google_legal_message, issuer_legal_message,
+          /*make_image_present=*/true));
+
+  // Simulate InitVirtualCardEnroll call during card unmask.
+  ON_CALL(mock_manager, ShouldContinueExistingDownstreamEnrollment)
+      .WillByDefault(testing::Return(false));
+  mock_manager.VirtualCardEnrollmentManager::InitVirtualCardEnroll(
+      *card_, VirtualCardEnrollmentSource::kDownstream, base::DoNothing());
+
+  // Simulate InitVirtualCardEnroll call after form extraction.
+  ON_CALL(mock_manager, ShouldContinueExistingDownstreamEnrollment)
+      .WillByDefault(testing::Return(true));
+  base::MockCallback<MockVirtualCardEnrollmentManager::
+                         VirtualCardEnrollmentFieldsLoadedCallback>
+      callback;
+  mock_manager.SetEnrollResponseDetailsReceived(enroll_details_received());
+
+  // If enroll details have been received, the callback should be invoked
+  // immediately.
+  EXPECT_CALL(callback, Run).Times(enroll_details_received() ? 1 : 0);
+  mock_manager.VirtualCardEnrollmentManager::InitVirtualCardEnroll(
+      *card_, VirtualCardEnrollmentSource::kDownstream, callback.Get());
+
+  // Otherwise, the callback should be invoked when the details are received.
+  if (!enroll_details_received()) {
+    EXPECT_CALL(callback, Run);
+    mock_manager.OnDidGetDetailsForEnrollResponse(
+        payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+        response);
+  }
 }
 
 }  // namespace autofill
