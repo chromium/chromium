@@ -34,7 +34,7 @@ public class TabListEditorRestoreArchivedTabsAction extends TabListEditorAction 
                 ButtonType.TEXT,
                 IconPosition.START,
                 R.plurals.archived_tabs_dialog_restore_action,
-                null,
+                R.plurals.accessibility_archived_tabs_dialog_restore_action,
                 null);
 
         mArchiveDelegate = archiveDelegate;

@@ -67,7 +67,7 @@ public class TabListEditorCloseArchivedTabsActionUnitTest {
                 true,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_IS_PLURAL));
         Assert.assertEquals(
-                R.plurals.accessibility_tab_selection_editor_close_tabs,
+                R.plurals.accessibility_archived_tabs_dialog_close_action,
                 mAction.getPropertyModel()
                         .get(TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID)
                         .intValue());

@@ -906,6 +906,12 @@
           other {Restore items}
         }
       </message>
+      <message name="IDS_ACCESSIBILITY_ARCHIVED_TABS_DIALOG_RESTORE_ACTION" desc="The accessibility text to read when the 'Restore items' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected items will be restored.">
+        {TABS_COUNT, plural,
+          =1 {Restore <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected item}
+          other {Restore <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected items}
+        }
+      </message>
       <message name="IDS_ARCHIVED_TABS_DIALOG_SELECT_ACTION" desc="A menu item for the archived tabs dialog. Enters selection mode and allows archived tabs and tab groups to be selected.">
         Select items
       </message>
@@ -913,6 +919,12 @@
         {TAB_COUNT, plural,
           =1 {Close item}
           other {Close items}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_ARCHIVED_TABS_DIALOG_CLOSE_ACTION" desc="The accessibility text to read when the 'Close items' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected items will be closed.">
+        {TABS_COUNT, plural,
+          =1 {Close <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected item}
+          other {Close <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected items}
         }
       </message>
       <message name="IDS_ARCHIVED_TABS_DIALOG_SETTINGS_ACTION" desc="A menu item for the archived tabs dialog. Navigates to the settings activity.">

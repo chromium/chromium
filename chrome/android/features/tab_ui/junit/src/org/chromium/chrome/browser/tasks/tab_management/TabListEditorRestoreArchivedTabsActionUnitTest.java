@@ -66,9 +66,11 @@ public class TabListEditorRestoreArchivedTabsActionUnitTest {
         Assert.assertEquals(
                 true,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_IS_PLURAL));
-        Assert.assertNull(
+        Assert.assertEquals(
+                R.plurals.accessibility_archived_tabs_dialog_restore_action,
                 mAction.getPropertyModel()
-                        .get(TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID));
+                        .get(TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID)
+                        .intValue());
         Assert.assertNull(mAction.getPropertyModel().get(TabListEditorActionProperties.ICON));
     }
 
