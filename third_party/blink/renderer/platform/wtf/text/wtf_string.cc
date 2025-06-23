@@ -131,7 +131,7 @@ String String::Substring(unsigned pos, unsigned len) const {
 String String::DeprecatedLower() const {
   if (!impl_)
     return String();
-  return CaseMap::FastToLowerInvariant(impl_.get());
+  return blink::CaseMap::FastToLowerInvariant(impl_.get());
 }
 
 String String::LowerASCII() const {

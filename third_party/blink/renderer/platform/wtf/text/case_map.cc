@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -434,4 +434,4 @@ String CaseMap::ToTitle(const String& source,
   return String();
 }
 
-}  // namespace WTF
+}  // namespace blink

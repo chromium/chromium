@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(TextOffsetMapTest, MergeConstructor) {
   using Entry = TextOffsetMap::Entry;
@@ -116,4 +116,4 @@ TEST(TextOffsetMapTest, CreateLengthMapCombiningMark) {
   EXPECT_EQ(1000u, length_map[0]);
 }
 
-}  // namespace WTF
+}  // namespace blink

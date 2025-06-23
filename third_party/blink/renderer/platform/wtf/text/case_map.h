@@ -9,9 +9,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
-class String;
 class TextOffsetMap;
 
 // This class performs the full Unicode case-mapping.
@@ -78,8 +77,6 @@ class WTF_EXPORT CaseMap {
   const char* case_map_locale_;
 };
 
-}  // namespace WTF
-
-using WTF::CaseMap;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_CASE_MAP_H_

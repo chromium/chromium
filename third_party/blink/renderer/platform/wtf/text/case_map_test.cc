@@ -12,7 +12,7 @@
 
 using testing::ElementsAreArray;
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -466,4 +466,4 @@ TEST(CaseMapTest, ToTitleWithPreviousCharacter) {
   EXPECT_EQ(result6, String::FromUTF8("ja"));
 }
 
-}  // namespace WTF
+}  // namespace blink

@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 
 std::ostream& operator<<(std::ostream& stream,
                          const TextOffsetMap::Entry& entry) {
@@ -142,4 +142,4 @@ Vector<TextOffsetMap::Length> TextOffsetMap::CreateLengthMap(
   return map;
 }
 
-}  // namespace WTF
+}  // namespace blink

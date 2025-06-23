@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 // Represents a mapping of text offset when |CaseMap| changes the length of the
 // input string. Similar to [icu::Edits], but tracks only when the length
@@ -75,8 +75,6 @@ WTF_EXPORT std::ostream& operator<<(
     std::ostream& stream,
     const Vector<TextOffsetMap::Entry>& entries);
 
-}  // namespace WTF
-
-using WTF::TextOffsetMap;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_OFFSET_MAP_H_
