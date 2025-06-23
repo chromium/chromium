@@ -12,7 +12,7 @@ import csv
 import json
 import pathlib
 import sys
-from typing import Optional
+from typing import List, Optional
 
 tracing_dir = (pathlib.Path(__file__).absolute().parents[2] /
                'third_party/catapult/tracing')
@@ -22,7 +22,7 @@ from tracing.value.diagnostics import generic_set
 from tracing.value.diagnostics import reserved_infos
 
 
-def _get_crossbench_json_path(out_dir: pathlib.Path) -> pathlib.Path:
+def _get_crossbench_json_paths(out_dir: pathlib.Path) -> List[pathlib.Path]:
   """Given a crossbench output directory, find the result json file.
 
   Args:
@@ -30,7 +30,7 @@ def _get_crossbench_json_path(out_dir: pathlib.Path) -> pathlib.Path:
         as --out-dir to crossbench.
 
   Returns:
-    Path to the result json file created by crossbench.
+    A list of paths to the result json files created by crossbench probes.
   """
 
   if not out_dir.exists():
@@ -55,7 +55,7 @@ def _get_crossbench_json_path(out_dir: pathlib.Path) -> pathlib.Path:
   browser_info = list(browsers.values())[0]
   debug_info += f'browser_info={browser_info}\n'
 
-  probe_json_path = None
+  probe_json_paths = []
   try:
     for probe, probe_data in browser_info.get('probes', {}).items():
       if probe.startswith('cb.') or not probe_data:
@@ -65,19 +65,15 @@ def _get_crossbench_json_path(out_dir: pathlib.Path) -> pathlib.Path:
         raise ValueError(f'Probe {probe} generated multiple json files, '
                          f'debug_info={debug_info}')
       if len(candidates) == 1:
-        if probe_json_path:
-          raise ValueError(
-              f'Multiple output json files found in {cb_results_json_path}, '
-              f'debug_info={debug_info}')
-        probe_json_path = pathlib.Path(candidates[0])
+        probe_json_paths.append(pathlib.Path(candidates[0]))
   except AttributeError as e:
     raise AttributeError(f'debug_info={debug_info}') from e
 
-  if not probe_json_path:
+  if not probe_json_paths:
     raise ValueError(f'No output json file found in {cb_results_json_path}, '
                      f'debug_info={debug_info}')
 
-  return probe_json_path
+  return probe_json_paths
 
 
 def convert(crossbench_out_dir: pathlib.Path,
@@ -94,9 +90,11 @@ def convert(crossbench_out_dir: pathlib.Path,
     _loadline(crossbench_out_dir, out_filename, benchmark, results_label)
     return
 
-  crossbench_json_filename = _get_crossbench_json_path(crossbench_out_dir)
-  with crossbench_json_filename.open() as f:
-    crossbench_result = json.load(f)
+  crossbench_json_filenames = _get_crossbench_json_paths(crossbench_out_dir)
+  crossbench_result = {}
+  for filename in crossbench_json_filenames:
+    with filename.open() as f:
+      crossbench_result.update(json.load(f))
 
   results = histogram_set.HistogramSet()
   for key, value in crossbench_result.items():

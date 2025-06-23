@@ -46,10 +46,10 @@ class CrossbenchResultConverterTest(unittest.TestCase):
   def process_crossbench_result(self, subdir):
     return self.list_to_dict(self.call_converter(subdir))
 
-  def check_result(self, result, metric, value, unit):
+  def check_result(self, result, metric, value, unit, sample_size=1):
     sample_values = result[metric]['sampleValues']
     self.assertIsInstance(sample_values, list)
-    self.assertEqual(len(sample_values), 1)
+    self.assertEqual(len(sample_values), sample_size)
     self.assertAlmostEqual(sample_values[0], value)
     self.assertEqual(result[metric]['unit'], unit)
 
@@ -87,6 +87,13 @@ class CrossbenchResultConverterTest(unittest.TestCase):
                       'unitless_biggerIsBetter')
     self.check_result(result, 'TodoMVC-jQuery', 259.5599999189377,
                       'ms_smallerIsBetter')
+
+  def test_embedder(self):
+    result = self.process_crossbench_result('embedder')
+    self.check_result(result, 'Some.Histogram1_mean', 165.0,
+                      'ms_smallerIsBetter', sample_size=50)
+    self.check_result(result, 'MetricFoo', 207,
+                      'ms_smallerIsBetter', sample_size=50)
 
 
 if __name__ == '__main__':
