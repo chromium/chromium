@@ -30,6 +30,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -93,6 +94,7 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -1363,6 +1365,53 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(kActionableItems_NewSyncPromoVariant,
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   ASSERT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  RunTest();
+}
+
+// List of actionable items in the correct order as they appear in the menu. If
+// a new button is added to the menu, it should also be added to this list.
+constexpr std::array kActionableItems_WithPromoButtons = {
+    ProfileMenuViewBase::ActionableItem::kHistorySyncOptInButton,
+    ProfileMenuViewBase::ActionableItem::kBatchUploadButton,
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kSignoutButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kHistorySyncOptInButton};
+
+const std::vector<base::test::FeatureRefAndParams>
+    kProfileMenuPromosButtonsFeatureFlags = {
+        {syncer::kReplaceSyncPromosWithSignInPromos, {}},
+        {switches::kEnableHistorySyncOptinExpansionPill,
+         {{"history-sync-optin-expansion-pill-option",
+           "browse-across-devices-new-profile-menu-promo-variant"}}}};
+
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(kActionableItems_WithPromoButtons,
+                                     ProfileMenuClickTest_WithPromoButtons,
+                                     kProfileMenuPromosButtonsFeatureFlags,
+                                     /*disabled_features=*/{}) {
+  secondary_account_helper::SignInUnconsentedAccount(
+      GetProfile(), &test_url_loader_factory_, "user@example.com");
+  UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
+  // Check that the setup was successful.
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  BatchUploadServiceTestHelper batch_upload_test_helper;
+  // Exceptionally allow this override during the test in order not to affect
+  // all existing tests.
+  batch_upload_test_helper.SetupBatchUploadTestingFactoryInProfile(
+      GetProfile());
+  batch_upload_test_helper.SetLocalDataDescriptionForAllAvailableTypes();
 
   RunTest();
 }

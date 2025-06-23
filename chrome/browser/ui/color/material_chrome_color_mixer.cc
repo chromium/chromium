@@ -130,7 +130,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorProfileMenuIdentityInfoBackground] = {ui::kColorSysSurface3};
   mixer[kColorProfileMenuIdentityInfoTitle] = {ui::kColorSysOnSurface};
   mixer[kColorProfileMenuIdentityInfoSubtitle] = {ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorProfileMenuSyncPromoButtonBackground] = {
+  mixer[kColorProfileMenuPromoButtonsBackground] = {
       ui::kColorSysTonalContainer};
 
   // Signin bubble colors. Main background color uses the same color as the

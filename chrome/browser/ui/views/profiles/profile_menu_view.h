@@ -23,6 +23,7 @@
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/sync/service/local_data_description.h"
 #include "ui/views/controls/styled_label.h"
 
 namespace signin_metrics {
@@ -85,6 +86,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnManageProfilesButtonClicked();
   void OnEditProfileButtonClicked();
   void OnAutofillSettingsButtonClicked();
+  void OnBuildBatchUploadButtonClicked();
 
   // We normally close the bubble any time it becomes inactive but this can lead
   // to flaky tests where unexpected UI events are triggering this behavior.
@@ -95,6 +97,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void SetMenuTitleForAccessibility();
   void BuildGuestIdentity();
   void BuildHistorySyncOptInButton();
+  void MaybeBuildBatchUploadButton();
   void BuildAutofillSettingsButton();
   void BuildCustomizeProfileButton();
   void MaybeBuildChromeAccountSettingsButton();
@@ -114,6 +117,9 @@ class ProfileMenuView : public ProfileMenuViewBase {
       const std::vector<ProfileAttributesEntry*>& available_profiles);
 
   void BuildProfileManagementFeatureButtons();
+
+  void OnBatchUploadDataReceived(
+      std::map<syncer::DataType, syncer::LocalDataDescription> local_data_map);
 
   const raw_ref<Browser> browser_;
 

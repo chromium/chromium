@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -28,6 +29,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -65,6 +67,12 @@ enum class ManagementStatus {
   kSupervisedUser
 };
 
+enum class WithLocalData {
+  kNoLocalData,
+  kSingleLocalData,
+  kMultipleLocalData,
+};
+
 struct ProfileMenuViewPixelTestParam {
   PixelTestParam pixel_test_param;
   ProfileTypePixelTestParam profile_type_param =
@@ -74,6 +82,7 @@ struct ProfileMenuViewPixelTestParam {
   ManagementStatus management_status = ManagementStatus::kNonManaged;
   bool use_multiple_profiles = false;
   bool account_image_available = true;
+  WithLocalData with_local_data = WithLocalData::kNoLocalData;
 
   // Features and parameters that are enabled in addition to the features
   // enabled by default.
@@ -81,8 +90,8 @@ struct ProfileMenuViewPixelTestParam {
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
-// to be named like `<TestClassName>.InvokeUi_default/<TestSuffix>` instead
-// of using the index of the param in `TestParam` as suffix.
+// to be named like `ProfileMenuViewPixelTest.InvokeUi_default/<TestSuffix>`
+// instead of using the index of the param in `TestParam` as suffix.
 std::string ParamToTestSuffix(
     const ::testing::TestParamInfo<ProfileMenuViewPixelTestParam>& info) {
   return info.param.pixel_test_param.test_suffix;
@@ -241,6 +250,28 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
               {{"history-sync-optin-expansion-pill-option",
                 "browse-across-devices-new-profile-menu-promo-variant"}}}},
     },
+    {
+        .pixel_test_param = {.test_suffix = "BatchUploadPromoSingleLocalData"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .with_local_data = WithLocalData::kSingleLocalData,
+    },
+    {
+        .pixel_test_param = {.test_suffix =
+                                 "BatchUploadPromoMultipleLocalDataDarkTheme",
+                             .use_dark_theme = true},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .with_local_data = WithLocalData::kMultipleLocalData,
+    },
+    {
+        .pixel_test_param = {.test_suffix =
+                                 "BatchUploadPromoAndHistorySyncOptinPromo"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .with_local_data = WithLocalData::kMultipleLocalData,
+        .extra_features_and_params =
+            {{switches::kEnableHistorySyncOptinExpansionPill,
+              {{"history-sync-optin-expansion-pill-option",
+                "browse-across-devices-new-profile-menu-promo-variant"}}}},
+    },
 };
 
 }  // namespace
@@ -260,7 +291,8 @@ class ProfileMenuViewPixelTest
 
     std::vector<base::test::FeatureRefAndParams> enabled_features_and_params = {
         {features::kEnterpriseProfileBadgingForMenu, {}},
-        {features::kEnterpriseProfileBadgingPolicies, {}}};
+        {features::kEnterpriseProfileBadgingPolicies, {}},
+        {syncer::kReplaceSyncPromosWithSignInPromos, {}}};
     std::move(GetParam().extra_features_and_params.begin(),
               GetParam().extra_features_and_params.end(),
               std::back_inserter(enabled_features_and_params));
@@ -282,6 +314,13 @@ class ProfileMenuViewPixelTest
   }
 
   ~ProfileMenuViewPixelTest() override = default;
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    ProfilesPixelTestBaseT::SetUpBrowserContextKeyedServices(context);
+    batch_upload_test_helper_.SetupBatchUploadTestingFactoryInProfile(
+        Profile::FromBrowserContext(context));
+  }
 
   void TearDownOnMainThread() override {
     scoped_browser_management_.reset();
@@ -424,6 +463,8 @@ class ProfileMenuViewPixelTest
         break;
     }
 
+    signin::IdentityManager* identity_manager =
+        identity_test_env()->identity_manager();
     switch (GetManagementStatus()) {
       case ManagementStatus::kNonManaged:
         break;
@@ -443,7 +484,7 @@ class ProfileMenuViewPixelTest
       case ManagementStatus::kSupervisedUser:
         if (!account_info.IsEmpty()) {
           supervised_user::UpdateSupervisionStatusForAccount(
-              account_info, identity_test_env()->identity_manager(), true);
+              account_info, identity_manager, true);
           break;
         }
     }
@@ -473,14 +514,28 @@ class ProfileMenuViewPixelTest
 
     if (!GetParam().account_image_available) {
       // Remove account images. `SignInWithAccount()` adds an image by default.
-      signin::IdentityManager* identity_manager =
-          identity_test_env()->identity_manager();
       for (const CoreAccountInfo& info :
            identity_manager->GetAccountsWithRefreshTokens()) {
         SimulateAccountImageFetch(identity_manager, info.account_id,
                                   /*image_url_with_size=*/"NO_IMAGE",
                                   gfx::Image());
       }
+    }
+
+    size_t local_data_count = 0;
+    switch (GetParam().with_local_data) {
+      case WithLocalData::kNoLocalData:
+        break;
+      case WithLocalData::kSingleLocalData:
+        local_data_count = 1;
+        break;
+      case WithLocalData::kMultipleLocalData:
+        local_data_count = 5;
+        break;
+    }
+    if (local_data_count != 0) {
+      batch_upload_test_helper_.SetReturnDescriptions(
+          syncer::DataType::PASSWORDS, local_data_count);
     }
   }
 
@@ -548,6 +603,7 @@ class ProfileMenuViewPixelTest
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
       scoped_browser_management_;
+  BatchUploadServiceTestHelper batch_upload_test_helper_;
 };
 
 IN_PROC_BROWSER_TEST_P(ProfileMenuViewPixelTest, InvokeUi_default) {

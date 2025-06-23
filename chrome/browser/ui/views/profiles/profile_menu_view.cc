@@ -26,6 +26,8 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -78,6 +80,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "net/base/url_util.h"
@@ -94,6 +97,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
@@ -512,6 +516,16 @@ void ProfileMenuView::OnAutofillSettingsButtonClicked() {
   chrome::ShowSettingsSubPage(&browser(), chrome::kAutofillSubPage);
 }
 
+void ProfileMenuView::OnBuildBatchUploadButtonClicked() {
+  RecordClick(ActionableItem::kBatchUploadButton);
+  if (!perform_menu_actions()) {
+    return;
+  }
+  BatchUploadServiceFactory::GetForProfile(&profile())
+      ->OpenBatchUpload(&browser(),
+                        BatchUploadService::EntryPoint::kProfileMenu);
+}
+
 void ProfileMenuView::SetMenuTitleForAccessibility() {
   const signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile());
@@ -761,16 +775,52 @@ void ProfileMenuView::BuildHistorySyncOptInButton() {
       explicit_signin_access_point_.value_or(
           signin_metrics::AccessPoint::kAvatarBubbleSignIn);
   signin_metrics::LogSyncOptInOffered(access_point);
-  AddFeatureButton(
+  AddPromoButton(
       l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SYNC_PROMO_ROW_BUTTON_LABEL),
       base::BindRepeating(
           &ProfileMenuView::OnSigninButtonClicked, base::Unretained(this),
           IdentityManagerFactory::GetForProfile(&profile())
               ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
           ActionableItem::kHistorySyncOptInButton, access_point),
-      kDevicesChromeRefreshIcon, /*icon_to_image_ratio=*/1.0f,
-      kColorProfileMenuSyncPromoButtonBackground,
-      /*add_vertical_margin=*/true);
+      kDevicesChromeRefreshIcon);
+}
+
+void ProfileMenuView::OnBatchUploadDataReceived(
+    std::map<syncer::DataType, syncer::LocalDataDescription> local_data_map) {
+  size_t local_data_count = std::accumulate(
+      local_data_map.begin(), local_data_map.end(), 0u,
+      [](size_t current_count,
+         std::pair<syncer::DataType, syncer::LocalDataDescription> local_data) {
+        return current_count + local_data.second.local_data_models.size();
+      });
+  if (local_data_count == 0) {
+    return;
+  }
+
+  AddPromoButton(
+      l10n_util::GetPluralStringFUTF16(IDS_PROFILE_MENU_BATCH_UPLOAD_BUTTON,
+                                       local_data_count),
+      base::BindRepeating(&ProfileMenuView::OnBuildBatchUploadButtonClicked,
+                          base::Unretained(this)),
+      vector_icons::kSaveCloudIcon);
+
+  // Adding the button being asynchronous, the menu may be already been shown,
+  // update the view size to accommodate for the addition of the button. In
+  // theory this update should not even be visible to the user.
+  if (views::Widget* widget = GetWidget()) {
+    widget->SetSize(widget->non_client_view()->GetPreferredSize());
+  }
+}
+
+void ProfileMenuView::MaybeBuildBatchUploadButton() {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    return;
+  }
+
+  BatchUploadServiceFactory::GetForProfile(&profile())
+      ->GetLocalDataDescriptionsForAvailableTypes(base::BindOnce(
+          &ProfileMenuView::OnBatchUploadDataReceived, base::Unretained(this)));
 }
 
 void ProfileMenuView::BuildAutofillSettingsButton() {
@@ -948,6 +998,8 @@ void ProfileMenuView::BuildFeatureButtons() {
       IsNewSyncPromoVariantEnabled()) {
     BuildHistorySyncOptInButton();
   }
+  // May add the button asynchronously, order is not be guaranteed.
+  MaybeBuildBatchUploadButton();
   BuildAutofillSettingsButton();
   MaybeBuildManageGoogleAccountButton();
   BuildCustomizeProfileButton();

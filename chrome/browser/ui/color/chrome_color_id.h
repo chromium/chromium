@@ -476,7 +476,7 @@
   E_CPONLY(kColorProfileMenuIdentityInfoBackground) \
   E_CPONLY(kColorProfileMenuIdentityInfoTitle) \
   E_CPONLY(kColorProfileMenuIdentityInfoSubtitle) \
-  E_CPONLY(kColorProfileMenuSyncPromoButtonBackground) \
+  E_CPONLY(kColorProfileMenuPromoButtonsBackground) \
   /* Profiles colors. */ \
   E_CPONLY(kColorProfilesReauthDialogBorder) \
   /* PWA colors. */ \

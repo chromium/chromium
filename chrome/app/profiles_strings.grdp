@@ -170,6 +170,12 @@
     <message name="IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON" desc="Button in the avatar menu bubble view for opening Chrome autofill settings.">
       Passwords and autofill
     </message>
+    <message name="IDS_PROFILE_MENU_BATCH_UPLOAD_BUTTON" desc="Button in the profile menu to open the Batch Upload dialog.">
+      {0, plural,
+      =1 {Save 1 item in account}
+      other {Save # items in account}
+      }
+    </message>
   </if>
   <if expr="use_titlecase">
     <message name="IDS_PROFILES_PROFILE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to manage accounts for a profile.">
@@ -198,6 +204,12 @@
     </message>
     <message name="IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON" desc="Button in the avatar menu bubble view for opening Chrome autofill settings.">
       Passwords and Autofill
+    </message>
+    <message name="IDS_PROFILE_MENU_BATCH_UPLOAD_BUTTON" desc="Button in the profile menu to open the Batch Upload dialog.">
+      {0, plural,
+      =1 {Save 1 Item in Account}
+      other {Save # Items in Account}
+      }
     </message>
   </if>
   <message name="IDS_PROFILES_MANAGED_BY" desc="Label shown under the avatar in the avatar menu bubble view stating that the account is managed.">
