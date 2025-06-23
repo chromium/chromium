@@ -77,7 +77,8 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
 + (NSError*)storeCredentialWithUsername:(NSString*)username
                                password:(NSString*)password
                                     URL:(NSURL*)URL
-                                 shared:(BOOL)shared {
+                                 shared:(BOOL)shared
+                         backupPassword:(NSString*)backupPassword {
   // Obtain a PasswordStore.
   scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
       PasswordStore();
@@ -90,6 +91,10 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
   PasswordForm passwordCredentialForm;
   passwordCredentialForm.username_value = base::SysNSStringToUTF16(username);
   passwordCredentialForm.password_value = base::SysNSStringToUTF16(password);
+  if (backupPassword) {
+    passwordCredentialForm.SetPasswordBackupNote(
+        base::SysNSStringToUTF16(backupPassword));
+  }
   passwordCredentialForm.url =
       net::GURLWithNSURL(URL).DeprecatedGetOriginAsURL();
   passwordCredentialForm.signon_realm = passwordCredentialForm.url.spec();
@@ -101,6 +106,17 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
   passwordStore->AddLogin(passwordCredentialForm);
 
   return nil;
+}
+
++ (NSError*)storeCredentialWithUsername:(NSString*)username
+                               password:(NSString*)password
+                                    URL:(NSURL*)URL
+                                 shared:(BOOL)shared {
+  return [PasswordManagerAppInterface storeCredentialWithUsername:username
+                                                         password:password
+                                                              URL:URL
+                                                           shared:shared
+                                                   backupPassword:nil];
 }
 
 + (NSError*)storeCredentialWithUsername:(NSString*)username

@@ -93,16 +93,15 @@ id<GREYMatcher> PasswordManagerContextMenuItem() {
                     grey_interactable(), nullptr);
 }
 
-// Returns the matcher for the recovery password suggestion with the given
+// Returns the matcher for the backup password suggestion with the given
 // `suggestion_username`.
-id<GREYMatcher> RecoveryPasswordSuggestion(NSString* suggestion_username) {
-  id<GREYMatcher> recovery_icon = grey_accessibilityID(kHistorySymbol);
-  id<GREYMatcher> recovery_text =
-      grey_accessibilityLabel(l10n_util::GetNSString(
-          IDS_IOS_PASSWORD_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL));
+id<GREYMatcher> BackupPasswordSuggestion(NSString* suggestion_username) {
+  id<GREYMatcher> backup_icon = grey_accessibilityID(kHistorySymbol);
+  id<GREYMatcher> backup_text = grey_accessibilityLabel(l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL));
   return grey_allOf(grey_accessibilityID(suggestion_username),
-                    grey_descendant(recovery_icon),
-                    grey_descendant(recovery_text), nullptr);
+                    grey_descendant(backup_icon), grey_descendant(backup_text),
+                    nullptr);
 }
 
 // Get the top presented view controller, in this case the bottom sheet view
@@ -258,9 +257,9 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
         password_manager::features::kIOSStatelessFillDataFlow);
   }
 
-  if ([self isRunningTest:@selector(testDisplayRecoveryPassword)] ||
+  if ([self isRunningTest:@selector(testUseBackupPassword)] ||
       [self isRunningTest:@selector
-            (testAvailableContextMenuItemsForRecoveryPassword)]) {
+            (testAvailableContextMenuItemsForBackupPassword)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSFillRecoveryPassword);
   }
@@ -324,6 +323,19 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
                               URL:net::NSURLWithGURL(
                                       [self loginAutofocusPageURL])];
   [self loadLoginAutofocusPage];
+}
+
+// Saves a credential with a defined backup password to the store and loads the
+// simple login page.
+- (void)savePasswordWithBackupAndLoadLoginPage {
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(
+                                      [self loginAutofocusPageURL])
+                           shared:NO
+                   backupPassword:@"backup password"];
+  [self loadLoginPage];
 }
 
 - (void)verifyPasswordFieldsHaveBeenFilled:(NSString*)username {
@@ -1146,37 +1158,44 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that recovery passwords appear as expected in the bottom sheet.
-- (void)testDisplayRecoveryPassword {
-  // TODO(crbug.com/422206607): Add a PasswordForm with a recovery password.
-  [self saveGenericPasswordAndLoadLoginPage];
+// Tests that backup passwords appear as expected in the bottom sheet and that
+// it can be used to fill the form.
+- (void)testUseBackupPassword {
+  [self savePasswordWithBackupAndLoadLoginPage];
 
   // Tap on a field to trigger the bottom sheet.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
-  // TODO(crbug.com/422206607): Switch the `grey_nil()` matcher for
-  // `grey_sufficientlyVisible` once a recovery password will have been added.
-  [[EarlGrey selectElementWithMatcher:RecoveryPasswordSuggestion(@"user")]
-      assertWithMatcher:grey_nil()];
+  // Select the backup password and use it to fill the form.
+  TapElementOnceVisible(BackupPasswordSuggestion(@"user"));
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+      performAction:grey_tap()];
+
+  [self verifyPasswordFieldsHaveBeenFilled:@"user"];
+
+  // Verify that the acceptance of the password suggestion at index 1 was
+  // correctly recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/1);
 }
 
 // Tests that only the expected options are available in the context menu when
-// opened from a recovery password suggestion.
-- (void)testAvailableContextMenuItemsForRecoveryPassword {
-  // TODO(crbug.com/422206607): Add a PasswordForm with a recovery password.
-  [self saveGenericPasswordAndLoadLoginPage];
+// opened from a backup password suggestion.
+- (void)testAvailableContextMenuItemsForBackupPassword {
+  [self savePasswordWithBackupAndLoadLoginPage];
 
   // Tap on a field to trigger the bottom sheet.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
-  // TODO(crbug.com/422206607): Once a recovery password will have been added,
-  // make sure to long press the recovery password suggestion and verify that
-  // only the "Password Manager" context menu item is available.
-  LongPressElementOnceVisible(grey_accessibilityID(@"user"));
+  // Long press the backup password suggestion to open the context menu.
+  LongPressElementOnceVisible(BackupPasswordSuggestion(@"user"));
+
+  // Verify the availabale options.
+  [[EarlGrey selectElementWithMatcher:PasswordManagerContextMenuItem()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:ShowDetailsContextMenuItem()]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

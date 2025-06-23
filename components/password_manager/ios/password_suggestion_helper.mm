@@ -223,12 +223,10 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
       }
 
       autofill::SuggestionType suggestionType =
-          autofill::SuggestionType::kPasswordEntry;
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::kIOSFillRecoveryPassword)) {
-        // TODO(crbug.com/422206607): Set the `suggestionType` to
-        // `kBackupPasswordEntry` when appropriate.
-      }
+          usernameAndRealm.is_backup_credential
+              ? autofill::SuggestionType::kBackupPasswordEntry
+              : autofill::SuggestionType::kPasswordEntry;
+
       FormSuggestionMetadata metadata;
       metadata.is_single_username_form = is_single_username_form;
       metadata.likely_from_real_password_field = isPasswordField;
