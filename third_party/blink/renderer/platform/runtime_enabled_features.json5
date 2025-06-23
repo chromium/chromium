@@ -3984,8 +3984,9 @@
       // createElement and attribute related DOM APIs.
       // https://github.com/whatwg/dom/pull/1079
       // http://crbug.com/40228234
+      // https://chromestatus.com/feature/6278918763708416
       name: "RelaxDOMValidNames",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "RelOpenerBcgDependencyHint",
