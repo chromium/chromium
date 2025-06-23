@@ -3494,25 +3494,9 @@ gfx::ColorSpace WebGLRenderingContextWebGPUBase::GetColorSpace() const {
 int WebGLRenderingContextWebGPUBase::AllocatedBufferCountPerPixel() {
   // Front and back buffers.
   // TODO(413078308): Add support configuring MSAA and depth-stencil.
-  int buffer_count = 2;
-
-  if (!Host()) {
-    return buffer_count;
-  }
-
-  auto* provider = Host()->GetResourceProviderForWebGL();
-  if (provider) {
-    buffer_count++;
-    if (provider->IsAccelerated()) {
-      // The number of internal GPU buffers vary between one (stable
-      // non-displayed state) and three (triple-buffered animations).
-      // Adding 2 is a pessimistic but relevant estimate.
-      // Note: These buffers might be allocated in GPU memory.
-      buffer_count += 2;
-    }
-  }
-
-  return buffer_count;
+  // Note: If/once this class creates a CanvasResourceProvider it should track
+  // the memory of the provider here as well.
+  return 2;
 }
 
 bool WebGLRenderingContextWebGPUBase::isContextLost() const {
