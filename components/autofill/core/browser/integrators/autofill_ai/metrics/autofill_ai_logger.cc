@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -116,6 +117,7 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
     }
   }
   RecordFunnelMetrics(state, submission_state);
+  RecordNumberOfFieldsFilled(form, state, opt_in_status);
 }
 
 void AutofillAiLogger::RecordFunnelMetrics(const FunnelState& funnel_state,
@@ -167,6 +169,53 @@ void AutofillAiLogger::RecordKeyMetrics(const FormStructure& form,
   if (funnel_state.did_fill_suggestions) {
     LogKeyMetric("FillingCorrectness", entity_type,
                  !funnel_state.edited_autofilled_field);
+  }
+}
+
+void AutofillAiLogger::RecordNumberOfFieldsFilled(const FormStructure& form,
+                                                  const FunnelState& state,
+                                                  bool opt_in_status) const {
+  const int num_filled_fields = std::ranges::count_if(
+      form, [&](const std::unique_ptr<AutofillField>& field) {
+        switch (field->filling_product()) {
+          case FillingProduct::kAddress:
+          case FillingProduct::kCreditCard:
+          case FillingProduct::kMerchantPromoCode:
+          case FillingProduct::kIban:
+          case FillingProduct::kPassword:
+          case FillingProduct::kPlusAddresses:
+          case FillingProduct::kAutofillAi:
+          case FillingProduct::kLoyaltyCard:
+          case FillingProduct::kIdentityCredential:
+            return true;
+          case FillingProduct::kAutocomplete:
+          case FillingProduct::kCompose:
+          case FillingProduct::kDataList:
+          case FillingProduct::kNone:
+            return false;
+        }
+      });
+  const int num_autofill_ai_filled_fields = std::ranges::count(
+      form, FillingProduct::kAutofillAi, &AutofillField::filling_product);
+  const std::string total_opt_in_histogram_name =
+      base::StrCat({"Autofill.Ai.NumberOfFilledFields.Total.",
+                    opt_in_status ? "OptedIn" : "OptedOut"});
+  const std::string total_readiness_histogram_name =
+      base::StrCat({"Autofill.Ai.NumberOfFilledFields.Total.",
+                    state.has_data_to_fill ? "HasDataToFill" : "NoDataToFill"});
+  base::UmaHistogramCounts100(total_opt_in_histogram_name, num_filled_fields);
+  base::UmaHistogramCounts100(total_readiness_histogram_name,
+                              num_filled_fields);
+
+  if (opt_in_status) {
+    base::UmaHistogramCounts100(
+        "Autofill.Ai.NumberOfFilledFields.AutofillAi.OptedIn",
+        num_autofill_ai_filled_fields);
+  }
+  if (state.has_data_to_fill) {
+    base::UmaHistogramCounts100(
+        "Autofill.Ai.NumberOfFilledFields.AutofillAi.HasDataToFill",
+        num_autofill_ai_filled_fields);
   }
 }
 

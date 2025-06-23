@@ -1163,6 +1163,38 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.NumberOfFilledFields.{FillType}.{SplitCriteria}"
+    units="fields" expires_after="2025-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records, at form submission, the number of fields filled in a form. Only
+    emitted for forms that can be filled by Autofill AI.
+
+    {FillType}
+
+    {SplitCriteria}
+  </summary>
+  <token key="FillType">
+    <variant name="AutofillAi"
+        summary="Only counts fields filled by Autofill AI and nothing else."/>
+    <variant name="Total"
+        summary="Counts fields filled by any Autofill source, except
+                 Autocomplete and Compose."/>
+  </token>
+  <token key="SplitCriteria">
+    <variant name=".HasDataToFill"
+        summary="Only emitted for users who have some Autofill AI entity
+                 saved and can therefore fill using Autofill AI."/>
+    <variant name=".NoDataToFill"
+        summary="Only emitted for users with no entities saved."/>
+    <variant name="OptedIn"
+        summary="Only emitted for users opted in to Autofill AI."/>
+    <variant name="OptedOut"
+        summary="Only emitted for users not opted in to Autofill AI."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Ai.OptInFunnel" enum="AutofillAiOptInFunnelEvents"
     expires_after="2025-12-12">
   <owner>brunobraga@google.com</owner>

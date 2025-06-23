@@ -74,6 +74,9 @@ class AutofillAiLogger {
                            bool submission_state) const;
   void RecordKeyMetrics(const FormStructure& form,
                         const FunnelState& funnel_state) const;
+  void RecordNumberOfFieldsFilled(const FormStructure& form,
+                                  const FunnelState& state,
+                                  bool opt_in_status) const;
 
   // Records the funnel state of each form. See the documentation of
   // `FunnelState` for more information about what is recorded.

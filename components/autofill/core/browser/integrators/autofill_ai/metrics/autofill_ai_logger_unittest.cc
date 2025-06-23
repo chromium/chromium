@@ -222,6 +222,44 @@ class BaseAutofillAiTest : public testing::Test {
       std::make_unique<EntityTable>()};
 };
 
+// Tests the recording of the number of filled fields at form submission.
+TEST_F(BaseAutofillAiTest, NumberOfFilledFields) {
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
+
+  form->field(0)->set_is_autofilled(true);
+  form->field(0)->set_filling_product(FillingProduct::kAddress);
+  form->field(1)->set_is_autofilled(true);
+  form->field(1)->set_filling_product(FillingProduct::kAutocomplete);
+  {
+    manager().OnFormSeen(*form);
+    base::HistogramTester histogram_tester;
+    manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
+
+    // Only one field should be recorded, since Autocomplete is excluded from
+    // the counts.
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.NumberOfFilledFields.Total.OptedIn", 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.NumberOfFilledFields.Total.NoDataToFill", 1, 1);
+  }
+  {
+    AddOrUpdateEntityInstance(test::GetPassportEntityInstance());
+    manager().OnFormSeen(*form);
+    form->field(2)->set_is_autofilled(true);
+    form->field(2)->set_filling_product(FillingProduct::kAutofillAi);
+    base::HistogramTester histogram_tester;
+    manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.NumberOfFilledFields.Total.OptedIn", 2, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.NumberOfFilledFields.Total.HasDataToFill", 2, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.NumberOfFilledFields.AutofillAi.OptedIn", 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.NumberOfFilledFields.AutofillAi.HasDataToFill", 1, 1);
+  }
+}
+
 // Test that the funnel metrics are logged correctly given different scenarios.
 // This test is parameterized by a boolean representing whether the form was
 // submitted or abandoned, and an integer representing the last stage of the
