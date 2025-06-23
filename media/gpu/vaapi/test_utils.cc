@@ -19,11 +19,7 @@
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/buffer_format_util.h"
 
-// TODO(crbug.com/421698315): Remove.
-#include "ui/gfx/gpu_memory_buffer.h"
-
 #if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/421698315): Remove.
 #include "media/gpu/test/local_gpu_memory_buffer_manager.h"
 #endif
 
