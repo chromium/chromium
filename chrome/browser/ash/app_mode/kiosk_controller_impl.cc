@@ -44,6 +44,7 @@
 #include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_manager_wrapper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/common/chrome_switches.h"
@@ -227,6 +228,9 @@ void KioskControllerImpl::StartSession(const KioskAppId& app_id,
   DUMP_WILL_BE_CHECK(app_maybe.has_value());
   KioskApp app = std::move(app_maybe).value_or(EmptyKioskApp(app_id));
 
+  kiosk_log_manager_wrapper_ =
+      std::make_unique<chromeos::KioskAppLevelLogsManagerWrapper>();
+
   launch_controller_ = std::make_unique<KioskLaunchController>(
       host,
       /*app_launched_callback=*/
@@ -250,6 +254,10 @@ void KioskControllerImpl::StartSessionAfterCrash(const KioskAppId& app,
                  << " flag.";
     return;
   }
+
+  kiosk_log_manager_wrapper_ =
+      std::make_unique<chromeos::KioskAppLevelLogsManagerWrapper>(profile);
+
   crash_recovery_launcher_ =
       std::make_unique<CrashRecoveryLauncher>(CHECK_DEREF(profile), app);
   crash_recovery_launcher_->Start(

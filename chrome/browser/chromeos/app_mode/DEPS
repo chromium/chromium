@@ -34,6 +34,8 @@ include_rules = [
   "+chrome/browser/lacros/app_mode",
   "+chrome/browser/lifetime",
   "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/profiles/profile_manager.h",
+  "+chrome/browser/profiles/profile_manager_observer.h",
   "+chrome/browser/ui/apps/chrome_app_delegate.h",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/browser.h",
