@@ -1478,6 +1478,7 @@ source_set("unit_tests") {
     "ui/payments/card_unmask_otp_input_dialog_controller_impl_unittest.cc",
     "ui/payments/card_unmask_prompt_controller_impl_unittest.cc",
     "ui/payments/payments_window_user_consent_dialog_controller_impl_unittest.cc",
+    "ui/payments/save_and_fill_dialog_controller_impl_unittest.cc",
     "ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params_unittest.cc",
     "ui/payments/select_bnpl_issuer_dialog_controller_impl_unittest.cc",
     "ui/payments/virtual_card_enroll_ui_model_unittest.cc",

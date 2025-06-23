@@ -43,6 +43,8 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
   base::WeakPtr<SaveAndFillDialogController> GetWeakPtr() override;
 
  private:
+  friend class SaveAndFillDialogControllerImplTest;
+
   std::unique_ptr<SaveAndFillDialogView> dialog_view_;
 
   // Determines whether the local or upload save version of the UI should be
