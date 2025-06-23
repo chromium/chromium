@@ -43,5 +43,8 @@ source_set("browser_resources") {
     "glic_resources.h",
   ]
   public_deps = [ ":grit" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chrome/common:chrome_features",
+  ]
 }

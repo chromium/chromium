@@ -667,6 +667,8 @@ const base::FeatureParam<int> kGlicTabFocusDataDebounceDelayMs{
     5};
 const base::FeatureParam<int> kGlicTabFocusDataMaxDebounces{
     &kGlicTabFocusDataDedupDebounce, "glic-tab-focus-data-max-debounces", 5};
+
+BASE_FEATURE(kGlicAssetsV2, "GlicAssetsV2", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 // Force Privacy Guide to be available even if it would be unavailable
