@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/commands/web_install_from_url_command.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/command_metrics_test_helper.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -63,7 +66,18 @@ constexpr char kDataError[] = "DataError";
 
 namespace web_app {
 
-class WebInstallFromUrlCommandBrowserTest : public WebAppBrowserTestBase {
+// Used to test variations of the `WebAppFilter::LaunchableFromInstallApi()`
+// where this command is essentially being used to reinstall an app that doesn't
+// meet the launch criteria specified via the filter.
+enum class NotLaunchableFromInstallApi {
+  // By default,
+  kNoOSIntegration,
+  kDisplayModeBrowser,
+};
+
+class WebInstallFromUrlCommandBrowserTest
+    : public WebAppBrowserTestBase,
+      public ::testing::WithParamInterface<NotLaunchableFromInstallApi> {
  public:
   WebInstallFromUrlCommandBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -82,10 +96,11 @@ class WebInstallFromUrlCommandBrowserTest : public WebAppBrowserTestBase {
 
   // Tests start on an about:blank page. We need to navigate to any valid URL
   // before we can execute `navigator.install()`
-  void NavigateToValidUrl() {
+  void NavigateToValidUrl(Browser* app_browser = nullptr) {
     VLOG(0) << https_server()->GetURL("/simple.html").spec();
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), https_server()->GetURL("/simple.html")));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(app_browser ? app_browser : browser(),
+                                     https_server()->GetURL("/simple.html")));
   }
 
   // When the permission prompt shows, it must be granted or denied.
@@ -103,7 +118,9 @@ class WebInstallFromUrlCommandBrowserTest : public WebAppBrowserTestBase {
   }
 
   // 2 param navigator.install(install_url, manifest_id)
-  bool TryInstallApp(std::string install_url, std::string manifest_id) {
+  bool TryInstallApp(std::string install_url,
+                     std::string manifest_id,
+                     content::WebContents* contents = nullptr) {
     std::string script = "navigator.install('" + install_url + "', '" +
                          manifest_id +
                          "').then(result => {"
@@ -111,7 +128,7 @@ class WebInstallFromUrlCommandBrowserTest : public WebAppBrowserTestBase {
                          "}).catch(error => {"
                          "  webInstallError = error;"
                          "});";
-    return ExecJs(web_contents(), script);
+    return ExecJs(contents ? contents : web_contents(), script);
   }
 
   // 1 param navigator.install(install_url)
@@ -235,6 +252,49 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
 }
 
+IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
+                       InstallApp_FromPWAWindow) {
+  // Install setup
+  auto auto_accept_pwa_install_confirmation =
+      SetAutoAcceptPWAInstallConfirmationForTesting();
+  ui_test_utils::BrowserChangeObserver wait_for_web_app(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  base::HistogramTester histograms;
+
+  // Install the pwa to use to call `navigator.install()` from within.
+  webapps::AppId app_id = InstallWebAppFromPage(
+      browser(), https_server()->GetURL("/banners/manifest_test_page.html"));
+  Browser* app_browser = wait_for_web_app.Wait();
+  content::WebContents* app_web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  histograms.ExpectBucketCount("WebApp.LaunchSource",
+                               apps::LaunchSource::kFromReparenting, 1);
+
+  // app to install with `navigator.install()`.
+  const GURL install_url =
+      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+  const std::string manifest_id =
+      GenerateManifestId("some_id", install_url).spec();
+
+  base::AutoReset<bool> auto_accept =
+      SetAutoAcceptPWAInstallConfirmationForTesting();
+  // NavigateToValidUrl(app_browser);
+  SetPermissionResponse(/*permission_granted=*/true, app_web_contents);
+  // !Important! Because the 2 apps share a scope, we need to pass manifest_id
+  // here to ensure an accurate app lookup. If we don't, we'll end up matching
+  // the app installed first and launching it. See web_install_service_impl.cc
+  // `IsAppInstalled` for more details.
+  ASSERT_TRUE(TryInstallApp(install_url.spec(), manifest_id, app_web_contents));
+
+  EXPECT_TRUE(ResultExists(app_web_contents));
+  EXPECT_FALSE(ErrorExists(app_web_contents));
+  EXPECT_EQ(GetManifestIdResult(app_web_contents), manifest_id);
+
+  // Another app should've launched.
+  histograms.ExpectBucketCount("WebApp.LaunchSource",
+                               apps::LaunchSource::kFromReparenting, 1);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Permissions handling
 ///////////////////////////////////////////////////////////////////////////////
@@ -352,6 +412,9 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   EXPECT_EQ(GetErrorName(), kAbortError);
 }
 
+// Collection of tests for calling `navigator.install(already_installed_url)`.
+// In these cases we show the `WebAppLaunchDialog` to allow the user to launch
+// or not.
 using WebInstallBackgroundAppAlreadyInstalledBrowserTest =
     WebInstallFromUrlCommandBrowserTest;
 
@@ -379,6 +442,37 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
   // permission before the launch.
   SetPermissionResponse(/*permission_granted=*/true);
   ASSERT_TRUE(TryInstallApp(background_doc_install_url.spec()));
+  EXPECT_TRUE(ResultExists());
+  EXPECT_FALSE(ErrorExists());
+  EXPECT_EQ(GetManifestIdResult(), manifest_id);
+  histograms.ExpectBucketCount("WebApp.LaunchSource",
+                               apps::LaunchSource::kFromWebInstallApi, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
+                       UserAcceptsLaunchDialog_WithManifestId) {
+  NavigateToValidUrl();
+  base::HistogramTester histograms;
+
+  // Install a background document.
+  const GURL background_doc_install_url =
+      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+  const std::string manifest_id =
+      GenerateManifestId("some_id", background_doc_install_url).spec();
+
+  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
+      browser(), background_doc_install_url);
+  // Verify that the app was installed and launched.
+  histograms.ExpectBucketCount("WebApp.LaunchSource",
+                               apps::LaunchSource::kFromReparenting, 1);
+
+  // Initiate another install request for the same background document.
+  base::AutoReset<bool> auto_accept =
+      SetAutoAcceptWebInstallLaunchDialogForTesting();
+  // Because we didn't install via web install, we'll be prompted to allow
+  // permission before the launch.
+  SetPermissionResponse(/*permission_granted=*/true);
+  ASSERT_TRUE(TryInstallApp(background_doc_install_url.spec(), manifest_id));
   EXPECT_TRUE(ResultExists());
   EXPECT_FALSE(ErrorExists());
   EXPECT_EQ(GetManifestIdResult(), manifest_id);
@@ -530,102 +624,101 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
                                apps::LaunchSource::kFromWebInstallApi, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
-                       LaunchApp_WithoutOSIntegration_WithId) {
+// Parameterized test for calling `navigator.install()` on an already
+// installed app that does *not satisfy our launch requirements*. In these
+// cases we expect the web app *install* dialog is shown. If the user accepts,
+// then WebInstallFromUrlCommand will essentially reinstall the app with OS
+// integration and launch it in a standalone window.
+IN_PROC_BROWSER_TEST_P(WebInstallFromUrlCommandBrowserTest, LaunchApp) {
+  // Validates that calling `navigator.install()` on an already installed app
+  // that does not satisfy our launch requirements will essentially reinstall
+  // the app as a fully OS integrated, standalone-windowed app.
   const GURL install_url =
       https_server()->GetURL("/banners/manifest_with_id_test_page.html");
   const GURL manifest_url =
       https_server()->GetURL("/banners/manifest_with_id.json");
   const GURL manifest_id = GenerateManifestId("some_id", install_url);
+
   auto info_result =
       WebAppInstallInfo::Create(manifest_url, manifest_id, install_url);
   ASSERT_TRUE(info_result.has_value());
   std::unique_ptr<WebAppInstallInfo> info =
       std::make_unique<WebAppInstallInfo>(std::move(info_result.value()));
-  info->title = u"Test App";
-  info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
-  webapps::AppId app_id = test::InstallWebAppWithoutOsIntegration(
-      profile(), std::move(info),
-      /*overwrite_existing_manifest_fields=*/false,
-      webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+  webapps::AppId app_id;
+  // Install a variety of apps that don't meet the launch requirements.
+  switch (GetParam()) {
+    case NotLaunchableFromInstallApi::kNoOSIntegration:
+      app_id = test::InstallWebAppWithoutOsIntegration(
+          profile(), std::move(info),
+          /*overwrite_existing_manifest_fields=*/false,
+          webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+      break;
+    case NotLaunchableFromInstallApi::kDisplayModeBrowser:
+      // Simulate the user unchecking "Open in window" in chrome://apps.
+      info->user_display_mode = mojom::UserDisplayMode::kBrowser;
 
-  // Verify that the app has no OS integration.
+      app_id =
+          test::InstallWebApp(profile(), std::move(info),
+                              /*overwrite_existing_manifest_fields=*/false,
+                              webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+      break;
+  }
+
+  // Check the app's OS integration status
   web_app::WebAppProvider* provider = WebAppProvider::GetForTest(profile());
+  auto& registrar = provider->registrar_unsafe();
   ASSERT_TRUE(provider);
-  web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-  EXPECT_NE(registrar.GetAppById(app_id)->install_state(),
-            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  switch (GetParam()) {
+    case NotLaunchableFromInstallApi::kNoOSIntegration:
+      EXPECT_NE(registrar.GetAppById(app_id)->install_state(),
+                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+      break;
+    case NotLaunchableFromInstallApi::kDisplayModeBrowser:
+      EXPECT_EQ(registrar.GetAppById(app_id)->install_state(),
+                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+      break;
+  }
 
   // Prepare to invoke navigator.install for the already installed app, which
-  // should initiate the launch dialog.
+  // should initiate the *install* dialog.
   base::HistogramTester histograms;
-  base::AutoReset<bool> auto_accept =
-      SetAutoAcceptWebInstallLaunchDialogForTesting();
+  auto auto_accept_pwa_install_confirmation =
+      SetAutoAcceptPWAInstallConfirmationForTesting();
   SetPermissionResponse(/*permission_granted=*/true);
-  ui_test_utils::BrowserChangeObserver wait_for_web_app(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
 
   NavigateToValidUrl();
   ASSERT_TRUE(TryInstallApp(install_url.spec()));
 
-  // Verify that it launched as expected.
-  ui_test_utils::WaitForBrowserToOpen();
   EXPECT_TRUE(ResultExists());
   EXPECT_FALSE(ErrorExists());
   EXPECT_EQ(GetManifestIdResult(), manifest_id.spec());
-  histograms.ExpectBucketCount("WebApp.LaunchSource",
-                               apps::LaunchSource::kFromWebInstallApi, 1);
-  // It should also now have OS integration.
+
+  // Verify the app was reinstalled.
+  histograms.ExpectUniqueSample("WebApp.Install.Source.Success", kInstallSource,
+                                1);
+  histograms.ExpectUniqueSample("WebApp.LaunchSource", kLaunchSource, 1);
+  histograms.ExpectUniqueSample("WebApp.NewCraftedAppInstalled.ByUser",
+                                /*sample=*/true, 1);
+
+  // It should always have OS integration and launch in an app window.
   EXPECT_EQ(registrar.GetAppById(app_id)->install_state(),
             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  // The app we're installing specifies display mode as `kFullscreen`, which is
+  // a type of standalone window.
+  EXPECT_EQ(registrar.GetAppById(app_id)->display_mode(),
+            blink::mojom::DisplayMode::kFullscreen);
+
+  // It should also indicate that it was installed via the web install API.
+  EXPECT_EQ(registrar.GetAppById(app_id)->latest_install_source(),
+            kInstallSource);
 }
 
-IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
-                       LaunchApp_WithoutOSIntegration_WithoutId) {
-  const GURL install_url =
-      https_server()->GetURL("/banners/manifest_test_page.html");
-  const GURL manifest_id = GenerateManifestIdFromStartUrlOnly(install_url);
-  std::unique_ptr<WebAppInstallInfo> info =
-      WebAppInstallInfo::CreateWithStartUrlForTesting(install_url);
-  info->title = u"Test App";
-  info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-
-  webapps::AppId app_id = test::InstallWebAppWithoutOsIntegration(
-      profile(), std::move(info),
-      /*overwrite_existing_manifest_fields=*/false,
-      webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-
-  // Verify that the app has no OS integration.
-  web_app::WebAppProvider* provider = WebAppProvider::GetForTest(profile());
-  ASSERT_TRUE(provider);
-  web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-  EXPECT_NE(registrar.GetAppById(app_id)->install_state(),
-            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-
-  // Prepare to invoke navigator.install for the already installed app, which
-  // should initiate the launch dialog.
-  base::HistogramTester histograms;
-  base::AutoReset<bool> auto_accept =
-      SetAutoAcceptWebInstallLaunchDialogForTesting();
-  SetPermissionResponse(/*permission_granted=*/true);
-  ui_test_utils::BrowserChangeObserver wait_for_web_app(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-
-  NavigateToValidUrl();
-  ASSERT_TRUE(TryInstallApp(install_url.spec()));
-
-  // Verify that it launched as expected.
-  ui_test_utils::WaitForBrowserToOpen();
-  EXPECT_TRUE(ResultExists());
-  EXPECT_FALSE(ErrorExists());
-  EXPECT_EQ(GetManifestIdResult(), manifest_id.spec());
-  histograms.ExpectBucketCount("WebApp.LaunchSource",
-                               apps::LaunchSource::kFromWebInstallApi, 1);
-  // It should also now have OS integration.
-  EXPECT_EQ(registrar.GetAppById(app_id)->install_state(),
-            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-}
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    WebInstallFromUrlCommandBrowserTest,
+    testing::Values(NotLaunchableFromInstallApi::kNoOSIntegration,
+                    NotLaunchableFromInstallApi::kDisplayModeBrowser));
 
 ///////////////////////////////////////////////////////////////////////////////
 // Error cases - bad manifests, invalid URLs, etc
@@ -857,9 +950,9 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandDialogTest,
       views::test::AnyWidgetTestPasskey{}, "WebAppSimpleInstallDialog");
 
   // We don't actually care about the result of the install, and EvalJs blocks
-  // until the promise resolves, which only happens after the dialog is closed.
-  // Execute the install asynchronously so we can actually check the dialog
-  // contents without the promise timing out.
+  // until the promise resolves, which only happens after the dialog is
+  // closed. Execute the install asynchronously so we can actually check the
+  // dialog contents without the promise timing out.
   ExecuteScriptAsync(web_contents(),
                      "navigator.install('" + install_url.spec() + "');");
 

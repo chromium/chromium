@@ -62,8 +62,9 @@ std::optional<webapps::AppId> IsAppInstalled(
   auto* provider = WebAppProvider::GetForWebApps(profile);
   CHECK(provider);
 
-  // TODO(crbug.com/426228062): Update WebAppFilter for background app launch.
-  WebAppFilter filter = WebAppFilter::InstalledInChrome();
+  // Only consider apps that launch in a standalone window, or were installed
+  // by the user.
+  WebAppFilter filter = WebAppFilter::LaunchableFromInstallApi();
 
   // If the developer provided a manifest ID, use it to look up the app. This
   // avoids issues with nested app scopes and `install_target` potentially
@@ -79,7 +80,8 @@ std::optional<webapps::AppId> IsAppInstalled(
                      : std::nullopt;
   }
 
-  // No `manifest_id` was provided. Check for the app by `install_target`.
+  // No `manifest_id` was provided. Check for the app by `install_target`. This
+  // is less accurate and may result in another app being launched.
   return provider->registrar_unsafe().FindBestAppWithUrlInScope(install_target,
                                                                 filter);
 }

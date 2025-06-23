@@ -977,6 +977,12 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
   }
 
+  if (filter.launchable_from_install_api_) {
+    const WebApp* app = GetAppById(app_id);
+    return (app && app->WasInstalledByUser()) ||
+           GetAppEffectiveDisplayMode(app_id) != DisplayMode::kBrowser;
+  }
+
   return false;
 }
 

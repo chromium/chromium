@@ -45,6 +45,10 @@ class WebAppFilter {
   // Only consider web apps that are DIY apps with OS shortcuts.
   static WebAppFilter IsDiyWithOsShortcut();
 
+  // Only consider web apps that open in a dedicated window (see above), or were
+  // installed by the user. Used by the Web Install API.
+  static WebAppFilter LaunchableFromInstallApi();
+
   WebAppFilter& operator=(const WebAppFilter&) = delete;
   ~WebAppFilter() = default;
 
@@ -70,6 +74,7 @@ class WebAppFilter {
   bool installed_in_chrome_ = false;
   bool installed_in_os_ = false;
   bool is_diy_with_os_shortcut_ = false;
+  bool launchable_from_install_api_ = false;
 };
 
 }  // namespace web_app

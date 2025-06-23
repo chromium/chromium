@@ -91,4 +91,11 @@ WebAppFilter WebAppFilter::IsDiyWithOsShortcut() {
   return filter;
 }
 
+// static
+WebAppFilter WebAppFilter::LaunchableFromInstallApi() {
+  WebAppFilter filter;
+  filter.launchable_from_install_api_ = true;
+  return filter;
+}
+
 }  // namespace web_app
