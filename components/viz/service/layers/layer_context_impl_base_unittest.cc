@@ -99,6 +99,12 @@ void LayerContextImplTest::SetUp() {
       compositor_frame_sink_support_.get(), /*draw_mode_is_gpu=*/true);
 }
 
+void LayerContextImplTest::RecreateLayerContextImplWithParams(
+    bool draw_mode_is_gpu) {
+  layer_context_impl_ = LayerContextImpl::CreateForTesting(
+      compositor_frame_sink_support_.get(), draw_mode_is_gpu);
+}
+
 void LayerContextImplTest::ResetTestState() {
   // Property tree node IDs and layers are reinitialized in
   // CreateDefaultUpdate if first_update_ is true.

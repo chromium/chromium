@@ -180,6 +180,16 @@ INSTANTIATE_TEST_SUITE_P(
       return name.str();
     });
 
+TEST_F(LayerContextImplTest, DrawModeIsGpuForwardedViaSettings) {
+  RecreateLayerContextImplWithParams(/*draw_mode_is_gpu=*/true);
+  cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
+  EXPECT_TRUE(host_impl->settings().display_tree_draw_mode_is_gpu);
+
+  RecreateLayerContextImplWithParams(/*draw_mode_is_gpu=*/false);
+  host_impl = layer_context_impl_->host_impl();
+  EXPECT_FALSE(host_impl->settings().display_tree_draw_mode_is_gpu);
+}
+
 TEST_F(LayerContextImplTest, TransferableUIResourceLifecycleAndEdgeCases) {
   cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
 
