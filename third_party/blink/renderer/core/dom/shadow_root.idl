@@ -54,32 +54,6 @@ interface ShadowRoot : DocumentFragment {
     // See https://crbug.com/346835896
     [RuntimeEnabled=ShadowRootReferenceTarget] attribute DOMString referenceTarget;
 
-    // Scoped element creation APIs
-    // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries#scoped-element-creation-apis
-    [
-      NewObject, PerWorldBindings, RaisesException, CEReactions,
-      RuntimeEnabled=ScopedCustomElementRegistry,
-      ImplementedAs=CreateElementForBinding
-    ]
-    Element createElement(DOMString localName);
-    [
-      NewObject, PerWorldBindings, RaisesException, CEReactions,
-      RuntimeEnabled=ScopedCustomElementRegistry,
-      ImplementedAs=CreateElementForBinding
-    ]
-    Element createElement(DOMString localName, (DOMString or ElementCreationOptions) options);
-    [
-      NewObject, RaisesException, CEReactions,
-      RuntimeEnabled=ScopedCustomElementRegistry
-    ]
-    Element createElementNS(DOMString? namespaceURI, DOMString qualifiedName);
-    [
-      NewObject, RaisesException, CEReactions,
-      RuntimeEnabled=ScopedCustomElementRegistry
-    ]
-    Element createElementNS(DOMString? namespaceURI, DOMString qualifiedName,
-                            (DOMString or ElementCreationOptions) options);
-
     [RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(HTMLString string);
     [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(HTMLString html, SetHTMLUnsafeOptions options);
     [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, optional SetHTMLOptions options = {});
