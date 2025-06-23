@@ -128,7 +128,7 @@ class BinderMapWithContext {
 
   void GetInterfacesForTesting(std::vector<std::string>& out) {
     for (const auto& [key, _] : binders_) {
-      out.push_back(key);
+      out.push_back(std::string(key));
     }
   }
 
@@ -136,7 +136,7 @@ class BinderMapWithContext {
   using IsVoidContext = std::is_same<ContextType, void>;
 
   std::map<
-      std::string,
+      std::string_view,
       std::unique_ptr<internal::GenericCallbackBinderWithContext<ContextType>>>
       binders_;
   DefaultBinder default_binder_;
