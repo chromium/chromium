@@ -763,17 +763,3 @@ IN_PROC_BROWSER_TEST_P(SystemNetworkContextManagerWPADQuickCheckBrowsertest,
 INSTANTIATE_TEST_SUITE_P(All,
                          SystemNetworkContextManagerWPADQuickCheckBrowsertest,
                          ::testing::Bool());
-
-class SystemNetworkContextManagerCertificateTransparencyBrowsertest
-    : public SystemNetworkContextManagerBrowsertest,
-      public testing::WithParamInterface<std::optional<bool>> {
- public:
-  SystemNetworkContextManagerCertificateTransparencyBrowsertest() {
-    SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        GetParam());
-  }
-  ~SystemNetworkContextManagerCertificateTransparencyBrowsertest() override {
-    SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        std::nullopt);
-  }
-};
