@@ -154,6 +154,7 @@ void BrowserManagementService::UpdateManagementIconForBrowser(
   std::string logo_url = g_browser_process->local_state()->GetString(
       prefs::kEnterpriseLogoUrlForBrowser);
   if (logo_url.empty()) {
+    SetManagementIconForBrowser(gfx::Image());
     return;
   }
   enterprise_util::GetManagementIcon(

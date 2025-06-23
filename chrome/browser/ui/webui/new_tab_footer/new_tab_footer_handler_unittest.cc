@@ -357,6 +357,8 @@ class NewTabFooterHandlerEnterpriseTest : public testing::Test {
         mock_ntp_custom_background_service_.get(), web_contents_.get());
     ASSERT_EQ(handler_.get(), ntp_custom_background_service_observer_);
     handler_->SetThemeProviderForTesting(&mock_theme_provider_);
+
+    document_.FlushForTesting();
     testing::Mock::VerifyAndClearExpectations(&document_);
   }
 
