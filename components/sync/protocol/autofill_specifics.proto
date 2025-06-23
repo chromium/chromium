@@ -613,6 +613,15 @@ message PaymentInstrument {
   }
 
   optional DeviceDetails device_details = 8;
+
+  enum ActionRequired {
+    ACTION_REQUIRED_UNKNOWN = 0;
+    // The user needs to accept the relevant ToS to make the instrument usable.
+    ACCEPT_TOS = 1;
+  }
+
+  // The action to take to update the instrument.
+  repeated ActionRequired action_required = 10;
 }
 
 // Details for user's linked and unlinked Buy Now Pay Later issuers.

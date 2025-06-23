@@ -147,5 +147,9 @@ TEST(ProtoEnumConversionsTest, GetCardBenefitSourceString) {
   TestEnumStringsNonEmpty(sync_pb::WalletMaskedCreditCard::CardBenefitSource);
 }
 
+TEST(ProtoEnumConversionsTest, GetActionRequiredString) {
+  TestEnumStringsNonEmpty(sync_pb::PaymentInstrument::ActionRequired);
+}
+
 }  // namespace
 }  // namespace syncer

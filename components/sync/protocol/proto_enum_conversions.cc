@@ -188,6 +188,17 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(
+    sync_pb::PaymentInstrument::ActionRequired action_required) {
+  ASSERT_ENUM_BOUNDS(sync_pb::PaymentInstrument, ActionRequired,
+                     ACTION_REQUIRED_UNKNOWN, ACCEPT_TOS);
+  switch (action_required) {
+    ENUM_CASE(sync_pb::PaymentInstrument, ACTION_REQUIRED_UNKNOWN);
+    ENUM_CASE(sync_pb::PaymentInstrument, ACCEPT_TOS);
+  }
+  NOTREACHED();
+}
+
+const char* ProtoEnumToString(
     sync_pb::PowerBookmarkSpecifics::PowerType power_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::PowerBookmarkSpecifics, PowerType,
                      POWER_TYPE_UNSPECIFIED, POWER_TYPE_NOTE);

@@ -73,6 +73,9 @@ const char* ProtoEnumToString(
     sync_pb::PaymentInstrument::SupportedRail supported_rail);
 
 const char* ProtoEnumToString(
+    sync_pb::PaymentInstrument::ActionRequired action_required);
+
+const char* ProtoEnumToString(
     sync_pb::PowerBookmarkSpecifics::PowerType power_type);
 
 const char* ProtoEnumToString(sync_pb::NoteEntity::TargetType target_type);

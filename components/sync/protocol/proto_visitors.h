@@ -1729,6 +1729,7 @@ VISIT_PROTO_FIELDS(const sync_pb::PaymentInstrument& proto) {
   VISIT(ewallet_details);
   VISIT(device_details);
   VISIT(bnpl_issuer_details);
+  VISIT_REP(action_required);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PaymentInstrumentCreationOption& proto) {
