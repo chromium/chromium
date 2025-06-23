@@ -271,6 +271,9 @@
   <message name="IDS_OS_SETTINGS_FIRMWARE_UP_TO_DATE_DESCRIPTION" desc="Sublabel shown when no firmware updates are available.">
     Firmware is up to date
   </message>
+  <message name="IDS_OS_SETTINGS_FIRMWARE_DISABLED_DESCRIPTION" desc="Sublabel shown when firmware updates are disabled.">
+    Firmware updates are disabled by your administrator.
+  </message>
   <message name="IDS_OS_SETTINGS_FIRMWARE_UPDATE_AVAILABLE_DESCRIPTION" desc="Sublabel shown when firmware updates are available.">
     Update available
   </message>

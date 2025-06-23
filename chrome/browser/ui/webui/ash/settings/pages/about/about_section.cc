@@ -255,6 +255,8 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"aboutDiagnostics", IDS_SETTINGS_ABOUT_PAGE_DIAGNOSTICS},
       {"aboutDiagnosticseDescription", IDS_OS_SETTINGS_DIAGNOSTICS_DESCRIPTION},
       {"aboutFirmwareUpdates", IDS_SETTINGS_ABOUT_PAGE_FIRMWARE_UPDATES},
+      {"aboutFirmwareUpdatesDisabledDescription",
+       IDS_OS_SETTINGS_FIRMWARE_DISABLED_DESCRIPTION},
       {"aboutFirmwareUpToDateDescription",
        IDS_OS_SETTINGS_FIRMWARE_UP_TO_DATE_DESCRIPTION},
       {"aboutFirmwareUpdateAvailableDescription",

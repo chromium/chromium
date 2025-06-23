@@ -24,7 +24,7 @@ items:
   value: true
 - caption: Users may not initiate firmware updates
   value: false
-default: false
+default: true
 example_value: true
 tags: ['google-sharing']
 generate_device_proto: True
