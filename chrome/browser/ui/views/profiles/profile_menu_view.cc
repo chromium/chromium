@@ -297,31 +297,6 @@ void ProfileMenuView::OnManageGoogleAccountButtonClicked() {
           .email);
 }
 
-void ProfileMenuView::OnPasswordsButtonClicked() {
-  RecordClick(ActionableItem::kPasswordsButton);
-  if (!perform_menu_actions()) {
-    return;
-  }
-  NavigateToManagePasswordsPage(
-      &browser(), password_manager::ManagePasswordsReferrer::kProfileChooser);
-}
-
-void ProfileMenuView::OnCreditCardsButtonClicked() {
-  RecordClick(ActionableItem::kCreditCardsButton);
-  if (!perform_menu_actions()) {
-    return;
-  }
-  chrome::ShowSettingsSubPage(&browser(), chrome::kPaymentsSubPage);
-}
-
-void ProfileMenuView::OnAddressesButtonClicked() {
-  RecordClick(ActionableItem::kAddressesButton);
-  if (!perform_menu_actions()) {
-    return;
-  }
-  chrome::ShowSettingsSubPage(&browser(), chrome::kAddressesSubPage);
-}
-
 void ProfileMenuView::OnGuestProfileButtonClicked() {
   RecordClick(ActionableItem::kGuestProfileButton);
   if (!perform_menu_actions()) {
@@ -527,16 +502,6 @@ void ProfileMenuView::OnEditProfileButtonClicked() {
     return;
   }
   chrome::ShowSettingsSubPage(&browser(), chrome::kManageProfileSubPage);
-}
-
-void ProfileMenuView::OnCookiesClearedOnExitLinkClicked() {
-  RecordClick(ActionableItem::kCookiesClearedOnExitLink);
-  if (!perform_menu_actions()) {
-    return;
-  }
-  chrome::ShowSettingsSubPage(&browser(), chrome::kContentSettingsSubPage +
-                                              std::string("/") +
-                                              chrome::kCookieSettingsSubPage);
 }
 
 void ProfileMenuView::OnAutofillSettingsButtonClicked() {

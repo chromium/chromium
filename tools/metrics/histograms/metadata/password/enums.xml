@@ -613,7 +613,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Password Context Manu"/>
   <int value="3" label="Password Dropdown"/>
   <int value="4" label="Password Generation Confirmation"/>
-  <int value="5" label="Profile Chooser"/>
+  <int value="5" label="(DEPRECATED - 06/25) Profile Chooser"/>
   <int value="6" label="Passwords Accessory Sheet"/>
   <int value="7" label="Touch To Fill"/>
   <int value="8" label="Safe state bubble"/>

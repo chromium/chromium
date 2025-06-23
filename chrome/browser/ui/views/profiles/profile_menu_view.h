@@ -72,9 +72,6 @@ class ProfileMenuView : public ProfileMenuViewBase {
   // Button/link actions.
   void OnProfileManagementButtonClicked();
   void OnManageGoogleAccountButtonClicked();
-  void OnPasswordsButtonClicked();
-  void OnCreditCardsButtonClicked();
-  void OnAddressesButtonClicked();
   void OnGuestProfileButtonClicked();
   void OnExitProfileButtonClicked();
   void OnSyncSettingsButtonClicked();
@@ -82,7 +79,6 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnSigninButtonClicked(CoreAccountInfo account,
                              ActionableItem button_type,
                              signin_metrics::AccessPoint access_point);
-  void OnCookiesClearedOnExitLinkClicked();
   void OnSignoutButtonClicked();
   void OnOtherProfileSelected(const base::FilePath& profile_path);
   void OnAddNewProfileButtonClicked();

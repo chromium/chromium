@@ -31,9 +31,12 @@ enum class ManagePasswordsReferrer {
   // Corresponds to the bubble shown when clicking the key icon after a password
   // was generated.
   kPasswordGenerationConfirmation = 4,
+
   // Corresponds to the profile chooser next to the omnibar ("Autofill Home").
   // Only used on desktop.
-  kProfileChooser = 5,
+  // Deprecated as part of the Profile Menu revamping.
+  // kProfileChooser = 5,
+
   // Corresponds to the passwords accessory sheet on Android, triggered by
   // tapping on the key icon above in the keyboard accessory bar.
   kPasswordsAccessorySheet = 6,

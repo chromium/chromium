@@ -412,24 +412,24 @@ chromium-metrics-reviews@google.com.
 
 <enum name="ProfileMenuActionableItem">
   <int value="0" label="Manage your Google Account button"/>
-  <int value="1" label="Passwords button"/>
-  <int value="2" label="Credit cards button"/>
-  <int value="3" label="Addresses button"/>
+  <int value="1" label="(DEPRECATED): Passwords button"/>
+  <int value="2" label="(DEPRECATED): Credit cards button"/>
+  <int value="3" label="(DEPRECATED): Addresses button"/>
   <int value="4" label="Guest profile button"/>
   <int value="5" label="Manage profiles button"/>
-  <int value="6" label="Lock button (deprecated)"/>
+  <int value="6" label="(DEPRECATED): Lock button"/>
   <int value="7" label="Exit profile button"/>
   <int value="8" label="Sync error button"/>
-  <int value="9" label="Current profile card (deprecated)"/>
+  <int value="9" label="(DEPRECATED): Current profile card"/>
   <int value="10" label="Sign-in and turn on sync button"/>
   <int value="11" label="Turn on sync for account button"/>
   <int value="12" label="Sign-out button"/>
   <int value="13" label="Switch to another profile button"/>
-  <int value="14" label="Cookies cleared on exit link"/>
+  <int value="14" label="(DEPRECATED): Cookies cleared on exit link"/>
   <int value="15" label="Add new profile button"/>
   <int value="16" label="Sync settings(sync on) button"/>
   <int value="17" label="Edit profile button"/>
-  <int value="18" label="Create incognito shortcut button (deprecated)"/>
+  <int value="18" label="(DEPRECATED): Create incognito shortcut button"/>
   <int value="19" label="Sign-in and turn on sync button for web-only account"/>
   <int value="20" label="Chrome Profile management link"/>
   <int value="21" label="Reauth button (Verify it's you)"/>
