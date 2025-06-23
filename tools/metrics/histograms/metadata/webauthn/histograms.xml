@@ -81,6 +81,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Android.GmsCoreGetCredentialsResult"
+    enum="GmsCoreGetCredentialsResult" expires_after="2025-11-30">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of getting credentials from GMSCore. This can either use
+    the passkey cache service or the FIDO2 APIs.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Android.NonDiscoverableCredentialsFound"
     enum="Boolean" expires_after="2025-12-14">
   <owner>derinel@google.com</owner>
@@ -148,6 +158,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of passkeys available for a Conditional UI get request.
   </summary>
+</histogram>
+
+<histogram name="WebAuthentication.CredentialFetchDuration.GmsCore.{Source}"
+    units="ms" expires_after="2025-11-09">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    The duration of a request to obtain a list of credentials for a WebAuthn
+    conditional UI Get Assertion request from GMS Core, broken down by the
+    source of the credentials. This is only recorded when at least one
+    credential is available in the results. This is a sub-histogram of
+    WebAuthentication.CredentialFetchDuration.GmsCore and {Source}.
+  </summary>
+  <token key="Source">
+    <variant name="Cache"
+        summary="Credentials were fetched from the passkey cache service."/>
+    <variant name="CacheFallback"
+        summary="Credentials were fetched from the FIDO2 API after the
+                 passkey cache service failed."/>
+    <variant name="Fido2"
+        summary="Credentials were fetched from the FIDO2 API directly."/>
+  </token>
 </histogram>
 
 <histogram name="WebAuthentication.CredentialFetchDuration.{ApiUsed}"

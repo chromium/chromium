@@ -22,6 +22,15 @@ COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthUseNativeWinApi);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthCableExtensionAnywhere);
 
+#if BUILDFLAG(IS_ANDROID)
+
+// Use the passkey cache service parallel to the FIDO2 module to retrieve
+// passkeys from GMSCore. This is for migration.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAndroidPasskeyCacheMigration);
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // These five feature flags control whether iCloud Keychain is the default
 // mechanism for platform credential creation in different situations.
 // "Active" means that the user is an active user of the profile authenticator,

@@ -12,6 +12,7 @@ public class GmsCoreUtils {
     private static final String GMSCORE_PACKAGE_NAME = "com.google.android.gms";
     private static final int GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS = 223300000;
     private static final int GMSCORE_MIN_VERSION_HYBRID_API = 231206000;
+    private static final int GMSCORE_MIN_VERSION_PASSKEY_CACHE = 244400000;
     private static final int GMSCORE_MIN_VERSION_RESULT_RECEIVER = 240700000;
     // This version is the minimum needed for dynamic lookup of services, which
     // the persistent API requires.
@@ -49,6 +50,11 @@ public class GmsCoreUtils {
     /** Returns whether makeCredential / getAssertion APIs support responding via ResultReceiver. */
     static boolean isResultReceiverSupported() {
         return getGmsCoreVersion() >= GMSCORE_MIN_VERSION_RESULT_RECEIVER;
+    }
+
+    /** Returns whether the passkey cache is supported. */
+    public static boolean isPasskeyCacheSupported() {
+        return getGmsCoreVersion() >= GMSCORE_MIN_VERSION_PASSKEY_CACHE;
     }
 
     public static void setGmsCoreVersionForTesting(int version) {

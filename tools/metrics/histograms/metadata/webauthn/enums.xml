@@ -74,6 +74,30 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="prepareGetCredential request failed."/>
 </enum>
 
+<!-- LINT.IfChange(GmsCoreGetCredentialsResultEnum) -->
+
+<enum name="GmsCoreGetCredentialsResult">
+  <int value="0" label="CacheSuccess">
+    The passkey cache service returned credentials successfully.
+  </int>
+  <int value="1" label="CacheFailureFallbackSuccess">
+    The passkey cache service failed, but the fallback to the FIDO2 API
+    succeeded.
+  </int>
+  <int value="2" label="CacheFailureFallbackFailure">
+    The passkey cache service failed, and the fallback to the FIDO2 API also
+    failed.
+  </int>
+  <int value="3" label="Fido2Success">
+    The FIDO2 API was used directly and succeeded.
+  </int>
+  <int value="4" label="Fido2Failure">
+    The FIDO2 API was used directly and failed.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/webauthn/android/java/src/org/chromium/components/webauthn/GmsCoreGetCredentialsHelper.java:GmsCoreGetCredentialsResult) -->
+
 <enum name="GPMGetAssertionEvents">
   <int value="0" label="Started - GPM passkey selected"/>
   <int value="1" label="Success - Authentication complete"/>

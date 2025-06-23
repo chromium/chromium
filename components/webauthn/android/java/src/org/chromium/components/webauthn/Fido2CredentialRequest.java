@@ -19,7 +19,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
 import android.os.ResultReceiver;
-import android.os.SystemClock;
 import android.util.Pair;
 
 import androidx.annotation.RequiresApi;
@@ -654,7 +653,7 @@ public class Fido2CredentialRequest
         }
 
         // Enumerate credentials from Play Services so that we can show the picker in Chrome UI.
-        // Chrome 3rd party mode does not support enumeration in Chrome UI, hence use FIDO 2
+        // Chrome 3rd party mode does not support enumeration in Chrome UI, hence use FIDO2
         // enumeration for them.
         if ((options.mediation == Mediation.CONDITIONAL || !hasAllowCredentials)
                 && is(webContents, WebauthnMode.CHROME)) {
@@ -673,11 +672,19 @@ public class Fido2CredentialRequest
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_FIDO_2_API);
             }
             mConditionalUiState = ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
-            long conditionalUiCredentialListInitialTimeMs = SystemClock.elapsedRealtime();
-            Fido2ApiCallHelper.getInstance()
-                    .invokeFido2GetCredentials(
+            GmsCoreGetCredentialsHelper.Reason reason;
+            if (payment != null) {
+                reason = GmsCoreGetCredentialsHelper.Reason.PAYMENT;
+            } else if (options.relyingPartyId.equals("google.com")) {
+                reason = GmsCoreGetCredentialsHelper.Reason.GET_ASSERTION_GOOGLE_RP;
+            } else {
+                reason = GmsCoreGetCredentialsHelper.Reason.GET_ASSERTION_NON_GOOGLE;
+            }
+            GmsCoreGetCredentialsHelper.getInstance()
+                    .getCredentials(
                             mAuthenticationContextProvider,
                             options.relyingPartyId,
+                            reason,
                             (credentials) ->
                                     mBarrier.onFido2ApiSuccessful(
                                             () ->
@@ -685,8 +692,7 @@ public class Fido2CredentialRequest
                                                             options,
                                                             callerOriginString,
                                                             finalClientDataHash,
-                                                            credentials,
-                                                            conditionalUiCredentialListInitialTimeMs)),
+                                                            credentials)),
                             (e) ->
                                     mBarrier.onFido2ApiFailed(
                                             AuthenticatorStatus.NOT_ALLOWED_ERROR));
@@ -792,10 +798,11 @@ public class Fido2CredentialRequest
             return;
         }
 
-        Fido2ApiCallHelper.getInstance()
-                .invokeFido2GetCredentials(
+        GmsCoreGetCredentialsHelper.getInstance()
+                .getCredentials(
                         mAuthenticationContextProvider,
                         relyingPartyId,
+                        GmsCoreGetCredentialsHelper.Reason.GET_MATCHING_CREDENTIAL_IDS,
                         (credentials) ->
                                 onGetMatchingCredentialIdsListReceived(
                                         credentials,
@@ -840,8 +847,7 @@ public class Fido2CredentialRequest
             PublicKeyCredentialRequestOptions options,
             String callerOriginString,
             byte @Nullable [] clientDataHash,
-            List<WebauthnCredentialDetails> credentials,
-            long conditionalUiCredentialListInitialTimeMs) {
+            List<WebauthnCredentialDetails> credentials) {
         assert mConditionalUiState == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST
                 || mConditionalUiState == ConditionalUiState.CANCEL_PENDING;
 
@@ -849,12 +855,6 @@ public class Fido2CredentialRequest
                 options.allowCredentials != null && options.allowCredentials.length != 0;
         boolean isConditionalRequest = options.mediation == Mediation.CONDITIONAL;
         assert isConditionalRequest || !hasAllowCredentials;
-
-        if (!credentials.isEmpty()) {
-            RecordHistogram.recordTimesHistogram(
-                    "WebAuthentication.CredentialFetchDuration.GmsCore",
-                    SystemClock.elapsedRealtime() - conditionalUiCredentialListInitialTimeMs);
-        }
 
         if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
             // The request was completed synchronously when the cancellation was received,
@@ -944,10 +944,11 @@ public class Fido2CredentialRequest
         Barrier.Mode mode = getBarrierMode();
         assert mode == Barrier.Mode.ONLY_CRED_MAN || mode == Barrier.Mode.BOTH;
 
-        Fido2ApiCallHelper.getInstance()
-                .invokeFido2GetCredentials(
+        GmsCoreGetCredentialsHelper.getInstance()
+                .getCredentials(
                         mAuthenticationContextProvider,
                         options.relyingPartyId,
+                        GmsCoreGetCredentialsHelper.Reason.CHECK_FOR_MATCHING_CREDENTIALS,
                         (credentials) ->
                                 checkForMatchingCredentialsReceived(
                                         options, callerOrigin, clientDataHash, credentials),
