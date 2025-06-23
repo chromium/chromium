@@ -229,8 +229,7 @@ public class Fido2CredentialRequest
         mErrorCallback = errorCallback;
         mRecordingCallback = recordingCallback;
         @Nullable Origin remoteDesktopOrigin = null;
-        if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS)
-                && options.remoteDesktopClientOverride != null
+        if (options.remoteDesktopClientOverride != null
                 && isChrome(mAuthenticationContextProvider.getWebContents())) {
             // SECURITY: remoteDesktopClientOverride comes from the renderer process and is
             // untrusted. We only use the override origin if the "caller origin" is explicitly
@@ -281,10 +280,8 @@ public class Fido2CredentialRequest
             String effectiveOriginString = convertOriginToString(origin);
             // Handle remote desktop client override for ClientDataJSON.
             // The origin from remoteDesktopClientOverride is only used after validation in
-            // ValidateDomainAndRelyingPartyID() confirmed that "caller origin" is allowlisted.
-            if (DeviceFeatureMap.isEnabled(
-                            DeviceFeatureList.WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS)
-                    && options.remoteDesktopClientOverride != null) {
+            // ValidateDomainAndRelyingPartyID() confirmed that the "caller origin" is allowlisted.
+            if (options.remoteDesktopClientOverride != null) {
                 effectiveOriginString =
                         convertOriginToString(
                                 new Origin(options.remoteDesktopClientOverride.origin));
@@ -462,8 +459,7 @@ public class Fido2CredentialRequest
         }
 
         @Nullable Origin remoteDesktopOrigin = null;
-        if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS)
-                && options.extensions.remoteDesktopClientOverride != null
+        if (options.extensions.remoteDesktopClientOverride != null
                 && isChrome(mAuthenticationContextProvider.getWebContents())) {
             // SECURITY: remoteDesktopClientOverride comes from the renderer process and is
             // untrusted. We only use the override origin if the "caller origin" is explicitly
@@ -525,10 +521,8 @@ public class Fido2CredentialRequest
             String effectiveOriginString = callerOriginString;
             // Handle remote desktop client override for ClientDataJSON.
             // The origin from remoteDesktopClientOverride is only used after validation in
-            // ValidateDomainAndRelyingPartyID() confirmed that "caller origin" is allowlisted.
-            if (DeviceFeatureMap.isEnabled(
-                            DeviceFeatureList.WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS)
-                    && options.extensions.remoteDesktopClientOverride != null) {
+            // ValidateDomainAndRelyingPartyID() confirmed that the "caller origin" is allowlisted.
+            if (options.extensions.remoteDesktopClientOverride != null) {
                 effectiveOriginString =
                         convertOriginToString(
                                 new Origin(options.extensions.remoteDesktopClientOverride.origin));

@@ -157,11 +157,6 @@ BASE_FEATURE(kSyncSecurityDomainBeforePINRenewal,
              "kWebAuthenticationSyncSecurityDomainBeforePINRenewal",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Default enabled in M136. Remove in or after M139.
-BASE_FEATURE(kWebAuthnRemoteDesktopAllowedOriginsPolicy,
-             "WebAuthenticationRemoteDesktopAllowedOriginsPolicy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Default enabled in M135. Remove in or after M138.
 BASE_FEATURE(kWebAuthnMicrosoftSoftwareUnexportableKeyProvider,
              "WebAuthenticationMicrosoftSoftwareUnexportableKeyProvider",

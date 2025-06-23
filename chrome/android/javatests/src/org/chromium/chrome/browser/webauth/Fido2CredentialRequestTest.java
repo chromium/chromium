@@ -108,7 +108,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockRenderFrameHost;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.common.ContentSwitches;
-import org.chromium.device.DeviceFeatureList;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.url.GURL;
@@ -2705,7 +2704,6 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     @UseMethodParameter(SameOriginTestParams.class)
-    @EnableFeatures(DeviceFeatureList.WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS)
     public void testMakeCredential_remoteDesktopClientOverride_generatesCorrectClientDataJson(
             boolean sameOriginWithAncestors) {
         mIntentSender.setNextResultIntent(
@@ -2769,7 +2767,6 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     @UseMethodParameter(SameOriginTestParams.class)
-    @EnableFeatures(DeviceFeatureList.WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS)
     public void testGetAssertion_remoteDesktopClientOverride_generatesCorrectClientDataJson(
             boolean sameOriginWithAncestors) {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());

@@ -62,10 +62,6 @@ bool IsGoogleCorpCrdOrigin(content::BrowserContext* browser_context,
 bool IsAllowedByPlatformEnterprisePolicy(
     content::BrowserContext* browser_context,
     const url::Origin& caller_origin) {
-  if (!base::FeatureList::IsEnabled(
-          device::kWebAuthnRemoteDesktopAllowedOriginsPolicy)) {
-    return false;
-  }
   const Profile* profile = Profile::FromBrowserContext(browser_context);
   const PrefService* prefs = profile->GetPrefs();
   const base::Value::List& allowed_origins =

@@ -346,7 +346,6 @@
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
-#include "device/fido/features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/buildflags/buildflags.h"
@@ -2900,9 +2899,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       // Make the WebAuthenticationRemoteDesktopAllowedOrigins policy enable the
       // experimental WebAuthenticationRemoteDesktopSupport Blink runtime
       // feature.
-      if (base::FeatureList::IsEnabled(
-              device::kWebAuthnRemoteDesktopAllowedOriginsPolicy) &&
-          !prefs->GetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins)
+      if (!prefs->GetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins)
                .empty()) {
         command_line->AppendSwitch(switches::kWebAuthRemoteDesktopSupport);
       }

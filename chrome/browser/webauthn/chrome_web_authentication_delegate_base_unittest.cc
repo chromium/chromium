@@ -5,14 +5,12 @@
 #include "chrome/browser/webauthn/chrome_web_authentication_delegate_base.h"
 
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
-#include "device/fido/features.h"
 
 namespace {
 
@@ -31,8 +29,6 @@ class OriginMayUseRemoteDesktopClientOverrideTest
 
   static constexpr char kExampleOrigin[] = "https://example.com";
   static constexpr char kAnotherExampleOrigin[] = "https://another.example.com";
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -116,7 +112,7 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
        AdditionalOriginSwitch_WithAllowedOriginsPolicy) {
   // The --webauthn-remote-proxied-requests-allowed-additional-origin switch
   // allows passing an additional origin for testing. This origin will be
-  // allowed if the kWebAuthnRemoteDesktopAllowedOriginsPolicy preference is set
+  // allowed if the WebAuthenticationRemoteDesktopAllowedOrigins policy is set
   // to a non-empty list of origins.  If the policy is set, the command-line
   // origin is treated as another allowed origin in addition to those specified
   // by the policy.
@@ -125,8 +121,6 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin,
       kExampleOrigin);
-  scoped_feature_list_.InitAndEnableFeature(
-      device::kWebAuthnRemoteDesktopAllowedOriginsPolicy);
 
   // Initially, no origins should be allowed because the allowed origins pref
   // hasn't been set yet.
@@ -170,8 +164,6 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin,
       kExampleOrigin);
-  scoped_feature_list_.InitAndEnableFeature(
-      device::kWebAuthnRemoteDesktopAllowedOriginsPolicy);
 
   PrefService* prefs =
       Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
@@ -191,8 +183,6 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
        AllowedOriginsPolicy_InvalidURLs) {
   ChromeWebAuthenticationDelegateBase delegate;
-  scoped_feature_list_.InitAndEnableFeature(
-      device::kWebAuthnRemoteDesktopAllowedOriginsPolicy);
 
   PrefService* prefs =
       Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
@@ -225,26 +215,8 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
 }
 
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
-       AllowedOriginsPolicy_FeatureDisabled) {
-  ChromeWebAuthenticationDelegateBase delegate;
-  // Feature explicitly disabled.
-  scoped_feature_list_.InitAndDisableFeature(
-      device::kWebAuthnRemoteDesktopAllowedOriginsPolicy);
-
-  PrefService* prefs =
-      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
-  prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
-                 base::Value::List().Append(kExampleOrigin));
-
-  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
-      browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
-}
-
-TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
        AllowedOriginsPolicy_MultipleValidURLs) {
   ChromeWebAuthenticationDelegateBase delegate;
-  scoped_feature_list_.InitAndEnableFeature(
-      device::kWebAuthnRemoteDesktopAllowedOriginsPolicy);
 
   PrefService* prefs =
       Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
@@ -269,8 +241,6 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
        AllowedOriginsPolicy_SchemePortPathMismatch) {
   ChromeWebAuthenticationDelegateBase delegate;
-  scoped_feature_list_.InitAndEnableFeature(
-      device::kWebAuthnRemoteDesktopAllowedOriginsPolicy);
   PrefService* prefs =
       Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
 

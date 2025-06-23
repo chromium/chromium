@@ -104,7 +104,6 @@ public class Fido2CredentialRequestRobolectricTest {
     public void setUp() throws Exception {
         FeatureOverrides.newBuilder()
                 .enable(DeviceFeatureList.WEBAUTHN_ANDROID_USE_PASSKEY_CACHE)
-                .enable(DeviceFeatureList.WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS)
                 .disable(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_BROWSER_BOUND_KEYS)
                 .apply();
 

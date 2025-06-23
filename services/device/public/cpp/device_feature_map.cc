@@ -25,7 +25,6 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &device::kWebAuthnAndroidUsePasskeyCache,
     &device::kWebAuthnPasskeyUpgrade,
-    &device::kWebAuthnRemoteDesktopAllowedOriginsPolicy,
     &kGenericSensorExtraClasses,
     &kBatteryStatusManagerBroadcastReceiverInBackground,
     &device::features::kBluetoothRfcommAndroid,

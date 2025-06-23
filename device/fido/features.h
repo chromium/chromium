@@ -111,11 +111,6 @@ BASE_DECLARE_FEATURE(kWebAuthnNoAccountTimeout);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kSyncSecurityDomainBeforePINRenewal);
 
-// Feature flag for the
-// `WebAuthenticationRemoteDesktopAllowedOrigins` enterprise policy.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnRemoteDesktopAllowedOriginsPolicy);
-
 // Enables using the Microsoft Software Key Storage Provider to store
 // unexportable keys when a TPM is not available.
 COMPONENT_EXPORT(DEVICE_FIDO)
