@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/lookalikes/lookalike_test_helper.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -37,6 +38,11 @@
 namespace actor {
 
 namespace {
+
+// Hosts that will trigger lookalike warnings. One causes an interstitial and
+// the other only a safety tip.
+constexpr char kLookalikeHostInterstitial[] = "google.com.example.com";
+constexpr char kLookalikeHostWarning[] = "accounts-google.com";
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
@@ -88,6 +94,10 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+    LookalikeTestHelper::SetUpLookalikeTestParams();
+    embedded_https_test_server().SetCertHostnames(
+        {"a.com", "b.com", "c.com", "bar.com", "*.bar.com",
+         kLookalikeHostInterstitial, kLookalikeHostWarning});
     ASSERT_TRUE(embedded_https_test_server().Start());
 
     // Optimization guide uses this histogram to signal initialization in tests.
@@ -96,6 +106,11 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
         "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
 
     InitActionBlocklist(browser()->profile());
+  }
+
+  void TearDownOnMainThread() override {
+    LookalikeTestHelper::TearDownLookalikeTestParams();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -139,6 +154,19 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicyBrowserTest,
   const GURL blocked_url =
       embedded_https_test_server().GetURL("sub.bar.com", "/title1.html");
   CheckUrl(blocked_url, false);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorSitePolicyBrowserTest, BlockLookalikes) {
+  const GURL lookalike_url = embedded_https_test_server().GetURL(
+      kLookalikeHostInterstitial, "/title1.html");
+  CheckUrl(lookalike_url, false);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorSitePolicyBrowserTest,
+                       TreatLookalikeWarningsAsBlocking) {
+  const GURL lookalike_url = embedded_https_test_server().GetURL(
+      kLookalikeHostWarning, "/title1.html");
+  CheckUrl(lookalike_url, false);
 }
 
 class ActorSitePolicySafeBrowsingBrowserTest
