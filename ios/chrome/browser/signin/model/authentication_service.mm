@@ -176,7 +176,7 @@ void AuthenticationService::Initialize(
   NSString* primary_account =
       [shared_defaults objectForKey:app_group::kPrimaryAccount];
 
-  if (!primary_account) {
+  if (!primary_account || primary_account.length == 0) {
     id<SystemIdentity> identity =
         GetPrimaryIdentity(signin::ConsentLevel::kSignin);
     if (identity.gaiaID) {
