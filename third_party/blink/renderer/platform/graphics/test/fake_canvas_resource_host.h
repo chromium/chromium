@@ -44,7 +44,6 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     return old_provider;
   }
 
-  size_t GetMemoryUsage() const override { return 0; }
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D()
       override {
     if (GetResourceProviderForCanvas2D()) {
