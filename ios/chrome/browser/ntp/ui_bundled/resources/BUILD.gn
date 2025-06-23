@@ -59,6 +59,9 @@ bundle_data_xcassets("resources") {
 }
 
 bundle_data("animation_files") {
-  sources = [ "mia_glowing_circle_animation.json" ]
+  sources = [
+    "mia_circle_animation_no_glow.json",
+    "mia_glowing_circle_animation.json",
+  ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }

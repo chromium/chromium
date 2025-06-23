@@ -99,7 +99,8 @@ const CGFloat kErrorSymbolPointSize = 16.0;
 const CGFloat kCustomizationNewBadgeOffset = 14.0;
 
 // The name of the animation for the MIA button.
-NSString* const kMIAGlowingCircleAnimation = @"mia_glowing_circle_animation";
+NSString* const kMIACircleAnimationLightMode = @"mia_circle_animation_no_glow";
+NSString* const kMIACircleAnimationDarkMode = @"mia_glowing_circle_animation";
 
 // The value that makes the Lottie animation loop indefinitely.
 const CGFloat kLottieInfiniteLoopFlag = -1;
@@ -431,11 +432,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     if (self.useInlineMIA) {
       [self addMIAAndVoiceDivider];
     } else if (self.useSingleButtonMIA) {
-      _miaAnimationView = [self createMIAAnimationView];
-      [_miaAnimation play];
-      [self.miaButton addSubview:_miaAnimationView];
-      AddSameCenterConstraints(_miaAnimationView, self.miaButton);
-      AddSizeConstraints(_miaAnimationView, [self miaAnimationSize]);
+      [self updateAnimationOnMIAButton];
     }
   }
 
@@ -1067,6 +1064,12 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
           AccountParticleDiscBadgeBackgroundColor(
               self.traitCollection.userInterfaceStyle);
     }
+
+    if (self.useSingleButtonMIA) {
+      [_miaAnimationView removeFromSuperview];
+      _miaAnimation = nil;
+      [self updateAnimationOnMIAButton];
+    }
   }
 }
 
@@ -1104,9 +1107,24 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 - (id<LottieAnimation>)createMIAAnimation {
   LottieAnimationConfiguration* config =
       [[LottieAnimationConfiguration alloc] init];
-  config.animationName = kMIAGlowingCircleAnimation;
+  config.animationName =
+      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
+          ? kMIACircleAnimationDarkMode
+          : kMIACircleAnimationLightMode;
   config.loopAnimationCount = kLottieInfiniteLoopFlag;
   return ios::provider::GenerateLottieAnimation(config);
+}
+
+- (void)updateAnimationOnMIAButton {
+  if (!self.miaButton) {
+    return;
+  }
+  _miaAnimationView = [self createMIAAnimationView];
+  _miaAnimationView.userInteractionEnabled = NO;
+  [_miaAnimation play];
+  [self.miaButton addSubview:_miaAnimationView];
+  AddSameCenterConstraints(_miaAnimationView, self.miaButton);
+  AddSizeConstraints(_miaAnimationView, [self miaAnimationSize]);
 }
 
 // The size for the animation view dependant on the fakebox size.
