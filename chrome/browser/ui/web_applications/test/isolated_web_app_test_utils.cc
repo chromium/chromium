@@ -10,10 +10,14 @@
 
 #include "base/files/file_path.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -100,7 +104,7 @@ Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
 
 content::RenderFrameHost* IsolatedWebAppBrowserTestHarness::OpenApp(
     const webapps::AppId& app_id,
-    std::string_view path) {
+    std::optional<std::string_view> path) {
   return OpenIsolatedWebApp(profile(), app_id, path);
 }
 
@@ -195,22 +199,30 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
   return url_info;
 }
 
-content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
-                                             const webapps::AppId& app_id,
-                                             std::string_view path) {
-  WebAppRegistrar& registrar =
-      WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
-  const WebApp* app = registrar.GetAppById(app_id);
-  EXPECT_TRUE(app);
+content::RenderFrameHost* OpenIsolatedWebApp(
+    Profile* profile,
+    const webapps::AppId& app_id,
+    std::optional<std::string_view> path) {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  auto url = [&]() -> std::optional<GURL> {
+    if (!path) {
+      return std::nullopt;
+    }
+    return provider->registrar_unsafe().GetAppStartUrl(app_id).Resolve(*path);
+  }();
 
-  NavigateParams params(profile, app->start_url().Resolve(path),
-                        ui::PAGE_TRANSITION_GENERATED);
-  params.app_id = app->app_id();
-  params.window_action = NavigateParams::SHOW_WINDOW;
-  params.disposition = WindowOpenDisposition::NEW_WINDOW;
-  params.user_gesture = true;
-  ui_test_utils::NavigateToURL(&params);
-  return params.navigated_or_inserted_contents->GetPrimaryMainFrame();
+  base::test::TestFuture<content::WebContents*> future;
+  provider->scheduler().LaunchApp(
+      app_id, url,
+      base::BindOnce([](base::WeakPtr<Browser>,
+                        base::WeakPtr<content::WebContents> web_contents,
+                        apps::LaunchContainer) {
+        return web_contents.get();
+      }).Then(future.GetCallback()));
+
+  auto* web_contents = future.Get();
+  content::WaitForLoadStop(web_contents);
+  return web_contents->GetPrimaryMainFrame();
 }
 
 void CreateIframe(content::RenderFrameHost* parent_frame,

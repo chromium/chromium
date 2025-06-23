@@ -32,6 +32,7 @@
 #include "chrome/browser/push_messaging/push_messaging_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -287,14 +288,15 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
 
   GURL app_url = url_info.origin().GetURL().Resolve("/index.html");
-  auto* app_frame =
-      NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
 
-  // The browser shouldn't have opened the app's page.
-  EXPECT_EQ(GetPrimaryMainFrame(browser())->GetLastCommittedURL(), GURL());
+  ui_test_utils::UrlLoadObserver observer(app_url);
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), app_url.spec());
+
+  observer.Wait();
+  auto* app_browser = chrome::FindBrowserWithTab(observer.web_contents());
+  auto* app_frame = observer.web_contents()->GetPrimaryMainFrame();
 
   // The app's frame should belong to an isolated PWA browser window.
-  Browser* app_browser = GetBrowserFromFrame(app_frame);
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(
       AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
@@ -388,14 +390,15 @@ IN_PROC_BROWSER_TEST_F(
                                        mojom::UserDisplayMode::kBrowser);
 
   GURL app_url = url_info.origin().GetURL();
-  auto* app_frame =
-      NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
 
-  // The browser shouldn't have opened the app's page.
-  EXPECT_EQ(GetPrimaryMainFrame(browser())->GetLastCommittedURL(), GURL());
+  ui_test_utils::UrlLoadObserver observer(app_url);
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), app_url.spec());
+
+  observer.Wait();
+  auto* app_browser = chrome::FindBrowserWithTab(observer.web_contents());
+  auto* app_frame = observer.web_contents()->GetPrimaryMainFrame();
 
   // The app's frame should belong to an IWA window.
-  Browser* app_browser = GetBrowserFromFrame(app_frame);
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(
       AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
@@ -414,14 +417,15 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
 
   GURL app_url = url_info.origin().GetURL();
-  auto* app_frame =
-      NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
 
-  // The browser shouldn't have opened the app's page.
-  EXPECT_EQ(GetPrimaryMainFrame(browser())->GetLastCommittedURL(), GURL());
+  ui_test_utils::UrlLoadObserver observer(app_url);
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), app_url.spec());
+
+  observer.Wait();
+  auto* app_browser = chrome::FindBrowserWithTab(observer.web_contents());
+  auto* app_frame = observer.web_contents()->GetPrimaryMainFrame();
 
   // The app's frame should belong to an IWA window.
-  Browser* app_browser = GetBrowserFromFrame(app_frame);
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(
       AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
@@ -437,13 +441,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
 
   const GURL app_url = url_info.origin().GetURL().Resolve("/non-existing");
-  auto* app_frame =
-      NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
 
-  // The browser shouldn't have opened the app's page.
-  EXPECT_EQ(GetPrimaryMainFrame(browser())->GetLastCommittedURL(), GURL());
+  ui_test_utils::UrlLoadObserver observer(app_url);
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), app_url.spec());
 
-  Browser* app_browser = GetBrowserFromFrame(app_frame);
+  observer.Wait();
+  auto* app_browser = chrome::FindBrowserWithTab(observer.web_contents());
+  auto* app_frame = observer.web_contents()->GetPrimaryMainFrame();
+
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(
       AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
