@@ -2807,7 +2807,7 @@ BASE_FEATURE(kDemoModeAppLandscapeLocked,
 // Enables the ToS Notification in demo mode signed-in sessions.
 BASE_FEATURE(kDemoSessionToSNotification,
              "DemoSessionToSNotification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The pref kSecondaryGoogleAccountSigninAllowed is set to false in Demo Mode.
 BASE_FEATURE(kDemoModeSecondaryGoogleAccountSigninAllowedFalse,
