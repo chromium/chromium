@@ -44,25 +44,10 @@ void TilingSetEvictionQueue::GenerateTilingOrder(
       tilings_.push_back(tiling);
   }
 
-  range = tiling_set->GetTilingRange(PictureLayerTilingSet::LOWER_THAN_LOW_RES);
-  for (size_t i = range.start; i < range.end; ++i) {
-    size_t index = range.start + (range.end - 1 - i);
-    PictureLayerTiling* tiling = tiling_set->tiling_at(index);
-    if (tiling->has_tiles())
-      tilings_.push_back(tiling);
-  }
-
   range = tiling_set->GetTilingRange(
       PictureLayerTilingSet::BETWEEN_HIGH_AND_LOW_RES);
   for (size_t i = range.start; i < range.end; ++i) {
     size_t index = range.start + (range.end - 1 - i);
-    PictureLayerTiling* tiling = tiling_set->tiling_at(index);
-    if (tiling->has_tiles())
-      tilings_.push_back(tiling);
-  }
-
-  range = tiling_set->GetTilingRange(PictureLayerTilingSet::LOW_RES);
-  for (size_t index = range.start; index < range.end; ++index) {
     PictureLayerTiling* tiling = tiling_set->tiling_at(index);
     if (tiling->has_tiles())
       tilings_.push_back(tiling);

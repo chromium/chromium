@@ -628,12 +628,6 @@ PictureLayerTilingSet::TilingRange PictureLayerTilingSet::GetTilingRange(
     case BETWEEN_HIGH_AND_LOW_RES:
       range = TilingRange(high_res_range.end, tilings_size);
       break;
-    case LOW_RES:
-      range = TilingRange(tilings_size, tilings_size);
-      break;
-    case LOWER_THAN_LOW_RES:
-      range = TilingRange(tilings_size, tilings_size);
-      break;
   }
 
   DCHECK_LE(range.start, range.end);
