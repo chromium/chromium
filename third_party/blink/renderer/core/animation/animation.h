@@ -59,6 +59,7 @@
 namespace blink {
 
 class AnimationTimeline;
+class AnimationTrigger;
 class Element;
 class PaintArtifactCompositor;
 class StyleChangeReasonForTracing;
@@ -466,6 +467,9 @@ class CORE_EXPORT Animation : public EventTarget,
   void PauseInternal(ExceptionState& exception_state);
   void ReverseInternal(ExceptionState& exception_state);
 
+  void AddTrigger(AnimationTrigger* trigger);
+  void RemoveTrigger(AnimationTrigger* trigger);
+
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
   void AddedEventListener(const AtomicString& event_type,
@@ -571,6 +575,8 @@ class CORE_EXPORT Animation : public EventTarget,
       const RangeBoundary* boundary,
       double default_percent,
       ExceptionState& exception_state);
+
+  void DisassociateTriggers();
 
   // Returns the effective zoom for the keyframe effect's target, or 1.f if
   // there is no keyframe effect or no target with computed style.
@@ -745,6 +751,8 @@ class CORE_EXPORT Animation : public EventTarget,
   // True is we have paused this animation in anticipation of a future trigger
   // event.
   bool paused_for_trigger_ = false;
+
+  HeapHashSet<WeakMember<AnimationTrigger>> triggers_;
 
   AnimationTriggerData trigger_data_;
 

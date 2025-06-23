@@ -42,12 +42,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_play_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
+#include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/css_number_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
@@ -2627,6 +2630,62 @@ TEST_P(AnimationAnimationTestNoCompositing,
   EXPECT_TRUE(animation->effect()->getTiming());
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kGetEffectTimingDelayZero));
+}
+
+TEST_P(AnimationAnimationTestCompositing,
+       CanceledTriggeredAnimationGrabageCollected) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #target {
+        width: 100px; height: 50px; background: blue;
+      }
+    </style>
+    <div id ='target'></div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  AnimationTrigger* trigger;
+  Animation* animation;
+  {
+    // Create an animation.
+    animation = CreateAnimation(CSSPropertyID::kTransform,
+                                "translate(100%, 100%)", "translate(0%, 0%)");
+    // The animation should be associated with the target element and be idle.
+    EXPECT_TRUE(
+        target->GetElementAnimations()->Animations().Contains(animation));
+    EXPECT_EQ(animation->CalculateAnimationPlayState(),
+              V8AnimationPlayState::Enum::kIdle);
+
+    // Create a trigger.
+    TimelineRangeOffset* dummy_offset =
+        MakeGarbageCollected<TimelineRangeOffset>();
+    AnimationTrigger::RangeBoundary* dummy_range_boundary =
+        MakeGarbageCollected<AnimationTrigger::RangeBoundary>(dummy_offset);
+    trigger = MakeGarbageCollected<AnimationTrigger>(
+        &GetDocument().Timeline(),
+        AnimationTrigger::Type(AnimationTrigger::Type::Enum::kOnce),
+        dummy_range_boundary, dummy_range_boundary, dummy_range_boundary,
+        dummy_range_boundary);
+
+    // Attach the trigger to the animation.
+    trigger->addAnimation(animation, ASSERT_NO_EXCEPTION);
+    EXPECT_EQ(animation->CalculateAnimationPlayState(),
+              V8AnimationPlayState::Enum::kRunning);
+
+    // Cancel the animation.
+    animation->cancel();
+    EXPECT_EQ(animation->CalculateAnimationPlayState(),
+              V8AnimationPlayState::Enum::kIdle);
+    EXPECT_TRUE(
+        target->GetElementAnimations()->Animations().Contains(animation));
+  }
+
+  // Do Garbage collection.
+  UpdateAllLifecyclePhasesForTest();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  EXPECT_FALSE(
+      target->GetElementAnimations()->Animations().Contains(animation));
 }
 
 }  // namespace blink

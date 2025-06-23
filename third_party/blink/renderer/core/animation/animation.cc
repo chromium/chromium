@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/css/css_transition.h"
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
@@ -3083,6 +3084,10 @@ void Animation::cancel() {
   AnimationTimeDelta current_time_before_cancel =
       CurrentTimeInternal().value_or(AnimationTimeDelta());
   SetPausedForTrigger(false);
+  // We disassociate triggers to avoid any future action by the triggers on the
+  // canceled animation. For any future trigger action to happen, the animation
+  // must be explicitly attached to a trigger.
+  DisassociateTriggers();
   V8AnimationPlayState::Enum initial_play_state = CalculateAnimationPlayState();
   if (initial_play_state != V8AnimationPlayState::Enum::kIdle) {
     ResetPendingTasks();
@@ -3609,6 +3614,7 @@ void Animation::Trace(Visitor* visitor) const {
   visitor->Trace(style_dependent_range_start_);
   visitor->Trace(style_dependent_range_end_);
   visitor->Trace(prior_native_paint_worklet_target_);
+  visitor->Trace(triggers_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
@@ -3656,6 +3662,22 @@ void Animation::ResetPlayback() {
   pause();
 
   SetPausedForTrigger(true);
+}
+
+void Animation::AddTrigger(AnimationTrigger* trigger) {
+  triggers_.insert(trigger);
+}
+
+void Animation::RemoveTrigger(AnimationTrigger* trigger) {
+  triggers_.erase(trigger);
+}
+
+void Animation::DisassociateTriggers() {
+  HeapHashSet<WeakMember<AnimationTrigger>> triggers;
+  triggers.swap(triggers_);
+  for (AnimationTrigger* trigger : triggers) {
+    trigger->removeAnimation(this);
+  }
 }
 
 float Animation::GetKeyframeEffectTargetZoom() const {

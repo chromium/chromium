@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/deferred_timeline.h"
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
@@ -458,10 +459,12 @@ void AnimationTrigger::addAnimation(Animation* animation,
   }
 
   animations_.insert(animation);
+  animation->AddTrigger(this);
 }
 
 void AnimationTrigger::removeAnimation(Animation* animation) {
   animations_.erase(animation);
+  animation->RemoveTrigger(this);
 }
 
 void AnimationTrigger::UpdateAnimations(
