@@ -18,7 +18,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -231,13 +230,7 @@ bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr) {
   }
 }
 
-AXNodeData::AXNodeData() : role(ax::mojom::Role::kUnknown) {
-  if (features::IsAccessibilityUseAXBitsetEnabled()) {
-    bool_attributes.emplace<BoolAttrBitset>();
-  } else {
-    bool_attributes.emplace<BoolAttrList>();
-  }
-}
+AXNodeData::AXNodeData() : role(ax::mojom::Role::kUnknown) {}
 
 AXNodeData::~AXNodeData() = default;
 
@@ -265,7 +258,7 @@ AXNodeData::AXNodeData(AXNodeData&& other) {
   string_attributes.swap(other.string_attributes);
   int_attributes.swap(other.int_attributes);
   float_attributes.swap(other.float_attributes);
-  bool_attributes = std::move(other.bool_attributes);
+  bool_attributes.swap(other.bool_attributes);
   intlist_attributes.swap(other.intlist_attributes);
   stringlist_attributes.swap(other.stringlist_attributes);
   html_attributes.swap(other.html_attributes);
@@ -296,23 +289,16 @@ AXNodeData& AXNodeData::operator=(const AXNodeData& other) {
 }
 
 bool AXNodeData::HasBoolAttribute(ax::mojom::BoolAttribute attribute) const {
-  if (auto bool_vector = std::get_if<BoolAttrList>(&bool_attributes)) {
-    auto iter = FindInVectorOfPairs(attribute, *bool_vector);
-    return iter != bool_vector->end();
-  }
-  auto bool_bitset = std::get<BoolAttrBitset>(bool_attributes);
-  return bool_bitset.Has(attribute).has_value();
+  auto iter = FindInVectorOfPairs(attribute, bool_attributes);
+  return iter != bool_attributes.end();
 }
 
 bool AXNodeData::GetBoolAttribute(ax::mojom::BoolAttribute attribute) const {
-  if (auto bool_vector = std::get_if<BoolAttrList>(&bool_attributes)) {
-    auto iter = FindInVectorOfPairs(attribute, *bool_vector);
-    return iter == bool_vector->end() ? kDefaultBoolValue : iter->second;
+  auto iter = FindInVectorOfPairs(attribute, bool_attributes);
+  if (iter != bool_attributes.end()) {
+    return iter->second;
   }
-
-  auto bool_bitset = std::get<BoolAttrBitset>(bool_attributes);
-  std::optional<bool> attr = bool_bitset.Has(attribute);
-  return attr.has_value() ? attr.value() : kDefaultBoolValue;
+  return kDefaultBoolValue;
 }
 
 bool AXNodeData::HasFloatAttribute(ax::mojom::FloatAttribute attribute) const {
@@ -423,15 +409,9 @@ std::optional<AXTreeID> AXNodeData::GetChildTreeID() const {
 void AXNodeData::AddBoolAttribute(ax::mojom::BoolAttribute attribute,
                                   bool value) {
   DCHECK_NE(attribute, ax::mojom::BoolAttribute::kNone);
-  if (auto bool_vector = std::get_if<BoolAttrList>(&bool_attributes)) {
-    if (HasBoolAttribute(attribute)) {
-      RemoveBoolAttribute(attribute);
-    }
-    bool_vector->emplace_back(attribute, value);
-    return;
-  }
-
-  get<BoolAttrBitset>(bool_attributes).Set(attribute, value);
+  if (HasBoolAttribute(attribute))
+    RemoveBoolAttribute(attribute);
+  bool_attributes.emplace_back(attribute, value);
 }
 
 void AXNodeData::AddIntAttribute(ax::mojom::IntAttribute attribute, int value) {
@@ -478,14 +458,9 @@ void AXNodeData::AddStringListAttribute(
 
 void AXNodeData::RemoveBoolAttribute(ax::mojom::BoolAttribute attribute) {
   DCHECK_NE(attribute, ax::mojom::BoolAttribute::kNone);
-  if (auto bool_vector = std::get_if<BoolAttrList>(&bool_attributes)) {
-    std::erase_if(*bool_vector, [attribute](const auto& bool_attribute) {
-      return bool_attribute.first == attribute;
-    });
-    return;
-  }
-
-  get<BoolAttrBitset>(bool_attributes).Unset(attribute);
+  std::erase_if(bool_attributes, [attribute](const auto& bool_attribute) {
+    return bool_attribute.first == attribute;
+  });
 }
 
 void AXNodeData::RemoveIntAttribute(ax::mojom::IntAttribute attribute) {
@@ -1761,10 +1736,10 @@ std::string AXNodeData::ToString(bool verbose) const {
     }
   }
 
-  auto process_bool_attribute = [&result](ax::mojom::BoolAttribute attr,
-                                          bool bool_value) {
-    std::string value = base::ToString(bool_value);
-    switch (attr) {
+  for (const std::pair<ax::mojom::BoolAttribute, bool>& bool_attribute :
+       bool_attributes) {
+    std::string value = base::ToString(bool_attribute.second);
+    switch (bool_attribute.first) {
       case ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot:
         result += " non_atomic_text_field_root=" + value;
         break;
@@ -1834,15 +1809,6 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::BoolAttribute::kNone:
         break;
     }
-  };
-
-  if (auto bool_vector = std::get_if<BoolAttrList>(&bool_attributes)) {
-    for (const std::pair<ax::mojom::BoolAttribute, bool>& bool_attribute :
-         *bool_vector) {
-      process_bool_attribute(bool_attribute.first, bool_attribute.second);
-    }
-  } else {
-    std::get<BoolAttrBitset>(bool_attributes).ForEach(process_bool_attribute);
   }
 
   for (const std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>&
@@ -1881,29 +1847,22 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::IntListAttribute::kMarkerTypes: {
         std::string types_str = VectorToString(values, [](const int32_t type) {
           std::string type_str;
-          if (type == static_cast<int32_t>(ax::mojom::MarkerType::kNone)) {
+          if (type == static_cast<int32_t>(ax::mojom::MarkerType::kNone))
             return type_str;
-          }
 
-          if (type & static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)) {
+          if (type & static_cast<int32_t>(ax::mojom::MarkerType::kSpelling))
             type_str += "spelling&";
-          }
-          if (type & static_cast<int32_t>(ax::mojom::MarkerType::kGrammar)) {
+          if (type & static_cast<int32_t>(ax::mojom::MarkerType::kGrammar))
             type_str += "grammar&";
-          }
-          if (type & static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)) {
+          if (type & static_cast<int32_t>(ax::mojom::MarkerType::kHighlight))
             type_str += "highlight&";
-          }
-          if (type & static_cast<int32_t>(ax::mojom::MarkerType::kTextMatch)) {
+          if (type & static_cast<int32_t>(ax::mojom::MarkerType::kTextMatch))
             type_str += "text_match&";
-          }
           if (type &
-              static_cast<int32_t>(ax::mojom::MarkerType::kActiveSuggestion)) {
+              static_cast<int32_t>(ax::mojom::MarkerType::kActiveSuggestion))
             type_str += "active_suggestion&";
-          }
-          if (type & static_cast<int32_t>(ax::mojom::MarkerType::kSuggestion)) {
+          if (type & static_cast<int32_t>(ax::mojom::MarkerType::kSuggestion))
             type_str += "suggestion&";
-          }
 
           return type_str;
         });
@@ -1925,16 +1884,14 @@ std::string AXNodeData::ToString(bool verbose) const {
         std::string highlight_types_str =
             VectorToString(values, [](const int32_t highlight_type) {
               if (static_cast<ax::mojom::HighlightType>(highlight_type) ==
-                  ax::mojom::HighlightType::kNone) {
+                  ax::mojom::HighlightType::kNone)
                 return "";
-              }
               return ui::ToString(
                   static_cast<ax::mojom::HighlightType>(highlight_type));
             });
 
-        if (!highlight_types_str.empty()) {
+        if (!highlight_types_str.empty())
           result += " highlight_types=" + highlight_types_str;
-        }
         break;
       }
       case ax::mojom::IntListAttribute::kCaretBounds:
@@ -2025,9 +1982,8 @@ std::string AXNodeData::ToString(bool verbose) const {
     result += " " + string_pair.first + "=" + string_pair.second;
   }
 
-  if (actions) {
+  if (actions)
     result += " actions=" + ActionsBitfieldToString(actions);
-  }
 
   return result;
 }
@@ -2051,15 +2007,9 @@ void AXNodeData::AccumulateSize(
   node_data_size.float_attribute_size +=
       float_attributes.size() *
       (sizeof(ax::mojom::FloatAttribute) + sizeof(float));
-
-  // The size of the std::variant object includes the AXBitset (if that's what
-  // is stored inside).
-  node_data_size.bool_attribute_size += sizeof(bool_attributes);
-  if (auto bool_vector = std::get_if<BoolAttrList>(&bool_attributes)) {
-    node_data_size.bool_attribute_size +=
-        bool_vector->size() * (sizeof(ax::mojom::BoolAttribute) + sizeof(bool));
-  }
-
+  node_data_size.bool_attribute_size +=
+      bool_attributes.size() *
+      (sizeof(ax::mojom::BoolAttribute) + sizeof(bool));
   node_data_size.child_ids_size = child_ids.size() * sizeof(int32_t);
 
   for (const auto& pair : string_attributes) {

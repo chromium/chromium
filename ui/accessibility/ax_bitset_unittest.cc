@@ -87,21 +87,21 @@ TEST(AXBitsetTest, ForEach) {
 TEST(AXBitsetTest, Size) {
   AXBitset<TestEnum> map;
   size_t expected_size = 0;
-  EXPECT_EQ(expected_size, map.size());
+  EXPECT_EQ(expected_size, map.Size());
 
   map.Set(TestEnum::kMinValue, true);
   map.Set(TestEnum::VAL_63, false);
   expected_size = 2;
-  EXPECT_EQ(expected_size, map.size());
+  EXPECT_EQ(expected_size, map.Size());
 
   // Re-setting an existing attribute.
   map.Set(TestEnum::kMinValue, false);
-  EXPECT_EQ(expected_size, map.size());
+  EXPECT_EQ(expected_size, map.Size());
 
   // Unset existing attribute.
   map.Unset(TestEnum::VAL_63);
   expected_size = 1;
-  EXPECT_EQ(expected_size, map.size());
+  EXPECT_EQ(expected_size, map.Size());
 }
 
 TEST(AXBitsetTest, Append) {

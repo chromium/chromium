@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <set>
 #include <string>
-#include <utility>
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enum_util.h"
@@ -68,19 +66,8 @@ void ViewAccessibilityUtils::Merge(const ui::AXNodeData& source,
     }
   }
 
-  if (auto source_bool_vector =
-          std::get_if<std::vector<std::pair<ax::mojom::BoolAttribute, bool>>>(
-              &source.bool_attributes)) {
-    for (const auto& attr : *source_bool_vector) {
-      destination.AddBoolAttribute(attr.first, attr.second);
-    }
-
-  } else if (auto source_bool_bitset =
-                 std::get_if<ui::AXBitset<ax::mojom::BoolAttribute>>(
-                     &source.bool_attributes)) {
-    std::get<ui::AXBitset<ax::mojom::BoolAttribute>>(
-        destination.bool_attributes)
-        .Append(*source_bool_bitset);
+  for (const auto& attr : source.bool_attributes) {
+    destination.AddBoolAttribute(attr.first, attr.second);
   }
 
   for (const auto& attr : source.intlist_attributes) {
@@ -131,22 +118,9 @@ void ViewAccessibilityUtils::ValidateAttributesNotSet(
         << attributeErrorMessage(std::string(ui::ToString(attr.first)));
   }
 
-  if (auto new_bool_vector =
-          std::get_if<std::vector<std::pair<ax::mojom::BoolAttribute, bool>>>(
-              &new_data.bool_attributes)) {
-    for (const auto& attr : *new_bool_vector) {
-      DCHECK(!existing_data.HasBoolAttribute(attr.first))
-          << attributeErrorMessage(std::string(ui::ToString(attr.first)));
-    }
-  } else if (auto new_bool_bitset =
-                 std::get_if<ui::AXBitset<ax::mojom::BoolAttribute>>(
-                     &new_data.bool_attributes)) {
-    (*new_bool_bitset)
-        .ForEach([&existing_data, &attributeErrorMessage](
-                     ax::mojom::BoolAttribute attr, bool value) {
-          DCHECK(!existing_data.HasBoolAttribute(attr))
-              << attributeErrorMessage(std::string(ui::ToString(attr)));
-        });
+  for (const auto& attr : new_data.bool_attributes) {
+    DCHECK(!existing_data.HasBoolAttribute(attr.first))
+        << attributeErrorMessage(std::string(ui::ToString(attr.first)));
   }
 
   for (const auto& attr : new_data.float_attributes) {
