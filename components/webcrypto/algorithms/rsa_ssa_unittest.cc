@@ -549,7 +549,7 @@ TEST_F(WebCryptoRsaSsaTest, GenerateKeyPairRsaBadModulusLength) {
       257,         // Not a multiple of 8.
       1023,        // Not a multiple of 8.
       0xFFFFFFFF,  // Too big.
-      16384 + 8,   // 16384 is the maxmimum length that NSS succeeds for.
+      8192 + 8,    // 8192 is the maximum length that is allowed in BoringSSL.
   };
 
   const std::vector<uint8_t> public_exponent = HexStringToBytes("010001");

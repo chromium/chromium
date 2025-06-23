@@ -264,7 +264,7 @@ Status Status::ErrorImportRsaEmptyModulus() {
 Status Status::ErrorGenerateRsaUnsupportedModulus() {
   return Status(blink::kWebCryptoErrorTypeOperation,
                 "The modulus length must be a multiple of 8 bits and >= 256 "
-                "and <= 16384");
+                "and <= 8192");
 }
 
 Status Status::ErrorImportRsaEmptyExponent() {

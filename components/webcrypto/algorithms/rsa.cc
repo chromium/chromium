@@ -283,12 +283,14 @@ Status RsaHashedAlgorithm::GenerateKey(
 
   // Limit the RSA key sizes to:
   //   * Multiple of 8 bits
-  //   * 256 bits to 16K bits
+  //   * 256 bits to 8K bits
   //
   // These correspond with limitations at the time there was an NSS WebCrypto
   // implementation. However in practice the upper bound is also helpful
-  // because generating large RSA keys is very slow.
-  if (modulus_length_bits < 256 || modulus_length_bits > 16384 ||
+  // because generating large RSA keys is very slow. In particular, generating
+  // keys > 8192 bits takes multiple minutes of compute time without providing
+  // any increase in realistic security level.
+  if (modulus_length_bits < 256 || modulus_length_bits > 8192 ||
       (modulus_length_bits % 8) != 0) {
     return Status::ErrorGenerateRsaUnsupportedModulus();
   }
