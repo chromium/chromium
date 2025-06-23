@@ -480,6 +480,27 @@ affect invariants or how features are designed.
     cases.
 
 
+## Videos
+
+[**What's Up with Site
+Isolation**](https://youtu.be/OH-bt7spDgo?si=T_mL39Sxr_JPit0K), September 2023\
+An interview about the goals and implementation of Site Isolation (46:41).
+
+[**Chrome Security EDU: Site Isolation
+101**](https://youtu.be/-L-LwHiCl9E?si=wEv7gdc7lr_6yiAy), June 2025\
+A short overview of how Site Isolation helps secure the browser (1:30).
+
+[**Chrome Security EDU: Site Isolation
+201**](https://youtu.be/Als73-6bqD0?si=LajJlqJeXZe7RTIl), June 2025\
+An introduction to how Site Isolation uses placeholders for frames in other
+renderer processes (1:15).
+
+[**Chrome Security EDU: Chrome's Process Model and Site
+Isolation**](https://youtu.be/2Ds_RIACLbk?si=kZWWF75slbRoZMa_), June 2025\
+An in-depth look at Site Isolation for browser engineers, including tradeoffs
+when making decisions around the process model (16:36).
+
+
 ## Further Reading
 
 Several academic papers have covered topics about Chromium's process model.
