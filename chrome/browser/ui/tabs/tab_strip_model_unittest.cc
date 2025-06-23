@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -856,7 +857,8 @@ TEST_F(TabStripModelTest, TestDetachSplitInGroupNewSelection) {
       2, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   split_tabs::SplitTabId split_id = tabstrip()->AddToNewSplit(
-      std::vector<int>{3}, split_tabs::SplitTabVisualData());
+      std::vector<int>{3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->ForgetAllOpeners();
 
   tabstrip()->DetachSplitTabForInsertion(split_id);
@@ -892,7 +894,8 @@ TEST_F(TabStripModelTest, TestDetachTabInSplitNewSelection) {
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->ForgetAllOpeners();
 
   tabstrip()->DetachTabAtForInsertion(1);
@@ -911,8 +914,9 @@ TEST_F(TabStripModelTest, TestDetachSplitForInsertion) {
       2, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  split_tabs::SplitTabId split_id =
-      tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  split_tabs::SplitTabId split_id = tabstrip()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   tabstrip()->ForgetAllOpeners();
 
@@ -1077,8 +1081,9 @@ TEST_F(TabStripModelTest, TestDetachAndInsertGroupWithSplit) {
   tabstrip()->ActivateTabAt(
       2, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  split_tabs::SplitTabId split_id =
-      tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  split_tabs::SplitTabId split_id = tabstrip()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   std::unique_ptr<DetachedTabCollection> detached_group =
       tabstrip()->DetachTabGroupForInsertion(group_id);
@@ -1818,7 +1823,8 @@ TEST_F(TabStripModelTest, CommandCloseOtherTabs) {
   // Unselected split tab.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 4, 1, {1}));
-  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->ActivateTabAt(3);
   ASSERT_EQ("0p 1s 2s 3", GetTabStripStateString(tabstrip()));
   EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
@@ -1855,7 +1861,8 @@ TEST_F(TabStripModelTest, CommandCloseTabsToRight) {
   // Unselected split tab.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 4, 1, {1}));
-  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->ActivateTabAt(3);
   ASSERT_EQ("0p 1s 2s 3", GetTabStripStateString(tabstrip()));
   EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
@@ -1902,7 +1909,9 @@ TEST_F(TabStripModelTest, SplitTabPinning) {
     for (bool use_left_tab : {true, false}) {
       ASSERT_NO_FATAL_FAILURE(
           PrepareTabstripForSelectionTest(tabstrip(), 5, 1, {2}));
-      tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+      tabstrip()->AddToNewSplit(
+          {3}, split_tabs::SplitTabVisualData(),
+          split_tabs::SplitTabCreatedSource::kToolbarButton);
       ASSERT_EQ("0p 1 2s 3s 4", GetTabStripStateString(tabstrip()));
       if (!split_is_selected) {
         tabstrip()->ActivateTabAt(1);
@@ -1925,11 +1934,13 @@ TEST_F(TabStripModelTest, SplitTabPinning) {
 TEST_F(TabStripModelTest, SplitTabPinningBulk) {
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 12, 2, {4}));
-  tabstrip()->AddToNewSplit({5}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({5}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   ASSERT_EQ("0p 1p 2 3 4s 5s 6 7 8 9 10 11",
             GetTabStripStateString(tabstrip()));
   tabstrip()->ActivateTabAt(8);
-  tabstrip()->AddToNewSplit({9}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({9}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   ASSERT_EQ("0p 1p 2 3 4s 5s 6 7 8s 9s 10 11",
             GetTabStripStateString(tabstrip()));
   tabstrip()->SelectTabAt(0);
@@ -1974,7 +1985,8 @@ TEST_F(TabStripModelTest, AddToSplitInGroup) {
       4, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0p 1p 3 2s 4s", GetTabStripStateString(tabstrip()));
   EXPECT_EQ(
@@ -1996,7 +2008,8 @@ TEST_F(TabStripModelTest, AddToSplitInPinned) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
 
@@ -2010,7 +2023,8 @@ TEST_F(TabStripModelTest, AddToSplitInSelected) {
       PrepareTabstripForSelectionTest(tabstrip(), 5, 0, {2}));
 
   tabstrip()->ActivateTabAt(0);
-  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0s 1s 2 3 4", GetTabStripStateString(tabstrip()));
   EXPECT_EQ(tabstrip()->active_index(), 0);
@@ -2032,8 +2046,9 @@ TEST_F(TabStripModelTest, UnsplitOperation) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  split_tabs::SplitTabId split_tab_id =
-      tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  split_tabs::SplitTabId split_tab_id = tabstrip()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
 
@@ -2052,8 +2067,9 @@ TEST_F(TabStripModelTest, MoveInsideSplitRemovesSplit) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  split_tabs::SplitTabId split_tab_id =
-      tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  split_tabs::SplitTabId split_tab_id = tabstrip()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ(tabstrip()->GetSplitData(split_tab_id)->ListTabs().size(), 2u);
   tabstrip()->MoveWebContentsAt(3, 1, false);
@@ -2071,8 +2087,9 @@ TEST_F(TabStripModelTest, MoveFromSplitRemovesSplit) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  split_tabs::SplitTabId split_tab_id =
-      tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  split_tabs::SplitTabId split_tab_id = tabstrip()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ(tabstrip()->GetSplitData(split_tab_id)->ListTabs().size(), 2u);
   tabstrip()->MoveWebContentsAt(1, 3, false);
@@ -2090,8 +2107,9 @@ TEST_F(TabStripModelTest, AddTabInsideSplitRemovesSplit) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  split_tabs::SplitTabId split_tab_id =
-      tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  split_tabs::SplitTabId split_tab_id = tabstrip()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ(tabstrip()->GetSplitData(split_tab_id)->ListTabs().size(), 2u);
 
@@ -2112,8 +2130,9 @@ TEST_F(TabStripModelTest, RemoveSplitTabRemovesEntireSplit) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  split_tabs::SplitTabId split_tab_id =
-      tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  split_tabs::SplitTabId split_tab_id = tabstrip()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ(tabstrip()->GetSplitData(split_tab_id)->ListTabs().size(), 2u);
 
@@ -2132,8 +2151,9 @@ TEST_F(TabStripModelTest, MoveGroupWithinSplitRemovesSplit) {
       3, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  split_tabs::SplitTabId split_tab_id =
-      tabstrip()->AddToNewSplit({4}, split_tabs::SplitTabVisualData());
+  split_tabs::SplitTabId split_tab_id = tabstrip()->AddToNewSplit(
+      {4}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ(tabstrip()->GetSplitData(split_tab_id)->ListTabs().size(), 2u);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({0, 1});
@@ -2155,8 +2175,9 @@ TEST_F(TabStripModelTest, SplitLayoutTest) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  split_tabs::SplitTabId split_tab_id =
-      tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  split_tabs::SplitTabId split_tab_id = tabstrip()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
   EXPECT_EQ(
@@ -2184,8 +2205,9 @@ TEST_F(TabStripModelTest, SplitRatioTest) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  split_tabs::SplitTabId split_tab_id =
-      tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  split_tabs::SplitTabId split_tab_id = tabstrip()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
   EXPECT_EQ(
@@ -2212,7 +2234,8 @@ TEST_F(TabStripModelTest, ReplaceActiveTabInSplit) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
 
@@ -2233,7 +2256,8 @@ TEST_F(TabStripModelTest, SwapActiveTabInSplit) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
 
@@ -2254,7 +2278,8 @@ TEST_F(TabStripModelTest, SwapActiveTabInSplitWithOnlyTabInGroup) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
 
@@ -2279,8 +2304,9 @@ TEST_F(TabStripModelTest, ReverseTabsInSplit) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  split_tabs::SplitTabId split_tab_id =
-      tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  split_tabs::SplitTabId split_tab_id = tabstrip()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
   std::vector<tabs::TabInterface*> old_tabs =
@@ -2308,8 +2334,9 @@ TEST_F(TabStripModelTest, ReverseAndReplaceTabsInSplit) {
       2, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  split_tabs::SplitTabId split_tab_id =
-      tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  split_tabs::SplitTabId split_tab_id = tabstrip()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
   EXPECT_EQ("0 1s 2s", GetTabStripStateString(tabstrip()));
 
   tabstrip()->ReverseTabsInSplit(split_tab_id);
@@ -3703,7 +3730,8 @@ TEST_F(TabStripModelTest, MoveSelectedTabsToWithSplit) {
       6, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  tabstrip()->AddToNewSplit({7}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({7}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   PrepareTabstripForSelectionTest(tabstrip(), 0, 0, {6, 7});
 
@@ -3722,17 +3750,20 @@ TEST_F(TabStripModelTest, MoveSelectedTabsToWithGroupAndSplit) {
   tabstrip()->ActivateTabAt(
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  tabstrip()->AddToNewSplit({0}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({0}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   tabstrip()->ActivateTabAt(
       6, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  tabstrip()->AddToNewSplit({7}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({7}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   tabstrip()->ActivateTabAt(
       11, TabStripUserGestureDetails(
               TabStripUserGestureDetails::GestureType::kOther));
-  tabstrip()->AddToNewSplit({12}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({12}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   // Move all the split tabs along with some other tabs.
   PrepareTabstripForSelectionTest(tabstrip(), 0, 0,
@@ -4322,10 +4353,12 @@ TEST_F(TabStripModelTest, AddTabAndSplitsToNewGroup) {
   tabstrip()->SetTabPinned(1, true);
   tabstrip()->SetTabPinned(2, true);
   tabstrip()->ActivateTabAt(1);
-  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->SetTabPinned(3, true);
   tabstrip()->ActivateTabAt(5);
-  tabstrip()->AddToNewSplit({6}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({6}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   ASSERT_EQ("0p 1ps 2ps 3p 4 5s 6s 7",
             GetTabStripStateString(tabstrip(), true));
 
@@ -4452,10 +4485,12 @@ TEST_F(TabStripModelTest, AddTabAndSplitsToExistingGroup) {
   tabstrip()->SetTabPinned(1, true);
   tabstrip()->SetTabPinned(2, true);
   tabstrip()->ActivateTabAt(1);
-  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->SetTabPinned(3, true);
   tabstrip()->ActivateTabAt(5);
-  tabstrip()->AddToNewSplit({6}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({6}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->AddToNewGroup({4});
   ASSERT_EQ("0p 1ps 2ps 3p 4g0 5s 6s 7",
             GetTabStripStateString(tabstrip(), true));
@@ -4577,7 +4612,8 @@ TEST_F(TabStripModelTest, RemoveTabFromGroupDeletesGroup) {
 TEST_F(TabStripModelTest, RemoveTabsAndSplitsFromGroup) {
   PrepareTabs(tabstrip(), 5);
   tabstrip()->ActivateTabAt(1);
-  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->AddToNewGroup({0, 1, 2, 3, 4});
   ASSERT_EQ("0g0 1g0s 2g0s 3g0 4g0", GetTabStripStateString(tabstrip(), true));
 
@@ -4588,7 +4624,8 @@ TEST_F(TabStripModelTest, RemoveTabsAndSplitsFromGroup) {
 
   PrepareTabs(tabstrip(), 5);
   tabstrip()->ActivateTabAt(2);
-  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->AddToNewGroup({0, 1, 2, 3, 4});
   ASSERT_EQ("0g0 1g0 2g0s 3g0s 4g0", GetTabStripStateString(tabstrip(), true));
 
@@ -5222,7 +5259,8 @@ TEST_F(TabStripModelTest, ActivateRecordsStartTime_UnSplitToSplit) {
   PrepareTabs(tabstrip(), 3);
   ASSERT_EQ(tabstrip()->GetActiveWebContents(),
             tabstrip()->GetWebContentsAt(2));
-  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   // ActivateTabAt should update the start time when the tab outside the split
   // becomes active.
@@ -5238,7 +5276,8 @@ TEST_F(TabStripModelTest, ActivateRecordsStartTime_SplitToUnSplit) {
   PrepareTabs(tabstrip(), 3);
   ASSERT_EQ(tabstrip()->GetActiveWebContents(),
             tabstrip()->GetWebContentsAt(2));
-  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->ActivateTabAt(0);
 
   // ActivateTabAt should update the start time when a tab in the split becomes
@@ -5257,7 +5296,8 @@ TEST_F(TabStripModelTest, ActivateRecordsStartTime_SplitToSameSplit) {
   PrepareTabs(tabstrip(), 3);
   ASSERT_EQ(tabstrip()->GetActiveWebContents(),
             tabstrip()->GetWebContentsAt(2));
-  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   // ActivateTabAt should not update the start time when the other tab in the
   // split becomes active.
@@ -5276,9 +5316,11 @@ TEST_F(TabStripModelTest, ActivateRecordsStartTime_SplitToOtherSplit) {
   PrepareTabs(tabstrip(), 4);
   ASSERT_EQ(tabstrip()->GetActiveWebContents(),
             tabstrip()->GetWebContentsAt(3));
-  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->ActivateTabAt(0);
-  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   // ActivateTabAt should update the start time when a tab in the other split
   // becomes active. Only the tab that was activated should get a start time.
@@ -5735,9 +5777,11 @@ TEST_F(TabStripModelTest, ExtendSelectionTo_SplitTabs) {
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 6, 0, {0}));
   tabstrip()->ActivateTabAt(0);
-  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->ActivateTabAt(4);
-  tabstrip()->AddToNewSplit({5}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({5}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0s 1s 2 3 4s 5s", GetTabStripStateString(tabstrip()));
 
@@ -5794,9 +5838,11 @@ TEST_F(TabStripModelTest, AddSelectionFromAnchorTo_SplitTabs) {
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 6, 0, {0}));
   tabstrip()->ActivateTabAt(0);
-  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->ActivateTabAt(4);
-  tabstrip()->AddToNewSplit({5}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({5}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   tabstrip()->ActivateTabAt(3);
   tabstrip()->AddSelectionFromAnchorTo(4);
@@ -5830,7 +5876,8 @@ TEST_F(TabStripModelTest, AddSelectionFromAnchorTo_NoAnchorAndSplit) {
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 6, 0, {0}));
   tabstrip()->ActivateTabAt(0);
-  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   ui::ListSelectionModel selection_model;
   selection_model.AddIndexToSelection(3);
@@ -5848,7 +5895,8 @@ TEST_F(TabStripModelTest, SelectTabAt_SplitTabs) {
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 4, 0, {0}));
   tabstrip()->ActivateTabAt(3);
-  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0 1 2s 3s", GetTabStripStateString(tabstrip()));
 
@@ -5864,7 +5912,8 @@ TEST_F(TabStripModelTest, DeselectTabAt_SplitTabs) {
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 4, 0, {0}));
   tabstrip()->ActivateTabAt(3);
-  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0 1 2s 3s", GetTabStripStateString(tabstrip()));
 
@@ -5882,7 +5931,8 @@ TEST_F(TabStripModelTest, DeselectTabAt_CantDeselectOnlySelectedSplitTabs) {
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 4, 0, {0}));
   tabstrip()->ActivateTabAt(3);
-  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0 1 2s 3s", GetTabStripStateString(tabstrip()));
 
@@ -5899,7 +5949,8 @@ TEST_F(TabStripModelTest, RemoveSplitInSelectionActivatesRemainingTab) {
   PrepareTabs(tabstrip(), 6);
   ASSERT_EQ(6, tabstrip()->count());
   tabstrip()->ActivateTabAt(1);
-  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
   tabstrip()->ActivateTabAt(3);
   tabstrip()->SelectTabAt(0);
   tabstrip()->SelectTabAt(2);
@@ -5923,8 +5974,9 @@ TEST_F(TabStripModelTest, RemoveSplitUnselectsNonActiveTab) {
   PrepareTabs(tabstrip(), 4);
   ASSERT_EQ(4, tabstrip()->count());
   tabstrip()->ActivateTabAt(1);
-  split_tabs::SplitTabId split_tab_id =
-      tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  split_tabs::SplitTabId split_tab_id = tabstrip()->AddToNewSplit(
+      {2}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   // Verify the selection model before closing the tab.
   EXPECT_EQ(tabstrip()->active_index(), 1);
@@ -5950,12 +6002,14 @@ TEST_F(TabStripModelTest, SplitSelectionTestFromModel) {
                          TabStripUserGestureDetails(
                              TabStripUserGestureDetails::GestureType::kOther));
 
-  tabstrip.AddToNewSplit({7}, split_tabs::SplitTabVisualData());
+  tabstrip.AddToNewSplit({7}, split_tabs::SplitTabVisualData(),
+                         split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   tabstrip.ActivateTabAt(2,
                          TabStripUserGestureDetails(
                              TabStripUserGestureDetails::GestureType::kOther));
-  tabstrip.AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  tabstrip.AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                         split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   // Pass in only one of the selected tabs in the splits.
   PrepareTabstripForSelectionTest(&tabstrip, 0, 0, {6, 2});
@@ -5974,7 +6028,8 @@ TEST_F(TabStripModelTest, RemoveLeftTabInSplitActivatesRemainingTab) {
   PrepareTabs(tabstrip(), 4);
   ASSERT_EQ(4, tabstrip()->count());
   tabstrip()->ActivateTabAt(0);
-  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   // Verify the selection model before closing the tab.
   EXPECT_EQ("0s 1s 2 3", GetTabStripStateString(tabstrip()));

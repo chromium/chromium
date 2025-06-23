@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_desktop.h"
@@ -1786,7 +1787,8 @@ void TabStripModel::ReverseTabsInSplit(split_tabs::SplitTabId split_id) {
 
 split_tabs::SplitTabId TabStripModel::AddToNewSplit(
     std::vector<int> indices,
-    split_tabs::SplitTabVisualData visual_data) {
+    split_tabs::SplitTabVisualData visual_data,
+    split_tabs::SplitTabCreatedSource source) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   // Ensure that there is only one index. This will be split with the active
@@ -1796,7 +1798,7 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
   CHECK(active_index() != kNoTab);
   CHECK(active_index() != indices[0]);
 
-  base::RecordAction(UserMetricsAction("DesktopSplitView_Create"));
+  split_tabs::RecordSplitTabCreated(source);
 
   split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
 
@@ -2520,9 +2522,9 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       // This callback results in creating a split. It is either sent to the
       // deletion dialog that owns it and is responsible for calling it or if no
       // group is deleted it is simply called here.
-      base::OnceCallback<void()> callback =
-          base::BindOnce(&TabStripModelDelegate::NewSplitTab,
-                         base::Unretained(delegate_), indices);
+      base::OnceCallback<void()> callback = base::BindOnce(
+          &TabStripModelDelegate::NewSplitTab, base::Unretained(delegate_),
+          indices, split_tabs::SplitTabCreatedSource::kTabContextMenu);
 
       // If we are splitting the active tab no group can be deleted.
       if (!indices.empty()) {

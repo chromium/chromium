@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -1779,7 +1780,9 @@ TEST_F(TabsApiUnitTest, SplitTabsWithHighlightFunction) {
                                           /*foreground=*/true);
   }
   GetTabStripModel()->ActivateTabAt(0);
-  GetTabStripModel()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  GetTabStripModel()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kLinkContextMenu);
 
   // Run extension to highlight tabs
   auto extension = CreateTabsExtension();

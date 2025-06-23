@@ -8,6 +8,7 @@
 
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "components/tab_groups/tab_group_id.h"
 
 TestTabStripModelDelegate::TestTabStripModelDelegate() = default;
@@ -125,7 +126,9 @@ bool TestTabStripModelDelegate::IsNormalWindow() {
   return true;
 }
 
-void TestTabStripModelDelegate::NewSplitTab(std::vector<int> indices) {}
+void TestTabStripModelDelegate::NewSplitTab(
+    std::vector<int> indices,
+    split_tabs::SplitTabCreatedSource source) {}
 
 BrowserWindowInterface* TestTabStripModelDelegate::GetBrowserWindowInterface() {
   return browser_window_interface_;
