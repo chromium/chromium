@@ -3202,7 +3202,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
           } else {
             ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
                 suggestions, *valuables_manager,
-                client().GetLastCommittedPrimaryMainFrameURL());
+                client().GetLastCommittedPrimaryMainFrameURL(),
+                autofill_field->is_autofilled());
           }
         }
       }

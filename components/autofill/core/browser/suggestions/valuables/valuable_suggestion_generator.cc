@@ -142,7 +142,8 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
 void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
     std::vector<Suggestion>& email_suggestions,
     const ValuablesDataManager& valuables_manager,
-    const GURL& url) {
+    const GURL& url,
+    bool trigger_field_is_autofilled) {
   std::vector<LoyaltyCard> all_loyalty_cards =
       valuables_manager.GetLoyaltyCardsToSuggest();
   CHECK(!email_suggestions.empty());
@@ -179,9 +180,22 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
       CreateManageLoyaltyCardsSuggestion());
   // There is at least one email, separator and manage addresses suggestion.
   CHECK_GE(int(email_suggestions.size()), 3);
-  email_suggestions.insert(email_suggestions.end() - 1, submenu_suggestion);
-  email_suggestions.insert(email_suggestions.end() - 1,
-                           Suggestion(SuggestionType::kSeparator));
+  if (trigger_field_is_autofilled) {
+    CHECK_EQ(email_suggestions[email_suggestions.size() - 2].type,
+             SuggestionType::kUndoOrClear);
+    // If the field is autofilled, insert the submenu suggestion before undo and
+    // Manage address suggestions.
+    email_suggestions.insert(email_suggestions.end() - 2, submenu_suggestion);
+    email_suggestions.insert(email_suggestions.end() - 2,
+                             Suggestion(SuggestionType::kSeparator));
+  } else {
+    // If the field is not yet autofilled, insert the submenu suggestion before
+    // the Manage address suggestion.
+    email_suggestions.insert(email_suggestions.end() - 1, submenu_suggestion);
+    email_suggestions.insert(email_suggestions.end() - 1,
+                             Suggestion(SuggestionType::kSeparator));
+  }
+
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

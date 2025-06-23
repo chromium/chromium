@@ -195,6 +195,7 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
     case FillingProduct::kAddress:
     case FillingProduct::kAutofillAi:
     case FillingProduct::kCreditCard:
+    case FillingProduct::kLoyaltyCard:
     case FillingProduct::kPlusAddresses:
       return true;
     case FillingProduct::kNone:
@@ -203,7 +204,6 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
     case FillingProduct::kAutocomplete:
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
-    case FillingProduct::kLoyaltyCard:
     case FillingProduct::kIdentityCredential:
     case FillingProduct::kDataList:
       return false;
