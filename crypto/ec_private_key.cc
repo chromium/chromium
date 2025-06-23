@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <utility>
 
 #include "base/check_op.h"
