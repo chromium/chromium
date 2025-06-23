@@ -32,16 +32,20 @@ class ChromeAndroidMetricsProvider : public metrics::MetricsProvider {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // metrics::MetricsProvider:
+  void AsyncInit(base::OnceClosure done_callback) override;
   void OnDidCreateMetricsLog() override;
   void ProvidePreviousSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
+  void ProvideSystemProfileMetrics(metrics::SystemProfileProto* proto) override;
 
   static void ResetGlobalStateForTesting();
 
  private:
   raw_ptr<PrefService> local_state_;
+  // Stores the full hardware class of the Android device.
+  std::string hardware_class_;
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_ANDROID_METRICS_PROVIDER_H_

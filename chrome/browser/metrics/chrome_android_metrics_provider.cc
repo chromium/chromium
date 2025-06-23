@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
@@ -77,6 +78,11 @@ void ChromeAndroidMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
   metrics::AndroidMetricsHelper::RegisterPrefs(registry);
 }
 
+void ChromeAndroidMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
+  hardware_class_ = base::SysInfo::GetAndroidHardwareClass();
+  std::move(done_callback).Run();
+}
+
 void ChromeAndroidMetricsProvider::OnDidCreateMetricsLog() {
   const auto type = chrome::android::GetActivityType();
 
@@ -144,4 +150,15 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
 // static
 void ChromeAndroidMetricsProvider::ResetGlobalStateForTesting() {
   metrics::AndroidMetricsHelper::ResetGlobalStateForTesting();
+}
+
+void ChromeAndroidMetricsProvider::ProvideSystemProfileMetrics(
+    metrics::SystemProfileProto* system_profile_proto) {
+  if (hardware_class_.empty()) {
+    return;
+  }
+
+  metrics::SystemProfileProto::Hardware* hardware =
+      system_profile_proto->mutable_hardware();
+  hardware->set_full_hardware_class(hardware_class_);
 }

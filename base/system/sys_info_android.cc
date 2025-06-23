@@ -126,6 +126,12 @@ std::string SysInfo::GetAndroidHardwareEGL() {
   return std::string(os_hardware_egl_str);
 }
 
+std::string SysInfo::GetAndroidHardwareClass() {
+  char os_hardware_id_str[PROP_VALUE_MAX];
+  __system_property_get("ro.boot.product.hardware.id", os_hardware_id_str);
+  return std::string(os_hardware_id_str);
+}
+
 // static
 SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
   HardwareInfo info;

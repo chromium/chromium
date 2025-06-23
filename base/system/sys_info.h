@@ -297,6 +297,11 @@ class BASE_EXPORT SysInfo {
 
   // Returns the Android hardware EGL system property.
   static std::string GetAndroidHardwareEGL();
+
+  // Returns the Android hardware class system property. Unlike individual
+  // component Hardware ID, this is at a device level to capture a class of
+  // devices with similar hardware components.
+  static std::string GetAndroidHardwareClass();
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
