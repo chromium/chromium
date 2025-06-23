@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/extensions/smart_card_provider_private/smart_card_provider_private_api.h"
@@ -26,6 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace scard_api = extensions::api::smart_card_provider_private;
 
@@ -318,6 +320,7 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
 
  private:
   raw_ptr<const Extension, DanglingUntriaged> extension_;
+  base::test::ScopedFeatureList feature_list_{blink::features::kSmartCard};
 };
 
 class EventObserver : public EventRouter::TestObserver {

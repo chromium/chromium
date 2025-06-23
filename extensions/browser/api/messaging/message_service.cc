@@ -143,7 +143,8 @@ void MaybeDisableBackForwardCacheForMessaging(content::RenderFrameHost* host) {
 // offer the possibility to restart a closed connection to a previous state.
 constexpr const char* kDefaultSWExtendedLifetimeList[] = {
     // Smart Card Connector
-    "chrome-extension://khpfeaanjngmcnplbdlpegiifgpfgdco/",
+    "chrome-extension://khpfeaanjngmcnplbdlpegiifgpfgdco/",  // stable
+    "chrome-extension://mockcojkppdndnhgonljagclgpkjbkek/",  // beta
 
     // Citrix Receiver
     "chrome-extension://haiffjcadagjlijoggckpgfnoeiflnem/",  // stable

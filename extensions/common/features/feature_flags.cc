@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "extensions/common/extension_features.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace extensions {
 
@@ -33,6 +34,9 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::
         kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered,
     &extensions_features::kWebstoreInstallerUserGestureKillSwitch,
+#if BUILDFLAG(IS_CHROMEOS)
+    &blink::features::kSmartCard,
+#endif
 };
 
 constinit base::span<const base::Feature*> g_feature_flags_test_override;
