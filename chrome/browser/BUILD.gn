@@ -1903,6 +1903,7 @@ static_library("browser") {
     ":active_use_util",
     ":browser_process",
     ":expired_flags_list",
+    ":flags",
     ":font_pref",
     ":global_features",
     ":k_anonymity_storage_proto",
@@ -8527,13 +8528,6 @@ static_library("browser_public_dependencies") {
     # //chrome/browser:browser needing to include 2 separate targets, we include
     # generated files here.
     ":browser_generated_files",
-
-    # To avoid that the huge amount of source files that include either
-    # "about_flags.h" or "flag_description.h" to depend directly on //c/b:flags
-    # for now, it is added temporarily as a public dependency of //c/b:b.
-    #
-    # TODO(crbug.com/369436587): Make all targets that include these headers to depend directly //c/b:flags.
-    ":flags",
 
     # //chrome/browser/ui and //chrome/browser are semantically the same target,
     # and thus their public dependencies are shared.

@@ -394,6 +394,7 @@ source_set("browser_tests") {
     "//ash/public/cpp",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser:flags",
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/apps/app_discovery_service/recommended_arc_apps",
     "//chrome/browser/apps/app_discovery_service/recommended_arc_apps:test_support",

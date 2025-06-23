@@ -60,6 +60,7 @@ source_set("impl") {
     ":prefs",
     ":util",
     "//chrome/browser:browser_process",
+    "//chrome/browser:flags",
     "//chrome/browser/devtools",
     "//chrome/browser/media/prefs",
     "//chrome/browser/media/router:media_router_feature",

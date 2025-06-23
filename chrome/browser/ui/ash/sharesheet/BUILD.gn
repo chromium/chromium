@@ -31,6 +31,7 @@ static_library("sharesheet") {
     "//ash/public/cpp",
     "//base",
     "//chrome/app/vector_icons",
+    "//chrome/browser:flags",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",

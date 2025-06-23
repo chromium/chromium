@@ -40,6 +40,7 @@ static_library("settings") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:flags",
     "//chrome/browser/ash/tpm",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",

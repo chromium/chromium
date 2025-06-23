@@ -3845,6 +3845,7 @@ if (!is_android) {
     }
 
     deps += [
+      "//chrome/browser:flags",
       "//chrome/browser/apps/link_capturing:app_service_browser_tests",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
@@ -7246,7 +7247,10 @@ test("unit_tests") {
 
   # TODO(417228688): Remove this dependency when
   # serial_chooser_context_unittest.cc gets modularized.
-  deps += [ "//chrome/browser/serial" ]
+  deps += [
+    "//chrome/browser:flags",
+    "//chrome/browser/serial",
+  ]
 
   if (enable_glic) {
     deps += [ "//chrome/browser/glic:glic" ]
@@ -11356,7 +11360,10 @@ if (!is_android && !is_chromeos_device) {
     # TODO(413315837): Remove this dependency when
     # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc
     # gets modularized.
-    deps += [ "//chrome/browser/privacy_sandbox:test_support" ]
+    deps += [
+      "//chrome/browser:flags",
+      "//chrome/browser/privacy_sandbox:test_support",
+    ]
 
     if (!is_chrome_for_testing) {
       deps += [
