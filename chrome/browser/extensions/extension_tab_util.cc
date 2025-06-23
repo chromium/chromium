@@ -346,7 +346,7 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   // We can't load extension URLs into incognito windows unless the extension
   // uses split mode. Special case to fall back to a tabbed window.
   if (url.SchemeIs(kExtensionScheme) &&
-      (extension || !IncognitoInfo::IsSplitMode(extension)) &&
+      (!extension || !IncognitoInfo::IsSplitMode(extension)) &&
       browser->profile()->IsOffTheRecord()) {
     Profile* original_profile = browser->profile()->GetOriginalProfile();
 

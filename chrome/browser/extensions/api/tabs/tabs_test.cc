@@ -105,6 +105,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
@@ -593,6 +594,39 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DefaultToIncognitoWhenItIsForced) {
             GetWindowId(result));
   // ... and it is incognito.
   EXPECT_TRUE(api_test_utils::GetBoolean(result, "incognito"));
+}
+
+// Regression test for crbug.com/427147470. Verifies that opening
+// chrome-extension:// URLs using chrome.tabs.create() from non-extension
+// contexts (e.g. WebUI pages) works as expected.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       CreateExtensionTabFromNonExtensionContext) {
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->SetRenderFrameHost(browser()
+                                   ->tab_strip_model()
+                                   ->GetActiveWebContents()
+                                   ->GetPrimaryMainFrame());
+  function->set_extension(nullptr);
+
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("options_page"));
+  ASSERT_TRUE(extension);
+  GURL extension_url = extension->ResolveExtensionURL("options.html");
+
+  const std::string args_with_extension_url =
+      base::StringPrintf(R"([{ "url": "%s" }])", extension_url.spec());
+  base::Value::Dict result =
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+          function.get(), args_with_extension_url, browser()->profile()));
+
+  int tab_id = GetTabId(result);
+  content::WebContents* created_tab = nullptr;
+  ExtensionTabUtil::GetTabById(tab_id, profile(), /*include_incognito=*/false,
+                               &created_tab);
+  ASSERT_TRUE(created_tab);
+  content::WaitForLoadStop(created_tab);
+  EXPECT_EQ(created_tab->GetPrimaryMainFrame()->GetLastCommittedURL(),
+            extension_url);
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
