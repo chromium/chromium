@@ -485,28 +485,31 @@
 // middle/scrolled to the top states.
 - (void)createScrolledBackgrounds {
   _scrolledToEdge = YES;
-  if (IsIOSSoftLockEnabled()) {
-    _scrollBackgroundView = [[TabGridToolbarScrollingBackground alloc] init];
-    _scrollBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:_scrollBackgroundView];
-    AddSameConstraintsToSides(
-        self, _scrollBackgroundView,
-        LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
+  if (@available(iOS 26, *)) {
   } else {
-    _backgroundView =
-        [[TabGridToolbarBackground alloc] initWithFrame:self.frame];
-    _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:_backgroundView];
-    AddSameConstraintsToSides(
-        self, _backgroundView,
-        LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
-  }
+    if (IsIOSSoftLockEnabled()) {
+      _scrollBackgroundView = [[TabGridToolbarScrollingBackground alloc] init];
+      _scrollBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+      [self addSubview:_scrollBackgroundView];
+      AddSameConstraintsToSides(
+          self, _scrollBackgroundView,
+          LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
+    } else {
+      _backgroundView =
+          [[TabGridToolbarBackground alloc] initWithFrame:self.frame];
+      _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+      [self addSubview:_backgroundView];
+      AddSameConstraintsToSides(
+          self, _backgroundView,
+          LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
+    }
 
-  // A non-nil UIImage has to be added in the background of the toolbar to avoid
-  // having an additional blur effect.
-  [_toolbar setBackgroundImage:[[UIImage alloc] init]
-            forToolbarPosition:UIBarPositionAny
-                    barMetrics:UIBarMetricsDefault];
+    // A non-nil UIImage has to be added in the background of the toolbar to
+    // avoid having an additional blur effect.
+    [_toolbar setBackgroundImage:[[UIImage alloc] init]
+              forToolbarPosition:UIBarPositionAny
+                      barMetrics:UIBarMetricsDefault];
+  }
 }
 
 // Updates the visibility of the backgrounds based on the state of the TabGrid.

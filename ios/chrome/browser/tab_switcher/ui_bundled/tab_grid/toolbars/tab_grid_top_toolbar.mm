@@ -222,12 +222,18 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 }
 
 - (void)hide {
-  self.backgroundColor = UIColor.blackColor;
+  if (@available(iOS 26, *)) {
+  } else {
+    self.backgroundColor = UIColor.blackColor;
+  }
   self.pageControl.alpha = 0.0;
 }
 
 - (void)show {
-  self.backgroundColor = UIColor.clearColor;
+  if (@available(iOS 26, *)) {
+  } else {
+    self.backgroundColor = UIColor.clearColor;
+  }
   self.pageControl.alpha = 1.0;
 }
 
@@ -548,28 +554,31 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 - (void)createScrolledBackgrounds {
   _scrolledToEdge = YES;
 
-  if (IsIOSSoftLockEnabled()) {
-    _scrollBackgroundView = [[TabGridToolbarScrollingBackground alloc] init];
-    _scrollBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self insertSubview:_scrollBackgroundView atIndex:0];
-    AddSameConstraintsToSides(
-        self, _scrollBackgroundView,
-        LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
+  if (@available(iOS 26, *)) {
   } else {
-    _backgroundView =
-        [[TabGridToolbarBackground alloc] initWithFrame:self.frame];
-    _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:_backgroundView];
-    AddSameConstraintsToSides(
-        self, _backgroundView,
-        LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
-  }
+    if (IsIOSSoftLockEnabled()) {
+      _scrollBackgroundView = [[TabGridToolbarScrollingBackground alloc] init];
+      _scrollBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+      [self insertSubview:_scrollBackgroundView atIndex:0];
+      AddSameConstraintsToSides(self, _scrollBackgroundView,
+                                LayoutSides::kLeading | LayoutSides::kBottom |
+                                    LayoutSides::kTrailing);
+    } else {
+      _backgroundView =
+          [[TabGridToolbarBackground alloc] initWithFrame:self.frame];
+      _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+      [self addSubview:_backgroundView];
+      AddSameConstraintsToSides(self, _backgroundView,
+                                LayoutSides::kLeading | LayoutSides::kBottom |
+                                    LayoutSides::kTrailing);
+    }
 
-  // A non-nil UIImage has to be added in the background of the toolbar to
-  // avoid having an additional blur effect.
-  [self setBackgroundImage:[[UIImage alloc] init]
-        forToolbarPosition:UIBarPositionAny
-                barMetrics:UIBarMetricsDefault];
+    // A non-nil UIImage has to be added in the background of the toolbar to
+    // avoid having an additional blur effect.
+    [self setBackgroundImage:[[UIImage alloc] init]
+          forToolbarPosition:UIBarPositionAny
+                  barMetrics:UIBarMetricsDefault];
+  }
 }
 
 // Returns YES if should use compact bottom toolbar layout.

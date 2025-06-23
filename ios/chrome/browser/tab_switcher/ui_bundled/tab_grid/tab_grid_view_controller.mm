@@ -959,8 +959,19 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [topToolbar.topAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
     [topToolbar.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-    [topToolbar.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor]
+    [topToolbar.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
   ]];
+
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    UIScrollEdgeElementContainerInteraction* edgeEffect =
+        [[UIScrollEdgeElementContainerInteraction alloc] init];
+    edgeEffect.edge = UIRectEdgeTop;
+    edgeEffect.scrollView = self.scrollView;
+    [topToolbar addInteraction:edgeEffect];
+  }
+#endif
 }
 
 // Adds the bottom toolbar and sets constraints.
@@ -980,6 +991,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self.layoutGuideCenter referenceView:bottomToolbar
                               underName:kTabGridBottomToolbarGuide];
+
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    UIScrollEdgeElementContainerInteraction* edgeEffect =
+        [[UIScrollEdgeElementContainerInteraction alloc] init];
+    edgeEffect.edge = UIRectEdgeBottom;
+    edgeEffect.scrollView = self.scrollView;
+    [bottomToolbar addInteraction:edgeEffect];
+  }
+#endif
 }
 
 // Adds the PinnedTabsViewController and sets constraints.
