@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -1467,9 +1468,9 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
         if (table_ids_checked.find(node->id()) != table_ids_checked.end())
           break;
         // Remove any table infos.
-        const auto& table_info_entry = table_info_map_.find(node->id());
-        if (table_info_entry != table_info_map_.end()) {
-          table_info_entry->second->Invalidate();
+        if (AXTableInfo* info =
+                base::FindPtrOrNull(table_info_map_, node->id())) {
+          info->Invalidate();
 #if defined(AX_EXTRA_MAC_NODES)
           // It will emit children changed notification on mac to make sure that
           // extra mac accessibles are recreated.
@@ -1674,11 +1675,10 @@ AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
   AXNode* table_node = const_cast<AXNode*>(const_table_node);
   AXTree* tree = const_cast<AXTree*>(this);
 
-  const auto& cached = table_info_map_.find(table_node->id());
-  if (cached != table_info_map_.end()) {
+  if (AXTableInfo* table_info =
+          base::FindPtrOrNull(table_info_map_, table_node->id())) {
     // Get existing table info, and update if invalid because the
     // tree has changed since the last time we accessed it.
-    AXTableInfo* table_info = cached->second.get();
     if (!table_info->valid()) {
       if (!table_info->Update()) {
         // If Update() returned false, this is no longer a valid table.
@@ -1693,7 +1693,7 @@ AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
   AXTableInfo* table_info = AXTableInfo::Create(tree, table_node);
   DCHECK(table_info);
 
-  table_info_map_[table_node->id()] = base::WrapUnique<AXTableInfo>(table_info);
+  table_info_map_[table_node->id()] = base::WrapUnique(table_info);
   return table_info;
 }
 

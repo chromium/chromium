@@ -66,7 +66,7 @@ class AX_BASE_EXPORT AXTreeID {
   std::optional<base::UnguessableToken> token_ = std::nullopt;
 };
 
-// For use in std::unordered_map.
+// Creates a hash of the AXTreeID for use in hash maps.
 struct AX_BASE_EXPORT AXTreeIDHash {
   size_t operator()(const AXTreeID& tree_id) const;
 };

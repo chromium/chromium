@@ -11,9 +11,20 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/ax_node.h"
 
 namespace ui {
+
+namespace {
+absl::flat_hash_map<AXTreeID, AXTreeManagerBase*, AXTreeIDHash>&
+GetTreeManagerMapInstance() {
+  static base::NoDestructor<
+      absl::flat_hash_map<AXTreeID, AXTreeManagerBase*, AXTreeIDHash>>
+      map_instance;
+  return *map_instance;
+}
+}  // namespace
 
 // static
 AXTreeManagerBase* AXTreeManagerBase::GetManager(const AXTreeID& tree_id) {
@@ -23,15 +34,6 @@ AXTreeManagerBase* AXTreeManagerBase::GetManager(const AXTreeID& tree_id) {
   if (iter == GetTreeManagerMapInstance().end())
     return nullptr;
   return iter->second;
-}
-
-// static
-std::unordered_map<AXTreeID, AXTreeManagerBase*, AXTreeIDHash>&
-AXTreeManagerBase::GetTreeManagerMapInstance() {
-  static base::NoDestructor<
-      std::unordered_map<AXTreeID, AXTreeManagerBase*, AXTreeIDHash>>
-      map_instance;
-  return *map_instance;
 }
 
 AXTreeManagerBase::AXTreeManagerBase() = default;

@@ -12,13 +12,13 @@
 #include <optional>
 #include <set>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
@@ -460,7 +460,7 @@ class AX_EXPORT AXTree {
 
   base::ObserverList<AXTreeObserver> observers_;
   raw_ptr<AXNode> root_ = nullptr;
-  std::unordered_map<AXNodeID, std::unique_ptr<AXNode>> id_map_;
+  absl::flat_hash_map<AXNodeID, std::unique_ptr<AXNode>> id_map_;
   std::string error_;
   AXTreeData data_;
 
@@ -475,7 +475,7 @@ class AX_EXPORT AXTree {
 
   // Map from node ID to cached table info, if the given node is a table.
   // Invalidated every time the tree is updated.
-  mutable std::unordered_map<AXNodeID, std::unique_ptr<AXTableInfo>>
+  mutable absl::flat_hash_map<AXNodeID, std::unique_ptr<AXTableInfo>>
       table_info_map_;
 
   // The next negative node ID to use for internal nodes.
@@ -534,7 +534,7 @@ class AX_EXPORT AXTree {
   // objects.
   // All other objects will map to default-constructed OrderedSetInfo objects.
   // Invalidated every time the tree is updated.
-  mutable std::unordered_map<AXNodeID, NodeSetSizePosInSetInfo>
+  mutable absl::flat_hash_map<AXNodeID, NodeSetSizePosInSetInfo>
       node_set_size_pos_in_set_info_map_;
 
   // Indicates if the tree is updating.

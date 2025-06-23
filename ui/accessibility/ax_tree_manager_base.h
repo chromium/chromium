@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <optional>
-#include <unordered_map>
 
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -122,9 +121,6 @@ class AX_EXPORT AXTreeManagerBase final {
   AXTreeManagerBase* DetachChildTree(AXNode& host_node);
 
  private:
-  static std::unordered_map<AXTreeID, AXTreeManagerBase*, AXTreeIDHash>&
-  GetTreeManagerMapInstance();
-
   std::unique_ptr<AXTree> tree_;
 };
 
