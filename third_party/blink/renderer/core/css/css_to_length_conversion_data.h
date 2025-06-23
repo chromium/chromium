@@ -190,6 +190,14 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     double DynamicWidth() const { return dynamic_width_; }
     double DynamicHeight() const { return dynamic_height_; }
 
+    String ToString() const {
+      return String::Format(
+          "large_width: %f, large_height: %f, small_width: %f, small_height: "
+          "%f, dynamic_width: %f, dynamic_height: %f",
+          large_width_, large_height_, small_width_, small_height_,
+          dynamic_width_, dynamic_height_);
+    }
+
    private:
     // v*, lv*
     double large_width_ = 0;
