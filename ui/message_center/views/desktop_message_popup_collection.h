@@ -52,6 +52,7 @@ class MESSAGE_CENTER_EXPORT DesktopMessagePopupCollection
   bool IsFromLeft() const override;
   bool IsPrimaryDisplayForNotification() const override;
   bool BlockForMixedFullscreen(const Notification& notification) const override;
+  bool CanUseTransformForBoundsAnimation() const override;
 
  private:
   friend class test::MessagePopupCollectionTest;

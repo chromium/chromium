@@ -5,6 +5,8 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_VIEW_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/message_center/message_center_export.h"
@@ -47,6 +49,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
   // Sets widget bounds.
   void SetPopupBounds(const gfx::Rect& bounds);
 
+  // Sets widget transform.
+  void SetPopupTransform(const gfx::Transform& transform);
+
   // Set widget opacity.
   void SetOpacity(float opacity);
 
@@ -74,6 +79,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
   void OnFocus() override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+
+  // Returns the cached height if `width` is the same as last call. Otherwise,
+  // call `GetHeightForWidth` to recalculate.
+  int GetCachedHeightForWidth(int width);
 
   bool is_hovered() const { return is_hovered_; }
   bool is_focused() const { return is_focused_; }
@@ -110,6 +119,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
 
   // Owned by the widget associated with this view.
   raw_ptr<views::FocusManager> focus_manager_ = nullptr;
+
+  std::optional<gfx::Size> cached_preferred_size_;
 
   base::WeakPtrFactory<MessagePopupView> weak_ptr_factory_{this};
 };

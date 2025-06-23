@@ -100,6 +100,7 @@ class ASH_EXPORT AshMessagePopupCollection
   message_center::MessagePopupView* CreatePopup(
       const message_center::Notification& notification) override;
   void ClosePopupItem(PopupItem& item) override;
+  bool CanUseTransformForBoundsAnimation() const override;
 
   // Returns true if `widget` is a popup widget belongs to this popup
   // collection.

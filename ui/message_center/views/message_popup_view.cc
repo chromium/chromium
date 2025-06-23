@@ -99,6 +99,7 @@ void MessagePopupView::UpdateContents(const Notification& notification) {
   if (!IsWidgetValid()) {
     return;
   }
+  cached_preferred_size_.reset();
   message_view_->UpdateWithNotification(notification);
   popup_collection_->NotifyPopupResized();
 }
@@ -116,6 +117,7 @@ void MessagePopupView::UpdateContentsForChildNotification(
     return;
   }
 
+  cached_preferred_size_.reset();
   child_notification_view->UpdateWithNotification(notification);
   popup_collection_->NotifyPopupResized();
 }
@@ -134,6 +136,14 @@ void MessagePopupView::SetPopupBounds(const gfx::Rect& bounds) {
   GetWidget()->SetBounds(bounds);
 }
 
+void MessagePopupView::SetPopupTransform(const gfx::Transform& transform) {
+  if (!IsWidgetValid()) {
+    return;
+  }
+
+  GetWidget()->GetLayer()->SetTransform(transform);
+}
+
 void MessagePopupView::SetOpacity(float opacity) {
   if (!IsWidgetValid())
     return;
@@ -145,6 +155,7 @@ void MessagePopupView::AutoCollapse() {
       message_view_->IsManuallyExpandedOrCollapsed()) {
     return;
   }
+  cached_preferred_size_.reset();
   message_view_->SetExpanded(false);
 }
 
@@ -221,6 +232,7 @@ void MessagePopupView::OnMouseExited(const ui::MouseEvent& event) {
 }
 
 void MessagePopupView::ChildPreferredSizeChanged(views::View* child) {
+  cached_preferred_size_.reset();
   popup_collection_->NotifyPopupResized();
 }
 
@@ -264,6 +276,18 @@ void MessagePopupView::RemovedFromWidget() {
 
 bool MessagePopupView::IsWidgetValid() const {
   return GetWidget() && !GetWidget()->IsClosed();
+}
+
+int MessagePopupView::GetCachedHeightForWidth(int width) {
+  if (cached_preferred_size_.has_value()) {
+    if (cached_preferred_size_->width() == width) {
+      return cached_preferred_size_->height();
+    }
+  }
+
+  int height = GetHeightForWidth(width);
+  cached_preferred_size_.emplace(width, height);
+  return height;
 }
 
 BEGIN_METADATA(MessagePopupView)

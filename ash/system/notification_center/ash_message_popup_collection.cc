@@ -469,6 +469,10 @@ void AshMessagePopupCollection::ClosePopupItem(PopupItem& item) {
   message_center::MessagePopupCollection::ClosePopupItem(item);
 }
 
+bool AshMessagePopupCollection::CanUseTransformForBoundsAnimation() const {
+  return true;
+}
+
 bool AshMessagePopupCollection::IsWidgetAPopupNotification(
     views::Widget* widget) {
   for (views::Widget* popup_widget : tracked_widgets_) {
