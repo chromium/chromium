@@ -19,10 +19,10 @@
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
 #include "components/media_router/common/providers/cast/certificate/cast_fallback_crl.h"
+#include "crypto/evp.h"
 #include "crypto/sha2.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
@@ -146,11 +146,9 @@ bool VerifyCRL(const Crl& crl,
     return false;
   }
 
-  CBS spki;
-  CBS_init(&spki, parsed_cert->tbs().spki_tlv.data(),
-           parsed_cert->tbs().spki_tlv.size());
-  bssl::UniquePtr<EVP_PKEY> pubkey(EVP_parse_public_key(&spki));
-  if (!pubkey || CBS_len(&spki) != 0) {
+  bssl::UniquePtr<EVP_PKEY> pubkey =
+      crypto::evp::PublicKeyFromBytes(parsed_cert->tbs().spki_tlv);
+  if (!pubkey) {
     VLOG(2) << "CRL - Parsing public key failed";
 #ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
     return false;

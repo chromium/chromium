@@ -23,9 +23,9 @@
 #include "components/media_router/common/providers/cast/certificate/cast_crl.h"
 #include "components/media_router/common/providers/cast/certificate/cast_trust_store.h"
 #include "components/media_router/common/providers/cast/certificate/switches.h"
+#include "crypto/evp.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/pki/cert_issuer_source_static.h"
@@ -187,10 +187,9 @@ void DetermineDeviceCertificatePolicy(
   }
 
   // Get the public key for the certificate.
-  CBS spki;
-  CBS_init(&spki, cert->tbs().spki_tlv.data(), cert->tbs().spki_tlv.size());
-  bssl::UniquePtr<EVP_PKEY> key(EVP_parse_public_key(&spki));
-  if (!key || CBS_len(&spki) != 0) {
+  bssl::UniquePtr<EVP_PKEY> key =
+      crypto::evp::PublicKeyFromBytes(cert->tbs().spki_tlv);
+  if (!key) {
     return false;
   }
 
