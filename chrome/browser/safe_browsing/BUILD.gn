@@ -507,6 +507,8 @@ static_library("safe_browsing") {
         "android/services_delegate_android.h",
         "download_protection/download_protection_delegate_android.cc",
         "download_protection/download_protection_delegate_android.h",
+        "download_protection/rate_limiting_key_manager.cc",
+        "download_protection/rate_limiting_key_manager.h",
         "tailored_security/consented_message_android.cc",
         "tailored_security/consented_message_android.h",
         "tailored_security/unconsented_message_android.cc",

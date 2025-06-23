@@ -12,6 +12,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 class GURL;
+class Profile;
 
 namespace base {
 class FilePath;
@@ -81,9 +82,12 @@ class DownloadProtectionDelegate {
   // ClientDownloadRequest.
   //
   // `item` is the download this pertains to, which may be null, e.g. if this
-  // request is not for a download.
+  // request is not for a download. `profile` is the Profile associated with the
+  // underlying item being checked (a DownloadItem or
+  // FileSystemAccessWriteItem).
   virtual std::vector<PendingClientDownloadRequestModification>
-  ProduceClientDownloadRequestModifications(const download::DownloadItem* item);
+  ProduceClientDownloadRequestModifications(const download::DownloadItem* item,
+                                            Profile* profile);
 
   // Called immediately prior to consuming the ResourceRequest used to send out
   // a download ping. Allows the delegate to make final modifications to the

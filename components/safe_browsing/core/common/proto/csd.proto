@@ -1152,6 +1152,15 @@ message ClientDownloadRequest {
   // from the ClientDownloadResponse that requested the visual features.
   // This is only populated for Enhanced Protection users.
   repeated DownloadVisualFeatures download_visual_features = 98;
+
+  // An opaque string value populated by Chrome on Android only, to be used by
+  // the server for rate-limiting or throttling individual clients who may be
+  // sending requests too frequently. A given value of `rate_limiting_key` can
+  // be used to pseudonymously identify ClientDownloadRequests sent by a single
+  // Chrome Profile, within a period of time (TTL). The TTL for this value is
+  // 15 minutes in Chrome on Android, and it is not persistent across restarting
+  // Chrome, and will be different for different Chrome profiles on the device.
+  optional string rate_limiting_key = 99;
 }
 
 message ReferrerChainOptions {

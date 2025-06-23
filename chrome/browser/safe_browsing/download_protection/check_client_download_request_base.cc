@@ -373,7 +373,8 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
 
 void CheckClientDownloadRequestBase::StartModificationsFromDelegate() {
   std::vector<PendingClientDownloadRequestModification> pending_modifications =
-      service_->delegate()->ProduceClientDownloadRequestModifications(item());
+      service_->delegate()->ProduceClientDownloadRequestModifications(
+          item(), Profile::FromBrowserContext(GetBrowserContext()));
 
   const auto collect_modifications_repeating =
       base::BarrierCallback<ClientDownloadRequestModification>(

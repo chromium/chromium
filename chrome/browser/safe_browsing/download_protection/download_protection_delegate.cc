@@ -24,7 +24,8 @@ DownloadProtectionDelegate::CreateForPlatform() {
 
 std::vector<PendingClientDownloadRequestModification>
 DownloadProtectionDelegate::ProduceClientDownloadRequestModifications(
-    const download::DownloadItem* item) {
+    const download::DownloadItem* item,
+    Profile* profile) {
   return std::vector<PendingClientDownloadRequestModification>();
 }
 
