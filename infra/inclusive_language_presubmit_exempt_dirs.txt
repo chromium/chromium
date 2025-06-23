@@ -335,7 +335,6 @@ third_party/blink/perf_tests/speedometer21/resources/todomvc/dependency-examples
 third_party/blink/perf_tests/speedometer21/resources/todomvc/labs/architecture-examples/react/bower_components/director
 third_party/blink/perf_tests/speedometer21/resources/todomvc/labs/architecture-examples/react/bower_components/react
 third_party/blink/public/common/fenced_frame
-third_party/blink/public/common/permissions_policy
 third_party/blink/public/common/storage_key
 third_party/blink/public/devtools_protocol
 third_party/blink/public/mojom/fenced_frame
@@ -688,7 +687,7 @@ third_party/rust/chromium_crates_io/vendor/prost-v0_13
 third_party/rust/chromium_crates_io/vendor/qr_code-v2
 third_party/rust/chromium_crates_io/vendor/quote-v1
 third_party/rust/chromium_crates_io/vendor/quote-v1/.github/workflows
-third_party/rust/chromium_crates_io/vendor/read-fonts-v0_29/src/tables
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_30/src/tables
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/util
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/dfa
