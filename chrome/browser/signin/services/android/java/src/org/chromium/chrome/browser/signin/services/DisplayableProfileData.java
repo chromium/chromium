@@ -72,6 +72,16 @@ public class DisplayableProfileData {
     }
 
     /**
+     * @return The email of the user if it is displayable, the full name otherwise.
+     */
+    public @Nullable String getEmailOrFullName() {
+        if (mHasDisplayableEmailAddress) {
+            return mAccountEmail;
+        }
+        return mFullName;
+    }
+
+    /**
      * Returns the given name of the user if it is available or the full name or email otherwise.
      */
     public String getGivenNameOrFullNameOrEmail() {

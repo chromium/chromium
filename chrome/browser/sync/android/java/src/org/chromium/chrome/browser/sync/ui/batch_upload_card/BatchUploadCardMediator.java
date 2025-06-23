@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.sync.R;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.ui.BatchUploadDialogCoordinator;
@@ -67,6 +68,7 @@ class BatchUploadCardMediator
     private final Runnable mBatchUploadCardChangeAction;
     private final @EntryPoint int mEntryPoint;
 
+    private final ProfileDataCache mProfileDataCache;
     private final @Nullable SyncService mSyncService;
     private @MonotonicNonNull HashMap<Integer, LocalDataDescription> mLocalDataDescriptionsMap;
     private boolean mShouldBeVisible;
@@ -96,6 +98,7 @@ class BatchUploadCardMediator
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mBatchUploadCardChangeAction = batchUploadCardChangeAction;
         mEntryPoint = entryPoint;
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
         if (mSyncService != null) {
             mSyncService.addSyncStateChangedListener(this);
@@ -251,7 +254,12 @@ class BatchUploadCardMediator
                 BatchUploadCardProperties.ON_CLICK_LISTENER,
                 v -> {
                     BatchUploadDialogCoordinator.show(
-                            mContext, mLocalDataDescriptionsMap, mDialogManager, accountInfo, this);
+                            mContext,
+                            mLocalDataDescriptionsMap,
+                            mDialogManager,
+                            /* displayableProfileData= */ mProfileDataCache.getProfileDataOrDefault(
+                                    accountInfo.getEmail()),
+                            this);
                 });
 
         int entryPointDataType =

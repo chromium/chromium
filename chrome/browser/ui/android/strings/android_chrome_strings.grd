@@ -2734,6 +2734,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_BATCH_UPLOAD_DIALOG_DESCRIPTION" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This note explains where the user can go to view and manage individual items. like individual bookmarks or passwords.">
         You can choose what data to save in your Google Account, <ph name="ACCOUNT_EMAIL">%1$s<ex>elisa.g.beckett@gmail.com</ex></ph>.\nYou can also view and manage these items in your bookmarks, reading list, or password manager.
       </message>
+      <message name="IDS_BATCH_UPLOAD_DIALOG_DESCRIPTION_NON_DISPLAYABLE_PROFILE_DATA" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This note explains where the user can go to view and manage individual items. like individual bookmarks or passwords.">
+        You can choose what data to save in your Google Account.\nYou can also view and manage these items in your bookmarks, reading list, or password manager.
+      </message>
       <message name="IDS_BATCH_UPLOAD_DIALOG_BOOKMARKS" desc="One of the data types that we allow uploading through a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome.">
         {ITEMS_COUNT, plural,
           =1 {1 bookmark}

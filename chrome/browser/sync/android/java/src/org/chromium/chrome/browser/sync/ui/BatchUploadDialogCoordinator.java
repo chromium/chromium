@@ -18,9 +18,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.sync.R;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithTitleAndSummary;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -59,11 +59,11 @@ public final class BatchUploadDialogCoordinator {
             Context context,
             HashMap<Integer, LocalDataDescription> localDataDescriptionsMap,
             ModalDialogManager dialogManager,
-            CoreAccountInfo accountInfo,
+            DisplayableProfileData displayableProfileData,
             Listener listener) {
         ThreadUtils.assertOnUiThread();
         new BatchUploadDialogCoordinator(
-                context, localDataDescriptionsMap, dialogManager, accountInfo, listener);
+                context, localDataDescriptionsMap, dialogManager, displayableProfileData, listener);
     }
 
     @VisibleForTesting
@@ -72,25 +72,28 @@ public final class BatchUploadDialogCoordinator {
             Context context,
             HashMap<Integer, LocalDataDescription> localDataDescriptionsMap,
             ModalDialogManager dialogManager,
-            CoreAccountInfo accountInfo,
+            DisplayableProfileData displayableProfileData,
             Listener listener) {
         mContext = context;
         mDialogManager = dialogManager;
 
         final View view = inflateView(context);
+        @Nullable String displayableEmailOrName = displayableProfileData.getEmailOrFullName();
 
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(
                                 ModalDialogProperties.TITLE,
                                 mContext.getString(R.string.batch_upload_dialog_title))
-                        // TODO(crbug.com/354922852): Handle accounts with non-displayable email
-                        // address.
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                mContext.getString(
-                                        R.string.batch_upload_dialog_description,
-                                        accountInfo.getEmail()))
+                                displayableEmailOrName != null
+                                        ? mContext.getString(
+                                                R.string.batch_upload_dialog_description,
+                                                displayableEmailOrName)
+                                        : mContext.getString(
+                                                R.string
+                                                        .batch_upload_dialog_description_non_displayable_profile_data))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 mContext.getString(R.string.batch_upload_dialog_save_button))
