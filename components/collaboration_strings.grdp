@@ -117,6 +117,15 @@
   <!-- Error Messages -->
   <!-- /Data Sharing -->
 
+  <!-- Versioning -->
+  <message name="IDS_COLLABORATION_SHARED_TAB_GROUPS_PANEL_OUT_OF_DATE_MESSAGE_CELL_TEXT" desc="Text for the out-of-date cell that can appear at the top of the tab groups panel when the app is out-of-date to support shared tab groups.">
+    Update Chrome to continue using your shared tab groups
+  </message>
+  <message name="IDS_COLLABORATION_SHARED_TAB_GROUPS_AVAILABLE_AGAIN_IPH_MESSAGE" desc="The text that appears in the in-product help tooltip anchored on the tab groups panel when the shared tab groups are available again (typically after having updated the app).">
+    Your shared tab groups are available again
+  </message>
+  <!-- Versioning -->
+
   <!-- Recent Activity -->
   <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_USER_SELF" desc="Text on a recent activity bottom sheet row that indicates that the user themselves took an action, e.g. user themselves changed the tab as opposed to another user changing the tab. Used as the first part of another string.">
     You

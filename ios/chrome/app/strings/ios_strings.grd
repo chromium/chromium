@@ -6712,9 +6712,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON" desc="Title of the button in the tab grid UI that revert the close all action recently taken by the user. [iOS only]">
         Undo
       </message>
-      <message name="IDS_IOS_TAB_GROUPS_AVAILABLE_AGAIN_IPH_MESSAGE" desc="The text that appears in the in-product help tooltip anchored on the tab groups panel when the shared tab groups are available again (typically after having updated the app).">
-        Your shared tab groups are available again
-      </message>
       <message name="IDS_IOS_TAB_GROUPS_PANEL_CELL_ACCESSIBILITY_LABEL_FORMAT" desc="Format for the accessibility label of a cell in the Tab Groups panel in Tab Grid. [iOS only]">
         Open <ph name="GROUP_TITLE">$1<ex>Travel</ex></ph>, group of <ph name="NUMBER_OF_TABS">$2<ex>4 Tabs</ex></ph>, <ph name="CREATION_TEXT">$3<ex>created 3 days ago</ex></ph>
       </message>
