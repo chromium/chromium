@@ -627,33 +627,49 @@ bool ui::IsNSRange(id value) {
     _children = [[NSMutableArray alloc] initWithCapacity:childCount];
     for (auto it = _owner->PlatformChildrenBegin();
          it != _owner->PlatformChildrenEnd(); ++it) {
-      AXPlatformNodeCocoa* child =
+      AXPlatformNodeCocoa* cocoa_child =
           base::apple::ObjCCastStrict<AXPlatformNodeCocoa>(
               it->GetNativeViewAccessible().Get());
-      if (![child instanceActive]) {
+      if (![cocoa_child instanceActive]) {
         // TODO(crbug.com/425758499): change to CHECK once root cause addressed.
         DCHECK(false) << "Tried to add destroyed child, parent = " << _owner;
         continue;
       }
-      if (![child nodeDelegate]) {
+      if (![cocoa_child nodeDelegate]) {
         // TODO(crbug.com/425758499): change to CHECK once root cause addressed.
         DCHECK(false) << "No delegate for child, parent = " << _owner;
         continue;
       }
-      [_children addObject:child];
+      [_children addObject:cocoa_child];
     }
 
     // Also, add indirect children (if any).
     const std::vector<int32_t>& indirectChildIds = _owner->GetIntListAttribute(
         ax::mojom::IntListAttribute::kIndirectChildIds);
-    for (int childId : indirectChildIds) {
+    for (ui::AXNodeID childId : indirectChildIds) {
       BrowserAccessibility* child = _owner->manager()->GetFromID(childId);
-
-      // This only became necessary as a result of https://crbug.com/41440696.
-      // It should be a DCHECK in the future.
-      if (child) {
-        [_children addObject:child->GetNativeViewAccessible().Get()];
+      if (!child) {
+        // This only became necessary as a result of https://crbug.com/41440696.
+        // It should be a DCHECK in the future.
+        DCHECK(false) << "Tried to add null indirect child, parent = "
+                      << _owner;
+        continue;
       }
+      AXPlatformNodeCocoa* cocoa_child =
+          base::apple::ObjCCastStrict<AXPlatformNodeCocoa>(
+              child->GetNativeViewAccessible().Get());
+      if (![cocoa_child instanceActive]) {
+        // TODO(crbug.com/425758499): change to CHECK once root cause addressed.
+        DCHECK(false) << "Tried to add destroyed indirect child, parent = "
+                      << _owner;
+        continue;
+      }
+      if (![cocoa_child nodeDelegate]) {
+        // TODO(crbug.com/425758499): change to CHECK once root cause addressed.
+        DCHECK(false) << "No delegate for indirect child, parent = " << _owner;
+        continue;
+      }
+      [_children addObject:cocoa_child];
     }
   }
   return NSAccessibilityUnignoredChildren(_children);
