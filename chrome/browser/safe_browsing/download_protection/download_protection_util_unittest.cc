@@ -502,6 +502,49 @@ TEST(DownloadProtectionUtilTest, ShouldSendDangerousDownloadReport) {
         &download_item,
         ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_WARNING));
   }
+  // Report type for Android is gated by ESB (non-Incognito).
+  {
+    TestingProfile profile;
+    NiceMock<download::MockDownloadItem> download_item;
+    setup(&profile, &download_item);
+    SetSafeBrowsingState(profile.GetPrefs(),
+                         SafeBrowsingState::NO_SAFE_BROWSING);
+    EXPECT_FALSE(ShouldSendDangerousDownloadReport(
+        &download_item,
+        ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_WARNING_ANDROID));
+  }
+  {
+    TestingProfile profile;
+    NiceMock<download::MockDownloadItem> download_item;
+    setup(&profile, &download_item);
+    SetSafeBrowsingState(profile.GetPrefs(),
+                         SafeBrowsingState::STANDARD_PROTECTION);
+    EXPECT_FALSE(ShouldSendDangerousDownloadReport(
+        &download_item,
+        ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_WARNING_ANDROID));
+  }
+  {
+    TestingProfile profile;
+    NiceMock<download::MockDownloadItem> download_item;
+    setup(&profile, &download_item);
+    SetSafeBrowsingState(profile.GetPrefs(),
+                         SafeBrowsingState::ENHANCED_PROTECTION);
+    EXPECT_TRUE(ShouldSendDangerousDownloadReport(
+        &download_item,
+        ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_WARNING_ANDROID));
+  }
+  {
+    TestingProfile profile;
+    TestingProfile::Builder profile_builder;
+    TestingProfile* otr_profile = profile_builder.BuildIncognito(&profile);
+    NiceMock<download::MockDownloadItem> download_item;
+    setup(otr_profile, &download_item);
+    SetSafeBrowsingState(otr_profile->GetPrefs(),
+                         SafeBrowsingState::ENHANCED_PROTECTION);
+    EXPECT_FALSE(ShouldSendDangerousDownloadReport(
+        &download_item,
+        ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_WARNING_ANDROID));
+  }
 }
 #endif
 

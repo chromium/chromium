@@ -18,8 +18,17 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "components/download/public/common/mock_simple_download_manager.h"
 #include "components/offline_items_collection/core/test_support/scoped_mock_offline_content_provider.h"
+#include "components/safe_browsing/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "content/public/test/browser_task_environment.h"
+#endif
 
 using ::testing::_;
 using ::testing::Eq;
@@ -40,18 +49,21 @@ constexpr char kTestReferrerUrl[] = "http://www.examplereferrerurl.com";
 
 }  // namespace
 
-class DownloadOfflineContentProviderTest : public testing::Test {
+class DownloadOfflineContentProviderTestBase : public testing::Test {
  public:
-  DownloadOfflineContentProviderTest()
-      : provider_(&aggregator_, kTestDownloadNamespace),
+  // Subclasses must provide a TaskEnvironment directly.
+  explicit DownloadOfflineContentProviderTestBase(
+      std::unique_ptr<base::test::TaskEnvironment> task_environment)
+      : task_environment_(std::move(task_environment)),
+        provider_(&aggregator_, kTestDownloadNamespace),
         coordinator_(base::NullCallback()) {}
 
-  DownloadOfflineContentProviderTest(
-      const DownloadOfflineContentProviderTest&) = delete;
-  DownloadOfflineContentProviderTest& operator=(
-      const DownloadOfflineContentProviderTest&) = delete;
+  DownloadOfflineContentProviderTestBase(
+      const DownloadOfflineContentProviderTestBase&) = delete;
+  DownloadOfflineContentProviderTestBase& operator=(
+      const DownloadOfflineContentProviderTestBase&) = delete;
 
-  ~DownloadOfflineContentProviderTest() override = default;
+  ~DownloadOfflineContentProviderTestBase() override = default;
 
   void InitializeDownloads(bool full_browser) {
     coordinator_.SetSimpleDownloadManager(&mock_manager_, full_browser);
@@ -98,16 +110,24 @@ class DownloadOfflineContentProviderTest : public testing::Test {
 
   void RunUntilMainThreadIdle() {
     ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return task_environment_.MainThreadIsIdle(); }));
+        [&]() { return task_environment_->MainThreadIsIdle(); }));
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   OfflineContentAggregator aggregator_;
   DownloadOfflineContentProvider provider_;
   SimpleDownloadManagerCoordinator coordinator_;
   NiceMock<download::MockSimpleDownloadManager> mock_manager_;
+};
+
+class DownloadOfflineContentProviderTest
+    : public DownloadOfflineContentProviderTestBase {
+ public:
+  DownloadOfflineContentProviderTest()
+      : DownloadOfflineContentProviderTestBase(
+            std::make_unique<base::test::SingleThreadTaskEnvironment>(
+                base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
 };
 
 TEST_F(DownloadOfflineContentProviderTest, PauseDownloadBeforeInit) {
@@ -251,3 +271,67 @@ TEST_F(DownloadOfflineContentProviderTest, ShowValidatedDownload) {
   provider_.OnDownloadUpdated(item.get());
   RunUntilMainThreadIdle();
 }
+
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && BUILDFLAG(IS_ANDROID)
+class DownloadOfflineContentProviderWithSafeBrowsingTest
+    : public DownloadOfflineContentProviderTestBase {
+ public:
+  DownloadOfflineContentProviderWithSafeBrowsingTest()
+      : DownloadOfflineContentProviderTestBase(
+            std::make_unique<content::BrowserTaskEnvironment>()) {}
+
+  void SetUp() override {
+    sb_service_ =
+        base::MakeRefCounted<safe_browsing::TestSafeBrowsingService>();
+    TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
+        sb_service_.get());
+    g_browser_process->safe_browsing_service()->Initialize();
+
+    DownloadOfflineContentProviderTestBase::SetUp();
+  }
+
+  void TearDown() override {
+    DownloadOfflineContentProviderTestBase::TearDown();
+    TestingBrowserProcess::GetGlobal()->safe_browsing_service()->ShutDown();
+    TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
+    test_safe_browsing_service()->ClearDownloadReport();
+  }
+
+  safe_browsing::TestSafeBrowsingService* test_safe_browsing_service() {
+    return sb_service_.get();
+  }
+
+ protected:
+  scoped_refptr<safe_browsing::TestSafeBrowsingService> sb_service_;
+};
+
+// Tests that validating a download produces a Safe Browsing warning bypass
+// report.
+TEST_F(DownloadOfflineContentProviderWithSafeBrowsingTest,
+       ValidateSendsSafeBrowsingDownloadReport) {
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  ContentId id(kTestDownloadNamespace, guid);
+
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateMockDownloadItem(guid);
+
+  EXPECT_CALL(*item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT));
+  EXPECT_CALL(*item, IsDangerous()).WillRepeatedly(Return(true));
+
+  InitializeDownloads(true);
+
+  provider_.ValidateDangerousDownload(id);
+  RunUntilMainThreadIdle();
+
+  safe_browsing::ClientSafeBrowsingReportRequest sent_report;
+  ASSERT_TRUE(sent_report.ParseFromString(
+      test_safe_browsing_service()->serialized_download_report()));
+
+  EXPECT_EQ(sent_report.type(), safe_browsing::ClientSafeBrowsingReportRequest::
+                                    DANGEROUS_DOWNLOAD_WARNING_ANDROID);
+
+  EXPECT_EQ(item->GetURL().spec(), sent_report.url());
+  EXPECT_TRUE(sent_report.did_proceed());
+}
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && BUILDFLAG(IS_ANDROID)

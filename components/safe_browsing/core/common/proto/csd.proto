@@ -1702,6 +1702,7 @@ message ClientSafeBrowsingReportRequest {
     URL_UNWANTED = 3;
     URL_CLIENT_SIDE_PHISHING = 4;
     URL_CLIENT_SIDE_MALWARE = 5 [deprecated = true];
+    // See also: DANGEROUS_DOWNLOAD_WARNING_ANDROID.
     DANGEROUS_DOWNLOAD_RECOVERY = 6;
     DANGEROUS_DOWNLOAD_WARNING = 7;
     DANGEROUS_DOWNLOAD_BY_API = 10;
@@ -1729,6 +1730,9 @@ message ClientSafeBrowsingReportRequest {
     // Triggered by a redirect to an external app, either through an
     // external protocol scheme (e.g. mailto://) or an Intent.
     EXTERNAL_APP_REDIRECT = 28;
+    // Analogous to DANGEROUS_DOWNLOAD_RECOVERY and DANGEROUS_DOWNLOAD_WARNING,
+    // but used only for download warnings in Chrome on Android.
+    DANGEROUS_DOWNLOAD_WARNING_ANDROID = 29;
   }
   // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:ClientSafeBrowsingReportType)
 

@@ -24,6 +24,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/display/display.h"
@@ -43,7 +44,12 @@
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/common/content_features.h"
 #include "ui/base/device_form_factor.h"
-#endif
+
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+#include "chrome/browser/download/download_ui_safe_browsing_util.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using OfflineItemFilter = offline_items_collection::OfflineItemFilter;
 using OfflineItemState = offline_items_collection::OfflineItemState;
@@ -295,6 +301,12 @@ void DownloadOfflineContentProvider::ValidateDangerousDownload(
   DownloadItem* item = GetDownload(id.id);
   if (item && !item->IsDone() && item->IsDangerous()) {
     item->ValidateDangerousDownload();
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && BUILDFLAG(IS_ANDROID)
+    SendSafeBrowsingDownloadReport(
+        safe_browsing::ClientSafeBrowsingReportRequest::
+            DANGEROUS_DOWNLOAD_WARNING_ANDROID,
+        /*did_proceed=*/true, item);
+#endif
   }
 }
 

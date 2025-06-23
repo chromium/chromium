@@ -18,6 +18,7 @@
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/download_item_utils.h"
@@ -160,6 +161,8 @@ bool IsDownloadReportGatedByExtendedReporting(
         DANGEROUS_DOWNLOAD_AUTO_DELETED:
     case safe_browsing::ClientSafeBrowsingReportRequest::
         DANGEROUS_DOWNLOAD_PROFILE_CLOSED:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_WARNING_ANDROID:
       return true;
     default:
       NOTREACHED();
