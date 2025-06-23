@@ -134,13 +134,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/webauthn/chrome_web_authentication_delegate.h:SignalUnknownCredentialResult) -->
 
-<enum name="SuccessState">
-  <int value="0" label="FIDO2 and Passkey Cache calls failed."/>
-  <int value="1" label="FIDO2 call failed; Passkey Cache call succeeded."/>
-  <int value="2" label="FIDO2 call succeeded; Passkey Cache call failed."/>
-  <int value="3" label="FIDO2 and Passkey Cache calls succeeded."/>
-</enum>
-
 <!-- LINT.IfChange(U2fSignOperationResultEnum) -->
 
 <enum name="U2fSignOperationResult">

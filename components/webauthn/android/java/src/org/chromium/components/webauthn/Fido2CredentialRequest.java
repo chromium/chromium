@@ -55,8 +55,6 @@ import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.device.DeviceFeatureList;
-import org.chromium.device.DeviceFeatureMap;
 import org.chromium.net.GURLUtils;
 import org.chromium.url.Origin;
 
@@ -73,7 +71,6 @@ import java.util.List;
 public class Fido2CredentialRequest
         implements Callback<Pair<Integer, Intent>>, WebauthnBrowserBridge.Provider {
     private static final String TAG = "Fido2Request";
-    private static final String GOOGLE_RP_ID = "google.com";
     static final String NON_EMPTY_ALLOWLIST_ERROR_MSG =
             "Authentication request must have non-empty allowList";
     static final String NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG =
@@ -677,56 +674,22 @@ public class Fido2CredentialRequest
             }
             mConditionalUiState = ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
             long conditionalUiCredentialListInitialTimeMs = SystemClock.elapsedRealtime();
-            boolean passkeyCacheEnabled =
-                    DeviceFeatureMap.isEnabled(
-                            DeviceFeatureList.WEBAUTHN_ANDROID_USE_PASSKEY_CACHE);
-            Fido2GetCredentialsComparator comparator =
-                    passkeyCacheEnabled
-                            ? Fido2GetCredentialsComparator.Factory.get(
-                                    GOOGLE_RP_ID.equals(options.relyingPartyId))
-                            : null;
-            assumeNonNull(comparator);
             Fido2ApiCallHelper.getInstance()
                     .invokeFido2GetCredentials(
                             mAuthenticationContextProvider,
                             options.relyingPartyId,
-                            (credentials) -> {
-                                if (passkeyCacheEnabled) {
-                                    comparator.onGetCredentialsSuccessful(credentials.size());
-                                }
-                                mBarrier.onFido2ApiSuccessful(
-                                        () ->
-                                                onWebauthnCredentialDetailsListReceived(
-                                                        options,
-                                                        callerOriginString,
-                                                        finalClientDataHash,
-                                                        credentials,
-                                                        conditionalUiCredentialListInitialTimeMs));
-                            },
-                            (e) -> {
-                                if (passkeyCacheEnabled) {
-                                    comparator.onGetCredentialsFailed();
-                                }
-                                mBarrier.onFido2ApiFailed(AuthenticatorStatus.NOT_ALLOWED_ERROR);
-                            });
-            if (passkeyCacheEnabled) {
-                String passkeyCacheSuccessfulHistogramName =
-                        "WebAuthentication.CredentialFetchDuration.GmsCorePasskeyCache";
-                Fido2ApiCallHelper.getInstance()
-                        .invokePasskeyCacheGetCredentials(
-                                mAuthenticationContextProvider,
-                                options.relyingPartyId,
-                                (credentials) -> {
-                                    if (!credentials.isEmpty()) {
-                                        RecordHistogram.recordTimesHistogram(
-                                                passkeyCacheSuccessfulHistogramName,
-                                                SystemClock.elapsedRealtime()
-                                                        - conditionalUiCredentialListInitialTimeMs);
-                                    }
-                                    comparator.onCachedGetCredentialsSuccessful(credentials.size());
-                                },
-                                (e) -> comparator.onCachedGetCredentialsFailed());
-            }
+                            (credentials) ->
+                                    mBarrier.onFido2ApiSuccessful(
+                                            () ->
+                                                    onWebauthnCredentialDetailsListReceived(
+                                                            options,
+                                                            callerOriginString,
+                                                            finalClientDataHash,
+                                                            credentials,
+                                                            conditionalUiCredentialListInitialTimeMs)),
+                            (e) ->
+                                    mBarrier.onFido2ApiFailed(
+                                            AuthenticatorStatus.NOT_ALLOWED_ERROR));
             return;
         }
 

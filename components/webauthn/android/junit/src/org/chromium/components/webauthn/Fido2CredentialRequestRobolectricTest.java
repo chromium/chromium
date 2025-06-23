@@ -60,7 +60,6 @@ import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.components.webauthn.cred_man.ShadowCredentialManager;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
-import org.chromium.device.DeviceFeatureList;
 import org.chromium.net.GURLUtils;
 import org.chromium.net.GURLUtilsJni;
 import org.chromium.url.GURL;
@@ -98,12 +97,10 @@ public class Fido2CredentialRequestRobolectricTest {
     @Mock Barrier mBarrierMock;
     @Mock WebauthnModeProvider mModeProviderMock;
     @Mock AuthenticationContextProvider mAuthenticationContextProviderMock;
-    @Mock Fido2GetCredentialsComparator mGetCredentialsComparator;
 
     @Before
     public void setUp() throws Exception {
         FeatureOverrides.newBuilder()
-                .enable(DeviceFeatureList.WEBAUTHN_ANDROID_USE_PASSKEY_CACHE)
                 .disable(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_BROWSER_BOUND_KEYS)
                 .apply();
 
@@ -186,7 +183,6 @@ public class Fido2CredentialRequestRobolectricTest {
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
                 /* overrideForcesGpm= */ true);
-        Fido2GetCredentialsComparator.Factory.setInstanceForTesting(mGetCredentialsComparator);
         mRequest.overrideBrowserBridgeForTesting(mBrowserBridgeMock);
         mRequest.setCredManHelperForTesting(mCredManHelperMock);
         mRequest.setBarrierForTesting(mBarrierMock);
@@ -195,7 +191,6 @@ public class Fido2CredentialRequestRobolectricTest {
     @After
     public void tearDown() {
         WebauthnModeProvider.setInstanceForTesting(null);
-        Fido2GetCredentialsComparator.Factory.setInstanceForTesting(null);
     }
 
     @Test
