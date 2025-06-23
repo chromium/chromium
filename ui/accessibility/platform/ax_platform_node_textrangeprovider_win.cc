@@ -1296,7 +1296,7 @@ AXPlatformNodeWin* AXPlatformNodeTextRangeProviderWin::GetOwner() const {
   const AXNode* anchor = position->GetAnchor();
   DCHECK(anchor);
   const AXTreeManager* ax_tree_manager = position->GetManager();
-  if (ax_tree_manager && ax_tree_manager->IsPlatformTreeManager()) {
+  if (ax_tree_manager && ax_tree_manager->is_platform_tree_manager()) {
     const AXPlatformTreeManager* platform_tree_manager =
         static_cast<const AXPlatformTreeManager*>(ax_tree_manager);
     DCHECK(platform_tree_manager);

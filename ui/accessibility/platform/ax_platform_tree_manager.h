@@ -36,8 +36,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManager
   // of the accessibility tree.
   virtual AXPlatformNodeDelegate* RootDelegate() const = 0;
 
-  bool IsPlatformTreeManager() const override;
-
   base::WeakPtr<AXPlatformTreeManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

@@ -131,7 +131,7 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::FromID(
   // `BrowserAccessibility`) corresponding to each `AXNode` in its managed tree,
   // then we can't cast it to one that does, in this case a
   // `BrowserAccessibilityManager`.
-  if (!manager || !manager->IsPlatformTreeManager()) {
+  if (!manager || !manager->is_platform_tree_manager()) {
     return nullptr;
   }
   return static_cast<BrowserAccessibilityManager*>(manager);
@@ -281,7 +281,7 @@ BrowserAccessibility* BrowserAccessibilityManager::GetFromAXNode(
     // `BrowserAccessibility`) corresponding to each `AXNode` in its managed
     // tree, then we can't cast it to one that does, in this case a
     // `BrowserAccessibilityManager`.
-    if (manager->IsPlatformTreeManager()) {
+    if (manager->is_platform_tree_manager()) {
       return static_cast<const BrowserAccessibilityManager*>(manager)
           ->GetFromID(node->id());
     }
@@ -323,7 +323,7 @@ BrowserAccessibilityManager::GetParentNodeFromParentTreeAsBrowserAccessibility()
   // generated content, which is currently not a platform tree manager. In those
   // cases, we should return nullptr since doing the cast will fail and result
   // in undefined behavior.
-  if (IsRootFrameManager() || !IsPlatformTreeManager()) {
+  if (IsRootFrameManager() || !is_platform_tree_manager()) {
     return nullptr;
   }
   BrowserAccessibilityManager* parent_manager_wrapper =

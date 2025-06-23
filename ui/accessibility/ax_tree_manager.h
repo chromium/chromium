@@ -50,7 +50,8 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // This default constructor does not create an empty accessibility tree. Call
   // `SetTree` if you need to manage a specific tree.
   AXTreeManager();
-  explicit AXTreeManager(std::unique_ptr<AXTree> tree);
+  explicit AXTreeManager(std::unique_ptr<AXTree> tree,
+                         bool is_platform_tree_manager = false);
 
   AXTreeManager(const AXTreeManager&) = delete;
   AXTreeManager& operator=(const AXTreeManager&) = delete;
@@ -96,12 +97,11 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // Returns AXTreeIDUnknown if this tree doesn't have a parent tree.
   virtual AXTreeID GetParentTreeID() const;
 
-  // Whether this manager can access platform nodes. Defaults to false
-  // and is overridden in `AXPlatformTreeManager` to return true.
-  virtual bool IsPlatformTreeManager() const;
-
   // Returns the AXNode that is at the root of the current tree.
   virtual AXNode* GetRoot() const;
+
+  // Returns true if this manager can access platform nodes.
+  bool is_platform_tree_manager() const { return is_platform_tree_manager_; }
 
   bool IsRoot() const;
 
@@ -177,6 +177,11 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // attributes accordingly when the parent connection changes.
   virtual void UpdateAttributesOnParent(AXNode* parent) {}
 
+ private:
+  // True if this platform can access platform nodes.
+  const bool is_platform_tree_manager_ = false;
+
+ protected:
   // True if the root's parent is in another accessibility tree and that
   // parent's child is the root. Ensures that the parent node is notified
   // once when this subtree is first connected.

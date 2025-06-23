@@ -68,8 +68,10 @@ AXTreeManager::AXTreeManager()
       ax_tree_(nullptr),
       event_generator_(ax_tree()) {}
 
-AXTreeManager::AXTreeManager(std::unique_ptr<AXTree> tree)
-    : connected_to_parent_tree_node_(false),
+AXTreeManager::AXTreeManager(std::unique_ptr<AXTree> tree,
+                             bool is_platform_tree_manager)
+    : is_platform_tree_manager_(is_platform_tree_manager),
+      connected_to_parent_tree_node_(false),
       ax_tree_(std::move(tree)),
       event_generator_(ax_tree()) {
   // Do not register the tree in the map if it has no ID. It will be registered
@@ -146,10 +148,6 @@ const AXTreeData& AXTreeManager::GetTreeData() const {
 
 AXTreeID AXTreeManager::GetParentTreeID() const {
   return ax_tree_ ? ax_tree_->data().parent_tree_id : AXTreeIDUnknown();
-}
-
-bool AXTreeManager::IsPlatformTreeManager() const {
-  return false;
 }
 
 AXNode* AXTreeManager::GetRoot() const {
