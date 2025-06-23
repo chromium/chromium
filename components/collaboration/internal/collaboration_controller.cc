@@ -155,7 +155,8 @@ class ControllerState {
 
   virtual void HandleErrorWithType(ErrorInfo::Type type) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    controller_->TransitionTo(StateId::kError, ErrorInfo(type));
+    controller_->TransitionTo(StateId::kError,
+                              ErrorInfo(type, controller_->flow().type));
   }
 
   // Called when the state outcome processing is finished.
@@ -1458,7 +1459,7 @@ void CollaborationController::Cancel() {
 void CollaborationController::SetStateForTesting(StateId state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   current_state_ = CreateStateObject(state);
-  current_state_->OnEnter(ErrorInfo(ErrorInfo::Type::kUnknown));
+  current_state_->OnEnter(ErrorInfo());
 }
 
 CollaborationController::StateId CollaborationController::GetStateForTesting() {
@@ -1559,7 +1560,7 @@ std::unique_ptr<ControllerState> CollaborationController::CreateStateObject(
 }
 
 void CollaborationController::Start() {
-  current_state_->OnEnter(ErrorInfo(ErrorInfo::Type::kUnknown));
+  current_state_->OnEnter(ErrorInfo());
 }
 
 }  // namespace collaboration

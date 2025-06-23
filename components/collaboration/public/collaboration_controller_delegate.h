@@ -41,7 +41,15 @@ class CollaborationControllerDelegate {
       kUpdateChromeUiForVersionOutOfDate = 7,
     };
 
-    explicit ErrorInfo(Type type) : type_(type) { GetStringForErrorType(); }
+    ErrorInfo() : type_(Type::kUnknown) { GetDefaultString(); }
+
+    explicit ErrorInfo(Type type) : type_(type) {
+      GetStringForErrorType(std::nullopt);
+    }
+
+    explicit ErrorInfo(Type type, FlowType flow_type) : type_(type) {
+      GetStringForErrorType(flow_type);
+    }
 
     bool operator==(const ErrorInfo& other) const {
       return type_ == other.type_;
@@ -73,13 +81,24 @@ class CollaborationControllerDelegate {
     }
 
    private:
-    void GetStringForErrorType() {
+    void GetStringForErrorType(std::optional<FlowType> flow_type) {
       switch (type_) {
         case Type::kUpdateChromeUiForVersionOutOfDate:
+          CHECK(flow_type.has_value());
           error_header = l10n_util::GetStringUTF8(
-              IDS_COLLABORATION_SHARE_BUTTON_CHROME_OUT_OF_DATE_ERROR_DIALOG_HEADER);
-          error_body = l10n_util::GetStringUTF8(
-              IDS_COLLABORATION_SHARE_BUTTON_CHROME_OUT_OF_DATE_ERROR_DIALOG_BODY);
+              IDS_COLLABORATION_CHROME_OUT_OF_DATE_ERROR_DIALOG_HEADER);
+          switch (flow_type.value()) {
+            case FlowType::kJoin:
+              error_body = l10n_util::GetStringUTF8(
+                  IDS_COLLABORATION_SHARE_BUTTON_CHROME_OUT_OF_DATE_ERROR_DIALOG_BODY);
+              break;
+            case FlowType::kShareOrManage:
+              error_body = l10n_util::GetStringUTF8(
+                  IDS_COLLABORATION_JOIN_BUTTON_CHROME_OUT_OF_DATE_ERROR_DIALOG_BODY);
+              break;
+            default:
+              NOTREACHED();
+          }
           break;
         case Type::kInvalidUrl:
           error_header =
@@ -113,11 +132,16 @@ class CollaborationControllerDelegate {
           break;
         case Type::kGenericError:
         case Type::kUnknown:
-          error_header = l10n_util::GetStringUTF8(
-              IDS_COLLABORATION_SOMETHING_WENT_WRONG_HEADER);
-          error_body = l10n_util::GetStringUTF8(
-              IDS_COLLABORATION_SOMETHING_WENT_WRONG_BODY);
+          GetDefaultString();
+          break;
       };
+    }
+
+    void GetDefaultString() {
+      error_header = l10n_util::GetStringUTF8(
+          IDS_COLLABORATION_SOMETHING_WENT_WRONG_HEADER);
+      error_body =
+          l10n_util::GetStringUTF8(IDS_COLLABORATION_SOMETHING_WENT_WRONG_BODY);
     }
 
     Type type_;

@@ -462,7 +462,8 @@ TEST_F(CollaborationControllerTest, JoinFlowVersionOutOfDate) {
 
   EXPECT_CALL(
       *delegate_,
-      ShowError(ErrorInfo(ErrorInfo::Type::kUpdateChromeUiForVersionOutOfDate),
+      ShowError(ErrorInfo(ErrorInfo::Type::kUpdateChromeUiForVersionOutOfDate,
+                          FlowType::kJoin),
                 IsNotNullCallback()));
 
   std::move(prepare_ui_callback_).Run(Outcome::kSuccess);
@@ -497,7 +498,8 @@ TEST_F(CollaborationControllerTest, ShareFlowVersionOutOfDate) {
 
   EXPECT_CALL(
       *delegate_,
-      ShowError(ErrorInfo(ErrorInfo::Type::kUpdateChromeUiForVersionOutOfDate),
+      ShowError(ErrorInfo(ErrorInfo::Type::kUpdateChromeUiForVersionOutOfDate,
+                          FlowType::kShareOrManage),
                 IsNotNullCallback()));
   std::move(prepare_ui_callback_).Run(Outcome::kSuccess);
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);

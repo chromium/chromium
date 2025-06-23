@@ -169,11 +169,9 @@ class CollaborationController
   Flow& flow() { return flow_; }
 
   // Called to transition to another state.
-  void TransitionTo(
-      StateId state,
-      const CollaborationControllerDelegate::ErrorInfo& error =
-          CollaborationControllerDelegate::ErrorInfo(
-              CollaborationControllerDelegate::ErrorInfo::Type::kUnknown));
+  void TransitionTo(StateId state,
+                    const CollaborationControllerDelegate::ErrorInfo& error =
+                        CollaborationControllerDelegate::ErrorInfo());
 
   // Called to refocus the current flow.
   void PromoteCurrentSession();
