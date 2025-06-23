@@ -2184,7 +2184,7 @@ TEST_F(BrowserAutofillManagerTestValuables,
 #else
       Suggestion::Icon::kNoIcon,
 #endif
-      SuggestionType::kLoyaltyCardEntry);
+      SuggestionType::kAllLoyaltyCardsEntry);
   loyalty_cards_submenu.acceptability =
       Suggestion::Acceptability::kUnacceptable;
   loyalty_cards_submenu.children = {

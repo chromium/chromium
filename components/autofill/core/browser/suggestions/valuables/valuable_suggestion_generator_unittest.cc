@@ -154,7 +154,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
                            Suggestion::Guid("loyalty_card_id_3")),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(
-              SuggestionType::kLoyaltyCardEntry,
+              SuggestionType::kAllLoyaltyCardsEntry,
               l10n_util::GetStringUTF16(
                   IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUBMENU_TITLE)),
           EqualsSuggestion(SuggestionType::kSeparator),
@@ -340,7 +340,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
           EqualsSuggestion(SuggestionType::kAddressEntry,
                            u"test-email2@domain2.example"),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(SuggestionType::kLoyaltyCardEntry,
+          EqualsSuggestion(SuggestionType::kAllLoyaltyCardsEntry,
                            l10n_util::GetStringUTF16(
                                IDS_AUTOFILL_LOYALTY_CARDS_SUBMENU_TITLE)),
           EqualsSuggestion(SuggestionType::kSeparator),

@@ -1604,6 +1604,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kUndoOrClear:
       return true;
+    case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageAutofillAi:

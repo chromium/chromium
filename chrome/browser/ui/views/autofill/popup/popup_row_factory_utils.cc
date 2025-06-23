@@ -86,7 +86,8 @@ constexpr int kRefreshInkDropRadius = 12;
 
 // Popup items that use a leading icon instead of a trailing one.
 constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
-    {SuggestionType::kAllSavedPasswordsEntry, SuggestionType::kManageAddress,
+    {SuggestionType::kAllLoyaltyCardsEntry,
+     SuggestionType::kAllSavedPasswordsEntry, SuggestionType::kManageAddress,
      SuggestionType::kManageAutofillAi, SuggestionType::kManageCreditCard,
      SuggestionType::kManageIban, SuggestionType::kManageLoyaltyCard,
      SuggestionType::kManagePlusAddress, SuggestionType::kUndoOrClear,

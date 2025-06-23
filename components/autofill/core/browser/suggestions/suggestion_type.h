@@ -127,6 +127,9 @@ enum class SuggestionType {
   // Loyalty card suggestions.
   kLoyaltyCardEntry = 67,
 
+  // All loyalty card suggestions.
+  kAllLoyaltyCardsEntry = 73,
+
   // Home & Work suggestions.
   // kHomeAndWorkAddressEntry = 69, // DEPRECATED
 
@@ -166,7 +169,7 @@ enum class SuggestionType {
   kPendingStateSignin = 65,
 
   // Next ID: 74
-  kMaxValue = kFreeformFooter
+  kMaxValue = kAllLoyaltyCardsEntry
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

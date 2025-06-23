@@ -43,6 +43,7 @@ bool IsAcceptableSuggestionType(SuggestionType id) {
 
 bool IsFooterSuggestionType(SuggestionType type) {
   switch (type) {
+    case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kFreeformFooter:
     case SuggestionType::kManageAddress:

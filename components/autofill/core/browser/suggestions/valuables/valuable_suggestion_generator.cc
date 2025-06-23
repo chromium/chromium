@@ -127,7 +127,7 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
   Suggestion& submenu_suggestion = suggestions.emplace_back(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUBMENU_TITLE),
-      SuggestionType::kLoyaltyCardEntry);
+      SuggestionType::kAllLoyaltyCardsEntry);
   submenu_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   submenu_suggestion.icon = Suggestion::Icon::kGoogleWalletMonochrome;
@@ -163,7 +163,7 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
 #else
   Suggestion submenu_suggestion = Suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_LOYALTY_CARDS_SUBMENU_TITLE),
-      SuggestionType::kLoyaltyCardEntry);
+      SuggestionType::kAllLoyaltyCardsEntry);
   submenu_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   submenu_suggestion.icon = Suggestion::Icon::kGoogleWalletMonochrome;

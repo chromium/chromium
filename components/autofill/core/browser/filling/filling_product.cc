@@ -108,6 +108,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kManageAutofillAi:
       return FillingProduct::kAutofillAi;
+    case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kLoyaltyCardEntry:
     case SuggestionType::kManageLoyaltyCard:
       return FillingProduct::kLoyaltyCard;
