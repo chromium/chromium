@@ -273,7 +273,7 @@ void MockPermissionService::AddPermissionObserver(
   NOTREACHED();
 }
 
-void MockPermissionService::AddPageEmbeddedPermissionObserver(
+void MockPermissionService::AddCombinedPermissionObserver(
     PermissionDescriptorPtr permission,
     mojom::blink::PermissionStatus last_known_status,
     mojo::PendingRemote<mojom::blink::PermissionObserver>) {

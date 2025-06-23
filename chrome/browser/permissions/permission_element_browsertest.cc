@@ -209,7 +209,7 @@ class PermissionServiceInterceptor : public blink::mojom::PermissionObserver {
   void AddPermissionStatusObserver(blink::mojom::PermissionName permission) {
     auto descriptor = blink::mojom::PermissionDescriptor::New();
     descriptor->name = permission;
-    GetForwardingInterface()->AddPageEmbeddedPermissionObserver(
+    GetForwardingInterface()->AddCombinedPermissionObserver(
         std::move(descriptor), blink::mojom::PermissionStatus::ASK,
         GetRemote());
   }

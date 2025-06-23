@@ -372,7 +372,7 @@ void PermissionServiceImpl::AddPermissionObserver(
       /*should_include_device_status*/ false, std::move(observer));
 }
 
-void PermissionServiceImpl::AddPageEmbeddedPermissionObserver(
+void PermissionServiceImpl::AddCombinedPermissionObserver(
     PermissionDescriptorPtr permission,
     PermissionStatus last_known_status,
     mojo::PendingRemote<blink::mojom::PermissionObserver> observer) {

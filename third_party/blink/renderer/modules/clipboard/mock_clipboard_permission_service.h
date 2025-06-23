@@ -71,7 +71,7 @@ class MockClipboardPermissionService final
               (override));
 
   MOCK_METHOD(void,
-              AddPageEmbeddedPermissionObserver,
+              AddCombinedPermissionObserver,
               (mojom::blink::PermissionDescriptorPtr permission,
                mojom::blink::PermissionStatus last_known_status,
                mojo::PendingRemote<mojom::blink::PermissionObserver>),

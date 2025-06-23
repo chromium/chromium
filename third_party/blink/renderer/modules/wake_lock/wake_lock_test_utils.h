@@ -136,7 +136,7 @@ class MockPermissionService final : public mojom::blink::PermissionService {
       mojom::blink::PermissionDescriptorPtr permission,
       mojom::blink::PermissionStatus last_known_status,
       mojo::PendingRemote<mojom::blink::PermissionObserver>) override;
-  void AddPageEmbeddedPermissionObserver(
+  void AddCombinedPermissionObserver(
       mojom::blink::PermissionDescriptorPtr permission,
       mojom::blink::PermissionStatus last_known_status,
       mojo::PendingRemote<mojom::blink::PermissionObserver>) override;

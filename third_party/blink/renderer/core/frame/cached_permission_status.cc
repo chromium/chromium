@@ -108,7 +108,7 @@ void CachedPermissionStatus::RegisterPermissionObserver(
   mojo::ReceiverId id = permission_observer_receivers_.Add(
       observer.InitWithNewPipeAndPassReceiver(), descriptor->name,
       GetTaskRunner());
-  GetPermissionService()->AddPageEmbeddedPermissionObserver(
+  GetPermissionService()->AddCombinedPermissionObserver(
       descriptor.Clone(), current_status, std::move(observer));
   auto inserted = permission_to_receivers_map_.insert(descriptor->name, id);
   CHECK(inserted.is_new_entry);
