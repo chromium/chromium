@@ -108,6 +108,13 @@ BASE_FEATURE(kPrerender2DisallowNonTrustworthyHttp,
              "Prerender2DisallowNonTrustworthyHttp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrerender2WarmUpCompositorForImmediate,
+             "Prerender2WarmUpCompositorForImmediate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrerender2WarmUpCompositorForNonImmediate,
+             "Prerender2WarmUpCompositorForNonImmediate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool UsePrefetchPrerenderIntegration() {
   return base::FeatureList::IsEnabled(
              features::kPrerender2FallbackPrefetchSpecRules) ||

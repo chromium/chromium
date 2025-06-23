@@ -237,10 +237,9 @@ PrerenderManager::StartPrerenderNewTabPage(
       /*additional_headers=*/net::HttpRequestHeaders(),
       /*no_vary_search_hint=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
-      // Considering the characteristics of triggers (e.g., the duration from
-      // trigger to activation), warm-up is not enabled for now on this trigger.
-      // Please see crbug and its doc for more details.
-      /*should_warm_up_compositor=*/false,
+      /*should_warm_up_compositor=*/
+      base::FeatureList::IsEnabled(
+          features::kPrerender2WarmUpCompositorForNewTabPage),
       /*should_prepare_paint_tree=*/false,
       content::PreloadingHoldbackStatus::kUnspecified,
       content::PreloadPipelineInfo::Create(

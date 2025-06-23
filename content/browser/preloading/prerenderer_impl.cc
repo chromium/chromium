@@ -294,6 +294,18 @@ bool PrerendererImpl::MaybePrerender(
         candidate->no_vary_search_hint);
   }
 
+  const bool should_warm_up_compositor = [&] {
+    switch (candidate->eagerness) {
+      case blink::mojom::SpeculationEagerness::kImmediate:
+        return base::FeatureList::IsEnabled(
+            features::kPrerender2WarmUpCompositorForImmediate);
+      case blink::mojom::SpeculationEagerness::kModerate:
+      case blink::mojom::SpeculationEagerness::kConservative:
+        return base::FeatureList::IsEnabled(
+            features::kPrerender2WarmUpCompositorForNonImmediate);
+    }
+  }();
+
   PrerenderAttributes attributes(
       candidate->url,
       PreloadingTriggerTypeFromSpeculationInjectionType(
@@ -304,7 +316,7 @@ bool PrerendererImpl::MaybePrerender(
                              SpeculationRulesTags(candidate->tags)),
       Referrer{*candidate->referrer}, no_vary_search_hint, &rfhi,
       web_contents->GetWeakPtr(), ui::PAGE_TRANSITION_LINK,
-      /*should_warm_up_compositor=*/false,
+      should_warm_up_compositor,
       /*should_prepare_paint_tree=*/false,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{},

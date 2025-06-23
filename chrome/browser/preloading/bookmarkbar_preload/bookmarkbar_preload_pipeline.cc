@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -93,10 +94,9 @@ bool BookmarkBarPreloadPipeline::StartPrerender(
       /*additional_headers=*/net::HttpRequestHeaders(),
       /*no_vary_search_hint=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
-      // Considering the characteristics of triggers (e.g., the duration
-      // from trigger to activation), warm-up is not enabled for now on
-      // this trigger. Please see crbug and its doc for more details.
-      /*should_warm_up_compositor=*/false,
+      /*should_warm_up_compositor=*/
+      base::FeatureList::IsEnabled(
+          features::kPrerender2WarmUpCompositorForBookmarkBar),
       /*should_prepare_paint_tree=*/false,
       content::PreloadingHoldbackStatus::kUnspecified, pipeline_info_,
       preloading_attempt,

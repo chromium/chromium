@@ -84,6 +84,11 @@ CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2DisallowNonTrustworthyHttp);
 
+// If enabled, requests the compositor warm-up (crbug.com/41496019) for
+// Immediate/non-Immediate Speculation Rules prerenders.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForImmediate);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForNonImmediate);
+
 CONTENT_EXPORT bool UsePrefetchPrerenderIntegration();
 
 }  // namespace features

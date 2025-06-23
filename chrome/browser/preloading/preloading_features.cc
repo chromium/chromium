@@ -14,4 +14,11 @@ BASE_FEATURE_PARAM(bool,
                    "zero_suggest_trigger",
                    false);
 
+BASE_FEATURE(kPrerender2WarmUpCompositorForBookmarkBar,
+             "Prerender2WarmUpCompositorForBookmarkBar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrerender2WarmUpCompositorForNewTabPage,
+             "Prerender2WarmUpCompositorForNewTabPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
