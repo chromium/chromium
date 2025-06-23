@@ -272,8 +272,13 @@ void CookieControlsBubbleViewController::
 }
 
 void CookieControlsBubbleViewController::OnReloadingUiTimeout() {
-  base::RecordAction(
-      base::UserMetricsAction("CookieControls.Bubble.ReloadingTimeout"));
+  if (privacy_sandbox::IsTrackingProtectionsUi(controls_state_)) {
+    base::RecordAction(
+        base::UserMetricsAction("TrackingProtections.Bubble.ReloadingTimeout"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.Bubble.ReloadingTimeout"));
+  }
   CloseBubble();
 }
 

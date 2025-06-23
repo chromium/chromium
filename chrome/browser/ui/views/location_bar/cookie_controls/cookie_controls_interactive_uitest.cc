@@ -60,6 +60,8 @@ const char kUMABubbleSendFeedback[] = "CookieControls.Bubble.SendFeedback";
 const char kUMABubbleReloadingShown[] = "CookieControls.Bubble.ReloadingShown";
 const char kUMABubbleReloadingTimeout[] =
     "CookieControls.Bubble.ReloadingTimeout";
+const char kUMATrackingProtectionsBubbleReloadingTimeout[] =
+    "TrackingProtections.Bubble.ReloadingTimeout";
 }  // namespace
 
 class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
@@ -563,6 +565,9 @@ IN_PROC_BROWSER_TEST_P(CookieControlsUiTest, ReloadViewTimeout) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleAllowThirdPartyCookies), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleBlockThirdPartyCookies), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(
+                kUMATrackingProtectionsBubbleReloadingTimeout),
+            0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 1);
 }
 
@@ -899,6 +904,9 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTrackingProtectionTest,
             WaitForHide(CookieControlsBubbleView::kCookieControlsBubble))));
   // Ensure that the reloading timeout doesn't execute when page reloads faster
   // than the timeout window.
+  EXPECT_EQ(user_actions_.GetActionCount(
+                kUMATrackingProtectionsBubbleReloadingTimeout),
+            0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
 }
 
@@ -925,6 +933,9 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTrackingProtectionTest,
             WaitForHide(CookieControlsBubbleView::kCookieControlsBubble))));
   // Ensure that the reloading timeout doesn't execute when page reloads faster
   // than the timeout window.
+  EXPECT_EQ(user_actions_.GetActionCount(
+                kUMATrackingProtectionsBubbleReloadingTimeout),
+            0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
 }
 
@@ -954,5 +965,8 @@ IN_PROC_BROWSER_TEST_F(
             PressButton(CookieControlsContentView::kTrackingProtectionsButton),
             EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
             WaitForHide(CookieControlsBubbleView::kCookieControlsBubble))));
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(
+                kUMATrackingProtectionsBubbleReloadingTimeout),
+            1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
 }

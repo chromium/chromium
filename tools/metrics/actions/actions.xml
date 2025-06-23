@@ -46182,6 +46182,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TrackingProtections.Bubble.ReloadingTimeout">
+  <owner>michelleabreo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Tracking protections bubble closed due to reloading timeout.
+  </description>
+</action>
+
 <action name="TrackingProtections.Bubble.SendFeedback">
   <owner>michelleabreo@google.com</owner>
   <owner>koilos@google.com</owner>
