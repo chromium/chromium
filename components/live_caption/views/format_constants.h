@@ -32,6 +32,9 @@ inline constexpr int kMinAnchorMarginDip = 20;
 inline constexpr char kPrimaryFont[] = "Roboto";
 inline constexpr char kSecondaryFont[] = "Arial";
 inline constexpr char kTertiaryFont[] = "sans-serif";
+#if BUILDFLAG(IS_CHROMEOS)
+inline constexpr char kArabicFont[] = "Noto Sans Arabic UI";
+#endif
 inline constexpr int kFontSizePx = 16;
 inline constexpr int kLiveTranslateLabelFontSizePx = 11;
 inline constexpr double kDefaultRatioInParentX = 0.5;

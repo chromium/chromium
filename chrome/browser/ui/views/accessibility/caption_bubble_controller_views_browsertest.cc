@@ -5,11 +5,14 @@
 #include "components/live_caption/views/caption_bubble_controller_views.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "build/build_config.h"
@@ -39,6 +42,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/font.h"
+#include "ui/gfx/font_list.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
@@ -172,6 +177,12 @@ class CaptionBubbleControllerViewsTest
   views::View* GetHeader() {
     return controller_ ? controller_->caption_bubble_->GetHeaderForTesting()
                        : nullptr;
+  }
+
+  void SetNewFontListGetter(
+      CaptionBubble::NewFontListGetter new_font_list_getter) {
+    GetController()->caption_bubble_->SetNewFontListGetterForTesting(
+        std::move(new_font_list_getter));
   }
 
   views::Label* GetTitle() {
@@ -834,6 +845,29 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
             GetTitle()->font_list().GetPrimaryFont().GetFontName());
   EXPECT_EQ("Helvetica",
             GetErrorText()->font_list().GetPrimaryFont().GetFontName());
+}
+
+IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
+                       FontFamilyArabicFallback) {
+#if BUILDFLAG(IS_CHROMEOS)
+  constexpr size_t kExpectedSize = 4;
+#else
+  constexpr size_t kExpectedSize = 3;
+#endif
+  std::vector<std::string> fonts;
+  SetNewFontListGetter(base::BindLambdaForTesting(
+      [&fonts](const std::vector<std::string>& font_names, int font_style,
+               int font_size, gfx::Font::Weight font_weight) -> gfx::FontList {
+        fonts = font_names;
+        return gfx::FontList(font_names, font_style, font_size, font_weight);
+      }));
+  ui::CaptionStyle caption_style;
+  caption_style.font_family = "";
+  GetController()->UpdateCaptionStyle(caption_style);
+  ASSERT_EQ(kExpectedSize, fonts.size());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ("Noto Sans Arabic UI", fonts[3]);
+#endif
 }
 
 IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,

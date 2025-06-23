@@ -44,6 +44,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/font.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -114,6 +116,13 @@ std::unique_ptr<views::ImageButton> BuildImageButton(
 std::string MaybeRemoveCSSImportant(std::string css_string) {
   RE2::Replace(&css_string, "\\s+!important", "");
   return css_string;
+}
+
+gfx::FontList GetNewFontList(const std::vector<std::string>& font_names,
+                             int font_style,
+                             int font_size,
+                             gfx::Font::Weight font_weight) {
+  return gfx::FontList(font_names, font_style, font_size, font_weight);
 }
 
 // Parses a CSS color string that is in the form rgba and has a non-zero alpha
@@ -552,7 +561,8 @@ CaptionBubble::CaptionBubble(
       destroyed_callback_(std::move(destroyed_callback)),
       application_locale_(application_locale),
       is_expanded_(caption_bubble_settings_->GetLiveCaptionBubbleExpanded()),
-      controls_animation_(this) {
+      controls_animation_(this),
+      new_font_list_getter_(base::BindRepeating(GetNewFontList)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   // While not shown, the title is still used to identify the window in the
   // window switcher.
@@ -1246,8 +1256,11 @@ const gfx::FontList CaptionBubble::GetFontList(int font_size) {
   font_names.push_back(kPrimaryFont);
   font_names.push_back(kSecondaryFont);
   font_names.push_back(kTertiaryFont);
+#if BUILDFLAG(IS_CHROMEOS)
+  font_names.push_back(kArabicFont);
+#endif
 
-  const gfx::FontList font_list = gfx::FontList(
+  const gfx::FontList font_list = new_font_list_getter_.Run(
       font_names, gfx::Font::FontStyle::NORMAL,
       font_size * GetTextScaleFactor(), gfx::Font::Weight::NORMAL);
   return font_list;
@@ -1619,6 +1632,10 @@ views::Label* CaptionBubble::GetScrollLockLabelForTesting() {
 
 bool CaptionBubble::IsGenericErrorMessageVisibleForTesting() const {
   return generic_error_message_->GetVisible();
+}
+
+void CaptionBubble::SetNewFontListGetterForTesting(NewFontListGetter callback) {
+  new_font_list_getter_ = std::move(callback);
 }
 
 void CaptionBubble::SetCaptionBubbleStyle() {

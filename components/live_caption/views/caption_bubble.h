@@ -18,6 +18,7 @@
 #include "components/live_caption/views/translation_view_wrapper_base.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -77,6 +78,12 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   METADATA_HEADER(CaptionBubble, views::BubbleDialogDelegateView)
 
  public:
+  using NewFontListGetter = base::RepeatingCallback<gfx::FontList(
+      const std::vector<std::string>& font_names,
+      int font_style,
+      int font_size,
+      gfx::Font::Weight font_weight)>;
+
   CaptionBubble(
       CaptionBubbleSettings* caption_bubble_settings,
       std::unique_ptr<TranslationViewWrapperBase> translation_view_wrapper,
@@ -111,6 +118,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   views::MdTextButton* GetScrollLockButtonForTesting();
   views::View* GetHeaderForTesting();
   TranslationViewWrapperBase* GetTranslationViewWrapperForTesting();
+  void SetNewFontListGetterForTesting(NewFontListGetter callback);
 
   void SetCaptionBubbleStyle();
 
@@ -307,6 +315,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   std::unique_ptr<CaptionBubbleEventObserver> caption_bubble_event_observer_;
 
   base::CallbackListSubscription title_text_changed_callback_;
+
+  NewFontListGetter new_font_list_getter_;
 
   base::WeakPtrFactory<CaptionBubble> weak_ptr_factory_{this};
 };
