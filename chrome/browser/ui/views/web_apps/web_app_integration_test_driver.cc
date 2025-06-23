@@ -153,7 +153,6 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -4788,8 +4787,6 @@ void WebAppIntegrationTest::TearDownOnMainThread() {
 
 void WebAppIntegrationTest::SetUpCommandLine(base::CommandLine* command_line) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  network::AddPublicIpAddressSpaceOverrideToCommandLine(*embedded_test_server(),
-                                                        *command_line);
 }
 
 Browser* WebAppIntegrationTest::CreateBrowser(Profile* profile) {

@@ -10838,7 +10838,6 @@ if (!is_android) {
       "//google_apis",
       "//printing/buildflags",
       "//services/device/public/cpp:test_support",
-      "//services/network/public/cpp:ip_address_space_overrides_test_utils",
       "//skia",
       "//testing/gtest",
       "//third_party/libaddressinput",
