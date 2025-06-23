@@ -259,6 +259,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Sharing ANGLE's Vulkan queue is not supported on WebView.
   aw_feature_overrides.DisableFeature(::features::kVulkanFromANGLE);
 
+  // This feature has not been experimented with yet on WebView.
+  // TODO(crbug.com/371512561): Disable this feature for WebView only if webview
+  // itself is using GLES.
+  aw_feature_overrides.DisableFeature(::features::kDefaultANGLEVulkan);
+
   // Partitioned :visited links history is not supported on WebView.
   aw_feature_overrides.DisableFeature(
       blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
