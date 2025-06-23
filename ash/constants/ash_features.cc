@@ -2799,10 +2799,15 @@ BASE_FEATURE(kFeatureManagementFeatureAwareDeviceDemoMode,
              "FeatureManagementFeatureAwareDeviceDemoMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Disable the demo mode app orientation locked in landscape.
+// Enables the demo mode app orientation locked in landscape.
 BASE_FEATURE(kDemoModeAppLandscapeLocked,
              "DemoModeAppLandscapeLocked",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the ToS Notification in demo mode signed-in sessions.
+BASE_FEATURE(kDemoSessionToSNotification,
+             "DemoSessionToSNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The pref kSecondaryGoogleAccountSigninAllowed is set to false in Demo Mode.
 BASE_FEATURE(kDemoModeSecondaryGoogleAccountSigninAllowedFalse,
@@ -3662,6 +3667,10 @@ bool IsEapGtcWifiAuthenticationEnabled() {
 
 bool IsDemoModeAppLandscapeLockedEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeAppLandscapeLocked);
+}
+
+bool IsDemoSessionToSNotificationEnabled() {
+  return base::FeatureList::IsEnabled(kDemoSessionToSNotification);
 }
 
 bool IsDemoModeSecondaryGoogleAccountSigninAllowedFalse() {

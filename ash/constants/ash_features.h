@@ -911,6 +911,8 @@ BASE_DECLARE_FEATURE(kFeatureManagementFeatureAwareDeviceDemoMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDemoModeAppLandscapeLocked);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kDemoSessionToSNotification);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDemoModeSecondaryGoogleAccountSigninAllowedFalse);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSideAlignedToasts);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1128,6 +1130,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosSwitcherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCryptauthAttestationSyncingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeepLinkingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeAppLandscapeLockedEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoSessionToSNotificationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeAppResetWindowContainerEnable();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeSignInEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeWallpaperUpdateEnabled();

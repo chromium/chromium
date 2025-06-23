@@ -75,6 +75,8 @@ static_library("demo_mode") {
     "//third_party/icu:icui18n_hidden_visibility",
     "//third_party/icu:icuuc_public",
     "//third_party/re2",
+    "//ui/message_center",
+    "//ui/message_center/public/cpp",
     "//ui/views",
   ]
 

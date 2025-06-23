@@ -46,6 +46,9 @@ include_rules = [
   "+chrome/common/chrome_paths.h",
   "+chrome/common/extensions",
   "+chrome/grit",
+
+  # Dependencies outside of //chrome:
+  "+ui/message_center/message_center.h",
 ]
 
 specific_include_rules = {

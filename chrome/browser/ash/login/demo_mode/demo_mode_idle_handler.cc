@@ -8,8 +8,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/metrics/demo_session_metrics_recorder.h"
+#include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/files/file_enumerator.h"
@@ -22,12 +26,15 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/experiences/idle_detector/idle_detector.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 
@@ -41,6 +48,9 @@ constexpr base::TimeDelta kReLuanchDemoAppIdleDuration = base::Seconds(90);
 // TODO(crbugs.com/355727308): Get logout delay from server response.
 constexpr base::TimeDelta kLogoutDelayMin = base::Minutes(60);
 constexpr base::TimeDelta kLogoutDelayMax = base::Minutes(90);
+
+constexpr char kDemoSessionToSNotificationId[] = "demo_session_ToS";
+constexpr char kGooglePoliciesURL[] = "https://policies.google.com/";
 
 // The list of prefs that are reset on the start of each shopper session.
 const char* const kPrefsPrefixToReset[] = {
@@ -132,6 +142,59 @@ DemoModeIdleHandler::DemoModeIdleHandler(
 
 DemoModeIdleHandler::~DemoModeIdleHandler() = default;
 
+void ShowNotification() {
+  const std::u16string notification_title =
+      l10n_util::GetStringUTF16(IDS_DEMO_SESSION_TOS_NOTIFICATION_TITLE);
+  const std::u16string notification_message =
+      l10n_util::GetStringUTF16(IDS_DEMO_SESSION_TOS_NOTIFICATION_MESSAGE);
+  const std::u16string button_text =
+      l10n_util::GetStringUTF16(IDS_DEMO_SESSION_TOS_NOTIFICATION_BUTTON_TEXT);
+
+  message_center::RichNotificationData optional_fields;
+  // Set a higher priority to make sure it displays even with Do Not Disturb
+  // (DND) enabled.
+  optional_fields.priority =
+      message_center::NotificationPriority::SYSTEM_PRIORITY;
+  // Add "Learn more" button
+  optional_fields.buttons.emplace_back(message_center::ButtonInfo(button_text));
+
+  const gfx::VectorIcon& privacy_indicator_icon = kPrivacyIndicatorsIcon;
+
+  std::unique_ptr<message_center::Notification> notification =
+      ash::CreateSystemNotificationPtr(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kDemoSessionToSNotificationId, notification_title,
+          notification_message,
+          /*display_source=*/std::u16string(),
+          /*origin_url=*/GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kDemoSessionToSNotificationId,
+              ash::NotificationCatalogName::kDemoMode),
+          optional_fields,
+          // Open the URL when the button is clicked
+          // https://policies.google.com/
+          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+              base::BindRepeating([](std::optional<int> button_index) {
+                if (button_index.has_value() && button_index.value() == 0) {
+                  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+                      GURL(kGooglePoliciesURL),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+                }
+              })),
+          privacy_indicator_icon,
+          // Demo mode has DND turned on by default, we need the warning level
+          // to be CRITICAL_WARNING to display the notification.
+          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+
+  auto* message_center = message_center::MessageCenter::Get();
+  CHECK(message_center);
+
+  message_center->RemoveNotification(notification->id(), /*by_user=*/false);
+  message_center->AddNotification(std::move(notification));
+}
+
 void DemoModeIdleHandler::OnUserActivity(const ui::Event* event) {
   // If there's user activity, no need `mgs_logout_timer_` any more. Device will
   // auto logout after 90s idle if logout is required.
@@ -161,6 +224,10 @@ void DemoModeIdleHandler::OnUserActivity(const ui::Event* event) {
       base::BindRepeating(&DemoModeIdleHandler::OnIdle,
                           weak_ptr_factory_.GetWeakPtr()),
       /*tick_clock=*/nullptr);
+
+  if (features::IsDemoSessionToSNotificationEnabled()) {
+    ShowNotification();
+  }
 
   idle_detector_->Start(
       idle_time_out_for_test_.value_or(kReLuanchDemoAppIdleDuration));

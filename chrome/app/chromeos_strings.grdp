@@ -1161,6 +1161,17 @@
     Please retry. If you see this error again please contact your support representative.
   </message>
 
+  <!-- Strings for Demo Sessions -->
+  <message name="IDS_DEMO_SESSION_TOS_NOTIFICATION_TITLE" desc="Title of the ToS notification in demo session.">
+    You are using a demo device
+  </message>
+  <message name="IDS_DEMO_SESSION_TOS_NOTIFICATION_MESSAGE" desc="Message of the ToS notification in demo session.">
+    Demo mode is intended for users 18+ and is governed by Google's Terms of Service and Privacy Policy. Data entered on this device may be viewed by others between periodic wipes.
+  </message>
+  <message name="IDS_DEMO_SESSION_TOS_NOTIFICATION_BUTTON_TEXT" desc="The text of the button on the ToS notification in demo session.">
+    Learn more
+  </message>
+
   <!-- Strings for OS trial screen-->
   <message name="IDS_OS_TRIAL_TITLE" desc="Title of the install or try screen, the first screen of the ChromeOS Flex Installation flow">
     Start using <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>
