@@ -295,11 +295,14 @@ void TouchSelectionMagnifierAura::CreateMagnifierLayer() {
   // Create the magnifier layer, which will parent the zoom layer and border
   // layer.
   magnifier_layer_ = std::make_unique<Layer>(LAYER_NOT_DRAWN);
+  magnifier_layer_->SetName("TouchSelectionMagnifierAura/MagnifierLayer");
   magnifier_layer_->SetFillsBoundsOpaquely(false);
 
   // Create the zoom layer, which will show the zoomed contents.
   zoom_layer_ = std::make_unique<Layer>(LAYER_SOLID_COLOR);
+  zoom_layer_->SetName("TouchSelectionMagnifierAura/ZoomLayer");
   zoom_layer_->SetBackgroundZoom(kMagnifierScale, 0);
+
   // BackdropFilterBounds applies after the backdrop filter (the zoom effect)
   // but before anything else, meaning its clipping effect is transformed by
   // the layer_offset() filter operation. SetRoundedCornerRadius() applies too
@@ -313,6 +316,8 @@ void TouchSelectionMagnifierAura::CreateMagnifierLayer() {
   // magnifier border and shadows aren't shown in the zoomed contents drawn by
   // the zoom layer.
   border_layer_ = std::make_unique<Layer>();
+  border_layer_->SetName("TouchSelectionMagnifierAura/BorderLayer");
+
   border_layer_->SetBounds(gfx::Rect(GetBorderLayerSize()));
   border_renderer_ = std::make_unique<BorderRenderer>();
   border_layer_->set_delegate(border_renderer_.get());
