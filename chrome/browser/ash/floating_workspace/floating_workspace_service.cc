@@ -408,11 +408,20 @@ void FloatingWorkspaceService::UpdateUiStateIfNeeded() {
     return;
   }
 
-  // In the calls below there is no need to double check if UI is already shown
-  // - the dialog is smart enough to recognize when there is no change.
   if (!floating_workspace_util::IsInternetConnected()) {
-    FloatingWorkspaceDialog::ShowDefaultScreen();
-    ScheduleShowingNetworkScreen();
+    // When the user just signed in there might be no internet access, because
+    // the device didn't have enough time to connect. In this case we show
+    // Default screen before maybe showing the network screen.
+    if (!FloatingWorkspaceDialog::IsShown()) {
+      FloatingWorkspaceDialog::ShowDefaultScreen();
+    }
+    // If the dialog already exists showing it again will focus on it. This
+    // behaviour is undesirable for captive portal, since it shows a dialog on
+    // top.
+    if (FloatingWorkspaceDialog::IsShown() !=
+        FloatingWorkspaceDialog::State::kNetwork) {
+      ScheduleShowingNetworkScreen();
+    }
     return;
   }
   if (!sync_service_) {
