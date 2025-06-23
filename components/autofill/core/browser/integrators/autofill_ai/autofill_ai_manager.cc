@@ -372,8 +372,7 @@ std::vector<Suggestion> AutofillAiManager::GetSuggestions(
 
   const AutofillField* autofill_field =
       form.GetFieldById(trigger_field.global_id());
-  if (!autofill_field ||
-      !autofill_field->GetAutofillAiServerTypePredictions()) {
+  if (!autofill_field) {
     return {};
   }
 

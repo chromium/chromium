@@ -120,6 +120,21 @@ std::unique_ptr<FormStructure> CreateFormStructure(
       [](FieldType type) { return std::vector<FieldType>({type}); }));
 }
 
+// Tests that no suggestions are generated when the field has a non-Autofill AI
+// type.
+TEST_F(AutofillAiSuggestionsTest, NoSuggestionsOnNonAiField) {
+  EntityInstance passport_entity = MakePassportWithRandomGuid();
+  std::vector<EntityInstance> entities = {passport_entity};
+
+  FieldType triggering_field_type = ADDRESS_HOME_ZIP;
+  std::unique_ptr<FormStructure> form = CreateFormStructure(
+      {triggering_field_type, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
+
+  EXPECT_THAT(CreateFillingSuggestions(*form, *form->fields()[0], entities,
+                                       kAppLocaleUS),
+              IsEmpty());
+}
+
 TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PassportEntity) {
   EntityInstance passport_entity = MakePassportWithRandomGuid();
   std::vector<EntityInstance> entities = {passport_entity};
