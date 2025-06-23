@@ -217,9 +217,10 @@ class CORE_EXPORT HTMLElement : public Element {
 
   virtual String AltText() const { return String(); }
 
-  // unclosedOffsetParent doesn't return Elements which are closed shadow hidden
-  // from this element. offsetLeftForBinding and offsetTopForBinding have their
-  // values adjusted for this as well.
+  // unclosedScrollParent and unclosedOffsetParent don't return Elements which
+  // are closed shadow hidden from this element. offsetLeftForBinding and
+  // offsetTopForBinding have their values adjusted for this as well.
+  Element* unclosedScrollParent();
   Element* unclosedOffsetParent();
   int offsetLeftForBinding();
   int offsetTopForBinding();

@@ -3030,6 +3030,18 @@ int HTMLElement::offsetHeightForBinding() {
   return result;
 }
 
+Element* HTMLElement::unclosedScrollParent() {
+  GetDocument().UpdateStyleAndLayoutForNode(this,
+                                            DocumentUpdateReason::kJavaScript);
+
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
+    return nullptr;
+  }
+
+  return layout_object->ScrollParent(this);
+}
+
 Element* HTMLElement::unclosedOffsetParent() {
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);

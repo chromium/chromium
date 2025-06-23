@@ -2599,6 +2599,10 @@
       depends_on: ["HTMLCommandAttributes"],
       status: "stable",
     },
+    {
+      name: "HTMLElementScrollParent",
+      status: "experimental",
+    },
     // The `<embed>` should follow the specification, layout is not forced
     // when the `type` attribute is set to `image`.
     // https://html.spec.whatwg.org/C/#the-embed-element

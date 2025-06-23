@@ -1878,6 +1878,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // If |base| is provided, then this function will not return an Element which
   // is closed shadow hidden from |base|.
+  Element* ScrollParent(const Element* base = nullptr) const;
+
+  // If |base| is provided, then this function will not return an Element which
+  // is closed shadow hidden from |base|.
   Element* OffsetParent(const Element* base = nullptr) const;
 
   // Inclusive of |this|, exclusive of |below|.

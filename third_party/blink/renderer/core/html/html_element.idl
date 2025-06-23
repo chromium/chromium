@@ -59,6 +59,7 @@
 
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extensions-to-the-htmlelement-interface
+    [RuntimeEnabled=HTMLElementScrollParent, ImplementedAs=unclosedScrollParent] readonly attribute Element? scrollParent;
     [PerWorldBindings, ImplementedAs=unclosedOffsetParent] readonly attribute Element? offsetParent;
     [ImplementedAs=offsetTopForBinding] readonly attribute long offsetTop;
     [ImplementedAs=offsetLeftForBinding] readonly attribute long offsetLeft;

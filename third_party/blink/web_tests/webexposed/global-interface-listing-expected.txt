@@ -3918,6 +3918,7 @@ interface HTMLElement : Element
     getter onwheel
     getter outerText
     getter popover
+    getter scrollParent
     getter spellcheck
     getter style
     getter tabIndex
