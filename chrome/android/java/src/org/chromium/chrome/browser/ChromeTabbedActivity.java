@@ -295,6 +295,7 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.supervised_user.SupervisedUserConstants;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -3519,6 +3520,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
             NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
                     NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);
             RecordUserAction.record("MobileMenuNtpCustomization");
+        } else if (id == R.id.menu_item_content_filter_help_center_id) {
+            currentTab.loadUrl(
+                    new LoadUrlParams(
+                            SupervisedUserConstants.DEVICE_FILTERS_HELP_CENTER_URL,
+                            PageTransition.AUTO_TOPLEVEL));
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotion);
         }

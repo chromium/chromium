@@ -134,6 +134,22 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserServicePlatformDelegate.java" ]
   }
 
+  generate_jni("supervised_user_service_bridge_jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserServiceBridge.java" ]
+  }
+
+  android_library("supervised_user_service_bridge_java") {
+    srcjar_deps = [ ":supervised_user_service_bridge_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserServiceBridge.java" ]
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/browser/profiles/android:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
   generate_jni("test_support_jni_headers") {
     testonly = true
     sources = [

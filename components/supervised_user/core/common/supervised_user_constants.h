@@ -253,6 +253,8 @@ extern const char kLocalWebApprovalErrorTypeHistogramName[];
 // Name of the Android's secure setting to observe the content filters.
 extern const char kBrowserContentFiltersSettingName[];
 extern const char kSearchContentFiltersSettingName[];
+// Url for the help center article about content filters.
+extern const char kDeviceFiltersHelpCenterUrl[];
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_

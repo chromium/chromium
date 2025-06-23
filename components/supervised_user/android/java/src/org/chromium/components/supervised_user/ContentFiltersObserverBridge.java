@@ -26,7 +26,7 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 @JNINamespace("supervised_user")
-class ContentFiltersObserverBridge {
+public class ContentFiltersObserverBridge {
 
     // Supervised User Content Filters Observer.
     private static final String TAG = "SUCFiltersObserver";
@@ -86,7 +86,7 @@ class ContentFiltersObserverBridge {
         return mIsEnabled;
     }
 
-    private boolean getValue(final String settingsName) {
+    private static boolean getValue(final String settingsName) {
         try {
             // The setting is considered enabled if the setting's value is positive.
             return Settings.Secure.getInt(

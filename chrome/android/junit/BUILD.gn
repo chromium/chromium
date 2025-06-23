@@ -1052,7 +1052,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/tabbed_mode/TabbedNavigationBarColorControllerUnitTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//components/supervised_user/android:content_filters_observer_bridge_java",
+    ]
   }
 
   robolectric_library(

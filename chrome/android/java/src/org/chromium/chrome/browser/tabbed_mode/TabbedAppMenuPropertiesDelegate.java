@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.share.ShareUtils;
+import org.chromium.chrome.browser.supervised_user.SupervisedUserServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
@@ -368,6 +369,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             maybeAddDividerLine(modelList, R.id.managed_by_divider_line_id);
             modelList.add(buildManagedByItem(currentTab));
         }
+        if (shouldShowContentFilterHelpCenterMenuItem(currentTab)) {
+            maybeAddDividerLine(modelList, R.id.menu_item_content_filter_divider_line_id);
+            modelList.add(buildContentFilterHelpCenterMenuItem(currentTab));
+        }
     }
 
     private Runnable buildUpdateStateChangedObserver() {
@@ -390,6 +395,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         if (modelList.get(modelList.size() - 1).type == AppMenuHandler.AppMenuItemType.DIVIDER) {
             return;
         }
+
         modelList.add(
                 new MVCListAdapter.ListItem(
                         AppMenuHandler.AppMenuItemType.DIVIDER, buildModelForDivider(id)));
@@ -991,6 +997,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return currentTab != null && ManagedBrowserUtils.isBrowserManaged(currentTab.getProfile());
     }
 
+    protected boolean shouldShowContentFilterHelpCenterMenuItem(@Nullable Tab currentTab) {
+        return currentTab != null
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.PROPAGATE_DEVICE_CONTENT_FILTERS_TO_SUPERVISED_USER)
+                && SupervisedUserServiceBridge.isSupervisedLocally(currentTab.getProfile());
+    }
+
     private MVCListAdapter.ListItem buildManagedByItem(Tab currentTab) {
         assert shouldShowManagedByMenuItem(currentTab);
         return new MVCListAdapter.ListItem(
@@ -999,6 +1012,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.managed_by_menu_id,
                         R.string.managed_browser,
                         shouldShowIconBeforeItem() ? R.drawable.ic_business : 0));
+    }
+
+    private MVCListAdapter.ListItem buildContentFilterHelpCenterMenuItem(Tab currentTab) {
+        assert shouldShowContentFilterHelpCenterMenuItem(currentTab);
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.menu_item_content_filter_help_center_id,
+                        R.string.menu_item_content_filter_help_center_link,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_account_child_20dp : 0));
     }
 
     @Override

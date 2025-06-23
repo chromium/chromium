@@ -173,6 +173,8 @@ found in the LICENSE file.
     <item type="id" name="close_all_tabs_menu_id" />
     <item type="id" name="close_all_incognito_tabs_menu_id" />
     <item type="id" name="menu_select_tabs" />
+    <item type="id" name="menu_item_content_filter_divider_line_id" />
+    <item type="id" name="menu_item_content_filter_help_center_id" />
 
     <!-- Custom Tabs -->
     <item type="id" name="view_id_tag_key" />

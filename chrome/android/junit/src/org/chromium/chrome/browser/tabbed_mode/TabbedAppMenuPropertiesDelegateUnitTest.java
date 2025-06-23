@@ -151,6 +151,7 @@ import java.util.List;
     ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION,
     DomDistillerFeatures.READER_MODE_IMPROVEMENTS
 })
+@EnableFeatures({ChromeFeatureList.PROPAGATE_DEVICE_CONTENT_FILTERS_TO_SUPERVISED_USER})
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Constants defining flags that determines multi-window menu items visibility.
     private static final boolean TAB_M = true; // multiple tabs
@@ -955,10 +956,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    public void testPageMenuItems_Phone_RegularPage_enterprise_user() {
+    public void testPageMenuItems_Phone_RegularPage_managed_users() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
-        when(mManagedBrowserUtilsJniMock.isBrowserManaged(any())).thenReturn(true);
         doReturn(true)
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .shouldShowManagedByMenuItem(any(Tab.class));
@@ -988,6 +988,56 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.help_id,
                                 R.id.managed_by_divider_line_id,
                                 R.id.managed_by_menu_id));
+
+        if (!BuildConfig.IS_DESKTOP_ANDROID) {
+            expectedItems.add(R.id.request_desktop_site_id);
+        }
+        if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
+            expectedItems.add(R.id.extensions_menu_id);
+        }
+
+        assertMenuItemsAreEqual(modelList, expectedItems.toArray(new Integer[0]));
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testPageMenuItems_Phone_RegularPage_locally_supervised_users() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
+        doReturn(true)
+                .when(mTabbedAppMenuPropertiesDelegate)
+                .shouldShowContentFilterHelpCenterMenuItem(any(Tab.class));
+        doReturn(false)
+                .when(mTabbedAppMenuPropertiesDelegate)
+                .shouldShowManagedByMenuItem(any(Tab.class));
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        // TODO(crbug.com/427240031): Stop asserting on menu items that are not subject of this
+        // test.
+        ArrayList<Integer> expectedItems =
+                new ArrayList<>(
+                        Arrays.asList(
+                                R.id.icon_row_menu_id,
+                                R.id.new_tab_menu_id,
+                                R.id.new_incognito_tab_menu_id,
+                                R.id.divider_line_id,
+                                R.id.open_history_menu_id,
+                                R.id.quick_delete_menu_id,
+                                R.id.quick_delete_divider_line_id,
+                                R.id.downloads_menu_id,
+                                R.id.all_bookmarks_menu_id,
+                                R.id.recent_tabs_menu_id,
+                                R.id.divider_line_id,
+                                R.id.share_menu_id,
+                                R.id.find_in_page_id,
+                                R.id.universal_install,
+                                R.id.auto_dark_web_contents_id,
+                                R.id.divider_line_id,
+                                R.id.preferences_id,
+                                R.id.help_id,
+                                R.id.menu_item_content_filter_divider_line_id,
+                                R.id.menu_item_content_filter_help_center_id));
 
         if (!BuildConfig.IS_DESKTOP_ANDROID) {
             expectedItems.add(R.id.request_desktop_site_id);
@@ -1123,6 +1173,20 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         assertTrue(isMenuVisible(modelList, R.id.managed_by_menu_id));
+    }
+
+    @Test
+    public void contentFilterHelpCenterItem_ChromeManagementPage() {
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions().withShowAddToHomeScreen());
+        doReturn(true)
+                .when(mTabbedAppMenuPropertiesDelegate)
+                .shouldShowContentFilterHelpCenterMenuItem(any(Tab.class));
+
+        Assert.assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        assertTrue(isMenuVisible(modelList, R.id.menu_item_content_filter_help_center_id));
     }
 
     @Test
@@ -1811,6 +1875,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(false)
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .shouldShowManagedByMenuItem(any(Tab.class));
+        doReturn(false)
+                .when(mTabbedAppMenuPropertiesDelegate)
+                .shouldShowContentFilterHelpCenterMenuItem(any(Tab.class));
         doReturn(true)
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .shouldShowAutoDarkItem(any(Tab.class), eq(false));
