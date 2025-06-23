@@ -9,7 +9,6 @@ import json
 import os
 import subprocess
 import re
-import sys
 from util import build_utils
 
 _CHROMIUM_SRC = os.path.normpath(os.path.join(__file__, '..', '..', '..', '..'))

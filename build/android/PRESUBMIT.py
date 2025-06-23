@@ -24,8 +24,9 @@ def CommonChecks(input_api, output_api, *, is_upload):
     return input_api.os_path.join(build_android_dir, *dirs)
 
   build_pys = [
-      r'gn/.*\.py$',
       r'gyp/.*\.py$',
+      r'.*create_unwind_table\.py',
+      r'.*create_unwind_table_tests\.py',
   ]
   tests = []
   # yapf likes formatting the extra_paths_list to be less readable.
@@ -42,6 +43,7 @@ def CommonChecks(input_api, output_api, *, is_upload):
               J(),
               J('gyp'),
               J('buildbot'),
+              J('..'),
               J('..', 'util'),
               J('..', '..', 'third_party', 'catapult', 'common',
                 'py_trace_event'),
@@ -50,13 +52,13 @@ def CommonChecks(input_api, output_api, *, is_upload):
               J('..', '..', 'third_party', 'catapult', 'tracing'),
               J('..', '..', 'third_party', 'depot_tools'),
               J('..', '..', 'third_party', 'colorama', 'src'),
-              J('..', '..', 'build'),
           ],
           version='2.7'))
   tests.extend(
       input_api.canned_checks.GetPylint(
           input_api,
           output_api,
+          pylintrc='pylintrc-3.2',
           files_to_check=build_pys,
           files_to_skip=[
               r'.*_pb2\.py',
@@ -64,19 +66,17 @@ def CommonChecks(input_api, output_api, *, is_upload):
               r'.*create_unwind_table\.py',
               r'.*create_unwind_table_tests\.py',
           ],
-          extra_paths_list=[J('gyp'), J('gn')],
-          version='2.7'))
-
-  tests.extend(
-      input_api.canned_checks.GetPylint(
-          input_api,
-          output_api,
-          files_to_check=[
-              r'.*create_unwind_table\.py',
-              r'.*create_unwind_table_tests\.py',
+          extra_paths_list=[
+              J(),
+              J('..'),
+              J('..', 'gn_ast'),
+              J('..', 'util'),
+              J('..', '..', 'google_apis'),
+              J('..', '..', 'third_party'),
+              J('gyp'),
+              J('gyp', 'util'),
           ],
-          extra_paths_list=[J('gyp'), J('gn')],
-          version='2.7'))
+          version='3.2'))
   # yapf: enable
 
   pylib_test_env = dict(input_api.environ)

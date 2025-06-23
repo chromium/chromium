@@ -204,7 +204,7 @@ def _RunD8(dex_cmd, input_paths, output_path, warnings_as_errors,
                               fail_on_output=warnings_as_errors)
     except Exception as e:
       if isinstance(e, build_utils.CalledProcessError):
-        output = e.output  # pylint: disable=no-member
+        output = e.output
         if "global synthetic for 'Record desugaring'" in output:
           sys.stderr.write('Java records are not supported.\n')
           sys.stderr.write(
@@ -328,7 +328,6 @@ def _DeleteStaleIncrementalDexFiles(dex_dir, dex_files):
 
 
 def _ParseDesugarDeps(desugar_dependencies_file):
-  # pylint: disable=line-too-long
   """Returns a dict of dependent/dependency mapping parsed from the file.
 
   Example file format:
@@ -343,10 +342,9 @@ def _ParseDesugarDeps(desugar_dependencies_file):
   org/chromium/base/task/TaskRunnerImplJni.class
     <-  org/chromium/base/task/TaskRunnerImpl$Natives.class
   """
-  # pylint: enable=line-too-long
   dependents_from_dependency = collections.defaultdict(set)
   if desugar_dependencies_file and os.path.exists(desugar_dependencies_file):
-    with open(desugar_dependencies_file, 'r') as f:
+    with open(desugar_dependencies_file, 'r', encoding='utf-8') as f:
       dependent = None
       for line in f:
         line = line.rstrip()
@@ -388,7 +386,7 @@ def _ExtractClassFiles(changes, tmp_dir, class_inputs, required_classes_set):
     if changes:
       changed_class_list = (set(changes.IterChangedSubpaths(jar))
                             | required_classes_set)
-      predicate = lambda x: x in changed_class_list and _IsClassFile(x)
+      predicate = lambda x: x in changed_class_list and _IsClassFile(x)  # pylint: disable=cell-var-from-loop
     else:
       predicate = _IsClassFile
 
