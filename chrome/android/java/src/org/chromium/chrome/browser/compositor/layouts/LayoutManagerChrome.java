@@ -305,11 +305,11 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     @Override
-    public void onTabsAllClosing(boolean incognito) {
+    public void tabsAllClosing(boolean incognito) {
         if (getActiveLayout() == mStaticLayout && !incognito && !XrUtils.isXrDevice()) {
             showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
         }
-        super.onTabsAllClosing(incognito);
+        super.tabsAllClosing(incognito);
     }
 
     @Override

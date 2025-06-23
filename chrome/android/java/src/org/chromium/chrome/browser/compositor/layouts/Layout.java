@@ -472,33 +472,6 @@ public abstract class Layout {
     }
 
     /**
-     * Called when a tab get selected. Typically when a tab get closed and the new current tab get
-     * selected.
-     * @param time      The current time of the app in ms.
-     * @param tabId     The id of the selected tab.
-     * @param prevId    The id of the previously selected tab.
-     * @param incognito Whether or not the affected model was incognito.
-     */
-    public void onTabSelected(long time, int tabId, int prevId, boolean incognito) {}
-
-    /**
-     * Called when a tab is being closed. When called, the closing tab will not
-     * be part of the model.
-     * @param time      The current time of the app in ms.
-     * @param tabId     The id of the tab being closed.
-     * @param nextTabId The id if the tab that is being switched to.
-     * @param incognito Whether or not the affected model was incognito.
-     */
-    public void onTabClosed(long time, int tabId, int nextTabId, boolean incognito) {}
-
-    /**
-     * Called when all the tabs in the current stack will be closed.
-     * When called, the tabs will still be part of the model.
-     * @param incognito True if this is the incognito tab model.
-     */
-    public void onTabsAllClosing(boolean incognito) {}
-
-    /**
      * Called before a tab is created from the top left button.
      *
      * @param sourceTabId The id of the source tab.
@@ -527,28 +500,6 @@ public abstract class Layout {
             boolean background,
             float originX,
             float originY) {}
-
-    /**
-     * Called when a tab is restored (created FROM_RESTORE).
-     * @param time  The current time of the app in ms.
-     * @param tabId The id of the restored tab.
-     */
-    public void onTabRestored(long time, int tabId) {}
-
-    /**
-     * Called when the current tabModel switched (e.g. standard -> incognito).
-     *
-     * @param incognito True if the new model is incognito.
-     */
-    public void onTabModelSwitched(boolean incognito) {}
-
-    /**
-     * Called when a tab is finally closed if the action was previously undoable.
-     * @param time      The current time of the app in ms.
-     * @param id        The id of the Tab.
-     * @param incognito True if the tab is incognito
-     */
-    public void onTabClosureCommitted(long time, int id, boolean incognito) {}
 
     /**
      * Steps the animation forward and updates all the animated values.

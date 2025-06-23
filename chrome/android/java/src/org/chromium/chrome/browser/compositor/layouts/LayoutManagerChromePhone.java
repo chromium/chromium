@@ -149,7 +149,6 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             // overview mode when the animation is finished.
             if (getActiveLayoutType() == LayoutType.SIMPLE_ANIMATION) {
                 setNextLayout(getLayoutForType(LayoutType.TAB_SWITCHER), true);
-                getActiveLayout().onTabClosed(time(), id, nextId, incognito);
             } else {
                 super.tabClosed(id, nextId, incognito, tabRemoved);
             }
