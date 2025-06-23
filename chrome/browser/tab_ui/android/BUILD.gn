@@ -111,6 +111,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/tab_ui/TabCardThemeUtilUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabListFaviconProviderTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherCustomViewManagerUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherGroupSuggestionServiceUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherUtilsUnitTest.java",
   ]
 
@@ -127,7 +128,9 @@ robolectric_library("junit") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tab_group_suggestion:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/tabwindow:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/theme:java",
@@ -142,6 +145,7 @@ robolectric_library("junit") {
     "//components/sync/android:sync_java",
     "//components/tab_groups:tab_groups_java",
     "//components/user_prefs/android:java",
+    "//components/visited_url_ranking/public:public_java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
