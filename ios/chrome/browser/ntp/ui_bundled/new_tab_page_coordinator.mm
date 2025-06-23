@@ -1648,6 +1648,9 @@
 - (void)handleChangeInModules {
   DCHECK(self.NTPViewController);
 
+  _headerViewController.isGoogleDefaultSearchEngine =
+      [self isGoogleDefaultSearchEngine];
+
   [self.NTPViewController resetViewHierarchy];
 
   if (self.feedViewController) {

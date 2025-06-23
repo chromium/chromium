@@ -204,3 +204,7 @@ bool ShowOnlyMIAEntrypointInNTPFakebox() {
          variation ==
              NTPMIAEntrypointVariation::kOmniboxContainedEnlargedFakebox;
 }
+
+bool ShouldShowQuickActionsRow() {
+  return ShowOnlyMIAEntrypointInNTPFakebox();
+}

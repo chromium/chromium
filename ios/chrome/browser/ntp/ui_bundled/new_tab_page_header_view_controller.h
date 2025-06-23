@@ -117,6 +117,9 @@
 // Return the toolbar view;
 - (UIView*)toolBarView;
 
+// Return the view containing the fake omnibox.
+- (UIView*)fakeOmniboxView;
+
 // Sends notification to focus the accessibility of the omnibox.
 - (void)focusAccessibilityOnOmnibox;
 

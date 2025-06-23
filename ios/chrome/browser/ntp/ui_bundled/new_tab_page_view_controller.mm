@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -177,6 +178,9 @@ CGFloat SpaceBetweenModules() {
   UIImage* _backgroundImage;
   // The image view to display the current background image.
   UIImageView* _backgroundImageView;
+  // The view controller holding the NTP quick actions buttons.
+  // Only created when the fakebox buttons are replaced.
+  NewTabPageQuickActionsViewController* _quickActionsViewController;
 }
 
 // Properties synthesized from NewTabPageConsumer.
@@ -208,6 +212,9 @@ CGFloat SpaceBetweenModules() {
   DCHECK(self.feedWrapperViewController);
 
   self.view.accessibilityIdentifier = kNTPViewIdentifier;
+
+  _quickActionsViewController =
+      [[NewTabPageQuickActionsViewController alloc] init];
 
   // TODO(crbug.com/40799579): Remove this when bug is fixed.
   [self.feedWrapperViewController loadViewIfNeeded];
@@ -514,6 +521,10 @@ CGFloat SpaceBetweenModules() {
 
   if (self.mostVisitedVisible) {
     [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
+  }
+
+  if (self.quickActionsVisible) {
+    [self addViewControllerAboveFeed:_quickActionsViewController];
   }
 
   [self addViewControllerAboveFeed:self.headerViewController];
@@ -1056,6 +1067,12 @@ CGFloat SpaceBetweenModules() {
 
 #pragma mark - Private
 
+// Whether the quick actions button row is visible.
+- (BOOL)quickActionsVisible {
+  return self.headerViewController.isGoogleDefaultSearchEngine &&
+         ShouldShowQuickActionsRow();
+}
+
 // Returns YES if scroll should be skipped when focusing the omnibox.
 - (BOOL)shouldSkipScrollToFocusOmnibox {
   return self.scrolledToMinimumHeight || IsSplitToolbarMode(self);
@@ -1452,6 +1469,19 @@ CGFloat SpaceBetweenModules() {
           constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
       [self.magicStackCollectionView.view.trailingAnchor
           constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
+    ]];
+  }
+
+  if (self.quickActionsVisible) {
+    _quickActionsViewController.view.translatesAutoresizingMaskIntoConstraints =
+        NO;
+    [NSLayoutConstraint activateConstraints:@[
+      [_quickActionsViewController.view.leadingAnchor
+          constraintEqualToAnchor:_headerViewController.fakeOmniboxView
+                                      .leadingAnchor],
+      [_quickActionsViewController.view.trailingAnchor
+          constraintEqualToAnchor:_headerViewController.fakeOmniboxView
+                                      .trailingAnchor],
     ]];
   }
 

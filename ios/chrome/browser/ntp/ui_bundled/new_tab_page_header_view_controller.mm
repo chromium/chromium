@@ -164,6 +164,10 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   return self.headerView.toolBarView;
 }
 
+- (UIView*)fakeOmniboxView {
+  return self.headerView.omnibox;
+}
+
 #if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];

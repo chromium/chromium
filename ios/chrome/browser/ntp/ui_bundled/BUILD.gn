@@ -199,6 +199,8 @@ source_set("ntp_internal") {
     "new_tab_page_mediator.h",
     "new_tab_page_mediator.mm",
     "new_tab_page_mutator.h",
+    "new_tab_page_quick_actions_view_controller.h",
+    "new_tab_page_quick_actions_view_controller.mm",
     "new_tab_page_view_controller.h",
     "new_tab_page_view_controller.mm",
   ]
