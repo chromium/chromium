@@ -115,8 +115,8 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
 
   page_stability_monitor_->WaitForStable(
       *tool, request->task_id, *journal_,
-      base::BindOnce(&ToolExecutor::ToolFinished, base::Unretained(this),
-                     std::move(result)));
+      base::BindOnce(&ToolExecutor::ToolFinished,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(result)));
 }
 
 void ToolExecutor::ToolFinished(mojom::ActionResultPtr result) {
