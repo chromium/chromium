@@ -121,6 +121,7 @@ public class TabSwitcherGroupSuggestionService {
 
     /**
      * @param windowId The ID of the current window.
+     * @param profile The profile used for tab group suggestions.
      * @param suggestionLifecycleObserver Listens for user responses to a group suggestion.
      */
     public TabSwitcherGroupSuggestionService(

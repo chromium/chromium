@@ -134,6 +134,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     private final @Nullable TabSwitcherDragHandler mTabSwitcherDragHandler;
     private final @NonNull ObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private final ObserverList<DragObserver> mDragObserverList = new ObserverList<>();
+    private final TabListHighlighter mTabListHighlighter;
 
     private boolean mIsInitialized;
     private OnLayoutChangeListener mListLayoutListener;
@@ -442,6 +443,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                     new TabListEmptyCoordinator(
                             parentView, mModelList, this::runOnItemAnimatorFinished);
         }
+        mTabListHighlighter = new TabListHighlighter(mModelList);
 
         configureRecyclerViewTouchHelpers();
     }
@@ -1048,5 +1050,9 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             }
             return res;
         }
+    }
+
+    public TabListHighlighter getTabListHighlighter() {
+        return mTabListHighlighter;
     }
 }
