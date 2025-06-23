@@ -175,10 +175,33 @@ public class StripLayoutTabTest {
         @ColorInt int expectedColor;
 
         // Normal.
+        expectedColor =
+                ColorUtils.setAlphaComponentWithFloat(
+                        SemanticColorUtils.getDefaultIconColorAccent1(mContext),
+                        DIVIDER_FOLIO_LIGHT_OPACITY);
+        assertEquals(
+                "Light mode divider uses 30% primary color",
+                expectedColor, mNormalTab.getDividerTint());
+
+        // Incognito.
+        expectedColor = mContext.getColor(R.color.tab_strip_tablet_divider_bg_incognito);
+        assertEquals(
+                "Incognito dividers use the baseline color.",
+                expectedColor,
+                mIncognitoTab.getDividerTint());
+    }
+
+    @Test
+    @Config(qualifiers = "night")
+    public void testGetDividerTint_Night() {
+        @ColorInt int expectedColor;
+
+        // Normal.
         expectedColor = SemanticColorUtils.getDividerLineBgColor(mContext);
         assertEquals(
-                "Light mode divider uses 20% icon color",
-                expectedColor, mNormalTab.getDividerTint());
+                "Night mode divider uses colorOutlineVariant.",
+                expectedColor,
+                mNormalTab.getDividerTint());
 
         // Incognito.
         expectedColor = mContext.getColor(R.color.tab_strip_tablet_divider_bg_incognito);
