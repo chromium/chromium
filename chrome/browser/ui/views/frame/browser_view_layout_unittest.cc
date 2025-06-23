@@ -65,9 +65,6 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const override {
     return gfx::Rect();
   }
-  void LayoutWebAppWindowTitle(
-      const gfx::Rect& available_space,
-      views::Label& window_title_label) const override {}
   int GetTopInsetInBrowserView() const override { return 0; }
   bool IsToolbarVisible() const override { return toolbar_visible_; }
   bool IsBookmarkBarVisible() const override { return bookmark_bar_visible_; }

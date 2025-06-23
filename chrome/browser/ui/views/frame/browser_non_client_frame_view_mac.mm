@@ -47,9 +47,6 @@
 
 namespace {
 
-// Keep in sync with web_app_frame_toolbar_browsertest.cc
-constexpr double kTitlePaddingWidthFraction = 0.1;
-
 // Empirical measurements of the traffic lights.
 constexpr int kCaptionButtonsWidth = 52;
 constexpr int kCaptionButtonsLeadingPadding = 20;
@@ -202,26 +199,6 @@ gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForWebAppFrameToolbar(
   }
 
   return bounds;
-}
-
-void BrowserNonClientFrameViewMac::LayoutWebAppWindowTitle(
-    const gfx::Rect& available_space,
-    views::Label& window_title_label) const {
-  gfx::Rect toolbar_bounds(0, 0, width(), available_space.height());
-  gfx::Rect title_bounds = available_space;
-  const int title_padding =
-      base::ClampRound(width() * kTitlePaddingWidthFraction);
-  title_bounds.Inset(gfx::Insets::VH(0, title_padding));
-  window_title_label.SetBoundsRect(GetCenteredTitleBounds(
-      toolbar_bounds, title_bounds,
-      window_title_label
-          .GetPreferredSize(views::SizeBounds(window_title_label.width(), {}))
-          .width()));
-  // The background of the title area is always opaquely drawn, but when in
-  // immersive fullscreen, it is drawn in a way that isn't detected by the
-  // DCHECK in Label. As such, disable the DCHECK.
-  window_title_label.SetSkipSubpixelRenderingOpacityCheck(
-      browser_view()->IsImmersiveModeEnabled());
 }
 
 int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
