@@ -1039,6 +1039,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.FlexInstalledViaFlexor" units="installed"
+    expires_after="2026-01-31">
+  <owner>tbrandston@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    Sent once when a ChromeOS Flex device sees that it was installed via Flexor.
+
+    When a ChromeOS Flex device is installed via Flexor, a file is created on
+    the stateful partition. If the file exists at boot, we delete it and emit
+    this metric. (If we fail to delete the file, we don't emit the metric.)
+  </summary>
+</histogram>
+
 <histogram name="Platform.FlexPageFlipFlakes" units="flakes"
     expires_after="2025-12-14">
   <owner>andrebraga@google.com</owner>
