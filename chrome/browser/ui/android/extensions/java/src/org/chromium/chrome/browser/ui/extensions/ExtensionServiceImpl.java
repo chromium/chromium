@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.ViewStub;
 import android.widget.LinearLayout;
 
+import org.chromium.base.Callback;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
@@ -33,8 +34,12 @@ import org.chromium.ui.base.WindowAndroid;
 public class ExtensionServiceImpl implements ExtensionService {
     @Nullable private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     @Nullable private ExtensionActionListCoordinator mExtensionActionListCoordinator;
+    @Nullable private ExtensionActionsBridge mExtensionActionsBridge;
     @Nullable private ExtensionsMenuButtonCoordinator mExtensionsMenuButtonCoordinator;
+
+    private final Callback<Profile> mProfileUpdatedCallback = this::onProfileUpdated;
     private ObservableSupplier<Profile> mProfileSupplier;
+    @Nullable private Profile mProfile;
 
     public ExtensionServiceImpl() {}
 
@@ -42,6 +47,8 @@ public class ExtensionServiceImpl implements ExtensionService {
     @Initializer
     public void initialize(ObservableSupplier<Profile> profileSupplier) {
         mProfileSupplier = profileSupplier;
+
+        mProfileSupplier.addObserver(mProfileUpdatedCallback);
     }
 
     @Override
@@ -71,17 +78,17 @@ public class ExtensionServiceImpl implements ExtensionService {
 
     @Override
     public boolean areExtensionsEnabled() {
-        Profile profile = mProfileSupplier.get();
-        if (profile == null) {
+        if (mExtensionActionsBridge == null) {
             return false;
         }
 
-        ExtensionActionsBridge extensionActionsBridge = ExtensionActionsBridge.get(profile);
-        return extensionActionsBridge.extensionsEnabled();
+        return mExtensionActionsBridge.extensionsEnabled();
     }
 
     @Override
     public void destroy() {
+        mProfileSupplier.removeObserver(mProfileUpdatedCallback);
+
         if (mExtensionActionListCoordinator != null) {
             mExtensionActionListCoordinator.destroy();
             mExtensionActionListCoordinator = null;
@@ -91,5 +98,18 @@ public class ExtensionServiceImpl implements ExtensionService {
             mExtensionsMenuButtonCoordinator = null;
         }
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+    }
+
+    private void onProfileUpdated(@Nullable Profile profile) {
+        if (profile == mProfile) {
+            return;
+        }
+
+        mExtensionActionsBridge = null;
+        mProfile = profile;
+
+        if (mProfile != null) {
+            mExtensionActionsBridge = ExtensionActionsBridge.get(mProfile);
+        }
     }
 }
