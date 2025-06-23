@@ -9,20 +9,19 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -31,10 +30,13 @@ namespace {
 
 using FieldPrediction =
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
-using ::testing::Ge;
+using ::testing::Contains;
+using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::Matcher;
 using ::testing::Not;
-using ::testing::SizeIs;
+using ::testing::ResultOf;
 
 constexpr char kAppLocaleUS[] = "en-US";
 
@@ -49,6 +51,28 @@ EntityInstance MakeVehicleWithRandomGuid(test::VehicleOptions options = {}) {
   base::Uuid guid = base::Uuid::GenerateRandomV4();
   options.guid = guid.AsLowercaseString();
   return test::GetVehicleEntityInstance(options);
+}
+
+Matcher<const Suggestion&> HasMainText(const std::u16string& text) {
+  return ResultOf(
+      "Suggestion::main_text.value",
+      [](const Suggestion& s) { return s.main_text.value; }, text);
+}
+
+Matcher<const Suggestion&> HasLabel(const std::u16string& label) {
+  return Field(
+      &Suggestion::labels,
+      ElementsAre(ElementsAre(Field(&Suggestion::Text::value, label))));
+}
+
+Matcher<const Suggestion&> HasType(SuggestionType type) {
+  return Field("Suggestion::type", &Suggestion::type, type);
+}
+
+auto SuggestionsAre(auto&&... matchers) {
+  return ElementsAre(std::forward<decltype(matchers)>(matchers)...,
+                     HasType(SuggestionType::kSeparator),
+                     HasType(SuggestionType::kManageAutofillAi));
 }
 
 class AutofillAiSuggestionsTest : public testing::Test {
@@ -118,12 +142,6 @@ class AutofillAiSuggestionsTest : public testing::Test {
   std::optional<FormStructure> form_structure_;
 };
 
-size_t CountFillingSuggestions(base::span<const Suggestion> suggestions) {
-  return std::ranges::count_if(suggestions, [](const Suggestion& suggestion) {
-    return suggestion.type == SuggestionType::kFillAutofillAi;
-  });
-}
-
 std::u16string GetPassportName(const EntityInstance& entity) {
   return entity.attribute(AttributeType(AttributeTypeName::kPassportName))
       ->GetCompleteInfo(kAppLocaleUS);
@@ -151,15 +169,13 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PassportEntity) {
 
   // There should be only one suggestion whose main text matches the entity
   // value for the PASSPORT_NAME_TAG.
-  EXPECT_EQ(suggestions.size(), 3u);
-  EXPECT_EQ(suggestions[0].main_text.value, GetPassportName(passport_entity));
-  EXPECT_EQ(suggestions[1].type, SuggestionType::kSeparator);
-  EXPECT_EQ(suggestions[2].type, SuggestionType::kManageAutofillAi);
+  EXPECT_THAT(suggestions,
+              SuggestionsAre(HasMainText(GetPassportName(passport_entity))));
 
   const Suggestion::AutofillAiPayload* payload =
       std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
   ASSERT_TRUE(payload);
-  EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kIdCard);
+  EXPECT_THAT(suggestions[0], HasIcon(Suggestion::Icon::kIdCard));
 
   // The triggering/first field is of Autofill AI type.
   EXPECT_EQ(GetFillValueForField(*payload, field(0)),
@@ -184,10 +200,9 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PrefixMatching) {
   // There should be only one suggestion whose main text matches is a prefix of
   // the value already existing in the triggering field.
   // Note that there is one separator and one footer suggestion as well.
-  std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
-  EXPECT_EQ(suggestions.size(), 3u);
-  EXPECT_EQ(suggestions[0].main_text.value,
-            GetPassportName(passport_prefix_matches));
+  EXPECT_THAT(
+      CreateFillingSuggestions(field(0)),
+      SuggestionsAre(HasMainText(GetPassportName(passport_prefix_matches))));
 }
 
 // Tests that no prefix matching is performed if the attribute that would be
@@ -211,11 +226,8 @@ TEST_F(AutofillAiSuggestionsTest,
   ASSERT_NE(field(0).section(), field(1).section());
 
   std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
-
-  // There should be only one suggestion whose main text matches the entity
-  // value for passport name.
-  EXPECT_THAT(suggestions, SizeIs(Ge(1)));
-  EXPECT_EQ(suggestions[0].main_text.value, GetPassportName(passport_entity));
+  EXPECT_THAT(suggestions,
+              SuggestionsAre(HasMainText(GetPassportName(passport_entity))));
 
   const Suggestion::AutofillAiPayload* payload =
       std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
@@ -264,16 +276,14 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   EntityInstance passport4 =
       MakePassportWithRandomGuid({.expiry_date = nullptr});
   SetEntities({passport1, passport2, passport3, passport4});
-
   SetForm({PASSPORT_NAME_TAG, PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY});
-  std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
 
   // `passport3` is deduped because there is no expiry date in the form and its
   // remaining attributes are a subset of `passport1`.
   // `passport4` is deduped because it is a proper subset of `passport1`.
-  ASSERT_THAT(suggestions, SizeIs(Ge(2)));
-  EXPECT_EQ(suggestions[0].main_text.value, GetPassportName(passport2));
-  EXPECT_EQ(suggestions[1].main_text.value, GetPassportName(passport1));
+  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+              SuggestionsAre(HasMainText(GetPassportName(passport2)),
+                             HasMainText(GetPassportName(passport1))));
 }
 
 // Tests that an "Undo Autofill" suggestion is appended if the trigger field
@@ -282,26 +292,22 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestions_Undo) {
   SetEntities({MakePassportWithRandomGuid()});
   SetForm({PASSPORT_NUMBER});
 
-  EXPECT_FALSE(base::Contains(CreateFillingSuggestions(field(0)),
-                              SuggestionType::kUndoOrClear, &Suggestion::type));
-
+  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+              Not(Contains(HasType(SuggestionType::kUndoOrClear))));
   field(0).set_is_autofilled(true);
-  EXPECT_TRUE(base::Contains(CreateFillingSuggestions(field(0)),
-                             SuggestionType::kUndoOrClear, &Suggestion::type));
+  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+              Contains(HasType(SuggestionType::kUndoOrClear)));
 }
 
 TEST_F(AutofillAiSuggestionsTest, LabelGeneration_SingleEntity_NoLabelAdded) {
   SetEntities({MakePassportWithRandomGuid()});
   SetForm({PASSPORT_NUMBER, PASSPORT_NAME_TAG});
-  std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
-  ASSERT_EQ(CountFillingSuggestions(suggestions), 1u);
-  EXPECT_EQ(suggestions[0].labels.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport");
+  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+              SuggestionsAre(HasLabel(u"Passport")));
 }
 
-// Check that the existence of an entity that does not fill the triggering
-// field, still affects label generation.
+// Tests that the existence of an entity that does not fill the triggering field
+// still affects label generation.
 TEST_F(
     AutofillAiSuggestionsTest,
     LabelGeneration_SingleSuggestion_OtherEntitiesFillOtherFieldsInForm_LabelAdded) {
@@ -312,32 +318,21 @@ TEST_F(
                                   .year = nullptr}),
        MakeVehicleWithRandomGuid({.name = nullptr, .number = nullptr})});
   SetForm({VEHICLE_LICENSE_PLATE, VEHICLE_VIN});
-  std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
-
-  ASSERT_EQ(CountFillingSuggestions(suggestions), 1u);
-  EXPECT_EQ(suggestions[0].labels.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Vehicle · BMW · Series 2");
+  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+              SuggestionsAre(HasLabel(u"Vehicle · BMW · Series 2")));
 }
 
-// In this test, the main test is the passport number, which is not the top
-// differentiating attribute (passport name), therefore, we add a label.
+// Test that if focused field (here: passport number) is not the highest-ranking
+// disambiguating label (passport name), we the latter as a label.
 TEST_F(AutofillAiSuggestionsTest,
        LabelGeneration_TwoSuggestions_SameMainText_AddTopDifferentiatingLabel) {
   SetEntities({MakePassportWithRandomGuid(),
                MakePassportWithRandomGuid(
                    {.name = u"Machado de Assis", .number = u"123"})});
   SetForm({PASSPORT_NUMBER, PASSPORT_NAME_TAG});
-  std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
-
-  ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
-  EXPECT_EQ(suggestions[0].labels.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Pippi Långstrump");
-
-  EXPECT_EQ(suggestions[1].labels.size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Machado de Assis");
+  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+              SuggestionsAre(HasLabel(u"Passport · Pippi Långstrump"),
+                             HasLabel(u"Passport · Machado de Assis")));
 }
 
 // Note that because the main text is the top disambiguating field (and is
@@ -351,16 +346,8 @@ TEST_F(
 
   // Note that passport name is the first at the rank of disambiguating texts.
   SetForm({PASSPORT_NAME_TAG, PASSPORT_ISSUING_COUNTRY});
-  std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
-
-  ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
-  EXPECT_EQ(suggestions[0].labels.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport");
-
-  EXPECT_EQ(suggestions[1].labels.size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport");
+  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+              SuggestionsAre(HasLabel(u"Passport"), HasLabel(u"Passport")));
 }
 
 // Note that while the main text is the top disambiguating field, we need
@@ -373,16 +360,9 @@ TEST_F(
 
   // Note that passport name is the first at the rank of disambiguating texts.
   SetForm({PASSPORT_NAME_TAG, PASSPORT_ISSUING_COUNTRY});
-  std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
-
-  ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
-  EXPECT_EQ(suggestions[0].labels.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Sweden");
-
-  EXPECT_EQ(suggestions[1].labels.size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Brazil");
+  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+              SuggestionsAre(HasLabel(u"Passport · Sweden"),
+                             HasLabel(u"Passport · Brazil")));
 }
 
 // Note that because the main text is not the top disambiguating field, we do
@@ -400,16 +380,9 @@ TEST_F(
   // the same. However, we still add the top differentiating label as a label,
   // as we always prioritize having it.
   SetForm({PASSPORT_ISSUING_COUNTRY, PASSPORT_NUMBER});
-  std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
-
-  ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
-  EXPECT_EQ(suggestions[0].labels.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Pippi Långstrump");
-
-  EXPECT_EQ(suggestions[1].labels.size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Machado de Assis");
+  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+              SuggestionsAre(HasLabel(u"Passport · Pippi Långstrump"),
+                             HasLabel(u"Passport · Machado de Assis")));
 }
 
 // Note that in this case all entities have the same maker, so it is removed
@@ -420,23 +393,10 @@ TEST_F(AutofillAiSuggestionsTest,
                MakeVehicleWithRandomGuid({.model = u"Series 3"}),
                MakeVehicleWithRandomGuid({.name = u"Diego Maradona"})});
   SetForm({VEHICLE_LICENSE_PLATE, VEHICLE_MODEL, VEHICLE_OWNER_TAG});
-  std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
-
-  ASSERT_EQ(CountFillingSuggestions(suggestions), 3u);
-  EXPECT_EQ(suggestions[0].labels.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value,
-            u"Vehicle · Series 2 · Knecht Ruprecht");
-
-  EXPECT_EQ(suggestions[1].labels.size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value,
-            u"Vehicle · Series 3 · Knecht Ruprecht");
-
-  EXPECT_EQ(suggestions[2].labels.size(), 1u);
-  EXPECT_EQ(suggestions[2].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[2].labels[0][0].value,
-            u"Vehicle · Series 2 · Diego Maradona");
+  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+              SuggestionsAre(HasLabel(u"Vehicle · Series 2 · Knecht Ruprecht"),
+                             HasLabel(u"Vehicle · Series 3 · Knecht Ruprecht"),
+                             HasLabel(u"Vehicle · Series 2 · Diego Maradona")));
 }
 
 TEST_F(
@@ -449,20 +409,10 @@ TEST_F(
        MakePassportWithRandomGuid({.number = u"9876", .country = nullptr}),
        MakePassportWithRandomGuid()});
   SetForm({PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY});
-  std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
-
-  ASSERT_EQ(CountFillingSuggestions(suggestions), 3u);
-  EXPECT_EQ(suggestions[0].labels.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Brazil");
-
-  EXPECT_EQ(suggestions[1].labels.size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport");
-
-  EXPECT_EQ(suggestions[2].labels.size(), 1u);
-  EXPECT_EQ(suggestions[2].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[2].labels[0][0].value, u"Passport · Sweden");
+  EXPECT_THAT(
+      CreateFillingSuggestions(field(0)),
+      SuggestionsAre(HasLabel(u"Passport · Brazil"), HasLabel(u"Passport"),
+                     HasLabel(u"Passport · Sweden")));
 }
 
 // Test that the non-disambiguating attributes (here: the expiry dates) do not
@@ -474,16 +424,8 @@ TEST_F(
                MakePassportWithRandomGuid({.expiry_date = u"2018-12-29"})});
   SetForm({PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY, PASSPORT_NAME_TAG,
            PASSPORT_EXPIRATION_DATE});
-  std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
-
-  ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
-  EXPECT_EQ(suggestions[0].labels.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport");
-
-  EXPECT_EQ(suggestions[1].labels.size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport");
+  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+              SuggestionsAre(HasLabel(u"Passport"), HasLabel(u"Passport")));
 }
 
 }  // namespace
