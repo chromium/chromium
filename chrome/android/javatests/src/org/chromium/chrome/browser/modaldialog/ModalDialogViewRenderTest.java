@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -37,6 +38,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
@@ -99,6 +101,15 @@ public class ModalDialogViewRenderTest {
     @BeforeClass
     public static void setupSuite() {
         sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    // This helper function waits until the view is rendered trying to prevent flakiness.
+    private void waitForViewToBeRendered(View view) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return view.isShown() && view.getWidth() > 0 && view.getHeight() > 0;
+                },
+                "View not rendered: " + view.getClass().getSimpleName());
     }
 
     @After
@@ -182,6 +193,7 @@ public class ModalDialogViewRenderTest {
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 mResources,
                                 R.string.cancel));
+        waitForViewToBeRendered(mModalDialogView);
         mRenderTestRule.render(mModalDialogView, "title_and_message");
     }
 
