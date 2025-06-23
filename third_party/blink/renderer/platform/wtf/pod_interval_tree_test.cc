@@ -34,10 +34,11 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace WTF {
+namespace blink {
 
-using tree_test_helpers::InitRandom;
-using tree_test_helpers::NextRandom;
+using WTF::PODInterval;
+using WTF::tree_test_helpers::InitRandom;
+using WTF::tree_test_helpers::NextRandom;
 
 #ifndef NDEBUG
 template <>
@@ -48,14 +49,14 @@ struct ValueToString<void*> {
 };
 #endif
 
-TEST(PODIntervalTreeTest, TestInsertion) {
-  PODIntervalTree<float> tree;
+TEST(PodIntevalTreeTest, TestInsertion) {
+  PodIntervalTree<float> tree;
   tree.Add(PODInterval<float>(2, 4));
   ASSERT_TRUE(tree.CheckInvariants());
 }
 
-TEST(PODIntervalTreeTest, TestInsertionAndQuery) {
-  PODIntervalTree<float> tree;
+TEST(PodIntevalTreeTest, TestInsertionAndQuery) {
+  PodIntervalTree<float> tree;
   tree.Add(PODInterval<float>(2, 4));
   ASSERT_TRUE(tree.CheckInvariants());
   Vector<PODInterval<float>> overlap =
@@ -80,8 +81,8 @@ TEST(PODIntervalTreeTest, TestInsertionAndQuery) {
   EXPECT_FALSE(next_point.has_value());
 }
 
-TEST(PODIntervalTreeTest, TestQueryAgainstZeroSizeInterval) {
-  PODIntervalTree<float> tree;
+TEST(PodIntevalTreeTest, TestQueryAgainstZeroSizeInterval) {
+  PodIntervalTree<float> tree;
   tree.Add(PODInterval<float>(1, 2.5));
   tree.Add(PODInterval<float>(3.5, 5));
   tree.Add(PODInterval<float>(2, 4));
@@ -102,11 +103,11 @@ struct ValueToString<int*> {
 };
 #endif
 
-TEST(PODIntervalTreeTest, TestDuplicateElementInsertion) {
-  PODIntervalTree<float, int*> tree;
+TEST(PodIntevalTreeTest, TestDuplicateElementInsertion) {
+  PodIntervalTree<float, int*> tree;
   int tmp1 = 1;
   int tmp2 = 2;
-  typedef PODIntervalTree<float, int*>::IntervalType IntervalType;
+  using IntervalType = PodIntervalTree<float, int*>::IntervalType;
   IntervalType interval1(1, 3, &tmp1);
   IntervalType interval2(1, 3, &tmp2);
   tree.Add(interval1);
@@ -143,8 +144,8 @@ struct ValueToString<UserData1> {
 };
 #endif
 
-TEST(PODIntervalTreeTest, TestInsertionOfComplexUserData) {
-  PODIntervalTree<float, UserData1> tree;
+TEST(PodIntevalTreeTest, TestInsertionOfComplexUserData) {
+  PodIntervalTree<float, UserData1> tree;
   UserData1 data1;
   data1.a = 5;
   data1.b = 6;
@@ -152,8 +153,8 @@ TEST(PODIntervalTreeTest, TestInsertionOfComplexUserData) {
   ASSERT_TRUE(tree.CheckInvariants());
 }
 
-TEST(PODIntervalTreeTest, TestQueryingOfComplexUserData) {
-  PODIntervalTree<float, UserData1> tree;
+TEST(PodIntevalTreeTest, TestQueryingOfComplexUserData) {
+  PodIntervalTree<float, UserData1> tree;
   UserData1 data1;
   data1.a = 5;
   data1.b = 6;
@@ -204,8 +205,8 @@ struct ValueToString<EndpointType1> {
 };
 #endif
 
-TEST(PODIntervalTreeTest, TestTreeDoesNotRequireMostOperators) {
-  PODIntervalTree<EndpointType1> tree;
+TEST(PodIntevalTreeTest, TestTreeDoesNotRequireMostOperators) {
+  PodIntervalTree<EndpointType1> tree;
   tree.Add(tree.CreateInterval(EndpointType1(1), EndpointType1(2)));
   ASSERT_TRUE(tree.CheckInvariants());
 }
@@ -220,7 +221,7 @@ void TreeInsertionAndDeletionTest(int32_t seed, int tree_size) {
   InitRandom(seed);
   int maximum_value = tree_size;
   // Build the tree
-  PODIntervalTree<int> tree;
+  PodIntervalTree<int> tree;
   Vector<PODInterval<int>> added_elements;
   Vector<PODInterval<int>> removed_elements;
   for (int i = 0; i < tree_size; i++) {
@@ -289,18 +290,18 @@ void TreeInsertionAndDeletionTest(int32_t seed, int tree_size) {
 
 }  // anonymous namespace
 
-TEST(PODIntervalTreeTest, RandomDeletionAndInsertionRegressionTest1) {
+TEST(PodIntevalTreeTest, RandomDeletionAndInsertionRegressionTest1) {
   TreeInsertionAndDeletionTest(13972, 100);
 }
 
-TEST(PODIntervalTreeTest, RandomDeletionAndInsertionRegressionTest2) {
+TEST(PodIntevalTreeTest, RandomDeletionAndInsertionRegressionTest2) {
   TreeInsertionAndDeletionTest(1283382113, 10);
 }
 
-TEST(PODIntervalTreeTest, RandomDeletionAndInsertionRegressionTest3) {
+TEST(PodIntevalTreeTest, RandomDeletionAndInsertionRegressionTest3) {
   // This is the sequence of insertions and deletions that triggered
   // the failure in RandomDeletionAndInsertionRegressionTest2.
-  PODIntervalTree<int> tree;
+  PodIntervalTree<int> tree;
   tree.Add(tree.CreateInterval(0, 5));
   ASSERT_TRUE(tree.CheckInvariants());
   tree.Add(tree.CreateInterval(4, 5));
@@ -335,10 +336,10 @@ TEST(PODIntervalTreeTest, RandomDeletionAndInsertionRegressionTest3) {
   ASSERT_TRUE(tree.CheckInvariants());
 }
 
-TEST(PODIntervalTreeTest, RandomDeletionAndInsertionRegressionTest4) {
+TEST(PodIntevalTreeTest, RandomDeletionAndInsertionRegressionTest4) {
   // Even further reduced test case for
   // RandomDeletionAndInsertionRegressionTest3.
-  PODIntervalTree<int> tree;
+  PodIntervalTree<int> tree;
   tree.Add(tree.CreateInterval(0, 5));
   ASSERT_TRUE(tree.CheckInvariants());
   tree.Add(tree.CreateInterval(8, 9));
@@ -353,4 +354,4 @@ TEST(PODIntervalTreeTest, RandomDeletionAndInsertionRegressionTest4) {
   ASSERT_TRUE(tree.CheckInvariants());
 }
 
-}  // namespace WTF
+}  // namespace blink

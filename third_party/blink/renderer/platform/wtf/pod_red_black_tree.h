@@ -80,12 +80,14 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #endif
 
-namespace WTF {
-
 #ifndef NDEBUG
+namespace blink {
 template <class T>
 struct ValueToString;
+}
 #endif
+
+namespace WTF {
 
 enum UninitializedTreeEnum { kUninitializedTree };
 
@@ -776,7 +778,7 @@ class PODRedBlackTree {
     builder.Append('-');
     if (node) {
       builder.Append(' ');
-      builder.Append(ValueToString<T>::GetString(node->Data()));
+      builder.Append(blink::ValueToString<T>::GetString(node->Data()));
       builder.Append((node->GetColor() == kBlack) ? " (black)" : " (red)");
     }
     DLOG(ERROR) << builder.ToString();

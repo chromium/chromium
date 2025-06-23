@@ -33,6 +33,13 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
+#ifndef NDEBUG
+namespace blink {
+template <class T>
+struct ValueToString;
+}
+#endif
+
 namespace WTF {
 
 // Class representing a closed interval which can hold an arbitrary
@@ -64,20 +71,14 @@ namespace WTF {
 // available:
 //
 //   template<> struct ValueToString<T> {
-//       static String toString(const T& t);
+//       static String ToString(const T& t);
 //   };
 //   template<> struct ValueToString<UserData> {
-//       static String toString(const UserData& t);
+//       static String ToString(const UserData& t);
 //   };
 //
 // Note that this class requires a copy constructor and assignment
 // operator in order to be stored in the red-black tree.
-
-#ifndef NDEBUG
-template <class T>
-struct ValueToString;
-#endif
-
 template <class T, class UserData = void*>
 class PODInterval {
   DISALLOW_NEW();
@@ -131,15 +132,15 @@ class PODInterval {
   String ToString() const {
     StringBuilder builder;
     builder.Append("[PODInterval (");
-    builder.Append(ValueToString<T>::ToString(Low()));
+    builder.Append(blink::ValueToString<T>::ToString(Low()));
     builder.Append(", ");
-    builder.Append(ValueToString<T>::ToString(High()));
+    builder.Append(blink::ValueToString<T>::ToString(High()));
     builder.Append("), data=");
-    builder.Append(ValueToString<UserData>::ToString(Data()));
+    builder.Append(blink::ValueToString<UserData>::ToString(Data()));
     builder.Append(", minLow=");
-    builder.Append(ValueToString<T>::ToString(MinLow()));
+    builder.Append(blink::ValueToString<T>::ToString(MinLow()));
     builder.Append(", maxHigh=");
-    builder.Append(ValueToString<T>::ToString(MaxHigh()));
+    builder.Append(blink::ValueToString<T>::ToString(MaxHigh()));
     builder.Append(']');
     return builder.ToString();
   }
@@ -153,7 +154,10 @@ class PODInterval {
   T max_high_;
 };
 
+}  // namespace WTF
+
 #ifndef NDEBUG
+namespace blink {
 template <>
 struct ValueToString<float> {
   STATIC_ONLY(ValueToString);
@@ -167,8 +171,7 @@ template <>
 struct ValueToString<int> {
   static String ToString(const int& value) { return String::Number(value); }
 };
+}  // namespace blink
 #endif
-
-}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_INTERVAL_H_

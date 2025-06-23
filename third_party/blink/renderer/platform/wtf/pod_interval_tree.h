@@ -33,21 +33,16 @@
 #include "third_party/blink/renderer/platform/wtf/pod_red_black_tree.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace WTF {
-
-#ifndef NDEBUG
-template <class T>
-struct ValueToString;
-#endif
+namespace blink {
 
 template <class T, class UserData = void*>
-class PODIntervalSearchAdapter {
+class PodIntervalSearchAdapter {
   DISALLOW_NEW();
 
  public:
-  typedef PODInterval<T, UserData> IntervalType;
+  using IntervalType = WTF::PODInterval<T, UserData>;
 
-  PODIntervalSearchAdapter(Vector<IntervalType>& result,
+  PodIntervalSearchAdapter(Vector<IntervalType>& result,
                            const T& low_value,
                            const T& high_value)
       : result_(result), low_value_(low_value), high_value_(high_value) {}
@@ -69,27 +64,28 @@ class PODIntervalSearchAdapter {
 // supports efficient (O(lg n)) insertion, removal and querying of
 // intervals in the tree.
 template <class T, class UserData = void*>
-class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
+class PodIntervalTree final
+    : public WTF::PODRedBlackTree<WTF::PODInterval<T, UserData>> {
  public:
   // Typedef to reduce typing when declaring intervals to be stored in
   // this tree.
-  typedef PODInterval<T, UserData> IntervalType;
-  typedef PODIntervalSearchAdapter<T, UserData> IntervalSearchAdapterType;
+  using IntervalType = WTF::PODInterval<T, UserData>;
+  using IntervalSearchAdapterType = PodIntervalSearchAdapter<T, UserData>;
 
-  PODIntervalTree(UninitializedTreeEnum unitialized_tree)
-      : PODRedBlackTree<IntervalType>(unitialized_tree) {
+  explicit PodIntervalTree(WTF::UninitializedTreeEnum unitialized_tree)
+      : WTF::PODRedBlackTree<IntervalType>(unitialized_tree) {
     Init();
   }
 
-  PODIntervalTree() : PODRedBlackTree<IntervalType>() { Init(); }
+  PodIntervalTree() : WTF::PODRedBlackTree<IntervalType>() { Init(); }
 
-  explicit PODIntervalTree(scoped_refptr<PODArena> arena)
-      : PODRedBlackTree<IntervalType>(arena) {
+  explicit PodIntervalTree(scoped_refptr<WTF::PODArena> arena)
+      : WTF::PODRedBlackTree<IntervalType>(arena) {
     Init();
   }
 
-  PODIntervalTree(const PODIntervalTree&) = delete;
-  PODIntervalTree& operator=(const PODIntervalTree&) = delete;
+  PodIntervalTree(const PodIntervalTree&) = delete;
+  PodIntervalTree& operator=(const PodIntervalTree&) = delete;
 
   // Returns all intervals in the tree which overlap the given query
   // interval. The returned intervals are sorted by increasing low
@@ -126,8 +122,9 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
   }
 
   bool CheckInvariants() const override {
-    if (!PODRedBlackTree<IntervalType>::CheckInvariants())
+    if (!WTF::PODRedBlackTree<IntervalType>::CheckInvariants()) {
       return false;
+    }
     if (!this->Root())
       return true;
     return CheckInvariantsFromNode(this->Root());
@@ -140,7 +137,7 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
   }
 
  private:
-  typedef typename PODRedBlackTree<IntervalType>::Node IntervalNode;
+  using IntervalNode = typename WTF::PODRedBlackTree<IntervalType>::Node;
 
   // Initializes the tree.
   void Init() {
@@ -323,7 +320,7 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
 
 #ifndef NDEBUG
   static void LogVerificationFailedAtNode(IntervalNode const* node) {
-    DLOG(ERROR) << "PODIntervalTree verification failed at node " << node
+    DLOG(ERROR) << "PodIntervalTree verification failed at node " << node
                 << ": data=" << node->Data().ToString();
   }
 #else
@@ -334,13 +331,13 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
 #ifndef NDEBUG
 // Support for printing PODIntervals at the PODRedBlackTree level.
 template <class T, class UserData>
-struct ValueToString<PODInterval<T, UserData>> {
-  static String ToString(const PODInterval<T, UserData>& interval) {
+struct ValueToString<WTF::PODInterval<T, UserData>> {
+  static String ToString(const WTF::PODInterval<T, UserData>& interval) {
     return interval.ToString();
   }
 };
 #endif
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_INTERVAL_TREE_H_

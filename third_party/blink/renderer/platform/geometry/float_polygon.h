@@ -65,7 +65,7 @@ class PLATFORM_EXPORT FloatPolygon {
 
  private:
   typedef WTF::PODInterval<float, FloatPolygonEdge*> EdgeInterval;
-  typedef WTF::PODIntervalTree<float, FloatPolygonEdge*> EdgeIntervalTree;
+  using EdgeIntervalTree = PodIntervalTree<float, FloatPolygonEdge*>;
 
   Vector<gfx::PointF> vertices_;
   gfx::RectF bounding_box_;
@@ -136,21 +136,18 @@ class PLATFORM_EXPORT FloatPolygonEdge final : public VertexPair {
   raw_ptr<const FloatPolygon> polygon_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-// These structures are used by PODIntervalTree for debugging.
+// These structures are used by PodIntervalTree for debugging.
 #ifndef NDEBUG
 template <>
-struct ValueToString<blink::FloatPolygonEdge*> {
+struct ValueToString<FloatPolygonEdge*> {
   STATIC_ONLY(ValueToString);
-  static String ToString(const blink::FloatPolygonEdge* edge) {
+  static String ToString(const FloatPolygonEdge* edge) {
     return String::Format("%p (%f,%f %f,%f)", edge, edge->Vertex1().x(),
                           edge->Vertex1().y(), edge->Vertex2().x(),
                           edge->Vertex2().y());
   }
 };
 #endif
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_POLYGON_H_
