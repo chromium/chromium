@@ -359,6 +359,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = [
+                "clobber",
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
