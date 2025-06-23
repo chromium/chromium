@@ -37,6 +37,8 @@ static_library("internal") {
     "event_model_provider.h",
     "event_model_reader.h",
     "event_model_writer.h",
+    "event_storage_migration.cc",
+    "event_storage_migration.h",
     "event_storage_validator.h",
     "event_store.h",
     "feature_config_condition_validator.cc",
@@ -83,10 +85,12 @@ static_library("internal") {
   public_deps = [
     "//base",
     "//components/feature_engagement/internal/proto",
+    "//components/prefs",
   ]
 
   deps = [
     "//components/feature_engagement/public",
+    "//components/feature_engagement/public:prefs",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
   ]
@@ -118,6 +122,7 @@ source_set("unit_tests") {
     "display_lock_controller_impl_unittest.cc",
     "editable_configuration_unittest.cc",
     "event_model_impl_unittest.cc",
+    "event_storage_migration_unittest.cc",
     "feature_config_condition_validator_unittest.cc",
     "feature_config_event_storage_validator_unittest.cc",
     "in_memory_event_store_unittest.cc",
@@ -142,8 +147,11 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/feature_engagement/internal/test:test_support",
     "//components/feature_engagement/public",
+    "//components/feature_engagement/public:prefs",
     "//components/feature_engagement/test:test_support",
     "//components/leveldb_proto:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

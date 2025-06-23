@@ -35,6 +35,8 @@ namespace leveldb_proto {
 class ProtoDatabaseProvider;
 }
 
+class PrefService;
+
 namespace feature_engagement {
 
 class Configuration;
@@ -161,6 +163,7 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   static std::unique_ptr<Tracker> Create(
       const base::FilePath& storage_dir,
       const base::FilePath& device_storage_dir,
+      PrefService* pref_service,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       leveldb_proto::ProtoDatabaseProvider* db_provider,
       std::unique_ptr<TrackerEventExporter> event_exporter,

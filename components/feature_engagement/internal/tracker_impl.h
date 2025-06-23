@@ -15,12 +15,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/feature_engagement/internal/event_storage_migration.h"
 #include "components/feature_engagement/public/session_controller.h"
 #include "components/feature_engagement/public/tracker.h"
 
 namespace base {
 class Clock;
 }
+
+class PrefService;
 
 namespace feature_engagement {
 class AvailabilityModel;
@@ -43,7 +46,9 @@ class TrackerImpl : public Tracker {
               std::unique_ptr<ConditionValidator> condition_validator,
               std::unique_ptr<TimeProvider> time_provider,
               std::unique_ptr<TrackerEventExporter> event_exporter,
-              std::unique_ptr<SessionController> session_controller);
+              std::unique_ptr<SessionController> session_controller,
+              std::unique_ptr<EventStorageMigration> event_storage_migration,
+              PrefService* pref_service);
 
   TrackerImpl(const TrackerImpl&) = delete;
   TrackerImpl& operator=(const TrackerImpl&) = delete;
@@ -92,6 +97,9 @@ class TrackerImpl : public Tracker {
 
   // Invoked by the AvailabilityModel when it has been initialized.
   void OnAvailabilityModelInitializationFinished(bool success);
+
+  // Invoked by the EventStorageMigration when the migration is finished.
+  void OnEventStorageMigrationFinished(bool success);
 
   // Invoked by the TrackerEventExporter if it has any events to
   // migrate.
@@ -152,6 +160,12 @@ class TrackerImpl : public Tracker {
 
   // The session controller that manages the life time of a session.
   std::unique_ptr<SessionController> session_controller_;
+
+  // The event storage migration.
+  std::unique_ptr<EventStorageMigration> event_storage_migration_;
+
+  // The pref service.
+  raw_ptr<PrefService> pref_service_;
 
   // Whether the initialization of the underlying EventModelProvider has
   // finished.

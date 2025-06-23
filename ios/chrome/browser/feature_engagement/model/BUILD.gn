@@ -19,6 +19,7 @@ source_set("model") {
     "//base",
     "//components/feature_engagement",
     "//components/leveldb_proto",
+    "//components/prefs",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/profile",

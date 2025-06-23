@@ -152,3 +152,16 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/components/feature_engagement/CppWrappedTestTracker.java" ]
   }
 }
+
+source_set("prefs") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
+}

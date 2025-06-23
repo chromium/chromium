@@ -11,6 +11,7 @@
 #import "base/task/thread_pool.h"
 #import "components/feature_engagement/public/feature_activation.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/feature_engagement/model/event_exporter.h"
 #import "ios/chrome/browser/feature_engagement/model/ios_tracker_session_controller.h"
@@ -59,8 +60,8 @@ std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
   auto session_controller = std::make_unique<IOSTrackerSessionController>();
 
   return feature_engagement::Tracker::Create(
-      storage_dir, device_storage_dir, background_task_runner, db_provider,
-      std::move(event_exporter),
+      storage_dir, device_storage_dir, profile->GetPrefs(),
+      background_task_runner, db_provider, std::move(event_exporter),
       feature_engagement::Tracker::GetDefaultConfigurationProviders(),
       std::move(session_controller));
 }

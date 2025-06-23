@@ -17,6 +17,7 @@
 #include "components/feature_engagement/public/field_trial_configuration_provider.h"
 #include "components/feature_engagement/public/local_configuration_provider.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -93,8 +94,8 @@ TrackerFactory::BuildServiceInstanceForBrowserContext(
 #endif
 
   return feature_engagement::Tracker::Create(
-      storage_dir, device_storage_dir, background_task_runner, db_provider,
-      nullptr, std::move(providers));
+      storage_dir, device_storage_dir, profile->GetPrefs(),
+      background_task_runner, db_provider, nullptr, std::move(providers));
 }
 
 }  // namespace feature_engagement

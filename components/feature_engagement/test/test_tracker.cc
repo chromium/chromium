@@ -54,7 +54,7 @@ std::unique_ptr<Tracker> CreateTestTracker(
       std::make_unique<NoopDisplayLockController>(),
       std::make_unique<FeatureConfigConditionValidator>(),
       std::make_unique<SystemTimeProvider>(), std::move(event_exporter),
-      nullptr);
+      nullptr, nullptr, nullptr);
 }
 
 }  // namespace feature_engagement

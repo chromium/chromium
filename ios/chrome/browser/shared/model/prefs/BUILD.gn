@@ -42,6 +42,7 @@ source_set("browser_prefs") {
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/connectors/core",
     "//components/enterprise/idle",
+    "//components/feature_engagement/public:prefs",
     "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/gcm_driver",
     "//components/handoff",

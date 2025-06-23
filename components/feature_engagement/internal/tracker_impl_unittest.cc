@@ -387,7 +387,8 @@ class TrackerImplTest : public ::testing::Test {
         std::move(event_model_provider), std::move(availability_model),
         std::move(configuration), std::move(display_lock_controller),
         std::move(condition_validator), std::move(time_provider),
-        std::move(event_exporter), std::move(session_controller));
+        std::move(event_exporter), std::move(session_controller),
+        nullptr /* event_storage_migration */, nullptr /* pref_service */);
   }
 
   void VerifyEventTrigger(std::string event_name, uint32_t count) {
@@ -1596,7 +1597,8 @@ class MultipleEventModelTrackerImplTest : public TrackerImplTest {
         std::move(multiple_event_model_provider), std::move(availability_model),
         std::move(configuration), std::move(display_lock_controller),
         std::move(condition_validator), std::move(time_provider),
-        std::move(event_exporter), std::move(session_controller));
+        std::move(event_exporter), std::move(session_controller),
+        nullptr /* event_storage_migration */, nullptr /* pref_service */);
   }
 
  protected:

@@ -116,6 +116,7 @@
 #include "components/enterprise/browser/identifiers/identifiers_prefs.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/feature_engagement/public/pref_names.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/prefs.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
@@ -1713,6 +1714,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ProfileAttributesStorage::RegisterPrefs(registry);
   ProfileNetworkContextService::RegisterLocalStatePrefs(registry);
   profiles::RegisterPrefs(registry);
+  feature_engagement::RegisterLocalStatePrefs(registry);
 #if BUILDFLAG(IS_ANDROID)
   PushMessagingServiceImpl::RegisterPrefs(registry);
 #endif

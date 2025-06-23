@@ -26,6 +26,7 @@
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/idle/idle_pref_names.h"
+#import "components/feature_engagement/public/pref_names.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/handoff/handoff_manager.h"
 #import "components/history/core/common/pref_names.h"
@@ -436,6 +437,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   auto_deletion::AutoDeletionService::RegisterLocalStatePrefs(registry);
   push_notification_prefs::RegisterLocalStatePrefs(registry);
   RegisterWelcomeBackLocalStatePrefs(registry);
+  feature_engagement::RegisterLocalStatePrefs(registry);
 
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   default_status::RegisterDefaultStatusPrefs(registry);
