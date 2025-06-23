@@ -9,11 +9,8 @@
 
 #import <string>
 
-#import "base/memory/raw_ptr.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "services/network/public/cpp/resource_request.h"
-
-class AuthenticationService;
 
 @class BWGConfiguration;
 
@@ -43,12 +40,6 @@ std::string CreateRequestBody(
 
 // Creates resource request for loading glic.
 std::unique_ptr<network::ResourceRequest> CreateResourceRequest();
-
-// TODO(crbug.com/422506000): Remove this once the provider is migrated.
-void StartBwgOverlay(
-    UIViewController* base_view_controller,
-    raw_ptr<AuthenticationService> auth_service,
-    std::unique_ptr<optimization_guide::proto::PageContext> page_context);
 
 // Starts the overlay experience with the given configuration.
 void StartBwgOverlay(BWGConfiguration* bwg_configuration);

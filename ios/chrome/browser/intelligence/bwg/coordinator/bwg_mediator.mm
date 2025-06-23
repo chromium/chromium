@@ -118,11 +118,7 @@
       page_context_completion_callback =
           base::BindOnce(^void(PageContextWrapperCallbackResponse response) {
             BWGMediator* strongSelf = weakSelf;
-            // TODO(crbug.com/422506000): Handle PageContextWrapper error
-            // states, and pipe them down.
-            if (response.has_value()) {
-              [strongSelf openBWGOverlayForPage:std::move(response.value())];
-            }
+            [strongSelf openBWGOverlayForPage:std::move(response)];
             strongSelf->_pageContextWrapper = nil;
           });
 
@@ -135,13 +131,13 @@
   [_pageContextWrapper populatePageContextFieldsAsync];
 }
 
-// Opens the BWG overlay with a given page context.
+// Opens the BWG overlay with a given PageContextWrapperCallbackResponse.
 - (void)openBWGOverlayForPage:
-    (std::unique_ptr<optimization_guide::proto::PageContext>)pageContext {
+    (PageContextWrapperCallbackResponse)pageContextWrapperResponse {
   BwgService* bwgService =
       BwgServiceFactory::GetForProfile(_browser->GetProfile());
-  bwgService->PresentOverlayOnViewController(self.baseViewController,
-                                             std::move(pageContext));
+  bwgService->PresentOverlayOnViewController(
+      self.baseViewController, std::move(pageContextWrapperResponse));
 
   // TODO(crbug.com/419064727): Dismiss bwg promo/consent.
 }

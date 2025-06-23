@@ -8,10 +8,17 @@
 #import <UIKit/UIKit.h>
 
 #import "base/memory/raw_ptr.h"
+#import "base/types/expected.h"
 #import "components/keyed_service/core/keyed_service.h"
-#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 class AuthenticationService;
+
+enum class PageContextWrapperError;
+
+namespace optimization_guide::proto {
+class PageContext;
+}  // namespace optimization_guide::proto
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -25,10 +32,12 @@ class BwgService : public KeyedService {
              PrefService* pref_service);
   ~BwgService() override;
 
-  // Presents the overlay on a given view controller.
+  // Presents the overlay on a given view controller for a given expected
+  // PageContext.
   void PresentOverlayOnViewController(
       UIViewController* base_view_controller,
-      std::unique_ptr<optimization_guide::proto::PageContext> page_context);
+      base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
+                     PageContextWrapperError> expected_page_context);
 
   // Returns whether the current profile is eligible for BWG.
   // TODO(crbug.com/419066154): Use this function to show the entry point.
