@@ -537,6 +537,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         test::kPreloadingEmbedderHistgramSuffixForTesting, referrer,
         std::move(referring_origin),
         /*no_vary_search_hint=*/std::nullopt,
+        /*priority=*/std::nullopt,
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
         /*attempt=*/nullptr);
@@ -555,7 +556,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       bool should_disable_block_until_head_timeout = false) {
     return browser_context()->StartBrowserPrefetchRequest(
         url, test::kPreloadingEmbedderHistgramSuffixForTesting, true,
-        no_vary_search_data, additional_headers,
+        no_vary_search_data, /*priority=*/std::nullopt, additional_headers,
         std::move(request_status_listener), ttl,
         /*should_append_variations_header=*/true,
         should_disable_block_until_head_timeout);
@@ -7714,6 +7715,7 @@ class PrefetchServiceAddPrefetchContainerTest
         prefetch_url, std::move(prefetch_type), blink::mojom::Referrer(),
         std::make_optional(SpeculationRulesTags()),
         /*no_vary_search_hint=*/std::nullopt,
+        /*priority=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
         PreloadPipelineInfo::Create(planned_max_preloading_type),
         attempt->GetWeakPtr());
@@ -7988,10 +7990,10 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Prioritize) {
           base::BindRepeating([](const PrefetchContainer& prefetch_container) {
             if (prefetch_container.GetURL().possibly_invalid_spec().ends_with(
                     "?prioritize=1")) {
-              return PrefetchPriority::kHighTest;
+              return PrefetchSchedulerPriority::kHighTest;
             }
 
-            return PrefetchPriority::kBase;
+            return PrefetchSchedulerPriority::kBase;
           }));
 
   const auto url_1 = GURL("https://example.com/one");
@@ -8068,10 +8070,10 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Prioritize_Async) {
           base::BindRepeating([](const PrefetchContainer& prefetch_container) {
             if (prefetch_container.GetURL().possibly_invalid_spec().ends_with(
                     "?prioritize=1")) {
-              return PrefetchPriority::kHighTest;
+              return PrefetchSchedulerPriority::kHighTest;
             }
 
-            return PrefetchPriority::kBase;
+            return PrefetchSchedulerPriority::kBase;
           }));
 
   const auto url_1 = GURL("https://example.com/one");
@@ -8132,10 +8134,10 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Burst) {
           base::BindRepeating([](const PrefetchContainer& prefetch_container) {
             if (prefetch_container.GetURL().possibly_invalid_spec().ends_with(
                     "?burst=1")) {
-              return PrefetchPriority::kBurstTest;
+              return PrefetchSchedulerPriority::kBurstTest;
             }
 
-            return PrefetchPriority::kBase;
+            return PrefetchSchedulerPriority::kBase;
           }));
 
   const auto url_1 = GURL("https://example.com/one");
@@ -8237,10 +8239,10 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_BurstTakesPriority) {
           base::BindRepeating([](const PrefetchContainer& prefetch_container) {
             if (prefetch_container.GetURL().possibly_invalid_spec().ends_with(
                     "?burst=1")) {
-              return PrefetchPriority::kBurstTest;
+              return PrefetchSchedulerPriority::kBurstTest;
             }
 
-            return PrefetchPriority::kBase;
+            return PrefetchSchedulerPriority::kBase;
           }));
 
   const auto url_1 = GURL("https://example.com/one");
@@ -8342,10 +8344,10 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_BurstTakesPriority_Async) {
           base::BindRepeating([](const PrefetchContainer& prefetch_container) {
             if (prefetch_container.GetURL().possibly_invalid_spec().ends_with(
                     "?burst=1")) {
-              return PrefetchPriority::kBurstTest;
+              return PrefetchSchedulerPriority::kBurstTest;
             }
 
-            return PrefetchPriority::kBase;
+            return PrefetchSchedulerPriority::kBase;
           }));
 
   const auto url_1 = GURL("https://example.com/one");

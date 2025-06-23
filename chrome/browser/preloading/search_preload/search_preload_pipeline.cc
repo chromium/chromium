@@ -87,8 +87,8 @@ bool SearchPreloadPipeline::StartPrefetch(
       /*use_prefetch_proxy=*/false,
       prerender_utils::kDefaultSearchEngineMetricSuffix,
       blink::mojom::Referrer(),
-      /*referring_origin=*/std::nullopt, no_vary_search_hint, pipeline_info_,
-      attempt->GetWeakPtr(),
+      /*referring_origin=*/std::nullopt, no_vary_search_hint,
+      /*priority=*/std::nullopt, pipeline_info_, attempt->GetWeakPtr(),
       /*holdback_status_override=*/std::nullopt,
       /*ttl=*/features::kDsePreload2PrefetchTtl.Get());
   CHECK(prefetch_handle_);

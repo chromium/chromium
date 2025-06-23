@@ -271,8 +271,9 @@ void PrefetchDocumentManager::PrefetchUrl(
   auto container = std::make_unique<PrefetchContainer>(
       static_cast<RenderFrameHostImpl&>(render_frame_host()), document_token_,
       url, prefetch_type, referrer, std::move(speculation_rules_tags),
-      std::move(no_vary_search_hint), weak_method_factory_.GetWeakPtr(),
-      std::move(preload_pipeline_info), attempt->GetWeakPtr());
+      std::move(no_vary_search_hint), /*priority=*/std::nullopt,
+      weak_method_factory_.GetWeakPtr(), std::move(preload_pipeline_info),
+      attempt->GetWeakPtr());
   DVLOG(1) << *container << ": created";
 
   referring_page_metrics_.prefetch_attempted_count++;

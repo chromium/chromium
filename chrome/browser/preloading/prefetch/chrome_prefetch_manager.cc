@@ -57,6 +57,7 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
           prefetch_url, use_prefetch_proxy, kCCTMetricsSuffix,
           blink::mojom::Referrer(), referring_origin,
           /*no_vary_search_hint=*/std::nullopt,
+          /*priority=*/std::nullopt,
           content::PreloadPipelineInfo::Create(
               /*planned_max_preloading_type=*/content::PreloadingType::
                   kPrefetch),

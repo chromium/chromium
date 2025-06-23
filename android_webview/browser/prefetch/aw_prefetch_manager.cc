@@ -144,8 +144,9 @@ int AwPrefetchManager::StartPrefetchRequest(
         browser_context_->StartBrowserPrefetchRequest(
             pf_url, AW_PREFETCH_METRICS_SUFFIX,
             GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
-            expected_no_vary_search, additional_headers,
-            std::move(request_status_listener), base::Seconds(ttl_in_sec_),
+            expected_no_vary_search, /*priority=*/std::nullopt,
+            additional_headers, std::move(request_status_listener),
+            base::Seconds(ttl_in_sec_),
             /*should_append_variations_header=*/false,
             /*should_disable_block_until_head_timeout=*/true);
 

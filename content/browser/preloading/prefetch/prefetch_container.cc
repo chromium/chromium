@@ -329,6 +329,7 @@ PrefetchContainer::PrefetchContainer(
     const blink::mojom::Referrer& referrer,
     std::optional<SpeculationRulesTags> speculation_rules_tags,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    std::optional<PrefetchPriority> priority,
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt)
@@ -357,7 +358,8 @@ PrefetchContainer::PrefetchContainer(
               .javascript_enabled,
           PrefetchContainerDefaultTtlInPrefetchService(),
           /*should_append_variations_header=*/true,
-          /*should_disable_block_until_head_timeout=*/false) {
+          /*should_disable_block_until_head_timeout=*/false,
+          priority) {
   CHECK(prefetch_type_.IsRendererInitiated());
 }
 
@@ -369,6 +371,7 @@ PrefetchContainer::PrefetchContainer(
     const blink::mojom::Referrer& referrer,
     const std::optional<url::Origin>& referring_origin,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    std::optional<PrefetchPriority> priority,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
     std::optional<PreloadingHoldbackStatus> holdback_status_override,
@@ -398,7 +401,8 @@ PrefetchContainer::PrefetchContainer(
           ttl.has_value() ? ttl.value()
                           : PrefetchContainerDefaultTtlInPrefetchService(),
           /*should_append_variations_header=*/true,
-          /*should_disable_block_until_head_timeout=*/false) {
+          /*should_disable_block_until_head_timeout=*/false,
+          priority) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
   CHECK(!embedder_histogram_suffix_.value().empty());
@@ -413,6 +417,7 @@ PrefetchContainer::PrefetchContainer(
     bool javascript_enabled,
     const std::optional<url::Origin>& referring_origin,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    std::optional<PrefetchPriority> priority,
     base::WeakPtr<PreloadingAttempt> attempt,
     const net::HttpRequestHeaders& additional_headers,
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
@@ -444,7 +449,8 @@ PrefetchContainer::PrefetchContainer(
           javascript_enabled,
           ttl,
           should_append_variations_header,
-          should_disable_block_until_head_timeout) {
+          should_disable_block_until_head_timeout,
+          priority) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
   CHECK(!embedder_histogram_suffix_.value().empty());
@@ -472,7 +478,8 @@ PrefetchContainer::PrefetchContainer(
     bool is_javascript_enabled,
     base::TimeDelta ttl,
     bool should_append_variations_header,
-    bool should_disable_block_until_head_timeout)
+    bool should_disable_block_until_head_timeout,
+    std::optional<PrefetchPriority> priority)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
       referring_origin_(referring_origin),
       referring_url_hash_(referring_url_hash),
@@ -498,7 +505,8 @@ PrefetchContainer::PrefetchContainer(
       ttl_(ttl),
       should_append_variations_header_(should_append_variations_header),
       should_disable_block_until_head_timeout_(
-          should_disable_block_until_head_timeout) {
+          should_disable_block_until_head_timeout),
+      priority_(priority) {
   is_likely_ahead_of_prerender_ =
       CalculateIsLikelyAheadOfPrerender(*preload_pipeline_info_);
 

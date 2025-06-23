@@ -256,6 +256,7 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest,
       test::kPreloadingEmbedderHistgramSuffixForTesting,
       blink::mojom::Referrer(), referring_origin,
       /*no_vary_search_hint=*/std::nullopt,
+      /*priority=*/std::nullopt,
       PreloadPipelineInfo::Create(
           /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
       /*attempt=*/nullptr, /*holdback_status_override=*/std::nullopt,

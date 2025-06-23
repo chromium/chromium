@@ -34,6 +34,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/prefetch_handle.h"
+#include "content/public/browser/prefetch_priority.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
@@ -1629,6 +1630,8 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   //   perspectives. Normally it should be nullopt and then the opaque origin is
   //   used internally, but if necessary, custom value from trusted surfaces can
   //   be embedded into it here.
+  // - `priority is an optimization hint of how quickly this prefetch should be
+  //    available. Performs no relevant optimization if passing `std::nullopt`
   // - `preload_pipeline_info` is used to designate what pipeline this prefetch
   //   belongs to.
   // - `attempt` is used to record some metrics associated with this prefetch
@@ -1647,6 +1650,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       const blink::mojom::Referrer& referrer,
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+      std::optional<PrefetchPriority> priority,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
       std::optional<PreloadingHoldbackStatus> holdback_status_override,

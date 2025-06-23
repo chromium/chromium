@@ -83,7 +83,8 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
                      /*use_prefetch_proxy=*/true, options.eagerness),
         blink::mojom::Referrer(),
         std::make_optional(std::move(options.speculation_rules_tags)),
-        /*no_vary_search_hint=*/std::nullopt, options.prefetch_document_manager,
+        /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
+        options.prefetch_document_manager,
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
   }
@@ -97,7 +98,7 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
                      /*use_prefetch_proxy=*/true),
         test::kPreloadingEmbedderHistgramSuffixForTesting,
         blink::mojom::Referrer(), std::move(referring_origin),
-        /*no_vary_search_hint=*/std::nullopt,
+        /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
         /*attempt=*/nullptr);
@@ -116,6 +117,7 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
         /*javascript_enabled=*/true,
         /*referring_origin=*/std::nullopt,
         /*no_vary_search_hint=*/std::nullopt,
+        /*priority=*/std::nullopt,
         /*attempt=*/nullptr, additional_headers,
         /*request_status_listener=*/nullptr, base::Minutes(10),
         should_append_additional_headers);
@@ -335,6 +337,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
       blink::mojom::Referrer(),
       std::make_optional(SpeculationRulesTags({"example"})),
       /*no_vary_search_hint=*/std::nullopt,
+      /*priority=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr,
       PreloadPipelineInfo::Create(
           /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
@@ -365,6 +368,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
       blink::mojom::Referrer(),
       /*referring_origin=*/std::nullopt,
       /*no_vary_search_hint=*/std::nullopt,
+      /*priority=*/std::nullopt,
       PreloadPipelineInfo::Create(
           /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
       /*attempt=*/nullptr);

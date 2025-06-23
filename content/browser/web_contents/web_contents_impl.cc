@@ -12018,6 +12018,7 @@ std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
     const blink::mojom::Referrer& referrer,
     const std::optional<url::Origin>& referring_origin,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    std::optional<PrefetchPriority> priority,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
     std::optional<PreloadingHoldbackStatus> holdback_status_override,
@@ -12037,7 +12038,7 @@ std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
                              use_prefetch_proxy);
   auto container = std::make_unique<PrefetchContainer>(
       *this, prefetch_url, prefetch_type, embedder_histogram_suffix, referrer,
-      referring_origin, std::move(no_vary_search_hint),
+      referring_origin, std::move(no_vary_search_hint), std::move(priority),
       std::move(preload_pipeline_info), std::move(attempt),
       holdback_status_override, std::move(ttl));
 

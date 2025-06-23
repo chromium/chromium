@@ -24,6 +24,7 @@
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/prefetch_priority.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
@@ -112,6 +113,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const blink::mojom::Referrer& referrer,
       std::optional<SpeculationRulesTags> speculation_rules_tags,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+      std::optional<PrefetchPriority> priority,
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr);
@@ -127,6 +129,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const blink::mojom::Referrer& referrer,
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+      std::optional<PrefetchPriority> priority,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
       std::optional<PreloadingHoldbackStatus> holdback_status_override =
@@ -145,6 +148,7 @@ class CONTENT_EXPORT PrefetchContainer {
       bool javascript_enabled,
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+      std::optional<PrefetchPriority> priority,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
       const net::HttpRequestHeaders& additional_headers = {},
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener =
@@ -838,7 +842,8 @@ class CONTENT_EXPORT PrefetchContainer {
       bool is_javascript_enabled,
       base::TimeDelta ttl,
       bool should_append_variations_header,
-      bool should_disable_block_until_head_timeout);
+      bool should_disable_block_until_head_timeout,
+      std::optional<PrefetchPriority> priority);
 
   // Update |prefetch_status_| and report prefetch status to
   // DevTools without updating TriggeringOutcome.
@@ -1117,6 +1122,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // `BlockUntilHeadTimeout`, which is currently calculated by
   // `PrefetchBlockUntilHeadTimeout()` as a `prefetch_params`.
   const bool should_disable_block_until_head_timeout_ = false;
+
+  // An optimization hint indicating how quickly this prefetch should be
+  // available.
+  const std::optional<PrefetchPriority> priority_ = std::nullopt;
 
   // Timing information for metrics
   //

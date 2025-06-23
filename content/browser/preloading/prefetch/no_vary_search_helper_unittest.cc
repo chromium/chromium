@@ -109,6 +109,7 @@ class NoVarySearchHelperTester final {
             blink::mojom::Referrer(),
             std::make_optional(SpeculationRulesTags()),
             /*no_vary_search_hint=*/std::nullopt,
+            /*priority=*/std::nullopt,
             /*prefetch_document_manager=*/nullptr,
             PreloadPipelineInfo::Create(/*planned_max_preloading_type=*/
                                         PreloadingType::kPrefetch));

@@ -333,6 +333,7 @@ source_set("browser_sources") {
     "popup_menu.h",
     "prefetch_handle.h",
     "prefetch_metrics.h",
+    "prefetch_priority.h",
     "prefetch_request_status_listener.h",
     "prefetch_service_delegate.cc",
     "prefetch_service_delegate.h",

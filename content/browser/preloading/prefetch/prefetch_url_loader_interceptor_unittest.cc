@@ -389,6 +389,7 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
         std::move(prefetch_type), blink::mojom::Referrer(),
         std::make_optional(SpeculationRulesTags()),
         /*no_vary_search_hint=*/std::nullopt,
+        /*priority=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
@@ -411,6 +412,7 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
         test::kPreloadingEmbedderHistgramSuffixForTesting,
         blink::mojom::Referrer(), std::move(referring_origin),
         /*no_vary_search_hint=*/std::nullopt,
+        /*priority=*/std::nullopt,
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
 
