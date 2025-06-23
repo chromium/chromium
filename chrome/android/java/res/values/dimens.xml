@@ -228,6 +228,7 @@ found in the LICENSE file.
     <dimen name="custom_tabs_toolbar_button_spacer_16">16dp</dimen>
     <dimen name="custom_tabs_toolbar_button_spacer_8">8dp</dimen>
     <dimen name="custom_tabs_adaptive_button_fg_padding_start">18dp</dimen>
+    <dimen name="custom_tabs_adaptive_button_bg_height">36dp</dimen>
     <dimen name="custom_tabs_adaptive_button_bg_padding_start">12dp</dimen>
     <dimen name="custom_tabs_adaptive_button_bg_padding_end">0dp</dimen>
     <dimen name="custom_tabs_adaptive_button_bg_padding_vert">10dp</dimen>

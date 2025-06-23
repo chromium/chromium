@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.SpannableString;
@@ -1606,6 +1607,23 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 mTrackerSupplier.set(TrackerFactory.getTrackerForProfile(tab.getProfile()));
             }
             mOptionalButtonCoordinator.updateButton(buttonData, isIncognitoBranded());
+            setOptionalButtonBackgroundInset();
+        }
+
+        // Modify the inset of the optional background drawable to match that of the icon secondary
+        // background.
+        private void setOptionalButtonBackgroundInset() {
+            View optionalButton = findViewById(R.id.optional_toolbar_button);
+            LayerDrawable backgroundDrawable = (LayerDrawable) optionalButton.getBackground();
+            int height = getDimensionPixelSize(R.dimen.custom_tabs_adaptive_button_bg_height);
+            int left = getDimensionPixelSize(R.dimen.custom_tabs_adaptive_button_bg_padding_start);
+            int right = getDimensionPixelSize(R.dimen.custom_tabs_adaptive_button_bg_padding_end);
+            backgroundDrawable.setLayerHeight(/* index= */ 0, height);
+            backgroundDrawable.setLayerInset(/* index= */ 0, left, /* t= */ 0, right, /* b= */ 0);
+        }
+
+        private int getDimensionPixelSize(@DimenRes int dimenId) {
+            return getResources().getDimensionPixelSize(dimenId);
         }
 
         // Display a (blue) dot on the overflow menu icon for the optional button that cannot be
