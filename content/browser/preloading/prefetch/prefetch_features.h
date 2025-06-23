@@ -113,6 +113,9 @@ CONTENT_EXPORT extern const base::FeatureParam<size_t>
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kPrefetchQueueingPartialFixWithoutScheduler);
 
+// Controls field trials parameters for prefetch canary checker.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCanaryCheckerParams);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

@@ -98,4 +98,7 @@ BASE_FEATURE(kPrefetchQueueingPartialFixWithoutScheduler,
              "PrefetchQueueingPartialFixWithoutScheduler",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrefetchCanaryCheckerParams,
+             "PrefetchCanaryCheckerParams",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
