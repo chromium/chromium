@@ -13,7 +13,7 @@ namespace enterprise_commands {
 
 UserRemoteCommandsService::UserRemoteCommandsService(Profile* profile)
     : policy::UserRemoteCommandsServiceBase(
-          profile->GetUserCloudPolicyManager()->core()),
+          profile->GetCloudPolicyManager()->core()),
       profile_(profile) {}
 UserRemoteCommandsService::~UserRemoteCommandsService() = default;
 
