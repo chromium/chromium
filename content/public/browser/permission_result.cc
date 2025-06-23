@@ -6,6 +6,10 @@
 
 namespace content {
 
+PermissionResult::PermissionResult()
+    : status(PermissionStatus::ASK),
+      source(PermissionStatusSource::UNSPECIFIED) {}
+
 PermissionResult::PermissionResult(
     PermissionStatus permission_status,
     PermissionStatusSource permission_status_source,

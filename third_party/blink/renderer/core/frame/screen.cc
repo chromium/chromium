@@ -41,7 +41,24 @@
 namespace blink {
 
 Screen::Screen(LocalDOMWindow* window, int64_t display_id)
-    : ExecutionContextClient(window), display_id_(display_id) {}
+    : ExecutionContextClient(window), display_id_(display_id) {
+  // If we're potentially reducing information about the screen size, register
+  // ourselves as a client of CachedPermissionStatus to listen for changes to
+  // the WINDOW_MANAGEMENT permission. We're going to rely on this cache because
+  // we'd otherwise need to block each synchronous property getter on a call to
+  // retrieve the current permission status, which is quite expensive for this
+  // commonly-used object.
+  if (RuntimeEnabledFeatures::ReduceScreenSizeEnabled() && DomWindow() &&
+      DomWindow()->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kWindowManagement)) {
+    auto descriptor = mojom::blink::PermissionDescriptor::New();
+    descriptor->name = mojom::blink::PermissionName::WINDOW_MANAGEMENT;
+    Vector<mojom::blink::PermissionDescriptorPtr> descriptors;
+    descriptors.push_back(std::move(descriptor));
+    CachedPermissionStatus::From(DomWindow())
+        ->RegisterClient(this, std::move(descriptors));
+  }
+}
 
 // static
 bool Screen::AreWebExposedScreenPropertiesEqual(
@@ -195,7 +212,8 @@ ExecutionContext* Screen::GetExecutionContext() const {
 bool Screen::ShouldReduceScreenSize() const {
   // TODO(408932088): Take the current state of the window management permission
   // (`mojom::blink::PermissionName::WINDOW_MANAGEMENT`) into account here.
-  return RuntimeEnabledFeatures::ReduceScreenSizeEnabled();
+  return RuntimeEnabledFeatures::ReduceScreenSizeEnabled() &&
+         !window_management_permission_granted_;
 }
 
 bool Screen::isExtended() const {
@@ -233,6 +251,26 @@ const display::ScreenInfo& Screen::GetScreenInfo() const {
   }
   DEFINE_STATIC_LOCAL(display::ScreenInfo, kEmptyScreenInfo, ());
   return kEmptyScreenInfo;
+}
+
+void Screen::OnPermissionStatusChange(mojom::blink::PermissionName name,
+                                      mojom::blink::PermissionStatus status) {
+  CHECK(name == mojom::blink::PermissionName::WINDOW_MANAGEMENT);
+  window_management_permission_granted_ =
+      status == mojom::blink::PermissionStatus::GRANTED;
+}
+
+void Screen::OnPermissionStatusInitialized(
+    CachedPermissionStatus::PermissionStatusMap map) {
+  // Window management permission is granted if the map we're given has entries,
+  // and they're all GRANTED:
+  window_management_permission_granted_ =
+      map.size() > 0U && std::ranges::all_of(map, [](const auto& status) {
+        return status.value == mojom::blink::PermissionStatus::GRANTED;
+      });
+
+  // If the permission is granted, it should be the only item in the map:
+  CHECK(!window_management_permission_granted_ || map.size() == 1U);
 }
 
 }  // namespace blink

@@ -701,12 +701,7 @@ PermissionControllerImpl::GetPermissionStatusForEmbeddedRequester(
 PermissionStatus PermissionControllerImpl::GetCombinedPermissionAndDeviceStatus(
     const blink::mojom::PermissionDescriptorPtr& permission,
     RenderFrameHost* render_frame_host) {
-  auto permission_type =
-      blink::PermissionDescriptorToPermissionType(permission);
-
-  CHECK(permission_type == blink::PermissionType::VIDEO_CAPTURE ||
-        permission_type == blink::PermissionType::AUDIO_CAPTURE ||
-        permission_type == blink::PermissionType::GEOLOCATION);
+  CHECK(PermissionUtil::IsDevicePermission(permission));
   return GetPermissionStatusForCurrentDocumentInternal(
       permission, render_frame_host, /*should_include_device_status=*/true);
 }

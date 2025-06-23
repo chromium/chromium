@@ -113,6 +113,7 @@
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_service_context.h"
+#include "content/browser/permissions/permission_util.h"
 #include "content/browser/preloading/preloading_decider.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -18650,7 +18651,9 @@ RenderFrameHostImpl::GetCachedPermissionStatuses() {
       std::to_array<std::pair<PermissionName, PermissionType>>(
           {{PermissionName::VIDEO_CAPTURE, PermissionType::VIDEO_CAPTURE},
            {PermissionName::AUDIO_CAPTURE, PermissionType::AUDIO_CAPTURE},
-           {PermissionName::GEOLOCATION, PermissionType::GEOLOCATION}});
+           {PermissionName::GEOLOCATION, PermissionType::GEOLOCATION},
+           {PermissionName::WINDOW_MANAGEMENT,
+            PermissionType::WINDOW_MANAGEMENT}});
 
   base::flat_map<PermissionName, PermissionStatus> permission_map;
   for (const auto& permission : kPermissions) {
@@ -18667,12 +18670,17 @@ RenderFrameHostImpl::GetCachedPermissionStatuses() {
 
 blink::mojom::PermissionStatus RenderFrameHostImpl::GetCombinedPermissionStatus(
     blink::PermissionType permission_type) {
+  auto descriptor = content::PermissionDescriptorUtil::
+      CreatePermissionDescriptorForPermissionType(permission_type);
+  if (PermissionUtil::IsDevicePermission(descriptor)) {
+    return GetBrowserContext()
+        ->GetPermissionController()
+        ->GetCombinedPermissionAndDeviceStatus(descriptor, this);
+  }
   return GetBrowserContext()
       ->GetPermissionController()
-      ->GetCombinedPermissionAndDeviceStatus(
-          content::PermissionDescriptorUtil::
-              CreatePermissionDescriptorForPermissionType(permission_type),
-          this);
+      ->GetPermissionResultForCurrentDocument(descriptor, this)
+      .status;
 }
 
 media::PictureInPictureEventsInfo::AutoPipReasonCallback

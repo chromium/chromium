@@ -52,6 +52,7 @@ enum class PermissionStatusSource {
 };
 
 struct CONTENT_EXPORT PermissionResult {
+  PermissionResult();
   PermissionResult(
       PermissionStatus permission_status,
       PermissionStatusSource permission_status_source,

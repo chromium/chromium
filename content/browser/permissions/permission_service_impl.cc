@@ -376,21 +376,20 @@ void PermissionServiceImpl::AddPageEmbeddedPermissionObserver(
     PermissionDescriptorPtr permission,
     PermissionStatus last_known_status,
     mojo::PendingRemote<blink::mojom::PermissionObserver> observer) {
-  if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
-    bad_message::ReceivedBadMessage(
-        context_->render_frame_host()->GetProcess(),
-        bad_message::PSI_ADD_PAGE_EMBEDDED_PERMISSION_OBSERVER_WITHOUT_FEATURE);
-    return;
-  }
   auto type = blink::MaybePermissionDescriptorToPermissionType(permission);
   if (!type) {
     ReceivedBadMessage();
     return;
   }
-  context_->CreateSubscription(
-      permission, origin_, GetCombinedPermissionAndDeviceStatus(permission),
-      last_known_status, /*should_include_device_status*/ true,
-      std::move(observer));
+  bool should_include_device_status =
+      PermissionUtil::IsDevicePermission(permission);
+  PermissionStatus current_status =
+      should_include_device_status
+          ? GetCombinedPermissionAndDeviceStatus(permission)
+          : GetPermissionStatusForCurrentContext(permission);
+  context_->CreateSubscription(permission, origin_, current_status,
+                               last_known_status, should_include_device_status,
+                               std::move(observer));
 }
 
 void PermissionServiceImpl::NotifyEventListener(

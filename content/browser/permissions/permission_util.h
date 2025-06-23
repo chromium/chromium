@@ -47,6 +47,12 @@ class PermissionUtil {
       const std::vector<blink::mojom::PermissionDescriptorPtr>& types,
       RenderFrameHost* rfh,
       const blink::mojom::PermissionDescriptorPtr& descriptor);
+
+  // Returns true if the given descriptor is a capability that combines the
+  // browser's permission status with a device-level status (and, therefore,
+  // can be retrieved through `GetCombinedPermissionAndDeviceStatus(...)`).
+  CONTENT_EXPORT static bool IsDevicePermission(
+      const blink::mojom::PermissionDescriptorPtr&);
 };
 
 }  // namespace content

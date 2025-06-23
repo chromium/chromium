@@ -36,7 +36,6 @@ CachedPermissionStatus::CachedPermissionStatus(LocalDOMWindow* local_dom_window)
       permission_service_(local_dom_window),
       permission_observer_receivers_(this, local_dom_window) {
   CHECK(local_dom_window);
-  CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(local_dom_window));
 }
 
 void CachedPermissionStatus::Trace(Visitor* visitor) const {

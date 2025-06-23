@@ -57,6 +57,9 @@ class SubscriptionInterceptingPermissionManager
       content::PermissionController::SubscriptionId subscription_id) override {
     permissions::PermissionManager::OnPermissionStatusChangeSubscriptionAdded(
         subscription_id);
+    if (callback_.is_null()) {
+      return;
+    }
     std::move(callback_).Run();
   }
 
