@@ -143,10 +143,18 @@ class CORE_EXPORT Event : public ScriptWrappable {
   const AtomicString& type() const { return type_; }
   void SetType(const AtomicString& type) { type_ = type; }
 
-  EventTarget* target() const { return target_.Get(); }
+  // Retargeted target for IDL call: the return object can never be a pseudo
+  // element.
+  EventTarget* target() const;
+  // Raw target for internal usage, can be a pseudo element.
+  EventTarget* RawTarget() const { return target_.Get(); }
   void SetTarget(EventTarget*);
 
+  // Retargeted target for IDL call: the return object can never be a pseudo
+  // element.
   EventTarget* currentTarget() const;
+  // Raw target for internal usage, can be a pseudo element.
+  EventTarget* RawCurrentTarget() const;
   void SetCurrentTarget(EventTarget* current_target) {
     current_target_ = current_target;
   }

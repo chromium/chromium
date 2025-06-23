@@ -67,7 +67,7 @@ void ScrollMarkerPseudoElement::DefaultEventHandler(Event& event) {
       is_key_down && (To<KeyboardEvent>(event).keyCode() == VKEY_RIGHT ||
                       To<KeyboardEvent>(event).keyCode() == VKEY_DOWN);
   bool should_intercept =
-      event.target() == this &&
+      event.RawTarget() == this &&
       (is_click || is_enter_or_space || is_left_or_up_arrow_key ||
        is_right_or_down_arrow_key);
   if (should_intercept) {

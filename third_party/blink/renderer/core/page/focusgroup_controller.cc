@@ -39,7 +39,7 @@ bool FocusgroupController::HandleArrowKeyboardEvent(KeyboardEvent* event,
     return false;
 
   Element* focused = frame->GetDocument()->FocusedElement();
-  if (!focused || focused != event->target()) {
+  if (!focused || focused != event->RawTarget()) {
     // The FocusgroupController shouldn't handle this arrow key event when the
     // focus already moved to a different element than where it came from. The
     // webpage likely had a key-handler that moved the focus.

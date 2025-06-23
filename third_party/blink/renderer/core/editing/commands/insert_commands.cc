@@ -54,7 +54,7 @@ namespace blink {
 LocalFrame& InsertCommands::TargetFrame(LocalFrame& frame, Event* event) {
   if (!event)
     return frame;
-  const Node* node = event->target()->ToNode();
+  const Node* node = event->RawTarget()->ToNode();
   if (!node)
     return frame;
   LocalFrame* local_frame = node->GetDocument().GetFrame();

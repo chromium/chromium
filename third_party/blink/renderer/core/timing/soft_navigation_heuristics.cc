@@ -164,7 +164,8 @@ EventScopeTypeFromEvent(const Event& event) {
     return SoftNavigationHeuristics::EventScope::Type::kNavigate;
   }
   if (event.IsKeyboardEvent()) {
-    Node* target_node = event.target() ? event.target()->ToNode() : nullptr;
+    Node* target_node =
+        event.RawTarget() ? event.RawTarget()->ToNode() : nullptr;
     if (target_node && target_node->IsHTMLElement() &&
         DynamicTo<HTMLElement>(target_node)->IsHTMLBodyElement()) {
       if (event.type() == event_type_names::kKeydown) {
