@@ -370,12 +370,14 @@ int MemEntryImpl::InternalReadData(int index, int offset, IOBuffer* buf,
                                    int buf_len) {
   DCHECK(type() == EntryType::kParent || index == kSparseData);
 
-  if (index < 0 || index >= kNumStreams || buf_len < 0)
+  if (index < 0 || index >= kNumStreams || offset < 0 || buf_len < 0) {
     return net::ERR_INVALID_ARGUMENT;
+  }
 
   int entry_size = data_[index].size();
-  if (offset >= entry_size || offset < 0 || !buf_len)
+  if (offset >= entry_size || !buf_len) {
     return 0;
+  }
   unsigned u_offset = static_cast<unsigned>(offset);
 
   int end_offset;

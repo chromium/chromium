@@ -836,11 +836,13 @@ int EntryImpl::ReadData(int index,
     return net::ERR_INVALID_ARGUMENT;
 
   int entry_size = entry_.Data()->data_size[index];
-  if (offset >= entry_size || offset < 0 || !buf_len)
+  if (offset >= entry_size || !buf_len) {
     return 0;
+  }
 
-  if (buf_len < 0)
+  if (offset < 0 || buf_len < 0) {
     return net::ERR_INVALID_ARGUMENT;
+  }
 
   if (!background_queue_.get())
     return net::ERR_UNEXPECTED;
@@ -1014,11 +1016,13 @@ int EntryImpl::InternalReadData(int index,
     return net::ERR_INVALID_ARGUMENT;
 
   int entry_size = entry_.Data()->data_size[index];
-  if (offset >= entry_size || offset < 0 || !buf_len)
+  if (offset >= entry_size || !buf_len) {
     return 0;
+  }
 
-  if (buf_len < 0)
+  if (offset < 0 || buf_len < 0) {
     return net::ERR_INVALID_ARGUMENT;
+  }
 
   if (!backend_.get())
     return net::ERR_UNEXPECTED;

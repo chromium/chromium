@@ -964,6 +964,28 @@ TEST_F(DiskCacheEntryTest, ZeroLengthIONoBuffer) {
   ZeroLengthIO(0);
 }
 
+TEST_P(DiskCacheGenericEntryTest, ReadDataWithNegativeOffset) {
+  InitCache();
+
+  std::string key("the first key");
+  disk_cache::Entry* entry;
+  ASSERT_THAT(CreateEntry(key, &entry), IsOk());
+
+  constexpr int kSize = 200;
+  auto buffer1 = CacheTestCreateAndFillBuffer(kSize, true);
+  auto buffer2 = CacheTestCreateAndFillBuffer(kSize, true);
+
+  EXPECT_EQ(kSize, WriteData(entry, /*index=*/1, /*offset=*/0, buffer1.get(),
+                             kSize, false));
+
+  // Try setting negative value as an offset which should be handled as error.
+  constexpr int kNegativeOffset = -1;
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT,
+            ReadData(entry, /*index=*/1, /*offset=*/kNegativeOffset,
+                     buffer2.get(), 100));
+  entry->Close();
+}
+
 // Tests that we handle the content correctly when buffering, a feature of the
 // standard cache that permits fast responses to certain reads.
 void DiskCacheEntryTest::Buffering() {
