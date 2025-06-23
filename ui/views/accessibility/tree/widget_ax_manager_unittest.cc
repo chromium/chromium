@@ -32,10 +32,6 @@ class WidgetAXManagerTest : public test::WidgetTest {
     WidgetTest::TearDown();
   }
 
-  base::test::SingleThreadTaskEnvironment* task_env() {
-    return static_cast<base::test::SingleThreadTaskEnvironment*>(
-        task_environment());
-  }
   Widget* widget() { return widget_.get(); }
   WidgetAXManager* manager() { return widget_->ax_manager(); }
 
@@ -148,10 +144,28 @@ TEST_F(WidgetAXManagerOffTest, CrashesWhenFlagOff) {
   widget.reset();
 }
 
-TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
+class WidgetAXManagerScheduleTest : public testing::Test {
+ public:
+  void SetUp() override {
+    manager_ = std::make_unique<WidgetAXManager>(/*widget=*/nullptr);
+  }
+
+  base::test::SingleThreadTaskEnvironment& task_env() { return task_env_; }
+  WidgetAXManager* manager() { return manager_.get(); }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_env_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAccessibilityTreeForViews};
+  std::unique_ptr<WidgetAXManager> manager_;
+};
+
+TEST_F(WidgetAXManagerScheduleTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
   WidgetAXManagerTestApi api(manager());
   manager()->Enable();
 
+  // Nothing pending initially.
+  EXPECT_EQ(task_env().GetPendingMainThreadTaskCount(), 0u);
   EXPECT_TRUE(api.pending_events().empty());
   EXPECT_TRUE(api.pending_data_updates().empty());
   EXPECT_FALSE(api.processing_update_posted());
@@ -160,13 +174,12 @@ TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
   auto v2 = ViewAccessibility::Create(nullptr);
 
   // Fire two events on v1, one on v2, before the first send.
-  auto before = task_env()->GetPendingMainThreadTaskCount();
   manager()->OnEvent(*v1, ax::mojom::Event::kFocus);
   manager()->OnEvent(*v1, ax::mojom::Event::kValueChanged);
   manager()->OnEvent(*v2, ax::mojom::Event::kBlur);
 
   // Still just one task posted.
-  EXPECT_EQ(task_env()->GetPendingMainThreadTaskCount(), before + 1u);
+  EXPECT_EQ(task_env().GetPendingMainThreadTaskCount(), 1u);
   EXPECT_TRUE(api.processing_update_posted());
 
   // pending_events has three entries, pending_data_updates has two unique IDs.
@@ -174,16 +187,20 @@ TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
   EXPECT_EQ(api.pending_data_updates().size(), 2u);
 
   // After run, everything clears.
-  task_env()->RunUntilIdle();
+  task_env().RunUntilIdle();
   EXPECT_EQ(api.pending_events().size(), 0u);
   EXPECT_EQ(api.pending_data_updates().size(), 0u);
   EXPECT_FALSE(api.processing_update_posted());
+  EXPECT_EQ(task_env().GetPendingMainThreadTaskCount(), 0u);
 }
 
-TEST_F(WidgetAXManagerTest, OnDataChanged_PostsSingleTaskAndQueuesCorrectly) {
+TEST_F(WidgetAXManagerScheduleTest,
+       OnDataChanged_PostsSingleTaskAndQueuesCorrectly) {
   WidgetAXManagerTestApi api(manager());
   manager()->Enable();
 
+  // Nothing pending initially.
+  EXPECT_EQ(task_env().GetPendingMainThreadTaskCount(), 0u);
   EXPECT_TRUE(api.pending_events().empty());
   EXPECT_TRUE(api.pending_data_updates().empty());
   EXPECT_FALSE(api.processing_update_posted());
@@ -192,29 +209,28 @@ TEST_F(WidgetAXManagerTest, OnDataChanged_PostsSingleTaskAndQueuesCorrectly) {
   auto v2 = ViewAccessibility::Create(nullptr);
 
   // Data-changes for both views.
-  auto before = task_env()->GetPendingMainThreadTaskCount();
   manager()->OnDataChanged(*v1);
   manager()->OnDataChanged(*v2);
 
   // One task scheduled, two unique IDs in pending_data_updates.
-  EXPECT_EQ(task_env()->GetPendingMainThreadTaskCount(), before + 1u);
+  EXPECT_EQ(task_env().GetPendingMainThreadTaskCount(), 1u);
   EXPECT_TRUE(api.processing_update_posted());
   EXPECT_EQ(api.pending_events().size(), 0u);
   EXPECT_EQ(api.pending_data_updates().size(), 2u);
 
   // Duplicate data-change for v1 should not grow the set.
-  before = task_env()->GetPendingMainThreadTaskCount();
   manager()->OnDataChanged(*v1);
   EXPECT_EQ(api.pending_data_updates().size(), 2u);
-  EXPECT_EQ(task_env()->GetPendingMainThreadTaskCount(), before);
+  EXPECT_EQ(task_env().GetPendingMainThreadTaskCount(), 1u);
 
   // After run, clear everything.
-  task_env()->RunUntilIdle();
+  task_env().RunUntilIdle();
   EXPECT_EQ(api.pending_data_updates().size(), 0u);
   EXPECT_FALSE(api.processing_update_posted());
+  EXPECT_EQ(task_env().GetPendingMainThreadTaskCount(), 0u);
 }
 
-TEST_F(WidgetAXManagerTest, OnEvent_CanScheduleAgainAfterSend) {
+TEST_F(WidgetAXManagerScheduleTest, OnEvent_CanScheduleAgainAfterSend) {
   WidgetAXManagerTestApi api(manager());
   manager()->Enable();
 
@@ -222,21 +238,20 @@ TEST_F(WidgetAXManagerTest, OnEvent_CanScheduleAgainAfterSend) {
 
   // First batch.
   manager()->OnEvent(*v, ax::mojom::Event::kFocus);
-  task_env()->RunUntilIdle();
+  task_env().RunUntilIdle();
   EXPECT_FALSE(api.processing_update_posted());
   EXPECT_TRUE(api.pending_events().empty());
   EXPECT_TRUE(api.pending_data_updates().empty());
 
   // Second batch.
-  auto before = task_env()->GetPendingMainThreadTaskCount();
   manager()->OnEvent(*v, ax::mojom::Event::kBlur);
-  EXPECT_EQ(task_env()->GetPendingMainThreadTaskCount(), before + 1u);
+  EXPECT_EQ(task_env().GetPendingMainThreadTaskCount(), 1u);
   EXPECT_TRUE(api.processing_update_posted());
   EXPECT_EQ(api.pending_events().size(), 1u);
   EXPECT_EQ(api.pending_data_updates().size(), 1u);
 }
 
-TEST_F(WidgetAXManagerTest, OnDataChanged_CanScheduleAgainAfterSend) {
+TEST_F(WidgetAXManagerScheduleTest, OnDataChanged_CanScheduleAgainAfterSend) {
   WidgetAXManagerTestApi api(manager());
   manager()->Enable();
 
@@ -244,37 +259,35 @@ TEST_F(WidgetAXManagerTest, OnDataChanged_CanScheduleAgainAfterSend) {
 
   // First batch.
   manager()->OnDataChanged(*v);
-  task_env()->RunUntilIdle();
+  task_env().RunUntilIdle();
   EXPECT_FALSE(api.processing_update_posted());
   EXPECT_TRUE(api.pending_events().empty());
   EXPECT_TRUE(api.pending_data_updates().empty());
 
   // Second batch.
-  auto before = task_env()->GetPendingMainThreadTaskCount();
   manager()->OnDataChanged(*v);
-  EXPECT_EQ(task_env()->GetPendingMainThreadTaskCount(), before + 1u);
+  EXPECT_EQ(task_env().GetPendingMainThreadTaskCount(), 1u);
   EXPECT_TRUE(api.processing_update_posted());
   EXPECT_EQ(api.pending_events().size(), 0u);
   EXPECT_EQ(api.pending_data_updates().size(), 1u);
 }
 
-TEST_F(WidgetAXManagerTest, UpdatesIgnoredWhenDisabled) {
+TEST_F(WidgetAXManagerScheduleTest, UpdatesIgnoredWhenDisabled) {
   WidgetAXManagerTestApi api(manager());
 
   // Manager is disabled by default.
   auto v = ViewAccessibility::Create(nullptr);
 
-  auto before = task_env()->GetPendingMainThreadTaskCount();
   manager()->OnEvent(*v, ax::mojom::Event::kFocus);
   EXPECT_FALSE(api.processing_update_posted());
   EXPECT_TRUE(api.pending_events().empty());
   EXPECT_TRUE(api.pending_data_updates().empty());
-  EXPECT_EQ(task_env()->GetPendingMainThreadTaskCount(), before);
+  EXPECT_EQ(task_env().GetPendingMainThreadTaskCount(), 0u);
 
   manager()->OnDataChanged(*v);
   EXPECT_FALSE(api.processing_update_posted());
   EXPECT_TRUE(api.pending_data_updates().empty());
-  EXPECT_EQ(task_env()->GetPendingMainThreadTaskCount(), before);
+  EXPECT_EQ(task_env().GetPendingMainThreadTaskCount(), 0u);
 }
 
 }  // namespace views::test
