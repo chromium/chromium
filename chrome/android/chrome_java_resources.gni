@@ -428,6 +428,7 @@ chrome_java_resources = [
   "java/res/drawable/tab_close_button_bg.xml",
   "java/res/drawable/tab_indicator.xml",
   "java/res/drawable/tablet_recent_tab_empty_state_illustration.xml",
+  "java/res/drawable/tablet_tab_strip_close_all_tabs_context_menu.xml",
   "java/res/drawable/text_cursor_lowend.xml",
   "java/res/drawable/virtual_card_enrollment_illustration.xml",
   "java/res/drawable/xr_toolbar_rounded_rect.xml",

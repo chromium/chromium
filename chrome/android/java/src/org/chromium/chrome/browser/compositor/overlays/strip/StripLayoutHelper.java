@@ -43,6 +43,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.ApplicationStatus;
@@ -703,6 +704,11 @@ public class StripLayoutHelper
 
         // Create tab menu
         mCloseButtonMenu = new ListPopupWindow(mContext);
+
+        mCloseButtonMenu.setBackgroundDrawable(
+                AppCompatResources.getDrawable(
+                        mContext, R.drawable.tablet_tab_strip_close_all_tabs_context_menu));
+
         mCloseButtonMenu.setAdapter(
                 new ArrayAdapter<>(
                         mContext,
