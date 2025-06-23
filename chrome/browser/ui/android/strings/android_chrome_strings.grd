@@ -2373,6 +2373,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_ACTION_LEARN_MORE" desc="Label for the button to open a help page about download warnings.">
         Learn more
       </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_ACTION_LEARN_MORE_ACCESSIBILITY_DESCRIPTION" desc="Accessibility description for the button to open a help page about download warnings.">
+        Learn more about why Chrome blocks some files
+      </message>
 
       <!-- Download Home dangerous warning -->
       <message name="IDS_DOWNLOAD_WARNING_HEED_MENU_ACTION_DELETE" desc="Label for the menu item to heed a download warning shown in the downloads list by removing the file from download history.">

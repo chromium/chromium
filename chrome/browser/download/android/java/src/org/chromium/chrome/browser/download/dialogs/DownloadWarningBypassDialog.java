@@ -131,6 +131,11 @@ public class DownloadWarningBypassDialog {
                                 resources.getString(
                                         R.string.download_warning_bypass_dialog_action_learn_more))
                         .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_CONTENT_DESCRIPTION,
+                                resources.getString(
+                                        R.string
+                                                .download_warning_bypass_dialog_action_learn_more_accessibility_description))
+                        .with(
                                 ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
                         .with(
