@@ -3612,7 +3612,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdateDuration{SafeBrowsing_V4Store_Metrics}"
-    units="ms" expires_after="2025-06-22">
+    units="ms" expires_after="2026-06-22">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
