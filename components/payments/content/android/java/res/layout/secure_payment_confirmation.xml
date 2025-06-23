@@ -26,8 +26,7 @@ found in the LICENSE file.
       android:id="@+id/scroll_view"
       android:layout_below="@id/handlebar"
       android:layout_height="wrap_content"
-      android:layout_width="match_parent"
-      android:clickable="true">
+      android:layout_width="match_parent">
 
     <RelativeLayout
         android:layout_height="wrap_content"
