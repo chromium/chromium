@@ -6,16 +6,22 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/task/current_thread.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/view.h"
 
 class MockStreamFactory : public audio::FakeStreamFactory {
  public:
@@ -30,22 +36,21 @@ class MockStreamFactory : public audio::FakeStreamFactory {
       bool enable_agc,
       media::mojom::AudioProcessingConfigPtr processing_config,
       CreateInputStreamCallback callback) override {
-    last_created_callback_ = std::move(callback);
-    run_loop_.Quit();
+    std::move(callback).Run(media::mojom::ReadWriteAudioDataPipePtr(), false,
+                            std::nullopt);
+    run_loop.Quit();
   }
 
-  void RunLoop() { run_loop_.Run(); }
+  void WaitToCreateInputStream() { run_loop.Run(); }
 
  private:
-  base::RunLoop run_loop_;
-  // Keeps the `last_created_callback_` alive during test.
-  CreateInputStreamCallback last_created_callback_;
+  base::RunLoop run_loop;
 };
 
-class AudioStreamCoordinatorTest : public TestWithBrowserView {
+class AudioStreamCoordinatorTest : public InProcessBrowserTest {
  protected:
-  void SetUp() override {
-    TestWithBrowserView::SetUp();
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     parent_view_ = std::make_unique<views::View>();
     coordinator_ = std::make_unique<AudioStreamCoordinator>(
         *parent_view_, media_preview_metrics::Context(
@@ -53,30 +58,33 @@ class AudioStreamCoordinatorTest : public TestWithBrowserView {
                            media_preview_metrics::PreviewType::kMic,
                            media_preview_metrics::PromptType::kSingle,
                            /*request=*/nullptr));
+    fake_stream_factory_ = std::make_unique<MockStreamFactory>();
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     coordinator_.reset();
     parent_view_.reset();
-    TestWithBrowserView::TearDown();
+    fake_stream_factory_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   std::unique_ptr<views::View> parent_view_;
   std::unique_ptr<AudioStreamCoordinator> coordinator_;
-
-  MockStreamFactory fake_stream_factory_;
+  std::unique_ptr<MockStreamFactory> fake_stream_factory_;
 };
 
-TEST_F(AudioStreamCoordinatorTest, ConnectToAudioCapturerAndReceiveBuses) {
+IN_PROC_BROWSER_TEST_F(AudioStreamCoordinatorTest,
+                       ConnectToAudioCapturerAndReceiveBuses) {
   constexpr uint32_t kAudioBusesNumber = 9;  // some arbitrary number
+
   base::MockCallback<base::RepeatingClosure> callback;
   EXPECT_CALL(callback, Run()).Times(kAudioBusesNumber);
   coordinator_->SetAudioBusReceivedCallbackForTest(callback.Get());
 
   const uint32_t kSampleRate = 33000;
-  coordinator_->ConnectToDevice(fake_stream_factory_.MakeRemote(), "device_id",
+  coordinator_->ConnectToDevice(fake_stream_factory_->MakeRemote(), "device_id",
                                 kSampleRate);
-  fake_stream_factory_.RunLoop();
+  fake_stream_factory_->WaitToCreateInputStream();
 
   std::unique_ptr<::media::AudioBus> audio_bus = media::AudioBus::Create(
       {media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -90,5 +98,7 @@ TEST_F(AudioStreamCoordinatorTest, ConnectToAudioCapturerAndReceiveBuses) {
         /*glitch_info=*/{},
         /*volume=*/1.0);
   }
-  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return testing::Mock::VerifyAndClear(&callback); }));
 }
