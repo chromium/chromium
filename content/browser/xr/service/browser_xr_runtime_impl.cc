@@ -278,15 +278,14 @@ void BrowserXRRuntimeImpl::OnServiceRemoved(VRServiceImpl* service) {
   DCHECK(service);
   services_.erase(service);
   if (service == presenting_service_) {
+    // Our presenting service is no longer valid, so we need to clear it before
+    // shutting down the session on the runtime side. Note that while
+    // `ExitPresent` looks similar, it may not be called by the presenting
+    // service, in which case the service needs to be notified after the
+    // shutdown is completed, so we can't simply move the check/clear down into
+    // `ShutdownRuntime`.
     presenting_service_ = nullptr;
-    // Note that we replicate the logic in ExitPresent because we need to clear
-    // our presenting_service_ as it is no longer valid. However, the Runtime
-    // may still need to be notified to terminate its session. ExitPresent may
-    // be called when the service *is* still valid and would need to be notified
-    // of this shutdown.
-    runtime_->ShutdownSession(
-        base::BindOnce(&BrowserXRRuntimeImpl::StopImmersiveSession,
-                       weak_ptr_factory_.GetWeakPtr()));
+    ShutdownRuntime();
   }
 }
 
@@ -294,10 +293,21 @@ void BrowserXRRuntimeImpl::ExitPresent(VRServiceImpl* service) {
   DVLOG(2) << __func__ << ": id=" << id_ << " service=" << service
            << " presenting_service_=" << presenting_service_;
   if (service == presenting_service_) {
-    runtime_->ShutdownSession(
-        base::BindOnce(&BrowserXRRuntimeImpl::StopImmersiveSession,
-                       weak_ptr_factory_.GetWeakPtr()));
+    ShutdownRuntime();
   }
+}
+
+void BrowserXRRuntimeImpl::ShutdownRuntime() {
+  // As part of it's shutdown, the runtime will disconnect this pipe. If we do
+  // not clear the current disconnect handler we'll essentially signal to blink
+  // too early that the session has shutdown. This has led to race conditions in
+  // tests that end the session from blink and then immediately start a new
+  // session where the pending `StopImmersiveSession` callback happens after a
+  // new session was granted and then kills the new session.
+  immersive_session_controller_.set_disconnect_handler(base::DoNothing());
+  runtime_->ShutdownSession(
+      base::BindOnce(&BrowserXRRuntimeImpl::StopImmersiveSession,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BrowserXRRuntimeImpl::SetFramesThrottled(const VRServiceImpl* service,

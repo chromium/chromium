@@ -89,6 +89,33 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestNonImmersiveStopsDuringImmersive) {
   t->EndTest();
 }
 
+// Tests that sessions can be repeatedly entered/exited.
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestMultipleEntryFromBlinkEnd) {
+  MockXRDeviceHookBase mock;
+  t->LoadFileAndAwaitInitialization("generic_webxr_page");
+
+  for (size_t i = 0; i < 5; i++) {
+    t->EnterSessionWithUserGestureOrFail();
+    mock.WaitNumFrames(5);
+    t->EndSessionOrFail();
+  }
+}
+
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestEndSessionFromBlink) {
+  MockXRDeviceHookBase transition_mock;
+  t->LoadFileAndAwaitInitialization("test_webxr_presentation_ended");
+  t->EnterSessionWithUserGestureOrFail();
+
+  // Wait for JavaScript to submit at least one frame.
+  ASSERT_TRUE(
+      t->PollJavaScriptBoolean("hasPresentedFrame", t->kPollTimeoutMedium))
+      << "No frame submitted";
+  t->EndSessionOrFail();
+  // Tell JavaScript that it is done with the test.
+  t->WaitOnJavaScriptStep();
+  t->EndTest();
+}
+
 #if BUILDFLAG(ENABLE_OPENXR)
 // Tests that WebXR session ends when certain events are received.
 void TestWebXRSessionEndWhenEventTriggered(
@@ -137,6 +164,24 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestSessionExited) {
   // Tell JavaScript that it is done with the test.
   this->RunJavaScriptOrFail("done()");
   this->EndTest();
+}
+
+// Tests that sessions can be repeatedly entered/exited.
+IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest,
+                       TestMultipleEntryFromDeviceEnd) {
+  MockXRDeviceHookBase mock;
+  LoadFileAndAwaitInitialization("generic_webxr_page");
+
+  for (size_t i = 0; i < 5; i++) {
+    EnterSessionWithUserGestureOrFail();
+    mock.WaitNumFrames(5);
+    device_test::mojom::EventData data = {};
+    data.type = device_test::mojom::EventType::kSessionLost;
+    mock.PopulateEvent(data);
+    WaitForSessionEndOrFail();
+  }
+
+  // EndTest();
 }
 
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestVisibilityChanged) {

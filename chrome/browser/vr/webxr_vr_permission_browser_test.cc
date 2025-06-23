@@ -76,14 +76,7 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase, TestPermissionPersists) {
   LoadFileAndAwaitInitialization("generic_webxr_page");
 
   EnterSessionWithUserGestureOrFail();
-
-  // End the session from the device process, due to potential racy behavior
-  // when ending a session from blink.
-  // TODO(https://crbug.com/235526581): Fix end session behavior.
-  device_test::mojom::EventData data = {};
-  data.type = device_test::mojom::EventType::kSessionLost;
-  mock.PopulateEvent(data);
-  WaitForSessionEndOrFail();
+  EndSessionOrFail();
 
   // Since the permission from the earlier prompt should be persisted,
   // requesting an XR session a second time should not prompt the user, but

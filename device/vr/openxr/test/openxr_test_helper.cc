@@ -127,6 +127,7 @@ void OpenXrTestHelper::Reset() {
 
   // vectors
   paths_.clear();
+  view_configs_enabled_.clear();
 
   // unordered_maps
   actions_.clear();
@@ -228,7 +229,7 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
 
   D3D11_MAPPED_SUBRESOURCE map_data = {};
   hr = context->Map(texture_destination.Get(), 0, D3D11_MAP_READ, 0, &map_data);
-  DCHECK_EQ(hr, S_OK);
+  DCHECK_EQ(hr, S_OK) << " hex value: " << std::hex << hr;
   // We have a 1-pixel image, so store it in the provided ViewData
   // along with the raw data.
   device::Color* color = static_cast<device::Color*>(map_data.pData);
@@ -732,7 +733,7 @@ void OpenXrTestHelper::CreateTextures(uint32_t width, uint32_t height) {
   for (uint32_t i = 0; i < kMinSwapchainBuffering; i++) {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
     HRESULT hr = d3d_device_->CreateTexture2D(&desc, nullptr, &texture);
-    DCHECK_EQ(hr, S_OK);
+    DCHECK_EQ(hr, S_OK) << " hex value:" << std::hex << hr;
 
     textures_arr_.push_back(texture);
   }
