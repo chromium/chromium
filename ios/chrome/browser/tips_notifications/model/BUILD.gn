@@ -8,6 +8,8 @@ source_set("client") {
     "tips_notification_client.mm",
     "tips_notification_criteria.h",
     "tips_notification_criteria.mm",
+    "tips_notification_presenter.h",
+    "tips_notification_presenter.mm",
   ]
   deps = [
     ":utils",
@@ -63,7 +65,10 @@ source_set("utils") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "tips_notification_client_unittest.mm" ]
+  sources = [
+    "tips_notification_client_unittest.mm",
+    "tips_notification_presenter_unittest.mm",
+  ]
   deps = [
     ":client",
     ":utils",

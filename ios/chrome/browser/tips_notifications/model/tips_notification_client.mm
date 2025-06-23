@@ -13,9 +13,6 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_commands.h"
-#import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -27,23 +24,12 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
-#import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
-#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
-#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_criteria.h"
+#import "ios/chrome/browser/tips_notifications/model/tips_notification_presenter.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
-#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 
 namespace {
 
@@ -127,16 +113,9 @@ void TipsNotificationClient::HandleNotificationInteraction(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Browser* browser = GetActiveForegroundBrowser();
   CHECK(browser);
-  id<ApplicationCommands> application_handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
-  auto showUICallback = base::CallbackToBlock(
-      base::BindOnce(&TipsNotificationClient::ShowUIForNotificationType,
-                     weak_ptr_factory_.GetWeakPtr(), type, browser));
-  [application_handler
-      prepareToPresentModalWithSnackbarDismissal:NO
-                                      completion:showUICallback];
+  TipsNotificationPresenter::Present(browser->AsWeakPtr(), type);
 
-  // If a relavent feature is enabled and the user hasn't yet opted-in, and the
+  // If a relevant feature is enabled and the user hasn't yet opted-in, and the
   // current auth status is "authorized", interacting with a notification (which
   // must have been sent provisionally) will be treated as a positive signal to
   // opt in the user to this type of notification.
@@ -403,138 +382,6 @@ bool TipsNotificationClient::IsSceneLevelForegroundActive() const {
   return GetActiveForegroundBrowser() != nullptr;
 }
 
-void TipsNotificationClient::ShowUIForNotificationType(
-    TipsNotificationType type,
-    Browser* browser) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (type) {
-    case TipsNotificationType::kDefaultBrowser:
-      ShowDefaultBrowserPromo(browser);
-      break;
-    case TipsNotificationType::kWhatsNew:
-      ShowWhatsNew(browser);
-      break;
-    case TipsNotificationType::kSignin:
-      ShowSignin(browser);
-      break;
-    case TipsNotificationType::kSetUpListContinuation:
-      ShowSetUpListContinuation(browser);
-      break;
-    case TipsNotificationType::kDocking:
-      ShowDocking(browser);
-      break;
-    case TipsNotificationType::kOmniboxPosition:
-      ShowOmniboxPosition(browser);
-      break;
-    case TipsNotificationType::kLens:
-      ShowLensPromo(browser);
-      break;
-    case TipsNotificationType::kEnhancedSafeBrowsing:
-      ShowEnhancedSafeBrowsingPromo(browser);
-      break;
-    case TipsNotificationType::kCPE:
-      ShowCPEPromo(browser);
-      break;
-    case TipsNotificationType::kLensOverlay:
-      ShowLensOverlayPromo(browser);
-      break;
-    case TipsNotificationType::kIncognitoLock:
-    case TipsNotificationType::kError:
-      NOTREACHED();
-  }
-}
-
-void TipsNotificationClient::ShowDefaultBrowserPromo(Browser* browser) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  id<SettingsCommands> settings_handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
-  [settings_handler
-      showDefaultBrowserSettingsFromViewController:nil
-                                      sourceForUMA:
-                                          DefaultBrowserSettingsPageSource::
-                                              kTipsNotification];
-}
-
-void TipsNotificationClient::ShowWhatsNew(Browser* browser) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(browser->GetCommandDispatcher(), WhatsNewCommands)
-      showWhatsNew];
-}
-
-void TipsNotificationClient::ShowSignin(Browser* browser) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The user may have signed in between when the notification was requested
-  // and when it triggered. If the user can no longer sign in, then open
-  // the account settings.
-  if (!TipsNotificationCriteria::CanSignIn(browser->GetProfile())) {
-    [HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands)
-        showAccountsSettingsFromViewController:nil
-                          skipIfUINotAvailable:NO];
-    return;
-  }
-  // If there are 0 identities, kInstantSignin requires less taps.
-  AuthenticationOperation operation =
-      HasIdentitiesOnDevice(browser->GetProfile())
-          ? AuthenticationOperation::kSigninOnly
-          : AuthenticationOperation::kInstantSignin;
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:operation
-               identity:nil
-            accessPoint:signin_metrics::AccessPoint::kTipsNotification
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:nil];
-
-  [HandlerForProtocol(browser->GetCommandDispatcher(), SigninPresenter)
-      showSignin:command];
-}
-
-void TipsNotificationClient::ShowSetUpListContinuation(Browser* browser) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(browser->GetCommandDispatcher(),
-                      ContentSuggestionsCommands)
-      showSetUpListSeeMoreMenuExpanded:YES];
-}
-
-void TipsNotificationClient::ShowDocking(Browser* browser) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(browser->GetCommandDispatcher(), DockingPromoCommands)
-      showDockingPromo:YES];
-}
-
-void TipsNotificationClient::ShowOmniboxPosition(Browser* browser) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(browser->GetCommandDispatcher(),
-                      BrowserCoordinatorCommands) showOmniboxPositionChoice];
-}
-
-void TipsNotificationClient::ShowLensPromo(Browser* browser) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(browser->GetCommandDispatcher(),
-                      BrowserCoordinatorCommands) showLensPromo];
-}
-
-void TipsNotificationClient::ShowEnhancedSafeBrowsingPromo(Browser* browser) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(browser->GetCommandDispatcher(),
-                      BrowserCoordinatorCommands)
-      showEnhancedSafeBrowsingPromo];
-}
-
-void TipsNotificationClient::ShowCPEPromo(Browser* browser) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(browser->GetCommandDispatcher(),
-                      CredentialProviderPromoCommands)
-      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
-                                                 TipsNotification];
-}
-
-void TipsNotificationClient::ShowLensOverlayPromo(Browser* browser) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(browser->GetCommandDispatcher(),
-                      BrowserCoordinatorCommands) showSearchWhatYouSeePromo];
-}
-
 void TipsNotificationClient::MarkNotificationTypeSent(
     TipsNotificationType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -698,10 +545,4 @@ void TipsNotificationClient::ClassifyUser() {
   }
   SetTipsNotificationUserType(local_state_, user_type_);
   base::UmaHistogramEnumeration("IOS.Notifications.Tips.UserType", user_type_);
-}
-
-bool TipsNotificationClient::HasIdentitiesOnDevice(ProfileIOS* profile) const {
-  return !IdentityManagerFactory::GetForProfile(profile)
-              ->GetAccountsOnDevice()
-              .empty();
 }
