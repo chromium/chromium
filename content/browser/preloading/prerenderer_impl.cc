@@ -9,6 +9,7 @@
 
 #include "content/browser/preloading/prerenderer_impl.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -36,9 +37,47 @@ namespace content {
 struct PrerendererImpl::PrerenderInfo {
   blink::mojom::SpeculationInjectionType injection_type;
   blink::mojom::SpeculationEagerness eagerness;
+  bool is_target_blank;
   FrameTreeNodeId prerender_host_id;
   GURL url;
+
+  PrerenderInfo() = default;
+  explicit PrerenderInfo(
+      const blink::mojom::SpeculationCandidatePtr& candidate);
+
+  static bool PrerenderInfoComparator(const PrerenderInfo& p1,
+                                      const PrerenderInfo& p2);
+
+  bool operator<(const PrerenderInfo& p) const {
+    return PrerenderInfoComparator(*this, p);
+  }
+
+  bool operator==(const PrerenderInfo& p) const {
+    return !PrerenderInfoComparator(*this, p) &&
+           !PrerenderInfoComparator(p, *this);
+  }
 };
+
+bool PrerendererImpl::PrerenderInfo::PrerenderInfoComparator(
+    const PrerenderInfo& p1,
+    const PrerenderInfo& p2) {
+  if (p1.url != p2.url) {
+    return p1.url < p2.url;
+  }
+
+  return p1.is_target_blank < p2.is_target_blank;
+}
+
+// `prerender_host_id` is not provided by `SpeculationCandidatePtr`, so
+// FrameTreeNodeId() is assigned instead. The value should be updated once it is
+// available.
+PrerendererImpl::PrerenderInfo::PrerenderInfo(
+    const blink::mojom::SpeculationCandidatePtr& candidate)
+    : injection_type(candidate->injection_type),
+      eagerness(candidate->eagerness),
+      is_target_blank(candidate->target_browsing_context_name_hint ==
+                      blink::mojom::SpeculationTargetHint::kBlank),
+      url(candidate->url) {}
 
 PrerendererImpl::PrerendererImpl(RenderFrameHost& render_frame_host)
     : WebContentsObserver(WebContents::FromRenderFrameHost(&render_frame_host)),
@@ -97,8 +136,9 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     }
   }
 
-  std::ranges::stable_sort(prerender_candidates, std::less<>(),
-                           [](const auto& p) { return p.second->url; });
+  std::ranges::stable_sort(
+      prerender_candidates, std::less<>(),
+      [](const auto& p) { return PrerenderInfo(p.second); });
   std::vector<std::pair<size_t, blink::mojom::SpeculationCandidatePtr>>
       candidates_to_start;
 
@@ -108,36 +148,39 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
   // Compare the sorted candidate and started prerender lists to one another.
   // Since they are sorted, we process the lexicographically earlier of the two
-  // URLs pointed at by the iterators, and compare the range of entries in each
-  // that match that URL.
+  // PrerenderInfos pointed at by the iterators, and compare the range of
+  // entries in each that match that PrerenderInfo.
   //
-  // URLs which are present in the prerender list but not the candidate list can
-  // no longer proceed and are cancelled.
+  // PrerenderInfos which are present in the prerender list but not the
+  // candidate list can no longer proceed and are cancelled.
   //
-  // URLs which are present in the candidate list but not the prerender list
-  // could be started and are gathered in `candidates_to_start`.
+  // PrerenderInfos which are present in the candidate list but not the
+  // prerender list could be started and are gathered in `candidates_to_start`.
   auto candidate_it = prerender_candidates.begin();
   auto started_it = started_prerenders_.begin();
   while (candidate_it != prerender_candidates.end() ||
          started_it != started_prerenders_.end()) {
-    // Select the lesser of the two URLs to diff.
-    GURL url;
-    if (started_it == started_prerenders_.end())
-      url = candidate_it->second->url;
-    else if (candidate_it == prerender_candidates.end())
-      url = started_it->url;
-    else
-      url = std::min(candidate_it->second->url, started_it->url);
+    // Select the lesser of the two PrerenderInfos to diff.
+    PrerenderInfo prerender_info;
+    if (started_it == started_prerenders_.end()) {
+      prerender_info = PrerenderInfo(candidate_it->second);
+    } else if (candidate_it == prerender_candidates.end()) {
+      prerender_info = *started_it;
+    } else {
+      prerender_info =
+          std::min(PrerenderInfo(candidate_it->second), *started_it);
+    }
 
-    // Select the ranges from both that match the URL in question.
+    // Select the ranges from both that match the PrerenderInfo in question.
     auto equal_prerender_end = std::ranges::find_if(
         started_it, started_prerenders_.end(),
-        [&](const auto& started) { return started.url != url; });
+        [&](const auto& started) { return started != prerender_info; });
     base::span<PrerenderInfo> matching_prerenders(started_it,
                                                   equal_prerender_end);
     auto equal_candidate_end = std::ranges::find_if(
-        candidate_it, prerender_candidates.end(),
-        [&](const auto& candidate) { return candidate.second->url != url; });
+        candidate_it, prerender_candidates.end(), [&](const auto& candidate) {
+          return PrerenderInfo(candidate.second) != prerender_info;
+        });
     base::span<std::pair<size_t, blink::mojom::SpeculationCandidatePtr>>
         matching_candidates(candidate_it, equal_candidate_end);
 
@@ -148,19 +191,30 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
       }
       // TODO(jbroman): This doesn't currently care about other aspects, like
       // the referrer. This doesn't presently matter, but in the future we might
-      // want to cancel if there are candidates which match by URL but none of
-      // which permit this prerender.
+      // want to cancel if there are candidates which match by PrerenderInfo but
+      // none of which permit this prerender.
       if (matching_candidates.empty()) {
         removed_prerender_rules.push_back(prerender.prerender_host_id);
       }
     }
 
     // Decide what new candidates to start.
-    // For now, start the first candidate for a URL only if there are no
-    // matching prerenders. We could be cleverer in the future.
+    // For now, start one candidate per target hint for a URL only if there are
+    // no matching prerenders. We could be cleverer in the future.
     if (matching_prerenders.empty()) {
       CHECK(!matching_candidates.empty());
-      candidates_to_start.push_back(std::move(matching_candidates[0]));
+
+      std::set<PrerenderInfo> processed_prerender_info;
+
+      for (auto& matching_candidate : matching_candidates) {
+        PrerenderInfo matching_candidate_prerender_info =
+            PrerenderInfo(matching_candidate.second);
+        if (processed_prerender_info
+                .insert(std::move(matching_candidate_prerender_info))
+                .second) {
+          candidates_to_start.push_back(std::move(matching_candidate));
+        }
+      }
     }
 
     // Advance the iterators past all matching entries.
@@ -258,10 +312,13 @@ bool PrerendererImpl::MaybePrerender(
 
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host_.get());
 
+  // `prerender_host_id` is not available yet.
+  PrerenderInfo prerender_info(candidate);
+
   auto [begin, end] = std::ranges::equal_range(
-      started_prerenders_.begin(), started_prerenders_.end(), candidate->url,
-      std::less<>(), &PrerenderInfo::url);
-  // cannot currently start a second prerender with the same URL
+      started_prerenders_.begin(), started_prerenders_.end(), prerender_info,
+      PrerenderInfo::PrerenderInfoComparator);
+  // cannot currently start a second prerender with the same URL and target_hint
   if (begin != end) {
     return false;
   }
@@ -328,7 +385,7 @@ bool PrerendererImpl::MaybePrerender(
           candidate->injection_type);
   PreloadingPredictor creating_predictor =
       GetPredictorForPreloadingTriggerType(trigger_type);
-  FrameTreeNodeId prerender_host_id = [&] {
+  prerender_info.prerender_host_id = [&] {
     // TODO(crbug.com/40235424): Handle the case where multiple speculation
     // rules have the same URL but its `target_browsing_context_name_hint` is
     // different. In the current implementation, only the first rule is
@@ -384,18 +441,20 @@ bool PrerendererImpl::MaybePrerender(
   // it is needed to re-calculate the right place here on `started_prerenders_`
   // for new candidates.
   end = std::ranges::upper_bound(started_prerenders_.begin(),
-                                 started_prerenders_.end(), candidate->url,
-                                 std::less<>(), &PrerenderInfo::url);
+                                 started_prerenders_.end(), prerender_info,
+                                 PrerenderInfo::PrerenderInfoComparator);
 
-  started_prerenders_.insert(end, {.injection_type = candidate->injection_type,
-                                   .eagerness = candidate->eagerness,
-                                   .prerender_host_id = prerender_host_id,
-                                   .url = candidate->url});
+  started_prerenders_.insert(end, std::move(prerender_info));
 
   return true;
 }
 
 bool PrerendererImpl::ShouldWaitForPrerenderResult(const GURL& url) {
+  // This function is used to check whetehr a prerender is started to avoid
+  // starting prefetch in OnPointerDown, OnPointerHover or other heuristic
+  // methods which don't take target_hint into consideration. So unlike other
+  // functions in this file, this part uses `url` only instead of
+  // `PrerenderInfo` which consists of target_hint information.
   auto [begin, end] = std::ranges::equal_range(
       started_prerenders_.begin(), started_prerenders_.end(), url,
       std::less<>(), &PrerenderInfo::url);

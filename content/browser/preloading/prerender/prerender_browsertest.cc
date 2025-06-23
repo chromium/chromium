@@ -2825,6 +2825,61 @@ class PrerenderTargetHintEnabledBrowserTest : public PrerenderBrowserTest {
 
   void TestActivateOnWindowOpen(std::string_view window_features);
 
+  std::string SpeculationRulesInsertionScriptWithBothTargetHint(GURL url) {
+    constexpr char add_speculationrules_with_both_target_hints[] = R"({
+      var script = document.createElement('script');
+      script.type = 'speculationrules';
+      script.text = `{"prerender": [
+          {"target_hint": "_self", "urls": ["$1"]},
+          {"target_hint": "_blank", "urls": ["$1"]}
+        ]
+      }`;
+      document.head.appendChild(script);
+    })";
+
+    return base::ReplaceStringPlaceholders(
+        add_speculationrules_with_both_target_hints, {url.spec()}, nullptr);
+  }
+
+  std::string SpeculationRulesInsertionScriptWithOneSelfAndTwoBlankTargetHint(
+      GURL url) {
+    constexpr char add_speculationrules_with_both_target_hints[] = R"({
+      var script = document.createElement('script');
+      script.type = 'speculationrules';
+      script.text = `{"prerender": [
+          {"target_hint": "_self", "urls": ["$1"]},
+          {"target_hint": "_blank", "urls": ["$1"]},
+          {"target_hint": "_blank", "urls": ["$1"]}
+        ]
+      }`;
+      document.head.appendChild(script);
+    })";
+
+    return base::ReplaceStringPlaceholders(
+        add_speculationrules_with_both_target_hints, {url.spec()}, nullptr);
+  }
+
+  std::string SpeculationRulesWithIdAndTargetHint(GURL url,
+                                                  std::string id,
+                                                  std::string target_hint) {
+    constexpr char add_speculationrules_with_id_and_target_hint[] = R"({
+      var script = document.createElement('script');
+      script.type = 'speculationrules';
+      script.id = '$1';
+      script.text = `{"prerender":
+                      [{
+                        "target_hint": "$2",
+                        "urls": ["$3"]
+                      }]
+      }`;
+      document.head.appendChild(script);
+    })";
+
+    return base::ReplaceStringPlaceholders(
+        add_speculationrules_with_id_and_target_hint,
+        {id, target_hint, url.spec()}, nullptr);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -3411,6 +3466,275 @@ void PrerenderTargetHintEnabledBrowserTest::TestActivateOnWindowOpen(
   // The navigation occurred in a new WebContents, so the original WebContents
   // should still be showing the initial trigger page.
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
+}
+
+// Tests that adding speculation rules with both target_hint and removes
+// target_hint=_self won't affect prerender activation on target_hint=_blank.
+IN_PROC_BROWSER_TEST_F(PrerenderTargetHintEnabledBrowserTest,
+                       PrerenderBothTargetHintButRemovesTargetHintSelf) {
+  const GURL initial_url = GetUrl("/simple_links.html");
+  const GURL prerendering_url = GetUrl("/title2.html");
+
+  const std::string add_speculation_rules_target_hint_self_script =
+      SpeculationRulesWithIdAndTargetHint(prerendering_url, "self_specrules",
+                                          "_self");
+  const std::string add_speculation_rules_target_hint_blank_script =
+      SpeculationRulesWithIdAndTargetHint(prerendering_url, "blank_specrules",
+                                          "_blank");
+
+  // Navigate to an initial page which has a link to `prerendering_url`.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Adding speculation rules with target_hint=_self.
+  EXPECT_TRUE(
+      ExecJs(web_contents(), add_speculation_rules_target_hint_self_script));
+  prerender_helper()->WaitForPrerenderLoadCompletion(*web_contents(),
+                                                     prerendering_url);
+
+  // Adding speculation rules with target_hint=_blank.
+  WebContents* new_tab_prerender_web_contents = nullptr;
+  base::RunLoop run_loop;
+
+  auto creation_subscription = RegisterWebContentsCreationCallback(
+      base::BindLambdaForTesting([&](content::WebContents* web_contents) {
+        new_tab_prerender_web_contents = web_contents;
+        run_loop.QuitClosure().Run();
+      }));
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(), add_speculation_rules_target_hint_blank_script));
+  // Wait for the new tab prerender.
+  run_loop.Run();
+
+  prerender_helper()->WaitForPrerenderLoadCompletion(
+      *new_tab_prerender_web_contents, prerendering_url);
+
+  ASSERT_NE(new_tab_prerender_web_contents, web_contents_impl());
+  ExpectWebContentsIsForNewTabPrerendering(*new_tab_prerender_web_contents);
+
+  ASSERT_TRUE(
+      ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+             "document.querySelector('script[id=self_specrules]').remove()"));
+
+  // Speculationrules removal for the initiator tab shouldn't cancel the
+  // prerender in the new WebContents.
+  EXPECT_FALSE(HasHostForUrl(*web_contents(), prerendering_url));
+  EXPECT_TRUE(HasHostForUrl(*new_tab_prerender_web_contents, prerendering_url));
+
+  // Open a new window with "_blank" and `noopener`. This should activate
+  // the prerendered page.
+  test::PrerenderHostObserver new_tab_prerender_observer(
+      *new_tab_prerender_web_contents, prerendering_url);
+
+  {
+    const std::string new_tab_opener_script =
+        "window.open(\"title2.html\", \"_blank\", \"noopener\")";
+    EXPECT_TRUE(ExecJs(web_contents(), new_tab_opener_script));
+    new_tab_prerender_observer.WaitForActivation();
+    EXPECT_EQ(new_tab_prerender_web_contents->GetLastCommittedURL(),
+              prerendering_url);
+    EXPECT_FALSE(
+        HasHostForUrl(*new_tab_prerender_web_contents, prerendering_url));
+  }
+}
+
+// Tests that adding speculation rules with both target_hint and removes
+// target_hint=_blank won't affect prerender activation on target_hint=_self.
+IN_PROC_BROWSER_TEST_F(PrerenderTargetHintEnabledBrowserTest,
+                       PrerenderBothTargetHintButRemovesTargetHintBlank) {
+  const GURL initial_url = GetUrl("/simple_links.html");
+  const GURL prerendering_url = GetUrl("/title2.html");
+
+  const std::string add_speculation_rules_target_hint_self_script =
+      SpeculationRulesWithIdAndTargetHint(prerendering_url, "self_specrules",
+                                          "_self");
+  const std::string add_speculation_rules_target_hint_blank_script =
+      SpeculationRulesWithIdAndTargetHint(prerendering_url, "blank_specrules",
+                                          "_blank");
+
+  // Navigate to an initial page which has a link to `prerendering_url`.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Adding speculation rules with target_hint=_self.
+  EXPECT_TRUE(
+      ExecJs(web_contents(), add_speculation_rules_target_hint_self_script));
+  prerender_helper()->WaitForPrerenderLoadCompletion(*web_contents(),
+                                                     prerendering_url);
+  // Adding speculation rules with target_hint=_blank.
+  WebContents* new_tab_prerender_web_contents = nullptr;
+  base::RunLoop run_loop;
+
+  auto creation_subscription = RegisterWebContentsCreationCallback(
+      base::BindLambdaForTesting([&](content::WebContents* web_contents) {
+        new_tab_prerender_web_contents = web_contents;
+        run_loop.QuitClosure().Run();
+      }));
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(), add_speculation_rules_target_hint_blank_script));
+  // Wait for the new tab prerender.
+  run_loop.Run();
+
+  prerender_helper()->WaitForPrerenderLoadCompletion(
+      *new_tab_prerender_web_contents, prerendering_url);
+
+  ASSERT_NE(new_tab_prerender_web_contents, web_contents_impl());
+  ExpectWebContentsIsForNewTabPrerendering(*new_tab_prerender_web_contents);
+  FrameTreeNodeId new_tab_host_id = test::PrerenderTestHelper::GetHostForUrl(
+      *new_tab_prerender_web_contents, prerendering_url);
+
+  test::PrerenderHostObserver new_tab_prerender_observer(
+      *new_tab_prerender_web_contents, new_tab_host_id);
+
+  ASSERT_TRUE(
+      ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+             "document.querySelector('script[id=blank_specrules]').remove()"));
+
+  // Speculationrules removal for the new tab shouldn't cancel the prerender in
+  // the initial WebContents.
+  EXPECT_TRUE(HasHostForUrl(*web_contents(), prerendering_url));
+  new_tab_prerender_observer.WaitForDestroyed();
+
+  test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                 prerendering_url);
+
+  // The prerender in the initial WebContents should be able to be activated.
+  {
+    ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                       JsReplace("location = $1", prerendering_url)));
+    prerender_observer.WaitForActivation();
+  }
+}
+
+// Tests that speculation rules with both target_hint in one script section can
+// be prerendered and activated correctly.
+IN_PROC_BROWSER_TEST_F(PrerenderTargetHintEnabledBrowserTest,
+                       ActivateOnBothTargetHint) {
+  const GURL initial_url = GetUrl("/simple_links.html");
+  const GURL prerendering_url = GetUrl("/title2.html");
+
+  const std::string add_speculation_rules_script =
+      SpeculationRulesInsertionScriptWithBothTargetHint(prerendering_url);
+
+  // Navigate to an initial page which has a link to `prerendering_url`.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Start prerendering `prerendering_url`.
+  WebContents* new_tab_prerender_web_contents = nullptr;
+  base::RunLoop run_loop;
+
+  auto creation_subscription = RegisterWebContentsCreationCallback(
+      base::BindLambdaForTesting([&](content::WebContents* web_contents) {
+        new_tab_prerender_web_contents = web_contents;
+        run_loop.QuitClosure().Run();
+      }));
+
+  EXPECT_TRUE(ExecJs(web_contents(), add_speculation_rules_script));
+  // Wait for the new tab prerender.
+  run_loop.Run();
+
+  prerender_helper()->WaitForPrerenderLoadCompletion(*web_contents(),
+                                                     prerendering_url);
+  prerender_helper()->WaitForPrerenderLoadCompletion(
+      *new_tab_prerender_web_contents, prerendering_url);
+
+  ASSERT_NE(new_tab_prerender_web_contents, web_contents_impl());
+  ExpectWebContentsIsForNewTabPrerendering(*new_tab_prerender_web_contents);
+
+  // Open a new window with "_blank" and `noopener`. This should activate
+  // the prerendered page.
+  test::PrerenderHostObserver new_tab_prerender_observer(
+      *new_tab_prerender_web_contents, prerendering_url);
+  test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                 prerendering_url);
+
+  {
+    const std::string new_tab_opener_script =
+        "window.open(\"title2.html\", \"_blank\", \"noopener\")";
+    EXPECT_TRUE(ExecJs(web_contents(), new_tab_opener_script));
+    new_tab_prerender_observer.WaitForActivation();
+    EXPECT_EQ(new_tab_prerender_web_contents->GetLastCommittedURL(),
+              prerendering_url);
+
+    // Prerender activation in the new tab shouldn't cancel the prerender in
+    // the initial WebContents.
+    EXPECT_TRUE(HasHostForUrl(*web_contents(), prerendering_url));
+    EXPECT_FALSE(
+        HasHostForUrl(*new_tab_prerender_web_contents, prerendering_url));
+  }
+
+  // The prerender in the initial WebContents should be able to be activated.
+  {
+    ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                       JsReplace("location = $1", prerendering_url)));
+    prerender_observer.WaitForActivation();
+  }
+}
+
+// Tests that speculation rules with 1 _self and 2 _blank target_hints in one
+// script section can be prerendered and activated correctly.
+IN_PROC_BROWSER_TEST_F(PrerenderTargetHintEnabledBrowserTest,
+                       ActivateOnOneSelfAndTwoBlankTargetHint) {
+  const GURL initial_url = GetUrl("/simple_links.html");
+  const GURL prerendering_url = GetUrl("/title2.html");
+
+  const std::string add_speculation_rules_script =
+      SpeculationRulesInsertionScriptWithOneSelfAndTwoBlankTargetHint(
+          prerendering_url);
+
+  // Navigate to an initial page which has a link to `prerendering_url`.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Start prerendering `prerendering_url`.
+  WebContents* new_tab_prerender_web_contents = nullptr;
+  base::RunLoop run_loop;
+
+  auto creation_subscription = RegisterWebContentsCreationCallback(
+      base::BindLambdaForTesting([&](content::WebContents* web_contents) {
+        new_tab_prerender_web_contents = web_contents;
+        run_loop.QuitClosure().Run();
+      }));
+
+  EXPECT_TRUE(ExecJs(web_contents(), add_speculation_rules_script));
+  // Wait for the new tab prerender.
+  run_loop.Run();
+
+  prerender_helper()->WaitForPrerenderLoadCompletion(*web_contents(),
+                                                     prerendering_url);
+  prerender_helper()->WaitForPrerenderLoadCompletion(
+      *new_tab_prerender_web_contents, prerendering_url);
+
+  ASSERT_NE(new_tab_prerender_web_contents, web_contents_impl());
+  ExpectWebContentsIsForNewTabPrerendering(*new_tab_prerender_web_contents);
+
+  // Open a new window with "_blank" and `noopener`. This should activate
+  // the prerendered page.
+  test::PrerenderHostObserver new_tab_prerender_observer(
+      *new_tab_prerender_web_contents, prerendering_url);
+  test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                 prerendering_url);
+
+  {
+    const std::string new_tab_opener_script =
+        "window.open(\"title2.html\", \"_blank\", \"noopener\")";
+    EXPECT_TRUE(ExecJs(web_contents(), new_tab_opener_script));
+    new_tab_prerender_observer.WaitForActivation();
+    EXPECT_EQ(new_tab_prerender_web_contents->GetLastCommittedURL(),
+              prerendering_url);
+
+    // Prerender activation in the new tab shouldn't cancel the prerender in
+    // the initial WebContents.
+    EXPECT_TRUE(HasHostForUrl(*web_contents(), prerendering_url));
+    EXPECT_FALSE(
+        HasHostForUrl(*new_tab_prerender_web_contents, prerendering_url));
+  }
+
+  // The prerender in the initial WebContents should be able to be activated.
+  {
+    ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                       JsReplace("location = $1", prerendering_url)));
+    prerender_observer.WaitForActivation();
+  }
 }
 
 // Tests that window.open() annotated with "_blank" and "noopener" can activate
