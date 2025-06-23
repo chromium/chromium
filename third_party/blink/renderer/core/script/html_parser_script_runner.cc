@@ -287,6 +287,17 @@ void HTMLParserScriptRunner::ProcessScriptElement(
   // Try to execute the script given to us.
   ProcessScriptElementInternal(script_element, script_start_position);
 
+  if (!document_) {
+    // The microtask checkpoint might have aborted the parser.  In that
+    // case it's best to return, although it's not entirely clear from
+    // the spec when we should return early.  See
+    // https://github.com/whatwg/html/issues/11393
+    //
+    // It would be nice to DCHECK() that the parser was aborted but it's
+    // not obvious how to do that without document_.
+    return;
+  }
+
   // <spec>... At this stage, if the pending parsing-blocking script is not
   // null, then:</spec>
   if (HasParserBlockingScript()) {
