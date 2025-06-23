@@ -19,3 +19,8 @@ enrichment of MathML expressions.
 Local Modifications:
 - The lone js file is the packed browser version of SRE.
 - All XMLHttpRequest calls were removed.
+- One instance of `$jscomp.global` was changed to `globalThis` to avoid runtime
+errors.
+- We added a call to Object.defineProperty(d,"parentNode",...) to avoid runtime
+errors when setting the `parentNode` property.
+- SRE is explicitly exported since it is imported into ChromeVox as a module.

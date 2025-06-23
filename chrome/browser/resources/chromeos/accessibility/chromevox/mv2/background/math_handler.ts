@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles math output and exploration.
  */
+import {SRE} from '/chromevox/mv2/third_party/sre/sre_browser.js';
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import type {CursorRange} from '/common/cursors/range.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
@@ -16,9 +17,6 @@ import {ChromeVox} from './chromevox.js';
 import type {InternalKeyEvent} from './input/background_keyboard_handler.js';
 
 import AutomationNode = chrome.automation.AutomationNode;
-
-// Speech Rule Engine is included as a global variable in background.html.
-declare let SRE: any;
 
 /**
  * Handles specialized code to navigate, announce, and interact with math
