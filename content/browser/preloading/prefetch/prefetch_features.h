@@ -116,6 +116,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 // Controls field trials parameters for prefetch canary checker.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCanaryCheckerParams);
 
+// Allows multiple base limit on `PrefetchScheduler`.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchMultipleActiveSetSizeLimitForBase);
+CONTENT_EXPORT extern const base::FeatureParam<size_t>
+    kPrefetchMultipleActiveSetSizeLimitForBaseValue;
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

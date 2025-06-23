@@ -300,7 +300,9 @@ bool UsePrefetchScheduler() {
          features::kPrerender2FallbackPrefetchSchedulerPolicy.Get() !=
              features::Prerender2FallbackPrefetchSchedulerPolicy::kNotUse ||
          base::FeatureList::IsEnabled(
-             features::kWebViewPrefetchHighestPrefetchPriority);
+             features::kWebViewPrefetchHighestPrefetchPriority) ||
+         base::FeatureList::IsEnabled(
+             features::kPrefetchMultipleActiveSetSizeLimitForBase);
 }
 
 }  // namespace content

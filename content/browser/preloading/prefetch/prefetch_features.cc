@@ -101,4 +101,12 @@ BASE_FEATURE(kPrefetchQueueingPartialFixWithoutScheduler,
 BASE_FEATURE(kPrefetchCanaryCheckerParams,
              "PrefetchCanaryCheckerParams",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrefetchMultipleActiveSetSizeLimitForBase,
+             "PrefetchMultipleActiveSetSizeLimitForBase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<size_t>
+    kPrefetchMultipleActiveSetSizeLimitForBaseValue{
+        &kPrefetchMultipleActiveSetSizeLimitForBase,
+        "prefetch_multiple_active_set_size_limit_for_base_value", 2};
 }  // namespace features

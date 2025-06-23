@@ -26,6 +26,11 @@ size_t GetActiveSetSizeLimitForBase() {
     return features::kPrefetchSchedulerTestingActiveSetSizeLimitForBase.Get();
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kPrefetchMultipleActiveSetSizeLimitForBase)) {
+    return features::kPrefetchMultipleActiveSetSizeLimitForBaseValue.Get();
+  }
+
   return 1;
 }
 
