@@ -34,12 +34,19 @@ struct AutofillFieldWithAttributeType {
 // (AutofillField::GetAutofillAiServerTypePredictions()).
 // Every field has at most one static AttributeType.
 //
-// Dynamic types are determined by looking at the surrounding fields.
-// (AutofillField::GetAutofillAiServerTypePredictions()).
-// Every field has at most one static AttributeType.
+// Dynamic types are determined by propagating types to neighboring fields as
+// follows: a target field is assigned an AttributeType if
+// - the source field has been assigned an AttributeType that belongs to the
+//   same EntityType, and
+// - the target field's FieldType is one of the target field's AttributeType's
+//   subtypes (AttributeType::field_subtype()).
+// We only propagate between pairs of fields that are in the same section and
+// whose distance is at most 5.
 //
 // Dynamic types are only determined if `features::kAutofillAiNoTagTypes` is
 // enabled.
+//
+// Invisible non-<select> fields are ignored; they're not assigned any type.
 //
 // The overloads are just specializations of one another for performance
 // reasons. The following expressions are equivalent:

@@ -121,9 +121,6 @@ using FormStructureTestCase = internal::FormStructureTestCase<>;
 // messages might refer to the form.
 testing::Message DescribeFormData(const FormData& form_data);
 
-// Returns the form field relevant to the |role|.
-FormFieldData CreateFieldByRole(FieldType role);
-
 // Creates a FormFieldData to be fed to the parser.
 FormFieldData GetFormFieldData(const FieldDescription& fd);
 

@@ -24,9 +24,13 @@ namespace autofill {
 
 namespace {
 
-using EntityMap =
-    base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>;
-using SectionMap = base::flat_map<Section, EntityMap>;
+// The furthest distance between two fields so that one field's AttributeType
+// may lead to a dynamic AttributeType assignment of the other.
+constexpr int kMaxPropagationDistance = 5;
+
+bool IsRelevant(const AutofillField& field) {
+  return field.is_focusable() || field.IsSelectElement();
+}
 
 // The set of all FieldTypes that have **more** than one associated
 // AttributeType.
@@ -68,6 +72,8 @@ static_assert(
           });
     }));
 
+// A field's static AttributeType is the unique AttributeType whose
+// AttributeType::field_type() is the field's FieldType.
 std::optional<AttributeType> GetStaticAttributeType(
     const AutofillField& field) {
   std::optional<FieldType> ft = field.GetAutofillAiServerTypePredictions();
@@ -100,69 +106,110 @@ std::optional<AttributeType> GetStaticAttributeType(
   return 0 <= *ft && *ft < kTable.size() ? kTable[*ft] : std::nullopt;
 }
 
-// The `i`th element of the returned vector contains the type of `fields[i]`.
-std::vector<std::optional<AttributeType>> GetStaticAttributeTypes(
+// A field is assignable a dynamic AttributeType if there are more than one
+// AttributeTypes whose AttributeType::field_type() is the field's FieldType.
+bool IsAssignableDynamicAttributeType(FieldType ft) {
+  return kNonInjectiveFieldTypes.contains(ft);
+}
+
+std::optional<AttributeType> GetAttributeType(EntityType entity,
+                                              FieldType field_type) {
+  for (AttributeType at : entity.attributes()) {
+    if (at.field_subtypes().contains(field_type)) {
+      return at;
+    }
+  }
+  return std::nullopt;
+}
+
+// Adds to `attributes_by_field[i]` the static types of `fields[i]`.
+void AddStaticAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields,
-    base::optional_ref<const Section> section_of_interest,
-    base::optional_ref<const EntityType> entity_of_interest) {
-  std::vector<std::optional<AttributeType>> field_to_type;
-  field_to_type.resize(fields.size());
-  for (size_t i = 0; i < fields.size(); ++i) {
-    if (section_of_interest && *section_of_interest != fields[i]->section()) {
+    base::span<DenseSet<AttributeType>> attributes_by_field) {
+  DCHECK_EQ(fields.size(), attributes_by_field.size());
+  for (auto [field, attributes] : base::zip(fields, attributes_by_field)) {
+    if (!IsRelevant(*field)) {
       continue;
     }
-    std::optional<AttributeType> at = GetStaticAttributeType(*fields[i]);
+    std::optional<AttributeType> at = GetStaticAttributeType(*field);
     if (!at) {
       continue;
     }
-    if (entity_of_interest && *entity_of_interest != at->entity_type()) {
-      continue;
-    }
-    field_to_type[i] = at;
+    attributes.insert(*at);
   }
-  return field_to_type;
 }
 
-// The `i`th element of the returned vector contains the type of `fields[i]`.
-std::vector<std::vector<AttributeType>> GetDynamicAttributeTypes(
+// Adds to `attributes_by_field[i]` the dynamic types of `fields[i]`.
+void AddDynamicAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields,
-    base::span<const std::optional<AttributeType>> stc_types,
-    base::optional_ref<const Section> section_of_interest,
-    base::optional_ref<const EntityType> entity_of_interest) {
-  std::vector<std::vector<AttributeType>> dyn_types;
-  dyn_types.resize(fields.size());
-
-  if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
-    return dyn_types;
+    base::span<DenseSet<AttributeType>> attributes_by_field) {
+  DCHECK_EQ(fields.size(), attributes_by_field.size());
+  if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes) ||
+      std::ranges::all_of(attributes_by_field,
+                          &DenseSet<AttributeType>::empty)) {
+    return;
   }
 
-  // TODO(crbug.com/422563282): Implement.
-  return dyn_types;
+  // Propagates the applicable EntityTypes in `last_seen` to the `attributes` of
+  // `field`.
+  //
+  // This function is to be called in sequence for a range of AutofillFields.
+  // `offset` counts how many relevant AutofillFields were encountered so far.
+  // `last_seen` maps the EntityTypes and Sections to the maximum offset where
+  // they were seen so far.
+  auto loop_body = [](std::map<std::pair<Section, EntityType>, int>& last_seen,
+                      int& offset, const AutofillField& field,
+                      DenseSet<AttributeType>& attributes) {
+    if (!IsRelevant(field)) {
+      return;
+    }
+    ++offset;
+    const FieldType field_type = field.Type().GetStorableType();
+    if (IsAssignableDynamicAttributeType(field_type)) {
+      for (const auto& [p, entity_offset] : last_seen) {
+        const auto& [entity_section, entity] = p;
+        if (std::abs(entity_offset - offset) > kMaxPropagationDistance ||
+            entity_section != field.section()) {
+          continue;
+        }
+        if (const std::optional<AttributeType> attribute =
+                GetAttributeType(entity, field_type)) {
+          attributes.insert(*attribute);
+        }
+      }
+    }
+    for (AttributeType attribute : attributes) {
+      last_seen[{field.section(), attribute.entity_type()}] = offset;
+    }
+  };
+
+  // Propagate types forward and backward.
+  const int num_fields = static_cast<int>(fields.size());
+  {
+    std::map<std::pair<Section, EntityType>, int> last_seen;
+    int offset = 0;
+    for (int i = 0; i < num_fields; ++i) {
+      loop_body(last_seen, offset, *fields[i], attributes_by_field[i]);
+    }
+  }
+  {
+    std::map<std::pair<Section, EntityType>, int> last_seen;
+    int offset = 0;
+    for (int i = num_fields - 1; i >= 0; --i) {
+      loop_body(last_seen, offset, *fields[i], attributes_by_field[i]);
+    }
+  }
 }
 
-// Merges the static and dynamic AttributeTypes and calls `cb(field, type)` for
-// every possible `type` of `field`.
-template <typename Callback>
-void GetAttributeTypes(base::span<const std::unique_ptr<AutofillField>> fields,
-                       base::optional_ref<const Section> section_of_interest,
-                       base::optional_ref<const EntityType> entity_of_interest,
-                       Callback cb) {
-  std::vector<std::optional<AttributeType>> stc_types_by_field =
-      GetStaticAttributeTypes(fields, section_of_interest, entity_of_interest);
-  std::vector<std::vector<AttributeType>> dyn_types_by_field =
-      GetDynamicAttributeTypes(fields, stc_types_by_field, section_of_interest,
-                               entity_of_interest);
-  for (auto [field, stc_type, dyn_types] :
-       base::zip(fields, stc_types_by_field, dyn_types_by_field)) {
-    if (stc_type) {
-      DCHECK(dyn_types.empty());
-      std::invoke(cb, *field, *stc_type);
-    }
-    for (AttributeType dyn_type : dyn_types) {
-      DCHECK(!stc_type);
-      std::invoke(cb, *field, dyn_type);
-    }
-  }
+// Returns the static and dynamic AttributeTypes.
+// The `i`th value in the returned vector is the dynamic type of `fields[i]`.
+std::vector<DenseSet<AttributeType>> GetAttributeTypes(
+    base::span<const std::unique_ptr<AutofillField>> fields) {
+  std::vector<DenseSet<AttributeType>> attributes_by_field;
+  attributes_by_field.resize(fields.size());
+  AddStaticAttributeTypes(fields, attributes_by_field);
+  AddDynamicAttributeTypes(fields, attributes_by_field);
+  return attributes_by_field;
 }
 
 }  // namespace
@@ -171,36 +218,54 @@ std::vector<AutofillFieldWithAttributeType> DetermineAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND,
     const Section& section_of_interest,
     EntityType entity_of_interest) {
-  std::vector<AutofillFieldWithAttributeType> c;
-  GetAttributeTypes(fields, section_of_interest, entity_of_interest,
-                    [&](const AutofillField& field, AttributeType type) {
-                      c.emplace_back(field, type);
-                    });
-  return c;
+  const std::vector<DenseSet<AttributeType>> attributes_by_field =
+      GetAttributeTypes(fields);
+  std::vector<AutofillFieldWithAttributeType> r;
+  for (auto [field, attributes] : base::zip(fields, attributes_by_field)) {
+    if (!section_of_interest || field->section() == section_of_interest) {
+      for (AttributeType attribute : attributes) {
+        if (entity_of_interest == attribute.entity_type()) {
+          r.emplace_back(*field, attribute);
+        }
+      }
+    }
+  }
+  return r;
 }
+
+using EntityMap =
+    base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>;
 
 EntityMap DetermineAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND,
     const Section& section_of_interest) {
-  EntityMap c;
-  GetAttributeTypes(fields, section_of_interest,
-                    /*entity_of_interest=*/std::nullopt,
-                    [&](const AutofillField& field, AttributeType type) {
-                      c[type.entity_type()].emplace_back(field, type);
-                    });
-  return c;
+  const std::vector<DenseSet<AttributeType>> attributes_by_field =
+      GetAttributeTypes(fields);
+  EntityMap r;
+  for (auto [field, attributes] : base::zip(fields, attributes_by_field)) {
+    if (!section_of_interest || field->section() == section_of_interest) {
+      for (AttributeType attribute : attributes) {
+        r[attribute.entity_type()].emplace_back(*field, attribute);
+      }
+    }
+  }
+  return r;
 }
+
+using SectionMap = base::flat_map<Section, EntityMap>;
 
 SectionMap DetermineAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND) {
-  SectionMap c;
-  GetAttributeTypes(fields, /*section_of_interest=*/std::nullopt,
-                    /*entity_of_interest=*/std::nullopt,
-                    [&](const AutofillField& field, AttributeType type) {
-                      c[field.section()][type.entity_type()].emplace_back(field,
-                                                                          type);
-                    });
-  return c;
+  const std::vector<DenseSet<AttributeType>> attributes_by_field =
+      GetAttributeTypes(fields);
+  SectionMap r;
+  for (auto [field, attributes] : base::zip(fields, attributes_by_field)) {
+    for (AttributeType attribute : attributes) {
+      r[field->section()][attribute.entity_type()].emplace_back(*field,
+                                                                attribute);
+    }
+  }
+  return r;
 }
 
 }  // namespace autofill

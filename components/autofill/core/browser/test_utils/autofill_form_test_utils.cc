@@ -22,6 +22,7 @@ testing::Message DescribeFormData(const FormData& form_data) {
   return result;
 }
 
+// Returns the form field relevant to the `role`.
 FormFieldData CreateFieldByRole(FieldType role) {
   FormFieldData field;
   // TODO(crbug.com/406073718): Add the missing roles and/or fail loudly.
