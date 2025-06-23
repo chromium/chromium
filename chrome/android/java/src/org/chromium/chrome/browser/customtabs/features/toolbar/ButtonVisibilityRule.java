@@ -52,6 +52,10 @@ public class ButtonVisibilityRule {
     // device rotation or the window width adjustment in multi-window mode.
     private int mToolbarWidth;
 
+    // Adjust minimum Title/URL bar width to have the optional button hidden/visible.
+    // Used for Q/A testing, enabled only through feature flag.
+    private boolean mHidingOptionalButton;
+
     static class Button {
         private final View mView;
         // Type of the button. Valid for CUSTOM_1 or CUSTOM_2 only; the rest of the buttons always
@@ -110,6 +114,7 @@ public class ButtonVisibilityRule {
      * @param width The updated width of the toolbar.
      */
     public void setToolbarWidth(int width) {
+        if (mHidingOptionalButton) return;
         int oldWidth = mToolbarWidth;
         mToolbarWidth = width;
         if (width == 0 || oldWidth == width) return;
@@ -306,5 +311,15 @@ public class ButtonVisibilityRule {
             if (button != null && button.mVisible) return false;
         }
         return true;
+    }
+
+    public void setHidingOptionalButton() {
+        Button button = mButtons.get(ButtonId.MTB);
+        if (button == null || (!button.mVisible && button.mSuppressed)) return;
+
+        // Set the toolbar width smaller than url bar and all the button widths combined.
+        int buttonsWidth = mToolbarWidth - getUrlBarWidth();
+        setToolbarWidth(mMinUrlWidthPx + (buttonsWidth - button.mView.getLayoutParams().width / 2));
+        mHidingOptionalButton = true;
     }
 }

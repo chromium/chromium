@@ -48,6 +48,7 @@ public class OptionalButtonCoordinator {
     private final Supplier<Tracker> mFeatureEngagementTrackerSupplier;
     private @Nullable Callback<Integer> mTransitionFinishedCallback;
     private @Nullable IphCommandBuilder mIphCommandBuilder;
+    private boolean mAlwaysShowActionChip;
 
     @IntDef({
         TransitionType.SWAPPING,
@@ -150,6 +151,15 @@ public class OptionalButtonCoordinator {
     }
 
     /**
+     * Set the flag that always enables chip animiation of contextual page action.
+     *
+     * @param show Whether the animation should be always enabled.
+     */
+    public void setAlwaysShowActionChip(boolean show) {
+        mAlwaysShowActionChip = show;
+    }
+
+    /**
      * Updates the button to replace the current action with a new one. If animations are allowed
      * (according to the BooleanSupplier set with setIsAnimationAllowedPredicate) then this update
      * will be animated. Otherwise it'll instantly switch to the new icon.
@@ -180,11 +190,12 @@ public class OptionalButtonCoordinator {
             // And if feature engagement allows it.
             Tracker featureEngagementTracker = mFeatureEngagementTrackerSupplier.get();
             boolean shouldShowActionChip =
-                    isActionChipVariant
-                            && featureEngagementTracker != null
-                            && featureEngagementTracker.isInitialized()
-                            && featureEngagementTracker.shouldTriggerHelpUi(
-                                    FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
+                    mAlwaysShowActionChip
+                            || (isActionChipVariant
+                                    && featureEngagementTracker != null
+                                    && featureEngagementTracker.isInitialized()
+                                    && featureEngagementTracker.shouldTriggerHelpUi(
+                                            FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP));
 
             if (!shouldShowActionChip) {
                 ((ButtonDataImpl) buttonData).updateActionChipResourceId(Resources.ID_NULL);

@@ -1568,6 +1568,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 firstButton.setPaddingRelative(
                         paddingStart, /* top= */ 0, /* end= */ 0, /* bottom= */ 0);
             }
+            if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.CCT_ADAPTIVE_BUTTON_TEST_SWITCH, "always-animate", false)) {
+                mOptionalButtonCoordinator.setAlwaysShowActionChip(true);
+            }
+            if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.CCT_ADAPTIVE_BUTTON_TEST_SWITCH, "hide-button", false)) {
+                mButtonVisibilityRule.setHidingOptionalButton();
+            }
             return true;
         }
 
