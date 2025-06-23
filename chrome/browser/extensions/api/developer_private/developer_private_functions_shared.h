@@ -334,6 +334,16 @@ class DeveloperPrivateShowOptionsFunction : public DeveloperPrivateAPIFunction {
   ResponseAction Run() override;
 };
 
+class DeveloperPrivateShowPathFunction : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.showPath",
+                             DEVELOPERPRIVATE_SHOWPATH)
+
+ protected:
+  ~DeveloperPrivateShowPathFunction() override;
+  ResponseAction Run() override;
+};
+
 class DeveloperPrivateSetShortcutHandlingSuspendedFunction
     : public DeveloperPrivateAPIFunction {
  public:

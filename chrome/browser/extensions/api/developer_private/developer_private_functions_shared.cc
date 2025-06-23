@@ -856,6 +856,25 @@ ExtensionFunction::ResponseAction DeveloperPrivateShowOptionsFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+DeveloperPrivateShowPathFunction::~DeveloperPrivateShowPathFunction() = default;
+
+ExtensionFunction::ResponseAction DeveloperPrivateShowPathFunction::Run() {
+  std::optional<developer::ShowPath::Params> params =
+      developer::ShowPath::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  const Extension* extension = GetExtensionById(params->extension_id);
+  if (!extension) {
+    return RespondNow(Error(kNoSuchExtensionError));
+  }
+
+  // We explicitly show manifest.json in order to work around an issue in OSX
+  // where opening the directory doesn't focus the Finder.
+  platform_util::ShowItemInFolder(
+      Profile::FromBrowserContext(browser_context()),
+      extension->path().Append(kManifestFilename));
+  return RespondNow(NoArguments());
+}
+
 DeveloperPrivateSetShortcutHandlingSuspendedFunction::
     ~DeveloperPrivateSetShortcutHandlingSuspendedFunction() = default;
 

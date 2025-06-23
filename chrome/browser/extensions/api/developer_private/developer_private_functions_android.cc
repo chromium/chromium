@@ -12,8 +12,6 @@ DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivatePackDirectoryFunction,
                                         "developerPrivate.packDirectory")
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadDirectoryFunction,
                                         "developerPrivate.loadDirectory")
-DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateShowPathFunction,
-                                        "developerPrivate.showPath")
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
     DeveloperPrivateRemoveMultipleExtensionsFunction,
     "developerPrivate.removeMultipleExtensions")
