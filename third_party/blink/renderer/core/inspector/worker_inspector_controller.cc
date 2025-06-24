@@ -121,20 +121,18 @@ void WorkerInspectorController::AttachSession(DevToolsSession* session,
   session->CreateAndAppend<InspectorEventBreakpointsAgent>(
       session->V8Session());
 
-  auto* worker_or_worklet_global_scope =
-      DynamicTo<WorkerOrWorkletGlobalScope>(thread_->GlobalScope());
-  auto* worker_global_scope =
-      DynamicTo<WorkerGlobalScope>(thread_->GlobalScope());
+  WorkerOrWorkletGlobalScope* worker_or_worklet_global_scope =
+      thread_->GlobalScope();
+  CHECK(worker_or_worklet_global_scope);
 
-  if (worker_or_worklet_global_scope) {
-    auto* network_agent = session->CreateAndAppend<InspectorNetworkAgent>(
-        inspected_frames_.Get(), worker_or_worklet_global_scope,
-        session->V8Session());
-    session->CreateAndAppend<InspectorAuditsAgent>(
-        network_agent, thread_->GetInspectorIssueStorage(),
-        /*inspected_frames=*/nullptr, /*web_autofill_client=*/nullptr);
-  }
-  if (worker_global_scope) {
+  auto* network_agent = session->CreateAndAppend<InspectorNetworkAgent>(
+      inspected_frames_.Get(), worker_or_worklet_global_scope,
+      session->V8Session());
+  session->CreateAndAppend<InspectorAuditsAgent>(
+      network_agent, thread_->GetInspectorIssueStorage(),
+      /*inspected_frames=*/nullptr, /*web_autofill_client=*/nullptr);
+  if (auto* worker_global_scope =
+          DynamicTo<WorkerGlobalScope>(worker_or_worklet_global_scope)) {
     auto* virtual_time_controller =
         thread_->GetScheduler()->GetVirtualTimeController();
     DCHECK(virtual_time_controller);
