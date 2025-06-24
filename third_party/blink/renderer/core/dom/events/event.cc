@@ -26,9 +26,6 @@
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
-#include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
-#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
-#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/events/focus_event.h"
@@ -47,33 +44,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
-
-namespace {
-
-// Retargets any pseudo element target to some element target.
-EventTarget* RetargetPseudoElement(EventTarget* target) {
-  if (!target) {
-    return nullptr;
-  }
-  Node* node = target->ToNode();
-  if (!node || !node->IsPseudoElement()) {
-    return target;
-  }
-  // For ::scroll-marker, the target should be the ultimate originating element
-  // of its ::scroll-marker-group.
-  if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(node)) {
-    CHECK(scroll_marker->ScrollMarkerGroup());
-    return &scroll_marker->ScrollMarkerGroup()->UltimateOriginatingElement();
-  }
-  // For ::scroll-button(), the target should be the ultimate originating
-  // element of its ::scroll-marker-group.
-  if (auto* scroll_button = DynamicTo<ScrollButtonPseudoElement>(node)) {
-    return &scroll_button->UltimateOriginatingElement();
-  }
-  NOTREACHED() << "target can't be a pseudo element! found " << node;
-}
-
-}  // namespace
 
 Event::Event() : Event(g_empty_atom, Bubbles::kNo, Cancelable::kNo) {
   was_initialized_ = false;
@@ -282,10 +252,6 @@ void Event::preventDefault() {
     prevent_default_called_on_uncancelable_event_ = true;
 }
 
-EventTarget* Event::target() const {
-  return RetargetPseudoElement(target_.Get());
-}
-
 void Event::SetTarget(EventTarget* target) {
   if (target_ == target)
     return;
@@ -309,12 +275,9 @@ void Event::ReceivedTarget() {}
 
 Element* Event::Retarget(const Element* element) const {
   CHECK(RuntimeEnabledFeatures::ImprovedSourceRetargetingEnabled());
-  EventTarget* raw_current_target = RawCurrentTarget();
-  if (!raw_current_target) {
-    raw_current_target = RawTarget();
-  }
-  if (element && raw_current_target && raw_current_target->ToNode()) {
-    return &raw_current_target->ToNode()->GetTreeScope().Retarget(*element);
+  EventTarget* retarget_against = currentTarget() ? currentTarget() : target();
+  if (element && retarget_against && retarget_against->ToNode()) {
+    return &retarget_against->ToNode()->GetTreeScope().Retarget(*element);
   }
   return nullptr;
 }
@@ -390,18 +353,12 @@ HeapVector<Member<EventTarget>> Event::composedPath(
 }
 
 EventTarget* Event::currentTarget() const {
-  return RetargetPseudoElement(RawCurrentTarget());
-}
-
-EventTarget* Event::RawCurrentTarget() const {
-  if (!current_target_) {
+  if (!current_target_)
     return nullptr;
-  }
   if (auto* curr_svg_element =
           DynamicTo<SVGElement>(current_target_->ToNode())) {
-    if (SVGElement* svg_element = curr_svg_element->CorrespondingElement()) {
+    if (SVGElement* svg_element = curr_svg_element->CorrespondingElement())
       return svg_element;
-    }
   }
   return current_target_.Get();
 }

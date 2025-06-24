@@ -118,12 +118,11 @@ SelectionInDOMTree Editor::SelectionForCommand(Event* event) {
     return selection;
   // If the target is a text control, and the current selection is outside of
   // its shadow tree, then use the saved selection for that text control.
-  if (!IsTextControl(*event->RawTarget()->ToNode())) {
+  if (!IsTextControl(*event->target()->ToNode()))
     return selection;
-  }
   auto* text_control_of_selection_start =
       EnclosingTextControl(selection.Anchor());
-  auto* text_control_of_target = ToTextControl(event->RawTarget()->ToNode());
+  auto* text_control_of_target = ToTextControl(event->target()->ToNode());
   if (!selection.IsNone() &&
       text_control_of_target == text_control_of_selection_start)
     return selection;
@@ -572,7 +571,7 @@ static void CountEditingEvent(ExecutionContext* execution_context,
                               WebFeature feature_on_text_area,
                               WebFeature feature_on_content_editable,
                               WebFeature feature_on_non_node) {
-  EventTarget* event_target = event.RawTarget();
+  EventTarget* event_target = event.target();
   Node* node = event_target->ToNode();
   if (!node) {
     UseCounter::Count(execution_context, feature_on_non_node);
