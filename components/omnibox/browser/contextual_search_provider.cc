@@ -436,6 +436,10 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
       return;
     match.actions.push_back(base::MakeRefCounted<T>());
   };
+  if (config.show_ai_mode_action) {
+    check_and_add.operator()<StarterPackAiModeAction>(
+        template_url_starter_pack_data::StarterPackId::kAiMode);
+  }
   if (config.show_history_action) {
     check_and_add.operator()<StarterPackHistoryAction>(
         template_url_starter_pack_data::StarterPackId::kHistory);

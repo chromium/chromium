@@ -176,3 +176,30 @@ const gfx::VectorIcon& StarterPackTabsAction::GetVectorIcon() const {
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
 
 StarterPackTabsAction::~StarterPackTabsAction() = default;
+
+////////////////////////////////////////////////////////////////////////////////
+
+StarterPackAiModeAction::StarterPackAiModeAction()
+    : OmniboxAction(OmniboxAction::LabelStrings(
+                        IDS_STARTER_PACK_AI_MODE_ACTION_HINT,
+                        IDS_STARTER_PACK_AI_MODE_ACTION_SUGGESTION_CONTENTS,
+                        IDS_ACC_STARTER_PACK_AI_MODE_ACTION_SUFFIX,
+                        IDS_ACC_STARTER_PACK_AI_MODE_ACTION),
+                    GURL()) {}
+
+OmniboxActionId StarterPackAiModeAction::ActionId() const {
+  return OmniboxActionId::STARTER_PACK_AI_MODE;
+}
+
+void StarterPackAiModeAction::Execute(ExecutionContext& context) const {
+  context.enter_starter_pack_id_ =
+      template_url_starter_pack_data::StarterPackId::kAiMode;
+}
+
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+const gfx::VectorIcon& StarterPackAiModeAction::GetVectorIcon() const {
+  return omnibox::kSearchSparkIcon;
+}
+#endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
+
+StarterPackAiModeAction::~StarterPackAiModeAction() = default;

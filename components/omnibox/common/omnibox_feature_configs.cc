@@ -201,8 +201,8 @@ Toolbelt::Toolbelt() {
       base::FeatureParam<bool>(&kOmniboxToolbelt, "AlwaysIncludeLensAction",
                                false)
           .Get();
-  show_ai_search_action =
-      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowAiSearchAction", false)
+  show_ai_mode_action =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowAiModeAction", false)
           .Get();
   show_lens_action =
       base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowLensAction", false)

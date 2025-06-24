@@ -1452,6 +1452,7 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       case OmniboxActionId::STARTER_PACK_BOOKMARKS:
       case OmniboxActionId::STARTER_PACK_HISTORY:
       case OmniboxActionId::STARTER_PACK_TABS:
+      case OmniboxActionId::STARTER_PACK_AI_MODE:
         return OmniboxEventProto::Suggestion::STARTER_PACK;
       case OmniboxActionId::UNKNOWN:
       case OmniboxActionId::LAST:
