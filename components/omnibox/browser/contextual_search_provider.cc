@@ -422,16 +422,10 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
     match.description_class = {{0, ACMatchClassification::NONE}};
   }
 
-  // AI and contextual search are only allowed if the DSE is google and locale
-  // is EN.
-  auto* turl_service = client()->GetTemplateURLService();
-  bool google_dse = search::DefaultSearchProviderIsGoogle(turl_service);
-  bool english_locale =
-      l10n_util::GetLanguage(client()->GetApplicationLocale()) == "en";
-
+  // Lens is only allowed if the DSE is google, but that's already checked in
+  // `client->IsLensEnabled()`. Lens is not restricted by locale.
   if (ActionEnabledForPageContext(input, config.show_lens_action_on_non_ntp,
                                   config.show_lens_action_on_ntp) &&
-      google_dse && english_locale &&
       (config.always_include_lens_action ||
        IsLensEntrypointAvailable(input, client()))) {
     match.actions.push_back(
@@ -440,6 +434,7 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
 
   // Add the starter pack entry actions only if the given starter pack keyword
   // is enabled.
+  auto* turl_service = client()->GetTemplateURLService();
   auto check_and_add = [&]<typename T>(int starter_pack_id) {
     const TemplateURL* turl =
         turl_service->FindStarterPackTemplateURL(starter_pack_id);
@@ -449,7 +444,13 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
       return;
     match.actions.push_back(base::MakeRefCounted<T>());
   };
-  if (ActionEnabledForPageContext(input, config.show_ai_mode_action_on_non_ntp,
+
+  // AI mode is only allowed if the DSE is google and locale is EN.
+  bool google_dse = search::DefaultSearchProviderIsGoogle(turl_service);
+  bool english_locale =
+      l10n_util::GetLanguage(client()->GetApplicationLocale()) == "en";
+  if (google_dse && english_locale &&
+      ActionEnabledForPageContext(input, config.show_ai_mode_action_on_non_ntp,
                                   config.show_ai_mode_action_on_ntp)) {
     check_and_add.operator()<StarterPackAiModeAction>(
         template_url_starter_pack_data::StarterPackId::kAiMode);
