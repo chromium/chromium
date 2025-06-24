@@ -4,40 +4,67 @@
 
 package org.chromium.ui.xr.scenecore;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * This is XR scene core session manager interface. The implementation is provided by an Activity.
- * See {@link org.chromium.chrome.browser.ChromeTabbedActivity}.
+ * This is XR scene core session management interface.
+ * (https://developer.android.com/reference/androidx/xr/scenecore/package-summary.html). It's used
+ * by activities to control XR space modes transitions. See implementation in {@link
+ * org.chromium.chrome.browser.xr.scenecore.XrSceneCoreSessionManagerImpl}.
  *
- * <p>Usage: 1. To switch XR space mode for an activity, the user of the interface must call
- * 'startSpaceModeChange' first. It start the mode switching flow and makes the activity invisible
- * for up to 1 second. 2. If (1) returned 'true', the provided callback will be called on the main
- * thread, signaling that the move between modes is completed. 3. The activity will be still
- * invisible at this moment. To make it visible, the 'finishSpaceModeChange' must be called.
+ * <p>Usage: There are two ways to switch between XR space modes.
  *
- * <p>This 3-steps flow is necessary to adjust the background of the activity, hide some UI elements
- * and avoid flicker.
+ * <p>1. Visibility of an activity is controlled internally. Call {@link
+ * XrSceneCoreSessionManager#requestSpaceModeChange}.
+ *
+ * <p>2. Visibility of an activity has to be controlled manually by a caller. This 3-steps flow is
+ * necessary to adjust the background of the activity, hide some UI elements and avoid UI flicker.
+ * Flow:
+ *
+ * <p>2.1. Call {@link XrSceneCoreSessionManager#startSpaceModeChange} and provide a callback. It
+ * will start the XR mode transition flow and will make the activity invisible for up to 1 second.
+ *
+ * <p>2.2. After XR space mode transition is completed, the callback from (2.1) will be called on
+ * the main thread.
+ *
+ * <p>2.3. The activity will still be invisible at this moment. To make it visible, finish the
+ * transition by calling {@link XrSceneCoreSessionManager#finishSpaceModeChange}. All XR space mode
+ * transitions requests must be called on the main thread.
  */
 @NullMarked
 public interface XrSceneCoreSessionManager extends Destroyable {
 
     /**
-     * @param fsmModeRequested: requested XR space mode (true for FSM).
-     * @param completedCallback: callback function, signaling that XR space mode transition is
-     *     completed. It can be null, but user still need to call 'finishSpaceModeChange'.
-     * @return: success status. True: if the activity has focus and it's not in the middle of
+     * @param fsmModeRequested Requested XR space mode (true for XR full space mode).
+     * @param completedCallback Callback function, signaling that XR space mode transition is
+     *     completed. Caller still need to call 'finishSpaceModeChange' to make the activity
+     *     visible.
+     * @return Success status. True: if the activity has focus and it's not in the middle of
      *     transition between XR space modes. False: the 'completedCallback' will not be called.
      */
-    boolean startSpaceModeChange(boolean fsmModeRequested, @Nullable Runnable completedCallback);
+    boolean startSpaceModeChange(boolean fsmModeRequested, Runnable completedCallback);
 
-    /** Get XR space mode observable supplier. Returns boolean: True for XR Full space mode. */
+    /**
+     * Get XR space mode observable supplier. The supplier provides boolean value: true for XR Full
+     * space mode.
+     */
     ObservableSupplier<Boolean> getXrSpaceModeObservableSupplier();
 
-    /** Call to complete XR space mode transition. */
+    /**
+     * Call to complete XR space mode transition initiated in {@link
+     * XrSceneCoreSessionManager#startSpaceModeChange}.
+     */
     void finishSpaceModeChange();
+
+    /**
+     * Request to change XR space mode synchronously. Visibility of the activity is controlled
+     * internally.
+     *
+     * @param fsmModeRequested Requested XR space mode (true for XR full space mode).
+     * @return success status. True: if the activity has focus and it's not in the middle of
+     *     transition between XR space modes.
+     */
+    boolean requestSpaceModeChange(boolean fsmModeRequested);
 }

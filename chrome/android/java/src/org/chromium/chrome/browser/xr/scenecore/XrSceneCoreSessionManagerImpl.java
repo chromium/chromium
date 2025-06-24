@@ -27,7 +27,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
-/** The class manages XR SceneCore JxrPlatformAdapterAxr for the activity. */
+/**
+ * The class wraps usage of {@link androidx.xr.scenecore.impl.JxrPlatformAdapterAxr} and implements
+ * {@link XrSceneCoreSessionManager}.
+ */
 @SuppressLint("RestrictedApi")
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @NullMarked
@@ -66,7 +69,18 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
 
     @MainThread
     @Override
-    public boolean startSpaceModeChange(
+    public boolean startSpaceModeChange(boolean fsmModeRequested, Runnable completedCallback) {
+        return trySpaceModeChange(fsmModeRequested, completedCallback);
+    }
+
+    @MainThread
+    @Override
+    public boolean requestSpaceModeChange(boolean fsmModeRequested) {
+        return trySpaceModeChange(fsmModeRequested, /* completedCallback= */ null);
+    }
+
+    @MainThread
+    private boolean trySpaceModeChange(
             boolean fsmModeRequested, @Nullable Runnable completedCallback) {
         ThreadUtils.assertOnUiThread();
         if (!ThreadUtils.runningOnUiThread()) return false;
@@ -83,10 +97,16 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
             return false;
         }
 
-        mIsFsmRequested = fsmModeRequested;
-        mXrModeSwitchCallback = completedCallback;
-        mJxrPlatformAdapter.getMainPanelEntity().setHidden(true);
-        if (mIsFsmRequested) {
+        // Hide the main panel only if callback is requested.
+        // The main panel will be set visible by {@link
+        // XrSceneCoreSessionManagerImpl#finishSpaceModeChange}.
+        if (completedCallback != null) {
+            mIsFsmRequested = fsmModeRequested;
+            mXrModeSwitchCallback = completedCallback;
+            mJxrPlatformAdapter.getMainPanelEntity().setHidden(true);
+        }
+
+        if (fsmModeRequested) {
             mJxrPlatformAdapter.requestFullSpaceMode();
         } else {
             mJxrPlatformAdapter.requestHomeSpaceMode();
@@ -132,7 +152,8 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
     private void boundsChangeCallback(Dimensions dimensions) {
         mIsFullSpaceModeNowSupplier.set(dimensions.width == Float.POSITIVE_INFINITY);
         if (mIsFsmRequested == null) {
-            // This is an initial callback on `addOnBoundsChangedListener`.
+            // This is an initial callback on `addOnBoundsChangedListener` or
+            // callback on `requestSpaceModeChange`.
             return;
         }
 
