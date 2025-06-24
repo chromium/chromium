@@ -80,6 +80,19 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     bool opened = false;
   };
 
+  // Holds information about a specific cache entry, including its `res_id` and
+  // `key`. This is used when iterating through entries.
+  struct NET_EXPORT_PRIVATE EntryInfoWithIdAndKey {
+    EntryInfoWithIdAndKey();
+    ~EntryInfoWithIdAndKey();
+    EntryInfoWithIdAndKey(EntryInfoWithIdAndKey&&);
+    EntryInfoWithIdAndKey& operator=(EntryInfoWithIdAndKey&&);
+
+    EntryInfo info;
+    int64_t res_id;
+    CacheEntryKey key;
+  };
+
   using ErrorCallback = base::OnceCallback<void(Error)>;
   using Int32Callback = base::OnceCallback<void(int32_t)>;
   using Int64Callback = base::OnceCallback<void(int64_t)>;
@@ -89,6 +102,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       base::expected<std::optional<EntryInfo>, Error>;
   using OptionalEntryInfoOrErrorCallback =
       base::OnceCallback<void(OptionalEntryInfoOrError)>;
+  using OptionalEntryInfoWithIdAndKey = std::optional<EntryInfoWithIdAndKey>;
+  using OptionalEntryInfoWithIdAndKeyCallback =
+      base::OnceCallback<void(OptionalEntryInfoWithIdAndKey)>;
 
   // Creates a new instance of the persistent store. The returned object must be
   // initialized by calling `Initialize()`. This function never returns a null
@@ -151,6 +167,15 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // Deletes all entries from the cache. `callback` is invoked on completion.
   virtual void DeleteAllEntries(ErrorCallback callback) = 0;
+
+  // Opens the latest (highest `res_id`) cache entry that has a `res_id` less
+  // than `res_id_cursor`. This method is used for iterating through entries
+  // in reverse `res_id` order. To fetch all entries, start with
+  // `res_id_cursor` set to `std::numeric_limits<int64_t>::max()`. `callback`
+  // receives the entry (or `std::nullopt` if no more entries exist).
+  virtual void OpenLatestEntryBeforeResId(
+      int64_t res_id_cursor,
+      OptionalEntryInfoWithIdAndKeyCallback callback) = 0;
 
   // The maximum size of an individual cache entry's data stream.
   virtual int64_t MaxFileSize() const = 0;

@@ -56,6 +56,9 @@ using EntryInfo = SqlPersistentStore::EntryInfo;
 using Error = SqlPersistentStore::Error;
 using EntryInfoOrError = SqlPersistentStore::EntryInfoOrError;
 using OptionalEntryInfoOrError = SqlPersistentStore::OptionalEntryInfoOrError;
+using EntryInfoWithIdAndKey = SqlPersistentStore::EntryInfoWithIdAndKey;
+using OptionalEntryInfoWithIdAndKey =
+    SqlPersistentStore::OptionalEntryInfoWithIdAndKey;
 
 using InitResultOrError = base::expected<InitResult, Error>;
 
@@ -100,6 +103,21 @@ void PopulateTraceDetails(const EntryInfo& entry_info,
 }
 void PopulateTraceDetails(const std::optional<EntryInfo>& entry_info,
                           perfetto::TracedDictionary& dict) {
+  if (entry_info) {
+    PopulateTraceDetails(*entry_info, dict);
+  } else {
+    dict.Add("entry_info", "not found");
+  }
+}
+void PopulateTraceDetails(const EntryInfoWithIdAndKey& result,
+                          perfetto::TracedDictionary& dict) {
+  PopulateTraceDetails(result.info, dict);
+  dict.Add("res_id", result.res_id);
+  dict.Add("key", result.key.string());
+}
+void PopulateTraceDetails(
+    const std::optional<EntryInfoWithIdAndKey>& entry_info,
+    perfetto::TracedDictionary& dict) {
   if (entry_info) {
     PopulateTraceDetails(*entry_info, dict);
   } else {
@@ -257,6 +275,9 @@ class Backend {
   Error DeleteLiveEntry(const CacheEntryKey& key);
   Error DeleteAllEntries();
 
+  OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResId(
+      int64_t res_id_cursor);
+
  private:
   void DatabaseErrorCallback(int error, sql::Statement* statement);
 
@@ -273,6 +294,9 @@ class Backend {
   Error DeleteLiveEntryInternal(const CacheEntryKey& key,
                                 bool& corruption_detected);
   Error DeleteAllEntriesInternal();
+  OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResIdInternal(
+      int64_t res_id_cursor,
+      Error& error_out);
 
   // Updates the in-memory `store_status_` by `entry_count_delta` and
   // `total_size_delta`. If the update results in an overflow or a negative
@@ -950,6 +974,87 @@ Error Backend::DeleteAllEntriesInternal() {
   return Error::kOk;
 }
 
+OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResId(
+    int64_t res_id_cursor) {
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.OpenLatestEntryBeforeResId",
+                     "data", [&](perfetto::TracedValue trace_context) {
+                       auto dict = std::move(trace_context).WriteDictionary();
+                       dict.Add("res_id_cursor", res_id_cursor);
+                     });
+  base::ElapsedTimer timer;
+  Error error = Error::kOk;
+  auto result = OpenLatestEntryBeforeResIdInternal(res_id_cursor, error);
+  RecordTimeAndErrorResultHistogram("OpenLatestEntryBeforeResId",
+                                    timer.Elapsed(), error);
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.OpenLatestEntryBeforeResId",
+                   "result", [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     PopulateTraceDetails(result, dict);
+                     PopulateTraceDetails(error, dict);
+                   });
+  return result;
+}
+
+OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResIdInternal(
+    int64_t res_id_cursor,
+    Error& error_out) {
+  CheckDatabaseInitStatus();
+
+  constexpr char kSqlSelectResources[] =
+      // clang-format off
+      "SELECT "
+        "res_id,"      // 0
+        "token_high,"  // 1
+        "token_low,"   // 2
+        "last_used,"   // 3
+        "body_end,"    // 4
+        "cache_key,"   // 5
+        "head "        // 6
+      "FROM resources "
+      "WHERE "
+        "res_id<? AND "  // 0
+        "doomed=? "      // 1
+      "ORDER BY res_id DESC";
+  // clang-format on
+  // Intentionally DCHECK() for performance.
+  DCHECK(db_.IsSQLValid(kSqlSelectResources));
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectResources));
+  statement.BindInt64(0, res_id_cursor);
+  statement.BindBool(1, false);
+  while (statement.Step()) {
+    auto maybe_token =
+        ToUnguessableToken(statement.ColumnInt64(1), statement.ColumnInt64(2));
+    if (!maybe_token) {
+      // If OpenNextEntry encounters invalid data, it records it in a histogram
+      // and ignores the data.
+      error_out = Error::kInvalidData;
+      continue;
+    }
+
+    EntryInfoWithIdAndKey result;
+    result.res_id = statement.ColumnInt64(0);
+    result.key = CacheEntryKey(statement.ColumnString(5));
+    auto& entry_info = result.info;
+    entry_info.token = *maybe_token;
+    entry_info.last_used = statement.ColumnTime(3);
+    entry_info.body_end = statement.ColumnInt64(4);
+    base::span<const uint8_t> blob_span = statement.ColumnBlob(6);
+    if (blob_span.size() > std::numeric_limits<int>::max()) {
+      // If OpenNextEntry encounters invalid data, it records it in a histogram
+      // and ignores the data.
+      error_out = Error::kInvalidData;
+      continue;
+    }
+    entry_info.head = base::MakeRefCounted<net::GrowableIOBuffer>();
+    entry_info.head->SetCapacity(blob_span.size());
+    entry_info.head->span().copy_from_nonoverlapping(blob_span);
+    entry_info.opened = true;
+    return result;
+  }
+  return std::nullopt;
+}
+
 bool Backend::UpdateStoreStatusAndCommitTransaction(
     sql::Transaction& transaction,
     int64_t entry_count_delta,
@@ -1115,6 +1220,13 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
         .Then(WrapCallback(std::move(callback)));
   }
 
+  void OpenLatestEntryBeforeResId(
+      int64_t res_id_cursor,
+      OptionalEntryInfoWithIdAndKeyCallback callback) override {
+    backend_.AsyncCall(&Backend::OpenLatestEntryBeforeResId)
+        .WithArgs(res_id_cursor)
+        .Then(WrapCallback(std::move(callback)));
+  }
   int64_t MaxFileSize() const override { return max_file_size_; }
   int64_t MaxSize() const override { return max_size_; }
   void GetEntryCount(Int32Callback callback) const override {
@@ -1172,5 +1284,13 @@ SqlPersistentStore::EntryInfo::~EntryInfo() = default;
 SqlPersistentStore::EntryInfo::EntryInfo(EntryInfo&&) = default;
 SqlPersistentStore::EntryInfo& SqlPersistentStore::EntryInfo::operator=(
     EntryInfo&&) = default;
+
+SqlPersistentStore::EntryInfoWithIdAndKey::EntryInfoWithIdAndKey() = default;
+SqlPersistentStore::EntryInfoWithIdAndKey::~EntryInfoWithIdAndKey() = default;
+SqlPersistentStore::EntryInfoWithIdAndKey::EntryInfoWithIdAndKey(
+    EntryInfoWithIdAndKey&&) = default;
+SqlPersistentStore::EntryInfoWithIdAndKey&
+SqlPersistentStore::EntryInfoWithIdAndKey::operator=(EntryInfoWithIdAndKey&&) =
+    default;
 
 }  // namespace disk_cache

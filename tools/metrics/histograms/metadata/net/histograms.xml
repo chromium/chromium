@@ -139,6 +139,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DoomEntry"/>
   <variant name="Initialize"/>
   <variant name="OpenEntry"/>
+  <variant name="OpenLatestEntryBeforeResId"/>
   <variant name="OpenOrCreateEntry"/>
 </variants>
 
