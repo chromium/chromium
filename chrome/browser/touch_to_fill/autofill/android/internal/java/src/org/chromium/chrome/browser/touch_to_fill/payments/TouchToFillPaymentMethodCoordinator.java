@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getValuableIcon;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
@@ -166,6 +167,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 .with(VISIBLE, false)
                 .with(CURRENT_SCREEN, HOME_SCREEN)
                 .with(SHEET_ITEMS, new ModelList())
+                .with(BACK_PRESS_HANDLER, mediator::showHomeScreen)
                 .with(DISMISS_HANDLER, mediator::onDismissed)
                 .build();
     }

@@ -27,10 +27,14 @@ class TouchToFillPaymentMethodProperties {
             new PropertyModel.WritableIntPropertyKey("current_screen");
     public static final PropertyModel.WritableObjectPropertyKey<ModelList> SHEET_ITEMS =
             new PropertyModel.WritableObjectPropertyKey("sheet_items");
+    static final PropertyModel.ReadableObjectPropertyKey<Runnable> BACK_PRESS_HANDLER =
+            new PropertyModel.ReadableObjectPropertyKey<>("back_press_handler");
     static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
             new PropertyModel.ReadableObjectPropertyKey<>("dismiss_handler");
 
-    static final PropertyKey[] ALL_KEYS = {VISIBLE, CURRENT_SCREEN, SHEET_ITEMS, DISMISS_HANDLER};
+    static final PropertyKey[] ALL_KEYS = {
+        VISIBLE, CURRENT_SCREEN, SHEET_ITEMS, BACK_PRESS_HANDLER, DISMISS_HANDLER
+    };
 
     // Identifies different screens that can be dynamically displayed by the payments TTF bottom
     // sheet.

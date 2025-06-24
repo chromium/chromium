@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.is;
@@ -27,6 +28,7 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCred
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCardSuggestion;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLocalCreditCard;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CURRENT_SCREEN;
@@ -316,6 +318,7 @@ public class TouchToFillPaymentMethodViewTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Mock private Callback<Integer> mDismissCallback;
+    @Mock private Runnable mBackPressHandler;
     @Mock private FillableItemCollectionInfo mItemCollectionInfo;
     @Mock private TouchToFillResourceProvider mResourceProvider;
 
@@ -344,6 +347,7 @@ public class TouchToFillPaymentMethodViewTest {
                                     .with(VISIBLE, false)
                                     .with(CURRENT_SCREEN, HOME_SCREEN)
                                     .with(SHEET_ITEMS, new ModelList())
+                                    .with(BACK_PRESS_HANDLER, mBackPressHandler)
                                     .with(DISMISS_HANDLER, mDismissCallback)
                                     .build();
                     mTouchToFillPaymentMethodView =
@@ -1141,6 +1145,10 @@ public class TouchToFillPaymentMethodViewTest {
         onView(withText(CVS_LOYALTY_CARD.getLoyaltyCardNumber()))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
         waitForEvent(actionCallback).run();
+
+        onView(withId(R.id.all_loyalty_cards_back_image_button))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForEvent(mBackPressHandler).run();
     }
 
     private RecyclerView getCreditCardSuggestions() {

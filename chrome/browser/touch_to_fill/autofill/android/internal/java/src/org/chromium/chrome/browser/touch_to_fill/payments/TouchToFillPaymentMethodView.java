@@ -101,6 +101,16 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                         new HorizontalDividerItemDecoration(getContentView().getContext()));
     }
 
+    void setBackPressHandler(Runnable backPressHandler) {
+        getContentView()
+                .findViewById(R.id.all_loyalty_cards_back_image_button)
+                .setOnClickListener(
+                        (unused) -> {
+                            backPressHandler.run();
+                            // TODO: crbug.com/420957826 - Remeasure the bottom sheet.
+                        });
+    }
+
     @Override
     public int getVerticalScrollOffset() {
         return getSheetItemListView().computeVerticalScrollOffset();
