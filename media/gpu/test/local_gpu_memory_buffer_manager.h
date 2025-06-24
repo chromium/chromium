@@ -23,7 +23,7 @@ class Size;
 
 namespace media {
 
-class GpuMemoryBufferImplGbm;
+class TestGmbBuffer;
 
 // A local, as opposed to the default IPC-based, implementation of
 // gfx::GpuMemoryBufferManager which interacts with the DRM render node device
@@ -39,7 +39,7 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager {
 
   ~LocalGpuMemoryBufferManager();
 
-  std::unique_ptr<GpuMemoryBufferImplGbm> CreateGpuMemoryBuffer(
+  std::unique_ptr<TestGmbBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
@@ -50,7 +50,7 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager {
   // GBM_BO_USE_SW_READ_OFTEN usage is specified so that the user of the
   // returned GpuMemoryBuffer is guaranteed to have a linear view when mapping
   // it.
-  std::unique_ptr<GpuMemoryBufferImplGbm> ImportDmaBuf(
+  std::unique_ptr<TestGmbBuffer> ImportDmaBuf(
       const gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
       gfx::BufferFormat format);
@@ -64,18 +64,17 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager {
   ui::ScopedGbmDevice gbm_device_;
 };
 
-class GpuMemoryBufferImplGbm {
+class TestGmbBuffer {
  public:
-  GpuMemoryBufferImplGbm() = delete;
+  TestGmbBuffer() = delete;
 
-  GpuMemoryBufferImplGbm(gfx::BufferFormat format, gbm_bo* buffer_object);
+  TestGmbBuffer(gfx::BufferFormat format, gbm_bo* buffer_object);
 
-  GpuMemoryBufferImplGbm(const GpuMemoryBufferImplGbm&) = delete;
-  GpuMemoryBufferImplGbm& operator=(const GpuMemoryBufferImplGbm&) = delete;
+  TestGmbBuffer(const TestGmbBuffer&) = delete;
+  TestGmbBuffer& operator=(const TestGmbBuffer&) = delete;
 
-  ~GpuMemoryBufferImplGbm();
+  ~TestGmbBuffer();
 
-  // gfx::GpuMemoryBuffer:
   bool Map();
   void* memory(size_t plane);
   void Unmap();

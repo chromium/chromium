@@ -164,46 +164,46 @@ class GpuMemoryBufferMapping : public NativePixmapMapping {
       gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
       const gfx::BufferFormat& format) {
-    std::unique_ptr<LocalGpuMemoryBufferManager> gpu_memory_buffer_manager =
+    std::unique_ptr<LocalGpuMemoryBufferManager> gbm_buffer_manager =
         std::make_unique<LocalGpuMemoryBufferManager>();
-    std::unique_ptr<GpuMemoryBufferImplGbm> gpu_memory_buffer =
-        gpu_memory_buffer_manager->ImportDmaBuf(handle, size, format);
+    std::unique_ptr<TestGmbBuffer> gbm_buffer =
+        gbm_buffer_manager->ImportDmaBuf(handle, size, format);
 
-    if (!gpu_memory_buffer->Map()) {
+    if (!gbm_buffer->Map()) {
       LOG(ERROR) << "Failed to map GPU memory buffer!";
       return nullptr;
     }
 
     return std::make_unique<GpuMemoryBufferMapping>(
-        std::move(gpu_memory_buffer_manager), std::move(gpu_memory_buffer));
+        std::move(gbm_buffer_manager), std::move(gbm_buffer));
   }
 
   GpuMemoryBufferMapping(
-      std::unique_ptr<LocalGpuMemoryBufferManager> gpu_memory_buffer_manager,
-      std::unique_ptr<GpuMemoryBufferImplGbm> gpu_memory_buffer)
-      : gpu_memory_buffer_manager_(std::move(gpu_memory_buffer_manager)),
-        gpu_memory_buffer_(std::move(gpu_memory_buffer)) {}
+      std::unique_ptr<LocalGpuMemoryBufferManager> gbm_buffer_manager,
+      std::unique_ptr<TestGmbBuffer> gbm_buffer)
+      : gbm_buffer_manager_(std::move(gbm_buffer_manager)),
+        gbm_buffer_(std::move(gbm_buffer)) {}
 
-  ~GpuMemoryBufferMapping() override { gpu_memory_buffer_->Unmap(); }
+  ~GpuMemoryBufferMapping() override { gbm_buffer_->Unmap(); }
 
   raw_ptr<uint8_t> GetData(size_t plane_idx) const override {
-    return static_cast<uint8_t*>(gpu_memory_buffer_->memory(plane_idx));
+    return static_cast<uint8_t*>(gbm_buffer_->memory(plane_idx));
   }
 
   int GetStride(size_t plane_idx) const override {
-    return gpu_memory_buffer_->stride(plane_idx);
+    return gbm_buffer_->stride(plane_idx);
   }
 
-  gfx::Size GetSize() const override { return gpu_memory_buffer_->GetSize(); }
+  gfx::Size GetSize() const override { return gbm_buffer_->GetSize(); }
 
  private:
   // It's very important these two objects are initialized in this order,
   // because C++ guarantees they will be destroyed in the reverse order.
-  // Unfortunately, the destructor for GpuMemoryBuffer calls the GBM device that
-  // gets destroyed by the LocalGpuMemoryBufferManager destructor, so there is
-  // an order we need to do this in to prevent a segfault.
-  const std::unique_ptr<LocalGpuMemoryBufferManager> gpu_memory_buffer_manager_;
-  const std::unique_ptr<GpuMemoryBufferImplGbm> gpu_memory_buffer_;
+  // Unfortunately, the destructor for TestGmbBuffer calls the GBM
+  // device that gets destroyed by the LocalGpuMemoryBufferManager destructor,
+  // so there is an order we need to do this in to prevent a segfault.
+  const std::unique_ptr<LocalGpuMemoryBufferManager> gbm_buffer_manager_;
+  const std::unique_ptr<TestGmbBuffer> gbm_buffer_;
 };
 
 class Tile4Mapping : public NativePixmapMapping {
@@ -235,11 +235,11 @@ class Tile4Mapping : public NativePixmapMapping {
     CHECK_EQ(handle.modifier, I915_FORMAT_MOD_4_TILED);
     handle.modifier = gfx::NativePixmapHandle::kNoModifier;
 
-    LocalGpuMemoryBufferManager gpu_memory_buffer_manager;
-    std::unique_ptr<GpuMemoryBufferImplGbm> gpu_memory_buffer =
-        gpu_memory_buffer_manager.ImportDmaBuf(handle, size, format);
+    LocalGpuMemoryBufferManager gbm_buffer_manager;
+    std::unique_ptr<TestGmbBuffer> gbm_buffer =
+        gbm_buffer_manager.ImportDmaBuf(handle, size, format);
 
-    if (!gpu_memory_buffer->Map()) {
+    if (!gbm_buffer->Map()) {
       LOG(ERROR) << "Failed to map GPU memory buffer!";
       return nullptr;
     }
@@ -248,8 +248,7 @@ class Tile4Mapping : public NativePixmapMapping {
     for (size_t plane_idx = 0; plane_idx < handle.planes.size(); plane_idx++) {
       int width = plane_strides[plane_idx];
       int height = plane_sizes[plane_idx] / width;
-      const uint8_t* src =
-          static_cast<uint8_t*>(gpu_memory_buffer->memory(plane_idx));
+      const uint8_t* src = static_cast<uint8_t*>(gbm_buffer->memory(plane_idx));
       uint8_t* dest = static_cast<uint8_t*>(
           mmap(nullptr, plane_sizes[plane_idx], PROT_READ | PROT_WRITE,
                MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
@@ -273,7 +272,7 @@ class Tile4Mapping : public NativePixmapMapping {
       }
     }
 
-    gpu_memory_buffer->Unmap();
+    gbm_buffer->Unmap();
 
     handle.modifier = I915_FORMAT_MOD_4_TILED;
 

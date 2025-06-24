@@ -103,8 +103,7 @@ uint32_t GetGbmUsage(gfx::BufferUsage usage) {
 
 }  // namespace
 
-GpuMemoryBufferImplGbm::GpuMemoryBufferImplGbm(gfx::BufferFormat format,
-                                               gbm_bo* buffer_object)
+TestGmbBuffer::TestGmbBuffer(gfx::BufferFormat format, gbm_bo* buffer_object)
     : buffer_object_(buffer_object), mapped_(false) {
   gfx::NativePixmapHandle native_pixmap_handle;
   for (size_t i = 0;
@@ -120,7 +119,7 @@ GpuMemoryBufferImplGbm::GpuMemoryBufferImplGbm(gfx::BufferFormat format,
   handle_.id = gfx::GpuMemoryBufferId(0);
 }
 
-GpuMemoryBufferImplGbm::~GpuMemoryBufferImplGbm() {
+TestGmbBuffer::~TestGmbBuffer() {
   if (mapped_) {
     Unmap();
   }
@@ -128,7 +127,7 @@ GpuMemoryBufferImplGbm::~GpuMemoryBufferImplGbm() {
   gbm_bo_destroy(buffer_object_.ExtractAsDangling());
 }
 
-bool GpuMemoryBufferImplGbm::Map() {
+bool TestGmbBuffer::Map() {
   if (mapped_) {
     return true;
   }
@@ -142,7 +141,7 @@ bool GpuMemoryBufferImplGbm::Map() {
                     gbm_bo_get_height(buffer_object_),
                     GBM_BO_TRANSFER_READ_WRITE, &stride, &mapped_data, i);
     if (addr == MAP_FAILED) {
-      LOG(ERROR) << "Failed to map GpuMemoryBufferImplGbm plane " << i;
+      LOG(ERROR) << "Failed to map TestGmbBuffer plane " << i;
       Unmap();
       return false;
     }
@@ -153,7 +152,7 @@ bool GpuMemoryBufferImplGbm::Map() {
   return true;
 }
 
-void* GpuMemoryBufferImplGbm::memory(size_t plane) {
+void* TestGmbBuffer::memory(size_t plane) {
   if (!mapped_) {
     LOG(ERROR) << "Buffer is not mapped";
     return nullptr;
@@ -165,7 +164,7 @@ void* GpuMemoryBufferImplGbm::memory(size_t plane) {
   return mapped_planes_[plane].addr;
 }
 
-void GpuMemoryBufferImplGbm::Unmap() {
+void TestGmbBuffer::Unmap() {
   for (size_t i = 0; i < mapped_planes_.size(); ++i) {
     if (mapped_planes_[i].addr) {
       gbm_bo_unmap(buffer_object_, mapped_planes_[i].mapped_data);
@@ -177,16 +176,16 @@ void GpuMemoryBufferImplGbm::Unmap() {
   mapped_ = false;
 }
 
-gfx::Size GpuMemoryBufferImplGbm::GetSize() const {
+gfx::Size TestGmbBuffer::GetSize() const {
   return gfx::Size(gbm_bo_get_width(buffer_object_),
                    gbm_bo_get_height(buffer_object_));
 }
 
-int GpuMemoryBufferImplGbm::stride(size_t plane) const {
+int TestGmbBuffer::stride(size_t plane) const {
   return gbm_bo_get_stride_for_plane(buffer_object_, plane);
 }
 
-gfx::GpuMemoryBufferHandle GpuMemoryBufferImplGbm::CloneHandle() const {
+gfx::GpuMemoryBufferHandle TestGmbBuffer::CloneHandle() const {
   DCHECK_EQ(handle_.type, gfx::NATIVE_PIXMAP);
   gfx::GpuMemoryBufferHandle handle(
       gfx::CloneHandleForIPC(handle_.native_pixmap_handle()));
@@ -198,7 +197,7 @@ LocalGpuMemoryBufferManager::LocalGpuMemoryBufferManager()
     : gbm_device_(CreateGbmDevice()) {}
 LocalGpuMemoryBufferManager::~LocalGpuMemoryBufferManager() = default;
 
-std::unique_ptr<GpuMemoryBufferImplGbm>
+std::unique_ptr<TestGmbBuffer>
 LocalGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
@@ -235,13 +234,13 @@ LocalGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     return nullptr;
   }
 
-  return std::make_unique<GpuMemoryBufferImplGbm>(format, buffer_object);
+  return std::make_unique<TestGmbBuffer>(format, buffer_object);
 }
 
-std::unique_ptr<GpuMemoryBufferImplGbm>
-LocalGpuMemoryBufferManager::ImportDmaBuf(const gfx::NativePixmapHandle& handle,
-                                          const gfx::Size& size,
-                                          gfx::BufferFormat format) {
+std::unique_ptr<TestGmbBuffer> LocalGpuMemoryBufferManager::ImportDmaBuf(
+    const gfx::NativePixmapHandle& handle,
+    const gfx::Size& size,
+    gfx::BufferFormat format) {
   if (handle.planes.size() !=
       gfx::NumberOfPlanesForLinearBufferFormat(format)) {
     // This could happen if e.g., we get a compressed RGBA buffer where one
@@ -280,7 +279,7 @@ LocalGpuMemoryBufferManager::ImportDmaBuf(const gfx::NativePixmapHandle& handle,
     PLOG(ERROR) << "Could not import the DmaBuf into gbm";
     return nullptr;
   }
-  return std::make_unique<GpuMemoryBufferImplGbm>(format, buffer_object);
+  return std::make_unique<TestGmbBuffer>(format, buffer_object);
 }
 
 bool LocalGpuMemoryBufferManager::IsFormatAndUsageSupported(
