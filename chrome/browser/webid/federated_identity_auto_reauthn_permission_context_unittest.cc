@@ -13,6 +13,7 @@
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/password_manager/core/browser/fake_password_manager_settings_service.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -22,44 +23,6 @@
 #include "url/origin.h"
 
 namespace {
-
-class FakePasswordManagerSettingsService
-    : public password_manager::PasswordManagerSettingsService {
- public:
-  FakePasswordManagerSettingsService() {
-    setting_enabled_map_
-        [password_manager::PasswordManagerSetting::kOfferToSavePasswords] =
-            true;
-    setting_enabled_map_
-        [password_manager::PasswordManagerSetting::kAutoSignIn] = true;
-    setting_enabled_map_[password_manager::PasswordManagerSetting::
-                             kBiometricReauthBeforePwdFilling] = true;
-  }
-
-  FakePasswordManagerSettingsService(
-      const FakePasswordManagerSettingsService&) = delete;
-  FakePasswordManagerSettingsService& operator=(
-      const FakePasswordManagerSettingsService&) = delete;
-
-  ~FakePasswordManagerSettingsService() override = default;
-
-  // password_manager::PasswordManagerSettingsService implementation.
-  bool IsSettingEnabled(
-      password_manager::PasswordManagerSetting setting) const override {
-    return setting_enabled_map_.at(setting);
-  }
-
-  void RequestSettingsFromBackend() override {}
-
-  void TurnOffAutoSignIn() override {
-    setting_enabled_map_
-        [password_manager::PasswordManagerSetting::kAutoSignIn] = false;
-  }
-
- private:
-  base::flat_map<password_manager::PasswordManagerSetting, bool>
-      setting_enabled_map_;
-};
 
 std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
 CreateAndRegisterPrefs() {
@@ -118,7 +81,8 @@ class FederatedIdentityAutoReauthnPermissionContextTest : public testing::Test {
       host_content_settings_map_.get()};
   FederatedIdentityAutoReauthnPermissionContext context_{
       host_content_settings_map_.get(), &permission_decision_auto_blocker_};
-  FakePasswordManagerSettingsService password_manager_settings_service_;
+  password_manager::FakePasswordManagerSettingsService
+      password_manager_settings_service_;
 };
 
 // Test that FedCM auto re-authn is opt-in by default.

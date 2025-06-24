@@ -69,7 +69,7 @@ class FederatedIdentityAutoReauthnPermissionContext
 
  private:
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
-  const raw_ptr<permissions::PermissionDecisionAutoBlocker, DanglingUntriaged>
+  const raw_ptr<permissions::PermissionDecisionAutoBlocker>
       permission_autoblocker_;
 
   raw_ptr<password_manager::PasswordManagerSettingsService>

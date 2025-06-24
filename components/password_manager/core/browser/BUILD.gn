@@ -381,6 +381,8 @@ static_library("test_support") {
   sources = [
     "fake_form_fetcher.cc",
     "fake_form_fetcher.h",
+    "fake_password_manager_settings_service.cc",
+    "fake_password_manager_settings_service.h",
     "mock_password_feature_manager.cc",
     "mock_password_feature_manager.h",
     "mock_password_form_cache.cc",
