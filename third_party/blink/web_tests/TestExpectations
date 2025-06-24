@@ -7860,7 +7860,6 @@ crbug.com/327590879 [ Linux ] virtual/view-transition-mpa-serialization/external
 
 # Gardener 2024-03-04 (EMEA)
 crbug.com/327224061 [ Win ] external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html [ Failure Pass ]
-crbug.com/40253082 [ Linux ] fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Pass ]
 
 # Suppressing color conversion failures while fixing functionality.
 # Also reported as flakey on Linux crbug.com/1481730 and failing on macOS (crbug.com/1493342)
@@ -7905,7 +7904,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14 ] svg/text/textLength-spacingAndGlyphs-decoration.svg [ Failure ]
 [ Mac14 ] svg/W3C-SVG-1.1/text-align-08-b.svg [ Failure ]
 [ Mac14 ] transforms/2d/hindi-rotated.html [ Failure ]
-[ Mac14 ] virtual/controls-refresh-hc/fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Failure ]
 [ Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/anchor-focus.https.html [ Failure ]
 [ Mac14 ] virtual/scalefactor200/css3/filters/effect-hue-rotate-hw.html [ Failure ]
 [ Mac14 ] virtual/text-antialias/international/lang-glyph-cache-separation.html [ Failure ]
@@ -8338,7 +8336,6 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 [ Mac14 ] external/wpt/WebCryptoAPI/derive_bits_keys/pbkdf2.https.any.html?3001-4000 [ Crash ]
 [ Mac14 ] external/wpt/WebCryptoAPI/derive_bits_keys/pbkdf2.https.any.worker.html?3001-4000 [ Crash ]
 [ Mac14 ] external/wpt/webrtc/RTCDataChannel-send-close.html [ Skip Timeout ]
-[ Mac14 ] fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Pass ]
 [ Mac14 ] gamepad/multiple-event-listeners.html [ Failure Pass ]
 [ Mac14 ] http/tests/misc/script-no-store.html [ Timeout ]
 [ Mac14 ] http/tests/origin_trials/valid-token-window-open-header-enabled.php [ Failure Pass ]
@@ -8354,9 +8351,6 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-ident.html [ Failure Pass ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple-wildcard.html [ Failure Pass ]
 
-# Branch Gardener 2024-03-20
-crbug.com/330547706 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Pass ]
-
 # WebDriver BiDi WPT network interception tests are not stable yet.
 # https://github.com/GoogleChromeLabs/chromium-bidi/issues/2045.
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/capture_screenshot.py [ Failure Pass ]
@@ -8371,9 +8365,6 @@ crbug.com/330668788 [ Linux ] external/wpt/html/semantics/embedded-content/media
 
 crbug.com/331291856 [ Mac ] storage/indexeddb/key-cursor-request-cycle.html [ Failure Pass ]
 crbug.com/331291856 [ Mac ] storage/indexeddb/cursor-request-cycle.html [ Failure Pass ]
-
-# Branch Gardener 2024-03-26
-crbug.com/40253082 [ Debug Mac13 ] fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Pass ]
 
 # New blocked ports need to be added.
 crbug.com/332467110 external/wpt/websockets/Create-blocked-port.any.html?default [ Timeout ]
