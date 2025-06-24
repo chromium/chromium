@@ -1421,6 +1421,8 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   wgpu::Texture current_swap_buffer_;
   EGLImage default_framebuffer_color_image_ = EGL_NO_IMAGE;
   GLuint default_framebuffer_color_texture_ = 0;
+  GLuint default_framebuffer_depth_stencil_renderbuffer_ = 0;
+  gfx::Size default_framebuffer_size_;
   GLuint default_framebuffer_ = 0;
 
   int num_gl_errors_to_console_allowed_ = 255;

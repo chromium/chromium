@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/extension_set.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gl/angle_platform_impl.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_utils.h"
@@ -198,6 +199,26 @@ class ScopedBindFramebuffer {
   raw_ref<const gl::DriverGL> gl_;
   GLint prev_draw_fbo_ = 0;
   GLint prev_read_fbo_ = 0;
+};
+
+class ScopedBindRenderbuffer {
+ public:
+  ScopedBindRenderbuffer(const gl::DriverGL& gl, GLuint renderbuffer)
+      : gl_(gl) {
+    gl_->fn.glGetIntegervFn(GL_RENDERBUFFER_BINDING, &prev_renderbuffer_);
+    gl_->fn.glBindRenderbufferEXTFn(GL_RENDERBUFFER, renderbuffer);
+  }
+
+  ~ScopedBindRenderbuffer() {
+    gl_->fn.glBindRenderbufferEXTFn(GL_RENDERBUFFER, prev_renderbuffer_);
+  }
+
+  ScopedBindRenderbuffer(const ScopedBindRenderbuffer&) = delete;
+  ScopedBindRenderbuffer& operator=(const ScopedBindRenderbuffer&) = delete;
+
+ private:
+  raw_ref<const gl::DriverGL> gl_;
+  GLint prev_renderbuffer_ = 0;
 };
 
 const char* GetErrorString(GLenum error) {
@@ -479,16 +500,15 @@ WebGLRenderingContextWebGPUBase::getHTMLOrOffscreenCanvas() const {
 }
 
 int WebGLRenderingContextWebGPUBase::drawingBufferWidth() const {
-  return isContextLost() ? 0 : swap_buffers_->Size().height();
+  return isContextLost() ? 0 : default_framebuffer_size_.width();
 }
 
 int WebGLRenderingContextWebGPUBase::drawingBufferHeight() const {
-  return isContextLost() ? 0 : swap_buffers_->Size().width();
+  return isContextLost() ? 0 : default_framebuffer_size_.height();
 }
 
 GLenum WebGLRenderingContextWebGPUBase::drawingBufferFormat() const {
-  NOTIMPLEMENTED();
-  return 0;
+  return GL_RGBA8;
 }
 
 V8PredefinedColorSpace
@@ -3652,9 +3672,12 @@ void WebGLRenderingContextWebGPUBase::EnsureDefaultFramebuffer() {
   if (current_swap_buffer_) {
     return;
   }
+
+  gfx::Size framebuffer_size = Host()->Size();
+
   wgpu::TextureDescriptor texDesc;
-  texDesc.size.width = std::max(1, Host()->Size().width());
-  texDesc.size.height = std::max(1, Host()->Size().height());
+  texDesc.size.width = std::max(1, framebuffer_size.width());
+  texDesc.size.height = std::max(1, framebuffer_size.height());
   texDesc.usage = swap_buffers_->TextureUsage();
   texDesc.format = swap_buffers_->TextureFormat();
   texDesc.dimension = wgpu::TextureDimension::e2D;
@@ -3692,6 +3715,36 @@ void WebGLRenderingContextWebGPUBase::EnsureDefaultFramebuffer() {
           default_framebuffer_color_texture_, 0);
     }
   }
+
+  // TODO(413078308): Don't create a depth stencil when the user did not request
+  // it. Also choose a format based on the request.
+  if (!default_framebuffer_depth_stencil_renderbuffer_ ||
+      framebuffer_size != default_framebuffer_size_) {
+    driver_gl_.fn.glDeleteRenderbuffersEXTFn(
+        1, &default_framebuffer_depth_stencil_renderbuffer_);
+    driver_gl_.fn.glGenRenderbuffersEXTFn(
+        1, &default_framebuffer_depth_stencil_renderbuffer_);
+
+    {
+      ScopedBindRenderbuffer bind_renderbuffer(
+          driver_gl_, default_framebuffer_depth_stencil_renderbuffer_);
+      driver_gl_.fn.glRenderbufferStorageEXTFn(
+          GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,
+          std::max(1, framebuffer_size.width()),
+          std::max(1, framebuffer_size.height()));
+    }
+
+    {
+      ScopedBindFramebuffer bind_default_fbo(
+          driver_gl_, supports_separate_framebuffer_targets_, GL_FRAMEBUFFER,
+          default_framebuffer_);
+      driver_gl_.fn.glFramebufferRenderbufferEXTFn(
+          GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
+          default_framebuffer_depth_stencil_renderbuffer_);
+    }
+  }
+
+  default_framebuffer_size_ = framebuffer_size;
 }
 
 // Do the full initialization of EGL Display and EGL context from the WebGPU
