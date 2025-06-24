@@ -74,13 +74,13 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
         // Auto delete switch.
         ChromeSwitchPreference enableAutoDeleteSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_TAB_ARCHIVE_ALLOW_AUTODELETE);
-        int autoDeleteTimeDeltaDays = mArchiveSettings.getAutoDeleteTimeDeltaDays();
-        enableAutoDeleteSwitch.setTitle(
+        int autoDeleteTimeDeltaMonths = mArchiveSettings.getAutoDeleteTimeDeltaMonths();
+        enableAutoDeleteSwitch.setSummary(
                 getResources()
                         .getQuantityString(
-                                R.plurals.archive_settings_allow_autodelete_title,
-                                autoDeleteTimeDeltaDays,
-                                autoDeleteTimeDeltaDays));
+                                R.plurals.archive_settings_allow_autodelete_summary,
+                                autoDeleteTimeDeltaMonths,
+                                autoDeleteTimeDeltaMonths));
         boolean isAutoDeleteEnabled =
                 mArchiveSettings.getArchiveEnabled() && mArchiveSettings.isAutoDeleteEnabled();
         enableAutoDeleteSwitch.setEnabled(mArchiveSettings.getArchiveEnabled());

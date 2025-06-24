@@ -899,7 +899,7 @@
 
       <!-- Tabs Settings Strings -->
       <message name="IDS_TABS_SETTINGS_TITLE" desc="A title to show in the top toolbar when the Tabs settings page is open.">
-        Tabs
+        Tabs and tab groups
       </message>
       <message name="IDS_AUTO_OPEN_SYNCED_TAB_GROUPS_SUMMARY" desc="A title to show in the top toolbar when the Tabs settings page is open.">
         Automatically open tab groups from other devices
@@ -954,20 +954,23 @@
       <message name="IDS_ARCHIVED_TABS_DIALOG_SETTINGS_ACTION" desc="A menu item for the archived tabs dialog. Navigates to the settings activity.">
         Settings
       </message>
-      <message name="IDS_ARCHIVE_SETTINGS_TITLE" desc="The title for the entry-point to declutter settings.">
+      <message name="IDS_ARCHIVE_SETTINGS_TITLE" desc="The title for the declutter settings page.">
         Inactive
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_SECTION_TITLE" desc="The title for the entry-point to declutter settings.">
+        Move to inactive section
       </message>
       <message name="IDS_ARCHIVE_SETTINGS_SUMMARY" desc="The summary for the entry-point to declutter settings.">
         {DAY_COUNT, plural,
-          =1 {After 1 day}
-          other {After <ph name="DAY_COUNT_MANY">%1$d<ex>15</ex></ph> days}
+          =1 {After 1 day inactive}
+          other {After <ph name="DAY_COUNT_MANY">%1$d<ex>15</ex></ph> days inactive}
         }
       </message>
-      <message name="IDS_ARCHIVE_SETTINGS_ALLOW_AUTODELETE_TITLE" desc="The title for toggle to allow tabs to be deleted automatically.">
-        {DAY_COUNT, plural,
-          =1 {Close after 1 day}
-          other {Close after <ph name="DAY_COUNT_MANY">%1$d<ex>15</ex></ph> days}
-        }
+      <message name="IDS_ARCHIVE_SETTINGS_DESCRIPTION_SECTION" desc="The information section for describing the use of declutter settings.">
+        Choose when tabs and tab groups are automatically moved to the inactive section.
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_ALLOW_AUTODELETE_TITLE" desc="The title for toggle to allow tabs and tab groups to be deleted automatically.">
+        Automatically close inactive items
       </message>
       <message name="IDS_ARCHIVE_SETTINGS_ARCHIVE_DUPLICATE_TABS_SUMMARY" desc="The summary for toggle to allow duplicate tabs to be archived.">
         All duplicate tabs will now also be archived, with the exception of the most recently used copy.
@@ -975,13 +978,16 @@
       <message name="IDS_ARCHIVE_SETTINGS_ARCHIVE_DUPLICATE_TABS_TITLE" desc="The title for toggle to allow duplicate tabs to be archived.">
         Archive duplicate tabs
       </message>
-      <message name="IDS_ARCHIVE_SETTINGS_ALLOW_AUTODELETE_SUMMARY" desc="The summary for toggle to allow tabs to be deleted automatically.">
-        Inactive tabs will automatically be closed. You can always find them in History.
+      <message name="IDS_ARCHIVE_SETTINGS_ALLOW_AUTODELETE_SUMMARY" desc="The summary for toggle to allow tabs and tab groups to be deleted automatically.">
+        {DAY_COUNT, plural,
+          =1 {Inactive tabs and groups will be closed after 1 month}
+          other {Inactive tabs and groups will be closed after <ph name="MONTH_COUNT_MANY">%1$d<ex>3</ex></ph> months}
+        }
       </message>
       <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA" desc="The string to show how many days until a tab is considered inactive.">
         {DAY_COUNT, plural,
-          =1 {After 1 day}
-          other {After <ph name="DAY_COUNT_MANY">%1$d<ex>15</ex></ph> days}
+          =1 {After 1 day inactive}
+          other {After <ph name="DAY_COUNT_MANY">%1$d<ex>15</ex></ph> days inactive}
         }
       </message>
       <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA_NEVER" desc="The string for the option to never archive tabs.">

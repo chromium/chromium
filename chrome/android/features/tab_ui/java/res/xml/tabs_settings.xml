@@ -11,7 +11,7 @@ found in the LICENSE file.
 
     <Preference
         android:key="archive_settings_entrypoint"
-        android:title="@string/archive_settings_title"
+        android:title="@string/archive_settings_section_title"
         android:fragment="org.chromium.chrome.browser.tasks.tab_management.TabArchiveSettingsFragment"
         app:allowDividerBelow="true" />
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference

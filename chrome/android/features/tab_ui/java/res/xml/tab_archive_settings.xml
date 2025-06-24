@@ -9,6 +9,11 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="tab_archive_settings_description"
+        android:summary="@string/archive_settings_description_section"
+        app:allowDividerBelow="false" />
+
     <org.chromium.chrome.browser.tasks.tab_management.TabArchiveTimeDeltaPreference
         android:key="tab_archive_time_delta" />
 
@@ -19,6 +24,6 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="tab_archive_allow_autodelete"
-        android:summary="@string/archive_settings_allow_autodelete_summary"
+        android:title="@string/archive_settings_allow_autodelete_title"
         app:allowDividerAbove="true"/>
 </PreferenceScreen>

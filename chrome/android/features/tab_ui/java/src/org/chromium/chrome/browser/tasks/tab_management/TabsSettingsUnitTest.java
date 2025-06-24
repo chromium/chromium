@@ -168,8 +168,8 @@ public class TabsSettingsUnitTest {
                 tabsSettings.findPreference(TabsSettings.PREF_TAB_ARCHIVE_SETTINGS);
         assertTrue(archiveSettinsEntryPoint.isVisible());
 
-        assertEquals("Inactive", archiveSettinsEntryPoint.getTitle());
-        assertEquals("After 14 days", archiveSettinsEntryPoint.getSummary());
+        assertEquals("Move to inactive section", archiveSettinsEntryPoint.getTitle());
+        assertEquals("After 14 days inactive", archiveSettinsEntryPoint.getSummary());
     }
 
     @Test

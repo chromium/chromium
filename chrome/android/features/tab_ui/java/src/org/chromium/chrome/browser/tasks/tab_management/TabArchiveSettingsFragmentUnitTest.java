@@ -93,7 +93,7 @@ public class TabArchiveSettingsFragmentUnitTest {
                                 TabArchiveSettingsFragment.INACTIVE_TIMEDELTA_PREF);
 
         assertEquals(
-                "After 7 days",
+                "After 7 days inactive",
                 archiveTimeDeltaPreference.getCheckedRadioButtonForTesting().getPrimaryText());
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -182,13 +182,13 @@ public class TabArchiveSettingsFragmentUnitTest {
         assertEquals(
                 "Never", archiveTimeDeltaPreference.getRadioButtonForTesting(0).getPrimaryText());
         assertEquals(
-                "After 7 days",
+                "After 7 days inactive",
                 archiveTimeDeltaPreference.getRadioButtonForTesting(1).getPrimaryText());
         assertEquals(
-                "After 14 days",
+                "After 14 days inactive",
                 archiveTimeDeltaPreference.getRadioButtonForTesting(2).getPrimaryText());
         assertEquals(
-                "After 21 days",
+                "After 21 days inactive",
                 archiveTimeDeltaPreference.getRadioButtonForTesting(3).getPrimaryText());
     }
 }
