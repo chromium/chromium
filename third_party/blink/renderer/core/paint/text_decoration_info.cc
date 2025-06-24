@@ -69,13 +69,11 @@ inline bool ShouldUseDecoratingBox(const ComputedStyle& style) {
   return true;
 }
 
-static float ComputeDecorationThickness(
+float ComputeDecorationThickness(
     const TextDecorationThickness text_decoration_thickness,
     float computed_font_size,
-    float minimum_thickness,
     const SimpleFontData* font_data) {
-  float auto_underline_thickness =
-      std::max(minimum_thickness, computed_font_size / 10.f);
+  const float auto_underline_thickness = computed_font_size / 10.f;
 
   if (text_decoration_thickness.IsAuto())
     return auto_underline_thickness;
@@ -90,20 +88,15 @@ static float ComputeDecorationThickness(
   if (text_decoration_thickness.IsFromFont()) {
     std::optional<float> font_underline_thickness =
         font_data->GetFontMetrics().UnderlineThickness();
-
-    if (!font_underline_thickness)
-      return auto_underline_thickness;
-
-    return std::max(minimum_thickness, font_underline_thickness.value());
+    return font_underline_thickness.value_or(auto_underline_thickness);
   }
 
   DCHECK(!text_decoration_thickness.IsFromFont());
 
   const Length& thickness_length = text_decoration_thickness.Thickness();
-  float text_decoration_thickness_pixels =
+  const float text_decoration_thickness_pixels =
       FloatValueForLength(thickness_length, computed_font_size);
-
-  return std::max(minimum_thickness, roundf(text_decoration_thickness_pixels));
+  return roundf(text_decoration_thickness_pixels);
 }
 
 static enum StrokeStyle TextDecorationStyleToStrokeStyle(
@@ -450,15 +443,13 @@ float TextDecorationInfo::ComputeThickness() const {
 float TextDecorationInfo::ComputeUnderlineThickness(
     const TextDecorationThickness& applied_decoration_thickness,
     const ComputedStyle* decorating_box_style) const {
-  const float minimum_thickness = minimum_thickness_is_one_ ? 1.0f : 0.0f;
   float thickness = 0;
   if (flipped_underline_position_ ==
           ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto ||
       flipped_underline_position_ ==
           ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont) {
     thickness = ComputeDecorationThickness(applied_decoration_thickness,
-                                           computed_font_size_,
-                                           minimum_thickness, font_data_);
+                                           computed_font_size_, font_data_);
   } else {
     // Compute decorating box. Position and thickness are computed from the
     // decorating box.
@@ -467,15 +458,15 @@ float TextDecorationInfo::ComputeUnderlineThickness(
     if (decorating_box_style) {
       thickness = ComputeDecorationThickness(
           applied_decoration_thickness,
-          decorating_box_style->ComputedFontSize(), minimum_thickness,
+          decorating_box_style->ComputedFontSize(),
           decorating_box_style->GetFont()->PrimaryFont());
     } else {
       thickness = ComputeDecorationThickness(applied_decoration_thickness,
-                                             computed_font_size_,
-                                             minimum_thickness, font_data_);
+                                             computed_font_size_, font_data_);
     }
   }
-  return thickness;
+  const float minimum_thickness = minimum_thickness_is_one_ ? 1.0f : 0.0f;
+  return std::max(minimum_thickness, thickness);
 }
 
 gfx::RectF TextDecorationInfo::Bounds() const {
