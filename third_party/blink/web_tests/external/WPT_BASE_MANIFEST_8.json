@@ -213419,6 +213419,49 @@
         {}
        ]
       ],
+      "text-spacing-trim-start-oof-001.html": [
+       "ab274efb34c06d23b14e6829185a2aec6d657c69",
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-oof-001.html?class=chws,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-oof-001-ref.html?class=chws,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-oof-001.html?class=chws,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-oof-001-ref.html?class=chws,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-oof-001.html?class=halt,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-oof-001-ref.html?class=halt,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-oof-001.html?class=halt,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-oof-001-ref.html?class=halt,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-spacing-trim-subset-001.html": [
        "caef2b18e4bb7612b4373c462c456a13e6096780",
        [
@@ -218064,6 +218107,45 @@
         [
          [
           "/css/css-text/white-space/reference/text-wrap-balance-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-wrap-balance-line-clamp-002.html": [
+       "f3a8cc3c739471679445913961c26e611fe0bd8e",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/text-wrap-balance-line-clamp-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-wrap-balance-line-clamp-003.html": [
+       "39f8254c935eee18fc429e945753974eb0ce4f60",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/text-wrap-balance-line-clamp-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-wrap-balance-line-clamp-004.html": [
+       "4de69b7be8172446d1ef9e7cce0b48ec25a98d13",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/text-wrap-balance-line-clamp-004-ref.html",
           "=="
          ]
         ],
@@ -261007,6 +261089,19 @@
         {}
        ]
       ],
+      "bottom.html": [
+       "1ed63382b342c3024de570ddfe3c7bc9d21449b3",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/green-square-100px.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "canvas.html": [
        "dbde2eda26a097e522f4f929b6ddec6c0e2a424c",
        [
@@ -261137,6 +261232,19 @@
         {}
        ]
       ],
+      "left.html": [
+       "9621318215be780a6f3017f6c3484bced3d4dd7f",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/green-square-100px.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "letter-spacing.html": [
        "03b66cddb358b64fc14401c1ecd6db9456aace21",
        [
@@ -261235,6 +261343,19 @@
         [
          [
           "/css/css-viewport/zoom/relative-units-from-parent-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "right.html": [
+       "1d7c109dff6b54411b9cb2a17d71b58d73f1a0e2",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/green-square-100px.html",
           "=="
          ]
         ],
@@ -261365,6 +261486,19 @@
         [
          [
           "/css/css-viewport/zoom/reference/text-underline-offset-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "top.html": [
+       "391b5c70385c1315686c116f3ac4787de76f012e",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/green-square-100px.html",
           "=="
          ]
         ],
@@ -369610,6 +369744,10 @@
        "fd4ca6d6913dcea4ea8b2d6c1b1cf6381a40773d",
        []
       ],
+      "text-spacing-trim-start-oof-001-ref.html": [
+       "e316bf308ce19459980f1fcb25fe7f50b37adc80",
+       []
+      ],
       "text-spacing-trim-subset-001-ref.html": [
        "10abd537c979c4455755561168c1d74113263675",
        []
@@ -370241,6 +370379,18 @@
        ],
        "text-wrap-balance-line-clamp-001-ref.html": [
         "4e465be7ccf97dfe4e8523f92aa6aec4470acbe2",
+        []
+       ],
+       "text-wrap-balance-line-clamp-002-ref.html": [
+        "17e6df994f78b65b655871232012464d8c297598",
+        []
+       ],
+       "text-wrap-balance-line-clamp-003-ref.html": [
+        "230f799fe269b2b3ee59d34b7120e6a7aabc10e8",
+        []
+       ],
+       "text-wrap-balance-line-clamp-004-ref.html": [
+        "06826aa8cf3f0b4d66749b246521f841d23f978f",
         []
        ],
        "text-wrap-balance-overflow-001-ref.html": [
@@ -436566,6 +436716,12 @@
         ]
        },
        "dom_content_loaded": {
+        "__init__.py": [
+         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         []
+        ]
+       },
+       "download_end": {
         "__init__.py": [
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
          []
@@ -503155,7 +503311,7 @@
        ]
       ],
       "color-valid.html": [
-       "5c18d62d75924fcd5c6a4baf8036624bf6b6ce87",
+       "ee513d3ab6064e1abe753e12bc3ae39f1703f9bd",
        [
         null,
         {}
@@ -717776,6 +717932,15 @@
          "testdriver": true
         }
        ]
+      ],
+      "raf-loop.html": [
+       "a047d6a8fb30a429e6a4cd00fd87fd75f3458c15",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
       ]
      }
     },
@@ -839682,6 +839847,13 @@
         null,
         {}
        ]
+      ],
+      "text-wrap-pretty-line-clamp-crash-001.html": [
+       "0ad61672f04fb12f6d05425906f3b3d8fac1acae",
+       [
+        null,
+        {}
+       ]
       ]
      }
     },
@@ -841770,6 +841942,22 @@
        "dom_content_loaded": {
         "dom_content_loaded.py": [
          "6cef36ca932aa7445cf8a5f7179571d20253de8b",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
+       "download_end": {
+        "download_end.py": [
+         "8594d91cbaf9bbea4530ca14059b87c9ca4e45c1",
+         [
+          null,
+          {}
+         ]
+        ],
+        "status.py": [
+         "234448cff2f272b72710a9515e7dff5799807cc8",
          [
           null,
           {}
