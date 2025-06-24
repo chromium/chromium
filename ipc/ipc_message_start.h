@@ -15,9 +15,6 @@ enum IPCMessageStart {
   AutomationMsgStart = 0,
   TestMsgStart,
   WorkerMsgStart,
-  NaClMsgStart,
-  PpapiMsgStart,
-  NaClHostMsgStart,
   LastIPCMsgStart  // Must come last.
 };
 

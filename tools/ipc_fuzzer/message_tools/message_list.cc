@@ -55,15 +55,6 @@ static bool check_msgtable() {
   exemptions.push_back(TestMsgStart);
   exemptions.push_back(WorkerMsgStart);    // Now only used by tests.
 
-#if !BUILDFLAG(ENABLE_NACL)
-  exemptions.push_back(NaClMsgStart);
-  exemptions.push_back(NaClHostMsgStart);
-#endif  // !BUILDFLAG(ENABLE_NACL)
-
-#if !BUILDFLAG(ENABLE_PPAPI)
-  exemptions.push_back(PpapiMsgStart);
-#endif  // !BUILDFLAG(ENABLE_PPAPI)
-
   for (size_t i = 0; i < MSGTABLE_SIZE; ++i) {
     int class_id = IPC_MESSAGE_ID_CLASS(msgtable[i].id);
     file_name = msgtable[i].file;

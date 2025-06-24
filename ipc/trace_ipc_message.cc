@@ -28,15 +28,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case WorkerMsgStart:
       message_class = ChromeLegacyIpc::CLASS_WORKER;
       break;
-    case NaClMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_NACL;
-      break;
-    case PpapiMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_PPAPI;
-      break;
-    case NaClHostMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_NACL_HOST;
-      break;
   }
   legacy_ipc->set_message_class(message_class);
   legacy_ipc->set_message_line(IPC_MESSAGE_ID_LINE(message_id));
