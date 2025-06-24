@@ -378,9 +378,9 @@ TEST_F(TemplateURLServiceUtilLoadTest,
                                       .country = kNonEeaCountryId});
   EXPECT_EQ(output, kNoUpdate);
 
-  // Missing country ID doesn't trigger an update either.
+  // Missing country ID triggers updates.
   output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion});
-  EXPECT_EQ(output, kNoUpdate);
+  EXPECT_EQ(output, kDefaultUpdatedState);
 
   // Out of date keyword data versions trigger updates
   output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion - 1});
@@ -426,9 +426,9 @@ TEST_F(TemplateURLServiceUtilLoadTest,
       {.data_version = kCurrentDataVersion, .country = kEeaCountryId});
   EXPECT_EQ(output, kNoUpdate);
 
-  // Missing country ID doesn't trigger an update either.
+  // Missing country ID triggers an update.
   output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion});
-  EXPECT_EQ(output, kNoUpdate);
+  EXPECT_EQ(output, kDefaultUpdatedState);
 
   // Out of date keyword data versions trigger updates
   output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion - 1});

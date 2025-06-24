@@ -751,7 +751,8 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
             .db_country = "",
             .db_version = kCurrentDataVersion,
             .profile_country = "FR",
-            .expected_output = std::nullopt,  // Update suppressed.
+            .expected_output =
+                BuildMetadata(CountryId("FR"), kCurrentDataVersion),
         },
         {
             .test_case_name = "CountryOverride",

@@ -78,14 +78,10 @@ Resolver::ComputeDatabaseUpdateRequirements(
     return current_metadata;
   }
 
-  if (keywords_metadata.builtin_keyword_country.has_value() &&
+  if (!keywords_metadata.builtin_keyword_country.has_value() ||
       keywords_metadata.builtin_keyword_country.value() !=
           current_metadata.country_id) {
     // The country associated with the profile has changed.
-    // We skip cases where the country was not previously set to avoid
-    // unnecessary churn. We expect that by the time this might matter, the
-    // client will have this data populated when the search engine choice
-    // feature gets enabled.
     return current_metadata;
   }
 
