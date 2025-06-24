@@ -97,6 +97,9 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
            TextType() == TextItemType::kSymbolMarker);
     SetTextType(TextItemType::kSymbolMarker);
   }
+  bool IsOpaqueForTextProcessing() const {
+    return !Length() || Type() == kFloating || Type() == kOutOfFlowPositioned;
+  }
 
   // The index in `InlineItems`. The value is valid only after `UpdateIndex()`
   // was run.
