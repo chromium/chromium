@@ -154,6 +154,7 @@ public class ModalDialogViewTest {
         onView(withId(R.id.modal_dialog_title_scroll_view)).check(matches(not(isDisplayed())));
         onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
         onView(withId(R.id.message_paragraph_2)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraphs_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.custom_view_not_in_scrollable)).check(matches(not(isDisplayed())));
         onView(withId(R.id.button_bar)).check(matches(not(isDisplayed())));
         onView(withId(R.id.positive_button)).check(matches(allOf(not(isDisplayed()), isEnabled())));

@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.widget.ButtonCompat;
+import org.chromium.ui.widget.TextViewWithLeading;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,6 +60,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private ImageView mTitleIcon;
     private TextView mMessageParagraph1;
     private TextView mMessageParagraph2;
+    private LinearLayout mMessageParagraphsContainer;
     private ViewGroup mCustomViewContainer;
     private ViewGroup mCustomButtonBarViewContainer;
     private View mButtonBar;
@@ -133,6 +136,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mTitleIcon = mTitleContainer.findViewById(R.id.title_icon);
         mMessageParagraph1 = findViewById(R.id.message_paragraph_1);
         mMessageParagraph2 = findViewById(R.id.message_paragraph_2);
+        mMessageParagraphsContainer = findViewById(R.id.message_paragraphs_container);
         mCustomViewContainer = findViewById(R.id.custom_view_not_in_scrollable);
         mCustomButtonBarViewContainer = findViewById(R.id.custom_button_bar);
         mButtonBar = findViewById(R.id.button_bar);
@@ -422,21 +426,74 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
      * @param message The message in the dialog content.
      */
     void setMessageParagraph1(CharSequence message) {
+        assert mMessageParagraphsContainer.getChildCount() == 0
+                : "Please use only setMessageParagraphs().";
+
         mMessageParagraph1.setText(message);
         UiUtils.maybeSetLinkMovementMethod(mMessageParagraph1);
         updateContentVisibility();
     }
 
     /**
-     * @param message The message shown below the text set via
-     *         {@link #setMessageParagraph1(CharSequence)} when both are set.
+     * @param message The message shown below the text set via {@link
+     *     #setMessageParagraph1(CharSequence)} when both are set.
      */
     void setMessageParagraph2(CharSequence message) {
+        assert mMessageParagraphsContainer.getChildCount() == 0
+                : "Please use only setMessageParagraphs().";
+
         mMessageParagraph2.setText(message);
         updateContentVisibility();
     }
 
-    /** @param view The customized view in the dialog content. */
+    /**
+     * Fills the dialog's message area with multiple paragraphs of text. This will clear any message
+     * text previously set by other methods.
+     *
+     * @param paragraphs An {@link ArrayList} of {@link CharSequence} to display as paragraphs.
+     */
+    public void setMessageParagraphs(ArrayList<CharSequence> paragraphs) {
+        assert TextUtils.isEmpty(mMessageParagraph1.getText())
+                        && TextUtils.isEmpty(mMessageParagraph2.getText())
+                : "Do not use setMessageParagraphs and setMessageParagraph1/2 at the same time.";
+
+        mMessageParagraphsContainer.removeAllViews();
+
+        if (paragraphs == null || paragraphs.isEmpty()) {
+            updateContentVisibility();
+            return;
+        }
+
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+
+        for (CharSequence paragraphText : paragraphs) {
+            TextViewWithLeading paragraphView =
+                    (TextViewWithLeading)
+                            inflater.inflate(
+                                    R.layout.modal_dialog_paragraph_view,
+                                    mMessageParagraphsContainer,
+                                    false);
+            paragraphView.setText(paragraphText);
+            UiUtils.maybeSetLinkMovementMethod(paragraphView);
+            mMessageParagraphsContainer.addView(paragraphView);
+        }
+        updateContentVisibility();
+    }
+
+    public TextView getMessageParagraphAtIndexForTesting(int index) {
+        int childCount = mMessageParagraphsContainer.getChildCount();
+        assert index >= 0 && index < childCount
+                : "Index "
+                        + index
+                        + " is out of bounds. The container has "
+                        + childCount
+                        + " children.";
+        return (TextView) mMessageParagraphsContainer.getChildAt(index);
+    }
+
+    /**
+     * @param view The customized view in the dialog content.
+     */
     void setCustomView(View view) {
         if (mCustomViewContainer.getChildCount() > 0) mCustomViewContainer.removeAllViews();
 
@@ -573,12 +630,17 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         boolean titleVisible = !TextUtils.isEmpty(mTitleView.getText());
         boolean titleIconVisible = mTitleIcon.getDrawable() != null;
         boolean titleContainerVisible = titleVisible || titleIconVisible;
+
         boolean messageParagraph1Visible = !TextUtils.isEmpty(mMessageParagraph1.getText());
         boolean messageParagraph2Visible = !TextUtils.isEmpty(mMessageParagraph2.getText());
+        boolean multipleParagraphsVisible = mMessageParagraphsContainer.getChildCount() > 0;
+
         boolean scrollViewVisible =
                 (mTitleScrollable && titleContainerVisible)
                         || messageParagraph1Visible
-                        || messageParagraph2Visible;
+                        || messageParagraph2Visible
+                        || multipleParagraphsVisible;
+
         boolean footerMessageVisible = !TextUtils.isEmpty(mFooterMessageView.getText());
         boolean modalDialogScrollViewVisible =
                 mShouldWrapCustomViewScrollable || mButtonGroup.getVisibility() == View.VISIBLE;
@@ -586,6 +648,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mTitleView.setVisibility(titleVisible ? View.VISIBLE : View.GONE);
         mTitleIcon.setVisibility(titleIconVisible ? View.VISIBLE : View.GONE);
         mTitleContainer.setVisibility(titleContainerVisible ? View.VISIBLE : View.GONE);
+        mMessageParagraphsContainer.setVisibility(
+                multipleParagraphsVisible ? View.VISIBLE : View.GONE);
         mMessageParagraph1.setVisibility(messageParagraph1Visible ? View.VISIBLE : View.GONE);
         mTitleScrollView.setVisibility(scrollViewVisible ? View.VISIBLE : View.GONE);
         mMessageParagraph2.setVisibility(messageParagraph2Visible ? View.VISIBLE : View.GONE);

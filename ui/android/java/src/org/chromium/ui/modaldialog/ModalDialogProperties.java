@@ -24,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 
 /** The model properties for a modal dialog. */
 @NullMarked
@@ -159,12 +160,19 @@ public class ModalDialogProperties {
     public static final WritableObjectPropertyKey<Drawable> TITLE_ICON =
             new WritableObjectPropertyKey<>();
 
-    /** The message paragraph 1 of the dialog. */
+    /** Deprecated for MESSAGE_PARAGRAPHS. The message paragraph 1 of the dialog. */
     public static final WritableObjectPropertyKey<CharSequence> MESSAGE_PARAGRAPH_1 =
             new WritableObjectPropertyKey<>();
 
-    /** The message paragraph 2 of the dialog. Shown below the paragraph 1 when both are set. */
+    /**
+     * Deprecated for MESSAGE_PARAGRAPHS.
+     *
+     * <p>The message paragraph 2 of the dialog. Shown below the paragraph 1 when both are set.
+     */
     public static final WritableObjectPropertyKey<CharSequence> MESSAGE_PARAGRAPH_2 =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<ArrayList<CharSequence>> MESSAGE_PARAGRAPHS =
             new WritableObjectPropertyKey<>();
 
     /** The customized content view of the dialog. */
@@ -302,6 +310,7 @@ public class ModalDialogProperties {
                 TITLE_ICON,
                 MESSAGE_PARAGRAPH_1,
                 MESSAGE_PARAGRAPH_2,
+                MESSAGE_PARAGRAPHS,
                 CUSTOM_VIEW,
                 CUSTOM_BUTTON_BAR_VIEW,
                 POSITIVE_BUTTON_TEXT,
