@@ -266,7 +266,7 @@ def _NormalizeResourcesArsc(apk_path, num_arsc_files, num_translations,
 
   size = 0
   for res_id, string_val in en_strings.items():
-    if string_val == fr_strings[res_id]:
+    if string_val == fr_strings.get(res_id):
       string_size = len(string_val)
       # 7 bytes is the per-entry overhead (not specific to any string). See
       # https://android.googlesource.com/platform/frameworks/base.git/+/android-4.2.2_r1/tools/aapt/StringPool.cpp#414.
