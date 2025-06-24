@@ -9,6 +9,7 @@
 
 #include <map>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/time/time.h"
@@ -36,6 +37,15 @@ enum ContentSetting {
   CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
   CONTENT_SETTING_NUM_SETTINGS
 };
+
+struct GeolocationSetting {
+  ContentSetting approximate = CONTENT_SETTING_DEFAULT;
+  ContentSetting precise = CONTENT_SETTING_DEFAULT;
+
+  auto operator<=>(const GeolocationSetting&) const = default;
+};
+
+using PermissionSetting = std::variant<ContentSetting, GeolocationSetting>;
 
 // Range-checked conversion of an int to a ContentSetting, for use when reading
 // prefs off disk.

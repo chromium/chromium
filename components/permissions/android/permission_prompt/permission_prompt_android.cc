@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/resources/android/theme_resources.h"
@@ -133,7 +134,7 @@ PermissionPromptAndroid::GetRadioButtonTexts(JNIEnv* env,
   }
   if (Requests()[0]->request_type() == RequestType::kGeolocation &&
       base::FeatureList::IsEnabled(
-          permissions::features::kApproximateGeolocationPermission)) {
+          content_settings::features::kApproximateGeolocationPermission)) {
     return base::android::ToJavaArrayOfStrings(
         env, {l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_APPROXIMATE_GEO),
               l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_PRECISE_GEO)});

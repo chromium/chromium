@@ -76,20 +76,6 @@ BASE_FEATURE(kPermissionDedicatedCpssSettingAndroid,
              "PermissionDedicatedCpssSettingAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kApproximateGeolocationPermission,
-             "ApproximateGeolocationPermission",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kApproximateGeolocationPermissionSampleData(
-    &features::kApproximateGeolocationPermission,
-    "sample_data",
-    false);
-
-const base::FeatureParam<int> kApproximateGeolocationPermissionPromptArm(
-    &features::kApproximateGeolocationPermission,
-    "prompt_arm",
-    0);
-
 #else
 
 // When enabled, chooser permissions grants will have a last visited timestamp

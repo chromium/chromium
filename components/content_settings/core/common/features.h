@@ -68,6 +68,16 @@ COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold;
 
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kApproximateGeolocationPermission);
+
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<bool>
+    kApproximateGeolocationPermissionSampleData;
+
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<int> kApproximateGeolocationPermissionPromptArm;
+
 // Feature to enable the feedback button in the User Bypass UI.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kUserBypassFeedback);
