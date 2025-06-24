@@ -804,7 +804,7 @@
     "linux-v4l2-codec-rel": "try/linux-v4l2-codec-rel/gn-args.json",
     "linux-viz-rel": "try/linux-viz-rel/gn-args.json",
     "linux-wayland-mutter-rel": "try/linux-wayland-mutter-rel/gn-args.json",
-    "linux-wayland-rel": "try/linux-wayland-rel/gn-args.json",
+    "linux-wayland-weston-rel": "try/linux-wayland-weston-rel/gn-args.json",
     "linux_chromium_archive_rel_ng": "try/linux_chromium_archive_rel_ng/gn-args.json",
     "linux_chromium_asan_rel_ng": "try/linux_chromium_asan_rel_ng/gn-args.json",
     "linux_chromium_cfi_rel_ng": "try/linux_chromium_cfi_rel_ng/gn-args.json",

@@ -4,7 +4,7 @@
       "chrome"
     ]
   },
-  "Linux Tests (Wayland)": {
+  "linux-wayland-weston-rel-tests": {
     "gtest_tests": [
       {
         "args": [
@@ -258,7 +258,7 @@
           "--no-xvfb",
           "--use-weston",
           "--ozone-platform=wayland",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.browser_tests_weston.filter"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -886,7 +886,7 @@
           "--no-xvfb",
           "--use-weston",
           "--ozone-platform=wayland",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_weston.filter"
         ],
         "isolate_profile_data": true,
         "merge": {

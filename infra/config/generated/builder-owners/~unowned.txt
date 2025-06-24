@@ -226,7 +226,6 @@ try/linux-ubsan-rel
 try/linux-ubsan-vptr-rel
 try/linux-v4l2-codec-rel
 try/linux-viz-rel
-try/linux-wayland-rel
 try/linux_chromium_archive_rel_ng
 try/linux_chromium_asan_rel_ng
 try/linux_chromium_asan_rel_ng-compilator

@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/linux-wayland-weston-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -34,7 +37,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Linux Tests (Wayland)",
+              "builder": "linux-wayland-weston-rel-tests",
               "project": "chromium"
             },
             "builder_spec": {
@@ -68,19 +71,39 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Linux Tests (Wayland)",
+          "builder": "Linux Builder (Wayland)",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
+      "builder_ids_in_scope_for_testing": [
         {
-          "builder": "linux-wayland-rel",
-          "group": "tryserver.chromium.linux"
+          "bucket": "ci",
+          "builder": "linux-wayland-weston-rel-tests",
+          "project": "chromium"
         }
       ],
-      "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Tests (Wayland)/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-wayland-weston-rel/targets"
     }
+  },
+  "$build/code_coverage": {
+    "coverage_test_types": [
+      "unit",
+      "overall"
+    ],
+    "use_clang_coverage": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder",
+      "remote-link"
+    ],
+    "enable_cloud_monitoring": true,
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
+    "output_local_strategy": "minimum",
+    "project": "rbe-chromium-untrusted"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -89,12 +112,7 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.linux",
-  "gardener_rotations": [
-    "chromium"
-  ],
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.linux",
+  "cq": "path-based",
+  "recipe": "chromium_trybot"
 }

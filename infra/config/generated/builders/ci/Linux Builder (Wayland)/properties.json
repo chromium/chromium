@@ -37,7 +37,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Linux Tests (Wayland)",
+              "builder": "linux-wayland-mutter-rel-tests",
               "project": "chromium"
             },
             "builder_spec": {
@@ -69,7 +69,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "linux-wayland-mutter-rel-tests",
+              "builder": "linux-wayland-weston-rel-tests",
               "project": "chromium"
             },
             "builder_spec": {
@@ -110,12 +110,12 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Linux Tests (Wayland)",
+          "builder": "linux-wayland-mutter-rel-tests",
           "project": "chromium"
         },
         {
           "bucket": "ci",
-          "builder": "linux-wayland-mutter-rel-tests",
+          "builder": "linux-wayland-weston-rel-tests",
           "project": "chromium"
         }
       ],
@@ -125,7 +125,7 @@
           "group": "tryserver.chromium.linux"
         },
         {
-          "builder": "linux-wayland-rel",
+          "builder": "linux-wayland-weston-rel",
           "group": "tryserver.chromium.linux"
         }
       ],

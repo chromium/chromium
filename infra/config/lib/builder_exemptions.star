@@ -80,7 +80,6 @@ exempted_from_description_builders = {
         "Linux MSan Tests",
         "Linux TSan Builder",
         "Linux TSan Tests",
-        "Linux Tests (Wayland)",
         "Linux Tests (dbg)(1)",
         "Linux Tests",
         "Linux Viz",

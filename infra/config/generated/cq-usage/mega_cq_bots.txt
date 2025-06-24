@@ -119,7 +119,7 @@ chromium/try/linux-ubsan-rel
 chromium/try/linux-ubsan-vptr-rel
 chromium/try/linux-v4l2-codec-rel
 chromium/try/linux-wayland-mutter-rel
-chromium/try/linux-wayland-rel
+chromium/try/linux-wayland-weston-rel
 chromium/try/linux-win-cross-rel
 chromium/try/linux_chromium_archive_rel_ng
 chromium/try/linux_chromium_asan_rel_ng

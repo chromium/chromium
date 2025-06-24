@@ -595,18 +595,28 @@ builder.
   * [`//media/gpu/chromeos/.+`](https://cs.chromium.org/chromium/src/media/gpu/chromeos/)
   * [`//media/gpu/v4l2/.+`](https://cs.chromium.org/chromium/src/media/gpu/v4l2/)
 
-* [linux-wayland-rel](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-wayland-rel""))
+* [linux-wayland-mutter-rel](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-mutter-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-wayland-mutter-rel""))
 
   Location filters:
   * [`//chrome/browser/.+(ui|browser)test.+`](https://cs.chromium.org/search?q=+file:chrome/browser/.+(ui|browser)test)
   * [`//chrome/browser/ui/views/.+test.+`](https://cs.chromium.org/search?q=+file:chrome/browser/ui/views/.+test)
   * [`//chrome/browser/ui/views/tabs/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ui/views/tabs/)
   * [`//testing/xvfb\.py`](https://cs.chromium.org/search?q=+file:testing/xvfb\.py)
+  * [`//third_party/glib/.+`](https://cs.chromium.org/chromium/src/third_party/glib/)
+  * [`//third_party/gvdb/.+`](https://cs.chromium.org/chromium/src/third_party/gvdb/)
+  * [`//third_party/libdisplay-info/.+`](https://cs.chromium.org/chromium/src/third_party/libdisplay-info/)
+  * [`//third_party/libgudev/.+`](https://cs.chromium.org/chromium/src/third_party/libgudev/)
+  * [`//third_party/libinput/.+`](https://cs.chromium.org/chromium/src/third_party/libinput/)
+  * [`//third_party/mutter/.+`](https://cs.chromium.org/chromium/src/third_party/mutter/)
   * [`//third_party/wayland/.+`](https://cs.chromium.org/chromium/src/third_party/wayland/)
   * [`//third_party/wayland-protocols/.+`](https://cs.chromium.org/chromium/src/third_party/wayland-protocols/)
-  * [`//third_party/weston/.+`](https://cs.chromium.org/chromium/src/third_party/weston/)
   * [`//ui/ozone/platform/wayland/.+`](https://cs.chromium.org/chromium/src/ui/ozone/platform/wayland/)
   * [`//ui/views/widget/.+test.+`](https://cs.chromium.org/search?q=+file:ui/views/widget/.+test)
+
+* [linux-wayland-weston-rel](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-weston-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-wayland-weston-rel""))
+
+  Location filters:
+  * [`//third_party/weston/.+`](https://cs.chromium.org/chromium/src/third_party/weston/)
 
 * [linux_chromium_cfi_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_cfi_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_cfi_rel_ng""))
 
