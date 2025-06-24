@@ -472,8 +472,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 #if BUILDFLAG(IS_WIN)
   windows_taskbar_icon_updater_.reset();
 #endif
-
-  exclusive_access_manager_.reset();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
