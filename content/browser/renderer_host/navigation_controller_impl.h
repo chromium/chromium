@@ -334,11 +334,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // |LoadPostCommitErrorPage()|, which only temporarily replaces the
   // NavigationEntry. See |NavigationController::LoadPostCommitErrorPage()| for
   // more details on this temporary replacement.
-  //
-  // IMPORTANT: This function will CHECK if |render_frame_host_impl| is not a
-  // fenced frame root, but in the future it will be updated to work for any
-  // frame. TODO(crbug.com/406729265): Implement this method for all types of
-  // frames, including main frames and other subframe types.
   virtual void NavigateFrameToErrorPage(
       RenderFrameHostImpl* render_frame_host_impl,
       const GURL& url,

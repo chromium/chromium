@@ -4570,12 +4570,6 @@ void NavigationControllerImpl::NavigateFrameToErrorPage(
     RenderFrameHostImpl* render_frame_host_impl,
     const GURL& url,
     const std::string& error_page_html) {
-  // For now, this function can only be used for fenced frame roots. In the
-  // future, it will be updated to work for any frame.
-  // TODO(crbug.com/406729265): Implement this method for all types of frames,
-  // including main frames and other subframe types.
-  CHECK(render_frame_host_impl->IsFencedFrameRoot());
-
   std::unique_ptr<NavigationRequest> navigation_request =
       CreateNavigationRequestForErrorPage(render_frame_host_impl, url,
                                           error_page_html,

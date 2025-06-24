@@ -6868,6 +6868,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   // Navigate the fenced frame to an error page. Fenced frames have their own
   // NavigationController and should always perform a "replace" navigation,
   // meaning the controller's entry count stays at 1.
+  // Note: the custom error page HTML is loaded with this URL, but the URL
+  // actually points to a normal page, not an error page.
   GURL fenced_frame_error_url(
       https_server()->GetURL("c.test", "/fenced_frames/title1.html"));
   TestFrameNavigationObserver error_observer(fenced_frame);
@@ -6896,6 +6898,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                            ->GetUniqueID();
   EXPECT_NE(error_entry_id, starting_fenced_frame_entry_id);
 
+  // The root NavigationController should still have the main frame URL in its
+  // last committed entry.
+  EXPECT_EQ(main_url,
+            root->navigator().controller().GetLastCommittedEntry()->GetURL());
+
   // We can't go back or forward in the fenced frame.
   EXPECT_FALSE(fenced_frame->navigator().controller().CanGoBack());
   EXPECT_FALSE(fenced_frame->navigator().controller().CanGoForward());
@@ -6906,6 +6913,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   EXPECT_TRUE(ExecJs(fenced_frame, "location.reload();"));
   reload_observer.Wait();
   EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
+  EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
   EXPECT_EQ(error_entry_id, fenced_frame->navigator()
                                 .controller()
                                 .GetLastCommittedEntry()
@@ -6918,6 +6926,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   EXPECT_EQ(
       fenced_frame_error_url,
       fenced_frame->navigator().controller().GetLastCommittedEntry()->GetURL());
+  EXPECT_EQ(main_url,
+            root->navigator().controller().GetLastCommittedEntry()->GetURL());
   EXPECT_FALSE(fenced_frame->current_frame_host()->IsErrorDocument());
 }
 
