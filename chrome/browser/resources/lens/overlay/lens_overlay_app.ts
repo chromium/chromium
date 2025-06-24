@@ -383,7 +383,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         document, 'pointermove', this.updateCursorPosition.bind(this));
     this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
       this.suppressGhostLoader = false;
-      this.showErrorState = false;
     });
 
     this.performanceTracker.startSession();
@@ -446,6 +445,14 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     // A request is only started for zero suggest, which is when the input value
     // is empty.
     this.autocompleteRequestStarted = !e.detail.inputValue;
+
+    if (this.autocompleteRequestStarted && !window.navigator.onLine) {
+      // If the user doesn't have an internet connection, the suggest request
+      // will fail, so immediately show the error state.
+      this.showErrorState = true;
+      return;
+    }
+
     this.showErrorState = false;
   }
 
@@ -681,6 +688,13 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private triggerSearchboxSuggestions() {
+    // If the user doesn't have an internet connection, the suggest request will
+    // fail, so immediately show the error state.
+    if (!window.navigator.onLine) {
+      this.showErrorState = true;
+      return;
+    }
+
     // If the backend handshake has completed, then it is safe to issue the
     // autocomplete query immediately.
     if (this.isBackendHandshakeComplete) {
