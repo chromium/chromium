@@ -5690,6 +5690,12 @@ const char kDelayMediaSinkDiscoveryDescription[] =
     "users have interacted with the Cast UI or visited a site supporting Cast "
     "SDK or Remote Playback API.";
 
+const char kPictureInPictureShowWindowAnimationName[] =
+    "Picture-in-Picture show window animation";
+const char kPictureInPictureShowWindowAnimationDescription[] =
+    "When enabled, Picture-in-Picture windows will use a fade-in show "
+    "animation. On Windows OS this is a no-op.";
+
 const char kShowCastPermissionRejectedErrorName[] =
     "Show the permission rejected error message in the Cast/GMC UI.";
 const char kShowCastPermissionRejectedErrorDescription[] =

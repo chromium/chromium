@@ -14515,6 +14515,7 @@ from previous Chrome versions.
   <int value="199225530" label="EnableLazyLoadImageForInvisiblePage:disabled"/>
   <int value="199237368" label="RenameJourneys:disabled"/>
   <int value="200347243" label="WebVRExperimentalRendering:disabled"/>
+  <int value="200711930" label="PictureInPictureShowWindowAnimation:disabled"/>
   <int value="201203491"
       label="ReduceUserAgentAndroidVersionDeviceModel:enabled"/>
   <int value="201343576" label="enable-password-change-support:enabled"/>
@@ -15079,6 +15080,7 @@ from previous Chrome versions.
   <int value="400239639" label="PrivacySandboxAdsAPIsOverride:enabled"/>
   <int value="400272381" label="LazyFrameLoading:disabled"/>
   <int value="400322063" label="ash-disable-screen-orientation-lock"/>
+  <int value="400748924" label="PictureInPictureShowWindowAnimation:enabled"/>
   <int value="400836553" label="ImeKoreanOnlyModeSwitchOnRightAlt:enabled"/>
   <int value="401640536" label="ShouldFreezeSelf:enabled"/>
   <int value="401983950" label="enable-spdy4"/>

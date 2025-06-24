@@ -3355,6 +3355,9 @@ extern const char kInfiniteTabsFreezingDescription[];
 extern const char kMemoryPurgeOnFreezeLimitName[];
 extern const char kMemoryPurgeOnFreezeLimitDescription[];
 
+extern const char kPictureInPictureShowWindowAnimationName[];
+extern const char kPictureInPictureShowWindowAnimationDescription[];
+
 extern const char kReadAnythingImagesViaAlgorithmName[];
 extern const char kReadAnythingImagesViaAlgorithmDescription[];
 
