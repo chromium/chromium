@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -467,6 +469,65 @@ TEST_F(HTMLElementTest, InertAttributeUseCounted) {
   )HTML");
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
   GetDocument().ClearUseCounterForTesting(WebFeature::kInertAttribute);
+}
+
+TEST_F(HTMLElementTest, TitleAttributeDirectionality) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #text { height: 20px; }
+      #target { height: 100px; }
+    </style>
+    <div id="parent">
+      <div id="container">
+        <div id="text"></div>
+        <div id="target"></div>
+      </div>
+    </div>
+  )HTML");
+
+  Element* parent = GetElementById("parent");
+  Element* container = GetElementById("container");
+  HTMLElement* text = DynamicTo<HTMLElement>(GetElementById("text"));
+  Element* target = GetElementById("target");
+
+  AtomicString a_b_c("abc");
+  AtomicString aleph_beth_gimel(u"\u05D0\u05D1\u05D2");
+  AtomicString kLtr("ltr");
+  AtomicString kRtl("rtl");
+  AtomicString kAuto("auto");
+
+  auto get_title_direction = [this, target]() -> TextDirection {
+    const HitTestRequest hit_request(HitTestRequest::kActive);
+    const HitTestLocation hit_location(PhysicalOffset(50, 70));
+    HitTestResult hit_result(hit_request, hit_location);
+    EXPECT_TRUE(GetLayoutView().HitTest(hit_location, hit_result));
+    EXPECT_EQ(hit_result.InnerNode(), target);
+    TextDirection dir;
+    EXPECT_FALSE(hit_result.Title(dir).IsNull());
+    return dir;
+  };
+
+  text->setInnerText(aleph_beth_gimel);
+  container->setAttribute(html_names::kTitleAttr, a_b_c);
+  EXPECT_EQ(get_title_direction(), TextDirection::kLtr);
+  container->setAttribute(html_names::kDirAttr, kRtl);
+  EXPECT_EQ(get_title_direction(), TextDirection::kRtl);
+  container->setAttribute(html_names::kDirAttr, kLtr);
+  EXPECT_EQ(get_title_direction(), TextDirection::kLtr);
+  container->setAttribute(html_names::kDirAttr,
+                          kAuto);  // RTL for contents, LTR for attribute
+  EXPECT_EQ(get_title_direction(), TextDirection::kLtr);
+  container->removeAttribute(html_names::kDirAttr);
+  parent->setAttribute(html_names::kDirAttr, kAuto);  // RTL
+  EXPECT_EQ(get_title_direction(), TextDirection::kRtl);
+  text->setInnerText(a_b_c);  // now auto is LTR
+  container->setAttribute(html_names::kTitleAttr, aleph_beth_gimel);
+  EXPECT_EQ(get_title_direction(), TextDirection::kLtr);
+  parent->removeAttribute(html_names::kDirAttr);
+  container->setAttribute(html_names::kDirAttr,
+                          kAuto);  // LTR for contents, RTL for attribute
+  EXPECT_EQ(get_title_direction(), TextDirection::kRtl);
 }
 
 }  // namespace blink

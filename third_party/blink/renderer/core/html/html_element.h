@@ -179,6 +179,12 @@ class CORE_EXPORT HTMLElement : public Element {
             const_cast<const Element*>(element)));
   }
 
+  // https://html.spec.whatwg.org/multipage/dom.html#directionality-of-the-attribute
+  // direction_result is the resulting directionality; it is set only
+  // when the return value is not null.
+  const AtomicString& GetDirectionalAttribute(const QualifiedName& attr_name,
+                                              TextDirection& direction_result);
+
   virtual bool IsHTMLBodyElement() const { return false; }
   // TODO(crbug.com/1123606): Remove this virtual method once the fenced frame
   // origin trial is over.

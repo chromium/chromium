@@ -530,6 +530,10 @@
       name: "AsyncSetCookie",
     },
     {
+      name: "AttributeDirectionality",
+      status: "stable",
+    },
+    {
       name: "AttributionReporting",
       status: "stable",
       base_feature: "none",

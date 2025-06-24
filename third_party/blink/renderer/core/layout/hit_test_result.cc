@@ -392,7 +392,15 @@ String HitTestResult::Title(TextDirection& dir) const {
   // using it.
   for (Node* title_node = inner_node_.Get(); title_node;
        title_node = FlatTreeTraversal::Parent(*title_node)) {
-    if (auto* element = DynamicTo<Element>(title_node)) {
+    if (auto* html_element = DynamicTo<HTMLElement>(title_node)) {
+      TextDirection title_dir;
+      const AtomicString& title = html_element->GetDirectionalAttribute(
+          html_names::kTitleAttr, title_dir);
+      if (!title.IsNull()) {
+        dir = title_dir;
+        return title;
+      }
+    } else if (auto* element = DynamicTo<Element>(title_node)) {
       String title = element->title();
       if (!title.IsNull()) {
         if (LayoutObject* layout_object = title_node->GetLayoutObject())
