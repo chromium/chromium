@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Le as noticias do día e aforra ata un 60 % de datos</translation>
 <translation id="1303339473099049190">Non se puido atopar o contrasinal. Comproba a ortografía e téntao de novo.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Contido enviado desde <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Agrupar pestanas</translation>
 <translation id="1318262688555255786">Compartir a ligazón á páxina web <ph name="PAGE_TITLE" />. Fonte: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Cartafoles de fluxo para gardar marcadores abertos a pantalla completa</translation>
 <translation id="1327257854815634930">O historial de navegación está aberto</translation>
@@ -477,6 +478,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3189635831478931757">Grupo de pestanas <ph name="GROUP_TITLE" /></translation>
+<translation id="3200536777393523575">Queres pechar a ventá actual?</translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
 <translation id="3208584281581115441">Comprobar agora</translation>
 <translation id="3211426585530211793">Eliminouse <ph name="ITEM_TITLE" /></translation>
@@ -721,6 +723,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4351244548802238354">Pechar cadro de diálogo</translation>
 <translation id="4352287748243729941">Queres utilizar o teu contrasinal de <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Engade un marcador ás páxinas que consideres importantes para volver acceder a elas</translation>
+<translation id="4356503491090073318">Número da tarxeta*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Resumo de seguranza</translation>
 <translation id="4378154925671717803">Teléfono</translation>
@@ -738,6 +741,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4425140285732600465">Estase facendo un seguimento do prezo. Recibe alertas se baixa o prezo en calquera sitio.</translation>
 <translation id="4425173294238317796">Folla de confirmación da clave de acceso</translation>
 <translation id="442518031075347249">Deixarás de poder utilizar a tarxeta virtual con Google Pay. <ph name="BEGIN_LINK1" />Máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{Pecharanse <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_ONE" /> pestana máis}other{Pecharanse <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_MANY" /> pestanas máis}}</translation>
 <translation id="4426508677408162512">Todos os marcadores</translation>
 <translation id="4430277756566635951">Selección actual: <ph name="EMAIL" />. Escolle unha conta.</translation>
 <translation id="4452411734226507615">Pecha a pestana <ph name="TAB_TITLE" /></translation>
@@ -873,6 +877,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4987271110129728827">Non se puido atopar esa páxina. Comproba que escribises ben a consulta ou proba a realizar unha busca web.</translation>
 <translation id="4988526792673242964">Páxinas</translation>
 <translation id="4991110219272367918">Opción para aprobar ou non un sitio web pechado</translation>
+<translation id="4996042648402406470">Obter</translation>
 <translation id="4996095658297597226">Queres utilizar o contrasinal suxerido?</translation>
 <translation id="5001388021414335527">Seguir este sitio aquí</translation>
 <translation id="5004416275253351869">Controis de actividade de Google</translation>
@@ -923,10 +928,12 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5210286577605176222">Saltar á pestana anterior</translation>
 <translation id="5210365745912300556">Pechar pestana</translation>
 <translation id="5215957675041756913">Controlar os teus datos e a túa conta</translation>
+<translation id="5218324087477576825">Cómpre indicar o número da tarxeta</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e algúns máis <ph name="SEPARATOR" /> Chrome quitou estes permisos porque levas tempo sen acceder</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5226378907213531272">Terás que desbloquear a pantalla cada vez que uses o coche</translation>
 <translation id="5227554086496586518">Toca para ver os resultados da busca</translation>
+<translation id="5229736206150093143">Últimos resultados</translation>
 <translation id="5233638681132016545">Nova pestana</translation>
 <translation id="5235196193381275927">Produciuse un erro ao iniciar sesión</translation>
 <translation id="5246093389635966745">Editar atallo da barra de ferramentas</translation>
@@ -1281,6 +1288,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="676305334223455055">Inicia sesión para ver contido baseado nos teus intereses</translation>
 <translation id="6764137532716892442">Grupo de pestanas <ph name="GROUP_TITLE" /> compartido con nova actividade</translation>
 <translation id="6767294960381293877">A lista de dispositivos cos que compartir unha pestana está aberta a media pantalla.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{Pecharanse <ph name="INCOGNITO_TAB_COUNT" /> pestanas de incógnito e <ph name="TAB_COUNT_ONE" /> pestana máis}other{Pecharanse <ph name="INCOGNITO_TAB_COUNT" /> pestanas de incógnito e <ph name="TAB_COUNT_MANY" /> pestanas máis}}</translation>
 <translation id="6785476624617658922">Condicións de servizo adicionais de Chrome e Chrome OS</translation>
 <translation id="6786747875388722282">Extensións</translation>
 <translation id="6795633245022906657">Abre rapidamente unha pestana nova. Para editar este atallo, vai a Configuración.</translation>
@@ -1400,6 +1408,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7224097611345298931">Combináronse todos os contrasinais gardados só neste dispositivo para Chrome e <ph name="CHROME_CHANNEL" />. Podes seguir autocompletando os contrasinais gardados en ambas as dúas aplicacións.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendente}other{# descargas pendentes}}</translation>
 <translation id="7230064152164845085">Cambiar ao modo de incógnito</translation>
+<translation id="7230836263524391273">Ocultar modo de lectura</translation>
 <translation id="7237724030342645845">O xestor de contrasinais de Google deixou de funcionar</translation>
 <translation id="72415438529550637">A suxestión de contrasinal está pechada.</translation>
 <translation id="7248671827512403053">Aplicación</translation>
@@ -1576,6 +1585,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7965838025086216108">Podes usar os contrasinais gardados en calquera dispositivo. Estes gárdanse no xestor de contrasinais de Google asociado a <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Engadiuse á lista de lectura</translation>
 <translation id="7968982339740310781">Ver detalles</translation>
+<translation id="7969391000881506217">Data de vencemento*</translation>
 <translation id="7971136598759319605">Dispositivo activo hai 1 día</translation>
 <translation id="7975379999046275268">Vista previa: páxina <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Avísate cando usas un contrasinal vulnerado nunha violación da seguranza dos datos.</translation>
@@ -1734,6 +1744,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8565021320663436446">Queres quitar a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Non se pode descargar o ficheiro de forma segura</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
+<translation id="8580435650274205305">Cómpre indicar a data de vencemento</translation>
 <translation id="8582529315803410153">Aquí atoparás as túas pestanas doutros dispositivos</translation>
 <translation id="8585103689515290060">Servizos de autocompletar</translation>
 <translation id="859046281437143747">Facer seguimento do prezo desde o botón Máis opcións</translation>

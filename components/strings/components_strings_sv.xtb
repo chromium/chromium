@@ -693,6 +693,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2157640075051554492">Aviseringar för prisbevakningar</translation>
 <translation id="21613918653299710">Bildgallerier online</translation>
 <translation id="2161656808144014275">Text</translation>
+<translation id="2162435186600002085">Primär sidhuvudslogotyp</translation>
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Kontrollera om det finns ett stavfel i <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Fullständig administrativ åtkomst</translation>
@@ -851,6 +852,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2400263725572336749">Lägg till pass</translation>
 <translation id="2400271059665846158">Hantera stamkundskort i Google Wallet</translation>
 <translation id="2400600116338235695">Får begära tillstånd att ansluta till en serieport</translation>
+<translation id="240450251994300576">Sekundär sidhuvudslogotyp</translation>
 <translation id="2404884497378469141">Testa att kopiera filerna igen</translation>
 <translation id="2413155254802890957">Tidigare</translation>
 <translation id="2413528052993050574">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat kan ha återkallats. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
@@ -981,6 +983,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2627847595568876492">Extraherar text från PDF …</translation>
 <translation id="2628224721443278970">Logga in på Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Det gick inte att hitta IP-adressen till servern på <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Skriv @ för att söka på <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tyg (halvblankt)</translation>
@@ -1438,6 +1441,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="343474037147570563">Filer som du laddar upp eller bifogar skickas till Google Cloud eller tredje part för analys. De kan till exempel genomsökas i syfte att upptäcka känsliga uppgifter eller skadlig kod, och de kan lagras i enlighet med företagspolicyer och är synliga för administratören.</translation>
 <translation id="3435557549311968410">Kontinuerlig (kort)</translation>
 <translation id="3435738964857648380">Säkerhet</translation>
+<translation id="3436118221454753036">Fråga AI-läget</translation>
 <translation id="3440783957068352691">kvadrat</translation>
 <translation id="3441653493275994384">Skärm</translation>
 <translation id="3443504041532578451">Optisk skiva (satäng)</translation>
@@ -2266,6 +2270,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4827283332383516812">Radera kort</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> har valts</translation>
 <translation id="4831993743164297314">Papper för bildsättning</translation>
+<translation id="4832388034239846146">Uppdatera Chrome om du vill dela flikgrupper</translation>
 <translation id="483241715238664915">Aktivera varningar</translation>
 <translation id="4832961164064927107">Grillning</translation>
 <translation id="4834250788637067901">Betalningsmetoder, erbjudanden och adresser med Google Pay</translation>
@@ -2973,6 +2978,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6043357981274314628">Klart!</translation>
 <translation id="6044573915096792553">Storlek 12</translation>
 <translation id="6045164183059402045">Utskjutningsmall</translation>
+<translation id="6046892054959167494">Skriv <ph name="SEARCH_AGGREGATOR_KEYWORD" /> för att söka på eller fråga <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Sidan kan ha till syfte att försöka lura dig att installera mjukvara eller avslöja personliga uppgifter. <ph name="BEGIN_LINK" />Visa ändå<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4-kuvert</translation>
 <translation id="6049488691372270142">Sidvisning</translation>
@@ -4011,6 +4017,7 @@ Mer information.
 <translation id="7761159795823346334">Vill du tillåta kamera?</translation>
 <translation id="7761701407923456692">Servercertifikatet överensstämmer inte med webbadressen.</translation>
 <translation id="7764225426217299476">Lägg till adress</translation>
+<translation id="7765158879357617694">Flytta</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7767278989746220252">Uteplatser och trädgård</translation>
 <translation id="776749070095465053">Tyg</translation>
@@ -4345,6 +4352,7 @@ Mer information.
 <translation id="8364627913115013041">Inte angiven.</translation>
 <translation id="8366057325711477500">Världsnyheter</translation>
 <translation id="836616551641291797">Läs mer om hur webbläsaren hanteras</translation>
+<translation id="8367705492654390392">Fråga vad som helst</translation>
 <translation id="8368001212524806591">Bevaka pris</translation>
 <translation id="8368027906805972958">Enheten är okänd eller stöds inte (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play-tjänster</translation>

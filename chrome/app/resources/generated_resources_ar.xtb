@@ -639,6 +639,7 @@
 <translation id="1438630805136563416">تمّت إزالة الإجراء "<ph name="REMOVED_ACTION" />"</translation>
 <translation id="1439671507542716852">الدعم الطويل الأمد</translation>
 <translation id="1440090277117135316">اكتملت عملية تسجيل الجهاز ضمن المؤسسة التعليمية</translation>
+<translation id="1442054921249164535">بيانات أخرى</translation>
 <translation id="144283815522798837">عدد العناصر المحدَّدة: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">‏ضبط تذكرة Kerberos النشِطة</translation>
 <translation id="1444389367706681769">فضاء خارجي</translation>
@@ -2613,6 +2614,7 @@
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{تم العثور على موقع إلكتروني واحد يحتوي على الكثير من الإشعارات.}zero{تم العثور على {NUM_SITES} موقع إلكتروني يحتوي على الكثير من الإشعارات.}two{تم العثور على موقعَين إلكترونيَّين ({NUM_SITES}) يحتويان على الكثير من الإشعارات.}few{تم العثور على {NUM_SITES} مواقع إلكترونية تحتوي على الكثير من الإشعارات.}many{تم العثور على {NUM_SITES} موقعًا إلكترونيًا يحتوي على الكثير من الإشعارات.}other{تم العثور على {NUM_SITES} موقع إلكتروني يحتوي على الكثير من الإشعارات.}}</translation>
 <translation id="2778471504622896352">‏إضافة التطبيقات عن بُعد إلى مشغِّل التطبيقات في ChromeOS</translation>
 <translation id="2779728796406650689">‏يتيح هذا الإجراء لخدمة "مساعد Google" تقديم ردود مخصّصة عند طرحك للأسئلة.</translation>
+<translation id="2781459437789641557">"<ph name="ATTRIBUTION_LINE_1" />" و"<ph name="ATTRIBUTION_LINE_2" />"</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
 <translation id="2783952358106015700">استخدام مفتاح الأمان مع <ph name="APP_NAME" /></translation>
@@ -4835,6 +4837,7 @@
 <translation id="435527878592612277">اختيار صورتك</translation>
 <translation id="4356100841225547054">إيقاف الصوت</translation>
 <translation id="4357583358198801992">عرض مجموعات علامات التبويب</translation>
+<translation id="4357812592970409234">مزيد من المعلومات حول خلفية صفحة "علامة تبويب جديدة"</translation>
 <translation id="4358361163731478742">ما مِن تطبيقات تتيح اختيار اللغة.</translation>
 <translation id="4358643842961018282">جهازك مُحدَّث.</translation>
 <translation id="4358995225307748864">اختر تطبيقًا لفتح صفحة الويب</translation>

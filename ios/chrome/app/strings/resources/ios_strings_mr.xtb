@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">सामायिकरण अयशस्वी झाले कारण तुम्ही नेटवर्कशी कनेक्ट केलेले नाही.</translation>
 <translation id="1668001730617725852">नवीन टॅब गटामध्ये उघडा</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ते <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">तुम्ही आता तुमच्या अ‍ॅड्रेस बारमधून Google Lens उघडू शकता आणि तुम्हाला दिसणारी कोणतीही गोष्ट शोधू शकता</translation>
 <translation id="1689333818294560261">टोपणनाव</translation>
 <translation id="169048873465870056">टॅब काढून टाकून गट हटवायचा आहे का?</translation>
 <translation id="1698090540708020240">पासवर्ड इंपोर्ट करा…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> हे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले आहे, ज्याला काही माहिती दिसू शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">नवीन आयटम</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> खाती हाच पासवर्ड वापरत आहेत</translation>
+<translation id="205013082884273671">तुमच्या स्क्रीनवर काहीही शोधा</translation>
 <translation id="2054044186557130763"><ph name="EMAIL" />, तुमच्या संस्थेने व्यवस्थापित केला आहे <ph name="NAME" /> म्हणून साइन करा.</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2060638295449304809">हा पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. तो तुमच्या इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या <ph name="USER_EMAIL" /> या Google खाते मध्ये सेव्ह करा</translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">सुरू असते, तेव्हा डेटा तुमच्या Google खाते मध्ये सेव्ह होतो. बंद असेल, तेव्हा डेटा फक्त या डिव्हाइसमध्ये सेव्ह केला जातो आणि तुम्ही साइन आउट केल्यास, हटवला जातो.</translation>
 <translation id="2827760117436553203">डेटा वेगळा ठेवायचा आहे का?</translation>
 <translation id="2829172210806130158">तुमच्या स्क्रीनवर शोधा</translation>
+<translation id="2831109159746537587">शोधण्यासाठी फोटोवर वर्तुळ करून पहा किंवा टॅप करून पहा</translation>
 <translation id="2834399722155632105">३. पासवर्ड पर्याय वर टॅप करा</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">वेळ</translation>
@@ -1104,6 +1107,7 @@
 <translation id="5576885723883013398">नवीन विंडो</translation>
 <translation id="5578795271662203820">या इमेजसाठी <ph name="SEARCH_ENGINE" /> शोधा</translation>
 <translation id="5579012242779565775">वाचन सूची लपवा</translation>
+<translation id="5581786858144165447">AI ला विचारा मोड</translation>
 <translation id="5585019845078534178">कार्डे</translation>
 <translation id="5595485650161345191">पत्ता संपादित करा</translation>
 <translation id="559567008082979829">तुमचे डाउनलोड एका महिन्यानंतर हटवले जाण्यासाठी सेट करा.</translation>

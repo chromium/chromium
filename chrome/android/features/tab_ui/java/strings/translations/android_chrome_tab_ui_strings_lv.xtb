@@ -17,6 +17,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Izveidota pirms <ph name="NUM_MINS_ONE" /> minūtes}zero{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtēm}one{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtes}other{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtēm}}</translation>
 <translation id="1499635324672558517">Vai aizvērt visas inkognito cilnes?</translation>
 <translation id="1501480321619201731">Dzēst grupu</translation>
+<translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktīvs vienums}zero{<ph name="TABS_COUNT_MANY" /> neaktīvi vienumi}one{<ph name="TABS_COUNT_MANY" /> neaktīvs vienums}other{<ph name="TABS_COUNT_MANY" /> neaktīvi vienumi}}</translation>
 <translation id="1555130319947370107">Zila</translation>
 <translation id="161042844686301425">Ciānzila</translation>
 <translation id="1645759014353344461">Grupētas <ph name="TABS_COUNT_MANY" /> cilnes</translation>
@@ -68,6 +69,7 @@
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> jauna cilne}zero{<ph name="MANY_ADDED" /> jaunu ciļņu}one{<ph name="MANY_ADDED" /> jauna cilne}other{<ph name="MANY_ADDED" /> jaunas cilnes}}</translation>
 <translation id="3613492231657284463">Paslēpt neaktīvo ciļņu dialoglodziņu</translation>
 <translation id="3619255692378312441">Piekļuves pārvaldība</translation>
+<translation id="3649471731638882002">{TAB_COUNT,plural, =1{Aizvērt vienumu}zero{Aizvērt vienumus}one{Aizvērt vienumus}other{Aizvērt vienumus}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Kopīgošanas sīktēls</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
@@ -80,6 +82,7 @@
 <translation id="4159784952369912983">Violets</translation>
 <translation id="427987768447457592">Jauna ciļņu grupa</translation>
 <translation id="4371591986692297148">neaktīva</translation>
+<translation id="4429658455677831355">{TAB_COUNT,plural, =1{Atjaunot vienumu}zero{Atjaunot vienumus}one{Atjaunot vienumus}other{Atjaunot vienumus}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Atjaunināta pirms <ph name="NUM_DAYS_ONE" /> dienas}zero{Atjaunināta pirms <ph name="NUM_DAYS_MANY" /> dienām}one{Atjaunināta pirms <ph name="NUM_DAYS_MANY" /> dienas}other{Atjaunināta pirms <ph name="NUM_DAYS_MANY" /> dienām}}</translation>
 <translation id="4686942373615810936">Izveidota tikko</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Aizvērt pēc 1 dienas}zero{Aizvērt pēc <ph name="DAY_COUNT_MANY" /> dienām}one{Aizvērt pēc <ph name="DAY_COUNT_MANY" /> dienas}other{Aizvērt pēc <ph name="DAY_COUNT_MANY" /> dienām}}</translation>
@@ -189,6 +192,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Atjaunināta pirms <ph name="NUM_MONTHS_ONE" /> mēneša}zero{Atjaunināta pirms <ph name="NUM_MONTHS_MANY" /> mēnešiem}one{Atjaunināta pirms <ph name="NUM_MONTHS_MANY" /> mēneša}other{Atjaunināta pirms <ph name="NUM_MONTHS_MANY" /> mēnešiem}}</translation>
 <translation id="8398929769197326728">Jauna mape — <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
+<translation id="855081842937141170">Piespraust cilni</translation>
 <translation id="8633025649649592204">Pēdējās darbības</translation>
 <translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8714939927607906138">Zemāka cena</translation>
@@ -205,4 +209,5 @@
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}zero{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}one{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}other{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="992256792861109788">Rozā</translation>
+<translation id="994514002078791059">{TAB_COUNT,plural, =1{Vai aizvērt vienu neaktīvu vienumu?}zero{Vai aizvērt <ph name="TAB_COUNT_MANY" /> neaktīvus vienumus?}one{Vai aizvērt <ph name="TAB_COUNT_MANY" /> neaktīvu vienumu?}other{Vai aizvērt <ph name="TAB_COUNT_MANY" /> neaktīvus vienumus?}}</translation>
 </translationbundle>

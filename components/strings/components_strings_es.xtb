@@ -1441,6 +1441,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="343474037147570563">Los archivos que subas o adjuntes se enviarán a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o software malicioso, que se almacenen de acuerdo con las políticas de la empresa y que tu administrador pueda verlos.</translation>
 <translation id="3435557549311968410">Impresión continua (corta)</translation>
 <translation id="3435738964857648380">Seguridad</translation>
+<translation id="3436118221454753036">Pregunta al Modo IA</translation>
 <translation id="3440783957068352691">cuadrada</translation>
 <translation id="3441653493275994384">Pantalla</translation>
 <translation id="3443504041532578451">Disco óptico (satinado)</translation>
@@ -2030,6 +2031,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4372948949327679948">Se esperaba un valor <ph name="VALUE_TYPE" />.</translation>
 <translation id="437620492464254965">Puertas y ventanas</translation>
 <translation id="4377125064752653719">Has intentado acceder a <ph name="DOMAIN" />, pero el emisor ha revocado el certificado mostrado por el servidor, lo que significa que las credenciales de seguridad presentadas por el servidor no son de confianza. Es posible que hayas accedido a la página de un atacante.</translation>
+<translation id="4377869186417956230">Cambiar a todas las tarjetas de fidelización de esta opción de menú.</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">A partir de ahora, guarda tus archivos en el almacenamiento en la nube</translation>
@@ -4017,6 +4019,7 @@ Más información:
 <translation id="7761159795823346334">¿Permitir cámara?</translation>
 <translation id="7761701407923456692">El certificado del servidor no coincide con la URL.</translation>
 <translation id="7764225426217299476">Añadir dirección</translation>
+<translation id="7765158879357617694">Mover</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7767278989746220252">Porches, terrazas y jardines</translation>
 <translation id="776749070095465053">Tela</translation>
@@ -4352,6 +4355,7 @@ Más información:
 <translation id="8364627913115013041">No establecida</translation>
 <translation id="8366057325711477500">Noticias internacionales</translation>
 <translation id="836616551641291797">Más información sobre cómo se gestiona tu navegador</translation>
+<translation id="8367705492654390392">Pregunta lo que quieras</translation>
 <translation id="8368001212524806591">Seguir precio</translation>
 <translation id="8368027906805972958">Dispositivo desconocido o no compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Servicios de Google Play</translation>
@@ -4666,6 +4670,7 @@ Más información:
 <translation id="8926389886865778422">No preguntar de nuevo</translation>
 <translation id="8932102934695377596">Tu reloj está atrasado</translation>
 <translation id="893332455753468063">Añade un nombre</translation>
+<translation id="8938242527120341116">Los filtros de contenido de tu dispositivo han bloqueado <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">Tu administrador ha permitido a <ph name="APP_NAME" /> recoger datos de diagnóstico para mejorar la experiencia de los usuarios con el producto. Visita <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> para consultar más información.</translation>
 <translation id="8943282376843390568">Lima</translation>
 <translation id="8949410982325929394">Tono</translation>
@@ -4871,6 +4876,7 @@ Más información:
 <translation id="963837307749850257">Todos los usuarios</translation>
 <translation id="964050462028070434">Gestionar contraseñas y claves de acceso…</translation>
 <translation id="969892804517981540">Build oficial</translation>
+<translation id="97054401902912338">Más información sobre los filtros de contenido</translation>
 <translation id="973788791897303708">Este grupo de pestañas está lleno</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ninguno}=1{1 elemento}other{# elementos}}</translation>
 <translation id="976522784004777030">5x8 pulgadas</translation>

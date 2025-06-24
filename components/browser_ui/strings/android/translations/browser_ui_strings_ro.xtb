@@ -36,6 +36,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="1409338233051621926">Atinge Aplicații, apoi atinge Aplicații prestabilite</translation>
 <translation id="1415402041810619267">Adresă URL trunchiată</translation>
 <translation id="1415855080660575082">Permite ca Chrome să-ți trimită filele recente pe dispozitiv ca să le vezi în lista de aplicații și în rezultatele căutării pe dispozitiv. Poți să activezi sau să dezactivezi opțiunea din setările Chrome.</translation>
+<translation id="1432650420699700107">Site-urile pot solicita permisiunea de a se conecta la orice dispozitiv din rețeaua locală</translation>
 <translation id="1448064542941920355">Micșorează nivelul de zoom</translation>
 <translation id="1464044141348608623">Nu permite site-urilor să afle când folosești activ dispozitivul</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}few{<ph name="SITE_COUNT" /> site-uri}other{<ph name="SITE_COUNT" /> de site-uri}}</translation>
@@ -254,6 +255,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3955321697524543127">Nu permite site-urilor să se conecteze la dispozitive USB</translation>
 <translation id="3965467402665811906">Site-urile pot solicita permisiunea de a folosi informațiile pe care le-au salvat despre tine</translation>
 <translation id="3967822245660637423">Descărcare finalizată</translation>
+<translation id="3969869202926863008">Accesul la rețeaua locală</translation>
 <translation id="3981465354637804599">În general, site-urile afișează anunțuri pentru a putea oferi conținut sau servicii fără costuri. Unele site-uri afișează însă anunțuri deranjante sau înșelătoare.</translation>
 <translation id="3987993985790029246">Copiază linkul</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="6554732001434021288">Accesat ultima dată acum <ph name="NUM_DAYS" /> zile</translation>
 <translation id="656065428026159829">Vezi mai multe</translation>
 <translation id="6561560012278703671">Folosește mesaje discrete (notificările nu te vor întrerupe)</translation>
+<translation id="6565144332292237355">Site-urile pot folosi această funcție pentru a căuta și a se conecta la orice dispozitiv din rețeaua locală</translation>
 <translation id="6593061639179217415">Versiune site desktop</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookie-uri permise pentru <ph name="RWS_MEMBERS_COUNT" /> site <ph name="RWS_OWNER" />}few{Cookie-uri permise pentru <ph name="RWS_MEMBERS_COUNT" /> site-uri <ph name="RWS_OWNER" />}other{Cookie-uri permise pentru <ph name="RWS_MEMBERS_COUNT" /> de site-uri <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

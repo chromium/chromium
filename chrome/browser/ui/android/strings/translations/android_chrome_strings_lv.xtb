@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Ietaupiet līdz pat 60% datu un lasiet šodienas ziņas</translation>
 <translation id="1303339473099049190">Nevar atrast meklēto paroli. Pārbaudiet pareizrakstību un mēģiniet vēlreiz.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> — nosūtīts no ierīces <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Grupēt cilnes</translation>
 <translation id="1318262688555255786">Kopīgot saiti uz tīmekļa lapu <ph name="PAGE_TITLE" />. Avots: <ph name="PAGE_URL" />.</translation>
 <translation id="1320912611264252795">Grāmatzīmes saglabāšanas plūsma ir atvērta pilna ekrāna augstumā</translation>
 <translation id="1327257854815634930">Navigācijas vēsture ir atvērta</translation>
@@ -477,6 +478,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Reklāmu novērtēšana</translation>
 <translation id="3189635831478931757">Ciļņu grupa “<ph name="GROUP_TITLE" />”</translation>
+<translation id="3200536777393523575">Vai aizvērt pašreizējo logu?</translation>
 <translation id="3207960819495026254">Atzīmēts kā grāmatzīme</translation>
 <translation id="3208584281581115441">Pārbaudīt tūlīt</translation>
 <translation id="3211426585530211793">Vienums <ph name="ITEM_TITLE" /> tika izdzēsts</translation>
@@ -721,6 +723,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4351244548802238354">Aizvērt dialoglodziņu</translation>
 <translation id="4352287748243729941">Vai izmantot jūsu <ph name="PROVIDER" /> paroli?</translation>
 <translation id="4355272626458588338">Varat pievienot grāmatzīmi, lai vēlāk atgrieztos svarīgā lapā</translation>
+<translation id="4356503491090073318">Kartes numurs*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Drošības informācija īsumā</translation>
 <translation id="4378154925671717803">Tālrunis</translation>
@@ -738,6 +741,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4425140285732600465">Notiek cenas izsekošana. Saņemiet paziņojumus, ja kādā vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="4425173294238317796">Piekļuves atslēgas apstiprinājuma lapa</translation>
 <translation id="442518031075347249">Vairs nevarēsiet izmantot virtuālo karti pakalpojumā Google Pay. <ph name="BEGIN_LINK1" />Uzziniet vairāk par virtuālajām kartēm<ph name="END_LINK1" />.</translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{Tiks aizvērta cilne “<ph name="TAB_TITLE" />” un vēl <ph name="TAB_COUNT_ONE" /> cilne}zero{Tiks aizvērta cilne “<ph name="TAB_TITLE" />” un vēl <ph name="TAB_COUNT_MANY" /> cilnes}one{Tiks aizvērta cilne “<ph name="TAB_TITLE" />” un vēl <ph name="TAB_COUNT_MANY" /> cilne}other{Tiks aizvērta cilne “<ph name="TAB_TITLE" />” un vēl <ph name="TAB_COUNT_MANY" /> cilnes}}</translation>
 <translation id="4426508677408162512">Visas grāmatzīmes</translation>
 <translation id="4430277756566635951">Pašlaik ir atlasīts šāds konts: <ph name="EMAIL" />. Izvēlieties kontu.</translation>
 <translation id="4452411734226507615">Aizvērt cilni <ph name="TAB_TITLE" /></translation>
@@ -873,6 +877,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4987271110129728827">Nevar atrast šo lapu. Pārbaudiet pareizrakstību vai meklējiet tīmeklī.</translation>
 <translation id="4988526792673242964">Lapas</translation>
 <translation id="4991110219272367918">Iespēja apstiprināt vai neapstiprināt piekļuvi vietnei, kas ir aizvērta</translation>
+<translation id="4996042648402406470">Iegūt</translation>
 <translation id="4996095658297597226">Vai izmantot ieteikto paroli?</translation>
 <translation id="5001388021414335527">Šeit varat sekot šai vietnei</translation>
 <translation id="5004416275253351869">Google aktivitātes vadīklas</translation>
@@ -923,10 +928,12 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5210286577605176222">Pāriet uz iepriekšējo cilni</translation>
 <translation id="5210365745912300556">Aizvērt cilni</translation>
 <translation id="5215957675041756913">Datu un konta pārvaldība</translation>
+<translation id="5218324087477576825">Kartes numurs jānorāda obligāti</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un citas <ph name="SEPARATOR" /> Pārlūkā Chrome tika noņemtas šīs atļaujas, jo pēdējā laikā neesat apmeklējis vietni</translation>
 <translation id="5222676887888702881">Izrakstīties</translation>
 <translation id="5226378907213531272">Jūs atbloķēsiet ekrānu ikreiz, kad izmantosiet automašīnu</translation>
 <translation id="5227554086496586518">Pieskarieties, lai skatītu meklēšanas rezultātus</translation>
+<translation id="5229736206150093143">Pēdējie rezultāti</translation>
 <translation id="5233638681132016545">Jauna cilne</translation>
 <translation id="5235196193381275927">Mēģinot pierakstīties, radās problēma.</translation>
 <translation id="5246093389635966745">Rīkjoslas rediģēšanas saīsne</translation>
@@ -1281,6 +1288,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="676305334223455055">Pierakstieties, lai iegūtu savām interesēm atbilstošu saturu.</translation>
 <translation id="6764137532716892442">Kopīgotajā ciļņu grupā “<ph name="GROUP_TITLE" />” ir jaunas darbības</translation>
 <translation id="6767294960381293877">Ierīču saraksts, ar ko kopīgot cilni, ir atvērts pusekrāna augstumā.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_ONE" /> cilne}zero{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_MANY" /> cilnes}one{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_MANY" /> cilne}other{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_MANY" /> cilnes}}</translation>
 <translation id="6785476624617658922">Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumi</translation>
 <translation id="6786747875388722282">Paplašinājumi</translation>
 <translation id="6795633245022906657">Šeit varat ātri atvērt jaunu cilni. Lai rediģētu šo saīsni, pārejiet uz iestatījumiem.</translation>
@@ -1576,6 +1584,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7965838025086216108">Varat izmantot saglabātās paroles jebkurā ierīcē. Tās ir saglabātas Google paroļu pārvaldniekā kontā <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Pievienota lasīšanas sarakstam</translation>
 <translation id="7968982339740310781">Skatīt detalizētu informāciju</translation>
+<translation id="7969391000881506217">Derīguma termiņš*</translation>
 <translation id="7971136598759319605">Aktīva pirms 1 dienas</translation>
 <translation id="7975379999046275268">Priekšskatīt lapu <ph name="BEGIN_NEW" />Jauna<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Tiek rādīts brīdinājums, ja izmantojat paroli, kas ir uzlauzta datu aizsardzības pārkāpuma dēļ.</translation>
@@ -1734,6 +1743,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8565021320663436446">Vai noņemt dalībnieku <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Failu nevar droši lejupielādēt</translation>
 <translation id="8571213806525832805">Pēdējās 4 nedēļas</translation>
+<translation id="8580435650274205305">Derīguma termiņš jānorāda obligāti</translation>
 <translation id="8582529315803410153">Šeit varēsiet skatīt cilnes no citām ierīcēm</translation>
 <translation id="8585103689515290060">Automātiskās aizpildes pakalpojumi</translation>
 <translation id="859046281437143747">Izsekojiet cenu, izmantojot pogu Citas opcijas</translation>

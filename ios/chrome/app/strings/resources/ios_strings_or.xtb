@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">ଆପଣ ନେଟ୍‌ୱାର୍କ ସହିତ ସଂଯୁକ୍ତ ନଥିବାରୁ ସେୟାରିଂ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="1668001730617725852">ନୂଆ ଟାବ ଗ୍ରୁପରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ରୁ <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">ଆପଣ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ଠିକଣା ବାରରୁ Google Lens ଖୋଲିପାରିବେ ଏବଂ ଯାହା ଦେଖୁଛନ୍ତି ତାହା ସର୍ଚ୍ଚ କରିପାରିବେ</translation>
 <translation id="1689333818294560261">ଡାକନାମ</translation>
 <translation id="169048873465870056">ଟାବକୁ କାଢ଼ି ଦେଇ ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="1698090540708020240">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> ଆକାଉଣ୍ଟ <ph name="HOSTED_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି, ଯାହା କିଛି ସୂଚନା ଭ୍ୟୁ କରିବାକୁ ସକ୍ଷମ ହୋଇପାରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">ନୂଆ ଆଇଟମ</translation>
 <translation id="2049727122989709386"><ph name="COUNT" />ଟି ଆକାଉଣ୍ଟ ସମାନ ପାସୱାର୍ଡ ବ୍ୟବହାର କରୁଛି</translation>
+<translation id="205013082884273671">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ କିଛି ବି ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2054044186557130763">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ <ph name="NAME" /> <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="2059166748188874810">ମ୍ୟୁନିସିପାଲିଟି</translation>
 <translation id="2060638295449304809">ଏହି ଠିକଣାକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରେ ଏହାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଏହାକୁ ସେଭ କରନ୍ତୁ, <ph name="USER_EMAIL" /></translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">ଚାଲୁ ଥିବା ସମୟରେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଡାଟା ସେଭ କରାଯାଏ। ବନ୍ଦ ଥିବା ସମୟରେ କେବଳ ଏହି ଡିଭାଇସରେ ଡାଟା ସେଭ କରାଯାଏ ଏବଂ ଆପଣ ସାଇନ ଆଉଟ କଲେ ଏହା ଡିଲିଟ ହୋଇଯାଏ।</translation>
 <translation id="2827760117436553203">ଡାଟାକୁ ଅଲଗା ରଖିବେ?</translation>
 <translation id="2829172210806130158">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
+<translation id="2831109159746537587">ସର୍ଚ୍ଚ କରିବାକୁ ଫଟୋକୁ ସର୍କଲ କିମ୍ବା ଟାପ କରି ଦେଖନ୍ତୁ</translation>
 <translation id="2834399722155632105">3. ପାସୱାର୍ଡ ବିକଳ୍ପଗୁଡ଼ିକରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />:<ph name="STATE" />:<ph name="URL" /></translation>
 <translation id="2841013758207633010">ସମୟ</translation>

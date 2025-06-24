@@ -36,6 +36,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="1409338233051621926">Dodir na Aplikacije, a zatim na Zadane aplikacije</translation>
 <translation id="1415402041810619267">URL je odsječen</translation>
 <translation id="1415855080660575082">Dozvolite Chromeu da dijeli nedavne kartice s uređajem da ih vidite na listi aplikacija i u rezultatima pretraživanja na uređaju. Možete uključiti ili isključiti u postavkama Chromea.</translation>
+<translation id="1432650420699700107">Web lokacije mogu zatražiti da se povežu s bilo kojim uređajem na lokalnoj mreži</translation>
 <translation id="1448064542941920355">Smanjenje zumiranja</translation>
 <translation id="1464044141348608623">Nemoj dozvoliti web lokacijama da znaju kada se uređaj aktivno koristi</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web lokacija}one{<ph name="SITE_COUNT" /> web lokacija}few{<ph name="SITE_COUNT" /> web lokacije}other{<ph name="SITE_COUNT" /> web lokacija}}</translation>
@@ -254,6 +255,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="3955321697524543127">Nemoj dozvoliti web lokacijama povezivanje s USB uređajima</translation>
 <translation id="3965467402665811906">Web lokacije vas mogu pitati da koriste sačuvane informacije o vama</translation>
 <translation id="3967822245660637423">Preuzimanje je završeno</translation>
+<translation id="3969869202926863008">Pristup lokalnoj mreži</translation>
 <translation id="3981465354637804599">Web lokacije obično prikazuju oglase da mogu besplatno pružati sadržaj ili usluge. Ali, poznato je da neke web lokacije prikazuju ometajuće ili obmanjujuće oglase.</translation>
 <translation id="3987993985790029246">Kopiraj link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="6554732001434021288">Posljednji put je posjećeno prije <ph name="NUM_DAYS" /> dan(a)</translation>
 <translation id="656065428026159829">Prikaži više</translation>
 <translation id="6561560012278703671">Koristi tiše poruke (blokira upite s obavještenjima da vas ne prekidaju)</translation>
+<translation id="6565144332292237355">Web lokacije mogu koristiti ovu funkciju da potraže bilo koji uređaj na lokalnoj mreži i povežu se s njim</translation>
 <translation id="6593061639179217415">Web lokacija za računar</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Kolačići su dozvoljeni za <ph name="RWS_MEMBERS_COUNT" /> web lokaciju čiji je vlasnik <ph name="RWS_OWNER" />}one{Kolačići su dozvoljeni za <ph name="RWS_MEMBERS_COUNT" /> web lokaciju čiji je vlasnik <ph name="RWS_OWNER" />}few{Kolačići su dozvoljeni za <ph name="RWS_MEMBERS_COUNT" /> web lokacije čiji je vlasnik <ph name="RWS_OWNER" />}other{Kolačići su dozvoljeni za <ph name="RWS_MEMBERS_COUNT" /> web lokacija čiji je vlasnik <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

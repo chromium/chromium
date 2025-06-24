@@ -1439,6 +1439,7 @@
 <translation id="343474037147570563">‏يتم إرسال الملفات التي تحمِّلها أو ترفقها إلى Google Cloud أو جهات خارجية لتحليلها. على سبيل المثال، قد يتم فحص هذه الملفات بحثًا عن بيانات حسّاسة أو برامج ضارة وتخزينها استنادًا إلى سياسات الشركة، وقد تظهر للمشرف.</translation>
 <translation id="3435557549311968410">غير متقطع (قصير)</translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
+<translation id="3436118221454753036">وضع "لِنسأل الذكاء الاصطناعي"</translation>
 <translation id="3440783957068352691">صفحة مربّعة</translation>
 <translation id="3441653493275994384">الشاشة</translation>
 <translation id="3443504041532578451">قرص ضوئي (برّاق)</translation>
@@ -2028,6 +2029,7 @@
 <translation id="4372948949327679948">القيمة <ph name="VALUE_TYPE" /> المتوقعة.</translation>
 <translation id="437620492464254965">أبواب ونوافذ</translation>
 <translation id="4377125064752653719">لقد حاولت الوصول إلى <ph name="DOMAIN" />، ولكن جهة إصدار الشهادة التي قدمها الخادم قد أبطلت الشهادة. وهذا يعني أن بيانات اعتماد الأمان التي قدمها الخادم يجب عدم الوثوق بها مطلقًا. فقد تكون على اتصال بأحد المهاجمين.</translation>
+<translation id="4377869186417956230">يمكنك التغيير إلى جميع بطاقات الولاء ضِمن هذا العنصر في القائمة.</translation>
 <translation id="4378154925671717803">هاتف</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">من الآن فصاعدًا، يمكنك حفظ ملفاتك في مساحة التخزين في السحابة الإلكترونية</translation>
@@ -4013,6 +4015,7 @@
 <translation id="7761159795823346334">هل تريد السماح بالوصول إلى الكاميرا؟</translation>
 <translation id="7761701407923456692">‏لا تتطابق شهادة الخادم مع عنوان URL.</translation>
 <translation id="7764225426217299476">إضافة عنوان</translation>
+<translation id="7765158879357617694">نقل</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7767278989746220252">أفنية وبساتين وحدائق</translation>
 <translation id="776749070095465053">نسيج</translation>
@@ -4349,6 +4352,7 @@
 </translation>
 <translation id="8366057325711477500">أخبار عالمية</translation>
 <translation id="836616551641291797">مزيد من المعلومات حول كيفية إدارة المتصفِّح</translation>
+<translation id="8367705492654390392">البحث عن أي شيء</translation>
 <translation id="8368001212524806591">تتبُّع السعر</translation>
 <translation id="8368027906805972958">جهاز غير معروف أو غير متوافق (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">‏خدمات Google Play</translation>

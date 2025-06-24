@@ -1442,6 +1442,7 @@
 <translation id="343474037147570563">আপনার আপলোড বা অ্যাটাচ করা ফাইল Google Cloud-এ বা থার্ড-পার্টির কাছে বিশ্লেষণ করার জন্য পাঠানো হয়। যেমন, সংবেদনশীল ব্যক্তিগত তথ্য বা ম্যালওয়্যার রয়েছে কিনা তা জানার জন্য সেগুলি স্ক্যান করা হতে পারে এবং কোম্পানির নীতির উপরে ভিত্তি করে সেভ করা হতে পারে ও আপনার অ্যাডমিনিস্ট্রেটর সেগুলি দেখতে পেতে পারেন।</translation>
 <translation id="3435557549311968410">কন্টিনিউআস (শর্ট)</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
+<translation id="3436118221454753036">AI মোডকে জিজ্ঞাসা করুন</translation>
 <translation id="3440783957068352691">বর্গাকার</translation>
 <translation id="3441653493275994384">বাছাই করুন</translation>
 <translation id="3443504041532578451">অপটিকাল (স্যাটিন)</translation>
@@ -4016,6 +4017,7 @@
 <translation id="7761159795823346334">ক্যামেরা অ্যাক্সেসের অনুমতি দেবেন?</translation>
 <translation id="7761701407923456692">সার্ভারের সার্টিফিকেট ইউআরএল-এর সাথে মেলে না৷</translation>
 <translation id="7764225426217299476">ঠিকানা যোগ করুন</translation>
+<translation id="7765158879357617694">সরান</translation>
 <translation id="7766518757692125295">স্কার্ট</translation>
 <translation id="7767278989746220252">উঠোন, লন ও বাগান</translation>
 <translation id="776749070095465053">ফ্যাব্রিক</translation>
@@ -4350,6 +4352,7 @@
 <translation id="8364627913115013041">সেট করা নেই৷</translation>
 <translation id="8366057325711477500">আন্তর্জাতিক খবর</translation>
 <translation id="836616551641291797">আপনার ব্রাউজার কীভাবে ম্যানেজ করা হয় সেই বিষয়ে আরও জানুন</translation>
+<translation id="8367705492654390392">যেকোনও কিছু জিজ্ঞাসা করুন</translation>
 <translation id="8368001212524806591">দাম ট্র্যাক করুন</translation>
 <translation id="8368027906805972958">অপরিচিত বা কাজ করে না এমন ডিভাইস (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play পরিষেবাদি</translation>

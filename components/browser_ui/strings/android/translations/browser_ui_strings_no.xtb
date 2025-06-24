@@ -36,6 +36,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="1409338233051621926">Trykk på Apper og deretter på Standardapper</translation>
 <translation id="1415402041810619267">Nettadressen er avkortet</translation>
 <translation id="1415855080660575082">La Chrome dele de nylige fanene dine med enheten din, slik at du kan se dem på applisten og i søkeresultater på enheten. Du kan slå dette på eller av i Chrome-innstillingene.</translation>
+<translation id="1432650420699700107">Nettsteder kan be om å få koble til enheter på det lokale nettverket ditt</translation>
 <translation id="1448064542941920355">Zoom ut</translation>
 <translation id="1464044141348608623">Ikke la nettsteder få vite når du bruker enheten aktivt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> nettsted}other{<ph name="SITE_COUNT" /> nettsteder}}</translation>
@@ -254,6 +255,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="3955321697524543127">Ikke la nettsteder koble til USB-enheter</translation>
 <translation id="3965467402665811906">Nettsteder kan be om å få bruke informasjon de har lagret om deg</translation>
 <translation id="3967822245660637423">Nedlasting fullført</translation>
+<translation id="3969869202926863008">Lokal nettverkstilgang</translation>
 <translation id="3981465354637804599">Nettsteder viser vanligvis annonser for å kunne tilby innhold eller tjenester kostnadsfritt. Men noen nettsteder er kjent for å vise forstyrrende eller villedende annonser.</translation>
 <translation id="3987993985790029246">Kopiér link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="6554732001434021288">Sist besøkt for <ph name="NUM_DAYS" /> dager siden</translation>
 <translation id="656065428026159829">Se mer</translation>
 <translation id="6561560012278703671">Bruk stillere meldinger (blokkerer varselmeldinger fra å forstyrre deg)</translation>
+<translation id="6565144332292237355">Nettsteder kan bruke denne funksjonen for å se etter og koble til enheter på det lokale nettverket ditt</translation>
 <translation id="6593061639179217415">Side for datamaskiner</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Informasjonskapsler er tillatt for <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-nettsted}other{Informasjonskapsler er tillatt for <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-nettsteder}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

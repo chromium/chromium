@@ -1438,6 +1438,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="343474037147570563">Przesyłane lub dołączone pliki są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane pod kątem danych wrażliwych lub złośliwego oprogramowania, a także mogą być przechowywane zgodnie z zasadami firmy i widoczne dla administratora.</translation>
 <translation id="3435557549311968410">Ciągły (krótki)</translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
+<translation id="3436118221454753036">Tryb Zapytaj AI</translation>
 <translation id="3440783957068352691">kwadrat</translation>
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3443504041532578451">Dysk optyczny (satyna)</translation>
@@ -3142,6 +3143,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6326947323444967009">Ustaw Chrome jako domyślną przeglądarkę systemową w ustawieniach iOS</translation>
 <translation id="6327065120806001832">dostęp przez sieć lokalną</translation>
 <translation id="6328639280570009161">Wyłącz przewidywanie działań sieciowych</translation>
+<translation id="6334834493885103305">Teraz możesz płacić w ratach za pomocą Affirm, Zip lub Klarna</translation>
 <translation id="6335029926534404762">Obuwie sportowe</translation>
 <translation id="6336948221660696475">Nie przyznano dostępu do rzeczywistości wirtualnej</translation>
 <translation id="6337133576188860026">Zwolni się mniej niż <ph name="SIZE" />. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
@@ -4011,6 +4013,7 @@ Dodatkowe informacje:
 <translation id="7761159795823346334">Zezwolić na używanie aparatu?</translation>
 <translation id="7761701407923456692">Certyfikat serwera jest niezgodny z adresem URL.</translation>
 <translation id="7764225426217299476">Dodaj adres</translation>
+<translation id="7765158879357617694">Przenieś</translation>
 <translation id="7766518757692125295">Fartuch</translation>
 <translation id="7767278989746220252">Patio, trawnik i ogród</translation>
 <translation id="776749070095465053">Tkanina</translation>
@@ -4065,6 +4068,7 @@ Dodatkowe informacje:
 <translation id="7878562273885520351">Ktoś mógł poznać Twoje hasło</translation>
 <translation id="7881044256965445977">Szukaj urządzeń w sieci lokalnej i łącz się z nimi</translation>
 <translation id="7882421473871500483">Brązowy</translation>
+<translation id="7885670691503039914">Otrzymasz alert e-mail, jeśli produkt stanieje w dowolnej witrynie. Ta strona zostanie zapisana w folderze zakładek <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Wybierz szerokie kategorie tematów, które mogą być używane do personalizacji reklam</translation>
 <translation id="7887683347370398519">Sprawdź kod CVC i spróbuj ponownie</translation>
 <translation id="7887885240995164102">Włącz obraz w obrazie</translation>
@@ -4345,6 +4349,7 @@ Dodatkowe informacje:
 <translation id="8364627913115013041">Nie ustawiono.</translation>
 <translation id="8366057325711477500">Wiadomości ze świata</translation>
 <translation id="836616551641291797">Dowiedz się więcej o sposobie zarządzania przeglądarką</translation>
+<translation id="8367705492654390392">Zapytaj, o co chcesz</translation>
 <translation id="8368001212524806591">Monitorowanie cen</translation>
 <translation id="8368027906805972958">Nieznane lub nieobsługiwane urządzenie (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Usługi Google Play</translation>

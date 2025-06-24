@@ -694,6 +694,7 @@
 <translation id="2157640075051554492">ဈေးနှုန်းစောင့်ကြည့်မှု အကြောင်းကြားချက်များ</translation>
 <translation id="21613918653299710">အွန်လိုင်းပုံပြခန်း</translation>
 <translation id="2161656808144014275">စာသား</translation>
+<translation id="2162435186600002085">ပင်မခေါင်းစီး လိုဂို</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> တွင်ယခု <ph name="CURRENT_PRICE" /> ဖြစ်သည်</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> တွင် စာလုံးပေါင်းအမှား ရှိမရှိ စစ်ဆေးရန်။</translation>
 <translation id="2166049586286450108">စီမံသူအပြည့်အဝ အသုံးပြုခွင့်</translation>
@@ -852,6 +853,7 @@
 <translation id="2400263725572336749">နိုင်ငံကူးလက်မှတ် ထည့်ခြင်း</translation>
 <translation id="2400271059665846158">Google Wallet တွင် သင်၏ ဖောက်သည်ကတ်များကို စီမံနိုင်သည်</translation>
 <translation id="2400600116338235695">အစဉ်လိုက်ပို့တ်များသို့ ချိတ်ဆက်ရန် ခွင့်တောင်းနိုင်သည်</translation>
+<translation id="240450251994300576">ဒုတိယခေါင်းစီး လိုဂို</translation>
 <translation id="2404884497378469141">သင့်ဖိုင်များကို ထပ်မံကူးယူကြည့်ပါ</translation>
 <translation id="2413155254802890957">အဟောင်း</translation>
 <translation id="2413528052993050574">ဒီဆာဗာက <ph name="DOMAIN" /> ဖြစ်တာကို သက်သေထူ မပြနိုင်ခဲ့ပါ၊ ၎င်း၏ လုံခြုံရေး လက်မှတ်ကို ရုပ်သိမ်းခဲ့တာ ဖြစ်နိုင်သည်။ ဖွဲ့စည်းစီစဉ်မှု အမှားကြောင့် သို့မဟုတ် တိုက်ခိုက်လိုသူက သင်၏ ချိတ်ဆက်မှုကို ကြားဖြတ်ယူနေ၍ ထိုသို့ ဖြစ်လာနိုင်ခဲ့ပါသည်။</translation>
@@ -986,6 +988,7 @@
 <translation id="2627847595568876492">PDF မှ စာသားကို ထုတ်ယူနေသည်…</translation>
 <translation id="2628224721443278970">Microsoft OneDrive သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ၏ ဆာဗာ IP လိပ်စာကို မတွေ့ပါ။</translation>
+<translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> တွင် ရှာဖွေရန် @ ကို ရိုက်ပါ</translation>
 <translation id="2639739919103226564">အခြေအနေ:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">အထည် (အနည်းငယ် တောက်ပြောင်)</translation>
@@ -1440,6 +1443,7 @@
 <translation id="343474037147570563">သင်အပ်လုဒ်လုပ်သည့် (သို့) တွဲချိတ်သည့် ဖိုင်များကို စိတ်ဖြာလေ့လာရန် Google Cloud (သို့) ပြင်ပအဖွဲ့များသို့ ပို့သည်။ ဥပမာအားဖြင့် သတိထားရမည့်ဒေတာ (သို့) မဲလ်ဝဲ ရှာဖွေရန် ၎င်းတို့ကို စကင်ဖတ်ပြီး ကုမ္ပဏီမူဝါဒများအရ သိမ်းနိုင်၍ သင့်စီမံခန့်ခွဲသူက မြင်နိုင်ပါသည်။</translation>
 <translation id="3435557549311968410">ဆက်တိုက် (အတို)</translation>
 <translation id="3435738964857648380">လုံခြုံရေး</translation>
+<translation id="3436118221454753036">AI မုဒ်ဖြင့် မေးရန်</translation>
 <translation id="3440783957068352691">စတုရန်း</translation>
 <translation id="3441653493275994384">မျက်နှာပြင်</translation>
 <translation id="3443504041532578451">ဒစ်ခွေ (ဖဲ)</translation>
@@ -2267,6 +2271,7 @@
 <translation id="4827283332383516812">ကတ်ကို ဖျက်ရန်</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> ခု ရွေးထားသည်</translation>
 <translation id="4831993743164297314">ပုံထုတ်စာရွက်</translation>
+<translation id="4832388034239846146">တဘ်အုပ်စုများ မျှဝေရန် Chrome ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="483241715238664915">သတိပေးချက်များ ဖွင့်ရန်</translation>
 <translation id="4832961164064927107">BBQ၊ အသားကင်ခြင်း</translation>
 <translation id="4834250788637067901">Google Pay ကို သုံးထားသော ငွေပေးချေနည်းလမ်း၊ ကမ်းလှမ်းချက်နှင့် လိပ်စာများ</translation>
@@ -2974,6 +2979,7 @@
 <translation id="6043357981274314628">ပြီးပါပြီ။</translation>
 <translation id="6044573915096792553">အရွယ်အစား ၁၂</translation>
 <translation id="6045164183059402045">သတ်မှတ်ချက် နမူနာ ပုံစံ</translation>
+<translation id="6046892054959167494">ရှာဖွေရန် (သို့) <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> ကို မေးရန် <ph name="SEARCH_AGGREGATOR_KEYWORD" /> ဟု ရိုက်ပါ</translation>
 <translation id="6047927260846328439">ဤအရာသည် သင့်ကို ဆော့ဖ်ဝဲထည့်သွင်းစေရန် သို့မဟုတ် ကိုယ်ရေးကိုယ်တာ အချက်အလက်များ ဖော်ပြစေရန် လှည့်ဖြားနိုင်ပါသည်။ <ph name="BEGIN_LINK" />မည်သို့ပင်ဖြစ်စေ ပြသရန်<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 စာအိတ်</translation>
 <translation id="6049488691372270142">စာမျက်နှာ ပေးပို့မှု</translation>
@@ -4011,6 +4017,7 @@
 <translation id="7761159795823346334">ကင်မရာကို သုံးခွင့်ပြုမလား။</translation>
 <translation id="7761701407923456692">Server's certificate does not match the URL နှင့်မကိုက်ညီပါ။</translation>
 <translation id="7764225426217299476">လိပ်စာများ ထည့်သွင်းပါ</translation>
+<translation id="7765158879357617694">ရွှေ့ရန်</translation>
 <translation id="7766518757692125295">အနားသတ်</translation>
 <translation id="7767278989746220252">အိမ်ကပြင်၊ မြက်ခင်းနှင့် ဥယျာဉ်</translation>
 <translation id="776749070095465053">အထည်</translation>
@@ -4346,6 +4353,7 @@
 <translation id="8364627913115013041">မသတ်မှတ်ရသေး</translation>
 <translation id="8366057325711477500">ကမ္ဘာ့သတင်း</translation>
 <translation id="836616551641291797">သင့်ဘရောင်ဇာကို စီမံပုံအကြောင်း ပိုမိုလေ့လာရန်</translation>
+<translation id="8367705492654390392">ကြိုက်ရာမေးရန်</translation>
 <translation id="8368001212524806591">ဈေးနှုန်း စောင့်ကြည့်ခြင်း</translation>
 <translation id="8368027906805972958">အမျိုးအမည်မသိ သို့မဟုတ် ပံ့ပိုးမထားသည့် ကိရိယာ ( <ph name="DEVICE_ID" /> )</translation>
 <translation id="8368476060205742148">Google Play ဝန်ဆောင်မှုများ</translation>
@@ -4660,6 +4668,7 @@
 <translation id="8926389886865778422">ထပ် မမေးပါနှင့်</translation>
 <translation id="8932102934695377596">သင်၏ နာရီ နောက်ကျနေ</translation>
 <translation id="893332455753468063">အမည် ထည့်သွင်းခြင်း</translation>
+<translation id="8938242527120341116">သင့်စက်၏ အကြောင်းအရာဖီလ်တာများက <ph name="BLOCKED_URL" /> ကို ပိတ်လိုက်သည်</translation>
 <translation id="8942355029279167844">သင်၏ စီမံခန့်ခွဲသူသည် ထုတ်ကုန်အသုံးပြုမှု ပိုမိုကောင်းမွန်စေရန်အတွက် အမှားရှာပြင်ခြင်းဒေတာများကို စုဆောင်းရန် <ph name="APP_NAME" /> ကို ခွင့်ပြုထားသည်။ နောက်ထပ်အချက်အလက်များအတွက် <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> တွင် ကြည့်ပါ။</translation>
 <translation id="8943282376843390568">သံပုရာ</translation>
 <translation id="8949410982325929394">သံစဉ်</translation>
@@ -4865,6 +4874,7 @@
 <translation id="963837307749850257">အသုံးပြုသူအားလုံး</translation>
 <translation id="964050462028070434">စကားဝှက်နှင့် လျှို့ဝှက်ကီးများ စီမံရန်…</translation>
 <translation id="969892804517981540">တရားဝင် တည်ဆောက်မှု</translation>
+<translation id="97054401902912338">အကြောင်းအရာဖီလ်တာအကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="973788791897303708">ဤတဘ်အုပ်စု ပြည့်နေသည်</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{အကြောင်းအရာ ၁ ခု}other{အကြောင်းအရာ # ခု}}</translation>
 <translation id="976522784004777030">၅ x ၈ လက်မ</translation>

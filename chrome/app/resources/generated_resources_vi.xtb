@@ -635,6 +635,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1438630805136563416">Đã xoá hành động <ph name="REMOVED_ACTION" /></translation>
 <translation id="1439671507542716852">hỗ trợ dài hạn</translation>
 <translation id="1440090277117135316">Đã hoàn tất việc đăng ký học</translation>
+<translation id="1442054921249164535">Dữ liệu khác</translation>
 <translation id="144283815522798837">Đã chọn <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Đặt vé Kerberos đang hoạt động</translation>
 <translation id="1444389367706681769">Vũ trụ</translation>
@@ -2623,6 +2624,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Tìm thấy 1 trang web gửi nhiều thông báo}other{Tìm thấy {NUM_SITES} trang web gửi nhiều thông báo}}</translation>
 <translation id="2778471504622896352">Thêm ứng dụng từ xa vào trình chạy ChromeOS</translation>
 <translation id="2779728796406650689">Việc này giúp Trợ lý Google đưa ra câu trả lời phù hợp khi bạn đặt câu hỏi.</translation>
+<translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Lỗi khi cài đặt ứng dụng Linux</translation>
 <translation id="2783952358106015700">Sử dụng khóa bảo mật cho <ph name="APP_NAME" /></translation>
@@ -4850,6 +4852,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="435527878592612277">Chọn ảnh của bạn</translation>
 <translation id="4356100841225547054">Tắt âm lượng</translation>
 <translation id="4357583358198801992">Hiện nhóm thẻ</translation>
+<translation id="4357812592970409234">Tìm hiểu thêm về nền của trang Thẻ mới</translation>
 <translation id="4358361163731478742">Không có ứng dụng nào hỗ trợ chọn ngôn ngữ cho ứng dụng</translation>
 <translation id="4358643842961018282">Phiên bản trên thiết bị của bạn là phiên bản mới nhất</translation>
 <translation id="4358995225307748864">Chọn một ứng dụng để mở</translation>

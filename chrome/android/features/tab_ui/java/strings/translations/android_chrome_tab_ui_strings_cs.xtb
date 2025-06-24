@@ -17,6 +17,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Vytvořeno před <ph name="NUM_MINS_ONE" /> minutou}few{Vytvořeno před <ph name="NUM_MINS_MANY" /> minutami}many{Vytvořeno před <ph name="NUM_MINS_MANY" /> minuty}other{Vytvořeno před <ph name="NUM_MINS_MANY" /> minutami}}</translation>
 <translation id="1499635324672558517">Zavřít všechny anonymní karty?</translation>
 <translation id="1501480321619201731">Smazat skupinu</translation>
+<translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktivní položka}few{<ph name="TABS_COUNT_MANY" /> neaktivní položky}many{<ph name="TABS_COUNT_MANY" /> neaktivní položky}other{<ph name="TABS_COUNT_MANY" /> neaktivních položek}}</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="161042844686301425">Azurová</translation>
 <translation id="1645759014353344461">Byl seskupen tento počet karet: <ph name="TABS_COUNT_MANY" /></translation>
@@ -68,6 +69,7 @@
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nová karta}few{<ph name="MANY_ADDED" /> nové karty}many{<ph name="MANY_ADDED" /> nové karty}other{<ph name="MANY_ADDED" /> nových karet}}</translation>
 <translation id="3613492231657284463">Dialogové okno Skrýt neaktivní karty</translation>
 <translation id="3619255692378312441">Spravovat přístup</translation>
+<translation id="3649471731638882002">{TAB_COUNT,plural, =1{Zavřít položku}few{Zavřít položky}many{Zavřít položky}other{Zavřít položky}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura náhledu sdílecího listu.</translation>
 <translation id="3810973564298564668">Spravovat</translation>
@@ -80,6 +82,7 @@
 <translation id="4159784952369912983">Nachová</translation>
 <translation id="427987768447457592">Nová skupina karet</translation>
 <translation id="4371591986692297148">Neaktivní</translation>
+<translation id="4429658455677831355">{TAB_COUNT,plural, =1{Obnovit položku}few{Obnovit položky}many{Obnovit položky}other{Obnovit položky}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Aktualizováno před <ph name="NUM_DAYS_ONE" /> dnem}few{Aktualizováno před <ph name="NUM_DAYS_MANY" /> dny}many{Aktualizováno před <ph name="NUM_DAYS_MANY" /> dne}other{Aktualizováno před <ph name="NUM_DAYS_MANY" /> dny}}</translation>
 <translation id="4686942373615810936">Vytvořeno právě teď</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zavřít po 1 dni}few{Zavřít po <ph name="DAY_COUNT_MANY" /> dnech}many{Zavřít po <ph name="DAY_COUNT_MANY" /> dne}other{Zavřít po <ph name="DAY_COUNT_MANY" /> dnech}}</translation>
@@ -189,6 +192,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Aktualizováno před <ph name="NUM_MONTHS_ONE" /> měsícem}few{Aktualizováno před <ph name="NUM_MONTHS_MANY" /> měsíci}many{Aktualizováno před <ph name="NUM_MONTHS_MANY" /> měsíce}other{Aktualizováno před <ph name="NUM_MONTHS_MANY" /> měsíci}}</translation>
 <translation id="8398929769197326728">Nová složka – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Nastavení</translation>
+<translation id="855081842937141170">Připnout kartu</translation>
 <translation id="8633025649649592204">Nedávná aktivita</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8714939927607906138">Nižší cena</translation>
@@ -205,4 +209,5 @@
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Rozbalit skupinu karet s <ph name="TABS_COUNT_ONE" /> kartou, barva <ph name="COLOR_NAME" />.}few{Rozbalit skupinu karet se <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}many{Rozbalit skupinu karet s <ph name="TABS_COUNT_MANY" /> karty, barva <ph name="COLOR_NAME" />.}other{Rozbalit skupinu karet s <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="992256792861109788">Růžová</translation>
+<translation id="994514002078791059">{TAB_COUNT,plural, =1{Zavřít 1 neaktivní položku?}few{Zavřít <ph name="TAB_COUNT_MANY" /> neaktivní položky?}many{Zavřít <ph name="TAB_COUNT_MANY" /> neaktivní položky?}other{Zavřít <ph name="TAB_COUNT_MANY" /> neaktivních položek?}}</translation>
 </translationbundle>

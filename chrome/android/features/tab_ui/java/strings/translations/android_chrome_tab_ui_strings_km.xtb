@@ -193,6 +193,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{បានធ្វើបច្ចុប្បន្នភាព <ph name="NUM_MONTHS_ONE" /> ខែមុន}other{បានធ្វើបច្ចុប្បន្នភាព <ph name="NUM_MONTHS_MANY" /> ខែមុន}}</translation>
 <translation id="8398929769197326728">ថតថ្មី - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">ការកំណត់</translation>
+<translation id="855081842937141170">ដៅផ្ទាំង</translation>
 <translation id="8633025649649592204">សកម្មភាព​ថ្មីៗ</translation>
 <translation id="8712637175834984815">យល់ហើយ</translation>
 <translation id="8714939927607906138">តម្លៃ​ទាប​ជាង​មុន</translation>

@@ -36,6 +36,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="1409338233051621926">Sakatu Aplikazioak eta, gero, sakatu Aplikazio lehenetsiak</translation>
 <translation id="1415402041810619267">URLa moztuta dago</translation>
 <translation id="1415855080660575082">Eman zure azkenaldiko fitxak gailuarekin partekatzeko aukera Chrome-ri, gailuko aplikazioen zerrendan eta bilaketa-emaitzetan ikusi ahal izan ditzazun. Aukera hori aktibatu edo desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
+<translation id="1432650420699700107">Sare lokaleko edozein gailutara konektatzeko eska dezakete webguneek</translation>
 <translation id="1448064542941920355">Gutxitu zooma</translation>
 <translation id="1464044141348608623">Ez eman gailua noiz erabiltzen ari zaren jakiteko baimena webguneei</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webgune}other{<ph name="SITE_COUNT" /> webgune}}</translation>
@@ -254,6 +255,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="3955321697524543127">Ez eman USB bidezko gailuetara konektatzeko baimena webguneei</translation>
 <translation id="3965467402665811906">Zuri buruz gordetako informazioa erabiltzeko baimena eska dezakete webguneek</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
+<translation id="3969869202926863008">Sare lokalerako sarbidea</translation>
 <translation id="3981465354637804599">Edukiak edo zerbitzuak erabiltzaileek ezer ordaindu gabe eskaini ahal izateko erakutsi ohi dituzte webguneek iragarkiak. Alabaina, badaude iragarki oztopatzaileak edo iruzurrezkoak erakusten dituzten webguneak ere.</translation>
 <translation id="3987993985790029246">Kopiatu esteka</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="6554732001434021288">Duela <ph name="NUM_DAYS" /> egun bisitatu zenuen azkenengoz</translation>
 <translation id="656065428026159829">Ikusi gehiago</translation>
 <translation id="6561560012278703671">Erabili mezularitza isilagoa (jakinarazpenak blokeatzen ditu arretarik galaraz ez diezazuten)</translation>
+<translation id="6565144332292237355">Webguneek eginbide hau erabil dezakete zure sare lokaleko edozein gailu bilatzeko eta hartara konektatzeko</translation>
 <translation id="6593061639179217415">Ordenagailuetarako webgunea</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" /> domeinuko <ph name="RWS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena du}other{<ph name="RWS_OWNER" /> domeinuko <ph name="RWS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena dute}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

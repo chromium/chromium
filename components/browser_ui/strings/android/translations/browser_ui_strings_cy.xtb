@@ -36,6 +36,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="1409338233051621926">Tapiwch Apiau yna tapiwch Apiau diofyn</translation>
 <translation id="1415402041810619267">Mae'r URL wedi'i gwtogi</translation>
 <translation id="1415855080660575082">Gadewch i Chrome rannu'ch tabiau diweddar gyda'ch dyfais i'w gweld yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch droi hwn ymlaen neu ei ddiffodd yng ngosodiadau Chrome.</translation>
+<translation id="1432650420699700107">Gall gwefannau ofyn am gael cysylltu ag unrhyw ddyfais ar eich rhwydwaith lleol</translation>
 <translation id="1448064542941920355">Pellhau</translation>
 <translation id="1464044141348608623">Peidio â chaniatáu i wefannau wybod pan fyddwch wrthi'n defnyddio'ch dyfais</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> wefan}zero{<ph name="SITE_COUNT" /> gwefannau}two{<ph name="SITE_COUNT" /> wefan}few{<ph name="SITE_COUNT" /> gwefan}many{<ph name="SITE_COUNT" /> gwefan}other{<ph name="SITE_COUNT" /> gwefan}}</translation>
@@ -254,6 +255,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="3955321697524543127">Peidio â chaniatáu i wefannau gysylltu â dyfeisiau USB</translation>
 <translation id="3965467402665811906">Gall gwefannau ofyn am gael defnyddio gwybodaeth y maent wedi'u cadw amdanoch chi</translation>
 <translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
+<translation id="3969869202926863008">Mynediad rhwydwaith lleol</translation>
 <translation id="3981465354637804599">Mae gwefannau fel arfer yn dangos hysbysebion fel y gallant ddarparu cynnwys neu wasanaethau'n ddi-dâl. Ond, mae'n hysbys bod rhai gwefannau yn dangos hysbysebion ymwthiol neu gamarweiniol.</translation>
 <translation id="3987993985790029246">Copïo'r ddolen</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="6554732001434021288">Ymwelwyd ddiwethaf <ph name="NUM_DAYS" /> o ddiwrnodau yn ôl</translation>
 <translation id="656065428026159829">Gweld rhagor</translation>
 <translation id="6561560012278703671">Defnyddiwch negeseuon tawelach (mae'n rhwystro anogwyr hysbysiadau rhag torri ar eich traws)</translation>
+<translation id="6565144332292237355">Gall gwefannau ddefnyddio'r nodwedd hon i chwilio am a chysylltu ag unrhyw ddyfais ar eich rhwydwaith lleol</translation>
 <translation id="6593061639179217415">Gwefan bwrdd gwaith</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Caniateir cwcis ar gyfer <ph name="RWS_MEMBERS_COUNT" /> wefan <ph name="RWS_OWNER" />}zero{Caniateir cwcis ar gyfer <ph name="RWS_MEMBERS_COUNT" /> gwefan <ph name="RWS_OWNER" />}two{Caniateir cwcis ar gyfer <ph name="RWS_MEMBERS_COUNT" /> wefan <ph name="RWS_OWNER" />}few{Caniateir cwcis ar gyfer <ph name="RWS_MEMBERS_COUNT" /> gwefan <ph name="RWS_OWNER" />}many{Caniateir cwcis ar gyfer <ph name="RWS_MEMBERS_COUNT" /> gwefan <ph name="RWS_OWNER" />}other{Caniateir cwcis ar gyfer <ph name="RWS_MEMBERS_COUNT" /> gwefan <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

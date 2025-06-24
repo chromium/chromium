@@ -1441,6 +1441,7 @@
 <translation id="343474037147570563">ไฟล์ที่คุณอัปโหลดหรือแนบจะส่งไปยัง Google Cloud หรือบุคคลที่สามเพื่อทำการวิเคราะห์ เช่น อาจสแกนหาข้อมูลที่ละเอียดอ่อนหรือมัลแวร์ และอาจจัดเก็บตามนโยบายบริษัทและผู้ดูแลระบบมองเห็นได้</translation>
 <translation id="3435557549311968410">ต่อเนื่อง (สั้น)</translation>
 <translation id="3435738964857648380">ความปลอดภัย</translation>
+<translation id="3436118221454753036">ถามโหมด AI</translation>
 <translation id="3440783957068352691">สี่เหลี่ยมจัตุรัส</translation>
 <translation id="3441653493275994384">หน้าจอ</translation>
 <translation id="3443504041532578451">แผ่นออปติคัลดิสก์ (ซาติน)</translation>
@@ -2029,6 +2030,7 @@
 <translation id="4372948949327679948">ค่า <ph name="VALUE_TYPE" /> ที่คาดไว้</translation>
 <translation id="437620492464254965">ประตูและหน้าต่าง</translation>
 <translation id="4377125064752653719">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่ใบรับรองที่เซิร์ฟเวอร์แจ้งมาถูกเพิกถอนโดยผู้ออกใบรับรอง ซึ่งหมายความว่าข้อมูลรับรองด้านความปลอดภัยที่เซิร์ฟเวอร์แจ้งมานั้นไม่สามารถเชื่อถือได้ คุณอาจกำลังติดต่อกับคนที่คิดจะโจมตีคุณ</translation>
+<translation id="4377869186417956230">เปลี่ยนเป็นบัตรสะสมคะแนนทั้งหมดภายใต้รายการในเมนูนี้</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">นับจากนี้ไป ระบบจะบันทึกไฟล์ของคุณไปยังพื้นที่เก็บข้อมูลระบบคลาวด์</translation>
@@ -3146,6 +3148,7 @@
 <translation id="6326947323444967009">ตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้นของระบบในการตั้งค่า iOS</translation>
 <translation id="6327065120806001832">การเข้าถึงเครือข่ายภายใน</translation>
 <translation id="6328639280570009161">ลองปิดการคาดคะเนเครือข่าย</translation>
+<translation id="6334834493885103305">ตอนนี้คุณจะชำระเงินเป็นงวดได้โดยใช้ Affirm, Zip หรือ Klarna</translation>
 <translation id="6335029926534404762">รองเท้ากีฬา</translation>
 <translation id="6336948221660696475">ไม่อนุญาต VR</translation>
 <translation id="6337133576188860026">หากเพิ่มพื้นที่ว่างไม่ถึง <ph name="SIZE" /> ไซต์บางแห่งอาจโหลดช้าลงเมื่อคุณเข้าชมครั้งถัดไป</translation>
@@ -4015,6 +4018,7 @@
 <translation id="7761159795823346334">อนุญาตให้เข้าถึงกล้องไหม</translation>
 <translation id="7761701407923456692">ใบรับรองของเซิร์ฟเวอร์ไม่ตรงกับ URL</translation>
 <translation id="7764225426217299476">เพิ่มที่อยู่</translation>
+<translation id="7765158879357617694">ย้าย</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7767278989746220252">ลานบ้าน สนามหญ้า และสวน</translation>
 <translation id="776749070095465053">ผ้า</translation>
@@ -4069,6 +4073,7 @@
 <translation id="7878562273885520351">รหัสผ่านของคุณอาจถูกขโมยได้</translation>
 <translation id="7881044256965445977">ค้นหาและเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณ</translation>
 <translation id="7882421473871500483">น้ำตาล</translation>
+<translation id="7885670691503039914">คุณจะได้รับการแจ้งเตือนทางอีเมลหากราคาลดลงในเว็บไซต์ใดก็ตาม ระบบจะบันทึกหน้านี้ไว้ในโฟลเดอร์บุ๊กมาร์ก <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="7886897188117641322">เลือกหมวดหมู่กว้างๆ ของหัวข้อที่สามารถใช้ในการปรับโฆษณาตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="7887683347370398519">ตรวจสอบ CVC และลองอีกครั้ง</translation>
 <translation id="7887885240995164102">เข้าสู่การแสดงภาพซ้อนภาพ</translation>
@@ -4349,6 +4354,7 @@
 <translation id="8364627913115013041">ไม่ได้ตั้งค่า</translation>
 <translation id="8366057325711477500">ข่าวรอบโลก</translation>
 <translation id="836616551641291797">ดูข้อมูลเพิ่มเติมว่าเบราว์เซอร์ของคุณได้รับการจัดการอย่างไร</translation>
+<translation id="8367705492654390392">ถามอะไรก็ได้</translation>
 <translation id="8368001212524806591">ติดตามราคา</translation>
 <translation id="8368027906805972958">อุปกรณ์ที่ไม่รู้จักหรือไม่รองรับ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">บริการ Google Play</translation>

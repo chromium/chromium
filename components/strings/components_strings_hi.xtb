@@ -1438,6 +1438,7 @@
 <translation id="343474037147570563">अपलोड या अटैच की गई फ़ाइलों को विश्लेषण के लिए, Google Cloud या तीसरे पक्ष की कंपनियों को भेजा जाता है. उदाहरण के लिए, संवेदनशील जानकारी या मैलवेयर का पता लगाने के लिए, उन फ़ाइलों को स्कैन किया जा सकता है. साथ ही, उन्हें कंपनी की नीतियों के हिसाब से सेव किया जा सकता है और ये आपके एडमिन को दिख सकती हैं.</translation>
 <translation id="3435557549311968410">कंटिन्यूअस (शॉर्ट)</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
+<translation id="3436118221454753036">एआई मोड में पूछें</translation>
 <translation id="3440783957068352691">स्क्वेयर</translation>
 <translation id="3441653493275994384">स्क्रीन</translation>
 <translation id="3443504041532578451">ऑप्टिकल डिस्क (सैटिन)</translation>
@@ -4006,12 +4007,13 @@
 <translation id="7755287808199759310">आपका अभिभावक इसे आपके लिए अनवरोधित कर सकता है</translation>
 <translation id="7755624218968747854">प्राइमरी रोल</translation>
 <translation id="7758069387465995638">हो सकता है कि फ़ायरवॉल या एंटीवायरस ने कनेक्शन को रोक दिया हो.</translation>
-<translation id="7759147511335618829">एमआईडीआई डिवाइस कंट्रोल और फिर से प्रोग्राम करना</translation>
+<translation id="7759147511335618829">एमआईडीआई डिवाइस कंट्रोल और रीप्रोग्राम करना</translation>
 <translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="776110834126722255">समर्थन नहीं है या रोक दिया गया है</translation>
 <translation id="7761159795823346334">क्या आप Chromium को कैमरा ऐक्सेस करने की अनुमति देना चाहते हैं?</translation>
 <translation id="7761701407923456692">सर्वर का प्रमाणपत्र यूआरएल से मेल नहीं खाता.</translation>
 <translation id="7764225426217299476">पता जोड़ें</translation>
+<translation id="7765158879357617694">ले जाएं</translation>
 <translation id="7766518757692125295">स्कर्ट</translation>
 <translation id="7767278989746220252">पैटियो, लॉन, और गार्डन</translation>
 <translation id="776749070095465053">फ़ैब्रिक</translation>
@@ -4346,6 +4348,7 @@
 <translation id="8364627913115013041">सेट नहीं है.</translation>
 <translation id="8366057325711477500">दुनिया भर की खबरें</translation>
 <translation id="836616551641291797">आपका ब्राउज़र कैसे मैनेज किया जाता है, इस बारे में ज़्यादा जानें</translation>
+<translation id="8367705492654390392">किसी भी विषय के बारे में पूछें</translation>
 <translation id="8368001212524806591">कीमत ट्रैक करें</translation>
 <translation id="8368027906805972958">अज्ञात या काम न करने वाला डिवाइस (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play सेवाएं</translation>

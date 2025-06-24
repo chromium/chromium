@@ -59,7 +59,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1820835682567584003">Chromium-ek <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1838374766361614909">Garbitu bilaketa</translation>
 <translation id="18552579716432081">Zure arakatze-datuak gailu honetatik soilik ezabatzeko, baina haiek Google-ko kontuan mantentzeko, <ph name="BEGIN_LINK" />amaitu saioa Chromium-en<ph name="END_LINK" />.</translation>
-<translation id="185970820835152459">Saioa hasita daukaten Google-ko kontuak kudea ditzakezu. Google-ko kontuak Chromium arakatzaile, Play Store, Gmail eta abarrerako erabiltzen dira. Kontu bat beste norbaitentzat gehitu nahi baduzu (adibidez, familiako kide batentzat), gehitu beste pertsona bat <ph name="DEVICE_TYPE" /> gailuan. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="185970820835152459">Saioa hasita daukaten Google-ko kontuak kudea ditzakezu. Google-ko kontuak Chromium arakatzaile, Google Play Store, Gmail eta abarrerako erabiltzen dira. Kontu bat beste norbaitentzat gehitu nahi baduzu (adibidez, familiako kide batentzat), gehitu beste pertsona bat <ph name="DEVICE_TYPE" /> gailuan. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Bilatu irudi-bilaketaren bidez</translation>
 <translation id="1863308913976887472">Webguneek zure interesei buruzko informazioa gorde dezakete Chromium-en; esaterako, webgune batera joaten bazara maratoi baterako oinetakoak erostera, baliteke webgune horrek "maratoiak" definitzea interes gisa. Ondorioz, beranduago beste webgune batera joaten bazara lasterketa batean izena emateko, litekeena da webgune horrek lasterketetarako oinetakoekin erlazionatutako iragarki bat erakustea zure interesetan oinarrituta.</translation>
 <translation id="1880677175115548835">Hautatu testua</translation>
@@ -248,6 +248,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4281844954008187215">Zerbitzu-baldintzak</translation>
 <translation id="4285930937574705105">Instalazioak huts egin du zehaztu gabeko errore batengatik. Chromium abian bada, itxi eta ireki berriro.</translation>
 <translation id="4304713468139749426">Pasahitz-kudeatzailea</translation>
+<translation id="4334241893986177674">Bilatu pantaila-argazki honetan</translation>
 <translation id="4334294535648607276">Deskargatu da.</translation>
 <translation id="439358628917130594">Gailua erabili aurretik, <ph name="MANAGER" /> kudeatzaileak jarraian azalduko diren Zerbitzu-baldintzak irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte hedatuko, aldatuko edo mugatuko Chromium OS-ren Baldintzak.</translation>
 <translation id="4407044323746248786">Chromium-etik irten nahi duzu hala ere?</translation>

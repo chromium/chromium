@@ -1441,6 +1441,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="343474037147570563">Os ficheiros que carrega ou anexa são enviados para o Google Cloud ou terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso, ser armazenados com base nas políticas da empresa e ficar visíveis para o seu administrador.</translation>
 <translation id="3435557549311968410">Contínuo (curto)</translation>
 <translation id="3435738964857648380">Segurança</translation>
+<translation id="3436118221454753036">Modo de perguntar à IA</translation>
 <translation id="3440783957068352691">quadrada</translation>
 <translation id="3441653493275994384">Ecrã</translation>
 <translation id="3443504041532578451">Disco ótico (acetinado)</translation>
@@ -2030,6 +2031,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="437620492464254965">Portas e janelas</translation>
 <translation id="4377125064752653719">Tentou aceder a <ph name="DOMAIN" />, mas o certificado que o servidor apresentou foi revogado pelo emissor. Isto significa que as credenciais de segurança apresentadas pelo servidor não deverão, em circunstância alguma, ser consideradas fidedignas. Pode estar a comunicar com um utilizador mal intencionado.</translation>
+<translation id="4377869186417956230">Altere para todos os cartões de fidelidade neste item de menu.</translation>
 <translation id="4378154925671717803">Telemóvel</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">A partir de agora, guarde os seus ficheiros no armazenamento na nuvem</translation>
@@ -4016,6 +4018,7 @@ Detalhes adicionais:
 <translation id="7761159795823346334">Permitir o acesso à câmara?</translation>
 <translation id="7761701407923456692">O certificado do servidor não corresponde ao URL.</translation>
 <translation id="7764225426217299476">Adicionar endereço</translation>
+<translation id="7765158879357617694">Mover</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7767278989746220252">Pátios, relvados e jardins</translation>
 <translation id="776749070095465053">Tecido</translation>
@@ -4351,6 +4354,7 @@ Detalhes adicionais:
 <translation id="8364627913115013041">Não definida.</translation>
 <translation id="8366057325711477500">Notícias do mundo</translation>
 <translation id="836616551641291797">Saiba como o navegador é gerido</translation>
+<translation id="8367705492654390392">Pergunte o que quiser</translation>
 <translation id="8368001212524806591">Monitorizar preço</translation>
 <translation id="8368027906805972958">Dispositivo desconhecido ou não suportado (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Serviços do Google Play</translation>

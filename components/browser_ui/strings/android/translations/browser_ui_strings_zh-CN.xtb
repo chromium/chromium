@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">点按“应用”，然后点按“默认应用”</translation>
 <translation id="1415402041810619267">网址被截断了</translation>
 <translation id="1415855080660575082">允许 Chrome 与您的设备分享您近期打开的标签页，以便在设备的应用列表和搜索结果中查看这些标签页。您可以在 Chrome 设置中开启或关闭此功能。</translation>
+<translation id="1432650420699700107">网站可以请求连接到本地网络上的任何设备</translation>
 <translation id="1448064542941920355">缩小</translation>
 <translation id="1464044141348608623">不允许网站了解您何时在主动使用自己的设备</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 个网站}other{<ph name="SITE_COUNT" /> 个网站}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">不允许网站连接到 USB 设备</translation>
 <translation id="3965467402665811906">网站可以请求使用其保存的与您相关的信息</translation>
 <translation id="3967822245660637423">下载完毕</translation>
+<translation id="3969869202926863008">本地网络访问权限</translation>
 <translation id="3981465354637804599">网站通常会显示广告，以便能够免费提供内容或服务。但据我们所知，有些网站会展示侵扰性或误导性广告。</translation>
 <translation id="3987993985790029246">复制链接</translation>
 <translation id="3991845972263764475">已下载 <ph name="BYTES_DOWNLOADED_WITH_UNITS" />，总大小不明</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">上次访问时间：<ph name="NUM_DAYS" /> 天前</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6561560012278703671">改用干扰性更低的提示方式（禁止网站发送通知，以免干扰）</translation>
+<translation id="6565144332292237355">网站可以使用此功能查找并连接到本地网络上的任何设备</translation>
 <translation id="6593061639179217415">桌面版网站</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{允许 <ph name="RWS_MEMBERS_COUNT" /> 个 <ph name="RWS_OWNER" /> 网站使用 Cookie}other{允许 <ph name="RWS_MEMBERS_COUNT" /> 个 <ph name="RWS_OWNER" /> 网站使用 Cookie}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

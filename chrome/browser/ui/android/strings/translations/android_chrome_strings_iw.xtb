@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">קראת חדשות היום? אפשר לחסוך עד 60% בניצול חבילת הגלישה</translation>
 <translation id="1303339473099049190">לא ניתן למצוא את הסיסמה. יש לבדוק את האיות ולנסות שוב.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> — נשלחה מ-<ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">קיבוץ כרטיסיות</translation>
 <translation id="1318262688555255786">שיתוף הקישור לדף האינטרנט <ph name="PAGE_TITLE" />. מקור: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">תהליך שמירת תיקיות הסימניות שפתוחות בגובה מלא</translation>
 <translation id="1327257854815634930">היסטוריית הניווט פתוחה</translation>
@@ -477,6 +478,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">מדידת המודעות</translation>
 <translation id="3189635831478931757">קבוצת הכרטיסיות "<ph name="GROUP_TITLE" />"</translation>
+<translation id="3200536777393523575">לסגור את החלון הנוכחי?</translation>
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
 <translation id="3208584281581115441">לבדיקה</translation>
 <translation id="3211426585530211793">מועד המחיקה: <ph name="ITEM_TITLE" /></translation>
@@ -721,6 +723,7 @@
 <translation id="4351244548802238354">סגירת תיבת הדו-שיח</translation>
 <translation id="4352287748243729941">להשתמש בסיסמה של <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">כדי שיהיה קל לחזור לדפים שחשובים לך, אפשר להוסיף אותם לסימניות</translation>
+<translation id="4356503491090073318">מספר הכרטיס*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">סיכום אמצעי הבטיחות</translation>
 <translation id="4378154925671717803">טלפון</translation>
@@ -738,6 +741,7 @@
 <translation id="4425140285732600465">המחיר נמצא במעקב. קבלת התראות על הנחות באתר כלשהו.</translation>
 <translation id="4425173294238317796">גיליון האישור של מפתח הגישה</translation>
 <translation id="442518031075347249">‏לא תהיה לך יותר אפשרות להשתמש בכרטיס הווירטואלי באמצעות Google Pay. <ph name="BEGIN_LINK1" />כאן יש מידע נוסף על כרטיסים וירטואליים<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{הכרטיסייה <ph name="TAB_TITLE" /> וכרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) נוספת ייסגרו}one{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}two{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}other{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}}</translation>
 <translation id="4426508677408162512">כל הסימניות</translation>
 <translation id="4430277756566635951">החשבון הנוכחי: <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
 <translation id="4452411734226507615">סגירת הכרטיסייה <ph name="TAB_TITLE" /></translation>
@@ -873,6 +877,7 @@
 <translation id="4987271110129728827">לא ניתן למצוא את הדף הזה. צריך לוודא שהאיות נכון או לנסות לבצע חיפוש באינטרנט.</translation>
 <translation id="4988526792673242964">דפים</translation>
 <translation id="4991110219272367918">האפשרות לאשר או לא לאשר אתר נסגרה</translation>
+<translation id="4996042648402406470">הורדת הסיסמאות</translation>
 <translation id="4996095658297597226">להשתמש בסיסמה המוצעת?</translation>
 <translation id="5001388021414335527">כאן ניתן לעקוב אחר האתר הזה</translation>
 <translation id="5004416275253351869">‏בקרת הפעילות בחשבון Google</translation>
@@ -923,10 +928,12 @@
 <translation id="5210286577605176222">חזרה לכרטיסייה הקודמת</translation>
 <translation id="5210365745912300556">סגירת הכרטיסייה</translation>
 <translation id="5215957675041756913">שליטה בנתונים ובחשבון</translation>
+<translation id="5218324087477576825">צריך להזין מספר כרטיס</translation>
 <translation id="5221437554987713282">‏‫<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ועוד <ph name="SEPARATOR" /> Chrome הסיר את ההרשאות האלה כי לא נכנסת לאחרונה</translation>
 <translation id="5222676887888702881">יציאה</translation>
 <translation id="5226378907213531272">יהיה צורך לבטל את נעילת המסך בכל פעם שמשתמשים ברכב</translation>
 <translation id="5227554086496586518">יש ללחוץ כדי להציג את תוצאות החיפוש</translation>
+<translation id="5229736206150093143">התוצאות האחרונות</translation>
 <translation id="5233638681132016545">כרטיסייה חדשה</translation>
 <translation id="5235196193381275927">משהו השתבש במהלך הכניסה לחשבון</translation>
 <translation id="5246093389635966745">עריכת קיצור הדרך בסרגל הכלים</translation>
@@ -1281,6 +1288,7 @@
 <translation id="676305334223455055">צריך להיכנס לחשבון כדי לקבל תוכן שמותאם לתחומי העניין שלך</translation>
 <translation id="6764137532716892442">פעילות חדשה בקבוצת הכרטיסיות המשותפת "<ph name="GROUP_TITLE" />"</translation>
 <translation id="6767294960381293877">רשימת המכשירים שאפשר לשתף איתם כרטיסייה נפתחה בחצי גובה המסך.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{כרטיסיית מצב פרטי אחת (<ph name="INCOGNITO_TAB_COUNT" />) וכרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) נוספת ייסגרו}one{כרטיסיית מצב פרטי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}two{כרטיסיית מצב פרטי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}other{כרטיסיית מצב פרטי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}}</translation>
 <translation id="6785476624617658922">‏תנאים והגבלות נוספים של Chrome ושל ChromeOS</translation>
 <translation id="6786747875388722282">תוספים</translation>
 <translation id="6795633245022906657">פתיחת כרטיסייה חדשה במהירות. ניתן לערוך את קיצור הדרך ב'הגדרות'.</translation>
@@ -1576,6 +1584,7 @@
 <translation id="7965838025086216108">‏יש לך אפשרות להשתמש בסיסמאות השמורות בכל מכשיר. הן נשמרות במנהל הסיסמאות של Google לחשבון <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">נוסף לרשימת הקריאה</translation>
 <translation id="7968982339740310781">הצגת פרטים</translation>
+<translation id="7969391000881506217">תאריך התפוגה*</translation>
 <translation id="7971136598759319605">פעילות אחרונה: לפני יום אחד</translation>
 <translation id="7975379999046275268">הצגת הדף בתצוגה מקדימה<ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">מקבלים אזהרה אם משתמשים בסיסמה שנחשפה בפרצה באבטחת מידע.</translation>
@@ -1734,6 +1743,7 @@
 <translation id="8565021320663436446">להסיר את <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">לא ניתן להוריד את הקובץ באופן מאובטח</translation>
 <translation id="8571213806525832805">מארבעת השבועות האחרונים</translation>
+<translation id="8580435650274205305">צריך לציין את תאריך התפוגה</translation>
 <translation id="8582529315803410153">כאן יופיעו הכרטיסיות שפתוחות במכשירים אחרים</translation>
 <translation id="8585103689515290060">שירותי מילוי אוטומטי</translation>
 <translation id="859046281437143747">אפשר לעקוב אחר המחיר באמצעות כפתור האפשרויות הנוספות</translation>

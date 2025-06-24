@@ -2623,6 +2623,7 @@
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{បាន​រកឃើញ​គេហទំព័រ 1 ដែលមាន​ការជូនដំណឹង​ជាច្រើន}other{បាន​រកឃើញ​គេហទំព័រ {NUM_SITES} ដែលមាន​ការជូនដំណឹង​ជាច្រើន}}</translation>
 <translation id="2778471504622896352">បញ្ចូល​កម្មវិធី​បញ្ជាពីចម្ងាយ​ទៅ​ក្នុង​កម្មវិធី​ចាប់ផ្ដើម ChromeOS</translation>
 <translation id="2779728796406650689">ការធ្វើបែបនេះអាច​ឱ្យ Google Assistant ផ្ដល់​ការឆ្លើយតប​ដែលស្រប​តាមអ្នក នៅពេលដែល​អ្នកសួរ​សំណួរ។</translation>
+<translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">មានបញ្ហាក្នុង​ការដំឡើង​កម្មវិធី Linux</translation>
 <translation id="2783952358106015700">ប្រើ​សោសុវត្ថិភាព​របស់អ្នក​ជាមួយ <ph name="APP_NAME" /></translation>
@@ -4848,6 +4849,7 @@
 <translation id="435527878592612277">ជ្រើសរើសរូបថតរបស់អ្នក</translation>
 <translation id="4356100841225547054">បិទ​កម្រិត​សំឡេង</translation>
 <translation id="4357583358198801992">បង្ហាញក្រុមផ្ទាំង</translation>
+<translation id="4357812592970409234">ស្វែងយល់​បន្ថែម​អំពី​ផ្ទៃខាងក្រោយ​ទំព័រ​ផ្ទាំងថ្មី​របស់អ្នក</translation>
 <translation id="4358361163731478742">គ្មាន​កម្មវិធី​ដែលអាចប្រើ​ការជ្រើសរើស​ភាសា​កម្មវិធីបានទេ</translation>
 <translation id="4358643842961018282">ឧបករណ៍​របស់អ្នក​បានដំឡើងកំណែថ្មី​ហើយ</translation>
 <translation id="4358995225307748864">ជ្រើសរើសកម្មវិធីសម្រាប់បើក</translation>

@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">Бааларга көз салуу боюнча билдирмелер</translation>
 <translation id="21613918653299710">Онлайн сүрөттөрдүн галереясы</translation>
 <translation id="2161656808144014275">Текст</translation>
+<translation id="2162435186600002085">Негизги аталыштын логотиби</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтында эми <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> туура жазылганын текшериңиз.</translation>
 <translation id="2166049586286450108">Толугу менен администратордун уруксаты</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">Паспортту кошуу</translation>
 <translation id="2400271059665846158">Google Капчыктагы туруктуу кардарлардын карталарын тескөө</translation>
 <translation id="2400600116338235695">Сериялык портторго туташууга уруксат сурай алат</translation>
+<translation id="240450251994300576">Кошумча аталыштын логотиби</translation>
 <translation id="2404884497378469141">Файлдарыңызды кайра көчүрүңүз</translation>
 <translation id="2413155254802890957">Эски</translation>
 <translation id="2413528052993050574">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби анын коопсуздук тастыктамасы жокко чыгарылган окшойт. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">PDF'тен текст чыгарылууда...</translation>
 <translation id="2628224721443278970">Microsoft OneDrive'га кирүү</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> серверинин IP дареги табылбай койду.</translation>
+<translation id="2638567100095052009">@ деп терип, төмөнкүлөрдөн издеңиз: <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Статус:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Кездеме (жарым жылтырак)</translation>
@@ -1438,6 +1441,7 @@
 <translation id="343474037147570563">Сиз жүктөп берген же тиркеген файлдар Google Булутка же үчүнчү тараптын кызматтарына талдоо үчүн жөнөтүлөт. Мисалы, аларда купуя маалыматтын же кесепеттүү программанын болуусу текшерилип, компаниянын эрежелерине ылайык сакталып, администраторуңузга көрүнүшү мүмкүн.</translation>
 <translation id="3435557549311968410">Үзгүлтүксүз басып чыгаруу (кыска тарабынан)</translation>
 <translation id="3435738964857648380">Коопсуздук</translation>
+<translation id="3436118221454753036">ЖИден суроо режими</translation>
 <translation id="3440783957068352691">чарчы</translation>
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3443504041532578451">Оптикалык диск (сатин)</translation>
@@ -2265,6 +2269,7 @@
 <translation id="4827283332383516812">Картаны өчүрүү</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> тандалды</translation>
 <translation id="4831993743164297314">Фото машина үчүн кагаз</translation>
+<translation id="4832388034239846146">Өтмөк топторун бөлүшүү үчүн Chrome'ду жаңыртыңыз</translation>
 <translation id="483241715238664915">Эскертүүлөрдү күйгүзүү</translation>
 <translation id="4832961164064927107">Барбекю жана гриль</translation>
 <translation id="4834250788637067901">Google Pay'ди колдонгон төлөм ыкмалары, сунуштар жана даректер</translation>
@@ -2972,6 +2977,7 @@
 <translation id="6043357981274314628">Бүттү!</translation>
 <translation id="6044573915096792553">Өлчөмү: 12</translation>
 <translation id="6045164183059402045">Вёрстканын үлгүсү</translation>
+<translation id="6046892054959167494">Издөө үчүн <ph name="SEARCH_AGGREGATOR_KEYWORD" /> деп терип же <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> деп сураңыз</translation>
 <translation id="6047927260846328439">Бул баракка кирсеңиз, зыянкеч программа орнотулуп же жеке маалыматыңыз уурдалышы мүмкүн. <ph name="BEGIN_LINK" />Баары бир уланта берем<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Конверт B4</translation>
 <translation id="6049488691372270142">Баракты жеткирүү</translation>
@@ -4009,6 +4015,7 @@
 <translation id="7761159795823346334">Камераны колдонууга уруксат бересизби?</translation>
 <translation id="7761701407923456692">Сервердин тастыктамасы URL'ге дал келбейт.</translation>
 <translation id="7764225426217299476">Дарек кошуу</translation>
+<translation id="7765158879357617694">Жылуу</translation>
 <translation id="7766518757692125295">Юбка</translation>
 <translation id="7767278989746220252">Патио, газон жана бакча</translation>
 <translation id="776749070095465053">Кездеме</translation>
@@ -4343,6 +4350,7 @@
 <translation id="8364627913115013041">Коюлган эмес.</translation>
 <translation id="8366057325711477500">Дүйнөлүк жаңылыктар</translation>
 <translation id="836616551641291797">Серепчиңиздин тескелиши жөнүндө кеңири маалымат алыңыз</translation>
+<translation id="8367705492654390392">Каалаган сурооңузду бериңиз</translation>
 <translation id="8368001212524806591">Баага көз салуу</translation>
 <translation id="8368027906805972958">Белгисиз же колдоого алынбаган түзмөк (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play кызматтары</translation>

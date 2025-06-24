@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">價格追蹤通知</translation>
 <translation id="21613918653299710">網上圖片庫</translation>
 <translation id="2161656808144014275">文字</translation>
+<translation id="2162435186600002085">主要頁首標誌</translation>
 <translation id="2162620598375156287">在 <ph name="SOURCE_WEBSITE" /> 上現售 <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">請檢查 <ph name="HOST_NAME" /> 中是否有錯字。</translation>
 <translation id="2166049586286450108">完整管理存取權</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">新護照</translation>
 <translation id="2400271059665846158">管理「Google 錢包」中的會員卡</translation>
 <translation id="2400600116338235695">可要求連接序列連接埠</translation>
+<translation id="240450251994300576">次要頁首標誌</translation>
 <translation id="2404884497378469141">嘗試再次複製檔案</translation>
 <translation id="2413155254802890957">舊地址</translation>
 <translation id="2413528052993050574">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已被撤銷。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">正在從 PDF 擷取文字…</translation>
 <translation id="2628224721443278970">登入 Microsoft OneDrive</translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的伺服器 IP 位址。</translation>
+<translation id="2638567100095052009">輸入 @ 即可在 <ph name="FEATURED_SEARCH_LIST" /> 上搜尋</translation>
 <translation id="2639739919103226564">狀態：</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">布料 (半光面)</translation>
@@ -1438,6 +1441,7 @@
 <translation id="343474037147570563">你上載或附加的檔案會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄檔案，檢查是否含有敏感資料或惡意軟件，亦可能會根據公司政策儲存這些檔案或向管理員顯示。</translation>
 <translation id="3435557549311968410">連續 (短邊)</translation>
 <translation id="3435738964857648380">安全性</translation>
+<translation id="3436118221454753036">詢問 AI 模式</translation>
 <translation id="3440783957068352691">正方形</translation>
 <translation id="3441653493275994384">螢幕</translation>
 <translation id="3443504041532578451">光碟 (光滑)</translation>
@@ -2265,6 +2269,7 @@
 <translation id="4827283332383516812">刪除卡</translation>
 <translation id="4830443836091007686">已選取 <ph name="ITEMS" /> 個</translation>
 <translation id="4831993743164297314">底片輸出機用紙</translation>
+<translation id="4832388034239846146">如要共用分頁群組，請更新 Chrome</translation>
 <translation id="483241715238664915">開啟警告</translation>
 <translation id="4832961164064927107">燒烤</translation>
 <translation id="4834250788637067901">使用 Google Pay 儲存的付款方法、優惠和地址</translation>
@@ -2972,6 +2977,7 @@
 <translation id="6043357981274314628">完成！</translation>
 <translation id="6044573915096792553">粗幼：12</translation>
 <translation id="6045164183059402045">拼版範本</translation>
+<translation id="6046892054959167494">輸入 <ph name="SEARCH_AGGREGATOR_KEYWORD" /> 即可在「<ph name="SEARCH_AGGREGATOR_SHORT_NAME" />」搜尋或提問</translation>
 <translation id="6047927260846328439">此內容可能會試圖誘使您安裝軟件或顯示個人資料。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 信封</translation>
 <translation id="6049488691372270142">頁面傳送</translation>
@@ -4010,6 +4016,7 @@
 <translation id="7761159795823346334">要授予相機權限嗎？</translation>
 <translation id="7761701407923456692">伺服器憑證與網址不符。</translation>
 <translation id="7764225426217299476">新增地址</translation>
+<translation id="7765158879357617694">移動</translation>
 <translation id="7766518757692125295">預印</translation>
 <translation id="7767278989746220252">露台、草坪和園藝</translation>
 <translation id="776749070095465053">布料</translation>
@@ -4344,6 +4351,7 @@
 <translation id="8364627913115013041">未設定。</translation>
 <translation id="8366057325711477500">國際新聞</translation>
 <translation id="836616551641291797">進一步了解機構點樣管理瀏覽器</translation>
+<translation id="8367705492654390392">發問</translation>
 <translation id="8368001212524806591">追蹤價格</translation>
 <translation id="8368027906805972958">不明或不支援的裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play 服務</translation>
@@ -4658,6 +4666,7 @@
 <translation id="8926389886865778422">不要再問我</translation>
 <translation id="8932102934695377596">您時鐘的時間過慢</translation>
 <translation id="893332455753468063">新增名稱</translation>
+<translation id="8938242527120341116">裝置的內容篩選器已封鎖 <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">您的管理員已允許 <ph name="APP_NAME" /> 收集診斷資料，以改善產品使用體驗。請查閱 <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> 以瞭解詳情。</translation>
 <translation id="8943282376843390568">青檸色</translation>
 <translation id="8949410982325929394">語氣</translation>
@@ -4862,6 +4871,7 @@
 <translation id="963837307749850257">所有使用者</translation>
 <translation id="964050462028070434">管理密碼和密鑰…</translation>
 <translation id="969892804517981540">正式版本</translation>
+<translation id="97054401902912338">進一步瞭解內容篩選器</translation>
 <translation id="973788791897303708">此分頁群組已滿</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{無}=1{1 個項目}other{# 個項目}}</translation>
 <translation id="976522784004777030">5 x 8 吋</translation>

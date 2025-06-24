@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Économisez jusqu'à 60 % de données mobiles, découvrez les actualités du jour</translation>
 <translation id="1303339473099049190">Ce mot de passe est introuvable. Vérifiez l'orthographe, puis réessayez.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> (envoyé depuis <ph name="DEVICE_NAME" />)</translation>
+<translation id="1310482092992808703">Regrouper les onglets</translation>
 <translation id="1318262688555255786">Partager le lien vers la page Web <ph name="PAGE_TITLE" />. Source : <ph name="PAGE_URL" />.</translation>
 <translation id="1320912611264252795">Flux d'enregistrement en tant que favori ouvert à pleine hauteur</translation>
 <translation id="1327257854815634930">Historique de navigation ouvert</translation>
@@ -477,6 +478,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Mesure des annonces</translation>
 <translation id="3189635831478931757">Groupe d'onglets <ph name="GROUP_TITLE" /></translation>
+<translation id="3200536777393523575">Fermer la fenêtre active ?</translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> a été supprimé</translation>
@@ -721,6 +723,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4351244548802238354">Fermer la boîte de dialogue</translation>
 <translation id="4352287748243729941">Utiliser votre mot de passe <ph name="PROVIDER" /> ?</translation>
 <translation id="4355272626458588338">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
+<translation id="4356503491090073318">Numéro de carte*</translation>
 <translation id="4357206670025518404">+ <ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Votre sécurité en un coup d'œil</translation>
 <translation id="4378154925671717803">Téléphone</translation>
@@ -738,6 +741,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4425140285732600465">Suivi du prix activé. Recevez des alertes si le prix baisse sur un site.</translation>
 <translation id="4425173294238317796">Feuille de confirmation de la clé d'accès</translation>
 <translation id="442518031075347249">Vous ne pourrez plus utiliser votre carte virtuelle avec Google Pay. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_ONE" /> autre onglet seront fermés}one{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_MANY" /> autre onglet seront fermés}other{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_MANY" /> autres onglets seront fermés}}</translation>
 <translation id="4426508677408162512">Tous les favoris</translation>
 <translation id="4430277756566635951">Actuellement sélectionné : <ph name="EMAIL" />. Choisissez un compte.</translation>
 <translation id="4452411734226507615">Fermer l'onglet <ph name="TAB_TITLE" /></translation>
@@ -873,6 +877,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4987271110129728827">Page introuvable. Vérifiez l'orthographe ou effectuez une recherche sur le Web.</translation>
 <translation id="4988526792673242964">Pages</translation>
 <translation id="4991110219272367918">Option permettant d'approuver ou non un site Web fermée</translation>
+<translation id="4996042648402406470">Obtenir</translation>
 <translation id="4996095658297597226">Utiliser le mot de passe suggéré ?</translation>
 <translation id="5001388021414335527">Suivre ce site ici</translation>
 <translation id="5004416275253351869">Commandes relatives à l'activité Google</translation>
@@ -923,10 +928,12 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5210286577605176222">Accéder à l'onglet précédent</translation>
 <translation id="5210365745912300556">Fermer l'onglet</translation>
 <translation id="5215957675041756913">Contrôler vos données et votre compte</translation>
+<translation id="5218324087477576825">Vous devez indiquer un numéro de carte</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et d'autres <ph name="SEPARATOR" /> Chrome a supprimé ces autorisations, car vous n'avez pas consulté ce site récemment</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5226378907213531272">Vous devrez déverrouiller votre écran chaque fois que vous utiliserez la voiture</translation>
 <translation id="5227554086496586518">Appuyer pour afficher les résultats de recherche</translation>
+<translation id="5229736206150093143">Derniers résultats</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
 <translation id="5235196193381275927">Une erreur s'est produite lors de la connexion</translation>
 <translation id="5246093389635966745">Modifier le raccourci sur la barre d'outils</translation>
@@ -1281,6 +1288,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="676305334223455055">Connectez-vous pour obtenir des contenus basés sur vos centres d'intérêt</translation>
 <translation id="6764137532716892442">Groupe d'onglets <ph name="GROUP_TITLE" /> partagé avec une nouvelle activité</translation>
 <translation id="6767294960381293877">La liste des appareils avec lesquels vous pouvez partager un onglet est ouverte à mi-hauteur.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> onglets de navigation privée et <ph name="TAB_COUNT_ONE" /> autre onglet seront supprimés}one{<ph name="INCOGNITO_TAB_COUNT" /> onglets de navigation privée et <ph name="TAB_COUNT_MANY" /> autre onglet seront supprimés}other{<ph name="INCOGNITO_TAB_COUNT" /> onglets de navigation privée et <ph name="TAB_COUNT_MANY" /> autres onglets seront supprimés}}</translation>
 <translation id="6785476624617658922">Conditions d'utilisation supplémentaires de Chrome et Chrome OS</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6795633245022906657">Ouvrir rapidement un nouvel onglet. Pour modifier ce raccourci, accédez aux paramètres.</translation>
@@ -1576,6 +1584,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7965838025086216108">Vous pouvez utiliser les mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le Gestionnaire de mots de passe de Google pour <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Ajouté à la liste de lecture</translation>
 <translation id="7968982339740310781">Afficher les détails</translation>
+<translation id="7969391000881506217">Date d'expiration*</translation>
 <translation id="7971136598759319605">Actif il y a 1 jour</translation>
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe compromis par une violation des données.</translation>
@@ -1734,6 +1743,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8565021320663436446">Retirer <ph name="MEMBER_FULL_NAME" /> ?</translation>
 <translation id="8570677896027847510">Impossible de télécharger le fichier de façon sécurisée</translation>
 <translation id="8571213806525832805">4 dernières semaines</translation>
+<translation id="8580435650274205305">Vous devez indiquer une date d'expiration</translation>
 <translation id="8582529315803410153">Vous trouverez ici les onglets de vos autres appareils</translation>
 <translation id="8585103689515290060">Services de saisie automatique</translation>
 <translation id="859046281437143747">Effectuez le suivi du prix via le bouton "Plus d'options"</translation>

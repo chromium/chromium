@@ -52,6 +52,7 @@
 <translation id="1031362278801463162">പ്രിവ്യൂ ലോഡ് ചെയ്യുന്നു</translation>
 <translation id="1032605640136438169">പുതിയ നിബന്ധനകൾ അവലോകനം ചെയ്യുക</translation>
 <translation id="103279545524624934">Android ആപ്പ് ആരംഭിക്കുന്നതിന്, ഡിസ്‌ക്കിൽ ഇടം സൃഷ്‌ടിക്കുക.</translation>
+<translation id="1033060461778467949">ടാബ്, സ്പ്ലിറ്റ് വ്യൂവിലേക്ക് നീക്കുക</translation>
 <translation id="1033780634303702874">നിങ്ങളുടെ സീരിയൽ ഉപകരണങ്ങൾ ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="1034484273907870301">ടാബ്‌ലെറ്റ് മോഡിൽ, തുറന്ന് വെച്ചിട്ടുള്ള ടാബുകളുടെ ലഘുചിത്രം</translation>
 <translation id="1035289631433631911">ഉള്ളടക്ക കൈമാറ്റ ടൂൾ</translation>
@@ -634,6 +635,7 @@
 <translation id="1438630805136563416"><ph name="REMOVED_ACTION" /> എന്ന പ്രവർത്തനം നീക്കം ചെയ്തു</translation>
 <translation id="1439671507542716852">ദീർഘകാല പിന്തുണ</translation>
 <translation id="1440090277117135316">സ്‌കൂൾ എൻറോൾമെന്റ് പൂർത്തിയായി</translation>
+<translation id="1442054921249164535">മറ്റ് ഡാറ്റ</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> തിരഞ്ഞെടുത്തു</translation>
 <translation id="1442851588227551435">സജീവ Kerberos ടിക്കറ്റ് സജ്ജീകരിക്കുക</translation>
 <translation id="1444389367706681769">ബഹിരാകാശം</translation>
@@ -1912,6 +1914,7 @@
 <translation id="2312219318583366810">പേജ് URL</translation>
 <translation id="2314165183524574721">നിലവിലെ ദൃശ്യപരതാ ക്രമീകരണം മറച്ചിരിക്കുന്നു</translation>
 <translation id="2314774579020744484">പേജുകൾ വിവർത്തനം ചെയ്യുമ്പോൾ ഉപയോഗിച്ച ഭാഷ</translation>
+<translation id="2316090909467242775">ഈ വീണ്ടെടുക്കൽ പാസ്‌വേഡ് പരീക്ഷിക്കുക</translation>
 <translation id="2316129865977710310">വേണ്ട, നന്ദി</translation>
 <translation id="2316433409811863464">ആപ്പ് സ്‌ട്രീമിംഗ്</translation>
 <translation id="2316709634732130529">നിർദ്ദേശിച്ച പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
@@ -2605,6 +2608,7 @@
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{നിരവധി അറിയിപ്പുകൾ ഉള്ള ഒരു സൈറ്റ് കണ്ടെത്തി}other{നിരവധി അറിയിപ്പുകൾ ഉള്ള {NUM_SITES} സൈറ്റുകൾ കണ്ടെത്തി}}</translation>
 <translation id="2778471504622896352">ChromeOS ലോഞ്ചറിൽ വിദൂര ആപ്പുകൾ ചേർക്കുക</translation>
 <translation id="2779728796406650689">നിങ്ങൾ ചോദ്യങ്ങൾ ചോദിക്കുമ്പോൾ ഉചിതമായ പ്രതികരണങ്ങൾ നൽകാൻ ഇത് Google Assistant-നെ അനുവദിക്കുന്നു.</translation>
+<translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുന്നതിൽ പിഴവ്</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />-നോടൊപ്പം നിങ്ങളുടെ സുരക്ഷാ കീ ഉപയോഗിക്കുക</translation>
@@ -3537,6 +3541,7 @@
 <translation id="3462413494201477527">അക്കൗണ്ട് സജ്ജീകരണം ഇല്ലാതാക്കണോ?</translation>
 <translation id="346298925039590474">ഈ ഉപകരണത്തിലുള്ള എല്ലാ ഉപയോക്താക്കൾക്കും ഈ മൊബൈൽ നെറ്റ്‌വർക്ക് ലഭ്യമാകും</translation>
 <translation id="3464145797867108663">ഔദ്യോഗിക പ്രൊഫൈൽ ചേർക്കുക</translation>
+<translation id="34673353983913587">നിങ്ങളുടെ പുതിയ പാസ്‌വേഡ് സംരക്ഷിക്കുന്നതിന്, സൈറ്റിന് അധിക പരിശോധിച്ചുറപ്പിക്കൽ ആവശ്യമാണ്</translation>
 <translation id="3468298837301810372">ലേബല്‍‌</translation>
 <translation id="3468999815377931311">Android ഫോൺ</translation>
 <translation id="3469583217479686109">സെലക്ഷൻ ടൂൾ</translation>
@@ -3564,6 +3569,7 @@
 <translation id="3487007233252413104">അജ്ഞാത പ്രവർത്തനം</translation>
 <translation id="3487649228420469005">സ്‌കാൻ ചെയ്‌തു</translation>
 <translation id="3488199663160411179">പേര്</translation>
+<translation id="3489457144969823485">2025 ജൂലൈയിൽ ChromeOS ഉപകരണങ്ങളിൽ Chrome ആപ്പുകൾ റൺ ചെയ്യുന്നത് അവസാനിപ്പിച്ചു. ഒരു ഇതര ആപ്പ് പരിഗണിക്കുക.</translation>
 <translation id="3490695139702884919">ഡൗൺലോഡ് ചെയ്യുന്നു... <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">നിങ്ങൾ പിന്നോ പാസ്‌വേഡോ മറന്നുപോയാൽ ലോക്കൽ ഡാറ്റ പുനഃസ്ഥാപിക്കാനാകും</translation>
 <translation id="3491616972057195633">ബൗൺസ് കീകൾ</translation>
@@ -4031,6 +4037,7 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> വിപുലീകരണങ്ങള്‍</translation>
 <translation id="3794792524918736965">Windows Hello ഓണാക്കുക</translation>
 <translation id="379509625511193653">ഓഫാണ്</translation>
+<translation id="3795624560191557077">പബ്ലിക് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയ ഒരു പാസ്‌വേഡ് നിങ്ങൾ അടുത്തിടെ മാറ്റി. എന്തെങ്കിലും പ്രശ്‌നമുണ്ടായാൽ, സൈൻ ഇൻ ചെയ്യാൻ Google Password Manager-ന് നിങ്ങളെ സഹായിക്കാനാകും.</translation>
 <translation id="3796215473395753611">alt + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, ശബ്ദം പ്രിവ്യൂ ചെയ്യാൻ വലത്തേക്കുള്ള അമ്പടയാള കീ ഉപയോഗിക്കുക</translation>
 <translation id="3796648294839530037">പ്രിയപ്പെട്ട നെറ്റ്‌വർക്കുകൾ:</translation>
@@ -4828,6 +4835,7 @@
 <translation id="435527878592612277">നിങ്ങളുടെ ഫോട്ടോ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4356100841225547054">ശബ്ദം ഓഫാക്കുക</translation>
 <translation id="4357583358198801992">ടാബ് ഗ്രൂപ്പുകൾ കാണിക്കുക</translation>
+<translation id="4357812592970409234">നിങ്ങളുടെ പുതിയ ടാബ് പേജ് പശ്ചാത്തലത്തെക്കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="4358361163731478742">ആപ്പ് ഭാഷാ സെലക്ഷനെ പിന്തുണയ്ക്കുന്ന ആപ്പുകളൊന്നുമില്ല</translation>
 <translation id="4358643842961018282">നിങ്ങളുടെ ഉപകരണം അപ് ടു ഡേറ്റ് ആണ്</translation>
 <translation id="4358995225307748864">തുറക്കാൻ ഒരു ആപ്പ് തിരഞ്ഞെടുക്കുക</translation>
@@ -5850,6 +5858,7 @@
 <translation id="5088534251099454936">RSA എന്‍‌ക്രിപ്‌ഷനോടുകൂടിയ PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">നിങ്ങളുടെ ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാൻ അനുവാദമില്ല</translation>
 <translation id="5091636240353511739">പിൻ കാണിക്കുക</translation>
+<translation id="5093417502834168387">സൈൻ ഇൻ ചെയ്യുന്നതിൽ പ്രശ്നമുണ്ടോ? മറ്റൊരു രീതി പരീക്ഷിക്കുക</translation>
 <translation id="5093477827231450397">മറ്റ് സൈറ്റുകളിലേക്ക് പരസ്യങ്ങൾ നിർദ്ദേശിക്കുന്നത് താൽപ്പര്യമില്ലാത്തതിനാൽ നിങ്ങൾ ബ്ലോക്ക് ചെയ്‌ത സൈറ്റുകളുടെ ലിസ്റ്റ്</translation>
 <translation id="5093569275467863761">അദൃശ്യ ബാക്ക്-ഫോർവേഡ് കാഷെ സബ്ഫ്രെയിം: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Files ആപ്പിൽ നിന്നോ മറ്റ് ആപ്പുകളിൽ നിന്നോ ഈ ആപ്പ് ഉപയോഗിച്ച് പിന്തുണയ്ക്കുന്ന ഫയലുകൾ നിങ്ങൾക്ക് തുറക്കാനും എഡിറ്റ് ചെയ്യാനുമാകും. ഡിഫോൾട്ടായി ഏതൊക്കെ ഫയലുകൾ തുറക്കാൻ ഈ ആപ്പിന് കഴിയുമെന്നത് നിയന്ത്രിക്കാൻ, <ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണത്തിൽ ഡിഫോൾട്ട് ആപ്പുകൾ എങ്ങനെ സജ്ജീകരിക്കാമെന്ന് അറിയുക<ph name="END_LINK" />.</translation>
@@ -6787,6 +6796,7 @@
 <translation id="5785583009707899920">Chrome ഫയൽ യൂട്ടിലിറ്റികൾ</translation>
 <translation id="5787146423283493983">കീ കരാര്‍‌</translation>
 <translation id="5787420647064736989">ഉപകരണത്തിന്റെ പേര്</translation>
+<translation id="5787582109651427233"><ph name="BEGIN_LINK_LOYALTY_CARDS" />ലോയൽറ്റി കാർഡുകളോ<ph name="END_LINK_LOYALTY_CARDS" /> Google Pay <ph name="BEGIN_LINK_PAYMENT_METHODS" />പേയ്‌മെന്റ് രീതികളോ<ph name="END_LINK_PAYMENT_METHODS" /> ചേർക്കാൻ അല്ലെങ്കിൽ മാനേജ് ചെയ്യാൻ Google Wallet സന്ദർശിക്കുക</translation>
 <translation id="5788367137662787332">ക്ഷമിക്കണം, <ph name="DEVICE_LABEL" /> എന്ന ഉപകരണത്തിലെ ഏറ്റവും കുറഞ്ഞത് ഒരു ഭാഗം പോലും മൗണ്ട് ചെയ്യാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="5789581866075720267">ഈ ഉപകരണത്തിലെ <ph name="BRAND" /> എന്നതിലേക്ക് പാസ്‌വേഡുകൾ ഇമ്പോർട്ട് ചെയ്യാൻ, CSV ഫയൽ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="5790085346892983794">വിജയകരം</translation>
@@ -7272,6 +7282,7 @@
 <translation id="6131511889181741773">സ്പ്ലാറ്റർ</translation>
 <translation id="6132251717264923430">ബട്ടൺ പിൻ ചെയ്തു</translation>
 <translation id="6132714462430777655">സ്‌കൂൾ എൻറോൾമെന്റ് ഒഴിവാക്കണോ?</translation>
+<translation id="6134418895482326458">പുതിയ ടാബ് പേജിലെ ഫൂട്ടർ മറയ്ക്കുക</translation>
 <translation id="6134428719487602109">എല്ലാ ഉപയോക്തൃ അക്കൗണ്ടുകളും നീക്കം ചെയ്‌ത് നിങ്ങളുടെ Chromebook പുതിയതുപോലെ റീസെറ്റ് ചെയ്യുക.</translation>
 <translation id="6135826623269483856">നിങ്ങളുടെ എല്ലാ ഡിസ്‌പ്ലേകളിലും വിൻഡോകൾ മാനേജ് ചെയ്യാൻ അനുവാദമില്ല</translation>
 <translation id="6136114942382973861">ഡൗണ്‍ലോഡ് വിവരങ്ങളുടെ ബാര്‍ അടയ്‌ക്കുക</translation>
@@ -7628,6 +7639,7 @@
 <translation id="6388577073199278153">നിങ്ങളുടെ മൊബൈൽ അക്കൗണ്ട് ആക്‌സസ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="6390020764191254941">ടാബ് പുതിയ വിൻഡോയിലേക്ക് നീക്കുക</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{ഒന്നുമില്ല}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> എന്നിവയ്ക്കും മറ്റൊരെണ്ണത്തിനും കൂടി}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> എന്നിവയ്ക്കും മറ്റ് {COUNT} എണ്ണത്തിനും കൂടി}}</translation>
+<translation id="6390533465682072118">വീണ്ടെടുക്കൽ</translation>
 <translation id="6391131092053186625">നിങ്ങളുടെ ഉപകരണത്തിന്റെ IMEI നമ്പർ <ph name="IMEI_NUMBER" /> ആണ്. സേവനം സജീവമാക്കാൻ സഹായിക്കുന്നതിന് ഈ നമ്പർ ഉപയോഗിക്കാം.</translation>
 <translation id="6393156038355142111">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിക്കുക</translation>
 <translation id="6393550101331051049">സുരക്ഷിതമല്ലാത്ത ഉള്ളടക്കം കാണിക്കാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
@@ -7712,6 +7724,7 @@
 <translation id="6455521402703088376">ഓഫാണ് • ഈ വിപുലീകരണം അതിന്റെ ഡെവലപ്പർ പ്രസിദ്ധീകരിച്ചത് റദ്ദാക്കി</translation>
 <translation id="6455894534188563617">&amp;പുതിയ ഫോള്‍ഡര്‍</translation>
 <translation id="645705751491738698">JavaScript തടയുന്നത് തുടരുക</translation>
+<translation id="6457572529564180082"><ph name="APP_NAME" /> ലോഞ്ച് ചെയ്യാനാകില്ല</translation>
 <translation id="6458606150257356946">എന്തായാലും ഒട്ടിക്കുക</translation>
 <translation id="6458701200018867744">അപ്‌ലോഡ് ചെയ്യാനായില്ല (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">കണ്ടെത്തുന്നതിനായി തിരഞ്ഞെടുപ്പ് ഉപയോഗിക്കുക</translation>
@@ -8004,6 +8017,7 @@
 <translation id="6667187897999649121">ഇപ്പോൾ നിങ്ങൾക്ക്, കുടുംബാംഗങ്ങളുമായി മാത്രമേ പാസ്‌വേഡുകൾ പങ്കിടാനാകൂ. 6 അംഗങ്ങൾ വരെയുള്ള <ph name="BEGIN_LINK" />ഒരു കുടുംബ ഗ്രൂപ്പ് സൃഷ്‌ടിച്ച്<ph name="END_LINK" /> Google-ൽ ഉടനീളമുള്ള നിങ്ങളുടെ ഉൽപ്പന്നങ്ങളും സബ്‌സ്‌ക്രിപ്‌ഷനുകളും കൂടുതൽ പ്രയോജനപ്പെടുത്തുക.</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="6669195257625975787">ഡാറ്റയും നിങ്ങൾ കാണുന്ന സൈറ്റും ഒരുപോലെയാണ് പരിഗണിക്കുന്നത്</translation>
+<translation id="6669637573228217624">ഒരു ഫയൽ അപ്‌ലോഡ് ചെയ്യുക</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> ഇപ്പോൾ ലഭ്യമാണ്</translation>
 <translation id="6670767097276846646">ചില വിപുലീകരണങ്ങൾക്ക് Chrome-ലേക്ക് തിരയൽ യന്ത്രങ്ങൾ ചേർക്കാനാകും</translation>
 <translation id="6670983860904543332">സ്വയമേവയുള്ള അപ്‌ഡേറ്റുകളിലൂടെ നിങ്ങൾക്ക് ഏറ്റവും പുതിയ ഫീച്ചറുകൾ ലഭിക്കുന്നു. പുതിയ അപ്‌ഡേറ്റുകളിൽ നിന്നുള്ള ഹൈലൈറ്റുകൾ അടുത്തറിയൂ.</translation>
@@ -8142,6 +8156,7 @@
 <translation id="6771503742377376720">ഒരു സര്‍ട്ടിഫിക്കറ്റ് അതോറിറ്റി ആണ്</translation>
 <translation id="6772974422346500939">തുറന്ന് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6773595613448852535">Chrome Root സ്റ്റോർ</translation>
+<translation id="677394079035748956">സൈറ്റിന് ഒറ്റത്തവണ പാസ്‌വേഡ് ആവശ്യമാണ്</translation>
 <translation id="6774710250118040929">പുതിയ പാസ്‌വേഡ് ചേർക്കുക</translation>
 <translation id="6775163072363532304">ലഭ്യമായ ഉപകരണങ്ങൾ ഇവിടെ ദൃശ്യമാകും.</translation>
 <translation id="6775992990195573904">നിങ്ങളുടെ ടാബുകൾ അടുക്കുക</translation>
@@ -9260,6 +9275,7 @@
 <translation id="7566118625369982896">Play ആപ്പ് ലിങ്കുകൾ നിയന്ത്രിക്കുക</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">കീ കോമ്പിനേഷൻ സൃഷ്ടിക്കുക</translation>
+<translation id="7567100268516475532">ടാബ്, സ്പ്ലിറ്റ് വ്യൂവിലേക്ക് നീക്കുക</translation>
 <translation id="7568014768212280234">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പ് നിറഞ്ഞിരിക്കുന്നു, ലിങ്ക് ഉപയോഗിച്ച് പുതിയ അംഗങ്ങൾക്ക് ചേരാനാകില്ല</translation>
 <translation id="7568759527730933493">DNS-ൽ (ഡൊമെയ്ൻ നാമ സിസ്റ്റം) സൈറ്റിന്റെ IP വിലാസം തിരയാൻ ഒരു സുരക്ഷിത കണക്ഷൻ ഉപയോഗിക്കുക. ഇത്, <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> എന്നതിലെ മാനേജ് ചെയ്യപ്പെടുന്ന സേവന ദാതാവിനെ ഉപയോഗിക്കുന്നു. നിങ്ങളുടെ അഡ്‌മിൻ കോൺഫിഗർ ചെയ്‌ത ചില ഡൊമെയ്‌നുകൾക്ക് സുരക്ഷിത കണക്ഷനുകൾ ഉപയോഗിക്കുന്നില്ല.</translation>
 <translation id="756876171895853918">അവതാർ ഇഷ്‌ടാനുസൃതമാക്കുക</translation>

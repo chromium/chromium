@@ -17,6 +17,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分鐘前建立}other{<ph name="NUM_MINS_MANY" /> 分鐘前建立}}</translation>
 <translation id="1499635324672558517">要關閉所有無痕分頁嗎？</translation>
 <translation id="1501480321619201731">刪除群組</translation>
+<translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個閒置項目}other{<ph name="TABS_COUNT_MANY" /> 個閒置項目}}</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1645759014353344461">已將 <ph name="TABS_COUNT_MANY" /> 個分頁加入群組</translation>
@@ -68,6 +69,7 @@
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{新增 <ph name="ONE_ADDED" /> 個分頁}other{新增 <ph name="MANY_ADDED" /> 個分頁}}</translation>
 <translation id="3613492231657284463">隱藏「閒置分頁」對話方塊</translation>
 <translation id="3619255692378312441">管理存取權</translation>
+<translation id="3649471731638882002">{TAB_COUNT,plural, =1{關閉 1 個項目}other{關閉多個項目}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">分享功能表預覽畫面縮圖。</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -80,6 +82,7 @@
 <translation id="4159784952369912983">紫色</translation>
 <translation id="427987768447457592">新分頁群組</translation>
 <translation id="4371591986692297148">未啟用</translation>
+<translation id="4429658455677831355">{TAB_COUNT,plural, =1{還原 1 個項目}other{還原多個項目}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> 天前更新}other{<ph name="NUM_DAYS_MANY" /> 天前更新}}</translation>
 <translation id="4686942373615810936">剛剛建立</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 天後關閉}other{<ph name="DAY_COUNT_MANY" /> 天後關閉}}</translation>
@@ -189,6 +192,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> 個月前更新}other{<ph name="NUM_MONTHS_MANY" /> 個月前更新}}</translation>
 <translation id="8398929769197326728">新資料夾 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">設定</translation>
+<translation id="855081842937141170">固定分頁</translation>
 <translation id="8633025649649592204">近期活動</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8714939927607906138">較低價格</translation>
@@ -205,4 +209,5 @@
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
 <translation id="945522503751344254">提供意見</translation>
 <translation id="992256792861109788">粉紅色</translation>
+<translation id="994514002078791059">{TAB_COUNT,plural, =1{要關閉 1 個閒置項目嗎？}other{要關閉 <ph name="TAB_COUNT_MANY" /> 個閒置項目嗎？}}</translation>
 </translationbundle>

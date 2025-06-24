@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">A megosztás nem sikerült, mert nem csatlakozik a hálózathoz.</translation>
 <translation id="1668001730617725852">Megnyitás új lapcsoportban</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> nyelvről <ph name="TARGET_LANGUAGE" /> nyelvre</translation>
+<translation id="168389590065701766">Mostantól a címsávból is megnyithatja a Google Lenst, és bármire rákereshet, amit lát</translation>
 <translation id="1689333818294560261">Egyedi név</translation>
 <translation id="169048873465870056">Eltávolítja a lapot és törli a csoportot?</translation>
 <translation id="1698090540708020240">Jelszavak importálása…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">A(z) <ph name="USER_EMAIL" /> fiókot a(z) <ph name="HOSTED_DOMAIN" /> kezeli, amely megtekinthet bizonyos adatokat. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">új elem</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> fiók használja ugyanazt a jelszót</translation>
+<translation id="205013082884273671">Bármire rákereshet a képernyőn</translation>
 <translation id="2054044186557130763">Jelentkezzen be a következővel: <ph name="NAME" />, <ph name="EMAIL" /> (az Ön szervezete kezeli).</translation>
 <translation id="2059166748188874810">Törvényhatósági terület</translation>
 <translation id="2060638295449304809">Ezt a címet csak erre az eszközre menti a rendszer. Ha szeretné más eszközökön is használni, mentse a Google-fiókjába (<ph name="USER_EMAIL" />).</translation>
@@ -459,6 +461,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="2819667972867209401">Ha be van kapcsolva, a rendszer az Ön Google-fiókjába menti az adatokat. Ha ki van kapcsolva, a rendszer csak erre az eszközre menti az adatokat, és törli őket, ha Ön kijelentkezik.</translation>
 <translation id="2827760117436553203">Elkülönítve szeretné tárolni az adatokat?</translation>
 <translation id="2829172210806130158">Keresés a képernyőn</translation>
+<translation id="2831109159746537587">A kereséshez karikázza be a képet vagy koppintson rá</translation>
 <translation id="2834399722155632105">3. Koppintson a Jelszóbeállítások lehetőségre.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Idő</translation>

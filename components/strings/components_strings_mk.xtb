@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">Известувања за следење на цените</translation>
 <translation id="21613918653299710">Онлајн галерии за слики</translation>
 <translation id="2161656808144014275">Текст</translation>
+<translation id="2162435186600002085">Примарно лого во заглавјето</translation>
 <translation id="2162620598375156287">Сега <ph name="CURRENT_PRICE" /> на <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Проверете дали има печатна грешка во <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Целосен пристап на администраторот</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">Додајте пасош</translation>
 <translation id="2400271059665846158">Управувајте со картичките за лојалност во Google Wallet</translation>
 <translation id="2400600116338235695">Може да прашува за да се поврзе со сериски порти</translation>
+<translation id="240450251994300576">Секундарно лого во заглавјето</translation>
 <translation id="2404884497378469141">Обидете се да ги копирате датотеките повторно</translation>
 <translation id="2413155254802890957">Старата</translation>
 <translation id="2413528052993050574">Серверот не може да докаже дека е <ph name="DOMAIN" />; можеби неговиот безбедносен сертификат е повлечен. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">Се извлекува текст од PDF…</translation>
 <translation id="2628224721443278970">Најавете се на Microsoft OneDrive</translation>
 <translation id="2634124572758952069">IP-адресата за серверот на <ph name="HOST_NAME" /> не може да се најде.</translation>
+<translation id="2638567100095052009">Напишете @ за да пребарувате во <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Статус:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Ткаенина (полусјајна)</translation>
@@ -1438,6 +1441,7 @@
 <translation id="343474037147570563">Датотеките што ги прикачувате или приложувате се испраќаат до Google Cloud или трети страни за анализа. На пример, можеби ќе се скенираат за да се провери дали содржат чувствителни податоци или злонамерен софтвер. Можеби ќе се складираат согласно со правилата на компанијата и ќе бидат видливи за администраторот.</translation>
 <translation id="3435557549311968410">Непрекинато (кратко)</translation>
 <translation id="3435738964857648380">Безбедност</translation>
+<translation id="3436118221454753036">Прашајте го „AI-режимот“</translation>
 <translation id="3440783957068352691">квадрат</translation>
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3443504041532578451">Оптички диск (сатен)</translation>
@@ -2266,6 +2270,7 @@
 <translation id="4827283332383516812">Бришење картичка</translation>
 <translation id="4830443836091007686">Избрано: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Хартија за префрлање слики</translation>
+<translation id="4832388034239846146">За да споделувате групи картички, ажурирајте го Chrome</translation>
 <translation id="483241715238664915">Вклучи опомени</translation>
 <translation id="4832961164064927107">Скара</translation>
 <translation id="4834250788637067901">Начини на плаќање, понуди и адреси преку Google Pay</translation>
@@ -2973,6 +2978,7 @@
 <translation id="6043357981274314628">Готово!</translation>
 <translation id="6044573915096792553">Големина 12</translation>
 <translation id="6045164183059402045">Шаблон за лепење</translation>
+<translation id="6046892054959167494">Напишете <ph name="SEARCH_AGGREGATOR_KEYWORD" /> за да пребарате или побарате во <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Содржинава може да се обиде да ве измами да инсталирате софтвер или да откриете лични информации. <ph name="BEGIN_LINK" />Сепак прикажи<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Плик B4</translation>
 <translation id="6049488691372270142">Испечатена страница</translation>
@@ -4010,6 +4016,7 @@
 <translation id="7761159795823346334">Да се дозволи камерата?</translation>
 <translation id="7761701407923456692">Сертификатот на серверот не се совпаѓа со URL.</translation>
 <translation id="7764225426217299476">Додај адреса</translation>
+<translation id="7765158879357617694">Премести</translation>
 <translation id="7766518757692125295">Престилка</translation>
 <translation id="7767278989746220252">Поплочен двор, тревник и градина</translation>
 <translation id="776749070095465053">Ткаенина</translation>
@@ -4344,6 +4351,7 @@
 <translation id="8364627913115013041">Не е поставено.</translation>
 <translation id="8366057325711477500">Вести од светот</translation>
 <translation id="836616551641291797">Дознајте повеќе за тоа како се управува со вашиот прелистувач</translation>
+<translation id="8367705492654390392">Прашајте што било</translation>
 <translation id="8368001212524806591">Следи ја цената</translation>
 <translation id="8368027906805972958">Непознат или неподдржан уред (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Услуги на Google Play</translation>

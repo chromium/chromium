@@ -52,6 +52,7 @@
 <translation id="1031362278801463162">மாதிரிக்காட்சியை ஏற்றுகிறது</translation>
 <translation id="1032605640136438169">புதிய விதிமுறைகளைப் படித்துப் பாருங்கள்</translation>
 <translation id="103279545524624934">Android பயன்பாடுகளைத் துவக்க, சாதனத்தில் இடத்தைக் காலியாக்கவும்.</translation>
+<translation id="1033060461778467949">பக்கத்தைக் காட்சிப் பிரிப்பிற்கு நகர்த்து</translation>
 <translation id="1033780634303702874">உங்கள் தொடர் சாதனங்களை அணுகலாம்</translation>
 <translation id="1034484273907870301">டேப்லெட் பயன்முறையில் சிறுபடங்களைக் காட்டும் உலாவிப்பக்கப் பட்டி</translation>
 <translation id="1035289631433631911">உள்ளடக்கப் பரிமாற்றக் கருவி</translation>
@@ -634,6 +635,7 @@
 <translation id="1438630805136563416"><ph name="REMOVED_ACTION" /> செயல் அகற்றப்பட்டது</translation>
 <translation id="1439671507542716852">நீண்டகால உதவி</translation>
 <translation id="1440090277117135316">பள்ளிகளுக்குப் பதிவுசெய்தல் நிறைவடைந்தது</translation>
+<translation id="1442054921249164535">மற்ற தரவு</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="1442851588227551435">செயலில் உள்ள Kerberos டிக்கெட்டை அமைத்தல்</translation>
 <translation id="1444389367706681769">விண்வெளி</translation>
@@ -1928,6 +1930,7 @@
 <translation id="2312219318583366810">பக்கத்தின் URL</translation>
 <translation id="2314165183524574721">தற்போதைய தெரிவுநிலை அமைப்பு: மறைக்கப்பட்டுள்ளது</translation>
 <translation id="2314774579020744484">பக்கங்களை மொழிபெயர்க்கும்போது பயன்படுத்தப்படும் மொழி</translation>
+<translation id="2316090909467242775">இந்த மீட்புக் கடவுச்சொல்லைப் பயன்படுத்திப் பாருங்கள்</translation>
 <translation id="2316129865977710310">வேண்டாம், நன்றி</translation>
 <translation id="2316433409811863464">ஆப்ஸ் ஸ்ட்ரீம்</translation>
 <translation id="2316709634732130529">பரிந்துரைக்கப்பட்ட கடவுச்சொல்லைப் பயன்படுத்து</translation>
@@ -3553,6 +3556,7 @@
 <translation id="3462413494201477527">கணக்கு அமைவை ரத்துசெய்யவா?</translation>
 <translation id="346298925039590474">இந்தச் சாதனத்திலுள்ள அனைத்துப் பயனர்களுக்கும் இந்த மொபைல் நெட்வொர்க் கிடைக்கும்</translation>
 <translation id="3464145797867108663">பணிக் கணக்கைச் சேர்</translation>
+<translation id="34673353983913587">புதிய கடவுச்சொல்லைச் சேமிக்கும் முன், இந்தத் தளத்தில் கூடுதல் சரிபார்ப்பை நிறைவுசெய்ய வேண்டும்</translation>
 <translation id="3468298837301810372">லேபிள்</translation>
 <translation id="3468999815377931311">Android ஃபோன்</translation>
 <translation id="3469583217479686109">தேர்வுக் கருவி</translation>
@@ -3580,6 +3584,7 @@
 <translation id="3487007233252413104">அநாமதேய செயல்பாடு</translation>
 <translation id="3487649228420469005">ஸ்கேன் முடிந்தது</translation>
 <translation id="3488199663160411179">பெயர்</translation>
+<translation id="3489457144969823485">ஜூலை 2025 முதல் ChromeOS சாதனங்களில் Chrome ஆப்ஸ் செயல்படுவதில்லை. வேறொரு ஆப்ஸைப் பயன்படுத்திப் பாருங்கள்.</translation>
 <translation id="3490695139702884919">பதிவிறக்குகிறது... <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">உங்கள் பின்னையோ கடவுச்சொல்லையோ மறந்துவிட்டால் சாதனத் தரவை மீட்டெடுக்கலாம்</translation>
 <translation id="3491616972057195633">பவுன்ஸ் பட்டன்கள்</translation>
@@ -4047,6 +4052,7 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> நீட்டிப்புகள்</translation>
 <translation id="3794792524918736965">Windows Hello அம்சத்தை இயக்குதல்</translation>
 <translation id="379509625511193653">ஆஃப்</translation>
+<translation id="3795624560191557077">நீங்கள் சமீபத்தில் மாற்றிய கடவுச்சொல் பொதுவான தரவு மீறலுக்கு உட்பட்டிருப்பதாகக் கண்டறியப்பட்டுள்ளது. சிக்கல் ஏதேனும் இருந்தால், Google Password Manager உதவியுடன் நீங்கள் உள்நுழையலாம்.</translation>
 <translation id="3796215473395753611">Alt + மேல்நோக்கிய அம்புக்குறி</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, குரலைக் கேட்டுப்பார்க்க வலது அம்புக்குறி பட்டனைப் பயன்படுத்தவும்</translation>
 <translation id="3796648294839530037">பிடித்த நெட்வொர்க்குகள்:</translation>
@@ -5867,6 +5873,7 @@
 <translation id="5088534251099454936">RSA என்க்ரிப்ஷனுடன் PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">உங்கள் கேமராவின் நிலையைக் கண்காணிக்க அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="5091636240353511739">பின்னைக் காட்டும்</translation>
+<translation id="5093417502834168387">உள்நுழைவதில் சிக்கலா? வேறு வழியில் முயலுங்கள்</translation>
 <translation id="5093477827231450397">பிற தளங்களுக்கு விளம்பரங்களைப் பரிந்துரைப்பதை நீங்கள் விரும்பாத தளங்களின் பட்டியல்</translation>
 <translation id="5093569275467863761">‘முன் பின் பக்கங்களைத் தற்காலிகமாகச் சேமித்தல்’ அம்சத்தில் சேமிக்கப்பட்ட மறைநிலை உப ஃபிரேம்: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">இந்த ஆப்ஸ் மூலம் Files ஆப்ஸில் இருந்தோ பிற ஆப்ஸில் இருந்தோ, ஆதரிக்கப்படும் ஃபைல்களைத் திறந்து அவற்றில் மாற்றம் செய்யலாம். எந்தெந்த ஃபைல்கள் இந்த ஆப்ஸில் இயல்பாகத் திறக்கப்பட வேண்டும் என்பதைக் கட்டுப்படுத்த, <ph name="BEGIN_LINK" />உங்கள் சாதனத்தில் இயல்பு ஆப்ஸை எப்படி அமைப்பது என அறிக<ph name="END_LINK" />.</translation>
@@ -6805,6 +6812,7 @@
 <translation id="5785583009707899920">Chrome ஃபைல் கருவிகள்</translation>
 <translation id="5787146423283493983">விசை ஒப்பந்தம்</translation>
 <translation id="5787420647064736989">சாதனத்தின் பெயர்</translation>
+<translation id="5787582109651427233"><ph name="BEGIN_LINK_LOYALTY_CARDS" />லாயல்டி கார்டுகள்<ph name="END_LINK_LOYALTY_CARDS" /> அல்லது Google Pay <ph name="BEGIN_LINK_PAYMENT_METHODS" />பேமெண்ட் முறைகளைச்<ph name="END_LINK_PAYMENT_METHODS" /> சேர்க்க அல்லது நிர்வகிக்க Google Walletடிற்குச் செல்லவும்</translation>
 <translation id="5788367137662787332"><ph name="DEVICE_LABEL" /> சாதனத்தில் குறைந்தபட்சம் ஒரு பிரிவினை இருந்தாலும் அதை ஏற்ற முடியாது. மன்னிக்கவும்.</translation>
 <translation id="5789581866075720267">இந்தச் சாதனத்தில் உள்ள <ph name="BRAND" />க்கு கடவுச்சொற்களை ஏற்ற CSV ஃபைலைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="5790085346892983794">வெற்றி</translation>
@@ -7290,6 +7298,7 @@
 <translation id="6131511889181741773">ஸ்பிளாட்டர்</translation>
 <translation id="6132251717264923430">பட்டன் பின் செய்யப்பட்டது</translation>
 <translation id="6132714462430777655">பள்ளிகளுக்குப் பதிவுசெய்தலைத் தவிர்க்கவா?</translation>
+<translation id="6134418895482326458">புதிய பக்கத்தில் உள்ள அடிக்குறிப்பை மறை</translation>
 <translation id="6134428719487602109">பயனர் கணக்குகள் அனைத்தையும் அகற்றிவிட்டு, உங்கள் Chromebookகைப் புதியது போல மீட்டமைக்கும்.</translation>
 <translation id="6135826623269483856">உங்கள் டிஸ்ப்ளேக்கள் அனைத்திலும் சாளரங்களை நிர்வகிக்க அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="6136114942382973861">பதிவிறக்கங்கள் பட்டியை மூடு</translation>
@@ -7646,6 +7655,7 @@
 <translation id="6388577073199278153">உங்கள் மொபைல் கணக்கை அணுக முடியவில்லை</translation>
 <translation id="6390020764191254941">தாவலை புதிய சாளரத்திற்கு நகர்த்து</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{எதுவுமில்லை}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> மற்றும் 1 டொமைனுக்கு}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> மற்றும் {COUNT} டொமைன்களுக்கு}}</translation>
+<translation id="6390533465682072118">மீட்பு</translation>
 <translation id="6391131092053186625">உங்கள் சாதனத்தின் IMEI: <ph name="IMEI_NUMBER" />. சேவையைச் செயல்படுத்த இந்த எண் உதவலாம்.</translation>
 <translation id="6393156038355142111">வலுவான கடவுச்சொல்லைப் பரிந்துரை</translation>
 <translation id="6393550101331051049">பாதுகாப்பற்ற உள்ளடக்கத்தைக் காட்டுவதற்கு அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
@@ -7730,6 +7740,7 @@
 <translation id="6455521402703088376">முடக்கப்பட்டுள்ளது • இந்த நீட்டிப்பை வெளியிடுவதை இதன் டெவெலப்பர் நிறுத்தியுள்ளார்</translation>
 <translation id="6455894534188563617">&amp;புதிய ஃபோல்டர்</translation>
 <translation id="645705751491738698">JavaScript ஐத் தடுப்பதைத் தொடர்க</translation>
+<translation id="6457572529564180082"><ph name="APP_NAME" /> ஆப்ஸைத் தொடங்க முடியவில்லை</translation>
 <translation id="6458606150257356946">பரவாயில்லை ஒட்டு</translation>
 <translation id="6458701200018867744">பதிவேற்ற முடியவில்லை (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">தேடுவதற்கு தேர்ந்தெடுத்ததைப் பயன்படுத்து</translation>
@@ -8022,6 +8033,7 @@
 <translation id="6667187897999649121">இப்போதைக்கு, குடும்ப உறுப்பினர்களுடன் மட்டுமே கடவுச்சொற்களைப் பகிர முடியும். 6 உறுப்பினர்கள் வரையிலான <ph name="BEGIN_LINK" />குடும்பக் குழுவை உருவாக்கி<ph name="END_LINK" />, Google முழுவதிலும் உங்கள் தயாரிப்புகள் மற்றும் சந்தாக்களில் இருந்து அதிகப் பலன்களைப் பெறுங்கள்.</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> இல் திற</translation>
 <translation id="6669195257625975787">நீங்கள் பார்க்கும் தளத்திற்கு ஏற்ப டேட்டா கையாளப்படும்</translation>
+<translation id="6669637573228217624">ஃபைலைப் பதிவேற்றலாம்</translation>
 <translation id="6670142487971298264">இப்போது <ph name="APP_NAME" /> ஆப்ஸைப் பயன்படுத்தலாம்</translation>
 <translation id="6670767097276846646">சில நீட்டிப்புகள் Chromeமில் தேடல் இன்ஜின்களைச் சேர்க்கும்</translation>
 <translation id="6670983860904543332">தானியங்குப் புதுப்பிப்புகள் சமீபத்திய அம்சங்களை வழங்கும். சமீபத்திய புதுப்பிகளில் உள்ள ஹைலைட்டுகளைப் பாருங்கள்.</translation>
@@ -8160,6 +8172,7 @@
 <translation id="6771503742377376720">இது ஒரு சான்றளிக்கும் மையம்</translation>
 <translation id="6772974422346500939">திறந்து திருத்து</translation>
 <translation id="6773595613448852535">Chrome ரூட் ஸ்டோர்</translation>
+<translation id="677394079035748956">இந்தத் தளத்திற்கு ஒரு முறை பயன்படுத்தப்படும் கடவுச்சொல் தேவை</translation>
 <translation id="6774710250118040929">புதிய கடவுச்சொல்லைச் சேருங்கள்</translation>
 <translation id="6775163072363532304">வெளிப்புற சேமிப்பக சாதனங்கள் இங்கே தோன்றும்.</translation>
 <translation id="6775992990195573904">உங்கள் பக்கங்களை வரிசைப்படுத்தலாம்</translation>
@@ -9279,6 +9292,7 @@
 <translation id="7566118625369982896">Play ஆப்ஸ் இணைப்புகளை நிர்வகி</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">பட்டன்களின் சேர்க்கையை உருவாக்குதல்</translation>
+<translation id="7567100268516475532">பக்கத்தைக் காட்சிப் பிரிப்பிற்கு நகர்த்து</translation>
 <translation id="7568014768212280234">உங்கள் பக்கக் குழு நிரம்பிவிட்டது, இணைப்பின் மூலம் புதிய உறுப்பினர்களால் சேர முடியாது</translation>
 <translation id="7568759527730933493">DNSஸில் (டொமைன் பெயர் சிஸ்டம்) தளத்தின் IP முகவரியைத் தேட பாதுகாப்பான இணைப்பைப் பயன்படுத்துங்கள். இது <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> தளத்தில் ‘நிர்வகிக்கப்படும் சேவை வழங்குநரைப்’ பயன்படுத்தும். உங்கள் நிர்வாகி உள்ளமைத்த டொமைன்கள் சிலவற்றில் பாதுகாப்பான இணைப்புகள் பயன்படுத்தப்படுவதில்லை.</translation>
 <translation id="756876171895853918">தோற்றப்படத்தைப் பிரத்தியேகமாக்கும்</translation>

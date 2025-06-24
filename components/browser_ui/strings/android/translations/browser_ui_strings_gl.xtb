@@ -36,6 +36,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="1409338233051621926">Toca Aplicacións e, a continuación, Aplicacións predeterminadas</translation>
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1415855080660575082">Permite que Chrome comparta as pestanas recentes co teu dispositivo para que se mostren na lista de aplicacións e nos resultados de busca do aparello. Activa ou desactiva esta opción na configuración de Chrome.</translation>
+<translation id="1432650420699700107">Os sitios poden pedir permiso para conectarse a calquera dispositivo da túa rede local</translation>
 <translation id="1448064542941920355">Reducir zoom</translation>
 <translation id="1464044141348608623">Non permitir que os sitios saiban cando estás utilizando o dispositivo de maneira activa</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sitio}other{<ph name="SITE_COUNT" /> sitios}}</translation>
@@ -254,6 +255,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="3955321697524543127">Non permitir que os sitios se conecten a dispositivos USB</translation>
 <translation id="3965467402665811906">Os sitios poderán usar a información que garden sobre ti</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
+<translation id="3969869202926863008">Acceso á rede local</translation>
 <translation id="3981465354637804599">Os sitios adoitan mostrar anuncios para poder ofrecer contido ou servizos sen custo económico. Non obstante, algúns conteñen anuncios enganosos ou intrusivos.</translation>
 <translation id="3987993985790029246">Copiar ligazón</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="6554732001434021288">Visitouse hai <ph name="NUM_DAYS" /> días por última vez</translation>
 <translation id="656065428026159829">Ver máis</translation>
 <translation id="6561560012278703671">Utilizar mensaxaría máis silenciosa (impide que as notificacións te interrompan)</translation>
+<translation id="6565144332292237355">Os sitios poden usar esta función para buscar calquera dispositivo da túa rede local ou conectarse a el</translation>
 <translation id="6593061639179217415">Sitio para ordenadores</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies permitidas para <ph name="RWS_MEMBERS_COUNT" /> sitio de <ph name="RWS_OWNER" />}other{Cookies permitidas para <ph name="RWS_MEMBERS_COUNT" /> sitios de <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

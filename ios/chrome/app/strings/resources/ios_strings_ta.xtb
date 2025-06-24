@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">நெட்வொர்க்குடன் இணைக்கப்படாததால் பகிர்தல் தோல்வியடைந்தது.</translation>
 <translation id="1668001730617725852">புதிய பக்கக் குழுவில் திற</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> இலிருந்து <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">முகவரிப் பட்டியில் இருந்தே Google Lensஸைத் திறந்து நீங்கள் பார்க்கும் எதையும் தேடலாம்</translation>
 <translation id="1689333818294560261">புனைப்பெயர்</translation>
 <translation id="169048873465870056">பக்கத்தை அகற்றிவிட்டு குழுவை நீக்க வேண்டுமா?</translation>
 <translation id="1698090540708020240">கடவுச்சொற்களை ஏற்று…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> என்ற கணக்கை <ph name="HOSTED_DOMAIN" /> நிர்வகிக்கிறது, சில தகவல்களை அதனால் பார்க்க முடியலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">புதியது</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> கணக்குகள் ஒரே கடவுச்சொல்லைப் பயன்படுத்துகின்றன</translation>
+<translation id="205013082884273671">உங்கள் திரையில் உள்ளதைத் தேடுங்கள்</translation>
 <translation id="2054044186557130763">உங்கள் நிறுவனத்தால் நிர்வகிக்கப்படும் <ph name="NAME" /> <ph name="EMAIL" /> கணக்கு மூலம் உள்நுழையுங்கள்.</translation>
 <translation id="2059166748188874810">நகராட்சி</translation>
 <translation id="2060638295449304809">இந்த முகவரி இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளது. உங்களின் பிற சாதனங்களில் இதைப் பயன்படுத்த, அதை உங்கள் <ph name="USER_EMAIL" /> Google கணக்கில் சேமியுங்கள்.</translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">இயக்கப்பட்டிருக்கும்போது, தரவு உங்கள் Google கணக்கில் சேமிக்கப்படும். முடக்கப்பட்டிருந்தால் இந்தச் சாதனத்தில் மட்டும் தரவு சேமிக்கப்படும், நீங்கள் வெளியேறினால் நீக்கப்படும்.</translation>
 <translation id="2827760117436553203">தரவுகளைத் தனியாக வைத்திருக்கவா?</translation>
 <translation id="2829172210806130158">திரையில் உள்ளவற்றைத் தேடுங்கள்</translation>
+<translation id="2831109159746537587">தேடுவதற்குப் படத்தில் வட்டமிட்டு அல்லது தட்டி முயலவும்</translation>
 <translation id="2834399722155632105">3. கடவுச்சொல் விருப்பங்கள் என்பதைத் தட்டவும்</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">நேரம்</translation>

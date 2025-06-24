@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">እስከ 60% ውሂብ ይቆጥቡ፣ የዛሬ ዜና ያንብቡ</translation>
 <translation id="1303339473099049190">ይህንን ይለፍ ቃል ማግኘት አይቻልም። የፊደል አጻጻፍዎን ይፈትሹና እንደገና ይሞክሩ።</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - ከ<ph name="DEVICE_NAME" /> የተላከ</translation>
+<translation id="1310482092992808703">ትሮችን ይሰብስቡ</translation>
 <translation id="1318262688555255786">አገናኝን ወደ ድረ-ገጽ <ph name="PAGE_TITLE" /> ያጋሩ። ምንጭ፦ <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">የዕልባት ማስቀመጥ ፍሰት አቃፊዎች በሙሉ ቁመት ላይ ተከፍተዋል</translation>
 <translation id="1327257854815634930">የዳሰሳ ታሪክ ተከፍቷል</translation>
@@ -477,6 +478,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">የማስታወቂያ ልኬት</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> የትር ቡድን</translation>
+<translation id="3200536777393523575">የአሁን መስኮትዎ ይዘጋ?</translation>
 <translation id="3207960819495026254">ዕልባት ተደርጎበታል</translation>
 <translation id="3208584281581115441">አሁን ፈትሽ</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ተሰርዟል</translation>
@@ -721,6 +723,7 @@
 <translation id="4351244548802238354">መገናኛ ዝጋ</translation>
 <translation id="4352287748243729941">የ<ph name="PROVIDER" /> የይለፍ ቃልዎን ይጠቀማሉ?</translation>
 <translation id="4355272626458588338">ዕልባት በማከል ለእርስዎ አስፈላጊ ወደሆነ ገጽ መመለስ ይችላሉ</translation>
+<translation id="4356503491090073318">የካርድ ቁጥር*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">ደህንነት በአፍታ ዕይታ</translation>
 <translation id="4378154925671717803">ስልክ</translation>
@@ -738,6 +741,7 @@
 <translation id="4425140285732600465">ዋጋዎችን በመከታተል ላይ። በማንኛውም ጣቢያ ላይ ዋጋው ቢቀንስ ማንቂያዎችን ያግኙ።</translation>
 <translation id="4425173294238317796">የይለፍ ቁልፍ ማረጋገጫ ሉህ</translation>
 <translation id="442518031075347249">ከእንግዲህ የእርስዎን ምናባዊ ካርድ በGoogle Pay መጠቀም አይችሉም። <ph name="BEGIN_LINK1" />ስለምናባዊ ካርዶች የበለጠ ይወቁ<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> እና <ph name="TAB_COUNT_ONE" /> ሌላ ትር ይዘጋሉ}one{<ph name="TAB_TITLE" /> እና <ph name="TAB_COUNT_MANY" /> ሌላ ትር ይዘጋሉ}other{<ph name="TAB_TITLE" /> እና <ph name="TAB_COUNT_MANY" /> ሌሎች ትሮች ይዘጋሉ}}</translation>
 <translation id="4426508677408162512">ሁሉም ዕልባቶች</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> አሁን ተመርጧል። መለያ ይምረጡ።</translation>
 <translation id="4452411734226507615">የ<ph name="TAB_TITLE" /> ትር ዝጋ</translation>
@@ -873,6 +877,7 @@
 <translation id="4987271110129728827">ያንን ገፅ ማግኘት አልተቻለም። የፊደል አጻጻፍዎን ይመልከቱ ወይም የድር ፍለጋ ይሞክሩ።</translation>
 <translation id="4988526792673242964">ገፆች</translation>
 <translation id="4991110219272367918">ድር ጣቢያን የማጽደቅ ወይም ያለማጽደቅ አማራጭ ተዘግቷል</translation>
+<translation id="4996042648402406470">አግኝ</translation>
 <translation id="4996095658297597226">የተጠቆመውን የይለፍ ቃል ይጠቀሙ?</translation>
 <translation id="5001388021414335527">ይህንን ጣቢያ እዚህ ይከተሉ</translation>
 <translation id="5004416275253351869">የGoogle እንቅስቃሴ መቆጣጠሪያዎች</translation>
@@ -923,10 +928,12 @@
 <translation id="5210286577605176222">ወደ ቀዳሚው ትር ዝለል</translation>
 <translation id="5210365745912300556">ትር ዝጋ</translation>
 <translation id="5215957675041756913">ውሂብዎን እና መለያዎን ይቆጣጠሩ</translation>
+<translation id="5218324087477576825">የካርድ ቁጥር፣ አስፈላጊ</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና ሌሎች <ph name="SEPARATOR" /> እርስዎ በቅርብ ጊዜ ስላልጎበኙ Chrome እነዚህን ፈቃዶች አስወግዷል</translation>
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
 <translation id="5226378907213531272">ሁልጊዜ መኪናውን ሲጠቀሙ ማያ ገፅዎን ይከፍታሉ</translation>
 <translation id="5227554086496586518">የፍለጋ ውጤቶችን ለማየት መታ ያድርጉ</translation>
+<translation id="5229736206150093143">የቅርብ ጊዜ ውጤቶች፦</translation>
 <translation id="5233638681132016545">አዲስ ትር</translation>
 <translation id="5235196193381275927">መግባት ላይ የሆነ ችግር ተፈጥሯል</translation>
 <translation id="5246093389635966745">የመሳሪያ አሞሌ አቋራጭን ያርትዑ</translation>
@@ -1281,6 +1288,7 @@
 <translation id="676305334223455055">በእርስዎ ፍላጐቶች ላይ የተመሰረተ ይዘት ለማግኘት ይመዝገቡ</translation>
 <translation id="6764137532716892442">የተጋራ <ph name="GROUP_TITLE" /> የትር ቡድን ከአዲስ እንቅስቃሴ ጋር</translation>
 <translation id="6767294960381293877">በግማሽ ቁመቱ ላይ የተከፈተ ትር የሚጋሩ የመሣሪያዎች ዝርዝር።</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ማንነትን የማያሳውቅ እና <ph name="TAB_COUNT_ONE" /> ሌላ ትር ይዘጋሉ}one{<ph name="INCOGNITO_TAB_COUNT" /> ማንነትን የማያሳውቅ እና <ph name="TAB_COUNT_MANY" /> ሌላ ትር ይዘጋሉ}other{<ph name="INCOGNITO_TAB_COUNT" /> ማንነትን የማያሳውቅ እና <ph name="TAB_COUNT_MANY" /> ሌሎች ትሮች ይዘጋሉ}}</translation>
 <translation id="6785476624617658922">የChrome እና የChromeOS ተጨማሪ አገልግሎት ውል</translation>
 <translation id="6786747875388722282">ቅጥያዎች</translation>
 <translation id="6795633245022906657">አዲስ ትር በፍጥነት ይክፈቱ። ይህን አቋራጭ ለማርትዕ ወደ ቅንብሮች ይሂዱ።</translation>
@@ -1576,6 +1584,7 @@
 <translation id="7965838025086216108">በማንኛውም መሣሪያ ላይ የተቀመጡ የይለፍ ቃላትን መጠቀም ይችላሉ። ለ<ph name="ACCOUNT" /> ወደ የGoogle የይለፍ ቃል አስተዳዳሪ ይቀመጣሉ።</translation>
 <translation id="7968014550143838305">ወደ የንባብ ዝርዝር ታክሏል</translation>
 <translation id="7968982339740310781">ዝርዝሮችን ይመልከቱ</translation>
+<translation id="7969391000881506217">የሚያበቃበት ቀን*</translation>
 <translation id="7971136598759319605">1 ቀን በፊት ንቁ ነበር</translation>
 <translation id="7975379999046275268">ገፅ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /> ቅድሚያ ይመልከቱ</translation>
 <translation id="7977451675950311423">በውሂብ ጥሰት ውስጥ የተጠለፈ የይለፍ ቃል ከተጠቀሙ ያስጠነቅቅዎታል።</translation>
@@ -1734,6 +1743,7 @@
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> ይወገድ?</translation>
 <translation id="8570677896027847510">ፋይል ደህንነቱ በተጠበቀ ሁኔታ ሊወርድ አይችልም</translation>
 <translation id="8571213806525832805">ባለፉት 4 ሳምንቶች</translation>
+<translation id="8580435650274205305">የሚያበቃበት ቀን፣ አስፈላጊ</translation>
 <translation id="8582529315803410153">የእርስዎን ትሮች ከሌሎች መሣሪያዎች እዚህ ያገኛሉ</translation>
 <translation id="8585103689515290060">የራስ-ሙላ አገልግሎቶች</translation>
 <translation id="859046281437143747">ከተጨማሪ አማራጮች አዝራር ዋጋን ይከታተሉ</translation>

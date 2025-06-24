@@ -192,6 +192,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> মাস আগে আপডেট করা হয়েছে}one{<ph name="NUM_MONTHS_MANY" /> মাস আগে আপডেট করা হয়েছে}other{<ph name="NUM_MONTHS_MANY" /> মাস আগে আপডেট করা হয়েছে}}</translation>
 <translation id="8398929769197326728">নতুন ফোল্ডার - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">সেটিংস</translation>
+<translation id="855081842937141170">ট্যাব পিন করুন</translation>
 <translation id="8633025649649592204">সাম্প্রতিক অ্যাক্টিভিটি</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8714939927607906138">খুব কম দামে</translation>

@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">節省高達 60% 的數據用量，閱讀今日新聞</translation>
 <translation id="1303339473099049190">找不到指定密碼。請檢查你輸入的內容，然後再試一次。</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - 來自 <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">將分頁加入群組</translation>
 <translation id="1318262688555255786">分享「<ph name="PAGE_TITLE" />」的網頁連結，來源：<ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">書籤儲存流程資料夾已開啟，目前顯示整個版面的內容</translation>
 <translation id="1327257854815634930">瀏覽記錄已開啟</translation>
@@ -477,6 +478,7 @@
 <translation id="3169472444629675720">探索</translation>
 <translation id="3187472288455401631">廣告評估功能</translation>
 <translation id="3189635831478931757">「<ph name="GROUP_TITLE" />」分頁群組</translation>
+<translation id="3200536777393523575">要關閉目前的視窗嗎？</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3211426585530211793">已刪除「<ph name="ITEM_TITLE" />」</translation>
@@ -721,6 +723,7 @@
 <translation id="4351244548802238354">關閉對話方塊</translation>
 <translation id="4352287748243729941">要使用 <ph name="PROVIDER" /> 的密碼嗎？</translation>
 <translation id="4355272626458588338">你可以將重要網頁加入書籤，方便日後查看</translation>
+<translation id="4356503491090073318">卡號*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">安全資訊一覽</translation>
 <translation id="4378154925671717803">電話</translation>
@@ -738,6 +741,7 @@
 <translation id="4425140285732600465">正在追蹤價格。如果產品在任何網站上降價，你會收到通知。</translation>
 <translation id="4425173294238317796">密碼金鑰確認工作表</translation>
 <translation id="442518031075347249">你將無法再透過 Google Pay 使用虛擬卡片。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡片<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{即將關閉「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="4426508677408162512">所有書籤</translation>
 <translation id="4430277756566635951">目前已選取 <ph name="EMAIL" />。請選擇帳戶。</translation>
 <translation id="4452411734226507615">關閉 [<ph name="TAB_TITLE" />] 分頁</translation>
@@ -873,6 +877,7 @@
 <translation id="4987271110129728827">找不到該頁面。請檢查錯別字或嘗試執行網頁搜尋。</translation>
 <translation id="4988526792673242964">頁面</translation>
 <translation id="4991110219272367918">審核網站瀏覽要求的選項功能表已關閉</translation>
+<translation id="4996042648402406470">取得</translation>
 <translation id="4996095658297597226">要使用建議的密碼嗎？</translation>
 <translation id="5001388021414335527">在這裡追蹤這個網站</translation>
 <translation id="5004416275253351869">Google 活動控制項</translation>
@@ -923,10 +928,12 @@
 <translation id="5210286577605176222">跳至上一個分頁</translation>
 <translation id="5210365745912300556">關閉分頁</translation>
 <translation id="5215957675041756913">控管資料和帳戶</translation>
+<translation id="5218324087477576825">請提供卡號</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和其他權限 <ph name="SEPARATOR" /> 你最近未造訪這個網站，因此 Chrome 已移除這些權限</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="5226378907213531272">每次使用車輛時都要解鎖螢幕</translation>
 <translation id="5227554086496586518">輕觸即可查看搜尋結果</translation>
+<translation id="5229736206150093143">最新搜尋結果</translation>
 <translation id="5233638681132016545">新增分頁</translation>
 <translation id="5235196193381275927">登入時發生問題</translation>
 <translation id="5246093389635966745">編輯工具列捷徑</translation>
@@ -1281,6 +1288,7 @@
 <translation id="676305334223455055">登入即可接收符合個人興趣的內容</translation>
 <translation id="6764137532716892442">共用的「<ph name="GROUP_TITLE" />」分頁群組，群組中有新活動</translation>
 <translation id="6767294960381293877">要共用分頁的裝置清單已開啟，顯示在畫面下半部。</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="6785476624617658922">Chrome 和 Chrome OS 的《附加服務條款》</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯這個捷徑，請前往 [設定]。</translation>
@@ -1576,6 +1584,7 @@
 <translation id="7965838025086216108">你可以在任何裝置上使用儲存的密碼，系統會將密碼儲存至 <ph name="ACCOUNT" /> 的 Google 密碼管理工具。</translation>
 <translation id="7968014550143838305">已加入閱讀清單</translation>
 <translation id="7968982339740310781">查看詳細資料</translation>
+<translation id="7969391000881506217">到期日*</translation>
 <translation id="7971136598759319605">上次使用時間：1 天前</translation>
 <translation id="7975379999046275268">預覽網頁 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">如果你使用的密碼因資料侵害事件而外洩，系統會顯示警告訊息。</translation>
@@ -1734,6 +1743,7 @@
 <translation id="8565021320663436446">要移除<ph name="MEMBER_FULL_NAME" />嗎？</translation>
 <translation id="8570677896027847510">無法安全下載檔案</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
+<translation id="8580435650274205305">請輸入到期日</translation>
 <translation id="8582529315803410153">這裡會顯示你在其他裝置上的分頁</translation>
 <translation id="8585103689515290060">自動填入服務</translation>
 <translation id="859046281437143747">透過 [更多] 選項按鈕追蹤價格</translation>

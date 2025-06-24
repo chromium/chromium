@@ -52,6 +52,7 @@
 <translation id="1031362278801463162">正在加载预览</translation>
 <translation id="1032605640136438169">请查阅新版条款</translation>
 <translation id="103279545524624934">请释放磁盘空间以启动 Android 应用。</translation>
+<translation id="1033060461778467949">将标签页移至拆分视图</translation>
 <translation id="1033780634303702874">访问您的串行设备</translation>
 <translation id="1034484273907870301">平板电脑模式下的缩略图标签页栏</translation>
 <translation id="1035289631433631911">Content Transfer 工具</translation>
@@ -634,6 +635,7 @@
 <translation id="1438630805136563416">已移除操作“<ph name="REMOVED_ACTION" />”</translation>
 <translation id="1439671507542716852">长期支持</translation>
 <translation id="1440090277117135316">学校注册已完成</translation>
+<translation id="1442054921249164535">其他数据</translation>
 <translation id="144283815522798837">已选择 <ph name="NUMBER_OF_ITEMS_SELECTED" /> 项</translation>
 <translation id="1442851588227551435">设置有效的 Kerberos 票据</translation>
 <translation id="1444389367706681769">太空</translation>
@@ -1908,6 +1910,7 @@
 <translation id="2312219318583366810">网页网址</translation>
 <translation id="2314165183524574721">当前的公开范围设置是“已隐藏”</translation>
 <translation id="2314774579020744484">翻译页面时使用的语言</translation>
+<translation id="2316090909467242775">请尝试使用此恢复密码</translation>
 <translation id="2316129865977710310">不用了，谢谢</translation>
 <translation id="2316433409811863464">应用串流</translation>
 <translation id="2316709634732130529">使用建议的密码</translation>
@@ -3530,6 +3533,7 @@
 <translation id="3462413494201477527">要取消账号设置吗？</translation>
 <translation id="346298925039590474">该移动网络将可供此设备上的所有用户使用</translation>
 <translation id="3464145797867108663">添加工作资料</translation>
+<translation id="34673353983913587">在保存新密码之前，该网站需要进行额外的验证</translation>
 <translation id="3468298837301810372">标签</translation>
 <translation id="3468999815377931311">Android 手机</translation>
 <translation id="3469583217479686109">选择工具</translation>
@@ -3557,6 +3561,7 @@
 <translation id="3487007233252413104">匿名函数</translation>
 <translation id="3487649228420469005">扫描完毕</translation>
 <translation id="3488199663160411179">姓名</translation>
+<translation id="3489457144969823485">自 2025 年 7 月起，Chrome 应用已停止在 ChromeOS 设备上运行。请考虑使用其他应用。</translation>
 <translation id="3490695139702884919">正在下载…<ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">如果您忘记了 PIN 码或密码，可以恢复本地数据</translation>
 <translation id="3491616972057195633">防抖键</translation>
@@ -4024,6 +4029,7 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> 个扩展程序</translation>
 <translation id="3794792524918736965">开启 Windows Hello</translation>
 <translation id="379509625511193653">已关闭</translation>
+<translation id="3795624560191557077">您最近更改了遭遇公开数据泄露的密码。如果您遇到问题，Google 密码管理工具可以帮助您登录。</translation>
 <translation id="3796215473395753611">alt + 向上键</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />，点按播放按钮可试听语音</translation>
 <translation id="3796648294839530037">收藏的网络：</translation>
@@ -5842,6 +5848,7 @@
 <translation id="5088534251099454936">PKCS #1，带有 RSA 加密的 SHA-512</translation>
 <translation id="5090637338841444533">不允许跟踪您的摄像头位置</translation>
 <translation id="5091636240353511739">显示 PIN 码</translation>
+<translation id="5093417502834168387">无法登录？请试试其他方式</translation>
 <translation id="5093477827231450397">网站列表，这些网站已被您屏蔽，因为您不想让它们向其他网站建议广告</translation>
 <translation id="5093569275467863761">无痕式往返缓存版子框架：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">您可以在“文件”应用或其他应用中，使用此应用打开和编辑支持的文件。若要控制哪些文件默认打开此应用，请<ph name="BEGIN_LINK" />了解如何在设备上设置默认应用<ph name="END_LINK" />。</translation>
@@ -6776,6 +6783,7 @@
 <translation id="5785583009707899920">Chrome 文件实用程序</translation>
 <translation id="5787146423283493983">密钥协议</translation>
 <translation id="5787420647064736989">设备名称</translation>
+<translation id="5787582109651427233">请访问 Google 钱包，添加或管理<ph name="BEGIN_LINK_LOYALTY_CARDS" />会员卡<ph name="END_LINK_LOYALTY_CARDS" />或 Google Pay <ph name="BEGIN_LINK_PAYMENT_METHODS" />支付方式<ph name="END_LINK_PAYMENT_METHODS" /></translation>
 <translation id="5788367137662787332">抱歉，“<ph name="DEVICE_LABEL" />”设备上至少有一个分区无法加载。</translation>
 <translation id="5789581866075720267">如需将密码导入此设备上的 <ph name="BRAND" />，请选择一个 CSV 文件。</translation>
 <translation id="5790085346892983794">成功</translation>
@@ -7260,6 +7268,7 @@
 <translation id="6131511889181741773">喷溅画</translation>
 <translation id="6132251717264923430">按钮已固定</translation>
 <translation id="6132714462430777655">跳过学校注册？</translation>
+<translation id="6134418895482326458">在“新标签页”页面上隐藏页脚</translation>
 <translation id="6134428719487602109">移除所有用户账号并重置您的 Chromebook，使其焕然一新。</translation>
 <translation id="6135826623269483856">不得管理您的所有显示屏上的窗口</translation>
 <translation id="6136114942382973861">关闭下载内容栏</translation>
@@ -7616,6 +7625,7 @@
 <translation id="6388577073199278153">无法访问您的移动账号</translation>
 <translation id="6390020764191254941">将标签页移至新窗口</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{无}=1{适用于 <ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> 和另外 1 个网域}other{适用于 <ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> 和另外 {COUNT} 个网域}}</translation>
+<translation id="6390533465682072118">恢复</translation>
 <translation id="6391131092053186625">您的设备 IMEI 为 <ph name="IMEI_NUMBER" />。此号码可用于帮助激活服务。</translation>
 <translation id="6393156038355142111">建议一个安全系数高的密码</translation>
 <translation id="6393550101331051049">允许显示不安全内容</translation>
@@ -7700,6 +7710,7 @@
 <translation id="6455521402703088376">已关闭 • 此扩展程序已被其开发者取消发布</translation>
 <translation id="6455894534188563617">新建文件夹(&amp;N)</translation>
 <translation id="645705751491738698">继续拦截 JavaScript</translation>
+<translation id="6457572529564180082">无法启动“<ph name="APP_NAME" />”</translation>
 <translation id="6458606150257356946">仍然粘贴</translation>
 <translation id="6458701200018867744">上传失败（<ph name="WEBRTC_LOG_UPLOAD_TIME" />）。</translation>
 <translation id="6459488832681039634">使用所选内容查找</translation>
@@ -7992,6 +8003,7 @@
 <translation id="6667187897999649121">目前，您只能向家庭成员分享密码。不妨<ph name="BEGIN_LINK" />创建一个家人群组<ph name="END_LINK" />并添加最多 6 名成员，与他们一起充分利用 Google 产品和订阅。</translation>
 <translation id="666731172850799929">在 <ph name="APP_NAME" />中打开</translation>
 <translation id="6669195257625975787">在数据处理方面，与您正在查看的网站相同</translation>
+<translation id="6669637573228217624">上传文件</translation>
 <translation id="6670142487971298264">现在可以使用“<ph name="APP_NAME" />”了</translation>
 <translation id="6670767097276846646">某些扩展程序可以向 Chrome 添加搜索引擎</translation>
 <translation id="6670983860904543332">自动更新可为您提供最新功能。探索近期更新中的亮点。</translation>
@@ -8130,6 +8142,7 @@
 <translation id="6771503742377376720">是证书授权中心</translation>
 <translation id="6772974422346500939">打开并修改</translation>
 <translation id="6773595613448852535">Chrome 根存储区</translation>
+<translation id="677394079035748956">该网站需要动态密码</translation>
 <translation id="6774710250118040929">添加新密码</translation>
 <translation id="6775163072363532304">可用设备将会显示在此处。</translation>
 <translation id="6775992990195573904">整理标签页</translation>
@@ -9249,6 +9262,7 @@
 <translation id="7566118625369982896">管理 Play 应用链接</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">创建组合键</translation>
+<translation id="7567100268516475532">将标签页移至拆分视图</translation>
 <translation id="7568014768212280234">您的标签页分组已满，新成员无法通过链接加入</translation>
 <translation id="7568759527730933493">使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。此操作需要使用 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 上的托管式服务提供商。由您的管理员配置的某些网域不会使用安全连接。</translation>
 <translation id="756876171895853918">自定义头像</translation>

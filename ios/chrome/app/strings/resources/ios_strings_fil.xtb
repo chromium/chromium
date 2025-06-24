@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Nabigo ang pagbabahagi dahil hindi ka nakakonekta sa network.</translation>
 <translation id="1668001730617725852">Buksan sa Bagong Grupo ng Tab</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> na isasalin sa <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Puwede mo na ngayong buksan ang Google Lens mula sa iyong address bar at hanapin ang kahit anong nakikita mo</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="169048873465870056">Alisin ang tab at i-delete ang grupo?</translation>
 <translation id="1698090540708020240">Mag-import ng mga password…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Ang account na <ph name="USER_EMAIL" /> ay pinapamahalaan ng <ph name="HOSTED_DOMAIN" />, na posibleng makakita ng ilang impormasyon. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">bagong item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> (na) account ang gumagamit ng parehong password</translation>
+<translation id="205013082884273671">Maghanap ng anumang bagay sa iyong screen</translation>
 <translation id="2054044186557130763">Mag-sign in bilang si <ph name="NAME" /> <ph name="EMAIL" />, pinapamahalaan ng iyong organisasyon.</translation>
 <translation id="2059166748188874810">Munisipalidad</translation>
 <translation id="2060638295449304809">Mase-save lang ang address na ito sa device na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account na <ph name="USER_EMAIL" /></translation>
@@ -459,6 +461,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2819667972867209401">Kapag naka-on, mase-save ang data sa iyong Google Account. Kapag naka-off, mase-save lang ang data sa device na ito at made-delete ito kung magsa-sign out ka.</translation>
 <translation id="2827760117436553203">Panatilihing nakahiwalay ang data?</translation>
 <translation id="2829172210806130158">Maghanap sa iyong screen</translation>
+<translation id="2831109159746537587">Subukang bilugan o i-tap ang larawan para maghanap</translation>
 <translation id="2834399722155632105">3. I-tap ang Mga Opsyon sa Password</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Oras</translation>

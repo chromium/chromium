@@ -635,6 +635,7 @@
 <translation id="1438630805136563416">アクション「<ph name="REMOVED_ACTION" />」を削除しました</translation>
 <translation id="1439671507542716852">長期サポート</translation>
 <translation id="1440090277117135316">教育機関の登録が完了しました</translation>
+<translation id="1442054921249164535">その他のデータ</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> 個のアイテムを選択しました</translation>
 <translation id="1442851588227551435">有効な Kerberos チケットの設定</translation>
 <translation id="1444389367706681769">宇宙空間</translation>
@@ -2604,6 +2605,7 @@
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{通知の数が多いサイトが 1 件見つかりました}other{通知の数が多いサイトが {NUM_SITES} 件見つかりました}}</translation>
 <translation id="2778471504622896352">ChromeOS ランチャーにリモートアプリを追加する</translation>
 <translation id="2779728796406650689">質問すると、Google アシスタントからカスタマイズされた回答が提供されるようになります。</translation>
+<translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />、<ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux アプリケーションのインストール中にエラーが発生しました</translation>
 <translation id="2783952358106015700">「<ph name="APP_NAME" />」でセキュリティ キーを使用</translation>
@@ -4827,6 +4829,7 @@
 <translation id="435527878592612277">写真を選択</translation>
 <translation id="4356100841225547054">音量をオフにする</translation>
 <translation id="4357583358198801992">タブグループを表示</translation>
+<translation id="4357812592970409234">新しいタブページの背景の詳細</translation>
 <translation id="4358361163731478742">アプリの言語選択に対応しているアプリはありません</translation>
 <translation id="4358643842961018282">お使いのデバイスは最新の状態です</translation>
 <translation id="4358995225307748864">開くアプリを選択</translation>

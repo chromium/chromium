@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">您尚未連上網路，因此無法分享。</translation>
 <translation id="1668001730617725852">在新分頁群組中開啟</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯為<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">你現在可以從網址列開啟 Google 智慧鏡頭，搜尋畫面上的任何內容</translation>
 <translation id="1689333818294560261">暱稱</translation>
 <translation id="169048873465870056">要移除分頁並刪除群組嗎？</translation>
 <translation id="1698090540708020240">匯入密碼…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">這個帳戶 (<ph name="USER_EMAIL" />) 是由 <ph name="HOSTED_DOMAIN" /> 管理，管理者或許可以查看部分資訊。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新項目</translation>
 <translation id="2049727122989709386">有 <ph name="COUNT" /> 個帳戶使用相同的密碼</translation>
+<translation id="205013082884273671">搜尋畫面上的任何內容</translation>
 <translation id="2054044186557130763">登入 <ph name="NAME" /> (<ph name="EMAIL" />，由貴機構管理)。</translation>
 <translation id="2059166748188874810">縣/市</translation>
 <translation id="2060638295449304809">這個地址只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">開啟時，資料會儲存到 Google 帳戶；關閉後，資料只會儲存到這部裝置，並在你登出後刪除。</translation>
 <translation id="2827760117436553203">要區分資料嗎？</translation>
 <translation id="2829172210806130158">搜尋畫面</translation>
+<translation id="2831109159746537587">請嘗試在圖片上圈起或輕觸要搜尋的內容</translation>
 <translation id="2834399722155632105">3. 輕觸「密碼選項」</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />，<ph name="STATE" />，<ph name="URL" /></translation>
 <translation id="2841013758207633010">時間</translation>

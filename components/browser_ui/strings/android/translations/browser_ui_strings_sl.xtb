@@ -36,6 +36,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="1409338233051621926">Dotaknite se možnosti Aplikacije in nato možnosti Privzete aplikacije</translation>
 <translation id="1415402041810619267">URL je skrajšan</translation>
 <translation id="1415855080660575082">Chrome naj deli vaše nedavne zavihke z napravo, da si jih boste lahko ogledali na seznamu aplikacij in v rezultatih iskanja naprave. To lahko kadar koli vklopite ali izklopite v nastavitvah Chroma.</translation>
+<translation id="1432650420699700107">Spletna mesta lahko zahtevajo vzpostavitev povezave s katero koli napravo v lokalnem omrežju</translation>
 <translation id="1448064542941920355">Zmanjšanje povečave/pomanjšave</translation>
 <translation id="1464044141348608623">Spletnim mestom ni dovoljeno vedeti, kdaj aktivno uporabljate napravo</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> spletnem mestu}one{<ph name="SITE_COUNT" /> spletnem mestu}two{<ph name="SITE_COUNT" /> spletnih mestih}few{<ph name="SITE_COUNT" /> spletnih mestih}other{<ph name="SITE_COUNT" /> spletnih mestih}}</translation>
@@ -254,6 +255,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="3955321697524543127">Spletnim mestom ni dovoljeno povezovanje z napravami USB.</translation>
 <translation id="3965467402665811906">Spletna mesta lahko zahtevajo uporabo podatkov, ki so jih shranila o vas</translation>
 <translation id="3967822245660637423">Prenos končan</translation>
+<translation id="3969869202926863008">Dostop v lokalnem omrežju</translation>
 <translation id="3981465354637804599">Spletna mesta običajno prikazujejo oglase zato, da vam lahko zagotovijo vsebino ali storitve brez stroškov. Vseeno pa so nekatera spletna mesta znana po tem, da prikazujejo vsiljive ali zavajajoče oglase.</translation>
 <translation id="3987993985790029246">Kopiranje povezave</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="6554732001434021288">Nazadnje obiskano pred toliko dnevi: <ph name="NUM_DAYS" /></translation>
 <translation id="656065428026159829">Prikaži več</translation>
 <translation id="6561560012278703671">Uporaba manj vsiljivih sporočil (preprečuje, da bi vas motili pozivi za pošiljanje obvestil)</translation>
+<translation id="6565144332292237355">Spletna mesta lahko s to funkcijo iščejo in vzpostavljajo povezave s katero koli napravo v lokalnem omrežju</translation>
 <translation id="6593061639179217415">Mesto za namizne račun.</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Piškotki so dovoljeni za <ph name="RWS_MEMBERS_COUNT" /> spletno mesto <ph name="RWS_OWNER" />}one{Piškotki so dovoljeni za <ph name="RWS_MEMBERS_COUNT" /> spletno mesto <ph name="RWS_OWNER" />}two{Piškotki so dovoljeni za <ph name="RWS_MEMBERS_COUNT" /> spletni mesti <ph name="RWS_OWNER" />}few{Piškotki so dovoljeni za <ph name="RWS_MEMBERS_COUNT" /> spletna mesta <ph name="RWS_OWNER" />}other{Piškotki so dovoljeni za <ph name="RWS_MEMBERS_COUNT" /> spletnih mest <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

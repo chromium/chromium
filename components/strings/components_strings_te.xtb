@@ -688,6 +688,7 @@
 <translation id="2157640075051554492">ధర ట్రాకింగ్ నోటిఫికేషన్‌లు</translation>
 <translation id="21613918653299710">ఆన్‌లైన్ ఇమేజ్ గ్యాలరీలు</translation>
 <translation id="2161656808144014275">వచనం</translation>
+<translation id="2162435186600002085">ప్రధాన హెడర్ లోగో</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" />లోని ప్రస్తుత ధర <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" />లో అక్షర దోషం ఉందేమో చెక్ చేయండి.</translation>
 <translation id="2166049586286450108">పూర్తి నిర్వాహక యాక్సెస్</translation>
@@ -846,6 +847,7 @@
 <translation id="2400263725572336749">పాస్‌పోర్ట్‌ను జోడించండి</translation>
 <translation id="2400271059665846158">Google Walletలో మీ లాయల్టీ కార్డ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="2400600116338235695">సీరియల్ పోర్ట్‌లకు కనెక్ట్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
+<translation id="240450251994300576">రెండవ హెడర్ లోగో</translation>
 <translation id="2404884497378469141">మీ ఫైళ్లను మళ్లీ కాపీ చేయడానికి ట్రై చేయండి</translation>
 <translation id="2413155254802890957">పాతది</translation>
 <translation id="2413528052993050574">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రం ఉపసంహరించబడి ఉండవచ్చు. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
@@ -976,6 +978,7 @@
 <translation id="2627847595568876492">PDF నుండి టెక్స్ట్‌ను పొందుతోంది...</translation>
 <translation id="2628224721443278970">Microsoft OneDriveకు సైన్ ఇన్ చేయండి</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> యొక్క సర్వర్ IP అడ్రస్‌ కనుగొనబడలేదు.</translation>
+<translation id="2638567100095052009">@‌ను టైప్ చేసి, <ph name="FEATURED_SEARCH_LIST" /> అంతటా సెర్చ్ చేయండి</translation>
 <translation id="2639739919103226564">స్థితి: </translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">ఫ్యాబ్రిక్ (సెమీ-గ్లాస్)</translation>
@@ -1433,6 +1436,7 @@
 <translation id="343474037147570563">మీరు అప్‌లోడ్ చేసిన లేదా జోడించిన ఫైల్స్ Google Cloudకు లేదా థర్డ్-పార్టీలకు విశ్లేషణ కోసం పంపబడతాయి. ఉదాహరణకు, అవి సున్నితమైన వ్యక్తిగత సమాచారం లేదా మాల్‌వేర్ కోసం స్కాన్ చేయబడవచ్చు, కంపెనీ పాలసీల ఆధారంగా స్టోర్ చేయబడవచ్చు, మీ అడ్మినిస్ట్రేటర్‌కు కనిపించవచ్చు.</translation>
 <translation id="3435557549311968410">కంటిన్యువస్ (షార్ట్)</translation>
 <translation id="3435738964857648380">భద్రత</translation>
+<translation id="3436118221454753036">AI మోడ్‌ను అడగండి</translation>
 <translation id="3440783957068352691">చతురస్రం</translation>
 <translation id="3441653493275994384">స్క్రీన్</translation>
 <translation id="3443504041532578451">ఆప్టికల్ డిస్క్ (శాటిన్)</translation>
@@ -2022,6 +2026,7 @@
 <translation id="4372948949327679948">ఆశిస్తున్న <ph name="VALUE_TYPE" /> విలువ.</translation>
 <translation id="437620492464254965">డోర్‌లు &amp; కిటికీలు</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" />ను చేరుకోవడానికి మీరు ప్రయత్నించారు, కానీ సర్వర్ అందించిన ప్రమాణపత్రాన్ని దాన్ని జారీ చేసినవారు రద్దు చేశారు. సర్వర్ అందించిన భద్రత ఆధారాలు ఖచ్చితంగా విశ్వసించబడలేదని దీని అర్థం. మీరు దాడి చేసే వారితో కమ్యూనికేట్ చేస్తూ ఉండవచ్చు.</translation>
+<translation id="4377869186417956230">ఈ మెనూ ఐటెమ్ కింద ఉన్న అన్ని లాయల్టీ కార్డ్‌లకు మార్చండి.</translation>
 <translation id="4378154925671717803">ఫోన్</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ఇప్పటి నుండి, మీ ఫైళ్లను ‌క్లౌడ్ స్టోరేజ్‌లో సేవ్ చేయండి</translation>
@@ -2261,6 +2266,7 @@
 <translation id="4827283332383516812">కార్డ్‌ను తొలగించండి</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> ఎంచుకోబడినవి</translation>
 <translation id="4831993743164297314">ఇమేజ్ సెట్టర్ పేపర్</translation>
+<translation id="4832388034239846146">ట్యాబ్ గ్రూప్‌లను షేర్ చేయడానికి, Chromeను అప్‌డేట్ చేయండి</translation>
 <translation id="483241715238664915">హెచ్చరికలను ఆన్ చేయండి</translation>
 <translation id="4832961164064927107">బార్బెక్యూ &amp; గ్రిల్లింగ్</translation>
 <translation id="4834250788637067901">Google Payను ఉపయోగిస్తున్న పేమెంట్ ఆప్షన్‌లు, ఆఫర్‌లు, అడ్రస్‌లు</translation>
@@ -2968,6 +2974,7 @@
 <translation id="6043357981274314628">పూర్తయింది!</translation>
 <translation id="6044573915096792553">సైజ్‌ 12</translation>
 <translation id="6045164183059402045">ఇంపోజిషన్ టెంప్లేట్</translation>
+<translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_KEYWORD" />‌ను టైప్ చేసి సెర్చ్ చేయండి లేదా <ph name="SEARCH_AGGREGATOR_SHORT_NAME" />‌ను అడగండి</translation>
 <translation id="6047927260846328439">ఈ కంటెంట్ సాఫ్ట్‌వేర్‌ను ఇన్‌స్టాల్ చేయడానికి లేదా వ్యక్తిగత సమాచారాన్ని బహిర్గతం చేయడానికి పురిగొల్పేలా మిమ్మల్ని మాయ చేయడానికి ప్రయత్నించవచ్చు. <ph name="BEGIN_LINK" />ఏది ఏమైనా చూపు<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">ఎన్వలప్ B4</translation>
 <translation id="6049488691372270142">పేజీ డెలివరీ</translation>
@@ -3137,6 +3144,7 @@
 <translation id="6326947323444967009">iOS సెట్టింగ్‌లలో Chromeను సిస్టమ్ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
 <translation id="6327065120806001832">లోకల్ నెట్‌వర్క్ యాక్సెస్</translation>
 <translation id="6328639280570009161">నెట్‌వర్క్ సూచనను నిలిపివేసి ప్రయత్నించండి</translation>
+<translation id="6334834493885103305">ఇప్పుడు మీరు Affirm, Zip, లేదా Klarnaను ఉపయోగించి వాయిదాల్లో పేమెంట్ చేయవచ్చు</translation>
 <translation id="6335029926534404762">క్రీడాకారుల షూస్</translation>
 <translation id="6336948221660696475">VRకు అనుమతి లేదు</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> కంటే తక్కువ స్థలాన్ని ఖాళీ చేస్తుంది. మీ తదుపరి సందర్శనలో కొన్ని సైట్‌లు మరింత నెమ్మదిగా లోడ్ కావచ్చు.</translation>
@@ -4006,6 +4014,7 @@
 <translation id="7761159795823346334">కెమెరాను యాక్సెస్ చేయడానికి అనుమతించాలా?</translation>
 <translation id="7761701407923456692">సర్వర్ ప్రమాణపత్రం URLతో సరిపోలలేదు.</translation>
 <translation id="7764225426217299476">అడ్రస్‌ను జోడించండి</translation>
+<translation id="7765158879357617694">తరలించు</translation>
 <translation id="7766518757692125295">స్కర్ట్</translation>
 <translation id="7767278989746220252">డాబా, లాన్ &amp; గార్డెన్</translation>
 <translation id="776749070095465053">ఫ్యాబ్రిక్</translation>
@@ -4060,6 +4069,7 @@
 <translation id="7878562273885520351">మీ పాస్‌వర్డ్ ఎవరికైనా తెలిసిపోయి ఉండవచ్చు</translation>
 <translation id="7881044256965445977">సెర్చ్ చేసి, మీ లోకల్ నెట్‌వర్క్‌లో ఏదైనా పరికరానికి కనెక్ట్ చేయండి</translation>
 <translation id="7882421473871500483">గోధుమ రంగు</translation>
+<translation id="7885670691503039914">ఏదైనా సైట్‌లో ధర తగ్గితే, మీరు ఈమెయిల్ అలర్ట్‌లను పొందుతారు. ఈ పేజీ <ph name="LAST_BOOKMARKS_FOLDER" /> బుక్‌మార్క్ ఫోల్డర్‌లో సేవ్ అవుతుంది.</translation>
 <translation id="7886897188117641322">యాడ్‌లను వ్యక్తిగతీకరించడంలో సహాయపడటానికి ఏ విస్తృత కేటగిరీలు టాపిక్‌లను ఉపయోగించవచ్చో ఎంచుకోండి</translation>
 <translation id="7887683347370398519">మీ CVCని చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
 <translation id="7887885240995164102">చిత్రంలో చిత్రం మోడ్‌లోకి ప్రవేశిస్తుంది</translation>
@@ -4340,6 +4350,7 @@
 <translation id="8364627913115013041">సెట్ చేయలేదు.</translation>
 <translation id="8366057325711477500">ప్రపంచ వార్తలు</translation>
 <translation id="836616551641291797">మీ బ్రౌజర్ ఎలా మేనేజ్ చేయబడుతోంది అనే దాని గురించి మరింత తెలుసుకోండి</translation>
+<translation id="8367705492654390392">ఏదైనా అడగండి</translation>
 <translation id="8368001212524806591">ధరను ట్రాక్ చేయండి</translation>
 <translation id="8368027906805972958">తెలియని లేదా మద్దతు లేని పరికరం (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play సర్వీసులు</translation>
@@ -4654,6 +4665,7 @@
 <translation id="8926389886865778422">మళ్ళి అడగవద్దు</translation>
 <translation id="8932102934695377596">మీ గడియారం సమయం గతంలో ఉంది</translation>
 <translation id="893332455753468063">పేరుని జోడించండి</translation>
+<translation id="8938242527120341116">మీ డివైజ్ కంటెంట్ ఫిల్టర్‌లు, <ph name="BLOCKED_URL" />‌ను బ్లాక్ చేశాయి</translation>
 <translation id="8942355029279167844">ప్రోడక్ట్ అనుభవాన్ని మెరుగుపరచడం కోసం, <ph name="APP_NAME" />కు సమస్య విశ్లేషణ డేటాను సేకరించడానికి మీ అడ్మినిస్ట్రేట‌ర్ అనుమతిచ్చారు. మరింత సమాచారం కోసం <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />ను చూడండి.</translation>
 <translation id="8943282376843390568">నిమ్మపండు రంగు</translation>
 <translation id="8949410982325929394">టోన్</translation>
@@ -4859,6 +4871,7 @@
 <translation id="963837307749850257">యూజర్‌లందరికి</translation>
 <translation id="964050462028070434">పాస్‌వర్డ్‌లను, పాస్-కీలను మేనేజ్ చేయండి…</translation>
 <translation id="969892804517981540">అధికారిక బిల్డ్</translation>
+<translation id="97054401902912338">కంటెంట్ ఫిల్టర్‌ల గురించి మరింత తెలుసుకోండి</translation>
 <translation id="973788791897303708">ఈ ట్యాబ్ గ్రూప్ నిండింది</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ఏమీ లేవు}=1{1 అంశం}other{# అంశాలు}}</translation>
 <translation id="976522784004777030">5 x 8 అంగుళాలు</translation>

@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">"Қолданбалар", содан кейін "Әдепкі қолданбалар" түймесін түртіңіз.</translation>
 <translation id="1415402041810619267">URL қысқартылды</translation>
 <translation id="1415855080660575082">Соңғы қойындыларды құрылғының қолданбалар тізімінен және іздеу нәтижелерінен көру үшін Chrome-ға соңғы қойындыларыңызды құрылғымен бөлісуге рұқсат беріңіз. Мұны Chrome параметрлерінде қосуға не өшіруге болады.</translation>
+<translation id="1432650420699700107">Сайттар жергілікті желідегі құрылғыларға қосылуды сұрай алады</translation>
 <translation id="1448064542941920355">Масштабты азайту</translation>
 <translation id="1464044141348608623">Сайттардың құрылғыңызды белсенді пайдаланатын уақытыңыз туралы білуіне рұқсат бермеу</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}other{<ph name="SITE_COUNT" /> сайт}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">Сайттардың USB құрылғыларына қосылуына рұқсат бермеу</translation>
 <translation id="3965467402665811906">Сайттар сіз туралы өздері сақтаған ақпаратты пайдалануды сұрай алады.</translation>
 <translation id="3967822245660637423">Жүктеп алынды</translation>
+<translation id="3969869202926863008">Жергілікті желіге кіру</translation>
 <translation id="3981465354637804599">Сайттар әдетте жарнамалар көрсетеді, сондықтан олар контентті немесе қызметтерді тегін ұсынады. Бірақ кейбір сайттар мазаны алатын немесе жалған ақпаратты жарнамаларды көрсетеді.</translation>
 <translation id="3987993985790029246">Сілтемені көшіру</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">Соңғы кіру: <ph name="NUM_DAYS" /> күн бұрын</translation>
 <translation id="656065428026159829">Басқаларын көру</translation>
 <translation id="6561560012278703671">Дыбыссыз хабарландыру функциясын пайдалану (хабарландырулар кедергі келтірмейді)</translation>
+<translation id="6565144332292237355">Сайттар бұл функцияны жергілікті желідегі құрылғыларды іздеу және қосылу үшін пайдалана алады.</translation>
 <translation id="6593061639179217415">Компьютерге арналған сайт</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookie файлдарына <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сайтында рұқсат етілді.}other{Cookie файлдарына <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сайтында рұқсат етілді.}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>

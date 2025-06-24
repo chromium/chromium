@@ -692,6 +692,7 @@
 <translation id="2157640075051554492">ಬೆಲೆ ಟ್ರ್ಯಾಕಿಂಗ್ ಅಧಿಸೂಚನೆಗಳು</translation>
 <translation id="21613918653299710">ಆನ್‌ಲೈನ್ ಚಿತ್ರದ ಗ್ಯಾಲರಿಗಳು</translation>
 <translation id="2161656808144014275">ಪಠ್ಯ</translation>
+<translation id="2162435186600002085">ಪ್ರಾಥಮಿಕ ಹೆಡರ್ ಲೋಗೋ</translation>
 <translation id="2162620598375156287">ಇದೀಗ <ph name="CURRENT_PRICE" /><ph name="SOURCE_WEBSITE" /> ನಲ್ಲಿ</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> ನ ಕಾಗುಣಿತ ತಪ್ಪಾಗಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="2166049586286450108">ಪೂರ್ಣ ನಿರ್ವಾಹಕ ಆ್ಯಕ್ಸೆಸ್</translation>
@@ -850,6 +851,7 @@
 <translation id="2400263725572336749">ಪಾಸ್‌ಪೋರ್ಟ್ ಸೇರಿಸಿ</translation>
 <translation id="2400271059665846158">Google Wallet ನಲ್ಲಿ ನಿಮ್ಮ ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2400600116338235695">ಸರಣಿ ಪೋರ್ಟ್‌ಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
+<translation id="240450251994300576">ದ್ವಿತೀಯ ಹೆಡರ್ ಲೋಗೋ</translation>
 <translation id="2404884497378469141">ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಪುನಃ ನಕಲಿಸಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="2413155254802890957">ಹಳೆಯ</translation>
 <translation id="2413528052993050574">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಲಾಗಿರಬಹುದು. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">PDF ನಿಂದ ಪಠ್ಯವನ್ನು ಎಕ್ಸ್‌ಟ್ರ್ಯಾಕ್ಟ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2628224721443278970">Microsoft OneDrive ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ನ ಸರ್ವರ್ IP ವಿಳಾಸ ಕಂಡುಬರಲಿಲ್ಲ.</translation>
+<translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> ಗಳಾದ್ಯಂತ ಹುಡುಕಲು @ ಎಂದು ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="2639739919103226564">ಸ್ಥಿತಿ: </translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">ಬಟ್ಟೆ (ಅರೆ ಹೊಳಪು)</translation>
@@ -1436,6 +1439,7 @@
 <translation id="343474037147570563">ನೀವು ಅಪ್‌ಲೋಡ್ ಮಾಡುವ ಅಥವಾ ಲಗತ್ತಿಸುವ ಫೈಲ್‌ಗಳನ್ನು ವಿಶ್ಲೇಷಣೆಗಾಗಿ Google Cloud ಅಥವಾ ಥರ್ಡ್-ಪಾರ್ಟಿಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಉದಾಹರಣೆಗೆ, ಅವುಗಳನ್ನು ಸೂಕ್ಷ್ಮವಾದ ವೈಯಕ್ತಿಕ ಡೇಟಾ ಅಥವಾ ಮಾಲ್‌ವೇರ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಬಹುದು ಹಾಗೂ ಕಂಪನಿಯ ನೀತಿಗಳ ಆಧಾರದ ಮೇಲೆ ಸಂಗ್ರಹಿಸಬಹುದು ಮತ್ತು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ಗೋಚರಿಸಬಹುದು.</translation>
 <translation id="3435557549311968410">ನಿರಂತರ (ಸಣ್ಣ)</translation>
 <translation id="3435738964857648380">ಭದ್ರತೆ</translation>
+<translation id="3436118221454753036">AI ಮೋಡ್ ಅನ್ನು ಕೇಳಿ</translation>
 <translation id="3440783957068352691">ಚೌಕಾಕಾರದ ಪುಟ</translation>
 <translation id="3441653493275994384">ಸ್ಕ್ರೀನ್‌</translation>
 <translation id="3443504041532578451">ಆಪ್ಟಿಕಲ್ ಡಿಸ್ಕ್ (ಸ್ಯಾಟಿನ್)</translation>
@@ -2263,6 +2267,7 @@
 <translation id="4827283332383516812">ಕಾರ್ಡ್ ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4831993743164297314">ಚಿತ್ರವನ್ನು ಸೆಟ್‌ ಮಾಡುವ ಕಾಗದ</translation>
+<translation id="4832388034239846146">ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು, Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
 <translation id="483241715238664915">ಎಚ್ಚರಿಕೆಗಳನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="4832961164064927107">BBQ ಮತ್ತು ಗ್ರಿಲ್ಲಿಂಗ್</translation>
 <translation id="4834250788637067901">Google Pay ಅನ್ನು ಬಳಸುತ್ತಿರುವ ಪಾವತಿ ವಿಧಾನಗಳು, ಆಫರ್‌ಗಳು ಮತ್ತು ವಿಳಾಸಗಳು</translation>
@@ -2970,6 +2975,7 @@
 <translation id="6043357981274314628">ಆಯಿತು!</translation>
 <translation id="6044573915096792553">ಗಾತ್ರ 12</translation>
 <translation id="6045164183059402045">ಅಳವಡಿಕೆ ಟೆಂಪ್ಲೇಟ್</translation>
+<translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> ಅನ್ನು ಹುಡುಕಲು ಅಥವಾ ಕೇಳಲು <ph name="SEARCH_AGGREGATOR_KEYWORD" /> ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="6047927260846328439">ಈ ಕಂಟೆಂಟ್‌ ಸಾಫ್ಟ್‌ವೇರ್ ಸ್ಥಾಪಿಸುವಂತೆ ಅಥವಾ ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಬಹಿರಂಗಪಡಿಸುವಂತೆ  ನಿಮ್ಮನ್ನು ಮೋಸಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು. <ph name="BEGIN_LINK" />ಹೇಗಿದ್ದರೂ ತೋರಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">ಎನ್ವಲಪ್ B4</translation>
 <translation id="6049488691372270142">ಪೇಜ್ ಡೆಲಿವರಿ</translation>
@@ -4007,6 +4013,7 @@
 <translation id="7761159795823346334">ಕ್ಯಾಮರಾ ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="7761701407923456692">ಸರ್ವರ್‌ನ ಪ್ರಮಾಣಪತ್ರವು URL ಗೆ ಸರಿ ಹೊಂದುವುದಿಲ್ಲ.</translation>
 <translation id="7764225426217299476">ವಿಳಾಸ ಸೇರಿಸಿ</translation>
+<translation id="7765158879357617694">ಸರಿಸು</translation>
 <translation id="7766518757692125295">ಸ್ಕರ್ಟ್</translation>
 <translation id="7767278989746220252">ಒಳಾಂಗಣ, ಹುಲ್ಲುಹಾಸು ಮತ್ತು ಉದ್ಯಾನ</translation>
 <translation id="776749070095465053">ಬಟ್ಟೆ</translation>
@@ -4341,6 +4348,7 @@
 <translation id="8364627913115013041">ಹೊಂದಿಸಿಲ್ಲ.</translation>
 <translation id="8366057325711477500">ಜಾಗತಿಕ ಸುದ್ದಿ</translation>
 <translation id="836616551641291797">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ಹೇಗೆ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ ಎಂಬುದರ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
+<translation id="8367705492654390392">ಏನನ್ನಾದರೂ ಕೇಳಿ</translation>
 <translation id="8368001212524806591">ಬೆಲೆ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="8368027906805972958">ಅಪರಿಚಿತ ಅಥವಾ ಬೆಂಬಲಿತವಲ್ಲದ ಸಾಧನ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play ಸೇವೆಗಳು</translation>
@@ -4656,6 +4664,7 @@
 <translation id="8926389886865778422">ಮತ್ತೆ ಕೇಳಬೇಡಿ</translation>
 <translation id="8932102934695377596">ನಿಮ್ಮ ಗಡಿಯಾರ ಹಿಂದೆ ಇದೆ</translation>
 <translation id="893332455753468063">ಹೆಸರು ಸೇರಿಸಿ</translation>
+<translation id="8938242527120341116">ನಿಮ್ಮ ಸಾಧನದ ವಿಷಯ ಫಿಲ್ಟರ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">ಉತ್ಪನ್ನದ ಅನುಭವವನ್ನು ಸುಧಾರಿಸುವುದಕ್ಕೆ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ಡೇಟಾವನ್ನು ಸಂಗ್ರಹಿಸಲು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP_NAME" /> ಗೆ ಅನುಮತಿಸಿದ್ದಾರೆ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ, <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
 <translation id="8943282376843390568">ನಿಂಬೆ ಹಳದಿ</translation>
 <translation id="8949410982325929394">ಟೋನ್</translation>
@@ -4860,6 +4869,7 @@
 <translation id="963837307749850257">ಎಲ್ಲಾ ಬಳಕೆದಾರರು</translation>
 <translation id="964050462028070434">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ಕೀಗಳನ್ನು ನಿರ್ವಹಿಸಿ…</translation>
 <translation id="969892804517981540">ಅಧಿಕೃತ ಬಿಲ್ಡ್‌</translation>
+<translation id="97054401902912338">ಕಂಟೆಂಟ್ಫಿ ಲ್ಟರ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="973788791897303708">ಈ ಟ್ಯಾಬ್ ಗುಂಪು ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಐಟಂ}one{# ಐಟಂಗಳು}other{# ಐಟಂಗಳು}}</translation>
 <translation id="976522784004777030">5 x 8 ಇಂಚು</translation>

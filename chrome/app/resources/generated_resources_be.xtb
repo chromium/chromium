@@ -52,6 +52,7 @@
 <translation id="1031362278801463162">Ідзе загрузка перадпрагляду</translation>
 <translation id="1032605640136438169">Азнаёмцеся з новымі ўмовамі</translation>
 <translation id="103279545524624934">Каб запускаць праграмы Android, вызваліце месца на дыску.</translation>
+<translation id="1033060461778467949">Перамясціць укладку на падзелены экран</translation>
 <translation id="1033780634303702874">Доступ да паслядоўных прылад</translation>
 <translation id="1034484273907870301">Панэль укладак з мініяцюрамі для планшэтнага рэжыму</translation>
 <translation id="1035289631433631911">Інструмент для пераносу змесціва</translation>
@@ -1916,6 +1917,7 @@
 <translation id="2312219318583366810">URL-адрас старонкі</translation>
 <translation id="2314165183524574721">Бягучая налада бачнасці: схавана</translation>
 <translation id="2314774579020744484">Мова, якая выкарыстоўваецца для перакладу</translation>
+<translation id="2316090909467242775">Паспрабуйце гэты пароль для аднаўлення</translation>
 <translation id="2316129865977710310">Не, дзякуй</translation>
 <translation id="2316433409811863464">Трансляцыя праграм</translation>
 <translation id="2316709634732130529">Выкарыстаць прапанаваны пароль</translation>
@@ -3541,6 +3543,7 @@
 <translation id="3462413494201477527">Скасаваць наладку ўліковага запісу?</translation>
 <translation id="346298925039590474">Гэта мабільная сетка будзе даступнай усім карыстальнікам прылады</translation>
 <translation id="3464145797867108663">Дадаць працоўны профіль</translation>
+<translation id="34673353983913587">Перад захаваннем новага пароля патрабуецца дадатковае спраўджанне на сайце</translation>
 <translation id="3468298837301810372">Метка</translation>
 <translation id="3468999815377931311">Тэлефон Android</translation>
 <translation id="3469583217479686109">Інструмент "Выбар"</translation>
@@ -3568,6 +3571,7 @@
 <translation id="3487007233252413104">ананімная функцыя</translation>
 <translation id="3487649228420469005">Сканіраванне скончана</translation>
 <translation id="3488199663160411179">імя</translation>
+<translation id="3489457144969823485">Пачынаючы з ліпеня 2025 года праграмы Chrome не працуюць на прыладах з ChromeOS. Паспрабуйце іншую праграму.</translation>
 <translation id="3490695139702884919">Ідзе спампоўванне… <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">Калі вы забудзеце PIN-код або пароль, то зможаце аднавіць лакальныя даныя</translation>
 <translation id="3491616972057195633">Ігнараванне паўторнага націскання</translation>
@@ -4033,6 +4037,7 @@
 <translation id="3792973596468118484">Пашырэнняў: <ph name="NUM_EXTENSIONS" /></translation>
 <translation id="3794792524918736965">Уключыце Windows Hello</translation>
 <translation id="379509625511193653">Выключана</translation>
+<translation id="3795624560191557077">Вы нядаўна змянілі пароль, які аказаўся сярод агульнадаступных даных у выніку ўцечкі. Калі ўзнікне праблема, вы зможаце выканаць уваход з дапамогай Менеджара пароляў Google.</translation>
 <translation id="3796215473395753611">Alt + стрэлка ўверх</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, скарыстайце клавішу са стрэлкай управа, каб праслухаць голас</translation>
 <translation id="3796648294839530037">Абраныя сеткі:</translation>
@@ -5853,6 +5858,7 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 з шыфраваннем RSA</translation>
 <translation id="5090637338841444533">Не дазволена адсочваць становішча камеры</translation>
 <translation id="5091636240353511739">Паказваць PIN-код</translation>
+<translation id="5093417502834168387">Праблемы з уваходам? Паспрабуйце іншы спосаб</translation>
 <translation id="5093477827231450397">Спіс заблакіраваных вамі сайтаў, якім забаронена прапаноўваць рэкламу іншым сайтам</translation>
 <translation id="5093569275467863761">Субфрэйм у рэжыме інкогніта, захаваны ў кэшы пераходу назад і наперад: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">З дапамогай гэтай праграмы можна адкрываць і змяняць сумяшчальныя файлы ў іншых праграмах (у прыватнасці, у "Файлах"). Каб указаць, якія файлы павінны адкрывацца ў гэтай праграме стандартна, <ph name="BEGIN_LINK" />паглядзіце, як задаць стандартныя праграмы для прылады<ph name="END_LINK" />.</translation>
@@ -6789,6 +6795,7 @@
 <translation id="5785583009707899920">Файлавыя ўтыліты Chrome</translation>
 <translation id="5787146423283493983">Узгадненне ключоў</translation>
 <translation id="5787420647064736989">Назва прылады</translation>
+<translation id="5787582109651427233">Перайдзіце ў Google Кашалёк, каб дадаць <ph name="BEGIN_LINK_LOYALTY_CARDS" />карткі лаяльнасці<ph name="END_LINK_LOYALTY_CARDS" /> ці Google Pay ў якасці <ph name="BEGIN_LINK_PAYMENT_METHODS" />спосабаў аплаты<ph name="END_LINK_PAYMENT_METHODS" /> або кіраваць імі</translation>
 <translation id="5788367137662787332">Як мінімум адзін раздзел на прыладзе <ph name="DEVICE_LABEL" /> не ўдалося падключыць.</translation>
 <translation id="5789581866075720267">Каб імпартаваць паролі ў <ph name="BRAND" />, выберыце файл CSV</translation>
 <translation id="5790085346892983794">Выканана</translation>
@@ -7274,6 +7281,7 @@
 <translation id="6131511889181741773">Пырскі</translation>
 <translation id="6132251717264923430">Кнопка замацавана</translation>
 <translation id="6132714462430777655">Прапусціць рэгістрацыю ў навучальнай установе?</translation>
+<translation id="6134418895482326458">Схаваць ніжні калонтытул на старонцы новай укладкі</translation>
 <translation id="6134428719487602109">Выдаліць усе ўліковыя запісы карыстальнікаў і скінуць налады прылады Chromebook да заводскіх.</translation>
 <translation id="6135826623269483856">Сайты, якім забаронена кіраваць вокнамі на ўсіх дысплэях</translation>
 <translation id="6136114942382973861">Закрыць панэль спамповак</translation>
@@ -7630,6 +7638,7 @@
 <translation id="6388577073199278153">Не ўдалося атрымаць доступ да ўліковага запісу на мабільнай прыладзе</translation>
 <translation id="6390020764191254941">Перамясціць укладку ў новае акно</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Няма}=1{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> і яшчэ 1 дамена}one{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> і яшчэ {COUNT} дамена}few{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> і яшчэ {COUNT} даменаў}many{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> і яшчэ {COUNT} даменаў}other{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> і яшчэ {COUNT} дамена}}</translation>
+<translation id="6390533465682072118">Аднаўленне</translation>
 <translation id="6391131092053186625">IMEI прылады: <ph name="IMEI_NUMBER" />. Гэты нумар можна выкарыстаць для актывацыі сэрвісу.</translation>
 <translation id="6393156038355142111">Прапанаваць надзейны пароль</translation>
 <translation id="6393550101331051049">Дазволена паказваць небяспечнае змесціва</translation>
@@ -7714,6 +7723,7 @@
 <translation id="6455521402703088376">Выключана • Распрацоўшчык адрабіў публікацыю гэтага пашырэння</translation>
 <translation id="6455894534188563617">&amp;Новая папка</translation>
 <translation id="645705751491738698">Працягнуць блакіраваць JavaScript</translation>
+<translation id="6457572529564180082">Не ўдаецца запусціць праграму "<ph name="APP_NAME" />"</translation>
 <translation id="6458606150257356946">Усё роўна ўставіць</translation>
 <translation id="6458701200018867744">Збой запампоўвання (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Выкарыстаць вылучанае для пошуку</translation>
@@ -8012,6 +8022,7 @@
 <translation id="6667187897999649121">Цяпер вы можаце абагульваць паролі толькі з удзельнікамі сямейнай групы. <ph name="BEGIN_LINK" />Стварыце сямейную групу<ph name="END_LINK" /> (да 6 удзельнікаў) і карыстайцеся дадатковымі магчымасцямі прадуктаў і падпісак Google.</translation>
 <translation id="666731172850799929">Адкрыць у праграме <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Даныя апрацоўваюцца так жа, як сайт, які вы праглядаеце.</translation>
+<translation id="6669637573228217624">Запампаваць файл</translation>
 <translation id="6670142487971298264">Праграма "<ph name="APP_NAME" />" даступная</translation>
 <translation id="6670767097276846646">Некаторыя пашырэнні могуць дадаваць пошукавыя сістэмы ў Chrome</translation>
 <translation id="6670983860904543332">Дзякуючы аўтаматычным абнаўленням вы можаце выкарыстоўваць навейшыя функцыі. Паглядзіце, што нядаўна было новага.</translation>
@@ -8150,6 +8161,7 @@
 <translation id="6771503742377376720">З’яўляецца цэнтрам сертыфікацыі</translation>
 <translation id="6772974422346500939">Адкрыць і змяніць</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
+<translation id="677394079035748956">Для сайта патрэбны аднаразовы пароль</translation>
 <translation id="6774710250118040929">Дадаванне новага пароля</translation>
 <translation id="6775163072363532304">Тут будуць з’яўляцца даступныя прылады.</translation>
 <translation id="6775992990195573904">Упарадкуйце свае ўкладкі</translation>
@@ -9268,6 +9280,7 @@
 <translation id="7566118625369982896">Кіраванне спасылкамі праграмы Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Стварыць спалучэнне клавіш</translation>
+<translation id="7567100268516475532">Перамясціць укладку на падзелены экран</translation>
 <translation id="7568014768212280234">Новыя карыстальнікі не могуць далучыцца да групы ўкладак па спасылцы, бо група запоўнена</translation>
 <translation id="7568759527730933493">Выкарыстоўваць абароненае падключэнне для пошуку IP-адраса сайта ў сістэме даменных імёнаў (DNS). Для гэтага ўжываецца прызначаны адміністратарам пастаўшчык паслуг: <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Для некаторых даменаў, якія наладзіў ваш адміністратар, абароненае падключэнне не выкарыстоўваецца.</translation>
 <translation id="756876171895853918">Наладзіць аватар</translation>

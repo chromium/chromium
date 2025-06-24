@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">Колдонмолорду, андан соң Демейки колдонмолорду таптап коюңуз</translation>
 <translation id="1415402041810619267">URL кесилди</translation>
 <translation id="1415855080660575082">Түзмөгүңүздөгү колдонмолордун тизмесинде жана табылган нерселерде көрүү үчүн Chrome'го соңку өтмөктөрүңүздү түзмөгүңүз менен бөлүшүүгө уруксат бериңиз. Аны Chrome'дун параметрлеринен күйгүзүп же өчүрсөңүз болот.</translation>
+<translation id="1432650420699700107">Сайттар жергиликтүү тармактагы түзмөккө туташууга уруксат сурай алышат</translation>
 <translation id="1448064542941920355">Масштабды кичирейтүү</translation>
 <translation id="1464044141348608623">Сайттарга түзмөктү активдүү колдонуп жатканыңыз тууралуу маалыматты алууга тыюу салуу</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}other{<ph name="SITE_COUNT" /> сайт}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">Сайттар USB түзмөктөрүнө туташа албасын</translation>
 <translation id="3965467402665811906">Сайттар аларда сакталган маалыматыңызды колдонууга уруксат сурашат</translation>
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
+<translation id="3969869202926863008">Жергиликтүү тармактан кирүү</translation>
 <translation id="3981465354637804599">Сайттар жарнамаларды көрсөтүп, акысыз кызматтар жана материалдар менен камсыздайт. Бирок айрым сайттар тажатма же адаштыруучу жарнамаларды көрсөтөт.</translation>
 <translation id="3987993985790029246">Шилтм көчр</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">Акыркы жолу <ph name="NUM_DAYS" /> күн мурун кирген</translation>
 <translation id="656065428026159829">Дагы көрүү</translation>
 <translation id="6561560012278703671">Даректер тилкесинде көрсөтүлгөн билдирмелерди колдонуңуз (сизди алаксыткан билдирмелерди бөгөттөйт)</translation>
+<translation id="6565144332292237355">Сайттар бул функцияны колдонуп, жергиликтүү тармактагы түзмөктөрдү таап, аларга туташа алышат</translation>
 <translation id="6593061639179217415">Компьютер версиясы</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сайтында cookie файлдарына уруксат берилген}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сайтында cookie файлдарына уруксат берилген}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Гб</translation>

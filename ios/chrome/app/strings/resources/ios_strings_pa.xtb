@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">ਸ਼ੇਅਰ ਕਰਨਾ ਅਸਫਲ ਕਿਉਂਕਿ ਤੁਸੀਂ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
 <translation id="1668001730617725852">ਨਵੇਂ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ਤੋਂ <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">ਹੁਣ ਤੁਸੀਂ ਆਪਣੀ ਪਤਾ ਬਾਰ ਤੋਂ Google Lens ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ ਅਤੇ ਦਿਖ ਰਹੀ ਕਿਸੇ ਵੀ ਚੀਜ਼ ਬਾਰੇ ਜਾਣਕਾਰੀ ਖੋਜ ਸਕਦੇ ਹੋ</translation>
 <translation id="1689333818294560261">ਉਪਨਾਮ</translation>
 <translation id="169048873465870056">ਕੀ ਟੈਬ ਹਟਾ ਕੇ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="1698090540708020240">ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਯਾਤ ਕਰੋ…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="HOSTED_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਜਿਸ ਵੱਲੋਂ ਕੁਝ ਜਾਣਕਾਰੀ ਨੂੰ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">ਨਵੀਂ ਆਈਟਮ</translation>
 <translation id="2049727122989709386">ਇੱਕੋ ਪਾਸਵਰਡ ਵਰਤਣ ਵਾਲੇ <ph name="COUNT" /> ਖਾਤੇ</translation>
+<translation id="205013082884273671">ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਕੁਝ ਵੀ ਖੋਜੋ</translation>
 <translation id="2054044186557130763"><ph name="NAME" /> <ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ, ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਹੈ।</translation>
 <translation id="2059166748188874810">ਨਗਰ ਪਾਲਿਕਾ</translation>
 <translation id="2060638295449304809">ਇਹ ਪਤਾ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ <ph name="USER_EMAIL" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਡਾਟਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਬੰਦ ਹੋਣ 'ਤੇ, ਡਾਟਾ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਸਾਈਨ-ਆਊਟ ਕਰਨ 'ਤੇ ਮਿਟਾ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="2827760117436553203">ਕੀ ਡਾਟੇ ਨੂੰ ਵੱਖ ਰੱਖਣਾ ਹੈ?</translation>
 <translation id="2829172210806130158">ਆਪਣੀ ਸਕ੍ਰੀਨ ਖੋਜੋ</translation>
+<translation id="2831109159746537587">ਖੋਜਣ ਲਈ ਤਸਵੀਰ 'ਤੇ ਚੱਕਰ ਲਗਾਓ ਜਾਂ ਉਸ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="2834399722155632105">3. ਪਾਸਵਰਡ ਵਿਕਲਪਾਂ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">ਸਮਾਂ</translation>

@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">[アプリ]、[デフォルトのアプリ] をタップします</translation>
 <translation id="1415402041810619267">URL の短縮バージョンです</translation>
 <translation id="1415855080660575082">Chrome で最近使ったタブをデバイスと共有して、デバイスのアプリリストと検索結果に表示できます。この機能は Chrome の設定でオンまたはオフにできます。</translation>
+<translation id="1432650420699700107">サイトがローカル ネットワーク上のデバイスへの接続を要求できるようにする</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="1464044141348608623">サイトによるデバイスのアクティブ状態の検出を許可しない</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 件のサイト}other{<ph name="SITE_COUNT" /> 件のサイト}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">サイトに USB デバイスへの接続を許可しない</translation>
 <translation id="3965467402665811906">サイトがあなたに関する保存済みの情報の使用を要求できるようにする</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
+<translation id="3969869202926863008">ローカル ネットワークへのアクセス</translation>
 <translation id="3981465354637804599">コンテンツやサービスを無料で提供するため、サイトで広告を表示する場合があります。ただし、一部のサイトでは煩わしい広告や誤解を招く広告が表示される場合もあります。</translation>
 <translation id="3987993985790029246">リンクのコピー</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ？</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">最終アクセス日: <ph name="NUM_DAYS" /> 日前</translation>
 <translation id="656065428026159829">もっと見る</translation>
 <translation id="6561560012278703671">目立たない方法で通知する（割り込み通知を行わない）</translation>
+<translation id="6565144332292237355">サイトはこの機能を使用して、ローカル ネットワーク上のデバイスを検索して接続できます</translation>
 <translation id="6593061639179217415">PC 版サイト</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" /> の <ph name="RWS_MEMBERS_COUNT" /> 件のサイトで Cookie が許可されています}other{<ph name="RWS_OWNER" /> の <ph name="RWS_MEMBERS_COUNT" /> 件のサイトで Cookie が許可されています}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

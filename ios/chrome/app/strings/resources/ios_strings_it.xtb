@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Condivisione non riuscita perché non sei collegato alla rete.</translation>
 <translation id="1668001730617725852">Apri in un nuovo gruppo di schede</translation>
 <translation id="1674504678466460478">Da <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Ora puoi aprire Google Lens dalla barra degli indirizzi ed eseguire ricerche su ciò che vedi</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="169048873465870056">Rimuovere scheda ed eliminare gruppo?</translation>
 <translation id="1698090540708020240">Importa password…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">L'account <ph name="USER_EMAIL" /> è gestito da <ph name="HOSTED_DOMAIN" />, che potrebbe essere in grado di visualizzare alcune informazioni. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuovo elemento</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> account utilizzano la stessa password</translation>
+<translation id="205013082884273671">Cerca qualsiasi cosa sullo schermo</translation>
 <translation id="2054044186557130763">Accedi come <ph name="NAME" /> <ph name="EMAIL" />, gestito dalla tua organizzazione.</translation>
 <translation id="2059166748188874810">Comune</translation>
 <translation id="2060638295449304809">Questo indirizzo viene salvato solo su questo dispositivo. Per usarlo sugli altri dispositivi, salvalo nel tuo Account Google, <ph name="USER_EMAIL" /></translation>
@@ -459,6 +461,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2819667972867209401">In caso di attivazione, i dati vengono salvati nel tuo Account Google. In caso di disattivazione, i dati vengono salvati solo su questo dispositivo e vengono eliminati se ti disconnetti.</translation>
 <translation id="2827760117436553203">Mantenere i dati separati?</translation>
 <translation id="2829172210806130158">Cerca sullo schermo</translation>
+<translation id="2831109159746537587">Prova a cerchiare o a toccare l'immagine per cercarla</translation>
 <translation id="2834399722155632105">3. Tocca Opzioni password</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Ora</translation>
@@ -1104,6 +1107,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5576885723883013398">Nuova finestra</translation>
 <translation id="5578795271662203820">Cerca questa immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Nascondi elenco di lettura</translation>
+<translation id="5581786858144165447">Chiedi a AI Mode</translation>
 <translation id="5585019845078534178">Schede</translation>
 <translation id="5595485650161345191">Modifica indirizzo</translation>
 <translation id="559567008082979829">Imposta l'eliminazione dei download dopo un mese.</translation>

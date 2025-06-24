@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Oszczędź do 60% danych, przeczytaj dzisiejsze wiadomości</translation>
 <translation id="1303339473099049190">Nie udało się znaleźć tego hasła. Sprawdź pisownię i spróbuj jeszcze raz.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – wysłane z: <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Grupuj karty</translation>
 <translation id="1318262688555255786">Udostępnij link do strony <ph name="PAGE_TITLE" />. Źródło: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Foldery procedury zapisywania zakładki zostały otwarte na połowę wysokości</translation>
 <translation id="1327257854815634930">Historia nawigacji jest otwarta</translation>
@@ -1400,6 +1401,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7224097611345298931">Chrome i <ph name="CHROME_CHANNEL" />: wszystkie hasła zapisane tylko na tym urządzeniu w tych przeglądarkach zostały scalone. Możesz korzystać z autouzupełniania wszystkich zapisanych haseł w obu aplikacjach.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 plik oczekuje na pobranie}few{# pliki oczekują na pobranie}many{# plików oczekuje na pobranie}other{# pliku oczekuje na pobranie}}</translation>
 <translation id="7230064152164845085">Przełącz na tryb incognito</translation>
+<translation id="7230836263524391273">Ukryj Tryb czytania</translation>
 <translation id="7237724030342645845">Menedżer haseł Google przestał działać</translation>
 <translation id="72415438529550637">Sugestia dotycząca hasła jest zamknięta.</translation>
 <translation id="7248671827512403053">Aplikacja</translation>

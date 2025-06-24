@@ -36,6 +36,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="1409338233051621926">Uygulamalar'a, ardından "Varsayılan uygulamalar"a dokunun</translation>
 <translation id="1415402041810619267">URL kısaltıldı</translation>
 <translation id="1415855080660575082">Chrome'un son sekmelerinizi cihazınızla paylaşmasına izin verdiğinizde bu sekmeleri cihazınızın uygulama listesinde ve arama sonuçlarında görebilirsiniz. Bu özelliği Chrome ayarlarından etkinleştirebilir veya devre dışı bırakabilirsiniz.</translation>
+<translation id="1432650420699700107">Siteler, yerel ağınızdaki cihazlara bağlanmak isteyebilir</translation>
 <translation id="1448064542941920355">Yakınlaştırmayı azalt</translation>
 <translation id="1464044141348608623">Cihazımı etkin olarak kullandığımda sitelerin bilmesine izin verme</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> site}}</translation>
@@ -254,6 +255,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="3955321697524543127">Sitelerin USB cihazlara bağlanmasına izin verme</translation>
 <translation id="3965467402665811906">Siteler, hakkınızda kaydettikleri bilgileri kullanmak için izin isteyebilir</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
+<translation id="3969869202926863008">Yerel ağ erişimi</translation>
 <translation id="3981465354637804599">Siteler genellikle içerik veya hizmetlerini ücretsiz olarak sunabilmek için reklam gösterirler. Ancak araya giren veya yanıltıcı reklamlar gösterdiği bilinen bazı siteler vardır.</translation>
 <translation id="3987993985790029246">Bağlantıyı kopyala</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="6554732001434021288">En son <ph name="NUM_DAYS" /> gün önce ziyaret edildi</translation>
 <translation id="656065428026159829">Daha fazla göster</translation>
 <translation id="6561560012278703671">Bildirim daha sessiz yapılsın (bildirim istemlerinin sizi rahatsız etmesini engeller)</translation>
+<translation id="6565144332292237355">Siteler, yerel ağınızdaki cihazları aramak ve cihazlara bağlanmak için bu özelliği kullanabilir</translation>
 <translation id="6593061639179217415">Masaüstü sitesi</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sitesi için çerezlere izin veriliyor}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sitesi için çerezlere izin veriliyor}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

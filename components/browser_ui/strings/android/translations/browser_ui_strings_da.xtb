@@ -36,6 +36,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="1409338233051621926">Tryk på Apps og derefter på Standardapps</translation>
 <translation id="1415402041810619267">Webadressen er forkortet</translation>
 <translation id="1415855080660575082">Få Chrome til at dele dine seneste faner med din enhed for at se dem på din enheds appliste og i søgeresultaterne. Du kan slå dette til eller fra i Chrome-indstillingerne.</translation>
+<translation id="1432650420699700107">Websites kan anmode om at oprette tilknytning til enhver enhed på dit lokale netværk</translation>
 <translation id="1448064542941920355">Zoom ud</translation>
 <translation id="1464044141348608623">Tillad ikke, at websites ved, hvornår du aktivt bruger din enhed</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> website}one{<ph name="SITE_COUNT" /> website}other{<ph name="SITE_COUNT" /> websites}}</translation>
@@ -254,6 +255,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="3955321697524543127">Tillad ikke, at websites opretter forbindelse til USB-enheder</translation>
 <translation id="3965467402665811906">Websites kan anmode om at bruge oplysninger, de har gemt om dig</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
+<translation id="3969869202926863008">Lokal netværksadgang</translation>
 <translation id="3981465354637804599">Websites viser normalt annoncer, så de kan levere indhold eller tjenester uden beregning. Nogle websites er dog kendt for at vise påtrængende eller vildledende annoncer.</translation>
 <translation id="3987993985790029246">Kopiér linket</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="6554732001434021288">Senest besøgt for <ph name="NUM_DAYS" /> dage siden</translation>
 <translation id="656065428026159829">Se mere</translation>
 <translation id="6561560012278703671">Få lydløse meddelelser (dette sørger for, at dine notifikationer ikke forstyrrer dig)</translation>
+<translation id="6565144332292237355">Websites kan bruge denne funktion til at søge efter og oprette tilknytning til enheder på dit lokale netværk</translation>
 <translation id="6593061639179217415">Standardwebsite</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> website tilhørende <ph name="RWS_OWNER" />}one{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> website tilhørende <ph name="RWS_OWNER" />}other{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> websites tilhørende <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

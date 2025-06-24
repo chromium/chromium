@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">আপুনি বৰ্তমান নেটৱৰ্কটো সৈতে সংযোজিত হৈ থকা নাই বাবে শ্বেয়াৰ কৰিব পৰা নগ’ল।</translation>
 <translation id="1668001730617725852">নতুন টেবৰ গোটত খোলক</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />ৰ পৰা <ph name="TARGET_LANGUAGE" />লৈ</translation>
+<translation id="168389590065701766">আপুনি এতিয়া আপোনাৰ ঠিকনাৰ বাৰৰ পৰা Google Lens খুলিব পাৰে আৰু আপুনি দেখা পোৱা যিকোনো বস্তু সন্ধান কৰিব পাৰে</translation>
 <translation id="1689333818294560261">উপনাম</translation>
 <translation id="169048873465870056">টেবটো আঁতৰাই গোটটো মচিবনে?</translation>
 <translation id="1698090540708020240">পাছৱৰ্ড আমদানি কৰক…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> একাউণ্টটো <ph name="HOSTED_DOMAIN" />এ পৰিচালনা কৰে, যি হয়তো কিছুমান তথ্য চাব পাৰিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">নতুন বস্তু</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> টা একাউণ্টে একেটা পাছৱৰ্ড ব্যৱহাৰ কৰি আছে</translation>
+<translation id="205013082884273671">আপোনাৰ স্ক্ৰীনত থকা যিকোনো বস্তু সন্ধান কৰক</translation>
 <translation id="2054044186557130763">আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰা <ph name="NAME" /> <ph name="EMAIL" />, হিচাপে ছাইন ইন কৰক।</translation>
 <translation id="2059166748188874810">পৌৰসভা</translation>
 <translation id="2060638295449304809">এই ঠিকনাটো কেৱল এই ডিভাইচটোত ছেভ কৰা হয়। আপোনাৰ আন ডিভাইচসমূহত ব্যৱহাৰ কৰিবলৈ, এইটো আপোনাৰ Google একাউণ্ট, <ph name="USER_EMAIL" />ত ছেভ কৰক</translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">অন থাকিলে, আপোনাৰ Google একাউণ্টত ডেটা ছেভ কৰা হয়। অফ থাকিলে, ডেটা কেৱল এই ডিভাইচটোত ছেভ কৰা হয় আৰু আপুনি ছাইন আউট কৰিলে মচা হয়।</translation>
 <translation id="2827760117436553203">ডেটা বেলেগে ৰাখিবনে?</translation>
 <translation id="2829172210806130158">আপোনাৰ স্ক্ৰীন সন্ধান কৰক</translation>
+<translation id="2831109159746537587">সন্ধান কৰিবলৈ চিত্ৰখনত বৃত্ত আঁকি বা টিপি চাওক</translation>
 <translation id="2834399722155632105">৩) পাছৱৰ্ডৰ বিকল্পসমূহত টিপক</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">সময়</translation>
@@ -1104,6 +1107,7 @@
 <translation id="5576885723883013398">নতুন ৱিণ্ড’</translation>
 <translation id="5578795271662203820">এই ছবিৰ বাবে <ph name="SEARCH_ENGINE" />ত সন্ধান কৰক</translation>
 <translation id="5579012242779565775">পঢ়াৰ সূচী লুকুৱাওক</translation>
+<translation id="5581786858144165447">AI ম’ডত প্ৰশ্ন সোধক</translation>
 <translation id="5585019845078534178">কাৰ্ড</translation>
 <translation id="5595485650161345191">ঠিকনা সম্পাদনা কৰক</translation>
 <translation id="559567008082979829">আপোনাৰ ডাউনল’ডসমূহ এমাহৰ পাছত মচি পেলোৱা হোৱাকৈ ছেট কৰক।</translation>

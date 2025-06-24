@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">Известия за следене на цени</translation>
 <translation id="21613918653299710">Онлайн фотогалерии</translation>
 <translation id="2161656808144014275">Текст</translation>
+<translation id="2162435186600002085">Основно лого в заглавката</translation>
 <translation id="2162620598375156287">Сега цената е <ph name="CURRENT_PRICE" /> в(ъв) <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Проверете дали <ph name="HOST_NAME" /> е изписано правилно.</translation>
 <translation id="2166049586286450108">Пълен администраторски достъп</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">Добавяне на паспорт</translation>
 <translation id="2400271059665846158">Управлявайте картите си за лоялност в Google Wallet</translation>
 <translation id="2400600116338235695">Може да поиска разрешение да се свързва със серийни портове</translation>
+<translation id="240450251994300576">Алтернативно лого в заглавката</translation>
 <translation id="2404884497378469141">Опитайте отново да копирате файловете си</translation>
 <translation id="2413155254802890957">Стар</translation>
 <translation id="2413528052993050574">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; възможно е сертификатът му за сигурност да е оттеглен. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">Текстът се извлича от PDF файла…</translation>
 <translation id="2628224721443278970">Вход в Microsoft OneDrive</translation>
 <translation id="2634124572758952069">IP адресът на сървъра на <ph name="HOST_NAME" /> не можа да бъде намерен.</translation>
+<translation id="2638567100095052009">Въведете @ за търсене в(ъв) <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Състояние:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Текстил (полугланциран)</translation>
@@ -1438,6 +1441,7 @@
 <translation id="343474037147570563">Качените или прикачените от вас файлове се изпращат до Google Cloud или до трети страни за анализ. Възможно е например файловете да бъдат сканирани за чувствителни данни или злонамерен софтуер, да се съхраняват въз основа на правилата на компанията и да бъдат видими за администратора ви.</translation>
 <translation id="3435557549311968410">Непрекъснат носител (вертикален)</translation>
 <translation id="3435738964857648380">Сигурност</translation>
+<translation id="3436118221454753036">Режим „Попитайте AI“</translation>
 <translation id="3440783957068352691">квадрат</translation>
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3443504041532578451">Оптичен диск (сатен)</translation>
@@ -2027,6 +2031,7 @@
 <translation id="4372948949327679948">Очаквана е стойност от тип <ph name="VALUE_TYPE" />.</translation>
 <translation id="437620492464254965">Врати и прозорци</translation>
 <translation id="4377125064752653719">Направихте опит да се свържете с/ъс <ph name="DOMAIN" />, но сървърът предoстави сертификат, анулиран от издателя си. Това означава, че в никакъв случай не трябва да се доверявате на представените от сървъра идентификационни данни за сигурност. Възможно е да сте се свързали с извършител на атака.</translation>
+<translation id="4377869186417956230">Промяна за всички карти за лоялност под този елемент от менюто.</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">От сега нататък запазвайте файловете си в хранилище в облака</translation>
@@ -2266,6 +2271,7 @@
 <translation id="4827283332383516812">Изтриване на картата</translation>
 <translation id="4830443836091007686">Избрахте <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Хартия за висококачествени изображения</translation>
+<translation id="4832388034239846146">За да споделяте групи раздели, актуализирайте Chrome</translation>
 <translation id="483241715238664915">Включване на предупрежденията</translation>
 <translation id="4832961164064927107">Готвене на барбекю и грил</translation>
 <translation id="4834250788637067901">Начини на плащане, оферти и адреси посредством Google Pay</translation>
@@ -2973,6 +2979,7 @@
 <translation id="6043357981274314628">Готово!</translation>
 <translation id="6044573915096792553">Размер 12</translation>
 <translation id="6045164183059402045">Шаблон за налагане</translation>
+<translation id="6046892054959167494">Въведете <ph name="SEARCH_AGGREGATOR_KEYWORD" />, за да търсите, или попитайте <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Въпросното съдържание може да се опита да ви подведе да инсталирате софтуер или да разкриете лична информация. <ph name="BEGIN_LINK" />Показване въпреки това<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Плик B4</translation>
 <translation id="6049488691372270142">Извеждане на страниците</translation>
@@ -4011,6 +4018,7 @@
 <translation id="7761159795823346334">Да се разреши ли достъпът до камерата?</translation>
 <translation id="7761701407923456692">Сертификатът на сървъра не съответства на URL адреса.</translation>
 <translation id="7764225426217299476">Добавяне на адрес</translation>
+<translation id="7765158879357617694">Преместване</translation>
 <translation id="7766518757692125295">Пола</translation>
 <translation id="7767278989746220252">Дворове, градини и морави</translation>
 <translation id="776749070095465053">Текстил</translation>
@@ -4345,6 +4353,7 @@
 <translation id="8364627913115013041">Не е зададено.</translation>
 <translation id="8366057325711477500">Световни новини</translation>
 <translation id="836616551641291797">Научете повече за това как се управлява браузърът ви</translation>
+<translation id="8367705492654390392">Попитайте каквото и да е</translation>
 <translation id="8368001212524806591">Проследяване на цената</translation>
 <translation id="8368027906805972958">Неизвестно или неподдържано устройство (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Услуги за Google Play</translation>

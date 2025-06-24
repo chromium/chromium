@@ -36,6 +36,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="1409338233051621926">Ilovalar &gt; Birlamchi ilovalar ustiga bosing</translation>
 <translation id="1415402041810619267">URL manzil qisqartirildi</translation>
 <translation id="1415855080660575082">Qurilmadagi ilovalar roʻyxati va qidiruv natijalarida oxirgi varaqlar chiqishi uchun Chrome ularni qurilmaga ulashishiga ruxsat bering. Buni Chrome sozlamalarida faolsizlantirish mumkin.</translation>
+<translation id="1432650420699700107">Saytlar mahalliy tarmoqdagi istalgan qurilmaga ulanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="1448064542941920355">Kichiklashtirish</translation>
 <translation id="1464044141348608623">Saytlarning qurilmadan foydalanish axborotidan foydalanishini taqiqlash</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ta sayt}other{<ph name="SITE_COUNT" /> ta sayt}}</translation>
@@ -254,6 +255,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="3955321697524543127">Saytlarga USB qurilmalarga ulanishni taqiqlash</translation>
 <translation id="3965467402665811906">Saytlar shaxsiy maʼlumotlaringizdan foydalanishga ruxsat soʻrashi mumkin</translation>
 <translation id="3967822245660637423">Yuklab olindi</translation>
+<translation id="3969869202926863008">Mahalliy tarmoqqa ruxsat</translation>
 <translation id="3981465354637804599">Saytlar odatda bepul kontent yoki xizmatlar taqdim qilish maqsadida reklama chiqaradi. Lekin ayrim saytlarda yoqimsiz yoki befoyda reklamalar chiqishi ham mumkin.</translation>
 <translation id="3987993985790029246">Nusxalash</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="6554732001434021288">Oxirgi tashrif: <ph name="NUM_DAYS" /> kun oldin</translation>
 <translation id="656065428026159829">Yana</translation>
 <translation id="6561560012278703671">Xabarlar tinchroq kelsin (bezovta qiluvchi bildirishnomalar bloklanadi)</translation>
+<translation id="6565144332292237355">Saytlar bu funksiya yordamida mahalliy tarmoqdagi istalgan qurilmani topishi va unga ulanishi mumkin</translation>
 <translation id="6593061639179217415">Desktop versiya</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" /> guruhidagi <ph name="RWS_MEMBERS_COUNT" /> ta sayt uchun cookie fayllarga ruxsat berilgan}other{<ph name="RWS_OWNER" /> guruhidagi <ph name="RWS_MEMBERS_COUNT" /> ta sayt uchun cookie fayllarga ruxsat berilgan}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

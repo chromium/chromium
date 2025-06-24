@@ -1442,6 +1442,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="343474037147570563">Failai, kuriuos įkeliate ar pridedate, siunčiami „Google Cloud“ arba trečiosioms šalims, kad būtų atlikta analizė. Pavyzdžiui, jie gali būti nuskaityti tikrinant, ar juose nėra neskelbtinų duomenų arba kenkėjiškų programų, ir saugomi atsižvelgiant į įmonės politiką bei matomi administratoriui.</translation>
 <translation id="3435557549311968410">Nepertraukiamas (trumpas)</translation>
 <translation id="3435738964857648380">Sauga</translation>
+<translation id="3436118221454753036">„Klausti DI“ režimas</translation>
 <translation id="3440783957068352691">kvadratas</translation>
 <translation id="3441653493275994384">Ekranas</translation>
 <translation id="3443504041532578451">Optinis diskas (atlasinis)</translation>
@@ -2031,6 +2032,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4372948949327679948">Numatyta „<ph name="VALUE_TYPE" />“ vertė.</translation>
 <translation id="437620492464254965">Durys ir langai</translation>
 <translation id="4377125064752653719">Bandėte pasiekti svetainę „<ph name="DOMAIN" />“, bet sertifikatą, kurį pateikė serveris, anuliavo jo išdavėjas. Tai reiškia, kad saugos kredencialais, kuriuos pateikė serveris, visiškai negalima pasitikėti. Galbūt bendraujate su užpuoliku.</translation>
+<translation id="4377869186417956230">Pakeiskite į visas lojalumo korteles naudodami šį meniu elementą.</translation>
 <translation id="4378154925671717803">Telefonas</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Nuo dabar saugokite failus saugykloje debesyje</translation>
@@ -4017,6 +4019,7 @@ Papildoma išsami informacija:
 <translation id="7761159795823346334">Leisti pasiekti fotoaparatą?</translation>
 <translation id="7761701407923456692">Serverio sertifikatas neatitinka URL.</translation>
 <translation id="7764225426217299476">Pridėti adresą</translation>
+<translation id="7765158879357617694">Perkelti</translation>
 <translation id="7766518757692125295">Pakraštys</translation>
 <translation id="7767278989746220252">Vidinis kiemas, veja ir sodas</translation>
 <translation id="776749070095465053">Audinys</translation>
@@ -4351,6 +4354,7 @@ Papildoma išsami informacija:
 <translation id="8364627913115013041">Nenustatyta.</translation>
 <translation id="8366057325711477500">Pasaulio naujienos</translation>
 <translation id="836616551641291797">Sužinokite daugiau, kaip tvarkoma naršyklė</translation>
+<translation id="8367705492654390392">Klauskite ko nors</translation>
 <translation id="8368001212524806591">Stebėti kainą</translation>
 <translation id="8368027906805972958">Nežinomas arba nepalaikomas įrenginys (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">„Google Play“ paslaugos</translation>
@@ -4666,6 +4670,7 @@ Papildoma išsami informacija:
 <translation id="8926389886865778422">Neklauskite dar kartą</translation>
 <translation id="8932102934695377596">Jūsų laikrodis atsilieka</translation>
 <translation id="893332455753468063">Vardo ir pavardės pridėjimas</translation>
+<translation id="8938242527120341116">Įrenginio turinio filtrai užblokavo <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">Administratorius leido programai „<ph name="APP_NAME" />“ rinkti diagnostikos duomenis, kad būtų galima tobulinti produkto funkcijas. Daugiau informacijos žr. <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Žaliųjų citrinų spalva</translation>
 <translation id="8949410982325929394">Tonas</translation>
@@ -4871,6 +4876,7 @@ Papildoma išsami informacija:
 <translation id="963837307749850257">Visi vartotojai</translation>
 <translation id="964050462028070434">Tvarkyti slaptažodžius ir „passkey“…</translation>
 <translation id="969892804517981540">Oficialiai pagaminta</translation>
+<translation id="97054401902912338">Sužinokite daugiau apie turinio filtrus</translation>
 <translation id="973788791897303708">Ši skirtukų grupė pilna</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nėra}=1{1 elementas}one{# elementas}few{# elementai}many{# elemento}other{# elementų}}</translation>
 <translation id="976522784004777030">5 x 8 col.</translation>

@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">६०% सम्म डेटा बचत गर्नुहोस्, आजको समाचार पढ्नुहोस्</translation>
 <translation id="1303339473099049190">उक्त पासवर्ड फेला पार्न सकिएन। आफ्नो हिज्जेको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> बाट पठाइएको</translation>
+<translation id="1310482092992808703">ट्याबहरू समूहबद्ध गर्नुहोस्</translation>
 <translation id="1318262688555255786">वेबपेज <ph name="PAGE_TITLE" /> को लिंक सेयर गर्नुहोस्। स्रोत: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">बुकमार्क सेभ गर्ने फ्लोका फोल्डरहरू स्क्रिनको पूरा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="1327257854815634930">नेभिगेसनको इतिहास खोलियो</translation>
@@ -1406,6 +1407,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7224097611345298931">Chrome र <ph name="CHROME_CHANNEL" /> का यो डिभाइसमा मात्र सेभ गरिएका सबै पासवर्डहरू मर्ज गरिएका छन्। तपाईं आफूले दुवै एपमा सेभ गरेका सबै पासवर्डहरू स्वतः भर्न सक्नुहुन्छ।</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{१ डाउनलोड विचारधीन छ}other{# डाउनलोडहरू विचारधीन छन्}}</translation>
 <translation id="7230064152164845085">इन्कोग्निटो प्रयोग गर्नुहोस्</translation>
+<translation id="7230836263524391273">रिडिङ मोड लुकाउनुहोस्</translation>
 <translation id="7237724030342645845">Google पासवर्ड म्यानेजरले काम गर्न छाडेको छ</translation>
 <translation id="72415438529550637">पासवर्ड सिफारिस गर्ने सुविधा बन्द गरिएको छ।</translation>
 <translation id="7248671827512403053">एप</translation>

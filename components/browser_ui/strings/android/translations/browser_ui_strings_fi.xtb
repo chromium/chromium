@@ -36,6 +36,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="1409338233051621926">Valitse Sovellukset ja sitten Oletussovellukset</translation>
 <translation id="1415402041810619267">URL näkyy lyhennettynä</translation>
 <translation id="1415855080660575082">Salli Chromen jakaa viimeaikaiset välilehdet laitteelle, jotta näet ne laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän päälle tai pois päältä Chromen asetuksista.</translation>
+<translation id="1432650420699700107">Sivustot voivat pyytää lupaa yhdistää paikallisessa verkossa oleviin laitteisiin</translation>
 <translation id="1448064542941920355">Vähennä zoomausta</translation>
 <translation id="1464044141348608623">Älä salli sivustojen tietää, milloin käytät laitetta aktiivisesti</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sivusto}other{<ph name="SITE_COUNT" /> sivustoa}}</translation>
@@ -254,6 +255,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3955321697524543127">Älä salli sivustojen yhdistää USB-laitteisiin</translation>
 <translation id="3965467402665811906">Sivustot voivat pyytää lupaa sinusta tallennettujen tietojen käytölle</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
+<translation id="3969869202926863008">Pääsy lähiverkkoon</translation>
 <translation id="3981465354637804599">Sivustot näyttävät yleensä mainoksia voidakseen tarjota sisältöä tai palveluja maksutta. Joidenkin sivustojen tiedetään näyttävän häiritseviä tai harhaanjohtavia mainoksia.</translation>
 <translation id="3987993985790029246">Kopioi linkki</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="6554732001434021288">Viimeksi avattu <ph name="NUM_DAYS" /> päivää sitten</translation>
 <translation id="656065428026159829">Katso lisää</translation>
 <translation id="6561560012278703671">Hiljaisemmat viestit (estää ilmoituksia häiritsemästä sinua)</translation>
+<translation id="6565144332292237355">Sivustot voivat käyttää tätä ominaisuutta etsiäkseen paikallisessa verkossa olevia laitteita ja muodostaakseen niihin yhteyden</translation>
 <translation id="6593061639179217415">Tietokonesivusto</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Evästeet sallittu <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-sivustolla}other{Evästeet sallittu <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-sivustolla}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Gt</translation>

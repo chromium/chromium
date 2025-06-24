@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">ನೀವು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕ ಹೊಂದದೇ ಇರುವುದರಿಂದ ಹಂಚಿಕೆ ವಿಫಲಗೊಂಡಿದೆ.</translation>
 <translation id="1668001730617725852">ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ನಿಂದ <ph name="TARGET_LANGUAGE" /> ಗೆ</translation>
+<translation id="168389590065701766">ನೀವು ಈಗ ನಿಮ್ಮ ವಿಳಾಸ ಪಟ್ಟಿಯಿಂದ Google Lens ಅನ್ನು ತೆರೆಯಬಹುದು ಮತ್ತು ನೀವು ನೋಡುವ ಯಾವುದನ್ನಾದರೂ ಹುಡುಕಬಹುದು</translation>
 <translation id="1689333818294560261">ಅಡ್ಡಹೆಸರು</translation>
 <translation id="169048873465870056">ಟ್ಯಾಬ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ ಮತ್ತು ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="1698090540708020240">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಇಂಪೋರ್ಟ್ ಮಾಡಿ…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">ಖಾತೆ <ph name="USER_EMAIL" /> ಅನ್ನು <ph name="HOSTED_DOMAIN" /> ನಿಂದ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ, ಇದು ಕೆಲವು ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸಲು ಸಾಧ್ಯವಾಗಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">ಹೊಸ ಐಟಂ</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> ಖಾತೆಗಳು ಒಂದೇ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸುತ್ತಿವೆ</translation>
+<translation id="205013082884273671">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ಮೇಲೆ ಏನನ್ನಾದರೂ ಹುಡುಕಿ</translation>
 <translation id="2054044186557130763">ನಿಮ್ಮ ಸಂಸ್ಥೆಯಿಂದ ನಿರ್ವಹಿಸಲ್ಪಡುವ <ph name="NAME" /> <ph name="EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="2059166748188874810">ಪುರಸಭೆ</translation>
 <translation id="2060638295449304809">ಈ ವಿಳಾಸವನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಇದನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್‌ ಮಾಡಿ, <ph name="USER_EMAIL" /></translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">ಆನ್ ಆಗಿರುವಾಗ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಡೇಟಾವನ್ನು ಸೇವ್‌ ಮಾಡಲಾಗುತ್ತದೆ. ಆಫ್ ಆಗಿರುವಾಗ, ಡೇಟಾವನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡಿದರೆ ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="2827760117436553203">ಡೇಟಾವನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿ ಇರಿಸಬೇಕೇ?</translation>
 <translation id="2829172210806130158">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಹುಡುಕಿ</translation>
+<translation id="2831109159746537587">ಹುಡುಕಲು ಸರ್ಕಲ್ ಮಾಡುವುದು, ಅಥವಾ ಚಿತ್ರವನ್ನು ಟ್ಯಾಪ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="2834399722155632105">3. ಪಾಸ್‌ವರ್ಡ್ ಆಯ್ಕೆಗಳು ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">ಸಮಯ</translation>

@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">앱을 탭한 다음 기본 앱을 탭합니다</translation>
 <translation id="1415402041810619267">URL 잘림</translation>
 <translation id="1415855080660575082">Chrome에서 내 기기와 최근 탭을 공유하도록 허용하면 기기의 앱 목록과 검색 결과에서 최근 탭을 볼 수 있습니다. 이 기능은 Chrome 설정에서 사용 또는 사용 중지할 수 있습니다.</translation>
+<translation id="1432650420699700107">사이트에서 로컬 네트워크의 모든 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="1448064542941920355">축소</translation>
 <translation id="1464044141348608623">사용자가 현재 기기를 사용 중인지 사이트에서 알 수 없도록 함</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 사이트}other{<ph name="SITE_COUNT" /> 사이트}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">사이트에서 USB 기기에 연결하도록 허용하지 않음</translation>
 <translation id="3965467402665811906">사이트에서 나에 관해 저장된 정보 사용을 요청할 수 있음</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
+<translation id="3969869202926863008">로컬 네트워크 액세스</translation>
 <translation id="3981465354637804599">사이트에서는 일반적으로 콘텐츠나 서비스를 무료로 제공하기 위해 광고를 표시합니다. 그러나 일부 사이트는 방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려져 있습니다.</translation>
 <translation id="3987993985790029246">링크 복사</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">최근 방문: <ph name="NUM_DAYS" />일 전</translation>
 <translation id="656065428026159829">더보기</translation>
 <translation id="6561560012278703671">조용한 메시지 사용(방해가 되지 않도록 알림 메시지 차단)</translation>
+<translation id="6565144332292237355">사이트에서 이 기능을 사용하여 로컬 네트워크의 기기를 찾고 연결할 수 있습니다.</translation>
 <translation id="6593061639179217415">데스크톱 사이트</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 사이트 <ph name="RWS_MEMBERS_COUNT" />개에 쿠키가 허용됨}other{<ph name="RWS_OWNER" /> 사이트 <ph name="RWS_MEMBERS_COUNT" />개에 쿠키가 허용됨}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>

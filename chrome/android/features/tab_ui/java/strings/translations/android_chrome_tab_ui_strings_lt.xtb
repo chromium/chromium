@@ -192,6 +192,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Atnaujinta prieš <ph name="NUM_MONTHS_ONE" /> mėnesį}one{Atnaujinta prieš <ph name="NUM_MONTHS_MANY" /> mėnesį}few{Atnaujinta prieš <ph name="NUM_MONTHS_MANY" /> mėnesius}many{Atnaujinta prieš <ph name="NUM_MONTHS_MANY" /> mėnesio}other{Atnaujinta prieš <ph name="NUM_MONTHS_MANY" /> mėnesių}}</translation>
 <translation id="8398929769197326728">Naujas aplankas – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Nustatymai</translation>
+<translation id="855081842937141170">Pažymėti skirtuką</translation>
 <translation id="8633025649649592204">Naujausia veikla</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8714939927607906138">Žemesnė kaina</translation>

@@ -692,6 +692,7 @@
 <translation id="2157640075051554492">價格追蹤通知</translation>
 <translation id="21613918653299710">線上圖庫</translation>
 <translation id="2161656808144014275">文字</translation>
+<translation id="2162435186600002085">主要頁首標誌</translation>
 <translation id="2162620598375156287">「<ph name="SOURCE_WEBSITE" />」目前售價　<ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">請檢查 <ph name="HOST_NAME" /> 中是否有錯字。</translation>
 <translation id="2166049586286450108">完整管理員存取權</translation>
@@ -850,6 +851,7 @@
 <translation id="2400263725572336749">新增護照</translation>
 <translation id="2400271059665846158">前往 Google 錢包管理會員卡</translation>
 <translation id="2400600116338235695">可以要求連線至序列埠</translation>
+<translation id="240450251994300576">次要頁首標誌</translation>
 <translation id="2404884497378469141">再次嘗試複製檔案</translation>
 <translation id="2413155254802890957">舊地址</translation>
 <translation id="2413528052993050574">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已遭撤銷。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
@@ -980,6 +982,7 @@
 <translation id="2627847595568876492">正在擷取 PDF 檔的文字...</translation>
 <translation id="2628224721443278970">登入 Microsoft OneDrive</translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的伺服器 IP 位址。</translation>
+<translation id="2638567100095052009">輸入 @ 即可在 <ph name="FEATURED_SEARCH_LIST" /> 上搜尋</translation>
 <translation id="2639739919103226564">狀態：</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">織品 (半光面)</translation>
@@ -1436,6 +1439,7 @@
 <translation id="343474037147570563">你上傳或附加的檔案會傳送到 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描檔案，檢查是否含有敏感資料或惡意軟體，也可能會依據公司政策儲存這些檔案，並通知系統管理員查看。</translation>
 <translation id="3435557549311968410">連續 (短邊)</translation>
 <translation id="3435738964857648380">安全性</translation>
+<translation id="3436118221454753036">「詢問 AI」模式</translation>
 <translation id="3440783957068352691">正方形</translation>
 <translation id="3441653493275994384">螢幕</translation>
 <translation id="3443504041532578451">光碟 (光滑)</translation>
@@ -2264,6 +2268,7 @@
 <translation id="4827283332383516812">刪除卡片</translation>
 <translation id="4830443836091007686">已選取 <ph name="ITEMS" /> 個項目</translation>
 <translation id="4831993743164297314">影像排版機用紙</translation>
+<translation id="4832388034239846146">如要共用分頁群組，請更新 Chrome</translation>
 <translation id="483241715238664915">開啟警告</translation>
 <translation id="4832961164064927107">烤肉與燒烤</translation>
 <translation id="4834250788637067901">儲存在 Google Pay 的付款方式、優惠和地址資訊</translation>
@@ -2971,6 +2976,7 @@
 <translation id="6043357981274314628">完成！</translation>
 <translation id="6044573915096792553">粗細：12</translation>
 <translation id="6045164183059402045">拼版範本</translation>
+<translation id="6046892054959167494">輸入「<ph name="SEARCH_AGGREGATOR_KEYWORD" />」即可在 <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> 上搜尋或提問</translation>
 <translation id="6047927260846328439">這項內容可能會試圖誘使你安裝軟體或提供個人資訊。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">頁面傳送</translation>
@@ -4009,6 +4015,7 @@
 <translation id="7761159795823346334">要授予相機權限嗎？</translation>
 <translation id="7761701407923456692">伺服器憑證與網址不符。</translation>
 <translation id="7764225426217299476">新增地址</translation>
+<translation id="7765158879357617694">移動</translation>
 <translation id="7766518757692125295">預擠圈</translation>
 <translation id="7767278989746220252">庭院、草坪和園藝</translation>
 <translation id="776749070095465053">織品</translation>
@@ -4343,6 +4350,7 @@
 <translation id="8364627913115013041">未設定。</translation>
 <translation id="8366057325711477500">國際新聞</translation>
 <translation id="836616551641291797">進一步瞭解如何管理瀏覽器</translation>
+<translation id="8367705492654390392">提出問題</translation>
 <translation id="8368001212524806591">追蹤價格</translation>
 <translation id="8368027906805972958">不明或不支援的裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play 服務</translation>

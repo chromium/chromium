@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">Notificări privind urmărirea prețurilor</translation>
 <translation id="21613918653299710">Galerii de imagini online</translation>
 <translation id="2161656808144014275">Text</translation>
+<translation id="2162435186600002085">Sigla principală din antet</translation>
 <translation id="2162620598375156287">Acum la <ph name="CURRENT_PRICE" /> pe <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Verifică dacă există vreo greșeală de scriere în <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Acces complet de administrare</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">Adaugă pașaportul</translation>
 <translation id="2400271059665846158">Gestionează-ți cardurile de fidelitate în Portofel Google</translation>
 <translation id="2400600116338235695">Poate solicita permisiunea de a se conecta la porturi seriale</translation>
+<translation id="240450251994300576">Sigla secundară din antet</translation>
 <translation id="2404884497378469141">Încearcă să copiezi din nou fișierele</translation>
 <translation id="2413155254802890957">Veche</translation>
 <translation id="2413528052993050574">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; este posibil ca certificatul său de securitate să fie revocat. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">Se extrage textul din PDF...</translation>
 <translation id="2628224721443278970">Conectează-te la Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Nu s-a găsit adresa IP pentru serverul <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Introdu @ pentru a căuta în <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Stare:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Material textil (semilucios)</translation>
@@ -1438,6 +1441,7 @@
 <translation id="343474037147570563">Fișierele pe care le încarci sau atașezi sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile sau programe malware și pot să fie stocate conform politicilor companiei și să fie vizibile pentru administrator.</translation>
 <translation id="3435557549311968410">Continuu (scurt)</translation>
 <translation id="3435738964857648380">Securitate</translation>
+<translation id="3436118221454753036">Modul Întreabă AI</translation>
 <translation id="3440783957068352691">pătrată</translation>
 <translation id="3441653493275994384">Ecran</translation>
 <translation id="3443504041532578451">Disc optic (satin)</translation>
@@ -2266,6 +2270,7 @@
 <translation id="4827283332383516812">Șterge cardul</translation>
 <translation id="4830443836091007686">Articole selectate: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Hârtie Setter pentru imagini</translation>
+<translation id="4832388034239846146">Pentru a trimite grupuri de file, actualizează Chrome</translation>
 <translation id="483241715238664915">Activează avertizările</translation>
 <translation id="4832961164064927107">Grătare</translation>
 <translation id="4834250788637067901">Metode de plată, oferte și adrese care folosesc Google Pay</translation>
@@ -2973,6 +2978,7 @@
 <translation id="6043357981274314628">Terminat!</translation>
 <translation id="6044573915096792553">Mărimea 12</translation>
 <translation id="6045164183059402045">Șablon de impunere</translation>
+<translation id="6046892054959167494">Introdu <ph name="SEARCH_AGGREGATOR_KEYWORD" /> pentru a căuta sau pentru a întreba <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Acest conținut ar putea încerca să te păcălească să instalezi software sau să dezvălui informații cu caracter personal. <ph name="BEGIN_LINK" />Afișează oricum<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Plic B4</translation>
 <translation id="6049488691372270142">Scoaterea paginilor</translation>
@@ -4011,6 +4017,7 @@ Detalii suplimentare:
 <translation id="7761159795823346334">Permiți accesul la cameră?</translation>
 <translation id="7761701407923456692">Certificatul serverului nu se potrivește cu adresa URL.</translation>
 <translation id="7764225426217299476">Adaugă o adresă</translation>
+<translation id="7765158879357617694">Mută</translation>
 <translation id="7766518757692125295">Contur</translation>
 <translation id="7767278989746220252">Terase, peluze și grădini</translation>
 <translation id="776749070095465053">Material textil</translation>
@@ -4345,6 +4352,7 @@ Detalii suplimentare:
 <translation id="8364627913115013041">Nesetată.</translation>
 <translation id="8366057325711477500">Știri internaționale</translation>
 <translation id="836616551641291797">Află mai multe despre gestionarea browserului</translation>
+<translation id="8367705492654390392">Întreabă orice</translation>
 <translation id="8368001212524806591">Urmărește prețul</translation>
 <translation id="8368027906805972958">Dispozitiv necunoscut sau neacceptat (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Servicii Google Play</translation>

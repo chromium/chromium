@@ -192,6 +192,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Cập nhật <ph name="NUM_MONTHS_ONE" /> tháng trước}other{Cập nhật <ph name="NUM_MONTHS_MANY" /> tháng trước}}</translation>
 <translation id="8398929769197326728">Thư mục mới – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Cài đặt</translation>
+<translation id="855081842937141170">Ghim thẻ</translation>
 <translation id="8633025649649592204">Hoạt động gần đây</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8714939927607906138">Giá thấp hơn</translation>

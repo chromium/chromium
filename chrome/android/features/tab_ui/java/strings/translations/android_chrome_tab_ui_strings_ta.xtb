@@ -17,6 +17,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> நிமிடத்திற்கு முன் உருவாக்கப்பட்டது}other{<ph name="NUM_MINS_MANY" /> நிமிடங்களுக்கு முன் உருவாக்கப்பட்டது}}</translation>
 <translation id="1499635324672558517">மறைநிலைப் பக்கங்கள் அனைத்தையும் மூடவா?</translation>
 <translation id="1501480321619201731">குழுவை நீக்கு</translation>
+<translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> செயலில் இல்லை}other{<ph name="TABS_COUNT_MANY" /> செயலில் இல்லை}}</translation>
 <translation id="1555130319947370107">நீலம்</translation>
 <translation id="161042844686301425">சியான்</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> பக்கங்கள் குழுவாக்கப்பட்டுள்ளன</translation>
@@ -68,6 +69,7 @@
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> புதிய பக்கம்}other{<ph name="MANY_ADDED" /> புதிய பக்கங்கள்}}</translation>
 <translation id="3613492231657284463">செயலில் இல்லாத பக்கங்களைக் காட்டும் உரையாடலை மறைக்கும்</translation>
 <translation id="3619255692378312441">அணுகலை நிர்வகித்தல்</translation>
+<translation id="3649471731638882002">{TAB_COUNT,plural, =1{பக்கத்தை மூடு}other{பக்கங்களை மூடு}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ஷேர் ஷீட் மாதிரிக்காட்சியின் சிறுபடம்.</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
@@ -80,6 +82,7 @@
 <translation id="4159784952369912983">பர்பிள்</translation>
 <translation id="427987768447457592">புதிய பக்கக் குழு</translation>
 <translation id="4371591986692297148">செயலில் இல்லை</translation>
+<translation id="4429658455677831355">{TAB_COUNT,plural, =1{பக்கத்தை மீட்டெடு}other{பக்கங்களை மீட்டெடு}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> நாளுக்கு முன் புதுப்பிக்கப்பட்டது}other{<ph name="NUM_DAYS_MANY" /> நாட்களுக்கு முன் புதுப்பிக்கப்பட்டது}}</translation>
 <translation id="4686942373615810936">சற்றுமுன் உருவாக்கப்பட்டது</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 நாளுக்குப் பிறகு மூடு}other{<ph name="DAY_COUNT_MANY" /> நாட்களுக்குப் பிறகு மூடு}}</translation>
@@ -189,6 +192,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> மாதத்திற்கு முன் புதுப்பிக்கப்பட்டது}other{<ph name="NUM_MONTHS_MANY" /> மாதங்களுக்கு முன் புதுப்பிக்கப்பட்டது}}</translation>
 <translation id="8398929769197326728">புதிய ஃபோல்டர் - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
+<translation id="855081842937141170">தாவலைப் பொருத்து</translation>
 <translation id="8633025649649592204">சமீபத்திய செயல்</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8714939927607906138">குறைவான விலை</translation>
@@ -205,4 +209,5 @@
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கத்துடன் உள்ள பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்களுடன் உள்ள பக்கக் குழுவை விரிவாக்கும்.}}</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
 <translation id="992256792861109788">பிங்க்</translation>
+<translation id="994514002078791059">{TAB_COUNT,plural, =1{செயலில் இல்லாத 1 பக்கத்தை மூடவா?}other{செயலில் இல்லாத <ph name="TAB_COUNT_MANY" /> பக்கங்களை மூடவா?}}</translation>
 </translationbundle>

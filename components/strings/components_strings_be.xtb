@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">Апавяшчэнні пра змяненне цэн</translation>
 <translation id="21613918653299710">Вэб-галерэі відарысаў</translation>
 <translation id="2161656808144014275">Тэкст</translation>
+<translation id="2162435186600002085">Лагатып асноўнага загалоўка</translation>
 <translation id="2162620598375156287">Цяперашняя цана на сайце <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">Праверце, ці няма памылкі ў напісанні: <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Поўны доступ адміністратара</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">Дадаць пашпарт</translation>
 <translation id="2400271059665846158">Кіруйце вашымі карткамі лаяльнасці ў Google Кашальку</translation>
 <translation id="2400600116338235695">Сайт можа запытваць дазвол на падключэнне да паслядоўных партоў</translation>
+<translation id="240450251994300576">Лагатып дадатковага загалоўка</translation>
 <translation id="2404884497378469141">Паспрабуйце скапіраваць файлы яшчэ раз</translation>
 <translation id="2413155254802890957">Старая форма</translation>
 <translation id="2413528052993050574">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; магчыма, яго сертыфікат бяспекі адкліканы. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
@@ -982,6 +984,7 @@
 <translation id="2627847595568876492">Вымаецца тэкст з PDF…</translation>
 <translation id="2628224721443278970">Увайсці ў Microsoft OneDrive</translation>
 <translation id="2634124572758952069">IP-адрас сервера хоста <ph name="HOST_NAME" /> не знойдзены.</translation>
+<translation id="2638567100095052009">Увядзіце @ для пошуку тут: <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Стан:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Паўглянцавая тканіна</translation>
@@ -1439,6 +1442,7 @@
 <translation id="343474037147570563">Запампаваныя і далучаныя файлы перасылаюцца для аналізу ў Google Cloud або трэцім бакам. У прыватнасці, яны могуць быць правераны на наяўнасць канфідэнцыяльных даных або шкодных праграм альбо адпраўлены на захоўванне ў адпаведнасці з палітыкамі кампаніі і іх зможа пабачыць адміністратар.</translation>
 <translation id="3435557549311968410">Ролевая папера (злучаная па кароткім краі)</translation>
 <translation id="3435738964857648380">Бяспека</translation>
+<translation id="3436118221454753036">Рэжым "Спытаць AI"</translation>
 <translation id="3440783957068352691">квадратная</translation>
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3443504041532578451">Сацініраваны аптычны дыск</translation>
@@ -2266,6 +2270,7 @@
 <translation id="4827283332383516812">Выдаленне карткі</translation>
 <translation id="4830443836091007686">Выбрана: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Папера для фотанаборнай машыны</translation>
+<translation id="4832388034239846146">Абнавіце версію Chrome, каб абагульваць групы ўкладак</translation>
 <translation id="483241715238664915">Уключыць папярэджанні</translation>
 <translation id="4832961164064927107">Барбекю і грыль</translation>
 <translation id="4834250788637067901">Спосабы аплаты, прапановы і адрасы, якія выкарыстоўваюць Google Pay</translation>
@@ -2972,6 +2977,7 @@
 <translation id="6043357981274314628">Гатова!</translation>
 <translation id="6044573915096792553">Памер 12</translation>
 <translation id="6045164183059402045">Шаблон накладання</translation>
+<translation id="6046892054959167494">Увядзіце "<ph name="SEARCH_AGGREGATOR_KEYWORD" />", каб выканаць пошук ці задаць пытанне тут: <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Праз гэта змесціва вас могуць падмануць і прымусіць усталяваць праграмнае забеспячэнне або выдаць асабістую інфармацыю. <ph name="BEGIN_LINK" />Усё роўна паказаць<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Канверт B4</translation>
 <translation id="6049488691372270142">Дастаўка старонак</translation>
@@ -4010,6 +4016,7 @@
 <translation id="7761159795823346334">Дазволіць доступ да камеры?</translation>
 <translation id="7761701407923456692">Несупадзенне паміж сертыфікатам сервера і URL-адрасам.</translation>
 <translation id="7764225426217299476">Дадаць адрас</translation>
+<translation id="7765158879357617694">Перамясціць</translation>
 <translation id="7766518757692125295">Край</translation>
 <translation id="7767278989746220252">Унутраны дворык, сад і газон</translation>
 <translation id="776749070095465053">Тканіна</translation>
@@ -4344,6 +4351,7 @@
 <translation id="8364627913115013041">Не зададзена</translation>
 <translation id="8366057325711477500">Сусветныя навіны</translation>
 <translation id="836616551641291797">Даведацца больш пра тое, як ажыццяўляецца кіраванне браўзерам</translation>
+<translation id="8367705492654390392">Задайце любое пытанне</translation>
 <translation id="8368001212524806591">Адсочваць цану</translation>
 <translation id="8368027906805972958">Прылада невядомая або не падтрымліваецца (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Сэрвісы Google Play</translation>

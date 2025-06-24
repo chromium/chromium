@@ -3471,11 +3471,6 @@ Si cette règle est configurée, la règle <ph name="DEVELOPER_TOOLS_AVAILABILIT
       Si la règle n'est pas configurée, aucune restriction ne sera appliquée.</translation>
 <translation id="3531084733660068324">Paramètres de supervision parentale</translation>
 <translation id="3532827558833318911">Effacer la connexion par mot de passe</translation>
-<translation id="353291262171579310">Cette règle contrôle la visibilité de l'avis de gestion dans le pied de la page "Nouvel onglet". Par défaut, le pied de la page "Nouvel onglet" affiche des informations lorsque le navigateur est géré par une organisation (indiqué par une icône représentant un bâtiment et la mention "Géré par [nom de domaine]"). Vous pouvez personnaliser cette règle à l'aide des règles <ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" /> et <ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />.
-
-Si cette règle n'est pas configurée ou si elle est définie sur "True", les navigateurs gérés affichent un avertissement indiquant "Géré par…" accompagné d'une icône.
-
-Si cette règle est définie sur "False", l'avis de gestion est masqué.</translation>
 <translation id="353611922042274900">Toujours afficher les informations système sur l'écran de connexion</translation>
 <translation id="3536263244905016305">Désactiver l'optimisation WPAD (Web Proxy Auto-Discovery, découverte automatique du proxy)</translation>
 <translation id="3539103206548425861">Permet la lecture automatique des vidéos (sans accord de l'utilisateur) avec leur contenu audio dans <ph name="PRODUCT_NAME" />. Si la règle <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> est définie sur "True", cette règle n'a aucune incidence. Si <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> est définie sur "False", la lecture automatique est toujours activée pour les formats d'URL inclus dans cette règle. Si <ph name="PRODUCT_NAME" /> est en cours d'exécution lorsque cette règle est modifiée, la modification n'affectera que les nouveaux onglets ouverts.
@@ -6674,6 +6669,8 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="5740636973289452345">Activer les rapports sur les informations liées aux extensions et plug-ins</translation>
 <translation id="5740716956489996914">Utiliser le comportement par défaut pour déterminer si des sites Web peuvent envoyer des requêtes aux points de terminaison du réseau local</translation>
 <translation id="5741110260062082926">Désactiver Orca</translation>
+<translation id="5746126833785204233">Si cette règle est activée, les journaux d'applis kiosque sont collectés quand une appli kiosque est exécutée sur l'appareil. Ces journaux sont collectés pour tous les types d'applis kiosque et stockés dans un fichier kiosk_apps.log distinct.
+Si cette règle est désactivée ou n'est pas configurée, les journaux au niveau des applis kiosque ne sont pas collectés.</translation>
 <translation id="5746149754419996562">Active la présence de widgets Glanceables sur <ph name="PRODUCT_OS_NAME" />. Plus précisément, les widgets accessibles via le chip de date sur l'étagère.
 Lorsque cette règle est activée, les Glanceables le sont aussi sur <ph name="PRODUCT_OS_NAME" />.
 Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas activés sur <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -7591,13 +7588,6 @@ AVERTISSEMENT : Faites attention quand vous modifiez ce paramètre, car cela po
 <translation id="6371005337713685988">Paramètres de la fonctionnalité d'ensembles de sites Web associés</translation>
 <translation id="6371561334154580937">Afficher la boîte de dialogue de déconnexion sur la dernière fenêtre fermée.</translation>
 <translation id="6372105930898423193">Permet de réactiver le cache des applications même s'il est désactivé par défaut.</translation>
-<translation id="6372676668820850849">Cette règle détermine si le partitionnement du stockage tiers est autorisé par défaut.
-
-Si cette règle est définie sur "1 - AllowPartitioning" ou si elle n'est pas configurée, le partitionnement du stockage tiers est autorisé par défaut. Cette valeur par défaut peut être remplacée pour des origines de premier niveau spécifiques par d'autres moyens.
-
-Si cette règle est définie sur "2 - BlockPartitioning", le partitionnement du stockage tiers est désactivé pour tous les contextes.
-
-Utilisez <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> pour désactiver le partitionnement du stockage tiers pour des origines de premier niveau spécifiques. Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="6373299801585455337">Activer les rapports sur le CPU de l'appareil</translation>
 <translation id="6374945506685352202">Liste de blocage pour les types d'installations d'extensions</translation>
 <translation id="6376540107659524656">Désactiver les connexions SSH dans Terminal System App</translation>
@@ -8439,6 +8429,7 @@ Si la règle <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /
 <translation id="6907778402784621686">Bloquer le contenu non sécurisé sur ces sites</translation>
 <translation id="6908335885425855120">Utiliser la visionneuse de PDF iFrame hors processus</translation>
 <translation id="6908640907898649429">Configure le moteur de recherche par défaut. Vous pouvez définir le moteur de recherche par défaut dont se servira l'utilisateur ou choisir de désactiver le moteur de recherche par défaut.</translation>
+<translation id="6910715067772088598">Désactiver les journaux d'applis kiosque</translation>
 <translation id="6913068954484253496">Autoriser <ph name="PRODUCT_NAME" /> à se connecter aux appareils Cast sur toutes les adresses IP.</translation>
 <translation id="6915493311660114995">Si cette règle est activée, <ph name="PRODUCT_NAME" /> autorise les requêtes d'authentification Web sur les sites dont les certificats TLS comportent des erreurs (c'est-à-dire les sites Web considérés comme non sécurisés).
 
@@ -8514,6 +8505,7 @@ Cette règle sera supprimée quand la fonctionnalité de pilotes d'impression ho
       Si elle n'est pas configurée, aucune imprimante associée à un appareil n'est affichée, et les autres règles <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> sont ignorées.</translation>
 <translation id="69525503251220566">Paramètre qui active la fonctionnalité de recherche par image pour le moteur de recherche par défaut</translation>
 <translation id="6953102253399571439">Activer l'impression par code définie par défaut</translation>
+<translation id="695532899547292238">Activer la collecte des journaux d'applis kiosque</translation>
 <translation id="6956272732789158625">Interdire à tous les sites d'utiliser la génération de clé</translation>
 <translation id="6960996423652450945">Désactiver la mise en surbrillance du curseur de saisie sur l'écran de connexion</translation>
 <translation id="6961602002757991199">Si cette règle est définie sur une URL valide, <ph name="PRODUCT_NAME" /> télécharge la liste des sites à partir de cette URL, puis applique les instructions comme si elles avaient été configurées avec la règle <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Ces instructions empêchent <ph name="PRODUCT_NAME" /> et le navigateur secondaire de s'ouvrir l'un l'autre.
@@ -9164,13 +9156,6 @@ Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name
 <translation id="7463934096276667908">Active les API de vidéo en plein écran avec préfixe</translation>
 <translation id="7464058117970792805">Activer l'aperçu avant impression</translation>
 <translation id="7464991223784276288">Limiter les cookies des URL correspondantes à la session en cours</translation>
-<translation id="7467748623079596345">Cette règle vous permet de définir une liste de formats d'URL indiquant les origines de premier niveau pour lesquelles le partitionnement du stockage tiers (partitionnement du stockage iFrame multi-origine) doit être désactivé.
-
-Si cette règle n'est pas configurée ou si une origine de premier niveau ne correspond à aucun des formats d'URL, <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> s'applique.
-
-Pour en savoir plus sur les formats valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Notez que les formats que vous répertoriez ici sont traités comme des origines, et non comme des URL. Vous ne devez donc pas spécifier de chemin d'accès.
-
-Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="7468182772656807573">Permet de spécifier la fréquence d'envoi (en millisecondes) des paquets réseau de contrôle. Cette fréquence peut être comprise entre 30 secondes et 24 heures. Toute valeur en dehors de cette plage sera remplacée par la valeur minimale ou maximale la plus proche autorisée.
 
       Si cette règle n'est pas configurée, la valeur par défaut (trois minutes) est appliquée.</translation>
@@ -9318,6 +9303,7 @@ Si cette règle est vide, aucune exception à <ph name="FLOATING_SSO_DOMAIN_BLOC
 <translation id="7586199729147257934">Activer le provisionnement des certificats client pour les navigateurs gérés</translation>
 <translation id="7587345076013230465">Demander à l'utilisateur de sélectionner le certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats sur l'écran de connexion</translation>
 <translation id="7587921466180902617">Active la version dogfood de l'enregistreur d'écran pour les utilisateurs de Family Link</translation>
+<translation id="7588140323025689972">Activer les journaux d'applis kiosque</translation>
 <translation id="7595074040612182185">Permet de lister les formats d'URL indiquant quels sites peuvent afficher des images.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Sinon, le paramètre défini par l'utilisateur s'applique.

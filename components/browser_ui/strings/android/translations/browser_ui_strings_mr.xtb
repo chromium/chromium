@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">अ‍ॅप्सवर, त्यानंतर डीफॉल्ट अ‍ॅप्सवर टॅप करा</translation>
 <translation id="1415402041810619267">URL कापली गेली</translation>
 <translation id="1415855080660575082">Chrome ला तुमचे अलीकडील टॅब तुमच्या डिव्हाइसच्या ॲप सूचीमध्ये आणि शोध परिणामांमध्ये पाहण्यासाठी ते तुमच्या डिव्हाइससह शेअर करू द्या. तुम्ही हे Chrome सेटिंग्जमध्ये सुरू किंवा बंद करू शकता.</translation>
+<translation id="1432650420699700107">साइट तुमच्या स्थानिक नेटवर्कवरील कोणत्याही डिव्हाइससोबत कनेक्ट करण्याची विनंती करू शकतात</translation>
 <translation id="1448064542941920355">झूम कमी करते</translation>
 <translation id="1464044141348608623">तुम्ही तुमचे डिव्हाइस सक्रियपणे केव्हा वापरता हे साइटना जाणून घेण्याची अनुमती देऊ नका</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> साइट}other{<ph name="SITE_COUNT" /> साइट}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">साइटना USB डिव्हाइसशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
 <translation id="3965467402665811906">तुमच्याविषयी सेव्ह केलेली माहिती वापरण्याची परवानगी साइट मागू शकतात</translation>
 <translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
+<translation id="3969869202926863008">स्थानिक नेटवर्क अ‍ॅक्सेस</translation>
 <translation id="3981465354637804599">साइट सहसा जाहिराती दाखवतात, जेणेकरून त्या आशय किंवा सेवा निःशुल्क पुरवू शकतात. पण, काही साइट नको असलेल्या किंवा दिशाभूल करणार्‍या जाहिराती दाखवतात.</translation>
 <translation id="3987993985790029246">लिंक कॉपी करा</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> दिवसांपूर्वी शेवटची भेट दिली</translation>
 <translation id="656065428026159829">आणखी पहा</translation>
 <translation id="6561560012278703671">कमी आवाजाचा मेसेज वापरा (तुम्हाला व्यत्यय आणणे थांबवण्यासाठी सूचना ब्लॉक करा)</translation>
+<translation id="6565144332292237355">तुमच्या स्थानिक नेटवर्कवरील कोणतेही डिव्हाइस शोधून त्याच्याशी कनेक्ट करण्यासाठी साइट हे वैशिष्ट्य वापरू शकते</translation>
 <translation id="6593061639179217415">डेस्कटॉप साइट</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> साइटसाठी कुकीना अनुमती दिली आहे}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> साइटसाठी कुकीना अनुमती दिली आहे}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

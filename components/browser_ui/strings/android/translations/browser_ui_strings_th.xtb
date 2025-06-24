@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">แตะ "แอป" จากนั้นแตะ "แอปเริ่มต้น"</translation>
 <translation id="1415402041810619267">ตัด URL ให้สั้นลงแล้ว</translation>
 <translation id="1415855080660575082">ให้ Chrome แชร์แท็บล่าสุดกับอุปกรณ์ของคุณเพื่อดูแท็บเหล่านั้นในรายการแอปและผลการค้นหาของอุปกรณ์ คุณเปิดหรือปิดฟีเจอร์นี้ได้ในการตั้งค่า Chrome</translation>
+<translation id="1432650420699700107">เว็บไซต์สามารถขอเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณได้</translation>
 <translation id="1448064542941920355">ลดการซูม</translation>
 <translation id="1464044141348608623">ไม่อนุญาตให้เว็บไซต์ทราบเวลาที่คุณใช้งานอุปกรณ์อยู่</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> เว็บไซต์}other{<ph name="SITE_COUNT" /> เว็บไซต์}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">ไม่อนุญาตให้เว็บไซต์เชื่อมต่อกับอุปกรณ์ USB</translation>
 <translation id="3965467402665811906">เว็บไซต์สามารถขอใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณ</translation>
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
+<translation id="3969869202926863008">การเข้าถึงเครือข่ายภายใน</translation>
 <translation id="3981465354637804599">โดยปกติแล้วเว็บไซต์จะแสดงโฆษณาเพื่อให้จัดเตรียมเนื้อหาหรือให้บริการได้โดยไม่มีค่าใช้จ่าย แต่บางเว็บไซต์นั้นเป็นที่ทราบว่าแสดงโฆษณาที่รบกวนหรือทำให้เข้าใจผิด</translation>
 <translation id="3987993985790029246">คัดลอกลิงก์</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">เข้าชมล่าสุด <ph name="NUM_DAYS" /> วันที่ผ่านมา</translation>
 <translation id="656065428026159829">ดูเพิ่มเติม</translation>
 <translation id="6561560012278703671">ใช้การส่งข้อความแบบไม่ส่งเสียง (บล็อกข้อความแจ้งเตือนไม่ให้รบกวนคุณ)</translation>
+<translation id="6565144332292237355">เว็บไซต์สามารถใช้ฟีเจอร์นี้เพื่อค้นหาและเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณ</translation>
 <translation id="6593061639179217415">เว็บไซต์แบบเดสก์ท็อป</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="RWS_OWNER" /> แล้ว <ph name="RWS_MEMBERS_COUNT" /> รายการ}other{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="RWS_OWNER" /> แล้ว <ph name="RWS_MEMBERS_COUNT" /> รายการ}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">השיתוף נכשל משום שאין לך חיבור לרשת.</translation>
 <translation id="1668001730617725852">פתיחה בקבוצת כרטיסיות חדשה</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ל<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">‏עכשיו אפשר לפתוח את Google Lens מסרגל הכתובות ולחפש את כל מה שרואים</translation>
 <translation id="1689333818294560261">כינוי</translation>
 <translation id="169048873465870056">להסיר את הכרטיסייה ולמחוק את הקבוצה?</translation>
 <translation id="1698090540708020240">ייבוא סיסמאות…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">החשבון <ph name="USER_EMAIL" /> מנוהל על ידי <ph name="HOSTED_DOMAIN" />, שיכול להיות שיש לו גישה לחלק מהמידע. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">פריט חדש</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> חשבונות משתמשים באותה סיסמה</translation>
+<translation id="205013082884273671">חיפוש של מה שמוצג במסך</translation>
 <translation id="2054044186557130763">כניסה בתור <ph name="NAME" /> <ph name="EMAIL" />, חשבון שמנוהל על ידי הארגון שלך.</translation>
 <translation id="2059166748188874810">מחוז</translation>
 <translation id="2060638295449304809">‏הכתובת הזו שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google, <ph name="USER_EMAIL" />.</translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">‏כשההגדרה מופעלת, הנתונים נשמרים בחשבון שלך ב-Google. כשההגדרה מושבתת, הנתונים נשמרים רק במכשיר הזה ונמחקים כשיוצאים מהחשבון.</translation>
 <translation id="2827760117436553203">לשמור את הנתונים בנפרד?</translation>
 <translation id="2829172210806130158">חיפוש במסך</translation>
+<translation id="2831109159746537587">כדי לחפש, מקיפים את התמונה עם האצבע או לוחצים עליה</translation>
 <translation id="2834399722155632105">3‏. לוחצים על 'אפשרויות של סיסמאות'</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">שעה</translation>

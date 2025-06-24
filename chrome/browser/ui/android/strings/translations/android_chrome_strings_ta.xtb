@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">60% வரை டேட்டாவைச் சேமிக்கலாம், இன்றைய செய்திகளைப் படிக்கலாம்</translation>
 <translation id="1303339473099049190">கடவுச்சொல்லைக் கண்டறிய முடியவில்லை. எழுத்துப்பிழையைச் சரிபார்த்து மீண்டும் முயலவும்.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> சாதனத்திலிருந்து அனுப்பப்பட்டது</translation>
+<translation id="1310482092992808703">தாவல்களைக் குழுவாக்கு</translation>
 <translation id="1318262688555255786"><ph name="PAGE_TITLE" /> என்ற இணையப் பக்கத்திற்கான இணைப்பைப் பகிரும். தகவல் ஆதாரம்: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">புக்மார்க் சேமிப்புச் செயல்முறை முழுத் திரையில் காட்டப்பட்டுள்ளது</translation>
 <translation id="1327257854815634930">வழிசெலுத்தல் வரலாறு திறக்கப்பட்டுள்ளது</translation>
@@ -477,6 +478,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">விளம்பர அளவீடு</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> பக்கக் குழு</translation>
+<translation id="3200536777393523575">தற்போதைய சாளரத்தை மூடவா?</translation>
 <translation id="3207960819495026254">புக்மார்க் செய்யப்பட்டது</translation>
 <translation id="3208584281581115441">இப்போது சரிபார்</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> நீக்கப்பட்டது</translation>
@@ -721,6 +723,7 @@
 <translation id="4351244548802238354">அறிவிப்பை மூடு</translation>
 <translation id="4352287748243729941">உங்கள் <ph name="PROVIDER" /> கடவுச்சொல்லைப் பயன்படுத்தவா?</translation>
 <translation id="4355272626458588338">முக்கியமான பக்கங்களை புக்மார்க் செய்வதன் மூலம் எப்போது வேண்டுமானாலும் அவற்றை அணுகலாம்</translation>
+<translation id="4356503491090073318">கார்டு எண்*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">ஒரே பார்வையில் பாதுகாப்புத் தகவல்கள்</translation>
 <translation id="4378154925671717803">மொபைல்</translation>
@@ -738,6 +741,7 @@
 <translation id="4425140285732600465">விலையைக் கண்காணிக்கிறது. எந்தத் தளத்திலாவது விலை குறைந்தால் அதுகுறித்து அறிவிப்பைப் பெறுவீர்கள்.</translation>
 <translation id="4425173294238317796">கடவுச்சாவியை உறுதிப்படுத்துவதற்கான தாள்</translation>
 <translation id="442518031075347249">உங்கள் விர்ச்சுவல் கார்டை Google Payயில் இனி பயன்படுத்த முடியாது. <ph name="BEGIN_LINK1" />விர்ச்சுவல் கார்டுகள் குறித்து மேலும் அறிக<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> மற்றும் வேறு <ph name="TAB_COUNT_ONE" /> பக்கம் மூடப்படும்}other{<ph name="TAB_TITLE" /> மற்றும் வேறு <ph name="TAB_COUNT_MANY" /> பக்கங்கள் மூடப்படும்}}</translation>
 <translation id="4426508677408162512">எல்லா புத்தகக்குறிகளும்</translation>
 <translation id="4430277756566635951">தற்போது தேர்ந்தெடுக்கப்பட்டுள்ளது: <ph name="EMAIL" />. கணக்கைத் தேர்வுசெய்யும்.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> தாவலை மூடும்</translation>
@@ -873,6 +877,7 @@
 <translation id="4987271110129728827">அந்தப் பக்கத்தைக் கண்டறிய முடியவில்லை. தேடல் வினவலில் உள்ள எழுத்துகளைச் சரிபார்க்கவும் அல்லது இணையத் தேடல் மூலம் முயன்று பார்க்கவும்.</translation>
 <translation id="4988526792673242964">பக்கங்கள்</translation>
 <translation id="4991110219272367918">மூடப்பட்டுள்ள இணையதளத்தை அனுமதிக்க அல்லது மறுப்பதற்கான விருப்பம்</translation>
+<translation id="4996042648402406470">பெறுக</translation>
 <translation id="4996095658297597226">பரிந்துரைக்கப்பட்ட கடவுச்சொல்லைப் பயன்படுத்த வேண்டுமா?</translation>
 <translation id="5001388021414335527">இங்கிருந்தே தளத்தைப் பின்தொடரலாம்</translation>
 <translation id="5004416275253351869">Google செயல்பாட்டுக் கட்டுப்பாடுகள்</translation>
@@ -923,10 +928,12 @@
 <translation id="5210286577605176222">முந்தைய தாவலுக்குச் செல்லும்</translation>
 <translation id="5210365745912300556">பக்கத்தை மூடுக</translation>
 <translation id="5215957675041756913">உங்கள் தரவையும் கணக்கையும் கட்டுப்படுத்துங்கள்</translation>
+<translation id="5218324087477576825">கார்டு எண் அவசியம்</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> மற்றும் பல <ph name="SEPARATOR" /> நீங்கள் சமீபத்தில் இந்தத் தளத்தைப் பார்வையிடாததால் Chrome இந்த அனுமதிகளை அகற்றியது</translation>
 <translation id="5222676887888702881">வெளியேறு</translation>
 <translation id="5226378907213531272">ஒவ்வொரு முறை காரைப் பயன்படுத்தும்போதும் உங்கள் திரையை அன்லாக் செய்ய வேண்டும்</translation>
 <translation id="5227554086496586518">தேடல் முடிவுகளைப் பார்க்க தட்டுக</translation>
+<translation id="5229736206150093143">சமீபத்திய முடிவுகள்</translation>
 <translation id="5233638681132016545">புதிய தாவல்</translation>
 <translation id="5235196193381275927">உள்நுழையும்போது ஏதோ தவறாகிவிட்டது</translation>
 <translation id="5246093389635966745">கருவிப்பட்டியின் ஷார்ட்கட்டை மாற்றும்</translation>
@@ -1281,6 +1288,7 @@
 <translation id="676305334223455055">உங்கள் ஆர்வங்களின் அடிப்படையில் உள்ளடக்கத்தைப் பெற உள்நுழையுங்கள்</translation>
 <translation id="6764137532716892442">புதிய செயல்பாட்டுடன், பகிரப்பட்ட <ph name="GROUP_TITLE" /> பக்கக் குழு</translation>
 <translation id="6767294960381293877">தாவலைப் பகிர்வதற்கான சாதனங்களின் பட்டியல் திரையின் பாதி அளவிற்குத் திறக்கப்பட்டுள்ளது.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> மறைநிலைப் பக்கமும் வேறு <ph name="TAB_COUNT_ONE" /> பக்கமும் மூடப்படும்}other{<ph name="INCOGNITO_TAB_COUNT" /> மறைநிலைப் பக்கமும் வேறு <ph name="TAB_COUNT_MANY" /> பக்கங்களும் மூடப்படும்}}</translation>
 <translation id="6785476624617658922">Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்</translation>
 <translation id="6786747875388722282">நீட்டிப்புகள்</translation>
 <translation id="6795633245022906657">புதிய தாவலை உடனடியாகத் திறக்கலாம். இந்த ஷார்ட்கட்டை மாற்ற அமைப்புகளுக்குச் செல்லவும்.</translation>
@@ -1576,6 +1584,7 @@
 <translation id="7965838025086216108">சேமிக்கப்பட்டுள்ள கடவுச்சொற்களை எந்தச் சாதனத்திலும் பயன்படுத்தலாம். <ph name="ACCOUNT" /> கணக்கின் Google Password Managerரில் அவை சேமிக்கப்படும்.</translation>
 <translation id="7968014550143838305">வாசிப்புப் பட்டியலில் சேர்ந்தது</translation>
 <translation id="7968982339740310781">விவரங்களைக் காண்பி</translation>
+<translation id="7969391000881506217">காலாவதித் தேதி*</translation>
 <translation id="7971136598759319605">கடைசியாக 1 நாளுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
 <translation id="7975379999046275268">பக்க மாதிரிக்காட்சியைக் காட்டு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">தரவு மீறலில் பாதிக்கப்பட்டுள்ள கடவுச்சொல்லை நீங்கள் பயன்படுத்தினால் உங்களை எச்சரிக்கும்.</translation>
@@ -1734,6 +1743,7 @@
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> ஐ அகற்றவா?</translation>
 <translation id="8570677896027847510">ஃபைலைப் பாதுகாப்பாகப் பதிவிறக்க முடியாது</translation>
 <translation id="8571213806525832805">கடந்த 4 வாரங்கள்</translation>
+<translation id="8580435650274205305">காலாவதித் தேதி அவசியம்</translation>
 <translation id="8582529315803410153">பிற சாதனங்களில் உள்ள பக்கங்கள் இங்கே காட்டப்படும்</translation>
 <translation id="8585103689515290060">தன்னிரப்பிச் சேவைகள்</translation>
 <translation id="859046281437143747">'மேலும் விருப்பங்கள்' பட்டன் மூலம் விலையைக் கண்காணிக்கலாம்</translation>

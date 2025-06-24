@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Deling mislykkedes. Du har ikke forbindelse til netværket.</translation>
 <translation id="1668001730617725852">Åbn i en ny fanegruppe</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Du kan nu åbne Google Lens via din adresselinje og søge efter alt det, du ser</translation>
 <translation id="1689333818294560261">Kaldenavn</translation>
 <translation id="169048873465870056">Vil du fjerne fanen og slette gruppen?</translation>
 <translation id="1698090540708020240">Importér adgangskoder…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Kontoen <ph name="USER_EMAIL" /> administreres af <ph name="HOSTED_DOMAIN" />, som muligvis kan se visse oplysninger. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nyt element</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> konti bruger den samme adgangskode</translation>
+<translation id="205013082884273671">Søg efter hvad som helst på din skærm</translation>
 <translation id="2054044186557130763">Log ind som <ph name="NAME" /> <ph name="EMAIL" />, der administreres af din organisation.</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2060638295449304809">Denne adresse gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, <ph name="USER_EMAIL" /></translation>
@@ -459,6 +461,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2819667972867209401">Når denne indstilling er aktiveret, gemmes data på din Google-konto. Når indstillingen er deaktiveret, gemmes data kun på denne enhed, og dataene slettes, hvis du logger ud.</translation>
 <translation id="2827760117436553203">Vil du holde dataene adskilt?</translation>
 <translation id="2829172210806130158">Søg på skærmen</translation>
+<translation id="2831109159746537587">Prøv at tegne en cirkel om eller trykke på billedet for at søge</translation>
 <translation id="2834399722155632105">3. Tryk på Valgmuligheder for adgangskoder</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Tid</translation>

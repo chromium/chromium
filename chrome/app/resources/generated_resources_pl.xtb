@@ -636,6 +636,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1438630805136563416">Działanie <ph name="REMOVED_ACTION" /> zostało usunięte</translation>
 <translation id="1439671507542716852">wsparcie długoterminowe</translation>
 <translation id="1440090277117135316">Rejestracja w szkole została zakończona</translation>
+<translation id="1442054921249164535">Inne dane</translation>
 <translation id="144283815522798837">Wybrane elementy: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Ustawianie aktywnego zgłoszenia Kerberos</translation>
 <translation id="1444389367706681769">Przestrzeń kosmiczna</translation>
@@ -4886,6 +4887,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4406883609789734330">Napisy na żywo</translation>
 <translation id="4408599188496843485">Pomo&amp;c</translation>
 <translation id="4409271659088619928">Twoja wyszukiwarka to <ph name="DSE" />. Zapoznaj się z jej instrukcjami, jeśli chcesz usunąć historię wyszukiwania.</translation>
+<translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />. Gdy nagrywanie się rozpocznie, otrzymasz powiadomienie.}=2{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. Gdy nagrywanie się rozpocznie, otrzymasz powiadomienie.}=3{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze 1. Gdy nagrywanie się rozpocznie, otrzymasz powiadomienie.}few{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Gdy nagrywanie się rozpocznie, otrzymasz powiadomienie.}many{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Gdy nagrywanie się rozpocznie, otrzymasz powiadomienie.}other{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Gdy nagrywanie się rozpocznie, otrzymasz powiadomienie.}}</translation>
 <translation id="4409697491990005945">Marginesy</translation>
 <translation id="4409779593816003679">Hasła i &amp;autouzupełnianie</translation>
 <translation id="4410545552906060960">Do odblokowywania urządzenia możesz używać numeru PIN zamiast hasła. Możesz podać PIN później w Ustawieniach.</translation>
@@ -8209,6 +8211,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6811792477922751991">Używaj klawisza Menu z aplikacjami, aby zmieniać działanie klawiszy funkcyjnych</translation>
 <translation id="6812349420832218321">Przeglądarki <ph name="PRODUCT_NAME" /> nie możesz uruchamiać jako użytkownik root.</translation>
 <translation id="6812841287760418429">Zachowaj zmiany</translation>
+<translation id="681360534161436378">{NUM_APPS,plural,offset:2 =1{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />.}=2{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />.}=3{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze 1.}few{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #.}many{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #.}other{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #.}}</translation>
 <translation id="6813907279658683733">Cały ekran</translation>
 <translation id="6814754908910736855">Informacje o klientach Wi-Fi Direct:</translation>
 <translation id="6815376457351236663">Otwórz mimo to</translation>
@@ -10388,6 +10391,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8339288417038613756">Rozmiar elementów interfejsu i tekstu</translation>
 <translation id="833986336429795709">Aby otworzyć ten link, wybierz aplikację</translation>
 <translation id="8340547030807793004">Więcej działań dotyczących: <ph name="DEVICE" /></translation>
+<translation id="8341804784147620576">Pokaż skróty do wyszukiwania</translation>
 <translation id="8342221978608739536">Nie wiem</translation>
 <translation id="8342861492835240085">Wybierz kolekcję</translation>
 <translation id="8345848587667658367">Możesz teraz wyświetlać najnowsze zdjęcia, pliki multimedialne, powiadomienia i aplikacje z telefonu</translation>
@@ -10897,6 +10901,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8702825062053163569">Urządzenie <ph name="DEVICE_TYPE" /> zostało zablokowane.</translation>
 <translation id="8703346390800944767">Pomiń reklamę</translation>
 <translation id="8703372953981978786">Ten link nie działa</translation>
+<translation id="8703766890819308134">Pokaż skróty do wyszukiwania</translation>
 <translation id="8704662571571150811">Domeny</translation>
 <translation id="8705331520020532516">Numer seryjny</translation>
 <translation id="8705580154597116082">Sieć Wi-Fi dostępna przez telefon</translation>
@@ -11609,6 +11614,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9182556968660520230">Nie zezwalaj witrynom na odtwarzanie chronionych treści</translation>
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacja}few{# aplikacje}many{# aplikacji}other{# aplikacji}}</translation>
+<translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}=2{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}=3{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze 1. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}few{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}many{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}other{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}}</translation>
 <translation id="9186963452600581158">Zaloguj się na konto Google dziecka</translation>
 <translation id="9187967020623675250">Klawisze są niezgodne. Naciśnij dowolny klawisz, aby <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Umożliwia odtwarzanie komunikatów głosowych, aby można było korzystać z urządzenia bez patrzenia na ekran. Komunikaty brajlowskie są dostępne na połączonych urządzeniach. Aby włączyć lub wyłączyć ChromeVoksa, naciśnij Ctrl + Alt + Z. Do nawigacji służą klawisze wyszukiwania + strzałka w lewo lub w prawo. Aby wybrać (aktywować) tę funkcję, naciśnij klawisz wyszukiwania + spację.</translation>

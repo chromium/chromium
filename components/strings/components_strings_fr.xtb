@@ -693,6 +693,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2157640075051554492">Notifications de suivi des prix</translation>
 <translation id="21613918653299710">Galeries d'images en ligne</translation>
 <translation id="2161656808144014275">Texte</translation>
+<translation id="2162435186600002085">Logo de l'en-tête principal</translation>
 <translation id="2162620598375156287">Actuellement à <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Vérifiez si l'adresse <ph name="HOST_NAME" /> est correcte.</translation>
 <translation id="2166049586286450108">Accès administrateur complet</translation>
@@ -851,6 +852,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2400263725572336749">Ajouter un passeport</translation>
 <translation id="2400271059665846158">Gérez vos cartes de fidélité dans Google Wallet</translation>
 <translation id="2400600116338235695">Peut demander à se connecter aux ports série</translation>
+<translation id="240450251994300576">Logo de l'en-tête secondaire</translation>
 <translation id="2404884497378469141">Réessayez de copier vos fichiers</translation>
 <translation id="2413155254802890957">Ancienne</translation>
 <translation id="2413528052993050574">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />. Il se peut que son certificat de sécurité ait été révoqué. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
@@ -981,6 +983,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2627847595568876492">Extraction du texte du PDF...</translation>
 <translation id="2628224721443278970">Se connecter à Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Impossible de trouver l'adresse IP du serveur de <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Tapez @ pour rechercher sur <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">État : </translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tissu (semi-brillance)</translation>
@@ -1438,6 +1441,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="343474037147570563">Les fichiers que vous importez ou joignez sont envoyés à Google Cloud ou à des tiers pour analyse. Ils peuvent par exemple être analysés pour rechercher des données sensibles ou des logiciels malveillants, être stockés conformément aux règles de l'entreprise et être visibles par votre administrateur.</translation>
 <translation id="3435557549311968410">Continu (court)</translation>
 <translation id="3435738964857648380">Sécurité</translation>
+<translation id="3436118221454753036">Demander au Mode IA</translation>
 <translation id="3440783957068352691">carré</translation>
 <translation id="3441653493275994384">Écran</translation>
 <translation id="3443504041532578451">Disque optique (satiné)</translation>
@@ -2266,6 +2270,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4827283332383516812">Supprimer la carte</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> sélectionné(s)</translation>
 <translation id="4831993743164297314">Papier pour photocomposeuse</translation>
+<translation id="4832388034239846146">Pour partager des groupes d'onglets, mettez à jour Chrome</translation>
 <translation id="483241715238664915">Activer les avertissements</translation>
 <translation id="4832961164064927107">Barbecue et grillades</translation>
 <translation id="4834250788637067901">Modes de paiement, offres et adresses utilisant Google Pay</translation>
@@ -2973,6 +2978,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6043357981274314628">Terminé</translation>
 <translation id="6044573915096792553">Taille 12</translation>
 <translation id="6045164183059402045">Modèle d'imposition</translation>
+<translation id="6046892054959167494">Tapez <ph name="SEARCH_AGGREGATOR_KEYWORD" /> pour rechercher ou demandez <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Ce contenu peut vous inciter à installer un logiciel ou vous soutirer des informations personnelles. <ph name="BEGIN_LINK" />Je souhaite y accéder malgré tout.<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Enveloppe B4</translation>
 <translation id="6049488691372270142">Livraison de la page</translation>
@@ -4012,6 +4018,7 @@ Informations supplémentaires :
 <translation id="7761159795823346334">Autoriser l'accès à la caméra ?</translation>
 <translation id="7761701407923456692">Le certificat du serveur ne correspond pas à l'URL.</translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
+<translation id="7765158879357617694">Déplacer</translation>
 <translation id="7766518757692125295">Jupe</translation>
 <translation id="7767278989746220252">Terrasse, pelouse et jardin</translation>
 <translation id="776749070095465053">Tissu</translation>
@@ -4346,6 +4353,7 @@ Informations supplémentaires :
 <translation id="8364627913115013041">Non définie</translation>
 <translation id="8366057325711477500">Actualités internationales</translation>
 <translation id="836616551641291797">En savoir plus sur la gestion de votre navigateur</translation>
+<translation id="8367705492654390392">Posez une question</translation>
 <translation id="8368001212524806591">Suivre les prix</translation>
 <translation id="8368027906805972958">Appareil inconnu ou non compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Services Google Play</translation>

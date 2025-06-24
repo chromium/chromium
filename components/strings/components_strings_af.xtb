@@ -693,6 +693,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2157640075051554492">Prysnasporingkennisgewings</translation>
 <translation id="21613918653299710">Aanlyn prentgalerye</translation>
 <translation id="2161656808144014275">Teks</translation>
+<translation id="2162435186600002085">Logo vir primêre opskrif</translation>
 <translation id="2162620598375156287">Nou <ph name="CURRENT_PRICE" /> op <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Kyk of daar 'n tikfout is in <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Volle administrateurtoegang</translation>
@@ -851,6 +852,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2400263725572336749">Voeg paspoort by</translation>
 <translation id="2400271059665846158">Bestuur jou lojaliteitskaarte in Google Wallet</translation>
 <translation id="2400600116338235695">Kan vra om aan reekspoorte te koppel</translation>
+<translation id="240450251994300576">Logo vir sekondêre opskrif</translation>
 <translation id="2404884497378469141">Probeer jou lêers weer kopieer</translation>
 <translation id="2413155254802890957">Oud</translation>
 <translation id="2413528052993050574">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat is dalk herroep. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
@@ -981,6 +983,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2627847595568876492">Onttrek tans teks uit PDF …</translation>
 <translation id="2628224721443278970">Meld aan by Microsoft OneDrive</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> se bediener se IP-adres kon nie gevind word nie.</translation>
+<translation id="2638567100095052009">Tik @ in om in <ph name="FEATURED_SEARCH_LIST" /> te soek</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tekstiel (semiglans)</translation>
@@ -1438,6 +1441,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="343474037147570563">Lêers wat jy oplaai of aanheg, word na Google Cloud of derde partye gestuur om ontleed te word. Hulle kan byvoorbeeld vir sensitiewe data of wanware geskandeer word en kan op grond van maatskappybeleide geberg word en sigbaar vir jou administrateur wees.</translation>
 <translation id="3435557549311968410">Aaneenlopend (kort)</translation>
 <translation id="3435738964857648380">Sekuriteit</translation>
+<translation id="3436118221454753036">Vra KI-modus</translation>
 <translation id="3440783957068352691">vierkant</translation>
 <translation id="3441653493275994384">Skerm</translation>
 <translation id="3443504041532578451">Optiese skyf (satyn)</translation>
@@ -2027,6 +2031,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4372948949327679948">Verwagte <ph name="VALUE_TYPE" />-waarde.</translation>
 <translation id="437620492464254965">Deure en vensters</translation>
 <translation id="4377125064752653719">Jy het probeer om <ph name="DOMAIN" /> te bereik, maar die sertifikaat wat die bediener voorgehou het, is deur sy uitreiker herroep. Dit beteken dat die sekuriteitseiebewyse wat die bediener uitgereik het, onder geen omstandighede vertrou mag word nie. Jy kommunikeer dalk met 'n aanvaller.</translation>
+<translation id="4377869186417956230">Veranderinge aan alle lojaliteitskaarte onder hierdie kieslysitem.</translation>
 <translation id="4378154925671717803">Foon</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Stoor voortaan jou lêers in wolkberging</translation>
@@ -2266,6 +2271,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4827283332383516812">Vee kaart uit</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> gekies</translation>
 <translation id="4831993743164297314">Beeldstellerpapier</translation>
+<translation id="4832388034239846146">Dateer Chrome op om oortjiegroepe te deel</translation>
 <translation id="483241715238664915">Skakel waarskuwings aan</translation>
 <translation id="4832961164064927107">Braai en rooster</translation>
 <translation id="4834250788637067901">Betaalmetodes, aanbiedings en adresse wat Google Pay gebruik</translation>
@@ -2973,6 +2979,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6043357981274314628">Klaar!</translation>
 <translation id="6044573915096792553">Grootte 12</translation>
 <translation id="6045164183059402045">Inslaanwerktemplaat</translation>
+<translation id="6046892054959167494">Tik <ph name="SEARCH_AGGREGATOR_KEYWORD" /> in om <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> te soek of te vra</translation>
 <translation id="6047927260846328439">Hierdie inhoud mag jou dalk probeer mislei om sagteware wat persoonlike inligting openbaar, te installeer. <ph name="BEGIN_LINK" />Wys in elk geval<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Koevert B4</translation>
 <translation id="6049488691372270142">Bladsylewering</translation>
@@ -4010,6 +4017,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7761159795823346334">Laat kamera toe?</translation>
 <translation id="7761701407923456692">Bediener se sertifikaat stem nie met die URL ooreen nie.</translation>
 <translation id="7764225426217299476">Voeg adres by</translation>
+<translation id="7765158879357617694">Skuif</translation>
 <translation id="7766518757692125295">Buitelyn</translation>
 <translation id="7767278989746220252">Stoep, grasperk en tuin</translation>
 <translation id="776749070095465053">Tekstiel</translation>
@@ -4344,6 +4352,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8364627913115013041">Nie gestel nie.</translation>
 <translation id="8366057325711477500">Wêreldnuus</translation>
 <translation id="836616551641291797">Kom meer te wete oor hoe jou blaaier bestuur word</translation>
+<translation id="8367705492654390392">Vra enigiets</translation>
 <translation id="8368001212524806591">Spoor prys na</translation>
 <translation id="8368027906805972958">Onbekende of ongesteunde toestel (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play Dienste</translation>

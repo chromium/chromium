@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">ਕੀਮਤਾਂ ਟਰੈਕ ਕਰਨ ਵਾਲੀਆਂ ਸੂਚਨਾਵਾਂ</translation>
 <translation id="21613918653299710">ਆਨਲਾਈਨ ਚਿੱਤਰ ਗੈਲਰੀਆਂ</translation>
 <translation id="2161656808144014275">ਲਿਖਤ</translation>
+<translation id="2162435186600002085">ਪ੍ਰਾਇਮਰੀ ਸਿਰਲੇਖ ਦਾ ਲੋਗੋ</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> 'ਤੇ ਹੁਣ <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">ਜਾਂਚ ਕਰੋ ਕਿ <ph name="HOST_NAME" /> ਵਿੱਚ ਕੋਈ ਟਾਈਪਿੰਗ ਸੰਬੰਧੀ ਗੜਬੜ ਤਾਂ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2166049586286450108">ਪੂਰੀ ਪ੍ਰਸ਼ਾਸਕ ਪਹੁੰਚ</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">ਪਾਸਪੋਰਟ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2400271059665846158">Google Wallet ਵਿੱਚ ਆਪਣੇ ਵਫ਼ਾਦਾਰੀ ਕਾਰਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2400600116338235695">ਸਾਈਟ ਸੀਰੀਅਲ ਪੋਰਟਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
+<translation id="240450251994300576">ਸੈਕੰਡਰੀ ਸਿਰਲੇਖ ਦਾ ਲੋਗੋ</translation>
 <translation id="2404884497378469141">ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੁਬਾਰਾ ਕਾਪੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="2413155254802890957">ਪੁਰਾਣਾ</translation>
 <translation id="2413528052993050574">ਇਹ ਸਰਵਰ ਇਹ ਸਿੱਧ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਸਰਟੀਫਿਕੇਟ ਰੱਦ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਇਸ ਦਾ ਕਾਰਨ ਗਲਤ ਸੰਰੂਪਣ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਦੇ ਰਾਹ ਨੂੰ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">PDF ਤੋਂ ਲਿਖਤ ਨੂੰ ਐਕਸਟਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2628224721443278970">Microsoft OneDrive ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ਦਾ ਸਰਵਰ IP ਪਤਾ ਨਹੀਂ ਲੱਭਿਆ।</translation>
+<translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> ਵਿੱਚ ਖੋਜਣ ਲਈ @ ਟਾਈਪ ਕਰੋ</translation>
 <translation id="2639739919103226564">ਸਥਿਤੀ:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">ਕੱਪੜਾ (ਸੇਮੀ-ਗਲੋਸ)</translation>
@@ -1436,6 +1439,7 @@
 <translation id="343474037147570563">ਤੁਹਾਡੇ ਵੱਲੋਂ ਅੱਪਲੋਡ ਜਾਂ ਨੱਥੀ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ Google ਕਲਾਊਡ ਜਾਂ ਤੀਜੀਆਂ ਧਿਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਉਦਾਹਰਨ ਲਈ, ਉਨ੍ਹਾਂ ਨੂੰ ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟੇ ਜਾਂ ਮਾਲਵੇਅਰ ਲਈ ਸਕੈਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ ਅਤੇ ਕੰਪਨੀ ਦੀਆਂ ਨੀਤੀਆਂ ਦੇ ਆਧਾਰ 'ਤੇ ਸਟੋਰ ਅਤੇ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਲਈ ਦਿਖਾਈ ਦੇਣਯੋਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="3435557549311968410">ਲਗਾਤਾਰ (ਸ਼ਾਰਟ)</translation>
 <translation id="3435738964857648380">ਸੁਰੱਖਿਆ</translation>
+<translation id="3436118221454753036">AI Mode ਤੋਂ ਪੁੱਛੋ</translation>
 <translation id="3440783957068352691">ਵਰਗ</translation>
 <translation id="3441653493275994384">ਸਕ੍ਰੀਨ</translation>
 <translation id="3443504041532578451">ਔਪਟੀਕਲ ਡਿਸਕ (ਸਾਟਿਨ)</translation>
@@ -2263,6 +2267,7 @@
 <translation id="4827283332383516812">ਕਾਰਡ ਮਿਟਾਓ</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="4831993743164297314">ਇਮੇਜ ਸੈੱਟਰ ਪੇਪਰ</translation>
+<translation id="4832388034239846146">ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ, Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="483241715238664915">ਚਿਤਾਵਨੀਆਂ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4832961164064927107">BBQ ਅਤੇ ਗ੍ਰਿਲਿੰਗ</translation>
 <translation id="4834250788637067901">Google Pay ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ, ਪੇਸ਼ਕਸ਼ਾਂ ਅਤੇ ਪਤੇ</translation>
@@ -2970,6 +2975,7 @@
 <translation id="6043357981274314628">ਹੋ ਗਿਆ!</translation>
 <translation id="6044573915096792553">ਆਕਾਰ 12</translation>
 <translation id="6045164183059402045">ਇੰਮਪੋਜ਼ਿਸ਼ਨ ਟੈਮਪਲੇਟ</translation>
+<translation id="6046892054959167494">ਖੋਜਣ ਜਾਂ <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> ਤੋਂ ਸਵਾਲ ਪੁੱਛਣ ਲਈ <ph name="SEARCH_AGGREGATOR_KEYWORD" /> ਟਾਈਪ ਕਰੋ</translation>
 <translation id="6047927260846328439">ਇਹ ਸਮੱਗਰੀ ਸਾਫਟਵੇਅਰ ਸਥਾਪਤ ਕਰਨ ਜਾਂ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਦਾ ਖੁਲਾਸਾ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਨਾਲ ਚਾਲਬਾਜ਼ੀ ਕਰ ਸਕਦੀ ਹੈ। <ph name="BEGIN_LINK" />ਫਿਰ ਵੀ ਦਿਖਾਓ<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="6049488691372270142">ਪੰਨਾ ਡਿਲੀਵਰੀ</translation>
@@ -4006,6 +4012,7 @@
 <translation id="7761159795823346334">ਕੀ ਕੈਮਰੇ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੋ?</translation>
 <translation id="7761701407923456692">ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ URL ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ।</translation>
 <translation id="7764225426217299476">ਪਤਾ ਜੋੜੋ</translation>
+<translation id="7765158879357617694">ਮੂਵ ਕਰੋ</translation>
 <translation id="7766518757692125295">ਕਿਨਾਰਾ</translation>
 <translation id="7767278989746220252">ਵਿਹੜਾ, ਬਗੀਚਾ ਅਤੇ ਬਾਗ</translation>
 <translation id="776749070095465053">ਕੱਪੜਾ</translation>
@@ -4340,6 +4347,7 @@
 <translation id="8364627913115013041">ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ।</translation>
 <translation id="8366057325711477500">ਸੰਸਾਰ ਦੀਆਂ ਖਬਰਾਂ</translation>
 <translation id="836616551641291797">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਦੇ ਤਰੀਕੇ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
+<translation id="8367705492654390392">ਕੁਝ ਵੀ ਪੁੱਛੋ</translation>
 <translation id="8368001212524806591">ਕੀਮਤ 'ਤੇ ਨਜ਼ਰ ਰੱਖੋ</translation>
 <translation id="8368027906805972958">ਅਗਿਆਤ ਜਾਂ ਅਸਮਰਥਿਤ ਡੀਵਾਈਸ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play ਸੇਵਾਵਾਂ</translation>

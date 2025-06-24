@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Csökkentse akár 60%-kal adatforgalmát, és olvassa el a mai híreket</translation>
 <translation id="1303339473099049190">Ez a jelszó nem található. Ellenőrizze, hogy jól írta-e be.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – A(z) <ph name="DEVICE_NAME" /> eszközről</translation>
+<translation id="1310482092992808703">Lapok csoportosítása</translation>
 <translation id="1318262688555255786">A következő weboldalra mutató link megosztása: <ph name="PAGE_TITLE" />. Forrás: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">A könyvjelzőmentési folyamat teljes magasságban van megnyitva</translation>
 <translation id="1327257854815634930">Megnyitotta a navigációs előzményeket</translation>
@@ -477,6 +478,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Hirdetésmérés</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> lapcsoport</translation>
+<translation id="3200536777393523575">Bezárja az aktuális ablakot?</translation>
 <translation id="3207960819495026254">Könyvjelző rögzítve</translation>
 <translation id="3208584281581115441">Ellenőrzés most</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> törölve</translation>
@@ -721,6 +723,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4351244548802238354">Párbeszédablak bezárása</translation>
 <translation id="4352287748243729941">Szeretné <ph name="PROVIDER" />-jelszavát használni?</translation>
 <translation id="4355272626458588338">A fontos oldalakra könyvjelző felvételével térhet vissza a későbbiekben</translation>
+<translation id="4356503491090073318">Kártyaszám*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Biztonsági áttekintés</translation>
 <translation id="4378154925671717803">Telefon</translation>
@@ -738,6 +741,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4425140285732600465">Ár nyomon követve. Értesítést kaphat, ha valamelyik webhelyen csökken az ár.</translation>
 <translation id="4425173294238317796">Azonosítókulcs megerősítő lapja</translation>
 <translation id="442518031075347249">A továbbiakban nem fogja tudni használni virtuális kártyáját a Google Pay alkalmazással. <ph name="BEGIN_LINK1" />További információ a virtuális kártyákról<ph name="END_LINK1" />.</translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{A(z) <ph name="TAB_TITLE" /> és <ph name="TAB_COUNT_ONE" /> lap bezárul.}other{A(z) <ph name="TAB_TITLE" /> és <ph name="TAB_COUNT_MANY" /> lap bezárul.}}</translation>
 <translation id="4426508677408162512">Minden könyvjelző</translation>
 <translation id="4430277756566635951">Jelenleg kiválasztva: <ph name="EMAIL" />. Válasszon fiókot.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> lap bezárása</translation>
@@ -873,6 +877,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4987271110129728827">A keresett oldal nem található. Ellenőrizze, hogy helyesen írta-e be, vagy próbáljon rákeresni az interneten.</translation>
 <translation id="4988526792673242964">Oldal</translation>
 <translation id="4991110219272367918">Lehetőség a webhely jóváhagyására vagy elutasítására bezárva</translation>
+<translation id="4996042648402406470">Megszerzés</translation>
 <translation id="4996095658297597226">A javasolt jelszót használja?</translation>
 <translation id="5001388021414335527">Itt követheti ezt a webhelyet</translation>
 <translation id="5004416275253351869">Google Tevékenységvezérlők</translation>
@@ -923,10 +928,12 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5210286577605176222">Ugrás az előző lapra</translation>
 <translation id="5210365745912300556">Lap bezárása</translation>
 <translation id="5215957675041756913">Az adatok és a fiók kezelése</translation>
+<translation id="5218324087477576825">Meg kell adni a kártya számát</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és továbbiak <ph name="SEPARATOR" /> A Chrome eltávolította ezeket az engedélyeket, mert Ön az utóbbi időben nem kereste fel ezt a webhelyet</translation>
 <translation id="5222676887888702881">Kijelentkezés</translation>
 <translation id="5226378907213531272">Minden alkalommal fel kell oldania a képernyő zárolását, amikor az autót használja</translation>
 <translation id="5227554086496586518">Koppintson a keresési találatok megtekintéséhez</translation>
+<translation id="5229736206150093143">Legfrissebb találatok</translation>
 <translation id="5233638681132016545">Új lap</translation>
 <translation id="5235196193381275927">A bejelentkezés közben hiba történt</translation>
 <translation id="5246093389635966745">Eszköztár gyorsparancsainak szerkesztése</translation>
@@ -1281,6 +1288,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="676305334223455055">Jelentkezzen be, hogy az érdeklődési körein alapuló tartalmakat láthasson.</translation>
 <translation id="6764137532716892442">Megosztott <ph name="GROUP_TITLE" /> lapcsoport új tevékenységgel</translation>
 <translation id="6767294960381293877">Lap megosztására szolgáló eszközök listája félmagasságban megnyitva.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitó- és <ph name="TAB_COUNT_ONE" /> további lap bezárul}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitó- és <ph name="TAB_COUNT_MANY" /> további lap bezárul}}</translation>
 <translation id="6785476624617658922">A Chrome és a ChromeOS Kiegészítő Általános Szerződési Feltételei</translation>
 <translation id="6786747875388722282">Bővítmények</translation>
 <translation id="6795633245022906657">Új lap gyors megnyitása. A gyorsparancs szerkesztéséhez lépjen a Beálltásokhoz.</translation>
@@ -1576,6 +1584,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7965838025086216108">A mentett jelszavakat bármelyik eszközön használhatja. A jelszavakat a Google Jelszókezelő szolgáltatásba menti a rendszer a(z) <ph name="ACCOUNT" /> fiókhoz.</translation>
 <translation id="7968014550143838305">Hozzáadva az olvasási listához</translation>
 <translation id="7968982339740310781">Részletek megjelenítése</translation>
+<translation id="7969391000881506217">Lejárati dátum*</translation>
 <translation id="7971136598759319605">1 napja volt aktív</translation>
 <translation id="7975379999046275268">Oldal előnézete <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Figyelmezteti Önt, ha adatvédelmi incidensben érintett jelszót használ.</translation>
@@ -1734,6 +1743,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8565021320663436446">Eltávolítja a következő tagot: <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">A fájlt nem lehet biztonságosan letölteni</translation>
 <translation id="8571213806525832805">Az elmúlt 4 hétből</translation>
+<translation id="8580435650274205305">Lejárati dátum megadása kötelező</translation>
 <translation id="8582529315803410153">Itt láthatja majd a többi eszközéről származó lapokat</translation>
 <translation id="8585103689515290060">Automatikus kitöltési szolgáltatások</translation>
 <translation id="859046281437143747">Az ár követéséhez nyomja meg a További műveletek gombot</translation>

@@ -192,6 +192,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Updated <ph name="NUM_MONTHS_ONE" /> month ago}other{Updated <ph name="NUM_MONTHS_MANY" /> months ago}}</translation>
 <translation id="8398929769197326728">New folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Settings</translation>
+<translation id="855081842937141170">Pin tab</translation>
 <translation id="8633025649649592204">Recent activity</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8714939927607906138">Lower price</translation>

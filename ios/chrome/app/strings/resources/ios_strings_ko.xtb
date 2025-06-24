@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">네트워크에 연결되어 있지 않아 공유하지 못했습니다.</translation>
 <translation id="1668001730617725852">새 탭 그룹에서 열기</translation>
 <translation id="1674504678466460478">출발어: <ph name="SOURCE_LANGUAGE" />, 도착어: <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">이제 주소 표시줄에서 Google 렌즈를 열고 눈앞에 있는 사물을 검색할 수 있습니다</translation>
 <translation id="1689333818294560261">닉네임</translation>
 <translation id="169048873465870056">탭 및 그룹을 삭제하시겠습니까?</translation>
 <translation id="1698090540708020240">비밀번호 가져오기…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> 계정은 일부 정보를 볼 수 있는 <ph name="HOSTED_DOMAIN" />에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">새 항목</translation>
 <translation id="2049727122989709386">계정 <ph name="COUNT" />개에서 동일한 비밀번호 사용 중</translation>
+<translation id="205013082884273671">화면의 내용을 검색하세요</translation>
 <translation id="2054044186557130763">조직에서 관리하는 <ph name="NAME" /> <ph name="EMAIL" /> 계정으로 로그인하세요.</translation>
 <translation id="2059166748188874810">지방 자치제</translation>
 <translation id="2060638295449304809">이 주소는 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="USER_EMAIL" />)에 저장하세요.</translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">사용 설정하면 데이터가 Google 계정에 저장됩니다. 사용 중지하면 데이터가 이 기기에만 저장되며, 로그아웃하는 경우 삭제됩니다.</translation>
 <translation id="2827760117436553203">데이터를 별도로 유지하시겠습니까?</translation>
 <translation id="2829172210806130158">화면 검색</translation>
+<translation id="2831109159746537587">검색하려면 사진에 원을 그리거나 탭하세요.</translation>
 <translation id="2834399722155632105">3. 비밀번호 옵션 탭하기</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">시간</translation>

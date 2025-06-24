@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Arbedwch hyd at 60% o ddata, darllenwch newyddion heddiw</translation>
 <translation id="1303339473099049190">Methu â dod o hyd i'r cyfrinair hwnnw. Gwiriwch eich sillafu a rhowch gynnig arall arni.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Anfonwyd o <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Grwpio tabiau</translation>
 <translation id="1318262688555255786">Rhannu dolen i'r dudalen we <ph name="PAGE_TITLE" />. Ffynhonnell: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Llif cadw nodau tudalen wedi'i hagor ar uchder llawn</translation>
 <translation id="1327257854815634930">Agorir hanes llywio</translation>
@@ -478,6 +479,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Mesur hysbysebion</translation>
 <translation id="3189635831478931757">Grŵp tabiau <ph name="GROUP_TITLE" /></translation>
+<translation id="3200536777393523575">Cau eich ffenestr bresennol?</translation>
 <translation id="3207960819495026254">Wedi rhoi nod tudalen ar gyfer</translation>
 <translation id="3208584281581115441">Gwirio nawr</translation>
 <translation id="3211426585530211793">Dilëwyd <ph name="ITEM_TITLE" /></translation>
@@ -722,6 +724,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4351244548802238354">Cau deialog</translation>
 <translation id="4352287748243729941">Defnyddio eich cyfrinair <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Gallwch fynd yn ôl i dudalen sy'n bwysig i chi drwy ychwanegu nod tudalen</translation>
+<translation id="4356503491090073318">Rhif y cerdyn*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Cipolwg ar ddiogelwch</translation>
 <translation id="4378154925671717803">Ffôn</translation>
@@ -739,6 +742,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4425140285732600465">Yn dilyn y pris. Cael hysbysiadau os bydd y pris yn gostwng ar unrhyw wefan.</translation>
 <translation id="4425173294238317796">Taflen cadarnhau cod pas</translation>
 <translation id="442518031075347249">Ni fyddwch yn gallu defnyddio eich cerdyn rhithwir gyda Google Pay mwyach. <ph name="BEGIN_LINK1" />Dysgu rhagor am gardiau rhithwir<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{Bydd <ph name="TAB_TITLE" /> ac <ph name="TAB_COUNT_ONE" /> tab arall yn cael eu cau}zero{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> tabiau eraill yn cael eu cau}two{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> dab arall yn cael eu cau}few{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> thab arall yn cael eu cau}many{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> thab arall yn cael eu cau}other{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}}</translation>
 <translation id="4426508677408162512">Pob Nod tudalen</translation>
 <translation id="4430277756566635951">Mae <ph name="EMAIL" /> wedi'i ddewis ar hyn o bryd. Dewis cyfrif.</translation>
 <translation id="4452411734226507615">Cau'r tab <ph name="TAB_TITLE" /></translation>
@@ -874,6 +878,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4987271110129728827">Methu â dod o hyd i'r dudalen honno. Gwiriwch eich sillafu neu rhowch gynnig ar chwiliad gwe.</translation>
 <translation id="4988526792673242964">Tudalennau</translation>
 <translation id="4991110219272367918">Opsiwn i gymeradwyo neu beidio â chymeradwyo gwefan wedi'i chloi</translation>
+<translation id="4996042648402406470">Cael</translation>
 <translation id="4996095658297597226">Defnyddio'r cyfrinair a awgrymir?</translation>
 <translation id="5001388021414335527">Dilyn y wefan hon yma</translation>
 <translation id="5004416275253351869">Rheolaethau gweithgarwch Google</translation>
@@ -924,10 +929,12 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5210286577605176222">Neidio i'r tab blaenorol</translation>
 <translation id="5210365745912300556">Cau'r tab</translation>
 <translation id="5215957675041756913">Rheoli'ch data a'ch cyfrif</translation>
+<translation id="5218324087477576825">Rhif y cerdyn, gofynnol</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a rhagor <ph name="SEPARATOR" /> Tynnodd Chrome y caniatadau hyn oherwydd nad ydych chi wedi ymweld â nhw yn ddiweddar</translation>
 <translation id="5222676887888702881">Allgofnodi</translation>
 <translation id="5226378907213531272">Byddwch yn datgloi eich sgrîn bob tro y byddwch yn defnyddio'r car</translation>
 <translation id="5227554086496586518">Tapiwch i weld canlyniadau chwilio</translation>
+<translation id="5229736206150093143">Canlyniadau diweddaraf</translation>
 <translation id="5233638681132016545">Tab newydd</translation>
 <translation id="5235196193381275927">Aeth rhywbeth o'i le wrth fewngofnodi</translation>
 <translation id="5246093389635966745">Golygu llwybr byr y bar offer</translation>
@@ -1282,6 +1289,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="676305334223455055">Mewngofnodwch i gael cynnwys yn seiliedig ar eich diddordebau</translation>
 <translation id="6764137532716892442">Grŵp tabiau a rennir <ph name="GROUP_TITLE" /> gyda gweithgaredd newydd</translation>
 <translation id="6767294960381293877">Agorodd rhestr o ddyfeisiau i rannu tab â nhw ar hanner uchder.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{Bydd <ph name="INCOGNITO_TAB_COUNT" /> tab anhysbys a <ph name="TAB_COUNT_ONE" /> tab arall yn cael eu cau}zero{Bydd <ph name="INCOGNITO_TAB_COUNT" /> tab anhysbys a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}two{Bydd <ph name="INCOGNITO_TAB_COUNT" /> dab anhysbys a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}few{Bydd <ph name="INCOGNITO_TAB_COUNT" /> thab anhysbys a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}many{Bydd <ph name="INCOGNITO_TAB_COUNT" /> thab anhysbys a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}other{Bydd <ph name="INCOGNITO_TAB_COUNT" /> tab anhysbys a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}}</translation>
 <translation id="6785476624617658922">Telerau Gwasanaeth Ychwanegol Chrome a ChromeOS</translation>
 <translation id="6786747875388722282">Estyniadau</translation>
 <translation id="6795633245022906657">Agor tab newydd yn gyflym. I olygu'r llwybr byr hwn, ewch i'r Gosodiadau.</translation>
@@ -1577,6 +1585,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7965838025086216108">Gallwch ddefnyddio cyfrineiriau sydd wedi'u cadw ar unrhyw ddyfais. Maent yn cael eu cadw i Rheolwr Cyfrineiriau Google ar gyfer <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Ychwanegwyd at y rhestr ddarllen</translation>
 <translation id="7968982339740310781">Gweld y manylion</translation>
+<translation id="7969391000881506217">Dyddiad darfod*</translation>
 <translation id="7971136598759319605">Yma 1 diwrnod yn ôl</translation>
 <translation id="7975379999046275268">Tudalen rhagolwg <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Yn eich rhybuddio os ydych yn defnyddio cyfrinair sydd wedi'i beryglu mewn achos o dor data.</translation>
@@ -1735,6 +1744,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8565021320663436446">Tynnu <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Ni ellir lawrlwytho'r ffeil yn ddiogel</translation>
 <translation id="8571213806525832805">Y 4 wythnos diwethaf</translation>
+<translation id="8580435650274205305">Dyddiad darfod, gofynnol</translation>
 <translation id="8582529315803410153">Byddwch yn gweld eich tabiau o ddyfeisiau eraill yma</translation>
 <translation id="8585103689515290060">Gwasanaethau awtolenwi</translation>
 <translation id="859046281437143747">Dilyn y pris o'r botwm Rhagor o ddewisiadau</translation>

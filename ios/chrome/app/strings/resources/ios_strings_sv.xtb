@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Det går inte att dela. Du är inte ansluten till nätverket.</translation>
 <translation id="1668001730617725852">Öppna i en ny flikgrupp</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> till <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Nu kan du öppna Google Lens från adressfältet och söka efter det du ser</translation>
 <translation id="1689333818294560261">Kortnamn</translation>
 <translation id="169048873465870056">Vill du ta bort fliken och radera gruppen?</translation>
 <translation id="1698090540708020240">Importera lösenord …</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Kontot <ph name="USER_EMAIL" /> hanteras av <ph name="HOSTED_DOMAIN" />, som kanska kan se viss information. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nytt objekt</translation>
 <translation id="2049727122989709386">Samma lösenord används för <ph name="COUNT" /> konton</translation>
+<translation id="205013082884273671">Sök efter vad som helst på skärmen</translation>
 <translation id="2054044186557130763">Logga in som <ph name="NAME" /> <ph name="EMAIL" />, som hanteras av organisationen.</translation>
 <translation id="2059166748188874810">Kommun</translation>
 <translation id="2060638295449304809">Adressen sparas bara på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot <ph name="USER_EMAIL" /></translation>
@@ -459,6 +461,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2819667972867209401">När detta är aktiverat sparas data i Google-kontot. När inställningen är inaktiverad sparas data endast på den här enheten och raderas när du loggar ut.</translation>
 <translation id="2827760117436553203">Vill du hålla data åtskild?</translation>
 <translation id="2829172210806130158">Sök på skärmen</translation>
+<translation id="2831109159746537587">Testa att ringa in eller trycka på bilden för att söka</translation>
 <translation id="2834399722155632105">3. Tryck på Lösenordsalternativ</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Tid</translation>

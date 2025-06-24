@@ -3474,11 +3474,6 @@ Jede Regel hat folgende Bestandteile:
       Wenn die Richtlinie nicht konfiguriert ist, werden keine Einschränkungen angewendet.</translation>
 <translation id="3531084733660068324">Einstellungen für die Elternaufsicht</translation>
 <translation id="3532827558833318911">Passwortanmeldung löschen</translation>
-<translation id="353291262171579310">Mit dieser Richtlinie wird die Sichtbarkeit des Verwaltungshinweises in der Fußzeile der Seite „Neuer Tab“ festgelegt. Standardmäßig werden in dieser Fußzeile Informationen angezeigt, wenn der Browser von einer Organisation verwaltet wird (angegeben durch ein Gebäudesymbol und „Verwaltet von [Domainname]“). Dies kann mithilfe der Richtlinien „<ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" />“ und „<ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />“ angepasst werden.
-
-Wenn diese Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, werden in verwalteten Browsern der Hinweis „Verwaltet von…“ und ein Symbol angezeigt.
-
-Ist sie auf „false“ gesetzt, wird der Verwaltungshinweis ausgeblendet.</translation>
 <translation id="353611922042274900">Systeminformationen immer auf dem Anmeldebildschirm anzeigen</translation>
 <translation id="3536263244905016305">Web Proxy Auto-Discovery (WPAD)-Optimierung deaktivieren</translation>
 <translation id="3539103206548425861">Wenn diese Richtlinie konfiguriert ist, können in <ph name="PRODUCT_NAME" /> ohne Zustimmung des Nutzers automatisch Videos mit Ton abgespielt werden. Wenn die Richtlinie <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> auf "True" gesetzt ist, hat diese Richtlinie keine Auswirkungen. Ist die Richtlinie <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> auf "False" gesetzt, können alle in dieser Richtlinie festgelegten URL-Muster weiterhin wiedergegeben werden. Wird die Richtlinie während der Ausführung von <ph name="PRODUCT_NAME" /> geändert, wird sie nur auf neu geöffnete Tabs angewendet.
@@ -6660,6 +6655,9 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="5740636973289452345">Erfassen von Daten zu Erweiterungen und Plug-ins aktivieren</translation>
 <translation id="5740716956489996914">Standardverhalten anwenden, wenn festgelegt wird, ob Websites Anfragen an lokale Netzwerkendpunkte senden können</translation>
 <translation id="5741110260062082926">Orca deaktivieren</translation>
+<translation id="5746126833785204233">Wenn die Richtlinie aktiviert ist, werden Protokolle auf Kiosk-App-Ebene erfasst, wenn eine Kiosk-App auf dem Gerät ausgeführt wird. Protokolle werden für alle Kiosk-App-Typen erfasst.
+Diese Protokolle werden in einer separaten „kiosk_apps.log“-Datei gespeichert.
+Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, werden keine Protokolle auf Kiosk-App-Ebene erfasst.</translation>
 <translation id="5746149754419996562">Dadurch können Glanceables-Widgets in <ph name="PRODUCT_OS_NAME" /> verwendet werden. Das gilt insbesondere für die Widgets, die über den Datums-Chip in der Ablage verfügbar sind.
 Wenn diese Richtlinie aktiviert ist, sind Glanceables in <ph name="PRODUCT_OS_NAME" /> aktiviert.
 Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, sind Glanceables in <ph name="PRODUCT_OS_NAME" /> nicht aktiviert.</translation>
@@ -7578,13 +7576,6 @@ ACHTUNG: Du musst vorsichtig sein, wenn du diese Einstellung änderst, da dadurc
 <translation id="6371005337713685988">Einstellungen für Gruppen ähnlicher Websites</translation>
 <translation id="6371561334154580937">Dialogfeld für die Abmeldung beim Schließen des letzten Fensters anzeigen.</translation>
 <translation id="6372105930898423193">Ermöglicht die Aktivierung der AppCache-Funktion, selbst wenn sie standardmäßig deaktiviert ist.</translation>
-<translation id="6372676668820850849">Mit dieser Richtlinie wird festgelegt, ob die Drittanbieter-Speicherpartitionierung standardmäßig zulässig ist.
-
-Wenn diese Richtlinie auf „1 – AllowPartitioning“ gesetzt oder nicht konfiguriert ist, ist die Drittanbieter-Speicherpartitionierung standardmäßig zulässig. Dieser Standardwert kann für bestimmte Ursprünge der obersten Ebene auf andere Weise überschrieben werden.
-
-Ist diese Richtlinie auf „2 – BlockPartitioning“ gesetzt, wird die Drittanbieter-Speicherpartitionierung für alle Kontexte deaktiviert.
-
-Mit „<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />“ kannst du die Drittanbieter-Speicherpartitionierung für bestimmte Ursprünge der obersten Ebene deaktivieren. Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="6373299801585455337">Melden der CPU-Informationen auf Geräten aktivieren</translation>
 <translation id="6374945506685352202">Sperrliste für Installationstypen von Erweiterungen</translation>
 <translation id="6376540107659524656">SSH in der Terminal System App deaktivieren</translation>
@@ -8426,6 +8417,7 @@ Wenn die Richtlinie „<ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLI
 <translation id="6907778402784621686">Unsichere Inhalte auf diesen Websites blockieren</translation>
 <translation id="6908335885425855120">Out-of-Process-iFrame-PDF-Viewer verwenden</translation>
 <translation id="6908640907898649429">Konfiguriert die Standardsuchmaschine. Du kannst festlegen, welche Suchmaschine als Standardsuchmaschine für die Nutzer verwendet werden soll, oder die Verwendung einer Standardsuchmaschine deaktivieren.</translation>
+<translation id="6910715067772088598">Protokolle für Kiosk-Apps deaktivieren</translation>
 <translation id="6913068954484253496"><ph name="PRODUCT_NAME" /> erlauben, eine Verbindung zu Übertragungsgeräten unter allen IP-Adressen herzustellen.</translation>
 <translation id="6915493311660114995">Wenn die Richtlinie aktiviert ist, erlaubt <ph name="PRODUCT_NAME" /> Webauthentifizierungsanfragen auf Websites mit fehlerhaften TLS-Zertifikaten (d. h. Websites, die als nicht sicher eingestuft werden).
 
@@ -8499,6 +8491,7 @@ Diese Richtlinie wird entfernt, nachdem die Funktion für Out-of-Process-Drucker
       Wenn sie nicht konfiguriert ist, stehen keine Gerätedrucker zur Verfügung und die anderen <ph name="DEVICE_PRINTERS_POLICY_PATTERN" />-Richtlinien werden ignoriert.</translation>
 <translation id="69525503251220566">Parameter für Funktion zur bildgesteuerten Suche für Standardsuchanbieter</translation>
 <translation id="6953102253399571439">PIN-Druckmodus standardmäßig aktivieren</translation>
+<translation id="695532899547292238">Erfassen von Protokollen für die Kiosk-App aktivieren</translation>
 <translation id="6956272732789158625">Schlüsselgenerierung für keine Website zulassen</translation>
 <translation id="6960996423652450945">„Caret hervorheben“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="6961602002757991199">Ist für die Richtlinie eine gültige URL angegeben, lädt <ph name="PRODUCT_NAME" /> die Websiteliste von dieser URL herunter und wendet die Regeln so an, als wären sie mit der Richtlinie "<ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />" konfiguriert worden. Diese Richtlinien verhindern, dass sich <ph name="PRODUCT_NAME" /> und der alternative Browser gegenseitig öffnen.
@@ -9149,13 +9142,6 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
 <translation id="7463934096276667908">Vollbild-APIs für Videos mit Präfix werden aktiviert</translation>
 <translation id="7464058117970792805">Druckvorschau aktivieren</translation>
 <translation id="7464991223784276288">Cookies von übereinstimmenden URLs auf die aktuelle Sitzung beschränken</translation>
-<translation id="7467748623079596345">Mit dieser Richtlinie kannst du eine Liste von URL-Mustern festlegen, durch die Ursprünge der obersten Ebene angegeben werden, für die die Drittanbieter-Speicherpartitionierung (Partitionierung des ursprungsübergreifenden iFrame-Speichers) deaktiviert werden soll.
-
-Wenn diese Richtlinie nicht konfiguriert ist oder der Ursprung der obersten Ebene nicht mit einem der URL-Muster übereinstimmt, wird „<ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />“ angewendet.
-
-Ausführliche Informationen zu gültigen Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Beachte, dass die Muster, die du hier aufführst, als Ursprünge und nicht als URLs behandelt werden. Gib deshalb keinen Pfad an.
-
-Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="7468182772656807573">Die Konfiguration der Richtlinie legt fest, wie oft Kontrollnetzwerkpakete gesendet werden (in Millisekunden). Intervalle reichen von 30 Sekunden bis zu 24 Stunden. Werte außerhalb dieses Bereiches werden automatisch auf den jeweiligen Grenzwert gesetzt.
 
       Wenn die Richtlinie nicht konfiguriert ist, betragen die Intervalle standardmäßig 3 Minuten.</translation>
@@ -9302,6 +9288,7 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
 <translation id="7586199729147257934">Aktiviert die Bereitstellung von Clientzertifikaten für verwaltete Browser</translation>
 <translation id="7587345076013230465">Nutzer auffordern, auf dem Anmeldebildschirm das Clientzertifikat auszuwählen, wenn die Richtlinie für die automatische Auswahl zu mehreren Zertifikaten passt</translation>
 <translation id="7587921466180902617">Screencast-Dogfood für Family Link-Nutzer aktivieren</translation>
+<translation id="7588140323025689972">Protokolle für Kiosk-Apps aktivieren</translation>
 <translation id="7595074040612182185">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites Bilder anzeigen dürfen.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.

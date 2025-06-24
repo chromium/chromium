@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Не вдалося поділитися, оскільки ви не під’єднані до мережі.</translation>
 <translation id="1668001730617725852">Відкрити в новій групі вкладок</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Тепер ви можете відкривати Google Об’єктив в адресному рядку й шукати все, що бачите</translation>
 <translation id="1689333818294560261">Псевдонім</translation>
 <translation id="169048873465870056">Вилучити вкладку й видалити групу?</translation>
 <translation id="1698090540708020240">Імпортувати паролі…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Обліковим записом <ph name="USER_EMAIL" /> керує адміністратор домену <ph name="HOSTED_DOMAIN" />, який може переглядати певну інформацію. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">новий об’єкт</translation>
 <translation id="2049727122989709386">Кілька облікових записів (<ph name="COUNT" />) використовують такий самий пароль</translation>
+<translation id="205013082884273671">Шукайте будь-що на екрані</translation>
 <translation id="2054044186557130763">Увійдіть в обліковий запис користувача <ph name="NAME" /> (<ph name="EMAIL" />), яким керує ваша організація.</translation>
 <translation id="2059166748188874810">Муніципалітет</translation>
 <translation id="2060638295449304809">Цю адресу збережено лише на поточному пристрої. Щоб використовувати її на інших пристроях, збережіть цю адресу в обліковому записі Google (<ph name="USER_EMAIL" />).</translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">Коли цей параметр увімкнено, дані зберігаються в обліковому записі Google. Якщо його вимкнути, дані зберігатимуться лише на пристрої і видалятимуться, коли ви вийдете з облікового запису.</translation>
 <translation id="2827760117436553203">Зберігати дані окремо?</translation>
 <translation id="2829172210806130158">Шукайте об’єкти на екрані</translation>
+<translation id="2831109159746537587">Щоб виконати пошук, обведіть або натисніть зображення</translation>
 <translation id="2834399722155632105">3. Натисніть "Параметри паролів"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Час</translation>

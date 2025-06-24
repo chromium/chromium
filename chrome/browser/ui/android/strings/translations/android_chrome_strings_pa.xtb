@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">60% ਤੱਕ ਡਾਟਾ ਬਚਾਓ, ਅੱਜ ਦੀਆਂ ਖਬਰਾਂ ਪੜ੍ਹੋ</translation>
 <translation id="1303339473099049190">ਇਹ ਪਾਸਵਰਡ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਆਪਣੇ ਸ਼ਬਦ-ਜੋੜਾਂ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> ਵੱਲੋਂ ਭੇਜੀ ਗਈ</translation>
+<translation id="1310482092992808703">ਟੈਬਾਂ ਦਾ ਗਰੁੱਪ ਬਣਾਓ</translation>
 <translation id="1318262688555255786">ਵੈੱਬ-ਪੰਨੇ <ph name="PAGE_TITLE" /> ਦਾ ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ। ਸਰੋਤ: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">ਬੁੱਕਮਾਰਕ ਰੱਖਿਅਤ ਕਰਨ ਸੰਬੰਧੀ ਪ੍ਰਵਾਹ ਵਾਲਾ ਫੋਲਡਰ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੋਲ੍ਹਿਆ ਗਿਆ ਹੈ</translation>
 <translation id="1327257854815634930">ਨੈਵੀਗੇਸ਼ਨ ਇਤਿਹਾਸ ਖੁੱਲ੍ਹਾ ਹੋਇਆ ਹੈ</translation>
@@ -477,6 +478,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">ਵਿਗਿਆਪਨ ਮਾਪ</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ਟੈਬ ਗਰੁੱਪ</translation>
+<translation id="3200536777393523575">ਕੀ ਤੁਹਾਡੀ ਮੌਜੂਦਾ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3207960819495026254">ਬੁੱਕਮਾਰਕ ਕੀਤੇ</translation>
 <translation id="3208584281581115441">ਹੁਣ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ਨੂੰ ਮਿਟਾਇਆ ਗਿਆ</translation>
@@ -721,6 +723,7 @@
 <translation id="4351244548802238354">ਡਾਇਲੌਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="4352287748243729941">ਕੀ ਆਪਣੇ <ph name="PROVIDER" /> ਪਾਸਵਰਡ ਨੂੰ ਵਰਤਣਾ ਹੈ?</translation>
 <translation id="4355272626458588338">ਬੁੱਕਮਾਰਕ ਸ਼ਾਮਲ ਕਰ ਕੇ ਤੁਸੀਂ ਉਸ ਪੰਨੇ 'ਤੇ ਆਸਾਨੀ ਨਾਲ ਵਾਪਸ ਜਾ ਸਕਦੇ ਹੋ ਜੋ ਤੁਹਾਡੇ ਲਈ ਮਹੱਤਵਪੂਰਨ ਹੈ</translation>
+<translation id="4356503491090073318">ਕਾਰਡ ਨੰਬਰ*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">ਸੁਰੱਖਿਆ ਇੱਕ ਨਜ਼ਰ ਵਿੱਚ</translation>
 <translation id="4378154925671717803">ਫ਼ੋਨ</translation>
@@ -738,6 +741,7 @@
 <translation id="4425140285732600465">ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਅਲਰਟ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="4425173294238317796">ਪਾਸਕੀ ਦੀ ਤਸਦੀਕ ਕਰਨ ਵਾਲੀ ਸ਼ੀਟ</translation>
 <translation id="442518031075347249">ਤੁਸੀਂ ਹੁਣ Google Pay ਨਾਲ ਆਪਣੇ ਆਭਾਸੀ ਕਾਰਡ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕੋਗੇ। <ph name="BEGIN_LINK1" />ਆਭਾਸੀ ਕਾਰਡਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> ਅਤੇ <ph name="TAB_COUNT_ONE" /> ਹੋਰ ਟੈਬ ਬੰਦ ਹੋ ਜਾਵੇਗੀ}one{<ph name="TAB_TITLE" /> ਅਤੇ <ph name="TAB_COUNT_MANY" /> ਹੋਰ ਟੈਬ ਬੰਦ ਹੋ ਜਾਵੇਗੀ}other{<ph name="TAB_TITLE" /> ਅਤੇ <ph name="TAB_COUNT_MANY" /> ਹੋਰ ਟੈਬਾਂ ਬੰਦ ਹੋ ਜਾਣਗੀਆਂ}}</translation>
 <translation id="4426508677408162512">ਸਭ ਬੁੱਕਮਾਰਕ</translation>
 <translation id="4430277756566635951">ਫ਼ਿਲਹਾਲ <ph name="EMAIL" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ। ਕੋਈ ਖਾਤਾ ਚੁਣੋ।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ਟੈਬ ਬੰਦ ਕਰੋ</translation>
@@ -873,6 +877,7 @@
 <translation id="4987271110129728827">ਉਹ ਪੰਨਾ ਨਹੀਂ ਮਿਲਿਆ। ਆਪਣੇ ਸ਼ਬਦ-ਜੋੜ ਦੀ ਜਾਂਚ ਕਰੋ ਜਾਂ ਵੈੱਬ ਖੋਜ ਕਰ ਕੇ ਦੇਖੋ।</translation>
 <translation id="4988526792673242964">ਸਫ਼ੇ</translation>
 <translation id="4991110219272367918">ਕਿਸੇ ਵੈੱਬਸਾਈਟ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦੇਣ ਜਾਂ ਨਾ ਦੇਣ ਦਾ ਵਿਕਲਪ ਬੰਦ ਹੋ ਗਿਆ ਹੈ</translation>
+<translation id="4996042648402406470">ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="4996095658297597226">ਕੀ ਸੁਝਾਇਆ ਗਿਆ ਪਾਸਵਰਡ ਵਰਤਣਾ ਹੈ?</translation>
 <translation id="5001388021414335527">ਇਸ ਸਾਈਟ ਦਾ ਇੱਥੇ ਅਨੁਸਰਣ ਕਰੋ</translation>
 <translation id="5004416275253351869">Google ਸਰਗਰਮੀ ਕੰਟਰੋਲ</translation>
@@ -923,10 +928,12 @@
 <translation id="5210286577605176222">ਪਿੱਛਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="5210365745912300556">ਟੈਬ ਬੰਦ ਕਰੋ</translation>
 <translation id="5215957675041756913">ਆਪਣਾ ਡਾਟਾ ਅਤੇ ਖਾਤਾ ਕੰਟਰੋਲ ਕਰੋ</translation>
+<translation id="5218324087477576825">ਕਾਰਡ ਨੰਬਰ, ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ ਹੋਰ <ph name="SEPARATOR" /> Chrome ਵੱਲੋਂ ਇਨ੍ਹਾਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਇਨ੍ਹਾਂ 'ਤੇ ਨਹੀਂ ਗਏ</translation>
 <translation id="5222676887888702881">ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="5226378907213531272">ਤੁਸੀਂ ਕਾਰ ਨੂੰ ਹਰੇਕ ਵਾਰ ਵਰਤਣ ਵੇਲੇ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਅਣਲਾਕ ਕਰੋਗੇ</translation>
 <translation id="5227554086496586518">ਖੋਜ ਨਤੀਜੇ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
+<translation id="5229736206150093143">ਨਵੀਨਤਮ ਨਤੀਜੇ</translation>
 <translation id="5233638681132016545">ਨਵੀਂ ਟੈਬ</translation>
 <translation id="5235196193381275927">ਸਾਈਨ-ਇਨ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="5246093389635966745">ਟੂਲਬਾਰ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
@@ -1281,6 +1288,7 @@
 <translation id="676305334223455055">ਆਪਣੀਆਂ ਦਿਲਚਸਪੀਆਂ ਦੇ ਆਧਾਰ 'ਤੇ ਸਮੱਗਰੀ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6764137532716892442">ਨਵੀਂ ਸਰਗਰਮੀ ਦੇ ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ <ph name="GROUP_TITLE" /> ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="6767294960381293877">ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਵਾਲੇ ਡੀਵਾਈਸਾਂ ਦੀ ਸੂਚੀ ਅੱਧੀ ਉਚਾਈ 'ਤੇ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ਇਨਕੋਗਨਿਟੋ ਅਤੇ <ph name="TAB_COUNT_ONE" /> ਹੋਰ ਟੈਬ ਬੰਦ ਹੋ ਜਾਵੇਗੀ}one{<ph name="INCOGNITO_TAB_COUNT" /> ਇਨਕੋਗਨਿਟੋ ਅਤੇ <ph name="TAB_COUNT_MANY" /> ਹੋਰ ਟੈਬ ਬੰਦ ਹੋ ਜਾਵੇਗੀ}other{<ph name="INCOGNITO_TAB_COUNT" /> ਇਨਕੋਗਨਿਟੋ ਅਤੇ <ph name="TAB_COUNT_MANY" /> ਹੋਰ ਟੈਬਾਂ ਬੰਦ ਹੋ ਜਾਣਗੀਆਂ}}</translation>
 <translation id="6785476624617658922">Chrome ਅਤੇ ChromeOS ਦੇ ਵਧੀਕ ਸੇਵਾ ਦੇ ਨਿਯਮ</translation>
 <translation id="6786747875388722282">ਐਕਸਟੈਂਸ਼ਨਾਂ</translation>
 <translation id="6795633245022906657">ਤੁਰੰਤ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ। ਇਸ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
@@ -1576,6 +1584,7 @@
 <translation id="7965838025086216108">ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਵਰਤ ਸਕਦੇ ਹੋ। ਉਹ <ph name="ACCOUNT" /> ਦੇ ਲਈ Google ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ।</translation>
 <translation id="7968014550143838305">ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7968982339740310781">ਵੇਰਵੇ ਦੇਖੋ</translation>
+<translation id="7969391000881506217">ਮਿਆਦ ਸਮਾਪਤੀ ਦੀ ਤਾਰੀਖ*</translation>
 <translation id="7971136598759319605">1 ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="7975379999046275268">ਪੰਨੇ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">ਇਹ ਤੁਹਾਨੂੰ ਚਿਤਾਵਨੀ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ ਕਿ ਕਿਤੇ ਤੁਸੀਂ ਉਸ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਤਾਂ ਨਹੀਂ ਕੀਤੀ ਜਿਸ ਨਾਲ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਛੇੜਛਾੜ ਕੀਤੀ ਗਈ ਹੈ।</translation>
@@ -1734,6 +1743,7 @@
 <translation id="8565021320663436446">ਕੀ <ph name="MEMBER_FULL_NAME" /> ਨੂੰ ਹਟਾਉਣਾ ਹੈ?</translation>
 <translation id="8570677896027847510">ਫ਼ਾਈਲ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="8571213806525832805">ਪਿਛਲੇ 4 ਹਫ਼ਤੇ</translation>
+<translation id="8580435650274205305">ਮਿਆਦ ਸਮਾਪਤੀ ਦੀ ਤਾਰੀਖ, ਲੋੜੀਂਦੀ ਹੈ</translation>
 <translation id="8582529315803410153">ਤੁਹਾਨੂੰ ਹੋਰ ਡੀਵਾਈਸਾਂ ਦੀਆਂ ਆਪਣੀਆਂ ਟੈਬਾਂ ਇੱਥੇ ਮਿਲਣਗੀਆਂ</translation>
 <translation id="8585103689515290060">ਆਟੋਫਿਲ ਸੇਵਾਵਾਂ</translation>
 <translation id="859046281437143747">'ਹੋਰ ਵਿਕਲਪ' ਬਟਨ ਤੋਂ ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਕਰੋ</translation>

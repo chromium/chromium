@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Ezin izan da partekatu ez zaudelako Internetera konektatuta.</translation>
 <translation id="1668001730617725852">Ireki beste fitxa talde batean</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> - <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Orain, Google Lens helbide-barratik ireki dezakezu, eta ikusten duzun edozer bilatu</translation>
 <translation id="1689333818294560261">Goitizena</translation>
 <translation id="169048873465870056">Fitxa kendu, eta taldea ezabatu nahi duzu?</translation>
 <translation id="1698090540708020240">Inportatu pasahitzak…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen du <ph name="USER_EMAIL" /> kontua, eta agian zenbait datu ikus ditzake. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">elementu berria</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> kontuk pasahitz bera darabilte</translation>
+<translation id="205013082884273671">Bilatu pantailako edozer</translation>
 <translation id="2054044186557130763">Hasi saioa <ph name="NAME" /> (<ph name="EMAIL" />) gisa. Erakundeak kudeatzen du.</translation>
 <translation id="2059166748188874810">Udalerria</translation>
 <translation id="2060638295449304809">Helbidea gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="USER_EMAIL" />).</translation>
@@ -459,6 +461,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2819667972867209401">Aktibatuta badago, datuak Google-ko kontuan gordetzen dira. Desaktibatuta badago, datuak gailu honetan soilik gordetzen dira. Saioa amaitzen baduzu, datu horiek ezabatuko dira.</translation>
 <translation id="2827760117436553203">Datuak bereiz mantendu nahi dituzu?</translation>
 <translation id="2829172210806130158">Bilatu pantailan</translation>
+<translation id="2831109159746537587">Inguratu edo sakatu irudia bilatzeko</translation>
 <translation id="2834399722155632105">3. Sakatu Password Options (pasahitzen aukerak).</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Ordua</translation>

@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">اشتراک‌گذاری انجام نشد چون به شبکه وصل نیستید.</translation>
 <translation id="1668001730617725852">باز کردن در گروه برگه جدید</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> به<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">‏اکنون می‌توانید «لنز Google» را از نوار نشانی باز کنید و هر آنچه را که می‌بینید جستجو کنید</translation>
 <translation id="1689333818294560261">نام مستعار</translation>
 <translation id="169048873465870056">برگه برداشته و گروه حذف شود؟</translation>
 <translation id="1698090540708020240">وارد کردن گذرواژه‌ها…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">حساب <ph name="USER_EMAIL" /> تحت‌مدیریت <ph name="HOSTED_DOMAIN" /> است. این دامنه ممکن است بتواند برخی اطلاعات را مشاهده کند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">مورد جدید</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> حساب از گذرواژه یکسانی استفاده می‌کنند</translation>
+<translation id="205013082884273671">هر چیزی در صفحه را جستجو کنید</translation>
 <translation id="2054044186557130763">ورود به سیستم با <ph name="NAME" />،‏ <ph name="EMAIL" />، توسط سازمانتان مدیریت می‌شود.</translation>
 <translation id="2059166748188874810">شهرداری</translation>
 <translation id="2060638295449304809">‏این نشانی فقط در این دستگاه ذخیره می‌شود. برای استفاده از آن در دیگر دستگاه‌هایتان، آن را در «حساب Google» خود (<ph name="USER_EMAIL" />) ذخیره کنید</translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">‏وقتی روشن باشد، داده‌ها در «حساب Google» شما ذخیره می‌شود. وقتی خاموش باشد، داده‌ها فقط در این دستگاه ذخیره می‌شود و درصورت خروج از سیستم، داده‌ها حذف می‌شود.</translation>
 <translation id="2827760117436553203">داده‌ها جدا نگه داشته شود؟</translation>
 <translation id="2829172210806130158">جستجو در صفحه</translation>
+<translation id="2831109159746537587">برای جستجو کردن، دور عکس موردنظر دایره بکشید یا روی آن تک‌ضرب بزنید</translation>
 <translation id="2834399722155632105">۳. روی «گزینه‌های گذرواژه» تک‌ضرب بزنید</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />، <ph name="STATE" />، <ph name="URL" /></translation>
 <translation id="2841013758207633010">زمان</translation>
@@ -1104,6 +1107,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5576885723883013398">پنجره جدید</translation>
 <translation id="5578795271662203820">جستجوی <ph name="SEARCH_ENGINE" /> برای این تصویر</translation>
 <translation id="5579012242779565775">پنهان کردن «فهرست خواندن»</translation>
+<translation id="5581786858144165447">از «حالت هوش مصنوعی» بپرسید</translation>
 <translation id="5585019845078534178">کارت‌ها</translation>
 <translation id="5595485650161345191">ویرایش نشانی</translation>
 <translation id="559567008082979829">درصورت فعال شدن، بارگیری‌ها پس‌از یک ماه حذف می‌شوند.</translation>

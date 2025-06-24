@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Uštedite i do 60% podataka, čitajte današnje vesti</translation>
 <translation id="1303339473099049190">Ne možemo da pronađemo tu lozinku. Proverite kako ste je napisali i probajte ponovo.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – poslato je sa uređaja <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Grupiši kartice</translation>
 <translation id="1318262688555255786">Delite link do veb-stranice <ph name="PAGE_TITLE" />. Izvor: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Folderi toka čuvanja obeleživača su otvoreni do polovine ekrana</translation>
 <translation id="1327257854815634930">Istorija navigacije je otvorena</translation>
@@ -1407,6 +1408,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7224097611345298931">Sve lozinke sačuvane samo na ovom uređaju za Chrome i <ph name="CHROME_CHANNEL" /> su objedinjene. Možete automatski da popunjavate sve sačuvane lozinke u obe aplikacije.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 preuzimanje na čekanju}one{# preuzimanje na čekanju}few{# preuzimanja na čekanju}other{# preuzimanja na čekanju}}</translation>
 <translation id="7230064152164845085">Pređi u režim bez arhiviranja</translation>
+<translation id="7230836263524391273">Sakrij Režim čitanja</translation>
 <translation id="7237724030342645845">Google menadžer lozinki je prestao da radi</translation>
 <translation id="72415438529550637">Predlog lozinke je zatvoren.</translation>
 <translation id="7248671827512403053">Aplikacija</translation>

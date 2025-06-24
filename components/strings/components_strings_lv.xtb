@@ -693,6 +693,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2157640075051554492">Cenu izsekošanas paziņojumi</translation>
 <translation id="21613918653299710">Tiešsaistes attēlu galerijas</translation>
 <translation id="2161656808144014275">Teksts</translation>
+<translation id="2162435186600002085">Galvenes primārais logotips</translation>
 <translation id="2162620598375156287">Tagad cena vietnē <ph name="SOURCE_WEBSITE" /> ir <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">Pārbaudiet, vai adresē <ph name="HOST_NAME" /> nav pareizrakstības kļūdas.</translation>
 <translation id="2166049586286450108">Pilna administratora piekļuve</translation>
@@ -851,6 +852,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2400263725572336749">Pases pievienošana</translation>
 <translation id="2400271059665846158">Pārvaldiet lojalitātes kartes lietotnē Google maks</translation>
 <translation id="2400600116338235695">Var pieprasīt atļauju veidot savienojumu ar seriālajiem portiem</translation>
+<translation id="240450251994300576">Galvenes sekundārais logotips</translation>
 <translation id="2404884497378469141">Mēģiniet vēlreiz kopēt savus failus.</translation>
 <translation id="2413155254802890957">Vecā</translation>
 <translation id="2413528052993050574">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts, iespējams, ir atsaukts. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
@@ -981,6 +983,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2627847595568876492">Iegūst tekstu no PDF faila...</translation>
 <translation id="2628224721443278970">Pierakstīties pakalpojumā Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Nevarēja atrast vietnes <ph name="HOST_NAME" /> servera IP adresi.</translation>
+<translation id="2638567100095052009">Ievadiet @, lai meklētu vietnē <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Statuss:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Audums (pusglancēts)</translation>
@@ -1438,6 +1441,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="343474037147570563">Jūsu augšupielādētie vai pievienotie faili tiek nosūtīti uz Google Cloud vai trešajām pusēm, lai veiktu analīzi. Piemēram, šie faili var tikt pārmeklēti, lai konstatētu, vai tajos ir sensitīvi dati vai ļaunprātīga programmatūra, un uzglabāti saskaņā ar uzņēmuma politikām, turklāt tie var būt redzami jūsu administratoram.</translation>
 <translation id="3435557549311968410">Vienlaidu (īsā mala)</translation>
 <translation id="3435738964857648380">Drošība</translation>
+<translation id="3436118221454753036">Jautāt MI režīmam</translation>
 <translation id="3440783957068352691">kvadrāts</translation>
 <translation id="3441653493275994384">Ekrāns</translation>
 <translation id="3443504041532578451">Optiskais disks (satinēts)</translation>
@@ -2264,6 +2268,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4827283332383516812">Kartes dzēšana</translation>
 <translation id="4830443836091007686">Atlasīti: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Attēlliča papīrs</translation>
+<translation id="4832388034239846146">Lai kopīgotu ciļņu grupas, atjauniniet pārlūku Chrome</translation>
 <translation id="483241715238664915">Ieslēgt brīdinājumus</translation>
 <translation id="4832961164064927107">Grilēšana</translation>
 <translation id="4834250788637067901">Maksājumu veidi, piedāvājumi un adreses no pakalpojuma Google Pay</translation>
@@ -2971,6 +2976,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6043357981274314628">Gatavs!</translation>
 <translation id="6044573915096792553">12. izmērs</translation>
 <translation id="6045164183059402045">Izvietojuma veidne</translation>
+<translation id="6046892054959167494">Ierakstiet “<ph name="SEARCH_AGGREGATOR_KEYWORD" />”, lai meklētu vai uzdotu jautājumu meklētājprogrammai <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Ar šo saturu jūs var maldināt un panākt, ka instalējat programmatūru vai atklājat personas informāciju. <ph name="BEGIN_LINK" />Tāpat rādīt<ph name="END_LINK" />.</translation>
 <translation id="6049056807983403918">Aploksne B4</translation>
 <translation id="6049488691372270142">Lapu izvade</translation>
@@ -4009,6 +4015,7 @@ Papildu informācija:
 <translation id="7761159795823346334">Vai atļaut piekļuvi kamerai?</translation>
 <translation id="7761701407923456692">Servera sertifikāts neatbilst URL.</translation>
 <translation id="7764225426217299476">Pievienot adresi</translation>
+<translation id="7765158879357617694">Pārvietot</translation>
 <translation id="7766518757692125295">Kontūra</translation>
 <translation id="7767278989746220252">Iekšpagalms, zāliens un dārzs</translation>
 <translation id="776749070095465053">Audums</translation>
@@ -4343,6 +4350,7 @@ Papildu informācija:
 <translation id="8364627913115013041">Nav iestatīta.</translation>
 <translation id="8366057325711477500">Pasaules ziņas</translation>
 <translation id="836616551641291797">Uzzināt vairāk par pārlūka pārvaldību</translation>
+<translation id="8367705492654390392">Uzdodiet jebkādu jautājumu</translation>
 <translation id="8368001212524806591">Izsekot cenu</translation>
 <translation id="8368027906805972958">Nezināma vai neatbalstīta ierīce (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play pakalpojumi</translation>

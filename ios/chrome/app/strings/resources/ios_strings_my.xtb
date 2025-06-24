@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">သင်သည် ကွန်ရက်သို့ချိတ်ဆက်မထားသောကြောင့် မျှဝေမှုမအောင်မြင်ပါ။</translation>
 <translation id="1668001730617725852">တဘ်အုပ်စုအသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> မှ <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">လိပ်စာဘားတွင် Google Lens ကို ဖွင့်ပြီး သင်မြင်သမျှကို ရှာဖွေနိုင်ပြီ</translation>
 <translation id="1689333818294560261">နာမည်ပြောင်</translation>
 <translation id="169048873465870056">တဘ်ဖယ်ရှားပြီး အုပ်စုကို ဖျက်မလား။</translation>
 <translation id="1698090540708020240">စကားဝှက် ထည့်သွင်းရန်…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> အကောင့်ကို <ph name="HOSTED_DOMAIN" /> က စီမံပြီး ၎င်းက အချက်အလက်အချို့ကို ကြည့်နိုင်ရှိသည်။ <ph name="BEGIN_LINK" />ပိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">အကြောင်းအရာ အသစ်</translation>
 <translation id="2049727122989709386">အကောင့် <ph name="COUNT" /> ခုက တူညီသောစကားဝှက်ကို သုံးနေသည်</translation>
+<translation id="205013082884273671">သင့်စခရင်တွင် မြင်ရသမျှကို ရှာပါ</translation>
 <translation id="2054044186557130763">သင့်အဖွဲ့အစည်းက စီမံခန့်ခွဲသည့် <ph name="NAME" /> <ph name="EMAIL" /> အနေဖြင့် လက်မှတ်ထိုးဝင်ရန်။</translation>
 <translation id="2059166748188874810">မြူနီစီပယ်</translation>
 <translation id="2060638295449304809">ဤလိပ်စာကို ယခုစက်တွင်သာ သိမ်းလိုက်သည်။ အခြားစက်များ၌သုံးရန် ၎င်းကို သင့် Google Account <ph name="USER_EMAIL" /> တွင် သိမ်းနိုင်သည်</translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">ဖွင့်ထားသောအခါ ဒေတာကို သင့် Google Account တွင်သိမ်းသည်။ ပိတ်ထားပါက ဒေတာကို ဤစက်တွင်သာ သိမ်းပြီး သင်အကောင့်မှ ထွက်သောအခါ ဖျက်သည်။</translation>
 <translation id="2827760117436553203">ဒေတာကို သီးခြားထားမလား။</translation>
 <translation id="2829172210806130158">သင့်စခရင်ကို ရှာနိုင်သည်</translation>
+<translation id="2831109159746537587">ရှာဖွေရန် ပုံကို ဝိုင်းပါ၊ တို့ပါ</translation>
 <translation id="2834399722155632105">၃။ စကားဝှက် ရွေးစရာများကို တို့ပါ</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />၊ <ph name="STATE" />၊ <ph name="URL" /></translation>
 <translation id="2841013758207633010">အချိန်</translation>

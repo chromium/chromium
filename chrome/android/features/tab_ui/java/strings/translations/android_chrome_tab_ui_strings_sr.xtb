@@ -112,6 +112,7 @@
 <translation id="5556417849629758491">Прегледајте информације о продавници, опцију која је доступна у врху екрана</translation>
 <translation id="5627941783489838464">Нема ажурирања картица</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> линк из Chrome-а}one{<ph name="TABS_COUNT_MANY" /> линк из Chrome-а}few{<ph name="TABS_COUNT_MANY" /> линкa из Chrome-а}other{<ph name="TABS_COUNT_MANY" /> линковa из Chrome-а}}</translation>
+<translation id="5746204836956568669">Желите да групишете картице (<ph name="NUMBER_OF_TABS" />) да би радиле брже?</translation>
 <translation id="58326064309361797">Превуците картице да бисте их груписали</translation>
 <translation id="5901630391730855834">Жута</translation>
 <translation id="5972844218283131174">Опозови све</translation>
@@ -192,6 +193,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Ажурирано је пре <ph name="NUM_MONTHS_ONE" /> месец}one{Ажурирано је пре <ph name="NUM_MONTHS_MANY" /> месец}few{Ажурирано је пре <ph name="NUM_MONTHS_MANY" /> месеца}other{Ажурирано је пре <ph name="NUM_MONTHS_MANY" /> месеци}}</translation>
 <translation id="8398929769197326728">Нови фолдер – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Подешавања</translation>
+<translation id="855081842937141170">Закачи картицу</translation>
 <translation id="8633025649649592204">Недавна активност</translation>
 <translation id="8712637175834984815">Важи</translation>
 <translation id="8714939927607906138">Нижа цена</translation>

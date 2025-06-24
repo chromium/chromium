@@ -693,6 +693,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2157640075051554492">Notificações de monitoramento de preço</translation>
 <translation id="21613918653299710">Galerias de imagens on-line</translation>
 <translation id="2161656808144014275">Texto</translation>
+<translation id="2162435186600002085">Logotipo principal do cabeçalho</translation>
 <translation id="2162620598375156287">Agora por <ph name="CURRENT_PRICE" /> nesta loja: <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Verifique se há um erro de digitação em <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Acesso completo de administrador</translation>
@@ -851,6 +852,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2400263725572336749">Adicionar passaporte</translation>
 <translation id="2400271059665846158">Gerencie seus cartões fidelidade na Carteira do Google</translation>
 <translation id="2400600116338235695">Pode pedir para se conectar a portas seriais</translation>
+<translation id="240450251994300576">Logotipo secundário do cabeçalho</translation>
 <translation id="2404884497378469141">Tente copiar seus arquivos de novo</translation>
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança pode ter sido revogado. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
@@ -981,6 +983,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2627847595568876492">Extraindo texto do PDF…</translation>
 <translation id="2628224721443278970">Fazer login no Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Não foi possível encontrar o endereço IP do servidor de <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Digite @ para pesquisar em <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tecido (semibrilho)</translation>
@@ -1438,6 +1441,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="343474037147570563">Os arquivos transferidos por upload ou anexados são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
 <translation id="3435557549311968410">Contínua (curta)</translation>
 <translation id="3435738964857648380">Segurança</translation>
+<translation id="3436118221454753036">Pergunte ao Modo IA</translation>
 <translation id="3440783957068352691">quadrado</translation>
 <translation id="3441653493275994384">Tela</translation>
 <translation id="3443504041532578451">Disco óptico (acetinado)</translation>
@@ -2027,6 +2031,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="437620492464254965">Portas e janelas</translation>
 <translation id="4377125064752653719">Você tentou acessar <ph name="DOMAIN" />, mas o certificado que o servidor apresentou foi revogado pelo seu emissor. Isso significa que as credenciais de segurança que o servidor apresentou não são nem um pouco seguras. Talvez você esteja se comunicando com um invasor.</translation>
+<translation id="4377869186417956230">Mudar para todos os cartões fidelidade neste item de menu.</translation>
 <translation id="4378154925671717803">Telefone</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">De agora em diante, salve seus arquivos no armazenamento em nuvem</translation>
@@ -2266,6 +2271,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4827283332383516812">Excluir cartão</translation>
 <translation id="4830443836091007686">Itens selecionados: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Papel imagesetter</translation>
+<translation id="4832388034239846146">Para compartilhar grupos de guias, atualize o Chrome</translation>
 <translation id="483241715238664915">Ativar avisos</translation>
 <translation id="4832961164064927107">Churrasco e grelhados</translation>
 <translation id="4834250788637067901">Formas de pagamento, ofertas e endereços que usam Google Pay</translation>
@@ -2973,6 +2979,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6043357981274314628">Concluído.</translation>
 <translation id="6044573915096792553">Tamanho 12</translation>
 <translation id="6045164183059402045">Modelo de imposição</translation>
+<translation id="6046892054959167494">Digite <ph name="SEARCH_AGGREGATOR_KEYWORD" /> para pesquisar ou perguntar ao <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Este conteúdo pode tentar enganar você para que instale um software ou revele informações pessoais. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">Entrega de página</translation>
@@ -4011,6 +4018,7 @@ Mais detalhes:
 <translation id="7761159795823346334">Permitir acesso à câmera?</translation>
 <translation id="7761701407923456692">O certificado do servidor não é compatível com o URL.</translation>
 <translation id="7764225426217299476">Adicionar endereço</translation>
+<translation id="7765158879357617694">Mover</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7767278989746220252">Quintal, gramado e jardim</translation>
 <translation id="776749070095465053">Tecido</translation>
@@ -4345,6 +4353,7 @@ Mais detalhes:
 <translation id="8364627913115013041">Não definida.</translation>
 <translation id="8366057325711477500">Notícias mundiais</translation>
 <translation id="836616551641291797">Saiba mais sobre como seu navegador é gerenciado</translation>
+<translation id="8367705492654390392">Pergunte o que quiser</translation>
 <translation id="8368001212524806591">Monitorar preço</translation>
 <translation id="8368027906805972958">Dispositivo desconhecido ou incompatível (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Serviços do Google Play</translation>
@@ -4660,6 +4669,7 @@ Mais detalhes:
 <translation id="8926389886865778422">Não perguntar novamente</translation>
 <translation id="8932102934695377596">Seu relógio está atrasado</translation>
 <translation id="893332455753468063">Adicione um Nome</translation>
+<translation id="8938242527120341116">Os filtros de conteúdo do seu dispositivo bloquearam <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">Seu administrador permitiu que <ph name="APP_NAME" /> coletasse dados de diagnósticos para melhorar a experiência com o produto. Veja mais informações em <ph name="BEGIN_LINK" />https://www.parallels.com/br/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Verde-limão</translation>
 <translation id="8949410982325929394">Tom</translation>
@@ -4866,6 +4876,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="963837307749850257">Todos os usuários</translation>
 <translation id="964050462028070434">Gerenciar senhas e chaves de acesso…</translation>
 <translation id="969892804517981540">Versão oficial</translation>
+<translation id="97054401902912338">Saiba mais sobre os filtros de conteúdo</translation>
 <translation id="973788791897303708">Este grupo de guias está cheio</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nenhum}=1{1 item}one{# item}other{# itens}}</translation>
 <translation id="976522784004777030">5 x 8 pol.</translation>

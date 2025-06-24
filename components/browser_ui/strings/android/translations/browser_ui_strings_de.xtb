@@ -36,6 +36,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="1409338233051621926">Tippe auf „Apps“ und dann auf „Standard-Apps“</translation>
 <translation id="1415402041810619267">URL abgeschnitten</translation>
 <translation id="1415855080660575082">Erlaube Chrome, deine zuletzt geöffneten Tabs mit deinem Gerät zu teilen, damit sie dort in der App-Liste und in den Suchergebnissen angezeigt werden können. Diese Funktion lässt sich in den Chrome-Einstellungen aktivieren oder deaktivieren.</translation>
+<translation id="1432650420699700107">Websites können nachfragen, ob eine Verbindung mit einem beliebigen Gerät in deinem lokalen Netzwerk hergestellt werden darf</translation>
 <translation id="1448064542941920355">Herauszoomen</translation>
 <translation id="1464044141348608623">Websites dürfen keine Informationen zu meiner aktiven Nutzung dieses Geräts abrufen</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> Website}other{<ph name="SITE_COUNT" /> Websites}}</translation>
@@ -254,6 +255,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="3955321697524543127">Websites dürfen keine Verbindung mit USB-Geräten herstellen</translation>
 <translation id="3965467402665811906">Websites dürfen darum bitten, Informationen verwenden zu dürfen, die sie zu deiner Person gespeichert haben</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
+<translation id="3969869202926863008">Zugriff auf lokales Netzwerk</translation>
 <translation id="3981465354637804599">Websites zeigen für gewöhnlich Werbung an, um Inhalte oder Dienste kostenlos anbieten zu können. Allerdings gibt es auch Websites, auf denen bekanntermaßen aufdringliche oder irreführende Werbung erscheint.</translation>
 <translation id="3987993985790029246">Link kopieren</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> von ?</translation>
@@ -463,6 +465,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="6554732001434021288">Vor <ph name="NUM_DAYS" /> Tagen zuletzt besucht</translation>
 <translation id="656065428026159829">Mehr anzeigen</translation>
 <translation id="6561560012278703671">Unaufdringlichere Benachrichtigungen verwenden (störende Aufforderungen zum Annehmen von Benachrichtigungen werden blockiert)</translation>
+<translation id="6565144332292237355">Websites können diese Funktion verwenden, um nach Geräten in deinem lokalen Netzwerk zu suchen und sich mit ihnen zu verbinden</translation>
 <translation id="6593061639179217415">Desktopwebsite</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies zugelassen für <ph name="RWS_MEMBERS_COUNT" /> Website von <ph name="RWS_OWNER" />}other{Cookies zugelassen für <ph name="RWS_MEMBERS_COUNT" /> Websites von <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

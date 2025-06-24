@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">节省高达 60% 的数据流量，阅读今日新闻</translation>
 <translation id="1303339473099049190">找不到该密码。请检查拼写，然后重试。</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - 发送者：<ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">组合标签页</translation>
 <translation id="1318262688555255786">分享指向“<ph name="PAGE_TITLE" />”网页的链接。来源：<ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">书签保存流程文件夹已全屏打开</translation>
 <translation id="1327257854815634930">导航历史记录已打开</translation>
@@ -477,6 +478,7 @@
 <translation id="3169472444629675720">探索</translation>
 <translation id="3187472288455401631">广告效果衡量</translation>
 <translation id="3189635831478931757">“<ph name="GROUP_TITLE" />”标签页分组</translation>
+<translation id="3200536777393523575">关闭当前窗口？</translation>
 <translation id="3207960819495026254">已加书签</translation>
 <translation id="3208584281581115441">立即检查</translation>
 <translation id="3211426585530211793">已删除“<ph name="ITEM_TITLE" />”</translation>
@@ -721,6 +723,7 @@
 <translation id="4351244548802238354">关闭对话框</translation>
 <translation id="4352287748243729941">要使用您的 <ph name="PROVIDER" /> 密码吗？</translation>
 <translation id="4355272626458588338">您可为重要网页添加书签以便返回查看</translation>
+<translation id="4356503491090073318">卡号*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">安全状况概览</translation>
 <translation id="4378154925671717803">电话</translation>
@@ -738,6 +741,7 @@
 <translation id="4425140285732600465">正在跟踪价格。当任一网站上的商品降价时，您会收到提醒。</translation>
 <translation id="4425173294238317796">通行密钥确认工作表</translation>
 <translation id="442518031075347249">您将无法再通过 Google Pay 使用此虚拟卡。<ph name="BEGIN_LINK1" />详细了解虚拟卡<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{系统将会关闭“<ph name="TAB_TITLE" />”以及另外 <ph name="TAB_COUNT_ONE" /> 个标签页}other{系统将会关闭“<ph name="TAB_TITLE" />”以及另外 <ph name="TAB_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="4426508677408162512">所有书签</translation>
 <translation id="4430277756566635951">目前选择的是：<ph name="EMAIL" />。请选择一个账号。</translation>
 <translation id="4452411734226507615">关闭“<ph name="TAB_TITLE" />”标签页</translation>
@@ -873,6 +877,7 @@
 <translation id="4987271110129728827">找不到这个页面。请检查拼写，或尝试进行网页搜索。</translation>
 <translation id="4988526792673242964">页面</translation>
 <translation id="4991110219272367918">选项表单，用于批准/禁止访问某个网站，已关闭</translation>
+<translation id="4996042648402406470">获取</translation>
 <translation id="4996095658297597226">要使用建议的密码吗？</translation>
 <translation id="5001388021414335527">点击此处关注此网站</translation>
 <translation id="5004416275253351869">Google 活动控件</translation>
@@ -923,10 +928,12 @@
 <translation id="5210286577605176222">跳转到上一个标签页</translation>
 <translation id="5210365745912300556">关闭标签页</translation>
 <translation id="5215957675041756913">控制您的数据和账号</translation>
+<translation id="5218324087477576825">卡号（必填）</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />等 <ph name="SEPARATOR" /> Chrome 撤消了这些权限，因为您近期未访问过此网站</translation>
 <translation id="5222676887888702881">退出</translation>
 <translation id="5226378907213531272">每次使用车载系统时，您都需要解锁屏幕</translation>
 <translation id="5227554086496586518">点按即可查看搜索结果</translation>
+<translation id="5229736206150093143">最新搜索结果</translation>
 <translation id="5233638681132016545">打开新的标签页</translation>
 <translation id="5235196193381275927">登录期间出了点问题</translation>
 <translation id="5246093389635966745">修改工具栏快捷方式</translation>
@@ -1281,6 +1288,7 @@
 <translation id="676305334223455055">登录即可获取系统根据您的兴趣推荐的内容</translation>
 <translation id="6764137532716892442">有新活动的共享“<ph name="GROUP_TITLE" />”标签页分组</translation>
 <translation id="6767294960381293877">要与之分享标签页的设备的列表已半屏打开。</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{系统将会关闭 <ph name="INCOGNITO_TAB_COUNT" /> 个无痕式标签页以及另外 <ph name="TAB_COUNT_ONE" /> 个标签页}other{系统将会关闭 <ph name="INCOGNITO_TAB_COUNT" /> 个无痕式标签页以及另外 <ph name="TAB_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="6785476624617658922">Chrome 和 Chrome 操作系统附加服务条款</translation>
 <translation id="6786747875388722282">扩展程序</translation>
 <translation id="6795633245022906657">快速打开一个新标签页。若要修改该快捷方式，请前往“设置”部分。</translation>
@@ -1574,6 +1582,7 @@
 <translation id="7965838025086216108">您可在任何设备上使用已保存的密码。系统会将密码保存到 <ph name="ACCOUNT" /> 的 Google 密码管理工具中。</translation>
 <translation id="7968014550143838305">已添加到阅读清单</translation>
 <translation id="7968982339740310781">查看详情</translation>
+<translation id="7969391000881506217">失效日期*</translation>
 <translation id="7971136598759319605">1 天前曾有活动</translation>
 <translation id="7975379999046275268">预览网页<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">若您使用的密码遭遇了数据泄露，向您发出警告。</translation>
@@ -1732,6 +1741,7 @@
 <translation id="8565021320663436446">移除<ph name="MEMBER_FULL_NAME" />？</translation>
 <translation id="8570677896027847510">无法安全地下载文件</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
+<translation id="8580435650274205305">失效日期（必填）</translation>
 <translation id="8582529315803410153">您在其他设备上打开的标签页会显示在此处</translation>
 <translation id="8585103689515290060">自动填充服务</translation>
 <translation id="859046281437143747">通过“更多选项”按钮跟踪价格</translation>

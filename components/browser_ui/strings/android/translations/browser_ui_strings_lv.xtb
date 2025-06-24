@@ -36,6 +36,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="1409338233051621926">Pieskarieties vienumam “Lietotnes” un pēc tam — vienumam “Noklusējuma lietotnes”.</translation>
 <translation id="1415402041810619267">URL ir saīsināts</translation>
 <translation id="1415855080660575082">Ļaujiet pārlūkam Chrome kopīgot jūsu nesen atvērtās cilnes ar ierīci, lai tās tiktu rādītas ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat ieslēgt vai izslēgt šo funkciju.</translation>
+<translation id="1432650420699700107">Vietnes var pieprasīt atļauju izveidot savienojumu ar jebkuru ierīci jūsu lokālajā tīklā</translation>
 <translation id="1448064542941920355">Tuvināt</translation>
 <translation id="1464044141348608623">Nerādīt vietnēm, kad jūs aktīvi lietojat savu ierīci</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> vietne}zero{<ph name="SITE_COUNT" /> vietņu}one{<ph name="SITE_COUNT" /> vietne}other{<ph name="SITE_COUNT" /> vietnes}}</translation>
@@ -254,6 +255,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="3955321697524543127">Neatļaut vietnēm veidot savienojumu ar USB ierīcēm</translation>
 <translation id="3965467402665811906">Vietnes drīkst pieprasīt atļauju izmantot par jums saglabāto informāciju.</translation>
 <translation id="3967822245660637423">Lejupielāde pabeigta</translation>
+<translation id="3969869202926863008">Piekļuve lokālajā tīklā</translation>
 <translation id="3981465354637804599">Parasti vietnēs tiek rādītas reklāmas, lai vietnes saturs vai pakalpojumi jums būtu pieejami bez maksas. Taču dažās vietnēs tiek rādītas traucējošas vai maldinošas reklāmas.</translation>
 <translation id="3987993985790029246">Saites kopēšana</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> no ?</translation>
@@ -463,6 +465,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="6554732001434021288">Pēdējoreiz apmeklēta pirms <ph name="NUM_DAYS" /> dienām</translation>
 <translation id="656065428026159829">Skatīt vairāk</translation>
 <translation id="6561560012278703671">Izmantot neuzkrītošāku ziņojumapmaiņu (bloķēt paziņojumu uzvednes, lai tās jūs netraucētu)</translation>
+<translation id="6565144332292237355">Vietnes var izmantot šo funkciju, lai meklētu un izveidotu savienojumu ar jebkuru ierīci jūsu lokālajā tīklā.</translation>
 <translation id="6593061639179217415">Vietne datoriem</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> vietnē ir atļauti sīkfaili.}zero{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> vietnēs ir atļauti sīkfaili.}one{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> vietnē ir atļauti sīkfaili.}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> vietnēs ir atļauti sīkfaili.}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

@@ -192,6 +192,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{განახლდა <ph name="NUM_MONTHS_ONE" /> თვის წინ}other{განახლდა <ph name="NUM_MONTHS_MANY" /> თვის წინ}}</translation>
 <translation id="8398929769197326728">ახალი საქაღალდე — <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">პარამეტრები</translation>
+<translation id="855081842937141170">ჩანართის ჩამაგრება</translation>
 <translation id="8633025649649592204">ბოლოდროინდელი აქტივობა</translation>
 <translation id="8712637175834984815">კარგი</translation>
 <translation id="8714939927607906138">უფრო დაბალი ფასი</translation>

@@ -52,6 +52,7 @@
 <translation id="1031362278801463162">正在載入預覽畫面</translation>
 <translation id="1032605640136438169">請閱讀新版條款</translation>
 <translation id="103279545524624934">請釋出磁碟的儲存空間，以啟動 Android 應用程式。</translation>
+<translation id="1033060461778467949">將分頁移至分割檢視模式</translation>
 <translation id="1033780634303702874">存取您的序列裝置</translation>
 <translation id="1034484273907870301">平板電腦模式適用的縮圖分頁列</translation>
 <translation id="1035289631433631911">內容轉移工具</translation>
@@ -634,6 +635,7 @@
 <translation id="1438630805136563416">移除咗動作「<ph name="REMOVED_ACTION" />」</translation>
 <translation id="1439671507542716852">長期支援</translation>
 <translation id="1440090277117135316">學校註冊程序完成</translation>
+<translation id="1442054921249164535">其他資料</translation>
 <translation id="144283815522798837">已選取 <ph name="NUMBER_OF_ITEMS_SELECTED" /> 個項目</translation>
 <translation id="1442851588227551435">設定使用中的 Kerberos 票證</translation>
 <translation id="1444389367706681769">外太空</translation>
@@ -1928,6 +1930,7 @@
 <translation id="2312219318583366810">網頁網址</translation>
 <translation id="2314165183524574721">目前嘅分享設定係隱藏</translation>
 <translation id="2314774579020744484">翻譯網頁所使用的語言</translation>
+<translation id="2316090909467242775">試用此復原密碼</translation>
 <translation id="2316129865977710310">不用了，謝謝</translation>
 <translation id="2316433409811863464">應用程式串流</translation>
 <translation id="2316709634732130529">使用建議的密碼</translation>
@@ -3550,6 +3553,7 @@
 <translation id="3462413494201477527">取消帳戶建立？</translation>
 <translation id="346298925039590474">此裝置的所有使用者都可連接此流動網絡</translation>
 <translation id="3464145797867108663">新增工作設定檔</translation>
+<translation id="34673353983913587">網站需要額外驗證，才能儲存新密碼</translation>
 <translation id="3468298837301810372">標籤</translation>
 <translation id="3468999815377931311">Android 手機</translation>
 <translation id="3469583217479686109">選取工具</translation>
@@ -3577,6 +3581,7 @@
 <translation id="3487007233252413104">匿名函數</translation>
 <translation id="3487649228420469005">掃瞄已完成</translation>
 <translation id="3488199663160411179">姓名</translation>
+<translation id="3489457144969823485">自 2025 年 7 月起，Chrome 應用程式已停止在 ChromeOS 裝置上執行。請考慮改用其他應用程式。</translation>
 <translation id="3490695139702884919">正在下載… <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">可在你忘記 PIN 或密碼時還原本機內容</translation>
 <translation id="3491616972057195633">彈跳鍵</translation>
@@ -4044,6 +4049,7 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> 個擴充程式</translation>
 <translation id="3794792524918736965">開啟 Windows Hello</translation>
 <translation id="379509625511193653">關閉</translation>
+<translation id="3795624560191557077">你最近變更的密碼已在公開資料外洩事件中外洩。如果遇到問題，「Google 密碼管理工具」可協助你登入。</translation>
 <translation id="3796215473395753611">Alt 鍵 + 向上箭咀鍵</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />，用向右箭咀鍵預覽語音</translation>
 <translation id="3796648294839530037">常用的網絡：</translation>
@@ -5860,6 +5866,7 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 (使用 RSA 加密)</translation>
 <translation id="5090637338841444533">不允許追蹤攝錄機位置</translation>
 <translation id="5091636240353511739">顯示 PIN</translation>
+<translation id="5093417502834168387">登入時發生問題嗎？改用其他方式</translation>
 <translation id="5093477827231450397">您唔希望呢啲網站向其他網站建議廣告，因此已經封鎖咗嘅網站清單</translation>
 <translation id="5093569275467863761">向前/返回快取中的無痕子頁框：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">您可在「檔案」應用程式或其他應用程式中，透過此應用程式開啟及編輯支援的檔案。如要控制在此應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
@@ -6794,6 +6801,7 @@
 <translation id="5785583009707899920">Chrome 檔案公用處理程序</translation>
 <translation id="5787146423283493983">金鑰協議</translation>
 <translation id="5787420647064736989">裝置名稱</translation>
+<translation id="5787582109651427233">前往「Google 錢包」新增或管理<ph name="BEGIN_LINK_LOYALTY_CARDS" />會員卡<ph name="END_LINK_LOYALTY_CARDS" />或 Google Pay <ph name="BEGIN_LINK_PAYMENT_METHODS" />付款方法<ph name="END_LINK_PAYMENT_METHODS" /></translation>
 <translation id="5788367137662787332">很抱歉，<ph name="DEVICE_LABEL" /> 裝置上至少有一個分割區無法掛載。</translation>
 <translation id="5789581866075720267">如要在此裝置上將密碼匯入「<ph name="BRAND" />」，請選取 CSV 檔案。</translation>
 <translation id="5790085346892983794">成功</translation>
@@ -7278,6 +7286,7 @@
 <translation id="6131511889181741773">潑墨</translation>
 <translation id="6132251717264923430">按鈕固定咗</translation>
 <translation id="6132714462430777655">要略過學校註冊程序嗎？</translation>
+<translation id="6134418895482326458">在新分頁隱藏頁尾</translation>
 <translation id="6134428719487602109">移除所有使用者帳戶，並將 Chromebook 回復原廠設定。</translation>
 <translation id="6135826623269483856">不允許在您所有的顯示屏上管理視窗</translation>
 <translation id="6136114942382973861">閂下載內容列</translation>
@@ -7634,6 +7643,7 @@
 <translation id="6388577073199278153">無法存取您的流動裝置帳戶</translation>
 <translation id="6390020764191254941">把分頁移至新視窗</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{無}=1{適用於 <ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> 和另外 1 個網域}other{適用於 <ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> 和另外 {COUNT} 個網域}}</translation>
+<translation id="6390533465682072118">復原</translation>
 <translation id="6391131092053186625">你嘅裝置 IMEI 係 <ph name="IMEI_NUMBER" />。呢個數字可以用嚟啟用服務。</translation>
 <translation id="6393156038355142111">建議安全性強的密碼</translation>
 <translation id="6393550101331051049">已允許顯示不安全的內容</translation>
@@ -7718,6 +7728,7 @@
 <translation id="6455521402703088376">已關閉 • 開發人員已取消發佈此擴充程式</translation>
 <translation id="6455894534188563617">新增資料夾(&amp;N)</translation>
 <translation id="645705751491738698">繼續封鎖 JavaScript</translation>
+<translation id="6457572529564180082">無法啟動「<ph name="APP_NAME" />」</translation>
 <translation id="6458606150257356946">仍要貼上</translation>
 <translation id="6458701200018867744">上載失敗 (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)。</translation>
 <translation id="6459488832681039634">使用所選範圍尋找</translation>
@@ -8010,6 +8021,7 @@
 <translation id="6667187897999649121">目前只能與家庭成員分享密碼。你可<ph name="BEGIN_LINK" />建立家庭群組<ph name="END_LINK" /> (最多 6 位成員)，讓 Google 的產品和訂閱服務發揮更多價值。</translation>
 <translation id="666731172850799929">在「<ph name="APP_NAME" />」中開啟</translation>
 <translation id="6669195257625975787">資料的處理方式與處理目前瀏覽網站的方式相同</translation>
+<translation id="6669637573228217624">上載檔案</translation>
 <translation id="6670142487971298264">「<ph name="APP_NAME" />」現已推出</translation>
 <translation id="6670767097276846646">部分擴充程式可以將搜尋引擎新增至 Chrome</translation>
 <translation id="6670983860904543332">自動更新會為你提供所有最新功能。探索最近更新的重點內容。</translation>
@@ -8148,6 +8160,7 @@
 <translation id="6771503742377376720">這是憑證授權單位</translation>
 <translation id="6772974422346500939">開啟並編輯</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
+<translation id="677394079035748956">網站需要一次性密碼</translation>
 <translation id="6774710250118040929">新增密碼</translation>
 <translation id="6775163072363532304">可用的裝置將會在這裡顯示。</translation>
 <translation id="6775992990195573904">為分頁排序</translation>
@@ -9266,6 +9279,7 @@
 <translation id="7566118625369982896">管理 Play 應用程式連結</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">管理按鍵組合</translation>
+<translation id="7567100268516475532">將分頁移至分割檢視模式</translation>
 <translation id="7568014768212280234">分頁群組已滿，新成員無法透過連結加入</translation>
 <translation id="7568759527730933493">在 DNS (網域名稱系統) 中透過安全連線查詢網站的 IP 位址。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的受管服務供應商。管理員設定的部分網域不會使用安全連線。</translation>
 <translation id="756876171895853918">自訂顯示圖片</translation>

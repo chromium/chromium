@@ -36,6 +36,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="1409338233051621926">I-tap ang Mga App at pagkatapos ay i-tap ang Mga default na app</translation>
 <translation id="1415402041810619267">Naputol ang URL</translation>
 <translation id="1415855080660575082">Hayaang i-share ng Chrome ang iyong mga kamakailang tab gamit ang device mo para makita ang mga ito sa listahan ng app at mga resulta ng paghahanap ng iyong device. Puwede mo itong i-on o i-off sa mga setting ng Chrome.</translation>
+<translation id="1432650420699700107">Puwedeng hilingin ng mga site na kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="1448064542941920355">Bawasan ang pag-zoom</translation>
 <translation id="1464044141348608623">Huwag payagan ang mga site na malaman kung aktibo mong ginagamit ang iyong device</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> na site}}</translation>
@@ -254,6 +255,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="3955321697524543127">Huwag payagan ang mga site na kumonekta sa mga USB device</translation>
 <translation id="3965467402665811906">Puwedeng humiling ang mga site na gumamit ng impormasyong na-save ng mga ito tungkol sa iyo</translation>
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
+<translation id="3969869202926863008">Access sa lokal na network</translation>
 <translation id="3981465354637804599">Karaniwang nagpapakita ng mga ad ang mga site para makapagbigay ang mga ito ng content o mga serbisyo nang libre. Pero, kilalang nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad ang ilang site.</translation>
 <translation id="3987993985790029246">Kopyahin ang link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="6554732001434021288">Huling binisita <ph name="NUM_DAYS" /> (na) araw ang nakalipas</translation>
 <translation id="656065428026159829">Tumingin pa</translation>
 <translation id="6561560012278703671">Gamitin ang mas tahimik na pagmemensahe (bina-block ang mga prompt ng notification na gumagambala sa iyo)</translation>
+<translation id="6565144332292237355">Puwedeng gamitin ng mga site ang feature na ito para maghanap ng at kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="6593061639179217415">Desktop site</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Pinapahintulutan ang cookies para sa <ph name="RWS_MEMBERS_COUNT" /> site ng<ph name="RWS_OWNER" />}one{Pinapahintulutan ang cookies para sa <ph name="RWS_MEMBERS_COUNT" /> site ng <ph name="RWS_OWNER" />}other{Pinapahintulutan ang cookies para sa <ph name="RWS_MEMBERS_COUNT" /> na site ng <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

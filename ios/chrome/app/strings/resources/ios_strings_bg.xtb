@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Споделянето не бе успешно, защото нямате връзка с мрежата.</translation>
 <translation id="1668001730617725852">Отваряне в нова група раздели</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Вече можете да отваряте Google Обектив от адресната лента и да търсите всичко, което виждате</translation>
 <translation id="1689333818294560261">Псевдоним</translation>
 <translation id="169048873465870056">Искате ли да премахнете раздела и да изтриете групата?</translation>
 <translation id="1698090540708020240">Импортиране на пароли…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Профилът <ph name="USER_EMAIL" /> се управлява от организацията <ph name="HOSTED_DOMAIN" />, която може да преглежда определена информация. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нов елемент</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> профила използват същата парола</translation>
+<translation id="205013082884273671">Търсете всичко, което виждате на екрана</translation>
 <translation id="2054044186557130763">Влизане като <ph name="NAME" /> (<ph name="EMAIL" />). Управлява се от организацията ви.</translation>
 <translation id="2059166748188874810">Община</translation>
 <translation id="2060638295449304809">Този адрес ще се запази само на това устройство. За да го използвате на другите си устройства, запазете го в профила си в Google <ph name="USER_EMAIL" /></translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">Когато настройката е включена, данните се запазват в профила ви в Google. Когато е изключена, те се запазват само на това устройство и се изтриват, ако излезете от профила си.</translation>
 <translation id="2827760117436553203">Да се съхраняват ли данните отделно?</translation>
 <translation id="2829172210806130158">Търсене на съдържанието на екрана</translation>
+<translation id="2831109159746537587">Опитайте да очертаете кръг или да докоснете снимката, за да търсите</translation>
 <translation id="2834399722155632105">3. Докоснете „Опции за паролите“.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Време</translation>
@@ -1104,6 +1107,7 @@
 <translation id="5576885723883013398">Нов прозорец</translation>
 <translation id="5578795271662203820">Търсене на изображението със: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Скриване на „Списък за четене“</translation>
+<translation id="5581786858144165447">Режим „Попитайте AI“</translation>
 <translation id="5585019845078534178">Карти</translation>
 <translation id="5595485650161345191">Редактиране на адреса</translation>
 <translation id="559567008082979829">Задайте изтеглянията ви да се изтриват след един месец.</translation>

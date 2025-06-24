@@ -192,6 +192,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> maand geleden geüpdatet}other{<ph name="NUM_MONTHS_MANY" /> maanden geleden geüpdatet}}</translation>
 <translation id="8398929769197326728">Nieuwe map - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Instellingen</translation>
+<translation id="855081842937141170">Tabblad vastzetten</translation>
 <translation id="8633025649649592204">Recente activiteit</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8714939927607906138">Lagere prijs</translation>

@@ -635,6 +635,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1438630805136563416">Ação <ph name="REMOVED_ACTION" /> removida</translation>
 <translation id="1439671507542716852">apoio técnico a longo prazo</translation>
 <translation id="1440090277117135316">Inscrição escolar concluída</translation>
+<translation id="1442054921249164535">Outros dados</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selecionados</translation>
 <translation id="1442851588227551435">Definir permissão Kerberos ativa</translation>
 <translation id="1444389367706681769">Espaço</translation>
@@ -2610,6 +2611,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Foi encontrado 1 site com muitas notificações}other{Foram encontrados {NUM_SITES} sites com muitas notificações}}</translation>
 <translation id="2778471504622896352">Adicionar apps remotas ao Launcher do Chrome OS</translation>
 <translation id="2779728796406650689">Isto permite que o Assistente Google dê respostas personalizadas quando faz perguntas.</translation>
+<translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Ocorreu um erro ao instalar a aplicação para Linux.</translation>
 <translation id="2783952358106015700">Usar a chave de segurança com a aplicação <ph name="APP_NAME" /></translation>
@@ -4838,6 +4840,7 @@ Quer pará-lo?</translation>
 <translation id="435527878592612277">Selecionar a sua foto</translation>
 <translation id="4356100841225547054">Desative o volume</translation>
 <translation id="4357583358198801992">Mostrar grupos de separadores</translation>
+<translation id="4357812592970409234">Saiba mais sobre o fundo da página Novo separador</translation>
 <translation id="4358361163731478742">Nenhuma app suporta a seleção do idioma da app</translation>
 <translation id="4358643842961018282">O dispositivo está atualizado</translation>
 <translation id="4358995225307748864">Selecione uma app para abrir</translation>

@@ -272,6 +272,7 @@
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome препорачува да ја паузирате картичката што го забавува прелистувачот}one{Chrome препорачува да ги паузирате картичките што го забавуваат прелистувачот}other{Chrome препорачува да ги паузирате картичките што го забавуваат прелистувачот}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">За да добиете персонализација и други функции, опфатете го Chrome во „Активноста на интернет и апликации“ и поврзаните услуги на Google</translation>
+<translation id="4334241893986177674">Пребарај ја оваа слика од екранот</translation>
 <translation id="4334294535648607276">Преземањето заврши.</translation>
 <translation id="4337324600316876133">За да добивате идни ажурирања на Google Chrome, потребен ви е macOS 12 или понова верзија. Компјутеров користи macOS 11.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> е додадена на Chrome</translation>

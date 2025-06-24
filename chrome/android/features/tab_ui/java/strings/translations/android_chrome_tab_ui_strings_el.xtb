@@ -192,6 +192,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Έγινε ενημέρωση πριν από <ph name="NUM_MONTHS_ONE" /> μήνα}other{Έγινε ενημέρωση πριν από <ph name="NUM_MONTHS_MANY" /> μήνες}}</translation>
 <translation id="8398929769197326728">Νέος φάκελος - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
+<translation id="855081842937141170">Καρφίτσωμα καρτέλας</translation>
 <translation id="8633025649649592204">Πρόσφατη δραστηριότητα</translation>
 <translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8714939927607906138">Χαμηλότερη τιμή</translation>

@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">Додирните Апликације, па Подразумеване апликације</translation>
 <translation id="1415402041810619267">URL је скраћен</translation>
 <translation id="1415855080660575082">Дозволите Chrome-у да дели недавне картице са уређајем да бисте их видели на листи апликација и у резултатима претраге уређаја. То можете да укључите или искључите у Chrome подешавањима.</translation>
+<translation id="1432650420699700107">Сајтови могу да траже да се повежу са било којим уређајем на локалној мрежи</translation>
 <translation id="1448064542941920355">Смањите зумирање</translation>
 <translation id="1464044141348608623">Не дозволите сајтовима да знају када активно користите уређај</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сајт}one{<ph name="SITE_COUNT" /> сајт}few{<ph name="SITE_COUNT" /> сајта}other{<ph name="SITE_COUNT" /> сајтова}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">Не дозвољавај сајтовима да се повезују са USB уређајима</translation>
 <translation id="3965467402665811906">Сајтови могу да затраже да користе информације које су сачували о вама</translation>
 <translation id="3967822245660637423">Преузимање је довршено</translation>
+<translation id="3969869202926863008">Приступ локалној мрежи</translation>
 <translation id="3981465354637804599">Сајтови обично приказују огласе да би могли да пружају садржај или услуге без накнаде. Али, има и сајтова који приказују огласе који ометају активности или обмањујуће огласе.</translation>
 <translation id="3987993985790029246">Копирај линк</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">Последња посета: пре <ph name="NUM_DAYS" /> дана</translation>
 <translation id="656065428026159829">Прикажи још</translation>
 <translation id="6561560012278703671">Користите ненаметљиву размену порука (спречава упите са обавештењима да вас ометају)</translation>
+<translation id="6565144332292237355">Сајтови могу да користе ову функцију да би тражили уређаје на локалној мрежи и повезивали се са њима</translation>
 <translation id="6593061639179217415">Верзија сајта за рачунар</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Колачићи су дозвољени за <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сајт}one{Колачићи су дозвољени за <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сајт}few{Колачићи су дозвољени за <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сајта}other{Колачићи су дозвољени за <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сајтова}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

@@ -17,6 +17,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Izrađeno prije <ph name="NUM_MINS_ONE" /> minutu}one{Izrađeno prije <ph name="NUM_MINS_MANY" /> minutu}few{Izrađeno prije <ph name="NUM_MINS_MANY" /> minute}other{Izrađeno prije <ph name="NUM_MINS_MANY" /> minuta}}</translation>
 <translation id="1499635324672558517">Zatvoriti sve anonimne kartice?</translation>
 <translation id="1501480321619201731">Izbriši grupu</translation>
+<translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktivna stavka}one{<ph name="TABS_COUNT_MANY" /> neaktivna stavka}few{<ph name="TABS_COUNT_MANY" /> neaktivne stavke}other{<ph name="TABS_COUNT_MANY" /> neaktivnih stavki}}</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="161042844686301425">Cijan</translation>
 <translation id="1645759014353344461">Kartice su grupirane (njih <ph name="TABS_COUNT_MANY" />)</translation>
@@ -68,6 +69,7 @@
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nova kartica}one{<ph name="MANY_ADDED" /> nova kartica}few{<ph name="MANY_ADDED" /> nove kartice}other{<ph name="MANY_ADDED" /> novih kartica}}</translation>
 <translation id="3613492231657284463">Sakrivanje dijaloškog okvira neaktivnih kartica</translation>
 <translation id="3619255692378312441">Upravljajte pristupom</translation>
+<translation id="3649471731638882002">{TAB_COUNT,plural, =1{Zatvori stavku}one{Zatvori stavke}few{Zatvori stavke}other{Zatvori stavke}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Minijatura za pregled lista za dijeljenje.</translation>
 <translation id="3810973564298564668">Upravljanje</translation>
@@ -80,6 +82,7 @@
 <translation id="4159784952369912983">Ljubičasto</translation>
 <translation id="427987768447457592">Nova grupa kartica</translation>
 <translation id="4371591986692297148">neaktivan</translation>
+<translation id="4429658455677831355">{TAB_COUNT,plural, =1{Vraćanje stavke}one{Vraćanje stavki}few{Vraćanje stavki}other{Vraćanje stavki}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Ažurirano prije <ph name="NUM_DAYS_ONE" /> dan}one{Ažurirano prije <ph name="NUM_DAYS_MANY" /> dan}few{Ažurirano prije <ph name="NUM_DAYS_MANY" /> dana}other{Ažurirano prije <ph name="NUM_DAYS_MANY" /> dana}}</translation>
 <translation id="4686942373615810936">Upravo izrađeno</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zatvori nakon jednog dana}one{Zatvori nakon <ph name="DAY_COUNT_MANY" /> dana}few{Zatvori nakon <ph name="DAY_COUNT_MANY" /> dana}other{Zatvori nakon <ph name="DAY_COUNT_MANY" /> dana}}</translation>
@@ -189,6 +192,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Ažurirano prije <ph name="NUM_MONTHS_ONE" /> mjesec}one{Ažurirano prije <ph name="NUM_MONTHS_MANY" /> mjesec}few{Ažurirano prije <ph name="NUM_MONTHS_MANY" /> mjeseca}other{Ažurirano prije <ph name="NUM_MONTHS_MANY" /> mjeseci}}</translation>
 <translation id="8398929769197326728">Nova mapa – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Postavke</translation>
+<translation id="855081842937141170">Označi karticu</translation>
 <translation id="8633025649649592204">Nedavna aktivnost</translation>
 <translation id="8712637175834984815">Shvaćam</translation>
 <translation id="8714939927607906138">Niža cijena</translation>
@@ -205,4 +209,5 @@
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Proširite grupu kartica s <ph name="TABS_COUNT_ONE" /> karticom, <ph name="COLOR_NAME" /> boja.}one{Proširite grupu kartica s <ph name="TABS_COUNT_MANY" /> karticom, <ph name="COLOR_NAME" /> boja.}few{Proširite grupu kartica s <ph name="TABS_COUNT_MANY" /> kartice, <ph name="COLOR_NAME" /> boja.}other{Proširite grupu kartica s <ph name="TABS_COUNT_MANY" /> kartica, <ph name="COLOR_NAME" /> boja.}}</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="992256792861109788">Ružičasta</translation>
+<translation id="994514002078791059">{TAB_COUNT,plural, =1{Želite li zatvoriti jednu neaktivnu stavku?}one{Želite li zatvoriti <ph name="TAB_COUNT_MANY" /> neaktivnu stavku?}few{Želite li zatvoriti <ph name="TAB_COUNT_MANY" /> neaktivne stavke?}other{Želite li zatvoriti <ph name="TAB_COUNT_MANY" /> neaktivnih stavki?}}</translation>
 </translationbundle>

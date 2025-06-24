@@ -278,6 +278,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 <translation id="1207301487141109411">Voorkomen dat gebruikers avatars selecteren via het lokale bestandssysteem, de camera en het Google-profiel</translation>
 <translation id="1209096923317019235">Apps toewijzen als standaardhandlers voor gespecificeerde bestandsextensies</translation>
 <translation id="120937472976628837">Ventilatorgegevens rapporteren</translation>
+<translation id="1211037010406094410">Software-reserveoptie voor WebGL met SwiftShader toestaan</translation>
 <translation id="1214639335214075459">Videodecodering voor GPU-hardware aanzetten</translation>
 <translation id="1214942205301731697">Het gebruik van de ontwikkelaarsmodus op de pagina Extensies niet toestaan</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange-ondersteuning (SXG) aanzetten</translation>
@@ -3469,11 +3470,6 @@ Elke regel bevat het volgende:
 Als je dit beleid niet instelt, worden er geen beperkingen toegepast.</translation>
 <translation id="3531084733660068324">Instellingen voor ouderlijk toezicht</translation>
 <translation id="3532827558833318911">Inloggen met wachtwoord wissen</translation>
-<translation id="353291262171579310">Met dit beleid bepaal je of de beheermelding zichtbaar is in de voettekst van de pagina Nieuw tabblad (NTP). De NTP-voettekst toont standaard informatie als de browser wordt beheerd door een organisatie (aangegeven met een gebouwicoon en 'Beheerd door [domeinnaam]'). Dit kan worden aangepast met het beleid <ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" /> en <ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />.
-
-Als je dit beleid niet instelt of instelt op Waar, tonen beheerde browsers een melding 'Beheerd door…' met een icoon.
-
-Als je dit beleid instelt op Onwaar, wordt de beheermelding verborgen.</translation>
 <translation id="353611922042274900">Altijd systeemgegevens weergeven op het inlogscherm</translation>
 <translation id="3536263244905016305">WPAD-optimalisatie (Web Proxy Auto-Discovery) uitzetten</translation>
 <translation id="3539103206548425861">Als je dit beleid instelt, worden video's met audiocontent automatisch (zonder toestemming van de gebruiker) afgespeeld in <ph name="PRODUCT_NAME" />. Als het beleid <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> is ingesteld op True, heeft dit beleid geen effect. Als <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> is ingesteld op False, kunnen URL-patronen die in dit beleid zijn ingesteld nog altijd worden afgespeeld. Als je dit beleid wijzigt terwijl <ph name="PRODUCT_NAME" /> wordt uitgevoerd, wordt het alleen toegepast op nieuw geopende tabbladen.
@@ -3588,6 +3584,15 @@ Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph nam
 
 Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="3606571057705314194">Profielkiezer staat uit bij opstarten</translation>
+<translation id="3607797531311171116">Een beleid dat bepaalt of SwiftShader wordt gebruikt als WebGL-reserveoptie als GPU-hardwareversnelling niet beschikbaar is.
+
+SwiftShader is gebruikt om WebGL te ondersteunen op systemen zonder GPU-versnelling, zoals systemen zonder interface of virtuele machines, maar is beëindigd vanwege beveiligingsproblemen. Vanaf M139 mislukt het maken van een WebGL-context als er anders SwiftShader zou worden gebruikt. Met dit beleid kan de browser of beheerder de beëindiging tijdelijk uitstellen.
+
+Als je het beleid toepast, wordt SwiftShader gebruikt als software-reserveoptie voor WebGL.
+
+Als je het beleid niet toepast of niet instelt, kan het maken van een WebGL-context mislukken als hardwareversnelling via de GPU niet beschikbaar is. Webpagina's kunnen zich onvoorspelbaar gedragen als ze het mislukken van het maken van een WebGL-context niet correct verwerken.
+
+Dit is een tijdelijk beleid dat in de toekomst wordt verwijderd.</translation>
 <translation id="3608206578291537084">De Encrypted Reporting Pipeline aanzetten</translation>
 <translation id="3608281460204780443">Het Chrome Web Store-icoon tonen in de <ph name="PRODUCT_OS_NAME" />-launcher en op de pagina Nieuw tabblad</translation>
 <translation id="3612482251405108708">Automatisch starten van online opnieuw verifiëren op het vergrendelscherm</translation>
@@ -5346,6 +5351,7 @@ We raden je af videodecodering met hardwareversnelling uit te zetten. Dit leidt 
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat monogeluid in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
+<translation id="493253860646951791">Ondersteuning aanzetten voor onveilige WebGL-reserveoptie met SwiftShader</translation>
 <translation id="4933301190614090397">Beheert hoelang (in seconden) keepalive-verzoeken toegestaan blijven als de browser wordt afgesloten.
 
       Als hiervoor een waarde is opgegeven, wordt gedurende het opgegeven aantal seconden voorkomen dat de browser afsluit, zodat keepalive-verzoeken (https://fetch.spec.whatwg.org/#request-keepalive-flag) kunnen worden verwerkt.
@@ -7547,13 +7553,6 @@ Als je dit beleid instelt op <ph name="DISALLOW" />, werken de opties <ph name="
 <translation id="6371005337713685988">Instellingen voor Gerelateerde websitesets</translation>
 <translation id="6371561334154580937">Dialoogvenster voor uitloggen tonen als het laatste venster wordt gesloten.</translation>
 <translation id="6372105930898423193">Hiermee sta je toe dat de AppCache-functie opnieuw wordt aangezet, ook als deze standaard is uitgezet.</translation>
-<translation id="6372676668820850849">Met dit beleid bepaal je of partitionering van opslag door derden standaard is toegestaan.
-
-Als je dit beleid instelt op 1 - AllowPartitioning of niet instelt, is partitionering van opslag door derden standaard toegestaan. Deze standaardinstelling kan op andere manieren worden overschreven voor specifieke oorsprongen op het hoogste niveau.
-
-Als je dit beleid instelt op 2 - BlockPartitioning, wordt partitionering van opslag door derden uitgezet voor alle contexten.
-
-Gebruik <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> om partitionering van opslag door derden uit te zetten voor specifieke oorsprongen op het hoogste niveau. Ga naar https://developers.google.com/privacy-sandbox/cookies/storage-partitioning voor meer informatie over partitionering van opslag door derden.</translation>
 <translation id="6373299801585455337">Rapportage van CPU-informatie van apparaat aanzetten</translation>
 <translation id="6374945506685352202">Blokkeerlijst voor installatietypen van extensies</translation>
 <translation id="6376540107659524656">SSH uitzetten in Terminal System App</translation>
@@ -7825,6 +7824,7 @@ De time-out voor inactiviteit waarna de screensaver wordt gestart en het interva
 <translation id="6513453889192806240">HTTPS-latentie</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" />-afbeelding</translation>
 <translation id="6518102411616460786">Wachten tot het doelkanaal de kanaaldowngrade heeft verwerkt</translation>
+<translation id="6518286606938091609">Ondersteuning uitzetten voor onveilige WebGL-reserveoptie met SwiftShader</translation>
 <translation id="6518894783486860562">Om veiligheidsredenen moet voor de web-API's <ph name="SHOW_SUBAPPS_APP_API_NAME" />, <ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> en <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> een eerder gebruikersgebaar ('tijdelijke activering') worden aangeroepen, anders mislukken deze. Daarnaast wordt de gebruiker gevraagd de bewerking te bevestigen via een bevestigingsdialoogvenster.
 
 Als dit beleid is ingesteld, kunnen beheerders oorsprongen aangeven waarvoor deze API's kunnen worden aangeroepen zonder eerder gebruikersgebaar of zonder de gebruiker om bevestiging te vragen.
@@ -9119,13 +9119,6 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 <translation id="7463934096276667908">Zet API's voor volledig scherm voor video met voorvoegsels aan</translation>
 <translation id="7464058117970792805">Afdrukvoorbeeld aanzetten</translation>
 <translation id="7464991223784276288">Cookies van overeenkomende URL's beperken tot de huidige sessie</translation>
-<translation id="7467748623079596345">Met dit beleid kun je een lijst met URL-patronen instellen van oorsprongen op het hoogste niveau waarvoor partitionering van opslag door derden (partitionering van cross-origin iframe-opslag) moet worden uitgezet.
-
-Als je dit beleid niet instelt of als de oorsprong op het hoogste niveau niet overeenkomt met een van de URL-patronen, wordt <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> toegepast.
-
-Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige patronen. Patronen die je hier vermeldt, worden behandeld als oorsprongen, niet als URL's. Voer dus geen pad in.
-
-Ga naar https://developers.google.com/privacy-sandbox/cookies/storage-partitioning voor meer informatie over partitionering van opslag door derden.</translation>
 <translation id="7468182772656807573">Als je dit beleid instelt, geef je aan hoe vaak (in milliseconden) controlenetwerkpakketten moeten worden gestuurd. De intervallen variëren van 30 seconden tot 24 uur. Waarden buiten dit bereik worden aangepast aan dit bereik.
 
       Als er geen interval is ingesteld, wordt het standaardinterval van 3 minuten toegepast.</translation>

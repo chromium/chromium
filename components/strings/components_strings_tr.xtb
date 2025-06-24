@@ -693,6 +693,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2157640075051554492">Fiyat takibi bildirimleri</translation>
 <translation id="21613918653299710">Çevrimiçi Resim Galerileri</translation>
 <translation id="2161656808144014275">Metin</translation>
+<translation id="2162435186600002085">Birincil Başlık Logosu</translation>
 <translation id="2162620598375156287">Şimdi <ph name="SOURCE_WEBSITE" /> sitesinde <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> yazımında hata olup olmadığını kontrol edin.</translation>
 <translation id="2166049586286450108">Tam Yönetici Erişimi</translation>
@@ -851,6 +852,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2400263725572336749">Pasaport ekleyin</translation>
 <translation id="2400271059665846158">Bağlılık kartlarınızı Google Cüzdan'da yönetin</translation>
 <translation id="2400600116338235695">Seri bağlantı noktalarına bağlanmak isteyebilir</translation>
+<translation id="240450251994300576">İkincil Başlık Logosu</translation>
 <translation id="2404884497378469141">Dosyalarınızı tekrar kopyalamayı deneyin</translation>
 <translation id="2413155254802890957">Eski</translation>
 <translation id="2413528052993050574">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası iptal edilmiş olabilir. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
@@ -981,6 +983,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2627847595568876492">PDF'deki metin çıkarılıyor...</translation>
 <translation id="2628224721443278970">Microsoft OneDrive'da oturum açın</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ana makinesinin sunucu IP adresi bulunamadı.</translation>
+<translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> üzerinde arama yapmak için @ yazın</translation>
 <translation id="2639739919103226564">Durum:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Kumaş (Yarı Parlak)</translation>
@@ -1438,6 +1441,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="343474037147570563">Yüklediğiniz veya eklediğiniz dosyalar analiz amacıyla Google Cloud ve üçüncü taraflara gönderilir. Örneğin, hassas veriler veya kötü amaçlı yazılım içerip içermedikleri kontrol edilir ve şirket politikalarına bağlı olarak saklanıp yöneticiniz tarafından görülebilir.</translation>
 <translation id="3435557549311968410">Kesintisiz (Kısa)</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
+<translation id="3436118221454753036">Yapay Zekaya Sorun Modu</translation>
 <translation id="3440783957068352691">kare</translation>
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3443504041532578451">Optik Disk (Saten)</translation>
@@ -2266,6 +2270,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4827283332383516812">Kartı sil</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> seçildi</translation>
 <translation id="4831993743164297314">Image Setter Kağıdı</translation>
+<translation id="4832388034239846146">Sekme gruplarını paylaşmak için Chrome'u güncelleyin</translation>
 <translation id="483241715238664915">Uyarıları açın</translation>
 <translation id="4832961164064927107">Barbekü ve Izgara</translation>
 <translation id="4834250788637067901">Google Pay'i kullanan ödeme yöntemleri, teklifler ve adresler</translation>
@@ -2973,6 +2978,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6043357981274314628">Bitti!</translation>
 <translation id="6044573915096792553">Boyut 12</translation>
 <translation id="6045164183059402045">Tanzim şablonu</translation>
+<translation id="6046892054959167494">Arama yapmak veya <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> arama motoruna sormak için <ph name="SEARCH_AGGREGATOR_KEYWORD" /> yazın</translation>
 <translation id="6047927260846328439">Bu içerik sizi kandırarak yazılım yüklemenizi veya kişisel bilgilerinizi ifşa etmenizi sağlamaya çalışabilir. <ph name="BEGIN_LINK" />Yine de göster<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Zarf B4</translation>
 <translation id="6049488691372270142">Sayfa teslimi</translation>
@@ -4011,6 +4017,7 @@ Ek ayrıntılar:
 <translation id="7761159795823346334">Kameraya izin verilsin mi?</translation>
 <translation id="7761701407923456692">Sunucu sertifikası URL ile eşleşmiyor.</translation>
 <translation id="7764225426217299476">Adres ekle</translation>
+<translation id="7765158879357617694">Taşı</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7767278989746220252">Avlu, Yeşil Alan ve Bahçe</translation>
 <translation id="776749070095465053">Kumaş</translation>
@@ -4345,6 +4352,7 @@ Ek ayrıntılar:
 <translation id="8364627913115013041">Henüz ayarlanmadı.</translation>
 <translation id="8366057325711477500">Dünya Haberleri</translation>
 <translation id="836616551641291797">Tarayıcınızın nasıl yönetildiği hakkında daha fazla bilgi</translation>
+<translation id="8367705492654390392">Soru sorun</translation>
 <translation id="8368001212524806591">Fiyatı takip et</translation>
 <translation id="8368027906805972958">Bilinmeyen veya desteklenmeyen cihaz (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play Hizmetleri</translation>

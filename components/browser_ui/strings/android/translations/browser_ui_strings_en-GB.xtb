@@ -36,6 +36,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="1409338233051621926">Tap Apps, then tap Default apps</translation>
 <translation id="1415402041810619267">URL truncated</translation>
 <translation id="1415855080660575082">Let Chrome share your recent tabs with your device to see them in your device's app list and search results. You can turn this on or off in Chrome settings.</translation>
+<translation id="1432650420699700107">Sites can ask to connect to any device on your local network</translation>
 <translation id="1448064542941920355">Decrease zoom</translation>
 <translation id="1464044141348608623">Don't allow sites to know when you're actively using your device</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
@@ -254,6 +255,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3955321697524543127">Don't allow sites to connect to USB devices</translation>
 <translation id="3965467402665811906">Sites can ask to use information that they've saved about you</translation>
 <translation id="3967822245660637423">Download complete</translation>
+<translation id="3969869202926863008">Local network access</translation>
 <translation id="3981465354637804599">Sites usually show ads so that they can provide content or services free of charge. But, some sites are known to show intrusive or misleading ads.</translation>
 <translation id="3987993985790029246">Copy link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="6554732001434021288">Last visited <ph name="NUM_DAYS" /> days ago</translation>
 <translation id="656065428026159829">See more</translation>
 <translation id="6561560012278703671">Use quieter messaging (blocks notification prompts from interrupting you)</translation>
+<translation id="6565144332292237355">Sites can use this feature to look for and connect to any device on your local network</translation>
 <translation id="6593061639179217415">Desktop site</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies allowed for <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> site}other{Cookies allowed for <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sites}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

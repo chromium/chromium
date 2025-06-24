@@ -635,6 +635,7 @@
 <translation id="1438630805136563416">Η ενέργεια <ph name="REMOVED_ACTION" /> καταργήθηκε</translation>
 <translation id="1439671507542716852">μακροπρόθεσμη υποστήριξη</translation>
 <translation id="1440090277117135316">Η εγγραφή του σχολείου ολοκληρώθηκε</translation>
+<translation id="1442054921249164535">Άλλα δεδομένα</translation>
 <translation id="144283815522798837">Επιλέχθηκαν <ph name="NUMBER_OF_ITEMS_SELECTED" /> στοιχεία</translation>
 <translation id="1442851588227551435">Ορισμός ενεργού εισιτηρίου Kerberos</translation>
 <translation id="1444389367706681769">Απώτερο διάστημα</translation>
@@ -2623,6 +2624,7 @@
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Βρέθηκε 1 ιστότοπος με πολλές ειδοποιήσεις}other{Βρέθηκαν {NUM_SITES} ιστότοποι με πολλές ειδοποιήσεις}}</translation>
 <translation id="2778471504622896352">Προσθήκη απομακρυσμένων εφαρμογών στην εφαρμογή εκκίνησης ChromeOS</translation>
 <translation id="2779728796406650689">Αυτή η ρύθμιση επιτρέπει στον Βοηθό Google να παρέχει προσαρμοσμένες απαντήσεις όταν κάνετε ερωτήσεις.</translation>
+<translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Παρουσιάστηκε σφάλμα κατά την εγκατάσταση της εφαρμογής Linux</translation>
 <translation id="2783952358106015700">Χρήση του κλειδιού ασφαλείας σας με την εφαρμογή <ph name="APP_NAME" /></translation>
@@ -4850,6 +4852,7 @@
 <translation id="435527878592612277">Επιλέξτε τη φωτογραφία σας</translation>
 <translation id="4356100841225547054">Απενεργοποίηση έντασης ήχου</translation>
 <translation id="4357583358198801992">Εμφάνιση ομάδων καρτελών</translation>
+<translation id="4357812592970409234">Μάθετε περισσότερα σχετικά με το φόντο της σελίδας Νέα καρτέλα</translation>
 <translation id="4358361163731478742">Δεν υπάρχουν εφαρμογές που να υποστηρίζουν την επιλογή γλώσσας εφαρμογής</translation>
 <translation id="4358643842961018282">Η συσκευή σας είναι ενημερωμένη</translation>
 <translation id="4358995225307748864">Επιλέξτε μια εφαρμογή για άνοιγμα</translation>

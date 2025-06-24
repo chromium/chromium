@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">Натисніть "Додатки", а потім – "Додатки за умовчанням"</translation>
 <translation id="1415402041810619267">URL-адресу скорочено</translation>
 <translation id="1415855080660575082">Дозвольте Chrome надсилати на ваш пристрій інформацію про останні вкладки, щоб ви могли переглядати їх у списку додатків і результатах пошуку. Цю функцію можна будь-коли ввімкнути або вимкнути в налаштуваннях Chrome.</translation>
+<translation id="1432650420699700107">Сайти можуть запитувати дозвіл на підключення до пристроїв у вашій локальній мережі</translation>
 <translation id="1448064542941920355">Зменшити масштаб</translation>
 <translation id="1464044141348608623">Заборонити сайтам дізнаватися, коли ви активно використовуєте пристрій</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайти}many{<ph name="SITE_COUNT" /> сайтів}other{<ph name="SITE_COUNT" /> сайту}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">Заборонити сайтам підключатися до пристроїв USB</translation>
 <translation id="3965467402665811906">Сайти можуть запитувати дозвіл на використання збереженої про вас інформації</translation>
 <translation id="3967822245660637423">Завантажено</translation>
+<translation id="3969869202926863008">Доступ до локальної мережі</translation>
 <translation id="3981465354637804599">Сайти зазвичай показують рекламу, щоб пропонувати контент або послуги безкоштовно. Однак деякі сайти показують нав’язливі чи оманливі оголошення.</translation>
 <translation id="3987993985790029246">Копіювати</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">Останнє відвідування: <ph name="NUM_DAYS" /> дн. тому</translation>
 <translation id="656065428026159829">Показати більше</translation>
 <translation id="6561560012278703671">Показувати лише значок повідомлення (блокувати сповіщення)</translation>
+<translation id="6565144332292237355">Сайти можуть використовувати цю функцію, щоб шукати пристрої в локальній мережі й підключатися до них</translation>
 <translation id="6593061639179217415">Версія для комп’ютера</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="RWS_OWNER" />}one{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="RWS_OWNER" />}few{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайтів у групі сайту-власника <ph name="RWS_OWNER" />}many{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайтів у групі сайту-власника <ph name="RWS_OWNER" />}other{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>

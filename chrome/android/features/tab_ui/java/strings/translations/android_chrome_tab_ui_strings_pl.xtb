@@ -109,6 +109,7 @@
 <translation id="5556417849629758491">Wyświetl informacje o sklepie, opcja dostępna u góry ekranu</translation>
 <translation id="5627941783489838464">Brak aktualizacji kart</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link z Chrome}few{<ph name="TABS_COUNT_MANY" /> linki z Chrome}many{<ph name="TABS_COUNT_MANY" /> linków z Chrome}other{<ph name="TABS_COUNT_MANY" /> linku z Chrome}}</translation>
+<translation id="5746204836956568669">Chcesz zgrupować karty (<ph name="NUMBER_OF_TABS" />), aby pracować szybciej?</translation>
 <translation id="58326064309361797">Przeciągaj karty, by je grupować</translation>
 <translation id="5901630391730855834">Żółty</translation>
 <translation id="5972844218283131174">Odznacz wszystko</translation>
@@ -189,6 +190,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Zaktualizowano <ph name="NUM_MONTHS_ONE" /> miesiąc temu}few{Zaktualizowano <ph name="NUM_MONTHS_MANY" /> miesiące temu}many{Zaktualizowano <ph name="NUM_MONTHS_MANY" /> miesięcy temu}other{Zaktualizowano <ph name="NUM_MONTHS_MANY" /> miesiąca temu}}</translation>
 <translation id="8398929769197326728">Nowy folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Ustawienia</translation>
+<translation id="855081842937141170">Przypnij kartę</translation>
 <translation id="8633025649649592204">Ostatnia aktywność</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8714939927607906138">Niższa cena</translation>

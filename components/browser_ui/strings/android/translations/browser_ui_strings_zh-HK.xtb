@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">㩒一下 [應用程式] 同 [預設應用程式]</translation>
 <translation id="1415402041810619267">縮短咗網址</translation>
 <translation id="1415855080660575082">讓 Chrome 與你的裝置分享最近使用的分頁，並在裝置應用程式清單和搜尋結果中顯示。你可以在 Chrome 設定中開啟或關閉此功能。</translation>
+<translation id="1432650420699700107">網站可要求連線至區域網絡上的任何裝置</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="1464044141348608623">不允許網站偵測您使用裝置的時間</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 個網站}other{<ph name="SITE_COUNT" /> 個網站}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">不允許網站連接 USB 裝置</translation>
 <translation id="3965467402665811906">網站可要求使用與你相關的既有資料</translation>
 <translation id="3967822245660637423">下載完成</translation>
+<translation id="3969869202926863008">區域網絡存取權</translation>
 <translation id="3981465354637804599">網站通常要顯示廣告，才能免費提供內容或服務。不過，部分網站會顯示滋擾性或誤導廣告。</translation>
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="3991845972263764475">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：不明</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">上次瀏覽日期：<ph name="NUM_DAYS" /> 天前</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6561560012278703671">使用靜態訊息功能 (免受通知提示干擾)</translation>
+<translation id="6565144332292237355">網站可使用此功能來搜尋和連線至區域網絡上的任何裝置</translation>
 <translation id="6593061639179217415">桌面版網站</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{已允許 <ph name="RWS_MEMBERS_COUNT" /> 個 <ph name="RWS_OWNER" /> 網站使用 Cookie}other{已允許 <ph name="RWS_MEMBERS_COUNT" /> 個 <ph name="RWS_OWNER" /> 網站使用 Cookie}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

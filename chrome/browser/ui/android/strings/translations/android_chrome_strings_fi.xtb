@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Käytä jopa 60 % vähemmän dataa, lue päivän uutiset</translation>
 <translation id="1303339473099049190">Tätä salasanaa ei löydy. Tarkista oikeinkirjoitus ja yritä uudelleen.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Lähetetty laitteelta <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Ryhmittele välilehtiä</translation>
 <translation id="1318262688555255786">Jaa linkki verkkosivulle <ph name="PAGE_TITLE" />. Lähde: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Kirjanmerkin tallennusvaiheet avattu koko näytön kokoisena</translation>
 <translation id="1327257854815634930">Navigointihistoria avattu</translation>
@@ -477,6 +478,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Mainosten mittaus</translation>
 <translation id="3189635831478931757">Välilehtiryhmä <ph name="GROUP_TITLE" /></translation>
+<translation id="3200536777393523575">Suljetaanko nykyinen ikkuna?</translation>
 <translation id="3207960819495026254">Kirjanmerkeissä</translation>
 <translation id="3208584281581115441">Tarkista nyt</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> poistettiin.</translation>
@@ -721,6 +723,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4351244548802238354">Sulje ikkuna</translation>
 <translation id="4352287748243729941">Käytetäänkö palvelun <ph name="PROVIDER" /> salasanaa?</translation>
 <translation id="4355272626458588338">Voit palata sinulle tärkeälle sivulle lisäämällä sen kirjanmerkiksi</translation>
+<translation id="4356503491090073318">Kortin numero*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Turvallisuus nopeasti</translation>
 <translation id="4378154925671717803">Puhelin</translation>
@@ -738,6 +741,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4425140285732600465">Hintaa seurataan. Voit saada ilmoituksen, jos hinta laskee jollakin sivustolla.</translation>
 <translation id="4425173294238317796">Avainkoodin vahvistussivu</translation>
 <translation id="442518031075347249">Et voi tämän jälkeen käyttää virtuaalista korttia Google Payssa. <ph name="BEGIN_LINK1" />Lue lisää virtuaalisista korteista<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> ja <ph name="TAB_COUNT_ONE" /> muu välilehti suljetaan}other{<ph name="TAB_TITLE" /> ja <ph name="TAB_COUNT_MANY" /> muuta välilehteä suljetaan}}</translation>
 <translation id="4426508677408162512">Kaikki kirjanmerkit</translation>
 <translation id="4430277756566635951">Tällä hetkellä valittuna <ph name="EMAIL" />. Valitse tili.</translation>
 <translation id="4452411734226507615">Sulje välilehti <ph name="TAB_TITLE" /></translation>
@@ -873,6 +877,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4987271110129728827">Sivua ei löydy. Tarkista oikeinkirjoitus tai kokeile verkkohakua.</translation>
 <translation id="4988526792673242964">Sivut</translation>
 <translation id="4991110219272367918">Suljetun verkkosivuston hyväksymisen tai hyväksymättä jättämisen vaihtoehto</translation>
+<translation id="4996042648402406470">Lataa</translation>
 <translation id="4996095658297597226">Käytetäänkö salasanaehdotusta?</translation>
 <translation id="5001388021414335527">Seuraa sivustoa valitsemalla tämä</translation>
 <translation id="5004416275253351869">Google-toiminnan hallinta</translation>
@@ -923,10 +928,12 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5210286577605176222">Siirry edelliselle välilehdelle</translation>
 <translation id="5210365745912300556">Sulje välilehti</translation>
 <translation id="5215957675041756913">Datan ja tilin ylläpito</translation>
+<translation id="5218324087477576825">Kortin numero, pakollinen</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja muu Chrome (<ph name="SEPARATOR" />) poisti nämä luvat, koska et ole käynyt sivustolla viime aikoina</translation>
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
 <translation id="5226378907213531272">Näytön lukitus avataan aina kun käytät autoa</translation>
 <translation id="5227554086496586518">Katso hakutulokset napauttamalla</translation>
+<translation id="5229736206150093143">Uusimmat tulokset</translation>
 <translation id="5233638681132016545">Uusi välilehti</translation>
 <translation id="5235196193381275927">Jotain meni pieleen sisäänkirjautumisen aikana</translation>
 <translation id="5246093389635966745">Muokkaa työkalupalkin pikakuvaketta</translation>
@@ -1281,6 +1288,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="676305334223455055">Kirjaudu sisään, niin näet kiinnostuksen kohteisiisi perustuvia uutisia</translation>
 <translation id="6764137532716892442">Jaettu välilehtiryhmä <ph name="GROUP_TITLE" /> sisältää uutta toimintaa</translation>
 <translation id="6767294960381293877">Välilehden jakamisen laiteluettelo avataan puolen näytön korkeudella.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognito-välilehti ja <ph name="TAB_COUNT_ONE" /> muu välilehti suljetaan}other{<ph name="INCOGNITO_TAB_COUNT" /> incognito-välilehteä ja <ph name="TAB_COUNT_MANY" /> muuta välilehteä suljetaan}}</translation>
 <translation id="6785476624617658922">Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot</translation>
 <translation id="6786747875388722282">Laajennukset</translation>
 <translation id="6795633245022906657">Avaa uusi välilehti nopeasti. Voit muokata pikakuvaketta asetuksista.</translation>
@@ -1576,6 +1584,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7965838025086216108">Voit käyttää tallennettuja salasanoja kaikilla laitteilla. Ne on tallennettu Google Salasanoihin tilillä <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Lisätty lukulistalle</translation>
 <translation id="7968982339740310781">Näytä tiedot</translation>
+<translation id="7969391000881506217">Viimeinen voimassaolopäivä*</translation>
 <translation id="7971136598759319605">Aktiivinen 1 päivä sitten</translation>
 <translation id="7975379999046275268">Esikatsele sivu <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Varoittaa, jos käytät salasanaa, joka on vaarantunut tietosuojaloukkauksen yhteydessä.</translation>
@@ -1734,6 +1743,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8565021320663436446">Poistetaanko <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Tiedostoa ei voi ladata turvallisesti</translation>
 <translation id="8571213806525832805">Viimeiset neljä viikkoa</translation>
+<translation id="8580435650274205305">Viimeinen voimassaolopäivä, pakollinen</translation>
 <translation id="8582529315803410153">Näet täällä muiden laitteiden välilehdet</translation>
 <translation id="8585103689515290060">Automaattisen täytön palvelut</translation>
 <translation id="859046281437143747">Seuraa hintaa Lisäasetukset-painikkeen kautta</translation>

@@ -693,6 +693,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2157640075051554492">Preisbenachrichtigungen</translation>
 <translation id="21613918653299710">Onlinebildergalerien</translation>
 <translation id="2161656808144014275">Text</translation>
+<translation id="2162435186600002085">Logo der primären Kopfzeile</translation>
 <translation id="2162620598375156287">Jetzt <ph name="CURRENT_PRICE" /> auf <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Prüfe, ob „<ph name="HOST_NAME" />“ einen Tippfehler enthält.</translation>
 <translation id="2166049586286450108">Vollständiger Administratorzugriff</translation>
@@ -851,6 +852,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2400263725572336749">Reisepass hinzufügen</translation>
 <translation id="2400271059665846158">Kundenkarten in Google Wallet verwalten</translation>
 <translation id="2400600116338235695">Darf nachfragen, wenn sie eine Verbindung mit seriellen Ports herstellen möchte</translation>
+<translation id="240450251994300576">Logo der sekundären Kopfzeile</translation>
 <translation id="2404884497378469141">Versuche noch einmal, deine Dateien zu kopieren</translation>
 <translation id="2413155254802890957">Alt</translation>
 <translation id="2413528052993050574">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wurde möglicherweise widerrufen. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
@@ -981,6 +983,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2627847595568876492">Text wird aus PDF extrahiert…</translation>
 <translation id="2628224721443278970">In Microsoft OneDrive anmelden</translation>
 <translation id="2634124572758952069">Die Server-IP-Adresse von <ph name="HOST_NAME" /> wurde nicht gefunden.</translation>
+<translation id="2638567100095052009">Gib „@“ ein, um auf <ph name="FEATURED_SEARCH_LIST" /> zu suchen</translation>
 <translation id="2639739919103226564">Status: </translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Stoff (halbglanz)</translation>
@@ -1438,6 +1441,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="343474037147570563">Dateien, die du hochlädst oder anhängst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie können beispielsweise auf sensible Daten oder Malware geprüft und gemäß Unternehmensrichtlinien gespeichert und für deinen Administrator sichtbar sein.</translation>
 <translation id="3435557549311968410">Endlos (kurz)</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
+<translation id="3436118221454753036">Modus „KI fragen“</translation>
 <translation id="3440783957068352691">Quadrat</translation>
 <translation id="3441653493275994384">Bildschirm</translation>
 <translation id="3443504041532578451">Optische Disk (Satin)</translation>
@@ -2264,6 +2268,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4827283332383516812">Karte löschen</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> ausgewählt</translation>
 <translation id="4831993743164297314">Bildsetzpapier</translation>
+<translation id="4832388034239846146">Aktualisiere Chrome, um Tabgruppen zu teilen</translation>
 <translation id="483241715238664915">Warnmeldungen aktivieren</translation>
 <translation id="4832961164064927107">Barbecue und Grillen</translation>
 <translation id="4834250788637067901">Zahlungsmethoden, Angebote und Adressen aus Google Pay</translation>
@@ -2971,6 +2976,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6043357981274314628">Fertig!</translation>
 <translation id="6044573915096792553">Größe 12</translation>
 <translation id="6045164183059402045">Vorlage für Ausschießen</translation>
+<translation id="6046892054959167494">Gib „<ph name="SEARCH_AGGREGATOR_KEYWORD" />“ ein, um zu suchen oder <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> zu fragen</translation>
 <translation id="6047927260846328439">Mit diesen Inhalten wird möglicherweise versucht, dich zu täuschen und so zur Installation von Software oder der Offenlegung personenbezogener Daten zu bringen. <ph name="BEGIN_LINK" />Trotzdem anzeigen<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Umschlag B4</translation>
 <translation id="6049488691372270142">Ausgabe der Seiten</translation>
@@ -4009,6 +4015,7 @@ Weitere Details:
 <translation id="7761159795823346334">Kamera zulassen?</translation>
 <translation id="7761701407923456692">Das Serverzertifikat stimmt nicht mit der URL überein.</translation>
 <translation id="7764225426217299476">Adresse hinzufügen</translation>
+<translation id="7765158879357617694">Verschieben</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7767278989746220252">Hof, Veranda, Garten und Rasen</translation>
 <translation id="776749070095465053">Stoff</translation>
@@ -4343,6 +4350,7 @@ Weitere Details:
 <translation id="8364627913115013041">Nicht eingerichtet</translation>
 <translation id="8366057325711477500">Internationale Nachrichten</translation>
 <translation id="836616551641291797">Weitere Informationen zur Verwaltung deines Browsers</translation>
+<translation id="8367705492654390392">Frage hier eingeben</translation>
 <translation id="8368001212524806591">Preis beobachten</translation>
 <translation id="8368027906805972958">Unbekanntes oder nicht unterstütztes Gerät (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play-Dienste</translation>

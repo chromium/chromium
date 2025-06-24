@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">ಶೇಕಡಾ 60 ರಷ್ಟು ಡೇಟಾವನ್ನು ಉಳಿಸಿ, ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಓದಿ</translation>
 <translation id="1303339473099049190">ಆ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಬರೆದಿರುವುದು ಸರಿ ಇದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> ಸಾಧನದಿಂದ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
+<translation id="1310482092992808703">ಟ್ಯಾಬ್‌ ಗುಂಪುಗೂಡಿಸಿ</translation>
 <translation id="1318262688555255786">ವೆಬ್‌ಪುಟ <ph name="PAGE_TITLE" /> ಗೆ ಲಿಂಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ. ಮೂಲ: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">ಬುಕ್‌ಮಾರ್ಕ್ ಸೇವ್ ಮಾಡಿ ಫ್ಲೋ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="1327257854815634930">ನ್ಯಾವಿಗೇಶನ್ ಇತಿಹಾಸ ತೆರೆದಿದೆ</translation>
@@ -477,6 +478,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">ಜಾಹೀರಾತು ಮಾಪನ</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪು</translation>
+<translation id="3200536777393523575">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ವಿಂಡೋವನ್ನು ಮುಚ್ಚಬೇಕೆ?</translation>
 <translation id="3207960819495026254">ಬುಕ್‌ಮಾರ್ಕ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3208584281581115441">ಈಗಲೇ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
@@ -721,6 +723,7 @@
 <translation id="4351244548802238354">ಸಂವಾದವನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="4352287748243729941">ನಿಮ್ಮ <ph name="PROVIDER" /> ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಬೇಕೆ?</translation>
 <translation id="4355272626458588338">ಬುಕ್‌ಮಾರ್ಕ್ ಒಂದನ್ನು ಸೇರಿಸುವ ಮೂಲಕ ನಿಮಗೆ ಮುಖ್ಯವಾದ ಪುಟಕ್ಕೆ ನೀವು ಹಿಂತಿರುಗಬಹುದಾಗಿದೆ</translation>
+<translation id="4356503491090073318">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">ಸುರಕ್ಷತೆ ಕುರಿತು ಇಣುಕು ನೋಟ</translation>
 <translation id="4378154925671717803">ಫೋನ್</translation>
@@ -738,6 +741,7 @@
 <translation id="4425140285732600465">ದರವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದರೆ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ.</translation>
 <translation id="4425173294238317796">ಪಾಸ್‌ಕೀ ದೃಢೀಕರಣದ ಶೀಟ್</translation>
 <translation id="442518031075347249">Google Pay ಜೊತೆಗೆ ನಿಮ್ಮ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಅನ್ನು ಇನ್ನು ಮುಂದೆ ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. <ph name="BEGIN_LINK1" />ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> ಮತ್ತು ಇತರ <ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}one{<ph name="TAB_TITLE" /> ಮತ್ತು ಇತರ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}other{<ph name="TAB_TITLE" /> ಮತ್ತು ಇತರ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}}</translation>
 <translation id="4426508677408162512">ಎಲ್ಲಾ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> ಅನ್ನು ಪ್ರಸ್ತುತ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ. ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ಟ್ಯಾಬ್‌ ಮುಚ್ಚಿ</translation>
@@ -872,6 +876,7 @@
 <translation id="4987271110129728827">ಆ ಪುಟ ಕಂಡುಬರುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ಕಾಗುಣಿತವನ್ನು ಪರಿಶೀಲಿಸಿ ಅಥವಾ ವೆಬ್‌ನಲ್ಲಿ ಹುಡುಕಿ ನೋಡಿ.</translation>
 <translation id="4988526792673242964">ಪುಟಗಳು</translation>
 <translation id="4991110219272367918">ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ಅನುಮೋದಿಸುವ ಅಥವಾ ಅನುಮೋದಿಸದಿರುವ ಕುರಿತ ಆಯ್ಕೆಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
+<translation id="4996042648402406470">ಪಡೆಯಿರಿ</translation>
 <translation id="4996095658297597226">ಸೂಚಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬೇಕೆ?</translation>
 <translation id="5001388021414335527">ಇಲ್ಲಿ ಈ ಸೈಟ್ ಅನ್ನು ಫಾಲೋ ಮಾಡಿ</translation>
 <translation id="5004416275253351869">Google ಚಟುವಟಿಕೆ ನಿಯಂತ್ರಣಗಳು</translation>
@@ -922,10 +927,12 @@
 <translation id="5210286577605176222">ಹಿಂದಿನ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="5210365745912300556">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="5215957675041756913">ನಿಮ್ಮ ಡೇಟಾ ಮತ್ತು ಖಾತೆಯನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
+<translation id="5218324087477576825">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನಷ್ಟು <ph name="SEPARATOR" /> ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡದ ಕಾರಣ Chrome ಈ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ</translation>
 <translation id="5222676887888702881">ಸೈನ್ ಔಟ್</translation>
 <translation id="5226378907213531272">ನೀವು ಕಾರ್ ಅನ್ನು ಬಳಸುವಾಗಲೆಲ್ಲಾ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡುತ್ತೀರಿ</translation>
 <translation id="5227554086496586518">ಹುಡುಕಾಟದ ಫಲಿತಾಂಶಗಳನ್ನು ನೋಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
+<translation id="5229736206150093143">ಇತ್ತೀಚಿನ ಫಲಿತಾಂಶಗಳು</translation>
 <translation id="5233638681132016545">ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="5235196193381275927">ಸೈನ್ ಇನ್ ಮಾಡುವ ಸಮಯದಲ್ಲಿ ಯಾವುದೋ ತಪ್ಪು ಸಂಭವಿಸಿದೆ</translation>
 <translation id="5246093389635966745">ಟೂಲ್‌ಬಾರ್‌ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
@@ -1280,6 +1287,7 @@
 <translation id="676305334223455055">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳ ಆಧಾರದ ಮೇಲೆ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6764137532716892442">ಹೊಸ ಚಟುವಟಿಕೆಯೊಂದಿಗೆ <ph name="GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="6767294960381293877">ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕಾದ ಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ಅಜ್ಞಾತ ಮತ್ತು ಇತರ <ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}one{<ph name="INCOGNITO_TAB_COUNT" /> ಅಜ್ಞಾತ ಮತ್ತು ಇತರ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}other{<ph name="INCOGNITO_TAB_COUNT" /> ಅಜ್ಞಾತ ಮತ್ತು ಇತರ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}}</translation>
 <translation id="6785476624617658922">Chrome ಮತ್ತು ChromeOS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳು</translation>
 <translation id="6786747875388722282">ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು</translation>
 <translation id="6795633245022906657">ಹೊಸ ಟ್ಯಾಬ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ತೆರೆಯಿರಿ. ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
@@ -1575,6 +1583,7 @@
 <translation id="7965838025086216108">ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನೀವು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಬಹುದು. ಅವುಗಳನ್ನು <ph name="ACCOUNT" /> ನ Google Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="7968014550143838305">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="7968982339740310781">ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="7969391000881506217">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ*</translation>
 <translation id="7971136598759319605">1 ದಿನದ ಹಿಂದೆ ಸಕ್ರಿಯ</translation>
 <translation id="7975379999046275268">ಪುಟ ಪೂರ್ವವೀಕ್ಷಿಸಿ <ph name="BEGIN_NEW" />ಹೊಸದು<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನೀವು ಬಳಸಿದರೆ ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ.</translation>
@@ -1733,6 +1742,7 @@
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> ಅನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?</translation>
 <translation id="8570677896027847510">ಫೈಲ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8571213806525832805">ಕಳೆದ 4 ವಾರಗಳು</translation>
+<translation id="8580435650274205305">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕದ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8582529315803410153">ಇತರ ಸಾಧನಗಳಲ್ಲಿನ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೀವು ಇಲ್ಲಿ ಕಂಡುಕೊಳ್ಳುತ್ತೀರಿ</translation>
 <translation id="8585103689515290060">ಆಟೋಫಿಲ್‌ ಸೇವೆಗಳು</translation>
 <translation id="859046281437143747">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳ ಬಟನ್‌ನಿಂದ ಬೆಲೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>

@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">Допрете „Апликации“, па „Стандардни апликации“</translation>
 <translation id="1415402041810619267">URL-адресата е скратена</translation>
 <translation id="1415855080660575082">Дозволете Chrome да ги споделува вашите неодамнешни картички со вашиот уред за да ги гледате во списокот со апликации и резултатите од пребарување на уредот. Ова може да го вклучите или исклучите во поставките за Chrome.</translation>
+<translation id="1432650420699700107">Сајтовите може да бараат да се поврзуваат на сите уреди на локалната мрежа</translation>
 <translation id="1448064542941920355">Одзумирај</translation>
 <translation id="1464044141348608623">Не им дозволувај на сајтовите да знаат кога активно го користам уредот</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сајт}one{<ph name="SITE_COUNT" /> сајт}other{<ph name="SITE_COUNT" /> сајта}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">Не им дозволувај на сајтовите да се поврзуваат со USB-уреди</translation>
 <translation id="3965467402665811906">Сајтовите може да бараат да ги користат податоците што ги зачувале за вас</translation>
 <translation id="3967822245660637423">Преземањето е завршено</translation>
+<translation id="3969869202926863008">Пристап на локалната мрежа</translation>
 <translation id="3981465354637804599">Сајтовите обично прикажуваат реклами за да може да нудат бесплатни содржини или услуги. Но, за некои сајтови е познато дека прикажуваат нападни или лажни реклами.</translation>
 <translation id="3987993985790029246">Копирај линк</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">Последно посетено пред <ph name="NUM_DAYS" /> дена</translation>
 <translation id="656065428026159829">Прикажи повеќе</translation>
 <translation id="6561560012278703671">Користете потивки пораки (не дозволува известувањата да ве попречуваат)</translation>
+<translation id="6565144332292237355">Сајтовите може да ја користат функцијава за да ги бараат и да се поврзуваат на сите уреди на локалната мрежа</translation>
 <translation id="6593061639179217415">Сајт за компјутер</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Колачињата се дозволени за <ph name="RWS_MEMBERS_COUNT" /> сајт на <ph name="RWS_OWNER" />}one{Колачињата се дозволени за <ph name="RWS_MEMBERS_COUNT" /> сајт на <ph name="RWS_OWNER" />}other{Колачињата се дозволени за <ph name="RWS_MEMBERS_COUNT" /> сајта на <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

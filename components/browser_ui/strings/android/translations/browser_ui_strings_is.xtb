@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">Ýttu á „Forrit“ og síðan á „Sjálfgefin forrit“</translation>
 <translation id="1415402041810619267">Stytt vefslóð</translation>
 <translation id="1415855080660575082">Leyfðu Chrome að deila nýlegum flipum með tækinu þínu svo að þú getir séð þá á forritalista og í leitarniðurstöðum tækisins. Þú getur kveikt eða slökkt á þessu í stillingum Chrome.</translation>
+<translation id="1432650420699700107">Vefsvæði geta beðið um að tengjast hvaða tæki sem er á staðarnetinu þínu</translation>
 <translation id="1448064542941920355">Minnka aðdrátt</translation>
 <translation id="1464044141348608623">Ekki leyfa vefsvæðum að vita hvenær þú notar tækið þitt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> vefsvæði}one{<ph name="SITE_COUNT" /> vefsvæði}other{<ph name="SITE_COUNT" /> vefsvæðum}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">Ekki leyfa vefsvæðum að tengjast USB-tækjum</translation>
 <translation id="3965467402665811906">Vefsvæði geta beðið um að fá að nota upplýsingar sem þau hafa vistað um þig</translation>
 <translation id="3967822245660637423">Niðurhali lokið</translation>
+<translation id="3969869202926863008">Aðgangur að staðarneti</translation>
 <translation id="3981465354637804599">Yfirleitt birta vefsvæði auglýsingar til að geta boðið upp á gjaldfrjálst efni eða þjónustur. Sum vefsvæði eru hins vegar þekkt fyrir að birta ágengar eða villandi auglýsingar.</translation>
 <translation id="3987993985790029246">Afrita tengil</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">Síðast opnað fyrir <ph name="NUM_DAYS" /> dögum</translation>
 <translation id="656065428026159829">Sjá meira</translation>
 <translation id="6561560012278703671">Nota hljóðlátari skilaboð (útilokar truflun af tilkynningum)</translation>
+<translation id="6565144332292237355">Vefsvæði geta notað þennan eiginleika til að leita að og tengjast hvaða tæki sem er á staðarnetinu þínu</translation>
 <translation id="6593061639179217415">Tölvuvefsvæði</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Fótspor leyfð fyrir <ph name="RWS_MEMBERS_COUNT" /> vefsvæði í eigu <ph name="RWS_OWNER" />}one{Fótspor leyfð fyrir <ph name="RWS_MEMBERS_COUNT" /> vefsvæði í eigu <ph name="RWS_OWNER" />}other{Fótspor leyfð fyrir <ph name="RWS_MEMBERS_COUNT" /> vefsvæði í eigu <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

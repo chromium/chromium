@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">Націсніце "Праграмы", потым – "Стандартныя праграмы"</translation>
 <translation id="1415402041810619267">URL-адрас абрэзаны</translation>
 <translation id="1415855080660575082">Дазвольце Chrome абагульваць апошнія ўкладкі з вашай прыладай, каб яны з’яўляліся ў спісе праграм прылады і ў выніках пошуку. Гэту функцыю можна ўключыць ці выключыць у наладах Chrome.</translation>
+<translation id="1432650420699700107">Сайты могуць запытваць дазвол на падключэнне да прылад у вашай лакальнай сетцы</translation>
 <translation id="1448064542941920355">Паменшыць маштаб</translation>
 <translation id="1464044141348608623">Не даваць сайтам доступу да звестак пра тое, калі вы карыстаецеся прыладай</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайты}many{<ph name="SITE_COUNT" /> сайтаў}other{<ph name="SITE_COUNT" /> сайта}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">Не дазваляць сайтам падключацца да прылад USB</translation>
 <translation id="3965467402665811906">Сайты могуць запытваць дазвол на выкарыстанне інфармацыі, якую яны пра вас захавалі</translation>
 <translation id="3967822245660637423">Спампоўка завершана</translation>
+<translation id="3969869202926863008">Доступ да лакальнай сеткі</translation>
 <translation id="3981465354637804599">Сайты звычайна паказваюць рэкламу, каб мець магчымасць прапаноўваць змесціва або паслугі бясплатна. Але некаторыя сайты паказваюць назойлівую рэкламу або рэкламу, якая ўводзіць у зман.</translation>
 <translation id="3987993985790029246">Скапіраваць спасылку</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">Апошняе наведванне: <ph name="NUM_DAYS" /> сут таму</translation>
 <translation id="656065428026159829">Яшчэ</translation>
 <translation id="6561560012278703671">Забараніць сайтам адцягваць вашу ўвагу запытамі дазволу на паказ апавяшчэнняў. Паказваць замест іх індыкатар блакіроўкі ў адрасным радку</translation>
+<translation id="6565144332292237355">Сайты могуць выкарыстоўваць гэту функцыю, каб шукаць прылады ў лакальнай сетцы і падключацца да іх</translation>
 <translation id="6593061639179217415">Версія для ПК</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Выкарыстанне файлаў cookie дазволена для <ph name="RWS_MEMBERS_COUNT" /> сайта ў дамене <ph name="RWS_OWNER" />}one{Выкарыстанне файлаў cookie дазволена для <ph name="RWS_MEMBERS_COUNT" /> сайта ў дамене <ph name="RWS_OWNER" />}few{Выкарыстанне файлаў cookie дазволена для <ph name="RWS_MEMBERS_COUNT" /> сайтаў у дамене <ph name="RWS_OWNER" />}many{Выкарыстанне файлаў cookie дазволена для <ph name="RWS_MEMBERS_COUNT" /> сайтаў у дамене <ph name="RWS_OWNER" />}other{Выкарыстанне файлаў cookie дазволена для <ph name="RWS_MEMBERS_COUNT" /> сайта ў дамене <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>

@@ -1441,6 +1441,7 @@
 <translation id="343474037147570563">ໄຟລ໌ທີ່ທ່ານອັບໂຫຼດ ຫຼື ແນບຈະຖືກສົ່ງໃຫ້ Google Cloud ຫຼື ພາກສ່ວນທີສາມເພື່ອວິເຄາະ. ຕົວຢ່າງ: ພວກມັນອາດຖືກສະແກນເພື່ອຊອກຫາຂໍ້ມູນທີ່ລະອຽດອ່ອນ ຫຼື ເມົາແວ ແລະ ອາດຖືກຈັດເກັບຕາມນະໂຍບາຍບໍລິສັດ ແລະ ສະແດງໃຫ້ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເຫັນ.</translation>
 <translation id="3435557549311968410">ຕໍ່ເນື່ອງ (ສັ້ນ)</translation>
 <translation id="3435738964857648380">ຄວາມ​ປອດ​ໄພ</translation>
+<translation id="3436118221454753036">ໂໝດຖາມ AI</translation>
 <translation id="3440783957068352691">ສີ່ຫຼ່ຽມ</translation>
 <translation id="3441653493275994384">ຫນ້າ​ຈໍ</translation>
 <translation id="3443504041532578451">ອັອບຕິຄອລດິສ (ຊາຕິນ)</translation>
@@ -2030,6 +2031,7 @@
 <translation id="4372948949327679948">ຄ່າ <ph name="VALUE_TYPE" /> ທີ່ຄາດໄວ້.</translation>
 <translation id="437620492464254965">ປະຕູ ແລະ ປ່ອງຢ້ຽມ</translation>
 <translation id="4377125064752653719">ທ່ານພະຍາຍາມເຂົ້າຫາ <ph name="DOMAIN" />, ແຕ່ໃບຢັ້ງຢືນທີ່ເຊີບເວີນໍາສະເໜີນັ້ນຖືກຜູ້ອອກໃຫ້ຖອນຄືນແລ້ວ. ນີ້ໝາຍຄວາມວ່າ ໃບຢັ້ງຢືນຄວາມປອດໄພທີ່ເຊີບເວີນໍາສະເໜີນັ້ນບໍ່ເຊື່ອຖືໄດ້ທັງໝົດ. ທ່ານອາດຈະກໍາລັງສື່ສານກັບຕົວໂຈມຕີຢູ່.</translation>
+<translation id="4377869186417956230">ປ່ຽນເປັນບັດສະມາຊິກທັງໝົດພາຍໃຕ້ລາຍການເມນູນີ້.</translation>
 <translation id="4378154925671717803">ໂທລະ​ສັບ</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ຈາກນີ້ໄປ, ໃຫ້ບັນທຶກໄຟລ໌ຂອງທ່ານໃສ່ບ່ອນຈັດເກັບຂໍ້ມູນຄລາວ</translation>
@@ -3147,6 +3149,7 @@
 <translation id="6326947323444967009">ຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງລະບົບໃນການຕັ້ງຄ່າ iOS</translation>
 <translation id="6327065120806001832">ການເຂົ້າເຖິງເຄືອຂ່າຍທ້ອງຖິ່ນ</translation>
 <translation id="6328639280570009161">ລອງປິດໃຊ້ງານການເດົາເຄືອຂ່າຍ</translation>
+<translation id="6334834493885103305">ຕອນນີ້ທ່ານສາມາດຈ່າຍເງິນເປັນງວດໄດ້ໂດຍໃຊ້ Affirm, Zip ຫຼື Klarna</translation>
 <translation id="6335029926534404762">ເກີບນັກກິລາ</translation>
 <translation id="6336948221660696475">ບໍ່ອະນຸຍາດ VR</translation>
 <translation id="6337133576188860026">ຂະຫຍາຍພື້ນທີ່ຫວ່າງໄດ້ໜ້ອຍກວ່າ <ph name="SIZE" />. ບາງເວັບໄຊອາດຈະໂຫຼດຊ້າກວ່າໃນການເຂົ້າເບິ່ງຄັ້ງຕໍ່ໄປຂອງທ່ານ.</translation>
@@ -4015,6 +4018,7 @@
 <translation id="7761159795823346334">ອະນຸຍາດກ້ອງຖ່າຍຮູບບໍ?</translation>
 <translation id="7761701407923456692">ໃບຢັ້ງຢືນຂອງເຊີບເວີບໍ່ເຂົ້າກັບ URL.</translation>
 <translation id="7764225426217299476">ເພີ່ມ​ທີ່​ຢູ່</translation>
+<translation id="7765158879357617694">ຍ້າຍ</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7767278989746220252">ເດີ່ນບ້ານ, ສະໜາມຫຍ້າ ແລະ ສວນ</translation>
 <translation id="776749070095465053">ຜ້າ</translation>
@@ -4069,6 +4073,7 @@
 <translation id="7878562273885520351">ອາດຈະມີການລັກໃຊ້ລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="7881044256965445977">ຊອກຫາ ແລະ ເຊື່ອມຕໍ່ກັບອຸປະກອນໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານ</translation>
 <translation id="7882421473871500483">ສີນ້ຳຕານ</translation>
+<translation id="7885670691503039914">ທ່ານຈະໄດ້ຮັບການເຕືອນອີເມວຫາກລາຄາຫຼຸດລົງຢູ່ເວັບໄຊໃດກໍຕາມ. ລະບົບຈະບັນທຶກໜ້ານີ້ໄວ້ໃນໂຟນເດີບຸກມາກ <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">ເລືອກໝວດໝູ່ກວ້າງໆຂອງຫົວຂໍ້ທີ່ສາມາດໃຊ້ໃນການຊ່ວຍປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວ</translation>
 <translation id="7887683347370398519">ກວດ​ເບິ່ງ CVC ຂອງ​ທ່ານ ແລະ​ລອງ​ໃໝ່​ອີກ</translation>
 <translation id="7887885240995164102">ເຂົ້າໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
@@ -4349,6 +4354,7 @@
 <translation id="8364627913115013041">ບໍ່​ໄດ້ຕັ້ງ​.</translation>
 <translation id="8366057325711477500">ຂ່າວຮອບໂລກ</translation>
 <translation id="836616551641291797">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບວິທີຈັດການໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ</translation>
+<translation id="8367705492654390392">ຖາມຫຍັງກໍໄດ້</translation>
 <translation id="8368001212524806591">ຕິດຕາມລາຄາ</translation>
 <translation id="8368027906805972958">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກ ຫຼື ບໍ່ຮອງຮັບ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">ບໍລິການ Google Play</translation>
@@ -4663,6 +4669,7 @@
 <translation id="8926389886865778422">ຢ່າຖາມອີກ</translation>
 <translation id="8932102934695377596">ໂມງ​ຂອງ​ທ່ານ​ຊ້າ</translation>
 <translation id="893332455753468063">ເພີ່ມຊື່</translation>
+<translation id="8938242527120341116">ຕົວກັ່ນຕອງເນື້ອຫາໃນອຸປະກອນຂອງທ່ານໄດ້ບລັອກ <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເກັບເອົາຂໍ້ມູນການວິເຄາະບັນຫາເພື່ອປັບປຸງປະສົບການຜະລິດຕະພັນແລ້ວ. ເບິ່ງ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="8943282376843390568">ສີຂຽວໝາກນາວ</translation>
 <translation id="8949410982325929394">ລະດັບສຽງ</translation>
@@ -4868,6 +4875,7 @@
 <translation id="963837307749850257">ຜູ້ໃຊ້ທັງໝົດ</translation>
 <translation id="964050462028070434">ຈັດການລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານ…</translation>
 <translation id="969892804517981540">ສ້າງເປັນທາງການ</translation>
+<translation id="97054401902912338">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຕົວກັ່ນຕອງເນື້ອຫາ</translation>
 <translation id="973788791897303708">ກຸ່ມແຖບນີ້ເຕັມແລ້ວ</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ບໍ່ມີ}=1{1 ລາຍການ}other{# ລາຍການ}}</translation>
 <translation id="976522784004777030">5 x 8 ນິ້ວ</translation>

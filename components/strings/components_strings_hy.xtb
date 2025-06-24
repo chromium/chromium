@@ -697,6 +697,7 @@
 <translation id="2157640075051554492">Գների հետագծման մասին ծանուցումներ</translation>
 <translation id="21613918653299710">Առցանց պատկերասրահներ</translation>
 <translation id="2161656808144014275">Տեքստ</translation>
+<translation id="2162435186600002085">Հիմնական վերնագրի լոգո</translation>
 <translation id="2162620598375156287">Այժմ <ph name="CURRENT_PRICE" />՝ <ph name="SOURCE_WEBSITE" /> կայքում</translation>
 <translation id="2164510882479075877">Համոզվեք, որ <ph name="HOST_NAME" /> անվան մեջ տառասխալներ չկան։</translation>
 <translation id="2166049586286450108">Ադմինիստրատորի ամբողջական թույլտվություն</translation>
@@ -855,6 +856,7 @@
 <translation id="2400263725572336749">Ավելացնել անձնագիր</translation>
 <translation id="2400271059665846158">Կառավարեք մշտական հաճախորդի ձեր քարտերը Google Wallet-ում</translation>
 <translation id="2400600116338235695">Կարող է հայցել հաջորդական միացքներին միանալու թույլտվություն</translation>
+<translation id="240450251994300576">Երկրորդական վերնագրի լոգո</translation>
 <translation id="2404884497378469141">Փորձեք նորից պատճենել ֆայլերը</translation>
 <translation id="2413155254802890957">Հին</translation>
 <translation id="2413528052993050574">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականը, հավանաբար, հետ է կանչվել: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
@@ -985,6 +987,7 @@
 <translation id="2627847595568876492">Տեքստի արտահանում PDF-ից...</translation>
 <translation id="2628224721443278970">Մուտք գործել Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Չհաջողվեց գտնել <ph name="HOST_NAME" /> տիրույթի սերվերի IP հասցեն։</translation>
+<translation id="2638567100095052009">Մուտքագրեք @ նշանը՝ <ph name="FEATURED_SEARCH_LIST" /> համակարգ(եր)ում որոնելու համար</translation>
 <translation id="2639739919103226564">Կարգավիճակ`</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Գործվածք (կիսափայլուն)</translation>
@@ -1444,6 +1447,7 @@
 <translation id="343474037147570563">Ձեր վերբեռնած կամ կցած ֆայլերը ուղարկվում են Google Cloud կամ գործընկեր կազմակերպություններին՝ վերլուծության նպատակով։ Օրինակ՝ դրանցում կարող է ստուգվել զգայուն տվյալների կամ վնասագրերի առկայությունը, և դրանք կարող են պահվել կազմակերպության կանոններին համաձայն ու տեսանելի լինել ձեր ադմինիստրատորին։</translation>
 <translation id="3435557549311968410">Շարունակական (կարճ)</translation>
 <translation id="3435738964857648380">Անվտանգություն</translation>
+<translation id="3436118221454753036">Հարցրեք ԱԲ-ին ռեժիմում</translation>
 <translation id="3440783957068352691">քառակուսի</translation>
 <translation id="3441653493275994384">Էկրան</translation>
 <translation id="3443504041532578451">Օպտիկական սկավառակ (ատլաս)</translation>
@@ -2272,6 +2276,7 @@
 <translation id="4827283332383516812">Ջնջել քարտը</translation>
 <translation id="4830443836091007686">Ընտրված է <ph name="ITEMS" /> տարր</translation>
 <translation id="4831993743164297314">Իմիջսեթերի թուղթ</translation>
+<translation id="4832388034239846146">Ներդիրների խմբերով կիսվելու համար թարմացրեք Chrome-ը</translation>
 <translation id="483241715238664915">Միացնել զգուշացումները</translation>
 <translation id="4832961164064927107">Խորոված և գրիլ</translation>
 <translation id="4834250788637067901">Վճարման եղանակներ, առաջարկներ ու հասցեներ Google Pay-ից</translation>
@@ -2982,6 +2987,7 @@
 <translation id="6043357981274314628">Պատրաստ է:</translation>
 <translation id="6044573915096792553">Չափ 12</translation>
 <translation id="6045164183059402045">Էջքի ձևանմուշ</translation>
+<translation id="6046892054959167494">Մուտքագրեք «<ph name="SEARCH_AGGREGATOR_KEYWORD" />»՝ որոնելու կամ <ph name="SEARCH_AGGREGATOR_SHORT_NAME" />-ին հարցնելու համար</translation>
 <translation id="6047927260846328439">Այս բովանդակությունը կարող է ձեզ խաբեությամբ ստիպել ծրագիր տեղադրել կամ անձնական տեղեկություններ հայտնել։ <ph name="BEGIN_LINK" />Միևնույն է ցուցադրել<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">Էջերի մատուցում</translation>
@@ -4019,6 +4025,7 @@
 <translation id="7761159795823346334">Թույլատրե՞լ տեսախցիկի օգտագործումը</translation>
 <translation id="7761701407923456692">Սերվերի վկայագիրը չի համապատասխանում URL-ին:</translation>
 <translation id="7764225426217299476">Ավելացնել հասցե</translation>
+<translation id="7765158879357617694">Տեղափոխել</translation>
 <translation id="7766518757692125295">Կիսաշրջազգեստ</translation>
 <translation id="7767278989746220252">Ներքնաբակ, սիզամարգ և այգի</translation>
 <translation id="776749070095465053">Գործվածք</translation>
@@ -4353,6 +4360,7 @@
 <translation id="8364627913115013041">Կարգավորված չէ:</translation>
 <translation id="8366057325711477500">Համաշխարհային լուրեր</translation>
 <translation id="836616551641291797">Իմանալ ավելին այն մասին, թե ինչպես է ձեր դիտարկիչը կառավարվում</translation>
+<translation id="8367705492654390392">Հարցրեք որևէ բան</translation>
 <translation id="8368001212524806591">Հետևել գներին</translation>
 <translation id="8368027906805972958">Անհայտ կամ չաջակցվող սարք (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play-ի ծառայություններ</translation>

@@ -36,6 +36,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="1409338233051621926">অ্যাপে ট্যাপ করে তারপর ডিফল্ট অ্যাপে ট্যাপ করুন</translation>
 <translation id="1415402041810619267">ইউআরএল ছোট করা হয়েছে</translation>
 <translation id="1415855080660575082">Chrome-কে আপনার ডিভাইসের সাথে আপনার সাম্প্রতিক ব্যবহার ট্যাব শেয়ার করার অনুমতি দিন যাতে সেগুলি আপনার ডিভাইসের অ্যাপের তালিকা এবং সার্চ ফলাফলে দেখা যায়। আপনি এটি Chrome সেটিংস থেকে চালু বা বন্ধ করতে পারবেন।</translation>
+<translation id="1432650420699700107">সাইট, আপনার স্থানীয় নেটওয়ার্কে যেকোনও ডিভাইসে কানেক্ট করতে বলতে পারে</translation>
 <translation id="1448064542941920355">জুম কমান</translation>
 <translation id="1464044141348608623">আপনি ডিভাইস কখন সক্রিয়ভাবে ব্যবহার করেন তা সাইটকে জানতে দেয় না</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" />টি সাইট}one{<ph name="SITE_COUNT" />টি সাইট}other{<ph name="SITE_COUNT" />টি সাইট}}</translation>
@@ -254,6 +255,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="3955321697524543127">USB ডিভাইসের সঙ্গে কানেক্ট করার ব্যাপারে সাইটগুলিকে অনুমতি দেয় না</translation>
 <translation id="3965467402665811906">আপনার সম্পর্কে যে তথ্য সাইটে সেভ হয়েছে, তা ব্যবহারের জন্য সেখান থেকে অনুমতি চাওয়া হতে পারে</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
+<translation id="3969869202926863008">স্থানীয় নেটওয়ার্ক অ্যাক্সেস</translation>
 <translation id="3981465354637804599">ফ্রিতে কন্টেন্ট বা পরিষেবা প্রদান করার জন্য সাইট সাধারণত বিজ্ঞাপন দেখায়। কিন্তু কিছু সাইটে ব্যাঘাত সৃষ্টিকারী অথবা বিভ্রান্তিকর বিজ্ঞাপন দেখানো হয়।</translation>
 <translation id="3987993985790029246">লিঙ্ক কপি করুন</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> দিন আগে শেষবার দেখেছেন</translation>
 <translation id="656065428026159829">আরও দেখুন</translation>
 <translation id="6561560012278703671">আওয়াজ ছাড়া বিজ্ঞপ্তি (বিজ্ঞপ্তির ক্ষেত্রে আওয়াজ সহ প্রম্পট ব্লক করা হয়, যাতে কাজের সময় ব্যাঘাত না ঘটে)</translation>
+<translation id="6565144332292237355">আপনার স্থানীয় নেটওয়ার্কে, যেকোনও ডিভাইস খুঁজতে ও কানেক্ট করার জন্য, সাইট এই ফিচার ব্যবহার করতে পারে</translation>
 <translation id="6593061639179217415">ডেস্কটপ সাইট</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" />-এর <ph name="RWS_MEMBERS_COUNT" />টি সাইটের জন্য কুকির অনুমতি আছে}one{<ph name="RWS_OWNER" />-এর <ph name="RWS_MEMBERS_COUNT" />টি সাইটের জন্য কুকির অনুমতি আছে}other{<ph name="RWS_OWNER" />-এর <ph name="RWS_MEMBERS_COUNT" />টি সাইটের জন্য কুকির অনুমতি আছে}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> জিবি</translation>
