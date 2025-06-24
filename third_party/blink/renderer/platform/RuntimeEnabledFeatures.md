@@ -136,6 +136,9 @@ If your feature is adding new CSS Properties you will need to use the runtime_fl
 ## Using A Runtime Enabled Feature
 
 ### C++ Source Code
+
+#### In the Renderer
+
 Add this include:
 ```cpp
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -148,6 +151,35 @@ void RuntimeEnabledFeatures::SetAmazingNewFeatureEnabled(bool enabled);
 **Note:** MethodNames and  FeatureNames are in UpperCamelCase. This is handled automatically in code generators, and works even if the feature's flag name begins with an acronym such as "CSS", "IME", or "HTML".
 For example "CSSMagicFeature" becomes `RuntimeEnabledFeatures::CSSMagicFeatureEnabled()` and `RuntimeEnabledFeatures::SetCSSMagicFeatureEnabled(bool)`.
 
+#### In the Browser Process
+
+If you need to know whether this feature is turned on from the browser process, be sure that your feature sets `browser_process_read_access` or `browser_process_read_write_access` to true.
+Without at least one of these the required code will not be generated.
+
+To read features you want to include:
+```cpp
+#include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
+#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
+```
+This will let you read features via the render frame host:
+```cpp
+RuntimeFeatureStateDocumentData::GetForCurrentDocument(render_frame_host)
+  ->runtime_feature_state_read_context()
+  IsAmazingNewFeatureEnabled();
+```
+
+To write features you want to include:
+```cpp
+#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
+```
+This will let you read/write features via the navigation handle (before it commits):
+```cpp
+navigation_handle->GetMutableRuntimeFeatureStateContext().IsAmazingNewFeatureEnabled();
+navigation_handle->GetMutableRuntimeFeatureStateContext().SetAmazingNewFeatureEnabled(true);
+```
+
+**Note:** The browser process will not see origin trial tokens sent via HTTP headers, they must be included in the page HTML.
+Please inform developers who would use this token of that limitation, and see [this bug](crbug.com/1377000) for more.
 
 ### IDL Files
 Use the [Blink extended attribute] `[RuntimeEnabled]` as in `[RuntimeEnabled=AmazingNewFeature]` in your IDL definition.
