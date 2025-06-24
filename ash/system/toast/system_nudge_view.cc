@@ -449,11 +449,11 @@ SystemNudgeView::~SystemNudgeView() {
 void SystemNudgeView::AddedToWidget() {
   GetWidget()->AddObserver(this);
 
-  // Attach the shadow at the bottom of the widget layer.
+  // Attach the shadow at the bottom of the parent layer.
   auto* shadow_layer = shadow_->GetLayer();
-  auto* widget_layer = GetWidget()->GetLayer();
-  widget_layer->Add(shadow_layer);
-  widget_layer->StackAtBottom(shadow_layer);
+  auto* parent_layer = layer()->parent();
+  parent_layer->Add(shadow_layer);
+  parent_layer->StackAtBottom(shadow_layer);
 }
 
 void SystemNudgeView::RemovedFromWidget() {
