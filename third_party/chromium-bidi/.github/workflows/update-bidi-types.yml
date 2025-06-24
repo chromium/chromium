@@ -23,10 +23,37 @@ on:
         type: string
 
 jobs:
-  build:
-    name: Build WebDriverBiDi types
+  build_main_spec:
+    name: Build main spec cddl types
     runs-on: ubuntu-latest
     steps:
+      - name: Install dependencies
+        run: |
+          cargo install cddlconv@0.1.6;
+          npm install parse5
+      - name: Check out the main spec repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: ${{ github.event.inputs.repository || 'w3c/webdriver-bidi' }}
+          ref: ${{ github.event.inputs.source_ref || 'main' }}
+          path: webdriver-bidi
+      - name: Generate WebDriverBidi CDDL
+        run: ./scripts/test.sh
+        working-directory: webdriver-bidi
+      - name: Upload WebDriverBidi CDDL
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: all-cddl
+          path: webdriver-bidi/all.cddl
+
+  build_permissions:
+    name: Build Permissions CDDL
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          cargo install cddlconv@0.1.6;
+          npm install parse5
       - name: Check out the main spec repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -39,20 +66,6 @@ jobs:
           repository: w3c/permissions
           ref: main
           path: permissions
-      - name: Check out w3c/permissions spec repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          repository: WebBluetoothCG/web-bluetooth
-          ref: main
-          path: web-bluetooth
-      - name: Generate WebDriverBidi CDDL
-        run: ./scripts/test.sh
-        working-directory: webdriver-bidi
-      - name: Upload WebDriverBidi CDDL
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: all-cddl
-          path: webdriver-bidi/all.cddl
       - name: Generate WebDriverBidi CDDL for Permissions
         run: ../webdriver-bidi/scripts/cddl/generate.js ./index.html && mv all.cddl permissions.cddl
         working-directory: permissions
@@ -61,10 +74,31 @@ jobs:
         with:
           name: permissions-cddl
           path: permissions/permissions.cddl
+
+  build_bluetooth_cddl:
+    name: Build Bluetooth CDDL
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          cargo install cddlconv@0.1.6;
+          npm install parse5
+      - name: Check out the main spec repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: ${{ github.event.inputs.repository || 'w3c/webdriver-bidi' }}
+          ref: ${{ github.event.inputs.source_ref || 'main' }}
+          path: webdriver-bidi
+      - name: Check out WebBluetoothCG/web-bluetooth spec repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: WebBluetoothCG/web-bluetooth
+          ref: main
+          path: web-bluetooth
       - name: Generate WebDriverBidi CDDL for web-bluetooth
         run: ../webdriver-bidi/scripts/cddl/generate.js ./index.bs && mv all.cddl web-bluetooth.cddl
         working-directory: web-bluetooth
-      - name: Upload WebDriverBidi CDDL for Permissions
+      - name: Upload WebDriverBidi CDDL for web-bluetooth
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: web-bluetooth-cddl
@@ -72,7 +106,9 @@ jobs:
 
   pr:
     name: Send PR
-    needs: build
+    needs: [build_main_spec, build_permissions, build_bluetooth_cddl]
+    # Run even if some CDDL's are not built.
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Check out mapper repository
@@ -100,20 +136,32 @@ jobs:
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: all-cddl
+        # Tolerate missing files.
+        continue-on-error: true
       - name: Download WebDriverBidi CDDL for Permissions
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: permissions-cddl
+        # Tolerate missing files.
+        continue-on-error: true
       - name: Download WebDriverBidi CDDL for web-bluetooth
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: web-bluetooth-cddl
+        # Tolerate missing files.
+        continue-on-error: true
       - name: Generate TypeScript types for the main spec
         run: node tools/generate-bidi-types.mjs --cddl-file all.cddl
+        # Tolerate errors during generating types.
+        continue-on-error: true
       - name: Generate TypeScript types for Permissions spec
         run: node tools/generate-bidi-types.mjs --cddl-file permissions.cddl --ts-file src/protocol/generated/webdriver-bidi-permissions.ts --zod-file src/protocol-parser/generated/webdriver-bidi-permissions.ts
+        # Tolerate errors during generating types.
+        continue-on-error: true
       - name: Generate TypeScript types for web-bluetooth spec
         run: node tools/generate-bidi-types.mjs --cddl-file web-bluetooth.cddl --ts-file src/protocol/generated/webdriver-bidi-bluetooth.ts --zod-file src/protocol-parser/generated/webdriver-bidi-bluetooth.ts
+        # Tolerate errors during generating types.
+        continue-on-error: true
       - run: git diff
       # Needed for `npm run format`.
       - run: python -m pip install pre-commit
