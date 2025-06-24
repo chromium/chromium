@@ -504,7 +504,7 @@ BASE_FEATURE(kFullscreenImprovement,
              "FullscreenImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabGroupSync, "TabGroupSync", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTabGroupSync, "TabGroupSync", base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsTabGroupSyncEnabled() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -515,7 +515,7 @@ bool IsTabGroupSyncEnabled() {
 
 BASE_FEATURE(kTabGroupIndicator,
              "TabGroupIndicator",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsTabGroupIndicatorEnabled() {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
