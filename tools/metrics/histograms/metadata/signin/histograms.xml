@@ -29,6 +29,39 @@ chromium-metrics-reviews@google.com.
   <variant name="_Periodic" summary="Emitted once per 24 hours."/>
 </variants>
 
+<!-- LINT.IfChange(BoundSessionRefreshCookieFetcherTrigger) -->
+
+<variants name="BoundSessionRefreshCookieFetcherTrigger">
+  <variant name=""
+      summary="Recorded every time a cookie rotation request is performed."/>
+  <variant name=".BlockedRequest"
+      summary="Recorded only for cookie rotation requests triggered because a
+               request to the bound site was missing a bound cookie and thus
+               was blocked."/>
+  <variant name=".ConnectionChanged"
+      summary="Recorded only for cookie rotation requests triggered by a
+               connection change."/>
+  <variant name=".CookieExpired"
+      summary="Recorded only for cookie rotation requests triggered by a
+               bound cookie update that expired the cookie."/>
+  <variant name=".NewSession"
+      summary="Recorded only for cookie rotation requests triggered by a new
+               session creation."/>
+  <variant name=".Other"
+      summary="Recorded only for cookie rotation requests that don't fall
+               into any of other categories."/>
+  <variant name=".PreemptiveRefresh"
+      summary="Recorded only for preemptive cookie rotation requests."/>
+  <variant name=".RetryWithBackoff"
+      summary="Recorded only for cookie rotation requests triggered by a
+               retry with backoff during a server outage."/>
+  <variant name=".Startup"
+      summary="Recorded only for cookie rotation requests triggered on Chrome
+               startup."/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.cc:GetRotationHistogramTriggerSuffix) -->
+
 <variants name="SigninAccountStatus">
   <variant name=".NewAccountExistingAccount"
       summary="Using a new account, in the sign-in promo, while Chrome knows
@@ -852,7 +885,7 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.BoundSessionCredentials.CookieRotationResult"
+<histogram name="Signin.BoundSessionCredentials.CookieRotationResult{Trigger}"
     enum="BoundSessionCredentialsCookieRotationResult"
     expires_after="2025-11-30">
   <owner>alexilin@chromium.org</owner>
@@ -860,27 +893,29 @@ prefs when the profile is loaded.  -->
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the result of the cookie rotation request triggered by the bound
-    session credentials feature. Recorded every time a cookie rotation request
-    is performed.
+    session credentials feature. {Trigger}
 
     Cookie rotation is triggered if there is a bound session on startup, bound
     cookies soon to expire/expired and/or requests to the bound site are blocked
     on bound cookies.
   </summary>
+  <token key="Trigger" variants="BoundSessionRefreshCookieFetcherTrigger"/>
 </histogram>
 
-<histogram name="Signin.BoundSessionCredentials.CookieRotationTotalDuration"
+<histogram
+    name="Signin.BoundSessionCredentials.CookieRotationTotalDuration{Trigger}"
     units="ms" expires_after="2025-12-14">
   <owner>alexilin@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Records how long the cookie rotation flow has taken.
+    Records how long the cookie rotation flow has taken. {Trigger}
 
     Cookie rotation is triggered if there is a bound session on startup, bound
     cookies soon to expire/expired and/or requests to the bound site are blocked
     on bound cookies.
   </summary>
+  <token key="Trigger" variants="BoundSessionRefreshCookieFetcherTrigger"/>
 </histogram>
 
 <histogram

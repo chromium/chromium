@@ -58,7 +58,7 @@ class BoundSessionCookieController {
 
   virtual ~BoundSessionCookieController();
 
-  virtual void Initialize();
+  virtual void Initialize(bool is_new_session);
 
   // Called when a network request requires a fresh SIDTS cookie.
   // The callback will be called once the cookie is fresh or the session is

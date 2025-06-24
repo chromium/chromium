@@ -39,6 +39,7 @@ class BoundSessionRefreshCookieFetcherImpl
       const GURL& cookie_url,
       base::flat_set<std::string> cookie_names,
       bool is_off_the_record_profile,
+      Trigger trigger,
       bound_session_credentials::RotationDebugInfo debug_info);
   ~BoundSessionRefreshCookieFetcherImpl() override;
 
@@ -49,6 +50,7 @@ class BoundSessionRefreshCookieFetcherImpl
   bool IsChallengeReceived() const override;
   std::optional<std::string> TakeSecSessionChallengeResponseIfAny() override;
   base::flat_set<std::string> GetNonRefreshedCookieNames() override;
+  Trigger GetTrigger() const override;
 
  private:
   friend class BoundSessionRefreshCookieFetcherImplTest;
@@ -113,6 +115,9 @@ class BoundSessionRefreshCookieFetcherImpl
   // Required to attach X-Client-Data header to cookie rotation request for
   // GWS-visible Finch experiment.
   const bool is_off_the_record_profile_;
+
+  // What triggered the refresh request. Useful for metrics.
+  const Trigger trigger_;
 
   RefreshCookieCompleteCallback callback_;
 

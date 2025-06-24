@@ -37,6 +37,7 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
 #include "content/public/browser/network_service_instance.h"
@@ -119,7 +120,15 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
     }
   }
 
+  void Initialize(bool is_new_session) override {
+    was_new_session_at_init_ = signin::TriboolFromBool(is_new_session);
+  }
+
   const std::vector<uint8_t>& wrapped_key() const { return wrapped_key_; }
+
+  // `signin::Tribool::kUnknown` means that the controller hasn't been
+  // initialized yet.
+  signin::Tribool was_new_session_at_init() { return was_new_session_at_init_; }
 
   void HandleRequestBlockedOnCookie(
       chrome::mojom::BoundSessionRequestThrottledHandler::
@@ -180,6 +189,7 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
                   HandleRequestBlockedOnCookieCallback>
       resume_blocked_requests_;
   std::vector<uint8_t> wrapped_key_;
+  signin::Tribool was_new_session_at_init_ = signin::Tribool::kUnknown;
   bool throttling_requests_paused_ = false;
   base::WeakPtrFactory<FakeBoundSessionCookieController> weak_ptr_factory_{
       this};
@@ -302,6 +312,7 @@ class FakeBoundSessionDebugReportFetcher
   base::flat_set<std::string> GetNonRefreshedCookieNames() override {
     return {};
   }
+  Trigger GetTrigger() const override { return Trigger::kOther; }
 };
 
 class MockObserver : public BoundSessionCookieRefreshService::Observer {
@@ -594,6 +605,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, VerifyControllerParams) {
   SetupPreConditionForBoundSession();
   GetCookieRefreshServiceImpl();
   VerifyBoundSession(CreateTestBoundSessionParams());
+  EXPECT_EQ(cookie_controller()->was_new_session_at_init(),
+            signin::Tribool::kFalse);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -1000,6 +1013,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, RegisterNewBoundSession) {
   auto params = CreateTestBoundSessionParams();
   service->RegisterNewBoundSession(params);
   VerifyBoundSession(params);
+  EXPECT_EQ(cookie_controller()->was_new_session_at_init(),
+            signin::Tribool::kTrue);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -1118,6 +1133,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, CreateRegistrationRequest) {
   registration_fetcher()->SimulateRegistrationFetchCompleted(params);
   EXPECT_FALSE(registration_fetcher());
   VerifyBoundSession(params);
+  EXPECT_EQ(cookie_controller()->was_new_session_at_init(),
+            signin::Tribool::kTrue);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
