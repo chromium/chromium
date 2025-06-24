@@ -9,7 +9,6 @@ import plistlib
 import mock
 import unittest
 
-import constants
 import iossim_util
 import mac_util
 import os
@@ -53,31 +52,7 @@ SIMULATORS_LIST = {
                 'Shutdown',
             'udid':
                 'A4E66321-177A-450A-9BA1-488D85B7278E'
-        }],
-        'com.apple.CoreSimulator.SimRuntime.tvOS-18-2': [{
-            'isAvailable':
-                True,
-            'name':
-                'Apple TV 4K (3rd generation)',
-            'deviceTypeIdentifier':
-                'com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K-3rd-generation-4K',
-            'state':
-                'Shutdown',
-            'udid':
-                'C2ECB6C1-801B-497F-BB17-19D656613E98',
-        }],
-        'com.apple.CoreSimulator.SimRuntime.watchOS-11-2': [{
-            'isAvailable':
-                True,
-            'name':
-                'Apple Watch Series 10 (46mm)',
-            'deviceTypeIdentifier':
-                'com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-10-46mm',
-            'state':
-                'Shutdown',
-            'udid':
-                '130E3116-DB18-4199-B3C7-6720DB10FB42',
-        }],
+        }]
     },
     'devicetypes': [
         {
@@ -95,193 +70,34 @@ SIMULATORS_LIST = {
             'bundlePath': '/path/iPhone 11/Content',
             'identifier': 'com.apple.CoreSimulator.SimDeviceType.iPhone-11'
         },
-        {
-            'name':
-                'Apple TV 4K (3rd generation)',
-            'bundlePath':
-                '/path/Apple TV 4K (3rd generation)/Content',
-            'identifier':
-                'com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K-3rd-generation-4K',
-        },
-        {
-            'name':
-                'Apple Watch Series 10 (46mm)',
-            'bundlePath':
-                '/path/Apple Watch Series 10 (46mm).simdevicetype/Content',
-            'identifier':
-                'com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-10-46mm',
-        },
     ],
     'pairs': [],
-    'runtimes': [{
-        "buildversion": "15F79",
-        "bundlePath": "/path/Runtimes/iOS 11.4.simruntime",
-        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-11-4",
-        "isAvailable": True,
-        "name": "iOS 11.4",
-        "version": "11.4",
-        "supportedDeviceTypes": [
-            {
-                "bundlePath":
-                    "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/iPhone 11.simdevicetype",
-                "name":
-                    "iPhone 11",
-                "identifier":
-                    "com.apple.CoreSimulator.SimDeviceType.iPhone-11",
-                "productFamily":
-                    "iPhone"
-            },
-            {
-                "bundlePath":
-                    "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/iPhone X.simdevicetype",
-                "name":
-                    "iPhone X",
-                "identifier":
-                    "com.apple.CoreSimulator.SimDeviceType.iPhone-X",
-                "productFamily":
-                    "iPhone"
-            },
-            {
-                "bundlePath":
-                    "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/iPhone 5s.simdevicetype",
-                "name":
-                    "iPhone 5s",
-                "identifier":
-                    "com.apple.CoreSimulator.SimDeviceType.iPhone-5s",
-                "productFamily":
-                    "iPhone"
-            },
-        ],
-    }, {
-        "buildversion": "17A844",
-        "bundlePath": "/path/Runtimes/iOS 13.1.simruntime",
-        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-13-1",
-        "isAvailable": True,
-        "name": "iOS 13.1",
-        "version": "13.1",
-        "supportedDeviceTypes": [
-            {
-                "bundlePath":
-                    "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/iPhone 11.simdevicetype",
-                "name":
-                    "iPhone 11",
-                "identifier":
-                    "com.apple.CoreSimulator.SimDeviceType.iPhone-11",
-                "productFamily":
-                    "iPhone"
-            },
-            {
-                "bundlePath":
-                    "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/iPhone X.simdevicetype",
-                "name":
-                    "iPhone X",
-                "identifier":
-                    "com.apple.CoreSimulator.SimDeviceType.iPhone-X",
-                "productFamily":
-                    "iPhone"
-            },
-            {
-                "bundlePath":
-                    "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/iPhone 5s.simdevicetype",
-                "name":
-                    "iPhone 5s",
-                "identifier":
-                    "com.apple.CoreSimulator.SimDeviceType.iPhone-5s",
-                "productFamily":
-                    "iPhone"
-            },
-        ],
-    }, {
-        "buildversion": "17B102",
-        "bundlePath": "/path/Runtimes/iOS.simruntime",
-        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-13-2",
-        "isAvailable": True,
-        "name": "iOS 13.2",
-        "version": "13.2.2",
-        "supportedDeviceTypes": [
-            {
-                "bundlePath":
-                    "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/iPhone 11.simdevicetype",
-                "name":
-                    "iPhone 11",
-                "identifier":
-                    "com.apple.CoreSimulator.SimDeviceType.iPhone-11",
-                "productFamily":
-                    "iPhone"
-            },
-            {
-                "bundlePath":
-                    "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/iPhone X.simdevicetype",
-                "name":
-                    "iPhone X",
-                "identifier":
-                    "com.apple.CoreSimulator.SimDeviceType.iPhone-X",
-                "productFamily":
-                    "iPhone"
-            },
-            {
-                "bundlePath":
-                    "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/iPhone 5s.simdevicetype",
-                "name":
-                    "iPhone 5s",
-                "identifier":
-                    "com.apple.CoreSimulator.SimDeviceType.iPhone-5s",
-                "productFamily":
-                    "iPhone"
-            },
-        ],
-    }, {
-        "buildversion": "22K153",
-        "bundlePath": "/path/Runtimes/tvOS 13.2.simruntime",
-        "identifier": "com.apple.CoreSimulator.SimRuntime.tvOS-13-2",
-        "isAvailable": True,
-        "name": "tvOS 13.2",
-        "version": "13.2",
-        "supportedDeviceTypes": [{
-            "bundlePath":
-                "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/Apple TV 4K (3rd generation).simdevicetype",
-            "name":
-                "Apple TV 4K (3rd generation)",
-            "identifier":
-                "com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K-3rd-generation-4K",
-            "productFamily":
-                "Apple TV"
-        },],
-    }, {
-        "buildversion": "22K154",
-        "bundlePath": "/path/Runtimes/tvOS 18.2.simruntime",
-        "identifier": "com.apple.CoreSimulator.SimRuntime.tvOS-18-2",
-        "isAvailable": True,
-        "name": "tvOS 18.2",
-        "version": "18.2",
-        "supportedDeviceTypes": [{
-            "bundlePath":
-                "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/Apple TV 4K (3rd generation).simdevicetype",
-            "name":
-                "Apple TV 4K (3rd generation)",
-            "identifier":
-                "com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K-3rd-generation-4K",
-            "productFamily":
-                "Apple TV"
-        },],
-    }, {
-        "buildversion": "22S99",
-        "bundlePath": "/path/Runtimes/watchOS 11.2.simruntime",
-        "identifier": "com.apple.CoreSimulator.SimRuntime.watchOS-11-2",
-        "isAvailable": True,
-        "name": "watchOS 11.2",
-        "version": "11.2",
-        "supportedDeviceTypes": [{
-            "bundlePath":
-                "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/Apple Watch Series 10 (46mm).simdevicetype",
-            "name":
-                "Apple Watch Series 10 (46mm)",
-            "identifier":
-                "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-10-46mm",
-            "productFamily":
-                "Apple Watch"
-        },],
-    }]
+    'runtimes': [
+        {
+            "buildversion": "15F79",
+            "bundlePath": "/path/Runtimes/iOS 11.4.simruntime",
+            "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-11-4",
+            "isAvailable": True,
+            "name": "iOS 11.4",
+            "version": "11.4"
+        },
+        {
+            "buildversion": "17A844",
+            "bundlePath": "/path/Runtimes/iOS 13.1.simruntime",
+            "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-13-1",
+            "isAvailable": True,
+            "name": "iOS 13.1",
+            "version": "13.1"
+        },
+        {
+            "buildversion": "17B102",
+            "bundlePath": "/path/Runtimes/iOS.simruntime",
+            "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-13-2",
+            "isAvailable": True,
+            "name": "iOS 13.2",
+            "version": "13.2.2"
+        },
+    ]
 }
 
 RUNTIMES_LIST = {
@@ -357,21 +173,7 @@ RUNTIMES_LIST = {
         "sizeBytes": 12596879362,
         "state": "Ready",
         "version": "15.1"
-    },
-    "FFFFFF": {
-        "build": "22K154",
-        "deletable": True,
-        "identifier": "FFFFFF",
-        "kind": "Bundled with Xcode",
-        "path": "path/to/runtime/FFFFFF.runtime",
-        "platformIdentifier": "com.apple.platform.appletvsimulator",
-        "runtimeBundlePath": "path/to/bundle/runtime/tvOS 18.2.simruntime",
-        "runtimeIdentifier": "com.apple.CoreSimulator.SimRuntime.tvOS-18-2",
-        "signatureState": "Unknown",
-        "sizeBytes": 4345796963,
-        "state": "Ready",
-        "version": "18.2"
-    },
+    }
 }
 
 RUNTIMES_MATCH_LIST = {
@@ -406,37 +208,18 @@ class GetiOSSimUtil(test_runner_test.TestCase):
   def setUp(self):
     super(GetiOSSimUtil, self).setUp()
 
-  def test_get_simulator_runtime_by_platform_and_version(self, _, _2):
+  def test_get_simulator_runtime_by_version(self, _, _2):
     """Ensures correctness of filter."""
     self.assertEqual(
         'com.apple.CoreSimulator.SimRuntime.iOS-13-2',
-        iossim_util.get_simulator_runtime_by_platform_and_version(
-            iossim_util.get_simulator_list(), 'iPhone X', '13.2.2'))
+        iossim_util.get_simulator_runtime_by_version(
+            iossim_util.get_simulator_list(), '13.2.2'))
 
-  def test_get_simulator_runtime_by_platform_and_version_multiple_devices(
-      self, _, _2):
-    """Ensures correctness of filter when runtimes for different product families have the same
-    version number"""
-    self.assertEqual(
-        'com.apple.CoreSimulator.SimRuntime.tvOS-13-2',
-        iossim_util.get_simulator_runtime_by_platform_and_version(
-            iossim_util.get_simulator_list(), 'Apple TV 4K (3rd generation)',
-            '13.2'))
-
-  def test_get_simulator_runtime_by_platform_and_version_non_ios_platform(
-      self, _, _2):
-    """Ensures a non-iOS runtime version can be found as well."""
-    self.assertEqual(
-        'com.apple.CoreSimulator.SimRuntime.tvOS-18-2',
-        iossim_util.get_simulator_runtime_by_platform_and_version(
-            iossim_util.get_simulator_list(), 'Apple TV 4K (3rd generation)',
-            '18.2'))
-
-  def test_get_simulator_runtime_by_platform_and_version_not_found(self, _, _2):
+  def test_get_simulator_runtime_by_version_not_found(self, _, _2):
     """Ensures that SimulatorNotFoundError raises if no runtime."""
     with self.assertRaises(test_runner.SimulatorNotFoundError) as context:
-      iossim_util.get_simulator_runtime_by_platform_and_version(
-          iossim_util.get_simulator_list(), 'iPhone X', '13.3')
+      iossim_util.get_simulator_runtime_by_version(
+          iossim_util.get_simulator_list(), '13.3')
     expected_message = ('Simulator does not exist: Not found '
                         '"13.3" SDK in runtimes')
     self.assertTrue(expected_message in str(context.exception))
@@ -483,34 +266,6 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     self.assertEqual([],
                      iossim_util.get_simulator_udids_by_platform_and_version(
                          'iPhone 11', '13.1'))
-
-  def test_get_platform_type_by_platform(self, _, _2):
-    """Ensures correctess of filter."""
-    self.assertEqual(constants.IOSPlatformType.IPHONEOS,
-                     iossim_util.get_platform_type_by_platform('iPhone 11'))
-    self.assertEqual(
-        constants.IOSPlatformType.TVOS,
-        iossim_util.get_platform_type_by_platform(
-            'Apple TV 4K (3rd generation)'))
-
-  def test_get_platform_type_by_platform_unsupported(self, _, _2):
-    """Ensures that UnsupportedDeviceTypeError is raised for unsupported
-    target platforms."""
-    with self.assertRaises(test_runner.UnsupportedDeviceTypeError) as context:
-      iossim_util.get_platform_type_by_platform('Apple Watch Series 10 (46mm)')
-    expected_message = (
-        'Unsupported device type: com.apple.CoreSimulator.SimDeviceType.'
-        'Apple-Watch-Series-10-46mm')
-    self.assertTrue(expected_message in str(context.exception))
-
-  def test_get_platform_type_by_platform_not_found(self, _, _2):
-    """Ensures that SimulatorNotFoundError is raised if a platform cannot be
-    found."""
-    with self.assertRaises(test_runner.SimulatorNotFoundError) as context:
-      iossim_util.get_platform_type_by_platform('Foo')
-    expected_message = ('Simulator does not exist: Not found device "Foo" in '
-                        'devicetypes')
-    self.assertTrue(expected_message in str(context.exception))
 
   @mock.patch('subprocess.check_output', autospec=True)
   def test_create_device_by_platform_and_version(self, subprocess_mock, _, _2):

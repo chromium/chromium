@@ -97,16 +97,6 @@ class SimulatorNotFoundError(TestRunnerError):
         'Simulator does not exist: %s' % iossim_path)
 
 
-class UnsupportedDeviceTypeError(TestRunnerError):
-  """A simulator device type corresponds to an unsupported platform (e.g.
-  Apple Vision).
-  """
-
-  def __init__(self, device_type):
-    super(UnsupportedDeviceTypeError,
-          self).__init__(f'Unsupported device type: {device_type}')
-
-
 class TestDataExtractionError(DeviceError):
   """Error extracting test data or crash reports from a device."""
   def __init__(self):
@@ -759,8 +749,6 @@ class SimulatorTestRunner(TestRunner):
     self.version = version
     self.clones = kwargs.get('clones') or 1
     self.udid = iossim_util.get_simulator(self.platform, self.version)
-    self.platform_type = iossim_util.get_platform_type_by_platform(
-        self.platform)
     self.use_clang_coverage = kwargs.get('use_clang_coverage') or False
 
   @staticmethod
@@ -952,7 +940,6 @@ class SimulatorTestRunner(TestRunner):
     if not self.xctest:
       return test_apps.GTestsApp(
           self.app_path,
-          self.platform_type,
           included_tests=self.test_cases,
           env_vars=self.env_vars,
           repeat_count=self.repeat_count,
@@ -960,7 +947,6 @@ class SimulatorTestRunner(TestRunner):
 
     return test_apps.SimulatorXCTestUnitTestsApp(
         self.app_path,
-        self.platform_type,
         included_tests=self.test_cases,
         env_vars=self.env_vars,
         repeat_count=self.repeat_count,

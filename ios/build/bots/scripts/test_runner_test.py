@@ -12,7 +12,6 @@ import os
 import tempfile
 import unittest
 
-import constants
 import iossim_util
 import result_sink_util
 import test_apps
@@ -69,10 +68,6 @@ class SimulatorTestRunnerTest(TestCase):
   def setUp(self):
     super(SimulatorTestRunnerTest, self).setUp()
     self.mock(iossim_util, 'get_simulator', lambda _1, _2: 'sim-UUID')
-    self.mock(
-        iossim_util, 'get_platform_type_by_platform',
-        lambda platform: constants.IOSPlatformType.TVOS if platform.startswith(
-            'Apple TV') else constants.IOSPlatformType.IPHONEOS)
     self.mock(result_sink_util.ResultSinkClient,
               'post', lambda *args, **kwargs: None)
 

@@ -12,7 +12,6 @@ import time
 import logging
 from typing import Tuple, List, Set
 
-import constants
 import shard_util
 import test_runner
 import test_runner_errors
@@ -152,12 +151,11 @@ class GTestsApp(object):
     test_app: full path to an app.
   """
 
-  def __init__(self, test_app, platform_type, **kwargs):
+  def __init__(self, test_app, **kwargs):
     """Initialize Egtests.
 
     Args:
       test_app: (str) full path to egtests app.
-      platform_type: (IOSPlatformType) iOS-based platform being targeted.
       (Following are potential args in **kwargs)
       included_tests: (list) Specific tests to run
          E.g.
@@ -179,7 +177,6 @@ class GTestsApp(object):
       raise test_runner.AppNotFoundError(test_app)
     self.test_app_path = test_app
     self.project_path = os.path.dirname(self.test_app_path)
-    self.platform_type = platform_type
     self.test_args = kwargs.get('test_args') or []
     self.env_vars = {}
     for env_var in kwargs.get('env_vars') or []:
@@ -238,15 +235,6 @@ class GTestsApp(object):
       return name
     return name.replace('/', '.', count - 1)
 
-  @property
-  def xcode_platform_dir_name(self):
-    """Returns the directory name under __PLATFORMS__ corresponding to the
-    current target platform.
-    """
-    if self.platform_type == constants.IOSPlatformType.TVOS:
-      return 'AppleTVSimulator.platform'
-    return 'iPhoneSimulator.platform'
-
   def fill_xctestrun_node(self):
     """Fills only required nodes for egtests in xctestrun file.
 
@@ -272,17 +260,11 @@ class GTestsApp(object):
         'TestHostBundleIdentifier': get_bundle_id(self.test_app_path),
         'TestingEnvironmentVariables': {
             'DYLD_LIBRARY_PATH':
-                ':'.join([
-                    dyld_path,
-                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
-                    'Library'
-                ]),
+                '%s:__PLATFORMS__/iPhoneSimulator.platform/Developer/Library' %
+                dyld_path,
             'DYLD_FRAMEWORK_PATH':
-                ':'.join([
-                    dyld_path,
-                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
-                    'Library/Frameworks'
-                ]),
+                '%s:__PLATFORMS__/iPhoneSimulator.platform/'
+                'Developer/Library/Frameworks' % dyld_path,
         }
     }
 
@@ -371,14 +353,13 @@ class EgtestsApp(GTestsApp):
   """
 
   def __init__(self, egtests_app: str, all_eg_test_names: List[Tuple[str, str]],
-               platform_type: constants.IOSPlatformType, **kwargs):
+               **kwargs):
     """Initialize Egtests.
 
     Args:
       egtests_app: (str) full path to egtests app.
       all_eg_test_names: (list) list in the form [(TestCase, testMethod)]
         which contains all the test methods present in the EG test app binary.
-      platform_type: (IOSPlatformType) iOS-based platform being targeted.
       (Following are potential args in **kwargs)
       included_tests: (list) Specific tests to run
          E.g.
@@ -400,7 +381,7 @@ class EgtestsApp(GTestsApp):
     Raises:
       AppNotFoundError: If the given app does not exist
     """
-    super(EgtestsApp, self).__init__(egtests_app, platform_type, **kwargs)
+    super(EgtestsApp, self).__init__(egtests_app, **kwargs)
     self.all_eg_test_names = all_eg_test_names
     self.record_video_option = kwargs.get('record_video_option')
 
@@ -430,7 +411,7 @@ class EgtestsApp(GTestsApp):
     # (and in this case without the GTest framework). See crbug.com/361610467
     # for more details.
     if not self.host_app_path:
-      libs.append(f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
+      libs.append('__PLATFORMS__/iPhoneSimulator.platform/Developer/'
                   'usr/lib/libXCTestBundleInject.dylib')
 
     for child in os.listdir(self.test_app_path):
@@ -504,8 +485,6 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
 
   This is for the XCTest framework hosted unit tests running on devices.
 
-  Note: running on devices is only supported on iOS, not tvOS, at the moment.
-
   Stores data about tests:
     tests_app: full path to tests app.
     project_path: root project folder.
@@ -538,13 +517,7 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
     test_args.append('--enable-run-ios-unittests-with-xctest')
     kwargs['test_args'] = test_args
 
-    super(DeviceXCTestUnitTestsApp,
-          self).__init__(tests_app, constants.IOSPlatformType.IPHONEOS,
-                         **kwargs)
-
-  @property
-  def xcode_platform_dir_name(self):
-    return 'iPhoneOS.platform'
+    super(DeviceXCTestUnitTestsApp, self).__init__(tests_app, **kwargs)
 
   def fill_xctestrun_node(self):
     """Fills only required nodes for XCTest hosted unit tests in xctestrun file.
@@ -614,12 +587,11 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
     excluded_tests: List of tests not to run.
   """
 
-  def __init__(self, tests_app, platform_type, **kwargs):
+  def __init__(self, tests_app, **kwargs):
     """Initialize the class.
 
     Args:
       tests_app: (str) full path to tests app.
-      platform_type: (IOSPlatformType) iOS-based platform being targeted.
       (Following are potential args in **kwargs)
       included_tests: (list) Specific tests to run
          E.g.
@@ -638,8 +610,7 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
     test_args = list(kwargs.get('test_args') or [])
     test_args.append('--enable-run-ios-unittests-with-xctest')
     kwargs['test_args'] = test_args
-    super(SimulatorXCTestUnitTestsApp, self).__init__(tests_app, platform_type,
-                                                      **kwargs)
+    super(SimulatorXCTestUnitTestsApp, self).__init__(tests_app, **kwargs)
 
   def fill_xctestrun_node(self):
     """Fills only required nodes for XCTest hosted unit tests in xctestrun file.
@@ -659,15 +630,15 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
                 '%s' % self.test_app_path,
             'TestingEnvironmentVariables': {
                 'DYLD_INSERT_LIBRARIES':
-                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
-                    'usr/lib/libXCTestBundleInject.dylib',
+                    '__PLATFORMS__/iPhoneSimulator.platform/Developer/usr/lib/'
+                    'libXCTestBundleInject.dylib',
                 'DYLD_LIBRARY_PATH':
-                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
-                    'Library',
+                    '__PLATFORMS__/iPhoneSimulator.platform/Developer/Library',
                 'DYLD_FRAMEWORK_PATH':
-                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
+                    '__PLATFORMS__/iPhoneSimulator.platform/Developer/'
                     'Library/Frameworks',
-                'XCInjectBundleInto': '__TESTHOST__/%s' % self.module_name
+                'XCInjectBundleInto':
+                    '__TESTHOST__/%s' % self.module_name
             }
         }
     }

@@ -82,13 +82,11 @@ def get_simulator_device_type_by_platform(simulators, platform):
       (platform, simulators['devicetypes']))
 
 
-def get_simulator_runtime_by_platform_and_version(simulators, platform,
-                                                  version):
-  """Finds the simulator runtime identifier for a given platform and OS version.
+def get_simulator_runtime_by_version(simulators, version):
+  """Gets runtime based on iOS version.
 
   Args:
     simulators: (dict) A list of available simulators.
-    platform: (str) A platform name, e.g. "iPhone 11"
     version: (str) A version name, e.g. "13.4"
 
   Returns:
@@ -102,10 +100,8 @@ def get_simulator_runtime_by_platform_and_version(simulators, platform,
     # The output might use version with a patch number (e.g. 17.0.1)
     # but the passed in version does not have a patch number (e.g. 17.0)
     # Therefore, we should use startswith for substring match.
-    if runtime['version'].startswith(version):
-      if any(supported_device_type['name'] == platform
-             for supported_device_type in runtime['supportedDeviceTypes']):
-        return runtime['identifier']
+    if runtime['version'].startswith(version) and 'iOS' in runtime['name']:
+      return runtime['identifier']
   raise test_runner.SimulatorNotFoundError('Not found "%s" SDK in runtimes %s' %
                                            (version, simulators['runtimes']))
 
@@ -135,30 +131,12 @@ def get_simulator_udids_by_platform_and_version(platform, version):
   """
   simulators = get_simulator_list()
   devices = simulators['devices']
-  sdk_id = get_simulator_runtime_by_platform_and_version(
-      simulators, platform, version)
+  sdk_id = get_simulator_runtime_by_version(simulators, version)
   results = []
   for device in devices.get(sdk_id, []):
     if device['name'] == _compose_simulator_name(platform, version):
       results.append(device['udid'])
   return results
-
-
-def get_platform_type_by_platform(platform) -> constants.IOSPlatformType:
-  """Returns the iOS-based target platform (e.g. iOS, tvOS) based on a given
-  platform name.
-
-    Args:
-      platform: (str) A platform name, e.g. "iPhone 11"
-  """
-  device_type = get_simulator_device_type_by_platform(get_simulator_list(),
-                                                      platform)
-  if device_type.startswith('com.apple.CoreSimulator.SimDeviceType.Apple-TV'):
-    return constants.IOSPlatformType.TVOS
-  elif (device_type.startswith('com.apple.CoreSimulator.SimDeviceType.iPad') or
-        device_type.startswith('com.apple.CoreSimulator.SimDeviceType.iPhone')):
-    return constants.IOSPlatformType.IPHONEOS
-  raise test_runner.UnsupportedDeviceTypeError(device_type)
 
 
 def create_device_by_platform_and_version(platform, version):
@@ -172,8 +150,7 @@ def create_device_by_platform_and_version(platform, version):
   LOGGER.info('Creating simulator %s', name)
   simulators = get_simulator_list()
   device_type = get_simulator_device_type_by_platform(simulators, platform)
-  runtime = get_simulator_runtime_by_platform_and_version(
-      simulators, platform, version)
+  runtime = get_simulator_runtime_by_version(simulators, version)
   try:
     udid = subprocess.check_output(
         ['xcrun', 'simctl', 'create', name, device_type,
