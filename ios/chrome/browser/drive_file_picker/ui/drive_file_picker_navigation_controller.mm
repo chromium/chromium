@@ -4,9 +4,28 @@
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ui/base/device_form_factor.h"
+
+namespace {
+
+// Converts `keyboardFrame` to window coordinates and returns its intersection
+// with `view.window.bounds`.
+CGRect GetKeyboardFrameInWindow(CGRect keyboardFrame,
+                                NSNotification* notification,
+                                UIView* view) {
+  id<UICoordinateSpace> fromCoordinateSpace =
+      base::apple::ObjCCast<UIScreen>(notification.object).coordinateSpace;
+  id<UICoordinateSpace> toCoordinateSpace = view.window;
+  CGRect keyboardFrameInWindow =
+      [fromCoordinateSpace convertRect:keyboardFrame
+                     toCoordinateSpace:toCoordinateSpace];
+  return CGRectIntersection(keyboardFrameInWindow, view.window.bounds);
+}
+
+}  // namespace
 
 @interface DriveFilePickerNavigationController () <
     UINavigationControllerDelegate>
@@ -63,10 +82,12 @@
     // If keyboard is going up, do nothing for now.
     return;
   }
+  CGRect keyboardFrameInWindow =
+      GetKeyboardFrameInWindow(keyboardFrameEnd, notification, self.view);
   // Update the additional safe area inset asynchronously to ensure the view has
   // already moved to its new position, as it might move in reaction to the
   // change of keyboard frame.
-  [self ensureViewIsUnobscuredByKeyboardFrame:keyboardFrameEnd
+  [self ensureViewIsUnobscuredByKeyboardFrame:keyboardFrameInWindow
                                asynchronously:YES];
 }
 
@@ -86,10 +107,12 @@
     self.sheetPresentationController.selectedDetentIdentifier =
         UISheetPresentationControllerDetentIdentifierLarge;
   }
+  CGRect keyboardFrameInWindow =
+      GetKeyboardFrameInWindow(keyboardFrameEnd, notification, self.view);
   // Update the additional safe area inset asynchronously to ensure the view has
   // already moved to its new position, as it might move in reaction to the
   // change of keyboard frame.
-  [self ensureViewIsUnobscuredByKeyboardFrame:keyboardFrameEnd
+  [self ensureViewIsUnobscuredByKeyboardFrame:keyboardFrameInWindow
                                asynchronously:YES];
 }
 
@@ -110,6 +133,12 @@
                                          asynchronously:NO];
             },
             weakSelf, keyboardFrameInWindow));
+    return;
+  }
+  // If the keyboard does not overlap with the window then no additional insets
+  // are needed.
+  if (CGRectIsEmpty(keyboardFrameInWindow)) {
+    self.additionalSafeAreaInsets = UIEdgeInsetsZero;
     return;
   }
   // If `asynchronously` is NO, update `additionalSafeAreaInsets` now.
