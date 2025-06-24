@@ -34,18 +34,22 @@ class ModalDialogWrapperTest : public testing::Test {
       base::OnceClosure cancel_callback = base::DoNothing(),
       ui::ButtonStyle cancel_button_style = ui::ButtonStyle::kDefault,
       base::OnceClosure close_callback = base::DoNothing(),
-      std::optional<mojom::DialogButton> override_button = std::nullopt) {
+      std::optional<mojom::DialogButton> override_button = std::nullopt,
+      const std::vector<std::u16string>& paragraphs = {u"paragraph"}) {
     ui::DialogModel::Builder dialog_builder;
-    dialog_builder.SetTitle(u"title")
-        .AddParagraph(ui::DialogModelLabel(u"paragraph"))
-        .AddOkButton(std::move(ok_callback),
-                     // The button style is now applied from the parameter.
-                     ui::DialogModel::Button::Params().SetLabel(u"ok").SetStyle(
-                         ok_button_style));
+    dialog_builder.SetTitle(u"title");
+
+    for (const auto& paragraph_text : paragraphs) {
+      dialog_builder.AddParagraph(ui::DialogModelLabel(paragraph_text));
+    }
+
+    dialog_builder.AddOkButton(
+        std::move(ok_callback),
+        ui::DialogModel::Button::Params().SetLabel(u"ok").SetStyle(
+            ok_button_style));
     if (cancel_button) {
       dialog_builder.AddCancelButton(
           std::move(cancel_callback),
-          // The button style is also applied here.
           ui::DialogModel::Button::Params().SetLabel(u"cancel").SetStyle(
               cancel_button_style));
     }
@@ -235,6 +239,49 @@ TEST_F(ModalDialogWrapperTest, ModalButtonsOverriddenNegative) {
             ui::ModalDialogWrapper::ModalDialogButtonStyles::
                 kPrimaryOutlineNegativeFilled);
   EXPECT_FALSE(dialog_destroyed_);
+}
+
+TEST_F(ModalDialogWrapperTest, ParagraphsAreSetAndReplaced) {
+  std::vector<std::u16string> paragraphs = {u"This is the first paragraph.",
+                                            u"This is the second paragraph."};
+
+  auto dialog_model_1 = CreateDialogModel(
+      /*ok_callback=*/base::DoNothing(),
+      /*ok_button_style=*/ui::ButtonStyle::kDefault,
+      /*cancel_button=*/false,
+      /*cancel_callback=*/base::DoNothing(),
+      /*cancel_button_style=*/ui::ButtonStyle::kDefault,
+      /*close_callback=*/base::DoNothing(),
+      /*override_button=*/std::nullopt,
+      /*paragraphs=*/paragraphs);
+
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model_1), window_->get());
+
+  std::vector<std::u16string> displayed_paragraphs_1 =
+      fake_dialog_manager_->GetMessageParagraphs();
+  ASSERT_EQ(displayed_paragraphs_1.size(), 2u);
+  EXPECT_EQ(displayed_paragraphs_1.front(), paragraphs.front());
+  EXPECT_EQ(displayed_paragraphs_1.back(), paragraphs.back());
+
+  // Remove the last element and confirm the behavior.
+  paragraphs.pop_back();
+
+  auto dialog_model_2 = CreateDialogModel(
+      /*ok_callback=*/base::DoNothing(),
+      /*ok_button_style=*/ui::ButtonStyle::kDefault,
+      /*cancel_button=*/false,
+      /*cancel_callback=*/base::DoNothing(),
+      /*cancel_button_style=*/ui::ButtonStyle::kDefault,
+      /*close_callback=*/base::DoNothing(),
+      /*override_button=*/std::nullopt,
+      /*paragraphs=*/paragraphs);
+
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model_2), window_->get());
+
+  std::vector<std::u16string> displayed_paragraphs_2 =
+      fake_dialog_manager_->GetMessageParagraphs();
+  ASSERT_EQ(displayed_paragraphs_2.size(), 1u);
+  EXPECT_EQ(displayed_paragraphs_2.front(), paragraphs.front());
 }
 
 }  // namespace ui

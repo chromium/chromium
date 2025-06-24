@@ -120,6 +120,37 @@ ModalDialogWrapper::GetButtonStyles() const {
   return ModalDialogButtonStyles::kPrimaryOutlineNegativeOutline;
 }
 
+std::vector<std::u16string> ModalDialogWrapper::getMessageParagraphs() const {
+  std::vector<std::u16string> paragraphs;
+  for (const auto& field :
+       dialog_model_->fields(DialogModelHost::GetPassKey())) {
+    switch (field->type()) {
+      case DialogModelField::kParagraph: {
+        std::u16string text;
+        const DialogModelLabel& label = field->AsParagraph()->label();
+        auto replacements = label.replacements();
+        if (replacements.empty()) {
+          text = label.GetString();
+        } else {
+          std::vector<std::u16string> string_replacements;
+          for (auto replacement : replacements) {
+            string_replacements.push_back(replacement.text());
+          }
+          text = l10n_util::GetStringFUTF16(label.message_id(),
+                                            string_replacements, nullptr);
+        }
+        paragraphs.push_back(text);
+        break;
+      }
+      default:
+        NOTREACHED() << "Unsupported DialogModel field type " << field->type()
+                     << ". Support should be added before this dialog is used "
+                        "in android";
+    }
+  }
+  return paragraphs;
+}
+
 void ModalDialogWrapper::BuildPropertyModel() {
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -138,36 +169,17 @@ void ModalDialogWrapper::BuildPropertyModel() {
       env, java_obj_, title, ok_button_label, cancel_button_label,
       (int)buttonStyles);
 
-  int paragraph_count = 0;
-  for (const auto& field :
-       dialog_model_->fields(DialogModelHost::GetPassKey())) {
-    switch (field->type()) {
-      case DialogModelField::kParagraph: {
-        // TODO(joelhockey): Add multi-paragraph support - clank supports 2.
-        CHECK_EQ(++paragraph_count, 1) << "Only single paragraph supported. "
-                                          "Fix me if you need multi-paragraph,";
-        std::u16string text;
-        const DialogModelLabel& label = field->AsParagraph()->label();
-        auto replacements = label.replacements();
-        if (replacements.empty()) {
-          text = label.GetString();
-        } else {
-          std::vector<std::u16string> string_replacements;
-          for (auto replacement : replacements) {
-            string_replacements.push_back(replacement.text());
-          }
-          text = l10n_util::GetStringFUTF16(label.message_id(),
-                                            string_replacements, nullptr);
-        }
-        Java_ModalDialogWrapper_withParagraph1(
-            env, java_obj_, ConvertUTF16ToJavaString(env, text));
-        break;
-      }
-      default:
-        NOTREACHED() << "Unsupported DialogModel field type " << field->type()
-                     << ". Support should be added before this dialog is used "
-                        "in android";
-    }
+  auto paragraphs = getMessageParagraphs();
+  if (paragraphs.size() == 1) {
+    // TODO(jthiesen): Remove this case to only use the second case.
+    Java_ModalDialogWrapper_withParagraph1(
+        env, java_obj_, ConvertUTF16ToJavaString(env, paragraphs.front()));
+  } else if (paragraphs.size() > 0) {
+    ScopedJavaLocalRef<jobjectArray> java_paragraphs_array =
+        base::android::ToJavaArrayOfStrings(env, paragraphs);
+
+    Java_ModalDialogWrapper_withMessageParagraphs(env, java_obj_,
+                                                  java_paragraphs_array);
   }
 }
 

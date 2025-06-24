@@ -18,6 +18,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 @JNINamespace("ui")
 @NullMarked
 public class ModalDialogWrapper implements ModalDialogProperties.Controller {
@@ -58,6 +61,13 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     @CalledByNative
     private void withParagraph1(String text) {
         mPropertyModelBuilder.with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, text);
+    }
+
+    @CalledByNative
+    private void withMessageParagraphs(String[] paragraphs) {
+        mPropertyModelBuilder.with(
+                ModalDialogProperties.MESSAGE_PARAGRAPHS,
+                new ArrayList<>(Arrays.asList(paragraphs)));
     }
 
     @Override

@@ -33,6 +33,7 @@ class UI_ANDROID_EXPORT FakeModalDialogManagerBridge {
   void ClickNegativeButton();
 
   int GetButtonStyles();
+  std::vector<std::u16string> GetMessageParagraphs();
 
   bool IsSuspend(ModalDialogManagerBridge::ModalDialogType dialog_type);
 
