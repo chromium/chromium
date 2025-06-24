@@ -12915,7 +12915,6 @@ from previous Chrome versions.
   <int value="-398012541"
       label="CertificateTransparency2022PolicyAllCerts:enabled"/>
   <int value="-397959190" label="ClipboardHistory:enabled"/>
-  <int value="-397404057" label="SiteInstanceGroupsForDataUrls:enabled"/>
   <int value="-397392156" label="FtpProtocol:disabled"/>
   <int value="-396994784" label="enable-vr-shell"/>
   <int value="-396568607" label="KerberosSettingsSection:enabled"/>
@@ -17519,7 +17518,6 @@ from previous Chrome versions.
   <int value="1306473273" label="BluetoothFlossCoredump:enabled"/>
   <int value="1307003774" label="AutofillEnableCompanyName:disabled"/>
   <int value="1307402891" label="ReadAloud:enabled"/>
-  <int value="1308474501" label="SiteInstanceGroupsForDataUrls:disabled"/>
   <int value="1308512803" label="WebAuthenticationPasskeyUpgrade:disabled"/>
   <int value="1308537004" label="force-pnacl-subzero"/>
   <int value="1308583017" label="PrefetchFontLookupTables:disabled"/>

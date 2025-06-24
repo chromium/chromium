@@ -10584,11 +10584,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kRenderDocumentVariations,
                                     "RenderDocument")},
 
-    {"site-instance-groups-for-data-urls",
-     flag_descriptions::kSiteInstanceGroupsForDataUrlsName,
-     flag_descriptions::kSiteInstanceGroupsForDataUrlsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kSiteInstanceGroupsForDataUrls)},
-
     {"default-site-instance-groups",
      flag_descriptions::kDefaultSiteInstanceGroupsName,
      flag_descriptions::kDefaultSiteInstanceGroupsDescription, kOsAll,

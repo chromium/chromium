@@ -2270,9 +2270,6 @@ extern const char kSidePanelResizingFlagId[];
 extern const char kSidePanelResizingName[];
 extern const char kSidePanelResizingDescription[];
 
-extern const char kSiteInstanceGroupsForDataUrlsName[];
-extern const char kSiteInstanceGroupsForDataUrlsDescription[];
-
 extern const char kDefaultSiteInstanceGroupsName[];
 extern const char kDefaultSiteInstanceGroupsDescription[];
 

@@ -3987,12 +3987,6 @@ const char kSidePanelResizingDescription[] =
     "Allows users to resize the side panel and persist the width across "
     "browser sessions.";
 
-const char kSiteInstanceGroupsForDataUrlsName[] =
-    "SiteInstanceGroups for data: URLs";
-const char kSiteInstanceGroupsForDataUrlsDescription[] =
-    "Put data: URL subframes in a separate SiteInstance from the initiator, "
-    "but in the same SiteInstanceGroup, and thus the same process.";
-
 const char kDefaultSiteInstanceGroupsName[] = "Default SiteInstanceGroups";
 const char kDefaultSiteInstanceGroupsDescription[] =
     "Put sites that don't need isolation in their own SiteInstance in a default"
