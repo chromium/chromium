@@ -269,8 +269,6 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest,
   // Login screen.
   EXPECT_TRUE(
       ParentAccessService::IsApprovalRequired(SupervisedAction::kAddUser));
-  EXPECT_FALSE(
-      ParentAccessService::IsApprovalRequired(SupervisedAction::kReauth));
   // In session, because child user is logged in the test fixture.
   EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
       SupervisedAction::kUnlockTimeLimits));
@@ -285,8 +283,6 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest,
   // Login screen.
   EXPECT_TRUE(
       ParentAccessService::IsApprovalRequired(SupervisedAction::kAddUser));
-  EXPECT_FALSE(
-      ParentAccessService::IsApprovalRequired(SupervisedAction::kReauth));
   // In session, because child user is logged in the test fixture.
   EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
       SupervisedAction::kUnlockTimeLimits));
@@ -309,8 +305,6 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest,
   // Login screen.
   EXPECT_FALSE(
       ParentAccessService::IsApprovalRequired(SupervisedAction::kAddUser));
-  EXPECT_FALSE(
-      ParentAccessService::IsApprovalRequired(SupervisedAction::kReauth));
   // In session. Child user is logged in the test fixture.
   EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
       SupervisedAction::kUnlockTimeLimits));
@@ -325,8 +319,6 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest,
   // Login screen.
   EXPECT_FALSE(
       ParentAccessService::IsApprovalRequired(SupervisedAction::kAddUser));
-  EXPECT_FALSE(
-      ParentAccessService::IsApprovalRequired(SupervisedAction::kReauth));
   // In session, because child user is logged in the test fixture.
   EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
       SupervisedAction::kUnlockTimeLimits));

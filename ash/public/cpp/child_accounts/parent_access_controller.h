@@ -25,10 +25,6 @@ enum class SupervisedAction {
   kUpdateTimezone,
   // Add user flow.
   kAddUser,
-  // TODO(b.corp.google.com/384763864): Deprecate the re-auth action once the
-  // feature `kSkipParentAccessCodeForReauth` is rolled out.
-  // Re-authentication flow.
-  kReauth,
 };
 
 // The result of parent access code validation.

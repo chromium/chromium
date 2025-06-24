@@ -34,10 +34,6 @@ constexpr char kUMAParentAccessCodeValidationResultBase[] =
 // results.
 constexpr char kUMAValidationResultSuffixAll[] = "All";
 
-// Suffix of the histogram to log parent access code validation results for
-// reauth flow.
-constexpr char kUMAValidationResultSuffixReauth[] = "Reauth";
-
 // Suffix of the histogram to log parent access code validation results for add
 // user flow.
 constexpr char kUMAValidationResultSuffixAddUser[] = "AddUser";
@@ -67,7 +63,6 @@ std::u16string GetTitle(SupervisedAction action) {
       title_id = IDS_ASH_LOGIN_PARENT_ACCESS_TITLE_CHANGE_TIMEZONE;
       break;
     case SupervisedAction::kAddUser:
-    case SupervisedAction::kReauth:
       title_id = IDS_ASH_LOGIN_PARENT_ACCESS_GENERIC_TITLE;
       break;
   }
@@ -86,9 +81,6 @@ std::u16string GetDescription(SupervisedAction action) {
       break;
     case SupervisedAction::kAddUser:
       description_id = IDS_ASH_LOGIN_PARENT_ACCESS_DESCRIPTION_ADD_USER;
-      break;
-    case SupervisedAction::kReauth:
-      description_id = IDS_ASH_LOGIN_PARENT_ACCESS_DESCRIPTION_REAUTH;
       break;
   }
   return l10n_util::GetStringUTF16(description_id);
@@ -169,10 +161,6 @@ ParentAccessControllerImpl::GetUMAParentCodeValidationResultHistorgam(
       return base::JoinString({kUMAParentAccessCodeValidationResultBase,
                                kUMAValidationResultSuffixAddUser},
                               separator);
-    case SupervisedAction::kReauth:
-      return base::JoinString({kUMAParentAccessCodeValidationResultBase,
-                               kUMAValidationResultSuffixReauth},
-                              separator);
     case SupervisedAction::kUpdateTimezone:
       return base::JoinString({kUMAParentAccessCodeValidationResultBase,
                                kUMAValidationResultSuffixTimezone},
@@ -222,11 +210,6 @@ void RecordParentAccessUsage(const AccountId& child_account_id,
       UMA_HISTOGRAM_ENUMERATION(
           ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
           ParentAccessControllerImpl::UMAUsage::kAddUserLoginScreen);
-      return;
-    case SupervisedAction::kReauth:
-      UMA_HISTOGRAM_ENUMERATION(
-          ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
-          ParentAccessControllerImpl::UMAUsage::kReauhLoginScreen);
       return;
   }
   NOTREACHED() << "Unknown SupervisedAction";

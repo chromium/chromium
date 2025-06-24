@@ -5304,9 +5304,6 @@ No devices connected.
       <message name="IDS_ASH_LOGIN_PARENT_ACCESS_DESCRIPTION_ADD_USER" desc="Title of the parent access input dialog that allows to add user with a code.">
         To add a person, enter your Family Link parent access code
       </message>
-      <message name="IDS_ASH_LOGIN_PARENT_ACCESS_DESCRIPTION_REAUTH" desc="Title of the parent access input dialog that allows to reauthenticate with a code.">
-        To sign in, enter your Family Link parent access code
-      </message>
       <message name="IDS_ASH_LOGIN_PIN_REQUEST_HELP" desc="Label of a button shown on the pin request input dialog.">
         Need help?
       </message>

@@ -228,9 +228,9 @@ void LoginScreenClientImpl::MakePreAuthenticationChecks(
       return;
   }
 
-  auto supervised_action = account_id.empty() ? SupervisedAction::kAddUser
-                                              : SupervisedAction::kReauth;
-  if (ash::parent_access::ParentAccessService::Get().IsApprovalRequired(
+  auto supervised_action = SupervisedAction::kAddUser;
+  if (account_id.empty() &&
+      ash::parent_access::ParentAccessService::Get().IsApprovalRequired(
           supervised_action)) {
     // Show the client native parent access widget and processed to GAIA signin
     // flow in |OnParentAccessValidation| when validation success.
