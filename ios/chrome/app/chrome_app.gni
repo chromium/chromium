@@ -51,8 +51,6 @@ template("chrome_app") {
       transparent = use_blink
 
       info_plist = "//ios/chrome/app/resources/EarlyPAFrameworkInfo.plist"
-      extra_substitutions =
-          [ "BUNDLE_IDENTIFIER=$ios_app_bundle_id_prefix.$output_name" ]
     }
   }
 
