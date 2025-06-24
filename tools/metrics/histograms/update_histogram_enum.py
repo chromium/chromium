@@ -120,6 +120,8 @@ def ReadHistogramValues(filename, start_marker, end_marker, strip_k_prefix):
         label = m.group(1)
       else:
         continue
+    if label in ['kMinValue', 'kMaxValue']:
+      continue
     if strip_k_prefix:
       assert label.startswith('k'), "Enum " + label + " should start with 'k'."
       label = label[1:]

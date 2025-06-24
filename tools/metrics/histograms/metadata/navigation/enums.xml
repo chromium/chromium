@@ -1952,6 +1952,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kWasted_NowUseNewSpeculativeRFH"/>
 </enum>
 
+<!-- LINT.IfChange(WebSchedulerTrackedFeature)-->
+
 <enum name="WebSchedulerTrackedFeature">
 <!-- Generated from third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h.
 Called by update_scheduler_enums.py.-->
@@ -2015,7 +2017,7 @@ Called by update_scheduler_enums.py.-->
   <int value="56" label="MediaSessionImplOnServiceCreated"/>
   <int value="57" label="WebTransport"/>
   <int value="58" label="Dummy"/>
-  <int value="59" label="Keepalive request"/>
+  <int value="59" label="KeepaliveRequest"/>
   <int value="60" label="JsNetworkRequestReceivedCacheControlNoStoreResource"/>
   <int value="61" label="IndexedDBEvent"/>
   <int value="62" label="WebSerial"/>
@@ -2026,7 +2028,11 @@ Called by update_scheduler_enums.py.-->
   <int value="67" label="UnloadHandler"/>
   <int value="68" label="ParserAborted"/>
   <int value="69" label="WebBluetooth"/>
+  <int value="70" label="WebAuthentication"/>
+  <int value="71" label="SharedWorkerMessage"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h:WebSchedulerTrackedFeature)-->
 
 </enums>
 

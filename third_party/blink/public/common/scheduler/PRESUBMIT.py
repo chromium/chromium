@@ -19,26 +19,27 @@ def _RunUmaHistogramChecks(input_api, output_api):  # pylint: disable=C0103
                                    'histograms')
         ]
         import update_histogram_enum  # pylint: disable=F0401
+        import update_scheduler_enums  # pylint: disable=F0401
     finally:
         sys.path = original_sys_path
 
     source_path = ''
     for f in input_api.AffectedFiles():
-        if f.LocalPath().endswith('web_scheduler_tracked_feature.h'):
+        if f.LocalPath().endswith(
+                input_api.os_path.basename(
+                    update_scheduler_enums.SOUCRE_FILE)):
             source_path = f.LocalPath()
             break
     else:
         return []
 
-    start_marker = '^enum class WebSchedulerTrackedFeature {'
-    end_marker = '^kMaxValue'
     presubmit_error = update_histogram_enum.CheckPresubmitErrors(
-        'tools/metrics/histograms/metadata/navigation/enums.xml',
-        histogram_enum_name='WebSchedulerTrackedFeature',
-        update_script_name='update_scheduler_enums.py',
-        source_enum_path=source_path,
-        start_marker=start_marker,
-        end_marker=end_marker,
+        update_scheduler_enums.XML_FILE,
+        histogram_enum_name=update_scheduler_enums.ENUM_NAME,
+        update_script_name=update_scheduler_enums.SCRIPT,
+        source_enum_path=update_scheduler_enums.SOUCRE_FILE,
+        start_marker=update_scheduler_enums.START_MARKER,
+        end_marker=update_scheduler_enums.END_MARKER,
         strip_k_prefix=True)
     if presubmit_error:
         return [

@@ -15,18 +15,24 @@ import sys
 
 from update_histogram_enum import UpdateHistogramEnum
 
+XML_FILE = 'tools/metrics/histograms/metadata/navigation/enums.xml'
+ENUM_NAME = 'WebSchedulerTrackedFeature'
+SOUCRE_FILE = 'third_party/blink/public/common/scheduler/' \
+  'web_scheduler_tracked_feature.h'
+START_MARKER = r'^enum class WebSchedulerTrackedFeature .*\{'
+END_MARKER = r'^kMaxValue'
+SCRIPT = os.path.basename(__file__)
+
 if __name__ == '__main__':
   if len(sys.argv) > 1:
     print('No arguments expected!', file=sys.stderr)
     sys.stderr.write(__doc__)
     sys.exit(1)
 
-  source_file = 'third_party/blink/public/common/scheduler/' \
-                'web_scheduler_tracked_feature.h'
-  UpdateHistogramEnum('tools/metrics/histograms/metadata/navigation/enums.xml',
-                      histogram_enum_name='WebSchedulerTrackedFeature',
-                      source_enum_path=source_file,
-                      start_marker='^enum class WebSchedulerTrackedFeature {',
-                      end_marker='^kMaxValue',
+  UpdateHistogramEnum(XML_FILE,
+                      histogram_enum_name=ENUM_NAME,
+                      source_enum_path=SOUCRE_FILE,
+                      start_marker=START_MARKER,
+                      end_marker=END_MARKER,
                       strip_k_prefix=True,
-                      calling_script=os.path.basename(__file__))
+                      calling_script=SCRIPT)

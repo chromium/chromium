@@ -25,6 +25,8 @@ namespace scheduler {
 // - add its index in removed_features in
 //   BackForwardCacheMetricsTest.AllFeaturesCovered.
 // - add it to the list in IsRemovedFeature if it appear in finch configs.
+// After changing this, run tools/metrics/histograms/update_scheduler_enums.py
+// LINT.IfChange(WebSchedulerTrackedFeature)
 enum class WebSchedulerTrackedFeature : uint32_t {
   kMinValue = 0,
   kWebSocket = 0,
@@ -179,6 +181,7 @@ enum class WebSchedulerTrackedFeature : uint32_t {
 
   kMaxValue = kSharedWorkerMessage,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:WebSchedulerTrackedFeature)
 
 using WebSchedulerTrackedFeatures =
     base::EnumSet<WebSchedulerTrackedFeature,
