@@ -5441,6 +5441,18 @@ interface IntegrityViolationReportBody : ReportBody
     getter reportOnly
     method constructor
     method toJSON
+interface InteractionContentfulPaint : PerformanceEntry
+    attribute @@toStringTag
+    getter element
+    getter id
+    getter loadTime
+    getter paintTime
+    getter presentationTime
+    getter renderTime
+    getter size
+    getter url
+    method constructor
+    method toJSON
 interface InterestEvent : Event
     attribute @@toStringTag
     getter source
@@ -12438,3 +12450,4 @@ namespace console
     setter toolbar
     setter visualViewport
 TEST FINISHED
+

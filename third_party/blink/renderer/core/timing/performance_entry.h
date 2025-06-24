@@ -83,6 +83,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
     kLongAnimationFrame = 1 << 15,
     kScript = 1 << 16,
     kContainer = 1 << 17,
+    kInteractionContentfulPaint = 1 << 18,
   };
 
   const AtomicString& name() const { return name_; }

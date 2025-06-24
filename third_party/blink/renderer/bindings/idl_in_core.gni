@@ -713,6 +713,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/timing/event_counts.idl",
   "//third_party/blink/renderer/core/timing/internals_profiler.idl",
   "//third_party/blink/renderer/core/timing/largest_contentful_paint.idl",
+  "//third_party/blink/renderer/core/timing/interaction_contentful_paint.idl",
   "//third_party/blink/renderer/core/timing/layout_shift.idl",
   "//third_party/blink/renderer/core/timing/layout_shift_attribution.idl",
   "//third_party/blink/renderer/core/timing/measure_memory/memory_attribution.idl",

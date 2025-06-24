@@ -21,23 +21,12 @@
     history.pushState({}, "", "foobar.html");
     history.pushState({}, "", "another_one.html");
 
-    const link = document.getElementById("link");
-    link.addEventListener("click", () => testRunner.goToOffset(-1));
     testSoftNavigation({
-      addContent: () => {
-        // Add the content to the main element
-        const main = document.getElementById("main");
-        main.removeChild(document.getElementsByTagName("div")[0]);
-        const div = document.createElement("div");
-        const text = document.createTextNode("Lorem ipsum");
-        div.appendChild(text);
-        div.style="font-size: 3em";
-        main.appendChild(div);
-      },
-      link: link,
       testName: "A soft navigation that uses a *browser initiated* popstate"
         + " event is recognized by SoftNavigationHeuristics",
-      eventType: "popstate"});
+      interactionFunc: () => { testRunner.goToOffset(-1); },
+      registerRouteChange: (cb) => addEventListener('popstate', cb),
+    });
   </script>
 </body>
 </html>

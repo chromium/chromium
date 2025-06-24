@@ -17,17 +17,15 @@
     </div>
   </main>
   <script>
-    window.addEventListener("keydown", () => {
-      timestamps[counter]["eventEnd"] = performance.now();
-    });
     testSoftNavigation({
-      addContent: () => {
-        addTextToDivOnMain();
+      testName: "Keyup on body triggers SoftNavigationHeuristics",
+      registerInteractionEvent: (cb) => {
+        window.addEventListener('keydown', (event) => {
+          timestamps[counter]["eventEnd"] = performance.now();
+        });
+        window.addEventListener('keyup', cb);
       },
-      link: document.body,
       interactionFunc: () => { window.eventSender.keyDownAsync('j'); },
-      eventType: "keyup",
-      test: "Keyup on body triggers SoftNavigationHeuristics"});
+    });
   </script>
 </html>
-

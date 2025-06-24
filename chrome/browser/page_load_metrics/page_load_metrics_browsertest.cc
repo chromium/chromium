@@ -2744,7 +2744,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_InputEventsForClick) {
 
 class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
  public:
-  void TestSoftNavigation(bool wait_for_second_lcp) {
+  void TestSoftNavigation(bool soft_navs_is_web_exposed) {
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
     content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -2763,51 +2763,40 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
     content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
 
     waiter->AddPageExpectation(TimingField::kSoftNavigationCountUpdated);
-    if (wait_for_second_lcp) {
-      waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
-    }
+    waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
 
-    const std::string wait_for_lcp = R"(
-      (async () => {
-        await new Promise(
-          resolve => {
-            (new PerformanceObserver(()=>resolve())).observe(
-              {type: 'largest-contentful-paint',
-               includeSoftNavigationObservations: true})});
-      })();
+    const std::string get_lcp_startTime = R"(
+      (() => new Promise(resolve => {
+        new PerformanceObserver(list => {
+          resolve(list.getEntries().at(-1).startTime);
+        }).observe({type: 'largest-contentful-paint', buffered: true});
+      }))();
     )";
-
-    const std::string get_last_lcp_start = R"(
-      (async () => {
-        const last_lcp_entry = await new Promise(
-          resolve => {
-            (new PerformanceObserver(
-              list => {
-                const entries = list.getEntries();
-                resolve(entries[entries.length - 1]);
-              })).observe({type: 'largest-contentful-paint', buffered: true,
-                           includeSoftNavigationObservations: true})});
-        return last_lcp_entry.startTime;
-      })();
-    )";
-
     // Get the web exposed LCP value before the click.
-    int lcp_start_before =
-        EvalJs(web_contents, get_last_lcp_start).ExtractDouble();
+    int lcp_startTime = EvalJs(web_contents, get_lcp_startTime).ExtractDouble();
 
     content::SimulateMouseClickAt(
         browser()->tab_strip_model()->GetActiveWebContents(), 0,
         blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
 
-    // Wait for an LCP entry to fire.
-    if (wait_for_second_lcp) {
-      ASSERT_TRUE(EvalJs(web_contents, wait_for_lcp).error.empty());
+    // Get the web exposed ICP value only if the feature flag for exposing to
+    // performance timeline is enabled.
+    if (soft_navs_is_web_exposed) {
+      const std::string get_icp_startTime = R"(
+        (() => new Promise(resolve => {
+          new PerformanceObserver(list => {
+            resolve(list.getEntries().at(-1).startTime);
+          }).observe({
+            type: 'interaction-contentful-paint',
+            buffered: true,
+            includeSoftNavigationObservations: true
+          });
+        }))();
+      )";
+      int icp_startTime =
+          EvalJs(web_contents, get_icp_startTime).ExtractDouble();
+      ASSERT_GE(icp_startTime, lcp_startTime);
     }
-
-    // Get the web exposed LCP value after the click
-    int lcp_start_after =
-        EvalJs(web_contents, get_last_lcp_start).ExtractDouble();
-    ASSERT_GE(lcp_start_after, lcp_start_before);
 
     // Wait for a soft navigation count update.
     waiter->Wait();
@@ -2828,7 +2817,7 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
 
     // The histogram value represents the low end of the bucket, not the actual
     // value. Therefore it is lower or equal to the web exposed value.
-    ASSERT_LE(lcp_value_bucket_start, lcp_start_before);
+    ASSERT_LE(lcp_value_bucket_start, lcp_startTime);
   }
 };
 
@@ -2846,12 +2835,12 @@ class SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag
 };
 
 IN_PROC_BROWSER_TEST_F(SoftNavigationBrowserTest, SoftNavigation) {
-  TestSoftNavigation(/*wait_for_second_lcp=*/false);
+  TestSoftNavigation(/*soft_navs_is_web_exposed=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(
     SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag, SoftNavigation) {
-  TestSoftNavigation(/*wait_for_second_lcp=*/true);
+  TestSoftNavigation(/*soft_navs_is_web_exposed=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, InputEventsForOmniboxMatch) {

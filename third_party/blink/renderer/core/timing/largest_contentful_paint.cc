@@ -11,21 +11,15 @@
 
 namespace blink {
 
-LargestContentfulPaint::LargestContentfulPaint(
-    double start_time,
-    DOMHighResTimeStamp render_time,
-    uint64_t size,
-    DOMHighResTimeStamp load_time,
-    const AtomicString& id,
-    const String& url,
-    Element* element,
-    DOMWindow* source,
-    bool is_triggered_by_soft_navigation)
-    : PerformanceEntry(g_empty_atom,
-                       start_time,
-                       start_time,
-                       source,
-                       is_triggered_by_soft_navigation),
+LargestContentfulPaint::LargestContentfulPaint(double start_time,
+                                               DOMHighResTimeStamp render_time,
+                                               uint64_t size,
+                                               DOMHighResTimeStamp load_time,
+                                               const AtomicString& id,
+                                               const String& url,
+                                               Element* element,
+                                               DOMWindow* source)
+    : PerformanceEntry(g_empty_atom, start_time, start_time, source),
       size_(size),
       render_time_(render_time),
       load_time_(load_time),

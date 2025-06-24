@@ -82,7 +82,8 @@ PerformanceEntryType PerformanceObserver::supportedEntryTypeMask(
   }
   if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
           execution_context)) {
-    mask |= PerformanceEntry::kSoftNavigation;
+    mask |= PerformanceEntry::kSoftNavigation |
+            PerformanceEntry::kInteractionContentfulPaint;
   }
   mask |= PerformanceEntry::kLongAnimationFrame;
   if (RuntimeEnabledFeatures::ContainerTimingEnabled(execution_context)) {
@@ -116,6 +117,10 @@ Vector<AtomicString> PerformanceObserver::supportedEntryTypes(
   }
   if (mask & PerformanceEntry::kFirstInput) {
     supportedEntryTypes.push_back(performance_entry_names::kFirstInput);
+  }
+  if (mask & PerformanceEntry::kInteractionContentfulPaint) {
+    supportedEntryTypes.push_back(
+        performance_entry_names::kInteractionContentfulPaint);
   }
   if (mask & PerformanceEntry::kLargestContentfulPaint) {
     supportedEntryTypes.push_back(
