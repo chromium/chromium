@@ -136,8 +136,7 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
   // blink::WebLocalFrameObserver implementation
   void OnFrameDetached() override;
 
-  bool SetUpUkmReporting(
-      base::ReadOnlySharedMemoryRegion& shared_memory_smoothness,
+  bool SetUpDroppedFramesReporting(
       base::ReadOnlySharedMemoryRegion& shared_memory_dropped_frames) override;
 
  protected:
@@ -181,8 +180,8 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
   // before this page loads in a new renderer).
   std::unique_ptr<PageResourceDataUse> provisional_frame_resource_data_use_;
 
-  // Handle to the shared memory for transporting smoothness related ukm data.
-  base::ReadOnlySharedMemoryRegion ukm_smoothness_data_;
+  // Handle to the shared memory for transporting dropped frame rate related ukm
+  // data.
   base::ReadOnlySharedMemoryRegion ukm_dropped_frames_data_;
 
   // The main frame intersection rectangle signal received before

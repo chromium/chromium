@@ -951,11 +951,6 @@ void SingleThreadProxy::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
   // need to record UKM in that case.
 }
 
-void SingleThreadProxy::SetUkmSmoothnessDestination(
-    base::WritableSharedMemoryMapping ukm_smoothness_data) {
-  DCHECK(task_runner_provider_->IsMainThread());
-}
-
 void SingleThreadProxy::SetUkmDroppedFramesDestination(
     base::WritableSharedMemoryMapping ukm_smoothness_data) {
   DCHECK(task_runner_provider_->IsMainThread());

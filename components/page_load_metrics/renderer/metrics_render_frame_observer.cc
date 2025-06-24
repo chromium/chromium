@@ -74,12 +74,10 @@ class MojoPageTimingSender : public PageTimingSender {
         subresource_load_metrics, soft_navigation_metrics->Clone());
   }
 
-  void SetUpUkmReporting(
-      base::ReadOnlySharedMemoryRegion shared_memory_smoothness,
+  void SetUpDroppedFramesReporting(
       base::ReadOnlySharedMemoryRegion shared_memory_dropped_frames) override {
     DCHECK(page_load_metrics_);
-    page_load_metrics_->SetUpSharedMemoryForUkms(
-        std::move(shared_memory_smoothness),
+    page_load_metrics_->SetUpSharedMemoryForDroppedFrames(
         std::move(shared_memory_dropped_frames));
   }
 
@@ -421,15 +419,12 @@ void MetricsRenderFrameObserver::OnFrameDetached() {
   WillDetach(blink::DetachReason::kNavigation);
 }
 
-bool MetricsRenderFrameObserver::SetUpUkmReporting(
-    base::ReadOnlySharedMemoryRegion& shared_memory_smoothness,
+bool MetricsRenderFrameObserver::SetUpDroppedFramesReporting(
     base::ReadOnlySharedMemoryRegion& shared_memory_dropped_frames) {
   if (page_timing_metrics_sender_) {
-    page_timing_metrics_sender_->SetUpUkmReporting(
-        std::move(shared_memory_smoothness),
+    page_timing_metrics_sender_->SetUpDroppedFramesReporting(
         std::move(shared_memory_dropped_frames));
   } else {
-    ukm_smoothness_data_ = std::move(shared_memory_smoothness);
     ukm_dropped_frames_data_ = std::move(shared_memory_dropped_frames);
   }
   return true;
@@ -484,9 +479,9 @@ void MetricsRenderFrameObserver::SendMetrics() {
 }
 
 void MetricsRenderFrameObserver::OnMetricsSenderCreated() {
-  if (ukm_smoothness_data_.IsValid() && ukm_dropped_frames_data_.IsValid()) {
-    page_timing_metrics_sender_->SetUpUkmReporting(
-        std::move(ukm_smoothness_data_), std::move(ukm_dropped_frames_data_));
+  if (ukm_dropped_frames_data_.IsValid()) {
+    page_timing_metrics_sender_->SetUpDroppedFramesReporting(
+        std::move(ukm_dropped_frames_data_));
   }
 
   // Send the latest the frame intersection update, as otherwise we may miss

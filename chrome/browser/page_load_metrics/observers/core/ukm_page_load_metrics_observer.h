@@ -111,8 +111,7 @@ class UkmPageLoadMetricsObserver
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
-  void SetUpSharedMemoryForUkms(
-      const base::ReadOnlySharedMemoryRegion& smoothness_memory,
+  void SetUpSharedMemoryForDroppedFrames(
       const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) override;
 
   void OnCpuTimingUpdate(
@@ -189,7 +188,6 @@ class UkmPageLoadMetricsObserver
       const page_load_metrics::PageEndReason page_end_reason);
 
   void RecordDroppedFramesMetrics();
-  void RecordSmoothnessMetrics();
   void RecordResponsivenessMetrics();
 
   void RecordPageLoadTimestampMetrics(ukm::builders::PageLoad& builder);
@@ -363,7 +361,6 @@ class UkmPageLoadMetricsObserver
   // The connection info for the committed URL.
   std::optional<net::HttpConnectionInfo> connection_info_;
 
-  base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
   base::ReadOnlySharedMemoryMapping ukm_dropped_frames_data_;
 
   // Only true if the page became hidden after the first time it was shown in

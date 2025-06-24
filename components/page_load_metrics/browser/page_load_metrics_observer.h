@@ -200,8 +200,7 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnFeaturesUsageObserved(
       content::RenderFrameHost* rfh,
       const std::vector<blink::UseCounterFeature>& features) override {}
-  void SetUpSharedMemoryForUkms(
-      const base::ReadOnlySharedMemoryRegion& smoothness_memory,
+  void SetUpSharedMemoryForDroppedFrames(
       const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) override {}
   void OnResourceDataUseObserved(
       content::RenderFrameHost* rfh,

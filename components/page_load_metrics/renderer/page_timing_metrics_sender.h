@@ -109,8 +109,7 @@ class PageTimingMetricsSender {
 
   void UpdateResourceMetadata(int resource_id, bool is_main_frame_resource);
 
-  void SetUpUkmReporting(
-      base::ReadOnlySharedMemoryRegion shared_memory_smoothness,
+  void SetUpDroppedFramesReporting(
       base::ReadOnlySharedMemoryRegion shared_memory_dropped_frames);
 
   void InitiateUserInteractionTiming();

@@ -256,8 +256,7 @@ class MetricsWebContentsObserver
   void AddCustomUserTiming(
       mojom::CustomUserTimingMarkPtr custom_timing) override;
 
-  void SetUpSharedMemoryForUkms(
-      base::ReadOnlySharedMemoryRegion smoothness_memory,
+  void SetUpSharedMemoryForDroppedFrames(
       base::ReadOnlySharedMemoryRegion dropped_frames_memory) override;
 
   // Common part for UpdateThroughput and OnTimingUpdated.
@@ -395,10 +394,8 @@ class MetricsWebContentsObserver
   // This is currently set only for the main frame of each page associated with
   // the WebContents. It maps to the shared memory for the smoothness and the
   // dropped frame count UKMs.
-  base::flat_map<content::RenderFrameHost*,
-                 std::pair<base::ReadOnlySharedMemoryRegion,
-                           base::ReadOnlySharedMemoryRegion>>
-      ukm_data_;
+  base::flat_map<content::RenderFrameHost*, base::ReadOnlySharedMemoryRegion>
+      ukm_dropped_frames_data_;
 
   std::vector<mojom::CustomUserTimingMarkPtr> page_load_custom_timings_;
 

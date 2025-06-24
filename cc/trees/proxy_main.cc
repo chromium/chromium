@@ -927,15 +927,6 @@ void ProxyMain::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
                                 source_id, url));
 }
 
-void ProxyMain::SetUkmSmoothnessDestination(
-    base::WritableSharedMemoryMapping ukm_smoothness_data) {
-  DCHECK(IsMainThread());
-  ImplThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ProxyImpl::SetUkmSmoothnessDestination,
-                                base::Unretained(proxy_impl_.get()),
-                                std::move(ukm_smoothness_data)));
-}
-
 void ProxyMain::SetUkmDroppedFramesDestination(
     base::WritableSharedMemoryMapping ukm_dropped_frames_data) {
   DCHECK(IsMainThread());

@@ -33,8 +33,7 @@ void FakePageTimingSender::SendTiming(
                            subresource_load_metrics, soft_navigation_metrics);
 }
 
-void FakePageTimingSender::SetUpUkmReporting(
-    base::ReadOnlySharedMemoryRegion smoothness_memory,
+void FakePageTimingSender::SetUpDroppedFramesReporting(
     base::ReadOnlySharedMemoryRegion dropped_frames_memory) {}
 
 void FakePageTimingSender::SendCustomUserTiming(

@@ -914,7 +914,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   }
 
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
-  base::ReadOnlySharedMemoryRegion CreateSharedMemoryForSmoothnessUkm();
   base::ReadOnlySharedMemoryRegion CreateSharedMemoryForDroppedFramesUkm();
 
   void SetRenderFrameObserver(

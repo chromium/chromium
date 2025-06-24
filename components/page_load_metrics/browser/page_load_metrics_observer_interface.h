@@ -452,12 +452,10 @@ class PageLoadMetricsObserverInterface {
       content::RenderFrameHost* rfh,
       const std::vector<blink::UseCounterFeature>& features) = 0;
 
-  // The smoothness and dropped frame count metrics are shared over
-  // shared-memory. The observer should create a mapping (by calling
-  // |shared_memory.Map()|) so that they are able to read from the shared
-  // memory.
-  virtual void SetUpSharedMemoryForUkms(
-      const base::ReadOnlySharedMemoryRegion& smoothness_memory,
+  // The dropped frame count metrics are shared over shared-memory. The observer
+  // should create a mapping (by calling |shared_memory.Map()|) so that they are
+  // able to read from the shared memory.
+  virtual void SetUpSharedMemoryForDroppedFrames(
       const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) = 0;
 
   // Invoked when there is data use for loading a resource on the page

@@ -166,8 +166,7 @@ class FakePageTimingSender : public PageTimingSender {
           subresource_load_metrics,
       const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) override;
 
-  void SetUpUkmReporting(
-      base::ReadOnlySharedMemoryRegion smoothness_memory,
+  void SetUpDroppedFramesReporting(
       base::ReadOnlySharedMemoryRegion dropped_frames_memory) override;
 
   void SendCustomUserTiming(mojom::CustomUserTimingMarkPtr timing) override;

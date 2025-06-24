@@ -119,9 +119,6 @@ class CC_EXPORT Proxy {
 
   virtual void SetSourceURL(ukm::SourceId source_id, const GURL& url) = 0;
 
-  virtual void SetUkmSmoothnessDestination(
-      base::WritableSharedMemoryMapping ukm_smoothness_data) = 0;
-
   virtual void SetUkmDroppedFramesDestination(
       base::WritableSharedMemoryMapping ukm_dropped_frames_data) = 0;
 

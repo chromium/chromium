@@ -307,9 +307,8 @@ void PageLoadMetricsForwardObserver::OnFeaturesUsageObserved(
   parent_observer_->OnFeaturesUsageObserved(rfh, features);
 }
 
-// SetUpSharedMemoryForUkms is called only for the outermost page.
-void PageLoadMetricsForwardObserver::SetUpSharedMemoryForUkms(
-    const base::ReadOnlySharedMemoryRegion& smoothness_memory,
+// SetUpSharedMemoryForDroppedFrames is called only for the outermost page.
+void PageLoadMetricsForwardObserver::SetUpSharedMemoryForDroppedFrames(
     const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) {
   // TODO(crbug.com/40895492): Investigate whether this should truly be
   // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,

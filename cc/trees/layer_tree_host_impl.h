@@ -840,8 +840,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void SetActiveURL(const GURL& url, ukm::SourceId source_id);
 
-  void SetUkmSmoothnessDestination(
-      base::WritableSharedMemoryMapping ukm_smoothness_data);
   void SetUkmDroppedFramesDestination(
       base::WritableSharedMemoryMapping ukm_dropped_frames_data);
 

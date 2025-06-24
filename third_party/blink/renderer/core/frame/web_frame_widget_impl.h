@@ -727,9 +727,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   // compositor submits a frame.
   void PropagateHistorySequenceNumberToCompositor();
 
-  // Ask compositor to create the shared memory for smoothness ukm region.
-  base::ReadOnlySharedMemoryRegion CreateSharedMemoryForSmoothnessUkm();
-
   // Ask compositor to create the shared memory for dropped frames ukm region.
   base::ReadOnlySharedMemoryRegion CreateSharedMemoryForDroppedFramesUkm();
 #if BUILDFLAG(IS_ANDROID)

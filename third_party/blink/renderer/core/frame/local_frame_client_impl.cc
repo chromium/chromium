@@ -560,13 +560,11 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
             web_frame_->GetDocument().GetUkmSourceId(),
             KURL(web_frame_->Client()->LastCommittedUrlForUKM()));
 
-        auto smoothness_shmem =
-            frame_widget->CreateSharedMemoryForSmoothnessUkm();
         auto dropped_frames_shmem =
             frame_widget->CreateSharedMemoryForDroppedFramesUkm();
-        if (smoothness_shmem.IsValid() && dropped_frames_shmem.IsValid()) {
-          web_frame_->Client()->SetUpSharedMemoryForUkms(
-              std::move(smoothness_shmem), std::move(dropped_frames_shmem));
+        if (dropped_frames_shmem.IsValid()) {
+          web_frame_->Client()->SetUpSharedMemoryForDroppedFrames(
+              std::move(dropped_frames_shmem));
         }
       }
     }

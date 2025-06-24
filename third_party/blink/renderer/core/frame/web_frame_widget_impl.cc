@@ -5290,11 +5290,6 @@ void WebFrameWidgetImpl::PropagateHistorySequenceNumberToCompositor() {
 }
 
 base::ReadOnlySharedMemoryRegion
-WebFrameWidgetImpl::CreateSharedMemoryForSmoothnessUkm() {
-  return LayerTreeHost()->CreateSharedMemoryForSmoothnessUkm();
-}
-
-base::ReadOnlySharedMemoryRegion
 WebFrameWidgetImpl::CreateSharedMemoryForDroppedFramesUkm() {
   return LayerTreeHost()->CreateSharedMemoryForDroppedFramesUkm();
 }

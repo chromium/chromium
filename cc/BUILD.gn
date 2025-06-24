@@ -221,8 +221,6 @@ cc_component("cc") {
     "metrics/ukm_dropped_frames_data.h",
     "metrics/ukm_manager.cc",
     "metrics/ukm_manager.h",
-    "metrics/ukm_smoothness_data.cc",
-    "metrics/ukm_smoothness_data.h",
     "metrics/video_playback_roughness_reporter.cc",
     "metrics/video_playback_roughness_reporter.h",
     "raster/categorized_worker_pool.cc",

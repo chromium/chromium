@@ -201,7 +201,7 @@ void MetricsWebContentsObserver::WebContentsDestroyed() {
   // access the current WebContents.
   primary_page_ = nullptr;
   active_pages_.clear();
-  ukm_data_.clear();
+  ukm_dropped_frames_data_.clear();
   provisional_loads_.clear();
   aborted_provisional_loads_.clear();
 }
@@ -273,7 +273,7 @@ void MetricsWebContentsObserver::RenderFrameDeleted(
   }
   active_pages_.erase(rfh);
   inactive_pages_.erase(rfh);
-  ukm_data_.erase(rfh);
+  ukm_dropped_frames_data_.erase(rfh);
 }
 
 void MetricsWebContentsObserver::MediaStartedPlaying(
@@ -826,13 +826,12 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
   const bool is_main_frame =
       render_frame_host && render_frame_host->GetParent() == nullptr;
   if (is_main_frame) {
-    auto ukm_it = ukm_data_.find(render_frame_host);
-    if (ukm_it != ukm_data_.end()) {
-      auto& [smoothness_memory, dropped_frames_memory] = ukm_it->second;
-      raw_tracker->metrics_update_dispatcher()->SetUpSharedMemoryForUkms(
-          render_frame_host, std::move(smoothness_memory),
-          std::move(dropped_frames_memory));
-      ukm_data_.erase(ukm_it);
+    auto ukm_it = ukm_dropped_frames_data_.find(render_frame_host);
+    if (ukm_it != ukm_dropped_frames_data_.end()) {
+      raw_tracker->metrics_update_dispatcher()
+          ->SetUpSharedMemoryForDroppedFrames(render_frame_host,
+                                              std::move(ukm_it->second));
+      ukm_dropped_frames_data_.erase(ukm_it);
     }
   }
 
@@ -1257,8 +1256,7 @@ void MetricsWebContentsObserver::AddCustomUserTiming(
   OnCustomUserTimingUpdated(render_frame_host, std::move(custom_timing));
 }
 
-void MetricsWebContentsObserver::SetUpSharedMemoryForUkms(
-    base::ReadOnlySharedMemoryRegion smoothness_memory,
+void MetricsWebContentsObserver::SetUpSharedMemoryForDroppedFrames(
     base::ReadOnlySharedMemoryRegion dropped_frames_memory) {
   content::RenderFrameHost* render_frame_host =
       page_load_metrics_receivers_.GetCurrentTargetFrame();
@@ -1269,13 +1267,11 @@ void MetricsWebContentsObserver::SetUpSharedMemoryForUkms(
   }
 
   if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host)) {
-    tracker->metrics_update_dispatcher()->SetUpSharedMemoryForUkms(
-        render_frame_host, std::move(smoothness_memory),
-        std::move(dropped_frames_memory));
+    tracker->metrics_update_dispatcher()->SetUpSharedMemoryForDroppedFrames(
+        render_frame_host, std::move(dropped_frames_memory));
   } else {
-    ukm_data_.emplace(render_frame_host,
-                      std::make_pair(std::move(smoothness_memory),
-                                     std::move(dropped_frames_memory)));
+    ukm_dropped_frames_data_.emplace(render_frame_host,
+                                     std::move(dropped_frames_memory));
   }
 }
 

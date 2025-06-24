@@ -719,8 +719,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void OnFrameVisibilityChanged(
       blink::mojom::FrameVisibility render_status) override;
 
-  void SetUpSharedMemoryForUkms(
-      base::ReadOnlySharedMemoryRegion smoothness_memory,
+  void SetUpSharedMemoryForDroppedFrames(
       base::ReadOnlySharedMemoryRegion dropped_frames_memory) override;
 
   blink::WebURL LastCommittedUrlForUKM() override;

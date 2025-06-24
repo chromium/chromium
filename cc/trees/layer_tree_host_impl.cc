@@ -70,7 +70,6 @@
 #include "cc/metrics/lcd_text_metrics_reporter.h"
 #include "cc/metrics/submit_info.h"
 #include "cc/metrics/ukm_dropped_frames_data.h"
-#include "cc/metrics/ukm_smoothness_data.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_worklet_job.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
@@ -5958,11 +5957,6 @@ void LayerTreeHostImpl::SetActiveURL(const GURL& url, ukm::SourceId source_id) {
   // The source id has already been associated to the URL.
   compositor_frame_reporting_controller_->SetSourceId(source_id);
   frame_sorter_.Reset(/*reset_fcp=*/true);
-}
-
-void LayerTreeHostImpl::SetUkmSmoothnessDestination(
-    base::WritableSharedMemoryMapping ukm_smoothness_data) {
-  ukm_smoothness_mapping_ = std::move(ukm_smoothness_data);
 }
 
 void LayerTreeHostImpl::SetUkmDroppedFramesDestination(

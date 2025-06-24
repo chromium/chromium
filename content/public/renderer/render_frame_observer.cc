@@ -58,8 +58,7 @@ void RenderFrameObserver::RenderFrameGone() {
   render_frame_ = nullptr;
 }
 
-bool RenderFrameObserver::SetUpUkmReporting(
-    base::ReadOnlySharedMemoryRegion& shared_memory_smoothness,
+bool RenderFrameObserver::SetUpDroppedFramesReporting(
     base::ReadOnlySharedMemoryRegion& shared_memory_dropped_frames) {
   return false;
 }
