@@ -90,6 +90,11 @@ class OnDeviceSpeechRecognitionImpl
   // to safeguard against fingerprinting resulting from timing the installation.
   base::TimeDelta GetDownloadDelay(const std::vector<std::string>& languages);
 
+  // A set of languages that have been downloaded for the current document. This
+  // is used for origins that cannot persist content settings, e.g. opaque
+  // origins or file schemes.
+  std::set<std::string> transient_on_device_languages_downloaded_;
+
   base::flat_map<std::set<std::string>, std::list<InstallCallback>>
       language_installation_callbacks_;
 #endif  // !BUILDFLAG(IS_ANDROID)

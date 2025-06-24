@@ -305,6 +305,11 @@ OnDeviceSpeechRecognitionImpl::GetMaskedAvailabilityStatus(
 
 bool OnDeviceSpeechRecognitionImpl::HasOnDeviceLanguageDownloaded(
     const std::string& language) {
+  const GURL url = render_frame_host().GetLastCommittedOrigin().GetURL();
+  if (!url.is_valid() || url.SchemeIsFile()) {
+    return transient_on_device_languages_downloaded_.contains(language);
+  }
+
   base::Value on_device_languages_downloaded_value =
       GetOnDeviceLanguagesDownloadedValue();
   if (on_device_languages_downloaded_value.is_dict()) {
@@ -318,6 +323,12 @@ bool OnDeviceSpeechRecognitionImpl::HasOnDeviceLanguageDownloaded(
 
 void OnDeviceSpeechRecognitionImpl::SetOnDeviceLanguageDownloaded(
     const std::string& language) {
+  const GURL url = render_frame_host().GetLastCommittedOrigin().GetURL();
+  if (!url.is_valid() || url.SchemeIsFile()) {
+    transient_on_device_languages_downloaded_.insert(language);
+    return;
+  }
+
   base::Value on_device_languages_downloaded_value =
       GetOnDeviceLanguagesDownloadedValue();
 

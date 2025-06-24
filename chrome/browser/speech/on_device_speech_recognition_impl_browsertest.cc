@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
@@ -312,5 +313,37 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
       {},
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
                      base::Unretained(this), false));
+}
+
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
+                       FileSchemeUrl) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("file:///empty.html")));
+
+  on_device_speech_recognition()->Available(
+      {kEnglishLanguageCode},
+      base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
+                         OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
+                     base::Unretained(this),
+                     media::mojom::AvailabilityStatus::kDownloadable));
+
+  on_device_speech_recognition()->Install(
+      {kEnglishLanguageCode},
+      base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
+                     base::Unretained(this), true));
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
+      speech::LanguageCode::kEnUs);
+  WaitUntilAvailable(kEnglishLanguageCode);
+
+  on_device_speech_recognition()->Available(
+      {kEnglishAlternateLocaleCode},
+      base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
+                         OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
+                     base::Unretained(this),
+                     media::mojom::AvailabilityStatus::kAvailable));
 }
 }  // namespace speech
