@@ -666,7 +666,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
   }
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to
   // make sure "hint" is properly taken into account.
-  auto* provider = Host()->GetOrCreateCanvasResourceProviderForCanvas2D();
+  auto* provider = canvas()->GetOrCreateCanvasResourceProviderForCanvas2D();
   if (!provider) {
     return nullptr;
   }

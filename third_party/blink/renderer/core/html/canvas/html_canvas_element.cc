@@ -37,6 +37,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
@@ -2292,11 +2293,21 @@ HTMLCanvasElement::RecreateCanvasResourceProviderForCanvas2D(
     CanvasHibernationHandler& hibernation_handler) {
   CHECK(IsRenderingContext2D());
 
-  // We call
-  // CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForCanvas2D()
-  // directly here to prevent a circular callstack.
-  CanvasResourceProvider* resource_provider = CanvasRenderingContextHost::
-      GetOrCreateCanvasResourceProviderForCanvas2D();
+  auto* resource_provider = GetResourceProviderForCanvas2D();
+  if (!resource_provider && !did_fail_to_create_resource_provider_) {
+    if (IsValidImageSize()) {
+      CreateCanvasResourceProvider2D();
+      resource_provider = GetResourceProviderForCanvas2D();
+    }
+    if (!resource_provider) {
+      did_fail_to_create_resource_provider_ = true;
+    } else if (resource_provider->IsValid()) {
+      base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                                resource_provider->IsAccelerated());
+      base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                    resource_provider->GetType());
+    }
+  }
   if (!resource_provider || !resource_provider->IsValid()) {
     return nullptr;
   }

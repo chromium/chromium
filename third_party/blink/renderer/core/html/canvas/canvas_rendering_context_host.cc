@@ -140,27 +140,6 @@ bool CanvasRenderingContextHost::IsImageBitmapRenderingContext() const {
          RenderingContext()->IsImageBitmapRenderingContext();
 }
 
-CanvasResourceProvider*
-CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForCanvas2D() {
-  CHECK(IsRenderingContext2D());
-  auto* provider = GetResourceProviderForCanvas2D();
-  if (!provider && !did_fail_to_create_resource_provider_) {
-    if (IsValidImageSize()) {
-      CreateCanvasResourceProvider2D();
-      provider = GetResourceProviderForCanvas2D();
-    }
-    if (!provider) {
-      did_fail_to_create_resource_provider_ = true;
-    } else if (provider->IsValid()) {
-      base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                                provider->IsAccelerated());
-      base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                    provider->GetType());
-    }
-  }
-  return provider;
-}
-
 void CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
   CHECK(!GetResourceProviderForCanvas2D());
 

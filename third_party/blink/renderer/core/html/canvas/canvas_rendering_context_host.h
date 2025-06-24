@@ -104,8 +104,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   // Partial CanvasResourceHost implementation
   void InitializeForRecording(cc::PaintCanvas*) const final;
-  virtual CanvasResourceProvider*
-  GetOrCreateCanvasResourceProviderForCanvas2D();
   virtual void PageVisibilityChanged();
 
   bool IsWebGL() const;
@@ -185,6 +183,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   bool ContextHasOpenLayers(const CanvasRenderingContext*) const;
 
+  void CreateCanvasResourceProvider2D();
+
   // Computes the digest that corresponds to the "input" of this canvas,
   // including the context type, and if applicable, canvas digest, and taint
   // bits.
@@ -198,7 +198,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   bool did_fail_to_create_resource_provider_ = false;
 
  private:
-  void CreateCanvasResourceProvider2D();
 
   std::unique_ptr<CanvasResourceProvider> resource_provider_for_canvas2d_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_for_image_bitmap_;
