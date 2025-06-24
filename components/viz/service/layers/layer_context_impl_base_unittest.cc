@@ -139,6 +139,10 @@ void LayerContextImplTest::AddDefaultPropertyUpdates(
   update->device_scale_factor = kDefaultDeviceScaleFactor;
   update->painted_device_scale_factor = kDefaultPaintedDeviceScaleFactor;
 
+  update->top_controls_shown_ratio =
+      LayerContextImplTest::kDefaultTopControlsShownRatio;
+  update->bottom_controls_shown_ratio = kDefaultBottomControlsShownRatio;
+
   update->num_transform_nodes = next_transform_id_;
   update->num_clip_nodes = next_clip_id_;
   update->num_effect_nodes = next_effect_id_;

@@ -129,6 +129,11 @@ struct LayerTreeUpdate {
   // Parameters for browser controls (URL bar, bottom bar, etc.).
   cc.mojom.BrowserControlsParams browser_controls_params;
 
+  // Parameters indicating the current browser controls shown ratios.
+  // Valid range is 0.0 - 1.0.
+  float top_controls_shown_ratio;
+  float bottom_controls_shown_ratio;
+
   // UIResource change requests accumulated since the last LayerTreeUpdate.
   array<TransferableUIResourceRequest> ui_resource_requests;
 

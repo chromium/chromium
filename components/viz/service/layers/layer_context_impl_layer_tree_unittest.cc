@@ -580,5 +580,104 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateBrowserControlsParams) {
   EXPECT_EQ(active_tree->browser_controls_params(), kDefaultParams);
 }
 
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateTopControlsShownRatio) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+  const float kDefaultRatio = kDefaultTopControlsShownRatio;
+
+  // Initial update with default ratio.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), kDefaultRatio);
+
+  // Update to a new ratio.
+  const float kRatio2 = 0.5f;
+  auto update2 = CreateDefaultUpdate();
+  update2->top_controls_shown_ratio = kRatio2;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), kRatio2);
+
+  // Update to another ratio.
+  const float kRatio3 = 0.25f;
+  auto update3 = CreateDefaultUpdate();
+  update3->top_controls_shown_ratio = kRatio3;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), kRatio3);
+
+  // Update with no change.
+  auto update4 = CreateDefaultUpdate();
+  update4->top_controls_shown_ratio = kRatio3;  // Same as previous
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
+  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), kRatio3);
+
+  // Update with invalid ratio < 0 should fail.
+  const float kRatio5 = -0.1;
+  auto update5 = CreateDefaultUpdate();
+  update5->top_controls_shown_ratio = kRatio5;
+  auto result5 = layer_context_impl_->DoUpdateDisplayTree(std::move(update5));
+  ASSERT_FALSE(result5.has_value());
+  EXPECT_EQ(result5.error(), "Invalid top/bottom controls shown ratios");
+  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), kRatio3);
+
+  // Update with invalid ratio > 1 should fail.
+  const float kRatio6 = 1.1;
+  auto update6 = CreateDefaultUpdate();
+  update6->top_controls_shown_ratio = kRatio6;
+  auto result6 = layer_context_impl_->DoUpdateDisplayTree(std::move(update6));
+  ASSERT_FALSE(result6.has_value());
+  EXPECT_EQ(result6.error(), "Invalid top/bottom controls shown ratios");
+  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), kRatio3);
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest,
+       UpdateBottomControlsShownRatio) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+  const float kDefaultRatio = kDefaultBottomControlsShownRatio;
+
+  // Initial update with default ratio.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), kDefaultRatio);
+
+  // Update to a new ratio.
+  const float kRatio2 = 0.75f;
+  auto update2 = CreateDefaultUpdate();
+  update2->bottom_controls_shown_ratio = kRatio2;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), kRatio2);
+
+  // Update with no change.
+  auto update3 = CreateDefaultUpdate();
+  update3->bottom_controls_shown_ratio = kRatio2;  // Same as previous
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), kRatio2);
+
+  // Update with invalid ratio < 0 should fail.
+  const float kRatio4 = -0.1;
+  auto update4 = CreateDefaultUpdate();
+  update4->bottom_controls_shown_ratio = kRatio4;
+  auto result4 = layer_context_impl_->DoUpdateDisplayTree(std::move(update4));
+  ASSERT_FALSE(result4.has_value());
+  EXPECT_EQ(result4.error(), "Invalid top/bottom controls shown ratios");
+  EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), kRatio2);
+
+  // Update with invalid ratio > 1 should fail.
+  const float kRatio5 = 1.1;
+  auto update5 = CreateDefaultUpdate();
+  update5->bottom_controls_shown_ratio = kRatio5;
+  auto result5 = layer_context_impl_->DoUpdateDisplayTree(std::move(update5));
+  ASSERT_FALSE(result5.has_value());
+  EXPECT_EQ(result5.error(), "Invalid top/bottom controls shown ratios");
+  EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), kRatio2);
+}
+
 }  // namespace
 }  // namespace viz

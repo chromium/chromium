@@ -22,6 +22,7 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/keyframe_effect.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
+#include "cc/input/browser_controls_offset_manager.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/mirror_layer_impl.h"
 #include "cc/layers/nine_patch_layer_impl.h"
@@ -1790,6 +1791,15 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   if (update->local_surface_id_from_parent) {
     layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);
   }
+
+  if (!(update->top_controls_shown_ratio >= 0 &&
+        update->top_controls_shown_ratio <= 1 &&
+        update->bottom_controls_shown_ratio >= 0 &&
+        update->bottom_controls_shown_ratio <= 1)) {
+    return base::unexpected("Invalid top/bottom controls shown ratios");
+  }
+  host_impl_->SetCurrentBrowserControlsShownRatio(
+      update->top_controls_shown_ratio, update->bottom_controls_shown_ratio);
 
   host_impl_->SetViewportDamage(update->viewport_damage_rect);
 
