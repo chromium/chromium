@@ -245,7 +245,7 @@
   {
     "name": "android-composeplate",
     "owners": [ "hanxi@chromium.org", "pnoland@chromium.org", "clank-start@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "android-elegant-text-height",
@@ -3297,7 +3297,7 @@
   {
     "name": "enable-educational-tip-module",
     "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-empty-space-context-menu-clank",
@@ -3871,7 +3871,7 @@
   {
     "name": "enable-magic-stack-android",
     "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-managed-configuration-web-api",
@@ -4216,7 +4216,7 @@
   {
     "name": "enable-search-resumption-module",
     "owners": ["clank-start@chromium.org","hanxi@chromium.org"],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
       "name": "enable-secure-payment-confirmation-availability-api",
@@ -4246,12 +4246,12 @@
   {
     "name": "enable-segmentation-platform-android-home-module-ranker-v2",
     "owners": ["ritikagup@google.com",  "hanxi@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-segmentation-platform-ephemeral_card_ranker",
     "owners": ["ritikagup@google.com",  "hanxi@chromium.org", "ssid@chromium.org","xinyiji@chromium.org","clank-start@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-service-workers-for-chrome-untrusted",
