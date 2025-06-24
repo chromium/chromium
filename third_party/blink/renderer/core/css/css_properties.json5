@@ -2631,6 +2631,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       invalidate: ["inset", "out-of-flow", "scroll-anchor"],
+      affected_by_zoom: true,
     },
     {
       name: "box-decoration-break",
@@ -3776,6 +3777,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       invalidate: ["inset", "out-of-flow", "scroll-anchor"],
+      affected_by_zoom: true,
     },
     {
       name: "letter-spacing",
@@ -4928,6 +4930,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       invalidate: ["inset", "out-of-flow", "scroll-anchor"],
+      affected_by_zoom: true,
     },
     {
       name: "r",
@@ -5995,6 +5998,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       invalidate: ["inset", "out-of-flow", "scroll-anchor"],
+      affected_by_zoom: true,
     },
     {
       name: "overlay",
