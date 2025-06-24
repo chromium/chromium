@@ -107,12 +107,6 @@ TEST(IntentHandlingMetricsTest, TestRecordLinkCapturingEntryPointShown) {
   // Link capturing entry point shown for unknown app type.
   test.RecordLinkCapturingEntryPointShown(app_info);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
-  histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
 
@@ -121,12 +115,6 @@ TEST(IntentHandlingMetricsTest, TestRecordLinkCapturingEntryPointShown) {
 
   // Link capturing entry point shown for web app type.
   test.RecordLinkCapturingEntryPointShown(app_info);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
@@ -138,12 +126,6 @@ TEST(IntentHandlingMetricsTest, TestRecordLinkCapturingEntryPointShown) {
 
   // Link capturing entry point shown for 2 web apps and 1 ARC app.
   test.RecordLinkCapturingEntryPointShown(app_info);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 3);
@@ -158,12 +140,6 @@ TEST(IntentHandlingMetricsTest, TestRecordLinkCapturingEvent) {
       PickerEntryType::kArc,
       IntentHandlingMetrics::LinkCapturingEvent::kAppOpened);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 0);
-  histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 1);
 
@@ -171,12 +147,6 @@ TEST(IntentHandlingMetricsTest, TestRecordLinkCapturingEvent) {
   test.RecordLinkCapturingEvent(
       PickerEntryType::kWeb,
       IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 0);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);

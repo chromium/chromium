@@ -17,10 +17,6 @@
 namespace {
 
 const char kLinkCapturingHistogram[] = "ChromeOS.Intents.LinkCapturingEvent2";
-const char kLinkCapturingHistogramWeb[] =
-    "ChromeOS.Intents.LinkCapturingEvent2.WebApp";
-const char kLinkCapturingHistogramArc[] =
-    "ChromeOS.Intents.LinkCapturingEvent2.ArcApp";
 
 using PickerAction = apps::IntentHandlingMetrics::PickerAction;
 using IntentPickerAction = apps::IntentHandlingMetrics::IntentPickerAction;
@@ -109,35 +105,11 @@ void IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
 
 void IntentHandlingMetrics::RecordLinkCapturingEvent(PickerEntryType app_type,
                                                      LinkCapturingEvent event) {
-  switch (app_type) {
-    case PickerEntryType::kWeb:
-      base::UmaHistogramEnumeration(kLinkCapturingHistogramWeb, event);
-      break;
-    case PickerEntryType::kArc:
-      base::UmaHistogramEnumeration(kLinkCapturingHistogramArc, event);
-      break;
-    case PickerEntryType::kUnknown:
-    case PickerEntryType::kDevice:
-    case PickerEntryType::kMacOs:
-      // These cases do not represent entering an app and should not record
-      // any histograms.
-      return;
-  }
   base::UmaHistogramEnumeration(kLinkCapturingHistogram, event);
 }
 
 void IntentHandlingMetrics::RecordLinkCapturingEntryPointShown(
     const std::vector<IntentPickerAppInfo>& app_infos) {
-  if (base::Contains(app_infos, PickerEntryType::kWeb,
-                     &IntentPickerAppInfo::type)) {
-    base::UmaHistogramEnumeration(kLinkCapturingHistogramWeb,
-                                  LinkCapturingEvent::kEntryPointShown);
-  }
-  if (base::Contains(app_infos, PickerEntryType::kArc,
-                     &IntentPickerAppInfo::type)) {
-    base::UmaHistogramEnumeration(kLinkCapturingHistogramArc,
-                                  LinkCapturingEvent::kEntryPointShown);
-  }
   base::UmaHistogramEnumeration(kLinkCapturingHistogram,
                                 LinkCapturingEvent::kEntryPointShown);
 }

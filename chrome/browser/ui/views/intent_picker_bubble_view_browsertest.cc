@@ -529,12 +529,6 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserBubbleTest, RememberOpenWebApp) {
 
   // Check that we recorded that settings were changed.
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 0);
-  histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
 }

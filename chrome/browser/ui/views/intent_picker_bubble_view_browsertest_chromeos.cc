@@ -647,22 +647,6 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTestChromeOS,
   intent_picker_bubble()->AcceptDialog();
   EXPECT_TRUE(VerifyPWALaunched(app_id_pwa));
 
-  // WebApp histogram.
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 1);
-
-  // ArcApp histogram.
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 0);
-
   // General histogram.
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",

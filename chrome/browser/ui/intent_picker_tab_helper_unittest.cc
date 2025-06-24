@@ -121,12 +121,6 @@ TEST_P(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
 
   // None of the histograms should be incremented.
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
-  histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
 
@@ -144,12 +138,6 @@ TEST_P(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
                                      apps::IntentPickerIconEvent::kIconShown,
                                      1);
   // All of the histograms should be incremented.
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
@@ -170,12 +158,6 @@ TEST_P(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
                                      2);
   // Only the web app and general histograms should be incremented.
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
-  histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
 
@@ -194,12 +176,6 @@ TEST_P(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
                                      apps::IntentPickerIconEvent::kIconShown,
                                      3);
   // Only the ARC app and general histograms should be incremented.
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 3);
@@ -220,12 +196,6 @@ TEST_P(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
                                      apps::IntentPickerIconEvent::kIconShown,
                                      4);
   // Only the general histogram should be incremented.
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 4);
