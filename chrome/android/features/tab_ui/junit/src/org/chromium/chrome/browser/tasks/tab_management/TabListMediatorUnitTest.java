@@ -175,6 +175,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -248,7 +249,9 @@ public class TabListMediatorUnitTest {
     private static final String GROUP_TITLE = "My Group";
     private static final Token TAB_GROUP_ID = new Token(829L, 283L);
     private static final String SYNC_GROUP_ID1 = "sync_group_id1";
+    private static final String SYNC_GROUP_ID2 = "sync_group_id2";
     private static final @TabGroupColorId int SYNC_GROUP_COLOR1 = TabGroupColorId.BLUE;
+    private static final @TabGroupColorId int SYNC_GROUP_COLOR2 = TabGroupColorId.RED;
     private static final TabListEditorItemSelectionId ITEM1_ID =
             TabListEditorItemSelectionId.createTabId(TAB1_ID);
     private static final TabListEditorItemSelectionId ITEM2_ID =
@@ -389,6 +392,7 @@ public class TabListMediatorUnitTest {
     private Resources mResources;
     private Context mContext;
     private SavedTabGroup mSavedTabGroup1;
+    private SavedTabGroup mSavedTabGroup2;
 
     @Before
     public void setUp() {
@@ -427,7 +431,8 @@ public class TabListMediatorUnitTest {
         mFakeViewHolder2 = prepareFakeViewHolder(mItemView2, POSITION2);
         List<Tab> tabs1 = new ArrayList<>(Arrays.asList(mTab1));
         List<Tab> tabs2 = new ArrayList<>(Arrays.asList(mTab2));
-        mSavedTabGroup1 = prepareSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE, SYNC_GROUP_COLOR1);
+        mSavedTabGroup1 = prepareSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE, SYNC_GROUP_COLOR1, 1);
+        mSavedTabGroup2 = prepareSavedTabGroup(SYNC_GROUP_ID2, "", SYNC_GROUP_COLOR2, 2);
 
         doNothing().when(mTabContentManager).getTabThumbnailWithCallback(anyInt(), any(), any());
         // Mock that tab restoring stage is over.
@@ -501,6 +506,7 @@ public class TabListMediatorUnitTest {
         doNothing().when(mTemplateUrlService).addObserver(mTemplateUrlServiceObserver.capture());
         doReturn(true).when(mTabListFaviconProvider).isInitialized();
         doReturn(mSavedTabGroup1).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID1);
+        doReturn(mSavedTabGroup2).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID2);
 
         mModelList = new TabListModel();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
@@ -3667,6 +3673,64 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testTabDescriptionString_withTabGroupType_Archived() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        List<String> syncIds = new ArrayList<>(Arrays.asList(SYNC_GROUP_ID1));
+        mMediator.setDefaultGridCardSize(new Size(100, 200));
+
+        // Ensure the groups are archived.
+        mSavedTabGroup1.archivalTimeMs = System.currentTimeMillis();
+        mSavedTabGroup2.archivalTimeMs = System.currentTimeMillis();
+
+        @StringRes
+        int colorDesc1 =
+                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        SYNC_GROUP_COLOR1);
+        String nonEmptyTitleTargetString =
+                mResources.getQuantityString(
+                        R.plurals.accessibility_restore_tab_group_with_group_name_with_color,
+                        mSavedTabGroup1.savedTabs.size(),
+                        GROUP_TITLE,
+                        mSavedTabGroup1.savedTabs.size(),
+                        mResources.getString(colorDesc1));
+
+        mMediator.resetWithListOfTabs(tabs, syncIds, false);
+
+        assertEquals(TAB_GROUP, mModelList.get(0).model.get(CARD_TYPE));
+        assertThat(
+                mModelList
+                        .get(0)
+                        .model
+                        .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext),
+                equalTo(nonEmptyTitleTargetString));
+
+        @StringRes
+        int colorDesc2 =
+                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        SYNC_GROUP_COLOR2);
+        String emptyTitleTargetString =
+                mResources.getQuantityString(
+                        R.plurals.accessibility_restore_tab_group_with_color,
+                        mSavedTabGroup2.savedTabs.size(),
+                        mSavedTabGroup2.savedTabs.size(),
+                        mResources.getString(colorDesc2));
+
+        syncIds = new ArrayList<>(Arrays.asList(SYNC_GROUP_ID2));
+        mMediator.resetWithListOfTabs(tabs, syncIds, false);
+
+        assertEquals(TAB_GROUP, mModelList.get(0).model.get(CARD_TYPE));
+        assertThat(
+                mModelList
+                        .get(0)
+                        .model
+                        .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext),
+                equalTo(emptyTitleTargetString));
+    }
+
+    @Test
     @EnableFeatures({ChromeFeatureList.DATA_SHARING})
     public void testTabGroupShareExpandDescriptionString() {
         when(mProfile.isOffTheRecord()).thenReturn(false);
@@ -3763,6 +3827,64 @@ public class TabListMediatorUnitTest {
                         .get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
                         .resolve(mContext),
                 equalTo(targetString));
+    }
+
+    @Test
+    public void testTabGroupActionButtonDescriptionString_WithTabGroupType_Archived() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        List<String> syncIds = new ArrayList<>(Arrays.asList(SYNC_GROUP_ID1));
+        mMediator.setDefaultGridCardSize(new Size(100, 200));
+
+        // Ensure the groups are archived.
+        mSavedTabGroup1.archivalTimeMs = System.currentTimeMillis();
+        mSavedTabGroup2.archivalTimeMs = System.currentTimeMillis();
+
+        @StringRes
+        int colorDesc1 =
+                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        SYNC_GROUP_COLOR1);
+        String nonEmptyTitleTargetString =
+                mResources.getQuantityString(
+                        R.plurals.accessibility_close_tab_group_button_with_group_name_with_color,
+                        mSavedTabGroup1.savedTabs.size(),
+                        GROUP_TITLE,
+                        mSavedTabGroup1.savedTabs.size(),
+                        mResources.getString(colorDesc1));
+
+        mMediator.resetWithListOfTabs(tabs, syncIds, false);
+
+        assertEquals(TAB_GROUP, mModelList.get(0).model.get(CARD_TYPE));
+        assertThat(
+                mModelList
+                        .get(0)
+                        .model
+                        .get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext),
+                equalTo(nonEmptyTitleTargetString));
+
+        @StringRes
+        int colorDesc2 =
+                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        SYNC_GROUP_COLOR2);
+        String emptyTitleTargetString =
+                mResources.getQuantityString(
+                        R.plurals.accessibility_close_tab_group_button_with_color,
+                        mSavedTabGroup2.savedTabs.size(),
+                        mSavedTabGroup2.savedTabs.size(),
+                        mResources.getString(colorDesc2));
+
+        syncIds = new ArrayList<>(Arrays.asList(SYNC_GROUP_ID2));
+        mMediator.resetWithListOfTabs(tabs, syncIds, false);
+
+        assertEquals(TAB_GROUP, mModelList.get(0).model.get(CARD_TYPE));
+        assertThat(
+                mModelList
+                        .get(0)
+                        .model
+                        .get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext),
+                equalTo(emptyTitleTargetString));
     }
 
     @Test
@@ -5013,11 +5135,17 @@ public class TabListMediatorUnitTest {
     }
 
     private SavedTabGroup prepareSavedTabGroup(
-            String syncId, String title, @TabGroupColorId int colorId) {
+            String syncId, String title, @TabGroupColorId int colorId, int numTabs) {
+        List<SavedTabGroupTab> savedTabs = new ArrayList<>();
+        for (int i = 0; i < numTabs; i++) {
+            savedTabs.add(new SavedTabGroupTab());
+        }
+
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.syncId = syncId;
         savedTabGroup.title = title;
         savedTabGroup.color = colorId;
+        savedTabGroup.savedTabs = savedTabs;
         return savedTabGroup;
     }
 

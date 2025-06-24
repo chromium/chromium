@@ -1991,6 +1991,11 @@ class TabListMediator implements TabListNotificationHandler {
         model.set(TabProperties.TAB_ACTION_BUTTON_DATA, tabActionButtonData);
         model.set(TabProperties.TAB_CLICK_LISTENER, tabClickListener);
         model.set(TabProperties.TAB_LONG_CLICK_LISTENER, tabLongClickListener);
+
+        if (mTabActionState != TabActionState.SELECTABLE) {
+            updateTabGroupDescriptionString(savedTabGroup, model);
+            updateTabGroupActionButtonDescriptionString(savedTabGroup, model);
+        }
     }
 
     private TabActionListener getTabActionListener(Tab tab, boolean isInTabGroup) {
@@ -2237,6 +2242,35 @@ class TabListMediator implements TabListNotificationHandler {
         model.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, contentDescriptionResolver);
     }
 
+    private void updateTabGroupDescriptionString(SavedTabGroup savedTabGroup, PropertyModel model) {
+        TextResolver contentDescriptionResolver =
+                (context) -> {
+                    Resources res = context.getResources();
+                    @StringRes
+                    int colorDescRes =
+                            ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                                    savedTabGroup.color);
+                    String colorDesc = res.getString(colorDescRes);
+                    int numOfRelatedTabs = savedTabGroup.savedTabs.size();
+                    // The default string to return for now with TabGroup card type and
+                    // archivalTimeMs not null, indicating an archived tab group.
+                    return savedTabGroup.title.isEmpty()
+                            ? res.getQuantityString(
+                                    R.plurals.accessibility_restore_tab_group_with_color,
+                                    numOfRelatedTabs,
+                                    numOfRelatedTabs,
+                                    colorDesc)
+                            : res.getQuantityString(
+                                    R.plurals
+                                            .accessibility_restore_tab_group_with_group_name_with_color,
+                                    numOfRelatedTabs,
+                                    savedTabGroup.title,
+                                    numOfRelatedTabs,
+                                    colorDesc);
+                };
+        model.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, contentDescriptionResolver);
+    }
+
     private void updateActionButtonDescriptionString(Tab tab, PropertyModel model) {
         TextResolver descriptionTextResolver;
         if (mActionsOnAllRelatedTabs) {
@@ -2258,6 +2292,36 @@ class TabListMediator implements TabListNotificationHandler {
                 (context) -> {
                     return context.getString(
                             R.string.accessibility_tabstrip_btn_close_tab, tab.getTitle());
+                };
+        model.set(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER, descriptionTextResolver);
+    }
+
+    private void updateTabGroupActionButtonDescriptionString(
+            SavedTabGroup savedTabGroup, PropertyModel model) {
+        TextResolver descriptionTextResolver =
+                (context) -> {
+                    Resources res = context.getResources();
+                    @StringRes
+                    int colorDescRes =
+                            ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                                    savedTabGroup.color);
+                    String colorDesc = res.getString(colorDescRes);
+                    int numOfRelatedTabs = savedTabGroup.savedTabs.size();
+                    // The default string to return for now with TabGroup card type and
+                    // archivalTimeMs not null, indicating an archived tab group.
+                    return savedTabGroup.title.isEmpty()
+                            ? res.getQuantityString(
+                                    R.plurals.accessibility_close_tab_group_button_with_color,
+                                    numOfRelatedTabs,
+                                    numOfRelatedTabs,
+                                    colorDesc)
+                            : res.getQuantityString(
+                                    R.plurals
+                                            .accessibility_close_tab_group_button_with_group_name_with_color,
+                                    numOfRelatedTabs,
+                                    savedTabGroup.title,
+                                    numOfRelatedTabs,
+                                    colorDesc);
                 };
         model.set(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER, descriptionTextResolver);
     }
