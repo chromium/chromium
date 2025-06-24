@@ -78,6 +78,19 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
         regional_prepopulated_engines,
     int prepopulated_id);
 
+// Returns the prepopulated search engine with the given `prepopulated_id`
+// from the full list of known prepopulated search engines, or `nullptr` if
+// it's not known there.
+// The region-specific list is used to ensure we prioritise returning a search
+// engine relevant for the given country, for cases where the `prepopulated_id`
+// could be associated with multiple country-specific variants.
+// Important: Unlike other functions in this file, it does not look for the
+// potential presence of search providers overrides. Use with caution.
+const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
+    int prepopulated_id,
+    const std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>&
+        regional_prepopulated_engines);
+
 #if BUILDFLAG(IS_ANDROID)
 // Returns the prepopulated URLs associated with `country_code`.
 // `country_code` is a two-character uppercase ISO 3166-1 country code.

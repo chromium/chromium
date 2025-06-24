@@ -338,7 +338,6 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
       ToStringView(engine.new_tab_url),
       ToStringView(engine.contextual_search_url), ToStringView(engine.logo_url),
       ToStringView(engine.doodle_url),
-      ToStringView(engine.base_builtin_resource_id),
       ToStringView(engine.search_url_post_params),
       ToStringView(engine.suggest_url_post_params),
       ToStringView(engine.image_url_post_params),
@@ -401,7 +400,6 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     std::string contextual_search_url;
     std::string logo_url;
     std::string doodle_url;
-    std::string base_builtin_resource_id;
     std::string search_url_post_params;
     std::string suggest_url_post_params;
     std::string image_url_post_params;
@@ -439,10 +437,6 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     string_value = engine_dict.FindString("doodle_url");
     if (string_value) {
       doodle_url = *string_value;
-    }
-    string_value = engine_dict.FindString("base_builtin_resource_id");
-    if (string_value) {
-      base_builtin_resource_id = *string_value;
     }
     string_value = engine_dict.FindString("search_url_post_params");
     if (string_value) {
@@ -492,8 +486,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     return std::make_unique<TemplateURLData>(
         name, keyword, search_url, suggest_url, image_url, image_translate_url,
         new_tab_url, contextual_search_url, logo_url, doodle_url,
-        base_builtin_resource_id, search_url_post_params,
-        suggest_url_post_params, image_url_post_params,
+        search_url_post_params, suggest_url_post_params, image_url_post_params,
         image_translate_source_language_param_key,
         image_translate_target_language_param_key,
         std::move(search_intent_params), favicon_url, encoding,

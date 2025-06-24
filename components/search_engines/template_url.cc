@@ -48,6 +48,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/sync/base/features.h"
 #include "components/url_formatter/url_formatter.h"
@@ -1805,19 +1806,14 @@ std::optional<std::string_view> TemplateURL::GetBaseBuiltinResourceId() const {
 
   if (!base_builtin_resource_id_.has_value()) {
     const TemplateURLPrepopulateData::PrepopulatedEngine*
-        reference_builtin_engine = nullptr;
-    // Grab the first matching entry from the complete list. In case of IDs
-    // shared across multiple entries, we might be returning the wrong one for
-    // the profile country. We can look into better heuristics in future work.
-    // As there are no diverging icons per ID yet, it is not critical for now.
-    if (auto iter = std::ranges::find_if(
-            TemplateURLPrepopulateData::kAllEngines,
-            [&](const TemplateURLPrepopulateData::PrepopulatedEngine* engine) {
-              return engine->id == data().prepopulate_id;
-            });
-        iter != TemplateURLPrepopulateData::kAllEngines.end()) {
-      reference_builtin_engine = *iter;
-    }
+        reference_builtin_engine =
+            TemplateURLPrepopulateData::GetPrepopulatedEngineFromBuiltInData(
+                data().prepopulate_id,
+                // We are deliberately not providing a list of regional engines.
+                // It would be useful to disambiguate between regional variants
+                // of some engines that could be using different icons. It is
+                // not a use case we have for now, so that's unnecessary.
+                /*regional_prepopulated_engines=*/ {});
 
     if (reference_builtin_engine &&
         reference_builtin_engine->base_builtin_resource_id) {
