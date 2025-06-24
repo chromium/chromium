@@ -31,7 +31,7 @@ class CC_EXPORT PictureLayerTilingSet {
   enum TilingRangeType {
     HIGHER_THAN_HIGH_RES,
     HIGH_RES,
-    BETWEEN_HIGH_AND_LOW_RES,
+    LOWER_THAN_HIGH_RES,
   };
   struct TilingRange {
     TilingRange(size_t start, size_t end) : start(start), end(end) {}

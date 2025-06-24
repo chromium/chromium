@@ -625,7 +625,7 @@ PictureLayerTilingSet::TilingRange PictureLayerTilingSet::GetTilingRange(
     case HIGH_RES:
       range = high_res_range;
       break;
-    case BETWEEN_HIGH_AND_LOW_RES:
+    case LOWER_THAN_HIGH_RES:
       range = TilingRange(high_res_range.end, tilings_size);
       break;
   }
