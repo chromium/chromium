@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/nacl/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 
 static_library("ipc_message_lib") {
@@ -12,7 +11,6 @@ static_library("ipc_message_lib") {
     "//base",
     "//chrome/common",
     "//chrome/common/safe_browsing:proto",
-    "//components/nacl/common:buildflags",
     "//components/safe_browsing/core/common",
     "//components/spellcheck/common",
     "//content/child",
@@ -42,7 +40,4 @@ static_library("ipc_message_lib") {
     "message_names.cc",
     "message_names.h",
   ]
-  if (enable_nacl) {
-    public_deps += [ "//components/nacl/common" ]
-  }
 }
