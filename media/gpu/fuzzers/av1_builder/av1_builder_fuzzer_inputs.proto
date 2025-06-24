@@ -1,0 +1,113 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package media.fuzzing;
+
+enum FrameType {
+  KEY = 0;
+  INTER = 1;
+  INTRAONLY = 2;
+  SWITCH = 3;
+}
+
+enum LoopRestorationType {
+  NONE = 0;
+  SWITCHABLE = 1;
+  WIENER = 2;
+  SGRPROJ = 3;
+}
+
+message AV1FrameHeader {
+  optional FrameType frame_type = 1;
+  optional bool error_resilient_mode = 2;
+  optional bool disable_cdf_update = 3;
+  optional bool disable_frame_end_update_cdf = 4;
+  optional uint32 base_qindex = 5;
+  optional bool separate_uv_delta_q = 6;
+  optional int32 delta_q_y_dc = 7;
+  optional int32 delta_q_u_dc = 8;
+  optional int32 delta_q_u_ac = 9;
+  optional int32 delta_q_v_dc = 10;
+  optional int32 delta_q_v_ac = 11;
+  optional bool using_qmatrix = 12;
+  optional uint32 qm_y = 13;
+  optional uint32 qm_u = 14;
+  optional uint32 qm_v = 15;
+  optional uint32 order_hint = 16;
+  repeated uint32 filter_level = 17;
+  optional uint32 filter_level_u = 18;
+  optional uint32 filter_level_v = 19;
+  optional uint32 sharpness_level = 20;
+  optional bool loop_filter_delta_enabled = 21;
+  optional bool loop_filter_delta_update = 22;
+  optional bool update_ref_delta = 23;
+  repeated int32 loop_filter_ref_deltas = 24;
+  optional bool update_mode_delta = 25;
+  repeated int32 loop_filter_mode_deltas = 26;
+  optional bool delta_lf_present = 27;
+  optional uint32 delta_lf_res = 28;
+  optional bool delta_lf_multi = 29;
+  optional bool delta_q_present = 30;
+  optional uint32 delta_q_res = 31;
+  optional uint32 primary_ref_frame = 32;
+  repeated uint32 ref_frame_idx = 33;
+  optional uint32 refresh_frame_flags = 34;
+  repeated uint32 ref_order_hint = 35;
+  optional uint32 cdef_damping_minus_3 = 36;
+  optional uint32 cdef_bits = 37;
+  repeated uint32 cdef_y_pri_strength = 38;
+  repeated uint32 cdef_y_sec_strength = 39;
+  repeated uint32 cdef_uv_pri_strength = 40;
+  repeated uint32 cdef_uv_sec_strength = 41;
+  repeated LoopRestorationType restoration_type = 42;
+  optional uint32 lr_unit_shift = 43;
+  optional uint32 lr_uv_shift = 44;
+  optional uint32 tx_mode = 45;
+  optional bool reduced_tx_set = 46;
+  optional bool segmentation_enabled = 47;
+  optional bool segmentation_update_map = 48;
+  optional bool segmentation_temporal_update = 49;
+  optional bool segmentation_update_data = 50;
+  optional uint32 segment_number = 51;
+  repeated uint32 feature_mask = 52;
+  repeated uint32 feature_data = 53;
+  optional bool allow_screen_content_tools = 54;
+  optional bool allow_intrabc = 55;
+  optional bool reference_select = 56;
+}
+
+message AV1SequenceHeader {
+  optional uint32 profile = 1;
+  optional uint32 operating_points_cnt_minus_1 = 2;
+  repeated uint32 level = 3;
+  repeated uint32 tier = 4;
+  optional uint32 frame_width_bits_minus_1 = 5;
+  optional uint32 frame_height_bits_minus_1 = 6;
+  optional uint32 width = 7;
+  optional uint32 height = 8;
+  optional bool use_128x128_superblock = 9;
+  optional bool enable_filter_intra = 10;
+  optional bool enable_intra_edge_filter = 11;
+  optional bool enable_interintra_compound = 12;
+  optional bool enable_masked_compound = 13;
+  optional bool enable_warped_motion = 14;
+  optional bool enable_dual_filter = 15;
+  optional bool enable_order_hint = 16;
+  optional bool enable_jnt_comp = 17;
+  optional bool enable_ref_frame_mvs = 18;
+  optional uint32 order_hint_bits_minus_1 = 19;
+  optional bool enable_superres = 20;
+  optional bool enable_cdef = 21;
+  optional bool enable_restoration = 22;
+}
+
+message AV1FrameOBUList {
+  message FrameHeader {
+    optional AV1SequenceHeader seq_hdr = 1;
+    optional AV1FrameHeader frame_hdr = 2;
+  }
+  repeated FrameHeader frames = 1;
+}

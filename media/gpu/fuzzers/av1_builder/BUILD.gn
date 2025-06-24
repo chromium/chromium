@@ -1,0 +1,27 @@
+# Copyright 2025 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//media/media_options.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/libgav1/options.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("av1_builder_fuzzer_inputs") {
+  sources = [ "av1_builder_fuzzer_inputs.proto" ]
+}
+
+if (is_win || use_vaapi) {
+  fuzzer_test("av1_builder_fuzzer") {
+    sources = [ "av1_builder_fuzzer.cc" ]
+    deps = [
+      ":av1_builder_fuzzer_inputs",
+      "//base",
+      "//media/gpu",
+      "//third_party/libgav1:libgav1_parser",
+      "//third_party/libprotobuf-mutator",
+    ]
+
+    seed_corpus = "seed"
+  }
+}

@@ -48,6 +48,7 @@ component("gpu") {
     "//content/gpu:*",
     "//content/renderer:*",
     "//media/audio:unit_tests",
+    "//media/gpu/fuzzers/av1_builder/*",
     "//media/gpu/ipc/*",
     "//media/gpu/test/*",
     "//media/gpu/vaapi/*",
@@ -775,4 +776,11 @@ fuzzer_test("media_vp9_decoder_fuzzer") {
     "//media:test_support",
   ]
   seed_corpuses = [ "//media/test/data" ]
+}
+
+if (is_win || use_vaapi) {
+  group("stream_builder_fuzzers") {
+    testonly = true
+    public_deps = [ "//media/gpu/fuzzers/av1_builder:av1_builder_fuzzer" ]
+  }
 }
