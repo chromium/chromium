@@ -487,8 +487,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // JavaScript and also easily identifiable (it is a single attribute).
   AttributeCollection AttributesWithoutStyleUpdate() const;
 
-  void scrollIntoView(const V8UnionBooleanOrScrollIntoViewOptions* arg);
-  void scrollIntoView(bool align_to_top = true);
   void scrollIntoViewWithOptions(const ScrollIntoViewOptions*);
   void ScrollIntoViewNoVisualUpdate(mojom::blink::ScrollIntoViewParamsPtr,
                                     const Element* container = nullptr,
@@ -515,10 +513,31 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual int scrollWidth();
   virtual int scrollHeight();
 
+  ScriptPromise<IDLUndefined> scrollIntoView(
+      ScriptState* script_state,
+      const V8UnionBooleanOrScrollIntoViewOptions* arg);
+  ScriptPromise<IDLUndefined> scrollIntoView(ScriptState* script_state,
+                                             bool align_to_top = true);
+  ScriptPromise<IDLUndefined> scrollBy(ScriptState* script_state,
+                                       double x,
+                                       double y);
+  ScriptPromise<IDLUndefined> scrollBy(ScriptState* script_state,
+                                       const ScrollToOptions*);
+  ScriptPromise<IDLUndefined> scrollTo(ScriptState* script_state,
+                                       double x,
+                                       double y);
+  ScriptPromise<IDLUndefined> scrollTo(ScriptState* script_state,
+                                       const ScrollToOptions*);
+
+  // The following `scrollIntoView`, `scrollBy` and `scrollTo` methods are
+  // called only from tests.
+  //
+  // TODO(mustaq@chromium.org): Append "ForTesting" to the method names to
+  // prevent unpexpected non-test calls.
+  void scrollIntoView(const V8UnionBooleanOrScrollIntoViewOptions* arg);
+  void scrollIntoView();
   void scrollBy(double x, double y);
-  void scrollBy(const ScrollToOptions*);
   void scrollTo(double x, double y);
-  void scrollTo(const ScrollToOptions*);
 
   bool SetScrollOffset(const ScrollOffset&);
   bool SetScrollOffset(const ScrollToOptions*);

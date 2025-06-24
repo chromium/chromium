@@ -1851,7 +1851,36 @@ void Element::setNonce(const AtomicString& nonce) {
   EnsureElementRareData().SetNonce(nonce);
 }
 
-void Element::scrollIntoView(const V8UnionBooleanOrScrollIntoViewOptions* arg) {
+namespace {
+
+// TODO(https://crbug.com/41406914): Ad-hoc method until we hook up with scroll
+// animation end.
+ScriptPromise<IDLUndefined> CreateScrollResolvedPromise(
+    ScriptState* script_state) {
+  // Legacy binary tests pass a null `script_state`.
+  if (!script_state ||
+      !RuntimeEnabledFeatures::ProgrammaticScrollPromiseEnabled()) {
+    return EmptyPromise();  // This is exposed to JS as `undefined`.
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  resolver->Resolve();
+  return resolver->Promise();
+}
+
+}  // namespace
+
+ScriptPromise<IDLUndefined> Element::scrollIntoView(ScriptState* script_state,
+                                                    bool align_to_top) {
+  auto* arg =
+      MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(align_to_top);
+  return scrollIntoView(script_state, arg);
+}
+
+ScriptPromise<IDLUndefined> Element::scrollIntoView(
+    ScriptState* script_state,
+    const V8UnionBooleanOrScrollIntoViewOptions* arg) {
   ScrollIntoViewOptions* options = nullptr;
   switch (arg->GetContentType()) {
     case V8UnionBooleanOrScrollIntoViewOptions::ContentType::kBoolean:
@@ -1866,12 +1895,8 @@ void Element::scrollIntoView(const V8UnionBooleanOrScrollIntoViewOptions* arg) {
   }
   DCHECK(options);
   scrollIntoViewWithOptions(options);
-}
 
-void Element::scrollIntoView(bool align_to_top) {
-  auto* arg =
-      MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(align_to_top);
-  scrollIntoView(arg);
+  return CreateScrollResolvedPromise(script_state);
 }
 
 void Element::scrollIntoViewWithOptions(const ScrollIntoViewOptions* options) {
@@ -2574,16 +2599,20 @@ int Element::scrollHeight() {
   return 0;
 }
 
-void Element::scrollBy(double x, double y) {
+ScriptPromise<IDLUndefined> Element::scrollBy(ScriptState* script_state,
+                                              double x,
+                                              double y) {
   ScrollToOptions* scroll_to_options = ScrollToOptions::Create();
   scroll_to_options->setLeft(x);
   scroll_to_options->setTop(y);
-  scrollBy(scroll_to_options);
+  return scrollBy(script_state, scroll_to_options);
 }
 
-void Element::scrollBy(const ScrollToOptions* scroll_to_options) {
+ScriptPromise<IDLUndefined> Element::scrollBy(
+    ScriptState* script_state,
+    const ScrollToOptions* scroll_to_options) {
   if (!InActiveDocument()) {
-    return;
+    return CreateScrollResolvedPromise(script_state);
   }
 
   // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
@@ -2600,17 +2629,27 @@ void Element::scrollBy(const ScrollToOptions* scroll_to_options) {
   } else {
     ScrollLayoutBoxBy(scroll_to_options);
   }
+
+  return CreateScrollResolvedPromise(script_state);
 }
 
-void Element::scrollTo(double x, double y) {
+ScriptPromise<IDLUndefined> Element::scrollTo(ScriptState* script_state,
+                                              double x,
+                                              double y) {
   ScrollToOptions* scroll_to_options = ScrollToOptions::Create();
   scroll_to_options->setLeft(x);
   scroll_to_options->setTop(y);
-  scrollTo(scroll_to_options);
+  return scrollTo(script_state, scroll_to_options);
 }
 
-void Element::scrollTo(const ScrollToOptions* scroll_to_options) {
+ScriptPromise<IDLUndefined> Element::scrollTo(
+    ScriptState* script_state,
+    const ScrollToOptions* scroll_to_options) {
+  if (!InActiveDocument()) {
+    return CreateScrollResolvedPromise(script_state);
+  }
   SetScrollOffset(scroll_to_options);
+  return CreateScrollResolvedPromise(script_state);
 }
 
 bool Element::SetScrollOffset(const ScrollOffset& offset) {
@@ -2639,6 +2678,22 @@ bool Element::SetScrollOffset(const ScrollToOptions* scroll_to_options) {
   } else {
     return ScrollLayoutBoxTo(scroll_to_options);
   }
+}
+
+void Element::scrollIntoView() {
+  scrollIntoView(nullptr, /*align_to_top=*/true);
+}
+
+void Element::scrollIntoView(const V8UnionBooleanOrScrollIntoViewOptions* arg) {
+  scrollIntoView(nullptr, arg);
+}
+
+void Element::scrollBy(double x, double y) {
+  scrollBy(nullptr, x, y);
+}
+
+void Element::scrollTo(double x, double y) {
+  scrollTo(nullptr, x, y);
 }
 
 bool Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options) {

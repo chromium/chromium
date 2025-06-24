@@ -3846,6 +3846,11 @@
       status: "test",
       base_feature: "none",
     },
+    // Promisify programmatic scroll methods in Element and Window.
+    // https://crbug.com/41406914
+    {
+      name: "ProgrammaticScrollPromise",
+    },
     {
       // Propagate overscroll-behavior from the root element rather than the
       // body element. crbug.com/41453796

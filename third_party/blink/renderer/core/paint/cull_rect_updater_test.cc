@@ -509,7 +509,7 @@ TEST_F(CullRectUpdaterTest, StackedChildOfNonStackingContextScroller) {
   EXPECT_EQ(gfx::Rect(0, 0, 400, 7000), GetCullRect("child").Rect());
 
   // The full cull rect still applies when the scroller scrolls to the top.
-  scroller->scrollTo(0, 0);
+  scroller->scrollTo(0.0, 0.0);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Rect(0, 0, 400, 7000), GetContentsCullRect("scroller").Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 400, 7000), GetCullRect("child").Rect());
@@ -565,7 +565,7 @@ TEST_F(CullRectUpdaterTest, ContentsCullRectCoveringWholeContentsRect) {
   EXPECT_EQ(gfx::Rect(0, 0, 400, 7020), GetContentsCullRect("scroller").Rect());
   EXPECT_EQ(gfx::Rect(-4000, -7000, 8400, 7020), GetCullRect("child").Rect());
 
-  scroller->scrollTo(0, 0);
+  scroller->scrollTo(0.0, 0.0);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Rect(0, 0, 400, 7020), GetContentsCullRect("scroller").Rect());
   EXPECT_EQ(gfx::Rect(-4000, -7000, 8400, 7020), GetCullRect("child").Rect());
