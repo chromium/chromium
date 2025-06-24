@@ -568,6 +568,10 @@ class PasswordsFallbackWithUIInteractionsTest
     autofill_context_menu_manager_ =
         std::make_unique<AutofillContextMenuManager>(
             render_view_context_menu_.get(), menu_model_.get());
+    autofill_client()
+        ->GetPersonalDataManager()
+        .test_address_data_manager()
+        .SetAutofillProfileEnabled(false);
 
     FormData form = CreateAndAttachPasswordForm();
     autofill_context_menu_manager()->set_params_for_testing(
