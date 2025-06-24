@@ -236,7 +236,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
     kIgnore,                       // Ignore the scroll.
     kUpdateBaseOffset,             // Update `base_offset_` only.
     kUpdateProgress,               // Update `progress_` only.
-    kUpdateBaseOffsetAndProgress,  // Update `bse_offset_` and `progress_`.
+    kUpdateBaseOffsetAndProgress,  // Update `base_offset_` and `progress_`.
   };
   ScrollAction ActionForScrollFromOffset(CGFloat from_offset) const;
 

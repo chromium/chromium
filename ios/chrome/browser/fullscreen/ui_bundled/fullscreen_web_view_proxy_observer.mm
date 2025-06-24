@@ -48,11 +48,6 @@
 
 #pragma mark - CRWWebViewScrollViewProxyObserver
 
-- (void)webViewScrollViewProxyDidSetScrollView:
-    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
-  MoveContentBelowHeader(self.proxy, self.model);
-}
-
 - (BOOL)webViewScrollViewShouldScrollToTop:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
   // Exit fullscreen when the status bar is tapped, but don't allow the scroll-

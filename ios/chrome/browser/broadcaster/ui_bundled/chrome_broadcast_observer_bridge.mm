@@ -26,6 +26,9 @@ ChromeBroadcastObserverInterface::~ChromeBroadcastObserverInterface() = default;
 }
 
 - (void)broadcastScrollViewContentSize:(CGSize)contentSize {
+  if (contentSize.width == 0.0 && contentSize.height == 0.0) {
+    return;
+  }
   self.observer->OnScrollViewContentSizeBroadcasted(contentSize);
 }
 
