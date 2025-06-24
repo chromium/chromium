@@ -11,6 +11,9 @@
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
 
 namespace content {
+
+class RenderProcessHost;
+
 namespace protocol {
 
 class MemoryHandler : public DevToolsDomainHandler,

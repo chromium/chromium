@@ -5,11 +5,13 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_BLUETOOTH_EMULATION_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_BLUETOOTH_EMULATION_HANDLER_H_
 
+#include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/protocol/bluetooth_emulation.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/common/content_export.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 
 namespace content::protocol {
 

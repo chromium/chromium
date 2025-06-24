@@ -51,6 +51,7 @@ class URLLoaderFactoryOverride;
 
 namespace content {
 class BrowserContext;
+class DevToolsAgentHostClient;
 class DevToolsAgentHostImpl;
 class DevToolsIOContext;
 class DevToolsURLLoaderInterceptor;

@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/strings/string_number_conversions.h"
+#include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/federated_auth_request_page_data.h"

@@ -31,6 +31,8 @@ class QuotaOverrideHandle;
 
 namespace content {
 class AttributionManager;
+class DevToolsAgentHostClient;
+class DevToolsAgentHostImpl;
 class RenderFrameHostImpl;
 class StoragePartition;
 

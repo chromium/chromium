@@ -17,6 +17,7 @@
 namespace content {
 
 class BrowserContext;
+class DevToolsAgentHostImpl;
 class FrameTreeNode;
 
 namespace protocol {

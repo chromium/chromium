@@ -12,8 +12,10 @@
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/fed_cm.h"
 #include "content/common/content_export.h"
+#include "url/origin.h"
 
 namespace content {
+class DevToolsAgentHostImpl;
 class FederatedAuthRequestImpl;
 class FederatedAuthRequestPageData;
 class FederatedIdentityApiPermissionContextDelegate;
