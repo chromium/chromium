@@ -21,7 +21,8 @@ load("./simple.star", "simple")
 load("./windows.star", chromium_windows = "chromium")
 
 def __disable_remote(ctx, step_config):
-    if gn.args(ctx).get("use_remoteexec") == "true":
+    gn_logs_data = gn_logs.read(ctx)
+    if gn_logs_data.get("use_remoteexec") == "true":
         return step_config
     for rule in step_config["rules"]:
         rule["remote"] = False

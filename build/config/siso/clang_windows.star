@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 """Siso configuration for clang-cl/windows."""
 
-load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
@@ -214,7 +213,7 @@ def __step_config(ctx, step_config):
             },
         ])
         step_config = clang_exception.step_config(ctx, step_config, use_windows_worker)
-    elif gn.args(ctx).get("use_remoteexec") == "true":
+    elif gn_logs.read(ctx).get("use_remoteexec") == "true":
         fail("remoteexec requires rewrapper config")
     return step_config
 

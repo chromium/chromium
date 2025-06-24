@@ -4,11 +4,11 @@
 # found in the LICENSE file.
 """Siso configuration for clang/mac."""
 
-load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
 load("./clang_exception.star", "clang_exception")
 load("./clang_unix.star", "clang_unix")
+load("./gn_logs.star", "gn_logs")
 load("./mac_sdk.star", "mac_sdk")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
@@ -48,7 +48,7 @@ def __step_config(ctx, step_config):
                 elif rule["platform_ref"] == "large":
                     rule["platform_ref"] = "clang_large"
             step_config["rules"].append(rule)
-    elif gn.args(ctx).get("use_remoteexec") == "true":
+    elif gn_logs.read(ctx).get("use_remoteexec") == "true":
         fail("remoteexec requires rewrapper config")
 
     step_config = clang_exception.step_config(ctx, step_config)
