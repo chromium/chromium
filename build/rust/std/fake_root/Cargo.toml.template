@@ -17,6 +17,7 @@ features = [
 ]
 
 [patch.crates-io]
+compiler_builtins = { path = "../../../../RUST_SRC_ROOT/library/compiler-builtins/compiler-builtins" }
 rustc-std-workspace-core = { path = '../../../../RUST_SRC_ROOT/library/rustc-std-workspace-core' }
 rustc-std-workspace-alloc = { path = '../../../../RUST_SRC_ROOT/library/rustc-std-workspace-alloc' }
 rustc-std-workspace-std = { path = '../../../../RUST_SRC_ROOT/library/rustc-std-workspace-std' }

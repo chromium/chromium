@@ -310,6 +310,9 @@ template("cargo_crate") {
       rustflags +=
           [ "-Awarnings" ]  # Suppress other warnings in 3rd-party crates.
 
+      # TODO(crbug.com/424424323): Clean up and enable.
+      rustflags += [ "-Amismatched_lifetime_syntaxes" ]
+
       if (!defined(build_native_rust_unit_tests)) {
         build_native_rust_unit_tests = _crate_type != "proc-macro"
       }

@@ -8,18 +8,17 @@ import("//build/rust/cargo_crate.gni")
 
 cargo_crate("addr2line") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.24.2/src/lib.rs"
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.25.0/src/lib.rs"
   enabled = !is_win
   sources = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.24.2/src/bin/addr2line.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.24.2/src/frame.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.24.2/src/function.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.24.2/src/lazy.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.24.2/src/lib.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.24.2/src/line.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.24.2/src/loader.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.24.2/src/lookup.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.24.2/src/unit.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.25.0/src/bin/addr2line.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.25.0/src/frame.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.25.0/src/function.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.25.0/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.25.0/src/line.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.25.0/src/loader.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.25.0/src/lookup.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/addr2line-0.25.0/src/unit.rs",
   ]
   inputs = []
   no_std = true
@@ -27,7 +26,7 @@ cargo_crate("addr2line") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "0.24.2"
+  cargo_pkg_version = "0.25.0"
   cargo_pkg_name = "addr2line"
   cargo_pkg_description =
       "A cross-platform symbolication library written in Rust, using `gimli`"
@@ -47,7 +46,6 @@ cargo_crate("addr2line") {
   ]
   if (!is_win) {
     deps += [
-      ":compiler_builtins",
       ":gimli",
       ":rustc_std_workspace_alloc",
       ":rustc_std_workspace_core",
@@ -59,7 +57,6 @@ cargo_crate("addr2line") {
   }
   features = [
     "alloc",
-    "compiler_builtins",
     "core",
     "rustc-dep-of-std",
   ]
@@ -77,11 +74,11 @@ cargo_crate("addr2line") {
 }
 cargo_crate("adler2") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/adler2-2.0.0/src/lib.rs"
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/adler2-2.0.1/src/lib.rs"
   enabled = !is_win
   sources = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/adler2-2.0.0/src/algo.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/adler2-2.0.0/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/adler2-2.0.1/src/algo.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/adler2-2.0.1/src/lib.rs",
   ]
   inputs = []
   no_std = true
@@ -89,7 +86,7 @@ cargo_crate("adler2") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "2.0.0"
+  cargo_pkg_version = "2.0.1"
   cargo_pkg_authors = "Jonas Schievink <jonasschievink@gmail.com>, oyvindln <oyvindln@users.noreply.github.com>"
   cargo_pkg_name = "adler2"
   cargo_pkg_description =
@@ -109,16 +106,12 @@ cargo_crate("adler2") {
     "//build/rust/std:std_build_deps",
   ]
   if (!is_win) {
-    deps += [
-      ":compiler_builtins",
-      ":rustc_std_workspace_core",
-    ]
+    deps += [ ":rustc_std_workspace_core" ]
   }
   aliased_deps = {
     core = ":rustc_std_workspace_core"
   }
   features = [
-    "compiler_builtins",
     "core",
     "rustc-dep-of-std",
   ]
@@ -202,6 +195,7 @@ cargo_crate("alloc") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/is_zero.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/partial_eq.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/peek_mut.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/set_len_on_drop.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/spec_extend.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/vec/spec_from_elem.rs",
@@ -248,15 +242,15 @@ cargo_crate("alloc") {
 }
 cargo_crate("cfg_if") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/cfg-if-1.0.0/src/lib.rs"
-  sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/cfg-if-1.0.0/src/lib.rs" ]
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/cfg-if-1.0.1/src/lib.rs"
+  sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/cfg-if-1.0.1/src/lib.rs" ]
   inputs = []
   no_std = true
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.0"
+  cargo_pkg_version = "1.0.1"
   cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "cfg-if"
   cargo_pkg_description = "A macro to ergonomically define an item depending on a large number of #[cfg] parameters. Structured like an if-else chain, the first matching branch is the item that gets emitted."
@@ -271,7 +265,6 @@ cargo_crate("cfg_if") {
   ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
-    ":compiler_builtins",
     ":rustc_std_workspace_core",
     "//build/rust/std:profiler_builtins_group",
     "//build/rust/std:std_build_deps",
@@ -280,7 +273,6 @@ cargo_crate("cfg_if") {
     core = ":rustc_std_workspace_core"
   }
   features = [
-    "compiler_builtins",
     "core",
     "rustc-dep-of-std",
   ]
@@ -298,233 +290,206 @@ cargo_crate("cfg_if") {
 }
 cargo_crate("compiler_builtins") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/lib.rs"
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/lib.rs"
   sources = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/aarch64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/aarch64_linux.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/arm.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/arm_linux.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/avr.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/float/add.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/float/cmp.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/float/conv.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/float/div.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/float/extend.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/float/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/float/mul.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/float/pow.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/float/sub.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/float/traits.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/float/trunc.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/hexagon.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/addsub.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/big.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/bswap.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/leading_zeros.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/mul.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/sdiv.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/shift.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/specialized_div_rem/asymmetric.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/specialized_div_rem/binary_long.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/specialized_div_rem/delegate.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/specialized_div_rem/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/specialized_div_rem/norm_shift.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/specialized_div_rem/trifecta.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/trailing_zeros.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/traits.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/int/udiv.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/lib.miri.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/lib.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/macros.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/acos.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/acosf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/acosh.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/acoshf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/arch/aarch64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/arch/i586.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/arch/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/arch/wasm32.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/arch/x86.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/arch/x86/detect.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/arch/x86/fma.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/asin.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/asinf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/asinh.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/asinhf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/atan.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/atan2.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/atan2f.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/atanf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/atanh.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/atanhf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/cbrt.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/cbrtf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/ceil.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/copysign.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/copysignf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/copysignf128.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/copysignf16.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/cos.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/cosf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/cosh.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/coshf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/erf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/erff.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/exp.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/exp10.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/exp10f.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/exp2.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/exp2f.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/expf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/expm1.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/expm1f.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/expo2.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fabs.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fabsf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fabsf128.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fabsf16.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fdim.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fdimf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fdimf128.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fdimf16.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/floor.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/floorf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/floorf128.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/floorf16.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fma.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fmin_fmax.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fminimum_fmaximum.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fminimum_fmaximum_num.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fmod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fmodf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fmodf128.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/fmodf16.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/frexp.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/frexpf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/ceil.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/copysign.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/fabs.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/fdim.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/floor.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/fma.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/fma_wide.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/fmax.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/fmaximum.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/fmaximum_num.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/fmin.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/fminimum.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/fminimum_num.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/fmod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/rint.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/round.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/scalbn.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/sqrt.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/generic/trunc.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/hypot.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/hypotf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/ilogb.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/ilogbf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/j0.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/j0f.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/j1.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/j1f.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/jn.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/jnf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/k_cos.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/k_cosf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/k_expo2.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/k_expo2f.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/k_sin.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/k_sinf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/k_tan.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/k_tanf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/ldexp.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/ldexpf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/ldexpf128.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/ldexpf16.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/lgamma.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/lgamma_r.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/lgammaf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/lgammaf_r.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/log.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/log10.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/log10f.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/log1p.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/log1pf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/log2.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/log2f.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/logf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/modf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/modff.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/nextafter.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/nextafterf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/pow.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/powf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/rem_pio2.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/rem_pio2_large.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/rem_pio2f.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/remainder.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/remainderf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/remquo.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/remquof.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/rint.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/round.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/roundeven.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/roundf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/roundf128.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/roundf16.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/scalbn.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/scalbnf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/scalbnf128.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/scalbnf16.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/sin.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/sincos.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/sincosf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/sinf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/sinh.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/sinhf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/sqrt.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/sqrtf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/sqrtf128.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/sqrtf16.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/support/big.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/support/big/tests.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/support/env.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/support/feature_detect.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/support/float_traits.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/support/hex_float.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/support/int_traits.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/support/macros.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/support/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/tan.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/tanf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/tanh.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/tanhf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/tgamma.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/tgammaf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/trunc.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/truncf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/truncf128.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/libm_math/truncf16.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/math/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/mem/impls.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/mem/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/mem/x86_64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/probestack.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/riscv.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/x86.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/x86_64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/aarch64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/aarch64_linux.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/arm.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/arm_linux.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/avr.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/float/add.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/float/cmp.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/float/conv.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/float/div.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/float/extend.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/float/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/float/mul.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/float/pow.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/float/sub.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/float/traits.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/float/trunc.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/hexagon.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/addsub.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/big.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/bswap.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/leading_zeros.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/mul.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/sdiv.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/shift.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/specialized_div_rem/asymmetric.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/specialized_div_rem/binary_long.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/specialized_div_rem/delegate.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/specialized_div_rem/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/specialized_div_rem/norm_shift.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/specialized_div_rem/trifecta.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/trailing_zeros.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/traits.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/int/udiv.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/lib.miri.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/macros.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/math/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/mem/impls.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/mem/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/mem/x86_64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/probestack.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/riscv.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/x86.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/x86_64.rs",
   ]
-  inputs = []
+  inputs = [
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/libm_helper.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/acos.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/acosf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/acosh.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/acoshf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/arch/aarch64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/arch/i586.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/arch/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/arch/wasm32.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/arch/x86/detect.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/arch/x86/fma.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/arch/x86.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/asin.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/asinf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/asinh.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/asinhf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/atan.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/atan2.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/atan2f.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/atanf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/atanh.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/atanhf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/cbrt.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/cbrtf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/ceil.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/copysign.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/cos.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/cosf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/cosh.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/coshf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/erf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/erff.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/exp.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/exp10.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/exp10f.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/exp2.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/exp2f.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/expf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/expm1.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/expm1f.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/expo2.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/fabs.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/fdim.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/floor.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/fma.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/fmin_fmax.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/fminimum_fmaximum.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/fminimum_fmaximum_num.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/fmod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/frexp.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/frexpf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/ceil.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/copysign.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/fabs.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/fdim.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/floor.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/fma.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/fma_wide.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/fmax.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/fmaximum.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/fmaximum_num.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/fmin.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/fminimum.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/fminimum_num.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/fmod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/rint.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/round.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/scalbn.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/sqrt.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/generic/trunc.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/hypot.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/hypotf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/ilogb.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/ilogbf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/j0.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/j0f.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/j1.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/j1f.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/jn.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/jnf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/k_cos.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/k_cosf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/k_expo2.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/k_expo2f.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/k_sin.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/k_sinf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/k_tan.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/k_tanf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/ldexp.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/lgamma.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/lgamma_r.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/lgammaf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/lgammaf_r.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/log.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/log10.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/log10f.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/log1p.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/log1pf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/log2.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/log2f.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/logf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/modf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/modff.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/nextafter.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/nextafterf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/pow.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/powf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/rem_pio2.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/rem_pio2_large.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/rem_pio2f.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/remainder.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/remainderf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/remquo.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/remquof.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/rint.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/round.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/roundeven.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/scalbn.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/sin.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/sincos.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/sincosf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/sinf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/sinh.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/sinhf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/sqrt.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/support/big/tests.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/support/big.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/support/env.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/support/feature_detect.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/support/float_traits.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/support/hex_float.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/support/int_traits.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/support/macros.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/support/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/tan.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/tanf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/tanh.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/tanhf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/tgamma.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/tgammaf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/src/math/trunc.rs",
+  ]
   no_std = true
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  edition = "2021"
-  cargo_pkg_version = "0.1.157"
+  edition = "2024"
+  cargo_pkg_version = "0.1.160"
   cargo_pkg_authors = "Jorge Aparicio <japaricious@gmail.com>"
   cargo_pkg_name = "compiler_builtins"
   cargo_pkg_description = "Compiler intrinsics used by the Rust compiler."
@@ -540,20 +505,17 @@ cargo_crate("compiler_builtins") {
   ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
-    ":rustc_std_workspace_core",
+    ":core",
     "//build/rust/std:std_build_deps",
   ]
-  aliased_deps = {
-    core = ":rustc_std_workspace_core"
-  }
   features = [
     "compiler-builtins",
     "default",
     "rustc-dep-of-std",
   ]
-  build_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/build.rs"
-  build_sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/build.rs" ]
-  build_script_inputs = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.157/src/../configure.rs" ]
+  build_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/build.rs"
+  build_sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/build.rs" ]
+  build_script_inputs = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../configure.rs" ]
   rustenv = [
     "CFG_DISABLE_UNSTABLE_FEATURES=0",
     "STD_ENV_ARCH=$rust_target_arch",
@@ -565,10 +527,6 @@ cargo_crate("compiler_builtins") {
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
-
-  if (current_cpu == "arm64") {
-    build_script_outputs = [ "outlined_atomics.rs" ]
-  }
 }
 cargo_crate("core") {
   crate_type = "rlib"
@@ -634,6 +592,7 @@ cargo_crate("core") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/hash/sip.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/hint.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/internal_macros.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/intrinsics/bounds.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/intrinsics/fallback.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/intrinsics/mir.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/intrinsics/mod.rs",
@@ -672,6 +631,7 @@ cargo_crate("core") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/empty.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/from_coroutine.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/from_fn.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/generator.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/once.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/once_with.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/repeat.rs",
@@ -726,6 +686,7 @@ cargo_crate("core") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/int_log10.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/int_macros.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/int_sqrt.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/libm.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/niche_types.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/num/nonzero.rs",
@@ -1066,6 +1027,10 @@ cargo_crate("core") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ffi/c_void.md",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/fmt/fmt_trait_method_doc.md",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/macros/panic.md",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ptr/docs/add.md",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ptr/docs/as_uninit_slice.md",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ptr/docs/is_null.md",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ptr/docs/offset.md",
   ]
   no_std = true
 
@@ -1104,21 +1069,21 @@ cargo_crate("core") {
 }
 cargo_crate("getopts") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/getopts-0.2.21/src/lib.rs"
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/getopts-0.2.23/src/lib.rs"
   sources = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/getopts-0.2.21/src/lib.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/getopts-0.2.21/src/tests/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/getopts-0.2.23/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/getopts-0.2.23/src/tests/mod.rs",
   ]
   inputs = []
   no_std = true
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  edition = "2015"
-  cargo_pkg_version = "0.2.21"
+  edition = "2021"
+  cargo_pkg_version = "0.2.23"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "getopts"
-  cargo_pkg_description = "getopts-like option parsing."
+  cargo_pkg_description = "getopts-like option parsing"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -1159,53 +1124,54 @@ cargo_crate("getopts") {
 }
 cargo_crate("gimli") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/lib.rs"
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/lib.rs"
   enabled = !is_win
   sources = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/arch.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/common.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/constants.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/endianity.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/leb128.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/lib.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/abbrev.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/addr.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/aranges.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/cfi.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/dwarf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/endian_reader.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/endian_slice.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/index.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/line.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/lists.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/loclists.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/lookup.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/op.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/pubnames.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/pubtypes.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/reader.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/relocate.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/rnglists.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/str.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/unit.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/util.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/read/value.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/test_util.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/abbrev.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/cfi.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/dwarf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/endian_vec.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/line.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/loc.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/op.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/range.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/relocate.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/section.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/str.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/unit.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.31.1/src/write/writer.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/arch.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/common.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/constants.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/endianity.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/leb128.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/abbrev.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/addr.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/aranges.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/cfi.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/dwarf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/endian_reader.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/endian_slice.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/index.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/line.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/lists.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/loclists.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/lookup.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/macros.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/op.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/pubnames.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/pubtypes.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/reader.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/relocate.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/rnglists.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/str.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/unit.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/util.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/read/value.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/test_util.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/abbrev.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/cfi.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/dwarf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/endian_vec.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/line.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/loc.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/op.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/range.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/relocate.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/section.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/str.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/unit.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.32.0/src/write/writer.rs",
   ]
   inputs = []
   no_std = true
@@ -1213,7 +1179,7 @@ cargo_crate("gimli") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "0.31.1"
+  cargo_pkg_version = "0.32.0"
   cargo_pkg_name = "gimli"
   cargo_pkg_description =
       "A library for reading and writing the DWARF debugging format."
@@ -1233,7 +1199,6 @@ cargo_crate("gimli") {
   ]
   if (!is_win) {
     deps += [
-      ":compiler_builtins",
       ":rustc_std_workspace_alloc",
       ":rustc_std_workspace_core",
     ]
@@ -1261,35 +1226,35 @@ cargo_crate("gimli") {
 }
 cargo_crate("hashbrown") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/lib.rs"
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/lib.rs"
   sources = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/control/bitmask.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/control/group/generic.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/control/group/lsx.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/control/group/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/control/group/neon.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/control/group/sse2.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/control/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/control/tag.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/external_trait_impls/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/external_trait_impls/rayon/helpers.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/external_trait_impls/rayon/map.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/external_trait_impls/rayon/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/external_trait_impls/rayon/raw.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/external_trait_impls/rayon/set.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/external_trait_impls/rayon/table.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/external_trait_impls/serde.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/lib.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/macros.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/map.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/raw/alloc.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/raw/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/raw_entry.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/rustc_entry.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/scopeguard.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/set.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/table.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.3/src/util.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/control/bitmask.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/control/group/generic.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/control/group/lsx.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/control/group/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/control/group/neon.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/control/group/sse2.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/control/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/control/tag.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/external_trait_impls/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/external_trait_impls/rayon/helpers.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/external_trait_impls/rayon/map.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/external_trait_impls/rayon/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/external_trait_impls/rayon/raw.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/external_trait_impls/rayon/set.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/external_trait_impls/rayon/table.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/external_trait_impls/serde.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/macros.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/map.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/raw/alloc.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/raw/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/raw_entry.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/rustc_entry.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/scopeguard.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/set.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/table.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.15.4/src/util.rs",
   ]
   inputs = []
   no_std = true
@@ -1297,7 +1262,7 @@ cargo_crate("hashbrown") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.15.3"
+  cargo_pkg_version = "0.15.4"
   cargo_pkg_authors = "Amanieu d'Antras <amanieu@gmail.com>"
   cargo_pkg_name = "hashbrown"
   cargo_pkg_description = "A Rust port of Google's SwissTable hash map"
@@ -1312,7 +1277,6 @@ cargo_crate("hashbrown") {
   ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
-    ":compiler_builtins",
     ":rustc_std_workspace_alloc",
     ":rustc_std_workspace_core",
     "//build/rust/std:profiler_builtins_group",
@@ -1324,7 +1288,6 @@ cargo_crate("hashbrown") {
   }
   features = [
     "alloc",
-    "compiler_builtins",
     "core",
     "nightly",
     "rustc-dep-of-std",
@@ -1344,189 +1307,189 @@ cargo_crate("hashbrown") {
 }
 cargo_crate("libc") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/lib.rs"
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/lib.rs"
   enabled = !is_win
   sources = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/fuchsia/aarch64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/fuchsia/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/fuchsia/riscv64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/fuchsia/x86_64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/hermit.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/lib.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/macros.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/primitives.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/psp.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/sgx.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/solid/aarch64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/solid/arm.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/solid/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/switch.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/teeos/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/trusty.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/aix/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/aix/powerpc64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/apple/b32/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/apple/b64/aarch64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/apple/b64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/apple/b64/x86_64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/apple/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/dragonfly/errno.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/dragonfly/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/aarch64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/arm.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/freebsd11/b32.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/freebsd11/b64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/freebsd11/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/freebsd12/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/freebsd12/x86_64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/freebsd13/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/freebsd13/x86_64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/freebsd14/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/freebsd14/x86_64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/freebsd15/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/freebsd15/x86_64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/powerpc.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/powerpc64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/riscv64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/x86.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/freebsd/x86_64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/freebsdlike/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/netbsd/aarch64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/netbsd/arm.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/netbsd/mips.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/netbsd/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/netbsd/powerpc.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/netbsd/riscv64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/netbsd/sparc64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/netbsd/x86.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/netbsd/x86_64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/openbsd/aarch64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/openbsd/arm.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/openbsd/mips64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/openbsd/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/openbsd/powerpc.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/openbsd/powerpc64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/openbsd/riscv64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/openbsd/sparc64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/openbsd/x86.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/bsd/netbsdlike/openbsd/x86_64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/cygwin/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/haiku/b32.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/haiku/b64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/haiku/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/haiku/native.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/haiku/x86_64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/hurd/b32.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/hurd/b64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/hurd/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/android/b32/arm.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/android/b32/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/android/b32/x86/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/android/b64/aarch64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/android/b64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/android/b64/riscv64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/android/b64/x86_64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/android/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/emscripten/lfs64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/emscripten/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/arch/generic/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/arch/mips/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/arch/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/arch/powerpc/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/arch/sparc/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b32/arm/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b32/csky/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b32/m68k/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b32/mips/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b32/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b32/powerpc.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b32/riscv32/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b32/sparc/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b32/x86/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b64/aarch64/ilp32.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b64/aarch64/lp64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b64/aarch64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b64/loongarch64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b64/mips64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b64/powerpc64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b64/riscv64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b64/s390x.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b64/sparc64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b64/x86_64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b64/x86_64/not_x32.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/b64/x86_64/x32.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/gnu/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b32/arm/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b32/hexagon.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b32/mips/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b32/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b32/powerpc.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b32/riscv32/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b32/x86/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b64/aarch64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b64/loongarch64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b64/mips64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b64/powerpc64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b64/riscv64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b64/s390x.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b64/wasm32/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b64/wasm32/wali.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/b64/x86_64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/lfs64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/musl/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/uclibc/arm/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/uclibc/mips/mips32/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/uclibc/mips/mips64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/uclibc/mips/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/uclibc/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/uclibc/x86_64/l4re.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/uclibc/x86_64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/linux/uclibc/x86_64/other.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/linux_like/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/newlib/aarch64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/newlib/arm/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/newlib/espidf/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/newlib/generic.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/newlib/horizon/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/newlib/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/newlib/powerpc/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/newlib/rtems/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/newlib/vita/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/nto/aarch64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/nto/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/nto/neutrino.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/nto/x86_64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/nuttx/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/redox/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/solarish/compat.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/solarish/illumos.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/solarish/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/solarish/solaris.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/solarish/x86.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/solarish/x86_64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/unix/solarish/x86_common.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/vxworks/aarch64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/vxworks/arm.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/vxworks/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/vxworks/powerpc.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/vxworks/powerpc64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/vxworks/riscv32.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/vxworks/riscv64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/vxworks/x86.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/vxworks/x86_64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/wasi/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/wasi/p2.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/windows/gnu/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/windows/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/windows/msvc/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/src/xous.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/fuchsia/aarch64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/fuchsia/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/fuchsia/riscv64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/fuchsia/x86_64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/hermit.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/macros.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/primitives.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/psp.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/sgx.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/solid/aarch64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/solid/arm.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/solid/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/switch.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/teeos/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/trusty.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/aix/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/aix/powerpc64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/apple/b32/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/apple/b64/aarch64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/apple/b64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/apple/b64/x86_64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/apple/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/dragonfly/errno.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/dragonfly/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/aarch64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/arm.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/freebsd11/b32.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/freebsd11/b64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/freebsd11/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/freebsd12/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/freebsd12/x86_64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/freebsd13/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/freebsd13/x86_64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/freebsd14/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/freebsd14/x86_64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/freebsd15/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/freebsd15/x86_64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/powerpc.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/powerpc64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/riscv64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/x86.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/freebsd/x86_64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/freebsdlike/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/netbsd/aarch64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/netbsd/arm.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/netbsd/mips.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/netbsd/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/netbsd/powerpc.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/netbsd/riscv64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/netbsd/sparc64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/netbsd/x86.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/netbsd/x86_64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/openbsd/aarch64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/openbsd/arm.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/openbsd/mips64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/openbsd/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/openbsd/powerpc.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/openbsd/powerpc64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/openbsd/riscv64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/openbsd/sparc64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/openbsd/x86.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/bsd/netbsdlike/openbsd/x86_64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/cygwin/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/haiku/b32.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/haiku/b64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/haiku/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/haiku/native.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/haiku/x86_64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/hurd/b32.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/hurd/b64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/hurd/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/android/b32/arm.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/android/b32/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/android/b32/x86/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/android/b64/aarch64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/android/b64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/android/b64/riscv64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/android/b64/x86_64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/android/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/emscripten/lfs64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/emscripten/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/arch/generic/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/arch/mips/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/arch/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/arch/powerpc/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/arch/sparc/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b32/arm/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b32/csky/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b32/m68k/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b32/mips/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b32/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b32/powerpc.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b32/riscv32/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b32/sparc/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b32/x86/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b64/aarch64/ilp32.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b64/aarch64/lp64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b64/aarch64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b64/loongarch64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b64/mips64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b64/powerpc64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b64/riscv64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b64/s390x.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b64/sparc64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b64/x86_64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b64/x86_64/not_x32.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/b64/x86_64/x32.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/gnu/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b32/arm/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b32/hexagon.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b32/mips/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b32/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b32/powerpc.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b32/riscv32/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b32/x86/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b64/aarch64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b64/loongarch64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b64/mips64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b64/powerpc64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b64/riscv64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b64/s390x.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b64/wasm32/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b64/wasm32/wali.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/b64/x86_64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/lfs64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/musl/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/uclibc/arm/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/uclibc/mips/mips32/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/uclibc/mips/mips64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/uclibc/mips/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/uclibc/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/uclibc/x86_64/l4re.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/uclibc/x86_64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/linux/uclibc/x86_64/other.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/linux_like/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/newlib/aarch64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/newlib/arm/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/newlib/espidf/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/newlib/generic.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/newlib/horizon/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/newlib/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/newlib/powerpc/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/newlib/rtems/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/newlib/vita/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/nto/aarch64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/nto/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/nto/neutrino.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/nto/x86_64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/nuttx/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/redox/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/solarish/compat.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/solarish/illumos.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/solarish/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/solarish/solaris.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/solarish/x86.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/solarish/x86_64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/unix/solarish/x86_common.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/vxworks/aarch64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/vxworks/arm.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/vxworks/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/vxworks/powerpc.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/vxworks/powerpc64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/vxworks/riscv32.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/vxworks/riscv64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/vxworks/x86.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/vxworks/x86_64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/wasi/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/wasi/p2.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/windows/gnu/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/windows/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/windows/msvc/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/src/xous.rs",
   ]
   inputs = []
   no_std = true
@@ -1534,7 +1497,7 @@ cargo_crate("libc") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.2.172"
+  cargo_pkg_version = "0.2.174"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "libc"
   cargo_pkg_description = "Raw FFI bindings to platform libraries like libc."
@@ -1558,8 +1521,8 @@ cargo_crate("libc") {
     "rustc-dep-of-std",
     "rustc-std-workspace-core",
   ]
-  build_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/build.rs"
-  build_sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.172/build.rs" ]
+  build_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/build.rs"
+  build_sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.174/build.rs" ]
   rustenv = [
     "CFG_DISABLE_UNSTABLE_FEATURES=0",
     "STD_ENV_ARCH=$rust_target_arch",
@@ -1574,54 +1537,54 @@ cargo_crate("libc") {
 }
 cargo_crate("memchr") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/lib.rs"
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/lib.rs"
   enabled = !is_win
   sources = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/aarch64/memchr.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/aarch64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/aarch64/neon/memchr.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/aarch64/neon/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/aarch64/neon/packedpair.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/all/memchr.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/all/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/all/packedpair/default_rank.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/all/packedpair/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/all/rabinkarp.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/all/shiftor.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/all/twoway.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/generic/memchr.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/generic/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/generic/packedpair.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/wasm32/memchr.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/wasm32/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/wasm32/simd128/memchr.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/wasm32/simd128/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/wasm32/simd128/packedpair.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/x86_64/avx2/memchr.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/x86_64/avx2/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/x86_64/avx2/packedpair.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/x86_64/memchr.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/x86_64/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/x86_64/sse2/memchr.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/x86_64/sse2/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/arch/x86_64/sse2/packedpair.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/cow.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/ext.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/lib.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/macros.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/memchr.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/memmem/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/memmem/searcher.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/tests/memchr/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/tests/memchr/naive.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/tests/memchr/prop.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/tests/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/tests/packedpair.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/tests/substring/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/tests/substring/naive.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/tests/substring/prop.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.4/src/vector.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/aarch64/memchr.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/aarch64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/aarch64/neon/memchr.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/aarch64/neon/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/aarch64/neon/packedpair.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/all/memchr.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/all/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/all/packedpair/default_rank.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/all/packedpair/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/all/rabinkarp.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/all/shiftor.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/all/twoway.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/generic/memchr.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/generic/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/generic/packedpair.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/wasm32/memchr.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/wasm32/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/wasm32/simd128/memchr.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/wasm32/simd128/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/wasm32/simd128/packedpair.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/x86_64/avx2/memchr.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/x86_64/avx2/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/x86_64/avx2/packedpair.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/x86_64/memchr.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/x86_64/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/x86_64/sse2/memchr.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/x86_64/sse2/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/arch/x86_64/sse2/packedpair.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/cow.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/ext.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/macros.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/memchr.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/memmem/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/memmem/searcher.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/tests/memchr/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/tests/memchr/naive.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/tests/memchr/prop.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/tests/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/tests/packedpair.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/tests/substring/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/tests/substring/naive.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/tests/substring/prop.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.7.5/src/vector.rs",
   ]
   inputs = []
   no_std = true
@@ -1629,7 +1592,7 @@ cargo_crate("memchr") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "2.7.4"
+  cargo_pkg_version = "2.7.5"
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>, bluss"
   cargo_pkg_name = "memchr"
   cargo_pkg_description = "Provides extremely fast (uses SIMD on x86_64, aarch64 and wasm32) routines for 1, 2 or 3 byte search and single substring search."
@@ -1648,16 +1611,12 @@ cargo_crate("memchr") {
     "//build/rust/std:std_build_deps",
   ]
   if (!is_win) {
-    deps += [
-      ":compiler_builtins",
-      ":rustc_std_workspace_core",
-    ]
+    deps += [ ":rustc_std_workspace_core" ]
   }
   aliased_deps = {
     core = ":rustc_std_workspace_core"
   }
   features = [
-    "compiler_builtins",
     "core",
     "rustc-dep-of-std",
   ]
@@ -1675,23 +1634,23 @@ cargo_crate("memchr") {
 }
 cargo_crate("miniz_oxide") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/lib.rs"
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/lib.rs"
   enabled = !is_win
   sources = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/deflate/buffer.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/deflate/core.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/deflate/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/deflate/stored.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/deflate/stream.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/deflate/zlib.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/inflate/core.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/inflate/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/inflate/output_buffer.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/inflate/stream.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/lib.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/serde/big_array.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/serde/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.8/src/shared.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/deflate/buffer.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/deflate/core.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/deflate/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/deflate/stored.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/deflate/stream.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/deflate/zlib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/inflate/core.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/inflate/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/inflate/output_buffer.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/inflate/stream.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/serde/big_array.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/serde/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.8.9/src/shared.rs",
   ]
   inputs = []
   no_std = true
@@ -1699,7 +1658,7 @@ cargo_crate("miniz_oxide") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.8.8"
+  cargo_pkg_version = "0.8.9"
   cargo_pkg_authors = "Frommi <daniil.liferenko@gmail.com>, oyvindln <oyvindln@users.noreply.github.com>, Rich Geldreich richgel99@gmail.com"
   cargo_pkg_name = "miniz_oxide"
   cargo_pkg_description = "DEFLATE compression and decompression library rewritten in Rust based on miniz"
@@ -1720,7 +1679,6 @@ cargo_crate("miniz_oxide") {
   if (!is_win) {
     deps += [
       ":adler2",
-      ":compiler_builtins",
       ":rustc_std_workspace_alloc",
       ":rustc_std_workspace_core",
     ]
@@ -1731,7 +1689,6 @@ cargo_crate("miniz_oxide") {
   }
   features = [
     "alloc",
-    "compiler_builtins",
     "core",
     "rustc-dep-of-std",
   ]
@@ -1749,89 +1706,89 @@ cargo_crate("miniz_oxide") {
 }
 cargo_crate("object") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/lib.rs"
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/lib.rs"
   enabled = !is_win
   sources = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/archive.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/build/bytes.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/build/elf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/build/error.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/build/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/build/table.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/common.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/elf.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/endian.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/lib.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/macho.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/pe.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/pod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/any.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/archive.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/coff/comdat.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/coff/file.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/coff/import.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/coff/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/coff/relocation.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/coff/section.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/coff/symbol.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/elf/attributes.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/elf/comdat.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/elf/compression.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/elf/dynamic.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/elf/file.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/elf/hash.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/elf/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/elf/note.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/elf/relocation.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/elf/section.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/elf/segment.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/elf/symbol.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/elf/version.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/gnu_compression.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/macho/dyld_cache.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/macho/fat.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/macho/file.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/macho/load_command.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/macho/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/macho/relocation.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/macho/section.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/macho/segment.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/macho/symbol.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/pe/data_directory.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/pe/export.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/pe/file.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/pe/import.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/pe/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/pe/relocation.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/pe/resource.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/pe/rich.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/pe/section.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/read_cache.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/read_ref.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/traits.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/util.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/wasm.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/xcoff/comdat.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/xcoff/file.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/xcoff/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/xcoff/relocation.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/xcoff/section.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/xcoff/segment.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/read/xcoff/symbol.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/write/coff/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/write/coff/object.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/write/coff/writer.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/write/elf/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/write/elf/object.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/write/elf/writer.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/write/macho.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/write/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/write/pe.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/write/string.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/write/util.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/write/xcoff.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/src/xcoff.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/archive.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/build/bytes.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/build/elf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/build/error.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/build/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/build/table.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/common.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/elf.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/endian.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/macho.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/pe.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/pod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/any.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/archive.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/coff/comdat.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/coff/file.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/coff/import.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/coff/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/coff/relocation.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/coff/section.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/coff/symbol.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/elf/attributes.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/elf/comdat.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/elf/compression.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/elf/dynamic.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/elf/file.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/elf/hash.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/elf/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/elf/note.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/elf/relocation.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/elf/section.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/elf/segment.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/elf/symbol.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/elf/version.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/gnu_compression.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/macho/dyld_cache.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/macho/fat.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/macho/file.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/macho/load_command.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/macho/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/macho/relocation.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/macho/section.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/macho/segment.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/macho/symbol.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/pe/data_directory.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/pe/export.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/pe/file.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/pe/import.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/pe/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/pe/relocation.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/pe/resource.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/pe/rich.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/pe/section.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/read_cache.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/read_ref.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/traits.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/util.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/wasm.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/xcoff/comdat.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/xcoff/file.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/xcoff/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/xcoff/relocation.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/xcoff/section.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/xcoff/segment.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/read/xcoff/symbol.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/write/coff/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/write/coff/object.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/write/coff/writer.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/write/elf/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/write/elf/object.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/write/elf/writer.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/write/macho.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/write/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/write/pe.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/write/string.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/write/util.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/write/xcoff.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/src/xcoff.rs",
   ]
   inputs = []
   no_std = true
@@ -1839,7 +1796,7 @@ cargo_crate("object") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "0.36.7"
+  cargo_pkg_version = "0.37.1"
   cargo_pkg_name = "object"
   cargo_pkg_description =
       "A unified interface for reading and writing object file formats."
@@ -1859,7 +1816,6 @@ cargo_crate("object") {
   ]
   if (!is_win) {
     deps += [
-      ":compiler_builtins",
       ":memchr",
       ":rustc_std_workspace_alloc",
       ":rustc_std_workspace_core",
@@ -1873,7 +1829,6 @@ cargo_crate("object") {
     "alloc",
     "archive",
     "coff",
-    "compiler_builtins",
     "core",
     "elf",
     "macho",
@@ -1883,8 +1838,8 @@ cargo_crate("object") {
     "unaligned",
     "xcoff",
   ]
-  build_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/build.rs"
-  build_sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.36.7/build.rs" ]
+  build_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/build.rs"
+  build_sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.37.1/build.rs" ]
   rustenv = [
     "CFG_DISABLE_UNSTABLE_FEATURES=0",
     "STD_ENV_ARCH=$rust_target_arch",
@@ -1925,15 +1880,16 @@ cargo_crate("panic_abort") {
   ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
-    ":alloc",
-    ":cfg_if",
     ":compiler_builtins",
     ":core",
     "//build/rust/std:profiler_builtins_group",
     "//build/rust/std:std_build_deps",
   ]
-  if (!is_win) {
-    deps += [ ":libc" ]
+  if (is_android) {
+    deps += [
+      ":alloc",
+      ":libc",
+    ]
   }
   rustenv = [
     "CFG_DISABLE_UNSTABLE_FEATURES=0",
@@ -2048,6 +2004,10 @@ cargo_crate("proc_macro") {
     "//build/rust/std:profiler_builtins_group",
     "//build/rust/std:std_build_deps",
   ]
+  features = [
+    "default",
+    "rustc-dep-of-std",
+  ]
   rustenv = [
     "CFG_DISABLE_UNSTABLE_FEATURES=0",
     "STD_ENV_ARCH=$rust_target_arch",
@@ -2098,11 +2058,11 @@ cargo_crate("profiler_builtins") {
 }
 cargo_crate("rustc_demangle") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/rustc-demangle-0.1.24/src/lib.rs"
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/rustc-demangle-0.1.25/src/lib.rs"
   sources = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/rustc-demangle-0.1.24/src/legacy.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/rustc-demangle-0.1.24/src/lib.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/rustc-demangle-0.1.24/src/v0.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/rustc-demangle-0.1.25/src/legacy.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/rustc-demangle-0.1.25/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/rustc-demangle-0.1.25/src/v0.rs",
   ]
   inputs = []
   no_std = true
@@ -2110,7 +2070,7 @@ cargo_crate("rustc_demangle") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2015"
-  cargo_pkg_version = "0.1.24"
+  cargo_pkg_version = "0.1.25"
   cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "rustc-demangle"
   cargo_pkg_description = "Rust compiler symbol demangling."
@@ -2125,7 +2085,6 @@ cargo_crate("rustc_demangle") {
   ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
-    ":compiler_builtins",
     ":rustc_std_workspace_core",
     "//build/rust/std:profiler_builtins_group",
     "//build/rust/std:std_build_deps",
@@ -2134,7 +2093,6 @@ cargo_crate("rustc_demangle") {
     core = ":rustc_std_workspace_core"
   }
   features = [
-    "compiler_builtins",
     "core",
     "rustc-dep-of-std",
   ]
@@ -2262,6 +2220,7 @@ cargo_crate("rustc_std_workspace_core") {
   ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
+    ":compiler_builtins",
     ":core",
     "//build/rust/std:std_build_deps",
   ]
@@ -2335,10 +2294,6 @@ cargo_crate("std") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/collections/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/env.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/error.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/f128.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/f16.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/f32.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/f64.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/ffi/c_str.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/ffi/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/ffi/os_str.rs",
@@ -2387,7 +2342,11 @@ cargo_crate("std") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/net/test.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/net/udp.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/net/udp/tests.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/num.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/num/f128.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/num/f16.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/num/f32.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/num/f64.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/num/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/os/aix/fs.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/os/aix/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/os/aix/raw.rs",
@@ -2653,6 +2612,8 @@ cargo_crate("std") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/net/connection/socket/wasip2.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/net/connection/socket/windows.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/net/connection/uefi/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/net/connection/uefi/tcp.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/net/connection/uefi/tcp4.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/net/connection/unsupported.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/net/connection/wasip1.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/net/connection/xous/dns.rs",
@@ -2735,6 +2696,7 @@ cargo_crate("std") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/pal/unix/os/tests.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/pal/unix/pipe.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/pal/unix/stack_overflow.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/pal/unix/stack_overflow/thread_info.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/pal/unix/sync/condvar.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/pal/unix/sync/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/pal/unix/sync/mutex.rs",
@@ -2783,6 +2745,7 @@ cargo_crate("std") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/pal/zkvm/abi.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/pal/zkvm/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/pal/zkvm/os.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/path/cygwin.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/path/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/path/sgx.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/path/uefi.rs",
@@ -2790,15 +2753,18 @@ cargo_crate("std") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/path/unsupported_backslash.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/path/windows.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/path/windows/tests.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/path/windows_prefix.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/personality/dwarf/eh.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/personality/dwarf/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/personality/dwarf/tests.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/personality/emcc.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/personality/gcc.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/personality/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/process/env.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/process/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/process/uefi.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/process/unix/common.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/process/unix/common/cstring_array.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/process/unix/common/tests.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/process/unix/fuchsia.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/process/unix/mod.rs",
@@ -2901,7 +2867,6 @@ cargo_crate("std") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/thread_local/no_threads.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/thread_local/os.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys_common/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys_common/process.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys_common/tests.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys_common/wstr.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys_common/wtf8.rs",
@@ -2970,6 +2935,10 @@ cargo_crate("std") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../core/src/fmt/fmt_trait_method_doc.md",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../core/src/macros/panic.md",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../core/src/primitive_docs.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../core/src/ptr/docs/add.md",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../core/src/ptr/docs/as_uninit_slice.md",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../core/src/ptr/docs/is_null.md",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../core/src/ptr/docs/offset.md",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../portable-simd/crates/core_simd/src/core_simd_docs.md",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../portable-simd/crates/std_float/src/lib.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../stdarch/crates/core_arch/src/core_arch_docs.md",
@@ -3112,7 +3081,6 @@ cargo_crate("std_detect") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":cfg_if",
-    ":compiler_builtins",
     ":rustc_std_workspace_alloc",
     ":rustc_std_workspace_core",
     "//build/rust/std:profiler_builtins_group",
@@ -3127,7 +3095,6 @@ cargo_crate("std_detect") {
   }
   features = [
     "alloc",
-    "compiler_builtins",
     "core",
     "libc",
     "rustc-dep-of-std",
@@ -3272,10 +3239,10 @@ cargo_crate("test") {
 }
 cargo_crate("unicode_width") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/unicode-width-0.1.14/src/lib.rs"
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/unicode-width-0.2.1/src/lib.rs"
   sources = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/unicode-width-0.1.14/src/lib.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/unicode-width-0.1.14/src/tables.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/unicode-width-0.2.1/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/unicode-width-0.2.1/src/tables.rs",
   ]
   inputs = []
   no_std = true
@@ -3283,7 +3250,7 @@ cargo_crate("unicode_width") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.14"
+  cargo_pkg_version = "0.2.1"
   cargo_pkg_authors =
       "kwantam <kwantam@gmail.com>, Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "unicode-width"
@@ -3299,7 +3266,6 @@ cargo_crate("unicode_width") {
   ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
-    ":compiler_builtins",
     ":rustc_std_workspace_core",
     ":rustc_std_workspace_std",
     "//build/rust/std:profiler_builtins_group",
@@ -3311,7 +3277,6 @@ cargo_crate("unicode_width") {
   }
   features = [
     "cjk",
-    "compiler_builtins",
     "core",
     "default",
     "rustc-dep-of-std",
