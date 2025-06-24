@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <tuple>
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
