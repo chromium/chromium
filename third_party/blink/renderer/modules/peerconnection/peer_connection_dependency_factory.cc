@@ -34,15 +34,10 @@
 #include "media/media_buildflags.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/net_buildflags.h"
-#include "services/network/public/cpp/ip_address_space_util.h"
-#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 #include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -54,8 +49,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -64,7 +57,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/intercepting_network_controller.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
-#include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_sink_bundle.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
@@ -85,7 +77,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_gfx.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -133,17 +124,6 @@ CreateMojoVideoEncoderMetricsProviderFactory(LocalFrame* local_frame) {
       std::move(video_encoder_metrics_provider));
 }
 
-network::mojom::IPAddressSpace FromSocketAddress(
-    const webrtc::SocketAddress socket_address) {
-  if (socket_address.IsLoopbackIP()) {
-    return network::mojom::IPAddressSpace::kLocal;
-  }
-  if (socket_address.IsPrivateIP()) {
-    return network::mojom::IPAddressSpace::kPrivate;
-  }
-  return network::mojom::IPAddressSpace::kPublic;
-}
-
 // PeerConnectionDependencies wants to own the factory, so we provide a simple
 // object that delegates calls to the IpcPacketSocketFactory.
 // TODO(zstein): Move the creation logic from IpcPacketSocketFactory in to this
@@ -177,111 +157,6 @@ class ProxyAsyncDnsResolverFactory final
 
  private:
   raw_ptr<IpcPacketSocketFactory, DanglingUntriaged> ipc_psf_;
-};
-
-class LocalNetworkAccessPermission final
-    : public webrtc::LocalNetworkAccessPermissionInterface {
- public:
-  explicit LocalNetworkAccessPermission(
-      network::mojom::IPAddressSpace originator_address_space,
-      mojo::Remote<mojom::blink::PermissionService> permission_service)
-      : originator_address_space_(originator_address_space),
-        permission_service_(std::move(permission_service)) {}
-
-  ~LocalNetworkAccessPermission() override {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  }
-
-  void RequestPermission(
-      const webrtc::SocketAddress& candidate_address,
-      absl::AnyInvocable<void(webrtc::LocalNetworkAccessPermissionStatus)>
-          callback) override {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    CHECK(RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled());
-
-    callback_ = std::move(callback);
-
-    if (!network::IsLessPublicAddressSpace(FromSocketAddress(candidate_address),
-                                           originator_address_space_)) {
-      // Can't use Frame-based task runners because this method is called on a
-      // WebRTC thread.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&LocalNetworkAccessPermission::OnPermissionRequested,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         mojom::blink::PermissionStatus::GRANTED));
-      return;
-    }
-
-    permission_service_->RequestPermission(
-        CreatePermissionDescriptor(
-            mojom::blink::PermissionName::LOCAL_NETWORK_ACCESS),
-        /*user_gesture=*/false,
-        base::BindRepeating(
-            &LocalNetworkAccessPermission::OnPermissionRequested,
-            // This is safe because this class owns `permission_service_` which
-            // won't call its callback after its destroyed.
-            base::Unretained(this)));
-  }
-
-  void OnPermissionRequested(mojom::blink::PermissionStatus status) {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-    switch (status) {
-      case mojom::blink::PermissionStatus::GRANTED:
-        callback_(webrtc::LocalNetworkAccessPermissionStatus::kGranted);
-        break;
-      case mojom::blink::PermissionStatus::ASK:
-      // Treat ASK i.e. the user closing the prompt, as denied.
-      case mojom::blink::PermissionStatus::DENIED:
-        callback_(webrtc::LocalNetworkAccessPermissionStatus::kDenied);
-        break;
-    }
-  }
-
-  absl::AnyInvocable<void(webrtc::LocalNetworkAccessPermissionStatus)>
-      callback_;
-  const network::mojom::IPAddressSpace originator_address_space_;
-  mojo::Remote<mojom::blink::PermissionService> permission_service_;
-
-  THREAD_CHECKER(thread_checker_);
-
-  base::WeakPtrFactory<LocalNetworkAccessPermission> weak_ptr_factory_{this};
-};
-
-class LocalNetworkAccessPermissionFactory final
-    : public webrtc::LocalNetworkAccessPermissionFactoryInterface {
- public:
-  explicit LocalNetworkAccessPermissionFactory(
-      PeerConnectionDependencyFactory* factory)
-      : factory_(factory),
-        originator_address_space_(factory->DomWindow()
-                                      ->GetPolicyContainer()
-                                      ->GetPolicies()
-                                      .ip_address_space),
-        main_thread_task_runner_(
-            factory->DomWindow()->GetTaskRunner(TaskType::kNetworking)) {}
-
-  std::unique_ptr<webrtc::LocalNetworkAccessPermissionInterface> Create()
-      override {
-    CHECK(RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled());
-
-    mojo::Remote<mojom::blink::PermissionService> permission_service;
-    PostCrossThreadTask(
-        *main_thread_task_runner_.get(), FROM_HERE,
-        CrossThreadBindOnce(
-            &PeerConnectionDependencyFactory::BindPermissionService,
-            MakeUnwrappingCrossThreadHandle(factory_),
-            permission_service.BindNewPipeAndPassReceiver()));
-
-    return std::make_unique<LocalNetworkAccessPermission>(
-        originator_address_space_, std::move(permission_service));
-  }
-
- private:
-  CrossThreadHandle<PeerConnectionDependencyFactory> factory_;
-  network::mojom::IPAddressSpace originator_address_space_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 };
 
 std::string WorkerThreadName() {
@@ -1000,10 +875,6 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
     dependencies.allocator = CreatePortAllocator(web_frame);
   }
   dependencies.async_dns_resolver_factory = CreateAsyncDnsResolverFactory();
-  if (RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled()) {
-    dependencies.lna_permission_factory =
-        std::make_unique<LocalNetworkAccessPermissionFactory>(this);
-  }
   if (rtp_transport) {
     dependencies.network_controller_factory =
         std::make_unique<InterceptingNetworkControllerFactory>(
@@ -1319,17 +1190,4 @@ std::unique_ptr<webrtc::Metronome>
 PeerConnectionDependencyFactory::CreateDecodeMetronome() {
   return StaticDeps().CreateDecodeMetronome();
 }
-
-void PeerConnectionDependencyFactory::BindPermissionService(
-    mojo::PendingReceiver<mojom::blink::PermissionService> permission_service) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto* execution_context = GetExecutionContext();
-  if (!execution_context) {
-    return;
-  }
-
-  execution_context->GetBrowserInterfaceBroker().GetInterface(
-      std::move(permission_service));
-}
-
 }  // namespace blink
