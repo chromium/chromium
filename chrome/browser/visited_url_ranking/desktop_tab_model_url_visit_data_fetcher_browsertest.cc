@@ -7,29 +7,35 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace visited_url_ranking {
 
 using Source = URLVisit::Source;
 
-class DesktopTabModelURLVisitDataFetcherTest
-    : public BrowserWithTestWindowTest {
+class DesktopTabModelURLVisitDataFetcherTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     desktop_tab_model_url_visit_data_fetcher_ =
-        std::make_unique<DesktopTabModelURLVisitDataFetcher>(profile());
+        std::make_unique<DesktopTabModelURLVisitDataFetcher>(GetProfile());
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     desktop_tab_model_url_visit_data_fetcher_ = nullptr;
-    BrowserWithTestWindowTest::TearDown();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   FetchResult FetchAndGetResult(const FetchOptions& options) {
@@ -53,9 +59,15 @@ class DesktopTabModelURLVisitDataFetcherTest
   void AddTabWithTitle(Browser* browser,
                        const GURL url,
                        const std::string title) {
-    AddTab(browser, url);
-    NavigateAndCommitActiveTabWithTitle(browser, url,
-                                        base::ASCIIToUTF16(title));
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
+    web_contents->UpdateTitleForEntry(
+        web_contents->GetController().GetActiveEntry(),
+        base::UTF8ToUTF16(title));
   }
 
  private:
@@ -63,7 +75,8 @@ class DesktopTabModelURLVisitDataFetcherTest
       desktop_tab_model_url_visit_data_fetcher_;
 };
 
-TEST_F(DesktopTabModelURLVisitDataFetcherTest, FetchURLVisitData) {
+IN_PROC_BROWSER_TEST_F(DesktopTabModelURLVisitDataFetcherTest,
+                       FetchURLVisitData) {
   size_t kSampleTabCount = 3;
   for (size_t i = 0; i < kSampleTabCount; i++) {
     AddTabWithTitle(browser(),
@@ -89,8 +102,8 @@ TEST_F(DesktopTabModelURLVisitDataFetcherTest, FetchURLVisitData) {
   EXPECT_EQ(tab_data->tab_count, 1u);
 }
 
-TEST_F(DesktopTabModelURLVisitDataFetcherTest,
-       FetchURLVisitData_AggregateValues) {
+IN_PROC_BROWSER_TEST_F(DesktopTabModelURLVisitDataFetcherTest,
+                       FetchURLVisitData_AggregateValues) {
   constexpr size_t kNumTabs = 3;
   // Create tab entries to be aggregated.
   for (size_t i = 0; i < kNumTabs; i++) {
@@ -101,7 +114,8 @@ TEST_F(DesktopTabModelURLVisitDataFetcherTest,
   // strip. By doing so, we can validate the fetcher is retaining the last
   // active tab regardless of position.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  tab_strip_model->MoveWebContentsAt(0, kNumTabs - 1, true);
+  // InProcessBrowserTest starts with one tab. The new tabs are added after it.
+  tab_strip_model->MoveWebContentsAt(1, kNumTabs, true);
 
   auto options = FetchOptions(
       {
