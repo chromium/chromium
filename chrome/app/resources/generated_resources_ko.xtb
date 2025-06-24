@@ -1664,7 +1664,7 @@
 <translation id="2136476978468204130">입력한 암호가 잘못되었습니다.</translation>
 <translation id="2137128126782078222"><ph name="WEBSITE" />의 알림 허용 안함</translation>
 <translation id="2139919072249842737">설정 버튼</translation>
-<translation id="2140788884185208305">배터리 상태</translation>
+<translation id="2140788884185208305">배터리 성능 상태</translation>
 <translation id="2142328300403846845">다음으로 링크 열기</translation>
 <translation id="2142484069755256151">Google 비밀번호 관리자에 사용할 6자리 복구 PIN을 만드세요. PIN은 <ph name="NUM_DIGIT" />/6자리입니다</translation>
 <translation id="2142582065325732898">최근 사용한 Chrome 탭을 확인하려면 <ph name="LINK1_BEGIN" />Chrome 동기화<ph name="LINK1_END" />를 사용 설정하세요. <ph name="LINK2_BEGIN" />자세히 알아보기<ph name="LINK2_END" /></translation>

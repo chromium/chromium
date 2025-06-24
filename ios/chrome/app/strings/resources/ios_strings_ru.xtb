@@ -236,7 +236,7 @@
 <translation id="1956138802718275401">Доступ к паролям с главного экрана</translation>
 <translation id="1959441496380398824">Нажмите на дату и удерживайте ее.</translation>
 <translation id="1962348300797608157">Пользователь <ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> передал вам пароль для сайта <ph name="WEBSITE" />.</translation>
-<translation id="1962969542251276847">Блокировать экран</translation>
+<translation id="1962969542251276847">Заблок. экран</translation>
 <translation id="1963976881984600709">Стандартная защита</translation>
 <translation id="1966313166384086081">данные сайтов</translation>
 <translation id="1967461193809857427">{count,plural, =1{Открыть вкладку, которую вы просматривали в Android?}one{Открыть вкладки, которые вы просматривали в Android?}few{Открыть вкладки, которые вы просматривали в Android?}many{Открыть вкладки, которые вы просматривали в Android?}other{Открыть вкладки, которые вы просматривали в Android?}}</translation>
