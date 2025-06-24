@@ -6409,25 +6409,12 @@ targets.bundle(
     name = "rust_common_gtests",
     targets = [
         "base_unittests",
-        # TODO(https://crbug.com/356914314): Remove `blink_platform_unittests`
-        # and `gfx_unittests` if/when Rust PNG is covered by the main
-        # waterfall/CQ bots.
-        "blink_platform_unittests",
-        "gfx_unittests",
         "mojo_rust_integration_unittests",
         "mojo_rust_unittests",
         "rust_gtest_interop_unittests",
         "test_cpp_including_rust_unittests",
         "test_serde_json_lenient",
     ],
-    per_test_modifications = {
-        "blink_platform_unittests": targets.mixin(
-            args = [
-                "--test-launcher-bot-mode",
-                "--gtest_filter=*PNG*",
-            ],
-        ),
-    },
 )
 
 # Rust tests run on non-cross builds.

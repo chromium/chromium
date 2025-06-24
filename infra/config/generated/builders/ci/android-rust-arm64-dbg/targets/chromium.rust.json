@@ -24,52 +24,6 @@
         "test_id_prefix": "ninja://base:base_unittests/"
       },
       {
-        "args": [
-          "--git-revision=${got_revision}",
-          "--test-launcher-bot-mode",
-          "--gtest_filter=*PNG*"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "blink_platform_unittests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "swarming": {
-          "dimensions": {
-            "device_os": "PQ3A.190801.002",
-            "device_os_flavor": "google",
-            "device_type": "walleye",
-            "os": "Android",
-            "pool": "chromium.tests"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "blink_platform_unittests",
-        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gfx_unittests",
-        "swarming": {
-          "dimensions": {
-            "device_os": "PQ3A.190801.002",
-            "device_os_flavor": "google",
-            "device_type": "walleye",
-            "os": "Android",
-            "pool": "chromium.tests"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gfx_unittests",
-        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
-      },
-      {
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
