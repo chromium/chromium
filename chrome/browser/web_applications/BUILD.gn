@@ -1084,10 +1084,6 @@ source_set("web_applications_unit_tests") {
   if (is_win || is_mac || is_linux) {
     deps += [ "//components/services/app_service" ]
   }
-
-  if (enable_nacl) {
-    deps += [ "//components/nacl/browser" ]
-  }
 }
 
 group("unit_tests") {

@@ -6,7 +6,6 @@ import("//build/config/buildflags_paint_preview.gni")
 import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 import("//chrome/common/request_header_integrity/buildflags.gni")
-import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/signin/features.gni")
@@ -246,17 +245,6 @@ static_library("renderer") {
       "bound_session_credentials/bound_session_request_throttled_in_renderer_manager.cc",
       "bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h",
     ]
-  }
-
-  if (enable_nacl) {
-    deps += [ "//components/nacl/renderer" ]
-
-    # TODO(https://crbug.com/1299021): This dependency might be redundant
-    # given that we were able to disable it, apparently without negative
-    # consequences, for the ARM32-NaCl-on-ARM64 case.
-    if (target_cpu != "arm64") {
-      deps += [ "//components/nacl/loader" ]
-    }
   }
 
   if (enable_plugins) {

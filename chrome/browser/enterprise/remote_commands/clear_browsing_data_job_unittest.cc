@@ -9,12 +9,9 @@
 #include "base/test/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/nacl_host/nacl_browser_delegate_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/nacl/browser/nacl_browser.h"
-#include "components/nacl/common/buildflags.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -89,21 +86,11 @@ class ClearBrowsingDataJobTest : public ::testing::Test {
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(profile_manager_->SetUp());
 
-#if BUILDFLAG(ENABLE_NACL)
-    // Clearing Cache will clear PNACL cache, which needs this delegate set.
-    nacl::NaClBrowser::SetDelegate(
-        std::make_unique<NaClBrowserDelegateImpl>(profile_manager()));
-#endif
   }
 
   void TearDown() override {
     profile_manager_.reset();
     task_environment_.reset();
-
-#if BUILDFLAG(ENABLE_NACL)
-    // Clearing Cache will clear PNACL cache, which needs this delegate set.
-    nacl::NaClBrowser::ClearAndDeleteDelegate();
-#endif
 
     ::testing::Test::TearDown();
   }

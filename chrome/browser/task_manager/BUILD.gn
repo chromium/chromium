@@ -4,7 +4,6 @@
 
 import("//chrome/common/features.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
-import("//components/nacl/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 if (is_android) {
@@ -209,9 +208,6 @@ source_set("impl") {
   }
   if (is_chromeos) {
     deps += [ "//components/nacl/common:buildflags" ]
-  }
-  if (enable_nacl) {
-    deps += [ "//components/nacl/browser" ]
   }
   if (is_chromeos) {
     sources += [
