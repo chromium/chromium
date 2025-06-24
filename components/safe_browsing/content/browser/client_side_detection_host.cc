@@ -1061,7 +1061,8 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
   gfx::Size size;
   content::RenderWidgetHostView* view =
       web_contents()->GetRenderWidgetHostView();
-  if (view) {
+  // native view can be null in tests.
+  if (view && view->GetNativeView()) {
     gfx::SizeF viewport = view->GetNativeView()->viewport_size();
     size = gfx::Size(static_cast<int>(viewport.width()),
                      static_cast<int>(viewport.height()));
