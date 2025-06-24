@@ -1647,9 +1647,13 @@ _CONFIG = [
         'paths': [
             'third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.cc',
         ],
-        # This class needs access to a GPU driver bug workaround entry.
+        # This class needs access to various GPU-related functionality.
         'allowed': [
+            'gfx::BufferFormat',
             'gpu::ENABLE_WEBGL_TIMER_QUERY_EXTENSIONS',
+            'gpu::IsImageFromGpuMemoryBufferFormatSupported',
+            'gpu::IsImageSizeValidForGpuMemoryBufferFormat',
+            'viz::SinglePlaneSharedImageFormatToBufferFormat',
         ],
     },
     {

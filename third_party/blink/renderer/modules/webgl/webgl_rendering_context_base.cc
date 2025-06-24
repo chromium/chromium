@@ -230,6 +230,110 @@ enum class WebGLANGLEImplementation {
 constexpr base::TimeDelta kDurationBetweenRestoreAttempts = base::Seconds(1);
 const int kMaxGLErrorsAllowedToConsole = 256;
 
+// This ResourceProvider is used for low-latency WebGL to pass the drawing
+// buffer's SharedImage directly through to the canvas via
+// ExternalCanvasResource for use cases such as compositing and snapshotting.
+class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
+ public:
+  CanvasResourceProviderPassThrough(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+          context_provider_wrapper,
+      CanvasResourceHost* resource_host)
+      : CanvasResourceProvider(kPassThrough,
+                               size,
+                               format,
+                               alpha_type,
+                               color_space,
+                               std::move(context_provider_wrapper),
+                               resource_host) {}
+
+  ~CanvasResourceProviderPassThrough() override = default;
+  bool IsValid() const final { return true; }
+  bool IsAccelerated() const final { return true; }
+  bool SupportsDirectCompositing() const override { return true; }
+  bool IsSingleBuffered() const override { return true; }
+
+ private:
+  void ImportResource(
+      scoped_refptr<ExternalCanvasResource>&& resource) override {
+    resource_ = resource;
+  }
+
+  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) final {
+    return resource_;
+  }
+
+  sk_sp<SkSurface> CreateSkSurface() const override { NOTREACHED(); }
+
+  scoped_refptr<StaticBitmapImage> Snapshot(FlushReason,
+                                            ImageOrientation) override {
+    if (IsGpuContextLost() || !resource_) {
+      return nullptr;
+    }
+    return resource_->Bitmap();
+  }
+
+ private:
+  scoped_refptr<ExternalCanvasResource> resource_;
+};
+
+std::unique_ptr<CanvasResourceProvider> CreatePassThroughProvider(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    CanvasResourceHost* resource_host) {
+  // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
+  // context_provider_wrapper, so it's important to call that first as it can
+  // invalidate the weak pointer.
+  if (!SharedGpuContext::IsGpuCompositingEnabled() ||
+      !context_provider_wrapper) {
+    return nullptr;
+  }
+
+  const auto& capabilities =
+      context_provider_wrapper->ContextProvider().GetCapabilities();
+  if (size.width() > capabilities.max_texture_size ||
+      size.height() > capabilities.max_texture_size) {
+    return nullptr;
+  }
+
+  const auto& shared_image_capabilities =
+      context_provider_wrapper->ContextProvider()
+          .SharedImageInterface()
+          ->GetCapabilities();
+
+  const gfx::BufferFormat buffer_format =
+      viz::SinglePlaneSharedImageFormatToBufferFormat(format);
+  bool gmb_allowed =
+      gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format) &&
+      gpu::IsImageFromGpuMemoryBufferFormatSupported(buffer_format,
+                                                     capabilities);
+
+  // Either swap_chain or gpu memory buffer should be enabled for this be used.
+  // TODO(crbug.com/404887530) : Remove or Rename `gmb_allowed` since
+  // CanvasResourceProvider no longer uses GMBs.
+  if (!shared_image_capabilities.shared_image_swap_chain && !gmb_allowed) {
+    return nullptr;
+  }
+
+  // Note: Unlike other CanvasResourceProvider subclasses, a
+  // CanvasResourceProviderPassThrough instance is always valid and does not
+  // require clearing as part of initialization (both of these being due to the
+  // fact that it simply delegates the internal parts of the resource to the
+  // drawing buffer).
+  auto provider = std::make_unique<CanvasResourceProviderPassThrough>(
+      size, format, alpha_type, color_space, context_provider_wrapper,
+      resource_host);
+  CHECK(provider->IsValid());
+  return provider;
+}
+
 base::Lock& WebGLContextLimitLock() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
   return lock;
@@ -1949,7 +2053,7 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
       // If either SwapChain is enabled or WebGLImage mode is enabled, we can
       // try a passthrough provider.
       DCHECK(Host()->LowLatencyEnabled());
-      provider = CanvasResourceProvider::CreatePassThroughProvider(
+      provider = CreatePassThroughProvider(
           Host()->Size(), format, alpha_type, color_space,
           SharedGpuContext::ContextProviderWrapper(), Host());
     }

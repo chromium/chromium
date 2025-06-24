@@ -146,14 +146,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       gpu::SharedImageUsageSet shared_image_usage_flags = {},
       CanvasResourceHost* resource_host = nullptr);
 
-  static std::unique_ptr<CanvasResourceProvider> CreatePassThroughProvider(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      CanvasResourceHost* resource_host = nullptr);
-
   static std::unique_ptr<CanvasResourceProvider> CreateSwapChainProvider(
       gfx::Size size,
       viz::SharedImageFormat format,

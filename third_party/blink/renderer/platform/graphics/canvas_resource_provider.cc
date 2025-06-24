@@ -1024,57 +1024,6 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
       base::BindOnce(&NotifyGpuContextLostTask, CreateWeakPtr()));
 };
 
-// This ResourceProvider is meant to be used with an imported external
-// CanvasResource, and all drawing and lifetime logic must be kept at a higher
-// level.
-class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
- public:
-  CanvasResourceProviderPassThrough(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-          context_provider_wrapper,
-      CanvasResourceHost* resource_host)
-      : CanvasResourceProvider(kPassThrough,
-                               size,
-                               format,
-                               alpha_type,
-                               color_space,
-                               std::move(context_provider_wrapper),
-                               resource_host) {}
-
-  ~CanvasResourceProviderPassThrough() override = default;
-  bool IsValid() const final { return true; }
-  bool IsAccelerated() const final { return true; }
-  bool SupportsDirectCompositing() const override { return true; }
-  bool IsSingleBuffered() const override { return true; }
-
- private:
-  void ImportResource(
-      scoped_refptr<ExternalCanvasResource>&& resource) override {
-    resource_ = resource;
-  }
-
-  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) final {
-    return resource_;
-  }
-
-  sk_sp<SkSurface> CreateSkSurface() const override { NOTREACHED(); }
-
-  scoped_refptr<StaticBitmapImage> Snapshot(FlushReason,
-                                            ImageOrientation) override {
-    if (IsGpuContextLost() || !resource_) {
-      return nullptr;
-    }
-    return resource_->Bitmap();
-  }
-
- private:
-  scoped_refptr<ExternalCanvasResource> resource_;
-};
-
 // * Renders to back buffer of a shared image swap chain.
 // * Presents swap chain and exports front buffer mailbox to compositor to
 //   support low latency mode.
@@ -1400,51 +1349,6 @@ CanvasResourceProvider::CreateWebGPUImageProvider(
       shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
           gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
       resource_host);
-}
-
-std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreatePassThroughProvider(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    CanvasResourceHost* resource_host) {
-  // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
-  // context_provider_wrapper, so it's important to call that first as it can
-  // invalidate the weak pointer.
-  if (!SharedGpuContext::IsGpuCompositingEnabled() || !context_provider_wrapper)
-    return nullptr;
-
-  const auto& capabilities =
-      context_provider_wrapper->ContextProvider().GetCapabilities();
-  if (size.width() > capabilities.max_texture_size ||
-      size.height() > capabilities.max_texture_size) {
-    return nullptr;
-  }
-
-  const auto& shared_image_capabilities =
-      context_provider_wrapper->ContextProvider()
-          .SharedImageInterface()
-          ->GetCapabilities();
-  // Either swap_chain or gpu memory buffer should be enabled for this be used.
-  // TODO(crbug.com/404887530) : Remove or Rename IsGMBAllowed() since
-  // CanvasResourceProvider no longer uses GMBs.
-  if (!shared_image_capabilities.shared_image_swap_chain &&
-      !IsGMBAllowed(size, format, capabilities)) {
-    return nullptr;
-  }
-
-  // Note: Unlike other CanvasResourceProvider subclasses, a
-  // CanvasResourceProviderPassThrough instance is always valid and does not
-  // require clearing as part of initialization (both of these being due to the
-  // fact that it simply delegates the internal parts of the resource to other
-  // classes).
-  auto provider = std::make_unique<CanvasResourceProviderPassThrough>(
-      size, format, alpha_type, color_space, context_provider_wrapper,
-      resource_host);
-  CHECK(provider->IsValid());
-  return provider;
 }
 
 std::unique_ptr<CanvasResourceProvider>
