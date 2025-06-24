@@ -91,57 +91,6 @@ void DrawLineAsRect(GraphicsContext& context,
   }
 }
 
-struct WavyParams {
-  float resolved_thickness;
-  float effective_zoom;
-  bool spelling_grammar;
-  Color color;
-
-  bool operator==(const WavyParams&) const = default;
-  DISALLOW_NEW();
-};
-
-float WavyControlPointDistance(const WavyParams& params) {
-  // Distance between decoration's axis and Bezier curve's control points. The
-  // height of the curve is based on this distance. Increases the curve's height
-  // as strokeThickness increases to make the curve look better.
-  if (params.spelling_grammar) {
-    return 5 * params.effective_zoom;
-  }
-  // Setting the distance to half-pixel values gives better antialiasing
-  // results, particularly for small values.
-  return 0.5 + roundf(3 * std::max<float>(1, params.resolved_thickness) + 0.5);
-}
-
-float WavyStep(const WavyParams& params) {
-  // Increment used to form the diamond shape between start point (p1), control
-  // points and end point (p2) along the axis of the decoration. Makes the curve
-  // wider as strokeThickness increases to make the curve look better.
-  if (params.spelling_grammar) {
-    return 3 * params.effective_zoom;
-  }
-  // Setting the step to half-pixel values gives better antialiasing
-  // results, particularly for small values.
-  return 0.5 + roundf(2 * std::max<float>(1, params.resolved_thickness) + 0.5);
-}
-
-// Computes the wavy pattern rect, which is where the desired wavy pattern would
-// be found when painting the wavy stroke path at the origin, or in other words,
-// how far PrepareWavyTileRecord needs to translate in the opposite direction
-// when painting to ensure that nothing is painted at y<0.
-gfx::RectF ComputeWavyPatternRect(const WavyParams& params,
-                                  const Path& stroke_path) {
-  StrokeData stroke_data;
-  stroke_data.SetThickness(params.resolved_thickness);
-
-  // Expand the stroke rect to integer y coordinates in both directions, to
-  // avoid messing with the vertical antialiasing.
-  gfx::RectF stroke_rect = stroke_path.StrokeBoundingRect(stroke_data);
-  float top = floorf(stroke_rect.y());
-  float bottom = ceilf(stroke_rect.bottom());
-  return {0.f, top, 2.f * WavyStep(params), bottom - top};
-}
-
 // Prepares a path for a cubic Bezier curve repeated three times, yielding a
 // wavy pattern that we can cut into a tiling shader (PrepareWavyTileRecord).
 //
@@ -167,51 +116,76 @@ gfx::RectF ComputeWavyPatternRect(const WavyParams& params,
 //                        x=0
 //             +                        +                        +
 //            cp1                      cp1                      cp1
-// |-----------|------------|
-//     step         step
-Path PrepareWavyStrokePath(const WavyParams& params) {
-  float control_point_distance = WavyControlPointDistance(params);
-  float step = WavyStep(params);
-
-  // We paint the wave before and after the text line (to cover the whole length
-  // of the line) and then we clip it at
-  // AppliedDecorationPainter::StrokeWavyTextDecoration().
-  // Offset the start point, so the bezier curve starts before the current line,
-  // that way we can clip it exactly the same way in both ends.
-  // For spelling and grammar errors we offset by half a step less, to get a
-  // result closer to Microsoft Word circa 2021.
-  float phase_shift = (params.spelling_grammar ? -1.5f : -2.f) * step;
-
+// |----- wavelength -------|
+Path WavyPath(const WaveDefinition& wave) {
   // Midpoints at y=0.5, to reduce vertical antialiasing.
-  gfx::PointF start{phase_shift, 0.5f};
-  gfx::PointF end{start + gfx::Vector2dF(2.f * step, 0.0f)};
-  gfx::PointF cp1{start + gfx::Vector2dF(step, +control_point_distance)};
-  gfx::PointF cp2{start + gfx::Vector2dF(step, -control_point_distance)};
+  gfx::PointF start{wave.phase, 0.5f};
+  gfx::PointF end{start + gfx::Vector2dF(wave.wavelength, 0.0f)};
+  gfx::PointF cp1{start + gfx::Vector2dF(wave.wavelength * 0.5f,
+                                         +wave.control_point_distance)};
+  gfx::PointF cp2{start + gfx::Vector2dF(wave.wavelength * 0.5f,
+                                         -wave.control_point_distance)};
 
   PathBuilder result;
   result.MoveTo(start);
 
   result.CubicTo(cp1, cp2, end);
-  cp1.set_x(cp1.x() + 2.f * step);
-  cp2.set_x(cp2.x() + 2.f * step);
-  end.set_x(end.x() + 2.f * step);
+  cp1.set_x(cp1.x() + wave.wavelength);
+  cp2.set_x(cp2.x() + wave.wavelength);
+  end.set_x(end.x() + wave.wavelength);
   result.CubicTo(cp1, cp2, end);
-  cp1.set_x(cp1.x() + 2.f * step);
-  cp2.set_x(cp2.x() + 2.f * step);
-  end.set_x(end.x() + 2.f * step);
+  cp1.set_x(cp1.x() + wave.wavelength);
+  cp2.set_x(cp2.x() + wave.wavelength);
+  end.set_x(end.x() + wave.wavelength);
   result.CubicTo(cp1, cp2, end);
 
   return result.Finalize();
 }
 
-cc::PaintRecord PrepareWavyTileRecord(const WavyParams& params,
+WaveDefinition MakeWave(float thickness) {
+  const float clamped_thickness = std::max<float>(1, thickness);
+  // Setting the step to half-pixel values gives better antialiasing results,
+  // particularly for small values.
+  const float wavelength = 1 + 2 * std::round(2 * clamped_thickness + 0.5f);
+  // Setting the distance to half-pixel values gives better antialiasing
+  // results, particularly for small values.
+  const float cp_distance = 0.5f + std::round(3 * clamped_thickness + 0.5f);
+  return {
+      .wavelength = wavelength,
+      .control_point_distance = cp_distance,
+      // Offset the start point, so the bezier curve starts before the current
+      // line, that way we can clip it exactly the same way in both ends.
+      .phase = -wavelength,
+  };
+}
+
+// Computes the wavy pattern rect, which is where the desired wavy pattern would
+// be found when painting the wavy stroke path at the origin, or in other words,
+// how far PrepareWavyTileRecord needs to translate in the opposite direction
+// when painting to ensure that nothing is painted at y<0.
+gfx::RectF ComputeWavyPatternRect(const float thickness,
+                                  const WaveDefinition& wave,
+                                  const Path& stroke_path) {
+  StrokeData stroke_data;
+  stroke_data.SetThickness(thickness);
+
+  // Expand the stroke rect to integer y coordinates in both directions, to
+  // avoid messing with the vertical antialiasing.
+  gfx::RectF stroke_rect = stroke_path.StrokeBoundingRect(stroke_data);
+  float top = floorf(stroke_rect.y());
+  float bottom = ceilf(stroke_rect.bottom());
+  return {0.f, top, wave.wavelength, bottom - top};
+}
+
+cc::PaintRecord PrepareWavyTileRecord(const Color& color,
+                                      const float thickness,
                                       const Path& stroke_path,
                                       const gfx::RectF& pattern_rect) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(params.color.Rgb());
+  flags.setColor(color.Rgb());
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setStrokeWidth(params.resolved_thickness);
+  flags.setStrokeWidth(thickness);
 
   PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording();
@@ -222,6 +196,15 @@ cc::PaintRecord PrepareWavyTileRecord(const WavyParams& params,
 
   return recorder.finishRecordingAsPicture();
 }
+
+struct WavyParams {
+  WaveDefinition wave;
+  float thickness;
+  Color color;
+
+  bool operator==(const WavyParams&) const = default;
+  DISALLOW_NEW();
+};
 
 void ComputeWavyLineData(const WavyParams& params,
                          DecorationGeometry& geometry) {
@@ -240,10 +223,11 @@ void ComputeWavyLineData(const WavyParams& params,
     return;
   }
 
-  Path stroke_path = PrepareWavyStrokePath(params);
-  geometry.wavy_pattern_rect = ComputeWavyPatternRect(params, stroke_path);
-  geometry.wavy_tile_record =
-      PrepareWavyTileRecord(params, stroke_path, geometry.wavy_pattern_rect);
+  Path stroke_path = WavyPath(params.wave);
+  geometry.wavy_pattern_rect =
+      ComputeWavyPatternRect(params.thickness, params.wave, stroke_path);
+  geometry.wavy_tile_record = PrepareWavyTileRecord(
+      params.color, params.thickness, stroke_path, geometry.wavy_pattern_rect);
   wavy_cache =
       WavyCache{params, geometry.wavy_pattern_rect, geometry.wavy_tile_record};
 }
@@ -265,10 +249,9 @@ gfx::RectF WavyPaintRect(const DecorationGeometry& geometry) {
 
 DecorationGeometry DecorationGeometry::Make(StrokeStyle style,
                                             const gfx::RectF& line,
-                                            float zoom,
                                             float double_offset,
                                             int wavy_offset_factor,
-                                            bool is_spelling_or_grammar,
+                                            const WaveDefinition* custom_wave,
                                             const Color& line_color) {
   DecorationGeometry geometry;
   geometry.style = style;
@@ -276,8 +259,9 @@ DecorationGeometry DecorationGeometry::Make(StrokeStyle style,
   geometry.double_offset = double_offset;
 
   if (geometry.style == kWavyStroke) {
-    WavyParams params{geometry.Thickness(), zoom, is_spelling_or_grammar,
-                      line_color};
+    const WaveDefinition wave =
+        custom_wave ? *custom_wave : MakeWave(geometry.Thickness());
+    WavyParams params{wave, geometry.Thickness(), line_color};
     ComputeWavyLineData(params, geometry);
     geometry.wavy_offset_factor = wavy_offset_factor;
   }

@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
@@ -13,9 +14,6 @@
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -123,6 +121,19 @@ static enum StrokeStyle TextDecorationStyleToStrokeStyle(
       return kWavyStroke;
   }
 }
+
+#if !BUILDFLAG(IS_APPLE)
+WaveDefinition MakeSpellingGrammarWave(float effective_zoom) {
+  const float wavelength = 6 * effective_zoom;
+  return {
+      .wavelength = wavelength,
+      .control_point_distance = 5 * effective_zoom,
+      // Offset by a quarter of a wavelength, to get a result closer to
+      // Microsoft Word circa 2021.
+      .phase = -0.75f * wavelength,
+  };
+}
+#endif
 
 }  // namespace
 
@@ -295,18 +306,18 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
       NOTREACHED();
   }
 
-  const bool is_spelling_or_grammar =
-      line == TextDecorationLine::kSpellingError ||
-      line == TextDecorationLine::kGrammarError;
-
   StrokeStyle style;
+  std::optional<WaveDefinition> spelling_wave;
   bool antialias = antialias_;
-  if (is_spelling_or_grammar) {
+  if (line == TextDecorationLine::kSpellingError ||
+      line == TextDecorationLine::kGrammarError) {
 #if BUILDFLAG(IS_APPLE)
     style = kDottedStroke;
     antialias = true;
 #else
     style = kWavyStroke;
+    spelling_wave =
+        MakeSpellingGrammarWave(decorating_box_style_->EffectiveZoom());
 #endif
   } else {
     DCHECK(applied_text_decoration_);
@@ -317,8 +328,8 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
       gfx::PointF(local_origin_) + gfx::Vector2dF(0, line_offset);
   line_geometry_ = DecorationGeometry::Make(
       style, gfx::RectF(start_point, gfx::SizeF(width_, ResolvedThickness())),
-      decorating_box_style_->EffectiveZoom(), double_offset, wavy_offset_factor,
-      is_spelling_or_grammar, LineColor());
+      double_offset, wavy_offset_factor, base::OptionalToPtr(spelling_wave),
+      LineColor());
   line_geometry_.antialias = antialias;
 }
 

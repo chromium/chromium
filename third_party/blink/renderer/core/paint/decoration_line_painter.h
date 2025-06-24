@@ -19,16 +19,27 @@ class GraphicsContext;
 class StyledStrokeData;
 class TextDecorationInfo;
 
+// Defines a "wave" for painting a kWavyStroke. See the .cc file for a detailed
+// description.
+struct WaveDefinition {
+  float wavelength;              // Wavelength of the waveform.
+  float control_point_distance;  // Almost-but-not-quite the amplitude of the
+                                 // waveform (the real amplitude will be less
+                                 // than this value).
+  float phase;                   // Phase of the waveform.
+
+  bool operator==(const WaveDefinition&) const = default;
+};
+
 struct DecorationGeometry {
   STACK_ALLOCATED();
 
  public:
   static DecorationGeometry Make(StrokeStyle style,
                                  const gfx::RectF& line,
-                                 float zoom,
                                  float double_offset,
                                  int wavy_offset_factor,
-                                 bool is_spelling_or_grammar,
+                                 const WaveDefinition* custom_wave,
                                  const Color& line_color);
 
   float Thickness() const { return line.height(); }
