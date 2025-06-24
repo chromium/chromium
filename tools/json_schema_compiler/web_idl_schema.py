@@ -508,6 +508,12 @@ class Operation:
     if (description_data.description):
       properties['description'] = description_data.description
 
+    callback_optional = True
+    for extended_attribute in GetExtendedAttributes(self.node):
+      attribute_name = extended_attribute.GetName()
+      if attribute_name == 'requiredCallback':
+        callback_optional = False
+
     parameters = []
     arguments_node = self.node.GetOneOf('Arguments')
     for argument in arguments_node.GetListOf('Argument'):
@@ -523,6 +529,15 @@ class Operation:
       # This is an Undefined return, so we don't add anything.
       pass
     elif 'type' in return_type and return_type['type'] == 'promise':
+      # TODO(tjudkins): The optionality of the callback is only relevant for
+      # contexts that don't support promise based calls and for the few
+      # functions which don't support promise based calls, as the callback is
+      # always inherently optional when using a promise based call instead. It
+      # would be nice to just get rid of the 'optional' property here and always
+      # treat it as optional when we remove the context restrictions for promise
+      # based calls.
+      if callback_optional:
+        return_type['optional'] = True
       # For legacy reasons Promise based returns are represented on a
       # "returns_async" property.
       properties['returns_async'] = return_type
