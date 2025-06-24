@@ -5514,6 +5514,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.System.PreferredSystemFontSize"
+    enum="IOSContentSizeCategory" expires_after="2026-06-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the preferred system font size from iOS device. Recorded at cold
+    start.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TabGrid.CloseTabs" units="Tabs" expires_after="2026-06-01">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
