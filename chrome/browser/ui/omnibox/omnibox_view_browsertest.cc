@@ -13,6 +13,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -1509,20 +1510,42 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_SelectAllStaysAfterUpdate) {
   EXPECT_EQ(1u, GetSelectionSize(omnibox_view));
 }
 
-base::Value CreateSiteSearchPolicyValue(bool featured) {
-  base::Value::List policy_value;
-  policy_value.Append(
-      base::Value::Dict()
-          .Set(policy::SiteSearchPolicyHandler::kShortcut,
-               kSiteSearchPolicyKeyword)
-          .Set(policy::SiteSearchPolicyHandler::kName, kSiteSearchPolicyName)
-          .Set(policy::SiteSearchPolicyHandler::kUrl, kSiteSearchPolicyURL)
-          .Set(policy::SiteSearchPolicyHandler::kFeatured, featured));
-  return base::Value(std::move(policy_value));
-}
+class SiteSearchPolicyOmniboxViewTest
+    : public OmniboxViewTest,
+      public ::testing::WithParamInterface<std::optional<bool>> {
+ public:
+  SiteSearchPolicyOmniboxViewTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        omnibox::kEnableSiteSearchAllowUserOverridePolicy);
+  }
+  ~SiteSearchPolicyOmniboxViewTest() override = default;
+
+  base::Value CreateSiteSearchPolicyValue(bool featured) {
+    base::Value::Dict policy_dict =
+        base::Value::Dict()
+            .Set(policy::SiteSearchPolicyHandler::kShortcut,
+                 kSiteSearchPolicyKeyword)
+            .Set(policy::SiteSearchPolicyHandler::kName, kSiteSearchPolicyName)
+            .Set(policy::SiteSearchPolicyHandler::kUrl, kSiteSearchPolicyURL)
+            .Set(policy::SiteSearchPolicyHandler::kFeatured, featured);
+    if (is_allow_user_override().has_value()) {
+      policy_dict.Set(policy::SiteSearchPolicyHandler::kAllowUserOverride,
+                      is_allow_user_override().value());
+    }
+    base::Value::List policy_value;
+    policy_value.Append(std::move(policy_dict));
+    return base::Value(std::move(policy_value));
+  }
+
+  std::optional<bool> is_allow_user_override() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 // Verifies that keyword search works when `SiteSearchSettings` policy is set.
-IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonFeaturedPolicyKeyword) {
+IN_PROC_BROWSER_TEST_P(SiteSearchPolicyOmniboxViewTest,
+                       NonFeaturedPolicyKeyword) {
   policy::PolicyMap policies;
   policies.Set(policy::key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -1541,6 +1564,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonFeaturedPolicyKeyword) {
   EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
   EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
   EXPECT_FALSE(turl->featured_by_policy());
+  EXPECT_EQ(turl->enforced_by_policy(),
+            !is_allow_user_override().value_or(false));
 
   // Trigger keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSiteSearchPolicyKeywordKeys));
@@ -1567,7 +1592,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonFeaturedPolicyKeyword) {
 
 // Verifies that keyword search works when `SiteSearchSettings` policy defines
 // a featured search engine.
-IN_PROC_BROWSER_TEST_F(OmniboxViewTest, FeaturedPolicyKeyword) {
+IN_PROC_BROWSER_TEST_P(SiteSearchPolicyOmniboxViewTest, FeaturedPolicyKeyword) {
   policy::PolicyMap policies;
   policies.Set(policy::key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -1586,6 +1611,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, FeaturedPolicyKeyword) {
   EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
   EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
   EXPECT_TRUE(turl->featured_by_policy());
+  EXPECT_EQ(turl->enforced_by_policy(),
+            !is_allow_user_override().value_or(false));
 
   // Type the keyword.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
@@ -1614,7 +1641,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, FeaturedPolicyKeyword) {
 
 // Verifies that featured search engine is shown with starter pack on "@" state
 // and that the underlying search works.
-IN_PROC_BROWSER_TEST_F(OmniboxViewTest, FeaturedPolicyKeywordArrowDown) {
+IN_PROC_BROWSER_TEST_P(SiteSearchPolicyOmniboxViewTest,
+                       FeaturedPolicyKeywordArrowDown) {
   policy::PolicyMap policies;
   policies.Set(policy::key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -1633,6 +1661,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, FeaturedPolicyKeywordArrowDown) {
   EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
   EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
   EXPECT_TRUE(turl->featured_by_policy());
+  EXPECT_EQ(turl->enforced_by_policy(),
+            !is_allow_user_override().value_or(false));
 
   // Trigger keyword mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
@@ -1653,6 +1683,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, FeaturedPolicyKeywordArrowDown) {
                 ->destination_url.spec(),
             kSiteSearchPolicyTextURL);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SiteSearchPolicyOmniboxViewTest,
+                         ::testing::Values(std::nullopt, true, false));
 
 class SearchAggregatorPolicyOmniboxViewTest : public OmniboxViewTest {
  public:
