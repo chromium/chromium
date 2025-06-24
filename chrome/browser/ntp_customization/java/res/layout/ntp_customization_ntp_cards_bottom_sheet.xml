@@ -38,9 +38,11 @@ found in the LICENSE file.
         android:layout_marginStart="@dimen/ntp_customization_ntp_cards_title_margin"
         android:layout_marginTop="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
         android:layout_marginEnd="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:focusable="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/drag_handle_bar"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:accessibilityHeading="true"/>
 
     <org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsListContainerView
         android:id="@+id/ntp_cards_container"
