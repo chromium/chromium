@@ -9249,5 +9249,9 @@ crbug.com/425936609 external/wpt/resource-timing/tentative/document-initiated.ht
 # Gardener 2025-06-19
 crbug.com/426081198 [ Mac ] external/wpt/html/document-isolation-policy/service-worker-coep-credentialless-proxy.https.tentative.window.html [ Pass Timeout ]
 
+# Gardener 2025-06-24
+crbug.com/427523525 [ Linux ] external/wpt/css/cssom-view/idlharness.html [ Failure Pass ]
+crbug.com/427523525 [ Linux ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/idlharness.html [ Failure Pass ]
+
 # Issues found with test suite 2025-06-21
 crbug.com/426602897 external/wpt/screen-capture/delegate-request.https.sub.html [ Failure Pass ]
