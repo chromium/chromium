@@ -9470,15 +9470,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmMetricsEndpointDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmMetricsEndpoint)},
 
-    {"fedcm-multi-idp", flag_descriptions::kFedCmMultiIdpName,
-     flag_descriptions::kFedCmMultiIdpDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmMultipleIdentityProviders)},
-
-    {"fedcm-show-filtered-accounts",
-     flag_descriptions::kFedCmShowFilteredAccountsName,
-     flag_descriptions::kFedCmShowFilteredAccountsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmShowFilteredAccounts)},
-
     {"fedcm-without-well-known-enforcement",
      flag_descriptions::kFedCmWithoutWellKnownEnforcementName,
      flag_descriptions::kFedCmWithoutWellKnownEnforcementDescription, kOsAll,

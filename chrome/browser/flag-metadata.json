@@ -5022,19 +5022,9 @@
     "expiry_milestone": 140
   },
   {
-    "name": "fedcm-multi-idp",
-    "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "fedcm-segmentation-platform",
     "owners": ["tanzachary@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 145
-  },
-  {
-    "name": "fedcm-show-filtered-accounts",
-    "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 137
   },
   {
     "name": "fedcm-without-well-known-enforcement",

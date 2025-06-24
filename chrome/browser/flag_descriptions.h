@@ -1256,14 +1256,8 @@ extern const char kFedCmLightweightModeDescription[];
 extern const char kFedCmMetricsEndpointName[];
 extern const char kFedCmMetricsEndpointDescription[];
 
-extern const char kFedCmMultiIdpName[];
-extern const char kFedCmMultiIdpDescription[];
-
 extern const char kFedCmQuietUiName[];
 extern const char kFedCmQuietUiDescription[];
-
-extern const char kFedCmShowFilteredAccountsName[];
-extern const char kFedCmShowFilteredAccountsDescription[];
 
 extern const char kFedCmWithoutWellKnownEnforcementName[];
 extern const char kFedCmWithoutWellKnownEnforcementDescription[];

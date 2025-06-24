@@ -2196,15 +2196,6 @@ const char kFedCmLightweightModeDescription[] =
     "Enables IdPs to store user profile information using the login status "
     "API.";
 
-const char kFedCmMultiIdpName[] = "FedCmMultiIdp";
-const char kFedCmMultiIdpDescription[] =
-    "Allows the FedCM API to request multiple identity providers "
-    "simultaneously. Requires FedCM to be enabled as well.";
-
-const char kFedCmShowFilteredAccountsName[] = "FedCmShowFilteredAccounts";
-const char kFedCmShowFilteredAccountsDescription[] =
-    "Allows the FedCM API to show filtered accounts greyed out.";
-
 const char kFedCmWithoutWellKnownEnforcementName[] =
     "FedCmWithoutWellKnownEnforcement";
 const char kFedCmWithoutWellKnownEnforcementDescription[] =
