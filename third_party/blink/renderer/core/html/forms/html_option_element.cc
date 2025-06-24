@@ -826,14 +826,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
     if (key == keywords::kTab &&
         !(keyboard_event->GetModifiers() & tab_ignore_modifiers) &&
         !select->IsInDialogMode()) {
-      if (appearance_base_in_page) {
-        // TODO(crbug.com/357649033): consider focusing the next focusable
-        // element after the owner select element, if possible. Maybe we could
-        // call KeyboardEventManager::DefaultTabEventHandler or something until
-        // focus has moved outside of this select? Or build something into
-        // FocusController to make it search for an element to focus which isn't
-        // one of the option elements inside this select?
-      } else {
+      if (!appearance_base_in_page) {
         // TODO(http://crbug.com/1511354): Consider focusing something in this
         // case. https://github.com/openui/open-ui/issues/1016
         select->HidePopup(SelectPopupHideBehavior::kNormal);
