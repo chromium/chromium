@@ -9,6 +9,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
@@ -71,6 +72,8 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ModalDialogButtonSpec;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+
+import java.util.ArrayList;
 
 /** Tests for {@link ModalDialogView}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -305,6 +308,82 @@ public class ModalDialogViewTest {
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_title_scroll_view)).check(matches(not(isDisplayed())));
         onView(withId(R.id.message_paragraph_2)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testMessageParagraphs() {
+        ArrayList<CharSequence> paragraphs = new ArrayList<>();
+        String p1 = "This is the first paragraph.";
+        String p2_original = "This is the original second paragraph.";
+        paragraphs.add(p1);
+        paragraphs.add(p2_original);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mModalDialogView.setMessageParagraphs(paragraphs));
+
+        // Replace the second paragraph in the ArrayList
+        String p2_updated = "This is the updated second paragraph.";
+        paragraphs.set(1, p2_updated);
+
+        // Verify the views are correct.
+        onView(withId(R.id.message_paragraphs_container)).check(matches(isDisplayed()));
+        onView(withText(p1)).check(matches(isDisplayed()));
+        onView(withText(p2_original)).check(matches(isDisplayed()));
+        Assert.assertEquals(
+                "Initial paragraph 0 has wrong text.",
+                p1,
+                mModalDialogView.getMessageParagraphAtIndexForTesting(0).getText().toString());
+        Assert.assertEquals(
+                "Initial paragraph 1 has wrong text.",
+                p2_original,
+                mModalDialogView.getMessageParagraphAtIndexForTesting(1).getText().toString());
+
+        // Replace the 2nd paragraph in the view.
+        ThreadUtils.runOnUiThreadBlocking(() -> mModalDialogView.setMessageParagraphs(paragraphs));
+
+        // Verify only the 2nd paragraph changed.
+        onView(withText(p2_original)).check(doesNotExist());
+
+        onView(withId(R.id.message_paragraphs_container)).check(matches(isDisplayed()));
+        onView(withText(p1)).check(matches(isDisplayed()));
+        onView(withText(p2_updated)).check(matches(isDisplayed()));
+        Assert.assertEquals(
+                "Updated paragraph 0 has wrong text.",
+                p1,
+                mModalDialogView.getMessageParagraphAtIndexForTesting(0).getText().toString());
+        Assert.assertEquals(
+                "Updated paragraph 1 has wrong text.",
+                p2_updated,
+                mModalDialogView.getMessageParagraphAtIndexForTesting(1).getText().toString());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testSetMessageParagraphs_clearsPreviousContent() {
+        ArrayList<CharSequence> initialParagraphs = new ArrayList<>();
+        String initialText = "This paragraph should be cleared.";
+        initialParagraphs.add(initialText);
+
+        // Verify that null call empties the view.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mModalDialogView.setMessageParagraphs(initialParagraphs));
+        onView(withText(initialText)).check(matches(isDisplayed()));
+        onView(withId(R.id.message_paragraphs_container)).check(matches(isDisplayed()));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModalDialogView.setMessageParagraphs(null));
+        onView(withText(initialText)).check(doesNotExist());
+        onView(withId(R.id.message_paragraphs_container)).check(matches(not(isDisplayed())));
+
+        // Verify that empty list call empties the view.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mModalDialogView.setMessageParagraphs(initialParagraphs));
+        onView(withText(initialText)).check(matches(isDisplayed()));
+        onView(withId(R.id.message_paragraphs_container)).check(matches(isDisplayed()));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mModalDialogView.setMessageParagraphs(new ArrayList<>()));
+        onView(withText(initialText)).check(doesNotExist());
+        onView(withId(R.id.message_paragraphs_container)).check(matches(not(isDisplayed())));
     }
 
     @Test
