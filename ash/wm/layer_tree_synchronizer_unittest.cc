@@ -111,21 +111,28 @@ UpdatingLayerTreeSynchronizerTestParam MakeTestParams(
                          expected_child_layer_radii);
 }
 
-INSTANTIATE_TEST_SUITE_P(SanityTests,
-                         UpdatingLayerTreeSynchronizerTest,
-                         testing::Values(
-                             // Child layer has zero bounds.
-                             MakeTestParams(kRootBounds,
-                                            kZeroRadii,
-                                            gfx::Rect(),
-                                            kZeroRadii,
-                                            kZeroRadii),
-                             // Parent layer has zero bounds.
-                             MakeTestParams(gfx::Rect(),
-                                            kZeroRadii,
-                                            gfx::Rect(5, 5, 10, 10),
-                                            kZeroRadii,
-                                            kZeroRadii)));
+INSTANTIATE_TEST_SUITE_P(
+    SanityTests,
+    UpdatingLayerTreeSynchronizerTest,
+    testing::Values(
+        // Child layer has zero bounds.
+        MakeTestParams(kRootBounds,
+                       kZeroRadii,
+                       gfx::Rect(),
+                       kZeroRadii,
+                       kZeroRadii),
+        // Parent layer has zero bounds.
+        MakeTestParams(gfx::Rect(),
+                       kZeroRadii,
+                       gfx::Rect(5, 5, 10, 10),
+                       kZeroRadii,
+                       kZeroRadii),
+        // If child layer has no rounded corners, we do not update those layers.
+        MakeTestParams(kRootBounds,
+                       gfx::RoundedCornersF(5),
+                       gfx::Rect(0, 0, 50, 50),
+                       kZeroRadii,
+                       kZeroRadii)));
 
 INSTANTIATE_TEST_SUITE_P(
     RootLayerHasNoRoundedCorners,
@@ -149,20 +156,6 @@ INSTANTIATE_TEST_SUITE_P(
                        gfx::Rect(10, 10, 20, 0),
                        gfx::RoundedCornersF(5),
                        gfx::RoundedCornersF(5))));
-
-INSTANTIATE_TEST_SUITE_P(
-    ChildLayerHasNoRoundedCorners,
-    UpdatingLayerTreeSynchronizerTest,
-    testing::Values(MakeTestParams(kRootBounds,
-                                   gfx::RoundedCornersF(10),
-                                   gfx::Rect(0, 0, 50, 50),
-                                   kZeroRadii,
-                                   gfx::RoundedCornersF(10)),
-                    MakeTestParams(kRootBounds,
-                                   gfx::RoundedCornersF(10),
-                                   gfx::Rect(0, 0, 30, 50),
-                                   kZeroRadii,
-                                   gfx::RoundedCornersF(10, 0, 0, 10))));
 
 INSTANTIATE_TEST_SUITE_P(
     RootLayerAndChildLayerHaveRoundedCorners,
