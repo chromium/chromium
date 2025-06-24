@@ -18,7 +18,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -209,34 +208,6 @@ password_manager::PasskeyCredential::Source ToPasswordManagerSource(
     case AuthenticatorType::kOther:
       return password_manager::PasskeyCredential::Source::kOther;
   }
-}
-
-// Stores the last used pairing in the user's profile if available.
-// TODO(crbug.com/372493822): remove and clean up pref.
-[[maybe_unused]] void MaybeStoreLastUsedPairing(
-    content::RenderFrameHost* rfh,
-    const std::array<uint8_t, device::kP256X962Length>& pairing_public_key) {
-  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext())
-                         ->GetOriginalProfile();
-  profile->GetPrefs()->SetString(
-      webauthn::pref_names::kLastUsedPairingFromSyncPublicKey,
-      base::Base64Encode(pairing_public_key));
-}
-
-// Retrieves the last used pairing public key from the user's profile, if
-// available.
-// TODO(crbug.com/372493822): remove and clean up pref.
-[[maybe_unused]] std::optional<std::vector<uint8_t>> RetrieveLastUsedPairing(
-    content::RenderFrameHost* rfh) {
-  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext())
-                         ->GetOriginalProfile();
-  std::string maybe_last_used_pairing = profile->GetPrefs()->GetString(
-      webauthn::pref_names::kLastUsedPairingFromSyncPublicKey);
-  std::optional<std::vector<uint8_t>> last_used_pairing;
-  if (maybe_last_used_pairing.empty()) {
-    return std::nullopt;
-  }
-  return base::Base64Decode(maybe_last_used_pairing);
 }
 
 bool WebAuthnApiSupportsHybrid() {

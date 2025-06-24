@@ -271,8 +271,6 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
           IsICloudDriveEnabled(),
           /*request_is_for_google_com=*/false, /*preference=*/std::nullopt));
 #endif
-  // TODO(crbug.com/372493822): remove and clean up prefs.
-  cablev2::RegisterProfilePrefs(registry);
 }
 
 ChromeAuthenticatorRequestDelegate::ChromeAuthenticatorRequestDelegate(

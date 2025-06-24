@@ -22,11 +22,6 @@ extern const char kEnclaveDeclinedGPMBootstrappingCount[];
 // enclave service from this device and profile.
 extern const char kEnclaveFailedPINAttemptsCount[];
 
-// The most recently used phone pairing from sync, identified by its public key
-// encoded in base64. If there is no last recently used phone, the preference
-// will be an empty string.
-extern const char kLastUsedPairingFromSyncPublicKey[];
-
 // Maps to the WebAuthenticationRemoteProxiedRequestsAllowed enterprise
 // policy.
 extern const char kRemoteProxiedRequestsAllowed[];

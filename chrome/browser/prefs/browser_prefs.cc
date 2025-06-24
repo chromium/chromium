@@ -1155,6 +1155,12 @@ inline constexpr char kDeviceNativeClientForceAllowedCache[] =
     "device_native_client_force_allowed_cache";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Deprecated 06/2025.
+inline constexpr char kLastUsedPairingFromSyncPublicKey[] =
+    "webauthn.last_used_pairing_from_sync_public_key";
+inline constexpr char kWebAuthnCablePairingsPrefName[] =
+    "webauthn.cablev2_pairings";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1652,6 +1658,8 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 06/2025
   registry->RegisterBooleanPref(kStorageGarbageCollect, false);
   registry->RegisterDoublePref(kGaiaCookiePeriodicReportTimeDeprecated, 0);
+  registry->RegisterListPref(kWebAuthnCablePairingsPrefName);
+  registry->RegisterStringPref(kLastUsedPairingFromSyncPublicKey, "");
 }
 
 }  // namespace
@@ -2348,9 +2356,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(
       webauthn::pref_names::kRemoteProxiedRequestsAllowed, false);
 
-  registry->RegisterStringPref(
-      webauthn::pref_names::kLastUsedPairingFromSyncPublicKey, "");
-
   registry->RegisterIntegerPref(
       webauthn::pref_names::kEnclaveFailedPINAttemptsCount, 0);
 
@@ -2991,6 +2996,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 06/2025.
   profile_prefs->ClearPref(kStorageGarbageCollect);
   profile_prefs->ClearPref(kGaiaCookiePeriodicReportTimeDeprecated);
+  profile_prefs->ClearPref(kWebAuthnCablePairingsPrefName);
+  profile_prefs->ClearPref(kLastUsedPairingFromSyncPublicKey);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
