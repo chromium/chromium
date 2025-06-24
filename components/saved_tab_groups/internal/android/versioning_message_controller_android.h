@@ -24,6 +24,10 @@ class VersioningMessageControllerAndroid {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env);
 
+  bool IsInitialized(JNIEnv* env, const JavaParamRef<jobject>& j_caller);
+  bool ShouldShowMessageUi(JNIEnv* env,
+                           const JavaParamRef<jobject>& j_caller,
+                           jint j_message_type);
   void ShouldShowMessageUiAsync(JNIEnv* env,
                                 const JavaParamRef<jobject>& j_caller,
                                 jint j_message_type,

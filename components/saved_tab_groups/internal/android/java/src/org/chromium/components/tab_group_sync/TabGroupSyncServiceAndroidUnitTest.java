@@ -260,6 +260,24 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
+    public void testIsInitialized() {
+        Assert.assertTrue(mService.getVersioningMessageController().isInitialized());
+    }
+
+    @CalledByNative
+    public void testShouldShowMessageUi() {
+        Assert.assertTrue(
+                mService.getVersioningMessageController()
+                        .shouldShowMessageUi(MessageType.VERSION_OUT_OF_DATE_INSTANT_MESSAGE));
+        Assert.assertFalse(
+                mService.getVersioningMessageController()
+                        .shouldShowMessageUi(MessageType.VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE));
+        Assert.assertTrue(
+                mService.getVersioningMessageController()
+                        .shouldShowMessageUi(MessageType.VERSION_UPDATED_MESSAGE));
+    }
+
+    @CalledByNative
     public void testShouldShowMessageUiAsync() {
         mCallback = mock(Callback.class);
         mService.getVersioningMessageController()

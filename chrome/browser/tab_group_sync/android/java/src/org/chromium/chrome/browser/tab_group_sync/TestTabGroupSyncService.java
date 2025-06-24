@@ -154,6 +154,16 @@ class TestTabGroupSyncService implements TabGroupSyncService {
 
     private static class TestVersioningMessageController implements VersioningMessageController {
         @Override
+        public boolean isInitialized() {
+            return false;
+        }
+
+        @Override
+        public boolean shouldShowMessageUi(int messageType) {
+            return false;
+        }
+
+        @Override
         public void shouldShowMessageUiAsync(int messageType, Callback<Boolean> callback) {}
 
         @Override

@@ -452,6 +452,35 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateArchivalStatus) {
       env, j_test_, j_uuid, true);
 }
 
+TEST_F(TabGroupSyncServiceAndroidTest, IsInitialized) {
+  auto* env = AttachCurrentThread();
+  EXPECT_CALL(versioning_message_controller_, IsInitialized)
+      .Times(1)
+      .WillOnce(Return(true));
+  Java_TabGroupSyncServiceAndroidUnitTest_testIsInitialized(env, j_test_);
+}
+
+TEST_F(TabGroupSyncServiceAndroidTest, ShouldShowMessageUi) {
+  auto* env = AttachCurrentThread();
+  EXPECT_CALL(versioning_message_controller_,
+              ShouldShowMessageUi(VersioningMessageController::MessageType::
+                                      VERSION_OUT_OF_DATE_INSTANT_MESSAGE))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(versioning_message_controller_,
+              ShouldShowMessageUi(VersioningMessageController::MessageType::
+                                      VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE))
+      .Times(1)
+      .WillOnce(Return(false));
+  EXPECT_CALL(
+      versioning_message_controller_,
+      ShouldShowMessageUi(
+          VersioningMessageController::MessageType::VERSION_UPDATED_MESSAGE))
+      .Times(1)
+      .WillOnce(Return(true));
+  Java_TabGroupSyncServiceAndroidUnitTest_testShouldShowMessageUi(env, j_test_);
+}
+
 TEST_F(TabGroupSyncServiceAndroidTest, ShouldShowMessageUiAsync) {
   auto* env = AttachCurrentThread();
   EXPECT_CALL(

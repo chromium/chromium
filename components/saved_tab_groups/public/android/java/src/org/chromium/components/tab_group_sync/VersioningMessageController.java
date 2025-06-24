@@ -14,9 +14,30 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public interface VersioningMessageController {
+
     /**
-     * Invoke this method to query if the given message UI should be shown. This will internally
-     * wait for TabGroupSyncService initialization.
+     * Whether this VersioningMessageController is initialized. Internally, this just returns
+     * whether the TabGroupSyncService is itself initialized.
+     *
+     * @return Whether or not initialization is complete.
+     */
+    boolean isInitialized();
+
+    /**
+     * Invoke this method to query if the given message UI should be shown. This should not be
+     * called if the VersioningMessageController is not initialized. See comments on MessageType for
+     * when the UI should inform this class about display / dismissed events.
+     *
+     * @param messageType The {@link MessageType} to query.
+     * @return Whether or not the message UI should be shown.
+     */
+    boolean shouldShowMessageUi(@MessageType int messageType);
+
+    /**
+     * Same as ShouldShowMessageUi but waits on the initialization before calling the callback. If
+     * the VersioningMessageController is already initialized, then the callback is called
+     * synchronously. See comments on MessageType for when the UI should inform this class about
+     * display / dismissed events.
      *
      * @param messageType The {@link MessageType} to query.
      * @param callback The callback to be invoked with the result.

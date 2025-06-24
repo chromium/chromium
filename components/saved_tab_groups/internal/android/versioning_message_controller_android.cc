@@ -33,6 +33,20 @@ VersioningMessageControllerAndroid::GetJavaObject(JNIEnv* env) {
   return base::android::ScopedJavaLocalRef<jobject>(java_obj_);
 }
 
+bool VersioningMessageControllerAndroid::IsInitialized(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller) {
+  return versioning_message_controller_->IsInitialized();
+}
+
+bool VersioningMessageControllerAndroid::ShouldShowMessageUi(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller,
+    jint j_message_type) {
+  MessageType message_type = static_cast<MessageType>(j_message_type);
+  return versioning_message_controller_->ShouldShowMessageUi(message_type);
+}
+
 void VersioningMessageControllerAndroid::ShouldShowMessageUiAsync(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
