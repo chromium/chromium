@@ -13,6 +13,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -148,6 +149,10 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   // passed to the WebRTC PeerConnection, allowing blink events to be coalesced
   // around the same ticks.
   virtual std::unique_ptr<webrtc::Metronome> CreateDecodeMetronome();
+
+  void BindPermissionService(
+      mojo::PendingReceiver<mojom::blink::PermissionService>
+          permission_service);
 
   void Trace(Visitor*) const override;
 

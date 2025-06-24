@@ -3002,6 +3002,10 @@
       // crbug.com/394009026).
     },
     {
+      name: "LocalNetworkAccessWebRTC",
+      status: "test",
+    },
+    {
       name: "LockedMode",
       status: "test",
       // Enabled by features::kLockedMode.
