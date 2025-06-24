@@ -332,6 +332,7 @@ extern const char kNTPMIAEntrypointParam[];
 extern const char kNTPMIAEntrypointParamOmniboxContainedSingleButton[];
 extern const char kNTPMIAEntrypointParamOmniboxContainedInline[];
 extern const char kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox[];
+extern const char kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito[];
 
 // Feature flag to change the MIA entrypoint in NTP.
 BASE_DECLARE_FEATURE(kNTPMIAEntrypoint);

@@ -28,7 +28,10 @@ enum class NTPMIAEntrypointVariation {
   kOmniboxContainedInline = 2,
   // The entrypoint is shown inside the enlarged fake omnibox.
   kOmniboxContainedEnlargedFakebox = 3,
-  kMaxValue = kOmniboxContainedEnlargedFakebox,
+  // The entrypoint is shown inside the enlarged fake omnibox without incognito
+  // shortcut.
+  kEnlargedFakeboxNoIncognito = 4,
+  kMaxValue = kEnlargedFakeboxNoIncognito,
 };
 
 #pragma mark - Feature declarations
@@ -164,5 +167,8 @@ bool ShowOnlyMIAEntrypointInNTPFakebox();
 
 // Whether the quick actions row should be displayed.
 bool ShouldShowQuickActionsRow();
+
+// Whether a MIA variation should increase the size of the fakebox.
+bool ShouldEnlargeNTPFakeboxForMIA();
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_

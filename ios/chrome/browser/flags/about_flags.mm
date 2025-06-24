@@ -152,6 +152,9 @@ const FeatureEntry::FeatureParam
     kNTPMIAEntrypointOmniboxContainedEnlargedFakebox[] = {
         {kNTPMIAEntrypointParam,
          kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}};
+const FeatureEntry::FeatureParam kNTPMIAEntrypointEnlargedFakeboxNoIncognito[] =
+    {{kNTPMIAEntrypointParam,
+      kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito}};
 
 const FeatureEntry::FeatureVariation kNTPMIAEntrypointVariations[] = {
     {"A: Contained in Omnibox, single button",
@@ -163,6 +166,9 @@ const FeatureEntry::FeatureVariation kNTPMIAEntrypointVariations[] = {
     {"C: Contained in Omnibox, enlarged fakebox",
      kNTPMIAEntrypointOmniboxContainedEnlargedFakebox,
      std::size(kNTPMIAEntrypointOmniboxContainedEnlargedFakebox), nullptr},
+    {"D: Contained in enlarged fakebox, without incognito shortcut",
+     kNTPMIAEntrypointEnlargedFakeboxNoIncognito,
+     std::size(kNTPMIAEntrypointEnlargedFakeboxNoIncognito), nullptr},
 };
 
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
