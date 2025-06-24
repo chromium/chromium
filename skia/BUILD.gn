@@ -592,7 +592,8 @@ component("skia") {
     # Blink includes Skia's JPEG encoder and decoder which pdf uses.
     assert(use_blink)
     deps += [
-      "//third_party:freetype_harfbuzz",
+      # Needed for HarfBuzz hb_subet subsetting.
+      "//third_party/harfbuzz-ng",
       "//third_party/zlib",
     ]
     public += skia_pdf_public

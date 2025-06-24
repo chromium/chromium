@@ -5,18 +5,14 @@
 import("//build/config/buildflags_paint_preview.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
-import("//build/config/freetype/freetype.gni")
 import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/harfbuzz-ng/harfbuzz.gni")
 
 if (use_system_harfbuzz) {
   import("//build/config/linux/pkg_config.gni")
-  pkg_config("harfbuzz_from_pkgconfig") {
-    visibility = [
-      "//third_party:freetype_harfbuzz",
-      "//third_party/freetype:freetype_source",
-    ]
+  pkg_config("harfbuzz-ng") {
+    visibility = [ "//third_party/harfbuzz-ng" ]
     packages = [
       "harfbuzz",
       "harfbuzz-subset",
@@ -34,9 +30,7 @@ if (use_system_harfbuzz) {
     }
   }
 
-  source_set("harfbuzz_source") {
-    visibility = [ "//third_party:freetype_harfbuzz" ]
-
+  component("harfbuzz-ng") {
     public = [
       "src/src/hb-blob.h",
       "src/src/hb-buffer.h",
@@ -405,28 +399,12 @@ if (use_system_harfbuzz) {
 
     if (is_component_build) {
       if (is_win) {
-        defines += [ "HB_EXTERN=__declspec (dllexport)" ]
+        defines += [ "HB_EXTERN=__declspec(dllexport)" ]
       } else {
         defines += [ "HB_EXTERN=__attribute__((visibility(\"default\")))" ]
-        # Exposing symbols in component builds can cause a mixture of system
-        # harfbuzz symbols and //third_party harfbuzz symbols to be loaded at
-        # the same time.  This can cause issues for libraries that indirectly
-        # load harfbuzz like pango (see https://crbug.com/1146397), so we need
-        # to include metrics symbols (i.e. have HB_NO_METRICS undefined) to
-        # prevent pango from using the system library. Currently, HB_NO_METRICS
-        # is always disabled, due to
-        # https://github.com/harfbuzz/harfbuzz/issues/3482 - if that changes
-        # "HB_NO_METRICS" needs to be removed from the defines list here.
-        # TODO(https://crbug.com/1148459): Remove this workaround once bug
-        # 1148459 is fixed.
       }
     }
 
-    if (use_system_freetype) {
-      configs += [ "//build/linux:freetype_from_pkgconfig" ]
-    } else {
-      configs += [ "//third_party/freetype:freetype_component_config" ]
-    }
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       "//build/config/compiler:no_chromium_code",
@@ -460,7 +438,7 @@ if (build_with_chromium) {
     sources = [ "fuzz/hb_shape_fuzzer.cc" ]
     deps = [
       "//base",
-      "//third_party:freetype_harfbuzz",
+      "//third_party/harfbuzz-ng",
     ]
     seed_corpus = "fuzz/seed_corpus"
   }
@@ -469,7 +447,7 @@ if (build_with_chromium) {
     sources = [ "fuzz/hb_subset_fuzzer.cc" ]
     deps = [
       "//base",
-      "//third_party:freetype_harfbuzz",
+      "//third_party/harfbuzz-ng",
     ]
     seed_corpus = "fuzz/seed_corpus"
   }

@@ -58,7 +58,7 @@ test("font_service_unittests") {
 
   if (enable_pdf) {
     deps += [
-      "//third_party:freetype_harfbuzz",
+      "//build/config/freetype",
       "//third_party/pdfium:pdfium_public_headers",
     ]
   }

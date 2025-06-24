@@ -124,8 +124,8 @@ component("gtk") {
 
     # GTK pulls pangoft2, which requires HarfBuzz symbols. When linking
     # our own HarfBuzz avoid mixing symbols from system HarfBuzz and
-    # our own through the indirect dependency to harfbuzz-ng here.
-    "//third_party:freetype_harfbuzz",
+    # our own through the dependency to harfbuzz-ng here.
+    "//third_party/harfbuzz-ng",
     "//ui/aura",
     "//ui/base",
     "//ui/base:buildflags",

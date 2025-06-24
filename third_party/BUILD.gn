@@ -49,26 +49,6 @@ group("jpeg_includes") {
   }
 }
 
-# FreeType and HarfBuzz libraries are dependent on each other. This component
-# will depend on the appropriate source sets or export the system packages
-# for both FreeType and HarfBuzz.
-component("freetype_harfbuzz") {
-  public_configs = []
-  public_deps = []
-  if (enable_freetype) {
-    if (use_system_freetype) {
-      public_configs += [ "//build/linux:freetype_from_pkgconfig" ]
-    } else {
-      public_deps += [ "//third_party/freetype:freetype_source" ]
-    }
-  }
-  if (use_system_harfbuzz) {
-    public_configs += [ "//third_party/harfbuzz-ng:harfbuzz_from_pkgconfig" ]
-  } else {
-    public_deps += [ "//third_party/harfbuzz-ng:harfbuzz_source" ]
-  }
-}
-
 buildflag_header("freetype_buildflags") {
   header = "freetype_buildflags.h"
   flags = [

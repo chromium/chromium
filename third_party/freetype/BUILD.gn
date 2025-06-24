@@ -23,16 +23,17 @@ config("freetype_component_config") {
     # in these defines.
     "FT_CONFIG_MODULES_H=\"freetype-custom/freetype/config/ftmodule.h\"",
     "FT_CONFIG_OPTIONS_H=\"freetype-custom/freetype/config/ftoption.h\"",
+
+    # HarfBuzz-supported autohinting is no longer used as Fontations
+    # has built-in shaping closure computation and does not require
+    # the connection between FreeType and HarfBuzz for that.
+    "WITHOUT_HARFBUZZ",
   ]
 
   if (!is_android) {
     # Selects type1cid.c and type1.c modules in
     # freetype-custom-include/freetype/config/ftmodule.h.
     defines += [ "PDFIUM_REQUIRED_MODULES" ]
-  } else {
-    # Using HarfBuzz assisted autohinting has a performance impact that we do
-    # not want to take on Android, see crbug.com/724095.
-    defines += [ "WITHOUT_HARFBUZZ" ]
   }
 
   if (!is_component_build) {
@@ -65,8 +66,8 @@ config("freetype-warnings") {
   }
 }
 
-source_set("freetype_source") {
-  visibility = [ "//third_party:freetype_harfbuzz" ]
+component("freetype") {
+  visibility = [ "//build/config/freetype:freetype" ]
 
   defines = []
   include_dirs = []

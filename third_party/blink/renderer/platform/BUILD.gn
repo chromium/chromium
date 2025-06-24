@@ -1812,7 +1812,6 @@ component("platform") {
     "//services/viz/public/cpp/gpu",
     "//skia",
     "//skia:skcms",
-    "//third_party:freetype_harfbuzz",
     "//third_party/abseil-cpp:absl",
     "//third_party/blink/public:image_resources",
     "//third_party/blink/public/common",
@@ -1820,6 +1819,7 @@ component("platform") {
     "//third_party/blink/renderer/platform/wtf",
     "//third_party/ced",
     "//third_party/emoji-segmenter",
+    "//third_party/harfbuzz-ng",
     "//third_party/highway:libhwy",
     "//third_party/icu",
     "//third_party/libgav1:libgav1_parser",
@@ -2457,7 +2457,6 @@ source_set("blink_platform_unittests_sources") {
     "//skia:test_fonts",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party:freetype_harfbuzz",
     "//third_party/blink/public:test_headers",
     "//third_party/blink/public/strings:strings",
     "//third_party/blink/renderer/platform/blob:unit_tests",
@@ -2470,6 +2469,7 @@ source_set("blink_platform_unittests_sources") {
     "//third_party/blink/renderer/platform/wtf",
     "//third_party/dawn/src/dawn/native",
     "//third_party/dawn/src/dawn/wire",
+    "//third_party/harfbuzz-ng",
     "//third_party/libyuv",
     "//third_party/webrtc/api/task_queue:task_queue_test",
     "//third_party/webrtc_overrides:metronome_like_task_queue_test",
@@ -2591,7 +2591,7 @@ test("blink_platform_perftests") {
     "//services/network/public/cpp:cpp",
     "//testing/gtest",
     "//testing/perf",
-    "//third_party:freetype_harfbuzz",
+    "//third_party/harfbuzz-ng",
   ]
 }
 
