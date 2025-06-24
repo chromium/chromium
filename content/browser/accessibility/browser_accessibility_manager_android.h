@@ -163,8 +163,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // AXTreeObserver overrides.
   void OnAtomicUpdateStarting(
       ui::AXTree* tree,
-      const std::set<ui::AXNodeID>& deleting_nodes,
-      const std::set<ui::AXNodeID>& reparenting_nodes) override;
+      const absl::flat_hash_set<ui::AXNodeID>& deleting_nodes,
+      const absl::flat_hash_set<ui::AXNodeID>& reparenting_nodes) override;
   void OnAtomicUpdateFinished(
       ui::AXTree* tree,
       bool root_changed,

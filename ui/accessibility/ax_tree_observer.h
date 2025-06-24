@@ -5,12 +5,15 @@
 #ifndef UI_ACCESSIBILITY_AX_TREE_OBSERVER_H_
 #define UI_ACCESSIBILITY_AX_TREE_OBSERVER_H_
 
-#include <set>
+#include <stdint.h>
+
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -187,8 +190,8 @@ class AX_EXPORT AXTreeObserver : public base::CheckedObserver {
   // `OnAtomicUpdateFinished()`.
   virtual void OnAtomicUpdateStarting(
       AXTree* tree,
-      const std::set<AXNodeID>& deleting_nodes,
-      const std::set<AXNodeID>& reparenting_nodes) {}
+      const absl::flat_hash_set<AXNodeID>& deleting_nodes,
+      const absl::flat_hash_set<AXNodeID>& reparenting_nodes) {}
 
   // Called at the end of the update operation. Every node that was added
   // or changed will be included in |changes|, along with an enum indicating

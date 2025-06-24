@@ -645,8 +645,8 @@ BrowserAccessibilityManagerAndroid::CreateBrowserAccessibility(
 
 void BrowserAccessibilityManagerAndroid::OnAtomicUpdateStarting(
     ui::AXTree* tree,
-    const std::set<ui::AXNodeID>& deleting_nodes,
-    const std::set<ui::AXNodeID>& reparenting_nodes) {
+    const absl::flat_hash_set<ui::AXNodeID>& deleting_nodes,
+    const absl::flat_hash_set<ui::AXNodeID>& reparenting_nodes) {
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
   if (wcax) {
     // This set needs to start fresh. This secondary cache is of requests to

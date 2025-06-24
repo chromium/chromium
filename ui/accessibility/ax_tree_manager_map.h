@@ -28,10 +28,7 @@ class AX_EXPORT AXTreeManagerMap {
   AXTreeManager* GetManager(const AXTreeID& tree_id);
 
  private:
-  absl::flat_hash_map<AXTreeID,
-                      raw_ptr<AXTreeManager, CtnExperimental>,
-                      AXTreeIDHash>
-      map_;
+  absl::flat_hash_map<AXTreeID, raw_ptr<AXTreeManager>, AXTreeIDHash> map_;
 };
 
 }  // namespace ui

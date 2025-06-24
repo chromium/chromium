@@ -347,7 +347,7 @@ class AXTreeTestWithMultipleUTFEncodings
 
 }  // namespace
 
-using ::testing::ElementsAre;
+using ::testing::UnorderedElementsAre;
 
 // A macro for testing that a std::optional has both a value and that its value
 // is set to a particular expectation.
@@ -541,10 +541,10 @@ TEST(AXTreeTest, DuplicateChildIdFails) {
   update.nodes[1].id = 2;
 #if AX_FAIL_FAST_BUILD()
   EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(update),
-                            "Node 1 has duplicate child id 2");
+                            "Node 1 has 1 duplicate child ids");
 #else
   EXPECT_FALSE(tree.Unserialize(update));
-  ASSERT_EQ("Node 1 has duplicate child id 2", tree.error());
+  ASSERT_EQ("Node 1 has 1 duplicate child ids", tree.error());
   histogram_tester.ExpectUniqueSample(
       "Accessibility.Reliability.Tree.UnserializeError",
       AXTreeUnserializeError::kDuplicateChild, 1);
@@ -1044,16 +1044,13 @@ TEST(AXTreeTest, TreeObserverIsCalled) {
   TestAXTreeObserver test_observer(&tree);
   ASSERT_TRUE(tree.Unserialize(update));
 
-  ASSERT_EQ(2U, test_observer.deleted_ids().size());
-  EXPECT_EQ(1, test_observer.deleted_ids()[0]);
-  EXPECT_EQ(2, test_observer.deleted_ids()[1]);
+  EXPECT_THAT(test_observer.deleted_ids(), UnorderedElementsAre(1, 2));
 
   ASSERT_EQ(1U, test_observer.subtree_deleted_ids().size());
   EXPECT_EQ(1, test_observer.subtree_deleted_ids()[0]);
 
   ASSERT_EQ(2U, test_observer.created_ids().size());
-  EXPECT_EQ(3, test_observer.created_ids()[0]);
-  EXPECT_EQ(4, test_observer.created_ids()[1]);
+  EXPECT_THAT(test_observer.created_ids(), UnorderedElementsAre(3, 4));
 
   ASSERT_EQ(1U, test_observer.subtree_creation_finished_ids().size());
   EXPECT_EQ(3, test_observer.subtree_creation_finished_ids()[0]);
@@ -1273,10 +1270,10 @@ TEST(AXTreeTest, BogusAXTree2) {
   AXTree tree;
 #if AX_FAIL_FAST_BUILD()
   EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(initial_state),
-                            "Node 1 has duplicate child id 1");
+                            "Node 1 has 1 duplicate child ids");
 #else
   EXPECT_FALSE(tree.Unserialize(initial_state));
-  EXPECT_EQ("Node 1 has duplicate child id 1", tree.error());
+  EXPECT_EQ("Node 1 has 1 duplicate child ids", tree.error());
 #endif
 }
 
@@ -1297,10 +1294,10 @@ TEST(AXTreeTest, BogusAXTree3) {
   AXTree tree;
 #if AX_FAIL_FAST_BUILD()
   EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(initial_state),
-                            "Node 1 has duplicate child id 2");
+                            "Node 1 has 1 duplicate child ids");
 #else
   EXPECT_FALSE(tree.Unserialize(initial_state));
-  EXPECT_EQ("Node 1 has duplicate child id 2", tree.error());
+  EXPECT_EQ("Node 1 has 1 duplicate child ids", tree.error());
 #endif
 }
 
@@ -3336,10 +3333,10 @@ TEST_P(AXTreeTestWithMultipleUTFEncodings, ComputedNodeData) {
   const std::vector<std::string>& change_log =
       test_observer.attribute_change_log();
   EXPECT_THAT(change_log,
-              ElementsAre("IsIgnored changed on node ID 5 to true",
-                          "IsIgnored changed on node ID 8 to false",
-                          "IsIgnored changed on node ID 9 to false",
-                          "IsIgnored changed on node ID 10 to true"));
+              UnorderedElementsAre("IsIgnored changed on node ID 5 to true",
+                                   "IsIgnored changed on node ID 8 to false",
+                                   "IsIgnored changed on node ID 9 to false",
+                                   "IsIgnored changed on node ID 10 to true"));
 }
 
 INSTANTIATE_TEST_SUITE_P(MultipleUTFEncodingTest,
@@ -4786,9 +4783,8 @@ TEST(AXTreeTest, OnNodeHasBeenDeleted) {
   ASSERT_TRUE(tree.Unserialize(update));
 
   EXPECT_EQ(3U, test_observer.deleted_ids().size());
-  EXPECT_EQ(3, test_observer.deleted_ids()[0]);
-  EXPECT_EQ(5, test_observer.deleted_ids()[1]);
-  EXPECT_EQ(6, test_observer.deleted_ids()[2]);
+  EXPECT_THAT(test_observer.deleted_ids(),
+              testing::UnorderedElementsAre(3, 5, 6));
 
   // Verify that the nodes we intend to delete in the update are actually
   // absent from the tree.

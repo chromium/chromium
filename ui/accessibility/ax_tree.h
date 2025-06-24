@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
@@ -354,7 +355,7 @@ class AX_EXPORT AXTree {
   // destroyed. This function is called during AXTree teardown.
   void RecursivelyNotifyNodeWillBeDeletedForTreeTeardown(
       AXNode& node,
-      std::set<AXNodeID>& deleted_nodes);
+      absl::flat_hash_set<AXNodeID>& deleted_nodes);
 
   // Notify the delegate that the node marked by |node_id| has been deleted.
   // We are passing the node id instead of ax node is because by the time this
@@ -483,9 +484,6 @@ class AX_EXPORT AXTree {
 
   // Contains pos_in_set and set_size data for an AXNode.
   struct NodeSetSizePosInSetInfo {
-    NodeSetSizePosInSetInfo();
-    ~NodeSetSizePosInSetInfo();
-
     std::optional<int> pos_in_set;
     std::optional<int> set_size;
     std::optional<int> lowest_hierarchical_level;

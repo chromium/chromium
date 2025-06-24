@@ -120,7 +120,7 @@ TEST_F(BrowserAccessibilityManagerTest, TestErrorOnCreateIsFatal) {
       manager.reset(CreateBrowserAccessibilityManager(
           MakeAXTreeUpdateForTesting(root), node_id_delegate_,
           test_browser_accessibility_delegate_.get())),
-      "Node 1 has duplicate child id 2");
+      "Node 1 has 1 duplicate child ids");
 }
 
 TEST_F(BrowserAccessibilityManagerTest, TestErrorOnUpdate) {
@@ -160,7 +160,7 @@ TEST_F(BrowserAccessibilityManagerTest, TestErrorOnUpdate) {
 #if AX_FAIL_FAST_BUILD()
   // Update errors are fatal in AX_FAIL_FAST_BUILD builds.
   EXPECT_DEATH_IF_SUPPORTED(manager->OnAccessibilityEvents(events),
-                            "Node 4 has duplicate child id 5");
+                            "Node 4 has 1 duplicate child ids");
 #else
   ASSERT_FALSE(manager->OnAccessibilityEvents(events));
 #endif

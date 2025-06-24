@@ -833,7 +833,7 @@ void BrowserAccessibilityManagerWin::OnAtomicUpdateFinished(
   // done in a single pass that must complete before the next step starts.
   // The nodes that need to be updated are all of the nodes that were changed,
   // plus some parents.
-  std::set<AXPlatformNode*> objs_to_update;
+  absl::flat_hash_set<AXPlatformNode*> objs_to_update;
   CollectChangedNodesAndParentsForAtomicUpdate(tree, changes, &objs_to_update);
 
   // The first step moves win_attributes_ to old_win_attributes_ and then

@@ -470,7 +470,7 @@ void BrowserAccessibilityManagerAuraLinux::OnAtomicUpdateFinished(
   BrowserAccessibilityManager::OnAtomicUpdateFinished(tree, root_changed,
                                                       changes);
 
-  std::set<AXPlatformNode*> objs_to_update;
+  absl::flat_hash_set<AXPlatformNode*> objs_to_update;
   CollectChangedNodesAndParentsForAtomicUpdate(tree, changes, &objs_to_update);
 
   for (auto* node : objs_to_update)

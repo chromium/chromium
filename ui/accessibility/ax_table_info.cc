@@ -679,7 +679,7 @@ void AXTableInfo::ClearExtraMacNodes() {
     return;
   }
 
-  std::set<AXNodeID> deleting_node_ids;
+  absl::flat_hash_set<AXNodeID> deleting_node_ids;
   for (AXNode* extra_mac_node : extra_mac_nodes) {
     deleting_node_ids.insert(extra_mac_node->id());
     for (AXTreeObserver& observer : tree_->observers()) {

@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -14,6 +16,7 @@
 #include "gin/public/context_holder.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -846,8 +849,11 @@ TEST_F(AutomationTreeManagerOwnerTest, GetMultipleChildRootsAppIdConstruction) {
   EXPECT_EQ(2U, child_roots.size());
   EXPECT_EQ(tree_1_id, child_roots[0]->tree()->GetAXTreeID());
   EXPECT_EQ(tree_1_id, child_roots[1]->tree()->GetAXTreeID());
-  EXPECT_EQ(2, child_roots[0]->id());
-  EXPECT_EQ(3, child_roots[1]->id());
+
+  std::vector<AXNodeID> child_root_node_ids;
+  std::ranges::transform(child_roots, std::back_inserter(child_root_node_ids),
+                         [](AXNode* node) { return node->id(); });
+  EXPECT_THAT(child_root_node_ids, testing::UnorderedElementsAre(2, 3));
 }
 
 TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
