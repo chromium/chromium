@@ -1344,9 +1344,6 @@ const char kContextMenuEmptySpaceDescription[] =
 const char kContextualCueingName[] = "Contextual cueing";
 const char kContextualCueingDescription[] =
     "Enables the contextual cueing system to support showing actions.";
-const char kGlicZeroStateSuggestionsName[] = "Glic zero state suggestions";
-const char kGlicZeroStateSuggestionsDescription[] =
-    "Enables zero state suggestions in Glic.";
 const char kGlicActorName[] = "Glic actor";
 const char kGlicActorDescription[] = "Enables the Glic actor.";
 const char kGlicPanelResetTopChromeButtonName[] =

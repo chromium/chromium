@@ -700,8 +700,6 @@ extern const char kContextMenuEmptySpaceDescription[];
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 extern const char kContextualCueingName[];
 extern const char kContextualCueingDescription[];
-extern const char kGlicZeroStateSuggestionsName[];
-extern const char kGlicZeroStateSuggestionsDescription[];
 extern const char kGlicActorName[];
 extern const char kGlicActorDescription[];
 extern const char kGlicPanelResetTopChromeButtonName[];

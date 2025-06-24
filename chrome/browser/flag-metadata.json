@@ -5475,14 +5475,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "glic-zero-state-suggestions",
-    "owners": [
-      "zekunjiang@google.com",
-      "//chrome/browser/contextual_cueing/OWNERS"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "global-media-controls-updated-ui",
     "owners": [ "yrw@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 140
