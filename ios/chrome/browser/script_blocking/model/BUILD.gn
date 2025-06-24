@@ -1,0 +1,40 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+
+source_set("model") {
+  sources = [
+    "script_blocking_rule_applier_service.h",
+    "script_blocking_rule_applier_service.mm",
+  ]
+  deps = [
+    "//components/keyed_service/ios",
+    "//ios/web/public/content_manager",
+    "//ios/web/public/thread",
+  ]
+  public_deps = [
+    "//base",
+    "//components/fingerprinting_protection_filter/ios",
+    "//components/keyed_service/core",
+    "//ios/web/public",
+  ]
+}
+
+source_set("factory") {
+  sources = [
+    "script_blocking_rule_applier_service_factory.h",
+    "script_blocking_rule_applier_service_factory.mm",
+  ]
+  deps = [
+    ":model",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/web/public/content_manager",
+  ]
+  public_deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+}
