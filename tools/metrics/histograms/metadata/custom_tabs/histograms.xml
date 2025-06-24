@@ -76,6 +76,38 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="CustomTabs.AdaptiveToolbarButton.ChosenRanking" units="rank"
+    expires_after="2025-09-25">
+  <owner>jinsukkiim@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the ranking of the toolbar button variant picked up for display. It
+    will be either 0 or 1. Recorded when the suggested list of variants are
+    checked in the filtering process. Android only.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.AdaptiveToolbarButton.HiddenReason"
+    enum="CustomTabsMtbHiddenReason" expires_after="2025-09-25">
+  <owner>jinsukkiim@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the reason the Adaptive toolbar button was hidden in Custom Tabs.
+    Recorded when the toolbar layout is initialized/updated, or adaptive toolbar
+    button is updated on the toolbar. Android only.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.AdaptiveToolbarButton.Shown"
+    enum="AdaptiveToolbarButtonVariant" expires_after="2025-09-25">
+  <owner>jinsukkiim@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the variant of adaptive toolbar button shown on the CCT toolbar.
+    Recorded when the visibility of the button is determined. Android only.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.AndroidBrowserHelper.Version" units="versioncode"
     expires_after="2026-05-21">
   <owner>hattorij@google.com</owner>

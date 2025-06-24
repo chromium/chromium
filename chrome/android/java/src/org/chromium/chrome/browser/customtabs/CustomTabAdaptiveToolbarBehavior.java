@@ -7,6 +7,11 @@ package org.chromium.chrome.browser.customtabs;
 import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF;
 import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_OFF;
 
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason.COUNT;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason.CPA_ONLY_MODE;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason.DUPLICATED_ACTION;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason.INVALID_VARIANT;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason.OTHER_REASON;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.SHARE;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.UNKNOWN;
@@ -16,12 +21,14 @@ import android.graphics.drawable.Drawable;
 
 import androidx.browser.customtabs.ExperimentalOpenInBrowser;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
@@ -131,14 +138,30 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
         // If a customized button is specified by dev (or the default 'share' is on), find the first
         // result from |segmentationResults| that is not present in the customized ones.
         // Try the next best one if the top one is not available.
+        @CustomTabMtbHiddenReason int hiddenReason = OTHER_REASON;
         for (int i = 0; i < Math.min(segmentationResults.size(), 2); ++i) {
             int result = segmentationResults.get(i);
-            if (mValidButtons.contains(result)
-                    && !isButtonDuplicated(result)
-                    && !shouldSkipStaticAction(result)) {
+            boolean isValid = true;
+            if (!mValidButtons.contains(result)) {
+                if (hiddenReason == OTHER_REASON) hiddenReason = INVALID_VARIANT;
+                isValid = false;
+            } else if (isButtonDuplicated(result)) {
+                if (hiddenReason == OTHER_REASON) hiddenReason = DUPLICATED_ACTION;
+                isValid = false;
+            } else if (shouldSkipStaticAction(result)) {
+                if (hiddenReason == OTHER_REASON) hiddenReason = CPA_ONLY_MODE;
+                isValid = false;
+            }
+            if (isValid) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "CustomTabs.AdaptiveToolbarButton.ChosenRanking", i, 2);
                 return result;
             }
         }
+
+        // If both 2 buttons are invalid, log the reason for the first variant.
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTabs.AdaptiveToolbarButton.HiddenReason", hiddenReason, COUNT);
         return AdaptiveToolbarButtonVariant.UNKNOWN;
     }
 

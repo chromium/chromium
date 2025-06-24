@@ -514,6 +514,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabBrowserControlsVisibilityDelegate.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabCaptureStateToken.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabHistoryIphController.java",
+  "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabMtbHiddenReason.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbar.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarAnimationDelegate.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarButtonsCoordinator.java",

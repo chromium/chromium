@@ -338,6 +338,7 @@ public class CustomTabActivityNavigationController
         Tab tab = mTabProvider.getTab();
         if (tab == null) return false;
 
+        boolean openedInBrowser = true;
         GURL gurl = tab.getUrl();
         if (DomDistillerUrlUtils.isDistilledPage(gurl)) {
             gurl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(gurl);
@@ -417,9 +418,13 @@ public class CustomTabActivityNavigationController
                 boolean isPdf = tab.isNativePage() && tab.getNativePage().isPdf();
                 RecordHistogram.recordBooleanHistogram(
                         "Android.CustomTab.CannotOpenUrlInBrowser.IsPdf", isPdf);
+                openedInBrowser = false;
             }
         }
-        return true;
+        if (openedInBrowser) {
+            RecordUserAction.record("CustomTabs.OpenInBrowser");
+        }
+        return openedInBrowser;
     }
 
     /**

@@ -63,6 +63,7 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -1487,11 +1488,21 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private boolean initializeOptionalButton() {
             if (mOptionalButtonCoordinator != null) return true;
 
-            if (!ChromeFeatureList.sCctAdaptiveButton.isEnabled()
-                    || hasMultipleDevButtons()
-                    || CustomTabsConnection.getInstance()
-                            .shouldEnableOmniboxForIntent(mIntentDataProvider)) {
+            if (!ChromeFeatureList.sCctAdaptiveButton.isEnabled()) return false;
+            if (hasMultipleDevButtons()) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "CustomTabs.AdaptiveToolbarButton.HiddenReason",
+                        CustomTabMtbHiddenReason.NO_BUTTON_SPACE,
+                        CustomTabMtbHiddenReason.COUNT);
+                return false;
+            }
+            if (CustomTabsConnection.getInstance()
+                    .shouldEnableOmniboxForIntent(mIntentDataProvider)) {
                 // We disable the optional button when omnibox in CCT is on.
+                RecordHistogram.recordEnumeratedHistogram(
+                        "CustomTabs.AdaptiveToolbarButton.HiddenReason",
+                        CustomTabMtbHiddenReason.OMNIBOX_ENABLED,
+                        CustomTabMtbHiddenReason.COUNT);
                 return false;
             }
 
@@ -1593,13 +1604,27 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void updateOptionalButton(ButtonData buttonData) {
-            if ((mOptionalButtonCoordinator == null && !initializeOptionalButton())
-                    || mButtonVisibilityRule.isSuppressed(ButtonId.MTB)) {
-                // See if we should show an indicator if optional button cannot be shown. This check
-                // needs to be invoked _after_ optional button initialization is attempted, in order
-                // to determine its visibility in case it gets hidden due to toolbar width/button
-                // count constraints.
-                maybeShowActionMenuIndicator(buttonData.getButtonSpec().getButtonVariant());
+            boolean showOptionalButton = true;
+            if (mOptionalButtonCoordinator == null) showOptionalButton = initializeOptionalButton();
+            if (showOptionalButton && mButtonVisibilityRule.isSuppressed(ButtonId.MTB)) {
+                showOptionalButton = false;
+                RecordHistogram.recordEnumeratedHistogram(
+                        "CustomTabs.AdaptiveToolbarButton.HiddenReason",
+                        CustomTabMtbHiddenReason.TOOLBAR_WIDTH_LIMIT,
+                        CustomTabMtbHiddenReason.COUNT);
+            }
+            var buttonVariant = buttonData.getButtonSpec().getButtonVariant();
+            if (showOptionalButton) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "CustomTab.AdaptiveToolbarButton.Shown",
+                        buttonVariant,
+                        AdaptiveToolbarButtonVariant.MAX_VALUE);
+            } else {
+                // See if we should show an indicator (a dot) if optional button cannot be shown.
+                // This check needs to be invoked _after_ optional button initialization is
+                // attempted, in order to determine its visibility in case it gets hidden due to
+                // toolbar width/button count constraints.
+                maybeShowActionMenuIndicator(buttonVariant);
                 return;
             }
             Tab tab = getCurrentTab();
