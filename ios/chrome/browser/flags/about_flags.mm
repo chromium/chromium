@@ -1380,12 +1380,41 @@ const FeatureEntry::FeatureVariation
         {"(retroactive)", kInvalidateChoiceOnRestoreIsRetroactiveOption,
          std::size(kInvalidateChoiceOnRestoreIsRetroactiveOption), nullptr}};
 
+const FeatureEntry::FeatureParam kSingleScreenForBWGPromoConsent[] = {
+    {kBWGPromoConsentParams, "1"}};
+const FeatureEntry::FeatureParam kDoubleScreenForBWGPromoConsent[] = {
+    {kBWGPromoConsentParams, "2"}};
+const FeatureEntry::FeatureParam kSkipBWGPromoConsent[] = {
+    {kBWGPromoConsentParams, "3"}};
+const FeatureEntry::FeatureParam kForceBWGPromoConsent[] = {
+    {kBWGPromoConsentParams, "4"}};
+
+const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
+    {"Single screen for BWG Promo Consent Flow",
+     kSingleScreenForBWGPromoConsent,
+     std::size(kSingleScreenForBWGPromoConsent), nullptr},
+    {"Double screen for BWG Promo Consent Flow",
+     kDoubleScreenForBWGPromoConsent,
+     std::size(kDoubleScreenForBWGPromoConsent), nullptr},
+    {"Skip FRE", kSkipBWGPromoConsent, std::size(kSkipBWGPromoConsent),
+     nullptr},
+    {"Force Consent", kForceBWGPromoConsent, std::size(kForceBWGPromoConsent),
+     nullptr}};
+
 const FeatureEntry::FeatureParam kOmniboxMobileParityEnableFeedForGoogleOnly[] =
     {{OmniboxFieldTrial::kMobileParityEnableFeedForGoogleOnly.name, "true"}};
 const FeatureEntry::FeatureVariation kOmniboxMobileParityVariations[] = {
     {"- feed only when searching with Google",
      kOmniboxMobileParityEnableFeedForGoogleOnly,
      std::size(kOmniboxMobileParityEnableFeedForGoogleOnly), nullptr}};
+
+const FeatureEntry::FeatureParam kPageActionMenuDirectEntryPoint[] = {
+    {kPageActionMenuDirectEntryPointParam, "true"},
+};
+const FeatureEntry::FeatureVariation kPageActionMenuVariations[] = {
+    {"Direct Entry Point", kPageActionMenuDirectEntryPoint,
+     std::size(kPageActionMenuDirectEntryPoint), nullptr},
+};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -2532,6 +2561,16 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayNavigationHistoryName,
      flag_descriptions::kLensOverlayNavigationHistoryDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensOverlayNavigationHistory)},
+    {"page-action-menu", flag_descriptions::kPageActionMenuName,
+     flag_descriptions::kPageActionMenuDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kPageActionMenu,
+                                    kPageActionMenuVariations,
+                                    "IOSPageActionMenu")},
+    {"bwg-promo-consent", flag_descriptions::kBWGPromoConsentName,
+     flag_descriptions::kBWGPromoConsentDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kBWGPromoConsent,
+                                    kBWGPromoConsentVariations,
+                                    "IOSBWGPromoConsent")},
     {"feedback-include-variations",
      flag_descriptions::kFeedbackIncludeVariationsName,
      flag_descriptions::kFeedbackIncludeVariationsDescription, flags_ui::kOsIos,
