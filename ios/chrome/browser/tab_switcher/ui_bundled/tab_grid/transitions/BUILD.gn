@@ -14,7 +14,6 @@ source_set("transitions") {
     "legacy_grid_transition_layout.mm",
     "legacy_tab_grid_transition_handler.h",
     "legacy_tab_grid_transition_handler.mm",
-    "tab_grid_transition_direction.h",
     "tab_grid_transition_handler.h",
     "tab_grid_transition_handler.mm",
     "tab_grid_transition_item.h",
@@ -27,6 +26,7 @@ source_set("transitions") {
     "//base",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations",
   ]

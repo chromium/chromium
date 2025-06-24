@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,10 @@
 
 #import "base/ios/block_types.h"
 
-// Protocol that defines a transition animation from Tab Grid to Browser and
-// vice versa.
-@protocol TabGridTransitionAnimation
+// Protocol for the tab grid transition animations.
+@protocol TabGridTransitionAnimation <NSObject>
 
-// Performs the animation with a `completion` handler.
+// Performs the animation with the given completion block.
 - (void)animateWithCompletion:(ProceduralBlock)completion;
 
 @end

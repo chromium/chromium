@@ -6,32 +6,25 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 
 source_set("animations") {
   sources = [
-    "centered_zoom_transition_animation.h",
-    "centered_zoom_transition_animation.mm",
-    "point_zoom_transition_animation.h",
-    "point_zoom_transition_animation.mm",
+    "grid_to_tab_animation.h",
+    "grid_to_tab_animation.mm",
+    "tab_grid_animation_constants.h",
+    "tab_grid_animation_constants.mm",
+    "tab_grid_animation_parameters.h",
+    "tab_grid_animation_parameters.mm",
+    "tab_grid_animation_utils.h",
+    "tab_grid_animation_utils.mm",
     "tab_grid_transition_animation.h",
-    "tab_grid_transition_animation_group.h",
-    "tab_grid_transition_animation_group.mm",
+    "tab_to_grid_animation.h",
+    "tab_to_grid_animation.mm",
   ]
 
   deps = [
     "//base",
-    "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "fake_tab_grid_transition_animation.h",
-    "fake_tab_grid_transition_animation.mm",
-    "tab_grid_transition_animation_group_unittest.mm",
-  ]
-  deps = [
-    ":animations",
-    "//base/test:test_support",
-    "//ios/chrome/test:test_support",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
   ]
 }

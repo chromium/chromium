@@ -10,15 +10,16 @@
 // Class defining a transition item in a TabGrid.
 @interface TabGridTransitionItem : NSObject
 
-// Transition item's view.
-@property(nonatomic, strong, readonly) UIView* view;
+// Transition item's snapshot.
+@property(nonatomic, weak, readonly) UIImage* snapshot;
 
 // Transition item's original frame based window coordinates.
 @property(nonatomic, assign, readonly) CGRect originalFrame;
 
-// Creates a new TabGridTransitionItem instance with the given `view` and
+// Creates a new TabGridTransitionItem instance with the given `snapshot` and
 // `originalFrame`.
-+ (instancetype)itemWithView:(UIView*)view originalFrame:(CGRect)originalFrame;
++ (instancetype)itemWithSnapshot:(UIImage*)snapshot
+                   originalFrame:(CGRect)originalFrame;
 
 @end
 

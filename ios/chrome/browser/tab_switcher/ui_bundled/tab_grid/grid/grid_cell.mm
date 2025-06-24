@@ -59,6 +59,7 @@ void PositionView(UIView* view, CGPoint point) {
 }  // namespace
 
 @interface GridCell ()
+
 // The constraints enabled under accessibility font size.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* accessibilityConstraints;
@@ -86,6 +87,7 @@ void PositionView(UIView* view, CGPoint point) {
 @property(nonatomic, weak) UIView* border;
 // Whether or not the cell is currently displaying an editing state.
 @property(nonatomic, readonly) BOOL isInSelectionMode;
+
 @end
 
 @implementation GridCell
@@ -313,6 +315,11 @@ void PositionView(UIView* view, CGPoint point) {
   [self.activityIndicator stopAnimating];
   [self.activityIndicator setHidden:YES];
   [self.iconView setHidden:NO];
+}
+
+- (CGRect)snapshotFrame {
+  return [self.snapshotView.superview convertRect:self.snapshotView.frame
+                                           toView:nil];
 }
 
 - (void)setSnapshot:(UIImage*)snapshot {

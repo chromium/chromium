@@ -237,8 +237,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 
   // Hide the toolbars and the floating button, so they can fade in the first
-  // time there's a transition into this view controller.
-  [self hideToolbars];
+  // time there's a transition into this view controller. Not hidden for the new
+  // tab grid transitions.
+  if (!IsNewTabGridTransitionsEnabled()) {
+    [self hideToolbars];
+  }
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
@@ -396,9 +399,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - TabGridTransitionLayoutProviding
 
 - (TabGridTransitionLayout*)transitionLayout {
+  TabGridPage activePage = self.activePage;
+  BaseGridViewController* activeGrid =
+      [self gridViewControllerForPage:activePage];
   TabGridTransitionItem* activeCell =
-      [self transitionItemForActiveCellWithActivePage:self.activePage];
-  return [TabGridTransitionLayout layoutWithActiveCell:activeCell];
+      [self transitionItemForActiveCellWithActivePage:activePage];
+  return [TabGridTransitionLayout layoutWithActiveCell:activeCell
+                                            activeGrid:activeGrid];
 }
 
 #pragma mark - Public Methods
@@ -417,7 +424,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (animated && self.transitionCoordinator) {
     [self animateToolbarsForAppearance];
   } else {
-    [self showToolbars];
+    // The new tab grid transitions don't hide the toolbars, so no need to show.
+    if (!IsNewTabGridTransitionsEnabled()) {
+      [self showToolbars];
+    }
   }
   [self broadcastIncognitoContentVisibility];
 
@@ -454,7 +464,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (animated && self.transitionCoordinator) {
     [self animateToolbarsForDisappearance];
   } else {
-    [self hideToolbars];
+    // The new tab grid transitions don't hide the toolbars.
+    if (!IsNewTabGridTransitionsEnabled()) {
+      [self hideToolbars];
+    }
   }
 
   self.viewVisible = NO;

@@ -509,7 +509,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/suggested_actions:unit_tests",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:unit_tests",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars:unit_tests",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations:unit_tests",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator:unit_tests",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui:unit_tests",
     "//ios/chrome/browser/tabs/model:unit_tests",

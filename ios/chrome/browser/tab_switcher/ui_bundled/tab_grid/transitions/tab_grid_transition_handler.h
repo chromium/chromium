@@ -8,9 +8,12 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_direction.h"
 
-@protocol TabGridTransitionLayoutProviding;
+// TabGrid transitions directions available.
+enum class TabGridTransitionDirection {
+  kFromTabGridToBrowser,
+  kFromBrowserToTabGrid,
+};
 
 // Transition types available.
 enum class TabGridTransitionType {
@@ -19,13 +22,16 @@ enum class TabGridTransitionType {
   kAnimationDisabled,
 };
 
+@class LayoutGuideCenter;
 @class TabGridTransitionHandler;
+@protocol TabGridTransitionLayoutProviding;
 
 // Handler for the transitions between the TabGrid and the Browser.
 @interface TabGridTransitionHandler : NSObject
 
 // Creates the transition object based on the provided `transitionType`,
-// `direction`, `tabGridViewController` and `bvcContainerViewController`.
+// `direction`, `tabGridViewController`, `bvcContainerViewController`,
+// `layoutGuideCenter`, `isRegularBrowserNTP`, and `isIncognito`.
 - (instancetype)initWithTransitionType:(TabGridTransitionType)transitionType
                              direction:(TabGridTransitionDirection)direction
                  tabGridViewController:
@@ -33,6 +39,9 @@ enum class TabGridTransitionType {
                          tabGridViewController
             bvcContainerViewController:
                 (UIViewController*)bvcContainerViewController
+                     layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
+                   isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
+                           isIncognito:(BOOL)isIncognito
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

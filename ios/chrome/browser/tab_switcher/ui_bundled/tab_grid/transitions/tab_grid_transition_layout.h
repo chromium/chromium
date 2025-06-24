@@ -15,8 +15,13 @@
 // Active cell transition item.
 @property(nonatomic, readonly) TabGridTransitionItem* activeCell;
 
-// Creates a new TabGridTransitionLayout instance with the given `activeCell`.
-+ (instancetype)layoutWithActiveCell:(TabGridTransitionItem*)activeCell;
+// The currently active grid of the tab grid (regular, incognito, etc.).
+@property(nonatomic, readonly) UIViewController* activeGrid;
+
+// Creates a new TabGridTransitionLayout instance with the given `activeCell`
+// and `activeGrid`.
++ (instancetype)layoutWithActiveCell:(TabGridTransitionItem*)activeCell
+                          activeGrid:(UIViewController*)activeGrid;
 
 @end
 

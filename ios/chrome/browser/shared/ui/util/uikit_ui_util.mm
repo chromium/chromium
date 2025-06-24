@@ -445,9 +445,18 @@ CGFloat DeviceCornerRadius() {
     }
   }
 
-  const BOOL isRoundedDevice =
-      (idiom == UIUserInterfaceIdiomPhone && window.safeAreaInsets.bottom);
-  return isRoundedDevice ? 40.0 : 0.0;
+  // Estimated iPhone rounded corners radii.
+  if (window.safeAreaInsets.bottom && idiom == UIUserInterfaceIdiomPhone) {
+    return 50.0;
+  }
+
+  // Estimated iPad rounded corners radii.
+  if (window.safeAreaInsets.bottom && idiom == UIUserInterfaceIdiomPad) {
+    return 18.0;
+  }
+
+  // Device has square corners.
+  return 0.0;
 }
 
 bool IsBottomOmniboxAvailable() {

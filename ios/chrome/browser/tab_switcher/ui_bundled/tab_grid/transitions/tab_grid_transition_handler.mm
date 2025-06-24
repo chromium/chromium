@@ -6,12 +6,14 @@
 
 #import "base/check.h"
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/centered_zoom_transition_animation.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/point_zoom_transition_animation.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/grid_to_tab_animation.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/tab_grid_animation_parameters.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/tab_grid_transition_animation.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/tab_grid_transition_animation_group.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/tab_to_grid_animation.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout_providing.h"
@@ -26,8 +28,20 @@
   // Transition item for the selected cell in tab grid.
   TabGridTransitionItem* _tabGridCellItem;
 
-  // Transition animation to execute.
+  // The view controller of the currently active tab grid.
+  UIViewController* _activeGrid;
+
+  // The tab grid transition animation to be performed.
   id<TabGridTransitionAnimation> _animation;
+
+  // The layout guide center associated to the current browser.
+  LayoutGuideCenter* _layoutGuideCenter;
+
+  // Whether the transition is for a tab that is a regular (non-icongnito) NTP.
+  BOOL _isRegularBrowserNTP;
+
+  // Whether the transition is for an incognito tab.
+  BOOL _isIncognito;
 }
 
 #pragma mark - Public
@@ -38,7 +52,10 @@
                      (UIViewController<TabGridTransitionLayoutProviding>*)
                          tabGridViewController
             bvcContainerViewController:
-                (UIViewController*)bvcContainerViewController {
+                (UIViewController*)bvcContainerViewController
+                     layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
+                   isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
+                           isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
     CHECK(tabGridViewController.transitionLayout);
@@ -48,6 +65,10 @@
     _tabGridViewController = tabGridViewController;
     _BVCContainerViewController = bvcContainerViewController;
     _tabGridCellItem = tabGridViewController.transitionLayout.activeCell;
+    _activeGrid = tabGridViewController.transitionLayout.activeGrid;
+    _layoutGuideCenter = layoutGuideCenter;
+    _isRegularBrowserNTP = isRegularBrowserNTP;
+    _isIncognito = isIncognito;
   }
   return self;
 }
@@ -79,8 +100,7 @@
   };
 
   [self prepareBrowserToTabGridTransition];
-  [self performBrowserToTabGridTransitionAnimationWithCompletion:
-            animationCompletion];
+  [self performTransitionAnimationWithCompletion:animationCompletion];
 }
 
 // Performs the Tab Grid to Browser transition with a `completion` block.
@@ -96,8 +116,7 @@
   };
 
   [self prepareTabGridToBrowserTransition];
-  [self performTabGridToBrowserTransitionAnimationWithCompletion:
-            animationCompletion];
+  [self performTransitionAnimationWithCompletion:animationCompletion];
 }
 
 // Prepares items for the Browser to Tab Grid transition.
@@ -112,20 +131,6 @@
   [_tabGridViewController.view addSubview:_BVCContainerViewController.view];
 
   _BVCContainerViewController.view.accessibilityViewIsModal = YES;
-}
-
-// Performs Browser to TabGrid transition animation.
-- (void)performBrowserToTabGridTransitionAnimationWithCompletion:
-    (ProceduralBlock)completion {
-  _animation = [self determineAnimationForBrowserToTabGridTransition];
-  [self performTransitionAnimationWithCompletion:completion];
-}
-
-// Performs TabGrid to Browser transition animation.
-- (void)performTabGridToBrowserTransitionAnimationWithCompletion:
-    (ProceduralBlock)completion {
-  _animation = [self determineAnimationForTabGridToBrowserTransition];
-  [self performTransitionAnimationWithCompletion:completion];
 }
 
 // Takes all necessary actions to finish Browser to TabGrid transition.
@@ -146,98 +151,144 @@
 
 // Performs transition animation.
 - (void)performTransitionAnimationWithCompletion:(ProceduralBlock)completion {
-  if (_animation) {
-    [_animation animateWithCompletion:completion];
+  TabGridAnimationParameters* animationParameters =
+      [self createAnimationParameters];
 
+  if (animationParameters) {
+    switch (_direction) {
+      case TabGridTransitionDirection::kFromTabGridToBrowser:
+        _animation = [[GridToTabAnimation alloc]
+            initWithAnimationParameters:animationParameters];
+        break;
+
+      case TabGridTransitionDirection::kFromBrowserToTabGrid:
+        _animation = [[TabToGridAnimation alloc]
+            initWithAnimationParameters:animationParameters];
+        break;
+    }
+
+    [_animation animateWithCompletion:completion];
   } else if (completion) {
     completion();
   }
 }
 
-// Determines the proper animation that should be used in Browser to TabGrid
-// transition.
-- (id<TabGridTransitionAnimation>)
-    determineAnimationForBrowserToTabGridTransition {
+// Creates animation parameters for the transition.
+- (TabGridAnimationParameters*)createAnimationParameters {
+  // Get the "top toolbar height" (everything above the web content area) by
+  // converting the top toolbar's frame into window coordinates and getting its
+  // max Y coordinate (this also includes the tab strip for iPads).
+  UIView* primaryToolbarView =
+      [_layoutGuideCenter referencedViewUnderName:kPrimaryToolbarGuide];
+  CGRect primaryToolbarFrameInWindow =
+      [primaryToolbarView.superview convertRect:primaryToolbarView.frame
+                                         toView:nil];
+  CGFloat topToolbarHeight = CGRectGetMaxY(primaryToolbarFrameInWindow);
+
+  // Get the "bottom toolbar height" (everything below the web content area).
+  UIView* bottomToolbarView =
+      [_layoutGuideCenter referencedViewUnderName:kSecondaryToolbarGuide];
+  CGRect bottomToolbarFrameInWindow =
+      [bottomToolbarView.superview convertRect:bottomToolbarView.frame
+                                        toView:nil];
+  CGFloat bottomToolbarHeight = bottomToolbarView.window.bounds.size.height -
+                                CGRectGetMinY(bottomToolbarFrameInWindow);
+
+  // Whether the top toolbar should be scaled during the transition,
+  // disabled for regular browser NTPs and iPads.
+  BOOL scaleTopToolbar =
+      !_isRegularBrowserNTP && IsSplitToolbarMode(_activeGrid);
+
+  // Get the content area frame.
+  UIView* tabContentView = [self tabContentView];
+  CGRect contentAreaFrame = [NamedGuide guideWithName:kContentAreaGuide
+                                                 view:tabContentView]
+                                .layoutFrame;
+
+  // Get the animation's destination and origin frames.
+  CGRect destinationFrame =
+      _direction == TabGridTransitionDirection::kFromBrowserToTabGrid
+          ? _tabGridCellItem.originalFrame
+          : _BVCContainerViewController.view.frame;
+
+  CGRect originFrame =
+      _direction == TabGridTransitionDirection::kFromBrowserToTabGrid
+          ? _BVCContainerViewController.view.frame
+          : _tabGridCellItem.originalFrame;
+
   switch (_transitionType) {
     case TabGridTransitionType::kNormal:
-      return [self browserToTabGridNormalAnimation];
+      return [[TabGridAnimationParameters alloc]
+           initWithDestinationFrame:destinationFrame
+                        originFrame:originFrame
+                         activeGrid:_activeGrid
+                       animatedView:_BVCContainerViewController.view
+                    contentSnapshot:_tabGridCellItem.snapshot
+                   topToolbarHeight:topToolbarHeight
+                bottomToolbarHeight:bottomToolbarHeight
+             topToolbarSnapshotView:
+                 [self snapshotOfViewPortionAboveRect:tabContentView
+                                           middleRect:contentAreaFrame]
+          bottomToolbarSnapshotView:
+              [self snapshotOfViewPortionBelowRect:tabContentView
+                                        middleRect:contentAreaFrame]
+              shouldScaleTopToolbar:scaleTopToolbar
+                        isIncognito:_isIncognito];
     case TabGridTransitionType::kReducedMotion:
-      return [self browserToTabGridReducedMotionAnimation];
+      // TODO(crbug.com/414807974): Handle reduced motion.
+      return nil;
     case TabGridTransitionType::kAnimationDisabled:
+      // TODO(crbug.com/414807974): Handle animation disabled.
       return nil;
   }
 }
 
-// Determines the proper animation that should be used in TabGrid to Browser
-// transition.
-- (id<TabGridTransitionAnimation>)
-    determineAnimationForTabGridToBrowserTransition {
-  switch (_transitionType) {
-    case TabGridTransitionType::kNormal:
-      return [self tabGridToBrowserNormalAnimation];
-    case TabGridTransitionType::kReducedMotion:
-      return [self tabGridToBrowserReducedMotionAnimation];
-    case TabGridTransitionType::kAnimationDisabled:
-      return nil;
+// Returns the frame for the snapshotted content of the active tab.
+// Conceptually the transition is dismissing/presenting a tab (a BVC).
+// However, currently the BVC instances are themselves contained within a
+// BVCContainer view controller. This means that the
+// `viewControllerForTab.view` is not the BVC's view; rather it's the view of
+// the view controller that contains the BVC. Unfortunatley, the layout guide
+// needed here is attached to the BVC's view, which is the first (and only)
+// subview of the BVCContainerViewController's view.
+// TODO(crbug.com/40583629) Clean up this arrangement.
+- (UIView*)tabContentView {
+  return _BVCContainerViewController.view.subviews[0];
+}
+
+// Returns a snapshot of the portion of the view that is above the given rect.
+- (UIView*)snapshotOfViewPortionAboveRect:(UIView*)view
+                               middleRect:(CGRect)rect {
+  if (view != nil && rect.origin.y > 0) {
+    // `topRect` starts from the origin of the view, and ends at the top of
+    // `rect`.
+    CGRect topRect = CGRectMake(0, 0, view.bounds.size.width, rect.origin.y);
+    return [view resizableSnapshotViewFromRect:topRect
+                            afterScreenUpdates:YES
+                                 withCapInsets:UIEdgeInsetsZero];
   }
+
+  return nil;
 }
 
-// Returns Browser to TabGrid normal motion animation.
-// TODO(crbug.com/40287759): Finish this animation.
-- (id<TabGridTransitionAnimation>)browserToTabGridNormalAnimation {
-  // Main animation.
-  PointZoomAnimationParameters animationParam = PointZoomAnimationParameters{
-      .direction =
-          PointZoomAnimationParameters::AnimationDirection::kContracting,
-      .destinationFrame = _tabGridCellItem.originalFrame,
-      .destinationCornerRadius = _tabGridCellItem.view.layer.cornerRadius};
-  id<TabGridTransitionAnimation> mainAnimation =
-      [[PointZoomTransitionAnimation alloc]
-                 initWithView:_BVCContainerViewController.view
-          animationParameters:animationParam];
+// Returns a snapshot of the portion of the view that is below the given rect.
+- (UIView*)snapshotOfViewPortionBelowRect:(UIView*)view
+                               middleRect:(CGRect)rect {
+  CGSize viewSize = view.bounds.size;
+  CGFloat middleRectBottom = CGRectGetMaxY(rect);
+  CGFloat bottomHeight = viewSize.height - middleRectBottom;
 
-  // Combine animation.
-  id<TabGridTransitionAnimation> combinedIntroAndMainAnimations =
-      [[TabGridTransitionAnimationGroup alloc]
-          initWithAnimations:@[ mainAnimation ]];
-  return combinedIntroAndMainAnimations;
-}
+  if (bottomHeight > 0) {
+    // `bottomRect` start at the bottom of `rect` and ends at the bottom of
+    // `view`.
+    CGRect bottomRect =
+        CGRectMake(0, middleRectBottom, viewSize.width, bottomHeight);
+    return [view resizableSnapshotViewFromRect:bottomRect
+                            afterScreenUpdates:YES
+                                 withCapInsets:UIEdgeInsetsZero];
+  }
 
-// Returns TabGrid to Browser normal motion animation.
-// TODO(crbug.com/40287759): Finish this animation.
-- (id<TabGridTransitionAnimation>)tabGridToBrowserNormalAnimation {
-  // Set the frame to be the same as the active cell.
-  _BVCContainerViewController.view.frame = _tabGridCellItem.originalFrame;
-
-  // Set the frame to be the same as the active cell.
-  PointZoomAnimationParameters animationParam = PointZoomAnimationParameters{
-      .direction = PointZoomAnimationParameters::AnimationDirection::kExpanding,
-      .destinationFrame = _tabGridViewController.view.bounds,
-      .destinationCornerRadius = DeviceCornerRadius()};
-  id<TabGridTransitionAnimation> mainAnimation =
-      [[PointZoomTransitionAnimation alloc]
-                 initWithView:_BVCContainerViewController.view
-          animationParameters:animationParam];
-
-  // Combine animation.
-  id<TabGridTransitionAnimation> combinedIntroAndMainAnimations =
-      [[TabGridTransitionAnimationGroup alloc]
-          initWithAnimations:@[ mainAnimation ]];
-  return combinedIntroAndMainAnimations;
-}
-
-// Returns Browser to TabGrid reduced motion animation.
-- (id<TabGridTransitionAnimation>)browserToTabGridReducedMotionAnimation {
-  return [[CenteredZoomTransitionAnimation alloc]
-      initWithView:_BVCContainerViewController.view
-         direction:CenteredZoomTransitionAnimationDirection::kContracting];
-}
-
-// Returns TabGrid to Browser reduced motion animation.
-- (id<TabGridTransitionAnimation>)tabGridToBrowserReducedMotionAnimation {
-  return [[CenteredZoomTransitionAnimation alloc]
-      initWithView:_BVCContainerViewController.view
-         direction:CenteredZoomTransitionAnimationDirection::kExpanding];
+  return nil;
 }
 
 @end

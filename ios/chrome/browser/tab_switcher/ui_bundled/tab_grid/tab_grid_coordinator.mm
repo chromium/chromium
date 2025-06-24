@@ -77,6 +77,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -531,8 +532,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     strongSelf.baseViewController.childViewControllerForStatusBarStyle = nil;
 
     if (IsNewTabGridTransitionsEnabled()) {
+      BOOL isIncognito = page == TabGridPageIncognitoTabs;
+
       [strongSelf
           performBrowserToTabGridTransitionWithAnimationEnabled:animated
+                                                    isIncognito:isIncognito
                                                      completion:
                                                          transitionCompletionBlock];
     } else {
@@ -674,6 +678,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   if (IsNewTabGridTransitionsEnabled()) {
     [self performTabGridToBrowserTransitionWithAnimationEnabled:animated
+                                                    isIncognito:incognito
                                                      completion:
                                                          extendedCompletion];
   } else {
@@ -729,42 +734,58 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                  completion:nil];
 }
 
-// Performs the new Browser to Tab Grid transition.
-- (void)performBrowserToTabGridTransitionWithAnimationEnabled:
-            (BOOL)animationEnabled
-                                                   completion:
-                                                       (ProceduralBlock)
-                                                           completionHandler {
-  TabGridTransitionDirection direction =
-      TabGridTransitionDirection::kFromBrowserToTabGrid;
+// Performs the tab grid transition for the `direction` with `animationEnabled`,
+// `isIncognito`, and `completionHandler`.
+- (void)
+    performTabGridTransitionWithDirection:(TabGridTransitionDirection)direction
+                         animationEnabled:(BOOL)animationEnabled
+                              isIncognito:(BOOL)isIncognito
+                               completion:(ProceduralBlock)completionHandler {
   TabGridTransitionType transitionType = [self
       determineTabGridTransitionTypeWithAnimationEnabled:animationEnabled];
+
+  Browser* browser = isIncognito ? self.incognitoBrowser : self.regularBrowser;
+  BOOL isNTP = IsUrlNtp(
+      browser->GetWebStateList()->GetActiveWebState()->GetVisibleURL());
+  BOOL isRegularBrowserNTP = !isIncognito && isNTP;
 
   self.transitionHandler = [[TabGridTransitionHandler alloc]
           initWithTransitionType:transitionType
                        direction:direction
            tabGridViewController:self.baseViewController
-      bvcContainerViewController:self.bvcContainer];
+      bvcContainerViewController:self.bvcContainer
+               layoutGuideCenter:LayoutGuideCenterForBrowser(browser)
+             isRegularBrowserNTP:isRegularBrowserNTP
+                     isIncognito:isIncognito];
   [self.transitionHandler performTransitionWithCompletion:completionHandler];
 }
 
-// Performs the new Tab Grid to Browser transition.
-- (void)performTabGridToBrowserTransitionWithAnimationEnabled:
+// Performs the new browser to tab grid transition.
+- (void)performBrowserToTabGridTransitionWithAnimationEnabled:
             (BOOL)animationEnabled
+                                                  isIncognito:(BOOL)isIncognito
                                                    completion:
                                                        (ProceduralBlock)
                                                            completionHandler {
-  TabGridTransitionDirection direction =
-      TabGridTransitionDirection::kFromTabGridToBrowser;
-  TabGridTransitionType transitionType = [self
-      determineTabGridTransitionTypeWithAnimationEnabled:animationEnabled];
+  [self performTabGridTransitionWithDirection:TabGridTransitionDirection::
+                                                  kFromBrowserToTabGrid
+                             animationEnabled:animationEnabled
+                                  isIncognito:isIncognito
+                                   completion:completionHandler];
+}
 
-  self.transitionHandler = [[TabGridTransitionHandler alloc]
-          initWithTransitionType:transitionType
-                       direction:direction
-           tabGridViewController:self.baseViewController
-      bvcContainerViewController:self.bvcContainer];
-  [self.transitionHandler performTransitionWithCompletion:completionHandler];
+// Performs the new tab grid to browser transition.
+- (void)performTabGridToBrowserTransitionWithAnimationEnabled:
+            (BOOL)animationEnabled
+                                                  isIncognito:(BOOL)isIncognito
+                                                   completion:
+                                                       (ProceduralBlock)
+                                                           completionHandler {
+  [self performTabGridTransitionWithDirection:TabGridTransitionDirection::
+                                                  kFromTabGridToBrowser
+                             animationEnabled:animationEnabled
+                                  isIncognito:isIncognito
+                                   completion:completionHandler];
 }
 
 // Performs the legacy Browser to Tab Grid transition, `toTabGroup` or not.

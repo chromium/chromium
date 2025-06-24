@@ -6,16 +6,17 @@
 
 @interface TabGridTransitionItem ()
 
-@property(nonatomic, strong, readwrite) UIView* view;
+@property(nonatomic, weak, readwrite) UIImage* snapshot;
 @property(nonatomic, assign, readwrite) CGRect originalFrame;
 
 @end
 
 @implementation TabGridTransitionItem
 
-+ (instancetype)itemWithView:(UIView*)view originalFrame:(CGRect)originalFrame {
++ (instancetype)itemWithSnapshot:(UIImage*)snapshot
+                   originalFrame:(CGRect)originalFrame {
   TabGridTransitionItem* item = [[self alloc] init];
-  item.view = view;
+  item.snapshot = snapshot;
   item.originalFrame = originalFrame;
   return item;
 }

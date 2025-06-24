@@ -221,7 +221,7 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
   LegacyGridTransitionLayout* layout =
       [self.layoutProvider transitionLayout:activePage];
 
-  // Get the fram for the snapshotted content of the active tab.
+  // Get the frame for the snapshotted content of the active tab.
   // Conceptually the transition is dismissing/presenting a tab (a BVC).
   // However, currently the BVC instances are themselves contanted within a
   // BVCContainer view controller. This means that the
