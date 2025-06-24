@@ -149,15 +149,20 @@ AXPlatformNode* BrowserAccessibility::GetAXPlatformNode() const {
 }
 
 size_t BrowserAccessibility::PlatformChildCount() const {
-  size_t announcement_node_count = 0u;
-  // On some platforms, we rely on extra announcement nodes to support aria
-  // notify.
-  if (HasExtraAnnouncementNodes()) {
-    // The extra announcement nodes are not part of the internal tree, but they
-    // are part of the platform tree.
-    announcement_node_count = manager()->TreeExtraAnnouncementNodesCount();
+  // We need to explicitly check for leafiness here instead of relying on
+  // `AXNode::IsLeaf()` because Android has a different notion of this concept.
+  if (IsLeaf()) {
+    return 0u;
   }
-  return announcement_node_count + PlatformChildCountWithoutAnnouncementNodes();
+  if (AXTreeManager::ForChildTree(*node())) {
+    // A child tree might not be connected yet, or might not be hosting platform
+    // objects.
+    return manager()->GetFromAXNode(
+               node()->GetFirstUnignoredChildCrossingTreeBoundary())
+               ? 1u
+               : 0u;
+  }
+  return node()->GetUnignoredChildCountCrossingTreeBoundary();
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetParent() const {
@@ -166,15 +171,6 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetParent() const {
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetFirstChild() const {
-  // On some platforms, we rely on extra announcement nodes to support aria
-  // notify.
-  if (HasExtraAnnouncementNodes()) {
-    CHECK(manager()->GetExtraAnnouncementNodeFromNode(
-        this, ax::mojom::AriaNotificationPriority::kNormal));
-
-    return manager()->GetExtraAnnouncementNodeFromNode(
-        this, ax::mojom::AriaNotificationPriority::kNormal);
-  }
   // We need to explicitly check for leafiness here instead of relying on
   // `AXNode::IsLeaf()` because Android has a different notion of this concept.
   if (IsLeaf())
@@ -184,16 +180,6 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetFirstChild() const {
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetLastChild() const {
-  // On some platforms, we rely on extra announcement nodes to support aria
-  // notify.
-  if (HasExtraAnnouncementNodes()) {
-    CHECK(manager()->GetExtraAnnouncementNodeFromNode(
-        this, ax::mojom::AriaNotificationPriority::kNormal));
-
-    return manager()->GetExtraAnnouncementNodeFromNode(
-        this, ax::mojom::AriaNotificationPriority::kNormal);
-  }
-
   // We need to explicitly check for leafiness here instead of relying on
   // `AXNode::IsLeaf()` because Android has a different notion of this concept.
   if (IsLeaf())
@@ -203,44 +189,11 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetLastChild() const {
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetNextSibling() const {
-  // On some platforms, we rely on extra announcement nodes to support aria
-  // notify.
-  BrowserAccessibility* parent = PlatformGetParent();
-  size_t next_child_index = node()->GetUnignoredIndexInParent() + 1;
-  if (!manager()->TreeHasExtraAnnouncementNodes() || !parent ||
-      next_child_index < parent->InternalChildCount()) {
-    return InternalGetNextSibling();
-  }
-
-  // The InternalChildCount() will not include extra announcement nodes, but
-  // the PlatformChildCount() will. Therefore if the next sibling is at one of
-  // the extra node indices, we'll need to get it via PlatformGetChild().
-  if (next_child_index < parent->PlatformChildCount()) {
-    return parent->PlatformGetChild(next_child_index);
-  }
-
-  return nullptr;
+  return InternalGetNextSibling();
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetPreviousSibling() const {
-  // On some platforms, we rely on extra announcement nodes to support aria
-  // notify.
-  BrowserAccessibility* parent = PlatformGetParent();
-  size_t child_index = node()->GetUnignoredIndexInParent();
-  if (!manager()->TreeHasExtraAnnouncementNodes() || !parent ||
-      child_index < parent->InternalChildCount()) {
-    return InternalGetPreviousSibling();
-  }
-
-  // The InternalChildCount() will not include extra announcement nodes, but
-  // the PlatformChildCount() will. Therefore if the previous sibling is at
-  // one of the extra node indices, we'll need to get it via
-  // PlatformGetChild().
-  if (child_index < parent->PlatformChildCount()) {
-    return parent->PlatformGetChild(child_index - 1);
-  }
-
-  return nullptr;
+  return InternalGetPreviousSibling();
 }
 
 BrowserAccessibility::PlatformChildIterator
@@ -276,34 +229,6 @@ bool BrowserAccessibility::HasDefaultAction() const {
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetChild(
     size_t child_index) const {
-  // On some platforms, we rely on extra announcement nodes to support aria
-  // notify.
-  if (HasExtraAnnouncementNodes() && child_index >= InternalChildCount()) {
-    if (child_index >= PlatformChildCount()) {
-      return nullptr;
-    }
-
-    BrowserAccessibility* high_priority_node =
-        manager()->GetExtraAnnouncementNodeFromNode(
-            this, ax::mojom::AriaNotificationPriority::kHigh);
-    CHECK(high_priority_node);
-    if (high_priority_node->GetIndexInParent() == child_index) {
-      LOG(ERROR) << "Extra announcement node with high priority found at index "
-                 << child_index;
-      return high_priority_node;
-    }
-    BrowserAccessibility* normal_priority_node =
-        manager()->GetExtraAnnouncementNodeFromNode(
-            this, ax::mojom::AriaNotificationPriority::kNormal);
-    CHECK(normal_priority_node);
-    if (normal_priority_node->GetIndexInParent() == child_index) {
-      LOG(ERROR)
-          << "Extra announcement node with normal priority found at index "
-          << child_index;
-      return normal_priority_node;
-    }
-  }
-
   // We need to explicitly check for leafiness here instead of relying on
   // `AXNode::IsLeaf()` because Android has a different notion of this concept.
   if (IsLeaf())
@@ -344,15 +269,6 @@ BrowserAccessibility* BrowserAccessibility::PlatformDeepestFirstChild() const {
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformDeepestLastChild() const {
-  // On some platforms, we rely on extra announcement nodes to support aria
-  // notify.
-  if (HasExtraAnnouncementNodes()) {
-    CHECK(manager()->GetExtraAnnouncementNodeFromNode(
-        this, ax::mojom::AriaNotificationPriority::kNormal));
-
-    return manager()->GetExtraAnnouncementNodeFromNode(
-        this, ax::mojom::AriaNotificationPriority::kNormal);
-  }
   // We need to explicitly check for leafiness here instead of relying on
   // `AXNode::IsLeaf()` because Android has a different notion of this concept.
   if (IsLeaf())
@@ -1973,19 +1889,6 @@ TextAttributeList BrowserAccessibility::ComputeTextAttributes() const {
   return TextAttributeList();
 }
 
-BrowserAccessibility* BrowserAccessibility::GetExtraAnnouncementNode(
-    ax::mojom::AriaNotificationPriority priority_property) const {
-  if (!manager() || !manager()->GetBrowserAccessibilityRoot()) {
-    return nullptr;
-  }
-
-  // On some platforms, we rely on extra announcement nodes to support aria
-  // notify.
-  CHECK(manager_->ShouldExposeExtraAnnouncementNodes());
-  return manager()->GetExtraAnnouncementNodeFromNode(
-      manager()->GetBrowserAccessibilityRoot(), priority_property);
-}
-
 TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes() const {
   // TODO(crbug.com/40672441): This is one of the few methods that won't be
   // moved to `AXNode` in the foreseeable future because the functionality it
@@ -2065,33 +1968,6 @@ TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes() const {
   }
 
   return spelling_attributes;
-}
-
-bool BrowserAccessibility::HasExtraAnnouncementNodes() const {
-  CHECK(manager_);
-  if (!manager_->ShouldExposeExtraAnnouncementNodes()) {
-    return false;
-  }
-  return this == manager_->GetBrowserAccessibilityRoot() && node()->tree() &&
-         manager()->TreeHasExtraAnnouncementNodes();
-}
-
-size_t BrowserAccessibility::PlatformChildCountWithoutAnnouncementNodes()
-    const {
-  // We need to explicitly check for leafiness here instead of relying on
-  // `AXNode::IsLeaf()` because Android has a different notion of this concept.
-  if (IsLeaf()) {
-    return 0u;
-  }
-  if (AXTreeManager::ForChildTree(*node())) {
-    // A child tree might not be connected yet, or might not be hosting platform
-    // objects.
-    return manager()->GetFromAXNode(
-               node()->GetFirstUnignoredChildCrossingTreeBoundary())
-               ? 1u
-               : 0u;
-  }
-  return node()->GetUnignoredChildCountCrossingTreeBoundary();
 }
 
 // static

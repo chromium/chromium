@@ -165,26 +165,6 @@ AXTreeUpdate BrowserAccessibilityManager::GetEmptyDocument() {
   return update;
 }
 
-bool BrowserAccessibilityManager::ShouldExposeExtraAnnouncementNodes() const {
-  return false;
-}
-
-BrowserAccessibility*
-BrowserAccessibilityManager::GetExtraAnnouncementNodeFromNode(
-    const BrowserAccessibility* node,
-    ax::mojom::AriaNotificationPriority priority_property) const {
-  return nullptr;
-}
-
-bool BrowserAccessibilityManager::TreeHasExtraAnnouncementNodes() const {
-  return false;
-}
-
-size_t BrowserAccessibilityManager::TreeExtraAnnouncementNodesCount() const {
-  NOTREACHED() << "This method should be overridden by the platform "
-               << "implementation if it has extra announcement nodes.";
-}
-
 void BrowserAccessibilityManager::FireFocusEventsIfNeeded() {
   if (!CanFireEvents())
     return;

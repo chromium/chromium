@@ -63,7 +63,7 @@ enum class AXTreeUnserializeError {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityTreeUnserializeError)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
 // To support AriaNotify on older versions of ATK, we need to use the ATK
 // signal "Text::text-insert". This signal requires a node that is a
 // text type, and it needs to have aria-live properties set in order for
@@ -92,7 +92,7 @@ class ExtraAnnouncementNodes {
   std::unique_ptr<AXNode> assertive_node_;
   std::unique_ptr<AXNode> polite_node_;
 };
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX)
 
 // AXTree is a live, managed tree of AXNode objects that can receive
 // updates from another AXTreeSource via AXTreeUpdates, and it can be
@@ -288,13 +288,13 @@ class AX_EXPORT AXTree {
 
   void NotifyChildTreeConnectionChanged(AXNode* node, AXTree* child_tree);
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
   void ClearExtraAnnouncementNodes();
   void CreateExtraAnnouncementNodes();
   ExtraAnnouncementNodes* extra_announcement_nodes() const {
     return extra_announcement_nodes_.get();
   }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX)
 
  private:
   friend class ScopedTreeUpdateInProgressStateSetter;
@@ -550,9 +550,9 @@ class AX_EXPORT AXTree {
 
   std::unique_ptr<AXEvent> event_data_;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
   std::unique_ptr<ExtraAnnouncementNodes> extra_announcement_nodes_ = nullptr;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX)
 };
 
 // Sets the flag that indicates whether the accessibility tree is currently

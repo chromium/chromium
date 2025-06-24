@@ -23,12 +23,21 @@ class BrowserAccessibilityAuraLinux : public BrowserAccessibility {
 
   COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux* GetNode() const;
 
+  COMPONENT_EXPORT(AX_PLATFORM)
+  BrowserAccessibilityAuraLinux* GetExtraAnnouncementNode(
+      ax::mojom::AriaNotificationPriority priority_property) const;
+
   // This is used to call UpdateHypertext, when a node needs to be
   // updated for some other reason other than via OnAtomicUpdateFinished.
   void UpdatePlatformAttributes() override;
 
   // BrowserAccessibility methods.
   void OnDataChanged() override;
+  size_t PlatformChildCount() const override;
+  BrowserAccessibility* PlatformGetChild(size_t child_index) const override;
+  BrowserAccessibility* PlatformGetLastChild() const override;
+  BrowserAccessibility* PlatformGetNextSibling() const override;
+  BrowserAccessibility* PlatformGetPreviousSibling() const override;
 
   AXPlatformNode* GetAXPlatformNode() const override;
   std::u16string GetHypertext() const override;
@@ -41,6 +50,7 @@ class BrowserAccessibilityAuraLinux : public BrowserAccessibility {
   bool IsPrimaryWebContentsForWindow() const override;
 
  private:
+  bool HasExtraAnnouncementNodes() const;
 
   AXPlatformNode::Pointer platform_node_;
 };

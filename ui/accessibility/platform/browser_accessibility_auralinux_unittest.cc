@@ -941,17 +941,20 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, GetExtraAnnouncementNodes) {
   ASSERT_TRUE(tree->extra_announcement_nodes());
   EXPECT_EQ(2, tree->extra_announcement_nodes()->Count());
 
-  BrowserAccessibility* root_node = manager->GetBrowserAccessibilityRoot();
+  BrowserAccessibilityAuraLinux* root_node =
+      ToBrowserAccessibilityAuraLinux(manager->GetBrowserAccessibilityRoot());
   EXPECT_EQ(2U, root_node->PlatformChildCount());
 
-  BrowserAccessibility* assertive_node = root_node->GetExtraAnnouncementNode(
-      ax::mojom::AriaNotificationPriority::kHigh);
+  BrowserAccessibilityAuraLinux* assertive_node =
+      root_node->GetExtraAnnouncementNode(
+          ax::mojom::AriaNotificationPriority::kHigh);
   EXPECT_EQ(assertive_node->GetData().GetStringAttribute(
                 ax::mojom::StringAttribute::kContainerLiveStatus),
             "assertive");
 
-  BrowserAccessibility* polite_node = root_node->GetExtraAnnouncementNode(
-      ax::mojom::AriaNotificationPriority::kNormal);
+  BrowserAccessibilityAuraLinux* polite_node =
+      root_node->GetExtraAnnouncementNode(
+          ax::mojom::AriaNotificationPriority::kNormal);
   EXPECT_EQ(polite_node->GetData().GetStringAttribute(
                 ax::mojom::StringAttribute::kContainerLiveStatus),
             "polite");

@@ -143,14 +143,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
       ax::mojom::AriaNotificationPriority priority_property,
       ax::mojom::AriaNotificationInterrupt interrupt_property,
       const std::string& type) {}
-  // Performs the platform-specific check to determine if we should use extra
-  // announcement nodes for ARIA notifications.
-  virtual bool ShouldExposeExtraAnnouncementNodes() const;
-  virtual BrowserAccessibility* GetExtraAnnouncementNodeFromNode(
-      const BrowserAccessibility* node,
-      ax::mojom::AriaNotificationPriority priority_property) const;
-  virtual bool TreeHasExtraAnnouncementNodes() const;
-  virtual size_t TreeExtraAnnouncementNodesCount() const;
 
   virtual void FireBlinkEvent(ax::mojom::Event event_type,
                               BrowserAccessibility* node,
