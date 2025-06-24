@@ -18,7 +18,4 @@
 #include "components/nacl/common/buildflags.h"
 
 #include "chrome/common/all_messages.h"
-#if BUILDFLAG(ENABLE_NACL)
-#include "components/nacl/common/nacl_host_messages.h"
-#endif
 #include "content/common/all_messages.h"
