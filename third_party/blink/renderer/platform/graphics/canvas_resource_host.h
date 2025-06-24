@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_HOST_H_
 
-#include <memory>
-
 #include "base/check.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/size.h"
@@ -58,9 +56,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   virtual CanvasResourceProvider* GetResourceProviderForCanvas2D() const = 0;
 
-  virtual std::unique_ptr<CanvasResourceProvider>
-      ReplaceResourceProviderForCanvas2D(
-          std::unique_ptr<CanvasResourceProvider>) = 0;
+  virtual void ResetResourceProviderForCanvas2D() = 0;
 
   virtual bool IsPageVisible() const = 0;
 

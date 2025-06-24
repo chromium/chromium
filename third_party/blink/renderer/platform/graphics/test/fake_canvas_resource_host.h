@@ -37,11 +37,8 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
     return resource_provider_.get();
   }
-  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
-      std::unique_ptr<CanvasResourceProvider> provider) override {
-    auto old_provider = std::move(resource_provider_);
-    resource_provider_ = std::move(provider);
-    return old_provider;
+  void ResetResourceProviderForCanvas2D() override {
+    resource_provider_.reset();
   }
 
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D() {
