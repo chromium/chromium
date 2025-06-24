@@ -28,7 +28,7 @@ message UserWhitelistProto {
 
 message UserAllowlistProto {
   // If a UserAllowlistProto is included in the ChromeDeviceSettingsProto but
-  // the user_whitelist field is empty then no user can sign-in.
+  // the user_allowlist field is empty then no user can sign-in.
   repeated string user_allowlist = 1;
 }
 
