@@ -109,11 +109,7 @@ base::ProcessId GetSelfPID() {
   if (int global_pid = Channel::GetGlobalPid())
     return global_pid;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_NACL)
-  return -1;
-#else
   return base::GetCurrentProcId();
-#endif  // BUILDFLAG(IS_NACL)
 }
 
 }  // namespace

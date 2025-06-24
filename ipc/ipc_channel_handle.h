@@ -8,22 +8,10 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
-#if BUILDFLAG(IS_NACL)
-#include "base/file_descriptor_posix.h"
-#endif  // defined (OS_NACL)
-
 namespace IPC {
 
 // Note that serialization for this object is defined in the ParamTraits
 // template specialization in ipc_message_utils.h.
-#if BUILDFLAG(IS_NACL)
-struct ChannelHandle {
-  ChannelHandle() {}
-  explicit ChannelHandle(const base::FileDescriptor& s) : socket(s) {}
-
-  base::FileDescriptor socket;
-};
-#else
 struct ChannelHandle {
   ChannelHandle() {}
   ChannelHandle(mojo::MessagePipeHandle h) : mojo_handle(h) {}
@@ -32,7 +20,6 @@ struct ChannelHandle {
 
   mojo::MessagePipeHandle mojo_handle;
 };
-#endif  // BUILDFLAG(IS_NACL)
 
 }  // namespace IPC
 

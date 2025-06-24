@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
-import("//build/config/nacl/config.gni")
 import("//ipc/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")

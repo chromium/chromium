@@ -25,14 +25,10 @@ class PlatformChannelFactory : public ChannelFactory {
   PlatformChannelFactory& operator=(const PlatformChannelFactory&) = delete;
 
   std::unique_ptr<Channel> BuildChannel(Listener* listener) override {
-#if BUILDFLAG(IS_NACL)
-    return Channel::Create(handle_, mode_, listener);
-#else
     DCHECK(handle_.is_mojo_channel_handle());
     return ChannelMojo::Create(
         mojo::ScopedMessagePipeHandle(handle_.mojo_handle), mode_, listener,
         ipc_task_runner_, base::SingleThreadTaskRunner::GetCurrentDefault());
-#endif
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetIPCTaskRunner() override {
