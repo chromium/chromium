@@ -427,10 +427,11 @@ advantage of SQLite's rowid optimizations.
 primary key reuse would be unacceptable.
 
 
-### Discouraged features
+### Sophisticated features
 
-SQLite exposes a vast array of functionality via SQL statements. The following
-features are not a good match for SQL statements used by Chrome feature code.
+SQLite exposes a vast array of functionality via SQL statements, many of which
+are not a good match for average Chrome feature code. Use them with care and if
+you know what you're doing.
 
 #### PRAGMA statements {#no-pragmas}
 
@@ -475,20 +476,24 @@ After
 to disable SQLite's CHECK constraint support using
 [SQLITE_OMIT_CHECK](https://sqlite.org/compile.html#omit_check).
 
-#### Triggers {#no-triggers}
+#### Triggers {#triggers}
 
-[SQL triggers](https://sqlite.org/lang_createtrigger.html) should not be used.
+[SQL triggers](https://sqlite.org/lang_createtrigger.html) should be used
+thoughtfully.
 
-Triggers significantly increase the difficulty of reviewing and maintaining
-Chrome features that use them.
+Use triggers only if they *increase* legibility and *reduce* query complexity.
+The vast majority of Chrome features should not need triggers as their SQL
+queries are typically very simple, and triggers can obfuscate behavior by
+introducing an easy-to-miss side effect to certain queries. It's generally
+preferred to "manually" execute a second query with the desired effect.
 
-Triggers are not executed on SQLite databases opened with Chrome's
-`sql::Database` infrastructure. This is intended to steer feature developers
-away from the discouraged feature.
+There are exceptions to this rule, such as when the follow-up query would itself
+be much more complex than the trigger, and/or a single trigger can take the
+place of multiple queries.
 
-After [WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we
-plan to disable SQLite's trigger support using
-[SQLITE_OMIT_TRIGGER](https://sqlite.org/compile.html#omit_trigger).
+Triggers are disabled by default, with hopes that this will encourage feature
+authors to carefully weigh their use against the alternatives, but can be
+enabled via `DatabaseOptions::set_triggers_enabled()`.
 
 #### Common Table Expressions {#no-ctes}
 

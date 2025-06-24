@@ -2419,11 +2419,9 @@ void Database::ConfigureSqliteDatabaseObject() {
   DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
       << "sqlite3_db_config(SQLITE_DBCONFIG_ENABLE_FKEY) should not fail";
 
-  // The use of triggers is discouraged for Chrome code. Thanks to this
-  // configuration change, triggers are not executed. CREATE TRIGGER and DROP
-  // TRIGGER still succeed.
   sqlite_result_code = ToSqliteResultCode(
-      sqlite3_db_config(db_, SQLITE_DBCONFIG_ENABLE_TRIGGER, 0, nullptr));
+      sqlite3_db_config(db_, SQLITE_DBCONFIG_ENABLE_TRIGGER,
+                        options_.enable_triggers_ ? 1 : 0, nullptr));
   DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
       << "sqlite3_db_config() should not fail";
 

@@ -244,6 +244,17 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
     return *this;
   }
 
+  // If true, enables SQL triggers for this database.
+  //
+  // The use of triggers should be thoughtful. See README.md for details.
+  //
+  // If this option is false, CREATE TRIGGER and DROP TRIGGER succeed, but the
+  // triggers won't fire.
+  DatabaseOptions& set_enable_triggers(bool enable_triggers) {
+    enable_triggers_ = enable_triggers;
+    return *this;
+  }
+
   // If non-null, specifies the vfs implementation for the database to look for.
   // Most use-cases do not require the use of a
   // VFS(https://www.sqlite.org/vfs.html). This option should only be used when
@@ -290,6 +301,7 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   const char* vfs_name_discouraged_ = nullptr;
   bool mmap_enabled_ = true;
   bool read_only_ = false;
+  bool enable_triggers_ = false;
 };
 
 // Holds database diagnostics in a structured format.

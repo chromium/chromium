@@ -192,7 +192,6 @@ void InitializeNewDatabase(sql::Database* db,
                   // record row that holds the reference.
                   " record_row_id INTEGER)"));
 
-  // TODO(crbug.com/419208485): enable triggers.
   TRANSIENT_CHECK(db->Execute(
       "CREATE TRIGGER delete_blob_references AFTER DELETE ON records "
       "BEGIN"
@@ -608,12 +607,18 @@ StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
     BackingStoreImpl& backing_store) {
   // TODO(crbug.com/40253999): Create new tag(s) for metrics.
   constexpr sql::Database::Tag kSqlTag = "Test";
-  auto db = std::make_unique<sql::Database>(
-      sql::DatabaseOptions().set_exclusive_locking(true).set_wal_mode(true),
-      kSqlTag);
+  auto db = std::make_unique<sql::Database>(sql::DatabaseOptions()
+                                                .set_exclusive_locking(true)
+                                                .set_wal_mode(true)
+                                                .set_enable_triggers(true),
+                                            kSqlTag);
 
   // TODO(crbug.com/40253999): Support on-disk databases.
   TRANSIENT_CHECK(db->OpenInMemory());
+
+  // What SQLite calls "recursive" triggers are required for SQLite to execute
+  // a DELETE ON trigger after `INSERT OR REPLACE` replaces a row.
+  TRANSIENT_CHECK(db->Execute("PRAGMA recursive_triggers=ON"));
 
   auto meta_table = std::make_unique<sql::MetaTable>();
   TRANSIENT_CHECK(meta_table->Init(db.get(), kEmptySchemaVersion,
