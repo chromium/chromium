@@ -227,6 +227,9 @@ PasswordGenerationControllerImpl::PasswordGenerationControllerImpl(
 
 std::unique_ptr<TouchToFillPasswordGenerationController>
 PasswordGenerationControllerImpl::CreateTouchToFillGenerationController() {
+  if (!active_frame_driver_ || !generation_element_data_) {
+    return nullptr;
+  }
   return std::make_unique<TouchToFillPasswordGenerationController>(
       active_frame_driver_, &GetWebContents(), *generation_element_data_,
       std::make_unique<TouchToFillPasswordGenerationBridgeImpl>(),
@@ -301,6 +304,9 @@ bool PasswordGenerationControllerImpl::ShowBottomSheet(
     PasswordGenerationType type) {
   touch_to_fill_generation_controller_ =
       create_touch_to_fill_generation_controller_.Run();
+  if (!touch_to_fill_generation_controller_) {
+    return false;  // Prevents using reset generation data, e.g. on unfocus.
+  }
   Profile* profile =
       Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
   std::string account =

@@ -604,3 +604,24 @@ TEST_F(PasswordGenerationControllerTest,
   EXPECT_CALL(create_ttf_generation_controller_, Run);
   controller()->OnGenerationRequested(PasswordGenerationType::kAutomatic);
 }
+
+TEST_F(PasswordGenerationControllerTest,
+       FocusChangePreventsRequestingGenerationWithInvalidGenerationData) {
+  // If the driver isn't active or nothing is focused, create no TTF controller.
+  ON_CALL(create_ttf_generation_controller_, Run).WillByDefault([]() {
+    return nullptr;
+  });
+
+  // Assume the initially focused field was unfocused briefly after.
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(false),
+                  autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
+  controller()->FocusedInputChanged(/*is_field_eligible_for_generation=*/false,
+                                    active_driver());
+
+  // Since the entry point may not have been updated, check that no crash occurs
+  // which would be caused by the generation controller returning null.
+  EXPECT_CALL(create_ttf_generation_controller_, Run);
+  controller()->OnGenerationRequested(PasswordGenerationType::kAutomatic);
+}
