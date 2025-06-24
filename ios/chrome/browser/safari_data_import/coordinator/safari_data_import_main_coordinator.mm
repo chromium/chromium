@@ -40,6 +40,7 @@
 - (void)start {
   CHECK(base::FeatureList::IsEnabled(kImportPasswordsFromSafari));
   _viewController = [[SafariDataImportEntryPointViewController alloc] init];
+  _viewController.modalInPresentation = YES;
   _viewController.actionHandler = self;
   PromosManager* promosManager =
       PromosManagerFactory::GetForProfile(self.profile);

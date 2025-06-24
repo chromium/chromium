@@ -24,7 +24,7 @@
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:[self viewController]];
   _navigationController.delegate = self;
-  _navigationController.navigationBarHidden = NO;
+  _navigationController.modalInPresentation = YES;
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
