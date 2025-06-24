@@ -1,7 +1,7 @@
 Name: diplomat_core
 URL: https://crates.io/crates/diplomat_core
-Version: 0.12.0
-Revision: 1eef4f8917d2222ce7ffbfc15df0042d4ac307e8
+Version: 0.12.1
+Revision: d11603ded564a1f0037d83e7302a0f333ecfa795
 Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/diplomat_core-v0_12/LICENSE-APACHE

@@ -44,10 +44,17 @@ pub struct Attrs {
     /// This user-defined type can be used as the error type in a Result.
     pub custom_errors: bool,
 
+    /// This user-defined type has a "default" state that can be computed purely foreign-language-side
+    ///
+    /// Can be applied to enum variants to signal the default
+    pub default: bool,
+
     /// From #[diplomat::demo()]. Created from [`crate::ast::attrs::Attrs::demo_attrs`].
     /// List of attributes specific to automatic demo generation.
     /// Currently just for demo_gen in diplomat-tool (which generates sample webpages), but could be used for broader purposes (i.e., demo Android apps)
     pub demo_attrs: DemoInfo,
+    /// From #[diplomat::attr()]. If true, generates a mocking interface for this type.
+    pub generate_mocking_interface: bool,
 }
 
 // #region: Demo specific attributes.
@@ -308,6 +315,21 @@ impl Attrs {
                             }
                             warn_auto(errors);
                         }
+                        "default" => {
+                            if let Meta::Path(_) = attr.meta {
+                                if this.default {
+                                    errors.push(LoweringError::Other(
+                                        "Duplicate `default` attribute".into(),
+                                    ));
+                                } else {
+                                    this.default = true;
+                                }
+                            } else {
+                                errors.push(LoweringError::Other(
+                                    "`default` must be a simple path".into(),
+                                ))
+                            }
+                        }
                         "rename" => {
                             match RenameAttr::from_meta(&attr.meta) {
                                 Ok(rename) => {
@@ -335,6 +357,18 @@ impl Attrs {
                         },
                         "error" => {
                             this.custom_errors = true;
+                        }
+                        "generate_mocking_interface" => {
+                            if !support.generate_mocking_interface {
+                                maybe_error_unsupported(
+                                    auto_found,
+                                    "generate_mocking_interface",
+                                    backend,
+                                    errors,
+                                );
+                                continue;
+                            }
+                            this.generate_mocking_interface = true;
                         }
                         _ => {
                             errors.push(LoweringError::Other(format!(
@@ -438,7 +472,9 @@ impl Attrs {
             abi_rename,
             special_method,
             custom_errors,
+            default,
             demo_attrs: _,
+            generate_mocking_interface,
         } = &self;
 
         if *disable && matches!(context, AttributeContext::EnumVariant(..)) {
@@ -746,7 +782,11 @@ impl Attrs {
                 "`namespace` can only be used on types".to_string(),
             ));
         }
-
+        if *default && !matches!(context, AttributeContext::EnumVariant(..)) {
+            errors.push(LoweringError::Other(
+                "`default` can only be used on types and enum variants".to_string(),
+            ));
+        }
         if matches!(
             context,
             AttributeContext::Param | AttributeContext::SelfParam | AttributeContext::Field
@@ -786,6 +826,13 @@ impl Attrs {
                 "`error` can only be used on types".to_string(),
             ));
         }
+        if *generate_mocking_interface
+            && !matches!(context, AttributeContext::Type(TypeDef::Opaque(..)))
+        {
+            errors.push(LoweringError::Other(
+                "`generate_mocking_interface` can only be used on opaque types".to_string(),
+            ));
+        }
     }
 
     pub(crate) fn for_inheritance(&self, context: AttrInheritContext) -> Attrs {
@@ -810,6 +857,8 @@ impl Attrs {
             disable,
             rename,
             namespace,
+            // Should not inherit from enums to their variants
+            default: false,
             // Was already inherited on the AST side
             abi_rename: Default::default(),
             // Never inherited
@@ -817,6 +866,8 @@ impl Attrs {
             // Not inherited
             custom_errors: false,
             demo_attrs: Default::default(),
+            // Not inherited
+            generate_mocking_interface: false,
         }
     }
 }
@@ -864,6 +915,9 @@ pub struct BackendAttrSupport {
     /// Whether the language supports using slices with 'static lifetimes.
     pub static_slices: bool,
 
+    /// Whether the language supports marking types as having a default value
+    pub defaults: bool,
+
     // Special methods
     /// Marking a method as a constructor to generate special constructor methods.
     pub constructors: bool,
@@ -901,6 +955,8 @@ pub struct BackendAttrSupport {
     pub traits_are_send: bool,
     /// Traits are safe to Sync between threads (safe to mark as std::marker::Sync)
     pub traits_are_sync: bool,
+    /// Whether to generate mocking interface.
+    pub generate_mocking_interface: bool,
 }
 
 impl BackendAttrSupport {
@@ -914,6 +970,7 @@ impl BackendAttrSupport {
             utf8_strings: true,
             utf16_strings: true,
             static_slices: true,
+            defaults: true,
 
             constructors: true,
             named_constructors: true,
@@ -932,6 +989,7 @@ impl BackendAttrSupport {
             custom_errors: true,
             traits_are_send: true,
             traits_are_sync: true,
+            generate_mocking_interface: true,
         }
     }
 
@@ -944,6 +1002,7 @@ impl BackendAttrSupport {
             "utf8_strings" => Some(self.utf8_strings),
             "utf16_strings" => Some(self.utf16_strings),
             "static_slices" => Some(self.static_slices),
+            "default" => Some(self.defaults),
             "constructors" => Some(self.constructors),
             "named_constructors" => Some(self.named_constructors),
             "fallible_constructors" => Some(self.fallible_constructors),
@@ -1080,6 +1139,7 @@ impl AttributeValidator for BasicAttributeValidator {
                 utf8_strings,
                 utf16_strings,
                 static_slices,
+                defaults,
 
                 constructors,
                 named_constructors,
@@ -1098,6 +1158,7 @@ impl AttributeValidator for BasicAttributeValidator {
                 custom_errors,
                 traits_are_send,
                 traits_are_sync,
+                generate_mocking_interface,
             } = self.support;
             match value {
                 "namespacing" => namespacing,
@@ -1107,6 +1168,7 @@ impl AttributeValidator for BasicAttributeValidator {
                 "utf8_strings" => utf8_strings,
                 "utf16_strings" => utf16_strings,
                 "static_slices" => static_slices,
+                "defaults" => defaults,
 
                 "constructors" => constructors,
                 "named_constructors" => named_constructors,
@@ -1125,6 +1187,7 @@ impl AttributeValidator for BasicAttributeValidator {
                 "custom_errors" => custom_errors,
                 "traits_are_send" => traits_are_send,
                 "traits_are_sync" => traits_are_sync,
+                "generate_mocking_interface" => generate_mocking_interface,
                 _ => {
                     return Err(LoweringError::Other(format!(
                         "Unknown supports = value found: {value}"
@@ -1360,6 +1423,91 @@ mod tests {
                     }
                 }
 
+            }
+        }
+    }
+
+    #[test]
+    fn test_mocking_interface_for_opaque_type() {
+        uitest_lowering_attr! { hir::BackendAttrSupport::all_true(),
+            #[diplomat::bridge]
+            mod ffi {
+                #[diplomat::opaque]
+                #[diplomat::attr(tests, generate_mocking_interface)]
+                pub struct Foo {
+                    pub x: u32,
+                    pub y: u32,
+                }
+
+                impl Foo {
+                    pub fn new() -> Box<Self> {
+                        Box::new(Self { x: 0, y: 0 })
+                    }
+
+                    pub fn get_x(&self) -> u32 {
+                        self.x
+                    }
+
+                    pub fn get_y(&self) -> u32 {
+                        self.y
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_mocking_interface_for_non_opaque_type() {
+        uitest_lowering_attr! { hir::BackendAttrSupport::all_true(),
+            #[diplomat::bridge]
+            mod ffi {
+                #[diplomat::attr(tests, generate_mocking_interface)]
+                pub struct Foo {
+                    pub x: u32,
+                    pub y: u32,
+                }
+
+                impl Foo {
+                    pub fn new() -> Self {
+                        Self { x: 0, y: 0 }
+                    }
+
+                    pub fn get_x(self) -> u32 {
+                        self.x
+                    }
+
+                    pub fn get_y(self) -> u32 {
+                        self.y
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_mocking_interface_for_unsupported_backend() {
+        uitest_lowering_attr! { hir::BackendAttrSupport::default(),
+            #[diplomat::bridge]
+            mod ffi {
+                #[diplomat::attr(tests, generate_mocking_interface)]
+                pub struct Foo {
+                    pub x: u32,
+                    pub y: u32,
+                }
+
+                impl Foo {
+                    pub fn new() -> Self {
+                        Self { x: 0, y: 0 }
+                    }
+
+                    pub fn get_x(self) -> u32 {
+                        self.x
+                    }
+
+                    pub fn get_y(self) -> u32 {
+                        self.y
+                    }
+                }
             }
         }
     }

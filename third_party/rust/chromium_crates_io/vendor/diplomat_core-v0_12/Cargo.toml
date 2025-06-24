@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.81"
 name = "diplomat_core"
-version = "0.12.0"
+version = "0.12.1"
 authors = [
     "Shadaj Laddad <shadaj@users.noreply.github.com>",
     "Manish Goregaokar <manishsmail@gmail.com>",
@@ -40,6 +40,9 @@ repository = "https://github.com/rust-diplomat/diplomat"
 
 [package.metadata.docs.rs]
 all-features = true
+
+[features]
+hir = ["either"]
 
 [lib]
 name = "diplomat_core"
@@ -85,6 +88,3 @@ features = [
 [dev-dependencies.insta]
 version = "1.7.1"
 features = ["yaml"]
-
-[features]
-hir = ["either"]
