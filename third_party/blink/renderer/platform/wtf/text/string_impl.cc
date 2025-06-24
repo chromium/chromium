@@ -636,7 +636,7 @@ ALWAYS_INLINE scoped_refptr<StringImpl> StringImpl::RemoveCharacters(
     return this;
   }
 
-  StringBuffer<CharType> data(characters.size());
+  blink::StringBuffer<CharType> data(characters.size());
   auto to = data.Span();
   size_t outc = i;
 
@@ -681,7 +681,7 @@ scoped_refptr<StringImpl> StringImpl::Remove(wtf_size_t start,
   return VisitCharacters(
       *this, [start, length_to_remove, removed_end](auto chars) {
         using CharType = decltype(chars)::value_type;
-        StringBuffer<CharType> buffer(chars.size() - length_to_remove);
+        blink::StringBuffer<CharType> buffer(chars.size() - length_to_remove);
         auto [before, after] = buffer.Span().split_at(start);
         CopyChars(before, chars.first(start));
         CopyChars(after, chars.subspan(removed_end));
@@ -694,7 +694,7 @@ inline scoped_refptr<StringImpl> StringImpl::SimplifyMatchedCharactersToSpace(
     base::span<const CharType> from,
     UCharPredicate predicate,
     StripBehavior strip_behavior) {
-  StringBuffer<CharType> data(length_);
+  blink::StringBuffer<CharType> data(length_);
 
   size_t outc = 0;
   bool changed_to_space = false;

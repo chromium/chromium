@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(StringBufferTest, Initial) {
   StringBuffer<LChar> buf1;
@@ -36,4 +36,4 @@ TEST(StringBufferTest, shrink) {
   EXPECT_EQ(0u, buf.length());
 }
 
-}  // namespace WTF
+}  // namespace blink

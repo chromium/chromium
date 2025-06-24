@@ -29,10 +29,15 @@
 template <typename T>
 class scoped_refptr;
 
-namespace WTF {
+namespace blink {
 
 template <typename T>
 class StringBuffer;
+
+}  // namespace blink
+
+namespace WTF {
+
 class PartitionAllocator;
 template <typename T,
           wtf_size_t inlineCapacity = 0,
@@ -59,7 +64,6 @@ using WTF::CaseMap;
 using WTF::SegmentedBuffer;
 using WTF::SharedBuffer;
 using WTF::String;
-using WTF::StringBuffer;
 using WTF::StringBuilder;
 using WTF::StringImpl;
 using WTF::StringView;

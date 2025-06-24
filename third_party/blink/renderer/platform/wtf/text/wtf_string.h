@@ -106,7 +106,7 @@ class WTF_EXPORT String {
   void swap(String& o) { impl_.swap(o.impl_); }
 
   template <typename CharType>
-  static String Adopt(StringBuffer<CharType>& buffer) {
+  static String Adopt(blink::StringBuffer<CharType>& buffer) {
     if (!buffer.length())
       return StringImpl::empty_;
     return String(buffer.Release());

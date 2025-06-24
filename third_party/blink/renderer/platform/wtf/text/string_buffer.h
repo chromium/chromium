@@ -39,8 +39,10 @@
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
-namespace WTF {
+namespace blink {
 
+// StringBuffer is a thin wrapper of StringImpl::CreateUninitialized().
+// It is helpful if the length and Is8Bit flag are known when creating a string.
 template <typename CharType>
 class StringBuffer {
   DISALLOW_NEW();
@@ -90,8 +92,6 @@ void StringBuffer<CharType>::Shrink(unsigned new_length) {
   data_ = data_->Substring(0, new_length);
 }
 
-}  // namespace WTF
-
-using WTF::StringBuffer;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUFFER_H_
