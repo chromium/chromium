@@ -331,19 +331,15 @@ ClientSharedImage::ClientSharedImage(
       sii_holder_(std::move(sii_holder)),
       texture_target_(exported_si.texture_target_) {
   if (exported_si.buffer_handle_) {
-#if BUILDFLAG(IS_WIN)
-    gpu_memory_buffer_manager_ =
-        std::make_unique<HelperGpuMemoryBufferManager>(this);
-#else
-    gpu_memory_buffer_manager_ = nullptr;
-#endif
     gpu_memory_buffer_ =
         GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
             std::move(exported_si.buffer_handle_.value()), metadata_.size,
             viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
                 metadata_.format),
             exported_si.buffer_usage_.value(), base::DoNothing(),
-            gpu_memory_buffer_manager_.get());
+            base::BindRepeating(
+                &ClientSharedImage::CopyNativeGmbToSharedMemoryAsync,
+                base::Unretained(this)));
   }
   CHECK(!mailbox_.IsZero());
   CHECK(sii_holder_);
@@ -360,19 +356,15 @@ ClientSharedImage::ClientSharedImage(ExportedSharedImage exported_si)
       buffer_usage_(exported_si.buffer_usage_),
       texture_target_(exported_si.texture_target_) {
   if (exported_si.buffer_handle_) {
-#if BUILDFLAG(IS_WIN)
-    gpu_memory_buffer_manager_ =
-        std::make_unique<HelperGpuMemoryBufferManager>(this);
-#else
-    gpu_memory_buffer_manager_ = nullptr;
-#endif
     gpu_memory_buffer_ =
         GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
             std::move(exported_si.buffer_handle_.value()), metadata_.size,
             viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
                 metadata_.format),
             exported_si.buffer_usage_.value(), base::DoNothing(),
-            gpu_memory_buffer_manager_.get());
+            base::BindRepeating(
+                &ClientSharedImage::CopyNativeGmbToSharedMemoryAsync,
+                base::Unretained(this)));
   }
   CHECK(!mailbox_.IsZero());
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -391,13 +383,6 @@ ClientSharedImage::ClientSharedImage(
       metadata_(info.meta),
       debug_label_(info.debug_label),
       creation_sync_token_(sync_token),
-      gpu_memory_buffer_manager_(
-#if BUILDFLAG(IS_WIN)
-          std::make_unique<HelperGpuMemoryBufferManager>(this)
-#else
-          nullptr
-#endif
-              ),
       gpu_memory_buffer_(
           GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
               std::move(handle_info.handle),
@@ -406,7 +391,9 @@ ClientSharedImage::ClientSharedImage(
                   ToBufferFormat(handle_info.format),
               handle_info.buffer_usage,
               base::DoNothing(),
-              gpu_memory_buffer_manager_.get(),
+              base::BindRepeating(
+                  &ClientSharedImage::CopyNativeGmbToSharedMemoryAsync,
+                  base::Unretained(this)),
               std::move(shared_memory_pool))),
       buffer_usage_(handle_info.buffer_usage),
       sii_holder_(std::move(sii_holder)) {
@@ -679,38 +666,27 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
   return client_si;
 }
 
-ClientSharedImage::HelperGpuMemoryBufferManager::HelperGpuMemoryBufferManager(
-    ClientSharedImage* client_shared_image)
-    : client_shared_image_(client_shared_image) {
-  CHECK(client_shared_image_);
-}
-
-ClientSharedImage::HelperGpuMemoryBufferManager::
-    ~HelperGpuMemoryBufferManager() = default;
-
-void ClientSharedImage::HelperGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
+void ClientSharedImage::CopyNativeGmbToSharedMemoryAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion memory_region,
     base::OnceCallback<void(bool)> callback) {
   // Lazily create the |task_runner_|.
-  if (!task_runner_) {
-    task_runner_ =
+  if (!copy_native_buffer_to_shmem_task_runner_) {
+    copy_native_buffer_to_shmem_task_runner_ =
         base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
-    CHECK(*task_runner_);
+    CHECK(copy_native_buffer_to_shmem_task_runner_);
   }
 
-  if (!(*task_runner_)->BelongsToCurrentThread()) {
-    (*task_runner_)
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ClientSharedImage::HelperGpuMemoryBufferManager::
-                               CopyGpuMemoryBufferAsync,
-                           base::Unretained(this), std::move(buffer_handle),
-                           std::move(memory_region), std::move(callback)));
+  if (!copy_native_buffer_to_shmem_task_runner_->BelongsToCurrentThread()) {
+    copy_native_buffer_to_shmem_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ClientSharedImage::CopyNativeGmbToSharedMemoryAsync,
+                       base::Unretained(this), std::move(buffer_handle),
+                       std::move(memory_region), std::move(callback)));
     return;
   }
 
-  auto sii = GetSharedImageInterface();
+  auto sii = sii_holder_->Get();
   if (!sii) {
     DLOG(WARNING) << "No SharedImageInterface.";
     std::move(callback).Run(false);
@@ -720,12 +696,6 @@ void ClientSharedImage::HelperGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
       std::move(buffer_handle), std::move(memory_region),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
                                                   /*result=*/false));
-}
-
-// Access the SharedImageInterface via the SharedImageInterfaceHolder.
-scoped_refptr<SharedImageInterface>
-ClientSharedImage::HelperGpuMemoryBufferManager::GetSharedImageInterface() {
-  return client_shared_image_->sii_holder_->Get();
 }
 
 ExportedSharedImage::ExportedSharedImage() = default;

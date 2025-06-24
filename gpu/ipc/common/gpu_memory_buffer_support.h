@@ -55,7 +55,6 @@ class V4L2JpegEncodeAccelerator;
 
 namespace gpu {
 class ClientSharedImage;
-class GpuMemoryBufferManager;
 
 // Provides a common factory for GPU memory buffer implementations.
 class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
@@ -124,8 +123,9 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
   // should match what was used to allocate the |handle|. |callback|, if
   // non-null, is called when instance is deleted, which is not necessarily on
   // the same thread as this function was called on and instance was created on.
-  // |gpu_memory_buffer_manager| and |pool| are only needed if the created
-  // buffer is a windows DXGI buffer and it needs to be mapped at the consumer.
+  // |copy_native_buffer_to_shmem_callback| and |pool| are only needed if the
+  // created buffer is a windows DXGI buffer and it needs to be mapped at the
+  // consumer.
   virtual std::unique_ptr<GpuMemoryBufferImpl>
   CreateGpuMemoryBufferImplFromHandle(
       gfx::GpuMemoryBufferHandle handle,
@@ -133,7 +133,9 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       GpuMemoryBufferImpl::DestructionCallback callback,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager = nullptr,
+      GpuMemoryBufferImpl::CopyNativeBufferToShMemCallback
+          copy_native_buffer_to_shmem_callback =
+              GpuMemoryBufferImpl::CopyNativeBufferToShMemCallback(),
       scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr);
 
   // Returns whether the provided buffer format is supported.

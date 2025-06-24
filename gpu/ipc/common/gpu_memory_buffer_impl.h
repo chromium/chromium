@@ -20,6 +20,10 @@ namespace gpu {
 class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
  public:
   using DestructionCallback = base::OnceCallback<void()>;
+  using CopyNativeBufferToShMemCallback =
+      base::RepeatingCallback<void(gfx::GpuMemoryBufferHandle,
+                                   base::UnsafeSharedMemoryRegion,
+                                   base::OnceCallback<void(bool)>)>;
 
   GpuMemoryBufferImpl(const GpuMemoryBufferImpl&) = delete;
   GpuMemoryBufferImpl& operator=(const GpuMemoryBufferImpl&) = delete;

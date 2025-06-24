@@ -31,7 +31,6 @@ class GpuMemoryBufferTrackerWin;
 
 namespace gpu {
 
-class GpuMemoryBufferManager;
 class GpuMemoryBufferSupport;
 
 // Implementation of GPU memory buffer based on dxgi textures.
@@ -88,16 +87,18 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       DestructionCallback callback,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      scoped_refptr<base::UnsafeSharedMemoryPool> pool);
+      CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback =
+          CopyNativeBufferToShMemCallback(),
+      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr);
 
-  GpuMemoryBufferImplDXGI(gfx::GpuMemoryBufferId id,
-                          const gfx::Size& size,
-                          gfx::BufferFormat format,
-                          DestructionCallback callback,
-                          gfx::DXGIHandle dxgi_handle,
-                          GpuMemoryBufferManager* gpu_memory_buffer_manager,
-                          scoped_refptr<base::UnsafeSharedMemoryPool> pool);
+  GpuMemoryBufferImplDXGI(
+      gfx::GpuMemoryBufferId id,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      DestructionCallback callback,
+      gfx::DXGIHandle dxgi_handle,
+      CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback,
+      scoped_refptr<base::UnsafeSharedMemoryPool> pool);
 
   // Returns callback for reporting early result.
   // `DoMapAsync` can't invoke it directly as it holds a mapping lock.
@@ -120,7 +121,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
   // from it.
   base::WritableSharedMemoryMapping region_mapping_;
 
-  raw_ptr<GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback_;
 
   std::vector<base::OnceCallback<void(bool)>> map_callbacks_
       GUARDED_BY(map_lock_);
