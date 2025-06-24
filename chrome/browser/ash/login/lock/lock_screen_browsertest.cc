@@ -14,7 +14,8 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -77,8 +78,9 @@ IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
 
   UserAddingScreen::Get()->Start();
   AddUserWithDbusClient(users[1].account_id, LoginManagerTest::kPassword);
-  EXPECT_EQ(users[1].account_id,
-            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+  EXPECT_EQ(
+      users[1].account_id,
+      session_manager::SessionManager::Get()->GetActiveSession()->account_id());
   ime_states[1] = input_manager->GetActiveIMEState();
   ASSERT_TRUE(ime_states[1]->EnableInputMethod(user_input_methods_[1]));
   ime_states[1]->ChangeInputMethod(user_input_methods_[1], false);
@@ -100,8 +102,9 @@ IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
   locker_tester.UnlockWithPassword(users[0].account_id,
                                    LoginManagerTest::kPassword);
   locker_tester.WaitForUnlock();
-  EXPECT_EQ(users[0].account_id,
-            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+  EXPECT_EQ(
+      users[0].account_id,
+      session_manager::SessionManager::Get()->GetActiveSession()->account_id());
   EXPECT_EQ(ime_states[0], input_manager->GetActiveIMEState());
   EXPECT_EQ(ime_states[0]->GetCurrentInputMethod().id(),
             user_input_methods_[0]);
@@ -120,8 +123,9 @@ IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
             user_input_methods_[1]);
   locker_tester.UnlockWithPassword(users[1].account_id,
                                    LoginManagerTest::kPassword);
-  EXPECT_EQ(users[1].account_id,
-            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+  EXPECT_EQ(
+      users[1].account_id,
+      session_manager::SessionManager::Get()->GetActiveSession()->account_id());
   EXPECT_EQ(ime_states[1], input_manager->GetActiveIMEState());
   EXPECT_EQ(ime_states[1]->GetCurrentInputMethod().id(),
             user_input_methods_[1]);
@@ -272,8 +276,9 @@ IN_PROC_BROWSER_TEST_F(LockScreenLocalPasswordTest, UnlockWithCorrectPassword) {
   locker_tester.UnlockWithPassword(test_account_id,
                                    LoginManagerTest::kLocalPassword);
   locker_tester.WaitForUnlock();
-  EXPECT_EQ(test_account_id,
-            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+  EXPECT_EQ(
+      test_account_id,
+      session_manager::SessionManager::Get()->GetActiveSession()->account_id());
 }
 
 IN_PROC_BROWSER_TEST_F(LockScreenLocalPasswordTest, UnlockWithWrongPassword) {
@@ -312,8 +317,9 @@ IN_PROC_BROWSER_TEST_F(LockScreenPinOnlyTest, UnlockWithCorrectPin) {
   // Unlock with pin, the same as was used for login.
   LoginScreenTestApi::SubmitPin(test_account_id, test::kAuthPin);
   locker_tester.WaitForUnlock();
-  EXPECT_EQ(test_account_id,
-            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+  EXPECT_EQ(
+      test_account_id,
+      session_manager::SessionManager::Get()->GetActiveSession()->account_id());
 }
 
 IN_PROC_BROWSER_TEST_F(LockScreenPinOnlyTest, UnlockWithWrongPin) {

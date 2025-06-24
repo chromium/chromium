@@ -4,9 +4,10 @@
 
 #include "components/session_manager/core/session_manager.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -98,11 +99,36 @@ void SessionManager::SessionStarted() {
     observer.OnUserSessionStarted(is_primary);
 }
 
-bool SessionManager::HasSessionForAccountId(
-    const AccountId& user_account_id) const {
-  return base::Contains(sessions_, user_account_id, [](const auto& session) {
+bool SessionManager::HasSessionForAccountId(const AccountId& account_id) const {
+  return FindSession(account_id) != nullptr;
+}
+
+const Session* SessionManager::FindSession(const AccountId& account_id) const {
+  auto it = std::ranges::find(sessions_, account_id, [](const auto& session) {
     return session->account_id();
   });
+  return it == sessions_.end() ? nullptr : it->get();
+}
+
+const Session* SessionManager::GetActiveSession() const {
+  CHECK(user_manager_);
+  const auto* active_user = user_manager_->GetActiveUser();
+  if (!active_user) {
+    return nullptr;
+  }
+  return FindSession(active_user->GetAccountId());
+}
+
+const Session* SessionManager::GetPrimarySession() const {
+  CHECK(user_manager_);
+  const auto* primary_user = user_manager_->GetPrimaryUser();
+  CHECK_EQ(!!primary_user, !sessions_.empty());
+  if (sessions_.empty()) {
+    return nullptr;
+  }
+  const Session* primary_session = sessions_[0].get();
+  CHECK_EQ(primary_user->GetAccountId(), primary_session->account_id());
+  return primary_session;
 }
 
 bool SessionManager::IsInSecondaryLoginScreen() const {
@@ -193,6 +219,11 @@ void SessionManager::CreateSessionInternal(const AccountId& user_account_id,
                     user_account_id);
   sessions_.push_back(std::make_unique<Session>(next_id_++, user_account_id));
   user_manager_->UserLoggedIn(user_account_id, username_hash);
+
+  // TODO(hidehiko): Add the check below.
+  // CHECK_EQ(sessions_.size(), user_manager_->GetLoggedInUsers().size());
+  // Currently, several tests are written incorrectly, so will fail.
+
   OnSessionCreated(browser_restart);
   observers_.Notify(&SessionManagerObserver::OnSessionCreated, user_account_id);
 }

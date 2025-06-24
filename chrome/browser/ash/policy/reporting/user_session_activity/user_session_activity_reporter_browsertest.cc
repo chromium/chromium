@@ -30,8 +30,8 @@
 #include "components/account_id/account_id.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_names.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(UserSessionActivityReporterBrowserTest,
 
   // Lock the screen. This triggers a session end.
   const AccountId account_id =
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id();
   ScreenLockerTester screen_locker_tester;
   screen_locker_tester.Lock();
   ASSERT_TRUE(screen_locker_tester.IsLocked());

@@ -350,12 +350,14 @@ class USER_MANAGER_EXPORT UserManager {
   // Same as FindUser but returns non-const pointer to User object.
   virtual User* FindUserAndModify(const AccountId& account_id) = 0;
 
+  // DEPRECATED. Please use SessionManager::GetActiveSession() instead.
   // Returns the logged-in user that is currently active within this session.
   // There could be multiple users logged in at the the same but for now
   // we support only one of them being active.
   virtual const User* GetActiveUser() const = 0;
   virtual User* GetActiveUser() = 0;
 
+  // DEPRECATED. Please use SessionManager::GetPrimarySession() instead.
   // Returns the primary user of the current session. It is recorded for the
   // first signed-in user and does not change thereafter.
   virtual const User* GetPrimaryUser() const = 0;

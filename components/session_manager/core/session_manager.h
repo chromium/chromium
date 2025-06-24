@@ -88,6 +88,23 @@ class SESSION_EXPORT SessionManager
   // Returns true if the session for the given user was started.
   bool HasSessionForAccountId(const AccountId& user_account_id) const;
 
+  // Returns the Session instance for the user specified by the given
+  // `account_id`. Returns nullptr if not found.
+  const Session* FindSession(const AccountId& account_id) const;
+
+  // Returns the Session instance for the current active session.
+  // If there's no such session, returns nullptr.
+  // NOTE: in most cases, this is not what you should use, because when you
+  // need this kind of function, it means the function is running under the
+  // active session conceptually, so, importantly, its callers, too.
+  // Instead of calling this, please pass `const Session&` via arguments
+  // from the bottom of the call stack.
+  const Session* GetActiveSession() const;
+
+  // Returns the Session instance for the primary session.
+  // If there's no such session (i.e. before user log-in), returns nullptr.
+  const Session* GetPrimarySession() const;
+
   // Convenience wrapps of session state.
   bool IsInSecondaryLoginScreen() const;
   bool IsScreenLocked() const;
