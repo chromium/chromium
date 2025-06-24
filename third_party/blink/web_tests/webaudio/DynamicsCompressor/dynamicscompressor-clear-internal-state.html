@@ -7,60 +7,56 @@
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let audit = Audit.createTaskRunner();
-      let context;
-      let buffer;
-      let source;
-      let compressor;
+    <script>
 
+      /*
+       * - Feed a DC signal (value = 1, duration = 5 s)
+           through a DynamicsCompressor.
+       * - Render 10 s total; after the DC ends the compressor should release
+       *   and its |reduction| should converge → 0.
+       * - Verify |reduction| ≤ 4.8223 e-2.
+       */
+
+      promise_test(t => {
       // Use a low sample rate to reduce complexity because we need to run for
       // quite a few seconds to get the reduction to converge.
-      let sampleRate = 8192;
-      let testDurationSamples = 10 * sampleRate;
+        const sampleRate = 8192;
+        const testDurationSamples = 10 * sampleRate;
+        // Create the offline context for the test.
+        const context = new OfflineAudioContext(
+            /* channels */ 1,
+            /* frames   */ testDurationSamples,
+            /* rate     */ sampleRate);
 
-      audit.define(
-          {
-            label: 'test',
-            description:
-                'Validate Reduction Value of DynamicsCompressor after Disabling'
-          },
-          function(task, should) {
-            // Create the offline context for the test.
-            context =
-                new OfflineAudioContext(1, testDurationSamples, sampleRate);
+        // 5 s buffer full-scale DC (value = 1)
+        const buffer = createConstantBuffer(
+            context, testDurationSamples / 2, 1);
 
-            // Create the constant sample buffer of 0.5 sec.
-            buffer = createConstantBuffer(context, testDurationSamples / 2, 1);
+        // Create the source and connect it to the destination
+        const source = new AudioBufferSourceNode(context);
 
-            // Create compressor and use default parameters for the compression.
-            compressor = context.createDynamicsCompressor();
+        // Create compressor and use default parameters for the compression.
+        const compressor = new DynamicsCompressorNode(context);
 
-            // Create the source and connect it to the destination
-            source = context.createBufferSource();
-            source.buffer = buffer;
-            source.connect(compressor);
-            compressor.connect(context.destination);
-            source.start(0.0);
+        source.buffer = buffer;
+        source.connect(compressor);
+        compressor.connect(context.destination);
+        source.start(0.0);
 
-            // Render it!
-            context.startRendering().then(() => {
-              // Check that the reduction value sufficiently close to 0.
-              // Error threshold experimentally determined.
-              let errorThreshold = 4.8223e-2;
-              should(
-                  Math.abs(compressor.reduction),
-                  'Math.abs(compressor.reduction) ('
-                    + Math.abs(compressor.reduction) + ')')
-                  .beLessThanOrEqualTo(errorThreshold);
-              task.done();
-            });
-          });
+        // Error threshold experimentally determined.
+        const ERROR_THRESHOLD = 4.8223e-2;
 
-      audit.run();
+        // Return the promise so testharness waits on it.
+        return context.startRendering().then(() => {
+          const reduction = Math.abs(compressor.reduction);
+
+          assert_less_than_equal(
+              reduction, ERROR_THRESHOLD,
+              `|reduction| (${reduction}) should be ≤ ${ERROR_THRESHOLD}`);
+        });
+      }, 'DynamicsCompressor.reduction approaches 0 after long silence');
     </script>
   </body>
 </html>
