@@ -15,8 +15,8 @@ class A {
   A(base::span<int> ptr) : member(ptr) {}
 
   // Expecte rewrite:
-  // int* advanceAndGet() { return base::postIncrementSpan(member).data(); }
-  int* advanceAndGet() { return base::postIncrementSpan(member).data(); }
+  // int* advanceAndGet() { return base::PostIncrementSpan(member).data(); }
+  int* advanceAndGet() { return base::PostIncrementSpan(member).data(); }
 
   // Expected rewrite:
   // int* get() { return member.data(); }
