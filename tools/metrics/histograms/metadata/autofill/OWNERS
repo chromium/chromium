@@ -5,7 +5,7 @@ per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 fleimgruber@google.com # Autofill
 jihadghanna@google.com
 jkeitel@google.com
-jsaul@google.com # Autofill (Payments org)
+osaul@google.com # Autofill (Payments org)
 schwering@google.com # Autofill
 vidhanj@google.com
 vsemeniuk@google.com # Passwords
