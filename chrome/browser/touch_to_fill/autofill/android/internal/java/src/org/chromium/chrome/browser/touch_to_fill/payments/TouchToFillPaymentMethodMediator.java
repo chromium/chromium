@@ -194,6 +194,8 @@ class TouchToFillPaymentMethodMediator {
     private List<AutofillSuggestion> mSuggestions;
     private List<Iban> mIbans;
     private List<LoyaltyCard> mAffiliatedLoyaltyCards;
+    private List<LoyaltyCard> mAllLoyaltyCards;
+    private Function<LoyaltyCard, Drawable> mValuableImageFunction;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
     private InputProtector mInputProtector = new InputProtector();
@@ -217,6 +219,8 @@ class TouchToFillPaymentMethodMediator {
         mSuggestions = suggestions;
         mIbans = null;
         mAffiliatedLoyaltyCards = null;
+        mAllLoyaltyCards = null;
+        mValuableImageFunction = null;
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
@@ -267,6 +271,8 @@ class TouchToFillPaymentMethodMediator {
         mIbans = ibans;
         mSuggestions = null;
         mAffiliatedLoyaltyCards = null;
+        mAllLoyaltyCards = null;
+        mValuableImageFunction = null;
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
@@ -306,9 +312,10 @@ class TouchToFillPaymentMethodMediator {
 
         assert allLoyaltyCards != null && affiliatedLoyaltyCards != null;
         mAffiliatedLoyaltyCards = affiliatedLoyaltyCards;
+        mAllLoyaltyCards = allLoyaltyCards;
+        mValuableImageFunction = valuableImageFunction;
         mSuggestions = null;
         mIbans = null;
-        // TODO: crbug.com/420957826 - Display affiliated loyalty cards.
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
@@ -375,7 +382,7 @@ class TouchToFillPaymentMethodMediator {
                         TouchToFillIbanOutcome.DISMISS,
                         TouchToFillIbanOutcome.MAX_VALUE);
             } else {
-                assert mAffiliatedLoyaltyCards != null;
+                assert mAffiliatedLoyaltyCards != null && mAllLoyaltyCards != null;
                 recordTouchToFillLoyaltyCardOutcomeHistogram(TouchToFillLoyaltyCardOutcome.DISMISS);
             }
         }
@@ -398,13 +405,13 @@ class TouchToFillPaymentMethodMediator {
     }
 
     public void showGoogleWalletSettings() {
-        assert mAffiliatedLoyaltyCards != null;
+        assert mAffiliatedLoyaltyCards != null && mAllLoyaltyCards != null;
         recordTouchToFillLoyaltyCardOutcomeHistogram(TouchToFillLoyaltyCardOutcome.WALLET_SETTINGS);
         mDelegate.showGoogleWalletSettings();
     }
 
     public void showManageLoyaltyCards() {
-        assert mAffiliatedLoyaltyCards != null;
+        assert mAffiliatedLoyaltyCards != null && mAllLoyaltyCards != null;
         mDelegate.openPassesManagementUi();
         recordTouchToFillLoyaltyCardOutcomeHistogram(
                 TouchToFillLoyaltyCardOutcome.MANAGE_LOYALTY_CARDS);
@@ -448,7 +455,13 @@ class TouchToFillPaymentMethodMediator {
 
     private void showAllLoyaltyCards() {
         mModel.set(CURRENT_SCREEN, ALL_LOYALTY_CARDS_SCREEN);
-        mModel.set(SHEET_ITEMS, new ModelList());
+        ModelList allLoyaltyCardsModel = new ModelList();
+        for (LoyaltyCard loyaltyCard : mAllLoyaltyCards) {
+            final PropertyModel loyaltyCardModel =
+                    createLoyaltyCardModel(loyaltyCard, mValuableImageFunction);
+            allLoyaltyCardsModel.add(new ListItem(LOYALTY_CARD, loyaltyCardModel));
+        }
+        mModel.set(SHEET_ITEMS, allLoyaltyCardsModel);
     }
 
     private PropertyModel createCardSuggestionModel(

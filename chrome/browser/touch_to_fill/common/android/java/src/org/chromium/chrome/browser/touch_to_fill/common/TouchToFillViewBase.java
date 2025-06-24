@@ -91,12 +91,21 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     /**
      * Used to access the handlebar to measure it.
+     *
      * @return the {@link View} representing the drag handlebar.
      */
     protected abstract View getHandlebar();
 
     /**
+     * Used to access the header view to measure it.
+     *
+     * @return the {@link View} representing the bottom sheet header view.
+     */
+    protected abstract @Nullable View getHeaderView();
+
+    /**
      * Returns the margin between the last item in the scrollable list and the footer.
+     *
      * @return the margin size in pixels.
      */
     protected abstract @Px int getConclusiveMarginHeightPx();
@@ -242,6 +251,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
         }
         int height =
                 getHeightWithMarginsPx(getHandlebar(), false)
+                        + getHeightWithMarginsPx(getHeaderView(), false)
                         + getSheetItemListHeightWithMarginsPx(true);
         return height;
     }
@@ -250,6 +260,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
         assert mContentView.getMeasuredHeight() > 0 : "ContentView hasn't been measured.";
         int height =
                 getHeightWithMarginsPx(getHandlebar(), false)
+                        + getHeightWithMarginsPx(getHeaderView(), false)
                         + getSheetItemListHeightWithMarginsPx(false);
         return height;
     }
@@ -278,7 +289,10 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
         return totalHeight;
     }
 
-    private static @Px int getHeightWithMarginsPx(View view, boolean shouldPeek) {
+    private static @Px int getHeightWithMarginsPx(@Nullable View view, boolean shouldPeek) {
+        if (view == null) {
+            return 0;
+        }
         assert view.getMeasuredHeight() > 0 : "View hasn't been measured.";
         return getMarginsPx(view, /* excludeBottomMargin= */ shouldPeek)
                 + (shouldPeek ? view.getMeasuredHeight() / 2 : view.getMeasuredHeight());

@@ -58,6 +58,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.NON_TRANSFORMING_LOYALTY_CARD_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.ON_LOYALTY_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ALL_LOYALTY_CARDS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.ALL_TERMS_LABEL_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
@@ -65,6 +66,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -1088,6 +1090,55 @@ public class TouchToFillPaymentMethodViewTest {
                 is(getString(R.string.autofill_bottom_sheet_all_your_loyalty_cards)));
 
         onView(withText(getString(R.string.autofill_bottom_sheet_all_your_loyalty_cards)))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForEvent(actionCallback).run();
+    }
+
+    @Test
+    @MediumTest
+    public void testAllLoyaltyCardsScreen() {
+        Runnable actionCallback = mock(Runnable.class);
+        runOnUiThreadBlocking(
+                () -> {
+                    ModelList allLoyaltyCards = new ModelList();
+                    allLoyaltyCards.add(
+                            new ListItem(
+                                    LOYALTY_CARD,
+                                    createLoyaltyCardModel(CVS_LOYALTY_CARD, actionCallback)));
+                    mTouchToFillPaymentMethodModel.set(CURRENT_SCREEN, ALL_LOYALTY_CARDS_SCREEN);
+                    mTouchToFillPaymentMethodModel.set(SHEET_ITEMS, allLoyaltyCards);
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ViewGroup allLoyaltyCardsScreen =
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.touch_to_fill_payment_method_all_loyalty_cards_screen);
+        assertNotNull(allLoyaltyCardsScreen);
+
+        TextView allLoyaltyCardsScreenTitle =
+                allLoyaltyCardsScreen.findViewById(R.id.all_loyalty_cards_screen_title);
+        assertThat(
+                allLoyaltyCardsScreenTitle.getText().toString(),
+                is(getString(R.string.autofill_bottom_sheet_all_loyalty_cards_screen_title)));
+
+        // Verify that 1 loyalty card is displayed.
+        RecyclerView allLoyaltyCardsContainer =
+                allLoyaltyCardsScreen.findViewById(R.id.touch_to_fill_all_loyalty_cards_list);
+        assertThat(allLoyaltyCardsContainer.getAdapter().getItemCount(), is(1));
+
+        // Verify that the correct data is displayed for the loyalty card.
+        View loyaltyCardItem = allLoyaltyCardsContainer.getChildAt(0);
+        TextView loyaltyCardNumber = loyaltyCardItem.findViewById(R.id.loyalty_card_number);
+        assertThat(
+                loyaltyCardNumber.getText().toString(),
+                is(CVS_LOYALTY_CARD.getLoyaltyCardNumber()));
+        TextView merchantName = loyaltyCardItem.findViewById(R.id.merchant_name);
+        assertThat(merchantName.getText().toString(), is(CVS_LOYALTY_CARD.getMerchantName()));
+
+        // Verify that the loyalty card is clickable.
+        onView(withText(CVS_LOYALTY_CARD.getLoyaltyCardNumber()))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
         waitForEvent(actionCallback).run();
     }

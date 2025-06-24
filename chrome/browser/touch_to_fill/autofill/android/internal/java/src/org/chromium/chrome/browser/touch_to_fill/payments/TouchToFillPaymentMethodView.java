@@ -21,6 +21,7 @@ import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.touch_to_fill.common.ItemDividerBase;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillViewBase;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType;
@@ -132,6 +133,18 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
     @Override
     protected View getHandlebar() {
         return getContentView().findViewById(R.id.drag_handlebar);
+    }
+
+    @Override
+    protected @Nullable View getHeaderView() {
+        ViewFlipper viewFlipper =
+                getContentView().findViewById(R.id.touch_to_fill_payment_method_view_flipper);
+        if (viewFlipper.getDisplayedChild()
+                == getDisplayedChildForScreenId(ALL_LOYALTY_CARDS_SCREEN)) {
+            // Only the all loyalty cards screen has a static header;
+            return getContentView().findViewById(R.id.all_loyalty_cards_toolbar);
+        }
+        return null;
     }
 
     @Override
