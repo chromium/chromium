@@ -144,7 +144,7 @@ void MyClass::NonStatic(JNIEnv* env) { ... }
 ### Calling Native -> Java
 
 Because the generated header files contain definitions as well as declarations,
-the must not be `#included` by multiple sources. If there are Java functions
+they must not be `#included` by multiple sources. If there are Java functions
 that need to be called by multiple sources, one source should be chosen to
 expose the functions to the others via additional wrapper functions.
 
