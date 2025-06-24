@@ -22,6 +22,7 @@ class AggregatedJournalSerializer : public AggregatedJournal::Observer {
  protected:
   // The subclass should call this when they are ready to accept data.
   void InitImpl();
+  void WriteTracePreamble();
 
   // Subclasses should implement this to receive generated data.
   virtual void WriteTracePacket(std::vector<uint8_t> message) = 0;

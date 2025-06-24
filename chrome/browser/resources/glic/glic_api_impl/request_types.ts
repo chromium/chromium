@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {type WebClientInitialState} from '../glic.mojom-webui.js';
-import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, Journal, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -191,6 +191,43 @@ export declare interface HostRequestTypes {
       enabled: boolean,
     },
   };
+  glicBrowserLogBeginAsyncEvent: {
+    request: {
+      asyncEventId: number,
+      taskId: number,
+      event: string,
+      details: string,
+    },
+  };
+  glicBrowserLogEndAsyncEvent: {
+    request: {
+      asyncEventId: number,
+      details: string,
+    },
+  };
+  glicBrowserLogInstantEvent: {
+    request: {
+      taskId: number,
+      event: string,
+      details: string,
+    },
+  };
+  glicBrowserJournalClear: {};
+  glicBrowserJournalSnapshot: {
+    request: {
+      clear: boolean,
+    },
+    response: {
+      journal: Journal,
+    },
+  };
+  glicBrowserJournalStart: {
+    request: {
+      maxBytes: number,
+      captureScreenshots: boolean,
+    },
+  };
+  glicBrowserJournalStop: {};
   glicBrowserOnUserInputSubmitted: {
     request: {
       mode: number,
@@ -374,6 +411,13 @@ type HostRequestEnumNamesType = {
     AttachPanel: 0,
     DetachPanel: 0,
     SetAudioDucking: 0,
+    LogBeginAsyncEvent: 0,
+    LogEndAsyncEvent: 0,
+    LogInstantEvent: 0,
+    JournalClear: 0,
+    JournalSnapshot: 0,
+    JournalStart: 0,
+    JournalStop: 0,
     OnUserInputSubmitted: 0,
     OnRequestStarted: 0,
     OnResponseStarted: 0,

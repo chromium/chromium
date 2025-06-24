@@ -33,6 +33,11 @@ AggregatedJournalSerializer::AggregatedJournalSerializer(
     : journal_(journal.GetSafeRef()) {}
 
 void AggregatedJournalSerializer::InitImpl() {
+  WriteTracePreamble();
+  journal_->AddObserver(this);
+}
+
+void AggregatedJournalSerializer::WriteTracePreamble() {
   // Write initial message in protobuf.
   {
     protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> init_msg;
@@ -77,7 +82,6 @@ void AggregatedJournalSerializer::InitImpl() {
     service_event->set_all_data_sources_started(true);
     WriteTracePacket(msg.SerializeAsArray());
   }
-  journal_->AddObserver(this);
 }
 
 AggregatedJournalSerializer::~AggregatedJournalSerializer() {

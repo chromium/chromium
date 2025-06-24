@@ -24,6 +24,11 @@ void AggregatedJournalInMemorySerializer::Init() {
   InitImpl();
 }
 
+void AggregatedJournalInMemorySerializer::Clear() {
+  buffer_list_.clear();
+  WriteTracePreamble();
+}
+
 void AggregatedJournalInMemorySerializer::WriteTracePacket(
     std::vector<uint8_t> message) {
   buffer_list_.push_back(std::move(message));

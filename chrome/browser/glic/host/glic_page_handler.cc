@@ -19,6 +19,9 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/version_info/version_info.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/aggregated_journal_in_memory_serializer.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
@@ -59,6 +62,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/size.h"
@@ -295,6 +299,82 @@ mojom::WebClientSizingMode GetWebClientSizingMode() {
              : glic::mojom::WebClientSizingMode::kNatural;
 }
 
+// Class that encapsulates interacting with the actor journal.
+class JournalHandler {
+ public:
+  explicit JournalHandler(Profile* profile)
+      : actor_keyed_service_(actor::ActorKeyedService::Get(profile)) {}
+
+  void LogBeginAsyncEvent(uint64_t event_async_id,
+                          int32_t task_id,
+                          const std::string& event,
+                          const std::string& details) {
+    // If there is a matching ID make sure it terminates before the new event is
+    // created.
+    auto it = active_journal_events_.find(event_async_id);
+    if (it != active_journal_events_.end()) {
+      active_journal_events_.erase(it);
+    }
+
+    active_journal_events_[event_async_id] =
+        actor_keyed_service_->GetJournal().CreatePendingAsyncEntry(
+            /*url=*/GURL::EmptyGURL(), actor::TaskId(task_id), event, details);
+  }
+
+  void LogEndAsyncEvent(uint64_t event_async_id, const std::string& details) {
+    auto it = active_journal_events_.find(event_async_id);
+    if (it != active_journal_events_.end()) {
+      it->second->EndEntry(details);
+      active_journal_events_.erase(it);
+    }
+  }
+
+  void LogInstantEvent(int32_t task_id,
+                       const std::string& event,
+                       const std::string& details) {
+    actor_keyed_service_->GetJournal().Log(
+        /*url=*/GURL::EmptyGURL(), actor::TaskId(task_id), event, details);
+  }
+
+  void Clear() {
+    if (journal_serializer_) {
+      journal_serializer_->Clear();
+    }
+  }
+
+  void Snapshot(
+      bool clear_journal,
+      glic::mojom::WebClientHandler::JournalSnapshotCallback callback) {
+    if (!journal_serializer_) {
+      std::move(callback).Run(glic::mojom::Journal::New());
+      return;
+    }
+    std::move(callback).Run(glic::mojom::Journal::New(
+        journal_serializer_->Snapshot(/*max_bytes=*/64 * 1024 * 1024)));
+    if (clear_journal) {
+      journal_serializer_->Clear();
+    }
+  }
+
+  void Start(uint64_t max_bytes, bool capture_screenshots) {
+    journal_serializer_ =
+        std::make_unique<actor::AggregatedJournalInMemorySerializer>(
+            actor_keyed_service_->GetJournal());
+    journal_serializer_->Init();
+  }
+
+  void Stop() { journal_serializer_.reset(); }
+
+ private:
+  absl::flat_hash_map<
+      uint64_t,
+      std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>>
+      active_journal_events_;
+  std::unique_ptr<actor::AggregatedJournalInMemorySerializer>
+      journal_serializer_;
+  raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
+};
+
 }  // namespace
 
 // WARNING: One instance of this class is created per WebUI navigated to
@@ -324,7 +404,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         browser_is_open_calculator_(profile_, this),
         receiver_(this, std::move(receiver)),
         annotation_manager_(
-            std::make_unique<GlicAnnotationManager>(glic_service_)) {
+            std::make_unique<GlicAnnotationManager>(glic_service_)),
+        journal_handler_(profile_) {
     active_state_calculator_.AddObserver(this);
   }
 
@@ -812,6 +893,38 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->GetAuthController().ForceSyncCookies(std::move(callback));
   }
 
+  void LogBeginAsyncEvent(uint64_t event_async_id,
+                          int32_t task_id,
+                          const std::string& event,
+                          const std::string& details) override {
+    journal_handler_.LogBeginAsyncEvent(event_async_id, task_id, event,
+                                        details);
+  }
+
+  void LogEndAsyncEvent(uint64_t event_async_id,
+                        const std::string& details) override {
+    journal_handler_.LogEndAsyncEvent(event_async_id, details);
+  }
+
+  void LogInstantEvent(int32_t task_id,
+                       const std::string& event,
+                       const std::string& details) override {
+    journal_handler_.LogInstantEvent(task_id, event, details);
+  }
+
+  void JournalClear() override { journal_handler_.Clear(); }
+
+  void JournalSnapshot(bool clear_journal,
+                       JournalSnapshotCallback callback) override {
+    journal_handler_.Snapshot(clear_journal, std::move(callback));
+  }
+
+  void JournalStart(uint64_t max_bytes, bool capture_screenshots) override {
+    journal_handler_.Start(max_bytes, capture_screenshots);
+  }
+
+  void JournalStop() override { journal_handler_.Stop(); }
+
   void OnUserInputSubmitted(glic::mojom::WebClientMode mode) override {
     glic_service_->OnUserInputSubmitted(mode);
   }
@@ -1139,6 +1252,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   const std::unique_ptr<GlicAnnotationManager> annotation_manager_;
   std::unique_ptr<system_permission_settings::ScopedObservation>
       system_permission_settings_observation_;
+  JournalHandler journal_handler_;
   std::vector<base::OnceClosure> on_get_user_profile_info_activation_callbacks_;
   std::unique_ptr<DebouncerDeduper> debouncer_deduper_;
 };

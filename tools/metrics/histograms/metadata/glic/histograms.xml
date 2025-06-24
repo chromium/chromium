@@ -78,6 +78,13 @@ chromium-metrics-reviews@google.com.
     <variant name="GetOsMicrophonePermissionStatus"/>
     <variant name="GetUserProfileInfo"/>
     <variant name="GetZeroStateSuggestionsForFocusedTab"/>
+    <variant name="JournalClear"/>
+    <variant name="JournalSnapshot"/>
+    <variant name="JournalStart"/>
+    <variant name="JournalStop"/>
+    <variant name="LogBeginAsyncEvent"/>
+    <variant name="LogEndAsyncEvent"/>
+    <variant name="LogInstantEvent"/>
     <variant name="MaybeRefreshUserStatus"/>
     <variant name="OnRequestStarted"/>
     <variant name="OnResponseRated"/>

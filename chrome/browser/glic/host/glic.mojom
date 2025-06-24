@@ -544,6 +544,29 @@ interface WebClientHandler {
   // webview.
   SyncCookies() => (bool success);
 
+  // Log a begin event in the journal.
+  LogBeginAsyncEvent(uint64 event_async_id, int32 task_id, string event,
+                     string details);
+
+  // Log an end event in the journal.
+  LogEndAsyncEvent(uint64 event_async_id, string details);
+
+  // Log an instant event in the journal.
+  LogInstantEvent(int32 task_id, string event, string details);
+
+  // Clear the journal.
+  JournalClear();
+
+  // Serialize the current journal collection to a encoded
+  // perfetto protobuf encoding.
+  JournalSnapshot(bool clear_journal) => (Journal journal);
+
+  // Start journal collection.
+  JournalStart(uint64 max_bytes, bool capture_screenshots);
+
+  // Stop journal collection.
+  JournalStop();
+
   // Called when the user submits input.
   OnUserInputSubmitted(WebClientMode mode);
 
@@ -851,6 +874,13 @@ struct AnnotatedPageData {
 // from which image is composed.
 // TODO(crbug.com/380495633): Finalize and implement image annotations.
 struct ImageOriginAnnotations {};
+
+// An encoded journal. This is an encoded perfetto protobuf.
+// See `chrome/browser/actor/aggregated_journal_serializer.h`
+struct Journal {
+  // Encoded journal data.
+  array<uint8> data;
+};
 
 // An encoded screenshot image and associated metadata.
 struct Screenshot {

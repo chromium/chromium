@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
@@ -193,6 +193,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   panelActiveValue = ObservableValueImpl.withNoValue<boolean>();
   isBrowserOpenValue = ObservableValueImpl.withNoValue<boolean>();
   private fitWindow = false;
+  private journalHost: GlicBrowserHostJournalImpl;
   private metrics: GlicBrowserHostMetricsImpl;
   private manuallyResizing = ObservableValueImpl.withValue<boolean>(false);
   pinnedTabs = ObservableValueImpl.withNoValue<TabData[]>();
@@ -210,6 +211,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'chrome://glic', this.hostId, windowProxy, this, 'glic_api_client');
     this.webClientMessageHandler =
         new WebClientMessageHandler(this.webClient, this);
+    this.journalHost = new GlicBrowserHostJournalImpl(this.sender);
     this.metrics = new GlicBrowserHostMetricsImpl(this.sender);
 
     for (const name of Object.getOwnPropertyNames(
@@ -525,6 +527,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.sender.requestNoResponse('glicBrowserSetAudioDucking', {enabled});
   }
 
+  getJournalHost(): GlicBrowserHostJournal {
+    return this.journalHost;
+  }
+
   getMetrics(): GlicBrowserHostMetrics {
     return this.metrics;
   }
@@ -599,6 +605,47 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   maybeRefreshUserStatus?(): void {
     this.sender.requestNoResponse(
         'glicBrowserMaybeRefreshUserStatus', undefined);
+  }
+}
+
+class GlicBrowserHostJournalImpl implements GlicBrowserHostJournal {
+  constructor(private sender: PostMessageRequestSender) {}
+
+  beginAsyncEvent(
+      asyncEventId: number, taskId: number, event: string,
+      details: string): void {
+    this.sender.requestNoResponse(
+        'glicBrowserLogBeginAsyncEvent',
+        {asyncEventId, taskId, event, details});
+  }
+
+  clear(): void {
+    this.sender.requestNoResponse('glicBrowserJournalClear', undefined);
+  }
+
+  endAsyncEvent(asyncEventId: number, details: string): void {
+    this.sender.requestNoResponse(
+        'glicBrowserLogEndAsyncEvent', {asyncEventId, details});
+  }
+
+  instantEvent(taskId: number, event: string, details: string): void {
+    this.sender.requestNoResponse(
+        'glicBrowserLogInstantEvent', {taskId, event, details});
+  }
+
+  async snapshot(clear: boolean): Promise<Journal> {
+    const snapshotResult = await this.sender.requestWithResponse(
+        'glicBrowserJournalSnapshot', {clear});
+    return snapshotResult.journal;
+  }
+
+  start(maxBytes: number, captureScreenshots: boolean): void {
+    this.sender.requestNoResponse(
+        'glicBrowserJournalStart', {maxBytes, captureScreenshots});
+  }
+
+  stop(): void {
+    this.sender.requestNoResponse('glicBrowserJournalStop', undefined);
   }
 }
 
