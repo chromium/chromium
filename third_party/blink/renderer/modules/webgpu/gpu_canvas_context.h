@@ -85,6 +85,7 @@ class GPUCanvasContext : public ScriptWrappable,
   void Stop() final;
   cc::Layer* CcLayer() const final;
   void Reshape(int width, int height) override;
+  void Dispose() override;
 
   // OffscreenCanvas-specific methods
   bool PushFrame() final;
@@ -140,6 +141,8 @@ class GPUCanvasContext : public ScriptWrappable,
       V8GPUCanvasAlphaMode::Enum alpha_mode);
 
   Member<GPUDevice> device_;
+
+  std::unique_ptr<CanvasResourceProvider> resource_provider_;
 
   // `did_fail_to_create_resource_provider_` prevents repeated attempts in
   // allocating resources after the first attempt failed.

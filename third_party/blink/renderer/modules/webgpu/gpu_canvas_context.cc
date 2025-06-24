@@ -129,7 +129,7 @@ gfx::ColorSpace GPUCanvasContext::GetColorSpace() const {
 }
 
 bool GPUCanvasContext::IsAccelerated() const {
-  auto* resource_provider = Host()->GetResourceProviderForWebGPU();
+  auto* resource_provider = resource_provider_.get();
   return resource_provider ? resource_provider->IsAccelerated()
                            : Host()->ShouldTryToUseGpuRaster();
 }
@@ -169,6 +169,11 @@ void GPUCanvasContext::Reshape(int width, int height) {
   Host()->SetNeedsCompositingUpdate();
 }
 
+void GPUCanvasContext::Dispose() {
+  resource_provider_.reset();
+  CanvasRenderingContext::Dispose();
+}
+
 scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
   if (!swap_buffers_) {
     return nullptr;
@@ -196,16 +201,16 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
 }
 
 CanvasResourceProvider* GPUCanvasContext::GetOrCreateCanvasResourceProvider() {
-  auto* provider = Host()->GetResourceProviderForWebGPU();
+  auto* provider = resource_provider_.get();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (Host()->IsValidImageSize()) {
       if (SharedGpuContext::IsGpuCompositingEnabled()) {
-        Host()->SetResourceProviderForWebGPU(
-            CanvasResourceProvider::CreateWebGPUImageProvider(
-                Host()->Size(), GetSharedImageFormat(), GetAlphaType(),
-                GetColorSpace(), gpu::SharedImageUsageSet(), Host()));
+        resource_provider_ = CanvasResourceProvider::CreateWebGPUImageProvider(
+            Host()->Size(), GetSharedImageFormat(), GetAlphaType(),
+            GetColorSpace(), gpu::SharedImageUsageSet(), Host());
       }
-      provider = Host()->GetResourceProviderForWebGPU();
+      Host()->UpdateMemoryUsage();
+      provider = resource_provider_.get();
     }
     if (!provider) {
       did_fail_to_create_resource_provider_ = true;
@@ -222,11 +227,12 @@ CanvasResourceProvider* GPUCanvasContext::GetOrCreateCanvasResourceProvider() {
 CanvasResourceProvider* GPUCanvasContext::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer) {
   if (!swap_buffers_) {
-    return Host()->GetResourceProviderForWebGPU();
+    return resource_provider_.get();
   }
 
-  if (Host()->GetResourceProviderForWebGPU() &&
-      Host()->GetResourceProviderForWebGPU()->Size() != swap_buffers_->Size()) {
+  if (resource_provider_.get() &&
+      resource_provider_.get()->Size() != swap_buffers_->Size()) {
+    resource_provider_.reset();
     Host()->DiscardResources();
   }
 
@@ -300,6 +306,7 @@ bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
 
 void GPUCanvasContext::SizeChanged() {
   did_fail_to_create_resource_provider_ = false;
+  resource_provider_.reset();
 }
 
 bool GPUCanvasContext::PushFrame() {
