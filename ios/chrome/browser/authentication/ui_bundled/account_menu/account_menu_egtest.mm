@@ -462,11 +462,9 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   // Confirm "Delete and Switch" when alert dialog that data will be cleared
   // is shown. This dialog is only shown when multi profiles are not available.
   if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
-                           IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)),
-                       grey_sufficientlyVisible(), nil)]
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                       IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)]
         performAction:grey_tap()];
   }
 
@@ -523,11 +521,9 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   // Confirm "Delete and Switch" when alert dialog that data will be cleared
   // is shown. This dialog is only shown when multi profiles are not available.
   if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
-                           IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)),
-                       grey_sufficientlyVisible(), nil)]
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                       IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)]
         performAction:grey_tap()];
   }
 
