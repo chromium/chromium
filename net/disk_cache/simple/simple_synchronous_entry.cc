@@ -109,14 +109,14 @@ int FileIndexForSubFile(SimpleFileTracker::SubFile sub_file) {
 // Helper class to track a range of data prefetched from a file.
 class SimpleSynchronousEntry::PrefetchData final {
  public:
-  explicit PrefetchData(size_t file_size)
+  explicit PrefetchData(uint64_t file_size)
       : file_size_(file_size), earliest_requested_offset_(file_size) {}
 
   // Returns true if the specified range within the file has been completely
   // prefetched.  Returns false if any part of the range has not been
   // prefetched.
-  bool HasData(size_t offset, size_t length) {
-    size_t end = 0;
+  bool HasData(uint64_t offset, size_t length) {
+    uint64_t end = 0;
     if (!base::CheckAdd(offset, length).AssignIfValid(&end))
       return false;
     UpdateEarliestOffset(offset);
@@ -128,13 +128,15 @@ class SimpleSynchronousEntry::PrefetchData final {
   // destination buffer.  If the range is not wholely contained within
   // the prefetch buffer than no data will be written to the target
   // buffer.  Returns true if the range has been copied.
-  bool ReadData(size_t offset, size_t length, base::span<uint8_t> dest) {
+  bool ReadData(uint64_t offset, size_t length, base::span<uint8_t> dest) {
     if (!length)
       return true;
     if (!HasData(offset, length))
       return false;
     DCHECK(offset >= offset_in_file_);
-    size_t buffer_offset = offset - offset_in_file_;
+    // `offset` could be larger than size_t but `buffer_offset` must be within
+    // size_t range.
+    size_t buffer_offset = base::checked_cast<size_t>(offset - offset_in_file_);
     dest.copy_prefix_from(
         base::as_byte_span(buffer_).subspan(buffer_offset, length));
     return true;
@@ -143,7 +145,7 @@ class SimpleSynchronousEntry::PrefetchData final {
   // Populate the prefetch buffer from the given file and range.  Returns
   // true if the data is successfully read.
   bool PrefetchFromFile(SimpleFileTracker::FileHandle* file,
-                        size_t offset,
+                        uint64_t offset,
                         size_t length) {
     DCHECK(file);
     if (!buffer_.empty()) {
@@ -162,26 +164,28 @@ class SimpleSynchronousEntry::PrefetchData final {
   // Return how much trailing data has been requested via HasData() or
   // ReadData().  The intent is that this value can be used to tune
   // future prefetching behavior.
-  size_t GetDesiredTrailerPrefetchSize() const {
-    return file_size_ - earliest_requested_offset_;
+  uint32_t GetDesiredTrailerPrefetchSize() const {
+    // Trailer prefetch size must be within uint32_t.
+    return std::min<uint32_t>(std::numeric_limits<uint32_t>::max(),
+                              (file_size_ - earliest_requested_offset_));
   }
 
  private:
   // Track the earliest offset requested in order to return an optimal trailer
   // prefetch amount in GetDesiredTrailerPrefetchSize().
-  void UpdateEarliestOffset(size_t offset) {
+  void UpdateEarliestOffset(uint64_t offset) {
     DCHECK_LE(earliest_requested_offset_, file_size_);
     earliest_requested_offset_ = std::min(earliest_requested_offset_, offset);
   }
 
-  const size_t file_size_;
+  const uint64_t file_size_;
 
   // Prefer to read the prefetch data into a stack buffer to minimize
   // memory pressure on the OS disk cache.
   absl::InlinedVector<char, 1024> buffer_;
-  size_t offset_in_file_ = 0;
+  uint64_t offset_in_file_ = 0;
 
-  size_t earliest_requested_offset_;
+  uint64_t earliest_requested_offset_;
 };
 
 class SimpleSynchronousEntry::ScopedFileOperationsBinding final {
@@ -224,11 +228,11 @@ constexpr base::FeatureParam<int> kSimpleCacheTrailerPrefetchSpeculativeBytes{
     &kSimpleCachePrefetchExperiment,
     kSimpleCacheTrailerPrefetchSpeculativeBytesParam, 0};
 
-int GetSimpleCacheFullPrefetchSize() {
+uint32_t GetSimpleCacheFullPrefetchSize() {
   return kSimpleCacheFullPrefetchSize.Get();
 }
 
-int GetSimpleCacheTrailerPrefetchSize(int hint_size) {
+uint32_t GetSimpleCacheTrailerPrefetchSize(int hint_size) {
   if (hint_size > 0)
     return hint_size;
   return kSimpleCacheTrailerPrefetchSpeculativeBytes.Get();
@@ -337,7 +341,7 @@ void SimpleSynchronousEntry::OpenEntry(
     const uint64_t entry_hash,
     SimpleFileTracker* file_tracker,
     std::unique_ptr<UnboundBackendFileOperations> file_operations,
-    int32_t trailer_prefetch_size,
+    uint32_t trailer_prefetch_size,
     SimpleEntryCreationResults* out_results) {
   base::TimeTicks start_sync_open_entry = base::TimeTicks::Now();
 
@@ -383,7 +387,7 @@ void SimpleSynchronousEntry::CreateEntry(
 
   auto sync_entry = std::make_unique<SimpleSynchronousEntry>(
       cache_type, path, key, entry_hash, file_tracker,
-      std::move(file_operations), -1);
+      std::move(file_operations), /*trailer_prefetch_size=*/0);
   {
     BackendFileOperations* bound_file_operations = nullptr;
     ScopedFileOperationsBinding binding(sync_entry.get(),
@@ -416,7 +420,7 @@ void SimpleSynchronousEntry::OpenOrCreateEntry(
     bool optimistic_create,
     SimpleFileTracker* file_tracker,
     std::unique_ptr<UnboundBackendFileOperations> file_operations,
-    int32_t trailer_prefetch_size,
+    uint32_t trailer_prefetch_size,
     SimpleEntryCreationResults* out_results) {
   base::TimeTicks start = base::TimeTicks::Now();
   if (index_state == INDEX_MISS) {
@@ -1177,7 +1181,7 @@ SimpleSynchronousEntry::SimpleSynchronousEntry(
     const uint64_t entry_hash,
     SimpleFileTracker* file_tracker,
     std::unique_ptr<UnboundBackendFileOperations> unbound_file_operations,
-    int32_t trailer_prefetch_size)
+    uint32_t trailer_prefetch_size)
     : cache_type_(cache_type),
       path_(path),
       entry_file_key_(entry_hash),
@@ -1589,6 +1593,9 @@ int SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(
   if (!file.IsOK())
     return net::ERR_FAILED;
 
+  // `file_size` must be a non-negative value.
+  size_t u_file_size = base::checked_cast<size_t>(file_size);
+
   // We may prefetch data from file in a couple cases:
   //  1) If the file is small enough we may prefetch it entirely.
   //  2) We may also prefetch a block of trailer bytes from the end of
@@ -1603,28 +1610,31 @@ int SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(
   // Determine a threshold for fully prefetching the entire entry file.  If
   // the entry file is less than or equal to this number of bytes it will
   // be fully prefetched.
-  int full_prefetch_size = GetSimpleCacheFullPrefetchSize();
+  uint32_t full_prefetch_size = GetSimpleCacheFullPrefetchSize();
 
   // Determine how much trailer data to prefetch.  If the full file prefetch
   // does not trigger then this is the number of bytes to read from the end
   // of the file in a single file operation.  Ideally the trailer prefetch
   // will contain at least stream 0 and its EOF record.
-  int trailer_prefetch_size =
+  uint32_t trailer_prefetch_size =
       GetSimpleCacheTrailerPrefetchSize(trailer_prefetch_size_);
 
   OpenPrefetchMode prefetch_mode = OPEN_PREFETCH_NONE;
-  if (file_size <= full_prefetch_size || file_size <= trailer_prefetch_size) {
+  if (u_file_size <= full_prefetch_size ||
+      u_file_size <= trailer_prefetch_size) {
     // Prefetch the entire file.
     prefetch_mode = OPEN_PREFETCH_FULL;
     RecordOpenPrefetchMode(cache_type_, prefetch_mode);
-    if (!prefetch_data.PrefetchFromFile(&file, 0, file_size))
+    if (!prefetch_data.PrefetchFromFile(&file, 0, u_file_size)) {
       return net::ERR_FAILED;
+    }
   } else if (trailer_prefetch_size > 0) {
     // Prefetch trailer data from the end of the file.
     prefetch_mode = OPEN_PREFETCH_TRAILER;
     RecordOpenPrefetchMode(cache_type_, prefetch_mode);
-    size_t length = std::min(trailer_prefetch_size, file_size);
-    size_t offset = file_size - length;
+    size_t length =
+        std::min(static_cast<size_t>(trailer_prefetch_size), u_file_size);
+    uint64_t offset = file_size - length;
     if (!prefetch_data.PrefetchFromFile(&file, offset, length))
       return net::ERR_FAILED;
   } else {
@@ -1637,7 +1647,7 @@ int SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(
   SimpleFileEOF stream_0_eof;
   int rv = GetEOFRecordData(
       file.get(), &prefetch_data, /* file_index = */ 0,
-      /* file_offset = */ file_size - sizeof(SimpleFileEOF), &stream_0_eof);
+      /* file_offset = */ u_file_size - sizeof(SimpleFileEOF), &stream_0_eof);
   if (rv != net::OK)
     return rv;
 

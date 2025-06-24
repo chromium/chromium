@@ -107,7 +107,7 @@ struct SimpleEntryCreationResults {
   std::array<SimpleStreamPrefetchData, 2> stream_prefetch_data;
 
   SimpleEntryStat entry_stat;
-  int32_t computed_trailer_prefetch_size = -1;
+  uint32_t computed_trailer_prefetch_size = 0;
   int result = net::OK;
   bool created = false;
 };
@@ -189,7 +189,7 @@ class SimpleSynchronousEntry {
       uint64_t entry_hash,
       SimpleFileTracker* simple_file_tracker,
       std::unique_ptr<UnboundBackendFileOperations> file_operations,
-      int32_t stream_0_size);
+      uint32_t trailer_prefetch_size);
 
   // Like Entry, the SimpleSynchronousEntry self releases when Close() is
   // called, but sometimes temporary ones are kept in unique_ptr.
@@ -204,7 +204,7 @@ class SimpleSynchronousEntry {
       uint64_t entry_hash,
       SimpleFileTracker* file_tracker,
       std::unique_ptr<UnboundBackendFileOperations> file_operations,
-      int32_t trailer_prefetch_size,
+      uint32_t trailer_prefetch_size,
       SimpleEntryCreationResults* out_results);
 
   static void CreateEntry(
@@ -225,7 +225,7 @@ class SimpleSynchronousEntry {
       bool optimistic_create,
       SimpleFileTracker* file_tracker,
       std::unique_ptr<UnboundBackendFileOperations> file_operations,
-      int32_t trailer_prefetch_size,
+      uint32_t trailer_prefetch_size,
       SimpleEntryCreationResults* out_results);
 
   // Renames the entry on the file system, making it no longer possible to open
@@ -307,7 +307,7 @@ class SimpleSynchronousEntry {
   NET_EXPORT_PRIVATE base::FilePath GetFilenameForSubfile(
       SimpleFileTracker::SubFile sub_file) const;
 
-  int32_t computed_trailer_prefetch_size() const {
+  uint32_t computed_trailer_prefetch_size() const {
     return computed_trailer_prefetch_size_;
   }
 
@@ -515,13 +515,13 @@ class SimpleSynchronousEntry {
   // prefetched in order to read the EOF record and stream 0.  This is
   // a hint from the index and may not be exactly right.  -1 if we
   // don't have a hinted value.
-  int32_t trailer_prefetch_size_;
+  uint32_t trailer_prefetch_size_;
 
   // The exact number of trailing bytes that were needed to read the
   // EOF record and stream 0 when the entry was actually opened.  This
   // may be different from the trailer_prefetch_size_ hint and is
   // propagated back to the index in order to optimize the next open.
-  int32_t computed_trailer_prefetch_size_ = -1;
+  uint32_t computed_trailer_prefetch_size_ = 0;
 
   // True if the corresponding stream is empty and therefore no on-disk file
   // was created to store it.

@@ -795,7 +795,7 @@ void SimpleEntryImpl::OpenEntryInternal(
   auto results = std::make_unique<SimpleEntryCreationResults>(
       SimpleEntryStat(last_used_, data_size_, sparse_data_size_));
 
-  int32_t trailer_prefetch_size = -1;
+  uint32_t trailer_prefetch_size = 0;
   base::Time last_used_time;
   if (SimpleBackendImpl* backend = backend_.get()) {
     if (cache_type_ == net::APP_CACHE) {
@@ -902,7 +902,7 @@ void SimpleEntryImpl::OpenOrCreateEntryInternal(
   auto results = std::make_unique<SimpleEntryCreationResults>(
       SimpleEntryStat(last_used_, data_size_, sparse_data_size_));
 
-  int32_t trailer_prefetch_size = -1;
+  uint32_t trailer_prefetch_size = 0;
   base::Time last_used_time;
   if (SimpleBackendImpl* backend = backend_.get()) {
     if (cache_type_ == net::APP_CACHE) {

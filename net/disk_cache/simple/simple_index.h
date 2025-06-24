@@ -51,14 +51,14 @@ class NET_EXPORT_PRIVATE EntryMetadata {
   EntryMetadata();
   EntryMetadata(base::Time last_used_time,
                 base::StrictNumeric<uint64_t> entry_size);
-  EntryMetadata(int32_t trailer_prefetch_size,
+  EntryMetadata(uint32_t trailer_prefetch_size,
                 base::StrictNumeric<uint64_t> entry_size);
 
   base::Time GetLastUsedTime() const;
   void SetLastUsedTime(const base::Time& last_used_time);
 
-  int32_t GetTrailerPrefetchSize() const;
-  void SetTrailerPrefetchSize(int32_t size);
+  uint32_t GetTrailerPrefetchSize() const;
+  void SetTrailerPrefetchSize(uint32_t size);
 
   uint32_t RawTimeForSorting() const {
     return last_used_time_seconds_since_epoch_;
@@ -103,7 +103,7 @@ class NET_EXPORT_PRIVATE EntryMetadata {
   // how much entry file trailer should be prefetched when its opened.
   union {
     uint32_t last_used_time_seconds_since_epoch_;
-    int32_t trailer_prefetch_size_;  // in bytes
+    uint32_t trailer_prefetch_size_;  // in bytes
   };
 
   uint32_t entry_size_256b_chunks_ : 30;  // in 256-byte blocks, rounded up.

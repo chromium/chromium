@@ -5250,8 +5250,8 @@ class DiskCacheSimplePrefetchTest : public DiskCacheEntryTest {
     DiskCacheEntryTest::SetUp();
   }
 
-  void SetupFullAndTrailerPrefetch(int full_size,
-                                   int trailer_speculative_size) {
+  void SetupFullAndTrailerPrefetch(uint32_t full_size,
+                                   uint32_t trailer_speculative_size) {
     std::map<std::string, std::string> params;
     params[disk_cache::kSimpleCacheFullPrefetchBytesParam] =
         base::NumberToString(full_size);
@@ -5261,7 +5261,9 @@ class DiskCacheSimplePrefetchTest : public DiskCacheEntryTest {
         disk_cache::kSimpleCachePrefetchExperiment, params);
   }
 
-  void SetupFullPrefetch(int size) { SetupFullAndTrailerPrefetch(size, 0); }
+  void SetupFullPrefetch(uint32_t size) {
+    SetupFullAndTrailerPrefetch(size, 0);
+  }
 
   void InitCacheAndCreateEntry(const std::string& key) {
     SetBackendToTest(BackendToTest::kSimple);
@@ -5279,8 +5281,8 @@ class DiskCacheSimplePrefetchTest : public DiskCacheEntryTest {
   virtual net::CacheType SimpleCacheType() const { return net::DISK_CACHE; }
 
   void InitCacheAndCreateEntryWithNoCrc(const std::string& key) {
-    const int kHalfSize = kEntrySize / 2;
-    const int kRemSize = kEntrySize - kHalfSize;
+    constexpr uint32_t kHalfSize = kEntrySize / 2;
+    constexpr uint32_t kRemSize = kEntrySize - kHalfSize;
 
     SetBackendToTest(BackendToTest::kSimple);
     InitCache();
@@ -5296,8 +5298,8 @@ class DiskCacheSimplePrefetchTest : public DiskCacheEntryTest {
     // so that the only difference between here and InitCacheAndCreateEntry()
     // would be whether the result has a checkum or not.
     auto second_half = base::MakeRefCounted<net::IOBufferWithSize>(kRemSize);
-    second_half->span().copy_from(payload_->span().subspan(
-        static_cast<size_t>(kHalfSize), static_cast<size_t>(kRemSize)));
+    second_half->span().copy_from(
+        payload_->span().subspan(kHalfSize, kRemSize));
     ASSERT_EQ(kRemSize, WriteData(entry, 1, kHalfSize, second_half.get(),
                                   kRemSize, false));
     entry->Close();

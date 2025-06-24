@@ -58,7 +58,7 @@ class SimpleFileTrackerTest : public DiskCacheTest {
             net::DISK_CACHE, cache_path_, "dummy", hash, &file_tracker_,
             base::MakeRefCounted<disk_cache::TrivialFileOperationsFactory>()
                 ->CreateUnbound(),
-            /*stream_0_size=*/-1),
+            /*trailer_prefetch_size=*/0),
         SyncEntryDeleter(this));
   }
 

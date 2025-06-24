@@ -110,7 +110,7 @@ EntryMetadata::EntryMetadata(base::Time last_used_time,
   SetLastUsedTime(last_used_time);
 }
 
-EntryMetadata::EntryMetadata(int32_t trailer_prefetch_size,
+EntryMetadata::EntryMetadata(uint32_t trailer_prefetch_size,
                              base::StrictNumeric<uint64_t> entry_size)
     : trailer_prefetch_size_(0),
       entry_size_256b_chunks_(0),
@@ -145,13 +145,15 @@ void EntryMetadata::SetLastUsedTime(const base::Time& last_used_time) {
     last_used_time_seconds_since_epoch_ = 1;
 }
 
-int32_t EntryMetadata::GetTrailerPrefetchSize() const {
+uint32_t EntryMetadata::GetTrailerPrefetchSize() const {
   return trailer_prefetch_size_;
 }
 
-void EntryMetadata::SetTrailerPrefetchSize(int32_t size) {
-  if (size <= 0)
+void EntryMetadata::SetTrailerPrefetchSize(uint32_t size) {
+  if (size == 0) {
     return;
+  }
+
   trailer_prefetch_size_ = size;
 }
 
@@ -216,8 +218,8 @@ bool EntryMetadata::Deserialize(net::CacheType cache_type,
 
   if (cache_type == net::APP_CACHE) {
     if (app_cache_has_trailer_prefetch_size) {
-      int32_t trailer_prefetch_size = 0;
-      base::CheckedNumeric<int32_t> numeric_size(tmp_time_or_prefetch_size);
+      uint32_t trailer_prefetch_size = 0;
+      base::CheckedNumeric<uint32_t> numeric_size(tmp_time_or_prefetch_size);
       if (numeric_size.AssignIfValid(&trailer_prefetch_size)) {
         SetTrailerPrefetchSize(trailer_prefetch_size);
       }
@@ -556,10 +558,11 @@ void SimpleIndex::SetTrailerPrefetchSize(uint64_t entry_hash, int32_t size) {
   auto it = entries_set_.find(entry_hash);
   if (it == entries_set_.end())
     return;
-  int32_t original_size = it->second.GetTrailerPrefetchSize();
+  uint32_t original_size = it->second.GetTrailerPrefetchSize();
   it->second.SetTrailerPrefetchSize(size);
-  if (original_size != it->second.GetTrailerPrefetchSize())
+  if (original_size != it->second.GetTrailerPrefetchSize()) {
     PostponeWritingToDisk();
+  }
 }
 
 bool SimpleIndex::UpdateEntrySize(uint64_t entry_hash,
