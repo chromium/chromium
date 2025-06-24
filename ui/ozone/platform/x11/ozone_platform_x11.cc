@@ -213,7 +213,7 @@ class OzonePlatformX11 : public OzonePlatform,
       // called on the gpu process side.
       properties.supports_native_pixmaps = true;
     }
-    properties.supports_subwindows_as_accelerated_widgets = true;
+    properties.supports_subwindows_as_accelerated_widgets = false;
     properties.supports_system_tray_windowing = true;
     properties.supports_server_window_menus =
         x11::Connection::Get()->WmSupportsHint(
