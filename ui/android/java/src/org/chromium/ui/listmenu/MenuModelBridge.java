@@ -34,10 +34,10 @@ public class MenuModelBridge {
         return new MenuModelBridge();
     }
 
-    /** {@return A {@link MenuModelBridge} instance.} */
+    /** {@return A {@link MenuModelBridge} instance} */
     public MenuModelBridge() {}
 
-    /** {@return The list of {@link ListItem} held by this {@link MenuModelBridge}.} */
+    /** {@return The list of {@link ListItem} held by this {@link MenuModelBridge}} */
     public List<ListItem> getListItems() {
         return mItems;
     }
