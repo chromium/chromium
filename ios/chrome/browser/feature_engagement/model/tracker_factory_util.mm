@@ -15,6 +15,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/feature_engagement/model/event_exporter.h"
 #import "ios/chrome/browser/feature_engagement/model/ios_tracker_session_controller.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -60,7 +61,7 @@ std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
   auto session_controller = std::make_unique<IOSTrackerSessionController>();
 
   return feature_engagement::Tracker::Create(
-      storage_dir, device_storage_dir, profile->GetPrefs(),
+      storage_dir, device_storage_dir, GetApplicationContext()->GetLocalState(),
       background_task_runner, db_provider, std::move(event_exporter),
       feature_engagement::Tracker::GetDefaultConfigurationProviders(),
       std::move(session_controller));
