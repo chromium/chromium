@@ -12,11 +12,6 @@ TestClipboardHistoryControllerDelegateImpl::
 TestClipboardHistoryControllerDelegateImpl::
     ~TestClipboardHistoryControllerDelegateImpl() = default;
 
-std::unique_ptr<ClipboardHistoryUrlTitleFetcher>
-TestClipboardHistoryControllerDelegateImpl::CreateUrlTitleFetcher() const {
-  return nullptr;
-}
-
 std::unique_ptr<ClipboardImageModelFactory>
 TestClipboardHistoryControllerDelegateImpl::CreateImageModelFactory() const {
   return nullptr;

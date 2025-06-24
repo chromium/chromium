@@ -3305,8 +3305,6 @@ constexpr char kBorealisScaleClientByDPIInternalName[] =
 constexpr char kBorealisZinkGlDriverInternalName[] = "borealis-zink-gl-driver";
 constexpr char kClipboardHistoryLongpressInternalName[] =
     "clipboard-history-longpress";
-constexpr char kClipboardHistoryUrlTitlesInternalName[] =
-    "clipboard-history-url-titles";
 constexpr char kBluetoothUseFlossInternalName[] = "bluetooth-use-floss";
 constexpr char kBluetoothUseLLPrivacyInternalName[] = "bluetooth-use-llprivacy";
 constexpr char kAssistantIphInternalName[] = "assistant-iph";
@@ -9024,10 +9022,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClipboardHistoryLongpressName,
      flag_descriptions::kClipboardHistoryLongpressDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kClipboardHistoryLongpress)},
-    {kClipboardHistoryUrlTitlesInternalName,
-     flag_descriptions::kClipboardHistoryUrlTitlesName,
-     flag_descriptions::kClipboardHistoryUrlTitlesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kClipboardHistoryUrlTitles)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)

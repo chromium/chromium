@@ -70,22 +70,6 @@ class ClipboardHistoryTextItemView::TextContentsView
                               container->text_, display_text_elide_behavior,
                               display_text_max_lines))
                           .SetID(clipboard_history_util::kDisplayTextLabelID))
-            .AfterBuild(base::BindOnce(
-                [](const ClipboardHistoryItem* item,
-                   views::BoxLayoutView* labels_container) {
-                  if (item && item->secondary_display_text()) {
-                    views::Builder<views::View>(labels_container)
-                        .AddChild(views::Builder<views::Label>(
-                            bubble_utils::CreateLabel(
-                                TypographyToken::kCrosAnnotation2,
-                                *item->secondary_display_text(),
-                                cros_tokens::kCrosSysSecondary)))
-                        .SetID(clipboard_history_util::
-                                   kSecondaryDisplayTextLabelID)
-                        .BuildChildren();
-                  }
-                },
-                item))
             .Build());
   }
 

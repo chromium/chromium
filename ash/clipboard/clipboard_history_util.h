@@ -66,7 +66,6 @@ enum MenuViewID {
   kFooterContentViewID,
   kFooterContentV2LabelID,
   kFooterContentV2ViewID,
-  kSecondaryDisplayTextLabelID,
 };
 
 // Modes for specifying a clipboard history pause's semantics.

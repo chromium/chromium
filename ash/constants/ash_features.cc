@@ -471,13 +471,6 @@ BASE_FEATURE(kClipboardHistoryLongpress,
              "ClipboardHistoryLongpress",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled when the user copies a URL that is present in the primary user
-// profile's browsing history, the clipboard history menu will show the page
-// title as part of the URL's menu item.
-BASE_FEATURE(kClipboardHistoryUrlTitles,
-             "ClipboardHistoryUrlTitles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls enabling/disabling conch.
 BASE_FEATURE(kConch, "Conch", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -3554,10 +3547,6 @@ bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
 
 bool IsClipboardHistoryLongpressEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryLongpress);
-}
-
-bool IsClipboardHistoryUrlTitlesEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistoryUrlTitles);
 }
 
 bool IsContinuousOverviewScrollAnimationEnabled() {

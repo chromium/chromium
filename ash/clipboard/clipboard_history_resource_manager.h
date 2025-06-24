@@ -56,17 +56,6 @@ class ASH_EXPORT ClipboardHistoryResourceManager
     std::vector<base::UnguessableToken> clipboard_history_item_ids;
   };
 
-  // If `item`'s display text is a URL, queries the primary user profile's
-  // browsing history for an associated page title. Asynchronously sets `item`'s
-  // secondary display text if a title is found.
-  void MaybeQueryUrlTitle(const ClipboardHistoryItem& item);
-
-  // Sets the secondary display text of the `ClipboardHistoryItem` specified by
-  // `item_id` with the page title found in the primary user profile's browsing
-  // history, if any.
-  void OnHistoryQueryComplete(const base::UnguessableToken& item_id,
-                              std::optional<std::u16string> maybe_title);
-
   // Sets `item`'s rendered HTML preview if one is cached; otherwise, ensures
   // that `item` is associated with an asynchronous `ImageModelRequest`.
   void SetOrRequestHtmlPreview(const ClipboardHistoryItem& item);

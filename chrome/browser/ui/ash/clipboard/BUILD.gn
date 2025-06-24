@@ -10,8 +10,6 @@ static_library("clipboard") {
   sources = [
     "clipboard_history_controller_delegate_impl.cc",
     "clipboard_history_controller_delegate_impl.h",
-    "clipboard_history_url_title_fetcher_impl.cc",
-    "clipboard_history_url_title_fetcher_impl.h",
     "clipboard_image_model_factory_impl.cc",
     "clipboard_image_model_factory_impl.h",
     "clipboard_image_model_request.cc",
@@ -31,10 +29,7 @@ static_library("clipboard") {
 
   deps = [
     "//ash/constants",
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/browser_context_helper",
-    "//components/history/core/browser",
     "//components/user_manager",
     "//services/data_decoder/public/cpp",
     "//ui/aura",
@@ -129,23 +124,5 @@ source_set("browser_tests") {
     "//ui/events:test_support",
     "//ui/strings:ui_strings",
     "//ui/views",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "clipboard_history_url_title_fetcher_impl_unittest.cc" ]
-
-  deps = [
-    ":clipboard",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser",
-    "//chrome/browser/ash/profiles",
-    "//chrome/test:test_support",
-    "//components/history/core/browser",
-    "//testing/gmock",
-    "//testing/gtest",
   ]
 }

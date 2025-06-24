@@ -9,7 +9,6 @@
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
-#include "ash/clipboard/clipboard_history_url_title_fetcher.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
@@ -53,15 +52,6 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
   MOCK_METHOD(void, Deactivate, (), (override));
   MOCK_METHOD(void, RenderCurrentPendingRequests, (), (override));
   void OnShutdown() override {}
-};
-
-class MockClipboardHistoryUrlTitleFetcher
-    : public ClipboardHistoryUrlTitleFetcher {
- public:
-  MOCK_METHOD(void,
-              QueryHistory,
-              (const GURL& url, OnHistoryQueryCompleteCallback callback),
-              (override));
 };
 
 void FlushMessageLoop() {
@@ -358,97 +348,6 @@ TEST_F(ClipboardHistoryResourceManagerTest, PlaceholderDuringRender) {
   // cached in the clipboard history item.
   ASSERT_TRUE(item.display_image().has_value());
   EXPECT_EQ(item.display_image().value(), expected_image_model);
-}
-
-// Base class for `ClipboardHistoryMenuResourceManager` tests parameterized by
-// whether the clipboard history URL titles feature is enabled.
-class ClipboardHistoryResourceManagerUrlTitlesTest
-    : public ClipboardHistoryResourceManagerTest,
-      public WithParamInterface</*enable_url_titles=*/bool> {
- public:
-  ClipboardHistoryResourceManagerUrlTitlesTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kClipboardHistoryUrlTitles,
-          IsClipboardHistoryUrlTitlesEnabled()}});
-  }
-
-  // ClipboardHistoryResourceManagerTest:
-  void SetUp() override {
-    ClipboardHistoryResourceManagerTest::SetUp();
-    Shell::Get()
-        ->clipboard_history_controller()
-        ->set_confirmed_operation_callback_for_test(
-            operation_confirmed_future_.GetRepeatingCallback());
-  }
-
-  void WriteTextToClipboardAndConfirm(const std::u16string& str) {
-    EXPECT_FALSE(operation_confirmed_future_.IsReady());
-    {
-      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-      scw.WriteText(str);
-    }
-    EXPECT_TRUE(operation_confirmed_future_.Take());
-  }
-
-  bool IsClipboardHistoryUrlTitlesEnabled() const { return GetParam(); }
-
-  StrictMock<MockClipboardHistoryUrlTitleFetcher>& mock_url_title_fetcher() {
-    return mock_url_title_fetcher_;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  StrictMock<MockClipboardHistoryUrlTitleFetcher> mock_url_title_fetcher_;
-  base::test::TestFuture<bool> operation_confirmed_future_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClipboardHistoryResourceManagerUrlTitlesTest,
-                         /*enable_url_titles=*/Bool());
-
-// Verifies the value of clipboard history text items' secondary display text
-// based on whether their display text is a URL, whether the URL title fetcher
-// finds a title for the URL, and what that title is.
-TEST_P(ClipboardHistoryResourceManagerUrlTitlesTest, SecondaryDisplayText) {
-  struct {
-    const std::u16string text;
-    const std::optional<std::u16string> returned_title;
-    const std::optional<std::u16string> expected_secondary_display_text;
-  } test_cases[]{
-      // Test that copying a visited URL sets the item's secondary display text
-      // with the page's title.
-      {u"https://visited.com", u"Title", u"Title"},
-      // Test that a visited URL's page title has its whitespace trimmed before
-      // being set as an item's secondary display text.
-      {u"https://visited.com", u" Title ", u"Title"},
-      // Test that a whitespace-only title is not treated as text an item should
-      // display.
-      {u"https://visited.com", u" ", std::nullopt},
-      // Test that copying an unvisited URL triggers a history query but does
-      // not set the item's secondary display text.
-      {u"https://unvisited.com", std::nullopt, std::nullopt},
-      // Test that copying non-URL text does not trigger a history query or set
-      // the item's secondary display text.
-      {u"Not a URL", std::nullopt, std::nullopt},
-  };
-
-  for (const auto& [text, returned_title, expected_secondary_display_text] :
-       test_cases) {
-    const GURL url(text);
-    const bool should_fetch_title =
-        IsClipboardHistoryUrlTitlesEnabled() && url.is_valid();
-
-    EXPECT_CALL(mock_url_title_fetcher(), QueryHistory(url, _))
-        .Times(should_fetch_title ? 1 : 0)
-        .WillOnce(base::test::RunOnceCallback<1>(returned_title));
-
-    WriteTextToClipboardAndConfirm(text);
-    ASSERT_FALSE(clipboard_history()->IsEmpty());
-    const auto& item = clipboard_history()->GetItems().front();
-    EXPECT_EQ(
-        item.secondary_display_text(),
-        should_fetch_title ? expected_secondary_display_text : std::nullopt);
-  }
 }
 
 }  // namespace ash

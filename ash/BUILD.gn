@@ -533,8 +533,6 @@ component("ash") {
     "clipboard/clipboard_history_menu_model_adapter.h",
     "clipboard/clipboard_history_resource_manager.cc",
     "clipboard/clipboard_history_resource_manager.h",
-    "clipboard/clipboard_history_url_title_fetcher.cc",
-    "clipboard/clipboard_history_url_title_fetcher.h",
     "clipboard/clipboard_history_util.cc",
     "clipboard/clipboard_history_util.h",
     "clipboard/clipboard_nudge_constants.cc",

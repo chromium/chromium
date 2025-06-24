@@ -6769,13 +6769,6 @@ const char kClipboardHistoryLongpressDescription[] =
     "the clipboard history menu. If an item is selected to paste, it replaces "
     "the content initially pasted by Ctrl+V.";
 
-const char kClipboardHistoryUrlTitlesName[] =
-    "Show page titles for copied URLs in the clipboard history menu";
-const char kClipboardHistoryUrlTitlesDescription[] =
-    "When clipboard-history-refresh is also enabled, this flag enables an "
-    "annotation for copied URLs in the clipboard history menu: If the URL has "
-    "been visited, its page title will appear as part of the URL's menu item.";
-
 const char kCloudGamingDeviceName[] = "Enable cloud game search";
 const char kCloudGamingDeviceDescription[] =
     "Enables cloud game search results in the launcher.";

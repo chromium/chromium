@@ -9,16 +9,12 @@
 #include <vector>
 
 #include "ash/clipboard/clipboard_history_item.h"
-#include "ash/clipboard/clipboard_history_url_title_fetcher.h"
-#include "ash/constants/ash_features.h"
 #include "ash/display/display_util.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_util.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/ime/input_method.h"
@@ -61,39 +57,6 @@ ClipboardHistoryResourceManager::ImageModelRequest::operator=(
 
 ClipboardHistoryResourceManager::ImageModelRequest::~ImageModelRequest() =
     default;
-
-void ClipboardHistoryResourceManager::MaybeQueryUrlTitle(
-    const ClipboardHistoryItem& item) {
-  // `url_title_fetcher` may be null in tests.
-  if (auto* const url_title_fetcher = ClipboardHistoryUrlTitleFetcher::Get();
-      url_title_fetcher &&
-      chromeos::clipboard_history::IsUrl(item.display_text())) {
-    url_title_fetcher->QueryHistory(
-        GURL(item.display_text()),
-        base::BindOnce(&ClipboardHistoryResourceManager::OnHistoryQueryComplete,
-                       weak_factory_.GetWeakPtr(), item.id()));
-  }
-}
-
-void ClipboardHistoryResourceManager::OnHistoryQueryComplete(
-    const base::UnguessableToken& item_id,
-    std::optional<std::u16string> maybe_title) {
-  auto& items = clipboard_history_->GetItems();
-  auto item = std::ranges::find(items, item_id, &ClipboardHistoryItem::id);
-  if (item == items.end()) {
-    return;
-  }
-
-  if (maybe_title) {
-    base::TrimWhitespace(*maybe_title, base::TRIM_ALL, &(*maybe_title));
-    if (maybe_title->empty()) {
-      // If the retrieved title was empty or consisted of only whitespace, the
-      // item has nothing to display as secondary text.
-      maybe_title.reset();
-    }
-  }
-  item->set_secondary_display_text(maybe_title);
-}
 
 void ClipboardHistoryResourceManager::SetOrRequestHtmlPreview(
     const ClipboardHistoryItem& item) {
@@ -213,14 +176,8 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
     const ClipboardHistoryItem& item,
     bool is_duplicate) {
   if (item.display_format() ==
-          crosapi::mojom::ClipboardHistoryDisplayFormat::kText &&
-      features::IsClipboardHistoryUrlTitlesEnabled()) {
-    // An item being re-copied might need its URL title changed based on updates
-    // to the user's browsing history.
-    MaybeQueryUrlTitle(item);
-  } else if (item.display_format() ==
-                 crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml &&
-             !is_duplicate) {
+          crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml &&
+      !is_duplicate) {
     // If an item is being copied for the first time, we begin rendering its
     // HTML preview as soon as possible.
     SetOrRequestHtmlPreview(item);

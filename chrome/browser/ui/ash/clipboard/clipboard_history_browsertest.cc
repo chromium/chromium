@@ -39,9 +39,6 @@
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/ash/clipboard/clipboard_history_test_util.h"
@@ -1861,93 +1858,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshAshBrowserTest,
   GetEventGenerator()->ReleaseTouch();
   EXPECT_TRUE(second_item_delete_button->GetVisible());
   EXPECT_FALSE(second_item_contents_view->clip_path().isEmpty());
-}
-
-// Base class for tests exercising the `ClipboardHistoryUrlTitleFetcher`'s
-// end-to-end functionality, parameterized by whether the clipboard history URL
-// titles feature is enabled.
-class ClipboardHistoryUrlTitleFetcherBrowserTest
-    : public ClipboardHistoryBrowserTest,
-      public testing::WithParamInterface</*enable_url_titles=*/bool> {
- public:
-  ClipboardHistoryUrlTitleFetcherBrowserTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{ash::features::kClipboardHistoryUrlTitles,
-          IsClipboardHistoryUrlTitlesEnabled()}});
-  }
-
- protected:
-  GURL GetTestUrl(std::string_view base_name) {
-    return ui_test_utils::GetTestUrl(
-        base::FilePath(base::FilePath::kCurrentDirectory),
-        base::FilePath(base_name));
-  }
-
-  std::vector<GURL> GetHistoryContents() {
-    ui_test_utils::HistoryEnumerator enumerator(GetProfile());
-    return enumerator.urls();
-  }
-
-  bool IsClipboardHistoryUrlTitlesEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClipboardHistoryUrlTitleFetcherBrowserTest,
-                         /*enable_url_titles=*/testing::Bool());
-
-// Verifies that if the clipboard history URL titles feature is enabled and the
-// user copies a URL they have visited before, then the clipboard history item
-// will show that page's title.
-IN_PROC_BROWSER_TEST_P(ClipboardHistoryUrlTitleFetcherBrowserTest, UrlTitles) {
-  const auto unvisited_url = GetTestUrl("title1.html");
-  const auto visited_url = GetTestUrl("title2.html");
-  ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
-
-  // Populate the primary user's browsing history with a URL.
-  ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
-      GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
-  EXPECT_TRUE(GetHistoryContents().empty());
-
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(CreateBrowser(GetProfile()), visited_url));
-  WaitForHistoryBackendToRun(GetProfile());
-
-  std::vector<GURL> urls(GetHistoryContents());
-  ASSERT_EQ(urls.size(), 1u);
-  EXPECT_EQ(visited_url.spec(), urls[0].spec());
-
-  // Verify that copying the unvisited URL produces a clipboard history item
-  // with no URL title.
-  SetClipboardText(unvisited_url.spec());
-  ASSERT_EQ(GetClipboardItems().size(), 1u);
-  EXPECT_FALSE(GetClipboardItems().front().secondary_display_text());
-
-  // Show the clipboard history menu and verify that the unvisited URL's item
-  // has no title label.
-  event_generator.PressAndReleaseKeyAndModifierKeys(ui::VKEY_V,
-                                                    ui::EF_COMMAND_DOWN);
-  EXPECT_FALSE(GetMenuItemViewForClipboardHistoryItemAtIndex(0u)->GetViewByID(
-      ash::clipboard_history_util::kSecondaryDisplayTextLabelID));
-  event_generator.PressAndReleaseKey(ui::VKEY_ESCAPE);
-
-  // Verify that copying the visited URL produces a clipboard history item with
-  // a URL title iff the clipboard history URL titles feature is enabled.
-  SetClipboardText(visited_url.spec());
-  ASSERT_EQ(GetClipboardItems().size(), 2u);
-  EXPECT_EQ(!!GetClipboardItems().front().secondary_display_text(),
-            IsClipboardHistoryUrlTitlesEnabled());
-
-  // Show the clipboard history menu and verify that the visited URL's item has
-  // a title label iff the clipboard history URL titles feature is enabled.
-  event_generator.PressAndReleaseKeyAndModifierKeys(ui::VKEY_V,
-                                                    ui::EF_COMMAND_DOWN);
-  EXPECT_EQ(!!GetMenuItemViewForClipboardHistoryItemAtIndex(0u)->GetViewByID(
-                ash::clipboard_history_util::kSecondaryDisplayTextLabelID),
-            IsClipboardHistoryUrlTitlesEnabled());
-  event_generator.PressAndReleaseKey(ui::VKEY_ESCAPE);
 }
 
 // Base class used to test features that only exist when the Ctrl+V longpress

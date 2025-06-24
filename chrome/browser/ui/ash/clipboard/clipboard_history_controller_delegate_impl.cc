@@ -6,7 +6,6 @@
 
 #include <set>
 
-#include "chrome/browser/ui/ash/clipboard/clipboard_history_url_title_fetcher_impl.h"
 #include "chrome/browser/ui/ash/clipboard/clipboard_image_model_factory_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -63,11 +62,6 @@ ClipboardHistoryControllerDelegateImpl::
 
 ClipboardHistoryControllerDelegateImpl::
     ~ClipboardHistoryControllerDelegateImpl() = default;
-
-std::unique_ptr<ash::ClipboardHistoryUrlTitleFetcher>
-ClipboardHistoryControllerDelegateImpl::CreateUrlTitleFetcher() const {
-  return std::make_unique<ClipboardHistoryUrlTitleFetcherImpl>();
-}
 
 std::unique_ptr<ash::ClipboardImageModelFactory>
 ClipboardHistoryControllerDelegateImpl::CreateImageModelFactory() const {

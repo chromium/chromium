@@ -13,12 +13,17 @@ include_rules = [
   "+chrome/app/chrome_command_ids.h",
   "+chrome/browser/ash/login/login_manager_test.h",
   "+chrome/browser/ash/login/test",
-  "+chrome/browser/ash/profiles",
-  "+chrome/browser/history",
-  "+chrome/browser/profiles",
-  "+chrome/browser/renderer_context_menu",
   "+chrome/browser/ui/ash/login",
-  "+chrome/browser/ui/browser.h",
   "+chrome/grit",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  ".*browsertest\\.cc": [
+    "+chrome/browser/profiles/profile.h",
+    "+chrome/browser/renderer_context_menu",
+  ],
+  ".*test\\.cc": [
+    "+chrome/browser/ui/browser.h",
+  ],
+}

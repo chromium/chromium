@@ -188,8 +188,7 @@ ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem& other)
       display_text_elide_behavior_(other.display_text_elide_behavior_),
       display_text_max_lines_(other.display_text_max_lines_),
       file_count_(other.file_count_),
-      icon_(other.icon_),
-      secondary_display_text_(other.secondary_display_text_) {}
+      icon_(other.icon_) {}
 
 ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&& other)
     : id_(std::move(other.id_)),
@@ -203,8 +202,7 @@ ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&& other)
           std::move(other.display_text_elide_behavior_)),
       display_text_max_lines_(std::move(other.display_text_max_lines_)),
       file_count_(std::move(other.file_count_)),
-      icon_(std::move(other.icon_)),
-      secondary_display_text_(std::move(other.secondary_display_text_)) {}
+      icon_(std::move(other.icon_)) {}
 
 ClipboardHistoryItem::~ClipboardHistoryItem() = default;
 

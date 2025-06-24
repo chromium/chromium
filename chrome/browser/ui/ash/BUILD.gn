@@ -50,7 +50,6 @@ group("unit_tests") {
     "//chrome/browser/ui/ash/assistant:unit_tests",
     "//chrome/browser/ui/ash/birch:unit_tests",
     "//chrome/browser/ui/ash/boca:unit_tests",
-    "//chrome/browser/ui/ash/clipboard:unit_tests",
     "//chrome/browser/ui/ash/desks:unit_tests",
     "//chrome/browser/ui/ash/device_scheduled_reboot:unit_tests",
     "//chrome/browser/ui/ash/focus_mode:unit_tests",

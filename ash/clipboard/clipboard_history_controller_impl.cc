@@ -15,7 +15,6 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
-#include "ash/clipboard/clipboard_history_url_title_fetcher.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/clipboard/clipboard_nudge_controller.h"
@@ -438,7 +437,6 @@ ClipboardHistoryControllerImpl::ClipboardHistoryControllerImpl(
     std::unique_ptr<ClipboardHistoryControllerDelegate> delegate)
     : delegate_(std::move(delegate)),
       image_model_factory_(delegate_->CreateImageModelFactory()),
-      url_title_fetcher_(delegate_->CreateUrlTitleFetcher()),
       clipboard_history_(std::make_unique<ClipboardHistory>()),
       resource_manager_(std::make_unique<ClipboardHistoryResourceManager>(
           clipboard_history_.get())),
@@ -446,7 +444,7 @@ ClipboardHistoryControllerImpl::ClipboardHistoryControllerImpl(
       nudge_controller_(
           std::make_unique<ClipboardNudgeController>(clipboard_history_.get())),
       menu_delegate_(std::make_unique<MenuDelegate>(this)) {
-  if (!image_model_factory_ || !url_title_fetcher_) {
+  if (!image_model_factory_) {
     CHECK_IS_TEST();
   }
   clipboard_history_->AddObserver(this);

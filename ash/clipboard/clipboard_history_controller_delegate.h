@@ -11,17 +11,12 @@
 
 namespace ash {
 
-class ClipboardHistoryUrlTitleFetcher;
 class ClipboardImageModelFactory;
 
 // The browser-implemented delegate of the `ClipboardHistoryControllerImpl`.
 class ASH_EXPORT ClipboardHistoryControllerDelegate {
  public:
   virtual ~ClipboardHistoryControllerDelegate();
-
-  // Creates the browser-implemented URL title fetcher.
-  virtual std::unique_ptr<ClipboardHistoryUrlTitleFetcher>
-  CreateUrlTitleFetcher() const = 0;
 
   // Creates the browser-implemented image model factory which renders html.
   virtual std::unique_ptr<ClipboardImageModelFactory> CreateImageModelFactory()
