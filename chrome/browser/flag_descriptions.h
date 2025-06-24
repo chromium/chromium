@@ -4528,9 +4528,6 @@ extern const char kPrintPreviewCrosAppDescription[];
 extern const char kProjectorAppDebugName[];
 extern const char kProjectorAppDebugDescription[];
 
-extern const char kProjectorGm3Name[];
-extern const char kProjectorGm3Description[];
-
 extern const char kProjectorServerSideSpeechRecognitionName[];
 extern const char kProjectorServerSideSpeechRecognitionDescription[];
 

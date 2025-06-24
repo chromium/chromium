@@ -34,9 +34,6 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
                      ash::features::IsProjectorMutingEnabled());
   source->AddBoolean("isPwaRedirectEnabled",
                      ash::features::IsProjectorRedirectToPwaEnabled());
-  source->AddBoolean("isDynamicColorsEnabled",
-                     ash::features::IsProjectorDynamicColorsEnabled());
-  source->AddBoolean("isGm3Enabled", ash::features::IsProjectorGm3Enabled());
   source->AddBoolean("useDvsPlaybackEndpoint",
                      ash::features::IsProjectorUseDVSPlaybackEndpointEnabled());
 

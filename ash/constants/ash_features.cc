@@ -2482,14 +2482,6 @@ BASE_FEATURE(kProjectorUseUSMForS3,
              "ProjectorUseUSMForS3",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// controls whether projector uses dynamic colors.
-BASE_FEATURE(kProjectorDynamicColors,
-             "ProjectorDynamicColors",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// controls whether the projector app uses updated styles and ui components.
-BASE_FEATURE(kProjectorGm3, "ProjectorGm3", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the projector app uses the latest endpoint for retrieving
 // playback urls.
 BASE_FEATURE(kProjectorUseDVSPlaybackEndpoint,
@@ -4421,16 +4413,6 @@ bool IsProjectorV2Enabled() {
 
 bool IsProjectorUseUSMForS3Enabled() {
   return base::FeatureList::IsEnabled(kProjectorUseUSMForS3);
-}
-
-bool IsProjectorDynamicColorsEnabled() {
-  // For Projector, Gm3 requires dynamic colors.
-  return base::FeatureList::IsEnabled(kProjectorDynamicColors) ||
-         base::FeatureList::IsEnabled(kProjectorGm3);
-}
-
-bool IsProjectorGm3Enabled() {
-  return base::FeatureList::IsEnabled(kProjectorGm3);
 }
 
 bool IsProjectorUseDVSPlaybackEndpointEnabled() {

@@ -7728,10 +7728,6 @@ const char kProjectorAppDebugName[] = "Enable Projector app debug";
 const char kProjectorAppDebugDescription[] =
     "Adds more informative error messages to the Projector app for debugging";
 
-const char kProjectorGm3Name[] = "Enable Screencast GM3";
-const char kProjectorGm3Description[] =
-    "Adds updated styles and dynamic colors to the Screencast app.";
-
 const char kProjectorServerSideSpeechRecognitionName[] =
     "Enable server side speech recognition for Projector";
 const char kProjectorServerSideSpeechRecognitionDescription[] =
