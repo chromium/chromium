@@ -37,8 +37,8 @@ base::span<int> fct3() {
   // Expected rewrite:
   // base::span<int> var1 = new int[1024];
   base::span<int> var1 = new int[1024];
-  // return base::postIncrementSpan(var1);
-  return base::postIncrementSpan(var1);
+  // return base::PostIncrementSpan(var1);
+  return base::PostIncrementSpan(var1);
 }
 
 // Expected rewrite:
@@ -48,8 +48,8 @@ base::span<int> fct4() {
   // Expected rewrite:
   // base::span<int> var1 = new int[1024];
   base::span<int> var1 = new int[1024];
-  // return base::preIncrementSpan(var1);
-  return base::preIncrementSpan(var1);
+  // return base::PreIncrementSpan(var1);
+  return base::PreIncrementSpan(var1);
 }
 
 // Expected rewrite:
@@ -113,36 +113,36 @@ void usage() {
   // Expected rewrite:
   // base::span<int> v1 = fct1();
   base::span<int> v1 = fct1();
-  // base::postIncrementSpan(v1);
-  base::postIncrementSpan(v1);
+  // base::PostIncrementSpan(v1);
+  base::PostIncrementSpan(v1);
 
   // Expected rewrite:
   // base::span<int> v2 = fct2();
   base::span<int> v2 = fct2();
-  // base::postIncrementSpan(v2);
-  base::postIncrementSpan(v2);
+  // base::PostIncrementSpan(v2);
+  base::PostIncrementSpan(v2);
 
   // Expected rewrite:
   // base::span<int> v3 = fct3();
   base::span<int> v3 = fct3();
-  // base::postIncrementSpan(v3);
-  base::postIncrementSpan(v3);
+  // base::PostIncrementSpan(v3);
+  base::PostIncrementSpan(v3);
 
   // Expected rewrite:
   // base::span<int> v4 = fct4();
   base::span<int> v4 = fct4();
-  // base::postIncrementSpan(v4);
-  base::postIncrementSpan(v4);
+  // base::PostIncrementSpan(v4);
+  base::PostIncrementSpan(v4);
 
   // Expected rewrite:
   // base::span<int> v5 = fct5();
   base::span<int> v5 = fct5();
-  // base::postIncrementSpan(v5);
-  base::postIncrementSpan(v5);
+  // base::PostIncrementSpan(v5);
+  base::PostIncrementSpan(v5);
 
   // Expected rewrite:
   // base::span<char> v6 = fct6();
   base::span<char> v6 = fct6();
-  // base::postIncrementSpan(v6);
-  base::postIncrementSpan(v6);
+  // base::PostIncrementSpan(v6);
+  base::PostIncrementSpan(v6);
 }

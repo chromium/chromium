@@ -78,11 +78,11 @@ void fct() {
   }
   int index = buf.size() - 1;
   // Expected rewrite:
-  // char* temp = (base::postIncrementSpan(expected_data)).data();
-  char* temp = (base::postIncrementSpan(expected_data)).data();
+  // char* temp = (base::PostIncrementSpan(expected_data)).data();
+  char* temp = (base::PostIncrementSpan(expected_data)).data();
   // Expected rewrite:
-  // temp = (base::preIncrementSpan(expected_data)).data();
-  temp = (base::preIncrementSpan(expected_data)).data();
+  // temp = (base::PreIncrementSpan(expected_data)).data();
+  temp = (base::PreIncrementSpan(expected_data)).data();
   // Expected rewrite:
   // temp = expected_data.subspan(1u).data();
   temp = expected_data.subspan(1u).data();
@@ -183,8 +183,8 @@ void fct() {
   base::span<char> buf = (char*)malloc(4 * sizeof(int));
   // Leads buf to be rewritten.
   // Expected rewrite:
-  // base::postIncrementSpan(buf);
-  base::postIncrementSpan(buf);
+  // base::PostIncrementSpan(buf);
+  base::PostIncrementSpan(buf);
 
   const char* buf2 = nullptr;
   (void)buf2[0];
@@ -244,10 +244,10 @@ void fct() {
   memcpy(buf2.data(), buf.data(), 10);
 
   // Expected rewrite:
-  // memcpy((base::postIncrementSpan(buf2)).data(),
-  //   (base::preIncrementSpan(buf)).data(), 10);
-  memcpy((base::postIncrementSpan(buf2)).data(),
-         (base::preIncrementSpan(buf)).data(), 10);
+  // memcpy((base::PostIncrementSpan(buf2)).data(),
+  //   (base::PreIncrementSpan(buf)).data(), 10);
+  memcpy((base::PostIncrementSpan(buf2)).data(),
+         (base::PreIncrementSpan(buf)).data(), 10);
 
   int index = 11;
   // Expected rewrite:
@@ -257,10 +257,10 @@ void fct() {
          buf.subspan(base::checked_cast<size_t>(index)).data(), 10);
 
   // Expected rewrite:
-  // int i = (base::postIncrementSpan(buf))[0];
-  int i = (base::postIncrementSpan(buf))[0];
-  // i = (base::preIncrementSpan(buf))[0];
-  i = (base::preIncrementSpan(buf))[0];
+  // int i = (base::PostIncrementSpan(buf))[0];
+  int i = (base::PostIncrementSpan(buf))[0];
+  // i = (base::PreIncrementSpan(buf))[0];
+  i = (base::PreIncrementSpan(buf))[0];
   // i = (buf.subspan(base::checked_cast<size_t>(index))[0]);
   i = (buf.subspan(base::checked_cast<size_t>(index))[0]);
   // i = buf[0];

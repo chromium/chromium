@@ -53,16 +53,16 @@ void fct() {
   base::span<int> e = d;
 
   // Expected rewrite:
-  // base::postIncrementSpan(e);
-  base::postIncrementSpan(e);  // Buffer usage, leads e to be rewritten.
+  // base::PostIncrementSpan(e);
+  base::PostIncrementSpan(e);  // Buffer usage, leads e to be rewritten.
 
   // Expected rewrite:
   // base::span<int> f = get<int>();
   base::span<int> f = get<int>();
 
   // Expected rewrite:
-  // base::preIncrementSpan(f);
-  base::preIncrementSpan(f);  // Leads to f being rewritten.
+  // base::PreIncrementSpan(f);
+  base::PreIncrementSpan(f);  // Leads to f being rewritten.
 
   // Exptected rewrite:
   // base::span<int> g = (condition) ? ctn1 : ctn2;
@@ -133,9 +133,9 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::raw_span<char> buf4 = buf3;
-  // base::postIncrementSpan(buf4);
+  // base::PostIncrementSpan(buf4);
   base::base::raw_span<char> buf4 = buf3;
-  base::postIncrementSpan(buf4);
+  base::PostIncrementSpan(buf4);
 
   // Expected rewrite:
   // base::raw_span<char> buf5 = buf4;
@@ -147,9 +147,9 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::raw_span<char> buf6 = buf5;
-  // base::preIncrementSpan(buf6);
+  // base::PreIncrementSpan(buf6);
   base::raw_span<char> buf6 = buf5;
-  base::preIncrementSpan(buf6);
+  base::PreIncrementSpan(buf6);
 
   // Expected rewrite:
   // buf6[0] = 'c';

@@ -48,7 +48,7 @@ void fct() {
   int* e = d.get();
 
   // Expected rewrite:
-  // base::postIncrementSpan(e);
+  // base::PostIncrementSpan(e);
   e++;  // Buffer usage, leads e to be rewritten.
 
   // Expected rewrite:
@@ -56,7 +56,7 @@ void fct() {
   int* f = get<int>();
 
   // Expected rewrite:
-  // base::preIncrementSpan(f);
+  // base::PreIncrementSpan(f);
   ++f;  // Leads to f being rewritten.
 
   // Exptected rewrite:
@@ -128,7 +128,7 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::raw_span<char> buf4 = buf3;
-  // base::postIncrementSpan(buf4);
+  // base::PostIncrementSpan(buf4);
   base::raw_ptr<char> buf4 = buf3;
   buf4++;
 
@@ -142,7 +142,7 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::raw_span<char> buf6 = buf5;
-  // base::preIncrementSpan(buf6);
+  // base::PreIncrementSpan(buf6);
   raw_ptr<char> buf6 = buf5;
   ++buf6;
 
