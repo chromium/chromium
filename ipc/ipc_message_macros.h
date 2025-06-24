@@ -122,15 +122,6 @@
 //   - Registering existing struct and enum definitions with IPC
 //   - Defining the messages themselves
 //
-// New structs are defined with IPC_STRUCT_BEGIN(), IPC_STRUCT_MEMBER(),
-// IPC_STRUCT_END() family of macros.  These cause the XXX_messages.h
-// to proclaim equivalent struct declarations for use by callers, as well
-// as later registering the type with the message generation.  Note that
-// IPC_STRUCT_MEMBER() is only permitted inside matching calls to
-// IPC_STRUCT_BEGIN() / IPC_STRUCT_END(). There is also an
-// IPC_STRUCT_BEGIN_WITH_PARENT(), which behaves like IPC_STRUCT_BEGIN(),
-// but also accommodates structs that inherit from other structs.
-//
 // Externally-defined structs are registered with IPC_STRUCT_TRAITS_BEGIN(),
 // IPC_STRUCT_TRAITS_MEMBER(), and IPC_STRUCT_TRAITS_END() macros. These
 // cause registration of the types with message generation only.
@@ -204,23 +195,6 @@
 #include "ipc/ipc_message_utils.h"
 #include "ipc/param_traits_macros.h"
 #include "ipc/tracing_helpers.h"
-
-// Convenience macro for defining structs without inheritance. Should not need
-// to be subsequently redefined.
-#define IPC_STRUCT_BEGIN(struct_name) \
-  IPC_STRUCT_BEGIN_WITH_PARENT(struct_name, IPC::NoParams)
-
-// Macros for defining structs. Will be subsequently redefined.
-#define IPC_STRUCT_BEGIN_WITH_PARENT(struct_name, parent) \
-  struct struct_name; \
-  IPC_STRUCT_TRAITS_BEGIN(struct_name) \
-  IPC_STRUCT_TRAITS_END() \
-  struct IPC_MESSAGE_EXPORT struct_name : parent { \
-    struct_name();
-// Optional variadic parameters specify the default value for this struct
-// member. They are passed through to the constructor for |type|.
-#define IPC_STRUCT_MEMBER(type, name, ...) type name;
-#define IPC_STRUCT_END() };
 
 // Message macros collect arguments and funnel them into the common message
 // generation macro.  These should never be redefined.

@@ -8,15 +8,6 @@
 // Null out all the macros that need nulling.
 #include "ipc/ipc_message_null_macros.h"
 
-// STRUCT declarations cause corresponding STRUCT_TRAITS declarations to occur.
-#undef IPC_STRUCT_BEGIN_WITH_PARENT
-#undef IPC_STRUCT_MEMBER
-#undef IPC_STRUCT_END
-#define IPC_STRUCT_BEGIN_WITH_PARENT(struct_name, parent) \
-  IPC_STRUCT_TRAITS_BEGIN(struct_name)
-#define IPC_STRUCT_MEMBER(type, name, ...) IPC_STRUCT_TRAITS_MEMBER(name)
-#define IPC_STRUCT_END() IPC_STRUCT_TRAITS_END()
-
 // Set up so next include will generate read methods.
 #undef IPC_STRUCT_TRAITS_BEGIN
 #undef IPC_STRUCT_TRAITS_MEMBER

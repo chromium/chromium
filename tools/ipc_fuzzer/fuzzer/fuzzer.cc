@@ -1599,18 +1599,6 @@ struct FuzzTraits<url::Origin> {
   }
 };
 
-// Redefine macros to generate generating from traits declarations.
-// STRUCT declarations cause corresponding STRUCT_TRAITS declarations to occur.
-#undef IPC_STRUCT_BEGIN
-#undef IPC_STRUCT_BEGIN_WITH_PARENT
-#undef IPC_STRUCT_MEMBER
-#undef IPC_STRUCT_END
-#define IPC_STRUCT_BEGIN_WITH_PARENT(struct_name, parent) \
-  IPC_STRUCT_BEGIN(struct_name)
-#define IPC_STRUCT_BEGIN(struct_name) IPC_STRUCT_TRAITS_BEGIN(struct_name)
-#define IPC_STRUCT_MEMBER(type, name, ...) IPC_STRUCT_TRAITS_MEMBER(name)
-#define IPC_STRUCT_END() IPC_STRUCT_TRAITS_END()
-
 // Set up so next include will generate generate trait classes.
 #undef IPC_STRUCT_TRAITS_BEGIN
 #undef IPC_STRUCT_TRAITS_MEMBER
