@@ -4,17 +4,17 @@
 
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 
-#include "base/functional/callback_helpers.h"
+#include <optional>
+
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -25,21 +25,22 @@ using ::testing::AllOf;
 using ::testing::Property;
 using profile_ref = base::optional_ref<const AutofillProfile>;
 
-class EditAddressProfileDialogControllerImplTest
-    : public BrowserWithTestWindowTest {
+class EditAddressProfileDialogControllerImplBrowserTest
+    : public InProcessBrowserTest {
  public:
-  EditAddressProfileDialogControllerImplTest() = default;
+  EditAddressProfileDialogControllerImplBrowserTest() = default;
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    AddTab(browser(), GURL("about:blank"));
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    profile_.emplace(test::GetFullProfile());
     EditAddressProfileDialogControllerImpl::CreateForWebContents(
         web_contents());
     ASSERT_THAT(controller(), ::testing::NotNull());
-    controller()->SetViewFactoryForTest(base::BindRepeating(
-        &EditAddressProfileDialogControllerImplTest::GetAutofillBubbleBase,
-        base::Unretained(this)));
-    controller()->OfferEdit(profile_,
+    controller()->SetViewFactoryForTest(
+        base::BindRepeating(&EditAddressProfileDialogControllerImplBrowserTest::
+                                GetAutofillBubbleBase,
+                            base::Unretained(this)));
+    controller()->OfferEdit(*profile_,
                             /*title_override=*/u"",
                             /*footer_message=*/u"",
                             /*is_editing_existing_address*/ false,
@@ -63,14 +64,15 @@ class EditAddressProfileDialogControllerImplTest
         web_contents());
   }
 
-  AutofillProfile profile_ = test::GetFullProfile();
+  autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  std::optional<AutofillProfile> profile_;
   base::MockOnceCallback<void(AutofillClient::AddressPromptUserDecision,
                               profile_ref profile)>
       save_callback_;
 };
 
-TEST_F(EditAddressProfileDialogControllerImplTest,
-       CloseTab_CancelCallbackInvoked) {
+IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplBrowserTest,
+                       CloseTab_CancelCallbackInvoked) {
   EXPECT_CALL(save_callback_, Run).Times(0);
 
   content::WebContents* tab =
@@ -78,8 +80,8 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
   tab->Close();
 }
 
-TEST_F(EditAddressProfileDialogControllerImplTest,
-       IgnoreDialog_CancelCallbackInvoked) {
+IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplBrowserTest,
+                       IgnoreDialog_CancelCallbackInvoked) {
   EXPECT_CALL(save_callback_,
               Run(AutofillClient::AddressPromptUserDecision::kIgnored,
                   Property(&profile_ref::has_value, false)));
@@ -88,8 +90,8 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
       AutofillClient::AddressPromptUserDecision::kIgnored, std::nullopt);
 }
 
-TEST_F(EditAddressProfileDialogControllerImplTest,
-       CancelEditing_CancelCallbackInvoked) {
+IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplBrowserTest,
+                       CancelEditing_CancelCallbackInvoked) {
   EXPECT_CALL(save_callback_,
               Run(AutofillClient::AddressPromptUserDecision::kEditDeclined,
                   Property(&profile_ref::has_value, false)));
@@ -98,35 +100,36 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
       AutofillClient::AddressPromptUserDecision::kEditDeclined, std::nullopt);
 }
 
-TEST_F(EditAddressProfileDialogControllerImplTest,
-       SaveAddress_SaveCallbackInvoked) {
+IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplBrowserTest,
+                       SaveAddress_SaveCallbackInvoked) {
   EXPECT_CALL(save_callback_,
               Run(AutofillClient::AddressPromptUserDecision::kEditAccepted,
                   AllOf(Property(&profile_ref::has_value, true),
-                        Property(&profile_ref::value, profile_))));
+                        Property(&profile_ref::value, *profile_))));
 
   controller()->OnDialogClosed(
-      AutofillClient::AddressPromptUserDecision::kEditAccepted, profile_);
+      AutofillClient::AddressPromptUserDecision::kEditAccepted, *profile_);
 }
 
-TEST_F(EditAddressProfileDialogControllerImplTest,
-       WindowTitleOverride_TitleUpdatedWhenParamIsPresent) {
-  controller()->OfferEdit(profile_,
-                          /*title_override=*/u"",
-                          /*footer_message=*/u"",
-                          /*is_editing_existing_address*/ false,
-                          /*is_migration_to_account=*/false,
-                          save_callback_.Get());
+IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplBrowserTest,
+                       WindowTitleOverride_TitleUpdatedWhenParamIsPresent) {
   EXPECT_EQ(controller()->GetWindowTitle(),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE));
 
+  EXPECT_CALL(save_callback_,
+              Run(AutofillClient::AddressPromptUserDecision::kEditDeclined,
+                  Property(&profile_ref::has_value, false)));
   controller()->OnDialogClosed(
       AutofillClient::AddressPromptUserDecision::kEditDeclined, std::nullopt);
-  controller()->OfferEdit(profile_, u"Overridden title",
+
+  base::MockOnceCallback<void(AutofillClient::AddressPromptUserDecision,
+                              profile_ref profile)>
+      second_save_callback;
+  controller()->OfferEdit(*profile_, u"Overridden title",
                           /*footer_message=*/u"",
                           /*is_editing_existing_address*/ false,
                           /*is_migration_to_account=*/false,
-                          save_callback_.Get());
+                          second_save_callback.Get());
   EXPECT_EQ(controller()->GetWindowTitle(), u"Overridden title");
 }
 
