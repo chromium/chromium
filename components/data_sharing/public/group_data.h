@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_DATA_SHARING_PUBLIC_GROUP_DATA_H_
 #define COMPONENTS_DATA_SHARING_PUBLIC_GROUP_DATA_H_
 
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
