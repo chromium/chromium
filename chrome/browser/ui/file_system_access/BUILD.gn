@@ -30,7 +30,6 @@ source_set("impl") {
   deps = [
     ":file_system_access",
     "//chrome/browser/ui:url_identity",
-    "//components/safe_browsing/content/common:file_type_policies",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
