@@ -24,6 +24,8 @@ static_library("default_model") {
     "fedcm_user_segment.h",
     "feed_user_segment.cc",
     "feed_user_segment.h",
+    "ios_default_browser_promo.cc",
+    "ios_default_browser_promo.h",
     "ios_module_ranker.cc",
     "ios_module_ranker.h",
     "low_user_engagement_model.cc",

@@ -195,6 +195,10 @@ extern const base::FeatureParam<int> kMaxAuxiliarySearchCardImpressions;
 // Feature flag for enabling FedCM user segment.
 BASE_DECLARE_FEATURE(kSegmentationPlatformFedCmUser);
 
+// Feature flag enabling checking a propensity model before showing a default
+// browser promo.
+BASE_DECLARE_FEATURE(kDefaultBrowserPromoPropensityModel);
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_
