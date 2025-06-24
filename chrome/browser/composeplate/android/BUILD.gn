@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
@@ -12,18 +13,28 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/composeplate/ComposeplateUtils.java",
     "java/src/org/chromium/chrome/browser/composeplate/ComposeplateViewBinder.java",
   ]
+  srcjar_deps = [ ":jni_headers" ]
 
   deps = [
     ":java_resources",
     "//base:base_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/util:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:gendeps_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
   ]
 
   resources_package = "org.chromium.chrome.browser.composeplate"
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/composeplate/ComposeplateUtils.java",
+  ]
 }
 
 android_resources("java_resources") {
@@ -53,6 +64,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/util:java",
     "//components/cached_flags:java",
     "//third_party/android_deps:org_mockito_mockito_core_java",
