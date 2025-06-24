@@ -2,6 +2,7 @@ Name: fend-core
 URL: https://crates.io/crates/fend-core
 Version: 1.5.6
 Revision: 6746da3ead1c9e2fa2784eaa929f85137034916d
+Update Mechanism: Manual
 License: MIT
 License File: //third_party/rust/chromium_crates_io/vendor/fend-core-v1/LICENSE.md
 Shipped: yes

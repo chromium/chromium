@@ -2,6 +2,7 @@ Name: either
 URL: https://crates.io/crates/either
 Version: 1.15.0
 Revision: 59ae1fce0cec62c886fcd486e06b7e219bc7ce48
+Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/either-v1/LICENSE-APACHE
 Shipped: yes

@@ -2,6 +2,7 @@ Name: crc32fast
 URL: https://crates.io/crates/crc32fast
 Version: 1.4.2
 Revision: b0899ffddc050eca040c4fc23a37a058d3017ce9
+Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/crc32fast-v1/LICENSE-APACHE
 Shipped: yes

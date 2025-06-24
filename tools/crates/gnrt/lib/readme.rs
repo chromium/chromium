@@ -18,6 +18,12 @@ use std::path::{Path, PathBuf};
 use std::sync::LazyLock;
 
 #[derive(Clone, Debug, Serialize)]
+pub enum UpdateMechanism {
+    Autoroll,
+    Manual,
+}
+
+#[derive(Clone, Debug, Serialize)]
 pub struct ReadmeFile {
     name: String,
     url: String,
@@ -28,6 +34,7 @@ pub struct ReadmeFile {
     license: String,
     license_files: Vec<String>,
     revision: Option<String>,
+    update_mechanism: UpdateMechanism,
 }
 
 /// Returns a map keyed by the directory where the README file should be
@@ -159,6 +166,9 @@ pub fn readme_file_from_package<'a>(
         license,
         license_files,
         revision,
+        // TODO(crbug.com/427084604): Currently all packages are rolled manually.
+        // Set to `UpdateMechanism::Autoroll` when automatic rolls are supported.
+        update_mechanism: UpdateMechanism::Manual,
     };
 
     Ok((crate_build_dir, readme))

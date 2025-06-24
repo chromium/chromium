@@ -2,6 +2,7 @@ Name: anstyle
 URL: https://crates.io/crates/anstyle
 Version: 1.0.11
 Revision: 886539c95318db5de9db49b6d66d19413bd308cc
+Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/anstyle-v1/LICENSE-APACHE
 Shipped: no

@@ -2,6 +2,7 @@ Name: temporal_capi
 URL: https://crates.io/crates/temporal_capi
 Version: 0.0.9
 Revision: 44632b0d855dd8136371d40ff99fd7566bc1f0aa
+Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0_9/LICENSE-MIT,//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0_9/LICENSE-APACHE
 Shipped: yes
