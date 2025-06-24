@@ -192,7 +192,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     // TabModel overrides except those overridden by TabModelJniBridge.
 
     @Override
-    public @Nullable Tab getTabById(int tabId) {
+    public @Nullable Tab getTabById(@TabId int tabId) {
         return mTabIdToTabs.get(tabId);
     }
 
@@ -203,7 +203,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public @Nullable Tab getNextTabIfClosed(int id, boolean uponExit) {
+    public @Nullable Tab getNextTabIfClosed(@TabId int id, boolean uponExit) {
         return null;
     }
 
@@ -213,7 +213,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public boolean isClosurePending(int tabId) {
+    public boolean isClosurePending(@TabId int tabId) {
         return false;
     }
 
@@ -221,10 +221,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public void commitAllTabClosures() {}
 
     @Override
-    public void commitTabClosure(int tabId) {}
+    public void commitTabClosure(@TabId int tabId) {}
 
     @Override
-    public void cancelTabClosure(int tabId) {}
+    public void cancelTabClosure(@TabId int tabId) {}
 
     @Override
     public void openMostRecentlyClosedEntry() {}
@@ -289,7 +289,31 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public void moveTab(int id, int newIndex) {}
+    public void moveTab(@TabId int id, int newIndex) {
+        assertOnUiThread();
+        Tab tab = getTabById(id);
+        if (tab == null) return;
+
+        int currentIndex = indexOf(tab);
+        if (currentIndex == TabList.INVALID_TAB_INDEX || currentIndex == newIndex) {
+            return;
+        }
+
+        // Clamp negative values here to ensure the tab moves to index 0 if negative. The size_t
+        // cast in C++ otherwise results in the tab going to the end of the list which is not
+        // intended.
+        newIndex = Math.max(0, newIndex);
+        newIndex =
+                TabCollectionTabModelImplJni.get()
+                        .moveTabRecursive(
+                                mNativeTabCollectionTabModelImplPtr,
+                                currentIndex,
+                                newIndex,
+                                tab.getTabGroupId(),
+                                tab.getIsPinned());
+
+        for (TabModelObserver obs : mTabModelObservers) obs.didMoveTab(tab, newIndex, currentIndex);
+    }
 
     @Override
     public void pinTab(int tabId) {
@@ -571,7 +595,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public int getValidPosition(Tab tab, int proposedPosition) {
-        return TabList.INVALID_TAB_INDEX;
+        // Return the proposedPosition. In the TabGroupModelFilterImpl the implementation of this
+        // method makes an effort to ensure tab groups remain contiguous. This behavior is now
+        // enforced when operating on the TabStripCollection in C++ so this method can effectively
+        // no-op.
+        return proposedPosition;
     }
 
     @Override
@@ -654,6 +682,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         int getIndexOfTabRecursive(long nativeTabCollectionTabModelImpl, Tab tab);
 
         Tab getTabAtIndexRecursive(long nativeTabCollectionTabModelImpl, int index);
+
+        int moveTabRecursive(
+                long nativeTabCollectionTabModelImpl,
+                int currentIndex,
+                int newIndex,
+                @Nullable Token tabGroupId,
+                boolean isPinned);
 
         void addTabRecursive(
                 long nativeTabCollectionTabModelImpl,

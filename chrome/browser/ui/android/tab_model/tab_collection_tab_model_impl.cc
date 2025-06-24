@@ -36,6 +36,16 @@ namespace {
 
 constexpr int kInvalidTabIndex = -1;
 
+std::optional<TabGroupId> ToTabGroupId(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_tab_group_id) {
+  if (!j_tab_group_id) {
+    return std::nullopt;
+  }
+  return TabGroupId::FromRawToken(
+      TokenAndroid::FromJavaToken(env, j_tab_group_id));
+}
+
 // Converts the `tab_android` to a `unique_ptr<TabInterface>`. Under the hood we
 // use a wrapper class `TabInterfaceAndroid` which takes a weak ptr to
 // `TabAndroid` to avoid memory management issues.
@@ -101,6 +111,22 @@ ScopedJavaLocalRef<jobject> TabCollectionTabModelImpl::GetTabAtIndexRecursive(
   return tab_android->GetJavaObject();
 }
 
+int TabCollectionTabModelImpl::MoveTabRecursive(
+    JNIEnv* env,
+    size_t current_index,
+    size_t new_index,
+    const JavaParamRef<jobject>& j_new_tab_group_id,
+    bool new_is_pinned) {
+  std::optional<TabGroupId> new_tab_group_id =
+      ToTabGroupId(env, j_new_tab_group_id);
+  new_index = GetSafeIndex(/*is_move=*/true, new_index, new_tab_group_id,
+                           new_is_pinned);
+
+  tab_strip_collection_->MoveTabRecursive(current_index, new_index,
+                                          new_tab_group_id, new_is_pinned);
+  return base::checked_cast<int>(new_index);
+}
+
 void TabCollectionTabModelImpl::AddTabRecursive(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_tab_android,
@@ -110,13 +136,9 @@ void TabCollectionTabModelImpl::AddTabRecursive(
   TabAndroid* tab_android = TabAndroid::GetNativeTab(env, j_tab_android);
   CHECK(tab_android);
 
-  std::optional<TabGroupId> tab_group_id;
-  if (j_tab_group_id) {
-    tab_group_id = TabGroupId::FromRawToken(
-        TokenAndroid::FromJavaToken(env, j_tab_group_id));
-  }
+  std::optional<TabGroupId> tab_group_id = ToTabGroupId(env, j_tab_group_id);
 
-  index = GetSafeIndex(index, tab_group_id, is_pinned);
+  index = GetSafeIndex(/*is_move=*/false, index, tab_group_id, is_pinned);
 
   auto tab_interface_android = ToTabInterface(tab_android);
   tab_strip_collection_->AddTabRecursive(std::move(tab_interface_android),
@@ -124,6 +146,7 @@ void TabCollectionTabModelImpl::AddTabRecursive(
 }
 
 size_t TabCollectionTabModelImpl::GetSafeIndex(
+    bool is_move,
     size_t proposed_index,
     const std::optional<TabGroupId>& tab_group_id,
     bool is_pinned) const {
@@ -134,6 +157,9 @@ size_t TabCollectionTabModelImpl::GetSafeIndex(
   }
 
   size_t tab_count = tab_strip_collection_->TabCountRecursive();
+  if (is_move) {
+    --tab_count;
+  }
   size_t clamped_index =
       std::clamp(proposed_index, first_non_pinned_index, tab_count);
   if (tab_group_id) {

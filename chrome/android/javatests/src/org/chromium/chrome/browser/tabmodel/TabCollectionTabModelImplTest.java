@@ -20,6 +20,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -28,6 +29,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+
+import java.util.List;
 
 /** Integration test for {@link TabCollectionTabModelImpl}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -45,15 +48,18 @@ public class TabCollectionTabModelImplTest {
     private String mTestUrl;
     private WebPageStation mPage;
     private TabModelSelector mTabModelSelector;
-    private TabCollectionTabModelImpl mRegularModel;
+    private TabModel mRegularModel;
+    private TabCollectionTabModelImpl mCollectionModel;
 
     @Before
     public void setUp() throws Exception {
         mTestUrl = mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/ok.txt");
         mPage = mActivityTestRule.startOnBlankPage();
         mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
-        mRegularModel =
-                (TabCollectionTabModelImpl) mTabModelSelector.getModel(/* incognito= */ false);
+        mRegularModel = mTabModelSelector.getModel(/* incognito= */ false);
+        if (mRegularModel instanceof TabCollectionTabModelImpl collectionModel) {
+            mCollectionModel = collectionModel;
+        }
         CallbackHelper helper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -70,16 +76,93 @@ public class TabCollectionTabModelImplTest {
     @MediumTest
     @UiThreadTest
     public void testInitialState() {
-        assertTrue(mRegularModel.isActiveModel());
-        assertTrue(mRegularModel.isInitializationComplete());
-        assertTrue(mRegularModel.isTabModelRestored());
+        assertTrue(mCollectionModel.isActiveModel());
+        assertTrue(mCollectionModel.isInitializationComplete());
+        assertTrue(mCollectionModel.isTabModelRestored());
 
-        assertEquals(1, mRegularModel.getCount());
-        assertEquals(0, mRegularModel.index());
+        assertEquals(1, mCollectionModel.getCount());
+        assertEquals(0, mCollectionModel.index());
 
-        Tab currentTab = mRegularModel.getCurrentTabSupplier().get();
+        Tab currentTab = mCollectionModel.getCurrentTabSupplier().get();
         assertNotNull(currentTab);
-        assertEquals(currentTab, mRegularModel.getTabAt(0));
-        assertEquals(0, mRegularModel.indexOf(currentTab));
+        assertEquals(currentTab, mCollectionModel.getTabAt(0));
+        assertEquals(0, mCollectionModel.indexOf(currentTab));
+    }
+
+    @Test
+    @MediumTest
+    public void testMoveTabCompatTest() {
+        moveTabCompatTest();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.TAB_COLLECTION_ANDROID})
+    public void testMoveTabCompatTest_Legacy() {
+        moveTabCompatTest();
+    }
+
+    private void moveTabCompatTest() {
+        Tab tab0 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.getCurrentTabSupplier().get());
+        Tab tab1 = mActivityTestRule.loadUrlInNewTab(mTestUrl, /* incognito= */ false);
+        Tab tab2 = mActivityTestRule.loadUrlInNewTab(mTestUrl, /* incognito= */ false);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        moveTab(tab0, 0);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        moveTab(tab0, 1);
+        assertTabsInOrderAre(List.of(tab1, tab0, tab2));
+
+        moveTab(tab0, 2);
+        assertTabsInOrderAre(List.of(tab1, tab2, tab0));
+
+        moveTab(tab0, 3);
+        assertTabsInOrderAre(List.of(tab1, tab2, tab0));
+
+        moveTab(tab0, 2);
+        assertTabsInOrderAre(List.of(tab1, tab2, tab0));
+
+        moveTab(tab0, 1);
+        assertTabsInOrderAre(List.of(tab1, tab0, tab2));
+
+        moveTab(tab0, 0);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        moveTab(tab0, 2);
+        assertTabsInOrderAre(List.of(tab1, tab2, tab0));
+
+        moveTab(tab0, -1);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+    }
+
+    private void assertTabsInOrderAre(List<Tab> tabs) {
+        assertEquals(
+                "Mismatched tab count",
+                (long) tabs.size(),
+                (long) ThreadUtils.runOnUiThreadBlocking(mRegularModel::getCount));
+        for (int i = 0; i < tabs.size(); i++) {
+            Tab expected = tabs.get(i);
+            Tab actual = getTabAt(i);
+            assertEquals(
+                    "Mismatched tabs at "
+                            + i
+                            + " expected, "
+                            + expected.getId()
+                            + " was, "
+                            + actual.getId(),
+                    expected,
+                    actual);
+        }
+    }
+
+    private Tab getTabAt(int index) {
+        return ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.getTabAt(index));
+    }
+
+    private void moveTab(Tab tab, int index) {
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.moveTab(tab.getId(), index));
     }
 }

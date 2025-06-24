@@ -51,6 +51,14 @@ class TabCollectionTabModelImpl {
       JNIEnv* env,
       size_t index) const;
 
+  // Moves a tab updating its group or pinned state if applicable.
+  int MoveTabRecursive(
+      JNIEnv* env,
+      size_t current_index,
+      size_t new_index,
+      const jni_zero::JavaParamRef<jobject>& j_new_tab_group_id,
+      bool new_is_pinned);
+
   // Adds a tab to the tab model.
   void AddTabRecursive(JNIEnv* env,
                        const jni_zero::JavaParamRef<jobject>& j_tab_android,
@@ -61,7 +69,8 @@ class TabCollectionTabModelImpl {
  private:
   // Returns a safe index for adding or moving a single tab without it changing
   // state.
-  size_t GetSafeIndex(size_t proposed_index,
+  size_t GetSafeIndex(bool is_move,
+                      size_t proposed_index,
                       const std::optional<tab_groups::TabGroupId>& tab_group_id,
                       bool is_pinned) const;
   std::optional<tab_groups::TabGroupId> GetGroupIdAt(size_t index) const;

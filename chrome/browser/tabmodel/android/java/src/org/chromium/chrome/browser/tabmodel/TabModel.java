@@ -10,6 +10,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
@@ -23,10 +24,10 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
     @Nullable Profile getProfile();
 
     /** Returns the matching tab that has the given id, or null if there is none. */
-    @Nullable Tab getTabById(int tabId);
+    @Nullable Tab getTabById(@TabId int tabId);
 
     /** Returns the matching tab that has the given id, or null if there is none. */
-    default Tab getTabByIdChecked(int tabId) {
+    default Tab getTabByIdChecked(@TabId int tabId) {
         Tab t = getTabById(tabId);
         assert t != null;
         return t;
@@ -42,7 +43,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * @param uponExit If the next tab is being selected upon exit or backgrounding of the app.
      * @return The id of the next tab that would be visible.
      */
-    @Nullable Tab getNextTabIfClosed(int id, boolean uponExit);
+    @Nullable Tab getNextTabIfClosed(@TabId int id, boolean uponExit);
 
     /**
      * @return Whether or not this model supports pending closures.
@@ -53,7 +54,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * @param tabId The id of the {@link Tab} that might have a pending closure.
      * @return Whether or not the {@link Tab} specified by {@code tabId} has a pending closure.
      */
-    boolean isClosurePending(int tabId);
+    boolean isClosurePending(@TabId int tabId);
 
     /** Commits all pending closures, closing all tabs that had a chance to be undone. */
     void commitAllTabClosures();
@@ -63,7 +64,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      *
      * @param tabId The id of the {@link Tab} to commit the pending closure.
      */
-    void commitTabClosure(int tabId);
+    void commitTabClosure(@TabId int tabId);
 
     /**
      * Cancels a pending {@link Tab} closure, bringing the tab back into this model. Note that this
@@ -71,7 +72,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      *
      * @param tabId The id of the {@link Tab} to undo.
      */
-    void cancelTabClosure(int tabId);
+    void cancelTabClosure(@TabId int tabId);
 
     /**
      * Restores the most recent closure, bringing the tab(s) back into their original tab model or
@@ -113,7 +114,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * @param id The id of the tab to move.
      * @param newIndex The new place to put the tab.
      */
-    void moveTab(int id, int newIndex);
+    void moveTab(@TabId int id, int newIndex);
 
     /**
      * Pins a tab to the model.
