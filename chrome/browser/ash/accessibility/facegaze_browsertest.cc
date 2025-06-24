@@ -987,7 +987,13 @@ IN_PROC_BROWSER_TEST_P(FaceGazeIntegrationTest, DisableActionsDialogCancel) {
       prefs->GetBoolean(prefs::kAccessibilityFaceGazeActionsEnabledSentinel));
 }
 
-IN_PROC_BROWSER_TEST_P(FaceGazeIntegrationTest, CloseButton) {
+// TODO(crbug.com/423267032): Fix and re-enable flaky test.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_CloseButton DISABLED_CloseButton
+#else
+#define MAYBE_CloseButton CloseButton
+#endif
+IN_PROC_BROWSER_TEST_P(FaceGazeIntegrationTest, MAYBE_CloseButton) {
   auto* controller = ash::Shell::Get()->accessibility_controller();
   auto* prefs = GetPrefs();
 
