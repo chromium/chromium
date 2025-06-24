@@ -13,6 +13,7 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/views/accessibility/tree/view_accessibility_ax_tree_source.h"
 #include "ui/views/views_export.h"
@@ -21,6 +22,13 @@ namespace views {
 
 class ViewAccessibility;
 class Widget;
+
+using ViewAccessibilityAXTreeSerializer = ui::AXTreeSerializer<
+    ViewAccessibility*,
+    std::vector<raw_ptr<ViewAccessibility, VectorExperimental>>,
+    ui::AXTreeUpdate*,
+    ui::AXTreeData*,
+    ui::AXNodeData>;
 
 // This class owns and manages the accessibility tree for a Widget. It is owned
 // by the `widget_` and must never outlive its owner. This is currently under
@@ -63,6 +71,9 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver {
   // Holds the active views-based tree. A tree consists of all the views in the
   // widget.
   std::unique_ptr<ViewAccessibilityAXTreeSource> tree_source_;
+
+  // Serializes incremental updates on the currently active `tree_source_`.
+  std::unique_ptr<ViewAccessibilityAXTreeSerializer> tree_serializer_;
 
   // Indicates whether we're actively serializing widget accessibility data.
   bool is_enabled_ = false;
