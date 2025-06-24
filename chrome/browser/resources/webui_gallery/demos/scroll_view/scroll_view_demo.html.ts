@@ -44,6 +44,20 @@ export function getHtml(this: ScrollViewDemoElement) {
     <div class="block"></div>
     <div class="cr-scrollable-bottom"></div>
   </div>
+  <div class="cr-scrollable">
+    <div class="cr-scrollable-top force-on"></div>
+    <div class="label">With borders always visible.</div>
+    <div class="cr-scrollable-bottom force-on"></div>
+  </div>
+  <div class="cr-scrollable">
+    <div class="cr-scrollable-top-shadow"></div>
+    <div class="label">With a top shadow indicating element is scrollable.</div>
+    <div class="block"></div>
+  </div>
+  <div class="cr-scrollable">
+    <div class="cr-scrollable-top-shadow force-on"></div>
+    <div class="label">With a top shadow always visible.</div>
+  </div>
 </div>`;
   // clang-format on
 }
