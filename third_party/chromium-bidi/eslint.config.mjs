@@ -53,12 +53,6 @@ export default defineConfig([
   {
     name: 'JavaScript rules',
 
-    plugins: {
-      import: importPlugin,
-      mocha: mochaPlugin,
-      promise: promisePlugin,
-    },
-
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -71,12 +65,6 @@ export default defineConfig([
       },
 
       parser: typescriptEslint.parser,
-    },
-
-    settings: {
-      'import/resolver': {
-        typescript: true,
-      },
     },
 
     rules: {
