@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Demonstrates using the platforms extended attribute with all used values.
-[platforms=("chromeos", "fuchsia", "linux", "mac", "win")]
+[platforms=("chromeos", "desktop_android", "fuchsia", "linux", "mac", "win")]
 interface AllPlatformsAPI {
 
 };
