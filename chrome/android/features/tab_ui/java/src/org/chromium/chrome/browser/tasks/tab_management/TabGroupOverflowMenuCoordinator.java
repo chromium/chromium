@@ -36,7 +36,7 @@ public abstract class TabGroupOverflowMenuCoordinator extends TabOverflowMenuCoo
             Supplier<TabModel> tabModelSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService,
-            Context context) {
+            @Nullable Context context) {
         super(
                 menuLayout,
                 onItemClickedCallback,

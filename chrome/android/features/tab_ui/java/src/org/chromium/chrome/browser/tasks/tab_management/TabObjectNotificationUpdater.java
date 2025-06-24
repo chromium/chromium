@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
@@ -16,7 +16,6 @@ import org.chromium.components.collaboration.messaging.PersistentMessage;
  * A partial implementation of a notifications for tab changes. Contains the pieces that all
  * concrete versions use.
  */
-@NullMarked
 public abstract class TabObjectNotificationUpdater implements Destroyable {
     private final PersistentMessageObserver mPersistentMessageObserver =
             new PersistentMessageObserver() {
@@ -40,7 +39,7 @@ public abstract class TabObjectNotificationUpdater implements Destroyable {
     protected final MessagingBackendService mMessagingBackendService;
 
     public TabObjectNotificationUpdater(
-            Profile profile, TabListNotificationHandler tabListNotificationHandler) {
+            @Nullable Profile profile, TabListNotificationHandler tabListNotificationHandler) {
         mTabListNotificationHandler = tabListNotificationHandler;
         mMessagingBackendService = MessagingBackendServiceFactory.getForProfile(profile);
         mMessagingBackendService.addPersistentMessageObserver(mPersistentMessageObserver);

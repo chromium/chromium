@@ -10,11 +10,11 @@ import android.util.FloatProperty;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
@@ -106,7 +106,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     // @TODO(crbug.com/379941150) Deprecate rootId and transition to using tabGroupId
     private int mRootId;
     private final Token mTabGroupId;
-    private String mTitle;
+    private @Nullable String mTitle;
     @TabGroupColorId private int mColorId;
 
     // Bottom indicator variables
@@ -114,12 +114,12 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     // Shared state
     private boolean mIsShared;
-    @Nullable private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
-    @Nullable private SharedImageTilesConfig.Builder mSharedImageTilesConfigBuilder;
-    @Nullable private ViewResourceAdapter mAvatarResource;
+    private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
+    private SharedImageTilesConfig.@Nullable Builder mSharedImageTilesConfigBuilder;
+    private @Nullable ViewResourceAdapter mAvatarResource;
     private float mAvatarWidthWithPadding;
     @ColorInt private final int mBubbleTint;
-    @Nullable private TabBubbler mTabBubbler;
+    private @Nullable TabBubbler mTabBubbler;
 
     // Reorder state
     @ColorInt private final int mReorderBackgroundTint;
@@ -139,7 +139,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
             StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             boolean incognito,
             int rootId,
-            Token tabGroupId) {
+            @Nullable Token tabGroupId) {
         super(incognito, delegate, keyboardFocusHandler, context);
         assert rootId != Tab.INVALID_TAB_ID && tabGroupId != null
                 : "Tried to create a group title for an invalid group.";
@@ -243,7 +243,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     /**
      * @return The group's title.
      */
-    protected String getTitle() {
+    protected @Nullable String getTitle() {
         return mTitle;
     }
 
@@ -348,7 +348,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      */
     public void updateSharedTabGroup(
             String collaborationId,
-            DataSharingService dataSharingService,
+            @Nullable DataSharingService dataSharingService,
             CollaborationService collaborationService,
             Callback<ViewResourceAdapter> registerAvatarResource,
             Runnable updateGroupTitleBitmap) {
@@ -442,7 +442,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      * @param tabBubbler The {@link TabBubbler} that responsible for managing shared group
      *     notification bubbles. The current {@link TabBubbler} is destroyed if set null.
      */
-    public void setTabBubbler(TabBubbler tabBubbler) {
+    public void setTabBubbler(@Nullable TabBubbler tabBubbler) {
         if (mTabBubbler != null && tabBubbler == null) {
             mTabBubbler.destroy();
         }
@@ -453,7 +453,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      * @return The {@link TabBubbler} that responsible for managing shared group notification
      *     bubbles.
      */
-    public TabBubbler getTabBubbler() {
+    public @Nullable TabBubbler getTabBubbler() {
         return mTabBubbler;
     }
 
@@ -508,14 +508,14 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     /**
      * @return The coordinator to retrieve the avatar face pile for shared group.
      */
-    public SharedImageTilesCoordinator getSharedImageTilesCoordinatorForTesting() {
+    public @Nullable SharedImageTilesCoordinator getSharedImageTilesCoordinatorForTesting() {
         return mSharedImageTilesCoordinator;
     }
 
     /**
      * @return The avatar face pile resource displayed on the tab group title for shared group.
      */
-    public ViewResourceAdapter getAvatarResourceForTesting() {
+    public @Nullable ViewResourceAdapter getAvatarResourceForTesting() {
         return mAvatarResource;
     }
 

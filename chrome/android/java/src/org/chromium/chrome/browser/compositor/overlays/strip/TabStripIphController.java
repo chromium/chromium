@@ -9,9 +9,10 @@ import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -27,6 +28,7 @@ import java.lang.annotation.RetentionPolicy;
  * Controls the display of IPH on tablet tab strip. The IPH will appear directly below the center of
  * the anchor rect area.
  */
+@NullMarked
 public class TabStripIphController {
     /** An enum representing the type of IPH. */
     @IntDef({

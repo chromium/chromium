@@ -10,7 +10,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -31,7 +30,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** Coordinator for the Tab Group List Bottom Sheet. */
-@NullMarked
 public class TabGroupListBottomSheetCoordinator {
     @IntDef({RowType.EXISTING_GROUP, RowType.NEW_GROUP})
     @Retention(RetentionPolicy.SOURCE)
@@ -84,7 +82,7 @@ public class TabGroupListBottomSheetCoordinator {
      */
     public TabGroupListBottomSheetCoordinator(
             Context context,
-            Profile profile,
+            @Nullable Profile profile,
             TabGroupCreationCallback tabGroupCreationCallback,
             @Nullable TabMovedCallback tabMovedCallback,
             TabGroupModelFilter filter,

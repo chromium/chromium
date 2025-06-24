@@ -9,14 +9,13 @@ import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 
 import android.app.Activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -59,7 +58,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             MultiInstanceManager multiInstanceManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
-            TabGroupSyncService tabGroupSyncService,
+            @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
@@ -98,10 +97,10 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             Supplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid) {
         Profile profile = tabModelSupplier.get().getProfile();
-        @Nullable
-        TabGroupSyncService tabGroupSyncService =
+
+        @Nullable TabGroupSyncService tabGroupSyncService =
                 profile.isOffTheRecord() ? null : TabGroupSyncServiceFactory.getForProfile(profile);
-        @NonNull
+
         CollaborationService collaborationService =
                 CollaborationServiceFactory.getForProfile(profile);
 
@@ -240,9 +239,8 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                 getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width));
     }
 
-    @Nullable
     @Override
-    protected String getCollaborationIdOrNull(Integer id) {
+    protected @Nullable String getCollaborationIdOrNull(Integer id) {
         var tab = mTabModelSupplier.get().getTabById(id);
         if (tab == null) return null;
         return TabShareUtils.getCollaborationIdOrNull(tab.getTabGroupId(), mTabGroupSyncService);

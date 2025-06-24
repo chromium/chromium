@@ -78,7 +78,7 @@ public class StripTabHoverCardView extends FrameLayout {
      * @param topPadding The top padding applied to the tab strip, in dp.
      */
     public void show(
-            Tab hoveredTab,
+            @Nullable Tab hoveredTab,
             boolean isSelectedTab,
             float tabX,
             float tabWidth,

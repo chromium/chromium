@@ -38,7 +38,7 @@ public class TintedCompositorButton extends CompositorButton {
     public TintedCompositorButton(
             Context context,
             @ButtonType int type,
-            StripLayoutView parentView,
+            @Nullable StripLayoutView parentView,
             float width,
             float height,
             @Nullable TooltipHandler tooltipHandler,

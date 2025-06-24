@@ -32,7 +32,7 @@ public interface TabGroupListBottomSheetCoordinatorFactory {
      */
     TabGroupListBottomSheetCoordinator create(
             Context context,
-            Profile profile,
+            @Nullable Profile profile,
             TabGroupCreationCallback tabGroupCreationCallback,
             @Nullable TabMovedCallback tabMovedCallback,
             TabGroupModelFilter filter,

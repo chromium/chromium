@@ -272,7 +272,7 @@ public class TabUiUtils {
      * @return Whether to show Tab Group Sync IPH.
      */
     public static boolean shouldShowIphForSync(
-            TabGroupSyncService tabGroupSyncService, Token tabGroupId) {
+            @Nullable TabGroupSyncService tabGroupSyncService, @Nullable Token tabGroupId) {
         if (tabGroupSyncService == null || tabGroupId == null) return false;
 
         @Nullable SavedTabGroup savedTabGroup =

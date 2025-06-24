@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
@@ -11,6 +12,7 @@ import org.chromium.ui.base.LocalizationUtils;
  * will be stacked side by side and the entire strip will scroll. Tabs will never completely overlap
  * each other.
  */
+@NullMarked
 public class ScrollingStripStacker extends StripStacker {
 
     @Override

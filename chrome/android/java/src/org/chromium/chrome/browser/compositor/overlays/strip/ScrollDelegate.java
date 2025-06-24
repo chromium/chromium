@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -83,6 +84,7 @@ import org.chromium.ui.base.LocalizationUtils;
  * documented above, so it requires time and effort to migrate this class to the <b>static</b>
  * window coordinate system that doesn't change due to layout configurations (LTR/RTL).
  */
+@NullMarked
 public class ScrollDelegate {
     // Constants.
     private static final int SCROLL_DURATION_MS = 250;

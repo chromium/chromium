@@ -26,7 +26,6 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenuCoordinator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -56,7 +55,6 @@ import org.chromium.ui.widget.ViewRectProvider;
  * @param <T> The type of the ID of the overflow menu's origin. For individual tabs, this is a tab
  *     ID. For tab groups, it's the tab group ID.
  */
-@NullMarked
 public abstract class TabOverflowMenuCoordinator<T> {
 
     /**
@@ -233,7 +231,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
             Supplier<TabModel> tabModelSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService,
-            Context context) {
+            @Nullable Context context) {
         mMenuLayout = menuLayout;
         mOnItemClickedCallback = onItemClickedCallback;
         mTabModelSupplier = tabModelSupplier;
@@ -340,7 +338,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
             boolean verticalOverlapAnchor,
             @StyleRes int animStyle,
             @HorizontalOrientation int horizontalOrientation,
-            Activity activity) {
+            @Nullable Activity activity) {
         createAndShowMenu(
                 anchorViewRectProvider,
                 id,

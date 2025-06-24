@@ -85,7 +85,7 @@ public class CompositorButton extends StripLayoutView {
     public CompositorButton(
             Context context,
             @ButtonType int type,
-            StripLayoutView parentView,
+            @Nullable StripLayoutView parentView,
             float width,
             float height,
             @Nullable TooltipHandler tooltipHandler,

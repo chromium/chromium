@@ -22,8 +22,6 @@ import android.view.animation.Interpolator;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -32,6 +30,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
@@ -191,7 +190,7 @@ public class StripLayoutHelperManager
     private final LayoutUpdateHost mUpdateHost;
 
     // Event Filters
-    private AreaMotionEventFilter mEventFilter;
+    private @Nullable AreaMotionEventFilter mEventFilter;
 
     // Internal state
     private boolean mIsIncognito;
@@ -209,10 +208,10 @@ public class StripLayoutHelperManager
     private float mTopPadding; // in dp units
     private final float mDensity;
     private int mOrientation;
-    @Nullable private TintedCompositorButton mModelSelectorButton;
+    private @Nullable TintedCompositorButton mModelSelectorButton;
     private final Context mContext;
     private float mStripTransitionScrimOpacity;
-    private Animator mFadeTransitionAnimator;
+    private @Nullable Animator mFadeTransitionAnimator;
     // This will be set only when a strip height transition runs to update the strip visibility and
     // not when this transition runs to solely update the strip top padding.
     private boolean mIsHeightTransitioning;
@@ -253,7 +252,7 @@ public class StripLayoutHelperManager
     private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     // Drag-Drop
-    @Nullable private TabStripDragHandler mTabStripDragHandler;
+    private @Nullable TabStripDragHandler mTabStripDragHandler;
 
     private class TabStripEventHandler implements MotionEventHandler {
         @Override
@@ -444,18 +443,18 @@ public class StripLayoutHelperManager
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragDropDelegate,
             View toolbarContainerView,
-            @NonNull ViewStub tabHoverCardViewStub,
+            ViewStub tabHoverCardViewStub,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull WindowAndroid windowAndroid,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            WindowAndroid windowAndroid,
             // TODO(crbug.com/40939440): Avoid passing the ToolbarManager instance. Potentially
             // implement an interface to manage strip transition states.
-            @NonNull ToolbarManager toolbarManager,
+            ToolbarManager toolbarManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             ActionConfirmationManager actionConfirmationManager,
             DataSharingTabManager dataSharingTabManager,
-            @NonNull BottomSheetController bottomSheetController,
-            @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
+            BottomSheetController bottomSheetController,
+            Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mContext = context;
         Resources res = context.getResources();
@@ -850,7 +849,7 @@ public class StripLayoutHelperManager
     }
 
     @Override
-    public EventFilter getEventFilter() {
+    public @Nullable EventFilter getEventFilter() {
         return mEventFilter;
     }
 
@@ -974,7 +973,7 @@ public class StripLayoutHelperManager
         mFadeTransitionAnimator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
-                    public void onAnimationEnd(@NonNull Animator animation) {
+                    public void onAnimationEnd(Animator animation) {
                         onFadeTransitionEnd(showStrip);
                     }
                 });
@@ -1093,7 +1092,7 @@ public class StripLayoutHelperManager
         return getActiveStripLayoutHelper().getNewTabButtonVisualOffset();
     }
 
-    public CompositorButton getModelSelectorButton() {
+    public @Nullable CompositorButton getModelSelectorButton() {
         return mModelSelectorButton;
     }
 
@@ -1215,7 +1214,7 @@ public class StripLayoutHelperManager
     }
 
     /** Returns drag listener for tab strip. */
-    public OnDragListener getDragListener() {
+    public @Nullable OnDragListener getDragListener() {
         return mTabStripDragHandler;
     }
 
@@ -1434,7 +1433,8 @@ public class StripLayoutHelperManager
                     }
 
                     @Override
-                    public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
+                    public void onFaviconUpdated(
+                            Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
                         updateTitleForTab(tab);
                     }
 
@@ -1460,7 +1460,7 @@ public class StripLayoutHelperManager
     }
 
     @Override
-    public void onAppHeaderStateChanged(AppHeaderState newState) {
+    public void onAppHeaderStateChanged(@Nullable AppHeaderState newState) {
         assert mDesktopWindowStateManager != null;
         // We do not update the layer's height in this method. The height adjustment will be
         // triggered by #onHeightChanged.
@@ -1621,7 +1621,7 @@ public class StripLayoutHelperManager
         return mTabHoverCardViewStub;
     }
 
-    public TabStripDragHandler getTabStripDragHandlerForTesting() {
+    public @Nullable TabStripDragHandler getTabStripDragHandlerForTesting() {
         return mTabStripDragHandler;
     }
 

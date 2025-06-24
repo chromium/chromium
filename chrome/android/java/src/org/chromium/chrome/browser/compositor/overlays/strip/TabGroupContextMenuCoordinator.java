@@ -18,8 +18,6 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
@@ -27,6 +25,7 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -81,13 +80,13 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private EditText mGroupTitleEditText;
     private ColorPickerCoordinator mColorPickerCoordinator;
     private TabGroupModelFilter mTabGroupModelFilter;
-    private Token mTabGroupId;
+    private @Nullable Token mTabGroupId;
     private int mGroupRootId;
     private Context mContext;
 
     // Title currently modified by the user through the edit box. This does not include previously
     // updated or default title.
-    private String mCurrentModifiedTitle;
+    private @Nullable String mCurrentModifiedTitle;
     private boolean mIsPresetTitleUsed;
     private final WindowAndroid mWindowAndroid;
     private final KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
@@ -95,7 +94,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
             new TabGroupModelFilterObserver() {
                 @Override
-                public void didChangeTabGroupTitle(int rootId, String newTitle) {
+                public void didChangeTabGroupTitle(int rootId, @Nullable String newTitle) {
                     if (isMenuShowing() && rootId == mGroupRootId) {
                         setExistingOrDefaultTitle(newTitle);
                     }
@@ -114,8 +113,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             TabGroupModelFilter tabGroupModelFilter,
             MultiInstanceManager multiInstanceManager,
             WindowAndroid windowAndroid,
-            TabGroupSyncService tabGroupSyncService,
-            DataSharingTabManager dataSharingTabManager,
+            @Nullable TabGroupSyncService tabGroupSyncService,
+            @Nullable DataSharingTabManager dataSharingTabManager,
             CollaborationService collaborationService) {
         super(
                 R.layout.tab_strip_group_menu_layout,
@@ -155,12 +154,12 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             TabGroupModelFilter tabGroupModelFilter,
             MultiInstanceManager multiInstanceManager,
             WindowAndroid windowAndroid,
-            DataSharingTabManager dataSharingTabManager) {
+            @Nullable DataSharingTabManager dataSharingTabManager) {
         Profile profile = tabModel.getProfile();
-        @Nullable
-        TabGroupSyncService tabGroupSyncService =
+
+        @Nullable TabGroupSyncService tabGroupSyncService =
                 profile.isOffTheRecord() ? null : TabGroupSyncServiceFactory.getForProfile(profile);
-        @NonNull
+
         CollaborationService collaborationService =
                 CollaborationServiceFactory.getForProfile(profile);
 
@@ -487,7 +486,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         mCurrentModifiedTitle = null;
     }
 
-    private void setExistingOrDefaultTitle(String s) {
+    private void setExistingOrDefaultTitle(@Nullable String s) {
         // Flip `IsPresetTitleUsed`to prevent `TextWatcher` from treating `#setText` as a title
         // update.
         mIsPresetTitleUsed = true;
