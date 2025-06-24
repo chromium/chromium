@@ -4,8 +4,5 @@ ci/Linux Builder (dbg)
 ci/Linux Tests
 ci/Linux Tests (Wayland)
 ci/Linux Tests (dbg)(1)
-ci/Network Service Linux
-ci/linux-bfcache-rel
-ci/linux-extended-tracing-rel
 ci/linux-wayland-mutter-rel-tests
 try/linux-wayland-mutter-rel

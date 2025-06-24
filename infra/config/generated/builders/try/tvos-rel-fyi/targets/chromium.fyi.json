@@ -1,8 +1,0 @@
-{
-  "tvos-rel-fyi": {
-    "additional_compile_targets": [
-      "content_shell",
-      "content_unittests"
-    ]
-  }
-}

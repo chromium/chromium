@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-10-arm64-rel",
-              "project": "chromium"
+              "project": "chromium-m139"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -45,7 +45,7 @@
         {
           "bucket": "ci",
           "builder": "android-10-arm64-rel",
-          "project": "chromium"
+          "project": "chromium-m139"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/try/android-10-arm64-rel/targets"

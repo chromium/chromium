@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux Builder (Wayland)",
-              "project": "chromium"
+              "project": "chromium-m139"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -38,7 +38,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux Tests (Wayland)",
-              "project": "chromium"
+              "project": "chromium-m139"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -62,7 +62,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Linux Builder (Wayland)",
-                "project": "chromium"
+                "project": "chromium-m139"
               }
             }
           },
@@ -70,7 +70,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "linux-wayland-mutter-rel-tests",
-              "project": "chromium"
+              "project": "chromium-m139"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -94,7 +94,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Linux Builder (Wayland)",
-                "project": "chromium"
+                "project": "chromium-m139"
               }
             }
           }
@@ -104,19 +104,19 @@
         {
           "bucket": "ci",
           "builder": "Linux Builder (Wayland)",
-          "project": "chromium"
+          "project": "chromium-m139"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Linux Tests (Wayland)",
-          "project": "chromium"
+          "project": "chromium-m139"
         },
         {
           "bucket": "ci",
           "builder": "linux-wayland-mutter-rel-tests",
-          "project": "chromium"
+          "project": "chromium-m139"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -154,10 +154,10 @@
   },
   "builder_group": "chromium.linux",
   "gardener_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }
