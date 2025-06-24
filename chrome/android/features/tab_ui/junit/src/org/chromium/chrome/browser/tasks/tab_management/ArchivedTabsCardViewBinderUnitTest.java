@@ -83,7 +83,7 @@ public class ArchivedTabsCardViewBinderUnitTest {
         mModel.set(ARCHIVE_TIME_DELTA_DAYS, 1);
 
         TextView titleView = mArchivedTabsCardView.findViewById(R.id.title);
-        assertEquals("Inactive tab (1)", titleView.getText());
+        assertEquals("(1) inactive item", titleView.getText());
 
         TextView subtitleView = mArchivedTabsCardView.findViewById(R.id.subtitle);
         assertEquals("Not used for 1 day or more", subtitleView.getText());
@@ -92,7 +92,7 @@ public class ArchivedTabsCardViewBinderUnitTest {
     @Test
     public void testPlural() throws TimeoutException {
         TextView titleView = mArchivedTabsCardView.findViewById(R.id.title);
-        assertEquals("Inactive tabs (10)", titleView.getText());
+        assertEquals("(10) inactive items", titleView.getText());
 
         TextView subtitleView = mArchivedTabsCardView.findViewById(R.id.subtitle);
         assertEquals("Not used for 14 days or more", subtitleView.getText());

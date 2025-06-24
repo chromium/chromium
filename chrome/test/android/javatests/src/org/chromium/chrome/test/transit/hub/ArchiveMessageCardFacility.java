@@ -19,7 +19,7 @@ public class ArchiveMessageCardFacility extends Facility<TabSwitcherStation> {
         mTextElement =
                 declareView(
                         tabSwitcherStation.recyclerViewElement.descendant(
-                                withText(containsString("Inactive tab"))));
+                                withText(containsString("inactive item"))));
     }
 
     public ArchivedTabsDialogStation openArchivedTabsDialog() {

@@ -904,7 +904,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     public static CharSequence getIphDescription(
             Context context, TabArchiveSettings tabArchiveSettings) {
         int archiveTimeDeltaDays = tabArchiveSettings.getArchiveTimeDeltaDays();
-        int autoDeleteTimeDeletaDays = tabArchiveSettings.getAutoDeleteTimeDeltaDays();
+        int autoDeleteTimeDeltaMonths = tabArchiveSettings.getAutoDeleteTimeDeltaMonths();
         String settingsTitle =
                 context.getString(R.string.archived_tab_iph_card_subtitle_settings_title);
         // The auto-delete section is blank when the feature param is disabled.
@@ -912,14 +912,15 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 tabArchiveSettings.isAutoDeleteEnabled()
                         ? context.getString(
                                 R.string.archived_tab_iph_card_subtitle_autodelete_section,
-                                autoDeleteTimeDeletaDays)
+                                autoDeleteTimeDeltaMonths)
                         : "";
+        int iphCardSubtitleRes =
+                ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
+                        ? R.string.archived_tab_iph_card_subtitle_with_tab_groups
+                        : R.string.archived_tab_iph_card_subtitle;
         String description =
                 context.getString(
-                        R.string.archived_tab_iph_card_subtitle,
-                        archiveTimeDeltaDays,
-                        autoDeleteTitle,
-                        settingsTitle);
+                        iphCardSubtitleRes, archiveTimeDeltaDays, autoDeleteTitle, settingsTitle);
 
         SpannableString ss = new SpannableString(description);
         ForegroundColorSpan fcs =

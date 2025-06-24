@@ -5894,6 +5894,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IPH_ANDROID_TAB_DECLUTTER_TEXT" desc="The in-product-help text for the android tab declutter feature.">
         Review your inactive tabs here
       </message>
+      <message name="IDS_IPH_ANDROID_TAB_DECLUTTER_TEXT_WITH_TAB_GROUPS" desc="The in-product-help text for the android tab declutter feature.">
+        Review your inactive tabs and groups here
+      </message>
       <message name="IDS_IPH_ANDROID_TAB_DECLUTTER_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text for the android tab declutter feature.">
         To open tabs and visit different pages at the same time, tap the open tabs button
       </message>
@@ -7161,21 +7164,29 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Tab declutter -->
-      <message name="IDS_ARCHIVED_TAB_CARD_TITLE" desc="Shown in the tab switcher to prompt the user to review their inactive tabs. Indicates how many tabs are inactive.">
+      <message name="IDS_ARCHIVED_TAB_CARD_TITLE" desc="Shown in the tab switcher to prompt the user to review their inactive tabs and tab groups. Indicates how many tabs and tab groups are inactive.">
         {ARCHIVED_TAB_COUNT, plural,
-          =1 {Inactive tab (1)}
-          other {Inactive tabs (#)}}
+          =1 {(1) inactive item}
+          other {(#) inactive items}}
       </message>
-      <message name="IDS_ARCHIVED_TAB_CARD_SUBTITLE" desc="Shown in the tab switcher to inform the user how long the relevant tabs have been in active for.">
+      <message name="IDS_ARCHIVED_TAB_CARD_SUBTITLE" desc="Shown in the tab switcher to inform the user how long the relevant tabs have been inactive for.">
         {INACTIVE_TIME_DAYS, plural,
           =1 {Not used for 1 day or more}
           other {Not used for # days or more}}
       </message>
+      <message name="IDS_ARCHIVED_TAB_CARD_SUBTITLE_WITH_TAB_GROUPS" desc="Shown in the tab switcher to inform the user how long the relevant tabs and tab groups have been inactive for.">
+        {INACTIVE_TIME_DAYS, plural,
+          =1 {Tabs and tab groups not used for 1 day or more}
+          other {Tabs and tab groups not used for # days or more}}
+      </message>
       <message name="IDS_ARCHIVED_TAB_IPH_CARD_SUBTITLE" desc="In product help shown as a message in the archived tabs dialog.">
-        Tabs you haven’t used for <ph name="DAYS_INACTIVE">%1$d<ex>14</ex></ph> days are moved here<ph name="AUTODELETE_SECTION">%2$s<ex>and deleted after 60 days</ex></ph>. You can change this anytime in <ph name="SETTINGS_TITLE">%3$s<ex>Settings</ex></ph>.
+        Tabs you haven’t used for <ph name="DAYS_INACTIVE">%1$d<ex>14</ex></ph> days are moved here<ph name="AUTODELETE_SECTION">%2$s<ex>and deleted after 3 months</ex></ph>. You can change this anytime in <ph name="SETTINGS_TITLE">%3$s<ex>Settings</ex></ph>.
+      </message>
+      <message name="IDS_ARCHIVED_TAB_IPH_CARD_SUBTITLE_WITH_TAB_GROUPS" desc="In product help shown as a message in the archived tabs dialog.">
+        Tabs and tab groups you haven’t used for <ph name="DAYS_INACTIVE">%1$d<ex>14</ex></ph> days are moved here<ph name="AUTODELETE_SECTION">%2$s<ex>and deleted after 3 months</ex></ph>. You can change this anytime in <ph name="SETTINGS_TITLE">%3$s<ex>Settings</ex></ph>.
       </message>
       <message name="IDS_ARCHIVED_TAB_IPH_CARD_SUBTITLE_AUTODELETE_SECTION" desc="A section describing auto-delete, shown if it's enabled.">
-        \u0020and closed after <ph name="DAYS_ARCHIVED">%1$d<ex>60</ex></ph> days
+        \u0020and closed after <ph name="MONTHS_ARCHIVED">%1$d<ex>3</ex></ph> months
       </message>
       <message name="IDS_ARCHIVED_TAB_IPH_CARD_SUBTITLE_SETTINGS_TITLE" desc="The word for settings, used in IDS_ARCHIVED_TAB_IPH_CARD_SUBTITLE.">
         Settings

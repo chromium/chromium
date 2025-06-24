@@ -422,11 +422,15 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChild {
         params.setBoundsRespectPadding(true);
         assumeNonNull(mArchivedTabsIphShownCallback);
         assumeNonNull(mArchivedTabsIphDismissedCallback);
+        int declutterIphTextRes =
+                ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
+                        ? R.string.iph_android_tab_declutter_text_with_tab_groups
+                        : R.string.iph_android_tab_declutter_text;
         mUserEducationHelper.requestShowIph(
                 new IphCommandBuilder(
                                 mContext.getResources(),
                                 FeatureConstants.ANDROID_TAB_DECLUTTER_FEATURE,
-                                R.string.iph_android_tab_declutter_text,
+                                declutterIphTextRes,
                                 R.string.iph_android_tab_declutter_accessibility_text)
                         .setAnchorView(mToggleTabStackButton)
                         .setHighlightParams(params)
