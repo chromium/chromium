@@ -58,41 +58,43 @@ configs_to_remove = [
 ]
 
 if (use_libcxx_modules) {
-  template("sysroot_modules") {
-    source_set(target_name) {
-      forward_variables_from(invoker, [ "public_deps" ])
-      use_libcxx_modules = false
-      sources = [ "//build/linux/amd64/module.modulemap" ]
-      deps = [
-        ":copy_custom_headers",
-        ":copy_libcxx_headers",
-      ]
+  if (is_linux || is_chromeos) {
+    template("sysroot_modules") {
+      source_set(target_name) {
+        forward_variables_from(invoker, [ "public_deps" ])
+        use_libcxx_modules = false
+        sources = [ "//build/linux/amd64/module.modulemap" ]
+        deps = [
+          ":copy_custom_headers",
+          ":copy_libcxx_headers",
+        ]
 
-      configs -= configs_to_remove
-      configs += configs_to_add
+        configs -= configs_to_remove
+        configs += configs_to_add
+      }
     }
-  }
 
-  sysroot_modules("sysroot_features") {
-  }
+    sysroot_modules("sysroot_features") {
+    }
 
-  sysroot_modules("sysroot_bits") {
-    public_deps = [
-      ":sysroot_features",
-      ":sysroot_time",
-    ]
-  }
+    sysroot_modules("sysroot_bits") {
+      public_deps = [
+        ":sysroot_features",
+        ":sysroot_time",
+      ]
+    }
 
-  sysroot_modules("sysroot_time") {
-    public_deps = [ ":sysroot_features" ]
-  }
+    sysroot_modules("sysroot_time") {
+      public_deps = [ ":sysroot_features" ]
+    }
 
-  sysroot_modules("sysroot_types") {
-    public_deps = [
-      ":sysroot_bits",
-      ":sysroot_features",
-      ":sysroot_time",
-    ]
+    sysroot_modules("sysroot_types") {
+      public_deps = [
+        ":sysroot_bits",
+        ":sysroot_features",
+        ":sysroot_time",
+      ]
+    }
   }
 
   template("builtin_modules") {

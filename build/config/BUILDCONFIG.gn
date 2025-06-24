@@ -548,9 +548,14 @@ DEFAULT_MODULE_DEPS = [
   "//buildtools/third_party/libc++:_Builtin_unwind",
   "//buildtools/third_party/libc++:std",
   "//buildtools/third_party/libc++:std_stdatomic_h",
-  "//buildtools/third_party/libc++:sysroot_features",
-  "//buildtools/third_party/libc++:sysroot_types",
 ]
+
+if (is_linux || is_chromeos) {
+  DEFAULT_MODULE_DEPS += [
+    "//buildtools/third_party/libc++:sysroot_features",
+    "//buildtools/third_party/libc++:sysroot_types",
+  ]
+}
 
 # A helper for forwarding testonly and visibility.
 # Forwarding "*" does not include variables from outer scopes (to avoid copying
