@@ -65,22 +65,22 @@ class PodIntervalSearchAdapter {
 // intervals in the tree.
 template <class T, class UserData = void*>
 class PodIntervalTree final
-    : public WTF::PODRedBlackTree<WTF::PODInterval<T, UserData>> {
+    : public PodRedBlackTree<WTF::PODInterval<T, UserData>> {
  public:
   // Typedef to reduce typing when declaring intervals to be stored in
   // this tree.
   using IntervalType = WTF::PODInterval<T, UserData>;
   using IntervalSearchAdapterType = PodIntervalSearchAdapter<T, UserData>;
 
-  explicit PodIntervalTree(WTF::UninitializedTreeEnum unitialized_tree)
-      : WTF::PODRedBlackTree<IntervalType>(unitialized_tree) {
+  explicit PodIntervalTree(UninitializedTreeEnum unitialized_tree)
+      : PodRedBlackTree<IntervalType>(unitialized_tree) {
     Init();
   }
 
-  PodIntervalTree() : WTF::PODRedBlackTree<IntervalType>() { Init(); }
+  PodIntervalTree() : PodRedBlackTree<IntervalType>() { Init(); }
 
   explicit PodIntervalTree(scoped_refptr<WTF::PODArena> arena)
-      : WTF::PODRedBlackTree<IntervalType>(arena) {
+      : PodRedBlackTree<IntervalType>(arena) {
     Init();
   }
 
@@ -122,7 +122,7 @@ class PodIntervalTree final
   }
 
   bool CheckInvariants() const override {
-    if (!WTF::PODRedBlackTree<IntervalType>::CheckInvariants()) {
+    if (!PodRedBlackTree<IntervalType>::CheckInvariants()) {
       return false;
     }
     if (!this->Root())
@@ -137,7 +137,7 @@ class PodIntervalTree final
   }
 
  private:
-  using IntervalNode = typename WTF::PODRedBlackTree<IntervalType>::Node;
+  using IntervalNode = typename PodRedBlackTree<IntervalType>::Node;
 
   // Initializes the tree.
   void Init() {
@@ -329,7 +329,7 @@ class PodIntervalTree final
 };
 
 #ifndef NDEBUG
-// Support for printing PODIntervals at the PODRedBlackTree level.
+// Support for printing PODIntervals at the PodRedBlackTree level.
 template <class T, class UserData>
 struct ValueToString<WTF::PODInterval<T, UserData>> {
   static String ToString(const WTF::PODInterval<T, UserData>& interval) {

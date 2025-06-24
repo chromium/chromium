@@ -36,9 +36,9 @@
 
 namespace blink {
 
+using tree_test_helpers::InitRandom;
+using tree_test_helpers::NextRandom;
 using WTF::PODInterval;
-using WTF::tree_test_helpers::InitRandom;
-using WTF::tree_test_helpers::NextRandom;
 
 #ifndef NDEBUG
 template <>

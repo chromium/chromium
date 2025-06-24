@@ -32,19 +32,19 @@
 #include "third_party/blink/renderer/platform/wtf/pod_tree_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace WTF {
+namespace blink {
 
-using arena_test_helpers::TrackedAllocator;
 using tree_test_helpers::InitRandom;
 using tree_test_helpers::NextRandom;
+using WTF::arena_test_helpers::TrackedAllocator;
 
-TEST(PODRedBlackTreeTest, TestTreeAllocatesFromArena) {
+TEST(PodRedBlackTreeTest, TestTreeAllocatesFromArena) {
   scoped_refptr<TrackedAllocator> allocator = TrackedAllocator::Create();
   {
-    typedef PODFreeListArena<PODRedBlackTree<int>::Node> PODIntegerArena;
-    scoped_refptr<PODIntegerArena> arena = PODIntegerArena::Create(allocator);
-    PODRedBlackTree<int> tree(arena);
-    int num_additions = 2 * PODArena::kDefaultChunkSize / sizeof(int);
+    using PodIntegerArena = WTF::PODFreeListArena<PodRedBlackTree<int>::Node>;
+    scoped_refptr<PodIntegerArena> arena = PodIntegerArena::Create(allocator);
+    PodRedBlackTree<int> tree(arena);
+    int num_additions = 2 * WTF::PODArena::kDefaultChunkSize / sizeof(int);
     for (int i = 0; i < num_additions; ++i)
       tree.Add(i);
     EXPECT_GT(allocator->NumRegions(), 1);
@@ -52,15 +52,15 @@ TEST(PODRedBlackTreeTest, TestTreeAllocatesFromArena) {
   EXPECT_EQ(allocator->NumRegions(), 0);
 }
 
-TEST(PODRedBlackTreeTest, TestSingleElementInsertion) {
-  PODRedBlackTree<int> tree;
+TEST(PodRedBlackTreeTest, TestSingleElementInsertion) {
+  PodRedBlackTree<int> tree;
   tree.Add(5);
   ASSERT_TRUE(tree.CheckInvariants());
   EXPECT_TRUE(tree.Contains(5));
 }
 
-TEST(PODRedBlackTreeTest, TestMultipleElementInsertion) {
-  PODRedBlackTree<int> tree;
+TEST(PodRedBlackTreeTest, TestMultipleElementInsertion) {
+  PodRedBlackTree<int> tree;
   tree.Add(4);
   ASSERT_TRUE(tree.CheckInvariants());
   EXPECT_TRUE(tree.Contains(4));
@@ -74,8 +74,8 @@ TEST(PODRedBlackTreeTest, TestMultipleElementInsertion) {
   EXPECT_TRUE(tree.Contains(3));
 }
 
-TEST(PODRedBlackTreeTest, TestDuplicateElementInsertion) {
-  PODRedBlackTree<int> tree;
+TEST(PodRedBlackTreeTest, TestDuplicateElementInsertion) {
+  PodRedBlackTree<int> tree;
   tree.Add(3);
   ASSERT_TRUE(tree.CheckInvariants());
   tree.Add(3);
@@ -86,8 +86,8 @@ TEST(PODRedBlackTreeTest, TestDuplicateElementInsertion) {
   EXPECT_TRUE(tree.Contains(3));
 }
 
-TEST(PODRedBlackTreeTest, TestSingleElementInsertionAndDeletion) {
-  PODRedBlackTree<int> tree;
+TEST(PodRedBlackTreeTest, TestSingleElementInsertionAndDeletion) {
+  PodRedBlackTree<int> tree;
   tree.Add(5);
   ASSERT_TRUE(tree.CheckInvariants());
   EXPECT_TRUE(tree.Contains(5));
@@ -96,8 +96,8 @@ TEST(PODRedBlackTreeTest, TestSingleElementInsertionAndDeletion) {
   EXPECT_FALSE(tree.Contains(5));
 }
 
-TEST(PODRedBlackTreeTest, TestMultipleElementInsertionAndDeletion) {
-  PODRedBlackTree<int> tree;
+TEST(PodRedBlackTreeTest, TestMultipleElementInsertionAndDeletion) {
+  PodRedBlackTree<int> tree;
   tree.Add(4);
   ASSERT_TRUE(tree.CheckInvariants());
   EXPECT_TRUE(tree.Contains(4));
@@ -122,8 +122,8 @@ TEST(PODRedBlackTreeTest, TestMultipleElementInsertionAndDeletion) {
   EXPECT_EQ(1, tree.size());
 }
 
-TEST(PODRedBlackTreeTest, TestDuplicateElementInsertionAndDeletion) {
-  PODRedBlackTree<int> tree;
+TEST(PodRedBlackTreeTest, TestDuplicateElementInsertionAndDeletion) {
+  PodRedBlackTree<int> tree;
   tree.Add(3);
   ASSERT_TRUE(tree.CheckInvariants());
   tree.Add(3);
@@ -144,9 +144,9 @@ TEST(PODRedBlackTreeTest, TestDuplicateElementInsertionAndDeletion) {
   EXPECT_FALSE(tree.Contains(3));
 }
 
-TEST(PODRedBlackTreeTest, FailingInsertionRegressionTest1) {
+TEST(PodRedBlackTreeTest, FailingInsertionRegressionTest1) {
   // These numbers came from a previously-failing randomized test run.
-  PODRedBlackTree<int> tree;
+  PodRedBlackTree<int> tree;
   tree.Add(5113);
   ASSERT_TRUE(tree.CheckInvariants());
   tree.Add(4517);
@@ -164,7 +164,7 @@ void InsertionAndDeletionTest(const int32_t seed, const int tree_size) {
   InitRandom(seed);
   const int maximum_value = tree_size;
   // Build the tree.
-  PODRedBlackTree<int> tree;
+  PodRedBlackTree<int> tree;
   Vector<int> values;
   for (int i = 0; i < tree_size; i++) {
     int value = NextRandom(maximum_value);
@@ -189,8 +189,8 @@ void InsertionAndDeletionTest(const int32_t seed, const int tree_size) {
 }
 }  // anonymous namespace
 
-TEST(PODRedBlackTreeTest, RandomDeletionAndInsertionRegressionTest1) {
+TEST(PodRedBlackTreeTest, RandomDeletionAndInsertionRegressionTest1) {
   InsertionAndDeletionTest(12311, 100);
 }
 
-}  // namespace WTF
+}  // namespace blink
