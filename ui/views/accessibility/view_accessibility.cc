@@ -1493,6 +1493,34 @@ gfx::NativeViewAccessible ViewAccessibility::GetFocusedDescendant() {
   return view_->GetNativeViewAccessible();
 }
 
+std::vector<raw_ptr<ViewAccessibility>> ViewAccessibility::GetChildren() const {
+  std::vector<raw_ptr<ViewAccessibility>> out;
+
+  if (IsLeaf()) {
+    return out;
+  }
+
+  // The virtual children always override any real children the view might have.
+  if (!virtual_children_.empty()) {
+    out.reserve(virtual_children_.size());
+    for (auto& v : virtual_children_) {
+      out.push_back(v.get());
+    }
+    return out;
+  }
+
+  if (!view_) {
+    return out;
+  }
+
+  const auto& view_children = view_->children();
+  out.reserve(view_children.size());
+  for (auto child_view : view_children) {
+    out.push_back(&child_view->GetViewAccessibility());
+  }
+  return out;
+}
+
 void ViewAccessibility::FireNativeEvent(ax::mojom::Event event_type) {
   if (accessibility_events_callback_) {
     accessibility_events_callback_.Run(nullptr, event_type);

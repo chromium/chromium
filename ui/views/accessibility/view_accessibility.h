@@ -553,6 +553,12 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // native accessibility object associated with this view.
   gfx::NativeViewAccessible GetFocusedDescendant();
 
+  // Returns the ViewAccessibility children. Since virtual children have a
+  // higher priority than real children (views), this function returns them
+  // first if any. If there are no virtual children, it returns the
+  // ViewAccessibility objects associated with the children of the `view_`.
+  std::vector<raw_ptr<ViewAccessibility>> GetChildren() const;
+
   // If true, moves accessibility focus to an ancestor.
   void set_propagate_focus_to_ancestor(bool value) {
     propagate_focus_to_ancestor_ = value;
