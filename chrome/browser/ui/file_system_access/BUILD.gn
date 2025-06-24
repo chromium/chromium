@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/safe_browsing/buildflags.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("file_system_access") {
@@ -31,6 +33,11 @@ source_set("impl") {
     ":file_system_access",
     "//chrome/browser/ui:url_identity",
   ]
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
+  }
+
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 

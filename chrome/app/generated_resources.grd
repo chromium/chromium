@@ -17083,7 +17083,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Save <ph name="FILE">$1<ex>filename.exe</ex></ph>?
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_TEXT" desc="Text of dialog explaining that the user is attempting to save a file with a dangerous extension">
-      This type of file can be dangerous. Only save this file if you trust <ph name="ORIGIN">$1<ex>example.com</ex></ph>
+      This file of type (<ph name="TYPE">$1<ex>.exe</ex></ph>) can be dangerous. Only save this file if you trust <ph name="ORIGIN">$2<ex>example.com</ex></ph>
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_DONT_SAVE" desc="Text of the button allowing the user to choose to not save a file with a dangerous extension">
       Don't save
