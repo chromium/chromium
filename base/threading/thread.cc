@@ -58,13 +58,17 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
  public:
   explicit SequenceManagerThreadDelegate(
       MessagePumpType message_pump_type,
-      OnceCallback<std::unique_ptr<MessagePump>()> message_pump_factory)
+      OnceCallback<std::unique_ptr<MessagePump>()> message_pump_factory,
+      std::unique_ptr<base::sequence_manager::SequenceManagerSettings>
+          sequence_manager_settings)
       : sequence_manager_(
             sequence_manager::internal::CreateUnboundSequenceManagerImpl(
                 PassKey<base::internal::SequenceManagerThreadDelegate>(),
-                sequence_manager::SequenceManager::Settings::Builder()
-                    .SetMessagePumpType(message_pump_type)
-                    .Build())),
+                sequence_manager_settings
+                    ? std::move(sequence_manager_settings->settings)
+                    : sequence_manager::SequenceManager::Settings::Builder()
+                          .SetMessagePumpType(message_pump_type)
+                          .Build())),
         default_task_queue_(sequence_manager_->CreateTaskQueue(
             sequence_manager::TaskQueue::Spec(
                 sequence_manager::QueueName::DEFAULT_TQ))),
@@ -120,7 +124,8 @@ Thread::Options::Options(Options&& other)
       message_pump_factory(std::move(other.message_pump_factory)),
       stack_size(std::move(other.stack_size)),
       thread_type(std::move(other.thread_type)),
-      joinable(std::move(other.joinable)) {
+      joinable(std::move(other.joinable)),
+      sequence_manager_settings(std::move(other.sequence_manager_settings)) {
   other.moved_from = true;
 }
 
@@ -192,12 +197,14 @@ bool Thread::StartWithOptions(Options options) {
     delegate_ = std::move(options.delegate);
   } else if (options.message_pump_factory) {
     delegate_ = std::make_unique<internal::SequenceManagerThreadDelegate>(
-        MessagePumpType::CUSTOM, options.message_pump_factory);
+        MessagePumpType::CUSTOM, options.message_pump_factory,
+        std::move(options.sequence_manager_settings));
   } else {
     delegate_ = std::make_unique<internal::SequenceManagerThreadDelegate>(
         options.message_pump_type,
         BindOnce([](MessagePumpType type) { return MessagePump::Create(type); },
-                 options.message_pump_type));
+                 options.message_pump_type),
+        std::move(options.sequence_manager_settings));
   }
 
   start_event_.Reset();

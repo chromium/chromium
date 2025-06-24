@@ -382,8 +382,7 @@ NetworkService::NetworkService(
   g_network_service = this;
 
   if (base::FeatureList::IsEnabled(features::kNetworkServiceScheduler)) {
-    scheduler_ = std::make_unique<NetworkServiceScheduler>();
-    scheduler_->SetUpNetTaskRunners();
+    NetworkServiceScheduler::MaybeCreate();
   }
 
   ContentDecodingInterceptor::SetIsNetworkServiceRunningInTheCurrentProcess(

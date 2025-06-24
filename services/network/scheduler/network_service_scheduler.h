@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/task_queue.h"
+#include "base/threading/thread.h"
 #include "services/network/scheduler/network_service_task_queues.h"
 
 namespace base {
@@ -23,25 +24,41 @@ struct Task;
 
 namespace network {
 
-// Manages the task scheduling for the network service. It sets up a
-// `base::sequence_manager::SequenceManager` on the current thread with specific
-// priorities defined by NetworkServiceTaskPriority` and manages
-// `NetworkServiceTaskQueues` (e.g., default, high priority).
+// Manages task scheduling for the network service. This scheduler assumes
+// that `SequenceManager` is already correctly constructed on the current thread
+// with specific priorities defined in `NetworkServiceTaskPriority`. This
+// scheduler creates and manages `NetworkServiceTaskQueues` (e.g., default, high
+// priority).
 //
 // This scheduler is responsible for:
-// - Creating and configuring the sequence manager for the network thread.
 // - Providing task runners for different priority levels.
 // - Integrating with `net::GetTaskRunner` by setting up the task runners in
 //   `net::internal::TaskRunnerGlobals`.
-// - Optionally handling task completion notifications for metrics.
+// - Handling task completion notifications for metrics.
+//
+// The scheduler does not own the sequence manager. This scheduler's lifetime
+// should outlive the network service.
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceScheduler {
  public:
-  NetworkServiceScheduler();
-
   NetworkServiceScheduler(const NetworkServiceScheduler&) = delete;
   NetworkServiceScheduler& operator=(const NetworkServiceScheduler&) = delete;
 
+  // Creates and registers a `NetworkServiceScheduler` for the current thread.
+  // This function is typically called during NetworkService initialization and
+  // will only create a scheduler if `SetSequenceManagerSettings()` was called
+  // beforehand (e.g. during child process startup) to configure the thread's
+  // sequence manager with the required priority settings.
+  static void MaybeCreate();
+
+  // Creates a NetworkServiceScheduler for testing.
+  static std::unique_ptr<NetworkServiceScheduler> CreateForTesting();
+
   ~NetworkServiceScheduler();
+
+  // Configures the sequence manager settings in Thread `options` for use with
+  // the network service scheduler. This must be called before the thread is
+  // started.
+  static void ConfigureSequenceManager(base::Thread::Options& options);
 
   using QueueType = NetworkServiceTaskQueues::QueueType;
 
@@ -49,17 +66,26 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceScheduler {
   const scoped_refptr<base::SingleThreadTaskRunner>& GetTaskRunner(
       QueueType type) const;
 
-  // Sets up the global task runners in `net::internal::TaskRunnerGlobals` so
-  // that `net::GetTaskRunner(net::RequestPriority)` returns the appropriate
-  // task runner managed by this scheduler.
-  void SetUpNetTaskRunners();
-
-  // Similar to `SetUpNetTaskRunners`, but specifically for testing.
-  // It saves the current global high-priority task runner and restores it
-  // when this `NetworkServiceScheduler` instance is destructed.
+  // Sets up the global `net` task runners to point to this scheduler's task
+  // runners. This test-only version saves the original global task runners
+  // and restores them upon this scheduler's destruction to prevent side-effects
+  // between tests.
   void SetUpNetTaskRunnersForTesting();
 
  private:
+  // Constructor for production, borrows the existing sequence manager.
+  explicit NetworkServiceScheduler(
+      base::sequence_manager::SequenceManager* sequence_manager);
+
+  // Constructor for testing, takes ownership of `sequence manager_for_testing`.
+  explicit NetworkServiceScheduler(
+      std::unique_ptr<base::sequence_manager::SequenceManager>
+          sequence_manager_for_testing);
+
+  // Sets up the global `net` task runners to point to this scheduler's task
+  // runners.
+  void SetUpNetTaskRunners();
+
   // Callback for when a task completes on one of the managed queues.
   // Used for recording metrics.
   void OnTaskCompleted(
@@ -67,7 +93,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceScheduler {
       base::sequence_manager::TaskQueue::TaskTiming* task_timing,
       base::LazyNow* lazy_now);
 
-  std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
+  // Sequence manager used only for testing scenarios where the scheduler
+  // owns the sequence manager.
+  std::unique_ptr<base::sequence_manager::SequenceManager>
+      sequence_manager_for_testing_;
+
   NetworkServiceTaskQueues task_queues_;
 
   // Stores the original global high-priority task runner when
@@ -75,6 +105,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceScheduler {
   // destruction.
   std::optional<scoped_refptr<base::SingleThreadTaskRunner>>
       original_high_priority_task_runner_for_testing_;
+
+  // Stores the original default task runner before `CreateForTesting()`
+  // is called, so it can be restored on destruction.
+  std::optional<scoped_refptr<base::SingleThreadTaskRunner>>
+      original_default_task_runner_;
 };
 
 }  // namespace network

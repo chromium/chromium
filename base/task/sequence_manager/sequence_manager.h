@@ -352,6 +352,20 @@ CreateSequenceManagerOnCurrentThreadWithPump(
 BASE_EXPORT std::unique_ptr<SequenceManager> CreateUnboundSequenceManager(
     SequenceManager::Settings settings = SequenceManager::Settings());
 
+// Wrapper around SequenceManager::Settings.
+//
+// If you need `SequenceManager::Settings` in a header file, forward declare
+// this `SequenceManagerSettings` instead of including the full
+// `sequence_manager.h` header file. This helps avoid increasing compile size.
+// For an example of its usage, see base/thread.h.
+struct BASE_EXPORT SequenceManagerSettings {
+  explicit SequenceManagerSettings(SequenceManager::Settings settings);
+  SequenceManagerSettings(const SequenceManagerSettings&) = delete;
+  SequenceManagerSettings& operator=(const SequenceManagerSettings&) = delete;
+
+  SequenceManager::Settings settings;
+};
+
 }  // namespace sequence_manager
 }  // namespace base
 

@@ -24,6 +24,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "child_process\.cc": [
+    "+services/network/scheduler/network_service_scheduler.h",
+  ],
   "child_thread_impl_browsertest\.*": [
     "+components/discardable_memory/service",
   ],
