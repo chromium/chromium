@@ -49,3 +49,24 @@ source_set("impl") {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 }
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "pinned_toolbar_actions_model_browsertest.cc" ]
+    deps = [
+      ":pinned_toolbar",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/toolbar",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/actions:actions_headers",
+      "//ui/base:features",
+    ]
+  }
+}
