@@ -29,6 +29,7 @@ import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mo
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BackgroundManager} from './background_manager.js';
+import {ComposeboxProxyImpl} from './composebox/composebox_proxy.js';
 import type {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote} from './customize_buttons.mojom-webui.js';
 import {CustomizeChromeSection, SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
 import {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
@@ -642,6 +643,12 @@ export class AppElement extends AppElementBase {
 
   protected toggleComposebox_() {
     this.showComposebox_ = !this.showComposebox_;
+  }
+
+  protected closeComposebox_() {
+    const composeboxHandler = ComposeboxProxyImpl.getInstance().handler;
+    composeboxHandler.notifySessionAbandoned();
+    this.toggleComposebox_();
   }
 
   protected onOpenVoiceSearch_() {

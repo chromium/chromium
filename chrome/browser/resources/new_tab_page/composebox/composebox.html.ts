@@ -14,7 +14,7 @@ export function getHtml(this: ComposeboxElement) {
   <div class="gradient gradient-outer-glow"></div>
   <div class="gradient"></div>
   <div class="background"></div>
-  <div id="composebox">
+  <div id="composebox" tabindex="-1" @keydown="${this.onKeydown_}">
     <div id="inputContainer">
       <textarea autocomplete="off" id="input"
           type="search" spellcheck="false"

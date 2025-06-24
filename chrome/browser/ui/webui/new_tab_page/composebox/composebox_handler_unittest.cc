@@ -59,3 +59,8 @@ TEST_F(ComposeboxHandlerTest, NotifySessionStarted) {
   EXPECT_CALL(query_controller(), NotifySessionStarted).Times(1);
   handler().NotifySessionStarted();
 }
+
+TEST_F(ComposeboxHandlerTest, NotifySessionAbandoned) {
+  EXPECT_CALL(query_controller(), NotifySessionAbandoned).Times(1);
+  handler().NotifySessionAbandoned();
+}

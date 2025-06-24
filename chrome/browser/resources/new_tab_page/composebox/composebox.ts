@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import type {ComposeboxPageHandlerRemote} from '../composebox.mojom-webui.js';
 import {recordLoadDuration} from '../metrics_utils.js';
@@ -26,6 +27,7 @@ export interface ComposeboxElement {
     imageInput: HTMLInputElement,
     imageUploadButton: HTMLElement,
     input: HTMLInputElement,
+    composebox: HTMLElement,
   };
 }
 
@@ -68,6 +70,7 @@ export class ComposeboxElement extends CrLitElement {
   private maxFileSize_: number =
       loadTimeData.getInteger('composeboxFileMaxSize');
   private pageHandler_: ComposeboxPageHandlerRemote;
+  private eventTracker_: EventTracker = new EventTracker();
 
   constructor() {
     super();
@@ -80,9 +83,16 @@ export class ComposeboxElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.$.input.addEventListener('input', () => {
+    this.eventTracker_.add(this.$.input, 'input', () => {
       this.submitEnabled_ = this.$.input.value.length > 0;
     });
+    // Make the element focusable to receive keyboard events.
+    this.$.composebox.focus();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
   }
 
   protected onDeleteFile_(e: CustomEvent) {
@@ -143,8 +153,19 @@ export class ComposeboxElement extends CrLitElement {
       this.files_ = [];
       this.submitEnabled_ = false;
     } else {
-      this.fire('toggle-composebox');
+      this.notifySessionAbandoned_();
     }
+  }
+
+  protected onKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      this.notifySessionAbandoned_();
+    }
+  }
+
+  private notifySessionAbandoned_() {
+    this.pageHandler_.notifySessionAbandoned();
+    this.fire('toggle-composebox');
   }
 
   protected onSubmitClick_() {

@@ -15,3 +15,7 @@ ComposeboxHandler::~ComposeboxHandler() = default;
 void ComposeboxHandler::NotifySessionStarted() {
   query_controller_->NotifySessionStarted();
 }
+
+void ComposeboxHandler::NotifySessionAbandoned() {
+  query_controller_->NotifySessionAbandoned();
+}
