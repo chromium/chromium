@@ -408,8 +408,14 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
   EXPECT_FALSE(toast_controller->GetToastWidgetForTesting()->IsVisible());
 }
 
+// TODO(crbug.com/427355902): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_HidesWhenOmniboxPopupShows DISABLED_HidesWhenOmniboxPopupShows
+#else
+#define MAYBE_HidesWhenOmniboxPopupShows HidesWhenOmniboxPopupShows
+#endif
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
-                       HidesWhenOmniboxPopupShows) {
+                       MAYBE_HidesWhenOmniboxPopupShows) {
   // Even though the omnibox is focused, the toast should still show because
   // the omnibox doesn't have a popup and the user isn't interacting with the
   // omnibox.
