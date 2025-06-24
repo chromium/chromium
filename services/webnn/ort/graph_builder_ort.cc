@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/types/fixed_array.h"
 #include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
@@ -48,6 +49,7 @@ constexpr base::cstring_view kOpTypeReciprocal = "Reciprocal";
 constexpr base::cstring_view kOpTypeCast = "Cast";
 
 constexpr base::cstring_view kOpTypeClamp = "Clip";
+constexpr base::cstring_view kOpTypeConcat = "Concat";
 constexpr base::cstring_view kOpTypeConv2d = "Conv";
 constexpr base::cstring_view kOpTypeConvTranspose2d = "ConvTranspose";
 constexpr base::cstring_view kOpTypeExpand = "Expand";
@@ -61,6 +63,7 @@ constexpr base::cstring_view kOpTypeReshape = "Reshape";
 constexpr base::cstring_view kOpTypeSigmoid = "Sigmoid";
 constexpr base::cstring_view kOpTypeSoftmax = "Softmax";
 constexpr base::cstring_view kOpTypeSoftsign = "Softsign";
+constexpr base::cstring_view kOpTypeSplit = "Split";
 constexpr base::cstring_view kOpTypeTanh = "Tanh";
 constexpr base::cstring_view kOpTypeTranspose = "Transpose";
 
@@ -635,6 +638,29 @@ void GraphBuilderOrt::AddExpandOperation(const mojom::Expand& expand) {
   AddExpandNode(node_name, input, output, output_shape);
 }
 
+void GraphBuilderOrt::AddConcatOperation(const mojom::Concat& concat) {
+  const std::string node_name = GenerateNodeName(concat.label);
+
+  size_t input_count = concat.input_operand_ids.size();
+  base::FixedArray<std::string> inputs_string(input_count);
+  base::FixedArray<const char*> inputs(input_count);
+  for (size_t i = 0; i < input_count; i++) {
+    CHECK(context_properties_.data_type_limits.concat_inputs.Supports(
+        GetOperand(concat.input_operand_ids[i]).descriptor));
+    inputs_string[i] = GetOperandNameById(concat.input_operand_ids[i]);
+    inputs[i] = inputs_string[i].c_str();
+  }
+
+  const std::string output = GetOperandNameById(concat.output_operand_id);
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  constexpr base::cstring_view kAxis = "axis";
+  std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
+      kAxis, base::checked_cast<int64_t>(concat.axis))};
+
+  model_editor_.AddNode(kOpTypeConcat, node_name, inputs, outputs, attributes);
+}
+
 void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
   const std::string node_name = GenerateNodeName(gemm.label);
   const std::string input_a = GetOperandNameById(gemm.a_operand_id);
@@ -848,6 +874,42 @@ void GraphBuilderOrt::AddPreluOperation(const mojom::Prelu& prelu) {
   model_editor_.AddNode(kOpTypePRelu, node_name, inputs, outputs);
 }
 
+void GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
+  const std::string node_name = GenerateNodeName(split.label);
+  const std::string input = GetOperandNameById(split.input_operand_id);
+
+  CHECK(context_properties_.data_type_limits.split_input.Supports(
+      GetOperand(split.input_operand_id).descriptor));
+
+  const auto output_count = split.output_operand_ids.size();
+  // 'split' is a 1-D tensor which specifies the length of each output. The sum
+  // of the values must be equal to the input size along 'axis'.
+  // https://onnx.ai/onnx/operators/onnx__Split.html#inputs
+  base::FixedArray<int64_t> split_sizes(output_count);
+  for (size_t i = 0; i < output_count; i++) {
+    const std::vector<uint32_t>& output_shape =
+        GetOperand(split.output_operand_ids[i]).descriptor.shape();
+    CHECK_LT(split.axis, output_shape.size());
+    split_sizes[i] = base::checked_cast<int64_t>(output_shape[split.axis]);
+  }
+  const std::string split_input = CreateInitializer<int64_t>(
+      {base::checked_cast<uint32_t>(split_sizes.size())}, split_sizes);
+  std::array<const char*, 2> inputs = {input.c_str(), split_input.c_str()};
+
+  base::FixedArray<std::string> output_names(output_count);
+  base::FixedArray<const char*> outputs(output_count);
+  for (size_t i = 0; i < output_count; i++) {
+    output_names[i] = GetOperandNameById(split.output_operand_ids[i]);
+    outputs[i] = output_names[i].c_str();
+  }
+
+  constexpr base::cstring_view kAttrAxis = "axis";
+  std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
+      kAttrAxis, base::checked_cast<int64_t>(split.axis))};
+
+  model_editor_.AddNode(kOpTypeSplit, node_name, inputs, outputs, attributes);
+}
+
 void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
   const std::string node_name = GenerateNodeName(transpose.label);
   const std::string input = GetOperandNameById(transpose.input_operand_id);
@@ -888,6 +950,10 @@ GraphBuilderOrt::BuildModel() {
     switch (operation->which()) {
       case mojom::Operation::Tag::kClamp: {
         AddClampOperation(*operation->get_clamp());
+        break;
+      }
+      case mojom::Operation::Tag::kConcat: {
+        AddConcatOperation(*operation->get_concat());
         break;
       }
       case mojom::Operation::Tag::kConv2d: {
@@ -962,6 +1028,10 @@ GraphBuilderOrt::BuildModel() {
         AddUnaryOperation(*operation->get_softsign(), kOpTypeSoftsign);
         break;
       }
+      case mojom::Operation::Tag::kSplit: {
+        AddSplitOperation(*operation->get_split());
+        break;
+      }
       case mojom::Operation::Tag::kTanh: {
         CHECK(data_type_limits.tanh_input.Supports(
             GetOperand(operation->get_tanh()->input_operand_id).descriptor));
@@ -974,7 +1044,6 @@ GraphBuilderOrt::BuildModel() {
       }
       case mojom::Operation::Tag::kArgMinMax:
       case mojom::Operation::Tag::kBatchNormalization:
-      case mojom::Operation::Tag::kConcat:
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kElu:
@@ -999,7 +1068,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kScatterNd:
       case mojom::Operation::Tag::kSlice:
       case mojom::Operation::Tag::kSoftplus:
-      case mojom::Operation::Tag::kSplit:
       case mojom::Operation::Tag::kTile:
       case mojom::Operation::Tag::kTriangular:
       case mojom::Operation::Tag::kWhere:

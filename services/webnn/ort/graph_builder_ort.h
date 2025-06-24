@@ -127,6 +127,7 @@ class GraphBuilderOrt {
   void AddCastOperation(const mojom::ElementWiseUnary& cast);
 
   void AddClampOperation(const mojom::Clamp& clamp);
+  void AddConcatOperation(const mojom::Concat& concat);
   void AddConv2dOperation(const mojom::Conv2d& conv2d);
   void AddElementWiseBinaryOperation(
       const mojom::ElementWiseBinary& element_wise_binary);
@@ -139,6 +140,7 @@ class GraphBuilderOrt {
   void AddPreluOperation(const mojom::Prelu& prelu);
   void AddReshapeOperation(const mojom::Reshape& reshape);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
+  void AddSplitOperation(const mojom::Split& split);
   void AddTransposeOperation(const mojom::Transpose& transpose);
 
   [[nodiscard]] base::expected<std::unique_ptr<ModelEditor::ModelInfo>,

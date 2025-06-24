@@ -42,6 +42,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
       std::numeric_limits<int32_t>::max();
 
   static constexpr SupportedRanks kMaxRank = SupportedRanks::UpTo(8);
+  static constexpr SupportedRanks kMaxNonScalarRank =
+      SupportedRanks::NonScalarUpTo(8);
 
   static constexpr SupportedDataTypes kFloat16To32Int32To64{
       OperandDataType::kFloat32, OperandDataType::kFloat16,
@@ -64,7 +66,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*cast_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*clamp_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
-       /*concat_inputs=*/{},
+       /*concat_inputs=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
        /*conv2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 8}},
        /*conv2d_bias=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
@@ -181,7 +184,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*softmax_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*softplus_input=*/{},
        /*softsign_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*split_input=*/{},
+       /*split_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
        /*tanh_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*tile_input=*/{},
        /*transpose_input=*/{SupportedDataTypes::All(), kMaxRank},
