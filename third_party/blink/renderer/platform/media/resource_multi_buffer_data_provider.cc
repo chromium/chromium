@@ -168,18 +168,6 @@ void ResourceMultiBufferDataProvider::SetDeferred(bool deferred) {
   if (active_loader_) {
     active_loader_->SetDefersLoading(deferred);
   }
-
-  if (deferred) {
-    if (!cleanup_timer_.IsRunning()) {
-      // Note: Timeout chosen based arbitrarily.
-      cleanup_timer_.Start(
-          FROM_HERE, base::Seconds(1),
-          WTF::BindOnce(&ResourceMultiBufferDataProvider::SetStale,
-                        weak_factory_.GetWeakPtr()));
-    }
-  } else {
-    cleanup_timer_.Stop();
-  }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -514,10 +502,6 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
   }
 }
 
-bool ResourceMultiBufferDataProvider::IsStale() const {
-  return is_stale_;
-}
-
 bool ResourceMultiBufferDataProvider::ParseContentRange(
     const std::string& content_range_str,
     int64_t* first_byte_position,
@@ -604,11 +588,6 @@ bool ResourceMultiBufferDataProvider::VerifyPartialResponse(
   bytes_to_discard_ = byte_pos() - first_byte_position;
 
   return true;
-}
-
-void ResourceMultiBufferDataProvider::SetStale() {
-  is_stale_ = true;
-  url_data_->multibuffer()->OnDataProviderEvent(this);
 }
 
 }  // namespace blink

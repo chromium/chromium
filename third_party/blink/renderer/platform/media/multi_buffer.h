@@ -130,9 +130,6 @@ class PLATFORM_EXPORT MultiBuffer {
     // Ask the data provider to stop giving us data.
     // It's ok if the effect is not immediate.
     virtual void SetDeferred(bool deferred) = 0;
-
-    // Ask the provider if it has been deferred too long.
-    virtual bool IsStale() const = 0;
   };
 
   // MultiBuffers use a global shared LRU to free memory.
@@ -303,8 +300,6 @@ class PLATFORM_EXPORT MultiBuffer {
   // for a provider in a deferred state to wake up.
   void OnDataProviderEvent(DataProvider* provider);
 
-  size_t writer_index_size_for_testing() const { return writer_index_.size(); }
-
  protected:
   // Create a new writer at |pos| and return it.
   // Users needs to implemement this method.
@@ -337,7 +332,7 @@ class PLATFORM_EXPORT MultiBuffer {
   void ReleaseBlocks(const std::vector<MultiBufferBlockId>& blocks);
 
   // Figure out what state a writer at |pos| should be in.
-  ProviderState SuggestProviderState(const BlockId& pos, bool is_stale) const;
+  ProviderState SuggestProviderState(const BlockId& pos) const;
 
   // Returns true if a writer at |pos| is colliding with
   // output of another writer.
