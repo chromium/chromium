@@ -822,6 +822,16 @@ TabContainerImpl::get_group_views_for_testing() const {
   return group_views_;
 }
 
+std::map<tab_groups::TabGroupId, TabGroupHeader*>
+TabContainerImpl::GetGroupHeaders() const {
+  std::map<tab_groups::TabGroupId, TabGroupHeader*> header_map;
+  for (const auto& entry : group_views_) {
+    header_map[entry.first] = entry.second->header();
+  }
+
+  return header_map;
+}
+
 gfx::Rect TabContainerImpl::GetIdealBounds(int model_index) const {
   return tabs_view_model_.ideal_bounds(model_index);
 }

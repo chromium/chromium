@@ -183,6 +183,8 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual const std::map<tab_groups::TabGroupId,
                          std::unique_ptr<TabGroupViews>>&
   get_group_views_for_testing() const = 0;
+  virtual std::map<tab_groups::TabGroupId, TabGroupHeader*> GetGroupHeaders()
+      const = 0;
 
   // Returns ideal bounds for the tab at `model_index` in this TabContainer's
   // coordinate space.

@@ -671,6 +671,11 @@ CompoundTabContainer::get_group_views_for_testing() const {
   return unpinned_tab_container_->get_group_views_for_testing();  // IN-TEST
 }
 
+std::map<tab_groups::TabGroupId, TabGroupHeader*>
+CompoundTabContainer::GetGroupHeaders() const {
+  return unpinned_tab_container_->GetGroupHeaders();
+}
+
 gfx::Rect CompoundTabContainer::GetIdealBounds(int model_index) const {
   // Ideal bounds for pinned tabs are fine as-is.
   if (model_index < NumPinnedTabs()) {

@@ -3677,7 +3677,7 @@ TEST_F(TabStripModelTest, MoveSelectedTabsToWithEntireGroupSelected) {
 
   tabstrip()->MoveSelectedTabsTo(3, std::nullopt);
   EXPECT_EQ("0p 1p 4p 2p 3p 6 7 9 5 8", GetTabStripStateString(tabstrip()));
-  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id));
+  EXPECT_TRUE(tabstrip()->group_model()->ContainsTabGroup(group_id));
   tabstrip()->CloseAllTabs();
 }
 
@@ -3741,8 +3741,8 @@ TEST_F(TabStripModelTest, MoveSelectedTabsToWithGroupAndSplit) {
   tabstrip()->MoveSelectedTabsTo(3, std::nullopt);
   EXPECT_EQ("2p 3p 4p 0ps 1ps 6s 7s 8 10 11s 12s 5 9",
             GetTabStripStateString(tabstrip()));
-  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id_one));
-  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id_two));
+  EXPECT_TRUE(tabstrip()->group_model()->ContainsTabGroup(group_id_one));
+  EXPECT_TRUE(tabstrip()->group_model()->ContainsTabGroup(group_id_two));
 }
 
 // Tests that moving a tab forgets all openers referencing it.

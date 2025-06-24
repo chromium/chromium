@@ -101,12 +101,14 @@ void TabStripCollection::MoveTabsRecursive(
     const std::vector<int>& tab_indices,
     size_t destination_index,
     std::optional<tab_groups::TabGroupId> new_group_id,
-    bool new_pinned_state) {
+    bool new_pinned_state,
+    const std::set<TabCollection::Type>& retain_collection_types) {
   CHECK(destination_index >= 0);
   ChildrenVector moved_datas;
 
   // Removes the tabs and collections needed to be moved.
-  for (auto& tab_or_collection : GetTabsAndCollectionsForMove(tab_indices)) {
+  for (auto& tab_or_collection :
+       GetTabsAndCollectionsForMove(tab_indices, retain_collection_types)) {
     TabCollection* parent_collection;
     if (std::holds_alternative<TabInterface*>(tab_or_collection)) {
       TabInterface* tab_to_remove = std::get<TabInterface*>(tab_or_collection);
@@ -120,9 +122,6 @@ void TabStripCollection::MoveTabsRecursive(
           parent_collection->MaybeRemoveCollection(collection_to_remove));
     }
 
-    // TODO(406529289): Remove this once groups collections can be moved by
-    // dragging. This is needed as a group can be left in an empty state here if
-    // all the tabs in the subcollection is removed.
     if (parent_collection->type() == TabCollection::Type::GROUP) {
       MaybeRemoveGroupCollection(
           static_cast<TabGroupTabCollection*>(parent_collection));
@@ -156,7 +155,8 @@ void TabStripCollection::MoveTabsRecursive(
 }
 
 ChildrenPtrs TabStripCollection::GetTabsAndCollectionsForMove(
-    const std::vector<int>& tab_indices) {
+    const std::vector<int>& tab_indices,
+    const std::set<TabCollection::Type>& retain_collection_types) {
   std::set<const TabInterface*> selected_tabs;
   for (int index : tab_indices) {
     selected_tabs.insert(GetTabAtIndexRecursive(index));
@@ -167,18 +167,35 @@ ChildrenPtrs TabStripCollection::GetTabsAndCollectionsForMove(
   // cannot be moved.
   std::set<const TabCollection*> selected_collections;
 
-  // TODO(406529289): Find selected group collections for dragging groups.
-  for (const auto& [split_id, split_collection] : split_mapping_) {
-    bool fully_selected = true;
-    for (const TabInterface* tab : *split_collection) {
-      if (!selected_tabs.contains(tab)) {
-        fully_selected = false;
-        break;
+  if (retain_collection_types.contains(TabCollection::Type::GROUP)) {
+    for (const auto& [group_id_, group_collection] : group_mapping_) {
+      bool fully_selected = true;
+      for (const TabInterface* tab : *group_collection) {
+        if (!selected_tabs.contains(tab)) {
+          fully_selected = false;
+          break;
+        }
+      }
+
+      if (fully_selected) {
+        selected_collections.insert(group_collection);
       }
     }
+  }
 
-    if (fully_selected) {
-      selected_collections.insert(split_collection);
+  if (retain_collection_types.contains(TabCollection::Type::SPLIT)) {
+    for (const auto& [split_id, split_collection] : split_mapping_) {
+      bool fully_selected = true;
+      for (const TabInterface* tab : *split_collection) {
+        if (!selected_tabs.contains(tab)) {
+          fully_selected = false;
+          break;
+        }
+      }
+
+      if (fully_selected) {
+        selected_collections.insert(split_collection);
+      }
     }
   }
 

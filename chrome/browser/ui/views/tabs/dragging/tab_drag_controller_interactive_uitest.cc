@@ -1046,9 +1046,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 }
 
 // Creates a browser with four tabs. The first tab is in a Tab Group. Dragging
-// the only tab in that group will remove the group.
+// the only tab in that group will retain the group.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DragOnlyTabInGroupRemovesGroup) {
+                       DragOnlyTabInGroupRetainsGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -1070,15 +1070,16 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   StopAnimating(tab_strip);
 
   EXPECT_EQ("1 0 2 3", IDString(model));
-  EXPECT_FALSE(model->group_model()->ContainsTabGroup(group));
+  EXPECT_EQ(model->group_model()->GetTabGroup(group)->ListTabs(),
+            gfx::Range(1, 2));
 }
 
 // Creates a browser with four tabs. The first tab is in Tab Group 1. The
-// third tab is in Tab Group 2. Dragging the second tab over one to the left
+// fourth tab is in Tab Group 2. Dragging the second tab over one to the left
 // will result in the second tab joining Tab Group 1. Then dragging the third
 // tab over one to the left will result in the tab joining Tab Group 1. Then
-// dragging the fourth tab over one to the left will result in the tab joining
-// Tab Group 1 as well.
+// dragging the fourth tab over one to the left will not result in the tab
+// joining Tab Group 1 as well as it is the only tab in its group.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragSingleTabLeftIntoGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
@@ -1089,7 +1090,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   AddTabsAndResetBrowser(browser(), 3);
   tab_groups::TabGroupId group1 = model->AddToNewGroup({0});
-  model->AddToNewGroup({2});
+  tab_groups::TabGroupId group4 = model->AddToNewGroup({3});
   StopAnimating(tab_strip);
   EnsureFocusToTabStrip(tab_strip);
 
@@ -1125,16 +1126,17 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(ReleaseInput());
   StopAnimating(tab_strip);
 
-  EXPECT_EQ("1 2 3 0", IDString(model));
-  EXPECT_EQ(group_model->GetTabGroup(group1)->ListTabs(), gfx::Range(0, 4));
+  EXPECT_EQ("1 2 0 3", IDString(model));
+  EXPECT_EQ(group_model->GetTabGroup(group1)->ListTabs(), gfx::Range(0, 3));
+  EXPECT_EQ(group_model->GetTabGroup(group4)->ListTabs(), gfx::Range(3, 4));
 }
 
 // Creates a browser with five tabs. The fourth tab is in Tab Group 1. The
-// second tab is in Tab Group 2. Dragging the third tab over one to the right
+// first tab is in Tab Group 2. Dragging the third tab over one to the right
 // will result in the tab joining Tab Group 1. Then dragging the second tab
 // over one to the right will result in the tab joining Tab Group 1. Then
-// dragging the first tab over one to the right will result in the tab joining
-// Tab Group 1 as well.
+// dragging the first tab over one to the right will not result in the tab
+// joining Tab Group 1.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragSingleTabRightIntoGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
@@ -1145,7 +1147,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   AddTabsAndResetBrowser(browser(), 4);
   tab_groups::TabGroupId group1 = model->AddToNewGroup({3});
-  model->AddToNewGroup({1});
+  tab_groups::TabGroupId group2 = model->AddToNewGroup({0});
   StopAnimating(tab_strip);
   EnsureFocusToTabStrip(tab_strip);
 
@@ -1176,8 +1178,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(ReleaseInput());
   StopAnimating(tab_strip);
 
-  EXPECT_EQ("3 0 1 2 4", IDString(model));
-  EXPECT_EQ(group_model->GetTabGroup(group1)->ListTabs(), gfx::Range(0, 4));
+  EXPECT_EQ("0 3 1 2 4", IDString(model));
+  EXPECT_EQ(group_model->GetTabGroup(group1)->ListTabs(), gfx::Range(1, 4));
+  EXPECT_EQ(group_model->GetTabGroup(group2)->ListTabs(), gfx::Range(0, 1));
 }
 
 // Creates a browser with five tabs. The last two tabs are in a Tab Group.
@@ -1206,11 +1209,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ(group_model->GetTabGroup(group)->ListTabs(), gfx::Range(2, 4));
 }
 
-// Creates a browser with four tabs each in its own group. Selecting and
-// dragging the first and third tabs right at the first tab will result in the
-// tabs joining the same group as the tab in the second position. Then dragging
-// the tabs over two to the right will result in the tabs joining the same group
-// as the last tab.
+// Creates a browser with four tabs. Second and Fourth tabs are parts of their
+// own groups. Selecting and dragging the first and third tabs right at the
+// first tab will result in the tabs joining the same group as the tab in the
+// second position. Then dragging the tabs over two to the right will result in
+// the tabs joining the same group as the last tab.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragMultipleTabsRightIntoGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
@@ -1222,10 +1225,10 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   TabGroupModel* group_model = model->group_model();
 
   AddTabsAndResetBrowser(browser(), 3);
-  model->AddToNewGroup({0});
+
   tab_groups::TabGroupId group2 = model->AddToNewGroup({1});
-  model->AddToNewGroup({2});
   tab_groups::TabGroupId group4 = model->AddToNewGroup({3});
+
   StopAnimating(tab_strip);
   EnsureFocusToTabStrip(tab_strip);
 
@@ -1261,9 +1264,10 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ(group_model->GetTabGroup(group4)->ListTabs(), gfx::Range(1, 4));
 }
 
-// Creates a browser with four tabs each in its own group. Selecting and
-// dragging the second and fourth tabs left at the fourth tab will result in the
-// tabs joining the same group as the tab in the third position.
+// Creates a browser with four tabs each. First and Third tabs are in their own
+// group. Selecting and dragging the second and fourth tabs left at the fourth
+// tab will result in the tabs joining the same group as the tab in the third
+// position.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragMultipleTabsLeftIntoGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
@@ -1274,9 +1278,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   AddTabsAndResetBrowser(browser(), 3);
   tab_groups::TabGroupId group1 = model->AddToNewGroup({0});
-  model->AddToNewGroup({1});
   tab_groups::TabGroupId group3 = model->AddToNewGroup({2});
-  model->AddToNewGroup({3});
+
   StopAnimating(tab_strip);
   EnsureFocusToTabStrip(tab_strip);
 
@@ -1340,7 +1343,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 #else
 #define MAYBE_RevertDragSplitTab RevertDragSplitTab
 #endif
-
 // Drag a split tab within a tabstrip and cancel the drag.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_RevertDragSplitTab) {
@@ -1406,13 +1408,20 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ(group_model->GetTabGroup(group1)->ListTabs(), gfx::Range(0, 2));
 }
 
-// Creates a browser with four tabs. The last two tabs are in Tab Group 1. The
-// second tab is in Tab Group 2. Dragging the second tab over one to the right
-// will result in the tab joining Tab Group 1. While this drag is still in
-// session, pressing escape will revert group of the tab, but will not recreate
-// the group because the group was closed during dragging.
+// Creates a browser with four tabs. The
+// second tab is in Tab Group 1. Dragging the second tab over to the end of the
+// tabstrip . While this drag is still in session, pressing escape will revert
+// group of the tab, but will not recreate the group because the group was
+// closed during dragging.
+// Flaky in LaCrOS. https://crbug.com/1176998
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_RevertDragSingleTabGroup DISABLED_RevertDragSingleTabGroup
+#else
+#define MAYBE_RevertDragSingleTabGroup RevertDragSingleTabGroup
+#endif
+
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       RevertDragSingleTabGroupIntoGroup) {
+                       MAYBE_RevertDragSingleTabGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -1420,20 +1429,19 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   TabGroupModel* group_model = model->group_model();
 
   AddTabsAndResetBrowser(browser(), 3);
-  tab_groups::TabGroupId group1 = model->AddToNewGroup({2, 3});
-  tab_groups::TabGroupId group2 = model->AddToNewGroup({1});
+  tab_groups::TabGroupId group1 = model->AddToNewGroup({1});
   const tab_groups::TabGroupVisualData new_data(
       u"Foo", tab_groups::TabGroupColorId::kCyan);
-  model->ChangeTabGroupVisuals(group2, new_data);
+  group_model->GetTabGroup(group1)->SetVisualData(new_data);
   StopAnimating(tab_strip);
 
   // Dragging the tab in the first index to the tab in the second index switches
   // the tabs and adds the dragged tab to the group.
   ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(1)));
-  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(2)));
+  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(3)));
 
-  EXPECT_EQ("0 2 1 3", IDString(model));
-  EXPECT_EQ(group_model->GetTabGroup(group1)->ListTabs(), gfx::Range(1, 4));
+  EXPECT_EQ("0 2 3 1", IDString(model));
+  EXPECT_EQ(group_model->GetTabGroup(group1)->ListTabs(), gfx::Range(3, 4));
 
   ASSERT_TRUE(TabDragController::IsActive());
 
@@ -1443,8 +1451,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
                                               false, false, false));
   EXPECT_EQ("0 1 2 3", IDString(model));
-  EXPECT_EQ(group_model->GetTabGroup(group1)->ListTabs(), gfx::Range(2, 4));
-  EXPECT_FALSE(group_model->ContainsTabGroup(group2));
+  EXPECT_EQ(group_model->GetTabGroup(group1)->ListTabs(), gfx::Range(1, 2));
 }
 
 // Creates a browser with four tabs. The middle two belong in the same Tab
@@ -3011,20 +3018,18 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 #define MAYBE_DragWindowIntoGroup DragWindowIntoGroup
 #endif
 
-// Creates two browser with two tabs each. The first browser has one tab in a
-// group and the second tab not in a group. The second browser {browser2} has
-// two tabs in another group {group1}. Dragging the two tabs in the first
-// browser into the middle of the second browser will insert the two dragged
-// tabs into the {group1}} after the first tab.
+// Creates two browser with two tabs each. The first browser has two tabs not in
+// any group. The second browser {browser2} has two tabs in another group
+// {group1}. Dragging the two tabs in the first browser into the middle of the
+// second browser will insert the two dragged tabs into the {group1}} after the
+// first tab.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragWindowIntoGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
-  TabStripModel* model = browser()->tab_strip_model();
 
   AddTabsAndResetBrowser(browser(), 1);
-  model->AddToNewGroup({0});
   StopAnimating(tab_strip);
 
   // Set up the second browser with two tabs in a group with distinct IDs.

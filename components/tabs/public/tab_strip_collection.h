@@ -53,10 +53,12 @@ class TabStripCollection : public TabCollection {
                         size_t final_index,
                         std::optional<tab_groups::TabGroupId> new_group_id,
                         bool new_pinned_state);
-  void MoveTabsRecursive(const std::vector<int>& tab_indices,
-                         size_t destination_index,
-                         std::optional<tab_groups::TabGroupId> new_group_id,
-                         bool new_pinned_state);
+  void MoveTabsRecursive(
+      const std::vector<int>& tab_indices,
+      size_t destination_index,
+      std::optional<tab_groups::TabGroupId> new_group_id,
+      bool new_pinned_state,
+      const std::set<TabCollection::Type>& retain_collection_types);
 
   // Removes the tab present at a recursive index in the collection and
   // returns the unique_ptr to the tab model. If there is no tab present
@@ -135,10 +137,12 @@ class TabStripCollection : public TabCollection {
       const tab_groups::TabGroupId& group_id);
 
   // Returns the list of tabs and collection to remove for `MoveTabsRecursive`.
-  // Collections might be present instead of tabs to retain certain collections
-  // during drag.
+  // `retain_collection_types` adds the fully selected collections based on the
+  // types passed in and adds the collection to be moved instead of the tabs
+  // in the collection.
   ChildrenPtrs GetTabsAndCollectionsForMove(
-      const std::vector<int>& tab_indices);
+      const std::vector<int>& tab_indices,
+      const std::set<TabCollection::Type>& retain_collection_types);
 
   // Helper to centralize updates to `group_mapping_` and `split_mapping_`. If
   // `root_collection` is a group, the appropriate splits need to group need to

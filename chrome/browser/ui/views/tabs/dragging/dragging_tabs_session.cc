@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/dragging/dragging_tabs_session.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -257,6 +259,13 @@ bool DraggingTabsSession::AreTabsConsecutive() const {
 std::optional<tab_groups::TabGroupId>
 DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
   TabStripModel* attached_model = attached_context_->GetTabStripModel();
+
+  // If a group is moved, the drag cannot be inserted into another group.
+  for (const TabDragData& tab_drag_datum : drag_data_.tab_drag_data_) {
+    if (tab_drag_datum.view_type == TabSlotView::ViewType::kTabGroupHeader) {
+      return std::nullopt;
+    }
+  }
 
   // Get the proposed tabstrip model assuming the selection has taken place.
   std::pair<std::optional<int>, std::optional<int>> adjacent_indices =
