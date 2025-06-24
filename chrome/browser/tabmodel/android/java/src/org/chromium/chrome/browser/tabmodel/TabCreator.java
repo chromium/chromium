@@ -117,7 +117,7 @@ public abstract class TabCreator {
      * @return The new Tab or null if a Tab was not created successfully.
      */
     public final @Nullable Tab createTabWithWebContents(
-            Tab parent, WebContents webContents, @TabLaunchType int type) {
+            @Nullable Tab parent, WebContents webContents, @TabLaunchType int type) {
         return createTabWithWebContents(parent, webContents, type, webContents.getVisibleUrl());
     }
 

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -216,6 +217,91 @@ public class TabModelImplTest {
                     Tab tab = mTabModelJni.getTabAt(0);
                     assertNotNull(tab);
                     assertEquals(url, tab.getUrl());
+                    assertEquals(
+                            TabLaunchType.FROM_TAB_LIST_INTERFACE,
+                            tab.getTabLaunchTypeAtCreation());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testDuplicateTab() {
+        String url = "https://www.chromium.org";
+        WebPageStation page = mPage.loadWebPageProgrammatically(url);
+        page.openNewTabFast();
+        // 0:Tab0 (tabToDuplicate) | 1:Tab1
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(2, mTabModelJni.getCount());
+                    int index = 0;
+                    Tab tabToDuplicate = mTabModelJni.getTabAt(index);
+                    GURL gurl = new GURL(url);
+                    assertEquals(gurl, tabToDuplicate.getUrl());
+                    assertNull(tabToDuplicate.getTabGroupId());
+
+                    mTabModelJni.duplicateTabForTesting(index);
+                    // 0:Tab0 (tabToDuplicate) | 1:Tab2 (duplicatedTab) | 2:Tab1
+                    assertEquals(3, mTabModelJni.getCount());
+
+                    Tab duplicatedTab = mTabModelJni.getTabAt(index + 1);
+                    assertEquals(tabToDuplicate.getId(), duplicatedTab.getParentId());
+                    assertEquals(gurl, duplicatedTab.getUrl());
+                    assertEquals(
+                            TabLaunchType.FROM_TAB_LIST_INTERFACE,
+                            duplicatedTab.getTabLaunchTypeAtCreation());
+                    assertNull(tabToDuplicate.getTabGroupId());
+                    assertNull(duplicatedTab.getTabGroupId());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testDuplicateTab_InsideTabGroup() {
+        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
+        createTabGroup(2, filter);
+        // 0:Tab0 | Group0: 1:Tab1 (tabToDuplicate), 2:Tab2
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(3, mTabModelJni.getCount());
+                    int index = 1;
+                    Tab tabToDuplicate = mTabModelJni.getTabAt(index);
+                    assertNotNull(tabToDuplicate.getTabGroupId());
+
+                    mTabModelJni.duplicateTabForTesting(index);
+                    // 0:Tab0 | Group0: 1:Tab1 (tabToDuplicate), 2:Tab3 (duplicatedTab), 3:Tab2
+                    assertEquals(4, mTabModelJni.getCount());
+
+                    Tab duplicatedTab = mTabModelJni.getTabAt(index + 1);
+                    assertEquals(tabToDuplicate.getId(), duplicatedTab.getParentId());
+                    assertEquals(tabToDuplicate.getTabGroupId(), duplicatedTab.getTabGroupId());
+                    assertEquals(
+                            TabLaunchType.FROM_TAB_LIST_INTERFACE,
+                            duplicatedTab.getTabLaunchTypeAtCreation());
+                });
+
+        Tab tabOutsideGroup = createTab();
+        // 0:Tab0 | Group0: 1:Tab1, 2:Tab3 , 3:Tab2 (tabToDuplicate) | 4:Tab4
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(5, mTabModelJni.getCount());
+                    int index = 3;
+                    Tab tabToDuplicate = mTabModelJni.getTabAt(index);
+                    assertNotNull(tabToDuplicate.getTabGroupId());
+
+                    mTabModelJni.duplicateTabForTesting(index);
+                    // 0:Tab0 | Group0: 1:Tab1, 2:Tab3 , 3:Tab2 (tabToDuplicate) | 4:Tab4
+                    assertEquals(6, mTabModelJni.getCount());
+                    assertEquals(tabOutsideGroup, mTabModelJni.getTabAt(5));
+
+                    Tab duplicatedTab = mTabModelJni.getTabAt(index + 1);
+                    assertEquals(tabToDuplicate.getId(), duplicatedTab.getParentId());
+                    assertEquals(tabToDuplicate.getTabGroupId(), duplicatedTab.getTabGroupId());
+                    assertEquals(
+                            TabLaunchType.FROM_TAB_LIST_INTERFACE,
+                            duplicatedTab.getTabLaunchTypeAtCreation());
                 });
     }
 

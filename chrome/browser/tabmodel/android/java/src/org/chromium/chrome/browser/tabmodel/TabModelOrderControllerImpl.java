@@ -154,7 +154,8 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
         // Restore is handling the active index by itself.
         if (type == TabLaunchType.FROM_RESTORE
                 || type == TabLaunchType.FROM_BROWSER_ACTIONS
-                || type == TabLaunchType.FROM_RESTORE_TABS_UI) {
+                || type == TabLaunchType.FROM_RESTORE_TABS_UI
+                || type == TabLaunchType.FROM_TAB_LIST_INTERFACE) {
             return false;
         }
         return (type != TabLaunchType.FROM_LONGPRESS_BACKGROUND

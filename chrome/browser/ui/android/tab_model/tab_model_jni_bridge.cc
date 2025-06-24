@@ -74,6 +74,12 @@ void TabModelJniBridge::TabAddedToModel(JNIEnv* env,
   }
 }
 
+void TabModelJniBridge::DuplicateTabForTesting(JNIEnv* env,
+                                               const JavaParamRef<jobject>& obj,
+                                               int index) {
+  DuplicateTab(index);
+}
+
 int TabModelJniBridge::GetTabCount() const {
   JNIEnv* env = AttachCurrentThread();
   return Java_TabModelJniBridge_getCount(env, java_object_.get(env));
@@ -253,8 +259,17 @@ void TabModelJniBridge::DiscardTab(tabs::TabHandle tab) {
 }
 
 void TabModelJniBridge::DuplicateTab(int index) {
-  // TODO(crbug.com/415351293): Implement.
-  NOTIMPLEMENTED();
+  WebContents* web_contents = GetWebContentsAt(index);
+  if (web_contents) {
+    std::unique_ptr<WebContents> cloned_web_contents = web_contents->Clone();
+    ScopedJavaLocalRef<jobject> jweb_contents =
+        cloned_web_contents->GetJavaWebContents();
+    JNIEnv* env = AttachCurrentThread();
+    ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+
+    Java_TabModelJniBridge_duplicateTab(env, jobj, index, jweb_contents);
+    cloned_web_contents.release();
+  }
 }
 
 tabs::TabInterface* TabModelJniBridge::GetTab(int index) {

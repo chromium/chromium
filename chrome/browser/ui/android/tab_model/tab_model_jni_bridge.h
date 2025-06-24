@@ -49,6 +49,11 @@ class TabModelJniBridge : public TabModel {
                        const base::android::JavaParamRef<jobject>& obj,
                        const base::android::JavaParamRef<jobject>& jtab);
 
+  // Called by JNI
+  void DuplicateTabForTesting(JNIEnv* env,
+                              const base::android::JavaParamRef<jobject>& obj,
+                              int index);
+
   // TabModel::
   int GetTabCount() const override;
   int GetActiveIndex() const override;

@@ -735,14 +735,20 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     /** Whether {@param tab}'s {@code TabLaunchType} should be part of a group with its parent. */
-    private boolean shouldUseParentIds(Tab tab) {
+    private boolean shouldGroupWithParent(Tab tab, @Nullable Tab parentTab) {
         @TabLaunchType int tabLaunchType = tab.getLaunchType();
+        boolean shouldGroupWithParentForTabListInterface =
+                tabLaunchType == TabLaunchType.FROM_TAB_LIST_INTERFACE
+                        && parentTab != null
+                        && parentTab.getTabGroupId() != null;
+
         return isTabModelRestored()
                 && !mIsResetting
                 && (tabLaunchType == TabLaunchType.FROM_TAB_GROUP_UI
                         || tabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP
                         || tabLaunchType == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                        || tabLaunchType == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP);
+                        || tabLaunchType == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP
+                        || shouldGroupWithParentForTabListInterface);
     }
 
     private @Nullable Tab getParentTab(Tab tab) {
@@ -756,8 +762,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         }
 
         boolean willMergingCreateNewGroup = false;
-        if (!fromUndo && shouldUseParentIds(tab)) {
-            Tab parentTab = getParentTab(tab);
+        Tab parentTab = getParentTab(tab);
+        if (!fromUndo && shouldGroupWithParent(tab, parentTab)) {
             if (parentTab != null) {
                 Token oldTabGroupId = parentTab.getTabGroupId();
                 Token newTabGroupId = getOrCreateTabGroupId(parentTab);
@@ -1138,12 +1144,10 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
     @Override
     public int getValidPosition(Tab tab, int proposedPosition) {
-        int rootId = Tab.INVALID_TAB_ID;
-        if (shouldUseParentIds(tab)) {
-            Tab parentTab = getParentTab(tab);
-            if (parentTab != null) {
-                rootId = parentTab.getRootId();
-            }
+        Tab parentTab = getParentTab(tab);
+        int rootId;
+        if (shouldGroupWithParent(tab, parentTab)) {
+            rootId = (parentTab != null) ? parentTab.getRootId() : Tab.INVALID_TAB_ID;
         } else {
             rootId = tab.getRootId();
         }

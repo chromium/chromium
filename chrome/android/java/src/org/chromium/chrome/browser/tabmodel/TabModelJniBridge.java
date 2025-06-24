@@ -146,6 +146,12 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         }
     }
 
+    protected void duplicateTabForTesting(int index) {
+        TabModelJniBridgeJni.get()
+                .duplicateTabForTesting( // IN-TEST
+                        mNativeTabModelJniBridge, TabModelJniBridge.this, index);
+    }
+
     /**
      * Sets the TabModel's index.
      *
@@ -392,6 +398,22 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                         index);
     }
 
+    /**
+     * Duplicates the tab at the given index to the next adjacent index. An out-of-bounds index is
+     * ignored.
+     *
+     * @param index Index of the tab to duplicate.
+     */
+    @CalledByNative
+    public void duplicateTab(int index, WebContents webContents) {
+        // TODO(crbug.com/415351293): Copy pinned state once implemented.
+        Tab tab = getTabAt(index);
+        if (tab == null) return;
+
+        getTabCreator()
+                .createTabWithWebContents(tab, webContents, TabLaunchType.FROM_TAB_LIST_INTERFACE);
+    }
+
     @CalledByNative
     protected abstract void moveTabToIndex(int index, int newIndex);
 
@@ -413,5 +435,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         void destroy(long nativeTabModelJniBridge, TabModelJniBridge caller);
 
         void tabAddedToModel(long nativeTabModelJniBridge, TabModelJniBridge caller, Tab tab);
+
+        void duplicateTabForTesting( // IN-TEST
+                long nativeTabModelJniBridge, TabModelJniBridge caller, int index);
     }
 }
