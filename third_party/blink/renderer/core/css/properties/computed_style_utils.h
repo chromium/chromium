@@ -395,11 +395,10 @@ class CORE_EXPORT ComputedStyleUtils {
                                                const LayoutObject*,
                                                bool allow_visited_style,
                                                CSSValuePhase value_phase);
-  static CSSValue* ValuesForInterestTargetDelayShorthand(
-      const ComputedStyle&,
-      const LayoutObject*,
-      bool allow_visited_style,
-      CSSValuePhase value_phase);
+  static CSSValue* ValuesForInterestDelayShorthand(const ComputedStyle&,
+                                                   const LayoutObject*,
+                                                   bool allow_visited_style,
+                                                   CSSValuePhase value_phase);
   static CSSValue* ValuesForFontVariantProperty(const ComputedStyle&,
                                                 const LayoutObject*,
                                                 bool allow_visited_style,

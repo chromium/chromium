@@ -310,7 +310,7 @@ bool HTMLInputElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
   // Interest invoker targets with partial interest aren't keyboard focusable.
   if (IsInPartialInterestPopover()) {
-    CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+    CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
         GetDocument().GetExecutionContext()));
     return false;
   }

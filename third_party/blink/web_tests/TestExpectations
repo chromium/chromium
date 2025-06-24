@@ -1518,9 +1518,9 @@ crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/sem
 crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-anchor-nested-display.tentative.html [ Failure ]
 crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-anchor-scroll-display.tentative.html [ Failure ]
 
-# Interesttarget related tests
-crbug.com/326681249 external/wpt/html/semantics/the-button-element/interest-target/interesttarget-svg-a-event-dispatch.tentative.html [ Failure ]
-crbug.com/326681249 [ Mac ] virtual/interest-target-no-partial-interest/external/wpt/html/semantics/the-button-element/interest-target/interesttarget-partial-interest.tentative.html [ Failure Pass ]
+# Interestfor related tests
+crbug.com/326681249 external/wpt/html/semantics/the-button-element/interest-for/interestfor-svg-a-event-dispatch.tentative.html [ Failure ]
+crbug.com/326681249 [ Mac ] virtual/interest-for-no-partial-interest/external/wpt/html/semantics/the-button-element/interest-for/interestfor-partial-interest.tentative.html [ Failure Pass ]
 
 crbug.com/421119389 external/wpt/pointerevents/crashtests/longpress-crash.html [ Crash ]
 
@@ -2960,7 +2960,7 @@ crbug.com/422822316 [ Win11-arm64 ] external/wpt/touch-events/single-touch-verti
 [ Win10.20h2 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/no-vary-search.https.html?2-2 [ Crash ]
 crbug.com/417031845 [ Win10.20h2 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/dynamic-stylesheet-animations-timing-function.html [ Pass Timeout ]
 crbug.com/416615751 external/wpt/css/css-contain/contain-layout-stacking-context-001.html [ Failure ]
-crbug.com/416633174 [ Mac ] external/wpt/html/semantics/the-button-element/interest-target/interesttarget-keyboard-invalidation.tentative.html [ Failure Pass ]
+crbug.com/416633174 [ Mac ] external/wpt/html/semantics/the-button-element/interest-for/interestfor-keyboard-invalidation.tentative.html [ Failure Pass ]
 crbug.com/416129743 [ Mac15-arm64 ] external/wpt/css/css-flexbox/overflow-auto-005.html [ Failure ]
 crbug.com/416704402 virtual/not-split-http-cache/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]
 crbug.com/416704402 virtual/split-cache-by-include-credentials/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]
@@ -9177,7 +9177,7 @@ crbug.com/418169805 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conf
 crbug.com/418173365 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?cpu [ Failure Pass ]
 
 # Gardener 2025-05-01
-crbug.com/411161567 [ Linux ] accessibility/interest-target.html [ Failure Pass ]
+crbug.com/411161567 [ Linux ] accessibility/interest-for.html [ Failure Pass ]
 
 # TODO(crbug.com/415223384): `document.requestStorageAccess` is racy when
 # permission has been overridden (e.g. via `test_driver.set_permission`).

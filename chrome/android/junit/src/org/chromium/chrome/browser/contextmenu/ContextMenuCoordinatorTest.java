@@ -187,8 +187,8 @@ public class ContextMenuCoordinatorTest {
                         0,
                         0,
                         false,
-                        /* openedFromInterestTarget= */ false,
-                        /* interestTargetNodeID= */ 0,
+                        /* openedFromInterestFor= */ false,
+                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
@@ -243,8 +243,8 @@ public class ContextMenuCoordinatorTest {
                         0,
                         0,
                         false,
-                        /* openedFromInterestTarget= */ false,
-                        /* interestTargetNodeID= */ 0,
+                        /* openedFromInterestFor= */ false,
+                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
@@ -304,8 +304,8 @@ public class ContextMenuCoordinatorTest {
                         0,
                         0,
                         false,
-                        /* openedFromInterestTarget= */ false,
-                        /* interestTargetNodeID= */ 0,
+                        /* openedFromInterestFor= */ false,
+                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
@@ -347,8 +347,8 @@ public class ContextMenuCoordinatorTest {
                         0,
                         0,
                         false,
-                        /* openedFromInterestTarget= */ false,
-                        /* interestTargetNodeID= */ 0,
+                        /* openedFromInterestFor= */ false,
+                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Video items
@@ -628,8 +628,8 @@ public class ContextMenuCoordinatorTest {
                         triggeringTouchYDp,
                         0,
                         false,
-                        /* openedFromInterestTarget= */ false,
-                        /* interestTargetNodeID= */ 0,
+                        /* openedFromInterestFor= */ false,
+                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         final WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);

@@ -1686,7 +1686,7 @@
     "expires": "never"
   },
   {
-    "prefix": "interest-target-no-partial-interest",
+    "prefix": "interest-for-no-partial-interest",
     "owners": [
       "masonf@chromium.org"
     ],
@@ -1696,10 +1696,10 @@
       "Win"
     ],
     "bases": [
-      "external/wpt/html/semantics/the-button-element/interest-target"
+      "external/wpt/html/semantics/the-button-element/interest-for"
     ],
     "args": [
-      "--enable-blink-features=HTMLInterestTargetNoPartialInterest,HTMLInterestTargetAttribute"
+      "--enable-blink-features=HTMLInterestForNoPartialInterest,HTMLInterestForAttribute"
     ],
     "expires": "Dec 1, 2025"
   },

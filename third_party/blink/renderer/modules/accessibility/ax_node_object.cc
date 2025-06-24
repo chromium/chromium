@@ -5181,7 +5181,7 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
     case ax::mojom::blink::NameFrom::kAttribute:
     case ax::mojom::blink::NameFrom::kCaption:
     case ax::mojom::blink::NameFrom::kCssAltText:
-    case ax::mojom::blink::NameFrom::kInterestTarget:
+    case ax::mojom::blink::NameFrom::kInterestFor:
     case ax::mojom::blink::NameFrom::kPlaceholder:
     case ax::mojom::blink::NameFrom::kRelatedElement:
     case ax::mojom::blink::NameFrom::kTitle:
@@ -5199,7 +5199,7 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
     case ax::mojom::blink::NameFrom::kAttribute:
     case ax::mojom::blink::NameFrom::kCaption:
     case ax::mojom::blink::NameFrom::kCssAltText:
-    case ax::mojom::blink::NameFrom::kInterestTarget:
+    case ax::mojom::blink::NameFrom::kInterestFor:
     case ax::mojom::blink::NameFrom::kPlaceholder:
     case ax::mojom::blink::NameFrom::kRelatedElement:
     case ax::mojom::blink::NameFrom::kTitle:
@@ -6685,18 +6685,17 @@ String AXNodeObject::TextAlternativeFromTooltip(
     return title_text;
   }
 
-  // First try for interest target, then for hint popover.
-  // TODO(accessibility) Consider only using interest target.
+  // First try for interest for, then for hint popover.
+  // TODO(accessibility) Consider only using interest for.
   AXObject* popover_ax_object = nullptr;
-  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+  if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           GetElement()->GetDocument().GetExecutionContext())) {
-    popover_ax_object =
-        AXObjectCache().Get(GetElement()->InterestTargetElement());
+    popover_ax_object = AXObjectCache().Get(GetElement()->InterestForElement());
   }
   if (popover_ax_object) {
-    DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+    DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
         GetElement()->GetDocument().GetExecutionContext()));
-    name_from = ax::mojom::blink::NameFrom::kInterestTarget;
+    name_from = ax::mojom::blink::NameFrom::kInterestFor;
   } else {
     auto* form_control = DynamicTo<HTMLFormControlElement>(GetElement());
     if (!form_control) {
@@ -6717,7 +6716,7 @@ String AXNodeObject::TextAlternativeFromTooltip(
     name_sources->back().type = name_from;
   }
 
-  // Hint popovers and interest targets are used for text if and only if all of
+  // Hint popovers and interest fors are used for text if and only if all of
   // the contents are plain, e.g. have no interesting semantic or interactive
   // elements. Otherwise, the hint will be exposed via the kDetails
   // relationship. The motivation for this is that by reusing the simple
@@ -7668,21 +7667,21 @@ String AXNodeObject::Description(
     }
   }
 
-  // For form controls that act as interest target triggering elements, use
+  // For form controls that act as interest for triggering elements, use
   // the target for a description if it only contains plain contents.
-  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+  if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           element->GetDocument().GetExecutionContext()) &&
-      name_from != ax::mojom::blink::NameFrom::kInterestTarget) {
-    if (Element* interest_target = element->InterestTargetElement()) {
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      name_from != ax::mojom::blink::NameFrom::kInterestFor) {
+    if (Element* target = element->InterestForElement()) {
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           element->GetDocument().GetExecutionContext()));
-      description_from = ax::mojom::blink::DescriptionFrom::kInterestTarget;
+      description_from = ax::mojom::blink::DescriptionFrom::kInterestFor;
       if (description_sources) {
-        description_sources->push_back(DescriptionSource(
-            found_description, html_names::kInteresttargetAttr));
+        description_sources->push_back(
+            DescriptionSource(found_description, html_names::kInterestforAttr));
         description_sources->back().type = description_from;
       }
-      AXObject* interest_ax_object = AXObjectCache().Get(interest_target);
+      AXObject* interest_ax_object = AXObjectCache().Get(target);
       if (interest_ax_object && interest_ax_object->IsPlainContent()) {
         AXObjectSet visited;
         description = RecursiveTextAlternative(*interest_ax_object,

@@ -67,8 +67,8 @@ bool StructTraits<blink::mojom::UntrustworthyContextMenuParamsDataView,
   out->edit_flags = data.edit_flags();
   out->selection_start_offset = data.selection_start_offset();
   out->annotation_type = data.annotation_type();
-  out->opened_from_interest_target = data.opened_from_interest_target();
-  out->interest_target_node_id = data.interest_target_node_id();
+  out->opened_from_interest_for = data.opened_from_interest_for();
+  out->interest_for_node_id = data.interest_for_node_id();
   out->is_content_editable_for_autofill =
       data.is_content_editable_for_autofill();
   return true;

@@ -814,7 +814,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
        match->type == CSSSelector::kPseudoHasPartialInterest ||
        match->type == CSSSelector::kPseudoTargetOfInterest ||
        match->type == CSSSelector::kPseudoTargetOfPartialInterest) &&
-      !RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      !RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           document ? document->GetExecutionContext() : nullptr)) {
     return CSSSelector::kPseudoUnknown;
   }

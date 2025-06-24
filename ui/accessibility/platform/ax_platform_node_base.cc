@@ -1101,12 +1101,12 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
         break;
       case ax::mojom::DescriptionFrom::kTitle:
       case ax::mojom::DescriptionFrom::kPopoverTarget:
-      case ax::mojom::DescriptionFrom::kInterestTarget:
+      case ax::mojom::DescriptionFrom::kInterestFor:
         // The following types of markup are mapped to "tooltip":
         // * The title attribute.
         // * A popover=something related via the `popovertarget` attribute.
         // * A tooltip related via aria-describedby (see kRelatedElement above).
-        // * An interesttarget pointing to plain content.
+        // * An interestfor pointing to plain content.
         from = "tooltip";
         break;
       case ax::mojom::DescriptionFrom::kNone:
@@ -1194,7 +1194,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       DCHECK(!GetName().empty());
       break;
     case ax::mojom::NameFrom::kPopoverTarget:
-    case ax::mojom::NameFrom::kInterestTarget:
+    case ax::mojom::NameFrom::kInterestFor:
     case ax::mojom::NameFrom::kTitle:
       from = "tooltip";
       DCHECK(!GetName().empty());
@@ -1246,8 +1246,8 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("haspopup", "menu", attributes);
   }
 
-  if (HasState(ax::mojom::State::kHasInterestTarget)) {
-    AddAttributeToList("has-interest-target", "true", attributes);
+  if (HasState(ax::mojom::State::kHasInterestFor)) {
+    AddAttributeToList("has-interest-for", "true", attributes);
   }
 
   // Expose the aria-ispopup attribute.
@@ -1488,8 +1488,8 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::DetailsFrom::kPopoverTarget:
         AddAttributeToList("details-from", "popover-target", attributes);
         break;
-      case ax::mojom::DetailsFrom::kInterestTarget:
-        AddAttributeToList("details-from", "interest-target", attributes);
+      case ax::mojom::DetailsFrom::kInterestFor:
+        AddAttributeToList("details-from", "interest-for", attributes);
         break;
       case ax::mojom::DetailsFrom::kCommandfor:
         AddAttributeToList("details-from", "command-for", attributes);

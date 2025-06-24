@@ -1018,8 +1018,8 @@ const char* ToString(ax::mojom::State state) {
       return "focusable";
     case ax::mojom::State::kHasActions:
       return "hasActions";
-    case ax::mojom::State::kHasInterestTarget:
-      return "hasInterestTarget";
+    case ax::mojom::State::kHasInterestFor:
+      return "hasInterestFor";
     case ax::mojom::State::kHorizontal:
       return "horizontal";
     case ax::mojom::State::kHovered:
@@ -2397,8 +2397,8 @@ const char* ToString(ax::mojom::NameFrom name_from) {
       return "contents";
     case ax::mojom::NameFrom::kCssAltText:
       return "cssAltText";
-    case ax::mojom::NameFrom::kInterestTarget:
-      return "interestTarget";
+    case ax::mojom::NameFrom::kInterestFor:
+      return "interestFor";
     case ax::mojom::NameFrom::kPlaceholder:
       return "placeholder";
     case ax::mojom::NameFrom::kProhibited:
@@ -2428,8 +2428,8 @@ const char* ToString(ax::mojom::DescriptionFrom description_from) {
       return "attributeExplicitlyEmpty";
     case ax::mojom::DescriptionFrom::kButtonLabel:
       return "buttonLabel";
-    case ax::mojom::DescriptionFrom::kInterestTarget:
-      return "interestTarget";
+    case ax::mojom::DescriptionFrom::kInterestFor:
+      return "interestFor";
     case ax::mojom::DescriptionFrom::kPopoverTarget:
       return "popoverTarget";
     case ax::mojom::DescriptionFrom::kProhibitedNameRepair:
@@ -2474,8 +2474,8 @@ const char* ToString(ax::mojom::DetailsFrom details_from) {
       return "cssAnchor";
     case ax::mojom::DetailsFrom::kPopoverTarget:
       return "popoverTarget";
-    case ax::mojom::DetailsFrom::kInterestTarget:
-      return "interestTarget";
+    case ax::mojom::DetailsFrom::kInterestFor:
+      return "interestFor";
     case ax::mojom::DetailsFrom::kCommandfor:
       return "commandforAttribute";
     case ax::mojom::DetailsFrom::kCssScrollMarkerPseudoElement:

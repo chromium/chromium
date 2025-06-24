@@ -386,7 +386,7 @@ class CORE_EXPORT LocalFrame final
   void NotifyContextMenuInsetsObservers(const gfx::Rect&) const;
 
   // This call will "show interest" in the Element with the provided DOMNodeID,
-  // which is presumed to have an `interesttarget` attribute.
+  // which is presumed to have an `interestfor` attribute.
   void ShowInterestInElement(int) const;
 
   // Bubbles a logical scroll to the parent frame, if one exists. For a local

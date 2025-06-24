@@ -465,10 +465,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GridTemplateRows() == b.GridTemplateRows();
     case CSSPropertyID::kHeight:
       return a.Height() == b.Height();
-    case CSSPropertyID::kInterestTargetShowDelay:
-      return a.InterestTargetShowDelay() == b.InterestTargetShowDelay();
-    case CSSPropertyID::kInterestTargetHideDelay:
-      return a.InterestTargetHideDelay() == b.InterestTargetHideDelay();
+    case CSSPropertyID::kInterestShowDelay:
+      return a.InterestShowDelay() == b.InterestShowDelay();
+    case CSSPropertyID::kInterestHideDelay:
+      return a.InterestHideDelay() == b.InterestHideDelay();
     case CSSPropertyID::kHyphenateCharacter:
       return a.HyphenationString() == b.HyphenationString();
     case CSSPropertyID::kHyphenateLimitChars:
@@ -1265,7 +1265,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kCornerBlockStartShape:
     case CSSPropertyID::kCornerBlockEndShape:
     case CSSPropertyID::kInset:
-    case CSSPropertyID::kInterestTargetDelay:
+    case CSSPropertyID::kInterestDelay:
     case CSSPropertyID::kFlex:
     case CSSPropertyID::kFlexFlow:
     case CSSPropertyID::kFont:

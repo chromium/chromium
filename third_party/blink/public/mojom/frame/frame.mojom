@@ -879,11 +879,11 @@ interface LocalFrame {
   NotifyVirtualKeyboardOverlayRect(gfx.mojom.Rect keyboard_rect);
 
   // Notifies the |LocalFrame| about the available space left uncovered by a
-  // context menu for `interesttarget` invokers.
+  // context menu for `interestfor` invokers.
   NotifyContextMenuInsetsObservers(gfx.mojom.Rect safe_area);
 
   // This call will "show interest" in the Element with the provided DOMNodeID,
-  // which is presumed to have an `interesttarget` attribute.
+  // which is presumed to have an `interestfor` attribute.
   ShowInterestInElement(int32 nodeID);
 
   // Add message to the frame console.

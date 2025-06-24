@@ -93,14 +93,14 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   }
 
   // TODO(accessibility): Replace all tests using RunPopoverHintTest to just
-  // RunHtmlTest when Popover hints and interest targets are enabled by default.
+  // RunHtmlTest when Popover hints and interest fors are enabled by default.
   void RunPopoverHintTest(const base::FilePath::CharType* file_path) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "HTMLPopoverHint");
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "HTMLCommandAttributes");
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "HTMLInterestTargetAttribute");
+        switches::kEnableBlinkFeatures, "HTMLInterestForAttribute");
     RunTypedTest<kHtml>(file_path);
   }
 

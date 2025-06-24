@@ -217,7 +217,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   void NotifyContextMenuInsetsObservers(const gfx::Rect&);
 
   // This call will "show interest" in the Element with the provided DOMNodeID,
-  // which is presumed to have an `interesttarget` attribute.
+  // which is presumed to have an `interestfor` attribute.
   void ShowInterestInElement(int);
 
   void SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode);

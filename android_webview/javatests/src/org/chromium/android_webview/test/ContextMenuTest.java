@@ -472,8 +472,8 @@ public class ContextMenuTest extends AwParameterizedTest {
                         /* triggeringTouchYDp= */ 0,
                         /* sourceType= */ 0,
                         /* openedFromHighlight= */ false,
-                        /* openedFromInterestTarget= */ false,
-                        /* interestTargetNodeID= */ 0,
+                        /* openedFromInterestFor= */ false,
+                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         AwContextMenuHelper helper = AwContextMenuHelper.create(mAwContents.getWebContents());
@@ -503,8 +503,8 @@ public class ContextMenuTest extends AwParameterizedTest {
                 0,
                 MenuSourceType.TOUCH,
                 false,
-                /* openedFromInterestTarget= */ false,
-                /* interestTargetNodeID= */ 0,
+                /* openedFromInterestFor= */ false,
+                /* interestForNodeID= */ 0,
                 /* additionalNavigationParams= */ null);
     }
 }

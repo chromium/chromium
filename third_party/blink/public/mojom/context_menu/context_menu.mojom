@@ -204,12 +204,12 @@ struct UntrustworthyContextMenuParams {
   AnnotationType? annotation_type;
 
   // True when the context menu was opened from an element with the
-  // `interesttarget` attribute.
-  bool opened_from_interest_target;
-  // If opened_from_interest_target is true, and if the
-  // HTMLInterestTargetContextMenuItemOnly feature is enabled, this will contain
+  // `interestfor` attribute.
+  bool opened_from_interest_for;
+  // If opened_from_interest_for is true, and if the
+  // HTMLInterestForContextMenuItemOnly feature is enabled, this will contain
   // the DOMNodeID of the link that generated the context menu.
-  int32 interest_target_node_id;
+  int32 interest_for_node_id;
 
   // The type of the form control element on which the context menu is invoked,
   // if any.

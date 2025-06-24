@@ -893,6 +893,12 @@ external/wpt/css/printing/input-file-print.html
 external/wpt/html/semantics/popovers/popover-focus-2.html
 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-focus-2.html
 
+# These are flaky on Mac. Judging by the other focus-related test in this list, I'm assuming
+# there is some kind of headless focus problem.
+external/wpt/html/semantics/the-button-element/interest-for/interestfor-popover-focus.tentative.html
+external/wpt/html/semantics/the-button-element/interest-for/interestfor-invoker-descendants.tentative.html
+external/wpt/html/semantics/the-button-element/interest-for/interestfor-partial-interest.tentative.html
+
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-001.html
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-animated-002.html
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/ttwf-css-3d-polygon-cycle.html

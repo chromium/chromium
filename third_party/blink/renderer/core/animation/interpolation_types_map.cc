@@ -243,8 +243,8 @@ const InterpolationTypes* InterpolationTypesMap::Get(
         applicable_types->push_back(
             MakeGarbageCollected<CSSNumberInterpolationType>(property));
         break;
-      case CSSPropertyID::kInterestTargetShowDelay:
-      case CSSPropertyID::kInterestTargetHideDelay:
+      case CSSPropertyID::kInterestShowDelay:
+      case CSSPropertyID::kInterestHideDelay:
         applicable_types->push_back(
             MakeGarbageCollected<CSSTimeInterpolationType>(property));
         break;

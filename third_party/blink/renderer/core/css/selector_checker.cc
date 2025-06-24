@@ -2114,18 +2114,18 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       return element.HasFocusWithin();
     case CSSSelector::kPseudoHasInterest:
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           element.GetDocument().GetExecutionContext()));
       return element.GetInterestState() != Element::InterestState::kNoInterest;
     case CSSSelector::kPseudoHasPartialInterest:
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           element.GetDocument().GetExecutionContext()));
       return element.GetInterestState() ==
                  Element::InterestState::kPartialInterest ||
              element.GetInterestState() ==
                  Element::InterestState::kPotentialPartialInterest;
     case CSSSelector::kPseudoTargetOfInterest: {
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           element.GetDocument().GetExecutionContext()));
       Element* invoker = element.GetInterestInvoker();
       DCHECK(!invoker || invoker->GetInterestState() !=
@@ -2133,7 +2133,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return invoker;
     }
     case CSSSelector::kPseudoTargetOfPartialInterest: {
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           element.GetDocument().GetExecutionContext()));
       Element* invoker = element.GetInterestInvoker();
       DCHECK(!invoker || invoker->GetInterestState() !=

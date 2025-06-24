@@ -5993,7 +5993,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5370" label="OBSOLETE_V8AIWriter_MeasureInputUsage_Method"/>
   <int value="5371" label="OBSOLETE_V8AIWriter_InputQuota_AttributeGetter"/>
   <int value="5372" label="SpeculationRulesTargetHintBlank"/>
-  <int value="5373" label="InterestTarget"/>
+  <int value="5373" label="InterestFor"/>
   <int value="5374" label="TextAutoSizingDisabledOnFlexbox"/>
   <int value="5375" label="AriaLabeledByAlternativeSpelling"/>
   <int value="5376" label="CanvasTextNg"/>
@@ -7782,11 +7782,11 @@ Called by update_use_counter_css.py.-->
   <int value="820" label="animation-trigger-range-end"/>
   <int value="821" label="animation-trigger-exit-range-start"/>
   <int value="822" label="animation-trigger-exit-range-end"/>
-  <int value="823" label="interest-target-show-delay"/>
-  <int value="824" label="interest-target-hide-delay"/>
+  <int value="823" label="interest-show-delay"/>
+  <int value="824" label="interest-hide-delay"/>
   <int value="825" label="animation-trigger-range"/>
   <int value="826" label="animation-trigger-exit-range"/>
-  <int value="827" label="interest-target-delay"/>
+  <int value="827" label="interest-delay"/>
   <int value="828" label="animation-trigger"/>
   <int value="829" label="column-rule-break"/>
   <int value="830" label="row-rule-break"/>

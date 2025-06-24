@@ -617,8 +617,8 @@ String StylePropertySerializer::SerializeShorthand(
       return Get2Values(gapShorthand());
     case CSSPropertyID::kInset:
       return Get4Values(insetShorthand());
-    case CSSPropertyID::kInterestTargetDelay:
-      return Get2Values(interestTargetDelayShorthand());
+    case CSSPropertyID::kInterestDelay:
+      return Get2Values(interestDelayShorthand());
     case CSSPropertyID::kInsetBlock:
       return Get2Values(insetBlockShorthand());
     case CSSPropertyID::kInsetInline:

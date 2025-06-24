@@ -473,7 +473,7 @@ std::string AXComputedNodeData::ComputeTextContentUTF8() const {
       // visible via e.g. a tooltip.
       case ax::mojom::NameFrom::kTitle:
       case ax::mojom::NameFrom::kPopoverTarget:
-      case ax::mojom::NameFrom::kInterestTarget:
+      case ax::mojom::NameFrom::kInterestFor:
         return std::string();
 
       case ax::mojom::NameFrom::kContents:

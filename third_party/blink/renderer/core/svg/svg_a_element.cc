@@ -196,19 +196,19 @@ void SVGAElement::DefaultEventHandler(Event& event) {
   SVGGraphicsElement::DefaultEventHandler(event);
 }
 
-Element* SVGAElement::InterestTargetElement() const {
-  if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+Element* SVGAElement::InterestForElement() const {
+  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           GetDocument().GetExecutionContext())) {
     return nullptr;
   }
   // Anchor elements that don't have the `href` attribute are not interactive,
-  // so they can't support `interesttarget`.
+  // so they can't support `interestfor`.
   if (!IsInTreeScope() || !IsLink()) {
     return nullptr;
   }
 
   return GetElementAttributeResolvingReferenceTarget(
-      svg_names::kInteresttargetAttr);
+      svg_names::kInterestforAttr);
 }
 
 bool SVGAElement::HasActivationBehavior() const {

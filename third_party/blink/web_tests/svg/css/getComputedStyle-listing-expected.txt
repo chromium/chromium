@@ -231,8 +231,8 @@ inset-block-start: auto
 inset-inline-end: auto
 inset-inline-start: auto
 interactivity: auto
-interest-target-hide-delay: 0.5s
-interest-target-show-delay: 0.5s
+interest-hide-delay: 0.5s
+interest-show-delay: 0.5s
 interpolate-size: numeric-only
 isolation: auto
 item-tolerance: normal

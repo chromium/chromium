@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<button id=invoker interestfor=target></button>
+<div id=target></div>
+
+<script>
+const kInterestForUseCounter = 5373; // From web_feature.mojom
+const invoker = document.getElementById('invoker');
+const target = document.getElementById('target');
+
+function addCleanup(t) {
+  t.add_cleanup(() => {
+    invoker.removeAttribute('interestfor');
+    internals.clearUseCounter(document, kInterestForUseCounter)
+  });
+}
+
+const initialCounterState = internals.isUseCounted(document, kInterestForUseCounter);
+test((t) => {
+  addCleanup(t);
+  assert_true(initialCounterState,'use counter should have been triggered');
+}, 'Use of interestfor content attribute (as parsed) is use counted.');
+
+test((t) => {
+  addCleanup(t);
+  assert_false(internals.isUseCounted(document, kInterestForUseCounter));
+  invoker.setAttribute('interestfor','target');
+  assert_true(internals.isUseCounted(document, kInterestForUseCounter),'use counter should have been triggered');
+}, 'Use of interestfor content attribute is use counted.');
+
+test((t) => {
+  addCleanup(t);
+  assert_false(internals.isUseCounted(document, kInterestForUseCounter));
+  assert_false(invoker.hasAttribute('interestfor'));
+  invoker.interestForElement = target;
+  assert_true(invoker.hasAttribute('interestfor'));
+  assert_equals(invoker.getAttribute('interestfor'),'');
+  assert_true(internals.isUseCounted(document, kInterestForUseCounter),'use counter should have been triggered');
+}, 'Use of interestForElement is use counted.');
+</script>

@@ -408,13 +408,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         linkGroup.add(createListItem(Item.OPEN_IN_NEW_WINDOW));
                     }
                 }
-                if (mParams.getOpenedFromInterestTarget()
-                        && mParams.getInterestTargetNodeID() != 0) {
-                    // This is a context menu for a link with `interesttarget`. If the node ID is
+                if (mParams.getOpenedFromInterestFor()
+                        && mParams.getInterestForNodeID() != 0) {
+                    // This is a context menu for a link with `interestfor`. If the node ID is
                     // valid, then we should add a context menu item to show interest in the link.
                     // There is a static_assert in ContextMenuController::ShowContextMenu() that
                     // ensures "zero" means invalid. This item will only be created if the
-                    // HTMLInterestTargetAttribute flag is enabled.
+                    // HTMLInterestForAttribute flag is enabled.
                     linkGroup.add(createListItem(Item.SHOW_INTEREST_IN_ELEMENT));
                 }
                 if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)
@@ -884,7 +884,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_show_interest_in_element) {
             recordContextMenuSelection(ContextMenuUma.Action.SHOW_INTEREST_IN_ELEMENT);
             WebContents webContents = mItemDelegate.getWebContents();
-            webContents.showInterestInElement(mParams.getInterestTargetNodeID());
+            webContents.showInterestInElement(mParams.getInterestForNodeID());
         } else {
             assert false;
         }

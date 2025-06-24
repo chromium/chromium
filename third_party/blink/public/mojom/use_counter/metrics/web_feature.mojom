@@ -4678,7 +4678,7 @@ enum WebFeature {
   kOBSOLETE_V8AIWriter_MeasureInputUsage_Method = 5370,
   kOBSOLETE_V8AIWriter_InputQuota_AttributeGetter = 5371,
   kSpeculationRulesTargetHintBlank = 5372,
-  kInterestTarget = 5373,
+  kInterestFor = 5373,
   kTextAutoSizingDisabledOnFlexbox = 5374,
   kAriaLabeledByAlternativeSpelling = 5375,
   kCanvasTextNg = 5376,

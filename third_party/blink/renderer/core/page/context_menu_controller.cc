@@ -508,18 +508,17 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       source_type == kMenuSourceLongTap) {
     for (Node* node = result.InnerNode(); node; node = node->parentNode()) {
       if (HTMLElement* element = DynamicTo<HTMLElement>(node);
-          element && element->InterestTargetElement()) {
+          element && element->InterestForElement()) {
         auto* context = element->GetDocument().GetExecutionContext();
-        CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
-            context));
-        data.opened_from_interest_target = true;
-        if (RuntimeEnabledFeatures::
-                HTMLInterestTargetContextMenuItemOnlyEnabled(context)) {
-          data.interest_target_node_id = element->NodeID();
+        CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(context));
+        data.opened_from_interest_for = true;
+        if (RuntimeEnabledFeatures::HTMLInterestForContextMenuItemOnlyEnabled(
+                context)) {
+          data.interest_for_node_id = element->NodeID();
         } else {
           static_assert(kInvalidDOMNodeId == 0,
                         "The Android Java code assumes 0 === invalid");
-          data.interest_target_node_id = kInvalidDOMNodeId;
+          data.interest_for_node_id = kInvalidDOMNodeId;
         }
         break;
       }

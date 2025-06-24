@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 [
-    RuntimeEnabled=HTMLInterestTargetAttribute,
+    RuntimeEnabled=HTMLInterestForAttribute,
     Exposed=Window
 ] interface InterestEvent : Event {
     constructor(DOMString type, optional InterestEventInit eventInitDict = {});

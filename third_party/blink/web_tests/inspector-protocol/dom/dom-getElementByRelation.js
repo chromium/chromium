@@ -32,7 +32,7 @@
     const popoverOpener2 = document.querySelector('.popover-opener-2');
     const myPopover2 = document.getElementById('my-popover-2');
     popoverOpener2.popoverTargetElement = myPopover2;
-    popoverOpener2.interestTargetElement = myPopover2;
+    popoverOpener2.interestForElement = myPopover2;
   `});
   const popoverTarget2 = await dp.DOM.getElementByRelation({nodeId: popoverOpener2, relation: 'PopoverTarget'});
   const interestTarget2 = await dp.DOM.getElementByRelation({nodeId: popoverOpener2, relation: 'InterestTarget'});
@@ -42,7 +42,7 @@
   testRunner.log('Node Id of PopoverTarget and InterestTarget should be the same because they point to the same element:');
   testRunner.log(popoverTarget2.result.nodeId === interestTarget2.result.nodeId);
 
-  // Verify that interest target works regardless of popover target.
+  // Verify that interestfor works regardless of popovertarget.
   const popoverOpener4 = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '.popover-opener-4' })).result.nodeId;
   const target3ById = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '#my-popover-3' })).result.nodeId;
   const interestTarget3 = await dp.DOM.getElementByRelation({nodeId: popoverOpener4, relation: 'InterestTarget'});

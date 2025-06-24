@@ -2902,8 +2902,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityImgMimeType) {
   RunHtmlTest(FILE_PATH_LITERAL("img-mime-type.png"));  // Open an image file.
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInterestTarget) {
-  RunPopoverHintTest(FILE_PATH_LITERAL("interest-target.html"));
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInterestFor) {
+  RunPopoverHintTest(FILE_PATH_LITERAL("interest-for.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInPageLinks) {

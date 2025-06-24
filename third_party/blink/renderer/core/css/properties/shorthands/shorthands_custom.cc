@@ -2758,22 +2758,22 @@ bool InsetInline::IsLayoutDependent(const ComputedStyle* style,
   return layout_object && layout_object->IsBox();
 }
 
-bool InterestTargetDelay::ParseShorthand(
+bool InterestDelay::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
-      interestTargetDelayShorthand(), important, context, stream, properties);
+      interestDelayShorthand(), important, context, stream, properties);
 }
 
-const CSSValue* InterestTargetDelay::CSSValueFromComputedStyleInternal(
+const CSSValue* InterestDelay::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValuesForInterestTargetDelayShorthand(
+  return ComputedStyleUtils::ValuesForInterestDelayShorthand(
       style, layout_object, allow_visited_style, value_phase);
 }
 

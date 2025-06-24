@@ -619,19 +619,19 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
   }
 }
 
-Element* HTMLAnchorElementBase::InterestTargetElement() const {
-  if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+Element* HTMLAnchorElementBase::InterestForElement() const {
+  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           GetDocument().GetExecutionContext())) {
     return nullptr;
   }
   // Anchor elements that don't have the `href` attribute are not interactive,
-  // so they can't support `interesttarget`.
+  // so they can't support `interestfor`.
   if (!IsInTreeScope() || !IsLink()) {
     return nullptr;
   }
 
   return GetElementAttributeResolvingReferenceTarget(
-      html_names::kInteresttargetAttr);
+      html_names::kInterestforAttr);
 }
 
 void HTMLAnchorElementBase::HandleClick(MouseEvent& event) {

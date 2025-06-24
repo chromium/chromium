@@ -4369,16 +4369,16 @@ static CSSValue* ExpandNoneLigaturesValue() {
   return list;
 }
 
-CSSValue* ComputedStyleUtils::ValuesForInterestTargetDelayShorthand(
+CSSValue* ComputedStyleUtils::ValuesForInterestDelayShorthand(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) {
   const CSSValue* show_delay =
-      interestTargetDelayShorthand().properties()[0]->CSSValueFromComputedStyle(
+      interestDelayShorthand().properties()[0]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
   const CSSValue* hide_delay =
-      interestTargetDelayShorthand().properties()[1]->CSSValueFromComputedStyle(
+      interestDelayShorthand().properties()[1]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
   // Both properties must be specified.
   CHECK(show_delay);

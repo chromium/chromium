@@ -913,7 +913,7 @@
     "base-select",
     "-internal-auto-base",
     // Used to set the `content` property of the pseudo-element "hint" given to
-    // elements with partial interest (via `interesttarget` keyboard activation).
+    // elements with partial interest (via `interestfor` keyboard activation).
     "-internal-partial-interest-content",
 
     //

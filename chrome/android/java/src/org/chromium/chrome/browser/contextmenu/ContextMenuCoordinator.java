@@ -69,7 +69,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     private ContextMenuDialog mDialog;
     private Runnable mOnMenuClosed;
     private final ContextMenuNativeDelegate mNativeDelegate;
-    private boolean mIsInterestTargetWithShiftedMenu;
+    private boolean mIsInterestForWithShiftedMenu;
 
     /**
      * Constructor that also sets the content offset.
@@ -151,21 +151,21 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         Activity activity = window.getActivity().get();
 
         final boolean isDragDropEnabled = ContextMenuUtils.isDragDropEnabled(activity);
-        // There are two experimental modes for the interesttarget feature:
+        // There are two experimental modes for the interestfor feature:
         //  1. the context menu is "shifted", to leave room for the page content, with the available
         //     space communicated back to the site via env() variables.
         //  2. the context menu is shown "as usual", but an item is added to the top of the context
         //     menu, allowing the user to show interest in the link.
-        // If mIsInterestTargetWithShiftedMenu is true, we're in case 1. The
-        // InterestTargetNodeID being set to 0 indicate this, and that'll happen
-        // if the `HTMLInterestTargetContextMenuItemOnly` feature is disabled.
-        mIsInterestTargetWithShiftedMenu =
-                params.getOpenedFromInterestTarget() && params.getInterestTargetNodeID() == 0;
+        // If mIsInterestForWithShiftedMenu is true, we're in case 1. The
+        // interestForNodeID being set to 0 indicate this, and that'll happen
+        // if the `HTMLInterestForContextMenuItemOnly` feature is disabled.
+        mIsInterestForWithShiftedMenu =
+                params.getOpenedFromInterestFor() && params.getInterestForNodeID() == 0;
 
         final boolean usePopupWindow =
                 isDragDropEnabled
                         || ContextMenuUtils.isMouseOrHighlightPopup(params)
-                        || mIsInterestTargetWithShiftedMenu;
+                        || mIsInterestForWithShiftedMenu;
 
         final View layout =
                 LayoutInflater.from(activity)
@@ -183,13 +183,13 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         layout);
         boolean shouldRemoveScrim = ContextMenuUtils.isPopupSupported(activity);
 
-        // If this is an interesttarget element, the top (or left) half of the
+        // If this is an interestfor element, the top (or left) half of the
         // screen should be left open for the site to locate its hovercard.
         // TODO(masonf): Still left to do:
         //  1. For larger screens, simply provide a rectangular area around the
         //     tapped screen location, and let the context menu position itself
         //     relative to that.
-        if (mIsInterestTargetWithShiftedMenu) {
+        if (mIsInterestForWithShiftedMenu) {
             var displayMetrics = activity.getResources().getDisplayMetrics();
             float displayWidth = (float) displayMetrics.widthPixels;
             float displayHeight = (float) displayMetrics.heightPixels;
@@ -292,7 +292,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mDialog.setOnDismissListener(
                 (dialogInterface) -> {
                     mOnMenuClosed.run();
-                    if (mIsInterestTargetWithShiftedMenu) {
+                    if (mIsInterestForWithShiftedMenu) {
                         // Remove context menu insets when the menu closes.
                         webContents.setContextMenuInsets(new Rect());
                     }
@@ -526,7 +526,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             mChipController.dismissChipIfShowing();
         }
         mDialog.dismiss();
-        if (mIsInterestTargetWithShiftedMenu) {
+        if (mIsInterestForWithShiftedMenu) {
             // Remove context menu insets if the menu is dismissed.
             mWebContents.setContextMenuInsets(new Rect());
         }

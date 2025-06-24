@@ -3179,11 +3179,11 @@ void Content::ApplyValue(StyleResolverState& state,
       builder.SetContent(MakeGarbageCollected<NoneContentData>());
     } else if (identifier_value->GetValueID() ==
                    CSSValueID::kInternalPartialInterestContent &&
-               RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+               RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
                    state.GetDocument().GetExecutionContext())) {
       String hint_text = state.GetDocument().GetCachedLocale().QueryString(
           IDS_PARTIAL_INTEREST_TARGET_ACTIVATION_HINT,
-          Element::GetPartialInterestTargetActivationHotkey());
+          Element::GetPartialInterestForActivationHotkey());
       auto* content =
           MakeGarbageCollected<TextContentData>(StrCat({"{", hint_text, "}"}));
       auto* alt_content = MakeGarbageCollected<AltTextContentData>(hint_text);
@@ -5225,7 +5225,7 @@ const CSSValue* Height::CSSValueFromComputedStyleInternal(
                                                              style);
 }
 
-const CSSValue* InterestTargetShowDelay::ParseSingleValue(
+const CSSValue* InterestShowDelay::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
@@ -5233,16 +5233,16 @@ const CSSValue* InterestTargetShowDelay::ParseSingleValue(
       stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
-const CSSValue* InterestTargetShowDelay::CSSValueFromComputedStyleInternal(
+const CSSValue* InterestShowDelay::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSNumericLiteralValue::Create(style.InterestTargetShowDelay(),
+  return CSSNumericLiteralValue::Create(style.InterestShowDelay(),
                                         CSSPrimitiveValue::UnitType::kSeconds);
 }
 
-const CSSValue* InterestTargetHideDelay::ParseSingleValue(
+const CSSValue* InterestHideDelay::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
@@ -5250,12 +5250,12 @@ const CSSValue* InterestTargetHideDelay::ParseSingleValue(
       stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
-const CSSValue* InterestTargetHideDelay::CSSValueFromComputedStyleInternal(
+const CSSValue* InterestHideDelay::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSNumericLiteralValue::Create(style.InterestTargetHideDelay(),
+  return CSSNumericLiteralValue::Create(style.InterestHideDelay(),
                                         CSSPrimitiveValue::UnitType::kSeconds);
 }
 

@@ -63,10 +63,10 @@ std::optional<double> CSSTimeInterpolationType::GetSeconds(
     const CSSPropertyID& property,
     const ComputedStyle& style) {
   switch (property) {
-    case CSSPropertyID::kInterestTargetShowDelay:
-      return style.InterestTargetShowDelay();
-    case CSSPropertyID::kInterestTargetHideDelay:
-      return style.InterestTargetHideDelay();
+    case CSSPropertyID::kInterestShowDelay:
+      return style.InterestShowDelay();
+    case CSSPropertyID::kInterestHideDelay:
+      return style.InterestHideDelay();
     default:
       NOTREACHED();
   }
@@ -84,8 +84,8 @@ std::optional<double> CSSTimeInterpolationType::GetSeconds(
 double CSSTimeInterpolationType::ClampTime(const CSSPropertyID& property,
                                            double value) const {
   switch (property) {
-    case CSSPropertyID::kInterestTargetShowDelay:
-    case CSSPropertyID::kInterestTargetHideDelay:
+    case CSSPropertyID::kInterestShowDelay:
+    case CSSPropertyID::kInterestHideDelay:
       return ClampTo<float>(value, 0);
     default:
       NOTREACHED();
@@ -116,11 +116,11 @@ void CSSTimeInterpolationType::ApplyStandardPropertyValue(
   double clamped_seconds =
       ClampTime(property, To<InterpolableNumber>(interpolable_value).Value());
   switch (property) {
-    case CSSPropertyID::kInterestTargetShowDelay:
-      builder.SetInterestTargetShowDelay(clamped_seconds);
+    case CSSPropertyID::kInterestShowDelay:
+      builder.SetInterestShowDelay(clamped_seconds);
       break;
-    case CSSPropertyID::kInterestTargetHideDelay:
-      builder.SetInterestTargetHideDelay(clamped_seconds);
+    case CSSPropertyID::kInterestHideDelay:
+      builder.SetInterestHideDelay(clamped_seconds);
       break;
     default:
       NOTREACHED();

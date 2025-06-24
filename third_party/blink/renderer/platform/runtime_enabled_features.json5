@@ -2635,33 +2635,33 @@
       name: "HTMLImageElementActualNaturalSize",
       status: "test",
     },
-    // Adds support for the experimental `interesttarget`
+    // Adds support for the experimental `interestfor`
     // attributes, as specified in the open-ui "Interest Invokers" explainer.
     // https://open-ui.org/components/interest-invokers.explainer/
     {
-      name: "HTMLInterestTargetAttribute",
+      name: "HTMLInterestForAttribute",
       status: "experimental",
-      origin_trial_feature_name: "HTMLInterestTargetAttribute",
+      origin_trial_feature_name: "HTMLInterestForAttribute",
       origin_trial_allows_third_party: true,
     },
     // Enables the "context menu item only" behavior mode for the
-    // `interesttarget` API. In this mode, the context menu is displayed in the
+    // `interestfor` API. In this mode, the context menu is displayed in the
     // "normal" location, but an additional line item is added to the menu which
     // allows the user to show interest. This is enabled by default, but depends
-    // on HTMLInterestTargetAttribute.
+    // on HTMLInterestForAttribute.
     {
-      name: "HTMLInterestTargetContextMenuItemOnly",
+      name: "HTMLInterestForContextMenuItemOnly",
       status: "stable",
-      depends_on: ["HTMLInterestTargetAttribute"],
+      depends_on: ["HTMLInterestForAttribute"],
     },
     // If this flag is enabled, the "partial interest" concept for the
-    // `interesttarget` API is not used. When an interest invoker is focused,
+    // `interestfor` API is not used. When an interest invoker is focused,
     // the target immediately gets full interest, regardless of whether it
     // contains focusable content. This is primarily to test the behavior with
     // users, to see which is the best.
     {
-      name: "HTMLInterestTargetNoPartialInterest",
-      depends_on: ["HTMLInterestTargetAttribute"],
+      name: "HTMLInterestForNoPartialInterest",
+      depends_on: ["HTMLInterestForAttribute"],
     },
     {
       // A flag, just for local testing to make the

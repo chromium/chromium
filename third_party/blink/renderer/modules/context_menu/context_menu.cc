@@ -43,7 +43,7 @@ void ContextMenu::ContextMenuInsetsChanged(const gfx::Insets* insets) {
   if (!frame_) {
     return;
   }
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
       frame_->DomWindow()));
   DocumentStyleEnvironmentVariables& vars = frame_->DomWindow()
                                                 ->document()

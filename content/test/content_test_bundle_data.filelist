@@ -4620,10 +4620,10 @@ data/accessibility/html/interactive-controls-with-labels-expected-mac.txt
 data/accessibility/html/interactive-controls-with-labels-expected-uia-win.txt
 data/accessibility/html/interactive-controls-with-labels-expected-win.txt
 data/accessibility/html/interactive-controls-with-labels.html
-data/accessibility/html/interest-target-expected-auralinux.txt
-data/accessibility/html/interest-target-expected-blink.txt
-data/accessibility/html/interest-target-expected-win.txt
-data/accessibility/html/interest-target.html
+data/accessibility/html/interest-for-expected-auralinux.txt
+data/accessibility/html/interest-for-expected-blink.txt
+data/accessibility/html/interest-for-expected-win.txt
+data/accessibility/html/interest-for.html
 data/accessibility/html/isInteresting-expected-android-assist-data.txt
 data/accessibility/html/isInteresting-expected-android-external.txt
 data/accessibility/html/isInteresting-expected-android.txt

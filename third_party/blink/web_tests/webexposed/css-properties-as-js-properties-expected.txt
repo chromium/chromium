@@ -278,9 +278,9 @@ insetInline
 insetInlineEnd
 insetInlineStart
 interactivity
-interestTargetDelay
-interestTargetHideDelay
-interestTargetShowDelay
+interestDelay
+interestHideDelay
+interestShowDelay
 interpolateSize
 isolation
 item

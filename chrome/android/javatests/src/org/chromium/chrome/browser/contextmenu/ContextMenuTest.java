@@ -1131,8 +1131,8 @@ public class ContextMenuTest {
                         0,
                         MenuSourceType.TOUCH,
                         /* openedFromHighlight= */ true,
-                        /* openedFromInterestTarget= */ false,
-                        /* interestTargetNodeID= */ 0,
+                        /* openedFromInterestFor= */ false,
+                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
         ContextMenuPopulatorFactory populatorFactory =
                 new ChromeContextMenuPopulatorFactory(

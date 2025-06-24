@@ -1142,7 +1142,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // are supported:
   //   <button popovertarget=foo>
   //   <button command=*-popover commandfor=foo>
-  //   <button interesttarget=foo>
+  //   <button interestfor=foo>
   //   (JS) popover.showPopover({source: foo})
   // Note: this function returns the *target* popover. Or nullptr if there isn't
   // a target, it isn't a popover, or the popover isn't open as the result of
@@ -1170,17 +1170,17 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     kFullInterest,
   };
 
-  // Implementation of the `interesttarget` feature. These are called on the
-  // element with the `interesttarget` attribute, and not on the target itself.
+  // Implementation of the `interestfor` feature. These are called on the
+  // element with the `interestfor` attribute, and not on the target itself.
   // These are called when interest is actually gained or lost on the element,
   // e.g. after any hover-delays. They return true if the event was *not*
   // cancelled, and the action was performed.
-  bool InterestGained(Element& interest_target, InterestState new_state);
-  bool InterestLost(Element& interest_target);
-  // Returns the target of the `interesttarget` attribute, if any, and only if
-  // the element supports this attribute. For example, `interesttarget` is not
+  bool InterestGained(Element& target, InterestState new_state);
+  bool InterestLost(Element& target);
+  // Returns the target of the `interestfor` attribute, if any, and only if
+  // the element supports this attribute. For example, `interestfor` is not
   // allowed on a `<div>`.
-  virtual Element* InterestTargetElement() const { return nullptr; }
+  virtual Element* InterestForElement() const { return nullptr; }
   // Returns the active interest invoker for which this element is the target,
   // or nullptr otherwise.
   Element* GetInterestInvoker() const;
@@ -1659,7 +1659,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void RemoveInterestInvokerTargetData();
   InterestInvokerTargetData& EnsureInterestInvokerTargetData();
   InterestInvokerTargetData* GetInterestInvokerTargetData() const;
-  static String GetPartialInterestTargetActivationHotkey();
+  static String GetPartialInterestForActivationHotkey();
 
   void DefaultEventHandler(Event&) override;
 
@@ -2228,20 +2228,20 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   bool IsStyleAttributeChangeAllowed(const AtomicString& style_string);
 
-  // These schedule interest gained/lost events, for `interesttarget` invokers.
+  // These schedule interest gained/lost events, for `interestfor` invokers.
   void ScheduleInterestGainedTask(InterestState);
   void ScheduleInterestLostTask();
   static bool GainOrLoseInterest(Element* invoker,
                                  Element* target,
                                  InterestState new_state);
-  enum class InterestTargetSource {
+  enum class InterestSource {
     kHover,
     kDeHover,
     kFocus,
     kBlur,
   };
-  void HandleInterestTargetHoverOrFocus(InterestTargetSource source,
-                                        bool recursive_call = false);
+  void HandleInterestForHoverOrFocus(InterestSource source,
+                                     bool recursive_call = false);
 
   // Highlight pseudos inherit all properties from the corresponding highlight
   // in the parent, but virtually all existing content uses universal rules

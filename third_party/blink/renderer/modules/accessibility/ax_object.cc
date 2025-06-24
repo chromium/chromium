@@ -2674,15 +2674,15 @@ void AXObject::SerializeComputedDetailsRelation(
     return;
   }
 
-  // Add aria-details for a interest target.
-  if (AXObject* interest_popover = GetInterestTargetForInvoker()) {
+  // Add aria-details for a interest for.
+  if (AXObject* interest_popover = GetInterestForTargetPopover()) {
     // Add state even if the target is hidden.
-    node_data->AddState(ax::mojom::blink::State::kHasInterestTarget);
+    node_data->AddState(ax::mojom::blink::State::kHasInterestFor);
     if (interest_popover->IsVisible()) {
       node_data->AddIntListAttribute(
           ax::mojom::blink::IntListAttribute::kDetailsIds,
           {static_cast<int32_t>(interest_popover->AXObjectID())});
-      node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kInterestTarget);
+      node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kInterestFor);
       return;
     }
   }
@@ -2837,20 +2837,21 @@ AXObject* AXObject::GetCommandForElement() const {
   return nullptr;
 }
 
-// Interest target invoking elements should have details relationships with
-// their interest target, when that interest target is a) visible, b) is rich,
-// and c) not the next element in the DOM (depth first search order).
-AXObject* AXObject::GetInterestTargetForInvoker() const {
+// Interest for invoking elements (with the `interestfor` attribute) should
+// have details relationships with their target, when that interest for is
+// a) visible, b) is rich, and c) not the next element in the DOM (depth first
+// search order).
+AXObject* AXObject::GetInterestForTargetPopover() const {
   if (!GetElement()) {
     return nullptr;
   }
 
-  if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           GetElement()->GetDocument().GetExecutionContext())) {
     return nullptr;
   }
 
-  Element* popover = GetElement()->InterestTargetElement();
+  Element* popover = GetElement()->InterestForElement();
   if (ElementTraversal::NextSkippingChildren(*GetElement()) == popover) {
     // The next element is already the popover.
     return nullptr;
