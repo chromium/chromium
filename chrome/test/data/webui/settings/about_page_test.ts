@@ -4,8 +4,8 @@
 
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {SettingsAboutPageElement, SettingsRoutes} from 'chrome://settings/settings.js';
-import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, Route, Router, resetRouterForTesting} from 'chrome://settings/settings.js';
+import type {SettingsAboutPageElement} from 'chrome://settings/settings.js';
+import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestAboutPageBrowserProxy} from './test_about_page_browser_proxy.js';
@@ -35,16 +35,6 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
 
-function setupRouter(): SettingsRoutes {
-  const routes = {
-    ABOUT: new Route('/help'),
-    ADVANCED: new Route('/advanced'),
-    BASIC: new Route('/'),
-  } as unknown as SettingsRoutes;
-  resetRouterForTesting(new Router(routes));
-  return routes;
-}
-
 // <if expr="not is_chromeos">
 function fireStatusChanged(
     status: UpdateStatus, options: {progress?: number, message?: string} = {}) {
@@ -61,15 +51,12 @@ suite('AllBuilds', function() {
   let aboutBrowserProxy: TestAboutPageBrowserProxy;
   let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
 
-  let testRoutes: SettingsRoutes;
-
   setup(function() {
     loadTimeData.overrideValues({
       aboutObsoleteNowOrSoon: false,
       aboutObsoleteEndOfTheLine: false,
     });
 
-    testRoutes = setupRouter();
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
@@ -87,7 +74,7 @@ suite('AllBuilds', function() {
     lifetimeBrowserProxy.reset();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-about-page');
-    Router.getInstance().navigateTo(testRoutes.ABOUT);
+    Router.getInstance().navigateTo(routes.ABOUT);
     document.body.appendChild(page);
     // <if expr="is_chromeos">
     return Promise.resolve();
@@ -348,17 +335,15 @@ suite('OfficialBuild', function() {
   let page: SettingsAboutPageElement;
   let browserProxy: TestAboutPageBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
-  let testRoutes: SettingsRoutes;
 
   setup(function() {
-    testRoutes = setupRouter();
     browserProxy = new TestAboutPageBrowserProxy();
     AboutPageBrowserProxyImpl.setInstance(browserProxy);
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-about-page');
-    Router.getInstance().navigateTo(testRoutes.ABOUT);
+    Router.getInstance().navigateTo(routes.ABOUT);
     document.body.appendChild(page);
     return flushTasks();
   });
