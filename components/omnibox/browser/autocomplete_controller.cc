@@ -1701,7 +1701,7 @@ void AutocompleteController::AttachActions() {
             template_url_service_, &keyword_input);
     // Attach the contextual search fulfillment actions in the @page keyword
     // mode.
-    if (keyword_turl->starter_pack_id() ==
+    if (keyword_turl && keyword_turl->starter_pack_id() ==
         template_url_starter_pack_data::kPage) {
       internal_result_.AttachContextualSearchFulfillmentActionToMatches();
       return;
