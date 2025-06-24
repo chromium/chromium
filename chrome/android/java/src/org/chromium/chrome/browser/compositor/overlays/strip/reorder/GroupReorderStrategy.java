@@ -231,8 +231,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
             // Case B: Attempt to drab past ungrouped tab.
             if (Math.abs(offset) <= getTabSwapThreshold()) return false;
 
-            int destIndex = towardEnd ? adjTabIndex + 1 : adjTabIndex;
-            mTabGroupModelFilter.moveRelatedTabs(mInteractingGroupTitle.getRootId(), destIndex);
+            mTabGroupModelFilter.moveRelatedTabs(mInteractingGroupTitle.getRootId(), adjTabIndex);
             animateViewSliding(adjStripTab);
         }
 
@@ -251,7 +250,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
         // Move the interacting group to its new position.
         List<Tab> adjTabs = mTabGroupModelFilter.getRelatedTabList(adjTitle.getRootId());
         int indexTowardStart = TabGroupUtils.getFirstTabModelIndexForList(mModel, adjTabs);
-        int indexTowardEnd = TabGroupUtils.getLastTabModelIndexForList(mModel, adjTabs) + 1;
+        int indexTowardEnd = TabGroupUtils.getLastTabModelIndexForList(mModel, adjTabs);
         int destIndex = towardEnd ? indexTowardEnd : indexTowardStart;
         mTabGroupModelFilter.moveRelatedTabs(mInteractingGroupTitle.getRootId(), destIndex);
 

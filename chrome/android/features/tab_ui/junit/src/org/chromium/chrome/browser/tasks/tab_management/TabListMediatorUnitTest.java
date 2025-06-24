@@ -1072,7 +1072,7 @@ public class TabListMediatorUnitTest {
 
         itemTouchHelperCallback.onMove(mRecyclerView, mViewHolder1, mViewHolder2);
 
-        verify(mTabGroupModelFilter).moveRelatedTabs(eq(TAB1_ID), eq(2));
+        verify(mTabGroupModelFilter).moveRelatedTabs(eq(TAB1_ID), eq(1));
     }
 
     @Test
@@ -1081,7 +1081,7 @@ public class TabListMediatorUnitTest {
 
         getItemTouchHelperCallback().onMove(mRecyclerView, mViewHolder1, mViewHolder2);
 
-        verify(mTabModel).moveTab(eq(TAB1_ID), eq(2));
+        verify(mTabModel).moveTab(eq(TAB1_ID), eq(1));
     }
 
     @Test

@@ -272,14 +272,13 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         TabModel tabModel = filter.getTabModel();
         if (!mActionsOnAllRelatedTabs) {
             int destinationIndex = tabModel.indexOf(tabModel.getTabById(destinationTabId));
-            tabModel.moveTab(currentTabId, distance > 0 ? destinationIndex + 1 : destinationIndex);
+            tabModel.moveTab(currentTabId, destinationIndex);
         } else {
             List<Tab> destinationTabGroup = getRelatedTabsForId(destinationTabId);
             int newIndex =
                     distance >= 0
                             ? TabGroupUtils.getLastTabModelIndexForList(
                                             tabModel, destinationTabGroup)
-                                    + 1
                             : TabGroupUtils.getFirstTabModelIndexForList(
                                     tabModel, destinationTabGroup);
             filter.moveRelatedTabs(currentTabId, newIndex);

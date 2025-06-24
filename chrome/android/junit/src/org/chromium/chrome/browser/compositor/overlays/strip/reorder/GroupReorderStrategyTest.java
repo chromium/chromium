@@ -179,7 +179,7 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
                 mExpandedGroup,
                 TAB_WIDTH,
                 DRAG_PAST_COLLAPSED_GROUP_SUCCESS,
-                /* expectedIndex= */ 3);
+                /* expectedIndex= */ 2);
     }
 
     @Test

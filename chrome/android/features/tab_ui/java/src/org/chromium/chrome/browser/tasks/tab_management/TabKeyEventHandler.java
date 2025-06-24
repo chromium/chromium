@@ -53,7 +53,7 @@ import java.util.List;
                 if (adjacentTab != null && !tabGroupId.equals(adjacentTab.getTabGroupId())) return;
             }
 
-            tabModel.moveTab(tabId, moveForward ? index - 1 : index + 2);
+            tabModel.moveTab(tabId, moveForward ? index - 1 : index + 1);
             return;
         }
 
@@ -75,7 +75,7 @@ import java.util.List;
         if (moveForward) {
             newIndex = TabGroupUtils.getFirstTabModelIndexForList(tabModel, adjacentGroup);
         } else {
-            newIndex = TabGroupUtils.getLastTabModelIndexForList(tabModel, adjacentGroup) + 1;
+            newIndex = TabGroupUtils.getLastTabModelIndexForList(tabModel, adjacentGroup);
         }
 
         filter.moveRelatedTabs(tabId, newIndex);

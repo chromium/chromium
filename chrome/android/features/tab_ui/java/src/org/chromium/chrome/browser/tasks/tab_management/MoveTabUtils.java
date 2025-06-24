@@ -62,11 +62,6 @@ public final class MoveTabUtils {
             // Case 1: Simple move.
             // This handles moves between two ungrouped tabs, or moves within the same tab group.
             validIndex = requestedIndex;
-
-            // {@link TabModel#moveTab} decreases the targetIndex by one when moving the tab to a
-            // higher index. We increase the targetIndex to ensure we insert it in the correct spot.
-            if (curIndex < validIndex) validIndex++;
-
         } else if (tabGroupId != null) {
             // Case 2: A grouped tab is attempting to leave its group.
             // This handles moves from GroupA -> GroupB and GroupA -> SingleTab.
@@ -88,11 +83,10 @@ public final class MoveTabUtils {
                             tabModel, filter, destinationTabGroupId, curIndex, requestedIndex);
         }
 
-        // No-op if invalid index, same index or  currIndex + 1 == validIndex due to the way {@link
-        // TabModel#moveTab} handles tab movement when currIndex < validIndex.
-        if (validIndex == TabList.INVALID_TAB_INDEX
-                || curIndex == validIndex
-                || curIndex + 1 == validIndex) return;
+        // No-op if invalid index.
+        if (validIndex == TabList.INVALID_TAB_INDEX || curIndex == validIndex) {
+            return;
+        }
 
         tabModel.moveTab(tab.getId(), validIndex);
     }
@@ -104,9 +98,7 @@ public final class MoveTabUtils {
             boolean isMovingToHigherIndex) {
         List<Tab> tabsInGroup = filter.getTabsInGroup(tabGroupId);
         if (isMovingToHigherIndex) {
-            // Adding 1 to account for {@link TabModel#moveTab} decreasing the targetIndex by one
-            // when moving the tab to a higher index.
-            return TabGroupUtils.getLastTabModelIndexForList(tabModel, tabsInGroup) + 1;
+            return TabGroupUtils.getLastTabModelIndexForList(tabModel, tabsInGroup);
         } else {
             return TabGroupUtils.getFirstTabModelIndexForList(tabModel, tabsInGroup);
         }
@@ -123,24 +115,25 @@ public final class MoveTabUtils {
         assert !tabsInGroup.isEmpty();
         int firstIndexOfGroup = TabGroupUtils.getFirstTabModelIndexForList(tabModel, tabsInGroup);
         if (tabsInGroup.size() == 1) {
-            // Adding 1 to account for {@link TabModel#moveTab} decreasing the targetIndex by one
-            // when moving the tab to a higher index.
-            return curIndex < firstIndexOfGroup ? firstIndexOfGroup + 1 : firstIndexOfGroup;
+            // There is only one tab in the group, so we can just return the requested index as
+            // there is no risk of breaking the contiguous property of the group.
+            return requestedIndex;
         }
 
         int lastIndexOfGroup = TabGroupUtils.getLastTabModelIndexForList(tabModel, tabsInGroup);
         int firstDelta = requestedIndex - firstIndexOfGroup;
         int lastDelta = lastIndexOfGroup - requestedIndex;
 
-        if (firstDelta < lastDelta) {
-            // Return first index to trigger no-op when curIndex + 1 = validIndex. Otherwise, it is
-            // a valid index to insert the tab to.
-            return firstIndexOfGroup;
-        } else if (firstDelta > lastDelta) {
-            // Target the position after the group.
-            return lastIndexOfGroup + 1;
+        boolean keepInFront =
+                firstDelta < lastDelta || (firstDelta == lastDelta && curIndex < firstIndexOfGroup);
+        if (keepInFront) {
+            // The new first index of the group will be one earlier than before if the tab is coming
+            // from a lower index.
+            return curIndex < firstIndexOfGroup ? firstIndexOfGroup - 1 : firstIndexOfGroup;
         } else {
-            return TabList.INVALID_TAB_INDEX;
+            // Target the last index of the group. If the group would not be shifted forward add one
+            // to ensure the tab comes after the group.
+            return curIndex < lastIndexOfGroup ? lastIndexOfGroup : lastIndexOfGroup + 1;
         }
     }
 }

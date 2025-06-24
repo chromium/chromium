@@ -222,7 +222,7 @@ public class TabReorderStrategy extends ReorderStrategyBase {
         if (!mayDragInOrOutOfGroup) {
             if (adjTab == null || Math.abs(offset) <= getTabSwapThreshold()) return false;
 
-            int destIndex = towardEnd ? curIndex + 2 : curIndex - 1;
+            int destIndex = towardEnd ? curIndex + 1 : curIndex - 1;
             mModel.moveTab(interactingTab.getTabId(), destIndex);
             animateViewSliding(stripTabs[curIndex]);
             return true;
@@ -281,7 +281,7 @@ public class TabReorderStrategy extends ReorderStrategyBase {
             boolean towardEnd) {
         // Move the tab, then animate the adjacent group indicator sliding.
         int numTabsToSkip = mTabGroupModelFilter.getTabCountForGroup(groupTitle.getTabGroupId());
-        int destIndex = towardEnd ? curIndex + 1 + numTabsToSkip : curIndex - numTabsToSkip;
+        int destIndex = towardEnd ? curIndex + numTabsToSkip : curIndex - numTabsToSkip;
         mModel.moveTab(interactingTab.getTabId(), destIndex);
         animateViewSliding(groupTitle);
     }

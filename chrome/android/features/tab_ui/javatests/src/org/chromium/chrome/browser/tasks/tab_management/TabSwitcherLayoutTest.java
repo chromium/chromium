@@ -940,15 +940,18 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertEquals(
-                            "Foo", filter.getTabGroupTitle(normalTabModel.getTabAt(1).getRootId()));
-                    assertNull(filter.getTabGroupTitle(normalTabModel.getTabAt(2).getRootId()));
-                    assertEquals(
-                            nextSuggestedColorId,
-                            filter.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+                    Tab tab0 = normalTabModel.getTabAt(0);
+                    Tab tab1 = normalTabModel.getTabAt(1);
+                    Tab tab2 = normalTabModel.getTabAt(2);
+                    assertEquals(tab0.getRootId(), tab1.getRootId());
+                    assertEquals(tab0.getTabGroupId(), tab1.getTabGroupId());
+                    assertNull(tab2.getTabGroupId());
+                    assertEquals("Foo", filter.getTabGroupTitle(tab1.getRootId()));
+                    assertNull(filter.getTabGroupTitle(tab2.getRootId()));
+                    assertEquals(nextSuggestedColorId, filter.getTabGroupColor(tab1.getRootId()));
                     assertEquals(
                             TabGroupColorUtils.INVALID_COLOR_ID,
-                            filter.getTabGroupColor(normalTabModel.getTabAt(2).getRootId()));
+                            filter.getTabGroupColor(tab2.getRootId()));
                 });
     }
 

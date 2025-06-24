@@ -221,7 +221,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
         //                     -------->
         // [CollapsedGroup]  [Tab]  [Tab]  [ExpandedGroup]  [Tab]
         testUpdateReorder_success(
-                mUngroupedTab1, TAB_WIDTH, DRAG_PAST_TAB_SUCCESS, /* expectedIndex= */ 3);
+                mUngroupedTab1, TAB_WIDTH, DRAG_PAST_TAB_SUCCESS, /* expectedIndex= */ 2);
         verifyMoved();
     }
 

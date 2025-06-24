@@ -68,7 +68,7 @@ public class TabKeyEventHandlerUnitTest {
                 mTabGroupModelFilter,
                 /* moveSingleTab= */ true);
 
-        verify(mTabModel).moveTab(tab0.getId(), 2);
+        verify(mTabModel).moveTab(tab0.getId(), 1);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class TabKeyEventHandlerUnitTest {
                 mTabGroupModelFilter,
                 /* moveSingleTab= */ false);
 
-        verify(mTabGroupModelFilter).moveRelatedTabs(tab.getId(), 3);
+        verify(mTabGroupModelFilter).moveRelatedTabs(tab.getId(), 2);
     }
 
     @Test

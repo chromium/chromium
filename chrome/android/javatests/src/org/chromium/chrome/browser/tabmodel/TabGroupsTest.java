@@ -186,7 +186,7 @@ public class TabGroupsTest {
         // Tab 4
         // Move tab 2 here still grouped with tab 1
         Tab tab2 = tabs.get(2);
-        moveTab(tab2, 5);
+        moveTab(tab2, 4);
         tabs.remove(tab2);
         tabs.add(tab2);
         assertEquals(tabs, getCurrentTabs());
@@ -226,11 +226,11 @@ public class TabGroupsTest {
         // Tab 4
         // Move tab 0 here
         Tab tab0 = tabs.get(0);
-        moveTab(tab0, 5);
+        moveTab(tab0, 4);
         tabs.remove(tab0);
         tabs.add(tab0);
         Tab tab1 = tabs.get(0);
-        moveTab(tab1, 3);
+        moveTab(tab1, 2);
         tabs.remove(tab1);
         tabs.add(2, tab1);
         assertEquals(tabs, getCurrentTabs());

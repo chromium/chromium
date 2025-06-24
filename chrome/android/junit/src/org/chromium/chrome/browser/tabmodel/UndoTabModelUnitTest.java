@@ -1486,7 +1486,7 @@ public class UndoTabModelUnitTest {
         checkState(model, new Tab[] {tab0, tab3}, tab3, sEmptyList, fullList, tab3);
 
         // 4.
-        model.moveTab(tab0.getId(), 2);
+        model.moveTab(tab0.getId(), 1);
         fullList = new Tab[] {tab3, tab0};
         checkState(model, new Tab[] {tab3, tab0}, tab3, sEmptyList, fullList, tab3);
         assertTrue(tab1.isClosing());

@@ -187,13 +187,12 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             observer.willMoveTabGroup(curIndex, newIndex);
         }
 
-        int offset = 0;
         for (Tab tab : tabs) {
             if (tabModel.indexOf(tab) == -1) {
                 assert false : "Tried to move a tab from another model!";
                 continue;
             }
-            tabModel.moveTab(tab.getId(), newIndex >= curIndex ? newIndex : newIndex + offset++);
+            tabModel.moveTab(tab.getId(), newIndex >= curIndex ? newIndex : newIndex++);
         }
     }
 
@@ -259,9 +258,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         if (areAnyTabsPartOfSharedGroup(mTabModel, tabsToMerge, destinationTab.getTabGroupId())) {
             return;
         }
-        int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
+        int lastTabIndexInGroup = getLastTabIndexInGroup(destinationTab);
 
-        if (!skipUpdateTabModel && needToUpdateTabModel(tabsToMerge, destinationIndexInTabModel)) {
+        if (!skipUpdateTabModel && needToUpdateTabModel(tabsToMerge, lastTabIndexInGroup)) {
             mergeListOfTabsToGroup(tabsToMerge, destinationTab, !skipUpdateTabModel);
         } else {
             int destinationRootId = destinationTab.getRootId();
@@ -412,7 +411,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                     getOrCreateTabGroupIdWithDefault(destinationTab, mergedTabGroupId);
         }
         mGroupIdToRootIdMap.put(destinationTabGroupId, destinationRootId);
-        int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
+        int lastTabIndexInGroup = getLastTabIndexInGroup(destinationTab);
         String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
         int destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
 
@@ -450,28 +449,19 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                         tabGroupId.equals(destinationTabGroupId) ? null : tabGroupId;
                 removedGroups.add(Pair.create(tab.getRootId(), oldTabGroupId));
             }
-            boolean isMergingBackward = index < destinationIndexInTabModel;
+            // Increment the destination index if the moved tab is after the destination index. If
+            // the tab is before the destination index, the location of the end of the tab group
+            // will be unchanged as all the tabs will shuffle forward by one.
+            if (index > lastTabIndexInGroup) ++lastTabIndexInGroup;
 
             setBothGroupIds(tab, destinationRootId, destinationTabGroupId);
-            if (index == destinationIndexInTabModel || index + 1 == destinationIndexInTabModel) {
+            if (index == lastTabIndexInGroup) {
                 // If the tab is not moved TabModelImpl will not invoke
                 // TabModelObserver#didMoveTab() and update events will not be triggered. Call the
                 // event manually.
-                int destinationIndex =
-                        MathUtils.clamp(
-                                isMergingBackward
-                                        ? destinationIndexInTabModel
-                                        : destinationIndexInTabModel++,
-                                0,
-                                getTabModel().getCount());
-                didMoveTab(tab, isMergingBackward ? destinationIndex - 1 : destinationIndex, index);
+                didMoveTab(tab, lastTabIndexInGroup, index);
             } else {
-                getTabModel()
-                        .moveTab(
-                                tab.getId(),
-                                isMergingBackward
-                                        ? destinationIndexInTabModel
-                                        : destinationIndexInTabModel++);
+                getTabModel().moveTab(tab.getId(), lastTabIndexInGroup);
             }
         }
 
@@ -606,12 +596,11 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 observer.didMoveTabOutOfGroup(sourceTab, prevFilterIndex);
             }
         } else {
-            // Plus one as offset because we are moving backwards in tab model.
-            tabModel.moveTab(sourceTab.getId(), trailing ? targetIndex + 1 : targetIndex);
+            tabModel.moveTab(sourceTab.getId(), targetIndex);
         }
     }
 
-    private int getTabModelDestinationIndex(Tab destinationTab) {
+    private int getLastTabIndexInGroup(Tab destinationTab) {
         List<Integer> destinationGroupedTabIds =
                 assumeNonNull(mRootIdToGroupMap.get(destinationTab.getRootId())).getTabIdList();
         int destinationTabIndex =
@@ -619,15 +608,15 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                         getTabModel(),
                         destinationGroupedTabIds.get(destinationGroupedTabIds.size() - 1));
 
-        return destinationTabIndex + 1;
+        return destinationTabIndex;
     }
 
-    private boolean needToUpdateTabModel(List<Tab> tabsToMerge, int destinationIndexInTabModel) {
+    private boolean needToUpdateTabModel(List<Tab> tabsToMerge, int lastTabIndexInGroup) {
         assert tabsToMerge.size() > 0;
 
         int firstTabIndexInTabModel =
                 TabModelUtils.getTabIndexById(getTabModel(), tabsToMerge.get(0).getId());
-        return firstTabIndexInTabModel != destinationIndexInTabModel;
+        return firstTabIndexInTabModel != lastTabIndexInGroup;
     }
 
     @Override
@@ -661,7 +650,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
         setBothGroupIds(tab, originalRootId, originalTabGroupId);
         if (isChangingIndex) {
-            if (currentIndex < originalIndex) originalIndex++;
             getTabModel().moveTab(tab.getId(), originalIndex);
         } else if (isChangingGroups) {
             didMoveTab(tab, originalIndex, currentIndex);
@@ -1191,7 +1179,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         int firstGroupIndex = TabModelUtils.getTabIndexById(getTabModel(), ids.get(0));
         int defaultDestinationIndex = firstGroupIndex + ids.size();
         if (proposedPosition < firstGroupIndex) {
-            return firstGroupIndex;
+            return Math.max(0, firstGroupIndex);
         }
         if (proposedPosition < defaultDestinationIndex) {
             return proposedPosition;
