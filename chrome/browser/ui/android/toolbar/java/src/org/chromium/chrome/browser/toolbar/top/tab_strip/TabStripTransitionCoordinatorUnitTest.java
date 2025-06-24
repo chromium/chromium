@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObscuringHandler.Target;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.ToolbarHairlineView;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowModeState;
@@ -1176,10 +1177,14 @@ public class TabStripTransitionCoordinatorUnitTest {
                 "Top margin is wrong for findToolbar.",
                 tabStripHeight + TEST_TOOLBAR_HEIGHT,
                 mSpyControlContainer.findToolbar.getTopMargin());
+
+        int toolbarHairlineTopMargin =
+                ((MarginLayoutParams) mSpyControlContainer.toolbarHairline.getLayoutParams())
+                        .topMargin;
         Assert.assertEquals(
                 "Top margin is wrong for toolbarHairline.",
                 tabStripHeight + TEST_TOOLBAR_HEIGHT,
-                mSpyControlContainer.toolbarHairline.getTopMargin());
+                toolbarHairlineTopMargin);
     }
 
     private void assertObservedHeight(int tabStripHeight) {
@@ -1267,7 +1272,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     // mocks for the sake of unit tests.
     static class TestControlContainerView extends FrameLayout {
         public TestView toolbarLayout;
-        public TestView toolbarHairline;
+        public ToolbarHairlineView toolbarHairline;
         public TestView findToolbar;
 
         @Nullable public View.OnLayoutChangeListener onLayoutChangeListener;
@@ -1311,7 +1316,7 @@ public class TabStripTransitionCoordinatorUnitTest {
             findToolbar = Mockito.spy(new TestView(context, attrs));
             when(toolbarLayout.getHeight()).thenReturn(TEST_TOOLBAR_HEIGHT);
             when(findToolbar.getHeight()).thenReturn(TEST_TOOLBAR_HEIGHT);
-            toolbarHairline = new TestView(context, attrs);
+            toolbarHairline = new ToolbarHairlineView(context, attrs);
 
             MarginLayoutParams sourceParams =
                     new MarginLayoutParams(

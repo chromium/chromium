@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.ToolbarHairlineView;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
@@ -76,7 +77,7 @@ public class ToolbarControlContainerTest {
     @Mock private View mToolbarContainer;
     @Mock private ViewGroup mToolbarView;
     @Mock private View mLocationBarView;
-    @Mock private View mToolbarHairline;
+    @Mock private ToolbarHairlineView mToolbarHairline;
     @Mock private Toolbar mToolbar;
     @Mock private ToolbarProgressBar mProgressBar;
     @Mock private Tab mTab;

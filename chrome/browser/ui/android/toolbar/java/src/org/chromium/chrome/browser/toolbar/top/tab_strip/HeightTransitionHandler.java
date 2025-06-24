@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarHairlineView;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
@@ -255,7 +256,8 @@ class HeightTransitionHandler {
         // Update the min size for the control container. This is needed one-layout-before browser
         // controls start changing its height, as it assumed a fixed size control container during
         // transition. See b/324178484.
-        View toolbarHairline = controlContainerView().findViewById(R.id.toolbar_hairline);
+        ToolbarHairlineView toolbarHairline =
+                controlContainerView().findViewById(R.id.toolbar_hairline);
         int maxHeight =
                 calculateTabStripHeight()
                         + mToolbarLayout.getMeasuredHeight()
@@ -430,7 +432,8 @@ class HeightTransitionHandler {
 
         // Change the toolbar hairline top margin.
         int topControlHeight = mTabStripHeight + mToolbarLayout.getHeight();
-        View toolbarHairline = controlContainerView().findViewById(R.id.toolbar_hairline);
+        ToolbarHairlineView toolbarHairline =
+                controlContainerView().findViewById(R.id.toolbar_hairline);
         updateTopMargin(toolbarHairline, topControlHeight);
 
         // Update the find toolbar and toolbar drop target views. Do not update find_toolbar_stub
@@ -536,7 +539,7 @@ class HeightTransitionHandler {
         mHandler.post(
                 mCallbackController.makeCancelable(
                         () -> {
-                            View toolbarHairline =
+                            ToolbarHairlineView toolbarHairline =
                                     controlContainerView().findViewById(R.id.toolbar_hairline);
                             controlContainerView()
                                     .setMinimumHeight(

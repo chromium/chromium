@@ -23,14 +23,11 @@ found in the LICENSE file.
             android:layout_marginTop="@dimen/tab_strip_height"
             android:layout_height="@dimen/toolbar_height_no_shadow" />
 
-        <ImageView
+        <org.chromium.chrome.browser.toolbar.ToolbarHairlineView
             android:id="@+id/toolbar_hairline"
-            android:src="@drawable/toolbar_hairline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/control_container_height"
-            android:scaleType="fitXY"
-            android:importantForAccessibility="no" />
+            android:layout_marginTop="@dimen/control_container_height" />
 
         <ViewStub
             android:id="@+id/find_toolbar_stub"
