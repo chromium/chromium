@@ -244,10 +244,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     // the lifetime of the texture.
     sk_sp<VideoTextureBacking> texture_backing;
 
-    // The GL texture ID used in non-OOP code path.
-    // This is only set if the VideoFrame was texture-backed.
-    uint32_t source_texture = 0;
-
     // The allocated size of VideoFrame texture.
     // This is only set if the VideoFrame was texture-backed.
     gfx::Size coded_size;
