@@ -14,9 +14,13 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "ui/shell_dialogs/select_file_dialog_win.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
@@ -68,7 +72,7 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
 
  private:
   // Simplified version of select file to avoid checking preferences and sticky
-  // settings in the test
+  // settings in the test.
   void SelectFile(const base::FilePath& default_filename,
                   content::WebContents* /* initiator */,
                   bool prompt_user) override {
@@ -90,7 +94,7 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
 
 }  // namespace
 
-class PdfPrinterHandlerWinTest : public BrowserWithTestWindowTest {
+class PdfPrinterHandlerWinTest : public InProcessBrowserTest {
  public:
   PdfPrinterHandlerWinTest() = default;
 
@@ -99,28 +103,29 @@ class PdfPrinterHandlerWinTest : public BrowserWithTestWindowTest {
 
   ~PdfPrinterHandlerWinTest() override = default;
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-
-    // Create a new tab
-    chrome::NewTab(browser());
-    AddTab(browser(), GURL("chrome://print"));
-
-    // Create the PDF printer
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    // Create a new tab and navigate to chrome://print.
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL("chrome://print"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    // Create the PDF printer.
     pdf_printer_ = std::make_unique<FakePdfPrinterHandler>(
-        profile(), browser()->tab_strip_model()->GetWebContentsAt(0), nullptr);
+        GetProfile(), browser()->tab_strip_model()->GetWebContentsAt(0),
+        nullptr);
   }
 
  protected:
   std::unique_ptr<FakePdfPrinterHandler> pdf_printer_;
 };
 
-TEST_F(PdfPrinterHandlerWinTest, TestSaveAsPdf) {
+IN_PROC_BROWSER_TEST_F(PdfPrinterHandlerWinTest, TestSaveAsPdf) {
   pdf_printer_->StartPrintToPdf(u"111111111111111111111.html");
   EXPECT_TRUE(pdf_printer_->save_failed());
 }
 
-TEST_F(PdfPrinterHandlerWinTest, TestSaveAsPdfLongFileName) {
+IN_PROC_BROWSER_TEST_F(PdfPrinterHandlerWinTest, TestSaveAsPdfLongFileName) {
   pdf_printer_->StartPrintToPdf(
       u"11111111111111111111111111111111111111111111111111111111111111111111111"
       u"11111111111111111111111111111111111111111111111111111111111111111111111"
