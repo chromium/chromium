@@ -1889,7 +1889,7 @@
   },
   {
     "name": "cros-components",
-    "owners": [ "wenbojie@chromium.com"],
+    "owners": [ "wenbojie@chromium.org"],
     "expiry_milestone": 137
   },
   {
@@ -2196,7 +2196,7 @@
   },
   {
     "name": "devtools-privacy-ui",
-    "owners": [ "jalonthomas@chromium.com", "shuuran@chromium.org", "masnoble@chromium.com" ],
+    "owners": [ "jalonthomas@chromium.org", "shuuran@chromium.org", "masnoble@chromium.org" ],
     "expiry_milestone": 150
   },
   {
@@ -2424,7 +2424,7 @@
   },
   {
     "name": "draw-key-native-edge-to-edge",
-    "owners": ["wenyufu@chromium.com", "clhager@google.com", "edge-to-edge@chromium.org"],
+    "owners": ["wenyufu@chromium.org", "clhager@google.com", "edge-to-edge@chromium.org"],
     "expiry_milestone": 142
   },
   {
@@ -2587,7 +2587,7 @@
   },
   {
     "name": "enable-accessibility-bounce-keys",
-    "owners": [ "aluh@chromium.com", "//ash/accessibility/OWNERS" ],
+    "owners": [ "aluh@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 143
   },
   {
@@ -2725,7 +2725,7 @@
   },
   {
     "name": "enable-accessibility-slow-keys",
-    "owners": [ "aluh@chromium.com", "//ash/accessibility/OWNERS" ],
+    "owners": [ "aluh@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 143
   },
   {
@@ -2777,7 +2777,7 @@
   },
   {
     "name": "enable-annotator-mode",
-    "owners": [ "sanjaperisic@chromium.com", "cros-edu-eng@google.com" ],
+    "owners": [ "sanjaperisic@chromium.org", "cros-edu-eng@google.com" ],
     "expiry_milestone": 140
   },
   {
@@ -3427,7 +3427,7 @@
   },
   {
     "name": "enable-extensions-explicit-browser-signin",
-    "owners": ["kelvinjiang@chromium.com"],
+    "owners": ["kelvinjiang@chromium.org"],
     "expiry_milestone": 140
   },
   {
@@ -3842,7 +3842,7 @@
   },
   {
     "name": "enable-mac-a11y-api-migration",
-    "owners": [ "shrike@chromium.org", "dtseng@chromium.com" ],
+    "owners": [ "shrike@chromium.org", "dtseng@chromium.org" ],
     "expiry_milestone": 142
   },
   {
@@ -9150,7 +9150,7 @@
   },
   {
     "name": "single-ca-cert-verification-phase-0",
-    "owners": ["olsa@chromium.com", "chromeos-commercial-networking@google.com"],
+    "owners": ["olsa@chromium.org", "chromeos-commercial-networking@google.com"],
     "expiry_milestone": 150
   },
   {
