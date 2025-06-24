@@ -19,7 +19,7 @@ generate_jni("jni_headers") {
 }
 
 java_cpp_enum("java_enum_srcjar") {
-  sources = [ "//chrome/browser/ui/safety_hub/revoked_permissions_service.h" ]
+  sources = [ "//chrome/browser/ui/safety_hub/revoked_permissions_result.h" ]
 }
 
 android_library("java") {

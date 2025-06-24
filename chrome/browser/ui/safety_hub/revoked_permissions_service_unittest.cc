@@ -10,15 +10,12 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
-#include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
-#include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -52,8 +49,6 @@
 #include "components/permissions/constants.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
-#include "components/permissions/pref_names.h"
-#include "components/permissions/test/test_permissions_client.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/content/source_url_recorder.h"
@@ -118,15 +113,6 @@ std::unique_ptr<KeyedService> BuildTestHistoryService(
   auto service = std::make_unique<history::HistoryService>();
   service->Init(history::TestHistoryDatabaseParamsForPath(context->GetPath()));
   return service;
-}
-
-PermissionsData CreatePermissionsData(
-    ContentSettingsPattern& primary_pattern,
-    std::set<ContentSettingsType>& permission_types) {
-  PermissionsData permissions_data;
-  permissions_data.primary_pattern = primary_pattern;
-  permissions_data.permission_types = permission_types;
-  return permissions_data;
 }
 
 void PopulateWebsiteSettingsLists(base::Value::List& integer_keyed,
@@ -441,15 +427,6 @@ class RevokedPermissionsServiceTest
     service()->UndoRegrantPermissionsForOrigin(permissions_data);
   }
 
-  void AddRevokedPermissionToResult(
-      RevokedPermissionsService::RevokedPermissionsResult* result,
-      std::set<ContentSettingsType> permission_types,
-      std::string url) {
-    auto origin = ContentSettingsPattern::FromString(url);
-    result->AddRevokedPermission(
-        CreatePermissionsData(origin, permission_types));
-  }
-
   void ExpectRevokedAbusiveNotificationSettingValues(std::string url) {
     EXPECT_TRUE(IsUrlInContentSettings(
         safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()),
@@ -526,7 +503,7 @@ class RevokedPermissionsServiceTest
   bool IsUrlInRevokedSettings(std::list<PermissionsData> permissions_data,
                               std::string url) {
     // TODO(crbug.com/40250875): Replace the below with a lambda method and
-    // base::Contians.
+    // base::Contains.
     std::string url_pattern =
         ContentSettingsPattern::FromURLNoWildcard(GURL(url)).ToString();
     for (const auto& permission : permissions_data) {
@@ -571,7 +548,7 @@ class RevokedPermissionsServiceTest
   bool IsUrlInContentSettings(ContentSettingsForOneType content_settings,
                               std::string url) {
     // TODO(crbug.com/40250875): Replace the below with a lambda method and
-    // base::Contians.
+    // base::Contains.
     std::string url_pattern =
         ContentSettingsPattern::FromURLNoWildcard(GURL(url)).ToString();
     for (const auto& setting : content_settings) {
@@ -1304,8 +1281,7 @@ TEST_P(RevokedPermissionsServiceTest, RestoreClearedRevokedPermissionsList) {
   auto opt_result = new_service->GetCachedResult();
   EXPECT_TRUE(opt_result.has_value());
   auto* result =
-      static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
-          opt_result.value().get());
+      static_cast<RevokedPermissionsResult*>(opt_result.value().get());
   auto revoked_permissions_list = result->GetRevokedPermissions();
   std::vector<PermissionsData> revoked_permissions_vector{
       std::begin(revoked_permissions_list), std::end(revoked_permissions_list)};
@@ -1451,8 +1427,7 @@ TEST_P(RevokedPermissionsServiceTest, InitializeLatestResult) {
       new_service->GetCachedResult();
   EXPECT_TRUE(opt_result.has_value());
   auto* result =
-      static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
-          opt_result.value().get());
+      static_cast<RevokedPermissionsResult*>(opt_result.value().get());
   auto revoked_permissions = result->GetRevokedPermissions();
   if (ShouldSetupDisruptiveSites()) {
     if (ShouldSetupUnusedSites() && ShouldSetupSafeBrowsing()) {
@@ -1561,8 +1536,7 @@ TEST_P(RevokedPermissionsServiceTest, PermissionsRevocationType) {
       new_service->GetCachedResult();
   EXPECT_TRUE(opt_result.has_value());
   auto* result =
-      static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
-          opt_result.value().get());
+      static_cast<RevokedPermissionsResult*>(opt_result.value().get());
   auto revoked_permissions = result->GetRevokedPermissions();
 
   EXPECT_EQ(5U, revoked_permissions.size());
@@ -1588,115 +1562,6 @@ TEST_P(RevokedPermissionsServiceTest, PermissionsRevocationType) {
   EXPECT_EQ(
       permission_5.revocation_type,
       PermissionsRevocationType::kUnusedPermissionsAndDisruptiveNotifications);
-}
-
-TEST_P(RevokedPermissionsServiceTest, ResultToFromDict) {
-  auto result =
-      std::make_unique<RevokedPermissionsService::RevokedPermissionsResult>();
-  // This is necessary for revoked abusive notification permissions, since
-  // checking URLs is asynchronous.
-  base::RunLoop().RunUntilIdle();
-  if (ShouldSetupUnusedSites()) {
-    AddRevokedPermissionToResult(result.get(), unused_permission_types, url1);
-    if (ShouldSetupSafeBrowsing()) {
-      AddRevokedPermissionToResult(result.get(),
-                                   abusive_and_unused_permission_types, url2);
-    } else {
-      AddRevokedPermissionToResult(result.get(), unused_permission_types, url2);
-    }
-  }
-  if (ShouldSetupSafeBrowsing()) {
-    if (!ShouldSetupUnusedSites()) {
-      AddRevokedPermissionToResult(result.get(), abusive_permission_types,
-                                   url2);
-    }
-    AddRevokedPermissionToResult(result.get(), abusive_permission_types, url3);
-  }
-
-  if (ShouldSetupUnusedSites() && ShouldSetupSafeBrowsing()) {
-    EXPECT_EQ(3U, result->GetRevokedPermissions().size());
-    EXPECT_EQ(ContentSettingsPattern::FromString(url1),
-              result->GetRevokedPermissions().front().primary_pattern);
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url1));
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url2));
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url3));
-  } else if (ShouldSetupUnusedSites()) {
-    EXPECT_EQ(2U, result->GetRevokedPermissions().size());
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url1));
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url2));
-  } else if (ShouldSetupSafeBrowsing()) {
-    EXPECT_EQ(2U, result->GetRevokedPermissions().size());
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url2));
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url3));
-  }
-
-  // When converting to dict, the values of the revoked permissions should be
-  // correctly converted to base::Value.
-  base::Value::Dict dict = result->ToDictValue();
-  auto* revoked_origins_list = dict.FindList(kRevokedPermissionsResultKey);
-  if (ShouldSetupUnusedSites() && ShouldSetupSafeBrowsing()) {
-    EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url1, url2, url3));
-  } else if (ShouldSetupUnusedSites()) {
-    EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url1, url2));
-  } else if (ShouldSetupSafeBrowsing()) {
-    EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url2, url3));
-  }
-}
-
-TEST_P(RevokedPermissionsServiceTest, ResultGetRevokedOrigins) {
-  auto result =
-      std::make_unique<RevokedPermissionsService::RevokedPermissionsResult>();
-  EXPECT_EQ(0U, result->GetRevokedOrigins().size());
-  AddRevokedPermissionToResult(result.get(), unused_permission_types, url1);
-  EXPECT_EQ(1U, result->GetRevokedOrigins().size());
-  EXPECT_EQ(ContentSettingsPattern::FromString(url1),
-            *result->GetRevokedOrigins().begin());
-  AddRevokedPermissionToResult(result.get(), unused_permission_types, url2);
-  EXPECT_EQ(2U, result->GetRevokedOrigins().size());
-  EXPECT_TRUE(result->GetRevokedOrigins().contains(
-      ContentSettingsPattern::FromString(url1)));
-  EXPECT_TRUE(result->GetRevokedOrigins().contains(
-      ContentSettingsPattern::FromString(url2)));
-
-  // Adding another permission type to `url2` does not change the size of the
-  // revoked origin list.
-  std::set<ContentSettingsType> permission_types({mediastream_type});
-  auto origin = ContentSettingsPattern::FromString(url2);
-  result->AddRevokedPermission(CreatePermissionsData(origin, permission_types));
-  EXPECT_EQ(2U, result->GetRevokedOrigins().size());
-}
-
-TEST_P(RevokedPermissionsServiceTest, ResultIsTriggerForMenuNotification) {
-  auto result =
-      std::make_unique<RevokedPermissionsService::RevokedPermissionsResult>();
-  EXPECT_FALSE(result->IsTriggerForMenuNotification());
-  AddRevokedPermissionToResult(result.get(), unused_permission_types, url1);
-  EXPECT_TRUE(result->IsTriggerForMenuNotification());
-}
-
-TEST_P(RevokedPermissionsServiceTest, ResultWarrantsNewMenuNotification) {
-  auto old_result =
-      std::make_unique<RevokedPermissionsService::RevokedPermissionsResult>();
-  auto new_result =
-      std::make_unique<RevokedPermissionsService::RevokedPermissionsResult>();
-  EXPECT_FALSE(
-      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
-  // origin1 revoked in new, but not in old -> warrants notification
-  AddRevokedPermissionToResult(new_result.get(), unused_permission_types, url1);
-  EXPECT_TRUE(
-      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
-  // origin1 in both new and old -> no notification
-  AddRevokedPermissionToResult(old_result.get(), unused_permission_types, url1);
-  EXPECT_FALSE(
-      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
-  // origin1 in both, origin2 in new -> warrants notification
-  AddRevokedPermissionToResult(new_result.get(), unused_permission_types, url2);
-  EXPECT_TRUE(
-      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
-  // origin1 and origin2 in both new and old -> no notification
-  AddRevokedPermissionToResult(old_result.get(), unused_permission_types, url2);
-  EXPECT_FALSE(
-      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
 }
 
 TEST_P(RevokedPermissionsServiceTest, AutoRevocationSetting) {

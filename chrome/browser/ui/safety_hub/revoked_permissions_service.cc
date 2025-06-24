@@ -4,35 +4,24 @@
 
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 
-#include <memory>
-#include <string>
-
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
@@ -41,14 +30,11 @@
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/permission_uma_util.h"
-#include "components/permissions/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -56,8 +42,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "revoked_permissions_service.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -258,106 +242,6 @@ PermissionsData::PermissionsData(const PermissionsData& other)
       constraints(other.constraints.Clone()),
       revocation_type(other.revocation_type) {
   chooser_permissions_data = other.chooser_permissions_data.Clone();
-}
-
-RevokedPermissionsService::RevokedPermissionsResult::
-    RevokedPermissionsResult() = default;
-RevokedPermissionsService::RevokedPermissionsResult::
-    ~RevokedPermissionsResult() = default;
-
-RevokedPermissionsService::RevokedPermissionsResult::RevokedPermissionsResult(
-    const RevokedPermissionsResult&) = default;
-
-std::unique_ptr<SafetyHubService::Result>
-RevokedPermissionsService::RevokedPermissionsResult::Clone() const {
-  return std::make_unique<RevokedPermissionsResult>(*this);
-}
-
-void RevokedPermissionsService::RevokedPermissionsResult::AddRevokedPermission(
-    PermissionsData permissions_data) {
-  revoked_permissions_.push_back(std::move(permissions_data));
-}
-
-const std::list<PermissionsData>&
-RevokedPermissionsService::RevokedPermissionsResult::GetRevokedPermissions() {
-  return revoked_permissions_;
-}
-
-std::set<ContentSettingsPattern>
-RevokedPermissionsService::RevokedPermissionsResult::GetRevokedOrigins() const {
-  std::set<ContentSettingsPattern> origins;
-  for (const auto& permission : revoked_permissions_) {
-    origins.insert(permission.primary_pattern);
-  }
-  return origins;
-}
-
-base::Value::Dict
-RevokedPermissionsService::RevokedPermissionsResult::ToDictValue() const {
-  base::Value::Dict result = BaseToDictValue();
-  base::Value::List revoked_origins;
-  for (const auto& permission : revoked_permissions_) {
-    revoked_origins.Append(permission.primary_pattern.ToString());
-  }
-  result.Set(kRevokedPermissionsResultKey, std::move(revoked_origins));
-  return result;
-}
-
-bool RevokedPermissionsService::RevokedPermissionsResult::
-    IsTriggerForMenuNotification() const {
-  // A menu notification should be shown when there is at least one permission
-  // that was revoked.
-  return !GetRevokedOrigins().empty();
-}
-
-bool RevokedPermissionsService::RevokedPermissionsResult::
-    WarrantsNewMenuNotification(
-        const base::Value::Dict& previous_result_dict) const {
-  std::set<ContentSettingsPattern> old_origins;
-  for (const base::Value& origin_val :
-       *previous_result_dict.FindList(kRevokedPermissionsResultKey)) {
-    // Before crrev.com/c/5000387, the revoked permissions were stored in a dict
-    // that looked as follows:
-    // {
-    //    "origin": "site.com",
-    //    "permissionTypes": [...permissions],
-    //    "expiration": TimeValue
-    // }
-    // After this CL, the list was updated to a list of strings representing
-    // the origins. To maintain backwards compatibility, support these
-    // old values for now. This check can be deleted in the future.
-    const std::string* origin_str{};
-    if (origin_val.is_dict()) {
-      const base::Value::Dict& revoked_permission = origin_val.GetDict();
-      origin_str = revoked_permission.FindString(kSafetyHubOriginKey);
-    } else if (origin_val.is_string()) {
-      origin_str = &origin_val.GetString();
-    } else {
-      NOTREACHED();
-    }
-    ContentSettingsPattern origin =
-        ContentSettingsPattern::FromString(*origin_str);
-    old_origins.insert(origin);
-  }
-
-  std::set<ContentSettingsPattern> new_origins = GetRevokedOrigins();
-  return !std::ranges::includes(old_origins, new_origins);
-}
-
-std::u16string
-RevokedPermissionsService::RevokedPermissionsResult::GetNotificationString()
-    const {
-  if (revoked_permissions_.empty()) {
-    return std::u16string();
-  }
-  return l10n_util::GetPluralStringFUTF16(
-      IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION,
-      revoked_permissions_.size());
-}
-
-int RevokedPermissionsService::RevokedPermissionsResult::
-    GetNotificationCommandId() const {
-  return IDC_OPEN_SAFETY_HUB;
 }
 
 void RevokedPermissionsService::TabHelper::PrimaryPageChanged(
@@ -773,8 +657,7 @@ RevokedPermissionsService::UpdateOnBackgroundThread(
     }
   }
 
-  auto result =
-      std::make_unique<RevokedPermissionsService::RevokedPermissionsResult>();
+  auto result = std::make_unique<RevokedPermissionsResult>();
   result->SetRecentlyUnusedPermissions(recently_unused);
   return std::move(result);
 }
@@ -782,9 +665,7 @@ RevokedPermissionsService::UpdateOnBackgroundThread(
 std::unique_ptr<SafetyHubService::Result>
 RevokedPermissionsService::UpdateOnUIThread(
     std::unique_ptr<SafetyHubService::Result> result) {
-  auto* interim_result =
-      static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
-          result.get());
+  auto* interim_result = static_cast<RevokedPermissionsResult*>(result.get());
   recently_unused_permissions_ = interim_result->GetRecentlyUnusedPermissions();
   if (IsUnusedSiteAutoRevocationEnabled()) {
     RevokeUnusedPermissions();
@@ -798,12 +679,11 @@ RevokedPermissionsService::UpdateOnUIThread(
   return GetRevokedPermissions();
 }
 
-std::unique_ptr<RevokedPermissionsService::RevokedPermissionsResult>
+std::unique_ptr<RevokedPermissionsResult>
 RevokedPermissionsService::GetRevokedPermissions() {
   ContentSettingsForOneType settings = hcsm()->GetSettingsForOneType(
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
-  auto result =
-      std::make_unique<RevokedPermissionsService::RevokedPermissionsResult>();
+  auto result = std::make_unique<RevokedPermissionsResult>();
 
   for (const auto& revoked_permissions : settings) {
     PermissionsData permissions_data;
@@ -1160,7 +1040,7 @@ void RevokedPermissionsService::OnPermissionsAutorevocationControlChanged() {
   }
 }
 
-std::vector<RevokedPermissionsService::ContentSettingEntry>
+std::vector<ContentSettingEntry>
 RevokedPermissionsService::GetTrackedUnusedPermissionsForTesting() {
   std::vector<ContentSettingEntry> result;
   for (const auto& list : recently_unused_permissions_) {

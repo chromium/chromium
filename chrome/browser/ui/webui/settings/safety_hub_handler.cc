@@ -260,8 +260,8 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
   RevokedPermissionsService* service =
       RevokedPermissionsServiceFactory::GetForProfile(profile_);
   CHECK(service);
-  std::unique_ptr<RevokedPermissionsService::RevokedPermissionsResult>
-      service_result = service->GetRevokedPermissions();
+  std::unique_ptr<RevokedPermissionsResult> service_result =
+      service->GetRevokedPermissions();
   for (const auto& permissions_data : service_result->GetRevokedPermissions()) {
     base::Value::Dict revoked_permission_value;
     revoked_permission_value.Set(site_settings::kOrigin,

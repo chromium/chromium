@@ -27,10 +27,9 @@ const base::TimeDelta kLifetime = base::Days(60);
 const base::Time kPastTime = base::Time::Now() - kLifetime;
 
 // TODO(crbug.com/40267370): Use a mock result instead.
-std::unique_ptr<RevokedPermissionsService::RevokedPermissionsResult>
-CreateRevokedPermissionsResult(base::Value::List urls) {
-  auto result =
-      std::make_unique<RevokedPermissionsService::RevokedPermissionsResult>();
+std::unique_ptr<RevokedPermissionsResult> CreateRevokedPermissionsResult(
+    base::Value::List urls) {
+  auto result = std::make_unique<RevokedPermissionsResult>();
   PermissionsData permissions_data;
   for (base::Value& url_val : urls) {
     permissions_data.primary_pattern =
@@ -145,7 +144,7 @@ TEST_F(SafetyHubMenuNotificationTest, DISABLED_ShouldBeShown) {
 
   // The notification is updated with a new result that is a trigger. The
   // notification has never been shown, so should be shown.
-  std::unique_ptr<RevokedPermissionsService::RevokedPermissionsResult> result =
+  std::unique_ptr<RevokedPermissionsResult> result =
       CreateRevokedPermissionsResult(base::Value::List().Append(kUrl1));
   notification->UpdateResult(std::move(result));
   ASSERT_TRUE(notification->ShouldBeShown(interval));
@@ -177,15 +176,14 @@ TEST_F(SafetyHubMenuNotificationTest, DISABLED_ShouldBeShown) {
 
   // When updating to a similar result, the notification should still not be
   // shown.
-  std::unique_ptr<RevokedPermissionsService::RevokedPermissionsResult>
-      similar_result =
-          CreateRevokedPermissionsResult(base::Value::List().Append(kUrl1));
+  std::unique_ptr<RevokedPermissionsResult> similar_result =
+      CreateRevokedPermissionsResult(base::Value::List().Append(kUrl1));
   notification->UpdateResult(std::move(similar_result));
   ASSERT_FALSE(notification->ShouldBeShown(interval));
 
   // When updating to a new result, the notification should be shown.
-  std::unique_ptr<RevokedPermissionsService::RevokedPermissionsResult>
-      new_result = CreateRevokedPermissionsResult(
+  std::unique_ptr<RevokedPermissionsResult> new_result =
+      CreateRevokedPermissionsResult(
           base::Value::List().Append("https://other.com:443"));
   notification->UpdateResult(std::move(new_result));
   ASSERT_TRUE(notification->ShouldBeShown(interval));
@@ -229,7 +227,7 @@ TEST_F(SafetyHubMenuNotificationTest, DISABLED_IsCurrentlyActive) {
 
   // A notification is not active when it new or when it has not been shown yet.
   ASSERT_FALSE(notification->IsCurrentlyActive());
-  std::unique_ptr<RevokedPermissionsService::RevokedPermissionsResult> result =
+  std::unique_ptr<RevokedPermissionsResult> result =
       CreateRevokedPermissionsResult(base::Value::List().Append(kUrl1));
   notification->UpdateResult(std::move(result));
   ASSERT_FALSE(notification->IsCurrentlyActive());

@@ -136,8 +136,7 @@ SafetyHubCardState GetOverallState(Profile* profile) {
       rp_service->GetCachedResult();
   if (opt_usp_result.has_value()) {
     auto* result =
-        static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
-            opt_usp_result.value().get());
+        static_cast<RevokedPermissionsResult*>(opt_usp_result.value().get());
     if (!result->GetRevokedOrigins().empty()) {
       return SafetyHubCardState::kWarning;
     }

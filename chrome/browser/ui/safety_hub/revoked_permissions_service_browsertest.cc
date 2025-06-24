@@ -570,8 +570,7 @@ IN_PROC_BROWSER_TEST_F(
       service->GetCachedResult();
   ASSERT_TRUE(opt_result.has_value());
   auto* result =
-      static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
-          opt_result.value().get());
+      static_cast<RevokedPermissionsResult*>(opt_result.value().get());
   EXPECT_EQ(result->GetRevokedPermissions().size(), 0u);
   EXPECT_EQ(
       CONTENT_SETTING_ALLOW,
@@ -674,8 +673,7 @@ IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
       service->GetCachedResult();
   ASSERT_TRUE(opt_result.has_value());
   auto* result =
-      static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
-          opt_result.value().get());
+      static_cast<RevokedPermissionsResult*>(opt_result.value().get());
   EXPECT_EQ(result->GetRevokedPermissions().size(), 1u);
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
@@ -745,8 +743,7 @@ IN_PROC_BROWSER_TEST_F(
       service->GetCachedResult();
   ASSERT_TRUE(opt_result.has_value());
   auto* result =
-      static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
-          opt_result.value().get());
+      static_cast<RevokedPermissionsResult*>(opt_result.value().get());
   EXPECT_EQ(result->GetRevokedPermissions().size(), 1u);
 
   revocation_entry =

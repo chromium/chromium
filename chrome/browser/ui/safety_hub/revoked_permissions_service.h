@@ -5,11 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_REVOKED_PERMISSIONS_SERVICE_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_REVOKED_PERMISSIONS_SERVICE_H_
 
-#include <list>
-#include <map>
-#include <memory>
-#include <string>
-
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,26 +12,21 @@
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class PrefChangeRegistrar;
 class PrefService;
-
-inline constexpr char kRevokedPermissionsResultKey[] = "permissions";
 
 namespace url {
 class Origin;
@@ -46,94 +36,12 @@ namespace content {
 class Page;
 }  // namespace content
 
-// A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.safety_hub
-enum class PermissionsRevocationType {
-  kUnusedPermissions,
-  kAbusiveNotificationPermissions,
-  kDisruptiveNotificationPermissions,
-  kUnusedPermissionsAndAbusiveNotifications,
-  kUnusedPermissionsAndDisruptiveNotifications,
-};
-
-// Class to store data about unused permissions for a given origin.
-struct PermissionsData {
- public:
-  PermissionsData();
-  ~PermissionsData();
-  PermissionsData(const PermissionsData&);
-  PermissionsData& operator=(const PermissionsData&) = delete;
-
-  ContentSettingsPattern primary_pattern;
-  std::set<ContentSettingsType> permission_types;
-  base::Value::Dict chooser_permissions_data;
-  content_settings::ContentSettingConstraints constraints;
-  PermissionsRevocationType revocation_type;
-};
-
 // This class keeps track of revoked permissions, including unused permissions,
 // abusive and disruptive notifications. For unused permissions, it updates
 // their last_visit date on navigations and clears them periodically.
 class RevokedPermissionsService final : public SafetyHubService,
                                         public content_settings::Observer {
  public:
-  struct ContentSettingEntry {
-    ContentSettingsType type;
-    ContentSettingPatternSource source;
-  };
-
-  // The result of the periodic update of unused site permissions contains
-  // the permissions that have been revoked. These revoked permissions will be
-  // stored until the clean-up threshold has been reached.
-  class RevokedPermissionsResult : public SafetyHubService::Result {
-   public:
-    RevokedPermissionsResult();
-
-    RevokedPermissionsResult(const RevokedPermissionsResult&);
-    RevokedPermissionsResult& operator=(const RevokedPermissionsResult&) =
-        default;
-
-    ~RevokedPermissionsResult() override;
-
-    std::unique_ptr<SafetyHubService::Result> Clone() const override;
-
-    using UnusedPermissionMap =
-        std::map<std::string, std::list<ContentSettingEntry>>;
-
-    // Adds a revoked permission, defined by origin, a set of permission types
-    // and the expiration until the user is made aware of the revoked
-    // permission.
-    void AddRevokedPermission(PermissionsData);
-
-    void SetRecentlyUnusedPermissions(UnusedPermissionMap map) {
-      recently_unused_permissions_ = std::move(map);
-    }
-
-    const UnusedPermissionMap& GetRecentlyUnusedPermissions() {
-      return recently_unused_permissions_;
-    }
-
-    const std::list<PermissionsData>& GetRevokedPermissions();
-
-    std::set<ContentSettingsPattern> GetRevokedOrigins() const;
-
-    // SafetyHubService::Result implementation
-    base::Value::Dict ToDictValue() const override;
-
-    bool IsTriggerForMenuNotification() const override;
-
-    bool WarrantsNewMenuNotification(
-        const base::Value::Dict& previous_result_dict) const override;
-
-    std::u16string GetNotificationString() const override;
-
-    int GetNotificationCommandId() const override;
-
-   private:
-    std::list<PermissionsData> revoked_permissions_;
-    UnusedPermissionMap recently_unused_permissions_;
-  };
-
   class TabHelper : public content::WebContentsObserver,
                     public content::WebContentsUserData<TabHelper> {
    public:
