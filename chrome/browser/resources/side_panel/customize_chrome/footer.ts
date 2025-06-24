@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -39,6 +40,7 @@ export class FooterElement extends CrLitElement {
     };
   }
 
+  protected disable_: boolean = false;
   protected accessor show_: boolean = false;
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
@@ -55,8 +57,9 @@ export class FooterElement extends CrLitElement {
     super.connectedCallback();
     this.setFooterSettingsListenerId_ =
         this.callbackRouter_.setFooterSettings.addListener(
-            (footerVisible: boolean) => {
-              this.show_ = footerVisible;
+            (visible: boolean, disable: boolean) => {
+              this.show_ = visible || disable;
+              this.disable_ = disable;
             });
     this.pageHandler_.updateFooterSettings();
   }
@@ -81,6 +84,9 @@ export class FooterElement extends CrLitElement {
   }
 
   protected onShowToggleClick_() {
+    if (this.disable_) {
+      return;
+    }
     this.setShow_(!this.show_);
   }
 

@@ -70,6 +70,13 @@
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#endif
+
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -176,7 +183,7 @@ class MockPage : public side_panel::mojom::CustomizeChromePage {
   MOCK_METHOD(void,
               NtpManagedByNameUpdated,
               (const std::string&, const std::string&));
-  MOCK_METHOD(void, SetFooterSettings, (bool visible));
+  MOCK_METHOD(void, SetFooterSettings, (bool visible, bool disable));
 
   mojo::Receiver<side_panel::mojom::CustomizeChromePage> receiver_{this};
 };
@@ -338,6 +345,13 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   base::UserActionTester& user_action_tester() { return user_action_tester_; }
 
  protected:
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // ScopedTestingLocalState must be instantiated before constructing
+  // CustmizeChromePageHandler as the handler registers observers on local state
+  // during construction.
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+#endif
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -903,6 +917,34 @@ TEST_F(CustomizeChromePageHandlerTest, SetFooterVisible_False) {
   EXPECT_FALSE(visible);
   EXPECT_FALSE(profile().GetPrefs()->GetBoolean(prefs::kNtpFooterVisible));
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+TEST_F(CustomizeChromePageHandlerTest, SetFooterSettings) {
+  // To trigger the footer's managed state, we need to enable the relevant flag
+  // and set the management authority to a value that indicates the browser is
+  // managed.
+  scoped_feature_list_.InitWithFeatures(
+      {features::kEnterpriseBadgingForNtpFooter}, {});
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser_->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  bool managed = true;
+  EXPECT_CALL(mock_page_, SetFooterSettings)
+      .Times(2)
+      .WillRepeatedly(SaveArg<1>(&managed));
+
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kNTPFooterManagementNoticeEnabled, false);
+  mock_page_.FlushForTesting();
+  EXPECT_FALSE(managed);
+
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kNTPFooterManagementNoticeEnabled, true);
+  mock_page_.FlushForTesting();
+  EXPECT_TRUE(managed);
+}
+#endif
 
 class CustomizeChromePageHandlerWallpaperSearchTest
     : public CustomizeChromePageHandlerTest,

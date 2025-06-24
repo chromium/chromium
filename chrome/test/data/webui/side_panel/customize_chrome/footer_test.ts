@@ -41,14 +41,27 @@ suite('FooterTest', () => {
 
   async function setChecked(checked: boolean): Promise<void> {
     await handler.whenCalled('updateFooterSettings');
-    callbackRouterRemote.setFooterSettings(checked);
+    callbackRouterRemote.setFooterSettings(checked, false);
     await callbackRouterRemote.$.flushForTesting();
   }
 
   ([true, false]).forEach((checked) => {
-    test(`initial setting ${checked}`, async () => {
+    test(`initial setting checked ${checked}`, async () => {
       await setChecked(checked);
       assertEquals(checked, footer.$.showToggle.checked);
+    });
+  });
+
+  async function setManaged(managed: boolean): Promise<void> {
+    await handler.whenCalled('updateFooterSettings');
+    callbackRouterRemote.setFooterSettings(true, managed);
+    await callbackRouterRemote.$.flushForTesting();
+  }
+
+  ([true, false]).forEach((managed) => {
+    test(`initial setting managed ${managed}`, async () => {
+      await setManaged(managed);
+      assertEquals(managed, footer.$.showToggle.disabled);
     });
   });
 

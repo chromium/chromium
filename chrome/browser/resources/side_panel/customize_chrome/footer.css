@@ -7,3 +7,11 @@
  * #import=./toggle_container_shared.css.js
  * #include=toggle-container-shared
  * #css_wrapper_metadata_end */
+
+#showTitle {
+  flex-grow: 1;
+}
+
+#showToggle {
+  margin-inline-start: 16px;
+}
