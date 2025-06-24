@@ -280,7 +280,7 @@ TEST_F(HistoryStateOperationsTest, StateReplacement) {
 
 // Tests that the state object is reset to the correct value after reloading a
 // page whose state has been replaced.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_StateReplacementReload StateReplacementReload
 #else
 #define MAYBE_StateReplacementReload DISABLED_StateReplacementReload

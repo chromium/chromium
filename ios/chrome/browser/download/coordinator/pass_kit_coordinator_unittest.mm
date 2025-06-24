@@ -97,7 +97,7 @@ TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
   // .. or on iPad device running iOS18.2.
   const bool runningIOS18_2 = base::ios::IsRunningOnOrLater(18, 2, 0) &&
                               !base::ios::IsRunningOnOrLater(18, 3, 0);
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
   const bool simulator = true;
 #else
   const bool simulator = false;

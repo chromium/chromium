@@ -165,7 +165,7 @@ void SwizzleNSDataDataWithContentsOfFile() {
 + (void)setUpDebuggingOptions {
 // Enable the zombie treadmill on simulator builds.
 // TODO(crbug.com/40492640): Consider enabling this on device builds too.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER)
   DCHECK(ObjcEvilDoers::ZombieEnable(true, 10000));
 #endif

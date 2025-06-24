@@ -71,7 +71,7 @@ NOINLINE void InduceBrowserCrash(const GURL& url) {
     return;
   }
 
-#if !TARGET_IPHONE_SIMULATOR  // Leaking memory does not cause UTE on simulator.
+#if !TARGET_OS_SIMULATOR  // Leaking memory does not cause UTE on simulator.
   std::string leak_string;
   if (net::GetValueForKeyInQuery(url, "leak", &leak_string) &&
       (leak_string == "" || leak_string == "true")) {

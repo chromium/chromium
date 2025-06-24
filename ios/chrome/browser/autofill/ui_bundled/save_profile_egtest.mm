@@ -198,7 +198,7 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 }
 
 // TODO(crbug.com/391826905): Re-enable this test on simulator.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_testEditBottomSheetAlertBySwipingDown \
   FLAKY_testEditBottomSheetAlertBySwipingDown
 #else

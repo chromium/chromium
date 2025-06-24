@@ -414,7 +414,7 @@ TEST_F(VerdictCacheManagerTest, TestRemoveCachedVerdictOnURLsDeleted) {
 }
 
 // TODO(crbug.com/40203584): This test is flaky on device.
-#if TARGET_OS_IOS && !TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_IOS && !TARGET_OS_SIMULATOR
 #define MAYBE_TestCleanUpExpiredVerdict DISABLED_TestCleanUpExpiredVerdict
 #else
 #define MAYBE_TestCleanUpExpiredVerdict TestCleanUpExpiredVerdict

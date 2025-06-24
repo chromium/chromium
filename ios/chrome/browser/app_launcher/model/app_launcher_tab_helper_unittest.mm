@@ -274,7 +274,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
 
 // Tests that a valid URL launches app.
 // TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_AbuseDetectorPolicyAllowedForValidUrl \
   AbuseDetectorPolicyAllowedForValidUrl
 #else
@@ -297,7 +297,7 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_AbuseDetectorPolicyAllowedForValidUrl) {
 // and scene activation before calling policy decision callbacks for
 // subsequent navigation requests.
 // TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ShouldAllowRequestWhileAppLaunchPending \
   ShouldAllowRequestWhileAppLaunchPending
 #else
@@ -364,7 +364,7 @@ TEST_F(AppLauncherTabHelperTest,
 // but not scene activation before calling policy decision callbacks for
 // subsequent navigation requests if kill switch is on.
 // TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ShouldAllowRequestWhileAppLaunchPendingKS \
   ShouldAllowRequestWhileAppLaunchPendingKS
 #else
@@ -429,7 +429,7 @@ TEST_F(AppLauncherTabHelperTest,
 // before calling policy decision callbacks for subsequent navigation requests
 // when app launching failed.
 // TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ShouldAllowRequestWhileFailingAppLaunchPending \
   ShouldAllowRequestWhileFailingAppLaunchPending
 #else
@@ -523,7 +523,7 @@ TEST_F(AppLauncherTabHelperTest, AppLaunchingFails) {
 // Tests that an extra alert is shown on app launch failure without user
 // gesture.
 // TODO(crbug.com/40287450): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_AppLaunchingFailsWithoutUserGesture \
   AppLaunchingFailsWithoutUserGesture
 #else
@@ -561,7 +561,7 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_AppLaunchingFailsWithoutUserGesture) {
 // Tests that a valid URL shows an alert and launches app when launch policy is
 // to prompt and user accepts.
 // TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ValidUrlPromptUserAccepts ValidUrlPromptUserAccepts
 #else
 #define MAYBE_ValidUrlPromptUserAccepts DISABLED_ValidUrlPromptUserAccepts
@@ -595,7 +595,7 @@ TEST_F(AppLauncherTabHelperTest, ValidUrlPromptUserRejects) {
 }
 
 // Tests that a valid URL triggers a prompt if transition is not link.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ValidUrlNotLinkTransition ValidUrlNotLinkTransition
 #else
 #define MAYBE_ValidUrlNotLinkTransition DISABLED_ValidUrlNotLinkTransition
@@ -615,7 +615,7 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_ValidUrlNotLinkTransition) {
 }
 
 // Tests that iTunes Urls are blocked with a prompt.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_iTunesURL iTunesURL
 #else
 #define MAYBE_iTunesURL DISABLED_iTunesURL
@@ -637,7 +637,7 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_iTunesURL) {
 // Tests that ShouldAllowRequest only launches apps for App Urls in main frame,
 // or iframe when there was a recent user interaction.
 // TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ShouldAllowRequestWithAppUrl ShouldAllowRequestWithAppUrl
 #else
 #define MAYBE_ShouldAllowRequestWithAppUrl DISABLED_ShouldAllowRequestWithAppUrl
@@ -736,7 +736,7 @@ TEST_F(AppLauncherTabHelperTest, InvalidUrls) {
 // Tests that if web_state is not shown or if there is a UI on top of it, no
 // request is triggered.
 // TODO(crbug.com/40287450): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_WebStateNotShown WebStateNotShown
 #else
 #define MAYBE_WebStateNotShown DISABLED_WebStateNotShown
@@ -783,7 +783,7 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_WebStateNotShown) {
 // Tests that when the last committed URL is invalid, the URL is only opened
 // when the last committed item is nil.
 // TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ValidUrlInvalidCommittedURL ValidUrlInvalidCommittedURL
 #else
 #define MAYBE_ValidUrlInvalidCommittedURL DISABLED_ValidUrlInvalidCommittedURL
@@ -828,7 +828,7 @@ TEST_F(AppLauncherTabHelperTest, InsecureUrls) {
 // Tests that tel: URLs are blocked when the target frame is cross-origin
 // with respect to the source origin.
 // TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_TelUrls TelUrls
 #else
 #define MAYBE_TelUrls DISABLED_TelUrls
@@ -878,7 +878,7 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_TelUrls) {
 // Tests that URLs with Chrome Bundle schemes are blocked on main frames and
 // iframes.
 // TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ChromeBundleUrlScheme ChromeBundleUrlScheme
 #else
 #define MAYBE_ChromeBundleUrlScheme DISABLED_ChromeBundleUrlScheme
@@ -919,7 +919,7 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_ChromeBundleUrlScheme) {
 // transitions regardless of the app launching success when AppLauncherRefresh
 // flag is enabled.
 // TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_UpdatingTheReadingList UpdatingTheReadingList
 #else
 #define MAYBE_UpdatingTheReadingList DISABLED_UpdatingTheReadingList
@@ -956,7 +956,7 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_UpdatingTheReadingList) {
 // Tests that launching a SMS URL via a JavaScript redirect in the main frame
 // is allowed. Covers the scenario for crbug.com/1058388
 // TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_LaunchSmsApp_JavaScriptRedirect LaunchSmsApp_JavaScriptRedirect
 #else
 #define MAYBE_LaunchSmsApp_JavaScriptRedirect \
@@ -1027,7 +1027,7 @@ TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, BlockedUrl) {
 // Tests that URLs to non-blocked domains are able to open native apps when
 // policy is blocking other domains.
 // TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_AllowedUrl AllowedUrl
 #else
 #define MAYBE_AllowedUrl DISABLED_AllowedUrl
@@ -1055,7 +1055,7 @@ class IncognitoAppLauncherTabHelperTest : public AppLauncherTabHelperTest {
 // Tests that opening an external App from incognito tab always triggers a
 // prompt.
 // TODO(crbug.com/40287450): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ValidUrlPromptUserAccepts ValidUrlPromptUserAccepts
 #else
 #define MAYBE_ValidUrlPromptUserAccepts DISABLED_ValidUrlPromptUserAccepts
@@ -1076,7 +1076,7 @@ TEST_F(IncognitoAppLauncherTabHelperTest, MAYBE_ValidUrlPromptUserAccepts) {
 // Tests that a second prompt is triggered when failing to open an external app
 // from incognito.
 // TODO(crbug.com/40287450): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_AppLaunchFails AppLaunchFails
 #else
 #define MAYBE_AppLaunchFails DISABLED_AppLaunchFails

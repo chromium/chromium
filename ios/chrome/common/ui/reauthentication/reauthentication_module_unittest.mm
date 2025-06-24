@@ -61,7 +61,7 @@ class ReauthenticationModuleTest : public PlatformTest {
 // even if the time interval since the previous reauthentication is less
 // than 60 seconds.
 // TODO(crbug.com/40167264): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ReauthReuseNotPermitted ReauthReuseNotPermitted
 #else
 #define MAYBE_ReauthReuseNotPermitted DISABLED_ReauthReuseNotPermitted
@@ -93,7 +93,7 @@ TEST_F(ReauthenticationModuleTest, MAYBE_ReauthReuseNotPermitted) {
 // and the last successful reauthentication occured less than 60 seconds
 // before the current attempt.
 // TODO(crbug.com/40167264): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ReauthReusePermittedLessThanSixtySeconds \
   ReauthReusePermittedLessThanSixtySeconds
 #else
@@ -135,7 +135,7 @@ TEST_F(ReauthenticationModuleTest,
 // permitted, but the last successful reauthentication occured more than 60
 // seconds before the current attempt.
 // TODO(crbug.com/40167264): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_ReauthReusePermittedMoreThanSixtySeconds \
   ReauthReusePermittedMoreThanSixtySeconds
 #else

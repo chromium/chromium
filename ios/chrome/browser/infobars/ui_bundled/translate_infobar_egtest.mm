@@ -297,7 +297,7 @@ void TestResponseProvider::GetLanguageResponse(
 // Tests that different language signals are detected correctly.
 - (void)testLanguageDetection {
 // TODO(crbug.com/40192556): test failing on ipad device
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
   }

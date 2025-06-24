@@ -181,14 +181,14 @@ void CallStackProfileBuilder::OnSampleCompleted(
     // Write CallStackProfile::Location protobuf message.
     uintptr_t instruction_pointer = frame.instruction_pointer;
 #if BUILDFLAG(IS_IOS)
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
     // Some iOS devices enable pointer authentication, which uses the
     // higher-order bits of pointers to store a signature. Strip that signature
     // off before computing the module_offset.
     // TODO(crbug.com/40131654): Use the ptrauth_strip() macro once it is
     // available.
     instruction_pointer &= 0xFFFFFFFFF;
-#endif  // !TARGET_IPHONE_SIMULATOR
+#endif  // !TARGET_OS_SIMULATOR
 #endif  // BUILDFLAG(IS_IOS)
 
     ptrdiff_t module_offset =

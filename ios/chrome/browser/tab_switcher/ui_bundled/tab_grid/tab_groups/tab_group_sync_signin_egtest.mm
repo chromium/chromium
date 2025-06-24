@@ -258,7 +258,7 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 // Tests that stopping syncing tabs keeps groups created before syncing and
 // deletes groups created since.
 // TODO(crbug.com/419246344): Test is flaky.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup \
   DISABLED_testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup
 #else

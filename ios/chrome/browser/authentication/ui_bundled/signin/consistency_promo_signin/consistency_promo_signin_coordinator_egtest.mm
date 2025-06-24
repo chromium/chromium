@@ -102,7 +102,7 @@
 // is removed, the web sign-in dialog needs to update itself to show the version
 // with no identity.
 // TODO(crbug.com/346537324): Test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_testRemoveLastIdentityWithSigninErrorDialogNoDismiss \
   testRemoveLastIdentityWithSigninErrorDialogNoDismiss
 #else
@@ -140,7 +140,7 @@
 
 // Display an error dialog and then dismiss the web sign-in dialog.
 // TODO(crbug.com/346537324): Test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_testGetErrorDialogAndSkipWebSigninDialog \
   testGetErrorDialogAndSkipWebSigninDialog
 #else

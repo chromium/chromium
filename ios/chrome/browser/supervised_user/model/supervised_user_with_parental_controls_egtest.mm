@@ -514,7 +514,7 @@ static const char* kInterstitialDetails = "Details";
 
 // Checks the behaviour of the "Details" link on click (expand/shrink details).
 - (void)testSupervisedUserShowInterstitialDetailsLinkOnClickForNarrowScreen {
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
   EARL_GREY_TEST_DISABLED(@"This is an iphone test case only.");
 #endif
   // Compact width only.
@@ -550,7 +550,7 @@ static const char* kInterstitialDetails = "Details";
 // be absernt from the interstitial 'Waiting' screen bor both existing (updated)
 // intersitials and new interstitials for already requested hosts.
 - (void)testSupervisedUserShowInterstitialDetailsLinkForNarrowScreen {
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
   EARL_GREY_TEST_DISABLED(@"This is an iphone test case only.");
 #endif
   // Compact width only.

@@ -6,8 +6,7 @@
 
 #import "testing/gtest/ios_enable_coverage.h"
 
-#if !defined(NDEBUG) && BUILDFLAG(IOS_ENABLE_COVERAGE) && \
-    TARGET_IPHONE_SIMULATOR
+#if !defined(NDEBUG) && BUILDFLAG(IOS_ENABLE_COVERAGE) && TARGET_OS_SIMULATOR
 extern "C" void __llvm_profile_set_filename(const char* name);
 #endif
 
@@ -16,8 +15,7 @@ namespace coverage_util {
 void ConfigureCoverageReportPath() {
 // Targets won't build on real devices with BUILDFLAG(IOS_ENABLE_COVERAGE)
 // because of llvm library linking issue for arm64 architecture.
-#if !defined(NDEBUG) && BUILDFLAG(IOS_ENABLE_COVERAGE) && \
-    TARGET_IPHONE_SIMULATOR
+#if !defined(NDEBUG) && BUILDFLAG(IOS_ENABLE_COVERAGE) && TARGET_OS_SIMULATOR
   static dispatch_once_t once_token;
   dispatch_once(&once_token, ^{
     // Writes the profraw file to the simulator shared resources directory,
@@ -43,7 +41,7 @@ void ConfigureCoverageReportPath() {
     NSLog(@"Coverage data at %@.", file_path);
   });
 #endif  // !defined(NDEBUG) && BUILDFLAG(IOS_ENABLE_COVERAGE) &&
-        // TARGET_IPHONE_SIMULATOR
+        // TARGET_OS_SIMULATOR
 }
 
 }  // namespace coverage_util

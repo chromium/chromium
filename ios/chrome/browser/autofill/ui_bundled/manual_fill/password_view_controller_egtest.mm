@@ -278,13 +278,13 @@ void CheckKeyboardIsUpAndNotCovered() {
   }
 
   // TODO(crbug.com/371189341): Test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
   if ([self isRunningTest:@selector
             (testPasswordGenerationFallbackSignedInEncryptionError)]) {
     config.features_enabled.push_back(
         syncer::kSyncTrustedVaultInfobarImprovements);
   }
-#endif  // TARGET_IPHONE_SIMULATOR
+#endif  // TARGET_OS_SIMULATOR
 
   return config;
 }
@@ -988,7 +988,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests password generation on manual fallback.
 // TODO(crbug.com/424760140): Test fails on simulator.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_testPasswordGenerationOnManualFallback \
   DISABLED_testPasswordGenerationOnManualFallback
 #else
@@ -1025,7 +1025,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests password generation on manual fallback for signed in users.
 // TODO(crbug.com/424760140): Test fails on simulator.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_testPasswordGenerationOnManualFallbackSignedInAccount \
   DISABLED_testPasswordGenerationOnManualFallbackSignedInAccount
 #else
@@ -1057,7 +1057,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests password generation on manual fallback not showing for signed in users
 // with Passwords toggle in account settings disabled.
 // TODO(crbug.com/371189341): Test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_testPasswordGenerationFallbackSignedInPasswordsDisabled \
   testPasswordGenerationFallbackSignedInPasswordsDisabled
 #else
@@ -1094,7 +1094,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests password generation on manual fallback not showing for signed in users
 // with encryption error.
 // TODO(crbug.com/371189341): Test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_testPasswordGenerationFallbackSignedInEncryptionError \
   testPasswordGenerationFallbackSignedInEncryptionError
 #else

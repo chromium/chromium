@@ -62,7 +62,7 @@ bool IsSceneStartupEnabled() {
 - (void)_terminateWithStatus:(int)status;
 @end
 
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 // Xcode 6 introduced behavior in the iOS Simulator where the software
 // keyboard does not appear if a hardware keyboard is connected. The following
 // declaration allows this behavior to be overridden when the app starts up.
@@ -71,7 +71,7 @@ bool IsSceneStartupEnabled() {
 - (void)setAutomaticMinimizationEnabled:(BOOL)enabled;
 - (void)setSoftwareKeyboardShownByTouch:(BOOL)enabled;
 @end
-#endif  // TARGET_IPHONE_SIMULATOR
+#endif  // TARGET_OS_SIMULATOR
 
 // Can be used to easily check if the current application is being used for
 // running tests.
@@ -122,7 +122,7 @@ bool IsSceneStartupEnabled() {
 
 - (BOOL)application:(UIApplication*)application
     didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
   // Xcode 6 introduced behavior in the iOS Simulator where the software
   // keyboard does not appear if a hardware keyboard is connected. The following
   // calls override this behavior by ensuring that the software keyboard is
@@ -132,7 +132,7 @@ bool IsSceneStartupEnabled() {
   } else {
     [[UIKeyboardImpl sharedInstance] setSoftwareKeyboardShownByTouch:YES];
   }
-#endif  // TARGET_IPHONE_SIMULATOR
+#endif  // TARGET_OS_SIMULATOR
 
   if (!IsSceneStartupEnabled()) {
     CGRect bounds = UIScreen.mainScreen.bounds;
@@ -160,14 +160,14 @@ bool IsSceneStartupEnabled() {
 // output to stdout, but results must be written to NSLog in order to show up in
 // the device log that is retrieved from the device by the host.
 - (BOOL)shouldRedirectOutputToFile {
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
   // Tests in XCTest mode don't need to redirect output to a file because the
   // test result parser analyzes console output.
   return !base::ShouldRunIOSUnittestsWithXCTest() &&
          !base::debug::BeingDebugged();
 #else
   return NO;
-#endif  // TARGET_IPHONE_SIMULATOR
+#endif  // TARGET_OS_SIMULATOR
 }
 
 // Returns the path to the directory to store gtest output files.

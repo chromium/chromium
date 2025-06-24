@@ -438,7 +438,7 @@ void TapSuppressDialogsButton() {
 // waits for the dismiss of the settings.
 - (void)MAYBE_testShowJavaScriptBehindSettings {
 // TODO(crbug.com/40182086): test failing on ipad device
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
   }

@@ -383,12 +383,12 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that when loading an invalid URL, the NTP is still displayed.
 // Prevents regressions from https://crbug.com/1063154 .
 - (void)testInvalidURL {
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled for iPad, because key '-' could not be "
                             @"found on the keyboard.");
   }
-#endif  // !TARGET_IPHONE_SIMULATOR
+#endif  // !TARGET_OS_SIMULATOR
 
   NSString* URL = @"app-settings://test/";
 
@@ -1206,7 +1206,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // and not in some unexpected layout state.
 - (void)testSignInSignOutScrolledToTop {
 // TODO(crbug.com/40903244): test failing on ipad device
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
   }
@@ -1248,7 +1248,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // and not in some unexpected layout state.
 - (void)testSignInSignOutScrolledToTop_AccountMenu {
 // TODO(crbug.com/40903244): test failing on ipad device
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
   }

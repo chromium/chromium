@@ -124,7 +124,7 @@ const char kGreenPDFPath[] = "/green.pdf";
 
 // Tests the center color of the grid tab showing a PDF. (physical device only)
 - (void)testCenterColorOfPDFTabGrid {
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
   EARL_GREY_TEST_SKIPPED(@"The API to take a snapshot is not working correctly "
                          @"and it becomes black on simulator.");
 #endif

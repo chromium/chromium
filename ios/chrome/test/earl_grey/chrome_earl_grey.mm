@@ -1747,7 +1747,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                @"Either hostString %d or pageTitle %d was not present",
                hostStringPresent, pageTitlePresent);
   } else {
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
     // The activity view share sheet blocks EarlGrey's synchronization on
     // the simulators. Ref:
     // github.com/google/EarlGrey/blob/master/docs/features.md#visibility-checks

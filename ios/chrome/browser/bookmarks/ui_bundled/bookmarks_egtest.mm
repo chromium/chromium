@@ -665,7 +665,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Tests the new folder name is committed when "hide keyboard" button is
 // pressed. (iPad specific)
 - (void)testNewFolderNameCommittedWhenKeyboardDismissedOnIpad {
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
   EARL_GREY_TEST_SKIPPED(@"The keyboard is not considered 'dismissed' on "
                          @"simulator when tapping on 'hide keyboard'.");
 #endif

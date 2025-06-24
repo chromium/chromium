@@ -129,7 +129,7 @@ NSString* const kStartResyncSpotlightIndex = @"StartResyncSpotlightIndex";
 NSString* const kStartupCleanupFavicons = @"StartupCleanupFavicons";
 #endif
 
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
 // Name of the block logging the storage metrics.
 NSString* const kStartupLogStorageMetrics = @"StartupLogStorageMetrics";
 
@@ -872,7 +872,7 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 
 // Schedules logging the storage metrics.
 - (void)scheduleLogStorageMetrics {
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
   if (!base::FeatureList::IsEnabled(kLogApplicationStorageSizeMetrics)) {
     return;
   }
@@ -942,7 +942,7 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 }
 #endif  // BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
 // Logs storage metrics.
 - (void)logStorageMetrics {
   DCHECK(_state.profile);
@@ -957,6 +957,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   LogApplicationStorageMetrics(profile->GetStatePath(),
                                profile->GetOffTheRecordStatePath());
 }
-#endif  // !TARGET_IPHONE_SIMULATOR
+#endif  // !TARGET_OS_SIMULATOR
 
 @end

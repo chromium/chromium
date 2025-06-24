@@ -149,7 +149,7 @@ std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
 
 CGRect GetBoundingRectOfElement(web::WebState* web_state,
                                 ElementSelector* selector) {
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
   // TODO(crbug.com/40652803): Replace delay with improved JavaScript.
   // As of iOS 13.1, devices need additional time to stabalize the page before
   // getting the element location. Without this wait, the element's bounding

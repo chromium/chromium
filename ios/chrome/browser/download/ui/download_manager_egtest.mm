@@ -408,7 +408,7 @@ using download::WaitForOpenPDFButton;
 // Tests successful download up to the point where "Open in..." button is
 // presented. EarlGrey does not allow testing "Open in..." dialog, because it
 // is run in a separate process. Performs download in Incognito.
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
 // TODO(crbug.com/40678419): Test consistently failing on device.
 #define MAYBE_testSuccessfulDownloadInIncognito \
   DISABLED_testSuccessfulDownloadInIncognito

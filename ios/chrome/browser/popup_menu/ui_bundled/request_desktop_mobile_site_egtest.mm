@@ -262,7 +262,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 // restored session is using the mode used in the past session.
 - (void)testNavigateForwardToDesktopMode {
   // TODO(crbug.com/329210328): Re-enable the test on iPad device.
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad device.");
   }

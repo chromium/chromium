@@ -20,7 +20,7 @@ WebTestSuite::WebTestSuite(int argc, char** argv)
     : base::TestSuite(argc, argv),
       web_client_(std::make_unique<FakeWebClient>()) {
   CHECK(IsCustomWebKitLoadedIfRequested());
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
   DCHECK(ObjcEvilDoers::ZombieEnable(true, 10000));
 #endif
 }

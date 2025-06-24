@@ -242,7 +242,7 @@ void AddSharedGroup(BOOL owner) {
 // Tests that when closing the last tab of shared group as an member of the
 // group, an alert is displayed and works.
 // TODO(crbug.com/415929742): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
 #define MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsMember \
   DISABLED_testTabStripLastTabCloseInSharedGroupAlertAsMember
 #else
@@ -331,7 +331,7 @@ void AddSharedGroup(BOOL owner) {
 // Tests that when closing the last tab of shared group as owner of the group,
 // an alert is displayed and works.
 // TODO(crbug.com/415929742): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
 #define MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsOwner \
   DISABLED_testTabStripLastTabCloseInSharedGroupAlertAsOwner
 #else

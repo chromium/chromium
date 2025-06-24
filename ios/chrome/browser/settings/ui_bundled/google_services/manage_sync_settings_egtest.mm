@@ -1170,7 +1170,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests that bulk upload moves the following data types to account:
 // - Passwords
 // TODO(crbug.com/407020882): Remove FLAKY_ from this test.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_testBulkUploadForPasswords FLAKY_testBulkUploadForPasswords
 #else
 #define MAYBE_testBulkUploadForPasswords testBulkUploadForPasswords
@@ -1590,13 +1590,13 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests the custom passphrase is remembered per account, kept across signout,
 // and cleared when account is removed from device.
 // TODO(crbug.com/384646508): This test is flaky on the iPad simulator.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_testRememberCustomPassphraseAfterSignout \
   FLAKY_testRememberCustomPassphraseAfterSignout
 #else
 #define MAYBE_testRememberCustomPassphraseAfterSignout \
   testRememberCustomPassphraseAfterSignout
-#endif  // TARGET_IPHONE_SIMULATOR
+#endif  // TARGET_OS_SIMULATOR
 - (void)MAYBE_testRememberCustomPassphraseAfterSignout {
   // Enable custom passphrase.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];

@@ -45,7 +45,7 @@ class ExternalFileRemoverImplTest : public PlatformTest {
     BrowserListFactory::GetForProfile(profile_.get())
         ->AddBrowser(browser_.get());
 
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
     external_file_remover_ = std::make_unique<ExternalFileRemoverImpl>(
         profile_.get(), tab_restore_service());
 #else
@@ -92,7 +92,7 @@ class ExternalFileRemoverImplTest : public PlatformTest {
   // stored.
   base::FilePath GetInboxDirectoryPath() {
     NSString* inbox_directory_path;
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
     NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                          NSUserDomainMask, YES);
     inbox_directory_path =

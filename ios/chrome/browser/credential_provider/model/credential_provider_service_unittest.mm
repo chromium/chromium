@@ -521,7 +521,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
 }
 
 // TODO(crbug.com/407946269): Fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_OnLoginsChanged_WithPerformanceImprovements_SingleOperation \
   OnLoginsChanged_WithPerformanceImprovements_SingleOperation
 #else
@@ -771,7 +771,7 @@ TEST_F(CredentialProviderServiceTest, DeletePasskey) {
 }
 
 // TODO(crbug.com/407946269): Fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_UpdatePasskey UpdatePasskey
 #else
 #define MAYBE_UpdatePasskey DISABLED_UpdatePasskey

@@ -85,7 +85,7 @@ id<GREYMatcher> SecondaryActionMatcher() {
 // promo.
 - (void)testPromoAppears {
   // TODO(crbug.com/418750327): Test fails on ipad device.
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
   }
