@@ -7729,6 +7729,19 @@ chromium-metrics-reviews@google.com.
   <summary>The time spent in closesocket call in UDPSocketWin::Close.</summary>
 </histogram>
 
+<histogram name="Net.URLLoader.AcceptCH.NeedsObserverCheck" enum="Boolean"
+    expires_after="2025-11-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    We aim to offload the critical client hint check in the network layer. This
+    metric records true if we still need to call the AcceptCHFrameObserver for
+    checking the hint. It is recorded only if the received header has the
+    ACCEPT_CH frame on the QUIC connection set up timing. Refer
+    AcceptCHFrameInterceptor::OnConnected() for details.
+  </summary>
+</histogram>
+
 <histogram name="Net.URLLoader.AcceptCH.RoundTripTime" units="microseconds"
     expires_after="2025-11-30">
   <owner>yyanagisawa@chromium.org</owner>

@@ -434,6 +434,7 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "accept_ch_frame_interceptor_unittest.cc",
     "chunked_data_pipe_upload_data_stream_unittest.cc",
     "connection_change_observer_unittest.cc",
     "cookie_access_delegate_impl_unittest.cc",

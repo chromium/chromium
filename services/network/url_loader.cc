@@ -428,7 +428,9 @@ URLLoader::URLLoader(
       has_fetch_streaming_upload_body_(
           url_loader_util::HasFetchStreamingUploadBody(request)),
       accept_ch_frame_interceptor_(AcceptCHFrameInterceptor::MaybeCreate(
-          std::move(accept_ch_frame_observer))),
+          std::move(accept_ch_frame_observer),
+          // TODO(crbug.com/406407746): update in the coming CL.
+          /*enabled_client_hints=*/std::nullopt)),
       allow_cookies_from_browser_(
           request.trusted_params &&
           request.trusted_params->allow_cookies_from_browser),
