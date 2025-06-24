@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <functional>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -637,6 +638,13 @@ TEST(LRUCacheIndexOrderTest, IndexIteration) {
       [](const auto& key_value_pair) -> int { return key_value_pair.first; });
   EXPECT_THAT(unordered_keys, testing::UnorderedElementsAre(
                                   kItem1Key, kItem2Key, kItem3Key, kItem4Key));
+}
+
+TEST(LRUCacheSimpleTest, TransparentLookup) {
+  LRUCache<std::string, int, std::less<>> cache(10);
+  cache.Put("some string", 4);
+  EXPECT_EQ(cache.Get(std::string_view("some string"))->second, 4);
+  EXPECT_EQ(cache.Peek(std::string_view("some string"))->second, 4);
 }
 
 }  // namespace base

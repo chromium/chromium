@@ -124,7 +124,9 @@ class LRUCacheBase {
   // Retrieves the contents of the given key, or end() if not found. This method
   // has the side effect of moving the requested item to the front of the
   // recency list.
-  iterator Get(const key_type& key) {
+  template <typename K = key_type>
+    requires requires(KeyIndex index, K key) { index.find(key); }
+  iterator Get(const K& key) {
     typename KeyIndex::iterator index_iter = index_.find(key);
     if (index_iter == index_.end()) {
       return end();
@@ -138,7 +140,9 @@ class LRUCacheBase {
 
   // Retrieves the item associated with a given key and returns it via
   // result without affecting the ordering (unlike Get()).
-  iterator Peek(const key_type& key) {
+  template <typename K = key_type>
+    requires requires(KeyIndex index, K key) { index.find(key); }
+  iterator Peek(const K& key) {
     typename KeyIndex::const_iterator index_iter = index_.find(key);
     if (index_iter == index_.end()) {
       return end();
@@ -146,7 +150,9 @@ class LRUCacheBase {
     return index_iter->second;
   }
 
-  const_iterator Peek(const key_type& key) const {
+  template <typename K = key_type>
+    requires requires(KeyIndex index, K key) { index.find(key); }
+  const_iterator Peek(const K& key) const {
     typename KeyIndex::const_iterator index_iter = index_.find(key);
     if (index_iter == index_.end()) {
       return end();
