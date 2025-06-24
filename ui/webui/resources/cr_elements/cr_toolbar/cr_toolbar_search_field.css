@@ -137,7 +137,6 @@ input {
   color: var(--cr-toolbar-search-field-input-text-color,
       var(--color-toolbar-search-field-foreground,
       var(--cr-fallback-color-on-surface)));
-  cursor: var(--cr-toolbar-search-field-cursor, text);
   font: inherit;
   font-size: 12px;
   font-weight: 500;
@@ -167,7 +166,7 @@ input[type='search']::-webkit-search-cancel-button {
   background: none;
   border-radius:
       var(--cr-toolbar-search-field-border-radius, 46px);
-  cursor: var(--cr-toolbar-search-field-cursor, text);
+  cursor: var(--cr-toolbar-search-field-cursor, default);
   height: 36px;
   max-width: var(--cr-toolbar-field-max-width, none);
   overflow: hidden;
