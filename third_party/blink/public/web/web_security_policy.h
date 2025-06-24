@@ -81,6 +81,11 @@ class BLINK_EXPORT WebSecurityPolicy {
   // Callers should use
   // network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority as the
   // default priority unless overriding existing entries is explicitly needed.
+  //
+  // Adding an allowlist entry here has a couple practical (renderer-side)
+  // implications for fetch(). It can allow the `source_origin` to:
+  //   1) bypass the same-origin policy when fetch()ing the destination
+  //   2) set forbidden headers on the fetch() request
   static void AddOriginAccessAllowListEntry(
       const WebURL& source_origin,
       const WebString& destination_protocol,

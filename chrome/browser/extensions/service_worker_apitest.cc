@@ -1482,6 +1482,11 @@ class ServiceWorkerFetchTest : public ServiceWorkerTest {
   base::Lock requests_to_server_lock_;
 };
 
+// TODO(crbug.com/418811955): The SetFetchHeaders* tests are confirming that the
+// renderer can set forbidden headers, but they don't confirm that the browser
+// will actually send the forbidden headers outbound on the wire. Let's create
+// test cases for that when the browser side component is completed.
+
 // Tests the behavior of a privileged (background) context when it
 // attempts to set forbidden and non-forbidden headers on fetch() requests to a
 // URL for which the extension has host_permissions.
@@ -1503,9 +1508,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFetchTest,
   EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
       embedded_test_server()->GetURL("/fetch/fetch_forbidden.html"),
       /*header_name=*/"Accept-Encoding",
-      // TODO(crbug.com/418811955): Set this to "fakeencoding, fakeencoding2"
-      // when this capability is allowed.
-      /*expected_header_value=*/"gzip, deflate, br, zstd"));
+      /*expected_header_value=*/"fakeencoding, fakeencoding2"));
 }
 
 // Tests the behavior of a privileged (extension resource) context when it
@@ -1540,9 +1543,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFetchTest,
   EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
       embedded_test_server()->GetURL("/fetch/fetch_forbidden.html"),
       /*header_name=*/"Accept-Encoding",
-      // TODO(crbug.com/418811955): Set this to "fakeencoding, fakeencoding2"
-      // when this capability is allowed.
-      /*expected_header_value=*/"gzip, deflate, br, zstd"));
+      /*expected_header_value=*/"fakeencoding, fakeencoding2"));
 }
 
 // Tests the behavior of an unprivileged (content script) context when it

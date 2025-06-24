@@ -1059,6 +1059,18 @@ Request::Request(ScriptState* script_state,
               Headers::Create(request->HeaderList()),
               signal) {
   headers_->SetGuard(Headers::kRequestGuard);
+
+  // This is currently only meant to allow certain contexts to bypass request
+  // forbidden header setting in the renderer. For example in Chromium:
+  // extension
+  // (https://www.chromium.org/developers/design-documents/extensions/) script
+  // contexts are an example of a context depending on their configuration.
+  bool bypass_forbidden_fetch_request_headers =
+      SecurityPolicy::IsOriginAccessToURLAllowed(
+          ExecutionContext::From(script_state)->GetSecurityOrigin(),
+          request_->Url());
+  headers_->SetBypassRequestForbiddenHeaderCheck(
+      bypass_forbidden_fetch_request_headers);
 }
 
 String Request::method() const {
