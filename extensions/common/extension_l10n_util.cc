@@ -14,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/containers/extend.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -418,8 +419,7 @@ void GetAllLocales(std::set<std::string>* all_locales) {
   // Add all parents of the current locale to the available locales set.
   // I.e. for sr_Cyrl_RS we add sr_Cyrl_RS, sr_Cyrl and sr.
   for (const auto& locale : available_locales) {
-    std::vector<std::string> result;
-    l10n_util::GetParentLocales(locale, &result);
+    std::vector<std::string> result = l10n_util::GetParentLocales(locale);
     all_locales->insert(result.begin(), result.end());
   }
 }
@@ -440,8 +440,10 @@ void GetAllFallbackLocales(const std::string& default_locale,
     all_fallback_locales->push_back(preferred_locale);
   }
 
-  if (!application_locale.empty() && application_locale != default_locale)
-    l10n_util::GetParentLocales(application_locale, all_fallback_locales);
+  if (!application_locale.empty() && application_locale != default_locale) {
+    base::Extend(*all_fallback_locales,
+                 l10n_util::GetParentLocales(application_locale));
+  }
   all_fallback_locales->push_back(default_locale);
 }
 

@@ -184,13 +184,12 @@ TEST(ExtensionResourceTest, CreateWithAllResourcesOnDisk) {
   base::FilePath l10n_path = temp.GetPath().Append(kLocaleFolder);
   ASSERT_TRUE(base::CreateDirectory(l10n_path));
 
-  std::vector<std::string> locales;
-  l10n_util::GetParentLocales(l10n_util::GetApplicationLocale(std::string()),
-                              &locales);
+  std::vector<std::string> locales = l10n_util::GetParentLocales(
+      l10n_util::GetApplicationLocale(std::string()));
   ASSERT_FALSE(locales.empty());
-  for (size_t i = 0; i < locales.size(); i++) {
+  for (const std::string& locale : locales) {
     base::FilePath make_path;
-    make_path = l10n_path.AppendASCII(locales[i]);
+    make_path = l10n_path.AppendASCII(locale);
     ASSERT_TRUE(base::CreateDirectory(make_path));
     ASSERT_TRUE(base::WriteFile(make_path.AppendASCII(filename), data));
   }

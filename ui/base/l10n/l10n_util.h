@@ -111,8 +111,7 @@ std::string NormalizeLocale(std::string_view locale);
 // It includes the current locale in the result.
 // sr_Cyrl_RS generates sr_Cyrl_RS, sr_Cyrl and sr.
 COMPONENT_EXPORT(UI_BASE)
-void GetParentLocales(const std::string& current_locale,
-                      std::vector<std::string>* parent_locales);
+std::vector<std::string> GetParentLocales(std::string_view current_locale);
 
 // Checks if a string is plausibly a syntactically-valid locale string,
 // for cases where we want the valid input to be a locale string such as

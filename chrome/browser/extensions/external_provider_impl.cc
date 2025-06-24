@@ -338,9 +338,8 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
     const base::Value::List* supported_locales =
         extension_dict.FindList(kSupportedLocales);
     if (supported_locales) {
-      std::vector<std::string> browser_locales;
-      l10n_util::GetParentLocales(g_browser_process->GetApplicationLocale(),
-                                  &browser_locales);
+      std::vector<std::string> browser_locales = l10n_util::GetParentLocales(
+          g_browser_process->GetApplicationLocale());
 
       bool locale_supported = false;
       for (const base::Value& locale : *supported_locales) {

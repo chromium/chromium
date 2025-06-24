@@ -709,20 +709,20 @@ std::string NormalizeLocale(std::string_view locale) {
   return normalized_locale;
 }
 
-void GetParentLocales(const std::string& current_locale,
-                      std::vector<std::string>* parent_locales) {
-  std::string locale(NormalizeLocale(current_locale));
+std::vector<std::string> GetParentLocales(std::string_view current_locale) {
+  std::string locale = NormalizeLocale(current_locale);
 
   const int kNameCapacity = 256;
   char parent[kNameCapacity];
   base::strlcpy(parent, locale.c_str(), kNameCapacity);
-  parent_locales->push_back(parent);
+  std::vector<std::string> parent_locales = {parent};
   UErrorCode err = U_ZERO_ERROR;
   while (uloc_getParent(parent, parent, kNameCapacity, &err) > 0) {
     if (U_FAILURE(err))
       break;
-    parent_locales->push_back(parent);
+    parent_locales.push_back(parent);
   }
+  return parent_locales;
 }
 
 bool IsValidLocaleSyntax(std::string_view locale) {
