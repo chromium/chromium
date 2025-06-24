@@ -11,9 +11,6 @@
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadUnpackedFunction,
                    "developerPrivate.loadUnpacked",
                    DEVELOPERPRIVATE_LOADUNPACKED);
-DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivatePackDirectoryFunction,
-                   "developerPrivate.packDirectory",
-                   DEVELOPERPRIVATE_PACKDIRECTORY);
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadDirectoryFunction,
                    "developerPrivate.loadDirectory",
                    DEVELOPERPRIVATE_LOADUNPACKEDCROS);

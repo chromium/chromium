@@ -12,8 +12,10 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
+#include "chrome/browser/extensions/pack_extension_job.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/extensions/webstore_install_result.h"
+#include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
@@ -536,6 +538,31 @@ class DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction
  private:
   ~DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction()
       override;
+};
+
+class DeveloperPrivatePackDirectoryFunction
+    : public DeveloperPrivateAPIFunction,
+      public PackExtensionJob::Client {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.packDirectory",
+                             DEVELOPERPRIVATE_PACKDIRECTORY)
+
+  DeveloperPrivatePackDirectoryFunction();
+
+  // ExtensionPackJob::Client implementation.
+  void OnPackSuccess(const base::FilePath& crx_file,
+                     const base::FilePath& key_file) override;
+  void OnPackFailure(const std::string& error,
+                     ExtensionCreator::ErrorType error_type) override;
+
+ protected:
+  ~DeveloperPrivatePackDirectoryFunction() override;
+  ResponseAction Run() override;
+
+ private:
+  std::unique_ptr<PackExtensionJob> pack_job_;
+  std::string item_path_str_;
+  std::string key_path_str_;
 };
 
 class DeveloperPrivateChoosePathFunction

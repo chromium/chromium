@@ -1383,6 +1383,86 @@ DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+void DeveloperPrivatePackDirectoryFunction::OnPackSuccess(
+    const base::FilePath& crx_file,
+    const base::FilePath& pem_file) {
+  developer::PackDirectoryResponse response;
+  response.message = base::UTF16ToUTF8(
+      PackExtensionJob::StandardSuccessMessage(crx_file, pem_file));
+  response.status = developer::PackStatus::kSuccess;
+  Respond(WithArguments(response.ToValue()));
+  pack_job_.reset();
+  Release();  // Balanced in Run().
+}
+
+void DeveloperPrivatePackDirectoryFunction::OnPackFailure(
+    const std::string& error,
+    ExtensionCreator::ErrorType error_type) {
+  developer::PackDirectoryResponse response;
+  response.message = error;
+  if (error_type == ExtensionCreator::kCRXExists) {
+    response.item_path = item_path_str_;
+    response.pem_path = key_path_str_;
+    response.override_flags = ExtensionCreator::kOverwriteCRX;
+    response.status = developer::PackStatus::kWarning;
+  } else {
+    response.status = developer::PackStatus::kError;
+  }
+  Respond(WithArguments(response.ToValue()));
+  pack_job_.reset();
+  Release();  // Balanced in Run().
+}
+
+ExtensionFunction::ResponseAction DeveloperPrivatePackDirectoryFunction::Run() {
+  std::optional<developer_private::PackDirectory::Params> params =
+      developer_private::PackDirectory::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  int flags = params->flags ? *params->flags : 0;
+  item_path_str_ = params->path;
+  if (params->private_key_path) {
+    key_path_str_ = *params->private_key_path;
+  }
+
+  base::FilePath root_directory =
+      base::FilePath::FromUTF8Unsafe(item_path_str_);
+  base::FilePath key_file = base::FilePath::FromUTF8Unsafe(key_path_str_);
+
+  developer::PackDirectoryResponse response;
+  if (root_directory.empty()) {
+    if (item_path_str_.empty()) {
+      response.message = l10n_util::GetStringUTF8(
+          IDS_EXTENSION_PACK_DIALOG_ERROR_ROOT_REQUIRED);
+    } else {
+      response.message = l10n_util::GetStringUTF8(
+          IDS_EXTENSION_PACK_DIALOG_ERROR_ROOT_INVALID);
+    }
+
+    response.status = developer::PackStatus::kError;
+    return RespondNow(WithArguments(response.ToValue()));
+  }
+
+  if (!key_path_str_.empty() && key_file.empty()) {
+    response.message =
+        l10n_util::GetStringUTF8(IDS_EXTENSION_PACK_DIALOG_ERROR_KEY_INVALID);
+    response.status = developer::PackStatus::kError;
+    return RespondNow(WithArguments(response.ToValue()));
+  }
+
+  AddRef();  // Balanced in OnPackSuccess / OnPackFailure.
+
+  pack_job_ =
+      std::make_unique<PackExtensionJob>(this, root_directory, key_file, flags);
+  pack_job_->Start();
+  return RespondLater();
+}
+
+DeveloperPrivatePackDirectoryFunction::DeveloperPrivatePackDirectoryFunction() =
+    default;
+
+DeveloperPrivatePackDirectoryFunction::
+    ~DeveloperPrivatePackDirectoryFunction() = default;
+
 DeveloperPrivateChoosePathFunction::DeveloperPrivateChoosePathFunction() =
     default;
 

@@ -102,31 +102,6 @@ class DeveloperPrivateLoadUnpackedFunction
   std::optional<ui::SelectedFileInfo> selected_file_for_testing_;
 };
 
-class DeveloperPrivatePackDirectoryFunction
-    : public DeveloperPrivateAPIFunction,
-      public PackExtensionJob::Client {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.packDirectory",
-                             DEVELOPERPRIVATE_PACKDIRECTORY)
-
-  DeveloperPrivatePackDirectoryFunction();
-
-  // ExtensionPackJob::Client implementation.
-  void OnPackSuccess(const base::FilePath& crx_file,
-                     const base::FilePath& key_file) override;
-  void OnPackFailure(const std::string& error,
-                     ExtensionCreator::ErrorType error_type) override;
-
- protected:
-  ~DeveloperPrivatePackDirectoryFunction() override;
-  ResponseAction Run() override;
-
- private:
-  std::unique_ptr<PackExtensionJob> pack_job_;
-  std::string item_path_str_;
-  std::string key_path_str_;
-};
-
 class DeveloperPrivateLoadDirectoryFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("developerPrivate.loadDirectory",
