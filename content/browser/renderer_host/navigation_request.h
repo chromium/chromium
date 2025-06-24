@@ -33,7 +33,6 @@
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_policy_container_builder.h"
 #include "content/browser/renderer_host/navigation_throttle_registry_impl.h"
-#include "content/browser/renderer_host/navigation_throttle_runner.h"
 #include "content/browser/renderer_host/navigation_type.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/scoped_view_transition_resources.h"
@@ -753,13 +752,8 @@ class CONTENT_EXPORT NavigationRequest
   void CancelDeferredNavigation(NavigationThrottle* cancelling_throttle,
                                 NavigationThrottle::ThrottleCheckResult result);
 
-  // Returns the underlying NavigationThrottleRunner for tests to manipulate.
-  NavigationThrottleRunner* GetNavigationThrottleRunnerForTesting() {
-    return throttle_runner_.get();
-  }
-
   // Returns the underlying NavigationThrottleRegistry for tests to manipulate.
-  NavigationThrottleRegistry* GetNavigationThrottleRegistryForTesting() {
+  NavigationThrottleRegistryImpl* GetNavigationThrottleRegistryForTesting() {
     return throttle_registry_.get();
   }
 
@@ -768,10 +762,6 @@ class CONTENT_EXPORT NavigationRequest
 
   typedef base::OnceCallback<bool(NavigationThrottle::ThrottleCheckResult)>
       ThrottleChecksFinishedCallback;
-
-  NavigationThrottle* GetDeferringThrottleForTesting() const {
-    return throttle_runner_->GetDeferringThrottle();
-  }
 
   // Called when the navigation was committed.
   // This will update the |state_|.
@@ -2672,12 +2662,7 @@ class CONTENT_EXPORT NavigationRequest
   const int navigation_entry_offset_ = 0;
 
   // Owns the NavigationThrottleRegistry associated with this navigation.
-  // This should outlive `throttle_runner_`.
   std::unique_ptr<NavigationThrottleRegistryImpl> throttle_registry_;
-
-  // Owns the NavigationThrottles associated with this navigation, and is
-  // responsible for notifying them about the various navigation events.
-  std::unique_ptr<NavigationThrottleRunner> throttle_runner_;
 
   // Once the navigation has passed all throttle checks the navigation will
   // commit. However, we may need to defer the commit until certain conditions

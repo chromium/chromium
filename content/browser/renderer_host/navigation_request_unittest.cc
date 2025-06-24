@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/navigation_throttle_runner.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/ssl_status.h"
@@ -625,8 +626,9 @@ TEST_F(NavigationRequestTest, WillFailRequestCanAccessRenderFrameHost) {
       NavigationRequest::From(navigation->GetNavigationHandle())->state());
   EXPECT_TRUE(navigation->GetNavigationHandle()->GetRenderFrameHost());
   NavigationRequest::From(navigation->GetNavigationHandle())
+      ->GetNavigationThrottleRegistryForTesting()
       ->GetNavigationThrottleRunnerForTesting()
-      ->CallResumeForTesting();
+      .CallResumeForTesting();
   EXPECT_TRUE(navigation->GetNavigationHandle()->GetRenderFrameHost());
 
   SetBrowserClientForTesting(old_browser_client);
@@ -1315,8 +1317,9 @@ class ResponseBodyNavigationThrottle : public NavigationThrottle {
   void OnResponseBodyReady(const std::string& response_body) {
     std::move(callback_).Run(response_body);
     NavigationRequest::From(navigation_handle())
+        ->GetNavigationThrottleRegistryForTesting()
         ->GetNavigationThrottleRunnerForTesting()
-        ->CallResumeForTesting();
+        .CallResumeForTesting();
   }
 
   ResponseBodyCallback callback_;
