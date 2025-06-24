@@ -25,11 +25,13 @@ class SaveAndFillDialogController {
   virtual std::u16string GetAcceptButtonText() const = 0;
   virtual std::u16string GetInvalidCardNumberErrorMessage() const = 0;
   virtual std::u16string GetInvalidCvcErrorMessage() const = 0;
+  virtual std::u16string GetInvalidNameOnCardErrorMessage() const = 0;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   virtual bool IsUploadSaveAndFill() const = 0;
   virtual bool IsValidCreditCardNumber(
       std::u16string_view input_text) const = 0;
   virtual bool IsValidCvc(std::u16string_view input_text) const = 0;
+  virtual bool IsValidNameOnCard(std::u16string_view input_text) const = 0;
 
   virtual base::WeakPtr<SaveAndFillDialogController> GetWeakPtr() = 0;
 };

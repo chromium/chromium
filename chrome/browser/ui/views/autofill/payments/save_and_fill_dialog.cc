@@ -80,6 +80,10 @@ void SaveAndFillDialog::ContentsChanged(views::Textfield* sender,
     cvc_data_.SetErrorState(
         /*is_valid_input=*/controller_->IsValidCvc(new_contents),
         /*error_message=*/controller_->GetInvalidCvcErrorMessage());
+  } else if (sender == &name_on_card_data_.GetInputTextField()) {
+    name_on_card_data_.SetErrorState(
+        /*is_valid_input=*/controller_->IsValidNameOnCard(new_contents),
+        /*error_message=*/controller_->GetInvalidNameOnCardErrorMessage());
   }
 }
 
@@ -154,12 +158,11 @@ void SaveAndFillDialog::InitViews() {
                       IDR_CREDIT_CARD_CVC_HINT_BACK))))
           .Build());
 
-  // TODO(crbug.com/378163937): Implement validation rule for the `name on card`
-  // field.
-  AddChildView(std::move(CreateLabelAndTextfieldView(
-                             /*label_text=*/controller_->GetNameOnCardLabel(),
-                             /*error_message=*/std::u16string())
-                             .container));
+  name_on_card_data_ = CreateLabelAndTextfieldView(
+      /*label_text=*/controller_->GetNameOnCardLabel(),
+      /*error_message=*/controller_->GetInvalidNameOnCardErrorMessage());
+  name_on_card_data_.GetInputTextField().SetController(this);
+  AddChildView(std::move(name_on_card_data_.container));
 }
 
 }  // namespace autofill

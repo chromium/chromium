@@ -37,10 +37,12 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetInvalidCardNumberErrorMessage() const override;
   std::u16string GetInvalidCvcErrorMessage() const override;
+  std::u16string GetInvalidNameOnCardErrorMessage() const override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   bool IsUploadSaveAndFill() const override;
   bool IsValidCreditCardNumber(std::u16string_view input_text) const override;
   bool IsValidCvc(std::u16string_view input_text) const override;
+  bool IsValidNameOnCard(std::u16string_view input_text) const override;
 
   base::WeakPtr<SaveAndFillDialogController> GetWeakPtr() override;
 

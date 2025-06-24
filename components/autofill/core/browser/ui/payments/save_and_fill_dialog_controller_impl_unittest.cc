@@ -105,4 +105,18 @@ TEST_F(SaveAndFillDialogControllerImplTest, IsValidCvc) {
   EXPECT_FALSE(controller()->IsValidCvc(u"1 3"));
 }
 
+TEST_F(SaveAndFillDialogControllerImplTest, IsValidNameOnCard) {
+  EXPECT_TRUE(controller()->IsValidNameOnCard(u"John Doe"));
+  EXPECT_TRUE(controller()->IsValidNameOnCard(u"Jane A. Smith-Jones"));
+  EXPECT_TRUE(controller()->IsValidNameOnCard(u"O'Malley"));
+
+  // The name on card field is required for this flow so an empty name is
+  // considered invalid.
+  EXPECT_FALSE(controller()->IsValidNameOnCard(u""));
+  EXPECT_FALSE(controller()->IsValidNameOnCard(u"John123"));
+  EXPECT_FALSE(controller()->IsValidNameOnCard(u"Invalid@Name"));
+  EXPECT_FALSE(
+      controller()->IsValidNameOnCard(u"This name is way too long for a card"));
+}
+
 }  // namespace autofill
