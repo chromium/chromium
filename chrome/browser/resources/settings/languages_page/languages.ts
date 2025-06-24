@@ -7,7 +7,7 @@
  * method settings. The 'languages' property, which reflects the current
  * language settings, must not be changed directly. Instead, changes to
  * language settings should be made using the LanguageHelper APIs provided by
- * this class via languageHelper.
+ * this class via the LanguageHelper singleton instance.
  */
 
 import '/shared/settings/prefs/prefs.js';
@@ -45,6 +45,14 @@ interface ModelArgs {
   currentInputMethodId?: string;
 }
 
+
+let instance: LanguageHelper|null = null;
+
+export function getLanguageHelperInstance(): LanguageHelper {
+  assert(instance);
+  return instance;
+}
+
 /**
  * Singleton element that generates the languages model on start-up and
  * updates it whenever Chrome's pref store and other settings change.
@@ -63,18 +71,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       languages: {
         type: Object,
         notify: true,
-      },
-
-      /**
-       * This element, as a LanguageHelper instance for API usage.
-       */
-      languageHelper: {
-        type: Object,
-        notify: true,
-        readOnly: true,
-        value() {
-          return this;
-        },
       },
     };
   }
@@ -112,7 +108,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
   }
 
   declare languages?: LanguagesModel|undefined;
-  declare languageHelper: LanguageHelper;
 
   private resolver_: PromiseResolver<void> = new PromiseResolver();
   private supportedLanguageMap_:
@@ -143,6 +138,9 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
 
   override connectedCallback() {
     super.connectedCallback();
+
+    assert(!instance);
+    instance = this;
 
     const promises: Array<Promise<any>> = [];
 
@@ -228,6 +226,9 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+
+    instance = null;
+    this.resolver_ = new PromiseResolver();
 
     // <if expr="not is_macosx">
     if (this.boundOnSpellcheckDictionariesChanged_) {

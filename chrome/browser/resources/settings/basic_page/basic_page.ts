@@ -33,9 +33,6 @@ import '../settings_page/settings_section.js';
 import '../settings_page_styles.css.js';
 // <if expr="not is_chromeos">
 import '../default_browser_page/default_browser_page.js';
-// </if>
-// <if expr="not chromeos_ash">
-import '../languages_page/languages.js';
 
 // </if>
 
@@ -55,7 +52,7 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import type {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {loadTimeData} from '../i18n_setup.js';
 // <if expr="not chromeos_ash">
-import type {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
+import type {LanguagesModel} from '../languages_page/languages_types.js';
 // </if>
 import {pageVisibility} from '../page_visibility.js';
 import type {PageVisibility} from '../page_visibility.js';
@@ -94,8 +91,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
        * 'settings-languages' instance.
        */
       languages: Object,
-
-      languageHelper: Object,
       // </if>
 
       /**
@@ -179,7 +174,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   // <if expr="not chromeos_ash">
   declare languages?: LanguagesModel;
-  declare languageHelper: LanguageHelper;
   // </if>
   declare private pageVisibility_: PageVisibility;
   declare inSearchMode: boolean;

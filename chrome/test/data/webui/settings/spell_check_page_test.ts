@@ -62,6 +62,7 @@ suite('SpellCheck', function() {
       settingsLanguages.prefs = settingsPrefs.prefs;
       fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
       document.body.appendChild(settingsLanguages);
+      languageHelper = settingsLanguages;
 
       spellcheckPage = document.createElement('settings-spell-check-page');
 
@@ -69,15 +70,11 @@ suite('SpellCheck', function() {
       spellcheckPage.prefs = settingsPrefs.prefs;
       fakeDataBind(settingsPrefs, spellcheckPage, 'prefs');
 
-      spellcheckPage.languageHelper = settingsLanguages.languageHelper;
-      fakeDataBind(settingsLanguages, spellcheckPage, 'language-helper');
-
       spellcheckPage.languages = settingsLanguages.languages;
       fakeDataBind(settingsLanguages, spellcheckPage, 'languages');
 
       document.body.appendChild(spellcheckPage);
       flush();
-      languageHelper = spellcheckPage.languageHelper;
       return languageHelper.whenReady();
     });
   });

@@ -55,6 +55,7 @@ suite('LanguagesPageMetricsBrowser', function() {
       settingsLanguages.prefs = settingsPrefs.prefs;
       fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
       document.body.appendChild(settingsLanguages);
+      languageHelper = settingsLanguages;
 
       languagesPage = document.createElement('settings-languages-page');
 
@@ -62,15 +63,12 @@ suite('LanguagesPageMetricsBrowser', function() {
       languagesPage.prefs = settingsLanguages.prefs;
       fakeDataBind(settingsLanguages, languagesPage, 'prefs');
 
-      languagesPage.languageHelper = settingsLanguages.languageHelper;
-      fakeDataBind(settingsLanguages, languagesPage, 'language-helper');
-
       languagesPage.languages = settingsLanguages.languages;
       fakeDataBind(settingsLanguages, languagesPage, 'languages');
 
       document.body.appendChild(languagesPage);
-      languageHelper = languagesPage.languageHelper;
-      return languageHelper.whenReady();
+
+      return settingsLanguages.whenReady();
     });
   });
 

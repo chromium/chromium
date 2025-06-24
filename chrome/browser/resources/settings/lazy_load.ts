@@ -69,6 +69,7 @@ import './people_page/sync_page.js';
 import './a11y_page/a11y_page.js';
 import './downloads_page/downloads_page.js';
 // <if expr="not chromeos_ash">
+import './languages_page/languages.js';
 import './languages_page/languages_page.js';
 import './languages_page/spell_check_page.js';
 import './languages_page/translate_page.js';
@@ -160,6 +161,7 @@ export {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_page
 export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';
 // <if expr="not chromeos_ash">
 export {SettingsAddLanguagesDialogElement} from './languages_page/add_languages_dialog.js';
+export {getLanguageHelperInstance} from './languages_page/languages.js';
 // <if expr="not is_macosx">
 export {SettingsEditDictionaryPageElement} from './languages_page/edit_dictionary_page.js';
 // </if>

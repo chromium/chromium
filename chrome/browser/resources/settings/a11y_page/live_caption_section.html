@@ -87,9 +87,7 @@
     </settings-toggle-button>
   </cr-collapse>
   <template is="dom-if" if="[[enableLiveTranslate_]]">
-    <settings-live-translate prefs="{{prefs}}" languages="[[languages]]"
-        language-helper="[[languageHelper]]">
-    </settings-live-translate>
+    <settings-live-translate prefs="{{prefs}}"></settings-live-translate>
   </template>
 </template>
 <template is="dom-if" if="[[showAddLanguagesDialog_]]" restamp>

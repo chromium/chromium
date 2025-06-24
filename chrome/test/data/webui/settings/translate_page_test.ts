@@ -53,14 +53,12 @@ suite('TranslatePage', function() {
       settingsLanguages.prefs = settingsPrefs.prefs;
       fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
       document.body.appendChild(settingsLanguages);
+      languageHelper = settingsLanguages;
 
       translatePage = document.createElement('settings-translate-page');
 
       translatePage.prefs = settingsPrefs.prefs;
       fakeDataBind(settingsPrefs, translatePage, 'prefs');
-
-      translatePage.languageHelper = settingsLanguages.languageHelper;
-      fakeDataBind(settingsLanguages, translatePage, 'language-helper');
 
       translatePage.languages = settingsLanguages.languages;
       fakeDataBind(settingsLanguages, translatePage, 'languages');
@@ -68,8 +66,7 @@ suite('TranslatePage', function() {
       document.body.appendChild(translatePage);
       flush();
 
-      languageHelper = translatePage.languageHelper;
-      return languageHelper.whenReady();
+      return settingsLanguages.whenReady();
     });
   });
 

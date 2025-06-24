@@ -4,11 +4,11 @@
 
 // clang-format off
 import type {LanguageHelper} from 'chrome://settings/lazy_load.js';
-import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {LanguagesBrowserProxyImpl, getLanguageHelperInstance} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, isTranslateBaseLanguage, getBaseLanguage, convertLanguageCodeForTranslate, convertLanguageCodeForChrome} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
-import {fakeDataBind, flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import type {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
@@ -31,14 +31,15 @@ suite('settings-languages', function() {
 
   suiteSetup(function() {
     CrSettingsPrefs.deferInitialization = true;
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
     settingsPrefs.initialize(settingsPrivate);
     document.body.appendChild(settingsPrefs);
+    await CrSettingsPrefs.initialized;
 
     // Setup test browser proxy.
     browserProxy = new TestLanguagesBrowserProxy();
@@ -50,13 +51,13 @@ suite('settings-languages', function() {
     languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
     const settingsLanguages = document.createElement('settings-languages');
-    languageHelper = settingsLanguages.languageHelper;
-
-    // Prefs would normally be data-bound to settings-languages.
+    settingsLanguages.prefs = settingsPrefs.prefs;
     fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
-    await flushTasks();
-
     document.body.appendChild(settingsLanguages);
+
+    languageHelper = getLanguageHelperInstance();
+    assertEquals(languageHelper, settingsLanguages);
+
     await languageHelper.whenReady();
     // <if expr="is_win">
     await browserProxy.whenCalled('getProspectiveUiLanguage');

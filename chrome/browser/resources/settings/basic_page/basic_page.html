@@ -168,8 +168,7 @@
             <template is="dom-if" if="[[showPage_(pageVisibility_.languages)]]"
                 restamp>
 <if expr="not chromeos_ash">
-              <settings-languages languages="{{languages}}" prefs="{{prefs}}"
-                  language-helper="{{languageHelper}}">
+              <settings-languages languages="{{languages}}" prefs="{{prefs}}">
               </settings-languages>
 </if>
               <settings-section
@@ -188,32 +187,26 @@
 </if>
 <if expr="not chromeos_ash">
                 <settings-languages-page prefs="{{prefs}}"
-                    languages="[[languages]]"
-                    language-helper="[[languageHelper]]">
+                    languages="[[languages]]">
                 </settings-languages-page>
 </if>
               </settings-section>
-            </template>
 <if expr="not chromeos_ash">
-            <template is="dom-if" if="[[showPage_(pageVisibility_.spellCheck)]]"
-                restamp>
               <settings-section page-title="$i18n{spellCheckTitle}"
                   section="spellCheck" nest-under-section="languages"
                   id="spellCheckSettingsSection">
                 <settings-spell-check-page prefs="{{prefs}}"
-                    languages="{{languages}}"
-                    language-helper="[[languageHelper]]">
+                    languages="{{languages}}">
                 </settings-spell-check-page>
               </settings-section>
-            </template>
-            <settings-section page-title="$i18n{translatePageTitle}"
-                section="translate" nest-under-section="languages">
-              <settings-translate-page prefs="{{prefs}}"
-                  languages="[[languages]]"
-                  language-helper="[[languageHelper]]">
-              </settings-translate-page>
-            </settings-section>
+              <settings-section page-title="$i18n{translatePageTitle}"
+                  section="translate" nest-under-section="languages">
+                <settings-translate-page prefs="{{prefs}}"
+                    languages="[[languages]]">
+                </settings-translate-page>
+              </settings-section>
 </if>
+            </template>
             <template is="dom-if" if="[[showPage_(pageVisibility_.downloads)]]"
                 restamp>
               <settings-section page-title="$i18n{downloadsPageTitle}"
@@ -226,10 +219,7 @@
                 restamp>
               <settings-section page-title="$i18n{a11yPageTitle}"
                   section="a11y">
-                <settings-a11y-page prefs="{{prefs}}"
-                    languages="[[languages]]"
-                    language-helper="[[languageHelper]]">
-                </settings-a11y-page>
+                <settings-a11y-page prefs="{{prefs}}"></settings-a11y-page>
               </settings-section>
             </template>
 <if expr="not chromeos_ash">

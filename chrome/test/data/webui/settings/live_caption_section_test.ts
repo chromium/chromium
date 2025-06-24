@@ -5,7 +5,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {LanguageHelper, SettingsAddLanguagesDialogElement, SettingsLiveCaptionElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsAddLanguagesDialogElement, SettingsLiveCaptionElement} from 'chrome://settings/lazy_load.js';
 import {CaptionsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -15,7 +15,6 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {TestCaptionsBrowserProxy} from './test_captions_browser_proxy.js';
 
 suite('LiveCaptionSection', function() {
-  let languageHelper: LanguageHelper;
   let liveCaptionSection: SettingsLiveCaptionElement;
   let browserProxy: TestCaptionsBrowserProxy;
   let dialog: SettingsAddLanguagesDialogElement|null = null;
@@ -46,13 +45,10 @@ suite('LiveCaptionSection', function() {
     liveCaptionSection = document.createElement('settings-live-caption');
     liveCaptionSection.prefs = settingsPrefs.prefs;
     fakeDataBind(settingsPrefs, liveCaptionSection, 'prefs');
-    liveCaptionSection.languageHelper = settingsLanguages.languageHelper;
-    fakeDataBind(settingsLanguages, liveCaptionSection, 'language-helper');
     document.body.appendChild(liveCaptionSection);
 
     flush();
-    languageHelper = liveCaptionSection.languageHelper;
-    return languageHelper.whenReady();
+    return settingsLanguages.whenReady();
   });
 
   test('test caption.enable toggle', function() {

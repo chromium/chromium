@@ -46,6 +46,7 @@ import type {FocusConfig} from '../focus_config.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
+import {getLanguageHelperInstance} from './languages.js';
 import type {LanguageSettingsMetricsProxy} from './languages_settings_metrics_proxy.js';
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from './languages_settings_metrics_proxy.js';
 import type {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
@@ -71,8 +72,6 @@ export class SettingsSpellCheckPageElement extends
        * 'settings-languages' instance.
        */
       languages: Object,
-
-      languageHelper: Object,
 
       // <if expr="not is_macosx">
       spellCheckLanguages_: {
@@ -114,15 +113,21 @@ export class SettingsSpellCheckPageElement extends
   // </if>
 
   declare languages?: LanguagesModel;
-  declare languageHelper: LanguageHelper;
   // <if expr="not is_macosx">
   declare private spellCheckLanguages_:
       Array<LanguageState|SpellCheckLanguageState>;
   // </if>
   declare private hideSpellCheckLanguages_: boolean;
   declare private focusConfig_: FocusConfig;
+  private languageHelper_: LanguageHelper;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.languageHelper_ = getLanguageHelperInstance();
+  }
 
   private onSpellCheckToggleChange_(e: Event) {
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
@@ -236,7 +241,7 @@ export class SettingsSpellCheckPageElement extends
     // `browser.enable_spellchecking` as the toggle for the 1 language as
     // well.
     if (this.spellCheckLanguages_.length === 1) {
-      this.languageHelper.toggleSpellCheck(
+      this.languageHelper_.toggleSpellCheck(
           this.spellCheckLanguages_[0].language.code,
           !!this.getPref('browser.enable_spellchecking').value);
     }
@@ -259,7 +264,7 @@ export class SettingsSpellCheckPageElement extends
       return;
     }
 
-    this.languageHelper.toggleSpellCheck(
+    this.languageHelper_.toggleSpellCheck(
         item.language.code, !item.spellCheckEnabled);
 
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
@@ -276,7 +281,7 @@ export class SettingsSpellCheckPageElement extends
       e: DomRepeatEvent<LanguageState|SpellCheckLanguageState>) {
     assert(this.errorsGreaterThan_(
         e.model.item.downloadDictionaryFailureCount, 0));
-    this.languageHelper.retryDownloadDictionary(e.model.item.language.code);
+    this.languageHelper_.retryDownloadDictionary(e.model.item.language.code);
   }
 
   /**

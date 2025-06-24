@@ -37,8 +37,6 @@ import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_r
 import './live_translate_section.js';
 import '../languages_page/add_languages_dialog.js';
 
-import type {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
-
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -92,14 +90,6 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
       },
 
       // <if expr="not is_chromeos">
-      /**
-       * Read-only reference to the languages model provided by the
-       * 'settings-languages' instance.
-       */
-      languages: Object,
-
-      languageHelper: Object,
-
       enableLiveTranslate_: {
         type: Boolean,
         value: function() {
@@ -128,8 +118,6 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   }
 
   // <if expr="not is_chromeos">
-  declare languages: LanguagesModel;
-  declare languageHelper: LanguageHelper;
   declare private enableLiveTranslate_: boolean;
   declare private installedLanguagePacks_: LiveCaptionLanguageList;
   declare private availableLanguagePacks_: LiveCaptionLanguageList;

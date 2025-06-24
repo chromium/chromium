@@ -5,7 +5,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {LanguageHelper, SettingsLiveTranslateElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsLiveTranslateElement} from 'chrome://settings/lazy_load.js';
 import {CaptionsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -15,7 +15,6 @@ import {TestCaptionsBrowserProxy} from './test_captions_browser_proxy.js';
 
 
 suite('LiveTranslateSection', function() {
-  let languageHelper: LanguageHelper;
   let liveTranslateSection: SettingsLiveTranslateElement;
   let browserProxy: TestCaptionsBrowserProxy;
 
@@ -45,13 +44,11 @@ suite('LiveTranslateSection', function() {
     liveTranslateSection = document.createElement('settings-live-translate');
     liveTranslateSection.prefs = settingsPrefs.prefs;
     fakeDataBind(settingsPrefs, liveTranslateSection, 'prefs');
-    liveTranslateSection.languageHelper = settingsLanguages.languageHelper;
     fakeDataBind(settingsLanguages, liveTranslateSection, 'language-helper');
     document.body.appendChild(liveTranslateSection);
 
     flush();
-    languageHelper = liveTranslateSection.languageHelper;
-    return languageHelper.whenReady();
+    return settingsLanguages.whenReady();
   });
 
   test('test translate.enable toggle', function() {

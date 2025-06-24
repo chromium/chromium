@@ -42,12 +42,6 @@ import type {AccessibilityBrowserProxy} from './a11y_browser_proxy.js';
 import {AccessibilityBrowserProxyImpl} from './a11y_browser_proxy.js';
 import {getTemplate} from './a11y_page.html.js';
 
-// clang-format off
-// <if expr="not is_chromeos">
-import type {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
-
-// </if>
-// clang-format on
 
 /**
  * Must be kept in sync with the C++ enum of the same name in
@@ -81,14 +75,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   static get properties() {
     return {
       // <if expr="not is_chromeos">
-      /**
-       * Read-only reference to the languages model provided by the
-       * 'settings-languages' instance.
-       */
-      languages: Object,
-
-      languageHelper: Object,
-
       enableLiveCaption_: {
         type: Boolean,
         value: function() {
@@ -158,9 +144,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
       AccessibilityBrowserProxyImpl.getInstance();
 
   // <if expr="not is_chromeos">
-  declare languages: LanguagesModel;
-  declare languageHelper: LanguageHelper;
-
   declare private enableLiveCaption_: boolean;
   declare private numericUncheckedToastAlertValues_: ToastAlertLevel[];
   // </if>

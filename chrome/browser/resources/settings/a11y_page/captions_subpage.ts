@@ -20,7 +20,6 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import type {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
 
 import {getTemplate} from './captions_subpage.html.js';
 
@@ -37,14 +36,6 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
 
   static get properties() {
     return {
-      /**
-       * Read-only reference to the languages model provided by the
-       * 'settings-languages' instance.
-       */
-      languages: Object,
-
-      languageHelper: Object,
-
       /**
        * List of options for the background opacity drop-down menu.
        */
@@ -208,8 +199,6 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
     };
   }
 
-  declare languages: LanguagesModel;
-  declare languageHelper: LanguageHelper;
   declare private readonly backgroundOpacityOptions_: DropdownMenuOptionList;
   declare private readonly colorOptions_: DropdownMenuOptionList;
   declare private textFontOptions_: DropdownMenuOptionList;

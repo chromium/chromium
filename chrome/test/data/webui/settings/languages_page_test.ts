@@ -45,11 +45,11 @@ suite('LanguagesPage', function() {
   const initialLanguages = 'en-US,sw';
 
   suiteSetup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     CrSettingsPrefs.deferInitialization = true;
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
     settingsPrefs.initialize(settingsPrivate);
@@ -69,14 +69,12 @@ suite('LanguagesPage', function() {
       settingsLanguages.prefs = settingsPrefs.prefs;
       fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
       document.body.appendChild(settingsLanguages);
+      languageHelper = settingsLanguages;
 
       languagesPage = document.createElement('settings-languages-page');
 
       languagesPage.prefs = settingsPrefs.prefs;
       fakeDataBind(settingsPrefs, languagesPage, 'prefs');
-
-      languagesPage.languageHelper = settingsLanguages.languageHelper;
-      fakeDataBind(settingsLanguages, languagesPage, 'language-helper');
 
       languagesPage.languages = settingsLanguages.languages;
       fakeDataBind(settingsLanguages, languagesPage, 'languages');
@@ -85,13 +83,8 @@ suite('LanguagesPage', function() {
       flush();
       actionMenu = languagesPage.$.menu.get();
 
-      languageHelper = languagesPage.languageHelper;
-      return languageHelper.whenReady();
+      return settingsLanguages.whenReady();
     });
-  });
-
-  teardown(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   suite('AddLanguagesDialog', function() {
