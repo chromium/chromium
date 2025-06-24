@@ -10,12 +10,13 @@
 #include <string>
 #include <vector>
 
-#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/platform/ax_platform_node_auralinux.h"
-#include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
+#include "ui/accessibility/platform/ax_platform_node_auralinux.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/browser_accessibility_manager_auralinux.h"
+#include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 namespace ui {
@@ -896,6 +897,22 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestAtkTextGetOffesetAtPoint) {
   manager.reset();
 }
 
+class TestBrowserAccessibilityManagerAuraLinux
+    : public BrowserAccessibilityManagerAuraLinux {
+ public:
+  TestBrowserAccessibilityManagerAuraLinux(
+      const AXTreeUpdate& initial_tree,
+      AXNodeIdDelegate& node_id_delegate,
+      TestAXPlatformTreeManagerDelegate* delegate)
+      : BrowserAccessibilityManagerAuraLinux(initial_tree,
+                                             node_id_delegate,
+                                             delegate) {}
+
+  // Override so this test runs normally no matter the linux version in the
+  // test environment.
+  bool ShouldExposeExtraAnnouncementNodes() const override { return true; }
+};
+
 TEST_F(BrowserAccessibilityAuraLinuxTest, CreateExtraAnnouncementNodes) {
   AXNodeData root_data;
   root_data.id = 1;
@@ -907,7 +924,7 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, CreateExtraAnnouncementNodes) {
   button.role = ax::mojom::Role::kButton;
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      std::make_unique<TestBrowserAccessibilityManagerAuraLinux>(
           MakeAXTreeUpdateForTesting(root_data, button), node_id_delegate_,
           test_browser_accessibility_delegate_.get()));
 
@@ -932,7 +949,7 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, GetExtraAnnouncementNodes) {
   root_data.role = ax::mojom::Role::kGenericContainer;
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      std::make_unique<TestBrowserAccessibilityManagerAuraLinux>(
           MakeAXTreeUpdateForTesting(root_data), node_id_delegate_,
           test_browser_accessibility_delegate_.get()));
 
@@ -941,20 +958,17 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, GetExtraAnnouncementNodes) {
   ASSERT_TRUE(tree->extra_announcement_nodes());
   EXPECT_EQ(2, tree->extra_announcement_nodes()->Count());
 
-  BrowserAccessibilityAuraLinux* root_node =
-      ToBrowserAccessibilityAuraLinux(manager->GetBrowserAccessibilityRoot());
+  BrowserAccessibility* root_node = manager->GetBrowserAccessibilityRoot();
   EXPECT_EQ(2U, root_node->PlatformChildCount());
 
-  BrowserAccessibilityAuraLinux* assertive_node =
-      root_node->GetExtraAnnouncementNode(
-          ax::mojom::AriaNotificationPriority::kHigh);
+  BrowserAccessibility* assertive_node = root_node->GetExtraAnnouncementNode(
+      ax::mojom::AriaNotificationPriority::kHigh);
   EXPECT_EQ(assertive_node->GetData().GetStringAttribute(
                 ax::mojom::StringAttribute::kContainerLiveStatus),
             "assertive");
 
-  BrowserAccessibilityAuraLinux* polite_node =
-      root_node->GetExtraAnnouncementNode(
-          ax::mojom::AriaNotificationPriority::kNormal);
+  BrowserAccessibility* polite_node = root_node->GetExtraAnnouncementNode(
+      ax::mojom::AriaNotificationPriority::kNormal);
   EXPECT_EQ(polite_node->GetData().GetStringAttribute(
                 ax::mojom::StringAttribute::kContainerLiveStatus),
             "polite");
@@ -971,7 +985,7 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, PlatformGetChild) {
   button.role = ax::mojom::Role::kButton;
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      std::make_unique<TestBrowserAccessibilityManagerAuraLinux>(
           MakeAXTreeUpdateForTesting(root_data, button), node_id_delegate_,
           test_browser_accessibility_delegate_.get()));
 
@@ -1017,7 +1031,7 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, PlatformGetLastChild) {
   button.role = ax::mojom::Role::kButton;
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      std::make_unique<TestBrowserAccessibilityManagerAuraLinux>(
           MakeAXTreeUpdateForTesting(root_data, button), node_id_delegate_,
           test_browser_accessibility_delegate_.get()));
 
@@ -1055,7 +1069,7 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, PlatformGetSiblings) {
   button.role = ax::mojom::Role::kButton;
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      std::make_unique<TestBrowserAccessibilityManagerAuraLinux>(
           MakeAXTreeUpdateForTesting(root_data, button), node_id_delegate_,
           test_browser_accessibility_delegate_.get()));
 

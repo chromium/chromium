@@ -411,15 +411,49 @@ void BrowserAccessibilityManagerAuraLinux::FireAriaNotificationEvent(
   DCHECK(node);
 
   // Only newer Atk versions support the notification signal type.
-  if (base::Version(atk_get_version()).CompareTo(base::Version("2.50.0")) >= 0) {
-    ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnAriaNotificationPosted(
-        announcement, priority_property);
-  } else {
-    ToBrowserAccessibilityAuraLinux(node)
-        ->GetExtraAnnouncementNode(priority_property)
+  if (ShouldExposeExtraAnnouncementNodes()) {
+    ToBrowserAccessibilityAuraLinux(
+        node->GetExtraAnnouncementNode(priority_property))
         ->GetNode()
         ->OnAriaNotificationPosted(announcement, priority_property);
+  } else {
+    ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnAriaNotificationPosted(
+        announcement, priority_property);
   }
+}
+
+bool BrowserAccessibilityManagerAuraLinux::ShouldExposeExtraAnnouncementNodes()
+    const {
+  // Compute this once and cache it, since it is expensive to call
+  // atk_get_version() and compare it to a version string for each call or
+  // check made in the BrowserAccessibility APIs.
+  static bool should_expose =
+      base::Version(atk_get_version()).CompareTo(base::Version("2.50.0")) < 0;
+  return should_expose;
+}
+
+BrowserAccessibility*
+BrowserAccessibilityManagerAuraLinux::GetExtraAnnouncementNodeFromNode(
+    const BrowserAccessibility* node,
+    ax::mojom::AriaNotificationPriority priority_property) const {
+  CHECK(ShouldExposeExtraAnnouncementNodes());
+  if (!node) {
+    return nullptr;
+  }
+  AXNode* extra_announcement_node =
+      node->node()->GetExtraAnnouncementNode(priority_property);
+  return GetFromAXNode(extra_announcement_node);
+}
+
+bool BrowserAccessibilityManagerAuraLinux::TreeHasExtraAnnouncementNodes()
+    const {
+  return ax_tree()->extra_announcement_nodes();
+}
+
+size_t BrowserAccessibilityManagerAuraLinux::TreeExtraAnnouncementNodesCount()
+    const {
+  CHECK(TreeHasExtraAnnouncementNodes());
+  return ax_tree()->extra_announcement_nodes()->Count();
 }
 
 void BrowserAccessibilityManagerAuraLinux::OnNodeWillBeDeleted(

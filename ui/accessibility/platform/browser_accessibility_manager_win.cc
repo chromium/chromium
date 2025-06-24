@@ -140,7 +140,17 @@ void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
     ax::mojom::AriaNotificationInterrupt interrupt_property,
     const std::string& type) {
   DCHECK(node);
-  if (!AXPlatform::GetInstance().IsUiaProviderEnabled()) {
+  // Allow fallback implementation when UIA is not supported or enabled.
+  if (ShouldExposeExtraAnnouncementNodes()) {
+    BrowserAccessibility* announcement_browser_accessibility =
+        node->GetExtraAnnouncementNode(priority_property);
+    AXNode* announcement_node = announcement_browser_accessibility->node();
+    AXNodeData data = announcement_node->data();
+    data.SetName(announcement);
+    announcement_node->SetData(data);
+    static_cast<AXPlatformNodeWin*>(
+        announcement_browser_accessibility->GetAXPlatformNode())
+        ->OnAriaNotificationIA2Fallback(announcement, priority_property);
     return;
   }
 
@@ -199,6 +209,30 @@ void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
   uia_raise_notification_event_func(provider, NotificationKind_ActionCompleted,
                                     MapPropertiesToUiaNotificationProcessing(),
                                     announcement_bstr.Get(), type_bstr.Get());
+}
+
+bool BrowserAccessibilityManagerWin::ShouldExposeExtraAnnouncementNodes()
+    const {
+  return !AXPlatform::GetInstance().IsUiaProviderEnabled();
+}
+
+BrowserAccessibility*
+BrowserAccessibilityManagerWin::GetExtraAnnouncementNodeFromNode(
+    const BrowserAccessibility* node,
+    ax::mojom::AriaNotificationPriority priority_property) const {
+  CHECK(ShouldExposeExtraAnnouncementNodes());
+  AXNode* extra_announcement_node =
+      node->node()->GetExtraAnnouncementNode(priority_property);
+  return GetFromAXNode(extra_announcement_node);
+}
+
+bool BrowserAccessibilityManagerWin::TreeHasExtraAnnouncementNodes() const {
+  return ax_tree()->extra_announcement_nodes();
+}
+
+size_t BrowserAccessibilityManagerWin::TreeExtraAnnouncementNodesCount() const {
+  CHECK(TreeHasExtraAnnouncementNodes());
+  return ax_tree()->extra_announcement_nodes()->Count();
 }
 
 void BrowserAccessibilityManagerWin::FireFocusEvent(AXNode* node) {

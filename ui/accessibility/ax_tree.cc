@@ -729,6 +729,10 @@ struct AXTreeUpdateState {
   // (crrev.com/c/2892259).
   const raw_ref<const AXTreeUpdate> pending_tree_update;
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  bool should_clear_extra_announcement_nodes = false;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
  private:
   PendingStructureChanges* GetPendingStructureChanges(AXNodeID node_id) const {
     auto iter = node_id_to_pending_data.find(node_id);
@@ -882,7 +886,7 @@ bool AXTree::ComputeNodeIsIgnoredChanged(
   return old_node_is_ignored != new_node_is_ignored;
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 ExtraAnnouncementNodes::ExtraAnnouncementNodes(AXNode* root) {
   assertive_node_ = CreateNode("assertive", root);
   polite_node_ = CreateNode("polite", root);
@@ -915,7 +919,7 @@ std::unique_ptr<AXNode> ExtraAnnouncementNodes::CreateNode(
   node->SetData(data);
   return node;
 }
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 AXTree::AXTree() {
   // TODO(chrishall): should language_detection_manager be a member or pointer?
@@ -975,9 +979,9 @@ AXNode* AXTree::GetFromId(AXNodeID id) const {
 
 void AXTree::Destroy() {
   base::ElapsedThreadTimer timer;
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   ClearExtraAnnouncementNodes();
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
   table_info_map_.clear();
   if (!root_)
@@ -1635,6 +1639,12 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   observers_.Notify(&AXTreeObserver::OnAtomicUpdateFinished, this,
                     root_->id() != old_root_id, changes);
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  if (update_state.should_clear_extra_announcement_nodes) {
+    ClearExtraAnnouncementNodes();
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
 #if AX_FAIL_FAST_BUILD()
   CheckTreeConsistency(update);
 #endif
@@ -2211,7 +2221,7 @@ void AXTree::NotifyNodeAttributesWillChange(
                     new_data);
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 void AXTree::ClearExtraAnnouncementNodes() {
   if (!extra_announcement_nodes_) {
     return;
@@ -2224,12 +2234,17 @@ void AXTree::ClearExtraAnnouncementNodes() {
                                  &extra_announcement_nodes_->PoliteNode());
   }
 
-  std::vector<AXNodeID> deleted_ids;
+  absl::flat_hash_set<AXNodeID> deleted_ids;
+  deleted_ids.insert(extra_announcement_nodes_->AssertiveNode().id());
+  deleted_ids.insert(extra_announcement_nodes_->PoliteNode().id());
+
+  for (AXTreeObserver& observer : observers()) {
+    observer.OnAtomicUpdateStarting(this, deleted_ids,
+                                    absl::flat_hash_set<AXNodeID>{});
+  }
 
   {
     ScopedTreeUpdateInProgressStateSetter tree_update_in_progress(*this);
-    deleted_ids.push_back(extra_announcement_nodes_->AssertiveNode().id());
-    deleted_ids.push_back(extra_announcement_nodes_->PoliteNode().id());
     extra_announcement_nodes_.reset();
   }
 
@@ -2269,7 +2284,7 @@ void AXTree::CreateExtraAnnouncementNodes() {
     observer.OnAtomicUpdateFinished(this, /*root_changed=*/false, changes);
   }
 }
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 void AXTree::NotifyNodeAttributesHaveBeenChanged(
     AXNode* node,
@@ -2605,14 +2620,14 @@ bool AXTree::CreateNewChildVector(
     AXTreeUpdateState* update_state) {
   DCHECK(GetTreeUpdateInProgressState());
   bool success = true;
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   // If the root node has children added, clear the extra announcement nodes,
   // which should always have their indices as the last two children of the root
   // node. They will be recreated if needed, and given the correct indices.
   if (node == root() && extra_announcement_nodes_) {
-    ClearExtraAnnouncementNodes();
+    update_state->should_clear_extra_announcement_nodes = true;
   }
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   for (size_t i = 0; i < new_child_ids.size(); ++i) {
     AXNodeID child_id = new_child_ids[i];
     AXNode* child = GetFromId(child_id);

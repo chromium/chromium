@@ -61,6 +61,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
       ax::mojom::AriaNotificationPriority priority_property,
       ax::mojom::AriaNotificationInterrupt interrupt_property,
       const std::string& type) override;
+  bool ShouldExposeExtraAnnouncementNodes() const override;
+  BrowserAccessibility* GetExtraAnnouncementNodeFromNode(
+      const BrowserAccessibility* node,
+      ax::mojom::AriaNotificationPriority priority_property) const override;
+  bool TreeHasExtraAnnouncementNodes() const override;
+  size_t TreeExtraAnnouncementNodesCount() const override;
 
   void FireFocusEvent(AXNode* node) override;
   void FireBlinkEvent(ax::mojom::Event event_type,

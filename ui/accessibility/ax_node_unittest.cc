@@ -1032,7 +1032,7 @@ TEST(AXNodeTest, GroupAsTreeItemParentPosInSetSetSize) {
   EXPECT_EQ(tree.GetFromId(8)->GetSetSize(), 6);
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 TEST(AXNodeTest, ExtraAnnouncementNodesNotCreated) {
   AXNodeData root;
   root.id = 1;
@@ -1094,6 +1094,6 @@ TEST(AXNodeTest, GetExtraAnnouncementNodeByPriority) {
                 ax::mojom::StringAttribute::kContainerLiveStatus),
             "polite");
 }
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 }  // namespace ui

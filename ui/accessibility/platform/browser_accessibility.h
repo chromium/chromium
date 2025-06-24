@@ -447,6 +447,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
   // collapsed.
   BrowserAccessibility* GetCollapsedMenuListSelectAncestor() const;
 
+  // Some platforms require extra nodes to be created in order to support aria
+  // notify.
+  // These extra nodes will be created by the AXTree but only the
+  // BrowserAccessibility/platform trees will be aware of them.
+  BrowserAccessibility* GetExtraAnnouncementNode(
+      ax::mojom::AriaNotificationPriority priority_property) const;
+
   // Returns true if:
   // 1. This node is a list, AND
   // 2. This node has a list ancestor or a list descendant.
@@ -524,6 +531,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
 
   // Determines whether this object is valid.
   bool IsValid() const;
+
+  // On Windows IA2 and older versions of linux, we must
+  // use extra announcement nodes to provide a fallback for aria notify.
+  bool HasExtraAnnouncementNodes() const;
+  size_t PlatformChildCountWithoutAnnouncementNodes() const;
 
   // Given a set of map of spelling text attributes and a start offset, merge
   // them into the given map of existing text attributes. Merges the given
