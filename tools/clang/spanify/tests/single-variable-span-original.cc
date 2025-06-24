@@ -19,10 +19,10 @@ void processUint8Buffer(uint8_t* buf) {
 void testPointerPassing() {
   int singleInt;
   // Expected rewrite:
-  // processIntBuffer(base::SpanFromSingleElement(singleInt));
+  // processIntBuffer(base::span_from_ref(singleInt));
   processIntBuffer(&singleInt);
   // processUint8Buffer(base::as_writable_byte_span(
-  //    base::SpanFromSingleElement(singleInt)));
+  //    base::span_from_ref(singleInt)));
   processUint8Buffer(reinterpret_cast<uint8_t*>(&singleInt));
 
   int intArray[10];
@@ -53,7 +53,7 @@ void testPointerPassing() {
   // void** should get rewritten.
   // Expected rewrite:
   // processUint8Buffer(
-  //   base::as_writable_byte_span(base::SpanFromSingleElement(voidPtr)));
+  //   base::as_writable_byte_span(base::span_from_ref(voidPtr)));
   processUint8Buffer(reinterpret_cast<uint8_t*>(&voidPtr));
 }
 
@@ -65,7 +65,7 @@ void processIntPointerBuffer(int** pointerToData) {
 void testPointerToPointerPassing() {
   int* singleIntPointer;
   // Expected rewrite:
-  // processIntPointerBuffer(base::SpanFromSingleElement(singleIntPointer));
+  // processIntPointerBuffer(base::span_from_ref(singleIntPointer));
   processIntPointerBuffer(&singleIntPointer);
 
   int* intArrayOfPointers[10];
@@ -91,12 +91,12 @@ struct MyStruct {
 void testFieldPointerPassing() {
   MyStruct myStruct;
   // Expected rewrite:
-  // processIntBuffer(base::SpanFromSingleElement(myStruct.field));
+  // processIntBuffer(base::span_from_ref(myStruct.field));
   processIntBuffer(&myStruct.field);
 }
 
 void testParamPointerPassing(int param) {
   // Expected rewrite:
-  // processIntBuffer(base::SpanFromSingleElement(param));
+  // processIntBuffer(base::span_from_ref(param));
   processIntBuffer(&param);
 }

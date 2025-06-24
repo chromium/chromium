@@ -1323,17 +1323,12 @@ static void EmitSingleVariableSpan(const std::string& key,
                          ampersand_loc, 0u, source_manager, lang_opts)};
 
   EmitReplacement(key, GetReplacementDirective(
-                           ampersand_range, "base::SpanFromSingleElement(",
+                           ampersand_range, "base::span_from_ref(",
                            source_manager, kEmitSingleVariableSpanPrecedence));
   EmitReplacement(
       key, GetReplacementDirective(
                getExprRange(operand_expr, source_manager, lang_opts).getEnd(),
                ")", source_manager, -kEmitSingleVariableSpanPrecedence));
-
-  // Include the header for `base::SpanFromSingleElement()`.
-  EmitReplacement(
-      key, GetIncludeDirective(operand_expr->getSourceRange(), source_manager,
-                               kBaseAutoSpanificationHelperIncludePath));
 }
 
 // Rewrites unsafe third-party member function calls to helper macro calls.

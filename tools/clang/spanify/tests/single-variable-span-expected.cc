@@ -8,7 +8,6 @@
 
 // Tests related to single_element_expr matcher.
 
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 
 void processIntBuffer(base::span<int> buf) {
@@ -22,12 +21,12 @@ void processUint8Buffer(base::span<uint8_t> buf) {
 void testPointerPassing() {
   int singleInt;
   // Expected rewrite:
-  // processIntBuffer(base::SpanFromSingleElement(singleInt));
-  processIntBuffer(base::SpanFromSingleElement(singleInt));
+  // processIntBuffer(base::span_from_ref(singleInt));
+  processIntBuffer(base::span_from_ref(singleInt));
   // processUint8Buffer(base::as_writable_byte_span(
-  //    base::SpanFromSingleElement(singleInt)));
+  //    base::span_from_ref(singleInt)));
   processUint8Buffer(
-      base::as_writable_byte_span(base::SpanFromSingleElement(singleInt)));
+      base::as_writable_byte_span(base::span_from_ref(singleInt)));
 
   int intArray[10];
   // Not using &.
@@ -57,9 +56,8 @@ void testPointerPassing() {
   // void** should get rewritten.
   // Expected rewrite:
   // processUint8Buffer(
-  //   base::as_writable_byte_span(base::SpanFromSingleElement(voidPtr)));
-  processUint8Buffer(
-      base::as_writable_byte_span(base::SpanFromSingleElement(voidPtr)));
+  //   base::as_writable_byte_span(base::span_from_ref(voidPtr)));
+  processUint8Buffer(base::as_writable_byte_span(base::span_from_ref(voidPtr)));
 }
 
 // Function that takes a pointer to an integer pointer.
@@ -70,8 +68,8 @@ void processIntPointerBuffer(base::span<int*> pointerToData) {
 void testPointerToPointerPassing() {
   int* singleIntPointer;
   // Expected rewrite:
-  // processIntPointerBuffer(base::SpanFromSingleElement(singleIntPointer));
-  processIntPointerBuffer(base::SpanFromSingleElement(singleIntPointer));
+  // processIntPointerBuffer(base::span_from_ref(singleIntPointer));
+  processIntPointerBuffer(base::span_from_ref(singleIntPointer));
 
   int* intArrayOfPointers[10];
   // Not using &.
@@ -96,12 +94,12 @@ struct MyStruct {
 void testFieldPointerPassing() {
   MyStruct myStruct;
   // Expected rewrite:
-  // processIntBuffer(base::SpanFromSingleElement(myStruct.field));
-  processIntBuffer(base::SpanFromSingleElement(myStruct.field));
+  // processIntBuffer(base::span_from_ref(myStruct.field));
+  processIntBuffer(base::span_from_ref(myStruct.field));
 }
 
 void testParamPointerPassing(int param) {
   // Expected rewrite:
-  // processIntBuffer(base::SpanFromSingleElement(param));
-  processIntBuffer(base::SpanFromSingleElement(param));
+  // processIntBuffer(base::span_from_ref(param));
+  processIntBuffer(base::span_from_ref(param));
 }
