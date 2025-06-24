@@ -219,7 +219,7 @@ base::TimeDelta PrefetchBlockUntilHeadTimeout(
       case blink::mojom::SpeculationEagerness::kImmediate:
         timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
             features::kPrefetchUseContentRefactor,
-            "block_until_head_timeout_eager_prefetch", 1000);
+            "block_until_head_timeout_immediate_prefetch", 1000);
         break;
       case blink::mojom::SpeculationEagerness::kModerate:
         timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(

@@ -4182,7 +4182,7 @@ class PrefetchServiceAlwaysBlockUntilHeadTest
               {"prefetch_container_lifetime_s", "-1"},
               {"prefetch_timeout_ms", "10000"},
               // Initialize timeouts > 0ms for testing purposes.
-              {"block_until_head_timeout_eager_prefetch", "1000"},
+              {"block_until_head_timeout_immediate_prefetch", "1000"},
               {"block_until_head_timeout_moderate_prefetch", "1000"},
               {"block_until_head_timeout_conservative_prefetch", "1000"},
           }}},
