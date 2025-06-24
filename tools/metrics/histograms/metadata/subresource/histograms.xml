@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Disallowed2"
-    units="microseconds" expires_after="2025-09-15">
+    units="microseconds" expires_after="2025-12-21">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -77,7 +77,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.WouldDisallow"
-    units="microseconds" expires_after="2025-09-15">
+    units="microseconds" expires_after="2025-12-21">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>

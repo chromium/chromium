@@ -703,7 +703,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.DuplicatePreUnsubscribeRealDelay"
-    units="ms" expires_after="2025-08-10">
+    units="ms" expires_after="2025-12-21">
   <owner>engedy@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

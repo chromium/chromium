@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.IsCanMakePaymentAllowedByPref.PaymentRequestConstruction.Once.DisabledReason"
-    enum="CanMakePaymentPreferenceSetter" expires_after="2025-10-19">
+    enum="CanMakePaymentPreferenceSetter" expires_after="2025-12-21">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-team@google.com</owner>
   <summary>
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.IsCanMakePaymentAllowedByPref.Startup"
-    enum="Boolean" expires_after="2025-10-19">
+    enum="Boolean" expires_after="2025-12-21">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-team@google.com</owner>
   <summary>
@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.IsCanMakePaymentAllowedByPref.Startup.DisabledReason"
-    enum="CanMakePaymentPreferenceSetter" expires_after="2025-10-19">
+    enum="CanMakePaymentPreferenceSetter" expires_after="2025-12-21">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-team@google.com</owner>
   <summary>

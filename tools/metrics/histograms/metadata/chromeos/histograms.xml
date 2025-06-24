@@ -1677,7 +1677,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Gaia.CreateAccount.IsFirstUser" enum="Boolean"
-    expires_after="2025-10-05">
+    expires_after="2025-12-21">
   <owner>thv@google.com</owner>
   <owner>cros-growth@google.com</owner>
   <summary>

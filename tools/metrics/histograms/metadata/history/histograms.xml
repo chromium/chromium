@@ -1669,7 +1669,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.ComputeAnswerStatus"
-    enum="ComputeAnswerStatus" expires_after="2025-10-12">
+    enum="ComputeAnswerStatus" expires_after="2025-12-21">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -1684,7 +1684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.ComputeAnswerTime{ComputeAnswerStatus}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-21">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -1996,7 +1996,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.InputTruncated" enum="Boolean"
-    expires_after="2025-10-19">
+    expires_after="2025-12-21">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -2113,7 +2113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.TokenizationSucceeded"
-    enum="Boolean" expires_after="2025-10-19">
+    enum="Boolean" expires_after="2025-12-21">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -2148,7 +2148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.LoadedMissizedEmbedding" enum="Boolean"
-    expires_after="2025-10-19">
+    expires_after="2025-12-21">
   <owner>orinj@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -2857,7 +2857,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.HashTableLengthOnReaderInit"
-    units="entries" expires_after="2025-10-19">
+    units="entries" expires_after="2025-12-21">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2868,7 +2868,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.HashTableSizeOnTableCreate" units="MB"
-    expires_after="2025-10-19">
+    expires_after="2025-12-21">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2878,7 +2878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.HashTableUsageOnLinkAdded"
-    units="fingerprints" expires_after="2025-10-19">
+    units="fingerprints" expires_after="2025-12-21">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>

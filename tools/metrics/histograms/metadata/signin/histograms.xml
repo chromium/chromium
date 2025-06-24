@@ -1115,7 +1115,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.CctAccountMismatchNoticeSuppressed"
-    enum="SuppressedReason" expires_after="2025-10-19">
+    enum="SuppressedReason" expires_after="2025-12-21">
   <owner>samarchehade@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1435,7 +1435,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.GaiaPageVisited" enum="GaiaPage"
-    expires_after="2025-10-20">
+    expires_after="2025-12-21">
   <owner>treib@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

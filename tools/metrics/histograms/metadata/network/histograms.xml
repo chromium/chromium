@@ -5241,7 +5241,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.IpProtection.GetProbabilisticRevealTokensResult"
-    enum="ProbabilisticRevealTokensResult" expires_after="2025-09-01">
+    enum="ProbabilisticRevealTokensResult" expires_after="2025-12-21">
   <owner>ryankalla@google.com</owner>
   <owner>kiln-eng@google.com</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
@@ -5274,7 +5274,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.IpProtection.IsProbabilisticRevealTokenAvailableOnInitialRequest"
-    enum="BooleanSuccess" expires_after="2025-09-01">
+    enum="BooleanSuccess" expires_after="2025-12-21">
   <owner>ryankalla@google.com</owner>
   <owner>kiln-eng@google.com</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
@@ -5292,7 +5292,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.IpProtection.IsProbabilisticRevealTokenAvailableOnSubsequentRequest"
-    enum="BooleanSuccess" expires_after="2025-09-01">
+    enum="BooleanSuccess" expires_after="2025-12-21">
   <owner>ryankalla@google.com</owner>
   <owner>kiln-eng@google.com</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
@@ -5333,7 +5333,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.IpProtection.ProbabilisticRevealTokenRandomizationTime"
-    units="ms" expires_after="2025-09-01">
+    units="ms" expires_after="2025-12-21">
   <owner>ryankalla@google.com</owner>
   <owner>kiln-eng@google.com</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
@@ -5345,7 +5345,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.IpProtection.ProbabilisticRevealTokensRequestTime"
-    units="ms" expires_after="2025-09-01">
+    units="ms" expires_after="2025-12-21">
   <owner>ryankalla@google.com</owner>
   <owner>kiln-eng@google.com</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>

@@ -206,7 +206,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="ExtensionBlacklist.BlockCRX" enum="ExtensionLocation"
-    expires_after="2025-10-19">
+    expires_after="2025-12-21">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2416,7 +2416,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram name="Extensions.ForceInstalledPreInstalledDeprecatedAppOpenUrl"
     enum="ExtensionForceInstalledPreInstalledDeprecatedSite"
-    expires_after="2025-09-21">
+    expires_after="2025-12-21">
   <owner>erikchen@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

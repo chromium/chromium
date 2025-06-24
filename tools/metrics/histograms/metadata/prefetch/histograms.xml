@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.{PrerenderOrNonPrerender}.{WasServed}.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2025-10-18">
+    units="ms" expires_after="2025-12-21">
   <owner>kenoss@chromium.org</owner>
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.{WasServed}.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2025-10-18">
+    units="ms" expires_after="2025-12-21">
   <owner>kenoss@chromium.org</owner>
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
