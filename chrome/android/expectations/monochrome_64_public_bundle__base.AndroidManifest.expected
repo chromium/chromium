@@ -16,7 +16,7 @@
     <package android:name="com.google.android.gms.policy_cast_dynamite"/>
     <package android:name="com.google.ar.core"/>
   </queries>  # DIFF-ANCHOR: e76c81ac
-  <uses-feature android:glEsVersion="0x00020000"/>
+  <uses-feature android:glEsVersion="0x00030000"/>
   <uses-feature android:name="android.hardware.camera" android:required="false"/>
   <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
   <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
