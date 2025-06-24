@@ -135,6 +135,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CreateEntry"/>
   <variant name="DeleteAllEntries"/>
   <variant name="DeleteDoomedEntry"/>
+  <variant name="DeleteLiveEntriesBetween"/>
   <variant name="DeleteLiveEntry"/>
   <variant name="DoomEntry"/>
   <variant name="Initialize"/>

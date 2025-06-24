@@ -6,6 +6,7 @@
 #define NET_DISK_CACHE_SQL_SQL_PERSISTENT_STORE_H_
 
 #include <optional>
+#include <set>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -167,6 +168,14 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // Deletes all entries from the cache. `callback` is invoked on completion.
   virtual void DeleteAllEntries(ErrorCallback callback) = 0;
+
+  // Deletes all "live" (not doomed) entries whose `last_used` time falls
+  // within the range [`initial_time`, `end_time`), excluding any entries whose
+  // keys are present in `excluded_keys`. `callback` is invoked on completion.
+  virtual void DeleteLiveEntriesBetween(base::Time initial_time,
+                                        base::Time end_time,
+                                        std::set<CacheEntryKey> excluded_keys,
+                                        ErrorCallback callback) = 0;
 
   // Opens the latest (highest `res_id`) cache entry that has a `res_id` less
   // than `res_id_cursor`. This method is used for iterating through entries

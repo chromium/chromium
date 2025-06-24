@@ -210,6 +210,17 @@ class SqlPersistentStoreTest : public testing::Test {
     return future.Take();
   }
 
+  // Synchronous wrapper for DeleteLiveEntriesBetween.
+  SqlPersistentStore::Error DeleteLiveEntriesBetween(
+      base::Time initial_time,
+      base::Time end_time,
+      std::set<CacheEntryKey> excluded_keys = {}) {
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    store_->DeleteLiveEntriesBetween(
+        initial_time, end_time, std::move(excluded_keys), future.GetCallback());
+    return future.Get();
+  }
+
   // Helper to count rows in the resource table.
   int64_t CountResourcesTable() {
     auto db = ManuallyOpenDatabase();
@@ -230,7 +241,7 @@ class SqlPersistentStoreTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::DEFAULT};
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   std::unique_ptr<SqlPersistentStore> store_;
@@ -1200,6 +1211,215 @@ TEST_F(SqlPersistentStoreTest, StaticResourceSizeEstimation) {
          "be too conservative.";
 }
 
+TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetween) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey1("key1");
+  const CacheEntryKey kKey2("key2-excluded");
+  const CacheEntryKey kKey3("key3");
+  const CacheEntryKey kKey4("key4-before");
+  const CacheEntryKey kKey5("key5-after");
+
+  const base::Time kBaseTime = base::Time::Now();
+
+  // Create entries with different last_used times.
+  task_environment_.AdvanceClock(base::Minutes(1));
+  ASSERT_TRUE(CreateEntry(kKey1).has_value());
+  const base::Time kTime1 = base::Time::Now();
+
+  task_environment_.AdvanceClock(base::Minutes(1));
+  ASSERT_TRUE(CreateEntry(kKey2).has_value());
+
+  task_environment_.AdvanceClock(base::Minutes(1));
+  ASSERT_TRUE(CreateEntry(kKey3).has_value());
+  const base::Time kTime3 = base::Time::Now();
+
+  // Create kKey4 and then manually set its last_used time to kBaseTime,
+  // which is before kTime1.
+  ASSERT_TRUE(CreateEntry(kKey4).has_value());
+  ClearStore();
+  {
+    auto db = ManuallyOpenDatabase();
+    sql::Statement statement(db->GetUniqueStatement(
+        "UPDATE resources SET last_used = ? WHERE cache_key = ?"));
+    statement.BindTime(0, kBaseTime);
+    statement.BindString(1, kKey4.string());
+    ASSERT_TRUE(statement.Run());
+  }
+  CreateAndInitStore();
+  // kKey4's last_used time in DB is now kBaseTime. kBaseTime < kTime1 is true.
+
+  // Create kKey5, ensuring its time is after kTime3.
+  // At this point, Time::Now() is effectively kTime3.
+  task_environment_.AdvanceClock(base::Minutes(1));
+  ASSERT_TRUE(CreateEntry(kKey5).has_value());
+  const base::Time kTime5 = base::Time::Now();
+  ASSERT_GT(kTime5, kTime3);
+
+  ASSERT_EQ(GetEntryCount(), 5);
+  int64_t initial_total_size = GetSizeOfAllEntries();
+
+  // Delete entries between kTime1 (inclusive) and kTime3 (exclusive).
+  // kKey2 should be excluded.
+  // Expected to delete: kKey1.
+  // Expected to keep: kKey2, kKey3, kKey4, kKey5.
+  std::set<CacheEntryKey> excluded_keys = {kKey2};
+  ASSERT_EQ(DeleteLiveEntriesBetween(kTime1, kTime3, excluded_keys),
+            SqlPersistentStore::Error::kOk);
+
+  EXPECT_EQ(GetEntryCount(), 4);
+  const int64_t expected_size_after_delete =
+      initial_total_size -
+      (kSqlBackendStaticResourceSize + kKey1.string().size());
+  EXPECT_EQ(GetSizeOfAllEntries(), expected_size_after_delete);
+
+  // Verify kKey1 is deleted.
+  auto open_key1 = OpenEntry(kKey1);
+  ASSERT_TRUE(open_key1.has_value());
+  EXPECT_FALSE(open_key1->has_value());
+
+  // Verify other keys are still present.
+  EXPECT_TRUE(OpenEntry(kKey2).value().has_value());
+  EXPECT_TRUE(OpenEntry(kKey3).value().has_value());
+  EXPECT_TRUE(OpenEntry(kKey4).value().has_value());
+  EXPECT_TRUE(OpenEntry(kKey5).value().has_value());
+
+  ClearStore();
+  EXPECT_EQ(CountResourcesTable(), 4);
+}
+
+TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetweenEmptyCache) {
+  CreateAndInitStore();
+  ASSERT_EQ(GetEntryCount(), 0);
+  ASSERT_EQ(GetSizeOfAllEntries(), 0);
+
+  ASSERT_EQ(DeleteLiveEntriesBetween(base::Time(), base::Time::Max()),
+            SqlPersistentStore::Error::kOk);
+
+  EXPECT_EQ(GetEntryCount(), 0);
+  EXPECT_EQ(GetSizeOfAllEntries(), 0);
+}
+
+TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetweenNoMatchingEntries) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey1("key1");
+
+  task_environment_.AdvanceClock(base::Minutes(1));
+  const base::Time kTime1 = base::Time::Now();
+  ASSERT_TRUE(CreateEntry(kKey1).has_value());
+
+  ASSERT_EQ(GetEntryCount(), 1);
+  int64_t initial_total_size = GetSizeOfAllEntries();
+
+  // Delete entries in a range that doesn't include kKey1.
+  ASSERT_EQ(DeleteLiveEntriesBetween(kTime1 + base::Minutes(1),
+                                     kTime1 + base::Minutes(2)),
+            SqlPersistentStore::Error::kOk);
+
+  EXPECT_EQ(GetEntryCount(), 1);
+  EXPECT_EQ(GetSizeOfAllEntries(), initial_total_size);
+  EXPECT_TRUE(OpenEntry(kKey1).value().has_value());
+}
+
+TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetweenWithCorruptSize) {
+  CreateAndInitStore();
+  const CacheEntryKey kKeyToCorrupt("key-to-corrupt-size");
+  const CacheEntryKey kKeyToKeep("key-to-keep");
+
+  // Create an entry that will be corrupted and fall within the deletion range.
+  task_environment_.AdvanceClock(base::Minutes(1));
+  const base::Time kTimeCorrupt = base::Time::Now();
+  ASSERT_TRUE(CreateEntry(kKeyToCorrupt).has_value());
+
+  // Create an entry that will be kept (outside the deletion range).
+  task_environment_.AdvanceClock(base::Minutes(1));
+  const base::Time kTimeKeep = base::Time::Now();
+  ASSERT_TRUE(CreateEntry(kKeyToKeep).has_value());
+
+  ASSERT_EQ(GetEntryCount(), 2);
+
+  ClearStore();
+  {
+    auto db = ManuallyOpenDatabase();
+    // Set bytes_usage for kKeyToCorrupt to cause overflow when subtracted
+    // during deletion.
+    sql::Statement update_corrupt_stmt(db->GetUniqueStatement(
+        "UPDATE resources SET bytes_usage=? WHERE cache_key=?"));
+    update_corrupt_stmt.BindInt64(0, std::numeric_limits<int64_t>::min());
+    update_corrupt_stmt.BindString(1, kKeyToCorrupt.string());
+    ASSERT_TRUE(update_corrupt_stmt.Run());
+  }
+  CreateAndInitStore();  // Re-initialize with modified DB
+
+  base::HistogramTester histogram_tester;
+
+  // Delete entries in a range that includes kKeyToCorrupt [kTimeCorrupt,
+  // kTimeKeep). kKeyToKeep's last_used time is kTimeKeep, so it's not <
+  // kTimeKeep.
+  ASSERT_EQ(DeleteLiveEntriesBetween(kTimeCorrupt, kTimeKeep),
+            SqlPersistentStore::Error::kOk);
+
+  // Verify that kInvalidData was recorded due to the corrupted bytes_usage.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SqlDiskCache.Backend.DeleteLiveEntriesBetween.Result",
+      SqlPersistentStore::Error::kInvalidData, 1);
+
+  // kKeyToCorrupt should be deleted.
+  // kKeyToKeep should remain.
+  // The store should have recovered from the size overflow.
+  EXPECT_EQ(GetEntryCount(), 1);
+  const int64_t expected_size_after_delete =
+      kSqlBackendStaticResourceSize + kKeyToKeep.string().size();
+  EXPECT_EQ(GetSizeOfAllEntries(), expected_size_after_delete);
+
+  EXPECT_FALSE(OpenEntry(kKeyToCorrupt).value().has_value());
+  EXPECT_TRUE(OpenEntry(kKeyToKeep).value().has_value());
+}
+
+TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetweenWithCorruptToken) {
+  CreateAndInitStore();
+  const CacheEntryKey kKeyToCorrupt("key-to-corrupt");
+  const CacheEntryKey kKeyToKeep("key-to-keep");
+
+  task_environment_.AdvanceClock(base::Minutes(1));
+  const base::Time kTimeCorrupt = base::Time::Now();
+  ASSERT_TRUE(CreateEntry(kKeyToCorrupt).has_value());
+
+  task_environment_.AdvanceClock(base::Minutes(1));
+  const base::Time kTimeKeep = base::Time::Now();
+  ASSERT_TRUE(CreateEntry(kKeyToKeep).has_value());
+
+  ASSERT_EQ(GetEntryCount(), 2);
+
+  ClearStore();
+  {
+    // Manually corrupt the token of kKeyToCorrupt in the database.
+    // This simulates a scenario where the token data is invalid.
+    auto db = ManuallyOpenDatabase();
+    sql::Statement statement(
+        db->GetUniqueStatement("UPDATE resources SET token_high=0, "
+                               "token_low=0 WHERE cache_key=?"));
+    statement.BindString(0, kKeyToCorrupt.string());
+    ASSERT_TRUE(statement.Run());
+  }
+  CreateAndInitStore();
+
+  base::HistogramTester histogram_tester;
+  ASSERT_EQ(DeleteLiveEntriesBetween(kTimeCorrupt, kTimeKeep),
+            SqlPersistentStore::Error::kOk);
+  // Verify that kInvalidData was recorded due to the corrupted token.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SqlDiskCache.Backend.DeleteLiveEntriesBetween.Result",
+      SqlPersistentStore::Error::kInvalidData, 1);
+
+  EXPECT_EQ(GetEntryCount(), 1);  // kKeyToKeep should remain
+  const int64_t expected_size_after_delete =
+      kSqlBackendStaticResourceSize + kKeyToKeep.string().size();
+  EXPECT_EQ(GetSizeOfAllEntries(), expected_size_after_delete);
+
+  EXPECT_FALSE(OpenEntry(kKeyToCorrupt).value().has_value());
+  EXPECT_TRUE(OpenEntry(kKeyToKeep).value().has_value());
+}
+
 TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdEmptyCache) {
   CreateAndInitStore();
   auto result = OpenLatestEntryBeforeResId(std::numeric_limits<int64_t>::max());
@@ -1486,6 +1706,21 @@ TEST_F(SqlPersistentStoreTest,
           [&](SqlPersistentStore::OptionalEntryInfoWithIdAndKey) {
             callback_run = true;
           }));
+  store_.reset();
+  FlushPendingTask();
+
+  EXPECT_FALSE(callback_run);
+}
+
+TEST_F(SqlPersistentStoreTest,
+       DeleteLiveEntriesBetweenCallbackNotRunOnStoreDestruction) {
+  CreateAndInitStore();
+  bool callback_run = false;
+
+  store_->DeleteLiveEntriesBetween(
+      base::Time(), base::Time::Max(), {},
+      base::BindLambdaForTesting(
+          [&](SqlPersistentStore::Error) { callback_run = true; }));
   store_.reset();
   FlushPendingTask();
 

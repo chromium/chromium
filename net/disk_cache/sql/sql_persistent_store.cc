@@ -274,6 +274,9 @@ class Backend {
                           const base::UnguessableToken& token);
   Error DeleteLiveEntry(const CacheEntryKey& key);
   Error DeleteAllEntries();
+  Error DeleteLiveEntriesBetween(base::Time initial_time,
+                                 base::Time end_time,
+                                 std::set<CacheEntryKey> excluded_keys);
 
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResId(
       int64_t res_id_cursor);
@@ -294,6 +297,10 @@ class Backend {
   Error DeleteLiveEntryInternal(const CacheEntryKey& key,
                                 bool& corruption_detected);
   Error DeleteAllEntriesInternal();
+  Error DeleteLiveEntriesBetweenInternal(base::Time initial_time,
+                                         base::Time end_time,
+                                         std::set<CacheEntryKey> excluded_keys,
+                                         bool& corruption_detected);
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResIdInternal(
       int64_t res_id_cursor,
       Error& error_out);
@@ -974,6 +981,125 @@ Error Backend::DeleteAllEntriesInternal() {
   return Error::kOk;
 }
 
+Error Backend::DeleteLiveEntriesBetween(base::Time initial_time,
+                                        base::Time end_time,
+                                        std::set<CacheEntryKey> excluded_keys) {
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.DeleteLiveEntriesBetween",
+                     "data", [&](perfetto::TracedValue trace_context) {
+                       auto dict = std::move(trace_context).WriteDictionary();
+                       dict.Add("initial_time", initial_time);
+                       dict.Add("end_time", end_time);
+                       dict.Add("excluded_keys_size", excluded_keys.size());
+                       PopulateTraceDetails(store_status_, dict);
+                     });
+  base::ElapsedTimer timer;
+  // Flag to indicate if we encounter signs of database corruption. In
+  // DeleteLiveEntriesBetween, database corruption is ignored.
+  bool corruption_detected = false;
+  Error result = DeleteLiveEntriesBetweenInternal(
+      initial_time, end_time, std::move(excluded_keys), corruption_detected);
+  RecordTimeAndErrorResultHistogram(
+      "DeleteLiveEntriesBetween", timer.Elapsed(),
+      corruption_detected ? Error::kInvalidData : result);
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.DeleteLiveEntriesBetween",
+                   "result", [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     PopulateTraceDetails(result, store_status_, dict);
+                   });
+  return result;
+}
+
+Error Backend::DeleteLiveEntriesBetweenInternal(
+    base::Time initial_time,
+    base::Time end_time,
+    std::set<CacheEntryKey> excluded_keys,
+    bool& corruption_detected) {
+  CheckDatabaseInitStatus();
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return Error::kFailedToStartTransaction;
+  }
+
+  std::vector<int64_t> res_ids_to_be_deleted;
+  std::vector<base::UnguessableToken> tokens_to_be_deleted;
+  int64_t entry_count_delta = 0;
+  base::CheckedNumeric<int64_t> total_size_delta = 0;
+  {
+    constexpr char kSqlSelectResourcesForEviction[] =
+        // clang-format off
+        "SELECT "
+          "res_id,"       // 0
+          "token_high,"   // 1
+          "token_low,"    // 2
+          "bytes_usage,"  // 3
+          "cache_key "    // 4
+        "FROM resources "
+        "WHERE "
+          "last_used>=? AND "  // 0
+          "last_used<? AND "   // 1
+          "doomed=?";          // 2
+    // clang-format on
+    // Intentionally DCHECK() for performance
+    DCHECK(db_.IsSQLValid(kSqlSelectResourcesForEviction));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectResourcesForEviction));
+    statement.BindTime(0, initial_time);
+    statement.BindTime(1, end_time);
+    statement.BindBool(2, false);
+    while (statement.Step()) {
+      if (excluded_keys.contains(CacheEntryKey(statement.ColumnString(4)))) {
+        continue;
+      }
+      --entry_count_delta;
+      res_ids_to_be_deleted.push_back(statement.ColumnInt64(0));
+      auto maybe_token = ToUnguessableToken(statement.ColumnInt64(1),
+                                            statement.ColumnInt64(2));
+      if (maybe_token) {
+        tokens_to_be_deleted.push_back(*maybe_token);
+        total_size_delta -= statement.ColumnInt64(3);
+      } else {
+        corruption_detected = true;
+      }
+    }
+  }
+
+  // TODO(crbug.com/422065015): delete body data from the `blobs` table using
+  // `tokens_to_be_deleted`.
+
+  // Delete the selected entries from the `resources` table.
+  for (const auto& res_id : res_ids_to_be_deleted) {
+    constexpr char kSqlDeleteFromResources[] =
+        "DELETE FROM resources WHERE res_id=?";
+    // Intentionally DCHECK() for performance
+    DCHECK(db_.IsSQLValid(kSqlDeleteFromResources));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromResources));
+    statement.BindInt64(0, res_id);
+    if (!statement.Run()) {
+      return Error::kFailedToExecute;
+    }
+  }
+
+  // If we detected corruption, or if the size update calculation overflowed,
+  // our metadata is suspect. We recover by recalculating everything from
+  // scratch.
+  if (corruption_detected || !total_size_delta.IsValid()) {
+    corruption_detected = true;
+    return RecalculateStoreStatusAndCommitTransaction(transaction)
+               ? Error::kOk
+               : Error::kFailedToCommitTransaction;
+  }
+
+  // Update the in-memory and on-disk store status (entry count and total size)
+  // and commit the transaction.
+  if (!UpdateStoreStatusAndCommitTransaction(transaction, entry_count_delta,
+                                             total_size_delta.ValueOrDie())) {
+    return Error::kFailedToCommitTransaction;
+  }
+
+  return Error::kOk;
+}
+
 OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResId(
     int64_t res_id_cursor) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.OpenLatestEntryBeforeResId",
@@ -1217,6 +1343,14 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   }
   void DeleteAllEntries(ErrorCallback callback) override {
     backend_.AsyncCall(&Backend::DeleteAllEntries)
+        .Then(WrapCallback(std::move(callback)));
+  }
+  void DeleteLiveEntriesBetween(base::Time initial_time,
+                                base::Time end_time,
+                                std::set<CacheEntryKey> excluded_keys,
+                                ErrorCallback callback) override {
+    backend_.AsyncCall(&Backend::DeleteLiveEntriesBetween)
+        .WithArgs(initial_time, end_time, std::move(excluded_keys))
         .Then(WrapCallback(std::move(callback)));
   }
 
