@@ -190,6 +190,23 @@ class BorderTest : public ViewsTestBase {
   raw_ptr<View> view_ = nullptr;
 };
 
+class ScaledBorderTest : public BorderTest {
+ public:
+  static constexpr float kScaleFactor = 1.5;
+
+  void SetUp() override {
+    // Deliberately skip the parent class setup method because this test needs a
+    // custom canvas with scaling.
+    ViewsTestBase::SetUp();
+    recorder_ = std::make_unique<cc::PaintRecorder>();
+    canvas_ = std::make_unique<gfx::Canvas>(recorder_->beginRecording(),
+                                            kScaleFactor);
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    view_ = widget_->SetContentsView(std::make_unique<views::View>());
+    view_->SetSize(gfx::Size(100, 50));
+  }
+};
+
 TEST_F(BorderTest, NullBorder) {
   std::unique_ptr<Border> border(NullBorder());
   EXPECT_FALSE(border);
@@ -269,6 +286,31 @@ TEST_F(BorderTest, SolidSidedBorder) {
   ASSERT_EQ(1u, mock->draw_paint_calls().size());
   EXPECT_EQ(kBorderColor, mock->draw_paint_calls().front().getColor());
   EXPECT_EQ(gfx::RectF(bounds), gfx::SkRectToRectF(mock->last_clip_bounds()));
+}
+
+TEST_F(ScaledBorderTest, SolidSidedBorder) {
+  constexpr SkColor kBorderColor = SK_ColorMAGENTA;
+  constexpr auto kInsets = gfx::Insets::TLBR(1, 2, 3, 4);
+
+  std::unique_ptr<Border> border(CreateSolidSidedBorder(kInsets, kBorderColor));
+  EXPECT_EQ(gfx::Size(6, 4), border->GetMinimumSize());
+  EXPECT_EQ(kInsets, border->GetInsets());
+  border->Paint(*view_, canvas_.get());
+
+  std::unique_ptr<MockCanvas> mock = DrawIntoMockCanvas();
+  std::vector<MockCanvas::DrawRectCall> draw_rect_calls =
+      mock->draw_rect_calls();
+
+  gfx::Rect bounds = view_->GetLocalBounds();
+  bounds.Inset(border->GetInsets());
+
+  ASSERT_EQ(1u, mock->draw_paint_calls().size());
+  EXPECT_EQ(kBorderColor, mock->draw_paint_calls().front().getColor());
+
+  gfx::RectF scaled_bounds = gfx::RectF(bounds);
+  scaled_bounds.Scale(ScaledBorderTest::kScaleFactor);
+  EXPECT_EQ(gfx::RectF(ToEnclosedRect(scaled_bounds)),
+            gfx::SkRectToRectF(mock->last_clip_bounds()));
 }
 
 TEST_F(BorderTest, BorderPainter) {

@@ -65,10 +65,10 @@ void SolidSidedBorder::Paint(const View& view, gfx::Canvas* canvas) {
     scaled_bounds.Scale(dsf);
   }
 
-  gfx::InsetsF insets_in_pixels(
-      gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(insets_, dsf)));
+  gfx::InsetsF insets_in_pixels(gfx::ConvertInsetsToPixels(insets_, dsf));
   scaled_bounds.Inset(insets_in_pixels);
-  canvas->sk_canvas()->clipRect(gfx::RectFToSkRect(scaled_bounds),
+  gfx::Rect clip_bounds = ToEnclosedRect(scaled_bounds);
+  canvas->sk_canvas()->clipRect(gfx::RectToSkRect(clip_bounds),
                                 SkClipOp::kDifference, true);
   canvas->DrawColor(color().ResolveToSkColor(view.GetColorProvider()));
 }
