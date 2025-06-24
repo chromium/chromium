@@ -4,6 +4,7 @@
 
 import type {BookmarkNode, BookmarksItemElement} from 'chrome://bookmarks/bookmarks.js';
 import {BrowserProxyImpl, selectItem} from 'chrome://bookmarks/bookmarks.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -110,6 +111,16 @@ suite('<bookmarks-item>', function() {
     await microtasksFinished();
 
     assertTrue(isChildVisible(item, '#account-upload-button'));
+
+    testBrowserProxy.setCanUploadAsAccountBookmark(false);
+    testBrowserProxy.resetResolver('getCanUploadBookmarkToAccountStorage');
+
+    // Notify that bookmarks sync state has been updated. The icon's visibility
+    // should be updated accordingly.
+    webUIListenerCallback('bookmarks-sync-state-changed');
+
+    await microtasksFinished();
+    assertFalse(isChildVisible(item, '#account-upload-button'));
   });
 
   test(

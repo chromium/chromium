@@ -98,6 +98,10 @@ class BookmarksMessageHandler : public content::WebUIMessageHandler,
   bool batch_updates_ongoing_ = false;
   bool need_local_count_update_ = false;
 
+  // Keep track of the previous bookmarks sync state to filter out irrelevant
+  // updates coming from `SyncService`.
+  bool is_bookmarks_sync_active_ = false;
+
   PrefChangeRegistrar pref_change_registrar_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>

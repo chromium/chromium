@@ -437,6 +437,14 @@ void BookmarksMessageHandler::OnStateChanged(
   if (sync_service->GetTransportState() !=
       syncer::SyncService::TransportState::CONFIGURING) {
     RequestLocalDataDescriptionsUpdate();
+
+    // Check if the bookmark sync state has changed.
+    const bool new_active_state =
+        sync_service->GetActiveDataTypes().Has(syncer::BOOKMARKS);
+    if (is_bookmarks_sync_active_ != new_active_state) {
+      is_bookmarks_sync_active_ = new_active_state;
+      FireWebUIListener("bookmarks-sync-state-changed");
+    }
   }
 }
 
