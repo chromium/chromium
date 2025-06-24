@@ -593,7 +593,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter features
 [Worker]     getter info
-[Worker]     getter isFallbackAdapter
 [Worker]     getter limits
 [Worker]     method constructor
 [Worker]     method requestDevice

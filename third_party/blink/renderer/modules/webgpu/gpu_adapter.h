@@ -42,7 +42,6 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   GPUSupportedFeatures* features() const;
   GPUSupportedLimits* limits() const { return limits_.Get(); }
   GPUAdapterInfo* info() const;
-  bool isFallbackAdapter() const;
   wgpu::BackendType backendType() const;
   bool SupportsMultiPlanarFormats() const;
 
@@ -73,7 +72,6 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   }
 
   Member<GPU> gpu_;
-  bool is_fallback_adapter_;
   wgpu::BackendType backend_type_;
   wgpu::AdapterType adapter_type_;
   bool is_consumed_ = false;
