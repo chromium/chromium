@@ -11,6 +11,8 @@
 #include <set>
 
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -223,20 +225,17 @@ class HttpConnectProxyHandler::ConnectTunnel {
 };
 
 HttpConnectProxyHandler::HttpConnectProxyHandler(
-    const uint16_t dest_port,
-    std::optional<HostPortPair> expected_dest)
-    : dest_port_(dest_port), expected_dest_(expected_dest) {}
+    base::span<const HostPortPair> proxied_destinations)
+    : proxied_destinations_(proxied_destinations.begin(),
+                            proxied_destinations.end()) {}
 
 HttpConnectProxyHandler::~HttpConnectProxyHandler() = default;
 
 bool HttpConnectProxyHandler::HandleProxyRequest(HttpConnection& connection,
                                                  const HttpRequest& request) {
-  // This class only support HTTP/1.x.
+  // This class only supports HTTP/1.x.
   CHECK_EQ(connection.protocol(), HttpConnection::Protocol::kHttp1);
-
-  if (request.method != METHOD_CONNECT) {
-    return false;
-  }
+  CHECK_EQ(request.method, METHOD_CONNECT);
 
   // For CONNECT requests, `relative_url` is actually a host and port.
   HostPortPair dest = HostPortPair::FromString(request.relative_url);
@@ -244,18 +243,19 @@ bool HttpConnectProxyHandler::HandleProxyRequest(HttpConnection& connection,
 
   if (dest.IsEmpty()) {
     ADD_FAILURE() << "Invalid CONNECT destination: " << request.relative_url;
-    // Returning true on error will result in the socket being closed.
-    return true;
+    // Returning true on error will result in an HTTP error message being
+    // written to the socket.
+    return false;
   }
-  if (expected_dest_ && *expected_dest_ != dest) {
-    ADD_FAILURE() << "Unexpected CONNECT destination: " << dest.ToString();
-    // Returning true on error will result in the socket being closed.
-    return true;
+  if (!proxied_destinations_.contains(dest)) {
+    // Returning true on error will result in an HTTP error message being
+    // written to the socket.
+    return false;
   }
 
   auto tunnel = std::make_unique<ConnectTunnel>(this, connection.TakeSocket());
   auto tunnel_it = connect_tunnels_.insert(std::move(tunnel)).first;
-  (*tunnel_it)->Start(dest_port_);
+  (*tunnel_it)->Start(dest.port());
 
   return true;
 }

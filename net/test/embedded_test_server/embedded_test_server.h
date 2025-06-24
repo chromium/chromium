@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -567,14 +568,12 @@ class EmbeddedTestServer {
 
   // Makes the server act as an HTTP/HTTPS CONNECT proxy. Must be invoked before
   // the server is fully started. Only supports HTTP/1.x. All CONNECT requests
-  // go to `dest_port` on localhost, regardless of what destination is actually
-  // provided. `expected_dest`, if provided, is the expected destination of all
-  // requests. CONNECT requests to other destinations will then result in test
-  // failures.
+  // to a port in `dest_ports` are go to the matching port on localhost,
+  // regardless of what destination host is actually provided. CONNECT requests
+  // to other destinations will then result 502 responses.
   //
   // Must be called before the EmbeddedTestServer starts accepting connections.
-  void EnableConnectProxy(uint16_t dest_port,
-                          std::optional<HostPortPair> expected_dest);
+  void EnableConnectProxy(base::span<const HostPortPair> proxied_destinations);
 
   // Adds a handler callback to process WebSocket upgrade requests.
   // |callback| will be invoked on the server's IO thread when a request

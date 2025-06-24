@@ -518,8 +518,7 @@ TEST_F(WebSocketEndToEndTest, HttpsProxyUnauthedFails) {
   ASSERT_TRUE(ws_server.StartInBackground());
   ASSERT_TRUE(ws_server.BlockUntilStarted());
 
-  proxy_server.EnableConnectProxy(ws_server.host_port_pair().port(),
-                                  /*expected_dest=*/ws_server.host_port_pair());
+  proxy_server.EnableConnectProxy({ws_server.host_port_pair()});
   RegisterProxyBasicAuthHandler(proxy_server, "user", "pass");
   ASSERT_TRUE(proxy_server.Start());
 
@@ -548,9 +547,7 @@ TEST_F(WebSocketEndToEndTest, HttpsWssProxyUnauthedFails) {
   ASSERT_TRUE(wss_server.StartInBackground());
   ASSERT_TRUE(wss_server.BlockUntilStarted());
 
-  proxy_server.EnableConnectProxy(
-      wss_server.host_port_pair().port(),
-      /*expected_dest=*/wss_server.host_port_pair());
+  proxy_server.EnableConnectProxy({wss_server.host_port_pair()});
   RegisterProxyBasicAuthHandler(proxy_server, "user", "pass");
   ASSERT_TRUE(proxy_server.Start());
 
@@ -580,8 +577,7 @@ TEST_F(WebSocketEndToEndTest, HttpsProxyUsed) {
   ASSERT_TRUE(ws_server.StartInBackground());
   ASSERT_TRUE(ws_server.BlockUntilStarted());
 
-  proxy_server.EnableConnectProxy(ws_server.host_port_pair().port(),
-                                  /*expected_dest=*/ws_server.host_port_pair());
+  proxy_server.EnableConnectProxy({ws_server.host_port_pair()});
 
   ASSERT_TRUE(proxy_server.Start());
 
@@ -652,8 +648,7 @@ TEST_F(WebSocketEndToEndTest, ProxyPacUsed) {
   HostPortPair fake_ws_host_port_pair("stealth-localhost",
                                       ws_server.host_port_pair().port());
 
-  proxy_server.EnableConnectProxy(ws_server.host_port_pair().port(),
-                                  /*expected_dest=*/fake_ws_host_port_pair);
+  proxy_server.EnableConnectProxy({fake_ws_host_port_pair});
   ASSERT_TRUE(proxy_server.Start());
 
   ProxyConfig proxy_config =

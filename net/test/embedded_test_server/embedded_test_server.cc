@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -749,7 +750,7 @@ void EmbeddedTestServer::HandleRequest(
     }
   }
 
-  if (http_connect_proxy_handler_) {
+  if (http_connect_proxy_handler_ && request->method == METHOD_CONNECT) {
     bool request_handled =
         http_connect_proxy_handler_->HandleProxyRequest(*connection, *request);
     // If the proxy handler took over the request, it took ownership of the
@@ -758,6 +759,12 @@ void EmbeddedTestServer::HandleRequest(
       connections_.erase(socket);
       return;
     }
+
+    auto response = std::make_unique<BasicHttpResponse>();
+    response->set_code(HttpStatusCode::HTTP_BAD_GATEWAY);
+    response->set_reason("Invalid destination");
+    DispatchResponseToDelegate(std::move(response), delegate);
+    return;
   }
 
   for (const auto& upgrade_request_handler : upgrade_request_handlers_) {
@@ -991,13 +998,12 @@ void EmbeddedTestServer::RegisterAuthHandler(
 }
 
 void EmbeddedTestServer::EnableConnectProxy(
-    uint16_t dest_port,
-    std::optional<HostPortPair> expected_dest) {
+    base::span<const HostPortPair> proxied_destinations) {
   CHECK(!StartedAcceptingConnection());
   CHECK(!http_connect_proxy_handler_);
 
-  http_connect_proxy_handler_ = std::make_unique<HttpConnectProxyHandler>(
-      dest_port, std::move(expected_dest));
+  http_connect_proxy_handler_ =
+      std::make_unique<HttpConnectProxyHandler>(proxied_destinations);
 }
 
 void EmbeddedTestServer::RegisterUpgradeRequestHandler(

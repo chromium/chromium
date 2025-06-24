@@ -4,6 +4,7 @@
 
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+#include <array>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -25,6 +26,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "net/base/elements_upload_data_stream.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/test_completion_callback.h"
@@ -180,8 +182,12 @@ class EmbeddedTestServerTest
   // restrictions on the connect proxy, which normally restrict connections to
   // be only to `server_->host_port_pair()`.
   testing::AssertionResult StartServerAndSetUpContext(
-      bool disable_proxy_destination_restrictions = false) {
-    if (!server_->Start()) {
+      std::optional<base::span<const HostPortPair>> proxied_destinations =
+          std::nullopt) {
+    // Only start the server if not already done. Some tests need to start the
+    // server before calling this method, so they can provide a list of proxied
+    // destinations.
+    if (!server_->Started() && !server_->Start()) {
       return testing::AssertionFailure() << "Failed to start server.";
     }
 
@@ -189,11 +195,8 @@ class EmbeddedTestServerTest
     if (GetParam().proxy_type) {
       proxy_server_ =
           std::make_unique<EmbeddedTestServer>(*GetParam().proxy_type);
-      proxy_server_->EnableConnectProxy(
-          server_->port(),
-          disable_proxy_destination_restrictions
-              ? std::nullopt
-              : std::optional(/*expected_dest=*/server_->host_port_pair()));
+      proxy_server_->EnableConnectProxy(proxied_destinations.value_or(
+          base::span<const HostPortPair>{server_->host_port_pair()}));
       if (!proxy_server_->Start()) {
         return testing::AssertionFailure() << "Failed to start proxy.";
       }
@@ -498,6 +501,95 @@ TEST_P(EmbeddedTestServerTest, ConnectionFailure) {
     EXPECT_EQ(ERR_TUNNEL_CONNECTION_FAILED, delegate.request_status());
   } else {
     EXPECT_EQ(ERR_CONNECTION_REFUSED, delegate.request_status());
+  }
+}
+
+// Tests the of using an incorrect destination port with an EmbeddedTestServer
+// CONNECT proxy.
+TEST_P(EmbeddedTestServerTest, ConnectProxyWrongPort) {
+  if (!GetParam().proxy_type) {
+    GTEST_SKIP() << "This test only makes sense with a proxy";
+  }
+
+  ASSERT_TRUE(StartServerAndSetUpContext(/*proxied_destinations=*/{}));
+
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> request(
+      context_->CreateRequest(server_->GetURL("/"), DEFAULT_PRIORITY, &delegate,
+                              TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // A recently closed socket should be blocked from reuse for some time, so the
+  // closed socket should not be reopened by some other app in the small windows
+  // before this test tries to connect to it.
+  EXPECT_TRUE(server_->ShutdownAndWaitUntilComplete());
+
+  request->Start();
+  delegate.RunUntilComplete();
+
+  EXPECT_EQ(ERR_TUNNEL_CONNECTION_FAILED, delegate.request_status());
+}
+
+// Tests the of using multiple allowed destination ports with an
+// EmbeddedTestServer CONNECT proxy.
+TEST_P(EmbeddedTestServerTest, ConnectProxyMultipleHostPortPairs) {
+  if (!GetParam().proxy_type) {
+    GTEST_SKIP() << "This test only makes sense with a proxy";
+  }
+
+  // This will be allowed for one server, but not the other.
+  const char kHostname[] = "a.test";
+
+  // Start `server_` with the default configuration.
+  ASSERT_TRUE(server_->Start());
+
+  // `server2` uses CERT_TEST_NAMES, which allows it to handle requests for
+  // "a.test", but not 127.0.0.1.
+  EmbeddedTestServer server2(GetParam().type, GetParam().protocol);
+  server2.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  server2.AddDefaultHandlers();
+  ASSERT_TRUE(server2.Start());
+
+  // Set up CONNECT support for `server_` using 127.0.0.1 as the hostname, and
+  // for `server2` using only kHostname.
+  ASSERT_TRUE(StartServerAndSetUpContext(
+      {{server_->host_port_pair(),
+        HostPortPair::FromURL(server2.GetURL(kHostname, "/"))}}));
+
+  struct TestCase {
+    GURL dest;
+    bool expect_success;
+  };
+  auto kTestCases = std::to_array<TestCase>({
+      // Check that each server's port is proxied only when using the right
+      // hostname. If the wrong hostname:port combination is
+      // proxied, the result will be a different error, since the SSL certs are
+      // specific to the destination hostname.
+      {server_->GetURL("/echo"), true},
+      {server2.GetURL("/echo"), false},
+      {server_->GetURL(kHostname, "/echo"), false},
+      {server2.GetURL(kHostname, "/echo"), true},
+
+      // As an added check, trying connecting to `server2` using a hostname its
+      // cert supports, but a hostname that the proxy is not configured
+      // to forward. This should fail.
+      {server2.GetURL("b.test", "/echo"), false},
+  });
+
+  for (size_t i = 0; i < kTestCases.size(); ++i) {
+    SCOPED_TRACE(i);
+    const auto& test_case = kTestCases[i];
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> request(
+        context_->CreateRequest(test_case.dest, DEFAULT_PRIORITY, &delegate,
+                                TRAFFIC_ANNOTATION_FOR_TESTS));
+    request->Start();
+    delegate.RunUntilComplete();
+    if (test_case.expect_success) {
+      EXPECT_EQ(OK, delegate.request_status());
+      EXPECT_EQ("Echo", delegate.data_received());
+    } else {
+      EXPECT_EQ(ERR_TUNNEL_CONNECTION_FAILED, delegate.request_status());
+    }
   }
 }
 
@@ -837,16 +929,25 @@ TEST_P(EmbeddedTestServerTest, AcceptCHFrameDifferentOrigins) {
   server_->SetAlpsAcceptCH("a.test", "a");
   server_->SetAlpsAcceptCH("b.test", "b");
   server_->SetAlpsAcceptCH("c.b.test", "c");
-  server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  server_->SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(server_->Start());
 
-  ASSERT_TRUE(StartServerAndSetUpContext(
-      /*disable_proxy_destination_restrictions=*/true));
+  // Need to configure proxying for each destination used in this test, if
+  // proxying is enabled. Passing in HostPortPairs to proxy is harmess if
+  // proxying is disabled for this test case.
+  GURL a_url = server_->GetURL("a.test", "/non-existent");
+  GURL b_url = server_->GetURL("b.test", "/non-existent");
+  GURL cb_url = server_->GetURL("c.b.test", "/non-existent");
+  ASSERT_TRUE(StartServerAndSetUpContext({{
+      HostPortPair::FromURL(a_url),
+      HostPortPair::FromURL(b_url),
+      HostPortPair::FromURL(cb_url),
+  }}));
 
   {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> request_a(context_->CreateRequest(
-        server_->GetURL("a.test", "/non-existent"), DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        a_url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     request_a->Start();
     delegate.RunUntilComplete();
 
@@ -857,8 +958,7 @@ TEST_P(EmbeddedTestServerTest, AcceptCHFrameDifferentOrigins) {
   {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> request_a(context_->CreateRequest(
-        server_->GetURL("b.test", "/non-existent"), DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        b_url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     request_a->Start();
     delegate.RunUntilComplete();
 
@@ -869,8 +969,7 @@ TEST_P(EmbeddedTestServerTest, AcceptCHFrameDifferentOrigins) {
   {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> request_a(context_->CreateRequest(
-        server_->GetURL("c.b.test", "/non-existent"), DEFAULT_PRIORITY,
-        &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+        cb_url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     request_a->Start();
     delegate.RunUntilComplete();
 
