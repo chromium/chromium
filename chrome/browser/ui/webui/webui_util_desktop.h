@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "ui/base/webui/resource_path.h"
 
 namespace content {
