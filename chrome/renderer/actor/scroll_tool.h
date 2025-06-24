@@ -33,7 +33,7 @@ class ScrollTool : public ToolBase {
   // actor::ToolBase
   mojom::ActionResultPtr Execute() override;
   std::string DebugString() const override;
-  base::TimeDelta MinimumObservationDelay() const override;
+  base::TimeDelta ExecutionObservationDelay() const override;
 
  private:
   struct ScrollerAndDistance {

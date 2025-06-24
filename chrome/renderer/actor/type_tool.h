@@ -37,6 +37,7 @@ class TypeTool : public ToolBase {
   // actor::ToolBase
   mojom::ActionResultPtr Execute() override;
   std::string DebugString() const override;
+  base::TimeDelta ExecutionObservationDelay() const override;
 
  private:
   // Structure to hold all necessary parameters for generating keyboard events

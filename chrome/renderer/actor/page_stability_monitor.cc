@@ -15,6 +15,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -65,15 +66,16 @@ void PageStabilityMonitor::WaitForStable(const ToolBase& tool,
                                          base::OnceClosure callback) {
   CHECK_EQ(state_, State::kInitial);
   CHECK(!is_stable_callback_);
-  journal_entry_ =
-      journal.CreatePendingAsyncEntry(task_id, "PageStability", "");
+  journal_entry_ = journal.CreatePendingAsyncEntry(
+      task_id, "PageStability",
+      absl::StrFormat("RequestsBefore[%d]", starting_request_count_));
 
-  minimum_end_time_ = base::TimeTicks::Now() + tool.MinimumObservationDelay();
+  monitoring_start_delay_ = tool.ExecutionObservationDelay();
 
   is_stable_callback_ = std::move(callback);
 
   SetTimeout(State::kTimeoutGlobal, GetGlobalTimeoutDelay());
-  MoveToState(State::kStartMonitoring);
+  MoveToState(State::kMonitorStartDelay);
 }
 
 void PageStabilityMonitor::DidCommitProvisionalLoad(
@@ -81,12 +83,17 @@ void PageStabilityMonitor::DidCommitProvisionalLoad(
   // If a same-RenderFrame navigation was committed a new document will be
   // loaded so finish observing the page. (loading is observed from the browser
   // process).
+  journal_entry_->Log(
+      "DidCommitProvisionalLoad",
+      absl::StrFormat("transition[%s]",
+                      PageTransitionGetCoreTransitionString(transition)));
   MoveToState(State::kInvokeCallback);
 }
 
 void PageStabilityMonitor::DidFailProvisionalLoad() {
   if (state_ == State::kWaitForNavigation) {
-    MoveToState(State::kInvokeCallback);
+    journal_entry_->Log("DidFailProvisionalLoad"),
+        MoveToState(State::kInvokeCallback);
   }
 }
 
@@ -108,16 +115,30 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     case State::kInitial: {
       NOTREACHED();
     }
+    case State::kMonitorStartDelay: {
+      journal_entry_->Log(
+          "MonitorStartDelay",
+          absl::StrFormat("delay[%dms]",
+                          monitoring_start_delay_.InMilliseconds()));
+      PostMoveToStateClosure(State::kStartMonitoring, monitoring_start_delay_)
+          .Run();
+      break;
+    }
     case State::kStartMonitoring: {
       WebDocument document = render_frame()->GetWebFrame()->GetDocument();
       int after_request_count = document.ActiveResourceRequestCount();
 
       State next_state;
       if (render_frame()->IsRequestingNavigation()) {
+        journal_entry_->Log("WaitForNavigation");
         next_state = State::kWaitForNavigation;
       } else if (after_request_count > starting_request_count_) {
+        journal_entry_->Log(
+            "WaitForNetworkIdle",
+            absl::StrFormat("Requests[%d]", after_request_count));
         next_state = State::kWaitForNetworkIdle;
       } else {
+        journal_entry_->Log("WaitForMainThreadIdle");
         next_state = State::kWaitForMainThreadIdle;
       }
 
@@ -140,19 +161,7 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       render_frame()
           ->GetTaskRunner(blink::TaskType::kIdleTask)
           ->PostTask(FROM_HERE,
-                     PostMoveToStateClosure(State::kEnsureMinimumDelay));
-      break;
-    }
-    case State::kEnsureMinimumDelay: {
-      if (base::TimeTicks::Now() < minimum_end_time_) {
-        base::TimeDelta time_remaining =
-            minimum_end_time_ - base::TimeTicks::Now();
-        PostMoveToStateClosure(State::kWaitForVisualStateRequest,
-                               /*delay=*/time_remaining)
-            .Run();
-      } else {
-        MoveToState(State::kWaitForVisualStateRequest);
-      }
+                     PostMoveToStateClosure(State::kWaitForVisualStateRequest));
       break;
     }
     case State::kWaitForVisualStateRequest: {
@@ -222,7 +231,10 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
       base::StateTransitions<State>({
           // clang-format off
           {State::kInitial,
-              {State::kStartMonitoring}},
+              {State::kMonitorStartDelay}},
+          {State::kMonitorStartDelay, {
+              State::kStartMonitoring,
+              State::kTimeoutGlobal}},
           {State::kStartMonitoring, {
               State::kWaitForNavigation,
               State::kWaitForNetworkIdle,
@@ -234,10 +246,6 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kWaitForMainThreadIdle,
               State::kTimeoutGlobal}},
           {State::kWaitForMainThreadIdle, {
-              State::kEnsureMinimumDelay,
-              State::kTimeoutMainThread,
-              State::kTimeoutGlobal}},
-          {State::kEnsureMinimumDelay, {
               State::kWaitForVisualStateRequest,
               State::kTimeoutMainThread,
               State::kTimeoutGlobal}},

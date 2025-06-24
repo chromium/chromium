@@ -72,9 +72,9 @@ std::string ScrollTool::DebugString() const {
                          base::ToString(action_->direction), action_->distance);
 }
 
-base::TimeDelta ScrollTool::MinimumObservationDelay() const {
+base::TimeDelta ScrollTool::ExecutionObservationDelay() const {
   return targeting_smooth_scroller_ ? kSmoothScrollDelay
-                                    : ToolBase::MinimumObservationDelay();
+                                    : ToolBase::ExecutionObservationDelay();
 }
 
 ScrollTool::ValidatedResult ScrollTool::Validate() const {

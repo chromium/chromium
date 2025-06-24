@@ -39,6 +39,15 @@ void Journal::PendingAsyncEntry::EndEntry(std::string_view details) {
   journal_->AddEndEvent(pass_key_, task_id_, trace_id_, event_name_, details);
 }
 
+void Journal::PendingAsyncEntry::Log(std::string_view event_name) {
+  journal_->Log(task_id_, event_name, std::string_view());
+}
+
+void Journal::PendingAsyncEntry::Log(std::string_view event_name,
+                                     std::string_view details) {
+  journal_->Log(task_id_, event_name, details);
+}
+
 Journal::Journal() : current_id_(base::RandUint64()) {}
 Journal::~Journal() {
   if (log_buffer_.size() > 0) {

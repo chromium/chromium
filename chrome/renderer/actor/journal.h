@@ -47,6 +47,10 @@ class Journal {
     // been called.
     void EndEntry(std::string_view details);
 
+    // Logs an instant event within the scope of this async entry.
+    void Log(std::string_view event_name);
+    void Log(std::string_view event_name, std::string_view details);
+
    private:
     base::PassKey<Journal> pass_key_;
     bool terminated_ = false;

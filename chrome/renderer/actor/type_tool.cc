@@ -50,6 +50,12 @@ using ::blink::WebString;
 
 namespace {
 
+// Typing into input fields often causes custom made dropdowns to appear and
+// update content. These are often updated via async tasks that try to detect
+// when a user has finished typing. Delay observation to try to ensure the page
+// stability monitor kicks in only after these tasks have invoked.
+constexpr base::TimeDelta kObservationDelay = base::Seconds(1);
+
 // Structure to hold the mapping
 struct KeyInfo {
   char16_t key_code;
@@ -320,6 +326,10 @@ std::string TypeTool::DebugString() const {
                          ToDebugString(action_->target), action_->text,
                          base::ToString(action_->mode),
                          action_->follow_by_enter);
+}
+
+base::TimeDelta TypeTool::ExecutionObservationDelay() const {
+  return kObservationDelay;
 }
 
 TypeTool::ValidatedResult TypeTool::Validate() const {

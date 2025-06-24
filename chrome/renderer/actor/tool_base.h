@@ -35,10 +35,11 @@ class ToolBase {
   // Used primarily for logging and debugging.
   virtual std::string DebugString() const = 0;
 
-  // The minimum amount of time to wait before allowing an observation. 0 by
-  // default, meaning no delay, but tools can override this on a case-by-case
-  // basis when needed to ensure an observation isn't captured before this time.
-  virtual base::TimeDelta MinimumObservationDelay() const;
+  // The amount of time to wait when observing tool execution before starting to
+  // wait for page stability. 0 by default, meaning no delay, but tools can
+  // override this on a case-by-case basis when the expected effects of tool use
+  // may happen asynchronously outside of the injected events.
+  virtual base::TimeDelta ExecutionObservationDelay() const;
 
  protected:
   // Raw ref since this is owned by ToolExecutor whose lifetime is tied to

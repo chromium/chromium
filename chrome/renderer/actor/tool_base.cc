@@ -6,7 +6,7 @@
 
 namespace actor {
 
-base::TimeDelta ToolBase::MinimumObservationDelay() const {
+base::TimeDelta ToolBase::ExecutionObservationDelay() const {
   return base::TimeDelta();
 }
 
