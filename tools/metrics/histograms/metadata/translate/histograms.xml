@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.LanguageDetection.LanguageVerification"
-    enum="TranslateLanguageVerification" expires_after="2025-10-19">
+    enum="TranslateLanguageVerification" expires_after="2025-12-21">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -567,7 +567,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PartialTranslation.HttpResponseCode"
-    enum="HttpResponseCode" expires_after="2025-10-19">
+    enum="HttpResponseCode" expires_after="2025-12-21">
   <owner>basiaz@google.com</owner>
   <owner>cuianthony@google.com</owner>
   <summary>
