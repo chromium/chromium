@@ -72,10 +72,17 @@ OmniboxTabHelper::OmniboxTabHelper(content::WebContents* contents,
                                    Profile* profile)
     : content::WebContentsUserData<OmniboxTabHelper>(*contents),
       content::WebContentsObserver(contents) {
-  // Only fetch the APC paywall signal if the feature flag is enabled.
-  if (omnibox_feature_configs::ContextualSearch::Get().use_apc_paywall_signal) {
+  // Only fetch the entire APC if the paywall signal feature flag is enabled AND
+  // the faster FrameMetadataObserver push service is disabled.
+  if (omnibox_feature_configs::ContextualSearch::Get().use_apc_paywall_signal &&
+      !base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver)) {
     if (auto* service = page_content_annotations::
             PageContentExtractionServiceFactory::GetForProfile(profile)) {
+      // TODO(crbug.com/426665820): There are currently two ways the paywall
+      // signal is being fetched. This uses the PageContentExtractionService
+      // which takes a while to run, but has been around longer so is safer.
+      // Eventually, once FrameMetadataObserver is well tested, this should be
+      // cleaned up in favor of that.
       page_content_service_observation_.Observe(service);
     }
   }
@@ -160,7 +167,9 @@ void OmniboxTabHelper::PrimaryPageChanged(content::Page& page) {
 }
 
 void OmniboxTabHelper::AddMetadataObserver(content::Page& page) {
-  if (!base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver) ||
+      !omnibox_feature_configs::ContextualSearch::Get()
+           .use_apc_paywall_signal) {
     return;
   }
 
@@ -226,9 +235,8 @@ void OmniboxTabHelper::MaybeLogNavigationToPopupShownTimings(
 void OmniboxTabHelper::MaybeLogPaywallSignal() {
   // If the page content service is not observing, then the paywall signal is
   // unavailable to be fetched.
-  // TODO(mercerd): handle the case where the listener exists -- maybe add
-  // `&& !frame_metadata_observer_receiver_`
-  if (!page_content_service_observation_.IsObserving()) {
+  if (!page_content_service_observation_.IsObserving() &&
+      !frame_metadata_observer_receiver_.is_bound()) {
     return;
   }
 
@@ -238,5 +246,5 @@ void OmniboxTabHelper::MaybeLogPaywallSignal() {
 }
 
 void OmniboxTabHelper::OnPaidContentMetadataChanged(bool has_paid_content) {
-  // TODO(mercerd): handle has_paid_content;
+  page_has_apc_paywall_signal_ = has_paid_content;
 }
