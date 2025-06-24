@@ -604,6 +604,7 @@ source_set("extensions") {
     deps += [ "//chrome/browser/ui/android/tab_model" ]
   } else {
     sources += [ "api/chrome_extensions_api_client_non_android.cc" ]
+    public_deps += [ "//components/app_icon_loader" ]
   }
 
   if (!is_chromeos) {

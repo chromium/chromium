@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_ICON_LOADER_H_
-#define CHROME_BROWSER_UI_APP_ICON_LOADER_H_
+#ifndef COMPONENTS_APP_ICON_LOADER_APP_ICON_LOADER_H_
+#define COMPONENTS_APP_ICON_LOADER_APP_ICON_LOADER_H_
 
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/app_icon_loader_delegate.h"
+#include "components/app_icon_loader/app_icon_loader_delegate.h"
 
 // Base class that loads and updates Chrome app's icons.
 // TODO(khmel): Switch to using ChromeAppIconService instead ChromeAppIconLoader
@@ -50,4 +50,4 @@ class AppIconLoader {
   const raw_ptr<AppIconLoaderDelegate> delegate_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_APP_ICON_LOADER_H_
+#endif  // COMPONENTS_APP_ICON_LOADER_APP_ICON_LOADER_H_

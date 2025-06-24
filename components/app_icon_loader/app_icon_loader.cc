@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_icon_loader.h"
+#include "components/app_icon_loader/app_icon_loader.h"
 
 AppIconLoader::AppIconLoader() = default;
 

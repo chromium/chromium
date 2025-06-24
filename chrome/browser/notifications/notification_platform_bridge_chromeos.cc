@@ -13,8 +13,8 @@
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/profile_notification.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_icon_loader.h"
 #include "chrome/common/notifications/notification_operation.h"
+#include "components/app_icon_loader/app_icon_loader.h"
 #include "ui/gfx/image/image.h"
 
 // static

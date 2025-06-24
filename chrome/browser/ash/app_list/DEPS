@@ -65,8 +65,6 @@ include_rules = [
   "+chrome/browser/signin",
   "+chrome/browser/sync",
   "+chrome/browser/trusted_vault",
-  "+chrome/browser/ui/app_icon_loader_delegate.h",
-  "+chrome/browser/ui/app_icon_loader.h",
   "+chrome/browser/ui/app_list",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_commands.h",
@@ -110,6 +108,7 @@ include_rules = [
   "+ash/resources",
   "+ash/strings",
   "+components/app_constants",
+  "+components/app_icon_loader",
   "+components/services/app_service/public",
 ]
 

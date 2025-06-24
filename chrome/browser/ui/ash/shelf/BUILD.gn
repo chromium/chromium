@@ -71,6 +71,7 @@ static_library("shelf") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//components/app_icon_loader",
   ]
 
   deps = [
@@ -256,6 +257,7 @@ source_set("unit_tests") {
     "//chromeos/ash/experiences/system_web_apps/types",
     "//components/account_id",
     "//components/app_constants",
+    "//components/app_icon_loader",
     "//components/exo",
     "//components/keep_alive_registry",
     "//components/prefs",

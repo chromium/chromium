@@ -5,6 +5,7 @@ include_rules = [
   "+components/security_state/content",
   "+components/live_caption",
   "+components/tabs/public",
+  "+components/app_icon_loader",
   "+dbus",
   "+extensions/strings/grit/extensions_strings.h",
   "+services/network/public",

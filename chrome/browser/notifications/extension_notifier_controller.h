@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/notifier_controller.h"
-#include "chrome/browser/ui/app_icon_loader_delegate.h"
+#include "components/app_icon_loader/app_icon_loader_delegate.h"
 
 class AppIconLoader;
 

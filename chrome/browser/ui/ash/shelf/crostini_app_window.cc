@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_icon_loader_delegate.h"
+#include "components/app_icon_loader/app_icon_loader_delegate.h"
 #include "extensions/common/constants.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"

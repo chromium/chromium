@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/notification_manager_interface.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
-#include "chrome/browser/ui/app_icon_loader.h"
+#include "components/app_icon_loader/app_icon_loader.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"

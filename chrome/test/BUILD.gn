@@ -9480,6 +9480,7 @@ test("unit_tests") {
       "//chrome/common/safe_browsing:proto",
       "//chrome/renderer/extensions",
       "//chrome/utility/image_writer:unit_tests",
+      "//components/app_icon_loader",
       "//components/enterprise:test_support",
       "//components/password_manager/core/browser/features:password_features",
       "//components/password_manager/core/browser/sharing",

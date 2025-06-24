@@ -26,7 +26,10 @@ static_library("app_service") {
     "app_service_promise_app_model_builder.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//components/app_icon_loader",
+  ]
 
   deps = [
     "//ash/constants",
