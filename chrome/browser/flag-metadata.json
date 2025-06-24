@@ -2137,7 +2137,7 @@
   {
     "name": "default-site-instance-groups",
     "owners": [ "yangsharon@chromium.org", "chrome-security-architecture@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "delay-media-sink-discovery",
