@@ -13,6 +13,7 @@ import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js'
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import type {FilePath} from '//resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import type {AudioData, Capabilities, InputPiece, ResponseChunk, ResponseSummary} from './on_device_model.mojom-webui.js';
@@ -83,6 +84,16 @@ function textToInputPieces(text: string): InputPiece[] {
   return input;
 }
 
+function filePathToString(filePath: FilePath): string {
+  if (typeof filePath.path === 'string') {
+    return filePath.path;
+  }
+
+  const decoder = new TextDecoder('utf-16');
+  const buffer = new Uint16Array(filePath.path);
+  return decoder.decode(buffer);
+}
+
 class OnDeviceInternalsToolsElement extends CrLitElement {
   static get is() {
     return 'on-device-internals-tools';
@@ -98,6 +109,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
 
   static override get properties() {
     return {
+      defaultModelPath_: {type: String},
       modelPath_: {type: String},
       error_: {type: String},
       imageError_: {type: String},
@@ -127,6 +139,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
   protected accessor currentResponse_: Response|null = null;
   protected accessor error_: string = '';
   protected accessor imageError_: string = '';
+  protected accessor defaultModelPath_: string = '';
   private loadModelDuration_: number = -1;
   private accessor loadModelStart_: number = 0;
   private accessor modelPath_: string = '';
@@ -149,6 +162,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
 
   override firstUpdated() {
     this.getPerformanceClass_();
+    this.getDefaultModelPath_();
     this.$.temperatureInput.inputElement.step = '0.1';
     this.$.imageInput.addEventListener(
         'change', this.onImageChange_.bind(this));
@@ -172,6 +186,14 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
     this.performanceClassText_ = getPerformanceClassText(
         (await this.proxy_.handler.getDevicePerformanceInfo())
             .performanceInfo.performanceClass);
+  }
+
+  private async getDefaultModelPath_() {
+    const defaultModelPath = await this.proxy_.handler.getDefaultModelPath();
+    if (defaultModelPath.modelPath === null) {
+      return;
+    }
+    this.defaultModelPath_ = filePathToString(defaultModelPath.modelPath);
   }
 
   private onModelOrErrorChanged_() {

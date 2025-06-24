@@ -14,6 +14,7 @@ export function getHtml(this: ToolsElement) {
 </div>
 <cr-input id="modelInput" label="Model directory" placeholder="/tmp/model"
     ?disabled="${this.isLoading_()}"
+    .value="${this.defaultModelPath_}"
     error-message="${this.error_}" ?invalid="${this.error_.length}" autofocus>
   <cr-button slot="suffix" ?disabled="${this.isLoading_()}"
       @click="${this.onLoadClick_}">

@@ -265,6 +265,20 @@ void PageHandler::GetDevicePerformanceInfo(
 #endif
 }
 
+void PageHandler::GetDefaultModelPath(GetDefaultModelPathCallback callback) {
+  auto* component_manager =
+      optimization_guide_keyed_service_->GetComponentManager();
+  auto debug_state =
+      component_manager->GetDebugState(base::PassKey<PageHandler>());
+
+  if (!debug_state.state_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(debug_state.state_->GetInstallDirectory());
+}
+
 void PageHandler::OnLogMessageAdded(
     base::Time event_time,
     optimization_guide_common::mojom::LogSource log_source,

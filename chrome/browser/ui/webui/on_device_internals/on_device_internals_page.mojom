@@ -96,6 +96,9 @@ interface PageHandler {
   GetDevicePerformanceInfo() =>
       (on_device_model.mojom.DevicePerformanceInfo performance_info);
 
+  // Returns the path of the default model.
+  GetDefaultModelPath() => (mojo_base.mojom.FilePath? model_path);
+
   // Returns the status of various on-device models.
   GetPageData() => (PageData page_data);
 
