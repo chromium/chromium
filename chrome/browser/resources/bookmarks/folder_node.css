@@ -96,3 +96,16 @@
     color: var(--google-grey-900);
   }
 }
+
+/* Set styles for high contrast mode in Windows. */
+@media (forced-colors: active) {
+  .cr-nav-menu-item[selected] #arrow,
+  .cr-nav-menu-item.drag-on #arrow {
+    --cr-icon-button-fill-color: FieldText;
+  }
+
+  .cr-nav-menu-item[selected],
+  .cr-nav-menu-item.drag-on {
+    outline: var(--cr-focus-outline-hcm) !important;
+  }
+}
