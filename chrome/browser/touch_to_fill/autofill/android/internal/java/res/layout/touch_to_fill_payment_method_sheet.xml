@@ -36,6 +36,10 @@ found in the LICENSE file.
         <include
             android:id="@+id/touch_to_fill_payment_method_home_screen"
             layout="@layout/touch_to_fill_payment_method_home_screen" />
+
+        <include
+            android:id="@+id/touch_to_fill_payment_method_all_loyalty_cards_screen"
+            layout="@layout/touch_to_fill_payment_method_all_loyalty_cards_screen" />
     </ViewFlipper>
 
 

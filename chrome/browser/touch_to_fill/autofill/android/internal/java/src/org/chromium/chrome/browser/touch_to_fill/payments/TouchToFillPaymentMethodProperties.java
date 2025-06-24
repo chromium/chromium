@@ -25,8 +25,8 @@ class TouchToFillPaymentMethodProperties {
             new PropertyModel.WritableBooleanPropertyKey("visible");
     static final PropertyModel.WritableIntPropertyKey CURRENT_SCREEN =
             new PropertyModel.WritableIntPropertyKey("current_screen");
-    public static final PropertyModel.ReadableObjectPropertyKey<ModelList> SHEET_ITEMS =
-            new PropertyModel.ReadableObjectPropertyKey("sheet_items");
+    public static final PropertyModel.WritableObjectPropertyKey<ModelList> SHEET_ITEMS =
+            new PropertyModel.WritableObjectPropertyKey("sheet_items");
     static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
             new PropertyModel.ReadableObjectPropertyKey<>("dismiss_handler");
 
@@ -37,6 +37,9 @@ class TouchToFillPaymentMethodProperties {
     @interface ScreenId {
         // The initial bottom sheet screen which offers the user to fill data into the form.
         int HOME_SCREEN = 0;
+
+        // The screen displaying all loyalty cards of a user.
+        int ALL_LOYALTY_CARDS_SCREEN = 1;
     }
 
     @interface ItemType {

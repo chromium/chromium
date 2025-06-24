@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ALL_LOYALTY_CARDS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 
 import android.content.Context;
@@ -160,6 +161,8 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
         switch (screenId) {
             case HOME_SCREEN:
                 return 0;
+            case ALL_LOYALTY_CARDS_SCREEN:
+                return 1;
         }
         assert false : "Undefined ScreenId: " + screenId;
         return 0;
@@ -169,6 +172,8 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
         switch (screenId) {
             case HOME_SCREEN:
                 return R.id.touch_to_fill_payment_method_home_screen;
+            case ALL_LOYALTY_CARDS_SCREEN:
+                return R.id.touch_to_fill_all_loyalty_cards_list;
         }
         assert false : "Undefined ScreenId: " + screenId;
         return 0;
