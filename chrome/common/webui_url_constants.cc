@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
-#include "components/nacl/common/buildflags.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
@@ -213,9 +212,6 @@ base::span<const base::cstring_view> ChromeURLHosts() {
 #endif
 #if BUILDFLAG(IS_WIN)
       kChromeUIConflictsHost,
-#endif
-#if BUILDFLAG(ENABLE_NACL)
-      kChromeUINaClHost,
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       kChromeUIExtensionsHost,
