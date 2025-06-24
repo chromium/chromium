@@ -1302,6 +1302,12 @@ extern const char kFluentScrollbarsDescription[];
 extern const char kKeyboardFocusableScrollersName[];
 extern const char kKeyboardFocusableScrollersDescription[];
 
+extern const char kKeyboardLockPromptName[];
+extern const char kKeyboardLockPromptDescription[];
+
+extern const char kPressAndHoldEscToExitBrowserFullscreenName[];
+extern const char kPressAndHoldEscToExitBrowserFullscreenDescription[];
+
 extern const char kFillOnAccountSelectName[];
 extern const char kFillOnAccountSelectDescription[];
 
@@ -3356,12 +3362,6 @@ extern const char kInfiniteTabsFreezingDescription[];
 
 extern const char kMemoryPurgeOnFreezeLimitName[];
 extern const char kMemoryPurgeOnFreezeLimitDescription[];
-
-extern const char kKeyboardLockPromptName[];
-extern const char kKeyboardLockPromptDescription[];
-
-extern const char kPressAndHoldEscToExitBrowserFullscreenName[];
-extern const char kPressAndHoldEscToExitBrowserFullscreenDescription[];
 
 extern const char kReadAnythingImagesViaAlgorithmName[];
 extern const char kReadAnythingImagesViaAlgorithmDescription[];

@@ -849,6 +849,16 @@ const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
     "When enabled, offers will be displayed in the keyboard accessory when "
     "available.";
 
+const char kKeyboardLockPromptName[] = "Keyboard Lock prompt";
+const char kKeyboardLockPromptDescription[] =
+    "Requesting to use the keyboard lock API causes a permission prompt to be "
+    "shown.";
+
+const char kPressAndHoldEscToExitBrowserFullscreenName[] =
+    "Holding Esc to exit browser fullscreen";
+const char kPressAndHoldEscToExitBrowserFullscreenDescription[] =
+    "Allows users to press and hold Esc key to exit browser fullscreen.";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kAutofillEnablePaymentSettingsCardPromoAndScanCardName[] =
     "Use the new card promo and allow for card scanning in the payment "
@@ -5766,16 +5776,6 @@ const char kMemoryPurgeOnFreezeLimitDescription[] =
     "Do not purge memory in renderers with frozen pages more than once per "
     "backgrounded interval, to minimize overhead when pages are periodically "
     "unfrozen. To be enabled with memory-purge-on-freeze-limit.";
-
-const char kKeyboardLockPromptName[] = "Keyboard Lock prompt";
-const char kKeyboardLockPromptDescription[] =
-    "Requesting to use the keyboard lock API causes a permission prompt to be "
-    "shown.";
-
-const char kPressAndHoldEscToExitBrowserFullscreenName[] =
-    "Holding Esc to exit browser fullscreen";
-const char kPressAndHoldEscToExitBrowserFullscreenDescription[] =
-    "Allows users to press and hold Esc key to exit browser fullscreen.";
 
 const char kReadAnythingImagesViaAlgorithmName[] =
     "Reading Mode with images added via algorithm";

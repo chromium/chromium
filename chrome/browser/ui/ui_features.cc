@@ -85,11 +85,9 @@ BASE_FEATURE(kPreloadTopChromeWebUILessNavigations,
 
 // Enables exiting browser fullscreen (users putting the browser itself into the
 // fullscreen mode via the browser UI or shortcuts) with press-and-hold Esc.
-#if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
              "PressAndHoldEscToExitBrowserFullscreen",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 // When enabled, a scrim is shown behind window modal dialogs to cover the
 // entire browser window. This gives user a visual cue that the browser window

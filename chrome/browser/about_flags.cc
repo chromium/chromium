@@ -9248,7 +9248,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPwaUpdateDialogForAppIconDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPwaUpdateDialogForIcon)},
 
-#if !BUILDFLAG(IS_ANDROID)
     {"keyboard-lock-prompt", flag_descriptions::kKeyboardLockPromptName,
      flag_descriptions::kKeyboardLockPromptDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kKeyboardLockPrompt)},
@@ -9258,7 +9257,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPressAndHoldEscToExitBrowserFullscreenDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPressAndHoldEscToExitBrowserFullscreen)},
-#endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     {"enable-oop-print-drivers", flag_descriptions::kEnableOopPrintDriversName,
