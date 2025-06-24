@@ -19,7 +19,6 @@ include_rules = [
   "+components/trusted_vault",
   "+components/url_formatter",
   "+crypto",
-  "+extensions/buildflags",
   "+net",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

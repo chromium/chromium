@@ -118,7 +118,6 @@ static_library("service") {
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//crypto",
-    "//extensions/buildflags",
     "//services/network/public/cpp",
     "//ui/base",
   ]

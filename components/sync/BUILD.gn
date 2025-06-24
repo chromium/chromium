@@ -283,7 +283,6 @@ source_set("unit_tests") {
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//components/version_info:version_string",
-    "//extensions/buildflags",
     "//google_apis:test_support",
     "//google_apis/gcm:gcm",
     "//net",
