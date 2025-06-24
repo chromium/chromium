@@ -1884,6 +1884,8 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           CacheControlNoStoreDeviceBoundSessionTerminated;
+    case Reason::kSharedWorkerMessage:
+      return Page::BackForwardCacheNotRestoredReasonEnum::SharedWorkerMessage;
   }
 }
 
@@ -2007,6 +2009,8 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
     case WebSchedulerTrackedFeature::kWebAuthentication:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           ContentWebAuthenticationAPI;
+    case WebSchedulerTrackedFeature::kSharedWorkerMessage:
+      return Page::BackForwardCacheNotRestoredReasonEnum::SharedWorkerMessage;
   }
 }
 
@@ -2174,6 +2178,7 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kWebViewDocumentStartJavascriptChanged:
     case Reason::kCacheLimitPrunedOnModerateMemoryPressure:
     case Reason::kCacheLimitPrunedOnCriticalMemoryPressure:
+    case Reason::kSharedWorkerMessage:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:
@@ -2198,6 +2203,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kBroadcastChannel:
     case WebSchedulerTrackedFeature::kWebXR:
     case WebSchedulerTrackedFeature::kSharedWorker:
+    case WebSchedulerTrackedFeature::kSharedWorkerMessage:
     case WebSchedulerTrackedFeature::kWebHID:
     case WebSchedulerTrackedFeature::kWebShare:
     case WebSchedulerTrackedFeature::kPaymentManager:

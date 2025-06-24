@@ -170,10 +170,14 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // The back/forward cache is disabled during WebAuthn transactions.
   kWebAuthentication = 70,
 
+  // The back/forward cache is disabled when pages receive a message from shared
+  // worker.
+  kSharedWorkerMessage = 71,
+
   // Please keep in sync with WebSchedulerTrackedFeature in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 
-  kMaxValue = kWebAuthentication,
+  kMaxValue = kSharedWorkerMessage,
 };
 
 using WebSchedulerTrackedFeatures =

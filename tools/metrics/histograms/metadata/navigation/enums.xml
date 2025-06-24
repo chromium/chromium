@@ -228,6 +228,7 @@ chromium-metrics-reviews@google.com.
              terminated"/>
   <int value="70" label="Cache limit pruned on moderate memory pressure"/>
   <int value="71" label="Cache limit pruned on critical memory pressure"/>
+  <int value="72" label="Message from SharedWorker to a page in BFCache"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/back_forward_cache.h:NotRestoredReason) -->

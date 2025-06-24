@@ -119,7 +119,8 @@ class CONTENT_EXPORT BackForwardCache {
     kCacheControlNoStoreDeviceBoundSessionTerminated = 69,
     kCacheLimitPrunedOnModerateMemoryPressure = 70,
     kCacheLimitPrunedOnCriticalMemoryPressure = 71,
-    kMaxValue = kCacheLimitPrunedOnCriticalMemoryPressure,
+    kSharedWorkerMessage = 72,
+    kMaxValue = kSharedWorkerMessage,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:BackForwardCacheNotRestoredReason)
 

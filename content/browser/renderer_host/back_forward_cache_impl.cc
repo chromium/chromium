@@ -213,7 +213,8 @@ WebSchedulerTrackedFeatures GetDisallowedWebSchedulerTrackedFeatures() {
           WebSchedulerTrackedFeature::kWebSocket,
           WebSchedulerTrackedFeature::kWebTransport,
           WebSchedulerTrackedFeature::kWebXR,
-          WebSchedulerTrackedFeature::kParserAborted};
+          WebSchedulerTrackedFeature::kParserAborted,
+          WebSchedulerTrackedFeature::kSharedWorkerMessage};
 }
 WebSchedulerTrackedFeatures GetInjectionWebSchedulerTrackedFeatures() {
   return {WebSchedulerTrackedFeature::kInjectedJavascript,

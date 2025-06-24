@@ -201,6 +201,8 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::CACHE_LIMIT_PRUNED_ON_MODERATE_MEMORY_PRESSURE;
     case Reason::kCacheLimitPrunedOnCriticalMemoryPressure:
       return ProtoEnum::CACHE_LIMIT_PRUNED_ON_CRITICAL_MEMORY_PRESSURE;
+    case Reason::kSharedWorkerMessage:
+      return ProtoEnum::SHARED_WORKER_MESSAGE;
   }
   NOTREACHED();
 }
@@ -458,6 +460,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
     case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
       return "A device bound session was terminated on a cached page with "
              "Cache-Control: no-store";
+    case Reason::kSharedWorkerMessage:
+      return "Pages with shared worker in bfcache received a message";
   }
 }
 
@@ -551,6 +555,8 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
                  blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)
                  ? "masked"
                  : "cookie-removed";
+    case Reason::kSharedWorkerMessage:
+      return "sharedworker-message";
     case Reason::kDisableForRenderFrameHostCalled:
       return DisabledReasonsToString(disabled_reasons_,
                                      /*for_not_restored_reasons=*/true);

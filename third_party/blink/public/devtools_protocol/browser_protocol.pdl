@@ -10060,6 +10060,7 @@ domain Page
       BroadcastChannel
       WebXR
       SharedWorker
+      SharedWorkerMessage
       WebLocks
       WebHID
       WebShare

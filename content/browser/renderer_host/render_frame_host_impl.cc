@@ -484,6 +484,8 @@ RendererEvictionReasonToNotRestoredReason(
     case blink::mojom::RendererEvictionReason::kBroadcastChannelOnMessage:
       return BackForwardCacheMetrics::NotRestoredReason::
           kBroadcastChannelOnMessage;
+    case blink::mojom::RendererEvictionReason::kSharedWorkerMessage:
+      return BackForwardCacheMetrics::NotRestoredReason::kSharedWorkerMessage;
   }
   NOTREACHED();
 }
