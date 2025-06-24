@@ -109,9 +109,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantViewDelegate {
   virtual void OnSuggestionPressed(
       const base::UnguessableToken& suggestion_id) = 0;
 
-  // Returns true if Assistant onboarding should be shown.
-  virtual bool ShouldShowOnboarding() const = 0;
-
   // Invoked when a launcher search chip is pressed.
   virtual void OnLauncherSearchChipPressed(std::u16string_view query) = 0;
 };

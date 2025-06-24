@@ -7,8 +7,6 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
-#include "ash/assistant/ui/colors/assistant_colors.h"
-#include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
 #include "ash/assistant/ui/main_stage/suggestion_chip_view.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -303,7 +301,6 @@ TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelWhenOpening) {
   ShowAssistantUi();
 
   EXPECT_TRUE(greeting_label()->IsDrawn());
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
 TEST_F(AssistantPageViewTest, ShouldDismissGreetingLabelAfterQuery) {
@@ -312,7 +309,6 @@ TEST_F(AssistantPageViewTest, ShouldDismissGreetingLabelAfterQuery) {
   MockTextInteraction().WithTextResponse("The response");
 
   EXPECT_FALSE(greeting_label()->IsDrawn());
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
 TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelAgainAfterReopening) {
@@ -327,7 +323,6 @@ TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelAgainAfterReopening) {
   ShowAssistantUi();
 
   EXPECT_TRUE(greeting_label()->IsDrawn());
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
 TEST_F(AssistantPageViewTest,
@@ -335,30 +330,6 @@ TEST_F(AssistantPageViewTest,
   ShowAssistantUi(AssistantEntryPoint::kLauncherSearchResult);
 
   EXPECT_FALSE(greeting_label()->IsDrawn());
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
-}
-
-TEST_F(AssistantPageViewTest,
-       ShouldNotShowOnboardingWhenOpeningFromSearchResult) {
-  ShowAssistantUi(AssistantEntryPoint::kLauncherSearchResult);
-
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
-  EXPECT_FALSE(greeting_label()->IsDrawn());
-}
-
-TEST_F(AssistantPageViewTest,
-       ShouldNotShowOnboardingToExistingUsersIfShownPreviouslyInMaxSessions) {
-  SetTimeOfLastInteraction(base::Time::Now());
-  SetNumberOfSessionsWhereOnboardingShown(
-      assistant::ui::kOnboardingMaxSessionsShown);
-
-  ShowAssistantUi();
-
-  // This user has *not* interacted with Assistant more recently than 28 days
-  // ago so they *are* considered new. Onboarding would normally be shown but,
-  // since it was shown already in the max number of previous user sessions, we
-  // do *not* show it.
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
 TEST_F(AssistantPageViewTest, ShouldFocusMicViewWhenPressingVoiceInputToggle) {
@@ -619,8 +590,6 @@ TEST_F(AssistantPageViewTest, RememberAndShowHistory) {
 
 TEST_F(AssistantPageViewTest, ShouldNotHaveConversationStarters) {
   ShowAssistantUi();
-
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
 
   // When Launcher Search IPH is enabled, there is no suggestion chips.
   EXPECT_TRUE(GetSuggestionChips().empty());

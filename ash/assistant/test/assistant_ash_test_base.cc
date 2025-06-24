@@ -10,7 +10,6 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/assistant/test/test_assistant_setup.h"
-#include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
 #include "ash/assistant/ui/main_stage/suggestion_chip_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -299,22 +298,12 @@ views::View* AssistantAshTestBase::keyboard_input_toggle() {
   return test_api_->keyboard_input_toggle();
 }
 
-views::View* AssistantAshTestBase::onboarding_view() {
-  return test_api_->onboarding_view();
-}
-
 views::View* AssistantAshTestBase::opt_in_view() {
   return test_api_->opt_in_view();
 }
 
 views::View* AssistantAshTestBase::suggestion_chip_container() {
   return test_api_->suggestion_chip_container();
-}
-
-std::vector<AssistantOnboardingSuggestionView*>
-AssistantAshTestBase::GetOnboardingSuggestionViews() {
-  const views::View* container = onboarding_view();
-  return ChildViewCollector<AssistantOnboardingSuggestionView>{container}.Get();
 }
 
 std::vector<SuggestionChipView*> AssistantAshTestBase::GetSuggestionChips() {

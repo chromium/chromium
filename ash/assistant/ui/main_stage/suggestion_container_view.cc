@@ -170,11 +170,6 @@ void SuggestionContainerView::InitLayout() {
 void SuggestionContainerView::OnConversationStartersChanged(
     const std::vector<AssistantSuggestion>& conversation_starters) {
   // We don't show conversation starters when showing onboarding since the
-  // onboarding experience already provides the user w/ suggestions.
-  if (delegate()->ShouldShowOnboarding()) {
-    return;
-  }
-
   if (base::FeatureList::IsEnabled(
           feature_engagement::kIPHLauncherSearchHelpUiFeature)) {
     return;

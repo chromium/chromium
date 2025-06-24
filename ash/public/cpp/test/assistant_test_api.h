@@ -129,11 +129,6 @@ class ASH_EXPORT AssistantTestApi {
   // Exists for both bubble launcher and fullscreen launcher.
   virtual views::View* keyboard_input_toggle() = 0;
 
-  // Returns the Assistant onboarding view.
-  // Can only be used after the Assistant UI has been shown at least once.
-  // Exists for both bubble launcher and fullscreen launcher.
-  virtual views::View* onboarding_view() = 0;
-
   // Returns the button to launch Assistant setup.
   // Can only be used after the Assistant UI has been shown at least once.
   // Exists for both bubble launcher and fullscreen launcher.

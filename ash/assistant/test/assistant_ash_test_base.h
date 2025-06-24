@@ -30,7 +30,6 @@ class ScopedAssistantBrowserDelegate;
 }
 
 class AppListView;
-class AssistantOnboardingSuggestionView;
 class AssistantTestApi;
 class SuggestionChipView;
 class TestAssistantService;
@@ -175,18 +174,11 @@ class AssistantAshTestBase : public AshTestBase {
   // Return the button to enable text mode.
   views::View* keyboard_input_toggle();
 
-  // Return the Assistant onboarding view.
-  views::View* onboarding_view();
-
   // Return the button to launch Assistant setup.
   views::View* opt_in_view();
 
   // Return the container with all the suggestion chips.
   views::View* suggestion_chip_container();
-
-  // Return the onboarding suggestions that are currently displayed.
-  std::vector<AssistantOnboardingSuggestionView*>
-  GetOnboardingSuggestionViews();
 
   // Return the suggestion chips that are currently displayed.
   std::vector<SuggestionChipView*> GetSuggestionChips();
