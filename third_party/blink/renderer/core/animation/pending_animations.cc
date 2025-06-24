@@ -126,7 +126,8 @@ bool PendingAnimations::Update(
 
   // If any synchronized animations were started on the compositor, all
   // remaining synchronized animations need to wait for the synchronized
-  // start time. Otherwise they may start immediately.
+  // start time. Otherwise they may start immediately if animating on the main
+  // thread.
   if (started_synchronized_on_compositor) {
     FlushWaitingNonCompositedAnimations();
     waiting_for_compositor_animation_start_.AppendVector(
@@ -138,6 +139,10 @@ bool PendingAnimations::Update(
       if (animation->HasActiveAnimationsOnCompositor()) {
         // A composited animation needs to continue waiting, otherwise the
         // start time on the compositor and main-thread will be misaligned.
+        if (animation->CompositorGroup() == compositor_group) {
+          // Composited animation was restarting with a new compositor group.
+          waiting_for_compositor_animation_start_.push_back(animation);
+        }
         continue;
       }
       DCHECK(!animation->StartTimeInternal());
@@ -160,11 +165,13 @@ bool PendingAnimations::Update(
   }
   DCHECK_EQ(pending_.size(), deferred.size());
 
-  if (started_synchronized_on_compositor)
+  if (started_synchronized_on_compositor) {
     return true;
+  }
 
-  if (waiting_for_compositor_animation_start_.empty())
+  if (waiting_for_compositor_animation_start_.empty()) {
     return false;
+  }
 
   // Check if we're still waiting for any compositor animations to start.
   for (auto& animation : waiting_for_compositor_animation_start_) {
