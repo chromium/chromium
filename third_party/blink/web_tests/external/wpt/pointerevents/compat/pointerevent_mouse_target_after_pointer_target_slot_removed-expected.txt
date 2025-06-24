@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] mousemove event should be fired on the slot parent when pointermove event listener removes the slot
+  assert_equals: expected "pointermove@child, (slot-removed), mousemove@slotParent" but got "pointermove@child, (slot-removed)"
+[FAIL] mousedown event should be fired on the slot parent when pointerdown event listener removes the slot
+  assert_equals: expected "pointerdown@child, (slot-removed), mousedown@slotParent" but got "pointerdown@child, (slot-removed)"
+[FAIL] mouseup event should be fired on the slot parent when pointerup event listener removes the slot
+  assert_equals: expected "pointerup@child, (slot-removed), mouseup@slotParent" but got "pointerup@child, (slot-removed)"
+Harness: the test ran to completion.
+

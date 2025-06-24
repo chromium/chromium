@@ -306392,14 +306392,14 @@
       }
      },
      "the-button-element": {
-      "interest-target": {
-       "interesttarget-keyboard-invalidation.tentative.html": [
-        "b6d0ff10932f1717fb038efb28c42c2bbf57cbf8",
+      "interest-for": {
+       "interestfor-keyboard-invalidation.tentative.html": [
+        "bcb2c5ae5b36469c8fffb5966ff2b2c6ebd7801d",
         [
          null,
          [
           [
-           "/html/semantics/the-button-element/interest-target/interesttarget-keyboard-invalidation-ref.html",
+           "/html/semantics/the-button-element/interest-for/interestfor-keyboard-invalidation-ref.html",
            "=="
           ]
          ],
@@ -306408,8 +306408,8 @@
          }
         ]
        ],
-       "interesttarget-plain-inline-element.tentative.html": [
-        "68ce00193f70c021cc392e0e2460662d7eb38ad9",
+       "interestfor-plain-inline-element.tentative.html": [
+        "c08a1673baa77187f877843112fbaa9184ec0296",
         [
          null,
          [
@@ -380580,7 +380580,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "c805a680ffa67ef11734df0a4020b593b29e0aaa",
+      "c283002118f02c5448fb6f5f9bd15fe952b2b5ea",
       []
      ],
      "iframe.html": [
@@ -410506,14 +410506,14 @@
         ]
        }
       },
-      "interest-target": {
-       "interesttarget-keyboard-invalidation-ref.html": [
+      "interest-for": {
+       "interestfor-keyboard-invalidation-ref.html": [
         "9d520943d5f542a2aeb45ac6cb1417eb20c25477",
         []
        ],
        "resources": {
         "invoker-utils.js": [
-         "b12190c7b040552fc974f07a38bf117ebda70fc9",
+         "f06d668632f3f0367b0d1437ab44bd6d8cb76401",
          []
         ]
        }
@@ -414655,7 +414655,7 @@
      []
     ],
     "interest-invokers.tentative.idl": [
-     "fe164e23575d1bf63e3325022eb02601de0d117a",
+     "53838c1f802cd4f6ee11ce0931d02a84326c77a7",
      []
     ],
     "intersection-observer.idl": [
@@ -421026,6 +421026,16 @@
      "0cc01909796fcce22401ef0ed2ffda3582f56634",
      []
     ],
+    "compat": {
+     "pointerevent_mouse_target_after_pointer_target_root_element_in_shadow_removed-expected.txt": [
+      "76c4fa0b8284093090ec570b174f91b39ffae708",
+      []
+     ],
+     "pointerevent_mouse_target_after_pointer_target_slot_removed-expected.txt": [
+      "718b9e2ba9413ad9dbcfe23878e4522af693f4f0",
+      []
+     ]
+    },
     "pointerevent_after_target_removed_from_slot_mouse-expected.txt": [
      "629baaba8c5990e4d847014619a9d1d6f5e98d1c",
      []
@@ -428026,7 +428036,7 @@
       ],
       "resources": {
        "property-reflection-helper.js": [
-        "88b7f743831acbfd41ed4ae6a782733bde9875a6",
+        "46daa4e10be1ed5459ff4331abaa1bbb8a099697",
         []
        ]
       }
@@ -434986,7 +434996,7 @@
       ]
      },
      "Animation": {
-      "commitStyles.tentative-expected.txt": [
+      "commitStyles-expected.txt": [
        "b4b70f68b0a79162309dc4fde868691a6d18479a",
        []
       ],
@@ -517145,15 +517155,6 @@
        }
       ]
      ],
-     "scroll-button-event-target.html": [
-      "f9be3f4f35be5cd516904ba605c5fb986ad34291",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
      "scroll-button-hover-remove.html": [
       "af000012b4ec605fb0e30a34e50bc02119a9b925",
       [
@@ -517277,15 +517278,6 @@
       [
        null,
        {}
-      ]
-     ],
-     "scroll-marker-event-target.html": [
-      "ed862d0c0724746715c8476bd8feb5982e2c426a",
-      [
-       null,
-       {
-        "testdriver": true
-       }
       ]
      ],
      "scroll-marker-focus-visible.html": [
@@ -534763,6 +534755,13 @@
      ],
      "test_variable_legal_values.html": [
       "1d86c0834ccb1da7965edf56f9a4aefc0a041421",
+      [
+       null,
+       {}
+      ]
+     ],
+     "var-ident-function.html": [
+      "3453cd5b64942b9d7bccdde418baa50e8018205a",
       [
        null,
        {}
@@ -618048,7 +618047,7 @@
          ]
         ],
         "createImageBitmap-resolves-in-task.any.js": [
-         "0d2ddf5855eba935a495819bcbea22570903d8ce",
+         "e88cc34c851d18668070a7570ba4b44b1de539cd",
          [
           "html/canvas/element/manual/imagebitmap/createImageBitmap-resolves-in-task.any.html",
           {
@@ -656239,10 +656238,19 @@
         ]
        ],
        "menubar-invoke-menulist.html": [
-        "3fe0caf62c7612d69a9f657fdf2171b6abf15687",
+        "4d228d48da217daa8dfbbfa3fd2dc87422429521",
         [
          null,
          {}
+        ]
+       ],
+       "menuitem-activate.html": [
+        "2c403420772491c8bbe20a710975ee4f25315569",
+        [
+         null,
+         {
+          "testdriver": true
+         }
         ]
        ],
        "menulist-popover-attribute.html": [
@@ -661518,7 +661526,7 @@
         ]
        ]
       },
-      "interest-target": {
+      "interest-for": {
        "idlharness.tentative.html": [
         "72859ca6ca8c8de3a0b695eb5e877f316bfefa8d",
         [
@@ -661527,14 +661535,14 @@
         ]
        ],
        "interestelement-interface.tentative.html": [
-        "41616d97bd0a26b53ac82570f98a40c675dbcd0c",
+        "ae2f8f99f6441754b1b32dea75dc250b56ae3197",
         [
          null,
          {}
         ]
        ],
        "interestevent-dispatch-shadow.tentative.html": [
-        "ac1b72b0ef8e0d31c2dc17f518a0e78785e87482",
+        "c509e733c7d7210f0792d5d8cfd974008980c5b5",
         [
          null,
          {
@@ -661551,8 +661559,8 @@
          }
         ]
        ],
-       "interesttarget-anchor-event-dispatch.tentative.html": [
-        "ae9198a91d55d2cfa6968917b26f8f2b3f71ffc2",
+       "interestfor-anchor-event-dispatch.tentative.html": [
+        "b7224ac4b56bbfef0f90fe3729244214978c1d7d",
         [
          null,
          {
@@ -661560,8 +661568,8 @@
          }
         ]
        ],
-       "interesttarget-area-event-dispatch.tentative.html": [
-        "4bd5165198eb206224cc19067745fcd45ce3815d",
+       "interestfor-area-event-dispatch.tentative.html": [
+        "2b1950cb6a186f3304884a8708672c2e12468794",
         [
          null,
          {
@@ -661569,8 +661577,8 @@
          }
         ]
        ],
-       "interesttarget-basic-delays.tentative.html": [
-        "9a4806a8ae60e1baf36ff5465301248243aac36c",
+       "interestfor-basic-delays.tentative.html": [
+        "3e594cb3e00d6fb6769e60ed4e9b3a97a6610e44",
         [
          null,
          {
@@ -661579,8 +661587,8 @@
          }
         ]
        ],
-       "interesttarget-button-event-dispatch.tentative.html": [
-        "67ab884d01d91490d9c861cd2fe9c9f61009ac4d",
+       "interestfor-button-event-dispatch.tentative.html": [
+        "5196aa09323f1190e0ea7508309181600aedde1b",
         [
          null,
          {
@@ -661588,56 +661596,56 @@
          }
         ]
        ],
-       "interesttarget-css-properties.tentative.html": [
-        "0aa45a41b3b21df441ba323172801297ed60b08c",
+       "interestfor-css-properties.tentative.html": [
+        "41c3938222d52b0e23c641923d790dbb09bbc9ba",
         [
          null,
          {}
         ]
        ],
-       "interesttarget-css-shorthands.tentative.html": [
-        "e3260d1b052da5d6c204746980d495a4e0c4d7ad",
+       "interestfor-css-shorthands.tentative.html": [
+        "282525193f1593d1eb29f4918848afc181477d84",
         [
          null,
          {}
         ]
        ],
-       "interesttarget-hide-delay.tentative.html": [
-        "8828d879cac2b55e485b67511e41d64609a635e0",
+       "interestfor-hide-delay.tentative.html": [
+        "4e2bf9801250d3c7cdbda974a6026de1d0634623",
         [
-         "html/semantics/the-button-element/interest-target/interesttarget-hide-delay.tentative.html?method=focus",
+         "html/semantics/the-button-element/interest-for/interestfor-hide-delay.tentative.html?method=focus",
          {
           "testdriver": true,
           "timeout": "long"
          }
         ],
         [
-         "html/semantics/the-button-element/interest-target/interesttarget-hide-delay.tentative.html?method=hover",
+         "html/semantics/the-button-element/interest-for/interestfor-hide-delay.tentative.html?method=hover",
          {
           "testdriver": true,
           "timeout": "long"
          }
         ]
        ],
-       "interesttarget-input-modalities.tentative.html": [
-        "ce2962bfa84f487c3a826e02b8fc3aafeeb74355",
+       "interestfor-input-modalities.tentative.html": [
+        "990972adce6466e4b39cfe76323d4cbbc8a63a97",
         [
-         "html/semantics/the-button-element/interest-target/interesttarget-input-modalities.tentative.html?method=focus",
+         "html/semantics/the-button-element/interest-for/interestfor-input-modalities.tentative.html?method=focus",
          {
           "testdriver": true,
           "timeout": "long"
          }
         ],
         [
-         "html/semantics/the-button-element/interest-target/interesttarget-input-modalities.tentative.html?method=hover",
+         "html/semantics/the-button-element/interest-for/interestfor-input-modalities.tentative.html?method=hover",
          {
           "testdriver": true,
           "timeout": "long"
          }
         ]
        ],
-       "interesttarget-invoker-descendants.tentative.html": [
-        "d976c0eb011d4240d162418df077c412db5fb9b1",
+       "interestfor-invoker-descendants.tentative.html": [
+        "7a6e5e4ac41c32830e032c20ef46c4dd699c91e6",
         [
          null,
          {
@@ -661645,8 +661653,8 @@
          }
         ]
        ],
-       "interesttarget-keyboard-behavior.tentative.html": [
-        "53be20b348a1e17e023ad5b977baad3eef39adb4",
+       "interestfor-keyboard-behavior.tentative.html": [
+        "4d636c3cd3a3435e8fb6449c6091dd86098b7eba",
         [
          null,
          {
@@ -661655,17 +661663,8 @@
          }
         ]
        ],
-       "interesttarget-on-popover-behavior.tentative.html": [
-        "44071a9ac93aff2a6645fb4c4a45b0d97da8f061",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
-       "interesttarget-partial-interest.tentative.html": [
-        "bc7184d42d2528fe8e027e7af51463a796177ca9",
+       "interestfor-on-popover-behavior.tentative.html": [
+        "99b25e21e50b28a11263ac486aab4d941994dccb",
         [
          null,
          {
@@ -661673,8 +661672,8 @@
          }
         ]
        ],
-       "interesttarget-popover-focus.tentative.html": [
-        "9dfc39a37a60d438ecf9287d0ddffc0212e7a21c",
+       "interestfor-partial-interest.tentative.html": [
+        "a38a0a762cfced382e216af88ce680ed6f4d4575",
         [
          null,
          {
@@ -661682,63 +661681,8 @@
          }
         ]
        ],
-       "interesttarget-pseudo-classes.tentative.html": [
-        "924c4d5fbc82f323741c27690f2b36fcc79961ae",
-        [
-         null,
-         {
-          "testdriver": true,
-          "timeout": "long"
-         }
-        ]
-       ],
-       "interesttarget-show-delay.tentative.html": [
-        "8d7b78de7fc6ae38a25ee70c413939aad7932f8e",
-        [
-         "html/semantics/the-button-element/interest-target/interesttarget-show-delay.tentative.html?layout=nested&method=focus",
-         {
-          "testdriver": true,
-          "timeout": "long"
-         }
-        ],
-        [
-         "html/semantics/the-button-element/interest-target/interesttarget-show-delay.tentative.html?layout=nested&method=hover",
-         {
-          "testdriver": true,
-          "timeout": "long"
-         }
-        ],
-        [
-         "html/semantics/the-button-element/interest-target/interesttarget-show-delay.tentative.html?layout=nested-offset&method=focus",
-         {
-          "testdriver": true,
-          "timeout": "long"
-         }
-        ],
-        [
-         "html/semantics/the-button-element/interest-target/interesttarget-show-delay.tentative.html?layout=nested-offset&method=hover",
-         {
-          "testdriver": true,
-          "timeout": "long"
-         }
-        ],
-        [
-         "html/semantics/the-button-element/interest-target/interesttarget-show-delay.tentative.html?layout=plain&method=focus",
-         {
-          "testdriver": true,
-          "timeout": "long"
-         }
-        ],
-        [
-         "html/semantics/the-button-element/interest-target/interesttarget-show-delay.tentative.html?layout=plain&method=hover",
-         {
-          "testdriver": true,
-          "timeout": "long"
-         }
-        ]
-       ],
-       "interesttarget-svg-a-event-dispatch.tentative.html": [
-        "d5db05023212ca5b8491a91954a0997278fbc6d1",
+       "interestfor-popover-focus.tentative.html": [
+        "d9b1bca5b106d5f422b351b9dec373df4f42327d",
         [
          null,
          {
@@ -661746,8 +661690,72 @@
          }
         ]
        ],
-       "interesttarget-user-select.tentative.html": [
-        "0726d10da92d1eb71c31657fb9a686cda681578d",
+       "interestfor-pseudo-classes.tentative.html": [
+        "2004aa2b3d9e8f3c024e6a6d51faf0c2bbe55180",
+        [
+         null,
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ]
+       ],
+       "interestfor-show-delay.tentative.html": [
+        "ccc9a28fcecde8ccc09060f21e0d9468a4cc122e",
+        [
+         "html/semantics/the-button-element/interest-for/interestfor-show-delay.tentative.html?layout=nested&method=focus",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/interest-for/interestfor-show-delay.tentative.html?layout=nested&method=hover",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/interest-for/interestfor-show-delay.tentative.html?layout=nested-offset&method=focus",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/interest-for/interestfor-show-delay.tentative.html?layout=nested-offset&method=hover",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/interest-for/interestfor-show-delay.tentative.html?layout=plain&method=focus",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/interest-for/interestfor-show-delay.tentative.html?layout=plain&method=hover",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ]
+       ],
+       "interestfor-svg-a-event-dispatch.tentative.html": [
+        "844627e2cac6eb324b9b53fd278831b51a9288ad",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "interestfor-user-select.tentative.html": [
+        "df8b4bbb9f81ac7da78c16415c69dd23360fc2fc",
         [
          null,
          {
@@ -666182,7 +666190,7 @@
         ]
        ],
        "event-handler-attributes-body-window.html": [
-        "e8055d99f357da2baf1f9034d121055338e238e8",
+        "8c3f3f7633cf1145495ee3f477513ce23bffc62a",
         [
          null,
          {}
@@ -689513,6 +689521,33 @@
      ],
      "pointerevent_mouse-pointer-updown-events.html": [
       "a5433aab535f075b58844481a44588cb578a6bf0",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "pointerevent_mouse_target_after_pointer_target_host_of_shadow_removed.html": [
+      "719bc79150bc7d45a1f96c7f47ccfa4db42f2bba",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "pointerevent_mouse_target_after_pointer_target_root_element_in_shadow_removed.html": [
+      "9d4a5fa1fe6a49587d05eb94c7d4b7398f98ad00",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "pointerevent_mouse_target_after_pointer_target_slot_removed.html": [
+      "b87f4d2700917934c463582b7e5924a82a1f6797",
       [
        null,
        {
@@ -715690,8 +715725,8 @@
         }
        ]
       ],
-      "interesttarget.tentative.html": [
-       "e8d7c814d865fa95df4a75fc59a119211fe8caf0",
+      "interestfor.tentative.html": [
+       "da983ace6128f98500bcbfadcdf4a6745f0958aa",
        [
         null,
         {
@@ -756189,14 +756224,7 @@
        ]
       ],
       "commitStyles.html": [
-       "26c8342e6f24b70d0acc81f4e62865b8cce6b261",
-       [
-        null,
-        {}
-       ]
-      ],
-      "commitStyles.tentative.html": [
-       "8b7d089ae34fcc7660c153e61a571b547b94e141",
+       "5efec92fc2dff94d360ac29b7750c31d4a713ab2",
        [
         null,
         {}
@@ -756238,7 +756266,7 @@
        ]
       ],
       "onfinish.html": [
-       "b58fea0362f412af753b87dbf55c6ee226a32736",
+       "0ab2c82dca3dd11f871e77e90a027088cdc60263",
        [
         null,
         {}
@@ -756251,7 +756279,7 @@
         {}
        ]
       ],
-      "overallProgress.tentative.html": [
+      "overallProgress.html": [
        "96292017e72b078fc293f648cabf1ef1f85e7820",
        [
         null,

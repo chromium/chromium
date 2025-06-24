@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] mousemove event should be fired on the host when pointermove event listener removes the root element in the shadow DOM
+  assert_equals: expected "pointermove@child, (root-element-in-shadow-root-removed), mousemove@host" but got "pointermove@child, (root-element-in-shadow-root-removed)"
+[FAIL] mousedown event should be fired on the host when pointerdown event listener removes the root element in the shadow DOM
+  assert_equals: expected "pointerdown@child, (root-element-in-shadow-root-removed), mousedown@host" but got "pointerdown@child, (root-element-in-shadow-root-removed)"
+[FAIL] mouseup event should be fired on the host when pointerup event listener removes the root element in the shadow DOM
+  assert_equals: expected "pointerup@child, (root-element-in-shadow-root-removed), mouseup@host" but got "pointerup@child, (root-element-in-shadow-root-removed)"
+Harness: the test ran to completion.
+
