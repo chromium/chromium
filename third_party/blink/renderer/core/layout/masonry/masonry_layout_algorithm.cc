@@ -63,7 +63,7 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
           track_collection.EndLineOfImplicitGrid(), LayoutUnit(),
           ResolveItemToleranceForMasonry(Style(), masonry_available_size_));
       PlaceMasonryItems(track_collection, masonry_items, start_offset,
-                        running_positions);
+                        running_positions, sizing_constraint);
       // `stacking_axis_gap` represents the space between each of the items
       // in the row. We need to subtract this as it is always added to
       // `running_positions` whenever an item is placed, but the very last
@@ -100,10 +100,11 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
 
   if (!masonry_items.IsEmpty()) {
     MasonryRunningPositions running_positions(
-        track_collection.EndLineOfImplicitGrid(), LayoutUnit(),
+        /*track_count=*/track_collection.EndLineOfImplicitGrid(),
+        /*initial_running_position=*/LayoutUnit(),
         ResolveItemToleranceForMasonry(Style(), masonry_available_size_));
     PlaceMasonryItems(track_collection, masonry_items, start_offset,
-                      running_positions);
+                      running_positions, SizingConstraint::kLayout);
   }
   // Account for border, scrollbar, and padding in the intrinsic block size.
   intrinsic_block_size_ += BorderScrollbarPadding().BlockSum();
@@ -148,16 +149,17 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     const GridLayoutTrackCollection& track_collection,
     GridItems& masonry_items,
     wtf_size_t start_offset,
-    MasonryRunningPositions& running_positions) {
+    MasonryRunningPositions& running_positions,
+    std::optional<SizingConstraint> sizing_constraint) {
   const auto& border_scrollbar_padding = BorderScrollbarPadding();
   const auto& container_space = GetConstraintSpace();
   const auto& style = Style();
+  const bool is_for_layout = sizing_constraint == SizingConstraint::kLayout;
 
   const auto container_writing_direction =
       container_space.GetWritingDirection();
   const auto grid_axis_direction = track_collection.Direction();
   const bool is_for_columns = grid_axis_direction == kForColumns;
-
   const auto stacking_axis_gap = GridTrackSizingAlgorithm::CalculateGutterSize(
       style, masonry_available_size_, is_for_columns ? kForRows : kForColumns);
 
@@ -188,12 +190,39 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
                    : containing_rect.offset.inline_offset =
                          max_position + border_scrollbar_padding.inline_start;
 
-    const auto space = CreateConstraintSpaceForLayout(
-        masonry_item, track_collection, &containing_rect);
+    std::optional<LayoutUnit> fixed_inline_size = ([&]() {
+      if (is_for_layout) {
+        return std::optional<LayoutUnit>(std::nullopt);
+      }
+
+      // We need to compute the available space for the item if we are using it
+      // to compute min/max content sizes.
+      const ConstraintSpace space_for_measure =
+          CreateConstraintSpaceForMeasure(masonry_item);
+      const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
+                                    masonry_item.node, space_for_measure)
+                                    .sizes;
+
+      return std::optional<LayoutUnit>(
+          (sizing_constraint == SizingConstraint::kMinContent)
+              ? sizes.min_size
+              : sizes.max_size);
+    })();
+
+    const ConstraintSpace space =
+        is_for_layout
+            ? CreateConstraintSpaceForLayout(masonry_item, track_collection,
+                                             &containing_rect)
+            : CreateConstraintSpaceForMeasure(masonry_item, fixed_inline_size,
+                                              /*is_for_min_max_sizing=*/true);
 
     const auto& item_node = masonry_item.node;
     const auto& item_style = item_node.Style();
-    const auto* result = item_node.Layout(space);
+    const LayoutResult* result =
+        is_for_layout ? result = item_node.Layout(space)
+                      : LayoutMasonryItemForMeasure(masonry_item, space,
+                                                    *sizing_constraint);
+
     const auto& physical_fragment =
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
     const LogicalBoxFragment fragment(container_writing_direction,
@@ -553,7 +582,8 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForLayout(
 
 ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     const GridItemData& masonry_item,
-    std::optional<LayoutUnit> opt_fixed_inline_size) const {
+    std::optional<LayoutUnit> opt_fixed_inline_size,
+    bool is_for_min_max_sizing) const {
   LogicalSize containing_size = masonry_available_size_;
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
   const auto grid_axis_direction = Style().MasonryTrackSizingDirection();
@@ -563,6 +593,12 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
   if (grid_axis_direction == kForColumns) {
     containing_size.inline_size = kIndefiniteSize;
   } else {
+    if (is_for_min_max_sizing) {
+      // In the row direction, we use this method to create a space for
+      // measuring the min/max-content of the item, so we have to set the inline
+      // size as indefinite to allow for text flow.
+      containing_size.inline_size = kIndefiniteSize;
+    }
     containing_size.block_size = kIndefiniteSize;
   }
 

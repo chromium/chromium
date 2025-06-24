@@ -1117,7 +1117,10 @@ crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/fragmentation/* [ 
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/masonry-grid-template-columns-computed-withcontent.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/parsing/* [ Failure Skip ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/subgrid/* [ Failure Skip ]
-# Masorny item placement failures
+# Masonry fit-content default behavior failures
+crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-placement-min-content.html [ Failure ]
+crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-placement-max-content.html [ Failure ]
+# Masonry item placement failures
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-001.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-002.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-004.html [ Failure ]

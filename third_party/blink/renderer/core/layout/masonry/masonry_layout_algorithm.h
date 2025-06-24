@@ -36,10 +36,12 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   // the items is finalized within this method. `running_positions` is an output
   // parameter that can be used to find the intrinsic inline size when the
   // stacking axis is the inline axis.
-  void PlaceMasonryItems(const GridLayoutTrackCollection& track_collection,
-                         GridItems& masonry_items,
-                         wtf_size_t start_offset,
-                         MasonryRunningPositions& running_positions);
+  void PlaceMasonryItems(
+      const GridLayoutTrackCollection& track_collection,
+      GridItems& masonry_items,
+      wtf_size_t start_offset,
+      MasonryRunningPositions& running_positions,
+      std::optional<SizingConstraint> sizing_constraint = std::nullopt);
 
   GridSizingTrackCollection BuildGridAxisTracks(
       const GridLineResolver& line_resolver,
@@ -81,7 +83,8 @@ class CORE_EXPORT MasonryLayoutAlgorithm
 
   ConstraintSpace CreateConstraintSpaceForMeasure(
       const GridItemData& masonry_item,
-      std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt) const;
+      std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt,
+      bool is_for_min_max_sizing = false) const;
 
   LayoutUnit intrinsic_block_size_;
 
