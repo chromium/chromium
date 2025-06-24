@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
 
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -105,8 +106,12 @@ void PageLifecycleStateManager::SetBackForwardCacheEntered(
            {BackForwardCacheEntered::kNo, BackForwardCacheEntered::kEntered}},
           {BackForwardCacheEntered::kEntered, {BackForwardCacheEntered::kNo}},
       }));
-  // TODO(https://crbug.com/427316606): Make this a CHECK.
-  DCHECK_STATE_TRANSITION(transitions, back_forward_cache_entered_, entered);
+  // TODO(https://crbug.com/427316606): Remove this when we have data from
+  // crashes.
+  SCOPED_CRASH_KEY_NUMBER("bfcache", "current_entered_",
+                          static_cast<int>(back_forward_cache_entered_));
+  SCOPED_CRASH_KEY_NUMBER("bfcache", "new_entered_", static_cast<int>(entered));
+  CHECK_STATE_TRANSITION(transitions, back_forward_cache_entered_, entered);
   back_forward_cache_entered_ = entered;
 }
 
