@@ -233,10 +233,11 @@ build_webui("build") {
   }
 
   if (!is_chromeos && !is_mac) {
-    web_component_files += [
-      "a11y_page/captions_subpage.ts",
-      "languages_page/edit_dictionary_page.ts",
-    ]
+    web_component_files += [ "languages_page/edit_dictionary_page.ts" ]
+  }
+
+  if (is_linux) {
+    web_component_files += [ "a11y_page/captions_subpage.ts" ]
   }
 
   if (is_mac) {
