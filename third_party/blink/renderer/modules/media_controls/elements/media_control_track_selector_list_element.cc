@@ -125,7 +125,7 @@ void MediaControlTrackSelectorListElement::DefaultEventHandler(Event& event) {
   } else if (event.type() == event_type_names::kChange) {
     // Identify which input element was selected and select the corresponding
     // track.
-    Node* target = event.RawTarget()->ToNode();
+    Node* target = event.target()->ToNode();
     if (!target || !target->IsElementNode()) {
       return;
     }

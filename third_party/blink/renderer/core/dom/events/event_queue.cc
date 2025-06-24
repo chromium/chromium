@@ -54,7 +54,7 @@ bool EventQueue::EnqueueEvent(const base::Location& from_here, Event& event) {
   if (is_closed_)
     return false;
 
-  DCHECK(event.RawTarget());
+  DCHECK(event.target());
   DCHECK(GetExecutionContext());
 
   event.async_task_context()->Schedule(GetExecutionContext(), event.type());
@@ -98,7 +98,7 @@ void EventQueue::DispatchEvent(Event* event) {
 
   probe::AsyncTask async_task(GetExecutionContext(),
                               event->async_task_context());
-  EventTarget* target = event->RawTarget();
+  EventTarget* target = event->target();
   if (LocalDOMWindow* window = target->ToLocalDOMWindow())
     window->DispatchEvent(*event, nullptr);
   else
