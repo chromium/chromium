@@ -120,7 +120,7 @@ media::VideoPixelFormat ToMediaPixelFormat(V8VideoPixelFormat::Enum fmt) {
     case V8VideoPixelFormat::Enum::kI444A:
       return media::PIXEL_FORMAT_I444A;
     case V8VideoPixelFormat::Enum::kI444AP10:
-      return media::PIXEL_FORMAT_YUV422AP10;
+      return media::PIXEL_FORMAT_YUV444AP10;
     case V8VideoPixelFormat::Enum::kNV12:
       return media::PIXEL_FORMAT_NV12;
     case V8VideoPixelFormat::Enum::kRGBA:
