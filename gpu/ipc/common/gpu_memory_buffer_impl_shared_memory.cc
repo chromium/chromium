@@ -179,13 +179,6 @@ bool GpuMemoryBufferImplSharedMemory::IsUsageSupported(gfx::BufferUsage usage) {
 }
 
 // static
-bool GpuMemoryBufferImplSharedMemory::IsConfigurationSupported(
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
-  return IsUsageSupported(usage);
-}
-
-// static
 bool GpuMemoryBufferImplSharedMemory::IsSizeValidForFormat(
     const gfx::Size& size,
     gfx::BufferFormat format) {
