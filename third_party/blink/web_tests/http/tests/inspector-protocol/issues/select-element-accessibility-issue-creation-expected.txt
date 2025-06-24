@@ -1,84 +1,84 @@
 Verifies that the <select> accessibility issue is created when the content model is not followed.
 Inspector issue: {
     issue : {
-        code : SelectElementAccessibilityIssue
+        code : ElementAccessibilityIssue
         details : {
-            selectElementAccessibilityIssueDetails : {
+            elementAccessibilityIssueDetails : {
+                elementAccessibilityIssueReason : DisallowedSelectChild
                 hasDisallowedAttributes : false
                 nodeId : <number>
-                selectElementAccessibilityIssueReason : DisallowedSelectChild
             }
         }
     }
 }
 Inspector issue: {
     issue : {
-        code : SelectElementAccessibilityIssue
+        code : ElementAccessibilityIssue
         details : {
-            selectElementAccessibilityIssueDetails : {
+            elementAccessibilityIssueDetails : {
+                elementAccessibilityIssueReason : DisallowedSelectChild
                 hasDisallowedAttributes : false
                 nodeId : <number>
-                selectElementAccessibilityIssueReason : DisallowedSelectChild
             }
         }
     }
 }
 Inspector issue: {
     issue : {
-        code : SelectElementAccessibilityIssue
+        code : ElementAccessibilityIssue
         details : {
-            selectElementAccessibilityIssueDetails : {
+            elementAccessibilityIssueDetails : {
+                elementAccessibilityIssueReason : NonPhrasingContentOptionChild
                 hasDisallowedAttributes : false
                 nodeId : <number>
-                selectElementAccessibilityIssueReason : NonPhrasingContentOptionChild
             }
         }
     }
 }
 Inspector issue: {
     issue : {
-        code : SelectElementAccessibilityIssue
+        code : ElementAccessibilityIssue
         details : {
-            selectElementAccessibilityIssueDetails : {
+            elementAccessibilityIssueDetails : {
+                elementAccessibilityIssueReason : InteractiveContentOptionChild
                 hasDisallowedAttributes : true
                 nodeId : <number>
-                selectElementAccessibilityIssueReason : InteractiveContentOptionChild
             }
         }
     }
 }
 Inspector issue: {
     issue : {
-        code : SelectElementAccessibilityIssue
+        code : ElementAccessibilityIssue
         details : {
-            selectElementAccessibilityIssueDetails : {
+            elementAccessibilityIssueDetails : {
+                elementAccessibilityIssueReason : NonPhrasingContentOptionChild
                 hasDisallowedAttributes : false
                 nodeId : <number>
-                selectElementAccessibilityIssueReason : NonPhrasingContentOptionChild
             }
         }
     }
 }
 Inspector issue: {
     issue : {
-        code : SelectElementAccessibilityIssue
+        code : ElementAccessibilityIssue
         details : {
-            selectElementAccessibilityIssueDetails : {
+            elementAccessibilityIssueDetails : {
+                elementAccessibilityIssueReason : InteractiveContentLegendChild
                 hasDisallowedAttributes : true
                 nodeId : <number>
-                selectElementAccessibilityIssueReason : InteractiveContentLegendChild
             }
         }
     }
 }
 Inspector issue: {
     issue : {
-        code : SelectElementAccessibilityIssue
+        code : ElementAccessibilityIssue
         details : {
-            selectElementAccessibilityIssueDetails : {
+            elementAccessibilityIssueDetails : {
+                elementAccessibilityIssueReason : InteractiveContentLegendChild
                 hasDisallowedAttributes : false
                 nodeId : <number>
-                selectElementAccessibilityIssueReason : InteractiveContentLegendChild
             }
         }
     }

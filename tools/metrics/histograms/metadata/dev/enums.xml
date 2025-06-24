@@ -1107,16 +1107,14 @@ Called by update_protocol_commands_enum.py.-->
   <int value="83" label="CookieIssue::WarnThirdPartyPhaseout::SetCookie"/>
   <int value="84" label="CookieIssue::ExcludeThirdPartyPhaseout::ReadCookie"/>
   <int value="85" label="CookieIssue::ExcludeThirdPartyPhaseout::SetCookie"/>
-  <int value="86"
-      label="SelectElementAccessibilityIssue::DisallowedSelectChild"/>
-  <int value="87"
-      label="SelectElementAccessibilityIssue::DisallowedOptGroupChild"/>
+  <int value="86" label="ElementAccessibilityIssue::DisallowedSelectChild"/>
+  <int value="87" label="ElementAccessibilityIssue::DisallowedOptGroupChild"/>
   <int value="88"
-      label="SelectElementAccessibilityIssue::NonPhrasingContentOptionChild"/>
+      label="ElementAccessibilityIssue::NonPhrasingContentOptionChild"/>
   <int value="89"
-      label="SelectElementAccessibilityIssue::InteractiveContentOptionChild"/>
+      label="ElementAccessibilityIssue::InteractiveContentOptionChild"/>
   <int value="90"
-      label="SelectElementAccessibilityIssue::InteractiveContentLegendChild"/>
+      label="ElementAccessibilityIssue::InteractiveContentLegendChild"/>
   <int value="91" label="SRIMessageSignatureIssue::MissingSignatureHeader"/>
   <int value="92"
       label="SRIMessageSignatureIssue::MissingSignatureInputHeader"/>
@@ -1158,6 +1156,8 @@ Called by update_protocol_commands_enum.py.-->
   <int value="111" label="CorsIssue::LocalNetworkAccessPermissionDenied"/>
   <int value="112"
       label="SRIMessageSignatureIssue::ValidationFailedIntegrityMismatch"/>
+  <int value="113"
+      label="ElementAccessibilityIssue::InteractiveContentSummaryDescendant"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">

@@ -12,10 +12,10 @@
     });
 
     dp.Audits.onceIssueAdded(issue => {
-      if (issue.params.issue.code !== 'SelectElementAccessibilityIssue') {
+      if (issue.params.issue.code !== 'ElementAccessibilityIssue') {
         return;
       }
-      const details = issue.params.issue.details.selectElementAccessibilityIssueDetails;
+      const details = issue.params.issue.details.elementAccessibilityIssueDetails;
       if (!Number.isInteger(details.nodeId)) {
         testRunner.log("Error: nodeId is not an integer." + details.nodeId);
       }
