@@ -27,7 +27,6 @@ sys.path.extend([
 import measures
 
 LOGGER = logging.getLogger(__name__)
-XcodeIOSSimulatorDefaultRuntimeFilename = 'iOS.simruntime'
 XcodeIOSSimulatorRuntimeRelPath = ('Contents/Developer/Platforms/'
                                    'iPhoneOS.platform/Library/Developer/'
                                    'CoreSimulator/Profiles/Runtimes')
@@ -35,9 +34,6 @@ XcodeCipdFiles = ['.cipd', '.xcode_versions']
 XcodeIOSSimulatorRuntimeBuildTagRegx = r'ios_runtime_build:(.*)'
 XcodeIOSSimulatorRuntimeVersionTagRegx = r'ios_runtime_version:(.*)'
 XcodeIOSSimulatorRuntimeDMGCipdPath = 'infra_internal/ios/xcode/ios_runtime_dmg'
-
-# TODO(crbug.com/40910268): remove Legacy Download once iOS 15.5 is deprecated
-IOS_SIM_RUNTIME_BUILTIN_STATE = ['Legacy Download', 'Bundled with Xcode']
 
 IOS_DMG_ADD_MAX_RETRIES = 2
 IOS_DMG_ADD_RETRY_DELAY = 5  # seconds
