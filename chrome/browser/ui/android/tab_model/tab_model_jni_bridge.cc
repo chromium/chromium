@@ -247,7 +247,7 @@ void TabModelJniBridge::OpenTab(const GURL& url, int index) {
   Java_TabModelJniBridge_openTabProgrammatically(env, jobj, jurl, index);
 }
 
-void TabModelJniBridge::DiscardTab(int index) {
+void TabModelJniBridge::DiscardTab(tabs::TabHandle tab) {
   // TODO(crbug.com/415351293): Implement.
   NOTIMPLEMENTED();
 }
@@ -261,7 +261,8 @@ tabs::TabInterface* TabModelJniBridge::GetTab(int index) {
   return GetTabAt(index);
 }
 
-void TabModelJniBridge::HighlightTabs(std::set<int> indicies) {
+void TabModelJniBridge::HighlightTabs(
+    const std::set<tabs::TabHandle>& indicies) {
   // TODO(crbug.com/415351293): Implement.
   NOTIMPLEMENTED();
 }
@@ -297,21 +298,27 @@ std::vector<tabs::TabInterface*> TabModelJniBridge::GetAllTabs() {
   return tabs;
 }
 
-void TabModelJniBridge::PinTab(int index) {
+void TabModelJniBridge::PinTab(tabs::TabHandle tab) {
   // TODO(crbug.com/415351293): Implement.
   NOTIMPLEMENTED();
 }
 
-void TabModelJniBridge::UnpinTab(int index) {
+void TabModelJniBridge::UnpinTab(tabs::TabHandle tab) {
   // TODO(crbug.com/415351293): Implement.
   NOTIMPLEMENTED();
 }
 
-std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateGroup(
-    std::set<int> indicies) {
+std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(
+    std::optional<tab_groups::TabGroupId> group_id,
+    const std::set<tabs::TabHandle>& tabs) {
   // TODO(crbug.com/415351293): Implement.
   NOTIMPLEMENTED();
   return std::nullopt;
+}
+
+void TabModelJniBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
 }
 
 void TabModelJniBridge::MoveGroupTo(tab_groups::TabGroupId group_id,

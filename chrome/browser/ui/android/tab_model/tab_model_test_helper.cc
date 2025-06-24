@@ -124,7 +124,7 @@ void TestTabModel::OpenTab(const GURL& url, int index) {
   NOTIMPLEMENTED();
 }
 
-void TestTabModel::DiscardTab(int index) {
+void TestTabModel::DiscardTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
@@ -137,7 +137,7 @@ tabs::TabInterface* TestTabModel::GetTab(int index) {
   return nullptr;
 }
 
-void TestTabModel::HighlightTabs(std::set<int> indicies) {
+void TestTabModel::HighlightTabs(const std::set<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
 }
 
@@ -154,18 +154,23 @@ std::vector<tabs::TabInterface*> TestTabModel::GetAllTabs() {
   return {};
 }
 
-void TestTabModel::PinTab(int index) {
+void TestTabModel::PinTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
-void TestTabModel::UnpinTab(int index) {
+void TestTabModel::UnpinTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
-std::optional<tab_groups::TabGroupId> TestTabModel::CreateGroup(
-    std::set<int> indicies) {
+std::optional<tab_groups::TabGroupId> TestTabModel::AddTabsToGroup(
+    std::optional<tab_groups::TabGroupId> group_id,
+    const std::set<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
   return std::nullopt;
+}
+
+void TestTabModel::Ungroup(const std::set<tabs::TabHandle>& tabs) {
+  NOTIMPLEMENTED();
 }
 
 void TestTabModel::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {
@@ -318,7 +323,7 @@ void OwningTestTabModel::OpenTab(const GURL& url, int index) {
   NOTIMPLEMENTED();
 }
 
-void OwningTestTabModel::DiscardTab(int index) {
+void OwningTestTabModel::DiscardTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
@@ -331,7 +336,7 @@ tabs::TabInterface* OwningTestTabModel::GetTab(int index) {
   return nullptr;
 }
 
-void OwningTestTabModel::HighlightTabs(std::set<int> indicies) {
+void OwningTestTabModel::HighlightTabs(const std::set<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
 }
 
@@ -348,18 +353,23 @@ std::vector<tabs::TabInterface*> OwningTestTabModel::GetAllTabs() {
   return {};
 }
 
-void OwningTestTabModel::PinTab(int index) {
+void OwningTestTabModel::PinTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
-void OwningTestTabModel::UnpinTab(int index) {
+void OwningTestTabModel::UnpinTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
-std::optional<tab_groups::TabGroupId> OwningTestTabModel::CreateGroup(
-    std::set<int> indicies) {
+std::optional<tab_groups::TabGroupId> OwningTestTabModel::AddTabsToGroup(
+    std::optional<tab_groups::TabGroupId> group_id,
+    const std::set<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
   return std::nullopt;
+}
+
+void OwningTestTabModel::Ungroup(const std::set<tabs::TabHandle>& tabs) {
+  NOTIMPLEMENTED();
 }
 
 void OwningTestTabModel::MoveGroupTo(tab_groups::TabGroupId group_id,

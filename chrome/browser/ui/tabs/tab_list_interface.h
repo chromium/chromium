@@ -14,9 +14,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
-// TODO(crbug.com/415323446): Move this file somewhere that is shared with
-// desktop and give it an appropriate namespace.
-
 // Interface for supporting a basic set of tab operations on Android and
 // Desktop.
 class TabListInterface {
@@ -31,12 +28,12 @@ class TabListInterface {
   // strip. `index` may be ignored by the implementation if necessary.
   virtual void OpenTab(const GURL& url, int index) = 0;
 
-  // Attempts to discard the renderer for the tab at the given `index` from
-  // memory. An out-of- bounds `index` is ignored.
+  // Attempts to discard the renderer for the `tab` from memory. An
+  // out-of-bounds `index` is ignored.
   //
   // For details refer to:
   // docs/website/site/chromium-os/chromiumos-design-docs/tab-discarding-and-reloading/index.md
-  virtual void DiscardTab(int index) = 0;
+  virtual void DiscardTab(tabs::TabHandle tab) = 0;
 
   // Duplicates the tab at the given `index` to the next adjacent index. An
   // out-of-bounds `index` is ignored.
@@ -46,9 +43,8 @@ class TabListInterface {
   // if the index is out-of-bounds.
   virtual tabs::TabInterface* GetTab(int index) = 0;
 
-  // Highlights / selects the tabs at the given `indices`. Any out-of-bounds
-  // index values are ignored.
-  virtual void HighlightTabs(std::set<int> indices) = 0;
+  // Highlights / selects the `tabs`.
+  virtual void HighlightTabs(const std::set<tabs::TabHandle>& tabs) = 0;
 
   // Moves the tab at `from_index` to `to_index`. The nearest valid index will
   // be used.
@@ -60,21 +56,26 @@ class TabListInterface {
   // Returns an in-order list of all tabs in the tab strip.
   virtual std::vector<tabs::TabInterface*> GetAllTabs() = 0;
 
-  // Pins the tab at `index`. Pinning a pinned tab has no effect. This may
-  // result in moving the tab if necessary.
-  virtual void PinTab(int index) = 0;
+  // Pins the `tab`. Pinning a pinned tab has no effect. This may result in
+  // moving the tab if necessary.
+  virtual void PinTab(tabs::TabHandle tab) = 0;
 
-  // Unpins the tab at `index`. Unpinning an unpinned tab has no effect. This
-  // may result in moving the tab if necessary.
-  virtual void UnpinTab(int index) = 0;
+  // Unpins the `tab`. Unpinning an unpinned tab has no effect. This may result
+  // in moving the tab if necessary.
+  virtual void UnpinTab(tabs::TabHandle tab) = 0;
 
-  // Creates a new tab group with the tabs at the given `indices`. Tabs will be
-  // moved as necessary to make the group contiguous. Pinned tabs will no longer
-  // be pinned, tabs that were in other groups will be removed from those
-  // groups. Will return nullopt if all indices are invalid or groups are not
-  // supported.
-  virtual std::optional<tab_groups::TabGroupId> CreateGroup(
-      std::set<int> indices) = 0;
+  // Adds `tabs` to the `group_id` if provided or creates a new tab group. Tabs
+  // will be moved as necessary to make the group contiguous. Pinned tabs will
+  // no longer be pinned, tabs that were in other groups will be removed from
+  // those groups. Will return nullopt if all indices are invalid or groups are
+  // not supported otherwise returns the tab group id that was used.
+  virtual std::optional<tab_groups::TabGroupId> AddTabsToGroup(
+      std::optional<tab_groups::TabGroupId> group_id,
+      const std::set<tabs::TabHandle>& tabs) = 0;
+
+  // Ungroups all `tabs`. Tabs will be moved to an index adjacent to the group
+  // they were in.
+  virtual void Ungroup(const std::set<tabs::TabHandle>& tabs) = 0;
 
   // Moves the tab group to `index`. The nearest valid index will be used.
   virtual void MoveGroupTo(tab_groups::TabGroupId group_id, int index) = 0;

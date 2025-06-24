@@ -75,17 +75,19 @@ class TestTabModel : public TabModel {
   // TODO(crbug.com/415351293): Implement these.
   // TabListInterface implementation.
   void OpenTab(const GURL& url, int index) override;
-  void DiscardTab(int index) override;
+  void DiscardTab(tabs::TabHandle tab) override;
   void DuplicateTab(int index) override;
   tabs::TabInterface* GetTab(int index) override;
-  void HighlightTabs(std::set<int> indicies) override;
+  void HighlightTabs(const std::set<tabs::TabHandle>& tabs) override;
   void MoveTab(int from_index, int to_index) override;
   void CloseTab(int index) override;
   std::vector<tabs::TabInterface*> GetAllTabs() override;
-  void PinTab(int index) override;
-  void UnpinTab(int index) override;
-  std::optional<tab_groups::TabGroupId> CreateGroup(
-      std::set<int> indicies) override;
+  void PinTab(tabs::TabHandle tab) override;
+  void UnpinTab(tabs::TabHandle tab) override;
+  std::optional<tab_groups::TabGroupId> AddTabsToGroup(
+      std::optional<tab_groups::TabGroupId> group_id,
+      const std::set<tabs::TabHandle>& tabs) override;
+  void Ungroup(const std::set<tabs::TabHandle>& tabs) override;
   void MoveGroupTo(tab_groups::TabGroupId group_id, int index) override;
 
  private:
@@ -164,17 +166,19 @@ class OwningTestTabModel : public TabModel {
   // TODO(crbug.com/415351293): Implement these.
   // TabListInterface implementation.
   void OpenTab(const GURL& url, int index) override;
-  void DiscardTab(int index) override;
+  void DiscardTab(tabs::TabHandle tab) override;
   void DuplicateTab(int index) override;
   tabs::TabInterface* GetTab(int index) override;
-  void HighlightTabs(std::set<int> indicies) override;
+  void HighlightTabs(const std::set<tabs::TabHandle>& tabs) override;
   void MoveTab(int from_index, int to_index) override;
   void CloseTab(int index) override;
   std::vector<tabs::TabInterface*> GetAllTabs() override;
-  void PinTab(int index) override;
-  void UnpinTab(int index) override;
-  std::optional<tab_groups::TabGroupId> CreateGroup(
-      std::set<int> indicies) override;
+  void PinTab(tabs::TabHandle index) override;
+  void UnpinTab(tabs::TabHandle index) override;
+  std::optional<tab_groups::TabGroupId> AddTabsToGroup(
+      std::optional<tab_groups::TabGroupId> group_id,
+      const std::set<tabs::TabHandle>& tabs) override;
+  void Ungroup(const std::set<tabs::TabHandle>& tabs) override;
   void MoveGroupTo(tab_groups::TabGroupId group_id, int index) override;
 
  private:
