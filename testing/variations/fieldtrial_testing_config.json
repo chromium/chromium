@@ -9217,21 +9217,6 @@
             ]
         }
     ],
-    "EnableImprovedManagementDisclosure": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ImprovedManagementDisclosure"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableLazyLoadImageForInvisiblePage": [
         {
             "platforms": [

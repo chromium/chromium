@@ -811,7 +811,7 @@ TEST_F(LockContentsViewUnitTest, ShowStatusIndicatorIfEnrolledDevice) {
 }
 
 // Show bottom status indicator if device is enrolled
-TEST_F(LockContentsViewUnitTest, ShowManagementBubbleOnClickIfEnrolledDevice) {
+TEST_F(LockContentsViewUnitTest, ShowManagementDialogOnClickIfEnrolledDevice) {
   // If the device is enrolled, bottom_status_indicator should be visible.
   Shell::Get()->system_tray_model()->SetDeviceEnterpriseInfo(
       DeviceEnterpriseInfo{"BestCompanyEver", ManagementDeviceMode::kNone});
@@ -825,27 +825,18 @@ TEST_F(LockContentsViewUnitTest, ShowManagementBubbleOnClickIfEnrolledDevice) {
   LockContentsViewTestApi test_api(contents);
 
   EXPECT_TRUE(test_api.bottom_status_indicator()->GetVisible());
-  EXPECT_FALSE(test_api.management_bubble()->GetVisible());
-
-  // Make the management bubble appear on click.
+  EXPECT_FALSE(test_api.management_disclosure_dialog());
+  // Make the management dialog appear on click.
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(
       test_api.bottom_status_indicator()->GetBoundsInScreen().CenterPoint());
   generator->ClickLeftButton();
-  EXPECT_TRUE(test_api.management_bubble()->GetVisible());
-
-  // Click somewhere else to make the management bubble disappear.
-  generator->MoveMouseTo(test_api.primary_big_view()
-                             ->GetUserView()
-                             ->GetBoundsInScreen()
-                             .CenterPoint());
-  generator->ClickLeftButton();
-  EXPECT_FALSE(test_api.management_bubble()->GetVisible());
+  EXPECT_TRUE(test_api.management_disclosure_dialog()->GetVisible());
 }
 
 // Do not show the management bubble on click if ADB sideloading is enabled and
 // device is enrolled.
-TEST_F(LockContentsViewUnitTest, DoNotShowManagementBubbleOnClickIfAdb) {
+TEST_F(LockContentsViewUnitTest, DoNotShowManagementDialogOnClickIfAdb) {
   // If the device is enrolled, bottom_status_indicator should be visible.
   Shell::Get()->system_tray_model()->SetDeviceEnterpriseInfo(
       DeviceEnterpriseInfo{"BestCompanyEver", ManagementDeviceMode::kNone});
@@ -877,7 +868,7 @@ TEST_F(LockContentsViewUnitTest, DoNotShowManagementBubbleOnClickIfAdb) {
   generator->MoveMouseTo(
       test_api.bottom_status_indicator()->GetBoundsInScreen().CenterPoint());
   generator->ClickLeftButton();
-  EXPECT_FALSE(test_api.management_bubble()->GetVisible());
+  EXPECT_FALSE(test_api.management_disclosure_dialog());
 }
 
 TEST_F(LockContentsViewUnitTest, ShowErrorBubbleOnAuthFailure) {
