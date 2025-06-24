@@ -5497,7 +5497,7 @@
   {
     "name": "group-promo-prototype",
     "owners": [ "ssid@chromium.org", "yuezhanggg@chromium.org"],
-    "expiry_milestone": 140
+    "expiry_milestone": 142
   },
   {
     "name": "growth-campaigns",
