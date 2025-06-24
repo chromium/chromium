@@ -46,7 +46,9 @@
 
 namespace {
 
-using password_manager::BrowserSavePasswordProgressLogger;
+using ::password_manager::BrowserSavePasswordProgressLogger;
+
+constexpr base::TimeDelta kToastDisplayTime = base::Seconds(8);
 
 void LogPasswordFormDetectedMetric(bool form_detected,
                                    base::TimeDelta time_delta) {
@@ -331,6 +333,15 @@ void PasswordChangeDelegateImpl::UpdateState(State new_state) {
     logger->LogNumber(
         BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_STATE_CHANGED,
         static_cast<int>(new_state));
+  }
+
+  // In case the password change was canceled or finished successfully, the flow
+  // and the respective UI should be stopped after a specified timeout.
+  if (current_state_ == State::kCanceled ||
+      current_state_ == State::kPasswordSuccessfullyChanged) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(&PasswordChangeDelegate::Stop, AsWeakPtr()),
+        kToastDisplayTime);
   }
 }
 

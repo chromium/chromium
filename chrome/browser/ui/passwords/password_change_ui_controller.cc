@@ -40,8 +40,6 @@ namespace {
 
 using ToastOptions = PasswordChangeToast::ToastOptions;
 
-constexpr base::TimeDelta kToastDisplayTime = base::Seconds(4);
-
 // Creates dialog offering password change to the user. `with_privacy_notice`
 // specifies whether an additional privacy paragraph should be displayed.
 std::unique_ptr<ui::DialogModel> CreateOfferChangePasswordDialog(
@@ -345,14 +343,6 @@ void PasswordChangeUIController::ShowPasswordDetails() {
 void PasswordChangeUIController::CancelPasswordChange() {
   CHECK(password_change_delegate_);
   password_change_delegate_->CancelPasswordChangeFlow();
-
-  // Post delayed task to stop password change. This will destroy the
-  // controller.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PasswordChangeDelegate::Stop,
-                     password_change_delegate_->AsWeakPtr()),
-      kToastDisplayTime);
 }
 
 void PasswordChangeUIController::NavigateToPasswordChangeSettings() {
