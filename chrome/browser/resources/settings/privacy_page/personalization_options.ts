@@ -94,6 +94,24 @@ export class SettingsPersonalizationOptionsElement extends
       showRestart_: Boolean,
       // </if>
 
+      showSearchAggregatorSuggest_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showSearchAggregatorSuggest'),
+      },
+
+      searchAggregatorSuggestFakePref_: {
+        type: Object,
+        value() {
+          return {
+            key: 'enterprise_search_aggregator_settings.fake_pref',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: true,
+            enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+            controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+          };
+        },
+      },
+
       showSignoutDialog_: Boolean,
 
       syncFirstSetupInProgress_: {
@@ -130,6 +148,10 @@ export class SettingsPersonalizationOptionsElement extends
       chrome.settingsPrivate.PrefObject<boolean>;
   declare private showRestart_: boolean;
   // </if>
+
+  declare private showSearchAggregatorSuggest_: boolean;
+  declare private searchAggregatorSuggestFakePref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
 
   declare private showSignoutDialog_: boolean;
   declare private syncFirstSetupInProgress_: boolean;
