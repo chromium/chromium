@@ -21,7 +21,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/robolectric_buildflags.h"
-#include "url/origin_debug.h"  // TODO(thestig): Remove.
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_ROBOLECTRIC)
