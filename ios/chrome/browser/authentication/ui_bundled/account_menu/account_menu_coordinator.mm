@@ -559,9 +559,8 @@ void maybeShowSettingsIPH(Browser* browser) {
   UINavigationController* navigationController = _navigationController;
   _navigationController = nil;
   _viewController = nil;
-  [navigationController.presentingViewController
-      dismissViewControllerAnimated:animated
-                         completion:completion];
+  [navigationController dismissViewControllerAnimated:animated
+                                           completion:completion];
 }
 
 #pragma mark - TrustedVaultReauthenticationCoordinatorDelegate
