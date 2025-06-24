@@ -1302,7 +1302,7 @@ TEST_F(ScrollAnchorPageTest, SvgRelativeBoundsCrashAfterClearLayoutResults) {
   Document& doc = GetDocument();
   doc.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  doc.getElementById(AtomicString("target"))->scrollIntoView();
+  doc.getElementById(AtomicString("target"))->scrollIntoViewForTesting();
   doc.getElementById(AtomicString("scrollbarSummoner"))
       ->setAttribute(html_names::kStyleAttr,
                      AtomicString("display:block; contain:size; height:0"));

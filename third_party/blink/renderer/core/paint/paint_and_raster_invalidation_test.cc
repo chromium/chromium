@@ -1245,7 +1245,7 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedScrollAndRepaint) {
 
   // Scroll only.
   GetDocument().View()->SetTracksRasterInvalidations(true);
-  scroller->scrollTo(0, 50);
+  scroller->scrollToForTesting(0, 50);
   UpdateAllLifecyclePhasesForTest();
   if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_EQ(pac->PreviousUpdateForTesting(),
@@ -1287,7 +1287,7 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedScrollAndRepaint) {
 
   // Scroll and repaint.
   GetDocument().View()->SetTracksRasterInvalidations(true);
-  scroller->scrollTo(0, 100);
+  scroller->scrollToForTesting(0, 100);
   To<Element>(child1->GetNode())
       ->SetInlineStyleProperty(CSSPropertyID::kBackground,
                                AtomicString("green"));

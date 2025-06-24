@@ -2680,19 +2680,20 @@ bool Element::SetScrollOffset(const ScrollToOptions* scroll_to_options) {
   }
 }
 
-void Element::scrollIntoView() {
+void Element::scrollIntoViewForTesting() {
   scrollIntoView(nullptr, /*align_to_top=*/true);
 }
 
-void Element::scrollIntoView(const V8UnionBooleanOrScrollIntoViewOptions* arg) {
+void Element::scrollIntoViewForTesting(
+    const V8UnionBooleanOrScrollIntoViewOptions* arg) {
   scrollIntoView(nullptr, arg);
 }
 
-void Element::scrollBy(double x, double y) {
+void Element::scrollByForTesting(double x, double y) {
   scrollBy(nullptr, x, y);
 }
 
-void Element::scrollTo(double x, double y) {
+void Element::scrollToForTesting(double x, double y) {
   scrollTo(nullptr, x, y);
 }
 

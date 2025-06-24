@@ -3533,7 +3533,7 @@ TEST_F(EventHandlerSimTest, GestureTapHoverState) {
   EXPECT_EQ(rgb_red, ColorOf(a));
   EXPECT_EQ(rgb_white, ColorOf(b));
 
-  doc.scrollingElement()->scrollBy(0, 100);
+  doc.scrollingElement()->scrollByForTesting(0, 100);
   Compositor().BeginFrame();
 
   // #a is still hovered after scrolling away (crbug.com/366020097).

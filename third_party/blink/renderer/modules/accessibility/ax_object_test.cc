@@ -1970,7 +1970,7 @@ TEST_F(AccessibilityTest, ScrollToMakeScrollerVisible) {
   Element* parent_scroller = GetElementById("parent-scroller");
   Element* scroller = GetElementById("scroller");
   // Scroll to 800px.
-  scroller->scrollTo(800, 0);
+  scroller->scrollToForTesting(800, 0);
   ASSERT_EQ(scroller->scrollLeft(), 800);
 
   // Scrolling to make the scrolling element visible shouldn't scroll

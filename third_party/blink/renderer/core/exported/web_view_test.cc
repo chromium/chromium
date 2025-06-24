@@ -1617,7 +1617,7 @@ TEST_F(WebViewTest, FinishCompositionDoesNotRevealSelection) {
   // Scroll the input field out of the viewport.
   Element* element = static_cast<Element*>(
       web_view->MainFrameImpl()->GetDocument().GetElementById("btn"));
-  element->scrollIntoView();
+  element->scrollIntoViewForTesting();
   float offset_height = web_view->MainFrameImpl()->GetScrollOffset().y();
   EXPECT_EQ(0, web_view->MainFrameImpl()->GetScrollOffset().x());
   EXPECT_LT(0, offset_height);

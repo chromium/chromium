@@ -528,7 +528,7 @@ TEST_P(PrePaintTreeWalkTest, ScrollTranslationNodeForNonZeroScrollPosition) {
 
   // When the scroll is scrolled all the way to the end of content it should
   // still get a scroll node.
-  scroller->scrollBy(-10000, 0);
+  scroller->scrollByForTesting(-10000, 0);
   UpdateAllLifecyclePhasesForTest();
   ASSERT_NE(ScrollOffset(), scrollable_area->GetScrollOffset());
   ASSERT_EQ(gfx::PointF(), scrollable_area->ScrollPosition());

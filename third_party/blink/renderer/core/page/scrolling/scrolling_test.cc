@@ -2821,7 +2821,7 @@ TEST_P(ScrollingTest, MainThreadScrollAndDeltaFromImplSide) {
   EXPECT_EQ(gfx::PointF(), CurrentScrollOffset(element_id));
 
   // Simulate a direct scroll update out of document lifecycle update.
-  scroller->scrollTo(0, 200);
+  scroller->scrollToForTesting(0, 200);
   EXPECT_EQ(gfx::PointF(0, 200), scrollable_area->ScrollPosition());
   EXPECT_EQ(gfx::PointF(0, 200), CurrentScrollOffset(element_id));
 

@@ -2193,7 +2193,7 @@ TEST_F(PaintLayerScrollableAreaWithWebFrameTest,
   EXPECT_TRUE(scrollable_area->ShouldScrollOnMainThread());
   EXPECT_FALSE(box->FirstFragment().PaintProperties()->Scroll());
 
-  scroller->scrollTo(0, 200);
+  scroller->scrollToForTesting(0, 200);
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(scrollable_area->ShouldScrollOnMainThread());
   EXPECT_TRUE(box->FirstFragment().PaintProperties()->Scroll());

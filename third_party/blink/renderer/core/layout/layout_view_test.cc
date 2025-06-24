@@ -1163,7 +1163,7 @@ TEST_P(LayoutViewHitTestTest, ScrolledBlockChildren) {
       "</div>");
 
   Element& sample = *GetElementById("sample");
-  sample.scrollTo(0, 45);
+  sample.scrollToForTesting(0, 45);
 
   const auto& text_4 = *To<Text>(GetElementById("four")->firstChild());
   const auto& text_5 = *To<Text>(GetElementById("five")->firstChild());
@@ -1203,7 +1203,7 @@ TEST_P(LayoutViewHitTestTest, ScrolledInlineChildren) {
   SetBodyInnerHTML("<div id=sample>012345678</div>");
 
   Element& sample = *GetElementById("sample");
-  sample.scrollTo(20, 0);
+  sample.scrollToForTesting(20, 0);
 
   const auto& text = *To<Text>(sample.firstChild());
 

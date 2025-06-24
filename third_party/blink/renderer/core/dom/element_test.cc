@@ -66,7 +66,7 @@ TEST_F(ElementTest,
   ASSERT_TRUE(writer);
   ASSERT_TRUE(sticky);
 
-  scroller->scrollTo(50.0, 200.0);
+  scroller->scrollToForTesting(50.0, 200.0);
 
   // The sticky element should remain at (0, 25) relative to the viewport due to
   // the constraints.
@@ -107,7 +107,7 @@ TEST_F(ElementTest, OffsetTopAndLeftCorrectForStickyElementsAfterInsertion) {
   ASSERT_TRUE(writer);
   ASSERT_TRUE(sticky);
 
-  scroller->scrollTo(50.0, 200.0);
+  scroller->scrollToForTesting(50.0, 200.0);
 
   // The sticky element should be offset to stay at (0, 25) relative to the
   // viewport due to the constraints.
@@ -154,7 +154,7 @@ TEST_F(ElementTest, BoundsInWidgetCorrectForStickyElementsAfterInsertion) {
   ASSERT_TRUE(writer);
   ASSERT_TRUE(sticky);
 
-  scroller->scrollTo(50.0, 200.0);
+  scroller->scrollToForTesting(50.0, 200.0);
 
   // The sticky element should remain at (0, 25) relative to the viewport due to
   // the constraints.

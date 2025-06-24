@@ -324,7 +324,9 @@ TEST_F(SelectionBoundsRecorderTest, BoundsHidden) {
   EXPECT_EQ(gfx::Point(80, 80), host->selection().end.edge_start);
   EXPECT_EQ(gfx::Point(80, 160), host->selection().end.edge_end);
 
-  GetDocument().getElementById(AtomicString("container"))->scrollTo(0, 60);
+  GetDocument()
+      .getElementById(AtomicString("container"))
+      ->scrollToForTesting(0, 60);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(host->selection().start.hidden);
   EXPECT_EQ(gfx::SelectionBound::LEFT, host->selection().start.type);

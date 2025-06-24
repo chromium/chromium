@@ -567,7 +567,7 @@ TEST_F(ScrollSnapTest, SnapAreaResizeDuringScrollAnimation) {
   const double delta = 20;
   const double target_offset = box5->OffsetLeft() + delta;
 
-  scroller->scrollTo(target_offset, 0);
+  scroller->scrollToForTesting(target_offset, 0);
   // Make some progress.
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.

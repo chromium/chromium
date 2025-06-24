@@ -335,7 +335,7 @@ TEST_P(ScrollMetricsTest, NestedScrollersTest) {
   EXPECT_WHEEL_TOTAL(1);
 
   histogram_tester.emplace();
-  box->scrollBy(0, 1000);
+  box->scrollByForTesting(0, 1000);
   Compositor().BeginFrame();
   Scroll(box, WebGestureDevice::kTouchpad);
 

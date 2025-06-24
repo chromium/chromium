@@ -876,7 +876,7 @@ TEST_P(PaintLayerPainterTest, DevtoolsPaintTraceEvents) {
 
   {
     trace_analyzer::Start("devtools.timeline");
-    scroller->scrollTo(0, 3000);
+    scroller->scrollToForTesting(0, 3000);
     UpdateAllLifecyclePhasesForTest();
     auto analyzer = trace_analyzer::Stop();
     trace_analyzer::TraceEventVector events;

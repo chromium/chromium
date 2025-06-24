@@ -53,7 +53,7 @@ TEST_F(ScrollIntoViewTest, InstantScroll) {
   Element* content = GetDocument().getElementById(AtomicString("content"));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   options->setBlock("start");
-  content->scrollIntoView(
+  content->scrollIntoViewForTesting(
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options));
 
   ASSERT_EQ(Window().scrollY(), content->OffsetTop());
@@ -84,7 +84,7 @@ TEST_F(ScrollIntoViewTest, ScrollPaddingOnDocumentElWhenBodyDefinesViewport) {
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
 
   // Sanity check that document element is the viewport defining element
   ASSERT_EQ(GetDocument().body(), GetDocument().ViewportDefiningElement());
@@ -114,7 +114,7 @@ TEST_F(ScrollIntoViewTest,
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
 
   // Sanity check that document element is the viewport defining element
   ASSERT_EQ(GetDocument().documentElement(),
@@ -150,7 +150,7 @@ TEST_F(ScrollIntoViewTest, ScrollPaddingOnBodyWhenDocumentElDefinesViewport) {
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
 
   // Sanity check that document element is the viewport defining element
   ASSERT_EQ(GetDocument().documentElement(),
@@ -206,7 +206,7 @@ TEST_F(ScrollIntoViewTest, EmptyScrollportSinceScrollPadding) {
   Compositor().BeginFrame();
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
   Element* scroller = GetDocument().getElementById(AtomicString("container"));
 
   ASSERT_EQ(scroller->scrollLeft(), 0);
@@ -231,7 +231,7 @@ TEST_F(ScrollIntoViewTest, SmoothScroll) {
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
 
-  content->scrollIntoView(arg);
+  content->scrollIntoViewForTesting(arg);
   // Scrolling the container
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
@@ -268,7 +268,7 @@ TEST_F(ScrollIntoViewTest, NestedContainer) {
   ASSERT_EQ(Window().scrollY(), 0);
   ASSERT_EQ(container->scrollTop(), 0);
 
-  content->scrollIntoView(arg);
+  content->scrollIntoViewForTesting(arg);
   // Scrolling the outer container
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
@@ -317,14 +317,14 @@ TEST_F(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   ASSERT_EQ(container1->scrollTop(), 0);
   ASSERT_EQ(container2->scrollTop(), 0);
 
-  content1->scrollIntoView(arg);
+  content1->scrollIntoViewForTesting(arg);
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(Window().scrollY(), 299, 1);
   ASSERT_NEAR(container1->scrollTop(), 299, 1);
 
-  content2->scrollIntoView(arg);
+  content2->scrollIntoViewForTesting(arg);
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
@@ -372,7 +372,7 @@ TEST_F(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
     options->setBehavior("smooth");
     auto* arg =
         MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-    content->scrollIntoView(arg);
+    content->scrollIntoViewForTesting(arg);
   }
 
   Compositor().BeginFrame();  // update run_state_.
@@ -389,7 +389,7 @@ TEST_F(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
     options->setBehavior("smooth");
     auto* arg =
         MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-    visibleElement->scrollIntoView(arg);
+    visibleElement->scrollIntoViewForTesting(arg);
   }
 
   // The window animation should continue running but the container shouldn't
@@ -432,7 +432,7 @@ TEST_F(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
   ASSERT_EQ(Window().scrollY(), 0);
   ASSERT_EQ(container->scrollTop(), 0);
 
-  content->scrollIntoView(arg);
+  content->scrollIntoViewForTesting(arg);
   // Scrolling the outer container
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
@@ -482,7 +482,7 @@ TEST_F(ScrollIntoViewTest, BlockAndInlineSettings) {
   options->setInlinePosition("nearest");
   auto* arg1 =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  content->scrollIntoView(arg1);
+  content->scrollIntoViewForTesting(arg1);
   ASSERT_EQ(Window().scrollX(),
             content->OffsetLeft() + content_width - window_width);
   ASSERT_EQ(Window().scrollY(),
@@ -492,7 +492,7 @@ TEST_F(ScrollIntoViewTest, BlockAndInlineSettings) {
   options->setInlinePosition("start");
   auto* arg2 =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  content->scrollIntoView(arg2);
+  content->scrollIntoViewForTesting(arg2);
   ASSERT_EQ(Window().scrollX(), content->OffsetLeft());
   ASSERT_EQ(Window().scrollY(), content->OffsetTop());
 
@@ -500,7 +500,7 @@ TEST_F(ScrollIntoViewTest, BlockAndInlineSettings) {
   options->setInlinePosition("center");
   auto* arg3 =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  content->scrollIntoView(arg3);
+  content->scrollIntoViewForTesting(arg3);
   ASSERT_EQ(Window().scrollX(),
             content->OffsetLeft() + (content_width - window_width) / 2);
   ASSERT_EQ(Window().scrollY(),
@@ -510,7 +510,7 @@ TEST_F(ScrollIntoViewTest, BlockAndInlineSettings) {
   options->setInlinePosition("end");
   auto* arg4 =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  content->scrollIntoView(arg4);
+  content->scrollIntoViewForTesting(arg4);
   ASSERT_EQ(Window().scrollX(),
             content->OffsetLeft() + content_width - window_width);
   ASSERT_EQ(Window().scrollY(),
@@ -547,7 +547,7 @@ TEST_F(ScrollIntoViewTest, SmoothAndInstantInChain) {
   ASSERT_EQ(Window().scrollY(), 0);
   ASSERT_EQ(container->scrollTop(), 0);
 
-  content->scrollIntoView(arg);
+  content->scrollIntoViewForTesting(arg);
   // Instant scroll of the window should have finished.
   ASSERT_EQ(Window().scrollY(), container->OffsetTop());
   // Instant scroll of the inner container should not have started.
@@ -643,7 +643,7 @@ TEST_F(ScrollIntoViewTest, ApplyRootElementScrollBehaviorToViewport) {
   Compositor().BeginFrame();
   ASSERT_EQ(Window().scrollY(), 0);
 
-  content->scrollIntoView(arg);
+  content->scrollIntoViewForTesting(arg);
   // Scrolling the container
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
@@ -801,7 +801,7 @@ TEST_F(ScrollIntoViewTest, RemoveSequencedScrollableArea) {
   Compositor().BeginFrame();
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
 
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
@@ -870,7 +870,7 @@ TEST_F(ScrollIntoViewTest, LongDistanceSmoothScrollFinishedInThreeSeconds) {
   options->setBehavior("smooth");
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  target->scrollIntoView(arg);
+  target->scrollIntoViewForTesting(arg);
 
   // Scrolling the window
   Compositor().BeginFrame();  // update run_state_.
@@ -951,7 +951,7 @@ TEST_F(ScrollIntoViewTest, OriginCrossingUseCounter) {
 
     Element* target =
         local_child_document->getElementById(AtomicString("target"));
-    target->scrollIntoView();
+    target->scrollIntoViewForTesting();
 
     ASSERT_NE(GetDocument().View()->GetScrollableArea()->GetScrollOffset(),
               ScrollOffset(0, 0));
@@ -969,7 +969,7 @@ TEST_F(ScrollIntoViewTest, OriginCrossingUseCounter) {
 
     Element* target =
         xorigin_child_document->getElementById(AtomicString("target"));
-    target->scrollIntoView();
+    target->scrollIntoViewForTesting();
 
     ASSERT_NE(GetDocument().View()->GetScrollableArea()->GetScrollOffset(),
               ScrollOffset(0, 0));
@@ -1046,7 +1046,7 @@ TEST_F(ScrollIntoViewTest, FromDisplayNoneIframe) {
   options->setBehavior("smooth");
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  target->scrollIntoView(arg);
+  target->scrollIntoViewForTesting(arg);
 
   EXPECT_EQ(Window().scrollY(), 0);
   EXPECT_EQ(Window().scrollX(), 0);

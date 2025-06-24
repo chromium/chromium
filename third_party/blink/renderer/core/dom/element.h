@@ -529,15 +529,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   ScriptPromise<IDLUndefined> scrollTo(ScriptState* script_state,
                                        const ScrollToOptions*);
 
-  // The following `scrollIntoView`, `scrollBy` and `scrollTo` methods are
-  // called only from tests.
-  //
-  // TODO(mustaq@chromium.org): Append "ForTesting" to the method names to
-  // prevent unpexpected non-test calls.
-  void scrollIntoView(const V8UnionBooleanOrScrollIntoViewOptions* arg);
-  void scrollIntoView();
-  void scrollBy(double x, double y);
-  void scrollTo(double x, double y);
+  void scrollIntoViewForTesting(
+      const V8UnionBooleanOrScrollIntoViewOptions* arg);
+  void scrollIntoViewForTesting();
+  void scrollByForTesting(double x, double y);
+  void scrollToForTesting(double x, double y);
 
   bool SetScrollOffset(const ScrollOffset&);
   bool SetScrollOffset(const ScrollToOptions*);

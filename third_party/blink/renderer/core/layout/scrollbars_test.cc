@@ -1006,7 +1006,7 @@ TEST_P(ScrollbarsTest, MouseOverCustomScrollbarTrackPieceWithCustomCursor) {
 
   Element* div = document.getElementById(AtomicString("d1"));
 
-  div->scrollTo(0, 100);
+  div->scrollToForTesting(0, 100);
   // Ensure hittest has DIV and scrollbar.
   HitTestResult hit_test_result = HitTest(195, 5);
 

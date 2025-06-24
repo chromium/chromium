@@ -1667,13 +1667,13 @@ TEST_F(LayoutObjectTestWithCompositing,
   target->setAttribute(html_names::kStyleAttr,
                        AtomicString(kTransformsWith3D[0]));
   UpdateAllLifecyclePhasesForTest();
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
 
   target->setAttribute(html_names::kStyleAttr, AtomicString(kPreserve3D));
   UpdateAllLifecyclePhasesForTest();
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
 
@@ -1696,14 +1696,14 @@ TEST_F(LayoutObjectTestWithCompositing,
   target->setAttribute(html_names::kStyleAttr,
                        AtomicString(kTransformWithout3D));
   UpdateAllLifecyclePhasesForTest();
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
 
   target->setAttribute(html_names::kStyleAttr,
                        AtomicString(kTransformsWith3D[0]));
   UpdateAllLifecyclePhasesForTest();
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
   GetDocument().ClearUseCounterForTesting(
@@ -1715,7 +1715,7 @@ TEST_F(LayoutObjectTestWithCompositing,
   target->setAttribute(html_names::kStyleAttr,
                        AtomicString(kTransformsWith3D[1]));
   UpdateAllLifecyclePhasesForTest();
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
   GetDocument().ClearUseCounterForTesting(
@@ -1723,7 +1723,7 @@ TEST_F(LayoutObjectTestWithCompositing,
 
   target->setAttribute(html_names::kStyleAttr, AtomicString(kPreserve3D));
   UpdateAllLifecyclePhasesForTest();
-  target->scrollIntoView();
+  target->scrollIntoViewForTesting();
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
   GetDocument().ClearUseCounterForTesting(
@@ -1826,7 +1826,7 @@ TEST_F(LayoutObjectTest, ScrollOffsetMapping) {
 
   Element* scroller = GetElementById("scroller");
   ASSERT_TRUE(scroller);
-  scroller->scrollTo(100, 200);
+  scroller->scrollToForTesting(100, 200);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(10, 20), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
@@ -1870,7 +1870,7 @@ TEST_F(LayoutObjectTest, QuadsInAncestor_Block) {
 
   Element* scroller_elm = GetElementById("scroller");
   ASSERT_TRUE(scroller_elm);
-  scroller_elm->scrollTo(110, 220);
+  scroller_elm->scrollToForTesting(110, 220);
   UpdateAllLifecyclePhasesForTest();
 
   const LayoutBox* scroller = GetLayoutBoxByElementId("scroller");
@@ -1933,7 +1933,7 @@ TEST_F(LayoutObjectTest, QuadsInAncestor_Inline) {
 
   Element* scroller_elm = GetElementById("scroller");
   ASSERT_TRUE(scroller_elm);
-  scroller_elm->scrollTo(110, 220);
+  scroller_elm->scrollToForTesting(110, 220);
   UpdateAllLifecyclePhasesForTest();
 
   const LayoutBox* scroller = GetLayoutBoxByElementId("scroller");

@@ -2340,7 +2340,7 @@ TEST_F(AnnotationAgentImplTest,
   options->setBehavior("instant");
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  element_bar->scrollIntoView(arg);
+  element_bar->scrollIntoViewForTesting(arg);
   Compositor().BeginFrame();
   EXPECT_TRUE(ExpectInViewport(*element_bar));
 

@@ -1979,7 +1979,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterElementScroll) {
   }
 
   // Scroll element by 50 pixels down.
-  GetDocument().FocusedElement()->scrollBy(0, 50);
+  GetDocument().FocusedElement()->scrollByForTesting(0, 50);
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
 
   Vector<gfx::Rect> actual =
