@@ -173,8 +173,7 @@ using signin_metrics::PromoAction;
   }
   [_signoutCoordinator stop];
   _signoutCoordinator = nil;
-  _viewController.modelIdentityDataSource = nil;
-  _viewController = nil;
+  [self closeViewController];
   _mediator.consumer = nil;
   [_mediator disconnect];
   _mediator = nil;
@@ -185,17 +184,7 @@ using signin_metrics::PromoAction;
 
 - (void)closeSettings {
   base::RecordAction(base::UserMetricsAction("Signin_AccountsTableView_Close"));
-  if ([_viewController respondsToSelector:@selector(settingsWillBeDismissed)]) {
-    [_viewController performSelector:@selector(settingsWillBeDismissed)];
-  }
-  if (_closeSettingsOnAddAccount) {
-    [base::apple::ObjCCastStrict<SettingsNavigationController>(
-        _viewController.navigationController)
-        popViewControllerOrCloseSettingsAnimated:YES];
-  } else {
-    [_viewController.navigationController dismissViewControllerAnimated:YES
-                                                             completion:nil];
-  }
+  [self closeViewController];
   [self requestStop];
 }
 
@@ -291,6 +280,22 @@ using signin_metrics::PromoAction;
 }
 
 #pragma mark - Private
+
+- (void)closeViewController {
+  if ([_viewController respondsToSelector:@selector(settingsWillBeDismissed)]) {
+    [_viewController performSelector:@selector(settingsWillBeDismissed)];
+  }
+  if (_closeSettingsOnAddAccount) {
+    [base::apple::ObjCCastStrict<SettingsNavigationController>(
+        _viewController.navigationController)
+        popViewControllerOrCloseSettingsAnimated:YES];
+  } else {
+    [_viewController.navigationController dismissViewControllerAnimated:YES
+                                                             completion:nil];
+  }
+  _viewController.modelIdentityDataSource = nil;
+  _viewController = nil;
+}
 
 - (void)stopAddAccountCoordinator {
   [_addAccountSigninCoordinator stop];
