@@ -173,18 +173,19 @@ bool WrappedSkImageBackingFactory::IsSupported(
     return false;
   }
 
-  // Note that this backing support thread safety only for vulkan mode because
-  // the underlying vulkan resources like vulkan images can be shared across
-  // multiple vulkan queues. Also note that this backing currently only supports
-  // thread safety for DrDc mode where both gpu main and drdc thread uses/shared
-  // a single vulkan queue to submit work and hence do not need to synchronize
-  // the reads/writes using semaphores. For this backing to support thread
-  // safety across multiple queues, we need to synchronize the reads/writes via
-  // semaphores.
+  // Note that this backing support thread safety only for DawnMetal or Vulkan
+  // mode because DawnMetal is already thread safe and the underlying vulkan
+  // resources like vulkan images can be shared across multiple vulkan queues.
+  // Also note that this backing currently only supports thread safety for DrDc
+  // mode where both gpu main and drdc thread uses/shared a single vulkan queue
+  // to submit work and hence do not need to synchronize the reads/writes using
+  // semaphores. For this backing to support thread safety across multiple
+  // queues, we need to synchronize the reads/writes via semaphores.
   if (thread_safe) {
     bool is_vulkan = gr_context_type == GrContextType::kVulkan ||
                      context_state_->IsGraphiteDawnVulkan();
-    if (!is_drdc_enabled_ || !is_vulkan) {
+    bool is_dawn_metal = context_state_->IsGraphiteDawnMetal();
+    if (!is_drdc_enabled_ || (!is_vulkan && !is_dawn_metal)) {
       return false;
     }
   }
