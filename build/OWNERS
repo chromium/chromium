@@ -27,7 +27,7 @@ per-file mac_toolchain.py=file://build/mac/OWNERS
 per-file xcode_binaries.yaml=file://build/mac/OWNERS
 
 per-file .gitignore=*
-per-file check_gn_headers_whitelist.txt=*
+per-file check_gn_headers_allowlist.txt=*
 per-file whitespace_file.txt=*
 per-file OWNERS.status=*
 per-file OWNERS.setnoparent=set noparent
