@@ -5,7 +5,6 @@
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//device/vr/buildflags/buildflags.gni")
-import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/blink/public/public_features.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -157,17 +156,6 @@ target(link_target_type, "child") {
     sources += [
       "child_process_sandbox_support_impl_mac.cc",
       "child_process_sandbox_support_impl_mac.h",
-    ]
-  }
-
-  if (enable_ppapi) {
-    deps += [
-      "//ppapi/proxy",
-      "//ppapi/shared_impl",
-    ]
-    sources += [
-      "browser_font_resource_trusted.cc",
-      "browser_font_resource_trusted.h",
     ]
   }
 
