@@ -98,10 +98,6 @@ class OmniboxEditModelIOS {
   // Returns the permanent display text for the current page and Omnibox state.
   std::u16string GetPermanentDisplayText() const;
 
-  // Sets the user_text_ to `text`. Also enters user-input-in-progress mode.
-  // Virtual for testing.
-  virtual void SetUserText(const std::u16string& text);
-
   // Invoked any time the text may have changed in the edit. Notifies the
   // controller.
   void OnChanged();

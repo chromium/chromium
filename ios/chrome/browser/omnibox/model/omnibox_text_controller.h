@@ -93,6 +93,10 @@ class OmniboxEditModelIOS;
 - (void)getInfoForCurrentText:(AutocompleteMatch*)match
        alternateNavigationURL:(GURL*)alternateNavigationURL;
 
+/// Sets the user_text_ to `text`. Also enters user-input-in-progress mode.
+/// Virtual for testing.
+- (void)setUserText:(const std::u16string&)text;
+
 #pragma mark - Autocomplete event
 
 /// Sets the additional text.

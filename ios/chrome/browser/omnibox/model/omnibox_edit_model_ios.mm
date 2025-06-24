@@ -134,14 +134,6 @@ std::u16string OmniboxEditModelIOS::GetPermanentDisplayText() const {
   return text_model_->url_for_editing;
 }
 
-void OmniboxEditModelIOS::SetUserText(const std::u16string& text) {
-  [text_controller_ setInputInProgress:YES];
-  text_model_->UpdateUserText(text);
-  [text_controller_ getInfoForCurrentText:&text_model_->current_match
-                   alternateNavigationURL:nullptr];
-  text_model_->paste_state = OmniboxPasteState::kNone;
-}
-
 void OmniboxEditModelIOS::OnChanged() {
   // Don't call CurrentMatch() when there's no editing, as in this case we'll
   // never actually use it.  This avoids running the autocomplete providers (and

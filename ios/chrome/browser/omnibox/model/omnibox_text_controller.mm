@@ -301,6 +301,14 @@ const char kOmniboxFocusResultedInNavigation[] =
   }
 }
 
+- (void)setUserText:(const std::u16string&)text {
+  [self setInputInProgress:YES];
+  _omniboxTextModel->UpdateUserText(text);
+  [self getInfoForCurrentText:&_omniboxTextModel->current_match
+       alternateNavigationURL:nullptr];
+  _omniboxTextModel->paste_state = OmniboxPasteState::kNone;
+}
+
 #pragma mark - Autocomplete events
 
 - (void)setAdditionalText:(const std::u16string&)text {
@@ -421,7 +429,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 
     if (_inLensOverlay) {
       if (textField.userText.length) {
-        _omniboxEditModel->SetUserText(textField.userText.cr_UTF16String);
+        [self setUserText:textField.userText.cr_UTF16String];
         [self startAutocompletePreventingInline:YES];
       } else if (_omniboxClient &&
                  _omniboxClient->GetPageClassification(/*is_prefetch=*/false) ==
@@ -683,9 +691,7 @@ const char kOmniboxFocusResultedInNavigation[] =
   OmniboxTextFieldIOS* textField = self.textField;
   // Exit preedit state and append the match. Refocus if necessary.
   [textField exitPreEditState];
-  if (_omniboxEditModel) {
-    _omniboxEditModel->SetUserText(text);
-  }
+  [self setUserText:text];
 
   [self setWindowText:text
                caretPos:text.length()
