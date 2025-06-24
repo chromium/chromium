@@ -9598,7 +9598,7 @@
   {
     "name": "tab-strip-incognito-migration",
     "owners": [ "skavuluru@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "tab-strip-layout-optimization",
