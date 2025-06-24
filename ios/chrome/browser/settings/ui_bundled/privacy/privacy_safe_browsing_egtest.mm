@@ -112,9 +112,9 @@ namespace {
       WaitForWarningAlert(l10n_util::GetNSString(
           IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_CONFIRM)),
       @"The No Protection pop-up did not show up");
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
   GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kSafeBrowsingEnhanced],
                   @"Failed to keep Enhanced Safe Browsing off");
   GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kSafeBrowsingEnabled],
@@ -464,7 +464,7 @@ namespace {
       @"The No Protection pop-up did not show up");
   [[EarlGrey
       selectElementWithMatcher:
-          ButtonWithAccessibilityLabelId(
+          chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
               IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_CONFIRM)]
       performAction:grey_tap()];
   GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kSafeBrowsingEnabled],
