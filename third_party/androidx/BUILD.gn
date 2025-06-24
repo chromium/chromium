@@ -217,7 +217,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_benchmark_benchmark_junit4_java") {
-    aar_path = "../androidx/cipd/libs/androidx_benchmark_benchmark_junit4/benchmark-junit4-1.4.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_benchmark_benchmark_junit4/benchmark-junit4-1.5.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_benchmark_benchmark_junit4/androidx_benchmark_benchmark_junit4.info"
     enable_bytecode_checks = false
     testonly = true
@@ -234,7 +234,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_benchmark_benchmark_macro_java") {
-    aar_path = "../androidx/cipd/libs/androidx_benchmark_benchmark_macro/benchmark-macro-1.4.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_benchmark_benchmark_macro/benchmark-macro-1.5.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_benchmark_benchmark_macro/androidx_benchmark_benchmark_macro.info"
     enable_bytecode_checks = false
     testonly = true
@@ -259,7 +259,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_benchmark_benchmark_macro_junit4_java") {
-    aar_path = "../androidx/cipd/libs/androidx_benchmark_benchmark_macro_junit4/benchmark-macro-junit4-1.4.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_benchmark_benchmark_macro_junit4/benchmark-macro-junit4-1.5.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_benchmark_benchmark_macro_junit4/androidx_benchmark_benchmark_macro_junit4.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1681,7 +1681,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_benchmark_benchmark_common_java") {
-    aar_path = "../androidx/cipd/libs/androidx_benchmark_benchmark_common/benchmark-common-1.4.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_benchmark_benchmark_common/benchmark-common-1.5.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_benchmark_benchmark_common/androidx_benchmark_benchmark_common.info"
     enable_bytecode_checks = false
 
@@ -1722,7 +1722,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_benchmark_benchmark_traceprocessor_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_benchmark_benchmark_traceprocessor_android/benchmark-traceprocessor-android-1.4.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_benchmark_benchmark_traceprocessor_android/benchmark-traceprocessor-android-1.5.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_benchmark_benchmark_traceprocessor_android/androidx_benchmark_benchmark_traceprocessor_android.info"
     enable_bytecode_checks = false
 

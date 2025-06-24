@@ -82,32 +82,32 @@
     {
         "name": "benchmark-common",
         "group": "androidx.benchmark",
-        "version": "1.4.0-SNAPSHOT"
+        "version": "1.5.0-SNAPSHOT"
     },
     {
         "name": "benchmark-junit4",
         "group": "androidx.benchmark",
-        "version": "1.4.0-SNAPSHOT"
+        "version": "1.5.0-SNAPSHOT"
     },
     {
         "name": "benchmark-macro",
         "group": "androidx.benchmark",
-        "version": "1.4.0-SNAPSHOT"
+        "version": "1.5.0-SNAPSHOT"
     },
     {
         "name": "benchmark-macro-junit4",
         "group": "androidx.benchmark",
-        "version": "1.4.0-SNAPSHOT"
+        "version": "1.5.0-SNAPSHOT"
     },
     {
         "name": "benchmark-traceprocessor",
         "group": "androidx.benchmark",
-        "version": "1.4.0-SNAPSHOT"
+        "version": "1.5.0-SNAPSHOT"
     },
     {
         "name": "benchmark-traceprocessor-android",
         "group": "androidx.benchmark",
-        "version": "1.4.0-SNAPSHOT"
+        "version": "1.5.0-SNAPSHOT"
     },
     {
         "name": "biometric",
