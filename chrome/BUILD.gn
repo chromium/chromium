@@ -24,7 +24,6 @@ import("//chrome/process_version_rc_template.gni")
 import("//components/optimization_guide/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
-import("//ppapi/buildflags/buildflags.gni")
 import("//services/shape_detection/features.gni")
 import("//third_party/angle/gni/angle.gni")
 import("//third_party/blink/public/public_features.gni")
@@ -432,7 +431,6 @@ if (is_win) {
       "//headless:headless_non_renderer",
       "//headless:headless_shell_browser_lib",
       "//net:net_resources",
-      "//ppapi/buildflags",
       "//sandbox/win:sandbox",
       "//third_party/cld_3/src/src:cld_3",
       "//third_party/wtl",
@@ -1427,10 +1425,6 @@ group("dependencies") {
     "//third_party/blink/public:blink_devtools_inspector_resources",
     "//v8:v8_headers",
   ]
-
-  if (enable_ppapi) {
-    public_deps += [ "//ppapi/host" ]
-  }
 
   if (enable_printing) {
     public_deps += [ "//printing" ]
