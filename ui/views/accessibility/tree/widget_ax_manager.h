@@ -14,6 +14,7 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/ax_mode_observer.h"
+#include "ui/views/accessibility/tree/view_accessibility_ax_tree_source.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -58,6 +59,10 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver {
 
   // The AXTreeID of the parent widget's accessibility tree, if any.
   ui::AXTreeID parent_ax_tree_id_;
+
+  // Holds the active views-based tree. A tree consists of all the views in the
+  // widget.
+  std::unique_ptr<ViewAccessibilityAXTreeSource> tree_source_;
 
   // Indicates whether we're actively serializing widget accessibility data.
   bool is_enabled_ = false;

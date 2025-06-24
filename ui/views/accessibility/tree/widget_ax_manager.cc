@@ -30,6 +30,9 @@ WidgetAXManager::~WidgetAXManager() {
 
 void WidgetAXManager::Enable() {
   is_enabled_ = true;
+  tree_source_ = std::make_unique<ViewAccessibilityAXTreeSource>(
+      widget_->GetRootView()->GetViewAccessibility().GetUniqueId(),
+      ax_tree_id_);
 }
 
 void WidgetAXManager::OnEvent(ViewAccessibility& view_ax,
