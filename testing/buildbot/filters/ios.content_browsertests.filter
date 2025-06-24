@@ -455,3 +455,9 @@
 -All/SitePerProcessWithMainFrameThresholdAndSiteRestrictionTest.RestrictedToURLWithContentClient/0
 -All/SitePerProcessWithMainFrameThresholdAndSiteRestrictionTest.RestrictedToURLWithContentClient/1
 -RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest.ReuseEmptyAvailableRenderForMainFrame
+
+# TODO(crbug.com/427329344): These tests have been failing since
+# https://crrev.com/c/6636534.
+-PrerenderTargetHintEnabledBrowserTest.ActivateOnBothTargetHint
+-PrerenderTargetHintEnabledBrowserTest.ActivateOnOneSelfAndTwoBlankTargetHint
+-PrerenderTargetHintEnabledBrowserTest.PrerenderBothTargetHintButRemovesTargetHintSelf
