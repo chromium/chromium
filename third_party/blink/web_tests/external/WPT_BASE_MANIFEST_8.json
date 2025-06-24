@@ -428724,7 +428724,7 @@
       []
      ],
      "history_push.js": [
-      "6647dd740a275cb8a62be5cc0356e90dc0991d2e",
+      "6b725eb213179bebc6e5a3753ecafa8b5018b401",
       []
      ],
      "images": {
@@ -428738,7 +428738,7 @@
       ]
      },
      "soft-navigation-helper.js": [
-      "9ee79d36f76fdd6e8f6324fe0425f80825d2670d",
+      "666040833a234a83251754072fb5decfef7e31b6",
       []
      ],
      "soft-navigation-test-helper.js": [
@@ -428759,11 +428759,7 @@
        ]
       }
      }
-    },
-    "softnav-before-lcp-paint.tentative-expected.txt": [
-     "76a218290d661258956e7b744f3171c7f9a9936b",
-     []
-    ]
+    }
    },
    "speculation-rules": {
     "WEB_FEATURES.yml": [
@@ -535568,7 +535564,7 @@
       ]
      ],
      "style-inheritance.html": [
-      "aa3e90e9e4ec39417f92ce0afdb25f6883a5ee85",
+      "ab13eebc0678eb8cce5bbeeed871306f0c9ab903",
       [
        null,
        {}
@@ -717552,7 +717548,7 @@
    },
    "soft-navigation-heuristics": {
     "back.tentative.html": [
-     "01dae7baab6d007f0c0d3db7f4f135e451b4f222",
+     "09ff178380e0e9231bd36c81fd439cd44bc96a47",
      [
       null,
       {
@@ -717561,7 +717557,7 @@
      ]
     ],
     "click-event-bubbles.tentative.html": [
-     "ee9d1e12335c8dc775a391585b02d892081000f7",
+     "afd3e9efff0264653161363c0a0224b2c2abc228",
      [
       null,
       {
@@ -717631,7 +717627,7 @@
      }
     },
     "dropped-entries.tentative.html": [
-     "d27ad452be07b778aea1aff5525d1670fb66ec5f",
+     "76a5cffa9da554ec1ae43350be34f257348a1cd7",
      [
       null,
       {
@@ -717641,7 +717637,7 @@
      ]
     ],
     "first-interaction-not-softnav.tentative.html": [
-     "2c9e2aa7c014025ca409da94172d6e0d61d106d7",
+     "27ba7df53cb86c8ae44319ed91fd17c64bb468bc",
      [
       null,
       {
@@ -717650,7 +717646,7 @@
      ]
     ],
     "hash.tentative.html": [
-     "3a8419c71da75196205190aadc707394bfe6614e",
+     "bb78d66f67a4d3f571f7c73661f895a5db958fee",
      [
       null,
       {
@@ -717681,7 +717677,7 @@
      }
     },
     "image-lcp-followed-by-image-softnav-lcp.tentative.html": [
-     "7a2018d20ee811ff1ec9ca88c80038b0f1239874",
+     "b14a46dfbfbbf50a5ec4fab70ed11bd46bd6189a",
      [
       null,
       {
@@ -717690,7 +717686,7 @@
      ]
     ],
     "image-lcp-followed-by-text-softnav-lcp.tentative.html": [
-     "501d1c5fb6fa0346f3c5cecd550001f933c9f1f1",
+     "50234fe9f4f548eee7764707237c301c5d19ee9d",
      [
       null,
       {
@@ -717699,7 +717695,7 @@
      ]
     ],
     "image-lcp-followed-by-two-image-softnavs-lcp.tentative.html": [
-     "4a394649c523061a43724f632598abcef5b6e1bf",
+     "59ebbe3450816a59bcd25547f99c9ff431c94845",
      [
       null,
       {
@@ -717719,7 +717715,7 @@
     "lcp": {
      "tentative": {
       "background-image-set-image.html": [
-       "a99ba5bdd789afeb11b809b98e13c061604fc22b",
+       "78a41dbc7765caa0e9a61cc589846f893476f828",
        [
         null,
         {
@@ -717728,16 +717724,7 @@
        ]
       ],
       "broken-image-icon.html": [
-       "fbfb2280dcfbad916b0b62d69e481b35256b0188",
-       [
-        null,
-        {
-         "testdriver": true
-        }
-       ]
-      ],
-      "contracted-image.html": [
-       "46d359a87b3fe5e99e03879cf3801e4e358e1f67",
+       "1dd21288fec9b7a15b23b24639deab60efe1157d",
        [
         null,
         {
@@ -717746,7 +717733,7 @@
        ]
       ],
       "cross-origin-image.sub.html": [
-       "78886e7b4dce1952e95d5bb05d3d1c514d85d7b5",
+       "777dcf706406a228bd9612b51853cc445bac6b44",
        [
         null,
         {
@@ -717764,7 +717751,7 @@
        ]
       ],
       "expanded-image.html": [
-       "5d47817a07c3ea3945d71344e30737d520943287",
+       "1a482b293fc568189e1917c63814dee27dbb8bdd",
        [
         null,
         {
@@ -717773,7 +717760,7 @@
        ]
       ],
       "first-paint-equals-lcp-text.html": [
-       "ea0ceb15387ce27fc551055966865f34b7beb1b0",
+       "b78f1a8e8bfa2796a23b9f93894bc3648dbcfe11",
        [
         null,
         {
@@ -717782,7 +717769,7 @@
        ]
       ],
       "iframe-content-not-observed.html": [
-       "73beb752adf07e7c6f07c4a6321b0a466aeec4d5",
+       "4a9bf86ff49943d684dbdb17638f4afaad67aea2",
        [
         null,
         {
@@ -717793,7 +717780,7 @@
      }
     },
     "load-classic-script-history-push.tentative.html": [
-     "4e375b2164db87258132f4a6edba4b68c1c2b99b",
+     "7c2ffa1f6c1fe4db998c7a28da094d67e2072a0f",
      [
       null,
       {
@@ -717802,7 +717789,7 @@
      ]
     ],
     "load-module-script-history-push.tentative.html": [
-     "e82cd13f4a5dcc0c5cb54a59829cb64a3f5ca50a",
+     "c298a968a24643084f00c529cd661afabf9c24b3",
      [
       null,
       {
@@ -717811,7 +717798,7 @@
      ]
     ],
     "multiple-nested-events.tentative.html": [
-     "e51841865d654a65e44fefc505e8102196a4093c",
+     "14f4ba42c3fac69d41d6ecf39e582abea3ead839",
      [
       null,
       {
@@ -717820,7 +717807,7 @@
      ]
     ],
     "multiple-paint-entries-buffered.tentative.html": [
-     "dbb945a0a811330a3efa74b8b34da3f7987e9f38",
+     "86a4f4400d4ca644de31c5df622771603b4aecdc",
      [
       null,
       {
@@ -717830,7 +717817,7 @@
      ]
     ],
     "navigate-child.html": [
-     "e3c17e2dbaa2148b0dd35632d0651592f9696bec",
+     "24cbf4d57fad54a6cbf2a2803ecbdb2d363e76f2",
      [
       null,
       {
@@ -717839,7 +717826,7 @@
      ]
     ],
     "navigation-api-back.tentative.html": [
-     "cb96d9caf95ba7987adb065a150b2182ec784b9a",
+     "37dc8328afde2c8f58ed9b2c526cb6043f8a98d5",
      [
       null,
       {
@@ -717848,7 +717835,7 @@
      ]
     ],
     "navigation-api-forward.tentative.html": [
-     "f483ad376b6ae247d0358363fda3c01cd71ac06f",
+     "c371b9f6c686343e425fac14b2a292435e84260f",
      [
       null,
       {
@@ -717857,7 +717844,7 @@
      ]
     ],
     "navigation-api-hash.tentative.html": [
-     "e20578ea79ed7a6564a2d960cc1148b520c55ef2",
+     "bde93b22aab99ae80e939b3d8a99d0e62c2523e2",
      [
       null,
       {
@@ -717884,7 +717871,7 @@
      ]
     ],
     "navigation-api-traverseto.tentative.html": [
-     "e4cabb095aafebf8291596f08a315e9c3103dd8d",
+     "5077d2b6130df1547cbbcf892db2409eb685595e",
      [
       null,
       {
@@ -717893,7 +717880,7 @@
      ]
     ],
     "navigation-api-view-transition.tentative.html": [
-     "4d88f3d0b7d9bee962f7b7e71c7695c421e7b560",
+     "97070271c3855efb378469ca5a394dea25ad60af",
      [
       null,
       {
@@ -717911,7 +717898,7 @@
      ]
     ],
     "popstate-multiple-backs.tentative.html": [
-     "a460b922eb798f61825b18e2802560056722628c",
+     "799082bd399a0dd512dc3a8aacbb1553ea58972d",
      [
       null,
       {
@@ -717920,7 +717907,7 @@
      ]
     ],
     "popstate.tentative.html": [
-     "f89991d76b044c5165c53b3b90b4620eb1e2d047",
+     "9a4b6ab6735576152d679411e7d65200d9ba94b3",
      [
       null,
       {
@@ -717929,7 +717916,7 @@
      ]
     ],
     "replacestate-null-then-push.tentative.html": [
-     "8a81c6be20237dee08d3343ab921b9f7331538fe",
+     "8a7b967853b3a4193a6e061cb3584c36016f5c27",
      [
       null,
       {
@@ -717938,7 +717925,7 @@
      ]
     ],
     "second-interaction-not-softnav.tentative.html": [
-     "a9bb337060d00a5e21075f2c2cb53570e500afaf",
+     "7382d769b7e21a27e951bb904b9713703bfbdc6e",
      [
       null,
       {
@@ -717985,7 +717972,7 @@
        ]
       ],
       "lcp-unbuffered.html": [
-       "cf6dd768313d8209fe15fc1fd8be6855e29c0559",
+       "1df6bd11d0fb67ac9463ae3a0cdc3fb1cbf9e4f8",
        [
         null,
         {
@@ -717994,7 +717981,7 @@
        ]
       ],
       "lcp.html": [
-       "cc582c6cbc3b8ae4b8d484bf0561a64b5cb39bbc",
+       "2b57e6ce19624751405a63c59454796adb3e2c9d",
        [
         null,
         {
@@ -718030,16 +718017,7 @@
      }
     },
     "soft-navigation-detection-main-descendent.tentative.html": [
-     "96ff55260c3b9553ac5735cc5fe209ee7cfd5f37",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "soft-navigation-detection-non-main.tentative.html": [
-     "86da167c3393903dfb3fe01e59a9bbfb216d5a44",
+     "4eac03e9c512ed5674b10e26041bcaecbeca19b2",
      [
       null,
       {
@@ -718048,7 +718026,7 @@
      ]
     ],
     "soft-navigation-detection-web-component-lifecycle.tentative.html": [
-     "4384893503866337edd6209bc25326521cf10290",
+     "5a5e8d14ec47e66cc05697b72c756eaa6edeeed0",
      [
       null,
       {
@@ -718057,7 +718035,7 @@
      ]
     ],
     "soft-navigation-detection.tentative.html": [
-     "618984d8592dc6d2f68a15fe7f4f87592731236e",
+     "64ca5aa4ef1a190ad4437c67d8abcfac7362f31e",
      [
       null,
       {
@@ -718066,7 +718044,7 @@
      ]
     ],
     "softnav-after-lcp-paint-larger-than-viewport.tentative.html": [
-     "3c930d8be4cd459d9167404be13ad9ac219ec422",
+     "04d7a76a1f2e0c04a0375d22f09785cfce358511",
      [
       null,
       {
@@ -718075,16 +718053,7 @@
      ]
     ],
     "softnav-after-lcp-paint.tentative.html": [
-     "cf9a9942ca6453719a5888df802d1c3398094495",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "softnav-before-lcp-paint.tentative.html": [
-     "d5dc4b74fb33b5bf0499ddae12a98d3789d48841",
+     "bcae0ca24369f6b969a6a129dbaf7ebfb87534e1",
      [
       null,
       {
@@ -718093,7 +718062,7 @@
      ]
     ],
     "softnav-between-lcp-render-and-paint.tentative.html": [
-     "56c7073de63036d92d342de610cba49ae5e9be00",
+     "8398e947d52d940249bf6bce416ebbecf61227c0",
      [
       null,
       {
@@ -718102,7 +718071,7 @@
      ]
     ],
     "text-lcp-followed-by-anim-image-softnav-lcp.tentative.html": [
-     "b34a6e81a58333c61ccedb4e25551feba4893736",
+     "36ba86ec47d7c6e4a85572846fa7a0288b076ed9",
      [
       null,
       {
@@ -718111,7 +718080,7 @@
      ]
     ],
     "text-lcp-followed-by-image-softnav-lcp.tentative.html": [
-     "3a8398347ce0ecb31aae24b4e8c8403aa2c9ef79",
+     "3b1e69994625267d542e00a853c3167b049bf3d0",
      [
       null,
       {
@@ -718120,7 +718089,7 @@
      ]
     ],
     "text-lcp-followed-by-text-softnav-lcp.tentative.html": [
-     "929f59f019df81195700e61ca0cfcbb3db04a688",
+     "8738b7f2fe5fb29a7b47d4b9a6a1195666ed3e04",
      [
       null,
       {
@@ -718129,7 +718098,7 @@
      ]
     ],
     "visited-link.tentative.html": [
-     "0bb31aaac1540b3d2b9f6a3157bb43d96e430a58",
+     "221d81357c0a9121c704c6794f9062eb1386a430",
      [
       null,
       {
