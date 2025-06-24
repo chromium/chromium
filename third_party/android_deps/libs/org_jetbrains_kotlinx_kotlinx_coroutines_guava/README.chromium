@@ -2,6 +2,7 @@ Name: kotlinx-coroutines-guava
 Short Name: kotlinx-coroutines-guava
 URL: https://github.com/Kotlin/kotlinx.coroutines
 Version: 1.8.1
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

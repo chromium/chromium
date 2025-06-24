@@ -2,6 +2,7 @@ Name: firebase-messaging
 Short Name: firebase-messaging
 URL: https://firebase.google.com
 Version: 24.1.0
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

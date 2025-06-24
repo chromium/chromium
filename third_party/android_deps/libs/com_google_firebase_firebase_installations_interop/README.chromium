@@ -2,6 +2,7 @@ Name: firebase-installations-interop
 Short Name: firebase-installations-interop
 URL: https://firebase.google.com
 Version: 17.1.1
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

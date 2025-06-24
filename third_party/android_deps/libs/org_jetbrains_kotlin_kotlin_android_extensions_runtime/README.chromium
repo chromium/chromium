@@ -2,6 +2,7 @@ Name: Kotlin Android Extensions Runtime
 Short Name: kotlin-android-extensions-runtime
 URL: https://kotlinlang.org/
 Version: 1.9.22
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

@@ -2,6 +2,7 @@ Name: Animal Sniffer Annotations
 Short Name: animal-sniffer-annotations
 URL: http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/
 Version: 1.17
+Update Mechanism: Manual
 License: MIT
 License File: LICENSE
 CPEPrefix: unknown

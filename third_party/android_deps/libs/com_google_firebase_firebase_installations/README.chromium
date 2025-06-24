@@ -2,6 +2,7 @@ Name: firebase-installations
 Short Name: firebase-installations
 URL: https://firebase.google.com
 Version: 17.2.0
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

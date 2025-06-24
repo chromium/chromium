@@ -2,6 +2,7 @@ Name: play-services-cloud-messaging
 Short Name: play-services-cloud-messaging
 URL: https://developers.google.com/android/guides/setup
 Version: 17.2.0
+Update Mechanism: Manual
 License: Android Software Development Kit License
 License File: LICENSE
 CPEPrefix: unknown

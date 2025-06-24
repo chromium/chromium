@@ -2,6 +2,7 @@ Name: firebase-iid
 Short Name: firebase-iid
 URL: https://firebase.google.com
 Version: 21.1.0
+Update Mechanism: Manual
 License: Android Software Development Kit License
 License File: LICENSE
 CPEPrefix: unknown

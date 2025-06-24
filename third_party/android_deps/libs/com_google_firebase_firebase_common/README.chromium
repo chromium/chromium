@@ -2,6 +2,7 @@ Name: firebase-common
 Short Name: firebase-common
 URL: https://firebase.google.com
 Version: 21.0.0
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

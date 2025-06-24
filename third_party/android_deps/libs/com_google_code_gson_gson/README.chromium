@@ -2,6 +2,7 @@ Name: Gson
 Short Name: gson
 URL: https://github.com/google/gson
 Version: 2.8.0
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

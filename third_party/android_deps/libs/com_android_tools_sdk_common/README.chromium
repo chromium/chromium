@@ -2,6 +2,7 @@ Name: com.android.tools.sdk-common
 Short Name: sdk-common
 URL: http://tools.android.com/
 Version: 30.2.0-beta01
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

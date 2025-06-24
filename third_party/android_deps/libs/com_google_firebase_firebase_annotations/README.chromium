@@ -2,6 +2,7 @@ Name: firebase-annotations
 Short Name: firebase-annotations
 URL: https://firebase.google.com
 Version: 16.2.0
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

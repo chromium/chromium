@@ -2,6 +2,7 @@ Name: Objenesis
 Short Name: objenesis
 URL: http://objenesis.org/index.html
 Version: 3.3
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

@@ -2,6 +2,7 @@ Name: firebase-components
 Short Name: firebase-components
 URL: https://firebase.google.com
 Version: 18.0.0
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

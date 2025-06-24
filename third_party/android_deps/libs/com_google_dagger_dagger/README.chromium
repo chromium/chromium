@@ -2,6 +2,7 @@ Name: Dagger
 Short Name: dagger
 URL: https://github.com/google/dagger
 Version: 2.52
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown
