@@ -5,11 +5,16 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/password_change/successful_password_change_bubble_controller.h"
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/favicon/core/favicon_util.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace metrics_util = password_manager::metrics_util;
@@ -79,6 +84,23 @@ std::u16string SuccessfulPasswordChangeBubbleController::GetUsername() const {
 std::u16string SuccessfulPasswordChangeBubbleController::GetNewPassword()
     const {
   return password_change_delegate_->GetGeneratedPassword();
+}
+
+void SuccessfulPasswordChangeBubbleController::RequestFavicon(
+    base::OnceCallback<void(const gfx::Image&)> favicon_ready_callback) {
+  favicon::FaviconService* favicon_service =
+      FaviconServiceFactory::GetForProfile(GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  favicon::GetFaviconImageForPageURL(
+      favicon_service, GetWebContents()->GetVisibleURL(),
+      favicon_base::IconType::kFavicon,
+      base::BindOnce(
+          [](base::OnceCallback<void(const gfx::Image&)> favicon_ready_callback,
+             const favicon_base::FaviconImageResult& result) {
+            std::move(favicon_ready_callback).Run(result.image);
+          },
+          std::move(favicon_ready_callback)),
+      &favicon_tracker_);
 }
 
 base::WeakPtr<SuccessfulPasswordChangeBubbleController>

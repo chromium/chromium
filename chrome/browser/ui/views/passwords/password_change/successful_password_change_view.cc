@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
-#include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -21,10 +20,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/gfx/image/image.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/vector_icons.h"
@@ -86,13 +87,19 @@ std::unique_ptr<views::View> CreateUsernamePasswordWithEyeIcon(
   parent_view->SetBetweenChildSpacing(icon_label_spacing);
 
   // Add favicon.
-  auto* favicon =
+  views::ImageView* favicon_view =
       parent_view->AddChildView(std::make_unique<views::ImageView>());
   const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
-  favicon->SetImageSize({icon_size, icon_size});
-  // TODO(crbug.com/381054978): Display proper favicon.
-  favicon->SetImage(ui::ImageModel::FromVectorIcon(
+  favicon_view->SetImageSize({icon_size, icon_size});
+  favicon_view->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kGlobeIcon, ui::kColorIcon, gfx::kFaviconSize));
+  controller->RequestFavicon(base::BindOnce(
+      [](views::ImageView* favicon_view, const gfx::Image& favicon) {
+        if (!favicon.IsEmpty()) {
+          favicon_view->SetImage(ui::ImageModel::FromImage(favicon));
+        }
+      },
+      favicon_view));
 
   // Add username/password labels.
   auto* username_password_view =

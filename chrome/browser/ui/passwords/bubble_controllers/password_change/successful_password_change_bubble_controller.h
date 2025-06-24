@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_PASSWORD_CHANGE_SUCCESSFUL_PASSWORD_CHANGE_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_PASSWORD_CHANGE_SUCCESSFUL_PASSWORD_CHANGE_BUBBLE_CONTROLLER_H_
 
-#include "chrome/browser/password_manager/password_change_delegate.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
+
+class PasswordChangeDelegate;
 
 // Controller for SuccessfulPasswordChangeView which is displayed after
 // successful password change.
@@ -29,13 +32,23 @@ class SuccessfulPasswordChangeBubbleController
   std::u16string GetUsername() const;
   std::u16string GetNewPassword() const;
 
+  // Makes a request to the favicon service for the icon of current visible URL.
+  // The request is cancelled on destruction.
+  void RequestFavicon(
+      base::OnceCallback<void(const gfx::Image&)> favicon_ready_callback);
+
   base::WeakPtr<SuccessfulPasswordChangeBubbleController> GetWeakPtr();
 
  private:
+  // Controls password change process.
   base::WeakPtr<PasswordChangeDelegate> password_change_delegate_;
+
   // Dismissal reason for a password bubble.
   password_manager::metrics_util::UIDismissalReason dismissal_reason_ =
       password_manager::metrics_util::NO_DIRECT_INTERACTION;
+
+  // Used to track the favicon request.
+  base::CancelableTaskTracker favicon_tracker_;
 
   base::WeakPtrFactory<SuccessfulPasswordChangeBubbleController>
       weak_ptr_factory_{this};
