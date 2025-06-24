@@ -2177,7 +2177,8 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
     CHECK(new_popover);
     CHECK(new_popover->IsPopover());
     CHECK_NE(new_popover->PopoverType(), PopoverValueType::kManual);
-    CHECK(!new_popover->popoverOpen());
+    CHECK(!new_popover->popoverOpen() ||
+          IsA<HTMLMenuListElement>(new_popover_or_top_layer_element));
   } else {
     CHECK(!new_popover);
     CHECK(!new_popovers_invoker);
@@ -2234,18 +2235,24 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
 const HTMLElement* HTMLElement::TopLayerElementPopoverAncestor(
     Element& top_layer_element,
     TopLayerElementType top_layer_element_type) {
-  CHECK(top_layer_element_type != TopLayerElementType::kPopover);
+  bool is_menulist = IsA<HTMLMenuListElement>(top_layer_element);
+  CHECK(top_layer_element_type != TopLayerElementType::kPopover || is_menulist);
   Document& document = top_layer_element.GetDocument();
+  // If top_layer_element is an open menulist popover, find its invoker.
+  // Since "normal" popovers don't go through this code path (see the
+  // CHECK above), pass `nullptr` otherwise.
+  Element* new_popovers_invoker =
+      is_menulist ? top_layer_element.GetPopoverData()->invoker() : nullptr;
   // Check the hint stack first.
   if (auto* ancestor = FindTopmostPopoverAncestor(
-          top_layer_element, document.PopoverHintStack(), nullptr,
+          top_layer_element, document.PopoverHintStack(), new_popovers_invoker,
           top_layer_element_type)) {
     return ancestor;
   }
   // Then the auto stack.
-  return FindTopmostPopoverAncestor(top_layer_element,
-                                    document.PopoverAutoStack(), nullptr,
-                                    top_layer_element_type);
+  return FindTopmostPopoverAncestor(
+      top_layer_element, document.PopoverAutoStack(), new_popovers_invoker,
+      top_layer_element_type);
 }
 
 namespace {

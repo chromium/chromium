@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/events/command_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -150,7 +151,7 @@ void HTMLMenuItemElement::setChecked(bool checked) {
     nearest_ancestor_field_set_->UpdateMenuItemCheckableExclusivity(this);
   }
 
-  // TODO: Accessibility mapping.
+  // TODO(crbug.com/425682466): Accessibility mapping.
 }
 
 bool HTMLMenuItemElement::ShouldAppearChecked() const {
@@ -237,11 +238,11 @@ void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
 
   if (keyboard_event && event.type() == event_type_names::kKeydown) {
     const AtomicString key(keyboard_event->key());
-    // TODO: This is the same ignore list as option event handling and can be
-    // consolidated together.
+    // TODO(crbug.com/425708944): This is the same ignore list as option event
+    // handling and can be consolidated together.
     if (!(keyboard_event->GetModifiers() & ignore_modifiers)) {
       if ((key == " " || key == keywords::kCapitalEnter)) {
-        // TODO: implement chooseItem(event);
+        // TODO(crbug.com/425682465): implement chooseItem(event).
         return;
       }
       if (auto* menulist = OwnerMenuListElement()) {
@@ -276,9 +277,111 @@ void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
             event.SetDefaultHandled();
             return;
           }
+        } else if (key == keywords::kArrowRight) {
+          auto& document = GetDocument();
+          // If this invokes a menulist and is itself in a menulist, then
+          // arrow right should open the invoked menulist and focus its first
+          // menuitem.
+          if (auto* invoked_menulist =
+                  DynamicTo<HTMLMenuListElement>(commandForElement())) {
+            CommandEventType type =
+                GetCommandEventType(FastGetAttribute(html_names::kCommandAttr));
+            bool can_show =
+                (type == CommandEventType::kTogglePopover ||
+                 type == CommandEventType::kShowPopover ||
+                 type == CommandEventType::kToggleMenu ||
+                 type == CommandEventType::kShowMenu) &&
+                invoked_menulist->IsPopoverReady(
+                    PopoverTriggerAction::kShow,
+                    /*exception_state=*/nullptr,
+                    /*include_event_handler_text=*/false, &document);
+            if (can_show) {
+              invoked_menulist->InvokePopover(*this);
+            }
+            MenuItemList invoked_menuitems = invoked_menulist->GetItemList();
+            if (auto* first = invoked_menuitems.NextFocusableMenuItem(
+                    *invoked_menuitems.begin(), /*inclusive=*/true)) {
+              first->Focus(focus_params);
+              event.SetDefaultHandled();
+              return;
+            }
+          } else {
+            // Else, this menuitem does not invoke a menulist and we close all
+            // ancestor menulists. Loop to find the invoker of the lowest layer
+            // menulist ancestor.
+            HTMLElement* ancestor_menulist = menulist;
+            Element* invoker = nullptr;
+            // While the ancestor is an open menulist, it should be closed.
+            while (IsA<HTMLMenuListElement>(ancestor_menulist) &&
+                   ancestor_menulist->popoverOpen()) {
+              invoker = ancestor_menulist->GetPopoverData()->invoker();
+              ancestor_menulist = const_cast<HTMLElement*>(
+                  HTMLElement::TopLayerElementPopoverAncestor(
+                      *ancestor_menulist, TopLayerElementType::kPopover));
+            }
+            HTMLElement::HideAllPopoversUntil(
+                ancestor_menulist, document, HidePopoverFocusBehavior::kNone,
+                HidePopoverTransitionBehavior::
+                    kFireEventsAndWaitForTransitions);
+            if (invoker) {
+              // If ancestor menulist is invoked from a menubar, focus on next
+              // menuitem within the menubar.
+              if (HTMLMenuItemElement* invoker_menuitem =
+                      DynamicTo<HTMLMenuItemElement>(invoker)) {
+                if (auto* ancestor_menubar =
+                        invoker_menuitem->OwnerMenuBarElement()) {
+                  MenuItemList ancestor_menuitems =
+                      ancestor_menubar->GetItemList();
+                  if (auto* next = ancestor_menuitems.NextFocusableMenuItem(
+                          *invoker_menuitem)) {
+                    next->Focus(focus_params);
+                    event.SetDefaultHandled();
+                    return;
+                  }
+                }
+              }
+              // Else, focus on the invoker (it can be a menuitem or a button).
+              invoker->Focus(focus_params);
+              event.SetDefaultHandled();
+              return;
+            }
+          }
+
+        } else if (key == keywords::kArrowLeft) {
+          // If this is itself in a menulist, then arrow left should close the
+          // current menulist.
+          Element* invoker = menulist->GetPopoverData()->invoker();
+          bool can_hide = menulist->IsPopoverReady(
+              PopoverTriggerAction::kHide,
+              /*exception_state=*/nullptr,
+              /*include_event_handler_text=*/false, &GetDocument());
+          if (can_hide) {
+            menulist->HidePopoverInternal(
+                invoker, HidePopoverFocusBehavior::kNone,
+                HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+                /*exception_state=*/nullptr);
+          }
+          if (auto* invoker_menuitem =
+                  DynamicTo<HTMLMenuItemElement>(invoker)) {
+            if (auto* first_menubar = invoker_menuitem->OwnerMenuBarElement()) {
+              // Focus on previous if it is in menubar.
+              MenuItemList first_menuitems = first_menubar->GetItemList();
+              if (auto* previous = first_menuitems.PreviousFocusableMenuItem(
+                      *invoker_menuitem)) {
+                previous->Focus(focus_params);
+                event.SetDefaultHandled();
+                return;
+              }
+            }
+            // Else, focus on invoker (it can be a button, a menuitem in a
+            // menulist or a standalone menuitem).
+            invoker->Focus(focus_params);
+            event.SetDefaultHandled();
+            return;
+          }
         }
-        // TODO: implement invoke nested menulist, for kArrowLeft/kArrowRight.
-        // TODO: implement scrolling to visible menuitem, for kPageDown/kPageUp.
+        // TODO(crbug.com/425682464): implement scrolling to visible menuitem,
+        // for kPageDown/kPageUp.
       } else if (auto* menubar = OwnerMenuBarElement()) {
         MenuItemList menuitems = menubar->GetItemList();
         // Nothing below can do anything, if the list is empty.
@@ -311,23 +414,36 @@ void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
             event.SetDefaultHandled();
             return;
           }
-        }
-        // If this invokes a menulist popover and is in a menubar, then
-        // arrow down/up should go to first/last menuitem in the menulist.
-        if (HTMLElement* popover = GetOpenPopoverTarget()) {
+        } else if (key == keywords::kArrowDown || key == keywords::kArrowUp) {
+          // If this invokes a menulist and is in a menubar, then arrow down/up
+          // should open the menulist and go to first/last menuitem in it.
           if (auto* invoked_menulist =
-                  DynamicTo<HTMLMenuListElement>(popover)) {
+                  DynamicTo<HTMLMenuListElement>(commandForElement())) {
+            CommandEventType type =
+                GetCommandEventType(FastGetAttribute(html_names::kCommandAttr));
+            bool can_show =
+                (type == CommandEventType::kTogglePopover ||
+                 type == CommandEventType::kShowPopover ||
+                 type == CommandEventType::kToggleMenu ||
+                 type == CommandEventType::kShowMenu) &&
+                invoked_menulist->IsPopoverReady(
+                    PopoverTriggerAction::kShow,
+                    /*exception_state=*/nullptr,
+                    /*include_event_handler_text=*/false, &GetDocument());
+            if (can_show) {
+              invoked_menulist->InvokePopover(*this);
+            }
             MenuItemList invoked_menuitems = invoked_menulist->GetItemList();
             if (key == keywords::kArrowDown) {
               if (auto* first = invoked_menuitems.NextFocusableMenuItem(
-                      *invoked_menuitems.begin(), /*inclusive*/ true)) {
+                      *invoked_menuitems.begin(), /*inclusive=*/true)) {
                 first->Focus(focus_params);
                 event.SetDefaultHandled();
                 return;
               }
             } else if (key == keywords::kArrowUp) {
               if (auto* last = invoked_menuitems.PreviousFocusableMenuItem(
-                      *invoked_menuitems.last(), /*inclusive*/ true)) {
+                      *invoked_menuitems.last(), /*inclusive=*/true)) {
                 last->Focus(focus_params);
                 event.SetDefaultHandled();
                 return;
