@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] PermissionsPolicy interface: existence and properties of interface object
   assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
 [FAIL] PermissionsPolicy interface object length
@@ -36,34 +35,6 @@ Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: wrong typeof object expected "object" but got "undefined"
 [FAIL] PermissionsPolicy interface: calling getAllowlistForFeature(DOMString) on document.permissionsPolicy with too few arguments must throw TypeError
   assert_equals: wrong typeof object expected "object" but got "undefined"
-[FAIL] PermissionsPolicyViolationReportBody interface: existence and properties of interface object
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
-[FAIL] PermissionsPolicyViolationReportBody interface object length
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
-[FAIL] PermissionsPolicyViolationReportBody interface object name
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
-[FAIL] PermissionsPolicyViolationReportBody interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
-[FAIL] PermissionsPolicyViolationReportBody interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
-[FAIL] PermissionsPolicyViolationReportBody interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
-[FAIL] PermissionsPolicyViolationReportBody interface: operation toJSON()
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
-[FAIL] PermissionsPolicyViolationReportBody interface: attribute featureId
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
-[FAIL] PermissionsPolicyViolationReportBody interface: attribute sourceFile
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
-[FAIL] PermissionsPolicyViolationReportBody interface: attribute lineNumber
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
-[FAIL] PermissionsPolicyViolationReportBody interface: attribute columnNumber
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
-[FAIL] PermissionsPolicyViolationReportBody interface: attribute disposition
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
-[FAIL] PermissionsPolicyViolationReportBody interface: attribute allowAttribute
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
-[FAIL] PermissionsPolicyViolationReportBody interface: attribute srcAttribute
-  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
 [FAIL] HTMLIFrameElement interface: attribute permissionsPolicy
   assert_true: The prototype object must have a property "permissionsPolicy" expected true got false
 [FAIL] HTMLIFrameElement interface: document.createElement("iframe") must inherit property "permissionsPolicy" with the proper type

@@ -79,6 +79,7 @@ dictionary IdentityProviderAPIConfig {
   required USVString login_url;
   USVString disconnect_endpoint;
   IdentityProviderBranding branding;
+  boolean supports_use_other_account = false;
   USVString account_label;
 };
 
@@ -122,6 +123,6 @@ dictionary IdentityResolveOptions {
 
 [Exposed=Window, SecureContext] interface IdentityProvider {
     static undefined close();
-    static undefined resolve(DOMString token, optional IdentityResolveOptions options = {});
+    static Promise<undefined> resolve(DOMString token, optional IdentityResolveOptions options = {});
     static Promise<sequence<IdentityUserInfo>> getUserInfo(IdentityProviderConfig config);
 };
