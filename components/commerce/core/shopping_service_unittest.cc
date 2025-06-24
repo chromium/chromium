@@ -419,9 +419,8 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse_MultipleOnDemandRequests) {
 // if it is disabled.
 TEST_P(ShoppingServiceTest, TestProductInfoResponse_ApiDisabled) {
   // Ensure a feature that uses product info is disabled.
-  test_features_.InitWithFeatures({},
-                                  {kShoppingList, kShoppingListRegionLaunched,
-                                   ntp_features::kNtpChromeCartModule});
+  test_features_.InitWithFeatures(
+      {}, {kShoppingList, ntp_features::kNtpChromeCartModule});
 
   base::RunLoop run_loop;
   shopping_service_->GetProductInfoForUrl(
@@ -1358,8 +1357,7 @@ TEST_P(ShoppingServiceTest, TestDataMergeWithNoTitle) {
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_Policy) {
-  test_features_.InitWithFeatures({kShoppingList},
-                                  {kShoppingListRegionLaunched});
+  test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -1377,8 +1375,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_Policy) {
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_FeatureFlagOff) {
-  test_features_.InitWithFeatures({},
-                                  {kShoppingList, kShoppingListRegionLaunched});
+  test_features_.InitWithFeatures({}, {kShoppingList});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -1393,8 +1390,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_FeatureFlagOff) {
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_MSBB) {
-  test_features_.InitWithFeatures({kShoppingList},
-                                  {kShoppingListRegionLaunched});
+  test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -1413,8 +1409,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_MSBB) {
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_SignIn) {
-  test_features_.InitWithFeatures({kShoppingList},
-                                  {kShoppingListRegionLaunched});
+  test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -1433,8 +1428,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_SignIn) {
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_ChildAccount) {
-  test_features_.InitWithFeatures({kShoppingList},
-                                  {kShoppingListRegionLaunched});
+  test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -1453,8 +1447,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_ChildAccount) {
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_SyncState) {
-  test_features_.InitWithFeatures({kShoppingList},
-                                  {kShoppingListRegionLaunched});
+  test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -1473,8 +1466,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_SyncState) {
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale) {
-  test_features_.InitWithFeatures({kShoppingList},
-                                  {kShoppingListRegionLaunched});
+  test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -1497,8 +1489,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale) {
 
 TEST_P(ShoppingServiceTest,
        TestShoppingListEligible_CountryAndLocale_BothFlags) {
-  test_features_.InitWithFeatures({kShoppingList, kShoppingListRegionLaunched},
-                                  {});
+  test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -1520,8 +1511,7 @@ TEST_P(ShoppingServiceTest,
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale_NoFlags) {
-  test_features_.InitWithFeatures({},
-                                  {kShoppingList, kShoppingListRegionLaunched});
+  test_features_.InitWithFeatures({}, {kShoppingList});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -1539,8 +1529,9 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale_NoFlags) {
 
 TEST_P(ShoppingServiceTest,
        TestShoppingListEligible_CountryAndLocale_RegionLaunched) {
-  test_features_.InitWithFeatures({kShoppingListRegionLaunched},
-                                  {kShoppingList});
+  // Specifically set up the flags so that the feature is not in an "overridden"
+  // state.
+  test_features_.InitWithEmptyFeatureAndFieldTrialLists();
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -1551,7 +1542,42 @@ TEST_P(ShoppingServiceTest,
   checker.SetLocale(kEligibleLocale);
   checker.SetPrefs(&prefs);
 
+  // This is well-established as a launched region.
+  checker.SetCountry("US");
+  checker.SetLocale("en-us");
+
   ASSERT_TRUE(IsShoppingListEligible(&checker));
+
+  checker.SetCountry("ZZ");
+  checker.SetLocale("zz-zz");
+
+  // If we only have the region flag enabled, we should be restricted to
+  // specific countries and locales. The fake country and locale below should
+  // be blocked.
+  ASSERT_FALSE(IsShoppingListEligible(&checker));
+}
+
+TEST_P(ShoppingServiceTest,
+       TestShoppingListEligible_CountryAndLocale_RegionLaunched_Override) {
+  // Specifically set up the flags so that the feature is in an "overridden"
+  // state. Even with the region launched map set up to ordinarily allow the
+  // feature, it should still be disabled.
+  test_features_.InitWithFeatures({}, {kShoppingList});
+
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(prefs.registry());
+  SetShoppingListEnterprisePolicyPref(&prefs, true);
+
+  MockAccountChecker checker;
+  checker.SetCountry(kEligibleCountry);
+  checker.SetLocale(kEligibleLocale);
+  checker.SetPrefs(&prefs);
+
+  // This is well-established as a launched region.
+  checker.SetCountry("US");
+  checker.SetLocale("en-us");
+
+  ASSERT_FALSE(IsShoppingListEligible(&checker));
 
   checker.SetCountry("ZZ");
   checker.SetLocale("zz-zz");

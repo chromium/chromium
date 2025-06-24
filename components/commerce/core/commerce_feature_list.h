@@ -53,7 +53,6 @@ BASE_DECLARE_FEATURE(kCompareConfirmationToast);
 BASE_DECLARE_FEATURE(kProductSpecificationsCache);
 
 BASE_DECLARE_FEATURE(kShoppingList);
-BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);
 BASE_DECLARE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey);
 BASE_DECLARE_FEATURE(kPriceTrackingSubscriptionServiceProductVersion);
 BASE_DECLARE_FEATURE(kShoppingPageTypes);
@@ -228,6 +227,11 @@ bool IsEnabledForCountryAndLocale(const base::Feature& feature,
 // A feature check for the specified |feature|, which will return true if the
 // user has the feature flag enabled or (if applicable) is in an enabled
 // country and locale.
+bool IsRegionLockedFeatureEnabled(const base::Feature& feature,
+                                  const std::string& country_code,
+                                  const std::string& locale);
+
+// DEPRECATED: Use the above function for new features.
 bool IsRegionLockedFeatureEnabled(const base::Feature& feature,
                                   const base::Feature& feature_region_launched,
                                   const std::string& country_code,

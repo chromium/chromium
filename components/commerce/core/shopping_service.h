@@ -361,6 +361,9 @@ class ShoppingService : public KeyedService,
   // locale is enabled. This method is a proxy for the utility method by the
   // same name in commerce_feature_list but provides the country and locale as
   // determined by this service at startup.
+  bool IsRegionLockedFeatureEnabled(const base::Feature& feature);
+
+  // DEPRECATED: Use the above method for new features.
   bool IsRegionLockedFeatureEnabled(
       const base::Feature& feature,
       const base::Feature& region_specific_feature);

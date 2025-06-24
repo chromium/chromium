@@ -636,8 +636,7 @@ void ShoppingService::PDPMetricsCallback(
   metrics::RecordPDPMetrics(decision, metadata, pref_service_,
                             is_off_the_record, IsShoppingListEligible(), url);
 
-  bool supported_country =
-      IsRegionLockedFeatureEnabled(kShoppingList, kShoppingListRegionLaunched);
+  bool supported_country = IsRegionLockedFeatureEnabled(kShoppingList);
   metrics::RecordShoppingListIneligibilityReasons(
       pref_service_, account_checker_.get(), is_off_the_record,
       supported_country);
@@ -1012,6 +1011,12 @@ bool ShoppingService::IsRegionLockedFeatureEnabled(
   return commerce::IsRegionLockedFeatureEnabled(
       feature, region_specific_feature, country_on_startup_,
       locale_on_startup_);
+}
+
+bool ShoppingService::IsRegionLockedFeatureEnabled(
+    const base::Feature& feature) {
+  return commerce::IsRegionLockedFeatureEnabled(feature, country_on_startup_,
+                                                locale_on_startup_);
 }
 
 const std::vector<UrlInfo> ShoppingService::GetUrlInfosForActiveWebWrappers() {

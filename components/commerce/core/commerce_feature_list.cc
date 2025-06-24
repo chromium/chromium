@@ -46,7 +46,7 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     map[&kPriceAnnotationsRegionLaunched] = {{"us", {"en-us"}}};
     map[&kPriceInsightsRegionLaunched] = {{"us", {"en-us"}}};
     map[&kProductSpecifications] = {{"us", {"en-us"}}};
-    map[&kShoppingListRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kShoppingList] = {{"us", {"en-us"}}};
     map[&kShoppingPageTypesRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShoppingPDPMetricsRegionLaunched] = {{"us", {"en-us"}}};
     map[&kSubscriptionsApiRegionLaunched] = {
@@ -299,16 +299,6 @@ const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory{
     &kCommerceMerchantViewer, "delete_all_merchants_on_clear_history", false};
 
 BASE_FEATURE(kShoppingList, "ShoppingList", base::FEATURE_DISABLED_BY_DEFAULT);
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
-BASE_FEATURE(kShoppingListRegionLaunched,
-             "ShoppingListRegionLaunched",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-BASE_FEATURE(kShoppingListRegionLaunched,
-             "ShoppingListRegionLaunched",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 BASE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey,
              "PriceTrackingSubscriptionServiceLocaleKey",
@@ -464,6 +454,27 @@ bool IsEnabledForCountryAndLocale(const base::Feature& feature,
   // If the set of allowed locales contains our locale, we're considered to be
   // enabled.
   return it->second.find(base::ToLowerASCII(locale)) != it->second.end();
+}
+
+bool IsRegionLockedFeatureEnabled(const base::Feature& feature,
+                                  const std::string& country_code,
+                                  const std::string& locale) {
+  auto* feature_list = base::FeatureList::GetInstance();
+
+  // If the feature has a server-side config, this check will ensure that
+  // we use that state rather than checking the country/region map. If a
+  // client is determined to be in the "default" group, this path is still
+  // taken, but is still subject to the experiment config filters. E.g. a
+  // config starting experimentation and filtering on CA will not affect
+  // launched users in the US.
+  if (feature_list && feature_list->IsFeatureOverridden(feature.name)) {
+    return base::FeatureList::IsEnabled(feature);
+  }
+
+  bool flag_enabled = base::FeatureList::IsEnabled(feature);
+  bool region_launched =
+      IsEnabledForCountryAndLocale(feature, country_code, locale);
+  return flag_enabled || region_launched;
 }
 
 bool IsRegionLockedFeatureEnabled(const base::Feature& feature,

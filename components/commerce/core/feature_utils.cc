@@ -34,9 +34,9 @@ bool CanFetchProductSpecificationsData(AccountChecker* account_checker,
 }  // namespace
 
 bool IsShoppingListEligible(AccountChecker* account_checker) {
-  if (!commerce::IsRegionLockedFeatureEnabled(
-          kShoppingList, kShoppingListRegionLaunched,
-          account_checker->GetCountry(), account_checker->GetLocale())) {
+  if (!commerce::IsRegionLockedFeatureEnabled(kShoppingList,
+                                              account_checker->GetCountry(),
+                                              account_checker->GetLocale())) {
     return false;
   }
 

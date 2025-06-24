@@ -264,7 +264,7 @@ void CommerceInternalsHandler::GetShoppingEligibilityDetails(
       /*expected_value=*/true));
   details->details.push_back(mojom::EligibilityDetail::New(
       "IsRegionLockedFeatureEnabled(kShoppingList)",
-      IsRegionLockedFeatureEnabled(kShoppingList, kShoppingListRegionLaunched,
+      IsRegionLockedFeatureEnabled(kShoppingList,
                                    shopping_service_->country_on_startup_,
                                    shopping_service_->locale_on_startup_),
       /*expected_value=*/true));
