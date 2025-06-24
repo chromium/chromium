@@ -648,7 +648,7 @@
   {
     "name": "auto-picture-in-picture-for-video-playback",
     "owners": [ "bkeen@google.com", "media-dev@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "autofill-across-iframes",
