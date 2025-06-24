@@ -314,13 +314,13 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   }
 
   void SetDeviceAllowEnterpriseRemoteAccessPolicyValue(bool enabled) {
-    profile_manager_.local_state()->Get()->SetBoolean(
+    TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
         prefs::kDeviceAllowEnterpriseRemoteAccessConnections, enabled);
   }
 
   void SetRemoteAccessHostAllowEnterpriseRemoteSupportConnections(
       bool enabled) {
-    profile_manager_.local_state()->Get()->SetBoolean(
+    TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
         prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
         enabled);
   }

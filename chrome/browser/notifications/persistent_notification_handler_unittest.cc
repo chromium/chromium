@@ -360,7 +360,7 @@ class
                 })));
     auto logs_uploader = std::make_unique<
         optimization_guide::TestModelQualityLogsUploaderService>(
-        manager_.local_state()->Get());
+        TestingBrowserProcess::GetGlobal()->local_state());
     mock_optimization_guide_keyed_service_
         ->SetModelQualityLogsUploaderServiceForTesting(
             std::move(logs_uploader));

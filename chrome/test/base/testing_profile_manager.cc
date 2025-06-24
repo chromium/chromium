@@ -57,17 +57,13 @@ std::unique_ptr<Profile> BuildTestingProfile(
 TestingProfileManager::TestingProfileManager(TestingBrowserProcess* process)
     : called_set_up_(false),
       browser_process_(process),
-      owned_local_state_(std::make_unique<ScopedTestingLocalState>(process)),
-      profile_manager_(nullptr) {
-  local_state_ = owned_local_state_.get();
-}
+      profile_manager_(nullptr) {}
 
 TestingProfileManager::~TestingProfileManager() {
   ProfileDestroyer::DestroyPendingProfilesForShutdown();
 
   // Drop unowned references before destroying the object that owns them.
   profile_manager_ = nullptr;
-  local_state_ = nullptr;
 
   // Destroying this class also destroys the LocalState, so make sure the
   // associated ProfileManager is also destroyed.

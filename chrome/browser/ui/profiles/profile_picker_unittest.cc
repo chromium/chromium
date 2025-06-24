@@ -47,7 +47,7 @@ class ProfilePickerTest : public testing::Test {
   }
 
   PrefService* local_state() {
-    return testing_profile_manager()->local_state()->Get();
+    return TestingBrowserProcess::GetGlobal()->local_state();
   }
 
  private:

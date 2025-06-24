@@ -313,24 +313,24 @@ class HidChooserContextTestBase {
   }
 
   void SetAllowDevicesForUrlsPolicy(std::string_view policy) {
-    testing_profile_manager_->local_state()->Get()->SetManagedPref(
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
         prefs::kManagedWebHidAllowDevicesForUrls, ParseJson(policy));
   }
 
   void SetAllowDevicesForUrlsOnLoginScreenPolicy(std::string_view policy) {
-    testing_profile_manager_->local_state()->Get()->SetManagedPref(
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
         prefs::kManagedWebHidAllowDevicesForUrlsOnLoginScreen,
         ParseJson(policy));
   }
 
   void SetAllowDevicesWithHidUsagesForUrlsPolicy(std::string_view policy) {
-    testing_profile_manager_->local_state()->Get()->SetManagedPref(
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
         prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls,
         ParseJson(policy));
   }
 
   void SetAllowAllDevicesForUrlsPolicy(std::string_view policy) {
-    testing_profile_manager_->local_state()->Get()->SetManagedPref(
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
         prefs::kManagedWebHidAllowAllDevicesForUrls, ParseJson(policy));
   }
 

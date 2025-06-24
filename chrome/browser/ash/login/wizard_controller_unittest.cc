@@ -203,7 +203,7 @@ class WizardControllerTestBase : public ::testing::Test {
     input_method::Initialize();
     AshTestHelper::InitParams params;
     params.start_session = false;
-    params.local_state = profile_manager_->local_state()->Get();
+    params.local_state = TestingBrowserProcess::GetGlobal()->local_state();
     test_context_factories_ = std::make_unique<ui::TestContextFactories>(
         /*enable_pixel_output=*/false);
     ash_test_helper_ = std::make_unique<AshTestHelper>(
@@ -235,7 +235,7 @@ class WizardControllerTestBase : public ::testing::Test {
     network_portal_detector::InitializeForTesting(&network_portal_detector_);
     chromeos::TpmManagerClient::InitializeFake();
     StatsReportingController::Initialize(
-        profile_manager_->local_state()->Get());
+        TestingBrowserProcess::GetGlobal()->local_state());
     CreateExtensionServiceFor(profile_.get());
     CreateExtensionServiceFor(
         profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));

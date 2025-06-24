@@ -173,11 +173,13 @@ class DeviceCommandFetchCrdAvailabilityInfoJobTest
   }
 
   void EnablePref(const char* pref_name) {
-    profile_manager_.local_state()->Get()->SetBoolean(pref_name, true);
+    TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(pref_name,
+                                                                  true);
   }
 
   void DisablePref(const char* pref_name) {
-    profile_manager_.local_state()->Get()->SetBoolean(pref_name, false);
+    TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(pref_name,
+                                                                  false);
   }
 
  private:

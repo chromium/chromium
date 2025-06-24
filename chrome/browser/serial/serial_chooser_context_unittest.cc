@@ -165,7 +165,7 @@ class SerialChooserContextTestBase {
   device::FakeSerialPortManager& port_manager() { return port_manager_; }
   TestingProfile* profile() { return profile_; }
   TestingPrefServiceSimple* local_state() {
-    return testing_profile_manager_->local_state()->Get();
+    return TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
   }
   SerialChooserContext* context() { return context_; }
   permissions::MockPermissionObserver& permission_observer() {

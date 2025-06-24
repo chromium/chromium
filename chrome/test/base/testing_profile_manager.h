@@ -139,7 +139,6 @@ class TestingProfileManager : public ProfileObserver {
   const base::FilePath& profiles_dir();
   ProfileManager* profile_manager();
   ProfileAttributesStorage* profile_attributes_storage();
-  ScopedTestingLocalState* local_state() { return local_state_; }
 
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
@@ -172,12 +171,6 @@ class TestingProfileManager : public ProfileObserver {
 
   // Weak reference to the browser process on which the ProfileManager is set.
   raw_ptr<TestingBrowserProcess> browser_process_;
-
-  // Local state in which all the profiles are registered.
-  raw_ptr<ScopedTestingLocalState> local_state_;
-
-  // Owned local state for when it's not provided in the constructor.
-  std::unique_ptr<ScopedTestingLocalState> owned_local_state_;
 
   // Weak reference to the profile manager.
   raw_ptr<ProfileManager, DanglingUntriaged> profile_manager_;

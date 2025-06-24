@@ -75,7 +75,9 @@ class AccountsPolicyManagerTest : public testing::Test {
         "accounts_policy_manager_test_profile_path");
   }
 
-  PrefService* GetLocalState() { return profile_manager_.local_state()->Get(); }
+  PrefService* GetLocalState() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
 
   Profile* GetProfile() {
     DCHECK(profile_);

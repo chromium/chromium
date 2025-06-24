@@ -15,8 +15,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -265,8 +267,9 @@ TEST_F(ProfileMenuControllerTest, DeleteActiveProfile) {
 
   // Simulate an unloaded profile by setting the "last used" local state pref
   // the profile that was just deleted.
-  ScopedTestingLocalState* local_state = manager->local_state();
-  local_state->Get()->SetUserPref(
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  local_state->SetUserPref(
       prefs::kProfileLastUsed,
       base::Value(profile3_path.BaseName().MaybeAsASCII()));
   EXPECT_FALSE(ProfileManager::GetLastUsedProfileIfLoaded());
@@ -286,9 +289,9 @@ TEST_F(ProfileMenuControllerTest, DeleteActiveProfile) {
 }
 
 TEST_F(ProfileMenuControllerTest, AddProfileDisabled) {
-  ScopedTestingLocalState* local_state = profile_manager()->local_state();
-  local_state->Get()->SetUserPref(prefs::kBrowserAddPersonEnabled,
-                                  base::Value(false));
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  local_state->SetUserPref(prefs::kBrowserAddPersonEnabled, base::Value(false));
 
   RebuildController();
 

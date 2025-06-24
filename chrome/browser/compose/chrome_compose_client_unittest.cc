@@ -174,7 +174,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
     GetOptimizationGuide().SetModelQualityLogsUploaderServiceForTesting(
         std::make_unique<TestModelQualityLogsUploaderService>(
-            profile_manager()->local_state()->Get()));
+            TestingBrowserProcess::GetGlobal()->local_state()));
 
     GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
                                          true);

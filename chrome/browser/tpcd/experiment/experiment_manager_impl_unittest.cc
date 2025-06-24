@@ -46,7 +46,9 @@ using Checkpoint = ::testing::MockFunction<void(int step)>;
 
 class ExperimentManagerImplTestBase : public testing::Test {
  public:
-  PrefService& prefs() { return *profile_manager_.local_state()->Get(); }
+  PrefService& prefs() {
+    return *TestingBrowserProcess::GetGlobal()->local_state();
+  }
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());

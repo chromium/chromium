@@ -102,7 +102,7 @@ void BrowserWithTestWindowTest::SetUp() {
 #endif
 
   user_performance_tuning_manager_environment_.SetUp(
-      profile_manager_->local_state()->Get());
+      TestingBrowserProcess::GetGlobal()->local_state());
 
 #if BUILDFLAG(IS_CHROMEOS)
   manager_ = std::make_unique<crosapi::CrosapiManager>();

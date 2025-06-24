@@ -435,7 +435,7 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNotice_CustomText) {
 
   // Set a custom label policy, which will be used in the management notice
   // text.
-  profile_manager_->local_state()->Get()->SetString(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       prefs::kEnterpriseCustomLabelForBrowser, "custom label");
   document_.FlushForTesting();
 
@@ -522,7 +522,7 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNotice_SetLabelPolicy) {
       .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
         EXPECT_EQ("Managed by NewCustomLabel", notice->text);
       });
-  profile_manager_->local_state()->Get()->SetString(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       prefs::kEnterpriseCustomLabelForBrowser, "NewCustomLabel");
 
   document_.FlushForTesting();
@@ -537,7 +537,7 @@ TEST_F(NewTabFooterHandlerEnterpriseTest,
           policy::ManagementServiceFactory::GetForProfile(profile()),
           policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
 
-  profile_manager_->local_state()->Get()->SetString(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       prefs::kEnterpriseCustomLabelForBrowser, "CustomLabel");
   // Browser management is local, so no domain is indicated in the managent
   // notice text.
@@ -555,7 +555,7 @@ TEST_F(NewTabFooterHandlerEnterpriseTest,
       .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
         EXPECT_EQ("Managed by your organization", notice->text);
       });
-  profile_manager_->local_state()->Get()->SetString(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       prefs::kEnterpriseCustomLabelForBrowser, std::string());
 
   document_.FlushForTesting();
@@ -572,7 +572,7 @@ TEST_F(NewTabFooterHandlerEnterpriseTest,
 
   // Disable the management notice policy and verify that an empty notice is
   // set.
-  profile_manager_->local_state()->Get()->SetBoolean(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
       prefs::kNTPFooterManagementNoticeEnabled, false);
 
   EXPECT_CALL(document_, SetManagementNotice)
@@ -591,7 +591,7 @@ TEST_F(NewTabFooterHandlerEnterpriseTest,
       profile_supervised_management(
           policy::ManagementServiceFactory::GetForProfile(profile()),
           policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
-  profile_manager_->local_state()->Get()->SetBoolean(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
       prefs::kNTPFooterManagementNoticeEnabled, false);
 
   EXPECT_CALL(document_, SetManagementNotice)
@@ -608,7 +608,7 @@ TEST_F(NewTabFooterHandlerEnterpriseTest,
         EXPECT_EQ("Managed by your organization", notice->text);
       });
 
-  profile_manager_->local_state()->Get()->SetBoolean(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
       prefs::kNTPFooterManagementNoticeEnabled, true);
 
   document_.FlushForTesting();

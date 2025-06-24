@@ -162,7 +162,7 @@ class GlicMetricsTest : public testing::Test {
 
  protected:
   TestingPrefServiceSimple* local_state() {
-    return testing_profile_manager_->local_state()->Get();
+    return TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
   }
 
   content::BrowserTaskEnvironment task_environment_;

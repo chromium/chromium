@@ -55,7 +55,7 @@ class NetworkPrefStateObserverTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     network_pref_state_observer_ = std::make_unique<NetworkPrefStateObserver>(
-        *profile_manager_->local_state()->Get());
+        *TestingBrowserProcess::GetGlobal()->local_state());
   }
 
   void TearDown() override {

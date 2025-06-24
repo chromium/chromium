@@ -1552,12 +1552,12 @@ class VolumeManagerLocalUserFilesTest : public VolumeManagerArcTest {
   void TearDown() override { VolumeManagerArcTest::TearDown(); }
 
   void SetLocalUserFilesPolicy(bool allowed) {
-    testing_profile_manager_->local_state()->Get()->SetBoolean(
+    TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
         prefs::kLocalUserFilesAllowed, allowed);
   }
 
   void SetLocalUserFilesMigrationPolicy(const std::string& destination) {
-    testing_profile_manager_->local_state()->Get()->SetString(
+    TestingBrowserProcess::GetGlobal()->local_state()->SetString(
         prefs::kLocalUserFilesMigrationDestination, destination);
     volume_manager()->OnMigrationSucceededForTesting();
   }
