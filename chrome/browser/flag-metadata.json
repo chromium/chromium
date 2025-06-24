@@ -7717,7 +7717,7 @@
   {
     "name": "paint-preview-demo",
     "owners": [ "ckitagawa@chromium.org", "fredmello@chromium.org", "chrome-fdt@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 160
   },
   {
     "name": "panel-self-refresh-2",
@@ -9074,7 +9074,7 @@
   {
     "name": "show-new-tab-animations",
     "owners": [ "ckitagawa@chromium.org", "polardz@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "show-overdraw-feedback",
@@ -9474,7 +9474,7 @@
   {
     "name": "tab-closure-method-refactor",
     "owners": [ "madhavpruthi@google.org", "ckitagawa@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "tab-collection-android",
