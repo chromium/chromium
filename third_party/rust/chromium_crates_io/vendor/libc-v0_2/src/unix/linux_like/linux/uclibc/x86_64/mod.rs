@@ -144,6 +144,8 @@ s! {
         st_pad4: [c_long; 3],
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigaction {
         pub sa_handler: crate::sighandler_t,
         pub sa_flags: c_ulong,

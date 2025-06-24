@@ -32,7 +32,7 @@ s! {
         pub st_dev: dev_t,
         pub st_ino: ino_t,
         pub st_mode: mode_t,
-        pub st_nlink: u64,
+        pub st_nlink: nlink_t,
         pub st_uid: u32,
         pub st_gid: u32,
         pub st_rdev: dev_t,

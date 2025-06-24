@@ -351,6 +351,8 @@ s! {
         pub cr2: u64,
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigevent {
         pub sigev_value: sigval,
         pub sigev_signo: c_int,

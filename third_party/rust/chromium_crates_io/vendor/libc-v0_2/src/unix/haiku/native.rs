@@ -403,11 +403,14 @@ s! {
     }
 
     // kernel/image.h
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct image_info {
         pub id: image_id,
         pub image_type: c_int,
         pub sequence: i32,
         pub init_order: i32,
+        // FIXME(1.0): these should be made optional
         pub init_routine: extern "C" fn(),
         pub term_routine: extern "C" fn(),
         pub device: crate::dev_t,

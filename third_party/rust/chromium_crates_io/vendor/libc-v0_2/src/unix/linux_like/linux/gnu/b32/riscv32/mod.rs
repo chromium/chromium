@@ -108,6 +108,8 @@ s! {
         pub ss_size: size_t,
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigaction {
         pub sa_sigaction: crate::sighandler_t,
         pub sa_mask: crate::sigset_t,

@@ -12,6 +12,8 @@ s! {
         __val: [c_ulong; 1],
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigaction {
         pub sa_flags: c_int,
         pub sa_sigaction: crate::sighandler_t,

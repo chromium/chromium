@@ -630,7 +630,7 @@ impl siginfo_t {
             _pad: [c_int; SI_PAD],
             _pid: crate::pid_t,
         }
-        (*(self as *const siginfo_t as *const siginfo_timer))._pid
+        (*(self as *const siginfo_t).cast::<siginfo_timer>())._pid
     }
 
     pub unsafe fn si_uid(&self) -> crate::uid_t {
@@ -643,7 +643,7 @@ impl siginfo_t {
             _pid: crate::pid_t,
             _uid: crate::uid_t,
         }
-        (*(self as *const siginfo_t as *const siginfo_timer))._uid
+        (*(self as *const siginfo_t).cast::<siginfo_timer>())._uid
     }
 
     pub unsafe fn si_value(&self) -> crate::sigval {
@@ -657,7 +657,7 @@ impl siginfo_t {
             _uid: crate::uid_t,
             value: crate::sigval,
         }
-        (*(self as *const siginfo_t as *const siginfo_timer)).value
+        (*(self as *const siginfo_t).cast::<siginfo_timer>()).value
     }
 }
 
@@ -1869,7 +1869,7 @@ f! {
     pub fn CMSG_NXTHDR(mhdr: *const crate::msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         if cmsg.is_null() {
             return crate::CMSG_FIRSTHDR(mhdr);
-        };
+        }
         let next =
             cmsg as usize + _ALIGN((*cmsg).cmsg_len as usize) + _ALIGN(mem::size_of::<cmsghdr>());
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;

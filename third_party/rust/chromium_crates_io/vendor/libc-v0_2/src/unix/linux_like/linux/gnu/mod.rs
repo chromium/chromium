@@ -366,6 +366,8 @@ s! {
         __pad: i32,
         #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
         pub tv_nsec: c_long,
+        #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
+        pub tv_nsec: i64,
         #[cfg(all(gnu_time_bits64, target_endian = "little"))]
         __pad: i32,
     }

@@ -158,6 +158,8 @@ s! {
         pub sem_flg: c_short,
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigaction {
         pub sa_sigaction: crate::sighandler_t,
         pub sa_mask: crate::sigset_t,
@@ -1365,7 +1367,7 @@ f! {
     pub fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         if ((*cmsg).cmsg_len as usize) < mem::size_of::<cmsghdr>() {
             return core::ptr::null_mut::<cmsghdr>();
-        };
+        }
         let next = (cmsg as usize + super::CMSG_ALIGN((*cmsg).cmsg_len as usize)) as *mut cmsghdr;
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
         if (next.offset(1)) as usize > max {

@@ -1415,6 +1415,8 @@ s! {
         pub stack: [u32; 8],
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct GeCallbackData {
         pub signal_func: Option<extern "C" fn(id: i32, arg: *mut c_void)>,
         pub signal_arg: *mut c_void,
@@ -1537,6 +1539,8 @@ s! {
         pub stack_mpid: SceUid,
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct SceKernelThreadInfo {
         pub size: usize,
         pub name: [u8; 32],
@@ -1611,6 +1615,8 @@ s! {
         pub first_message: *mut c_void,
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct SceKernelVTimerInfo {
         pub size: usize,
         pub name: [u8; 32],
@@ -1622,6 +1628,8 @@ s! {
         pub common: *mut c_void,
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct SceKernelThreadEventHandlerInfo {
         pub size: usize,
         pub name: [u8; 32],
@@ -1631,6 +1639,8 @@ s! {
         pub common: *mut c_void,
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct SceKernelAlarmInfo {
         pub size: usize,
         pub schedule: SceKernelSysClock,
@@ -1688,6 +1698,8 @@ s! {
         pub size: usize,
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct SceKernelCallbackInfo {
         pub size: usize,
         pub name: [u8; 32usize],
@@ -1787,6 +1799,8 @@ s! {
         pub type_: UmdType,
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct SceMpegRingbuffer {
         pub packets: i32,
         pub unk0: u32,

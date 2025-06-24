@@ -137,6 +137,8 @@ s! {
         pub ev: crate::__c_anonymous_struct_ev,
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct _sighandler_info {
         pub siginfo: crate::siginfo_t,
         pub handler: Option<unsafe extern "C" fn(value: c_int)>,

@@ -2422,7 +2422,7 @@ f! {
     pub fn CMSG_NXTHDR(mhdr: *const crate::msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         if cmsg.is_null() {
             return crate::CMSG_FIRSTHDR(mhdr);
-        };
+        }
         let next =
             _CMSG_HDR_ALIGN(cmsg as usize + (*cmsg).cmsg_len as usize + size_of::<cmsghdr>());
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;

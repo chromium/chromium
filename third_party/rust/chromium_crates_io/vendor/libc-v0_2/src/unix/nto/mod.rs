@@ -576,6 +576,8 @@ s! {
         re_g: *mut c_void,
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct _thread_attr {
         pub __flags: c_int,
         pub __stacksize: size_t,

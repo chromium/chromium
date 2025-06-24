@@ -1533,7 +1533,7 @@ f! {
     pub fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         if cmsg.is_null() {
             return crate::CMSG_FIRSTHDR(mhdr);
-        };
+        }
         let next = cmsg as usize
             + CMSG_ALIGN((*cmsg).cmsg_len as usize)
             + CMSG_ALIGN(mem::size_of::<cmsghdr>());

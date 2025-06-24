@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.2.174](https://github.com/rust-lang/libc/compare/0.2.173...0.2.174) - 2025-06-17
+
+### Added
+
+- Linux: Make `pidfd_info` fields pub ([#4487](https://github.com/rust-lang/libc/pull/4487))
+
+### Fixed
+
+- Gnu x32: Add missing `timespec.tv_nsec` ([#4497](https://github.com/rust-lang/libc/pull/4497))
+- NuttX: Use `nlink_t` type for `st_nlink` in `struct stat` definition ([#4483](https://github.com/rust-lang/libc/pull/4483))
+
+### Other
+
+- Allow new `unpredictable_function_pointer_comparisons` lints ([#4489](https://github.com/rust-lang/libc/pull/4489))
+- OpenBSD: Fix some clippy warnings to use `pointer::cast`. ([#4490](https://github.com/rust-lang/libc/pull/4490))
+- Remove unessecary semicolons from definitions of `CMSG_NXTHDR`. ([#4492](https://github.com/rust-lang/libc/pull/4492))
+
 
 ## [0.2.173](https://github.com/rust-lang/libc/compare/0.2.172...0.2.173) - 2025-06-09
 

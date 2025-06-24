@@ -12,6 +12,8 @@ pub type __u64 = u64;
 pub type __s64 = i64;
 
 s! {
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigaction {
         pub sa_sigaction: crate::sighandler_t,
         __glibc_reserved0: c_int,

@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "libc"
-version = "0.2.173"
+version = "0.2.174"
 authors = ["The Rust Project Developers"]
 build = "build.rs"
 exclude = [

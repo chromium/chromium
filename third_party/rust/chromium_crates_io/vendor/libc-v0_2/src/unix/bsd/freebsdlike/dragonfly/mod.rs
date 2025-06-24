@@ -520,6 +520,8 @@ s_no_extra_traits! {
         pub mc_fpregs: [[c_uint; 8]; 32],
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct ucontext_t {
         pub uc_sigmask: crate::sigset_t,
         pub uc_mcontext: mcontext_t,

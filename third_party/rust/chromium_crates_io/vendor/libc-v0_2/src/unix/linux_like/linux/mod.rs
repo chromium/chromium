@@ -1366,21 +1366,22 @@ s! {
 
     // linux/pidfd.h
 
+    #[non_exhaustive]
     pub struct pidfd_info {
-        mask: crate::__u64,
-        cgroupid: crate::__u64,
-        pid: crate::__u32,
-        tgid: crate::__u32,
-        ppid: crate::__u32,
-        ruid: crate::__u32,
-        rgid: crate::__u32,
-        euid: crate::__u32,
-        egid: crate::__u32,
-        suid: crate::__u32,
-        sgid: crate::__u32,
-        fsuid: crate::__u32,
-        fsgid: crate::__u32,
-        exit_code: crate::__s32,
+        pub mask: crate::__u64,
+        pub cgroupid: crate::__u64,
+        pub pid: crate::__u32,
+        pub tgid: crate::__u32,
+        pub ppid: crate::__u32,
+        pub ruid: crate::__u32,
+        pub rgid: crate::__u32,
+        pub euid: crate::__u32,
+        pub egid: crate::__u32,
+        pub suid: crate::__u32,
+        pub sgid: crate::__u32,
+        pub fsuid: crate::__u32,
+        pub fsgid: crate::__u32,
+        pub exit_code: crate::__s32,
     }
 
     // linux/uio.h
