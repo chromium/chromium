@@ -275,7 +275,7 @@ ntp-lens-upload-dialog {
 #composeboxScrim {
   background: var(--color-new-tab-page-background);
   inset: 0;
-  position: absolute;
+  position: fixed;
   z-index: 1;
 }
 
