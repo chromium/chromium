@@ -44,7 +44,7 @@ cr-collapse {
   width: 100%;
 }
 
-hr {
+.sp-hr {
   margin: var(--sp-card-block-padding) var(--sp-card-inline-padding);
   width: auto;
 }
