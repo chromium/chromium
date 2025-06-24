@@ -2878,6 +2878,9 @@ extern const char kCCTAuthTabDisableAllExternalIntentsDescription[];
 extern const char kCCTAuthTabEnableHttpsRedirectsName[];
 extern const char kCCTAuthTabEnableHttpsRedirectsDescription[];
 
+extern const char kCCTContextualMenuItemsName[];
+extern const char kCCTContextualMenuItemsDescription[];
+
 extern const char kCCTEphemeralMediaViewerExperimentName[];
 extern const char kCCTEphemeralMediaViewerExperimentDescription[];
 

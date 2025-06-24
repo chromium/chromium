@@ -291,6 +291,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_BLOCK_TOUCHES_DURING_ENTER_ANIMATION =
             "CCTBlockTouchesDuringEnterAnimation";
     public static final String CCT_CLIENT_DATA_HEADER = "CCTClientDataHeader";
+    public static final String CCT_CONTEXTUAL_MENU_ITEMS = "CCTContextualMenuItems";
     public static final String CCT_EARLY_NAV = "CCTEarlyNav";
     public static final String CCT_EPHEMERAL_MEDIA_VIEWER_EXPERIMENT =
             "CCTEphemeralMediaViewerExperiment";
@@ -741,6 +742,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctBlockTouchesDuringEnterAnimation =
             newCachedFlag(CCT_BLOCK_TOUCHES_DURING_ENTER_ANIMATION, true);
+    public static final CachedFlag sCctContextualMenuItems =
+            newCachedFlag(CCT_CONTEXTUAL_MENU_ITEMS, false);
     public static final CachedFlag sCctEphemeralMediaViewerExperiment =
             newCachedFlag(
                     CCT_EPHEMERAL_MEDIA_VIEWER_EXPERIMENT,
@@ -1038,6 +1041,7 @@ public abstract class ChromeFeatureList {
                     sCctAuthTabEnableHttpsRedirects,
                     sCctAutoTranslate,
                     sCctBlockTouchesDuringEnterAnimation,
+                    sCctContextualMenuItems,
                     sCctEphemeralMediaViewerExperiment,
                     sCctEphemeralMode,
                     sCctFixWarmup,

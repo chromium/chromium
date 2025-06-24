@@ -4935,6 +4935,12 @@ const char kCCTAuthTabEnableHttpsRedirectsName[] =
 const char kCCTAuthTabEnableHttpsRedirectsDescription[] =
     "Enables HTTPS redirect scheme in Auth Tab";
 
+const char kCCTContextualMenuItemsName[] =
+    "Enable Contextual Menu Items in CCT";
+const char kCCTContextualMenuItemsDescription[] =
+    "When enabled, contextual menu items passed by developers will be visible "
+    "in CCTs.";
+
 const char kCCTEphemeralMediaViewerExperimentName[] =
     "Ephemeral CCT for Media Viewer";
 const char kCCTEphemeralMediaViewerExperimentDescription[] =

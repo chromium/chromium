@@ -250,6 +250,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTAuthTabEnableHttpsRedirects,
     &kCCTBlockTouchesDuringEnterAnimation,
     &kCCTClientDataHeader,
+    &kCCTContextualMenuItems,
     &kCCTEarlyNav,
     &kCCTExtendTrustedCdnPublisher,
     &kCCTEphemeralMediaViewerExperiment,
@@ -739,6 +740,10 @@ BASE_FEATURE(kCCTBlockTouchesDuringEnterAnimation,
 
 BASE_FEATURE(kCCTClientDataHeader,
              "CCTClientDataHeader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTContextualMenuItems,
+             "CCTContextualMenuItems",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTEarlyNav, "CCTEarlyNav", base::FEATURE_DISABLED_BY_DEFAULT);

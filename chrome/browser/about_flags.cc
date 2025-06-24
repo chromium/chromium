@@ -8131,6 +8131,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"cct-contextual-menu-items",
+     flag_descriptions::kCCTContextualMenuItemsName,
+     flag_descriptions::kCCTContextualMenuItemsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTContextualMenuItems)},
     {"cct-resizable-for-third-parties",
      flag_descriptions::kCCTResizableForThirdPartiesName,
      flag_descriptions::kCCTResizableForThirdPartiesDescription, kOsAndroid,
