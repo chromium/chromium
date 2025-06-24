@@ -24,6 +24,7 @@ QUERY_BUILD = 'query_build'
 POLL_HEARTBEAT = 'poll_heartbeat'
 REGISTER_BUILDER = 'register_builder'
 CANCEL_BUILD = 'cancel_build'
+STOP_SERVER = 'stop_server'
 
 SERVER_SCRIPT = pathlib.Path(
     build_utils.DIR_SOURCE_ROOT

@@ -237,7 +237,7 @@ class ServerStartedTest(unittest.TestCase):
 
       proc_result = callServer(['--print-status-all'])
       self.assertIn('has 1 registered build', proc_result.stdout)
-      self.assertIn('[1/1]', proc_result.stdout)
+      self.assertIn('1/1', proc_result.stdout)
 
       with blockingFifo() as fifo_path:
         # cat gets stuck until we open the other end of the fifo.
@@ -246,7 +246,7 @@ class ServerStartedTest(unittest.TestCase):
         self.assertIn('is still 1 static analysis job', proc_result.stdout)
         self.assertIn('--wait-for-idle', proc_result.stdout)
         proc_result = callServer(['--print-status-all'])
-        self.assertIn('[1/2]', proc_result.stdout)
+        self.assertIn('1/2', proc_result.stdout)
 
       self.waitForTasksDone()
       callServer(['--cancel-build', self._build_id])
@@ -255,7 +255,7 @@ class ServerStartedTest(unittest.TestCase):
       self.assertEqual('', proc_result.stdout)
 
     proc_result = callServer(['--print-status-all'])
-    self.assertIn('Siso finished', proc_result.stdout)
+    self.assertIn('Main build completed', proc_result.stdout)
 
   def testServerCancelsRunningTasks(self):
     output_stamp = pathlib.Path('/tmp/.deleteme.stamp')

@@ -84,21 +84,23 @@ def _exception_hook(exctype: type, exc: Exception, tb):
 # Stores global options so as to not keep passing along and storing options
 # everywhere.
 class OptionsManager:
-  _options = None
+  _quiet = None
+  _should_remote_print = None
 
   @classmethod
-  def set_options(cls, options):
-    cls._options = options
+  def set_options(cls, *, quiet, should_remote_print):
+    cls._quiet = quiet
+    cls._should_remote_print = should_remote_print
 
   @classmethod
   def is_quiet(cls):
-    assert cls._options is not None
-    return cls._options.quiet
+    assert cls._quiet is not None
+    return cls._quiet
 
   @classmethod
   def should_remote_print(cls):
-    assert cls._options is not None
-    return not cls._options.no_remote_print
+    assert cls._should_remote_print is not None
+    return cls._should_remote_print
 
 
 class LogfileManager:
@@ -567,7 +569,8 @@ class TaskManager:
 class Task:
   """Class to represent one task and operations on it."""
 
-  def __init__(self, name: str, build: Build, cmd: List[str], stamp_file: str):
+  def __init__(self, name: str, build: Build, cmd: List[str],
+               stamp_file: Optional[str]):
     self.name = name
     self.build = build
     self.cmd = cmd
@@ -688,7 +691,7 @@ class Task:
         # output/text already on the remote tty we are printing to.
         self.build.stdout.write(f'\n{remote_message}')
         self.build.stdout.flush()
-    if delete_stamp:
+    if delete_stamp and self.stamp_file:
       # Force siso to consider failed targets as dirty.
       try:
         os.unlink(os.path.join(self.build.cwd, self.stamp_file))
@@ -703,8 +706,10 @@ def _handle_add_task(data, current_tasks: Dict[Tuple[str, str], Task]):
   build = BuildManager.get_build(build_id)
   BuildManager.maybe_init_cwd(build, data.get('cwd'))
 
-  new_task = Task(name=data['name'],
-                  cmd=data['cmd'],
+  cmd = data['cmd']
+  name = data.get('name') or shlex.join(cmd)
+  new_task = Task(name=name,
+                  cmd=cmd,
                   build=build,
                   stamp_file=data['stamp_file'])
   existing_task = current_tasks.get(new_task.key)
@@ -756,6 +761,14 @@ def _handle_cancel_build(data):
   BuildManager.update_remote_titles('')
 
 
+def _handle_stop_server():
+  """Handle messages of type STOP_SERVER."""
+  server_log('STOPPING SERVER...')
+  TaskManager.deactivate()
+  server_log('STOPPED')
+  sys.exit(0)
+
+
 def _listen_for_request_data(sock: socket.socket):
   """Helper to encapsulate getting a new message."""
   while True:
@@ -795,9 +808,7 @@ def _process_requests(sock: socket.socket, exit_on_idle: bool):
   # Since dicts in python can contain anything, explicitly type tasks to help
   # make static type checking more useful.
   tasks: Dict[Tuple[str, str], Task] = {}
-  server_log(
-      'READY... Remember to set android_static_analysis="build_server" in '
-      'args.gn files')
+  server_log(f'Server started. PID={os.getpid()}')
   _register_cleanup_signal_handlers()
   # pylint: disable=too-many-nested-blocks
   while True:
@@ -817,6 +828,9 @@ def _process_requests(sock: socket.socket, exit_on_idle: bool):
         elif message_type == server_utils.CANCEL_BUILD:
           connection.close()
           _handle_cancel_build(data)
+        elif message_type == server_utils.STOP_SERVER:
+          connection.close()
+          _handle_stop_server()
         else:
           connection.close()
     except TimeoutError:
@@ -901,21 +915,6 @@ def _wait_for_idle():
     time.sleep(0.5)
 
 
-def _check_if_running():
-  """Communicates with the main server to make sure its running."""
-  with socket.socket(socket.AF_UNIX) as sock:
-    try:
-      sock.connect(server_utils.SOCKET_ADDRESS)
-    except OSError:
-      print('Build server is not running and '
-            'android_static_analysis="build_server" is set.\nPlease run '
-            'this command in a separate terminal:\n\n'
-            '$ build/android/fast_local_dev_server.py\n')
-      return 1
-    else:
-      return 0
-
-
 def _send_message_and_close(message_dict):
   with contextlib.closing(socket.socket(socket.AF_UNIX)) as sock:
     sock.connect(server_utils.SOCKET_ADDRESS)
@@ -939,7 +938,20 @@ def _send_cancel_build(build_id):
   return 0
 
 
-def _register_builder(build_id, builder_pid, output_directory):
+def _send_stop_server():
+  try:
+    _send_message_and_close({
+        'message_type': server_utils.STOP_SERVER,
+    })
+  except socket.error as e:
+    if e.errno == 111:
+      sys.stderr.write('No running build server found.\n')
+      return 1
+    raise
+  return 0
+
+
+def _register_build(builder_pid, output_directory):
   if output_directory is not None:
     output_directory = str(pathlib.Path(output_directory).absolute())
   for _attempt in range(3):
@@ -957,7 +969,7 @@ def _register_builder(build_id, builder_pid, output_directory):
       return 0
     except OSError:
       time.sleep(0.05)
-  print(f'Failed to register builer for build_id={build_id}.')
+  print('Failed to register build. No server running?')
   return 1
 
 
@@ -999,12 +1011,12 @@ def _print_build_status_all():
       status = 'Finished without any jobs'
     else:
       if active:
-        status = 'Siso still running'
+        status = 'Main build is still running'
       else:
-        status = 'Siso finished'
+        status = 'Main build completed'
       if out_dir:
         status += f' in {out_dir}'
-      status += f'. Completed [{completed_tasks}/{total_tasks}].'
+      status += f'. Tasks completed: {completed_tasks}/{total_tasks}'
       if completed_tasks < total_tasks:
         status += f' {len(active_tasks)} task(s) currently executing'
     print(f'{build_id}: {status}')
@@ -1045,7 +1057,8 @@ def _print_build_status(build_id):
   return 0
 
 
-def _wait_for_task_requests(exit_on_idle):
+def _start_server(exit_on_idle):
+  sys.excepthook = _exception_hook
   with socket.socket(socket.AF_UNIX) as sock:
     sock.settimeout(_SOCKET_TIMEOUT)
     try:
@@ -1064,13 +1077,37 @@ def _wait_for_task_requests(exit_on_idle):
   return 0
 
 
-def main():
-  # pylint: disable=too-many-return-statements
+def _add_task(cmd):
+  build_id = f'default-{time.time()}'
+  os.environ['AUTONINJA_BUILD_ID'] = build_id
+  tty = os.readlink('/proc/self/fd/1')
+  if os.path.exists(tty):
+    os.environ['AUTONINJA_STDOUT_NAME'] = tty
+  else:
+    os.environ['AUTONINJA_STDOUT_NAME'] = '/dev/null'
+
+  if code := _register_build(os.getpid(), os.getcwd()):
+    return code
+
+  try:
+    _send_message_and_close({
+        'name': None,
+        'message_type': server_utils.ADD_TASK,
+        'cmd': cmd,
+        'cwd': os.getcwd(),
+        'build_id': build_id,
+        'stamp_file': None,
+    })
+    return 0
+  except socket.error as e:
+    if e.errno == 111:
+      sys.stderr.write('No running build server found.\n')
+      return 1
+    raise
+
+
+def _main_old():
   parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument(
-      '--fail-if-not-running',
-      action='store_true',
-      help='Used by GN to fail fast if the build server is not running.')
   parser.add_argument(
       '--exit-on-idle',
       action='store_true',
@@ -1107,10 +1144,10 @@ def main():
                       metavar='BUILD_ID',
                       help='Cancel all pending and running tasks for BUILD_ID.')
   args = parser.parse_args()
-  OptionsManager.set_options(args)
 
-  if args.fail_if_not_running:
-    return _check_if_running()
+  OptionsManager.set_options(quiet=args.quiet,
+                             should_remote_print=not args.no_remote_print)
+
   if args.wait_for_build:
     return _wait_for_build(args.wait_for_build)
   if args.wait_for_idle:
@@ -1120,13 +1157,106 @@ def main():
   if args.print_status_all:
     return _print_build_status_all()
   if args.register_build_id:
-    return _register_builder(args.register_build_id, args.builder_pid,
-                             args.output_directory)
+    return _register_build(args.builder_pid, args.output_directory)
   if args.cancel_build:
     return _send_cancel_build(args.cancel_build)
-  return _wait_for_task_requests(args.exit_on_idle)
+  return _start_server(args.exit_on_idle)
+
+
+def _main_new():
+  parser = argparse.ArgumentParser(description=__doc__)
+  sub_parsers = parser.add_subparsers(dest='command')
+
+  sub_parser = sub_parsers.add_parser('start', help='Start the server')
+  sub_parser.add_argument('--quiet',
+                          action='store_true',
+                          help='Do not output status updates.')
+  sub_parser.add_argument('--no-remote-print',
+                          action='store_true',
+                          help='Do not output errors to remote terminals.')
+  sub_parser.add_argument(
+      '--exit-on-idle',
+      action='store_true',
+      help='Server started on demand. Exit when all tasks run out.')
+
+  sub_parser = sub_parsers.add_parser('stop',
+                                      help='Stops the server if it is running')
+
+  sub_parser = sub_parsers.add_parser(
+      'register-build', help='Tell a running server about a new ninja session')
+  sub_parser.add_argument('--output-directory',
+                          required=True,
+                          help='CWD for the build')
+  sub_parser.add_argument('--builder-pid',
+                          required=True,
+                          help='Builder process\'s PID.')
+
+  sub_parser = sub_parsers.add_parser(
+      'unregister-build',
+      help='Tell a running server a ninja session has finished')
+  sub_parser.add_argument('--build-id',
+                          required=True,
+                          help='The AUTONINJA_BUILD_ID')
+  sub_parser.add_argument('--verbose',
+                          action='store_true',
+                          help='Print status if jobs exist.')
+  sub_parser.add_argument('--cancel-jobs',
+                          action='store_true',
+                          help='Cancel pending jobs')
+
+  sub_parser = sub_parsers.add_parser('status', help='Print status and exit')
+  sub_parser.add_argument('--build-id',
+                          help='The AUTONINJA_BUILD_ID of the session to query '
+                          '(otherwise prints all sessions).')
+
+  sub_parser = sub_parsers.add_parser('wait', help='Wait for jobs to complete')
+  sub_parser.add_argument(
+      '--build-id',
+      help='The AUTONINJA_BUILD_ID of the session to wait for '
+      '(otherwise waits for all sessions).')
+
+  sub_parser = sub_parsers.add_parser('run', help='Adds a task.')
+  sub_parser.add_argument('cmd', nargs='+', help='The command to run')
+
+  args = parser.parse_args()
+
+  ret = 0
+  if args.command == 'start':
+    OptionsManager.set_options(quiet=args.quiet,
+                               should_remote_print=not args.no_remote_print)
+    ret = _start_server(args.exit_on_idle)
+  elif args.command == 'stop':
+    ret = _send_stop_server()
+  elif args.command == 'register-build':
+    ret = _register_build(args.builder_pid, args.output_directory)
+  elif args.command == 'unregister-build':
+    if args.verbose:
+      ret = _print_build_status(args.build_id)
+    if args.cancel_jobs:
+      ret = _send_cancel_build(args.cancel_build)
+  elif args.command == 'status':
+    if args.build_id:
+      ret = _print_build_status(args.build_id)
+    else:
+      ret = _print_build_status_all()
+  elif args.command == 'wait':
+    if args.build_id:
+      ret = _wait_for_build(args.build_id)
+    else:
+      ret = _wait_for_idle()
+  elif args.command == 'run':
+    ret = _add_task(args.cmd)
+  else:
+    parser.print_help()
+    return 1
+  return ret
+
+
+def main():
+  if len(sys.argv) <= 1 or not sys.argv[1].startswith('-'):
+    return _main_new()
+  return _main_old()
 
 
 if __name__ == '__main__':
-  sys.excepthook = _exception_hook
   sys.exit(main())
