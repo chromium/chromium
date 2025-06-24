@@ -78,7 +78,9 @@ class BackingStore {
         blink::mojom::IDBTransactionMode mode) = 0;
 
     // Deletes the database from the backing store and resets metadata to a
-    // mostly uninitialized state.
+    // mostly uninitialized state. If the database does not exist, this should
+    // return Status::OK() and `on_complete` need not be called. (The LevelDB
+    // backing store does call it, which is harmless but unnecessary.)
     [[nodiscard]] virtual Status DeleteDatabase(
         std::vector<PartitionedLock> locks,
         base::OnceClosure on_complete) = 0;
