@@ -1600,10 +1600,18 @@ const FeatureEntry::FeatureVariation
 };
 
 const FeatureEntry::FeatureParam kOmniboxToolbeltAggressive[] = {
-    {"KeepToolbeltAfterInput", "true"}, {"AlwaysIncludeLensAction", "false"},
-    {"ShowAiModeAction", "true"},       {"ShowLensAction", "true"},
-    {"ShowBookmarksAction", "true"},    {"ShowTabsAction", "true"},
-    {"ShowHistoryAction", "true"},
+    {"KeepToolbeltAfterInput", "true"},
+    {"AlwaysIncludeLensAction", "false"},
+    {"ShowLensActionOnNonNtp", "true"},
+    {"ShowLensActionOnNtp", "true"},
+    {"ShowAiModeActionOnNonNtp", "true"},
+    {"ShowAiModeActionOnNtp", "true"},
+    {"ShowHistoryActionOnNonNtp", "true"},
+    {"ShowHistoryActionOnNtp", "true"},
+    {"ShowBookmarksActionOnNonNtp", "true"},
+    {"ShowBookmarksActionOnNtp", "true"},
+    {"ShowTabsActionOnNonNtp", "true"},
+    {"ShowTabsActionOnNtp", "true"},
 };
 const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
     {"Aggressive - zero & typed inputs; all actions.",

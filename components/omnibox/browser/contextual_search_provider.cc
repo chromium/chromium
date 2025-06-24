@@ -95,6 +95,17 @@ bool IsLensEntrypointAvailable(const AutocompleteInput& input,
          input.IsZeroSuggest() && client->IsLensEnabled();
 }
 
+// Whether the feature param is enabled for the current page context.
+bool ActionEnabledForPageContext(const AutocompleteInput& input,
+                                 bool enabled_non_ntp,
+                                 bool enabled_ntp) {
+  return input.current_page_classification() ==
+                 metrics::OmniboxEventProto::
+                     INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS
+             ? enabled_ntp
+             : enabled_non_ntp;
+}
+
 }  // namespace
 
 void ContextualSearchProvider::Start(
@@ -418,7 +429,9 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
   bool english_locale =
       l10n_util::GetLanguage(client()->GetApplicationLocale()) == "en";
 
-  if (config.show_lens_action && google_dse && english_locale &&
+  if (ActionEnabledForPageContext(input, config.show_lens_action_on_non_ntp,
+                                  config.show_lens_action_on_ntp) &&
+      google_dse && english_locale &&
       (config.always_include_lens_action ||
        IsLensEntrypointAvailable(input, client()))) {
     match.actions.push_back(
@@ -436,19 +449,24 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
       return;
     match.actions.push_back(base::MakeRefCounted<T>());
   };
-  if (config.show_ai_mode_action) {
+  if (ActionEnabledForPageContext(input, config.show_ai_mode_action_on_non_ntp,
+                                  config.show_ai_mode_action_on_ntp)) {
     check_and_add.operator()<StarterPackAiModeAction>(
         template_url_starter_pack_data::StarterPackId::kAiMode);
   }
-  if (config.show_history_action) {
+  if (ActionEnabledForPageContext(input, config.show_history_action_on_non_ntp,
+                                  config.show_history_action_on_ntp)) {
     check_and_add.operator()<StarterPackHistoryAction>(
         template_url_starter_pack_data::StarterPackId::kHistory);
   }
-  if (config.show_bookmarks_action) {
+  if (ActionEnabledForPageContext(input,
+                                  config.show_bookmarks_action_on_non_ntp,
+                                  config.show_bookmarks_action_on_ntp)) {
     check_and_add.operator()<StarterPackBookmarksAction>(
         template_url_starter_pack_data::StarterPackId::kBookmarks);
   }
-  if (config.show_tabs_action) {
+  if (ActionEnabledForPageContext(input, config.show_tabs_action_on_non_ntp,
+                                  config.show_tabs_action_on_ntp)) {
     check_and_add.operator()<StarterPackTabsAction>(
         template_url_starter_pack_data::StarterPackId::kTabs);
   }

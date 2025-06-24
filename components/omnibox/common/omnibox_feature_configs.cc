@@ -201,20 +201,44 @@ Toolbelt::Toolbelt() {
       base::FeatureParam<bool>(&kOmniboxToolbelt, "AlwaysIncludeLensAction",
                                false)
           .Get();
-  show_ai_mode_action =
-      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowAiModeAction", false)
+
+  show_lens_action_on_non_ntp =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowLensActionOnNonNtp",
+                               false)
           .Get();
-  show_lens_action =
-      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowLensAction", false)
+  show_lens_action_on_ntp =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowLensActionOnNtp", false)
           .Get();
-  show_bookmarks_action =
-      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowBookmarksAction", false)
+  show_ai_mode_action_on_non_ntp =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowAiModeActionOnNonNtp",
+                               false)
           .Get();
-  show_tabs_action =
-      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowTabsAction", false)
+  show_ai_mode_action_on_ntp =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowAiModeActionOnNtp",
+                               false)
           .Get();
-  show_history_action =
-      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowHistoryAction", false)
+  show_history_action_on_non_ntp =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowHistoryActionOnNonNtp",
+                               false)
+          .Get();
+  show_history_action_on_ntp =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowHistoryActionOnNtp",
+                               false)
+          .Get();
+  show_bookmarks_action_on_non_ntp =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowBookmarksActionOnNonNtp",
+                               false)
+          .Get();
+  show_bookmarks_action_on_ntp =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowBookmarksActionOnNtp",
+                               false)
+          .Get();
+  show_tabs_action_on_non_ntp =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowTabsActionOnNonNtp",
+                               false)
+          .Get();
+  show_tabs_action_on_ntp =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowTabsActionOnNtp", false)
           .Get();
 }
 
