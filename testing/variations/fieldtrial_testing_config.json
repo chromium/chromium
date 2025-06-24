@@ -11810,28 +11810,6 @@
             ]
         }
     ],
-    "HistoryPageHistorySyncPromo": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithContinue",
-                    "enable_features": [
-                        "HistoryPageHistorySyncPromo",
-                        "HistoryPagePromoCtaStringVariation"
-                    ]
-                },
-                {
-                    "name": "EnabledWithTurnOn",
-                    "enable_features": [
-                        "HistoryPageHistorySyncPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "HistorySyncAlternativeIllustration": [
         {
             "platforms": [
