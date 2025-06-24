@@ -46,12 +46,14 @@ class EntityTable;
 // It is associated with an EntityInstance. Attributes are used in order to fill
 // fields with information of certain types.
 //
+// If kAutofillAiNoTagTypes is disabled:
 // Note that there are two concepts of types that are relevant here:
 // - AttributeType: This is the type of the attribute itself and determines the
 //   structure of the attribute.
 // - FieldType: This is the type of data that can be requested by consumers from
 //   the attribute.
 //
+// If kAutofillAiNoTagTypes is disabled:
 // `AutofillField` computes two types for the field: One is available through
 // `AutofillField::GetAutofillAiServerTypePredictions()` and represents the
 // type used in order to figure out the appropriate AttributeInstance to fill
@@ -59,6 +61,7 @@ class EntityTable;
 // represents the general classification of the field (through Autofill server
 // and heuristic prediction logic).
 //
+// If kAutofillAiNoTagTypes is disabled:
 // It could happen that these two types are totally unrelated (e.g., the former
 // returns PASSPORT_NAME_TAG and the latter returns PHONE_HOME_WHOLE_NUMBER)
 // or that the two types are equal (e.g., both return PASSPORT_NAME_TAG). This
@@ -95,7 +98,7 @@ class AttributeInstance final {
   // Returns a string that contains all information stored in this attribute
   // instance, formatted according to the given `app_locale`.
   //
-  // For more control over over which, see GetInfo().
+  // For more control over the return value, see GetInfo().
   std::u16string GetCompleteInfo(const std::string& app_locale) const {
     return GetInfo(type_.field_type(), app_locale, std::nullopt);
   }
