@@ -158,6 +158,14 @@ bool GLContext::MakeCurrent(GLSurface* surface) {
     }
     recorded_max_gles_version_if_feasible = true;
   }
+#elif (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+       BUILDFLAG(IS_WIN))
+  static bool recorded_emulated_gles_version = false;
+  if (!recorded_emulated_gles_version) {
+    base::UmaHistogramBoolean("GPU.ANGLECanEmulateGLES3",
+                              current_gl_->Version->IsAtLeastGLES(3, 0));
+    recorded_emulated_gles_version = true;
+  }
 #endif
 
   return true;

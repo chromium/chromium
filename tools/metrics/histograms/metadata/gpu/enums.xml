@@ -74,6 +74,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Missing serial number"/>
 </enum>
 
+<enum name="BooleanANGLECanEmulateGLES3">
+  <summary>Whether ANGLE can emulate GLES3.</summary>
+  <int value="0" label="false"/>
+  <int value="1" label="true"/>
+</enum>
+
 <enum name="BooleanDisplayIdCollision">
   <int value="0" label="No display ID collision"/>
   <int value="1" label="Display ID collision detected"/>

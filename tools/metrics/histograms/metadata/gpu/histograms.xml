@@ -414,6 +414,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.ANGLECanEmulateGLES3" enum="BooleanANGLECanEmulateGLES3"
+    expires_after="2025-10-01">
+  <owner>blundell@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@google.com</owner>
+  <summary>
+    Records whether ANGLE is able to emulate GLES3 on desktop platforms.
+    Recorded once per GPU process launch.
+  </summary>
+</histogram>
+
 <histogram name="GPU.BlocklistEntriesApplied" enum="GpuBlocklistEntry"
     expires_after="never">
 <!-- expires-never: For monitoring GPU blocklist entries. -->
