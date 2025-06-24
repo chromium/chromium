@@ -22,6 +22,7 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframe_model.h"
+#include "cc/input/browser_controls_offset_manager.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/mirror_layer_impl.h"
@@ -1277,6 +1278,8 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->display_transform_hint = tree.display_transform_hint();
   update->max_safe_area_inset_bottom = tree.max_safe_area_inset_bottom();
   update->browser_controls_params = tree.browser_controls_params();
+  update->browser_controls_offset_tag_modifications =
+      host_impl_->browser_controls_manager()->GetOffsetTagModifications();
   update->inner_scroll = property_ids.inner_scroll;
   update->outer_clip = property_ids.outer_clip;
   update->outer_scroll = property_ids.outer_scroll;

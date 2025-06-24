@@ -5,6 +5,7 @@
 module viz.mojom;
 
 import "cc/mojom/browser_controls_params.mojom";
+import "cc/mojom/browser_controls_offset_tag_modifications.mojom";
 import "cc/mojom/ui_resource_id.mojom";
 import "services/viz/public/mojom/compositing/animation.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
@@ -128,6 +129,10 @@ struct LayerTreeUpdate {
 
   // Parameters for browser controls (URL bar, bottom bar, etc.).
   cc.mojom.BrowserControlsParams browser_controls_params;
+
+  // Modifications to browser controls offset tags.
+  cc.mojom.BrowserControlsOffsetTagModifications
+      browser_controls_offset_tag_modifications;
 
   // Parameters indicating the current browser controls shown ratios.
   // Valid range is 0.0 - 1.0.

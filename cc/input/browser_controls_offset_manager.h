@@ -116,6 +116,19 @@ class CC_EXPORT BrowserControlsOffsetManager {
       base::optional_ref<const BrowserControlsOffsetTagModifications>
           offset_tag_modifications);
 
+  // Directly set the current offset tag modifications.
+  // This is used to set the offset tag modifications from the viz process.
+  void SetOffsetTagModifications(
+      const BrowserControlsOffsetTagModifications& offset_tag_modifications) {
+    offset_tag_modifications_ = offset_tag_modifications;
+  }
+
+  // Returns the current offset tag modifications.
+  const BrowserControlsOffsetTagModifications& GetOffsetTagModifications()
+      const {
+    return offset_tag_modifications_;
+  }
+
   // Return the browser control constraint that must be synced to the
   // main renderer thread (to trigger viewport and related changes).
   BrowserControlsState PullConstraintForMainThread(

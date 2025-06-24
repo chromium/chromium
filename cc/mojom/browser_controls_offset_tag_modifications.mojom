@@ -4,15 +4,9 @@
 
 module cc.mojom;
 
-import "services/viz/public/mojom/compositing/offset_tag.mojom";
+import "cc/mojom/browser_controls_offset_tags.mojom";
 
-struct BrowserControlsOffsetTags {
-  viz.mojom.OffsetTag top_controls_offset_tag;
-  viz.mojom.OffsetTag content_offset_tag;
-  viz.mojom.OffsetTag bottom_controls_offset_tag;
-};
-
-// Only sent from browser to renderer.
+// Corresponds to |cc::BrowserControlsOffsetTagModifications|.
 struct BrowserControlsOffsetTagModifications {
   BrowserControlsOffsetTags tags;
   int32 top_controls_additional_height;

@@ -4,6 +4,7 @@
 
 #include <limits>
 
+#include "cc/input/browser_controls_offset_manager.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/service/layers/layer_context_impl.h"
 #include "components/viz/service/layers/layer_context_impl_base_unittest.h"
@@ -677,6 +678,38 @@ TEST_F(LayerContextImplLayerTreePropertiesTest,
   ASSERT_FALSE(result5.has_value());
   EXPECT_EQ(result5.error(), "Invalid top/bottom controls shown ratios");
   EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), kRatio2);
+}
+
+class LayerContextImplBrowserControlsOffsetTagTest
+    : public LayerContextImplTest {};
+
+// Test that BrowserControlsOffsetTagModifications are deserialized and applied
+// correctly.
+TEST_F(LayerContextImplBrowserControlsOffsetTagTest,
+       DeserializeBrowserControlsOffsetTagModifications) {
+  auto update = CreateDefaultUpdate();
+  cc::BrowserControlsOffsetTagModifications modifications;
+  modifications.tags.top_controls_offset_tag = OffsetTag::CreateRandom();
+  modifications.tags.content_offset_tag = OffsetTag::CreateRandom();
+  modifications.tags.bottom_controls_offset_tag = OffsetTag::CreateRandom();
+  modifications.top_controls_additional_height = 10;
+  modifications.bottom_controls_additional_height = 20;
+  update->browser_controls_offset_tag_modifications = modifications;
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  const auto& offset_tag_modifications = layer_context_impl_->host_impl()
+                                             ->browser_controls_manager()
+                                             ->GetOffsetTagModifications();
+  EXPECT_EQ(offset_tag_modifications.tags.top_controls_offset_tag,
+            modifications.tags.top_controls_offset_tag);
+  EXPECT_EQ(offset_tag_modifications.tags.content_offset_tag,
+            modifications.tags.content_offset_tag);
+  EXPECT_EQ(offset_tag_modifications.tags.bottom_controls_offset_tag,
+            modifications.tags.bottom_controls_offset_tag);
+  EXPECT_EQ(offset_tag_modifications.top_controls_additional_height, 10);
+  EXPECT_EQ(offset_tag_modifications.bottom_controls_additional_height, 20);
 }
 
 }  // namespace

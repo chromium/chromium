@@ -1784,6 +1784,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     layers.set_needs_update_draw_properties();
   }
   layers.SetBrowserControlsParams(update->browser_controls_params);
+  host_impl_->browser_controls_manager()->SetOffsetTagModifications(
+      update->browser_controls_offset_tag_modifications);
+
   layers.set_display_transform_hint(update->display_transform_hint);
   layers.SetMaxSafeAreaInsetBottom(update->max_safe_area_inset_bottom);
   layers.set_painted_device_scale_factor(update->painted_device_scale_factor);
