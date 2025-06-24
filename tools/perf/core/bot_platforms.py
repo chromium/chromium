@@ -588,6 +588,7 @@ _CROSSBENCH_WEBVIEW = frozenset([
         estimated_runtime=900,
         arguments=[
             '--wpr=crossbench_android_embedder_000.wprgo',
+            '--skip-wpr-script-injection',
             '--embedder=com.google.android.googlequicksearchbox',
             '--splashscreen=skip',
             '--cuj-config=../../third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',
