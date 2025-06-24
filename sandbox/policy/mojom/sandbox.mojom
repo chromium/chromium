@@ -153,4 +153,7 @@ enum Sandbox {
   // On Windows the kService sandbox type is used.
   // TODO(crbug.com/340778819): Implement sandboxing on other platforms.
   [EnableIf=is_linux|is_mac] kOnDeviceTranslation,
+
+  // Like kUtility but allows loading of the shape detection internal library.
+  [EnableIf=is_chromeos] kShapeDetection,
 };

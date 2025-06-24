@@ -4,5 +4,10 @@ include_rules = [
   "+ui/gfx/codec",
   "+ui/gfx/geometry/rect_f.h",
   "+ui/gl/gl_switches.h",
-  "+third_party/barhopper/barhopper",
 ]
+
+specific_include_rules = {
+  "shape_detection_sandbox_hook\.[cc|h]": [
+    "+sandbox/policy/linux",
+  ],
+}
