@@ -5,6 +5,8 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_TREE_VIEW_ACCESSIBILITY_AX_TREE_SOURCE_H_
 #define UI_VIEWS_ACCESSIBILITY_TREE_VIEW_ACCESSIBILITY_AX_TREE_SOURCE_H_
 
+#include <algorithm>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -22,6 +24,8 @@ struct AXTreeData;
 
 namespace views {
 
+class WidgetViewAXCache;
+
 // This class exposes the views hierarchy as an accessibility tree permitting
 // use with other accessibility classes. It uses the View's ViewAccessibility
 // instance as source.
@@ -30,7 +34,8 @@ class VIEWS_EXPORT ViewAccessibilityAXTreeSource
           AXTreeSource<ViewAccessibility*, ui::AXTreeData*, ui::AXNodeData> {
  public:
   ViewAccessibilityAXTreeSource(ui::AXNodeID root_id,
-                                const ui::AXTreeID& tree_id);
+                                const ui::AXTreeID& tree_id,
+                                WidgetViewAXCache* cache);
   ViewAccessibilityAXTreeSource(const ViewAccessibilityAXTreeSource&) = delete;
   ViewAccessibilityAXTreeSource& operator=(
       const ViewAccessibilityAXTreeSource&) = delete;
@@ -63,11 +68,15 @@ class VIEWS_EXPORT ViewAccessibilityAXTreeSource
   const ui::AXTreeID tree_id() const { return tree_id_; }
 
  private:
+  friend class ViewAccessibilityAXTreeSourceTestApi;
+
   // The ID of the top-level object to use for the AX tree.
   const ui::AXNodeID root_id_;
 
   // ID to use for the AXTree.
   const ui::AXTreeID tree_id_;
+
+  raw_ptr<WidgetViewAXCache> cache_;
 };
 
 }  // namespace views

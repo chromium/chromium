@@ -68,6 +68,8 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver {
   // The AXTreeID of the parent widget's accessibility tree, if any.
   ui::AXTreeID parent_ax_tree_id_;
 
+  std::unique_ptr<WidgetViewAXCache> cache_;
+
   // Holds the active views-based tree. A tree consists of all the views in the
   // widget.
   std::unique_ptr<ViewAccessibilityAXTreeSource> tree_source_;

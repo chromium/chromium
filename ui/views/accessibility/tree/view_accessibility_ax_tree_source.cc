@@ -14,13 +14,15 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
+#include "ui/views/accessibility/tree/widget_view_ax_cache.h"
 
 namespace views {
 
 ViewAccessibilityAXTreeSource::ViewAccessibilityAXTreeSource(
     ui::AXNodeID root_id,
-    const ui::AXTreeID& tree_id)
-    : root_id_(root_id), tree_id_(tree_id) {
+    const ui::AXTreeID& tree_id,
+    WidgetViewAXCache* cache)
+    : root_id_(root_id), tree_id_(tree_id), cache_(cache) {
   CHECK_NE(root_id_, ui::kInvalidAXNodeID);
   CHECK_NE(tree_id_, ui::AXTreeIDUnknown());
 }
@@ -39,13 +41,11 @@ bool ViewAccessibilityAXTreeSource::GetTreeData(
 }
 
 ViewAccessibility* ViewAccessibilityAXTreeSource::GetRoot() const {
-  // TODO(accessibility): Implement.
-  return nullptr;
+  return cache_->Get(root_id_);
 }
 
 ViewAccessibility* ViewAccessibilityAXTreeSource::GetFromId(int32_t id) const {
-  // TODO(accessibility): Implement.
-  return nullptr;
+  return cache_->Get(id);
 }
 
 int32_t ViewAccessibilityAXTreeSource::GetId(ViewAccessibility* node) const {
@@ -54,7 +54,10 @@ int32_t ViewAccessibilityAXTreeSource::GetId(ViewAccessibility* node) const {
 
 void ViewAccessibilityAXTreeSource::CacheChildrenIfNeeded(
     ViewAccessibility* node) {
-  // TODO(accessibility): Implement.
+  if (cache_->HasCachedChildren(node)) {
+    return;
+  }
+  cache_->CacheChildrenIfNeeded(node);
 }
 
 size_t ViewAccessibilityAXTreeSource::GetChildCount(
@@ -71,7 +74,7 @@ ViewAccessibility* ViewAccessibilityAXTreeSource::ChildAt(
 }
 
 void ViewAccessibilityAXTreeSource::ClearChildCache(ViewAccessibility* node) {
-  // TODO(accessibility): Implement.
+  cache_->RemoveFromChildCache(node);
 }
 
 ViewAccessibility* ViewAccessibilityAXTreeSource::GetParent(

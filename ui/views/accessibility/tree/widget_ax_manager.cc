@@ -7,12 +7,15 @@
 #include "base/task/single_thread_task_runner.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform.h"
+#include "ui/views/accessibility/tree/widget_view_ax_cache.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace views {
 
 WidgetAXManager::WidgetAXManager(Widget* widget)
-    : widget_(widget), ax_tree_id_(ui::AXTreeID::CreateNewAXTreeID()) {
+    : widget_(widget),
+      ax_tree_id_(ui::AXTreeID::CreateNewAXTreeID()),
+      cache_(std::make_unique<WidgetViewAXCache>()) {
   CHECK(::features::IsAccessibilityTreeForViewsEnabled())
       << "WidgetAXManager should only be created when the "
          "accessibility tree feature is enabled.";
@@ -31,8 +34,8 @@ WidgetAXManager::~WidgetAXManager() {
 void WidgetAXManager::Enable() {
   is_enabled_ = true;
   tree_source_ = std::make_unique<ViewAccessibilityAXTreeSource>(
-      widget_->GetRootView()->GetViewAccessibility().GetUniqueId(),
-      ax_tree_id_);
+      widget_->GetRootView()->GetViewAccessibility().GetUniqueId(), ax_tree_id_,
+      cache_.get());
   tree_serializer_ =
       std::make_unique<ViewAccessibilityAXTreeSerializer>(tree_source_.get());
 }
