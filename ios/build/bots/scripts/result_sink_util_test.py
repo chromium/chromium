@@ -49,21 +49,28 @@ App crashed and disconnected.
 Recovery Suggestion:
 """
 
+_TEST_ID = 'TestCase/testSomething'
+_TEST_CLASS = 'TestCase'
+_TEST_NAME = 'testSomething'
 
 class UnitTest(unittest.TestCase):
 
   def test_compose_test_result(self):
     """Tests compose_test_result function."""
     # Test a test result without log_path.
-    test_result = result_sink_util._compose_test_result(
-        'TestCase/testSomething', 'PASS', True)
+    test_result = result_sink_util._compose_test_result(_TEST_ID, 'PASS', True)
     expected = {
-        'testId': 'TestCase/testSomething',
+        'testId': _TEST_ID,
         'status': 'PASS',
         'expected': True,
         'tags': [],
+        'testIdStructured': {
+            'caseNameComponents': [_TEST_NAME],
+            'coarseName': None,
+            'fineName': _TEST_CLASS
+        },
         'testMetadata': {
-            'name': 'TestCase/testSomething',
+            'name': _TEST_ID,
             'location': None,
         },
     }
@@ -71,14 +78,14 @@ class UnitTest(unittest.TestCase):
     short_log = 'Some logs.'
     # Tests a test result with log_path.
     test_result = result_sink_util._compose_test_result(
-        'TestCase/testSomething',
+        _TEST_ID,
         'PASS',
         True,
         test_log=short_log,
         duration=1233,
         file_artifacts={'name': '/path/to/name'})
     expected = {
-        'testId': 'TestCase/testSomething',
+        'testId': _TEST_ID,
         'status': 'PASS',
         'expected': True,
         'summaryHtml': '<text-artifact artifact-id="Test Log" />',
@@ -93,8 +100,13 @@ class UnitTest(unittest.TestCase):
         },
         'duration': '1.233000000s',
         'tags': [],
+        'testIdStructured': {
+            'caseNameComponents': [_TEST_NAME],
+            'coarseName': None,
+            'fineName': _TEST_CLASS
+        },
         'testMetadata': {
-            'name': 'TestCase/testSomething',
+            'name': _TEST_ID,
             'location': None,
         },
     }
@@ -105,9 +117,9 @@ class UnitTest(unittest.TestCase):
     """Tests parsing crash message from test log and setting it as the
     failure reason"""
     test_result = result_sink_util._compose_test_result(
-        'TestCase/testSomething', 'FAIL', False, test_log=CRASH_TEST_LOG)
+        _TEST_ID, 'FAIL', False, test_log=CRASH_TEST_LOG)
     expected = {
-        'testId': 'TestCase/testSomething',
+        'testId': _TEST_ID,
         'status': 'FAIL',
         'expected': False,
         'summaryHtml': '<text-artifact artifact-id="Test Log" />',
@@ -122,8 +134,13 @@ class UnitTest(unittest.TestCase):
                                     ).decode('utf-8')
             },
         },
+        'testIdStructured': {
+            'caseNameComponents': [_TEST_NAME],
+            'coarseName': None,
+            'fineName': _TEST_CLASS
+        },
         'testMetadata': {
-            'name': 'TestCase/testSomething',
+            'name': _TEST_ID,
             'location': None,
         },
     }
@@ -137,7 +154,7 @@ class UnitTest(unittest.TestCase):
     self.assertEqual(len(len_4128_str), 4128)
 
     expected = {
-        'testId': 'TestCase/testSomething',
+        'testId': _TEST_ID,
         'status': 'PASS',
         'expected': True,
         'summaryHtml': '<text-artifact artifact-id="Test Log" />',
@@ -149,81 +166,102 @@ class UnitTest(unittest.TestCase):
             },
         },
         'tags': [],
+        'testIdStructured': {
+            'caseNameComponents': [_TEST_NAME],
+            'coarseName': None,
+            'fineName': _TEST_CLASS
+        },
         'testMetadata': {
-            'name': 'TestCase/testSomething',
+            'name': _TEST_ID,
             'location': None,
         },
     }
     test_result = result_sink_util._compose_test_result(
-        'TestCase/testSomething', 'PASS', True, test_log=len_4128_str)
+        _TEST_ID, 'PASS', True, test_log=len_4128_str)
     self.assertEqual(test_result, expected)
 
   def test_compose_test_result_assertions(self):
     """Tests invalid status is rejected"""
     with self.assertRaises(AssertionError):
       test_result = result_sink_util._compose_test_result(
-          'TestCase/testSomething', 'SOME_INVALID_STATUS', True)
+          _TEST_ID, 'SOME_INVALID_STATUS', True)
 
     with self.assertRaises(AssertionError):
       test_result = result_sink_util._compose_test_result(
-          'TestCase/testSomething', 'PASS', True, tags=('a', 'b'))
+          _TEST_ID, 'PASS', True, tags=('a', 'b'))
 
     with self.assertRaises(AssertionError):
       test_result = result_sink_util._compose_test_result(
-          'TestCase/testSomething',
-          'PASS',
-          True,
-          tags=[('a', 'b', 'c'), ('d', 'e')])
+          _TEST_ID, 'PASS', True, tags=[('a', 'b', 'c'), ('d', 'e')])
 
     with self.assertRaises(AssertionError):
       test_result = result_sink_util._compose_test_result(
-          'TestCase/testSomething', 'PASS', True, tags=[('a', 'b'), ('c', 3)])
+          _TEST_ID, 'PASS', True, tags=[('a', 'b'), ('c', 3)])
 
   def test_composed_with_tags(self):
     """Tests tags is in correct format."""
     expected = {
-        'testId': 'TestCase/testSomething',
+        'testId': _TEST_ID,
         'status': 'SKIP',
         'expected': True,
         'tags': [{
             'key': 'disabled_test',
             'value': 'true',
         }],
+        'testIdStructured': {
+            'caseNameComponents': [_TEST_NAME],
+            'coarseName': None,
+            'fineName': _TEST_CLASS
+        },
         'testMetadata': {
-            'name': 'TestCase/testSomething',
+            'name': _TEST_ID,
             'location': None,
         },
     }
     test_result = result_sink_util._compose_test_result(
-        'TestCase/testSomething',
-        'SKIP',
-        True,
-        tags=[('disabled_test', 'true')])
+        _TEST_ID, 'SKIP', True, tags=[('disabled_test', 'true')])
     self.assertEqual(test_result, expected)
 
   def test_composed_with_location(self):
     """Tests with test locations"""
     test_loc = {'repo': 'https://test', 'fileName': '//test.cc'}
     expected = {
-        'testId': 'TestCase/testSomething',
+        'testId': _TEST_ID,
         'status': 'SKIP',
         'expected': True,
         'tags': [{
             'key': 'disabled_test',
             'value': 'true',
         }],
+        'testIdStructured': {
+            'caseNameComponents': [_TEST_NAME],
+            'coarseName': None,
+            'fineName': _TEST_CLASS
+        },
         'testMetadata': {
-            'name': 'TestCase/testSomething',
+            'name': _TEST_ID,
             'location': test_loc,
         },
     }
     test_result = result_sink_util._compose_test_result(
-        'TestCase/testSomething',
+        _TEST_ID,
         'SKIP',
         True,
         test_loc=test_loc,
         tags=[('disabled_test', 'true')])
     self.assertEqual(test_result, expected)
+
+  def test_get_struct_test_dict(self):
+    result_dict = result_sink_util._get_struct_test_dict('myclass/testname')
+    self.assertIsNone(result_dict['coarseName'], None)
+    self.assertEqual(result_dict['fineName'], 'myclass')
+    self.assertEqual(result_dict['caseNameComponents'], ['testname'])
+
+    result_dict = result_sink_util._get_struct_test_dict(
+        'myclass/subclass.testname')
+    self.assertIsNone(result_dict['coarseName'], None)
+    self.assertEqual(result_dict['fineName'], 'myclass')
+    self.assertEqual(result_dict['caseNameComponents'], ['testname'])
 
   @mock.patch.object(requests.Session, 'post')
   @mock.patch('%s.open' % 'result_sink_util',
@@ -231,7 +269,7 @@ class UnitTest(unittest.TestCase):
   @mock.patch('os.environ.get', return_value='filename')
   def test_post_test_result(self, mock_open_file, mock_session_post):
     test_result = {
-        'testId': 'TestCase/testSomething',
+        'testId': _TEST_ID,
         'status': 'SKIP',
         'expected': True,
         'tags': [{
@@ -239,7 +277,7 @@ class UnitTest(unittest.TestCase):
             'value': 'true',
         }],
         'testMetadata': {
-            'name': 'TestCase/testSomething',
+            'name': _TEST_ID,
             'location': None,
         },
     }

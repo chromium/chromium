@@ -8,6 +8,7 @@ import cgi
 import json
 import logging
 import os
+import re
 import requests
 import sys
 import traceback
@@ -64,7 +65,7 @@ def _compose_test_result(test_id,
         report as artifact.
 
   Returns:
-    A dict of test results with input information, confirming to
+    A dict of test results with input information, conforming to
       https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
   """
   tags = tags or []
@@ -88,6 +89,7 @@ def _compose_test_result(test_id,
           'key': key,
           'value': value
       } for (key, value) in tags],
+      'testIdStructured': _get_struct_test_dict(test_id),
       'testMetadata': {
           'name': test_id,
           'location': test_loc,
@@ -128,6 +130,60 @@ def _compose_test_result(test_id,
     test_result['duration'] = '%.9fs' % (duration / 1000.0)
 
   return test_result
+
+
+def _get_struct_test_dict(test_id):
+  """Returns a structured_test_dict with filled in fields.
+
+  Args:
+    test_id: A string of the test_id.
+
+  Returns:
+    A dictionary with the struct fields filled in.
+  """
+  # Source comes from:
+  # infra/go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
+  struct_test_dict = {
+      'coarseName': None,  # Not used for gtests or xctests.
+      'fineName': None,
+      'caseNameComponents': [''],
+  }
+
+  found_match = False
+  # We may encounter gtests or XCTests which are parsed differently.
+  # Attempt to parse gtests based on:
+  #     infra/go/src/infra/tools/result_adapter/gtest.go
+  re_match = re.search(r'^((\w+)/)?(\w+)/(\w+)\.(\w+)$', test_id)
+  if re_match:
+    struct_test_dict['fineName'] = re_match.group(3)
+    struct_test_dict['caseNameComponents'] = [re_match.group(5)]
+    found_match = True
+
+  re_match = re.search(r'^((\w+)/)?(\w+)\.(\w+)/(\w+)$', test_id)
+  if not found_match and re_match:
+    struct_test_dict['fineName'] = re_match.group(3)
+    struct_test_dict['caseNameComponents'] = [re_match.group(4)]
+    found_match = True
+
+  re_match = re.search(r'^(\w+)\.(\w+)$', test_id)
+  if not found_match and re_match:
+    struct_test_dict['fineName'] = re_match.group(1)
+    struct_test_dict['caseNameComponents'] = [re_match.group(2)]
+    found_match = True
+
+  # XCTests format.
+  re_match = re.search(r'(.*)/(.*)', test_id)
+  if not found_match and re_match:
+    struct_test_dict['fineName'] = re_match.group(1)
+    struct_test_dict['caseNameComponents'] = [re_match.group(2)]
+    found_match = True
+
+  if not found_match:
+    logging.error(
+        'Test id %s did not match known format, so could not be parsed.' %
+        test_id)
+
+  return struct_test_dict
 
 
 def _to_camel_case(s):
@@ -284,5 +340,3 @@ class ResultSinkClient(object):
         data=inv_data,
     )
     res.raise_for_status()
-
-
