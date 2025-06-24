@@ -39,7 +39,7 @@ enum TextDirection {
 BASE_I18N_EXPORT std::string GetConfiguredLocale();
 
 // Canonicalize a string (eg. a POSIX locale string) to a Chrome locale name.
-BASE_I18N_EXPORT std::string GetCanonicalLocale(const std::string& locale);
+BASE_I18N_EXPORT std::string GetCanonicalLocale(std::string_view locale);
 
 // Sets the default locale of ICU.
 // Once the application locale of Chrome in GetApplicationLocale is determined,

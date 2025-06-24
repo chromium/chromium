@@ -139,8 +139,9 @@ std::string GetConfiguredLocale() {
 }
 
 // Convert the ICU canonicalized locale to a string.
-std::string GetCanonicalLocale(const std::string& locale) {
-  return GetLocaleString(icu::Locale::createCanonical(locale.c_str()));
+std::string GetCanonicalLocale(std::string_view locale) {
+  return GetLocaleString(
+      icu::Locale::createCanonical(std::string(locale).c_str()));
 }
 
 void SetICUDefaultLocale(std::string_view locale_string) {
