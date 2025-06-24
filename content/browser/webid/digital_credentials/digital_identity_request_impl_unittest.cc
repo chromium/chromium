@@ -146,6 +146,82 @@ base::Value GenerateOnlyAgeOpenid4VpRequestWithDCQL() {
   return ParseJsonAndCheck(kJson);
 }
 
+base::Value GenerateVerifyPhoneNumberOpenid4VpRequest() {
+  constexpr char kJson[] = R"({
+  "response_type": "vp_token",
+  "response_mode": "dc_api",
+  "client_id": "web-origin:https://www.digital-credentials.dev",
+  "nonce": "y9f67H0Kb2QF7nSbYh-XxBKkvGTCHk5MQo9OLBkKWD0",
+  "dcql_query": {
+    "credentials": [
+      {
+        "claims": [
+          {
+            "path": [
+              "subscription_hint"
+            ],
+            "values": [
+              1
+            ]
+          },
+          {
+            "path": [
+              "carrier_hint"
+            ],
+            "values": [
+              "310250"
+            ]
+          },
+          {
+            "path": [
+              "android_carrier_hint"
+            ],
+            "values": [
+              7
+            ]
+          }
+        ],
+        "format": "dc-authorization+sd-jwt",
+        "id": "aggregator1",
+        "meta": {
+          "credential_authorization_jwt": "eyJhbGciOiJFUzI1NiIsInR5cCI6Im9hdXRoLWF1dGh6LXJlcStqd3QiLCJ4NWMiOlsiTUlJQ3BUQ0NBa3VnQXdJQkFnSVVDOWZOSnBkVU1RWWRCbDFuaDgrUml0UndNRDh3Q2dZSUtvWkl6ajBFQXdJd2VERUxNQWtHQTFVRUJoTUNWVk14RXpBUkJnTlZCQWdNQ2tOaGJHbG1iM0p1YVdFeEZqQVVCZ05WQkFjTURVMXZkVzUwWVdsdUlGWnBaWGN4R3pBWkJnTlZCQW9NRWtWNFlXMXdiR1VnUVdkbmNtVm5ZWFJ2Y2pFZk1CMEdBMVVFQXd3V1pYaGhiWEJzWlMxaFoyZHlaV2RoZEc5eUxtUmxkakFlRncweU5UQTFNVEV5TWpRd01EVmFGdzB6TlRBME1qa3lNalF3TURWYU1IZ3hDekFKQmdOVkJBWVRBbFZUTVJNd0VRWURWUVFJREFwRFlXeHBabTl5Ym1saE1SWXdGQVlEVlFRSERBMU5iM1Z1ZEdGcGJpQldhV1YzTVJzd0dRWURWUVFLREJKRmVHRnRjR3hsSUVGblozSmxaMkYwYjNJeEh6QWRCZ05WQkFNTUZtVjRZVzF3YkdVdFlXZG5jbVZuWVhSdmNpNWtaWFl3V1RBVEJnY3Foa2pPUFFJQkJnZ3Foa2pPUFFNQkJ3TkNBQVJRcW5LTGw5U2g4dFcwM0h5aVBnOVRUcGlyQVg2V2haKzlJSWhVWFJGcDlxRFM0eW5YeG1GbjMzWk5nMTlQR1VzRWpxNGwzam9Penh2cHhqWDRoL1JlbzRHeU1JR3ZNQjBHQTFVZERnUVdCQlFBV1I5czRrWFRjeHJPeTFLSE12UldTSkg5YmpBZkJnTlZIU01FR0RBV2dCUUFXUjlzNGtYVGN4ck95MUtITXZSV1NKSDliakFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQTRHQTFVZER3RUIvd1FFQXdJSGdEQXBCZ05WSFJJRUlqQWdoaDVvZEhSd2N6b3ZMMlY0WVcxd2JHVXRZV2RuY21WbllYUnZjaTVqYjIwd0lRWURWUjBSQkJvd0dJSVdaWGhoYlhCc1pTMWhaMmR5WldkaGRHOXlMbU52YlRBS0JnZ3Foa2pPUFFRREFnTklBREJGQWlCeERROUZiby9EUVRkbVNaS0NURUlHOXZma0JkWU5jVHcxUkkzT0k2L25KUUloQUw1NmU3YkVNOTlSTTFTUDAyd3gzbHhxZFZCWnhiVEhJcllCQkY3Y0FzYjMiXX0.eyJpc3MiOiAiaHR0cHM6Ly9kY2FnZ3JlZ2F0b3IuZGV2IiwgIm5vbmNlIjogInk5ZjY3SDBLYjJRRjduU2JZaC1YeEJLa3ZHVENIazVNUW85T0xCa0tXRDAiLCAiZW5jcnlwdGVkX3Jlc3BvbnNlX2VuY192YWx1ZXNfc3VwcG9ydGVkIjogWyJBMTI4R0NNIl0sICJqd2tzIjogeyJrZXlzIjogW3sia3R5IjogIkVDIiwgInVzZSI6ICJlbmMiLCAiYWxnIjogIkVDREgtRVMiLCAia2lkIjogIjEiLCAiY3J2IjogIlAtMjU2IiwgIngiOiAiY2g1eFFhSUtCdjlPdG95Mmlmb2hMUWJTTWRlVE5paVFyWEVvcjRreHBtSSIsICJ5IjogInU2MlBuTkQwZUhEay1tRFFjOFI0YUEyRVdjRkE5VVo0YVpjOG1KZDlTX00ifV19LCAiY29uc2VudF9kYXRhIjogImV5SmpiMjV6Wlc1MFgzUmxlSFFpT2lBaVVtbGtaWElnY0hKdlkyVnpjMlZ6SUhsdmRYSWdjR1Z5YzI5dVlXd2daR0YwWVNCaFkyTnZjbVJwYm1jZ2RHOGdiM1Z5SUhCeWFYWmhZM2tnY0c5c2FXTjVJaXdnSW5CdmJHbGplVjlzYVc1cklqb2dJbWgwZEhCek9pOHZaR1YyWld4dmNHVnlMbUZ1WkhKdmFXUXVZMjl0TDJsa1pXNTBhWFI1TDJScFoybDBZV3d0WTNKbFpHVnVkR2xoYkhNdlkzSmxaR1Z1ZEdsaGJDMTJaWEpwWm1sbGNpSXNJQ0p3YjJ4cFkzbGZkR1Y0ZENJNklDSk1aV0Z5YmlCaFltOTFkQ0J3Y21sMllXTjVJSEJ2YkdsamVTSjkifQ.rlVyABcvR1a-g7eyPSKJBeIgrsUkIsVHNKAFrEKeeQ5Qyscys02T_z3I72g0jGqbAddEBgq9rLuncc7z3ayp-Q",
+          "vct_values": [
+            "number-verification/verify/ts43"
+          ]
+        }
+      }
+    ]
+  }
+})";
+
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GenerateGetPhoneNumberOpenid4VpRequest() {
+  constexpr char kJson[] = R"({
+  "response_type": "vp_token",
+  "response_mode": "dc_api",
+  "client_id": "web-origin:https://www.digital-credentials.dev",
+  "nonce": "y9f67H0Kb2QF7nSbYh-XxBKkvGTCHk5MQo9OLBkKWD0",
+  "dcql_query": {
+    "credentials": [
+      {
+        "format": "dc-authorization+sd-jwt",
+        "id": "aggregator1",
+        "meta": {
+          "credential_authorization_jwt": "eyJhbGciOiJFUzI1NiIsInR5cCI6Im9hdXRoLWF1dGh6LXJlcStqd3QiLCJ4NWMiOlsiTUlJQ3BUQ0NBa3VnQXdJQkFnSVVDOWZOSnBkVU1RWWRCbDFuaDgrUml0UndNRDh3Q2dZSUtvWkl6ajBFQXdJd2VERUxNQWtHQTFVRUJoTUNWVk14RXpBUkJnTlZCQWdNQ2tOaGJHbG1iM0p1YVdFeEZqQVVCZ05WQkFjTURVMXZkVzUwWVdsdUlGWnBaWGN4R3pBWkJnTlZCQW9NRWtWNFlXMXdiR1VnUVdkbmNtVm5ZWFJ2Y2pFZk1CMEdBMVVFQXd3V1pYaGhiWEJzWlMxaFoyZHlaV2RoZEc5eUxtUmxkakFlRncweU5UQTFNVEV5TWpRd01EVmFGdzB6TlRBME1qa3lNalF3TURWYU1IZ3hDekFKQmdOVkJBWVRBbFZUTVJNd0VRWURWUVFJREFwRFlXeHBabTl5Ym1saE1SWXdGQVlEVlFRSERBMU5iM1Z1ZEdGcGJpQldhV1YzTVJzd0dRWURWUVFLREJKRmVHRnRjR3hsSUVGblozSmxaMkYwYjNJeEh6QWRCZ05WQkFNTUZtVjRZVzF3YkdVdFlXZG5jbVZuWVhSdmNpNWtaWFl3V1RBVEJnY3Foa2pPUFFJQkJnZ3Foa2pPUFFNQkJ3TkNBQVJRcW5LTGw5U2g4dFcwM0h5aVBnOVRUcGlyQVg2V2haKzlJSWhVWFJGcDlxRFM0eW5YeG1GbjMzWk5nMTlQR1VzRWpxNGwzam9Penh2cHhqWDRoL1JlbzRHeU1JR3ZNQjBHQTFVZERnUVdCQlFBV1I5czRrWFRjeHJPeTFLSE12UldTSkg5YmpBZkJnTlZIU01FR0RBV2dCUUFXUjlzNGtYVGN4ck95MUtITXZSV1NKSDliakFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQTRHQTFVZER3RUIvd1FFQXdJSGdEQXBCZ05WSFJJRUlqQWdoaDVvZEhSd2N6b3ZMMlY0WVcxd2JHVXRZV2RuY21WbllYUnZjaTVqYjIwd0lRWURWUjBSQkJvd0dJSVdaWGhoYlhCc1pTMWhaMmR5WldkaGRHOXlMbU52YlRBS0JnZ3Foa2pPUFFRREFnTklBREJGQWlCeERROUZiby9EUVRkbVNaS0NURUlHOXZma0JkWU5jVHcxUkkzT0k2L25KUUloQUw1NmU3YkVNOTlSTTFTUDAyd3gzbHhxZFZCWnhiVEhJcllCQkY3Y0FzYjMiXX0.eyJpc3MiOiAiaHR0cHM6Ly9kY2FnZ3JlZ2F0b3IuZGV2IiwgIm5vbmNlIjogImVnOXFPRjZjQXdsV1ZrTVNIRjREWkdJZF9xZVhLcG9yUzdPUnJUTE5RODAiLCAiZW5jcnlwdGVkX3Jlc3BvbnNlX2VuY192YWx1ZXNfc3VwcG9ydGVkIjogWyJBMTI4R0NNIl0sICJqd2tzIjogeyJrZXlzIjogW3sia3R5IjogIkVDIiwgInVzZSI6ICJlbmMiLCAiYWxnIjogIkVDREgtRVMiLCAia2lkIjogIjEiLCAiY3J2IjogIlAtMjU2IiwgIngiOiAiUThLT25XYzdWWDdkb3RuRU9jT0daOVFudUg5MlBFSWQwR0dDQ3lXT0R3TSIsICJ5IjogIm1LNjd2emRnOGxveHpQNWVkazVLb0FnNmZpenhoVXgyN3Q0cFdTb1lMVVUifV19LCAiY29uc2VudF9kYXRhIjogImV5SmpiMjV6Wlc1MFgzUmxlSFFpT2lBaVVtbGtaWElnY0hKdlkyVnpjMlZ6SUhsdmRYSWdjR1Z5YzI5dVlXd2daR0YwWVNCaFkyTnZjbVJwYm1jZ2RHOGdiM1Z5SUhCeWFYWmhZM2tnY0c5c2FXTjVJaXdnSW5CdmJHbGplVjlzYVc1cklqb2dJbWgwZEhCek9pOHZaR1YyWld4dmNHVnlMbUZ1WkhKdmFXUXVZMjl0TDJsa1pXNTBhWFI1TDJScFoybDBZV3d0WTNKbFpHVnVkR2xoYkhNdlkzSmxaR1Z1ZEdsaGJDMTJaWEpwWm1sbGNpSXNJQ0p3YjJ4cFkzbGZkR1Y0ZENJNklDSk1aV0Z5YmlCaFltOTFkQ0J3Y21sMllXTjVJSEJ2YkdsamVTSjkifQ.vtHXBcFG_lzTCfiVfrupmSd4k7CptvBAknq821A5QmNqGVQmnzmYUlTF6a9bFdigeE2q_yJRfchJoiHXSUM_Uw",
+          "vct_values": [
+            "number-verification/device-phone-number/ts43"
+          ]
+        }
+      }
+    ]
+  }
+})";
+
+  return ParseJsonAndCheck(kJson);
+}
+
 base::Value GenerateOnlyAgePreviewRequest() {
   constexpr char kJson[] = R"({
     "selector": {
@@ -668,6 +744,21 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
   EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
                                     std::move(malformed_request)),
             InterstitialType::kLowRisk);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeInterstitialType_VerifyPhoneNumber) {
+  EXPECT_EQ(
+      ComputeInterstitialType(kOpenid4vpProtocol,
+                              GenerateVerifyPhoneNumberOpenid4VpRequest()),
+      std::nullopt);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeInterstitialType_GetPhoneNumber) {
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
+                                    GenerateGetPhoneNumberOpenid4VpRequest()),
+            std::nullopt);
 }
 
 class DigitalIdentityRequestImplWithCreationEnabledTest

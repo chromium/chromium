@@ -57,6 +57,14 @@ constexpr char kMdocAgeInYearsDataElement[] = "age_in_years";
 constexpr char kMdocAgeBirthYearDataElement[] = "age_birth_year";
 constexpr char kMdocBirthDateDataElement[] = "birth_date";
 
+constexpr char kSubscriptionHint[] = "subscription_hint";
+constexpr char kCarrierHint[] = "carrier_hint";
+constexpr char kAndroidCarrierHint[] = "android_carrier_hint";
+
+constexpr char kGetPhoneNumberVctValue[] =
+    "number-verification/device-phone-number/ts43";
+constexpr char kVerifyPhoneNumberVctValue[] = "number-verification/verify/ts43";
+
 constexpr char kDigitalIdentityDialogParam[] = "dialog";
 constexpr char kDigitalIdentityNoDialogParamValue[] = "no_dialog";
 constexpr char kDigitalIdentityLowRiskDialogParamValue[] = "low_risk";
@@ -74,22 +82,28 @@ const Value::Dict* FindSingleElementListEntry(const Value::Dict& dict,
 }
 
 // Returns whether an interstitial should be shown for a request which solely
-// requests the passed-in mdoc data element.
-bool CanMdocDataElementBypassInterstitial(const std::string& data_element) {
-  if (re2::RE2::FullMatch(data_element,
-                          re2::RE2(kMdocAgeOverDataElementRegex))) {
+// requests the passed-in claims/data elements.
+bool CanClaimBypassInterstitial(const std::string& claim) {
+  if (re2::RE2::FullMatch(claim, re2::RE2(kMdocAgeOverDataElementRegex))) {
     return true;
   }
 
-  const std::string kDataElementsCanBypassInterstitial[] = {
+  const std::string kClaimsCanBypassInterstitial[] = {
       kMdocAgeInYearsDataElement,
       kMdocAgeBirthYearDataElement,
       kMdocBirthDateDataElement,
+      kSubscriptionHint,
+      kCarrierHint,
+      kAndroidCarrierHint,
   };
-  return std::find(std::begin(kDataElementsCanBypassInterstitial),
-                   std::end(kDataElementsCanBypassInterstitial),
-                   data_element) !=
-         std::end(kDataElementsCanBypassInterstitial);
+  return std::find(std::begin(kClaimsCanBypassInterstitial),
+                   std::end(kClaimsCanBypassInterstitial),
+                   claim) != std::end(kClaimsCanBypassInterstitial);
+}
+
+bool CanVctValueBypassInterstitial(const std::string& vct_value) {
+  return vct_value == kGetPhoneNumberVctValue ||
+         vct_value == kVerifyPhoneNumberVctValue;
 }
 
 bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithPresentationDefition(
@@ -138,7 +152,7 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithPresentationD
   return re2::RE2::FullMatch(field_paths->front().GetString(),
                              re2::RE2(kOpenid4vpPathRegex),
                              &mdoc_data_element) &&
-         CanMdocDataElementBypassInterstitial(mdoc_data_element);
+         CanClaimBypassInterstitial(mdoc_data_element);
 }
 
 bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
@@ -147,57 +161,72 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
   if (!query_dict) {
     return false;
   }
-  auto credential_to_claims = [](const Value::Dict& credential)
-      -> std::optional<std::vector<std::string>> {
+  auto credential_to_claims =
+      [](const Value::Dict& credential) -> std::vector<std::string> {
     const Value::List* claims_list = credential.FindList("claims");
     if (!claims_list) {
-      return std::nullopt;
+      return {};
     }
     std::vector<std::string> claims;
     for (const Value& claim : *claims_list) {
       const Value::Dict* claim_dict = claim.GetIfDict();
       if (!claim_dict) {
-        return std::nullopt;
+        return {};
       }
       const Value::List* paths = claim_dict->FindList("path");
       if (!paths) {
-        return std::nullopt;
+        return {};
       }
       const std::string* claim_name = paths->back().GetIfString();
       if (!claim_name) {
-        return std::nullopt;
+        return {};
       }
       claims.push_back(*claim_name);
     }
     return claims;
   };
 
-  base::flat_set<std::string> all_claims;
+  auto meta_to_vct_values =
+      [](const Value::Dict& meta) -> std::vector<std::string> {
+    const Value::List* vct_values_list = meta.FindList("vct_values");
+    if (!vct_values_list) {
+      return {};
+    }
+    std::vector<std::string> vct_values;
+    for (const Value& vct_value : *vct_values_list) {
+      if (!vct_value.is_string()) {
+        return {};
+      }
+      vct_values.push_back(vct_value.GetString());
+    }
+    return vct_values;
+  };
+
   const Value::List* credentials = query_dict->FindList("credentials");
   if (!credentials) {
     return false;
   }
+
+  base::flat_set<std::string> all_claims;
+  base::flat_set<std::string> all_vct_values;
   for (const Value& credential : *credentials) {
     const Value::Dict* credential_dict = credential.GetIfDict();
     if (!credential_dict) {
       return false;
     }
+    std::vector<std::string> credential_claims =
+        credential_to_claims(*credential_dict);
+    all_claims.insert(credential_claims.begin(), credential_claims.end());
+
     const Value::Dict* meta_dict = credential_dict->FindDict("meta");
     if (!meta_dict) {
-      return false;
+      continue;
     }
-    const std::string* doctype_value = meta_dict->FindString("doctype_value");
-    if (!doctype_value || *doctype_value != kMdlDocumentType) {
-      return false;
-    }
-    std::optional<std::vector<std::string>> credential_claims =
-        credential_to_claims(*credential_dict);
-    if (!credential_claims.has_value()) {
-      return false;
-    }
-    all_claims.insert(credential_claims->begin(), credential_claims->end());
+    std::vector<std::string> meta_vct_values = meta_to_vct_values(*meta_dict);
+    all_vct_values.insert(meta_vct_values.begin(), meta_vct_values.end());
   }
-  return std::ranges::all_of(all_claims, CanMdocDataElementBypassInterstitial);
+  return std::ranges::all_of(all_claims, CanClaimBypassInterstitial) &&
+         std::ranges::all_of(all_vct_values, CanVctValueBypassInterstitial);
 }
 
 bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(
@@ -240,8 +269,7 @@ bool CanRequestCredentialBypassInterstitialForPreviewProtocol(
     return false;
   }
   const std::string* mdoc_data_element = field_dict->FindString("name");
-  return mdoc_data_element &&
-         CanMdocDataElementBypassInterstitial(*mdoc_data_element);
+  return mdoc_data_element && CanClaimBypassInterstitial(*mdoc_data_element);
 }
 
 // Returns whether an interstitial should be shown based on the assertions being
