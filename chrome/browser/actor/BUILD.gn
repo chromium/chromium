@@ -108,6 +108,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
+    "//components/lookalikes/core",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/variations/service:service",
