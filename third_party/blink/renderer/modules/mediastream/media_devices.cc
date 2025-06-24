@@ -361,6 +361,9 @@ MediaStreamConstraints* ToMediaStreamConstraints(
   if (source->hasSystemAudio()) {
     constraints->setSystemAudio(source->systemAudio());
   }
+  if (source->hasWindowAudio()) {
+    constraints->setWindowAudio(source->windowAudio());
+  }
   if (source->hasSurfaceSwitching()) {
     constraints->setSurfaceSwitching(source->surfaceSwitching());
   }
