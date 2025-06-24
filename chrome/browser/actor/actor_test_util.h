@@ -12,6 +12,10 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "ui/gfx/geometry/point.h"
 
+namespace base {
+class CommandLine;
+}  // namespace base
+
 namespace content {
 class RenderFrameHost;
 }  // namespace content
@@ -57,6 +61,10 @@ optimization_guide::proto::BrowserAction MakeWait();
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future);
 void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr>& future,
                        mojom::ActionResultCode expected_code);
+
+// Sets up GLIC_ACTION_PAGE_BLOCK to block the given host.
+void SetUpBlocklist(base::CommandLine* command_line,
+                    const std::string& blocked_host);
 
 }  // namespace actor
 

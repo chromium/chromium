@@ -4,7 +4,6 @@
 
 #include "chrome/browser/actor/site_policy.h"
 
-#include "base/base64.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -12,15 +11,13 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/lookalikes/lookalike_test_helper.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/optimization_guide/core/filters/bloom_filter.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
@@ -60,35 +57,7 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
-
-    constexpr std::string kBlockedHost = "bar.com";
-    constexpr uint32_t kNumHashFunctions = 7;
-    constexpr uint32_t kNumBits = 511;
-    optimization_guide::BloomFilter blocklist_bloom_filter(kNumHashFunctions,
-                                                           kNumBits);
-    blocklist_bloom_filter.Add(kBlockedHost);
-    std::string blocklist_bloom_filter_data(
-        reinterpret_cast<const char*>(&blocklist_bloom_filter.bytes()[0]),
-        blocklist_bloom_filter.bytes().size());
-
-    optimization_guide::proto::Configuration config;
-    optimization_guide::proto::OptimizationFilter*
-        blocklist_optimization_filter = config.add_optimization_blocklists();
-    blocklist_optimization_filter->set_optimization_type(
-        optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK);
-    blocklist_optimization_filter->mutable_bloom_filter()
-        ->set_num_hash_functions(kNumHashFunctions);
-    blocklist_optimization_filter->mutable_bloom_filter()->set_num_bits(
-        kNumBits);
-    blocklist_optimization_filter->mutable_bloom_filter()->set_data(
-        blocklist_bloom_filter_data);
-
-    std::string encoded_config;
-    config.SerializeToString(&encoded_config);
-    encoded_config = base::Base64Encode(encoded_config);
-
-    command_line->AppendSwitchASCII(
-        optimization_guide::switches::kHintsProtoOverride, encoded_config);
+    SetUpBlocklist(command_line, "bar.com");
   }
 
   void SetUpOnMainThread() override {

@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -18,7 +19,9 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -122,19 +125,13 @@ int GetRangeValue(RenderFrameHost& rfh, std::string_view query) {
 
 constexpr int32_t kNonExistentContentNodeId = 12345;
 
-base::FieldTrialParams GetAllowlistParams() {
-  return {{"allowlist", "foo.com,bar.com"}, {"allowlist_only", "true"}};
-}
-
 class ActorToolsTest : public InProcessBrowserTest {
  public:
   ActorToolsTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlic, {}},
-                              {features::kTabstripComboButton, {}},
-                              {features::kGlicActor, {}},
-                              {kGlicActionAllowlist, GetAllowlistParams()}},
-        /*disabled_features=*/{features::kGlicWarming});
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
+                              features::kGlicActor},
+        /*disabled_features=*/{features::kGlicWarming, kGlicActionAllowlist});
   }
   ActorToolsTest(const ActorToolsTest&) = delete;
   ActorToolsTest& operator=(const ActorToolsTest&) = delete;
@@ -150,6 +147,13 @@ class ActorToolsTest : public InProcessBrowserTest {
     ExecutionEngine* raw_execution_engine = execution_engine.get();
     actor_task_ = std::make_unique<ActorTask>(std::move(execution_engine));
     raw_execution_engine->SetOwner(actor_task_.get());
+
+    // Optimization guide uses this histogram to signal initialization in tests.
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester_for_init_,
+        "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
+
+    InitActionBlocklist(browser()->profile());
   }
 
   virtual std::unique_ptr<ExecutionEngine> InitializeExecutionEngine() {
@@ -159,6 +163,7 @@ class ActorToolsTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
+    SetUpBlocklist(command_line, "blocked.example.com");
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1");
   }
 
@@ -206,6 +211,7 @@ class ActorToolsTest : public InProcessBrowserTest {
 
  private:
   ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_for_init_;
   std::unique_ptr<ActorTask> actor_task_;
 };
 
@@ -1613,6 +1619,21 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool_DelaysUntilLoad) {
   // and complete the tool request.
   ASSERT_TRUE(subframe_manager.WaitForNavigationFinished());
   ExpectOkResult(result);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool_TargetUrlRestriction) {
+  const GURL url_start =
+      embedded_https_test_server().GetURL("/actor/blank.html?start");
+  const GURL url_target = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+
+  BrowserAction action = MakeNavigate(url_target.spec());
+  TestFuture<mojom::ActionResultPtr> result;
+  execution_engine().Act(action, result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
+
+  EXPECT_EQ(web_contents()->GetURL(), url_start);
 }
 
 // ===============================================

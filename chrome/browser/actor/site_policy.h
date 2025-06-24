@@ -12,6 +12,7 @@ namespace tabs {
 class TabInterface;
 }
 
+class GURL;
 class Profile;
 
 namespace actor {
@@ -27,6 +28,13 @@ using DecisionCallback = base::OnceCallback<void(/*may_act=*/bool)>;
 // last committed document and URL. Invokes the callback with true if it is
 // allowed.
 void MayActOnTab(const tabs::TabInterface& tab,
+                 AggregatedJournal& journal,
+                 TaskId task_id,
+                 DecisionCallback callback);
+
+// Like MayActOnTab, but considers a URL on its own.
+void MayActOnUrl(const GURL& url,
+                 Profile* profile,
                  AggregatedJournal& journal,
                  TaskId task_id,
                  DecisionCallback callback);

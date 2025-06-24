@@ -48,10 +48,11 @@ class DecisionWrapper {
   DecisionWrapper(AggregatedJournal& journal,
                   const GURL& url,
                   TaskId task_id,
+                  std::string_view event_name,
                   DecisionCallback callback)
       : callback_(std::move(callback)),
         journal_entry_(
-            journal.CreatePendingAsyncEntry(url, task_id, "MayActOnTab", "")) {}
+            journal.CreatePendingAsyncEntry(url, task_id, event_name, "")) {}
 
   void Reject(std::string_view reason) {
     journal_entry_->EndEntry(reason);
@@ -230,7 +231,7 @@ void MayActOnTab(const tabs::TabInterface& tab,
 
   const GURL& url = web_contents.GetPrimaryMainFrame()->GetLastCommittedURL();
   std::unique_ptr<DecisionWrapper> decision_wrapper =
-      std::make_unique<DecisionWrapper>(journal, url, task_id,
+      std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnTab",
                                         std::move(callback));
 
   if (web_contents.GetPrimaryMainFrame()->IsErrorDocument()) {
@@ -253,6 +254,17 @@ void MayActOnTab(const tabs::TabInterface& tab,
   MayActOnUrl(url,
               Profile::FromBrowserContext(web_contents.GetBrowserContext()),
               std::move(decision_wrapper));
+}
+
+void MayActOnUrl(const GURL& url,
+                 Profile* profile,
+                 AggregatedJournal& journal,
+                 TaskId task_id,
+                 DecisionCallback callback) {
+  std::unique_ptr<DecisionWrapper> decision_wrapper =
+      std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnUrl",
+                                        std::move(callback));
+  MayActOnUrl(url, profile, std::move(decision_wrapper));
 }
 
 }  // namespace actor

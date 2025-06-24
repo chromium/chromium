@@ -4,8 +4,10 @@
 
 #include "chrome/browser/actor/tools/navigate_tool.h"
 
+#include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/tabs/public/tab_interface.h"
@@ -19,6 +21,15 @@ using content::NavigationHandle;
 using content::WebContents;
 
 namespace actor {
+
+namespace {
+
+mojom::ActionResultPtr MayActOnUrlToResult(bool may_act) {
+  return may_act ? MakeOkResult()
+                 : MakeResult(mojom::ActionResultCode::kUrlBlocked);
+}
+
+}  // namespace
 
 NavigateTool::NavigateTool(TaskId task_id,
                            AggregatedJournal& journal,
@@ -36,9 +47,10 @@ void NavigateTool::Validate(ValidateCallback callback) {
     return;
   }
 
-  // TODO(crbug.com/402731599): Validate URL and state here.
-
-  PostResponseTask(std::move(callback), MakeOkResult());
+  MayActOnUrl(url_,
+              Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+              journal(), task_id(),
+              base::BindOnce(&MayActOnUrlToResult).Then(std::move(callback)));
 }
 
 void NavigateTool::Invoke(InvokeCallback callback) {

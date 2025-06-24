@@ -2244,6 +2244,7 @@ if (!is_android) {
       "//chrome/browser:shell_integration",
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/actor:browser_tests",
+      "//chrome/browser/actor:test_support",
       "//chrome/browser/affiliations",
       "//chrome/browser/ai",
       "//chrome/browser/apps/app_service",

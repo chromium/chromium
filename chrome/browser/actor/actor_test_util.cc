@@ -6,13 +6,18 @@
 
 #include <string_view>
 
+#include "base/base64.h"
+#include "base/command_line.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/core/filters/bloom_filter.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/render_frame_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
@@ -214,6 +219,36 @@ void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr>& future,
   EXPECT_EQ(result.code, expected_code)
       << "Expected error " << base::to_underlying(expected_code) << ", got "
       << ToDebugString(result);
+}
+
+void SetUpBlocklist(base::CommandLine* command_line,
+                    const std::string& blocked_host) {
+  constexpr uint32_t kNumHashFunctions = 7;
+  constexpr uint32_t kNumBits = 511;
+  optimization_guide::BloomFilter blocklist_bloom_filter(kNumHashFunctions,
+                                                         kNumBits);
+  blocklist_bloom_filter.Add(blocked_host);
+  std::string blocklist_bloom_filter_data(
+      reinterpret_cast<const char*>(&blocklist_bloom_filter.bytes()[0]),
+      blocklist_bloom_filter.bytes().size());
+
+  optimization_guide::proto::Configuration config;
+  optimization_guide::proto::OptimizationFilter* blocklist_optimization_filter =
+      config.add_optimization_blocklists();
+  blocklist_optimization_filter->set_optimization_type(
+      optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK);
+  blocklist_optimization_filter->mutable_bloom_filter()->set_num_hash_functions(
+      kNumHashFunctions);
+  blocklist_optimization_filter->mutable_bloom_filter()->set_num_bits(kNumBits);
+  blocklist_optimization_filter->mutable_bloom_filter()->set_data(
+      blocklist_bloom_filter_data);
+
+  std::string encoded_config;
+  config.SerializeToString(&encoded_config);
+  encoded_config = base::Base64Encode(encoded_config);
+
+  command_line->AppendSwitchASCII(
+      optimization_guide::switches::kHintsProtoOverride, encoded_config);
 }
 
 }  // namespace actor
