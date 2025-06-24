@@ -99,13 +99,8 @@ void WorkerOrWorkletScriptController::DisposeContextIfNeeded() {
   // referring to cleared memory on the next GC in case the JS wrapper objects
   // survived.
   v8::Local<v8::Object> global_proxy_object = context->Global();
-  v8::Local<v8::Object> global_object =
-      global_proxy_object->GetPrototype().As<v8::Object>();
-  DCHECK(!global_object.IsEmpty());
-  V8DOMWrapper::ClearNativeInfo(isolate_, global_object,
-                                global_scope_->GetWrapperTypeInfo());
-  V8DOMWrapper::ClearNativeInfo(isolate_, global_proxy_object,
-                                global_scope_->GetWrapperTypeInfo());
+  V8DOMWrapper::ClearNativeInfoForGlobal(isolate_, global_proxy_object,
+                                         global_scope_->GetWrapperTypeInfo());
 
   // This detaches v8::MicrotaskQueue pointer from v8::Context, so that we can
   // destroy EventLoop safely.
@@ -212,15 +207,14 @@ void WorkerOrWorkletScriptController::Initialize(const KURL& url_for_debugger) {
 
   // The global proxy object.  Note this is not the global object.
   v8::Local<v8::Object> global_proxy = context->Global();
+  // Set a link from both JSGlobalProxy and its hidden prototype
+  // (JSGlobalObject) to the |script_wrappable| object.
+  V8DOMWrapper::SetNativeInfoForGlobal(isolate_, global_proxy,
+                                       script_wrappable);
   v8::Local<v8::Object> associated_wrapper =
       V8DOMWrapper::AssociateObjectWithWrapper(isolate_, script_wrappable,
                                                wrapper_type_info, global_proxy);
   CHECK(global_proxy == associated_wrapper);
-
-  // The global object, aka worker/worklet wrapper object.
-  v8::Local<v8::Object> global_object =
-      global_proxy->GetPrototype().As<v8::Object>();
-  V8DOMWrapper::SetNativeInfo(isolate_, global_object, script_wrappable);
 
   if (global_scope_->IsMainThreadWorkletGlobalScope()) {
     // Set the human readable name for the world.

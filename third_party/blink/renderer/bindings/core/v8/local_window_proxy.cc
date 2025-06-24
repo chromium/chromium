@@ -121,9 +121,8 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
     v8::Local<v8::Object> global = context->Global();
     if (!global_proxy_.IsEmpty()) {
       CHECK(global_proxy_ == global);
-      CHECK_EQ(ToScriptWrappable<DOMWindow>(GetIsolate(), global),
-               ToScriptWrappable<DOMWindow>(
-                   GetIsolate(), global->GetPrototype().As<v8::Object>()));
+      CHECK(V8DOMWrapper::CheckNativeInfoForGlobal(
+          GetIsolate(), global, V8Window::GetWrapperTypeInfo()));
     }
     auto* window = GetFrame()->DomWindow();
     V8DOMWrapper::ClearNativeInfo(GetIsolate(), global,
@@ -304,7 +303,7 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
                "IsMainFrame", GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
                GetFrame()->IsOutermostMainFrame());
 
-  // Associate the window wrapper object and its prototype chain with the
+  // Associate the global proxy and its prototype chain with the
   // corresponding native DOMWindow object.
   DOMWindow* window = GetFrame()->DomWindow();
   const WrapperTypeInfo* wrapper_type_info = window->GetWrapperTypeInfo();
@@ -313,38 +312,35 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
   // The global proxy object.  Note this is not the global object.
   v8::Local<v8::Object> global_proxy = context->Global();
   CHECK(global_proxy_ == global_proxy);
-  // Use the global proxy as window wrapper object.
-  V8DOMWrapper::SetNativeInfo(GetIsolate(), global_proxy, window);
+  // Set a link from both JSGlobalProxy and its hidden prototype
+  // (JSGlobalObject) to the native DOMWindow object.
+  V8DOMWrapper::SetNativeInfoForGlobal(GetIsolate(), global_proxy, window);
   CHECK(global_proxy_ == window->AssociateWithWrapper(GetIsolate(), world_,
                                                       wrapper_type_info,
                                                       global_proxy));
 
-  // The global object, aka window wrapper object.
-  v8::Local<v8::Object> window_wrapper =
-      global_proxy->GetPrototype().As<v8::Object>();
-  V8DOMWrapper::SetNativeInfo(GetIsolate(), window_wrapper, window);
-
-  // The prototype object of Window interface.
+  // The prototype object of Window interface (aka Window.prototype).
   v8::Local<v8::Object> window_prototype =
-      window_wrapper->GetPrototype().As<v8::Object>();
+      global_proxy->GetPrototypeV2().As<v8::Object>();
   CHECK(!window_prototype.IsEmpty());
 
-  // The named properties object of Window interface.
+  // The named properties object of Window interface (aka WindowProperties)
+  // also needs a link to DOMWindow object.
   v8::Local<v8::Object> window_properties =
-      window_prototype->GetPrototype().As<v8::Object>();
+      window_prototype->GetPrototypeV2().As<v8::Object>();
   CHECK(!window_properties.IsEmpty());
   V8DOMWrapper::SetNativeInfo(GetIsolate(), window_properties, window);
 
   // [CachedAccessor=kWindowProxy]
   V8PrivateProperty::GetCachedAccessor(
       GetIsolate(), V8PrivateProperty::CachedAccessor::kWindowProxy)
-      .Set(window_wrapper, global_proxy);
+      .Set(global_proxy, global_proxy);
 
   if (GetFrame()->GetPage()->GetChromeClient().IsPopup()) {
     // TODO(yukishiino): Remove installPagePopupController and implement
     // PagePopupController in another way.
     V8PagePopupControllerBinding::InstallPagePopupController(context,
-                                                             window_wrapper);
+                                                             global_proxy);
   }
 }
 
