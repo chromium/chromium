@@ -64,6 +64,10 @@ id<GREYMatcher> ContextMenuItemWithAccessibilityLabelId(int message_id);
 
 // Returns a matcher for action sheeet items with accessibility label
 // corresponding to `label`.
+id<GREYMatcher> ActionSheetItemWithAccessibilityLabel(NSString* label);
+
+// Returns a matcher for action sheeet items with accessibility label
+// corresponding to `message_id`.
 id<GREYMatcher> ActionSheetItemWithAccessibilityLabelId(int message_id);
 
 // Returns a matcher for element with an image corresponding to `image_id`.

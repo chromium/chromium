@@ -66,6 +66,11 @@ id<GREYMatcher> ContextMenuItemWithAccessibilityLabelId(int message_id) {
       contextMenuItemWithAccessibilityLabelID:message_id];
 }
 
+id<GREYMatcher> ActionSheetItemWithAccessibilityLabel(NSString* label) {
+  return
+      [ChromeMatchersAppInterface actionSheetItemWithAccessibilityLabel:label];
+}
+
 id<GREYMatcher> ActionSheetItemWithAccessibilityLabelId(int message_id) {
   return [ChromeMatchersAppInterface
       actionSheetItemWithAccessibilityLabelID:message_id];

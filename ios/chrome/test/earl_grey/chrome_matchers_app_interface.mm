@@ -286,6 +286,13 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                                                 messageID)];
 }
 
++ (id<GREYMatcher>)actionSheetItemWithAccessibilityLabel:(NSString*)label {
+  return grey_allOf(grey_accessibilityLabel(label),
+                    grey_ancestor(grey_kindOfClassName(
+                        @"_UIInterfaceActionCustomViewRepresentationView")),
+                    grey_minimumVisiblePercent(0.5), nil);
+}
+
 + (id<GREYMatcher>)actionSheetItemWithAccessibilityLabelID:(int)messageID {
   return grey_allOf(
       [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(messageID)],

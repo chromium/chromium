@@ -58,6 +58,10 @@
 + (id<GREYMatcher>)contextMenuItemWithAccessibilityLabelID:(int)messageID;
 
 // Matcher for action sheet items with accessibility label
+// corresponding to `label`.
++ (id<GREYMatcher>)actionSheetItemWithAccessibilityLabel:(NSString*)label;
+
+// Matcher for action sheet items with accessibility label
 // corresponding to `messageID`.
 + (id<GREYMatcher>)actionSheetItemWithAccessibilityLabelID:(int)messageID;
 
