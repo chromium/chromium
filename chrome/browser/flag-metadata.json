@@ -5214,7 +5214,7 @@
   {
     "name": "focus-follows-cursor",
     "owners": [ "dandersson@chromium.org", "tclaiborne@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 200
   },
   {
     "name": "force-color-profile",
