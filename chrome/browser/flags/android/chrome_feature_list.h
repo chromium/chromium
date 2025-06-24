@@ -217,6 +217,7 @@ BASE_DECLARE_FEATURE(kSearchResumptionModuleAndroid);
 BASE_DECLARE_FEATURE(kSettingsSingleActivity);
 BASE_DECLARE_FEATURE(kShareCustomActionsInCCT);
 BASE_DECLARE_FEATURE(kSharingHubLinkToggle);
+BASE_DECLARE_FEATURE(kShowCloseAllIncognitoTabsButton);
 BASE_DECLARE_FEATURE(kSkipIsolatedSplitPreload);
 BASE_DECLARE_FEATURE(kSmallerTabStripTitleLimit);
 BASE_DECLARE_FEATURE(kScrollToTLDOptimization);

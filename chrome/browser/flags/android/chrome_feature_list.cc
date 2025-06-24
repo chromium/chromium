@@ -377,6 +377,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSearchResumptionModuleAndroid,
     &kSettingsSingleActivity,
     &kShareCustomActionsInCCT,
+    &kShowCloseAllIncognitoTabsButton,
     &kSkipIsolatedSplitPreload,
     &kSmallerTabStripTitleLimit,
     &kSuppressToolbarCapturesAtGestureEnd,
@@ -1238,6 +1239,10 @@ BASE_FEATURE(kSettingsSingleActivity,
 
 BASE_FEATURE(kShareCustomActionsInCCT,
              "ShareCustomActionsInCCT",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kShowCloseAllIncognitoTabsButton,
+             "ShowCloseAllIncognitoTabsButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSkipIsolatedSplitPreload,

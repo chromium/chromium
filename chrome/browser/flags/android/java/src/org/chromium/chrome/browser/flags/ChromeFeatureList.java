@@ -576,6 +576,8 @@ public abstract class ChromeFeatureList {
             "SensitiveContentWhileSwitchingTabs";
     public static final String SETTINGS_SINGLE_ACTIVITY = "SettingsSingleActivity";
     public static final String SHARE_CUSTOM_ACTIONS_IN_CCT = "ShareCustomActionsInCCT";
+    public static final String SHOW_CLOSE_ALL_INCOGNITO_TABS_BUTTON =
+            "ShowCloseAllIncognitoTabsButton";
     public static final String SHOW_HOME_BUTTON_POLICY_ANDROID = "ShowHomeButtonPolicyAndroid";
     public static final String SHOW_NEW_TAB_ANIMATIONS = "ShowNewTabAnimations";
     public static final String SHOW_TAB_LIST_ANIMATIONS = "ShowTabListAnimations";
