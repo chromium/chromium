@@ -167,7 +167,14 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGPU() {
   auto* provider = GetResourceProviderForWebGPU();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (IsValidImageSize()) {
-      CreateCanvasResourceProviderWebGPU();
+      if (SharedGpuContext::IsGpuCompositingEnabled()) {
+        resource_provider_for_webgpu_ =
+            CanvasResourceProvider::CreateWebGPUImageProvider(
+                Size(), GetRenderingContextFormat(),
+                GetRenderingContextAlphaType(), GetRenderingContextColorSpace(),
+                gpu::SharedImageUsageSet(), this);
+        UpdateMemoryUsage();
+      }
       provider = GetResourceProviderForWebGPU();
     }
     if (!provider) {
@@ -180,18 +187,6 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGPU() {
     }
   }
   return provider;
-}
-
-void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
-  CHECK(!GetResourceProviderForWebGPU());
-
-  if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    resource_provider_for_webgpu_ =
-        CanvasResourceProvider::CreateWebGPUImageProvider(
-            Size(), GetRenderingContextFormat(), GetRenderingContextAlphaType(),
-            GetRenderingContextColorSpace(), gpu::SharedImageUsageSet(), this);
-    UpdateMemoryUsage();
-  }
 }
 
 void CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
