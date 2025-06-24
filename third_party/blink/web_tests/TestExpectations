@@ -7217,7 +7217,6 @@ crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-cross-sit
 crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure ]
 
 # Sheriff 2022-11-15
-crbug.com/1383990 [ Mac ] external/wpt/html/dom/idlharness.worker.html [ Failure Skip ]
 crbug.com/1383989 [ Mac ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Failure Skip ]
 
 # Tests disabled for the memory measurement API.

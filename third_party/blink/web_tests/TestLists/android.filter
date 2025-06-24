@@ -137,7 +137,6 @@ external/wpt/hr-time/idlharness.any.worker.html
 external/wpt/html-media-capture/idlharness.window.html
 external/wpt/html/dom/idlharness-shadowrealm.window.html
 external/wpt/html/dom/idlharness.https.html?include=(Document|Window)
-external/wpt/html/dom/idlharness.worker.html
 external/wpt/idle-detection/idlharness-worker.https.window.html
 external/wpt/idle-detection/idlharness.https.window.html
 external/wpt/input-device-capabilities/idlharness.window.html
