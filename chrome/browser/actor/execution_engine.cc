@@ -14,13 +14,16 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
+#include "base/state_transitions.h"
 #include "base/types/id_type.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -35,6 +38,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
+#include "ui/event_dispatcher.h"
 #include "url/origin.h"
 
 using content::RenderFrameHost;
@@ -156,7 +160,8 @@ void PostTaskForActCallback(ExecutionEngine::ActionResultCallback callback,
 
 ExecutionEngine::ExecutionEngine(Profile* profile)
     : profile_(profile),
-      journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()) {
+      journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
+      ui_event_dispatcher_(NewUiEventDispatcher()) {
   CHECK(profile_);
   // Idempotent. Enables the action blocklist if it isn't already enabled.
   InitActionBlocklist(profile_.get());
@@ -166,7 +171,8 @@ ExecutionEngine::ExecutionEngine(Profile* profile, tabs::TabInterface* tab)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
       tab_scoped_actions_deprecated_(true),
-      tab_(tab) {
+      tab_(tab),
+      ui_event_dispatcher_(NewUiEventDispatcher()) {
   CHECK(profile_);
   // Idempotent. Enables the action blocklist if it isn't already enabled.
   InitActionBlocklist(profile_.get());
@@ -174,6 +180,32 @@ ExecutionEngine::ExecutionEngine(Profile* profile, tabs::TabInterface* tab)
   CHECK(tab_);
   tab_will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
       &ExecutionEngine::OnTabWillDetach, base::Unretained(this)));
+}
+
+ExecutionEngine::ExecutionEngine(
+    Profile* profile,
+    std::unique_ptr<UiEventDispatcher> ui_event_dispatcher,
+    tabs::TabInterface* tab)
+    : profile_(profile),
+      journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
+      tab_scoped_actions_deprecated_(true),
+      tab_(tab),
+      ui_event_dispatcher_(std::move(ui_event_dispatcher)) {
+  CHECK(profile_);
+  // Idempotent. Enables the action blocklist if it isn't already enabled.
+  InitActionBlocklist(profile_.get());
+
+  CHECK(tab_);
+  tab_will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
+      &ExecutionEngine::OnTabWillDetach, base::Unretained(this)));
+}
+
+std::unique_ptr<ExecutionEngine> ExecutionEngine::CreateForTesting(
+    Profile* profile,
+    std::unique_ptr<UiEventDispatcher> ui_event_dispatcher,
+    tabs::TabInterface* tab) {
+  return base::WrapUnique<ExecutionEngine>(
+      new ExecutionEngine(profile, std::move(ui_event_dispatcher), tab));
 }
 
 ExecutionEngine::~ExecutionEngine() {
@@ -185,7 +217,43 @@ void ExecutionEngine::SetOwner(ActorTask* task) {
   tool_controller_ = std::make_unique<ToolController>(task_->id(), *journal_);
 }
 
-// static
+void ExecutionEngine::SetState(State state) {
+  VLOG(1) << "ExecutionEngine state change: " << StateToString(state_) << " -> "
+          << StateToString(state);
+#if DCHECK_IS_ON()
+  static const base::NoDestructor<base::StateTransitions<State>> transitions(
+      base::StateTransitions<State>({
+          {State::kInit, {State::kStartAction, State::kComplete}},
+          {State::kStartAction, {State::kUiPreTool, State::kComplete}},
+          {State::kUiPreTool, {State::kToolController, State::kComplete}},
+          {State::kToolController, {State::kUiPostTool, State::kComplete}},
+          {State::kUiPostTool, {State::kComplete, State::kStartAction}},
+          // TODO(crbug.com/425784083): Confirm if this transition is valid
+          // outside of tests.
+          {State::kComplete, {State::kStartAction}},
+      }));
+  DCHECK_STATE_TRANSITION(transitions, state_, state);
+#endif  // DCHECK_IS_ON()
+  state_ = state;
+}
+
+std::string ExecutionEngine::StateToString(State state) {
+  switch (state) {
+    case State::kInit:
+      return "INIT";
+    case State::kStartAction:
+      return "START_ACTION";
+    case State::kUiPreTool:
+      return "UI_PRE_TOOL";
+    case State::kToolController:
+      return "TOOL_CONTROLLER";
+    case State::kUiPostTool:
+      return "UI_POST_TOOL";
+    case State::kComplete:
+      return "COMPLETE";
+  }
+}
+
 void ExecutionEngine::RegisterWithProfile(Profile* profile) {
   InitActionBlocklist(profile);
 }
@@ -280,20 +348,26 @@ void ExecutionEngine::Act(const Actions& actions,
 
 void ExecutionEngine::KickOffNextAction(
     mojom::ActionResultPtr previous_action_result) {
+  // TODO(crbug.com/425784083): Allowing the transition from Complete here is
+  // needed (at least) for some tests.
+  DCHECK(state_ == State::kInit || state_ == State::kUiPostTool ||
+         state_ == State::kComplete)
+      << "Current state is " << StateToString(state_);
   if (actions_v1_) {
     BrowserAction& proto = actions_v1_->proto;
     if (proto.actions_size() <= action_index_) {
-      CompleteActionsV1(std::move(previous_action_result));
+      CompleteActions(std::move(previous_action_result));
       return;
     }
   } else {
     auto& proto = actions_v2_->proto;
     if (proto.actions_size() <= action_index_) {
-      CompleteActionsV2(std::move(previous_action_result));
+      CompleteActions(std::move(previous_action_result));
       return;
     }
   }
 
+  SetState(State::kStartAction);
   if (ActionRequiresTabScopedSafetyChecks(GetNextAction())) {
     SafetyChecksForNextAction();
   } else {
@@ -357,6 +431,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
 }
 
 void ExecutionEngine::ExecuteNextAction() {
+  DCHECK_EQ(state_, State::kStartAction);
   CHECK(actions_v1_ || actions_v2_);
   CHECK(tool_controller_);
 
@@ -373,14 +448,42 @@ void ExecutionEngine::ExecuteNextAction() {
     return;
   }
 
-  tool_controller_->Invoke(
-      *active_tool_request_, last_observed_page_content_.get(),
-      base::BindOnce(&ExecutionEngine::FinishOneAction, GetWeakPtr()));
+  SetState(State::kUiPreTool);
+  ui_event_dispatcher_->OnPreTool(
+      profile_, *active_tool_request_,
+      base::BindOnce(&ExecutionEngine::FinishedUiPreTool, GetWeakPtr()));
 }
 
-void ExecutionEngine::FinishOneAction(mojom::ActionResultPtr result) {
-  CHECK(actions_v1_ || actions_v2_);
+void ExecutionEngine::FinishedUiPreTool(mojom::ActionResultPtr result) {
+  DCHECK_EQ(state_, State::kUiPreTool);
+  if (!IsOk(*result)) {
+    CompleteActions(std::move(result));
+    return;
+  }
 
+  SetState(State::kToolController);
+  tool_controller_->Invoke(
+      *active_tool_request_, last_observed_page_content_.get(),
+      base::BindOnce(&ExecutionEngine::FinishedToolController, GetWeakPtr()));
+}
+
+void ExecutionEngine::FinishedToolController(mojom::ActionResultPtr result) {
+  DCHECK_EQ(state_, State::kToolController);
+  // The current action errored out. Stop the chain.
+  if (!IsOk(*result)) {
+    CompleteActions(std::move(result));
+    return;
+  }
+
+  SetState(State::kUiPostTool);
+  ui_event_dispatcher_->OnPostTool(
+      profile_, *active_tool_request_,
+      base::BindOnce(&ExecutionEngine::FinishedUiPostTool, GetWeakPtr()));
+}
+
+void ExecutionEngine::FinishedUiPostTool(mojom::ActionResultPtr result) {
+  DCHECK_EQ(state_, State::kUiPostTool);
+  CHECK(actions_v1_ || actions_v2_);
   active_tool_request_.reset();
 
   // The current action errored out. Stop the chain.
@@ -393,6 +496,7 @@ void ExecutionEngine::FinishOneAction(mojom::ActionResultPtr result) {
 }
 
 void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result) {
+  SetState(State::kComplete);
   if (actions_v1_) {
     CompleteActionsV1(std::move(result));
     return;
@@ -496,6 +600,10 @@ tabs::TabInterface* ExecutionEngine::GetTab(
     return tab_;
   }
   return nullptr;
+}
+
+std::ostream& operator<<(std::ostream& o, const ExecutionEngine::State& s) {
+  return o << ExecutionEngine::StateToString(s);
 }
 
 }  // namespace actor

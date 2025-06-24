@@ -1,0 +1,24 @@
+source_set("event_dispatcher") {
+  sources = [
+    "event_dispatcher.cc",
+    "event_dispatcher.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/actor:types",
+  ]
+  deps = [ "//chrome/browser/actor:actor" ]
+}
+
+source_set("mock_event_dispatcher") {
+  sources = [
+    "mock_event_dispatcher.cc",
+    "mock_event_dispatcher.h",
+  ]
+  testonly = true
+  public_deps = [ "//base" ]
+  deps = [
+    ":event_dispatcher",
+    "//testing/gmock",
+  ]
+}

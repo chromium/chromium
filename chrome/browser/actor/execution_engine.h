@@ -46,6 +46,7 @@ namespace actor {
 
 class ActorTask;
 class ToolRequest;
+class UiEventDispatcher;
 
 // Coordinates the execution of a multi-step task.
 class ExecutionEngine {
@@ -53,6 +54,25 @@ class ExecutionEngine {
   using ActionResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
   using ActionsResultCallback =
       base::OnceCallback<void(optimization_guide::proto::ActionsResult)>;
+
+  // State machine (success case)
+  //
+  //    Init
+  //     |
+  //     v
+  // StartAction -> UiPreTool -> ToolController -> UiPostTool -> Complete
+  //     ^                                            |                |
+  //     |____________________________________________|__(test only?)__|
+  //
+  // Complete may also be reached directly from other states in case of error.
+  enum class State {
+    kInit = 0,
+    kStartAction,
+    kUiPreTool,
+    kToolController,
+    kUiPostTool,
+    kComplete,
+  };
 
   explicit ExecutionEngine(Profile* profile);
 
@@ -63,6 +83,11 @@ class ExecutionEngine {
   ExecutionEngine(const ExecutionEngine&) = delete;
   ExecutionEngine& operator=(const ExecutionEngine&) = delete;
   ~ExecutionEngine();
+
+  static std::unique_ptr<ExecutionEngine> CreateForTesting(
+      Profile* profile,
+      std::unique_ptr<UiEventDispatcher> ui_event_dispatcher,
+      tabs::TabInterface* tab);
 
   // This cannot be in the constructor as we first construct the
   // ExecutionEngine, then the ActorTask.
@@ -101,8 +126,16 @@ class ExecutionEngine {
   // Invalidated anytime `actions_` is reset.
   base::WeakPtr<ExecutionEngine> GetWeakPtr();
 
+  static std::string StateToString(State state);
+
  private:
   class NewTabWebContentsObserver;
+  // Used by tests only.
+  ExecutionEngine(Profile* profile,
+                  std::unique_ptr<UiEventDispatcher> ui_event_dispatcher,
+                  tabs::TabInterface* tab);
+
+  void SetState(State state);
 
   // If there are no actions remaining, calls CompleteActions.
   // Otherwise, calls SafetyChecksForNextAction().
@@ -121,7 +154,9 @@ class ExecutionEngine {
   void ExecuteNextAction();
 
   // Called each time an action finishes.
-  void FinishOneAction(mojom::ActionResultPtr result);
+  void FinishedUiPreTool(mojom::ActionResultPtr result);
+  void FinishedToolController(mojom::ActionResultPtr result);
+  void FinishedUiPostTool(mojom::ActionResultPtr result);
 
   // Calls out to CompleteActionsV1 or CompleteActionsV2.
   void CompleteActions(mojom::ActionResultPtr result);
@@ -140,6 +175,8 @@ class ExecutionEngine {
   const optimization_guide::proto::Action& GetNextAction();
   // Returns the tab associated with the action or nullptr.
   tabs::TabInterface* GetTab(const optimization_guide::proto::Action& action);
+
+  State state_ = State::kInit;
 
   static std::optional<base::TimeDelta> action_observation_delay_for_testing_;
 
@@ -177,6 +214,7 @@ class ExecutionEngine {
   // Created when task_ is set. Handles execution details for an individual tool
   // request.
   std::unique_ptr<ToolController> tool_controller_;
+  std::unique_ptr<UiEventDispatcher> ui_event_dispatcher_;
 
   // A sequence of actions that the model has requested. When it is finished
   // being processed it is reset.
@@ -201,6 +239,8 @@ class ExecutionEngine {
   // actions is passed in. This effectively cancels any ongoing async actions.
   base::WeakPtrFactory<ExecutionEngine> actions_weak_ptr_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream& o, const ExecutionEngine::State& s);
 
 }  // namespace actor
 
