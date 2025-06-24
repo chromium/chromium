@@ -9813,6 +9813,7 @@ test("unit_tests") {
   } else if (safe_browsing_mode == 2 && is_android) {
     sources += [
       "../browser/component_updater/real_time_url_checks_allowlist_component_installer_unittest.cc",
+      "../browser/safe_browsing/android/client_side_detection_intelligent_scan_delegate_android_unittest.cc",
       "../browser/safe_browsing/android/password_reuse_controller_android_unittest.cc",
       "../browser/safe_browsing/download_protection/rate_limiting_key_manager_unittest.cc",
       "../browser/safe_browsing/safe_browsing_pref_change_handler_android_unittest.cc",
