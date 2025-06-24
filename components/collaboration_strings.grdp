@@ -65,6 +65,9 @@
   <message name="IDS_COLLABORATION_CHROME_OUT_OF_DATE_ERROR_DIALOG_NOT_NOW_BUTTON" desc="The text of the button to skip updating the app from the chrome out of date dialog, shown when user tries to share or join a tab group.">
     Not now
   </message>
+  <message name="IDS_COLLABORATION_CHROME_OUT_OF_DATE_ERROR_DIALOG_CONTINUE_BODY" desc="The body for the chrome out of date dialog, shown when user tries to continue using shared tab groups after a restart.">
+    To continue using your shared tab groups, update Chrome
+  </message>
   <message name="IDS_COLLABORATION_SIGNED_OUT_HEADER" desc="The title for the signed out dialog." formatter_data="android_java">
     You're signed out
   </message>
