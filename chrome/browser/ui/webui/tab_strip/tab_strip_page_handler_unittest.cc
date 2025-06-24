@@ -13,6 +13,8 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
@@ -143,6 +145,10 @@ class TabStripPageHandlerTest : public BrowserWithTestWindowTest {
     handler_ = std::make_unique<TestTabStripPageHandler>(
         page_.BindAndGetRemote(), web_ui(), browser(), &stub_embedder_);
     web_ui()->ClearTrackedCalls();
+
+    // Wait for the TabGroupSyncService to properly initialize before making any
+    // changes to tab groups.
+    WaitForTabGroupSyncServiceInitialized(profile());
   }
   void TearDown() override {
     web_contents_.reset();
@@ -158,6 +164,13 @@ class TabStripPageHandlerTest : public BrowserWithTestWindowTest {
                         const tab_strip::mojom::TabGroupVisualData& tab_group) {
     EXPECT_EQ(base::UTF16ToASCII(visual_data.title()), tab_group.title);
     EXPECT_EQ(color_utils::SkColorToRgbString(SK_ColorWHITE), tab_group.color);
+  }
+
+  void WaitForTabGroupSyncServiceInitialized(Profile* profile) {
+    auto observer =
+        std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile));
+    observer->Wait();
   }
 
  protected:
@@ -466,6 +479,9 @@ TEST_F(TabStripPageHandlerTest, MoveGroupAcrossProfiles) {
   std::unique_ptr<Browser> new_browser = CreateBrowser(
       different_profile, browser()->type(), false, new_window.get());
   AddTab(new_browser.get(), GURL("http://foo"));
+
+  WaitForTabGroupSyncServiceInitialized(different_profile);
+
   tab_groups::TabGroupId group_id =
       new_browser.get()->tab_strip_model()->AddToNewGroup({0});
 

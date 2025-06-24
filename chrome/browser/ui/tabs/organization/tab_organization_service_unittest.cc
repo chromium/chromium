@@ -8,10 +8,12 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -76,6 +78,13 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
     return browser->tab_strip_model()->GetTabAtIndex(index);
   }
 
+  void WaitForTabGroupSyncServiceInitialized() {
+    auto observer =
+        std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
+    observer->Wait();
+  }
+
   TestingProfile* profile() { return profile_.get(); }
   TabOrganizationService* service() { return service_.get(); }
 
@@ -93,6 +102,10 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
     signin::SetPrimaryAccount(identity_manager, "test@example.com",
                               signin::ConsentLevel::kSignin);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+    // Wait for the TabGroupSyncService to properly initialize before making any
+    // changes to tab groups.
+    WaitForTabGroupSyncServiceInitialized();
   }
   void TearDown() override {
     for (auto& browser : browsers_) {
