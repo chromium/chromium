@@ -161,34 +161,6 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForCanvas2D() {
   return provider;
 }
 
-CanvasResourceProvider*
-CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGPU() {
-  CHECK(IsWebGPU());
-  auto* provider = GetResourceProviderForWebGPU();
-  if (!provider && !did_fail_to_create_resource_provider_) {
-    if (IsValidImageSize()) {
-      if (SharedGpuContext::IsGpuCompositingEnabled()) {
-        resource_provider_for_webgpu_ =
-            CanvasResourceProvider::CreateWebGPUImageProvider(
-                Size(), GetRenderingContextFormat(),
-                GetRenderingContextAlphaType(), GetRenderingContextColorSpace(),
-                gpu::SharedImageUsageSet(), this);
-        UpdateMemoryUsage();
-      }
-      provider = GetResourceProviderForWebGPU();
-    }
-    if (!provider) {
-      did_fail_to_create_resource_provider_ = true;
-    } else if (provider->IsValid()) {
-      base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                                provider->IsAccelerated());
-      base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                    provider->GetType());
-    }
-  }
-  return provider;
-}
-
 void CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
   CHECK(!GetResourceProviderForCanvas2D());
 

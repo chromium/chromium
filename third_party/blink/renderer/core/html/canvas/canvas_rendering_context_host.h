@@ -108,8 +108,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   GetOrCreateCanvasResourceProviderForCanvas2D();
   virtual void PageVisibilityChanged();
 
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderForWebGPU();
-
   bool IsWebGL() const;
   bool IsWebGPU() const;
   bool IsRenderingContext2D() const;
@@ -165,6 +163,15 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   virtual void DiscardResources();
 
   void FlushRecordingForCanvas2D(FlushReason reason);
+
+  // `resource_provider_` must be null.
+  void SetResourceProviderForWebGPU(
+      std::unique_ptr<CanvasResourceProvider> resource_provider) {
+    CHECK(IsWebGPU());
+    CHECK(!resource_provider_for_webgpu_);
+    resource_provider_for_webgpu_ = std::move(resource_provider);
+    UpdateMemoryUsage();
+  }
 
  protected:
   ~CanvasRenderingContextHost() override = default;

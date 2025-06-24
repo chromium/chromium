@@ -77,6 +77,7 @@ class GPUCanvasContext : public ScriptWrappable,
       const gfx::ColorSpace& dst_color_space,
       VideoFrameCopyCompletedCallback callback) override;
   void PageVisibilityChanged() override {}
+  void SizeChanged() override;
   bool isContextLost() const override { return false; }
   bool IsComposited() const final { return true; }
   bool IsAccelerated() const final;
@@ -114,6 +115,7 @@ class GPUCanvasContext : public ScriptWrappable,
   bool IsGPUDeviceDestroyed() override;
 
  private:
+  CanvasResourceProvider* GetOrCreateCanvasResourceProvider();
   CanvasResourceProvider* PaintRenderingResultsToCanvas(SourceDrawingBuffer);
   scoped_refptr<WebGPUMailboxTexture> GetFrontBufferMailboxTexture();
   void DetachSwapBuffers();
@@ -138,6 +140,10 @@ class GPUCanvasContext : public ScriptWrappable,
       V8GPUCanvasAlphaMode::Enum alpha_mode);
 
   Member<GPUDevice> device_;
+
+  // `did_fail_to_create_resource_provider_` prevents repeated attempts in
+  // allocating resources after the first attempt failed.
+  bool did_fail_to_create_resource_provider_ = false;
 
   // If the system doesn't support the requested format but it's one that WebGPU
   // is required to offer, a texture_ will be allocated separately with the
