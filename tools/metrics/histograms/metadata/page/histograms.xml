@@ -1560,7 +1560,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfActual{PositiveOrNegative}.2"
-    units="%" expires_after="2025-12-07">
+    units="%" expires_after="2026-05-01">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -1580,7 +1580,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfActual{PositiveOrNegative}.PerTotalFrequency.2"
-    units="Count" expires_after="2025-12-07">
+    units="Count" expires_after="2026-05-01">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -1601,7 +1601,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.ImageLoadingPriority.FrequencyOfActual{PositiveOrNegative}.2"
-    units="Count" expires_after="2025-08-01">
+    units="Count" expires_after="2026-05-01">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -1621,7 +1621,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.ImageLoadingPriority.TotalFrequencyOfActual{PositiveOrNegative}.PerConfidence.3"
-    units="Count" expires_after="2025-12-07">
+    units="Count" expires_after="2026-05-01">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -1642,7 +1642,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.ImageLoadingPriority.TotalFrequencyOfActual{PositiveOrNegative}.WithConfidence{Range}.2"
-    units="Count" expires_after="2025-08-01">
+    units="Count" expires_after="2026-05-01">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
