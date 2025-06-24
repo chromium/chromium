@@ -25,7 +25,15 @@ std::string GetTwaPackageName(content::RenderFrameHost* render_frame_host) {
   if (!web_contents)
     return std::string();
 
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab) {
+    // This can happen when the RenderFrameHost does not belong to a proper tab
+    // such as a PWA or in this case a TWA. In these cases, there are no
+    // guarantees that a TabInterface is associated with the WebContents. See
+    // crbug.com/425155901 for more details.
+    return std::string();
+  }
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   if (!browser || !browser->GetProfile()) {
     return std::string();
