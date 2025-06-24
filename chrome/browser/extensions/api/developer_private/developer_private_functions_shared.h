@@ -275,6 +275,73 @@ class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
       error_reporter_observation_{this};
 };
 
+class DeveloperPrivateLoadUnpackedFunction
+    : public DeveloperPrivateAPIFunction,
+      public ui::SelectFileDialog::Listener {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.loadUnpacked",
+                             DEVELOPERPRIVATE_LOADUNPACKED)
+  DeveloperPrivateLoadUnpackedFunction();
+
+  // ui::SelectFileDialog::Listener:
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
+
+  // For testing:
+  void set_accept_dialog_for_testing(bool accept) {
+    accept_dialog_for_testing_ = accept;
+  }
+  void set_selected_file_for_testing(const ui::SelectedFileInfo& file) {
+    selected_file_for_testing_ = file;
+  }
+
+ protected:
+  ~DeveloperPrivateLoadUnpackedFunction() override;
+
+  // DeveloperPrivateAPIFunction:
+  ResponseAction Run() override;
+
+ private:
+  // Shows the file picker dialog.
+  void ShowSelectFileDialog();
+
+  // Starts loading the given `file_path`.
+  void StartFileLoad(const base::FilePath file_path);
+
+  // Called when `file_path` load is completed
+  void OnLoadComplete(const Extension* extension,
+                      const base::FilePath& file_path,
+                      const std::string& error);
+
+  // Called when `file_path` load encounters a manifest parsing `error`.
+  void OnGotManifestError(const base::FilePath& file_path,
+                          const std::string& error,
+                          size_t line_number,
+                          const std::string& manifest);
+
+  // Returns `response_value` when the function should finish asynchronously.
+  void Finish(ResponseValue response_value);
+
+  // Whether or not we should fail quietly in the event of a load error.
+  bool fail_quietly_ = false;
+
+  // Whether we populate a developer_private::LoadError on load failure, as
+  // opposed to simply passing the message in lastError.
+  bool populate_error_ = false;
+
+  // The identifier for the selected path when retrying an unpacked load.
+  DeveloperPrivateAPI::UnpackedRetryId retry_guid_;
+
+  // The dialog with the select file picker.
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+
+  // For testing:
+  // Whether to accept or reject the select file dialog without showing it.
+  std::optional<bool> accept_dialog_for_testing_;
+  // File to load when accepting the select file dialog without showing it.
+  std::optional<ui::SelectedFileInfo> selected_file_for_testing_;
+};
+
 class DeveloperPrivateInstallDroppedFileFunction
     : public DeveloperPrivateAPIFunction {
  public:

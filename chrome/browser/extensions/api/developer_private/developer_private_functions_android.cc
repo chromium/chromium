@@ -6,8 +6,6 @@
 
 #include "extensions/browser/extension_function.h"
 
-DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadUnpackedFunction,
-                                        "developerPrivate.loadUnpacked")
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadDirectoryFunction,
                                         "developerPrivate.loadDirectory")
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
