@@ -5929,5 +5929,24 @@
       "--force-color-profile=display-p3-d65"
     ],
     "expires": "Jul 1, 2026"
+  },
+  {
+    "prefix": "script-src-hashes-v1-enabled",
+    "owners": [
+      "carlosil@chromium.org",
+      "meacer@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/content-security-policy/unsafe-eval/tentative"
+    ],
+    "args": [
+      "--enable-features=ScriptSrcHashesV1"
+    ],
+    "expires": "Aug 1, 2025"
   }
 ]
