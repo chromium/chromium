@@ -23,7 +23,6 @@ import android.content.res.Resources;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 
-import androidx.core.content.res.ResourcesCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -170,7 +169,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
                         eq(TAB_ID),
                         eq(true),
                         eq(false),
-                        eq(ResourcesCompat.ID_NULL),
+                        eq(Resources.ID_NULL),
                         eq(HorizontalOrientation.LAYOUT_DIRECTION),
                         eq(mActivity),
                         eq(false));

@@ -9,6 +9,7 @@ import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.View;
@@ -21,7 +22,6 @@ import android.widget.ListView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
@@ -286,7 +286,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 tabGroupId,
                 /* horizontalOverlapAnchor= */ true,
                 /* verticalOverlapAnchor= */ false,
-                /* animStyle= */ ResourcesCompat.ID_NULL,
+                /* animStyle= */ Resources.ID_NULL,
                 HorizontalOrientation.LAYOUT_DIRECTION,
                 assumeNonNull(mWindowAndroid.getActivity().get()));
         RecordUserAction.record("MobileToolbarTabGroupMenu.Shown");

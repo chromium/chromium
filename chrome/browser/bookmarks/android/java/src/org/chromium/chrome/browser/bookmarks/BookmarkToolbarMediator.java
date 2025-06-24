@@ -12,7 +12,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -455,7 +454,7 @@ class BookmarkToolbarMediator
             case BookmarkRowDisplayPref.VISUAL:
                 return R.id.visual_view;
         }
-        return ResourcesCompat.ID_NULL;
+        return Resources.ID_NULL;
     }
 
     private @IdRes int getMenuIdFromSortOrder(@BookmarkRowSortOrder int sortOrder) {
@@ -473,7 +472,7 @@ class BookmarkToolbarMediator
             case BookmarkRowSortOrder.MANUAL:
                 return R.id.sort_by_manual;
         }
-        return ResourcesCompat.ID_NULL;
+        return Resources.ID_NULL;
     }
 
     // Private methods.

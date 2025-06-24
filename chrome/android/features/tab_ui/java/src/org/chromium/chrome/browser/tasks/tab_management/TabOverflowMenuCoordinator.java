@@ -21,7 +21,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.LifetimeAssert;
@@ -160,7 +159,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
             mMenuWindow.setVerticalOverlapAnchor(verticalOverlapAnchor);
             mMenuWindow.setPreferredHorizontalOrientation(horizontalOrientation);
             // Override animation style or animate from anchor as default.
-            if (animStyle == ResourcesCompat.ID_NULL) {
+            if (animStyle == Resources.ID_NULL) {
                 mMenuWindow.setAnimateFromAnchor(true);
             } else {
                 mMenuWindow.setAnimationStyle(animStyle);

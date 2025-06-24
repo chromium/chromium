@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.view.View;
 
 import androidx.annotation.StringRes;
-import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
@@ -84,7 +83,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 createAndShowMenu(
                         new ViewRectProvider(view),
                         tabGroupId,
-                        /* animStyle= */ ResourcesCompat.ID_NULL,
+                        /* animStyle= */ Resources.ID_NULL,
                         /* verticalOverlapAnchor= */ true,
                         (Activity) view.getContext(),
                         true);
@@ -109,7 +108,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabGroupId,
-                /* animStyle= */ ResourcesCompat.ID_NULL,
+                /* animStyle= */ Resources.ID_NULL,
                 /* verticalOverlapAnchor= */ false,
                 mActivity,
                 focusable);

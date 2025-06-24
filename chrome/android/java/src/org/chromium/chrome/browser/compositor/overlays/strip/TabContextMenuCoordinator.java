@@ -9,9 +9,9 @@ import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_ST
 import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 
 import android.app.Activity;
+import android.content.res.Resources;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
@@ -178,7 +178,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                 tabId,
                 /* horizontalOverlapAnchor= */ true,
                 /* verticalOverlapAnchor= */ false,
-                /* animStyle= */ ResourcesCompat.ID_NULL,
+                /* animStyle= */ Resources.ID_NULL,
                 HorizontalOrientation.LAYOUT_DIRECTION,
                 assumeNonNull(mWindowAndroid.getActivity().get()));
         RecordUserAction.record("MobileToolbarTabMenu.Shown");

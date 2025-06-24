@@ -8,9 +8,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_STRIP_CONTEXT_MENU;
 
 import android.app.Activity;
+import android.content.res.Resources;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
@@ -146,7 +146,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 tabId,
                 /* horizontalOverlapAnchor= */ true,
                 /* verticalOverlapAnchor= */ false,
-                /* animStyle= */ ResourcesCompat.ID_NULL,
+                /* animStyle= */ Resources.ID_NULL,
                 HorizontalOrientation.LAYOUT_DIRECTION,
                 mActivity,
                 /* isIncognito= */ false);

@@ -12,7 +12,6 @@ import android.util.SparseArray;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.core.content.res.ResourcesCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -278,7 +277,7 @@ public class LayerTitleCache {
                             LayerTitleCache.this,
                             groupId,
                             title.getTitleResId(),
-                            avatarResource == null ? ResourcesCompat.ID_NULL : avatarResId,
+                            avatarResource == null ? Resources.ID_NULL : avatarResId,
                             avatarResource == null ? 0 : mSharedGroupAvatarPaddingPx,
                             incognito,
                             isRtl);
@@ -412,8 +411,8 @@ public class LayerTitleCache {
                         mNativeLayerTitleCache,
                         LayerTitleCache.this,
                         tabId,
-                        ResourcesCompat.ID_NULL,
-                        ResourcesCompat.ID_NULL,
+                        Resources.ID_NULL,
+                        Resources.ID_NULL,
                         false,
                         false,
                         false);
@@ -430,8 +429,8 @@ public class LayerTitleCache {
                         mNativeLayerTitleCache,
                         LayerTitleCache.this,
                         groupId,
-                        ResourcesCompat.ID_NULL,
-                        ResourcesCompat.ID_NULL,
+                        Resources.ID_NULL,
+                        Resources.ID_NULL,
                         0,
                         false,
                         false);

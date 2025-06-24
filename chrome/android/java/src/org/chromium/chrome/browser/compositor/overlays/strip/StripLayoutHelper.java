@@ -43,7 +43,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
@@ -3855,7 +3854,7 @@ public class StripLayoutHelper
         //  to invalid a11y node. Replace with official strings when available.
         String description = "Placeholder Tab";
         String title = "Placeholder";
-        tab.setAccessibilityDescription(description, title, ResourcesCompat.ID_NULL);
+        tab.setAccessibilityDescription(description, title, Resources.ID_NULL);
 
         pushPropertiesToTab(tab);
 
