@@ -8,16 +8,50 @@ source_set("coordinator") {
     "safari_data_import_main_coordinator.mm",
     "safari_data_import_ui_handler.h",
   ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
   deps = [
+    ":coordinator_delegate",
+    ":export_coordinator",
     "//base",
     "//ios/chrome/browser/passwords/model:features",
+    "//ios/chrome/browser/safari_data_import/ui",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/confirmation_alert",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("export_coordinator") {
+  sources = [
+    "safari_data_import_export_coordinator.h",
+    "safari_data_import_export_coordinator.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    ":coordinator_delegate",
+    ":import_coordinator",
+    "//base",
+  ]
+}
+
+source_set("import_coordinator") {
+  sources = [
+    "safari_data_import_import_coordinator.h",
+    "safari_data_import_import_coordinator.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    ":coordinator_delegate",
+    "//base",
+  ]
+}
+
+source_set("coordinator_delegate") {
+  sources = [ "safari_data_import_coordinator_transitioning_delegate.h" ]
 }
 
 source_set("promo") {

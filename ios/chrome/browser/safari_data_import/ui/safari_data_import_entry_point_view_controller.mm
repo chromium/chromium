@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_entry_point_view_controller.h"
 
-#import "ios/chrome/browser/safari_data_import/public/safari_data_import_screen_type.h"
-#import "ios/chrome/browser/safari_data_import/ui/safari_data_import_transition_delegate.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -26,6 +24,7 @@
       IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_SECONDARY_ACTION);
   self.image = [UIImage imageNamed:@"safari_data_import"];
   self.imageHasFixedSize = YES;
+  self.topAlignedLayout = YES;
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemClose;
   [super viewDidLoad];
 }

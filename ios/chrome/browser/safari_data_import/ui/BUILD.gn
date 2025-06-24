@@ -7,11 +7,14 @@ source_set("ui") {
     "safari_data_import_entry_point_view_controller.h",
     "safari_data_import_entry_point_view_controller.mm",
   ]
-  public_deps = [ "//ios/chrome/common/ui/confirmation_alert" ]
+  public_deps = [
+    "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
+  ]
   deps = [
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/safari_data_import/ui/resources",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
