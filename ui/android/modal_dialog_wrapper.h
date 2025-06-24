@@ -68,7 +68,6 @@ class UI_ANDROID_EXPORT ModalDialogWrapper : public DialogModelHost {
 
   // Helper function for BuildPropertyModel.
   ModalDialogButtonStyles GetButtonStyles() const;
-  std::vector<std::u16string> getMessageParagraphs() const;
 
   // Build java PropertyModel from ui::DialogModel.
   void BuildPropertyModel();

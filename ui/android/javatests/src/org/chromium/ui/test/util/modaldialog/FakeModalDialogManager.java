@@ -17,8 +17,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
-
 /**
  * A fake ModalDialogManager for use in tests involving modals. Unlike ModalDialogManager, this
  * class is managed by its native `FakeModalDialogManagerBridge`.
@@ -91,13 +89,6 @@ public class FakeModalDialogManager extends ModalDialogManager {
 
     @CalledByNativeForTesting
     public String[] getMessageParagraphs() {
-        CharSequence p1 = mShownDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1);
-        if (p1 != null) {
-            ArrayList<CharSequence> singleParagraphs = new ArrayList<>();
-            singleParagraphs.add(p1);
-            return singleParagraphs.stream().map(String::valueOf).toArray(String[]::new);
-        }
-
         return mShownDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).stream()
                 .map(String::valueOf)
                 .toArray(String[]::new);
