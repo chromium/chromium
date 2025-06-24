@@ -105,7 +105,8 @@ void PageLifecycleStateManager::SetBackForwardCacheEntered(
            {BackForwardCacheEntered::kNo, BackForwardCacheEntered::kEntered}},
           {BackForwardCacheEntered::kEntered, {BackForwardCacheEntered::kNo}},
       }));
-  CHECK_STATE_TRANSITION(transitions, back_forward_cache_entered_, entered);
+  // TODO(https://crbug.com/427316606): Make this a CHECK.
+  DCHECK_STATE_TRANSITION(transitions, back_forward_cache_entered_, entered);
   back_forward_cache_entered_ = entered;
 }
 
