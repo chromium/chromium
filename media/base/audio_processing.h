@@ -23,13 +23,17 @@ struct MEDIA_EXPORT AudioProcessingSettings {
   // Multi-channel is not an individual audio effect, but determines whether the
   // processing algorithms should preserve multi-channel input audio.
   bool multi_channel_capture_processing = true;
+  // If true, a system loopback stream will be used as the echo cancellation
+  // reference signal.
+  bool needs_loopback_aec_reference = false;
 
   bool operator==(const AudioProcessingSettings& b) const {
     return echo_cancellation == b.echo_cancellation &&
            noise_suppression == b.noise_suppression &&
            automatic_gain_control == b.automatic_gain_control &&
            multi_channel_capture_processing ==
-               b.multi_channel_capture_processing;
+               b.multi_channel_capture_processing &&
+           needs_loopback_aec_reference == b.needs_loopback_aec_reference;
   }
 
   bool NeedWebrtcAudioProcessing() const {
