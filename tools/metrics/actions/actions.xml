@@ -49582,6 +49582,10 @@ should be able to be added at any place in this file.
       label="For iOSFeedSwipeStaticFeature feature"/>
   <suffix name="iOSHistoryOnOverflowMenuFeature"
       label="For iOSHistoryOnOverflowMenuFeature feature"/>
+  <suffix name="iOSHomepageCustomizationNewBadge"
+      label="For iOSHomepageCustomizationNewBadge feature"/>
+  <suffix name="iOSHomepageLensNewBadge"
+      label="For iOSHomepageLensNewBadge feature"/>
   <suffix name="iOSInlineEnhancedSafeBrowsingPromoFeature"
       label="For Enhanced Safe Browsing Promo feature"/>
   <suffix name="iOSLensOverlayEntrypointTip"

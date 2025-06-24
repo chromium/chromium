@@ -337,6 +337,10 @@ DEFINE_VARIATION_PARAM(kIPHIOSBWGPromoFeature, "IPH_iOSBWGPromo");
 DEFINE_VARIATION_PARAM(kIPHiOSSafariImportFeature,
                        "IPH_iOSSafariImportFeature");
 DEFINE_VARIATION_PARAM(kIPHIOSPageActionMenu, "IPH_iOSPageActionMenu");
+DEFINE_VARIATION_PARAM(kIPHiOSHomepageLensNewBadge,
+                       "IPH_iOSHomepageLensNewBadge");
+DEFINE_VARIATION_PARAM(kIPHiOSHomepageCustomizationNewBadge,
+                       "IPH_iOSHomepageCustomizationNewBadge");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

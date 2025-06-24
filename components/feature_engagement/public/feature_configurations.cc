@@ -2341,6 +2341,40 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHiOSHomepageLensNewBadge.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);  // Available immediately
+    config.session_rate = Comparator(LESS_THAN, 1);
+    config.used =
+        EventConfig("ios_homepage_lens_badge_used", Comparator(ANY, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config.trigger =
+        EventConfig("ios_homepage_lens_badge_trigger", Comparator(LESS_THAN, 3),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config.groups.push_back(kiOSHomepageNewBadgesGroup.name);
+    return config;
+  }
+
+  if (kIPHiOSHomepageCustomizationNewBadge.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);  // Available immediately
+    config.session_rate = Comparator(LESS_THAN, 1);
+    config.used =
+        EventConfig("ios_homepage_customization_badge_used", Comparator(ANY, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config.trigger = EventConfig("ios_homepage_customization_badge_trigger",
+                                 Comparator(LESS_THAN, 3),
+                                 feature_engagement::kMaxStoragePeriod,
+                                 feature_engagement::kMaxStoragePeriod);
+    config.groups.push_back(kiOSHomepageNewBadgesGroup.name);
+    return config;
+  }
+
   if (kIPHiOSPromoPasswordManagerWidgetFeature.name == feature->name) {
     // A config to allow a user to be shown the Password Manager widget promo in
     // the Password Manager. The promo will be shown for a maximum of three

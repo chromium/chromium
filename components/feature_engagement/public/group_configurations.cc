@@ -99,6 +99,20 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
 
     return config;
   }
+  if (kiOSHomepageNewBadgesGroup.name == group->name) {
+    GroupConfig config;
+    config.valid = true;
+    config.session_rate = Comparator(ANY, 0);
+    // Group Rule: Only allow 1 badge from this group per day.
+    config.trigger = EventConfig("homepage_new_badges_group_trigger",
+                                 Comparator(LESS_THAN, 1), 1, 365);
+    // Group Rule: Don't show immediately after FRE. (Requires
+    // `kIOSFirstRunComplete` event to have occurred 0 times in the last day.)
+    config.event_configs.insert(EventConfig(
+        feature_engagement::events::kIOSFirstRunComplete, Comparator(EQUAL, 0),
+        1, feature_engagement::kMaxStoragePeriod));
+    return config;
+  }
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

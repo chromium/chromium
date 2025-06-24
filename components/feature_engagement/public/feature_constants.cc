@@ -783,6 +783,14 @@ BASE_FEATURE(kIPHIOSPageActionMenu,
              "IPH_iOSPageActionMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIPHiOSHomepageLensNewBadge,
+             "IPH_iOSHomepageLensNewBadge",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIPHiOSHomepageCustomizationNewBadge,
+             "IPH_iOSHomepageCustomizationNewBadge",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
              "DefaultBrowserEligibilitySlidingWindow",

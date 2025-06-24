@@ -32,6 +32,9 @@ BASE_FEATURE(kiOSTailoredNonModalDefaultBrowserPromosGroup,
 BASE_FEATURE(kiOSNonModalSigninPromosGroup,
              "IPH_iOSNonModalSigninPromosGroup",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kiOSHomepageNewBadgesGroup,
+             "IPH_iOSHomepageNewBadgesGroup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kClankDefaultBrowserPromosGroup,

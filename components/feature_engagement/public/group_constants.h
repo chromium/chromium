@@ -19,6 +19,7 @@ BASE_DECLARE_FEATURE(kiOSDefaultBrowserPromosGroup);
 BASE_DECLARE_FEATURE(kiOSTailoredDefaultBrowserPromosGroup);
 BASE_DECLARE_FEATURE(kiOSTailoredNonModalDefaultBrowserPromosGroup);
 BASE_DECLARE_FEATURE(kiOSNonModalSigninPromosGroup);
+BASE_DECLARE_FEATURE(kiOSHomepageNewBadgesGroup);
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kClankDefaultBrowserPromosGroup);

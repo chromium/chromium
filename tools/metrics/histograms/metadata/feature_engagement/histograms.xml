@@ -295,6 +295,12 @@ chromium-metrics-reviews@google.com.
       summary="Showing the static Feed Swipe IPH on iOS."/>
   <variant name="IPH_iOSHistoryOnOverflowMenuFeature"
       summary="history item on the overflow menu on iOS"/>
+  <variant name="IPH_iOSHomepageCustomizationNewBadge"
+      summary="showing the new badge IPH on the homepage customization menu
+               button"/>
+  <variant name="IPH_iOSHomepageLensNewBadge"
+      summary="showing the new badge IPH on the Lens entrypoint in the
+               homepage Omnibox"/>
   <variant name="IPH_iOSInlineEnhancedSafeBrowsingPromoFeature"
       summary="Showing the Enhanced Safe Browsing Promo on iOS"/>
   <variant name="IPH_iOSLensOverlayEntrypointTip"
