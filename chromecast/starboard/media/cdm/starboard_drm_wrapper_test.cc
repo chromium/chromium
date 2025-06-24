@@ -5,6 +5,7 @@
 #include "chromecast/starboard/media/cdm/starboard_drm_wrapper.h"
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -17,6 +18,22 @@
 
 namespace chromecast {
 namespace media {
+
+// This class exists for the purpose of accessing resources_ and simulating
+// AtExitManager logic.
+class StarboardDrmWrapperTestPeer {
+ public:
+  static size_t GetNumResources() {
+    return StarboardDrmWrapper::GetInstance().resources_.size();
+  }
+
+  static void AttemptDestroySbDrmSystem() {
+    // This code is normally not run in tests, because it relies on
+    // AtExitManager.
+    StarboardDrmWrapper::GetInstance().MaybeDestroySbDrmSystem();
+  }
+};
+
 namespace {
 
 using ::testing::_;
@@ -30,6 +47,7 @@ using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::StrEq;
+using ::testing::WithoutArgs;
 
 // Checks that a const void* arg matches a string.
 //
@@ -130,7 +148,9 @@ class StarboardDrmWrapperTest : public ::testing::Test {
   // This will be passed to the StarboardDecryptorCast, and all calls to
   // Starboard will go through it. Thus, we can mock out those calls.
   MockStarboardApiWrapper starboard_;
-  MockStarboardDrmWrapperClient client_;
+  // This is optional so that we can delay construction until after
+  // StarboardDrmWrapper::SetSingletonForTesting has been called.
+  std::optional<MockStarboardDrmWrapperClient> client_;
   // Since SbDrmSystem is just an opaque blob to the StarboardDecryptorCast, we
   // will simply use an int to represent it.
   int fake_drm_system_ = 1;
@@ -164,14 +184,16 @@ TEST_F(StarboardDrmWrapperTest, GeneratesSessionUpdateRequestForSuccessCase) {
                   &fake_drm_system_, _, StrEq(payload_type),
                   StrEqWhenCast(init_data_str), init_data_str.size()))
       .WillOnce(SaveArg<1>(&actual_wrapper_ticket));
-  EXPECT_CALL(client_, OnSessionUpdateRequest(ticket, status, request_type,
-                                              error_message, session_id,
-                                              ElementsAreArray(content)))
+  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
+
+  client_.emplace();
+  EXPECT_CALL(*client_, OnSessionUpdateRequest(ticket, status, request_type,
+                                               error_message, session_id,
+                                               ElementsAreArray(content)))
       .Times(1);
 
-  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
   StarboardDrmWrapper::GetInstance().GenerateSessionUpdateRequest(
-      &client_, ticket, payload_type,
+      &*client_, ticket, payload_type,
       std::vector<uint8_t>(init_data.begin(), init_data.end()));
 
   // Simulate Starboard responding.
@@ -210,13 +232,15 @@ TEST_F(StarboardDrmWrapperTest, GeneratesSessionUpdateRequestForErrorCase) {
                   &fake_drm_system_, _, StrEq(payload_type),
                   StrEqWhenCast(init_data_str), init_data_str.size()))
       .WillOnce(SaveArg<1>(&actual_wrapper_ticket));
-  EXPECT_CALL(client_, OnSessionUpdateRequest(ticket, status, _, error_message,
-                                              session_id, IsEmpty()))
+  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
+
+  client_.emplace();
+  EXPECT_CALL(*client_, OnSessionUpdateRequest(ticket, status, _, error_message,
+                                               session_id, IsEmpty()))
       .Times(1);
 
-  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
   StarboardDrmWrapper::GetInstance().GenerateSessionUpdateRequest(
-      &client_, ticket, payload_type,
+      &*client_, ticket, payload_type,
       std::vector<uint8_t>(init_data.begin(), init_data.end()));
 
   // Simulate Starboard responding with an error.
@@ -267,22 +291,24 @@ TEST_F(StarboardDrmWrapperTest, UpdatesSessionForSuccessCase) {
       DrmUpdateSession(&fake_drm_system_, _, StrEqWhenCast(key), key.size(),
                        StrEqWhenCast(session_id), session_id.size()))
       .WillOnce(SaveArg<1>(&actual_wrapper_update_session_ticket));
-  EXPECT_CALL(client_,
+  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
+
+  client_.emplace();
+  EXPECT_CALL(*client_,
               OnSessionUpdateRequest(generate_session_ticket, status,
                                      request_type, error_message, session_id,
                                      ElementsAreArray(content)))
       .Times(1);
-  EXPECT_CALL(client_, OnSessionUpdated(update_session_ticket, status,
-                                        error_message, session_id))
+  EXPECT_CALL(*client_, OnSessionUpdated(update_session_ticket, status,
+                                         error_message, session_id))
       .Times(1);
 
-  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
   StarboardDrmWrapper::GetInstance().GenerateSessionUpdateRequest(
-      &client_, generate_session_ticket, payload_type,
+      &*client_, generate_session_ticket, payload_type,
       std::vector<uint8_t>(init_data.begin(), init_data.end()));
   base::span<const uint8_t> key_span = base::as_byte_span(key);
   StarboardDrmWrapper::GetInstance().UpdateSession(
-      &client_, update_session_ticket, session_id,
+      &*client_, update_session_ticket, session_id,
       std::vector<uint8_t>(key_span.begin(), key_span.end()));
 
   // Simulate Starboard responding.
@@ -334,21 +360,23 @@ TEST_F(StarboardDrmWrapperTest, ForwardsKeyStatusUpdates) {
                   &fake_drm_system_, _, StrEq(payload_type),
                   StrEqWhenCast(init_data_str), init_data_str.size()))
       .WillOnce(SaveArg<1>(&actual_wrapper_generate_session_ticket));
-  EXPECT_CALL(client_,
+  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
+
+  client_.emplace();
+  EXPECT_CALL(*client_,
               OnSessionUpdateRequest(generate_session_ticket, status,
                                      request_type, error_message, session_id,
                                      ElementsAreArray(content)))
       .Times(1);
   EXPECT_CALL(
-      client_,
+      *client_,
       OnKeyStatusesChanged(
           session_id, ElementsAre(StarboardDrmKeyIdMatches(key)),
           ElementsAre(StarboardDrmKeyStatus::kStarboardDrmKeyStatusUsable)))
       .Times(1);
 
-  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
   StarboardDrmWrapper::GetInstance().GenerateSessionUpdateRequest(
-      &client_, generate_session_ticket, payload_type,
+      &*client_, generate_session_ticket, payload_type,
       std::vector<uint8_t>(init_data.begin(), init_data.end()));
 
   // Simulate Starboard responding, including a response that keys have been
@@ -413,22 +441,24 @@ TEST_F(StarboardDrmWrapperTest, UpdatesServerCertificates) {
                                                      StrEqWhenCast(cert_str),
                                                      cert_str.size()))
       .WillOnce(SaveArg<1>(&actual_wrapper_update_cert_ticket));
-  EXPECT_CALL(client_,
+  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
+
+  client_.emplace();
+  EXPECT_CALL(*client_,
               OnSessionUpdateRequest(generate_session_ticket, status,
                                      request_type, error_message, session_id,
                                      ElementsAreArray(content)))
       .Times(1);
-  EXPECT_CALL(client_, OnCertificateUpdated(
-                           update_cert_ticket,
-                           StarboardDrmStatus::kStarboardDrmStatusSuccess, ""))
+  EXPECT_CALL(*client_, OnCertificateUpdated(
+                            update_cert_ticket,
+                            StarboardDrmStatus::kStarboardDrmStatusSuccess, ""))
       .Times(1);
 
-  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
   StarboardDrmWrapper::GetInstance().GenerateSessionUpdateRequest(
-      &client_, generate_session_ticket, payload_type,
+      &*client_, generate_session_ticket, payload_type,
       std::vector<uint8_t>(init_data.begin(), init_data.end()));
   StarboardDrmWrapper::GetInstance().UpdateServerCertificate(
-      &client_, update_cert_ticket,
+      &*client_, update_cert_ticket,
       std::vector<uint8_t>(cert.begin(), cert.end()));
 
   // Simulate Starboard responding, including a response that the server cert
@@ -485,18 +515,20 @@ TEST_F(StarboardDrmWrapperTest, ClosesSession) {
   EXPECT_CALL(starboard_,
               DrmCloseSession(&fake_drm_system_, StrEqWhenCast(session_id),
                               session_id.size()));
-  EXPECT_CALL(client_,
+  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
+
+  client_.emplace();
+  EXPECT_CALL(*client_,
               OnSessionUpdateRequest(generate_session_ticket, status,
                                      request_type, error_message, session_id,
                                      ElementsAreArray(content)))
       .Times(1);
-  EXPECT_CALL(client_, OnSessionClosed(session_id)).Times(1);
+  EXPECT_CALL(*client_, OnSessionClosed(session_id)).Times(1);
 
-  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
   StarboardDrmWrapper::GetInstance().GenerateSessionUpdateRequest(
-      &client_, generate_session_ticket, payload_type,
+      &*client_, generate_session_ticket, payload_type,
       std::vector<uint8_t>(init_data.begin(), init_data.end()));
-  StarboardDrmWrapper::GetInstance().CloseSession(&client_, session_id);
+  StarboardDrmWrapper::GetInstance().CloseSession(&*client_, session_id);
 
   // Simulate Starboard responding.
   ASSERT_THAT(decryptor_provided_callbacks, NotNull());
@@ -694,6 +726,77 @@ TEST_F(StarboardDrmWrapperTest, RespondsToCorrectClientBySessionId) {
       error_message, session_id_1,
       std::vector<uint8_t>(provisioning_data.begin(), provisioning_data.end()),
       url);
+}
+
+TEST_F(StarboardDrmWrapperTest, DrmSystemResourceAddsToResourceSet) {
+  ON_CALL(starboard_, CreateDrmSystem).WillByDefault(Return(&fake_drm_system_));
+  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
+
+  std::optional<StarboardDrmWrapper::DrmSystemResource> resource1;
+  std::optional<StarboardDrmWrapper::DrmSystemResource> resource2;
+
+  EXPECT_EQ(StarboardDrmWrapperTestPeer::GetNumResources(), 0u);
+
+  resource1.emplace();
+  EXPECT_EQ(StarboardDrmWrapperTestPeer::GetNumResources(), 1u);
+
+  resource2.emplace();
+  EXPECT_EQ(StarboardDrmWrapperTestPeer::GetNumResources(), 2u);
+
+  resource1.reset();
+  EXPECT_EQ(StarboardDrmWrapperTestPeer::GetNumResources(), 1u);
+
+  resource2.reset();
+  EXPECT_EQ(StarboardDrmWrapperTestPeer::GetNumResources(), 0u);
+}
+
+TEST_F(StarboardDrmWrapperTest,
+       DrmSystemIsNotDestructedUntilAllResourcesAreDestructed) {
+  bool drm_system_destroyed = false;
+  EXPECT_CALL(starboard_, CreateDrmSystem("com.widevine.alpha", _))
+      .WillOnce(Return(&fake_drm_system_));
+  EXPECT_CALL(starboard_, DrmDestroySystem(&fake_drm_system_))
+      .WillOnce(WithoutArgs(
+          [&drm_system_destroyed]() { drm_system_destroyed = true; }));
+  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
+
+  std::optional<StarboardDrmWrapper::DrmSystemResource> resource1;
+  std::optional<StarboardDrmWrapper::DrmSystemResource> resource2;
+
+  resource1.emplace();
+  resource2.emplace();
+
+  // Simulate the AtExit logic via the test peer.
+  StarboardDrmWrapperTestPeer::AttemptDestroySbDrmSystem();
+
+  // Since the resources have not been destructed, the SbDrmSystem should not
+  // have been destroyed.
+  EXPECT_FALSE(drm_system_destroyed);
+
+  resource1.reset();
+
+  // resource2 still exists.
+  EXPECT_FALSE(drm_system_destroyed);
+
+  // Release the last resource; now the DRM system should be destroyed.
+  resource2.reset();
+  EXPECT_TRUE(drm_system_destroyed);
+}
+
+TEST_F(StarboardDrmWrapperTest,
+       DrmSystemIsDestructedImmediatelyIfNoResourcesAreHeld) {
+  bool drm_system_destroyed = false;
+  EXPECT_CALL(starboard_, CreateDrmSystem("com.widevine.alpha", _))
+      .WillOnce(Return(&fake_drm_system_));
+  EXPECT_CALL(starboard_, DrmDestroySystem(&fake_drm_system_))
+      .WillOnce(WithoutArgs(
+          [&drm_system_destroyed]() { drm_system_destroyed = true; }));
+  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
+
+  EXPECT_FALSE(drm_system_destroyed);
+  // Simulate the AtExit logic via the test peer.
+  StarboardDrmWrapperTestPeer::AttemptDestroySbDrmSystem();
+  EXPECT_TRUE(drm_system_destroyed);
 }
 
 }  // namespace

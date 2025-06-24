@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "chromecast/public/graphics_types.h"
-#include "chromecast/starboard/media/cdm/starboard_drm_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 
 namespace chromecast {
@@ -42,6 +41,7 @@ MediaPipelineBackendStarboard::~MediaPipelineBackendStarboard() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   video_plane_->UnregisterCallback(video_plane_callback_token_);
   if (player_) {
+    LOG(INFO) << "Destroying SbPlayer";
     starboard_->DestroyPlayer(player_);
   }
 }
@@ -258,6 +258,7 @@ void MediaPipelineBackendStarboard::CreatePlayer() {
 
   if (has_drm) {
     LOG(INFO) << "Content is encrypted. Passing an SbDrmSystem to SbPlayer.";
+    drm_resource_.emplace();
     params.drm_system = StarboardDrmWrapper::GetInstance().GetDrmSystem();
   } else {
     LOG(INFO)

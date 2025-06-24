@@ -148,12 +148,6 @@ class StarboardDecryptorCastTest : public ::testing::Test {
 
 TEST_F(StarboardDecryptorCastTest,
        SendsProvisionRequestToWidevineProvisioningServer) {
-  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
-      /*create_provision_fetcher_cb=*/base::BindRepeating(
-          &StarboardDecryptorCastTest::CreateProvisionFetcher,
-          base::Unretained(this)),
-      /*media_resource_tracker=*/nullptr);
-
   const std::string license_request_data_str = "license request data";
   base::span<const uint8_t> license_request_data =
       base::as_byte_span(license_request_data_str);
@@ -185,6 +179,11 @@ TEST_F(StarboardDecryptorCastTest,
       .Times(1);
 
   StarboardDrmWrapper::SetSingletonForTesting(starboard_.get());
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
+      /*create_provision_fetcher_cb=*/base::BindRepeating(
+          &StarboardDecryptorCastTest::CreateProvisionFetcher,
+          base::Unretained(this)),
+      /*media_resource_tracker=*/nullptr);
   std::string actual_session_id;
   bool resolved_promise = false;
   decryptor->Initialize(
@@ -260,12 +259,6 @@ TEST_F(StarboardDecryptorCastTest,
 
 TEST_F(StarboardDecryptorCastTest,
        DoesNotResolveProvisionPromiseUntilResponseIsReceived) {
-  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
-      /*create_provision_fetcher_cb=*/base::BindRepeating(
-          &StarboardDecryptorCastTest::CreateProvisionFetcher,
-          base::Unretained(this)),
-      /*media_resource_tracker=*/nullptr);
-
   const std::string provision_request_data_str = "request data";
   base::span<const uint8_t> provision_request_data =
       base::as_byte_span(provision_request_data_str);
@@ -299,6 +292,11 @@ TEST_F(StarboardDecryptorCastTest,
       .WillOnce(SaveArg<1>(&update_session_request_ticket));
 
   StarboardDrmWrapper::SetSingletonForTesting(starboard_.get());
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
+      /*create_provision_fetcher_cb=*/base::BindRepeating(
+          &StarboardDecryptorCastTest::CreateProvisionFetcher,
+          base::Unretained(this)),
+      /*media_resource_tracker=*/nullptr);
   decryptor->Initialize(
       base::BindLambdaForTesting(session_message_cb_.AsStdFunction()),
       base::BindLambdaForTesting(session_closed_cb_.AsStdFunction()),
@@ -388,12 +386,6 @@ TEST_F(StarboardDecryptorCastTest, SendsSessionUpdateToStarboard) {
   constexpr std::string_view key = "some_key";
   base::span<const uint8_t> key_span = base::as_byte_span(key);
 
-  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
-      /*create_provision_fetcher_cb=*/base::BindRepeating(
-          &StarboardDecryptorCastTest::CreateProvisionFetcher,
-          base::Unretained(this)),
-      /*media_resource_tracker=*/nullptr);
-
   // This will get populated by decryptor.
   const StarboardDrmSystemCallbackHandler* decryptor_provided_callbacks =
       nullptr;
@@ -411,6 +403,11 @@ TEST_F(StarboardDecryptorCastTest, SendsSessionUpdateToStarboard) {
       .WillOnce(SaveArg<1>(&ticket));
 
   StarboardDrmWrapper::SetSingletonForTesting(starboard_.get());
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
+      /*create_provision_fetcher_cb=*/base::BindRepeating(
+          &StarboardDecryptorCastTest::CreateProvisionFetcher,
+          base::Unretained(this)),
+      /*media_resource_tracker=*/nullptr);
   decryptor->Initialize(
       base::BindLambdaForTesting(session_message_cb_.AsStdFunction()),
       base::BindLambdaForTesting(session_closed_cb_.AsStdFunction()),
@@ -477,12 +474,6 @@ TEST_F(StarboardDecryptorCastTest, CallsKeyChangeCallbackOnKeyUpdate) {
   const StarboardDrmKeyStatus starboard_key_status =
       kStarboardDrmKeyStatusUsable;
 
-  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
-      /*create_provision_fetcher_cb=*/base::BindRepeating(
-          &StarboardDecryptorCastTest::CreateProvisionFetcher,
-          base::Unretained(this)),
-      /*media_resource_tracker=*/nullptr);
-
   // This will get populated by decryptor.
   const StarboardDrmSystemCallbackHandler* decryptor_provided_callbacks =
       nullptr;
@@ -505,6 +496,11 @@ TEST_F(StarboardDecryptorCastTest, CallsKeyChangeCallbackOnKeyUpdate) {
       .Times(1);
 
   StarboardDrmWrapper::SetSingletonForTesting(starboard_.get());
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
+      /*create_provision_fetcher_cb=*/base::BindRepeating(
+          &StarboardDecryptorCastTest::CreateProvisionFetcher,
+          base::Unretained(this)),
+      /*media_resource_tracker=*/nullptr);
   decryptor->Initialize(
       base::BindLambdaForTesting(session_message_cb_.AsStdFunction()),
       base::BindLambdaForTesting(session_closed_cb_.AsStdFunction()),
@@ -595,12 +591,6 @@ TEST_F(StarboardDecryptorCastTest,
   const StarboardDrmKeyStatus starboard_key_released_status =
       kStarboardDrmKeyStatusReleased;
 
-  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
-      /*create_provision_fetcher_cb=*/base::BindRepeating(
-          &StarboardDecryptorCastTest::CreateProvisionFetcher,
-          base::Unretained(this)),
-      /*media_resource_tracker=*/nullptr);
-
   // This will get populated by decryptor.
   const StarboardDrmSystemCallbackHandler* decryptor_provided_callbacks =
       nullptr;
@@ -633,6 +623,11 @@ TEST_F(StarboardDecryptorCastTest,
       .Times(1);
 
   StarboardDrmWrapper::SetSingletonForTesting(starboard_.get());
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
+      /*create_provision_fetcher_cb=*/base::BindRepeating(
+          &StarboardDecryptorCastTest::CreateProvisionFetcher,
+          base::Unretained(this)),
+      /*media_resource_tracker=*/nullptr);
   decryptor->Initialize(
       base::BindLambdaForTesting(session_message_cb_.AsStdFunction()),
       base::BindLambdaForTesting(session_closed_cb_.AsStdFunction()),
@@ -708,12 +703,6 @@ TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRequest) {
   const std::string init_data_str = "init_data";
   const base::span<const uint8_t> init_data = base::as_byte_span(init_data_str);
 
-  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
-      /*create_provision_fetcher_cb=*/base::BindRepeating(
-          &StarboardDecryptorCastTest::CreateProvisionFetcher,
-          base::Unretained(this)),
-      /*media_resource_tracker=*/nullptr);
-
   // This will get populated by decryptor.
   const StarboardDrmSystemCallbackHandler* decryptor_provided_callbacks =
       nullptr;
@@ -737,6 +726,11 @@ TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRequest) {
       .Times(1);
 
   StarboardDrmWrapper::SetSingletonForTesting(starboard_.get());
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
+      /*create_provision_fetcher_cb=*/base::BindRepeating(
+          &StarboardDecryptorCastTest::CreateProvisionFetcher,
+          base::Unretained(this)),
+      /*media_resource_tracker=*/nullptr);
   decryptor->Initialize(
       base::BindLambdaForTesting(session_message_cb_.AsStdFunction()),
       base::BindLambdaForTesting(session_closed_cb_.AsStdFunction()),
@@ -799,12 +793,6 @@ TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRenewal) {
   const std::string init_data_str = "init_data";
   const base::span<const uint8_t> init_data = base::as_byte_span(init_data_str);
 
-  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
-      /*create_provision_fetcher_cb=*/base::BindRepeating(
-          &StarboardDecryptorCastTest::CreateProvisionFetcher,
-          base::Unretained(this)),
-      /*media_resource_tracker=*/nullptr);
-
   // This will get populated by decryptor.
   const StarboardDrmSystemCallbackHandler* decryptor_provided_callbacks =
       nullptr;
@@ -829,6 +817,11 @@ TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRenewal) {
       .Times(1);
 
   StarboardDrmWrapper::SetSingletonForTesting(starboard_.get());
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
+      /*create_provision_fetcher_cb=*/base::BindRepeating(
+          &StarboardDecryptorCastTest::CreateProvisionFetcher,
+          base::Unretained(this)),
+      /*media_resource_tracker=*/nullptr);
   decryptor->Initialize(
       base::BindLambdaForTesting(session_message_cb_.AsStdFunction()),
       base::BindLambdaForTesting(session_closed_cb_.AsStdFunction()),
@@ -886,12 +879,6 @@ TEST_F(StarboardDecryptorCastTest, ForwardsCloseSessionToStarboard) {
   const std::string session_id = "session_id";
   const std::vector<uint8_t> init_data = {0, 1, 2, 3};
 
-  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
-      /*create_provision_fetcher_cb=*/base::BindRepeating(
-          &StarboardDecryptorCastTest::CreateProvisionFetcher,
-          base::Unretained(this)),
-      /*media_resource_tracker=*/nullptr);
-
   // This will get populated by decryptor.
   const StarboardDrmSystemCallbackHandler* decryptor_provided_callbacks =
       nullptr;
@@ -909,6 +896,11 @@ TEST_F(StarboardDecryptorCastTest, ForwardsCloseSessionToStarboard) {
       .Times(1);
 
   StarboardDrmWrapper::SetSingletonForTesting(starboard_.get());
+  auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
+      /*create_provision_fetcher_cb=*/base::BindRepeating(
+          &StarboardDecryptorCastTest::CreateProvisionFetcher,
+          base::Unretained(this)),
+      /*media_resource_tracker=*/nullptr);
   decryptor->Initialize(
       base::BindLambdaForTesting(session_message_cb_.AsStdFunction()),
       base::BindLambdaForTesting(session_closed_cb_.AsStdFunction()),
@@ -984,12 +976,12 @@ TEST_F(StarboardDecryptorCastTest, DoesNotDestroySbDrmSystemOnDestruction) {
       .WillOnce(Return(&fake_drm_system_));
   EXPECT_CALL(*starboard_, DrmDestroySystem).Times(0);
 
+  StarboardDrmWrapper::SetSingletonForTesting(starboard_.get());
   auto decryptor = base::MakeRefCounted<StarboardDecryptorCast>(
       /*create_provision_fetcher_cb=*/base::BindRepeating(
           &StarboardDecryptorCastTest::CreateProvisionFetcher,
           base::Unretained(this)),
       /*media_resource_tracker=*/nullptr);
-  StarboardDrmWrapper::SetSingletonForTesting(starboard_.get());
   decryptor->Initialize(
       base::BindLambdaForTesting(session_message_cb_.AsStdFunction()),
       base::BindLambdaForTesting(session_closed_cb_.AsStdFunction()),

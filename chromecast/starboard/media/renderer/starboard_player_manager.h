@@ -6,6 +6,7 @@
 #define CHROMECAST_STARBOARD_MEDIA_RENDERER_STARBOARD_PLAYER_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -13,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromecast/starboard/media/cdm/starboard_drm_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "chromecast/starboard/media/renderer/client_stats_tracker.h"
 #include "chromecast/starboard/media/renderer/demuxer_stream_reader.h"
@@ -85,6 +87,7 @@ class StarboardPlayerManager {
 
  private:
   explicit StarboardPlayerManager(
+      std::optional<StarboardDrmWrapper::DrmSystemResource> drm_resource,
       StarboardApiWrapper* starboard,
       ::media::DemuxerStream* audio_stream,
       ::media::DemuxerStream* video_stream,
@@ -148,7 +151,11 @@ class StarboardPlayerManager {
       &StarboardPlayerManager::CallOnPlayerStatus,
       &StarboardPlayerManager::CallOnPlayerError,
   };
-  StarboardApiWrapper* starboard_ = nullptr;
+  // Ensure that the underlying SbDrmSystem is not destructed until after this
+  // class's destructor runs (so we can destroy SbPlayer first). This is
+  // optional because it is only needed for DRM playback.
+  std::optional<StarboardDrmWrapper::DrmSystemResource> drm_resource_;
+  raw_ptr<StarboardApiWrapper> starboard_ = nullptr;
   // This class owns the SbPlayer.
   raw_ptr<void> player_ = nullptr;
   raw_ptr<::media::RendererClient> client_ = nullptr;

@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
+#include "chromecast/starboard/media/cdm/starboard_drm_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_audio_decoder.h"
 #include "chromecast/starboard/media/media/starboard_video_decoder.h"
@@ -145,6 +146,13 @@ class MediaPipelineBackendStarboard : public MediaPipelineBackend {
       &CallDeallocateSample, &CallOnPlayerStatus,
       &CallOnPlayerError,
   };
+  // Prevent destruction of any underlying SbDrmSystem until this class is being
+  // destroyed. This prevents a scenario where the SbDrmSystem is destroyed
+  // before SbPlayer, which causes problems in some starboard implementations.
+  //
+  // This is optional because not all content is encrypted. The resource only
+  // needs to be acquired for DRM playback.
+  std::optional<StarboardDrmWrapper::DrmSystemResource> drm_resource_;
   // Calls to Starboard are made through this struct, to allow tests to mock
   // their behavior (and not rely on Starboard).
   std::unique_ptr<StarboardApiWrapper> starboard_;

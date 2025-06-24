@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,6 +23,11 @@ namespace media {
 // A wrapper around a single SbDrmSystem instance. This class supports
 // multiplexing calls from multiple callers (Clients).
 //
+// To prevent the destruction of the underlying SbDrmSystem, classes can
+// instantiate an StarboardDrmWrapper::DrmSystemResource. The SbDrmSystem will
+// not be destructed until all DrmSystemResources have been destructed. Note
+// that Clients automatically hold a DrmSystemResource.
+//
 // This class must only be accessed on a single sequence. It is expected to be
 // used as a singleton, via GetInstance(). Its destructor should not run in
 // production code.
@@ -29,6 +35,15 @@ class StarboardDrmWrapper {
  public:
   // This must match the definition of kSbDrmTicketInvalid in starboard/drm.h.
   static constexpr int kInvalidTicket = std::numeric_limits<int>::min();
+
+  // Blocks SbDrmSystem destruction. In other words, users of
+  // StarboardDrmWrapper can hold an instance of this class to guarantee that
+  // the underlying SbDrmSystem has not been destructed.
+  class DrmSystemResource {
+   public:
+    DrmSystemResource();
+    ~DrmSystemResource();
+  };
 
   // A client that interacts with a StarboardDrmWrapper to make DRM-related
   // calls into starboard.
@@ -63,6 +78,10 @@ class StarboardDrmWrapper {
 
     // Called when a session has closed.
     virtual void OnSessionClosed(std::string session_id) = 0;
+
+   private:
+    // Prevent the SbDrmSystem from being destructed while any client exists.
+    DrmSystemResource drm_resource_;
   };
 
   // Returns a handle to the SbDrmSystem singleton. All calls to starboard for
@@ -108,6 +127,7 @@ class StarboardDrmWrapper {
 
  private:
   friend base::NoDestructor<StarboardDrmWrapper>;
+  friend class StarboardDrmWrapperTestPeer;
 
   StarboardDrmWrapper();
 
@@ -116,10 +136,18 @@ class StarboardDrmWrapper {
 
   virtual ~StarboardDrmWrapper();
 
+  // Starts tracking `resource`. Destruction of the SbDrmSystem is prevented
+  // until all resources have been removed via RemoveResource.
+  void AddResource(DrmSystemResource* resource);
+
+  // Stops tracking `resource`. Destruction of the SbDrmSystem is prevented
+  // until all resources have been removed via RemoveResource.
+  void RemoveResource(DrmSystemResource* resource);
+
   // Destroys the owned SbDrmSystem and unsubscribes from
   // CastStarboardApiAdapter. This should only be called when the cast runtime
   // is stopping.
-  void DestroySbDrmSystem();
+  void MaybeDestroySbDrmSystem();
 
   // Returns the next internal ticket. Avoids returning kSbDrmTicketInvalid.
   // Must be called on task_runner_.
@@ -222,6 +250,9 @@ class StarboardDrmWrapper {
   // sequences (Starboard's callbacks do not provide sequencing guarantees).
   base::flat_map<int, int> ticket_map_;
 
+  // SbDrmSystem will not be destructed while this set is non-empty.
+  base::flat_set<DrmSystemResource*> resources_;
+
   // Per the documentation at starboard/drm.h, the ticket must not be INT_MIN.
   // This is an internal ticket, not to be confused with client tickets. This
   // allows us to handle multiple clients simultaneously. For example, two
@@ -231,6 +262,10 @@ class StarboardDrmWrapper {
 
   // Pointer to the SbDrmSystem instance.
   void* drm_system_ = nullptr;
+
+  // If this is true, it means cast is exiting and we should destroy drm_system_
+  // once there are no remaining DrmSystemResources.
+  bool cast_exiting_ = false;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

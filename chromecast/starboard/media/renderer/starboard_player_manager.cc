@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "chromecast/starboard/media/cdm/starboard_drm_wrapper.h"
 #include "chromecast/starboard/media/media/drm_util.h"
 #include "chromecast/starboard/media/renderer/chromium_starboard_conversions.h"
 
@@ -93,10 +92,16 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
     }
   }
 
+  std::optional<StarboardDrmWrapper::DrmSystemResource> drm_resource;
+  if (creation_param.drm_system != nullptr) {
+    drm_resource.emplace();
+  }
+
   // base::WrapUnique is necessary because we're calling a private ctor.
   auto starboard_player_manager = base::WrapUnique(new StarboardPlayerManager(
-      starboard, audio_stream, video_stream, std::move(audio_sample_info),
-      std::move(video_sample_info), client, std::move(media_task_runner)));
+      std::move(drm_resource), starboard, audio_stream, video_stream,
+      std::move(audio_sample_info), std::move(video_sample_info), client,
+      std::move(media_task_runner)));
 
   starboard->EnsureInitialized();
   void* sb_player = starboard->CreatePlayer(
@@ -111,6 +116,7 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
 }
 
 StarboardPlayerManager::StarboardPlayerManager(
+    std::optional<StarboardDrmWrapper::DrmSystemResource> drm_resource,
     StarboardApiWrapper* starboard,
     ::media::DemuxerStream* audio_stream,
     ::media::DemuxerStream* video_stream,
@@ -120,6 +126,7 @@ StarboardPlayerManager::StarboardPlayerManager(
     scoped_refptr<base::SequencedTaskRunner> media_task_runner)
     :  // base::Unretained(this) is safe here because demuxer_stream_reader_
        // will be destroyed before `this`.
+      drm_resource_(std::move(drm_resource)),
       starboard_(starboard),
       client_(client),
       stats_tracker_(client),
