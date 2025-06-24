@@ -188,6 +188,12 @@ public class TabArchiveSettings {
         return (int) TimeUnit.HOURS.toDays(getAutoDeleteTimeDeltaHours());
     }
 
+    /** Similar to above, but the return value is in months. */
+    public int getAutoDeleteTimeDeltaMonths() {
+        // Assuming a month to have 30 days on average.
+        return getAutoDeleteTimeDeltaDays() / 30;
+    }
+
     /** Sets the time delta used to determine if an archived tab is eligible for auto deletion. */
     public void setAutoDeleteTimeDeltaHours(int timeDeltaHours) {
         mPrefsManager.writeInt(

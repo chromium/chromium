@@ -208,7 +208,7 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
 
     /* Sets and returns the auto delete delay variable in the description string. */
     private String setPromoDescription() {
-        int autoDeleteTimeFrame = mTabArchiveSettings.getAutoDeleteTimeDeltaDays();
+        int autoDeleteTimeFrame = mTabArchiveSettings.getAutoDeleteTimeDeltaMonths();
         String descriptionString =
                 mContext.getResources()
                         .getQuantityString(

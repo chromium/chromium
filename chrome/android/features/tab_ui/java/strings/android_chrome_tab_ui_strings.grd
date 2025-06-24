@@ -992,8 +992,8 @@
       </message>
       <message name="IDS_ARCHIVED_TABS_AUTO_DELETE_PROMO_DESCRIPTION" desc="Description text for the Auto Delete Decision Bottom Sheet.">
           {AUTO_DELETE_DELAY, plural,
-            =1 {Chrome automatically closes items in the inactive section that you haven't used in <ph name="AUTO_DELETE_DELAY_ONE">%1$d<ex>1</ex></ph> day. You can turn this off now or anytime in Settings.}
-            other {Chrome automatically closes items in the inactive section that you haven't used in <ph name="AUTO_DELETE_DELAY_MANY">%1$d<ex>14</ex></ph> days. You can turn this off now or anytime in Settings.}
+            =1 {Chrome automatically closes items in the inactive section that you haven't used in <ph name="AUTO_DELETE_DELAY_ONE">%1$d<ex>1</ex></ph> month. You can turn this off now or anytime in Settings.}
+            other {Chrome automatically closes items in the inactive section that you haven't used in <ph name="AUTO_DELETE_DELAY_MANY">%1$d<ex>3</ex></ph> months. You can turn this off now or anytime in Settings.}
           }
       </message>
       <message name="IDS_ARCHIVED_TABS_AUTO_DELETE_PROMO_CLOSED" desc="The announcement when the Tabs Auto Delete Promo bottom sheet is closed.">
