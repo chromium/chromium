@@ -2052,8 +2052,7 @@ struct EnhancedSafeBrowsingActivePromoData
                                                 promoAction:promoAction
                                         optionalHistorySync:YES
                                             fullscreenPromo:NO
-                                       continuationProvider:
-                                           DoNothingContinuationProvider()];
+                                       continuationProvider:provider];
   _signinAndHistorySyncCoordinator.signinCompletion =
       ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
         [weakSelf didFinishSignin];
