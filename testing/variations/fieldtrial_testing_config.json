@@ -20534,6 +20534,7 @@
                         "ReportNotificationContentDetectionDataRate": "100"
                     },
                     "enable_features": [
+                        "NotificationContentDetectionMqlsLogging",
                         "ReportNotificationContentDetectionData"
                     ]
                 }
