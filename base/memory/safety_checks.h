@@ -5,6 +5,8 @@
 #ifndef BASE_MEMORY_SAFETY_CHECKS_H_
 #define BASE_MEMORY_SAFETY_CHECKS_H_
 
+#include <stdint.h>
+
 #include <new>
 #include <type_traits>
 
