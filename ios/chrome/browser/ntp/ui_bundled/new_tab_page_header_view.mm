@@ -503,6 +503,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   }
 
   UIImageView* logoView = [[UIImageView alloc] init];
+  logoView.contentMode = UIViewContentModeScaleAspectFit;
   [searchField addSubview:logoView];
 
   logoView.translatesAutoresizingMaskIntoConstraints = NO;
