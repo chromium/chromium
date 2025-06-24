@@ -53,7 +53,7 @@ sys.path.insert(1, str(_SRC_ROOT / 'third_party/catapult/devil'))
 from devil.android.sdk import adb_wrapper
 from devil.android import device_utils
 
-_GN_PATH = _SRC_ROOT / 'third_party/depot_tools/gn'
+_GN_PATH = _SRC_ROOT / 'third_party/depot_tools/gn.py'
 
 _EMULATOR_AVD_DIR = _SRC_ROOT / 'tools/android/avd'
 _AVD_SCRIPT = _EMULATOR_AVD_DIR / 'avd.py'
@@ -327,7 +327,10 @@ def _run_and_time_cmd(cmd: List[str]) -> float:
 
 
 def _run_gn_gen(out_dir: pathlib.Path) -> float:
-    return _run_and_time_cmd([str(_GN_PATH), 'gen', '-C', str(out_dir)])
+    return _run_and_time_cmd(
+        [sys.executable,
+         str(_GN_PATH), 'gen', '-C',
+         str(out_dir)])
 
 
 def _terminate_build_server_if_needed(out_dir: pathlib.Path):
