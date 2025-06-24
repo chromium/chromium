@@ -391,7 +391,8 @@ public class CustomTabObserver extends EmptyTabObserver {
     }
 
     public void setTwaStartupTimestamp(long startupUptimeMillis) {
-        if (startupUptimeMillis != 0) return;
+        if (startupUptimeMillis == 0) return;
+        assert mTwaStartupUptimeMillis == 0;
         mTwaStartupUptimeMillis = startupUptimeMillis;
         for (Runnable callback : mTwaStartupTimeAvailableCallbacks) {
             callback.run();
