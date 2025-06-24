@@ -30,6 +30,10 @@
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 
+namespace base::debug {
+struct CrashKeyString;
+}
+
 namespace blink {
 class WebGestureEvent;
 class WebInputEvent;

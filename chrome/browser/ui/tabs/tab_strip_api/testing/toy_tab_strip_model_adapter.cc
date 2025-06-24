@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_model_adapter.h"
 
+#include <utility>
+
+#include "base/strings/string_number_conversions.h"
+
 namespace tabs_api::testing {
 
 ToyTabStripModelAdapter::ToyTabStripModelAdapter(ToyTabStrip* tab_strip)

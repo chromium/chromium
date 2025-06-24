@@ -14,7 +14,6 @@
 
 #include "base/component_export.h"
 #include "base/trace_event/base_tracing_forward.h"
-#include "url/gurl_debug.h"  // TODO(thestig): Remove.
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_canon_stdstring.h"

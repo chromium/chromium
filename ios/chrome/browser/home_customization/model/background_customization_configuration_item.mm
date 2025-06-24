@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration_item.h"
 
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "url/gurl.h"
 
