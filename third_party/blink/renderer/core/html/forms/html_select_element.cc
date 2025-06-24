@@ -876,6 +876,12 @@ void HTMLSelectElement::OptionSelectionStateChanged(HTMLOptionElement* option,
 
 void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLFormControlElementWithState::ChildrenChanged(change);
+  if (SelectParserRelaxationEnabled(this)) {
+    // The remaining code in this method is duplicated by the logic in
+    // HTMLOptionElement::InsertedInto and HTMLOptGroupElement::InsertedInto.
+    // When the flag is removed, this method and ElementInserted can be deleted.
+    return;
+  }
   if (change.type ==
       ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
     for (Node& node : NodeTraversal::ChildrenOf(*this)) {
@@ -922,15 +928,10 @@ void HTMLSelectElement::ElementInserted(Node& node) {
 
 void HTMLSelectElement::OptionInserted(HTMLOptionElement& option,
                                        bool option_is_selected) {
-  if (SelectParserRelaxationEnabled(this)) {
-    // During parsing, ChildrenChanged (which calls this) on the parent is
-    // called before InsertedInto on the child; during DOM mutation the reverse
-    // is true. Thus we need to set the owner select in both places.
-    option.SetOwnerSelectElement(this);
-  }
-
   DCHECK_EQ(option.OwnerSelectElement(), this);
-  option.SetWasOptionInsertedCalled(true);
+  if (!SelectParserRelaxationEnabled(this)) {
+    option.SetWasOptionInsertedCalled(true);
+  }
   SetRecalcListItems();
   if (option_is_selected) {
     SelectOption(&option, IsMultiple() ? 0 : kDeselectOtherOptionsFlag);
@@ -964,7 +965,9 @@ void HTMLSelectElement::OptionInserted(HTMLOptionElement& option,
 }
 
 void HTMLSelectElement::OptionRemoved(HTMLOptionElement& option) {
-  option.SetWasOptionInsertedCalled(false);
+  if (!SelectParserRelaxationEnabled(this)) {
+    option.SetWasOptionInsertedCalled(false);
+  }
   SetRecalcListItems();
   if (option.Selected())
     ResetToDefaultSelection(kResetReasonSelectedOptionRemoved);
@@ -2037,16 +2040,10 @@ void HTMLSelectElement::UpdateAllSelectedcontents(
 
 // static
 HTMLSelectElement* HTMLSelectElement::NearestAncestorSelectNoNesting(
-    const Element& element,
-    ContainerNode* insertion_point,
-    bool* passed_insertion_point) {
+    const Element& element) {
   CHECK(HTMLSelectElement::SelectParserRelaxationEnabled(&element));
   unsigned num_ancestor_optgroups = 0;
   for (Node& ancestor : NodeTraversal::AncestorsOf(element)) {
-    if (passed_insertion_point && insertion_point &&
-        ancestor == insertion_point) {
-      *passed_insertion_point = true;
-    }
     if (IsA<HTMLOptionElement>(ancestor)) {
       // Elements nested inside of an <option> are not associated with the
       // <select>.

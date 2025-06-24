@@ -420,13 +420,8 @@ HTMLDataListElement* HTMLOptionElement::OwnerDataListElement() const {
   return Traversal<HTMLDataListElement>::FirstAncestor(*this);
 }
 
-HTMLSelectElement* HTMLOptionElement::OwnerSelectElement(
-    bool skip_check) const {
+HTMLSelectElement* HTMLOptionElement::OwnerSelectElement() const {
   if (HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
-    if (!skip_check) {
-      DCHECK_EQ(nearest_ancestor_select_,
-                HTMLSelectElement::NearestAncestorSelectNoNesting(*this));
-    }
     return nearest_ancestor_select_;
   } else {
     if (!parentNode()) {
@@ -543,35 +538,13 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
     return return_value;
   }
 
-  auto* parent_select = DynamicTo<HTMLSelectElement>(parentNode());
-  if (!parent_select) {
-    if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(parentNode())) {
-      parent_select = DynamicTo<HTMLSelectElement>(optgroup->parentNode());
-    }
-  }
-  if (parent_select) {
-    // Don't call OptionInserted because HTMLSelectElement::ChildrenChanged or
-    // HTMLOptGroupElement::ChildrenChanged will call it for us in this case. If
-    // insertion_point is an ancestor of parent_select, then we shouldn't really
-    // be doing anything here and OptionInserted was already called in a
-    // previous insertion.
-    // TODO(crbug.com/1511354): When the CustomizableSelect flag is removed, we
-    // can remove the code in HTMLSelectElement::ChildrenChanged and
-    // HTMLOptGroupElement::ChildrenChanged which handles this case as well as
-    // the code here which avoids handling it.
-    SetOwnerSelectElement(parent_select);
-    return return_value;
-  }
-
-  // If there is a <select> in between this and insertion_point, then don't call
-  // OptionInserted. Otherwise, if this option is being inserted into a <select>
-  // ancestor, then we must call OptionInserted on it.
-  bool passed_insertion_point = false;
+  HTMLSelectElement* old_ancestor_select = nearest_ancestor_select_;
   HTMLSelectElement* new_ancestor_select =
-      HTMLSelectElement::NearestAncestorSelectNoNesting(
-          *this, &insertion_point, &passed_insertion_point);
+      HTMLSelectElement::NearestAncestorSelectNoNesting(*this);
   SetOwnerSelectElement(new_ancestor_select);
-  if (new_ancestor_select && passed_insertion_point) {
+
+  if (new_ancestor_select && new_ancestor_select != old_ancestor_select) {
+    CHECK(!old_ancestor_select);
     new_ancestor_select->OptionInserted(*this, Selected());
   }
 
@@ -585,50 +558,15 @@ void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
     return;
   }
 
-  // This code determines the value of was_removed_from_select_parent, which
-  // should be true in the case that this <option> was a child of a <select> and
-  // got removed, or there was an <optgroup> directly in between this <option>
-  // and a <select> and either the optgroup-option or select-optgroup child
-  // relationship was disconnected.
-  bool insertion_point_passed = false;
-  bool is_parent_select_or_optgroup = false;
-  ContainerNode* parent = parentNode();
-  if (!parent) {
-    parent = &insertion_point;
-    insertion_point_passed = true;
-  }
-  if (IsA<HTMLSelectElement>(parent)) {
-    is_parent_select_or_optgroup = true;
-  } else if (IsA<HTMLOptGroupElement>(parent)) {
-    parent = parent->parentNode();
-    if (!parent) {
-      parent = &insertion_point;
-      insertion_point_passed = true;
-    }
-    is_parent_select_or_optgroup = IsA<HTMLSelectElement>(parent);
-  }
-  bool was_removed_from_select_parent =
-      insertion_point_passed && is_parent_select_or_optgroup;
-
-  if (was_removed_from_select_parent) {
-    SetOwnerSelectElement(nullptr);
-    // Don't call select->OptionRemoved() in this case because
-    // HTMLSelectElement::ChildrenChanged or
-    // HTMLOptGroupElement::ChildrenChanged will call it for us.
-    // TODO(crbug.com/1511354): When the SelectParserRelaxation flag is removed,
-    // we can remove this and the code in HTMLSelectElement::ChildrenChanged and
-    // HTMLOptGroupElement::ChildrenChanged.
-    return;
-  }
-
   HTMLSelectElement* new_ancestor_select =
       HTMLSelectElement::NearestAncestorSelectNoNesting(*this);
-  if (new_ancestor_select != nearest_ancestor_select_) {
+  HTMLSelectElement* old_ancestor_select = nearest_ancestor_select_;
+  if (new_ancestor_select != old_ancestor_select) {
     // We should only get here if we are being removed from a <select>
     CHECK(!new_ancestor_select);
-    CHECK(nearest_ancestor_select_);
-    nearest_ancestor_select_->OptionRemoved(*this);
+    CHECK(old_ancestor_select);
     SetOwnerSelectElement(new_ancestor_select);
+    old_ancestor_select->OptionRemoved(*this);
   }
 }
 
@@ -867,6 +805,12 @@ bool HTMLOptionElement::IsLabelContainerElement(const Element& element) {
   return IsA<HTMLOptionElement>(element.OwnerShadowHost()) &&
          element.ShadowPseudoId() ==
              shadow_element_names::kOptionLabelContainer;
+}
+
+bool HTMLOptionElement::WasOptionInsertedCalled() const {
+  return HTMLSelectElement::SelectParserRelaxationEnabled(this)
+             ? nearest_ancestor_select_
+             : was_option_inserted_called_;
 }
 
 }  // namespace blink

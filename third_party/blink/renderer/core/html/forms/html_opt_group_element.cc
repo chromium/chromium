@@ -107,20 +107,26 @@ void HTMLOptGroupElement::ChildrenChanged(const ChildrenChange& change) {
             ChildrenChangeType::kFinishedBuildingDocumentFragmentTree);
   if (change.type == ChildrenChangeType::kElementInserted) {
     if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
-      select->OptionInserted(*option, option->Selected());
+      if (!HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
+        select->OptionInserted(*option, option->Selected());
+      }
     } else if (IsA<HTMLLegendElement>(change.sibling_changed)) {
       UpdateGroupLabel();
     }
   } else if (change.type == ChildrenChangeType::kElementRemoved) {
     if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
-      select->OptionRemoved(*option);
+      if (!HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
+        select->OptionRemoved(*option);
+      }
     } else if (IsA<HTMLLegendElement>(change.sibling_changed)) {
       UpdateGroupLabel();
     }
   } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
     for (Node* node : change.removed_nodes) {
       if (auto* option = DynamicTo<HTMLOptionElement>(node)) {
-        select->OptionRemoved(*option);
+        if (!HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
+          select->OptionRemoved(*option);
+        }
       } else if (IsA<HTMLLegendElement>(change.sibling_changed)) {
         UpdateGroupLabel();
       }
