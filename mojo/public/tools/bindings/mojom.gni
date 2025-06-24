@@ -17,11 +17,9 @@ import("//build/config/cast.gni")
 # flipped elsewhere though.
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
-import("//build/config/nacl/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build/toolchain/kythe.gni")
-import("//components/nacl/features.gni")
 import("//third_party/jinja2/jinja2.gni")
 import("//third_party/ply/ply.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
@@ -82,14 +80,13 @@ if (is_chromeos) {
 # reason we always enable scrambling within NaCl toolchains when possible,
 # as well as within the default toolchain when NaCl is enabled.
 #
-# Finally, because we *cannot* enable scrambling on Chrome OS (it would break
-# ARC) we have to explicitly opt out there even when NaCl is enabled (and
-# consequently also when building for NaCl toolchains.) For this reason we
-# check |target_os| explicitly, as it's consistent across all toolchains.
-enable_scrambled_message_ids =
-    enable_mojom_message_id_scrambling &&
-    (is_mac || is_win || (is_linux && !is_castos) ||
-     ((enable_nacl || is_nacl) && target_os != "chromeos"))
+# Finally, because we *cannot* enable scrambling on Chrome OS, as it would
+# break ARC.
+enable_scrambled_message_ids = enable_mojom_message_id_scrambling &&
+                               (is_mac || is_win || (is_linux && !is_castos))
+if (enable_scrambled_message_ids) {
+  assert(!is_chromeos)
+}
 
 _mojom_tools_root = "//mojo/public/tools"
 _mojom_library_root = "$_mojom_tools_root/mojom/mojom"

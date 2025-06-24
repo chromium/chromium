@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/nacl/config.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
 config("ipc_fuzzer_config") {

@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
-import("//build/config/nacl/config.gni")
 import("//mojo/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -156,15 +155,13 @@ source_set("impl_for_embedder") {
   }
 
   if (is_posix && !mojo_use_apple_channel) {
-    if (!is_nacl) {
-      sources += [
-        "broker_posix.cc",
-        "channel_posix.cc",
-        "channel_posix.h",
-      ]
-    }
+    sources += [
+      "broker_posix.cc",
+      "channel_posix.cc",
+      "channel_posix.h",
+    ]
 
-    if ((is_linux || is_chromeos || is_android) && !is_nacl) {
+    if (is_linux || is_chromeos || is_android) {
       sources += [
         "channel_linux.cc",
         "channel_linux.h",
@@ -178,26 +175,21 @@ source_set("impl_for_embedder") {
     sources += [ "channel_mac.cc" ]
   }
 
-  if (!is_nacl) {
-    sources += [
-      "broker_host.cc",
-      "broker_host.h",
-    ]
-  }
+  sources += [
+    "broker_host.cc",
+    "broker_host.h",
+  ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = [ "MOJO_SYSTEM_IMPL_IMPLEMENTATION" ]
-  deps = []
+  deps = [ "//crypto" ]
   if (is_android) {
     sources += [
       "channel_binder.cc",
       "channel_binder.h",
     ]
     deps += [ "//third_party/ashmem" ]
-  }
-  if (!is_nacl) {
-    deps += [ "//crypto" ]
   }
 
   if (is_win) {

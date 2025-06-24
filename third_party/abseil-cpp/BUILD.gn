@@ -7,7 +7,6 @@
 # without these options will be part of the same program.
 
 import("//build/config/c++/c++.gni")
-import("//build/config/nacl/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
@@ -16,9 +15,6 @@ import("//third_party/abseil-cpp/absl.gni")
 config("absl_component_build") {
   defines = [ "ABSL_CONSUME_DLL" ]
 }
-
-assert(!is_nacl || is_nacl_saigo,
-       "base must not be built in most nacl toolchains")
 
 component("absl") {
   public_deps = [ ":absl_component_deps" ]
@@ -132,13 +128,6 @@ group("absl_component_deps") {
     public_deps += [ ":absl_full_deps" ]
   }
 
-  # The following dependencies currently don't build with NaCl.
-  # TODO(https://crbug.com/1114625): Fix build errors and remove this section.
-  if (is_nacl) {
-    public_deps -=
-        [ "//third_party/abseil-cpp/absl/debugging:failure_signal_handler" ]
-  }
-
   visibility = [ ":absl" ]
 }
 
@@ -229,10 +218,8 @@ config("absl_default_cflags_cc") {
       "-Wnull-conversion",
       "-Wobjc-literal-conversion",
       "-Wstring-conversion",
+      "-Wbitfield-enum-conversion",
     ]
-    if (!is_nacl) {
-      cflags_cc += [ "-Wbitfield-enum-conversion" ]
-    }
   }
 }
 

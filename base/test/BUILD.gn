@@ -4,7 +4,6 @@
 
 import("//build/compiled_action.gni")
 import("//build/config/features.gni")
-import("//build/config/nacl/config.gni")
 import("//build/config/ui.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build_overrides/build.gni")
