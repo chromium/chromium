@@ -289,6 +289,9 @@
     <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_CARD_NUMBER" desc="Error message to show when a user has input an invalid card number.">
       Card number is invalid
     </message>
+        <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_CVC" desc="Error message to show when a user has input an invalid security code.">
+      Code is invalid
+    </message>
   </if>
 
   <!-- Autofill error dialog related strings -->

@@ -82,4 +82,27 @@ TEST_F(SaveAndFillDialogControllerImplTest, CorrectStringsAreReturned) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+TEST_F(SaveAndFillDialogControllerImplTest, IsValidCvc) {
+  // Empty CVC is valid since it's optional.
+  EXPECT_TRUE(controller()->IsValidCvc(u""));
+
+  // Valid 3-digit CVC.
+  EXPECT_TRUE(controller()->IsValidCvc(u"123"));
+
+  // Valid 4-digit CVC.
+  EXPECT_TRUE(controller()->IsValidCvc(u"1234"));
+
+  // CVC with less than 3 digits is invalid.
+  EXPECT_FALSE(controller()->IsValidCvc(u"12"));
+  EXPECT_FALSE(controller()->IsValidCvc(u"1"));
+
+  // CVC with more than 4 digits is invalid.
+  EXPECT_FALSE(controller()->IsValidCvc(u"12345"));
+
+  // CVC with non-digit characters is invalid.
+  EXPECT_FALSE(controller()->IsValidCvc(u"12A"));
+  EXPECT_FALSE(controller()->IsValidCvc(u"ABC"));
+  EXPECT_FALSE(controller()->IsValidCvc(u"1 3"));
+}
+
 }  // namespace autofill

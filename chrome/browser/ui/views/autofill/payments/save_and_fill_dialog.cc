@@ -76,6 +76,10 @@ void SaveAndFillDialog::ContentsChanged(views::Textfield* sender,
     card_number_data_.SetErrorState(
         /*is_valid_input=*/controller_->IsValidCreditCardNumber(new_contents),
         /*error_message=*/controller_->GetInvalidCardNumberErrorMessage());
+  } else if (sender == &cvc_data_.GetInputTextField()) {
+    cvc_data_.SetErrorState(
+        /*is_valid_input=*/controller_->IsValidCvc(new_contents),
+        /*error_message=*/controller_->GetInvalidCvcErrorMessage());
   }
 }
 
