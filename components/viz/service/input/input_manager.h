@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_INPUT_INPUT_MANAGER_H_
 #define COMPONENTS_VIZ_SERVICE_INPUT_INPUT_MANAGER_H_
 
+#include <deque>
 #include <memory>
 #include <vector>
 
@@ -159,6 +160,27 @@ class VIZ_SERVICE_EXPORT InputManager
   void SetBeginFrameSource(const FrameSinkId& frame_sink_id,
                            BeginFrameSource* begin_frame_source);
 
+  struct Operation {
+    enum class Type {
+      kSetupRenderInputRouter = 0,
+      kOnCreateCompositorFrameSink = 1,
+      kOnDestroyedCompositorFrameSink = 2,
+      kOnRegisteredFrameSinkHierarchy = 3,
+      kOnUnregisteredFrameSinkHierarchy = 4,
+      kStateOnTouchTransfer = 5,
+      kCreateOrReuseAndroidInputReceiver = 6,
+    } type;
+    base::TimeTicks start_time;
+    base::TimeDelta duration;
+    FrameSinkId frame_sink_id;
+  };
+  void AddOperation(const Operation& operation);
+
+  // Removes operations that ended before `browser_request_time` from
+  // `operations_`, then writes them into `dict`.
+  void FillOperations(base::TimeTicks browser_request_time,
+                      base::Value::Dict& dict);
+
  private:
   // Recreates RenderInputRouterSupport in cases where Viz receives a
   // |CreateCompositorFrameSink| call before |CreateRootCompositorFrameSink|
@@ -169,6 +191,8 @@ class VIZ_SERVICE_EXPORT InputManager
 
   void RecreateRenderInputRouterSupport(const FrameSinkId& child_frame_sink_id,
                                         FrameSinkMetadata& frame_sink_metadata);
+
+  void RemoveOlderOperations(base::TimeTicks earliest_time);
 
   std::unique_ptr<RenderInputRouterSupportBase> MakeRenderInputRouterSupport(
       input::RenderInputRouter* rir,
@@ -241,6 +265,8 @@ class VIZ_SERVICE_EXPORT InputManager
       rir_delegate_receivers_;
 
   raw_ptr<FrameSinkManagerImpl> frame_sink_manager_;
+
+  std::deque<Operation> operations_;
 
   base::WeakPtrFactory<InputManager> weak_ptr_factory_{this};
 };

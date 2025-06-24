@@ -152,6 +152,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       override;
   void DestroyCompositorFrameSink(
       const FrameSinkId& frame_sink_id,
+      std::optional<base::TimeTicks> request_time,
       DestroyCompositorFrameSinkCallback callback) override;
   void RegisterFrameSinkHierarchy(
       const FrameSinkId& parent_frame_sink_id,
@@ -441,6 +442,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     // walks in the hierarchy tree.
     std::list<FrameSinkId> parent;
   };
+
+  // TOOD(crbug.com/414568877): Remove once the crash investigation is complete.
+  void DumpCrashKeys(base::TimeDelta total_time_taken_to_destroy,
+                     base::TimeTicks browser_request_time);
 
   void RecursivelyAttachBeginFrameSource(const FrameSinkId& frame_sink_id,
                                          BeginFrameSource* source);

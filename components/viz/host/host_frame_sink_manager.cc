@@ -125,7 +125,8 @@ void HostFrameSinkManager::InvalidateFrameSinkId(
     // the platform window (eg. XWindow or HWND) get destroyed before the
     // platform window is destroyed.
     mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_call;
-    frame_sink_manager_->DestroyCompositorFrameSink(frame_sink_id);
+    frame_sink_manager_->DestroyCompositorFrameSink(frame_sink_id,
+                                                    base::TimeTicks::Now());
 
     // Other synchronous IPCs continue to get processed while
     // DestroyCompositorFrameSink() is happening, so it's possible
@@ -165,8 +166,8 @@ void HostFrameSinkManager::CreateRootCompositorFrameSink(
   // If GL context is lost a new CompositorFrameSink will be created. Destroy
   // the old CompositorFrameSink first.
   if (data.has_created_compositor_frame_sink) {
-    frame_sink_manager_->DestroyCompositorFrameSink(frame_sink_id,
-                                                    base::DoNothing());
+    frame_sink_manager_->DestroyCompositorFrameSink(
+        frame_sink_id, base::TimeTicks::Now(), base::DoNothing());
   }
 
   data.is_root = true;
@@ -220,8 +221,8 @@ void HostFrameSinkManager::CreateFrameSink(
   // If GL context is lost a new CompositorFrameSink will be created. Destroy
   // the old CompositorFrameSink first.
   if (data.has_created_compositor_frame_sink) {
-    frame_sink_manager_->DestroyCompositorFrameSink(frame_sink_id,
-                                                    base::DoNothing());
+    frame_sink_manager_->DestroyCompositorFrameSink(
+        frame_sink_id, base::TimeTicks::Now(), base::DoNothing());
   }
 
   data.is_root = false;

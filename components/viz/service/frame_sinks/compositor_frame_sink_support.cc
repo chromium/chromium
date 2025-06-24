@@ -1697,7 +1697,7 @@ void CompositorFrameSinkSupport::DestroySelf() {
   // DestroyCompositorFrameSink takes the FrameSinkId by reference and may
   // dereference it after destroying `this`.
   FrameSinkId frame_sink_id = frame_sink_id_;
-  frame_sink_manager_->DestroyCompositorFrameSink(frame_sink_id,
+  frame_sink_manager_->DestroyCompositorFrameSink(frame_sink_id, std::nullopt,
                                                   base::DoNothing());
 }
 

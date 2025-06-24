@@ -64,6 +64,8 @@ class VIZ_COMMON_EXPORT FrameSinkId {
 
   std::string ToString() const;
 
+  std::string ToStringMinimal() const;
+
   std::string ToString(std::string_view debug_label) const;
 
   using TraceProto = perfetto::protos::pbzero::FrameSinkId;

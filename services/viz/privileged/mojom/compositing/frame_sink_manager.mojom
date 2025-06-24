@@ -137,7 +137,8 @@ interface FrameSinkManager {
   // CompositorFrameSinks to ensure the GL context/surface is destroyed before
   // the platform window.
   [Sync, NoInterrupt]
-  DestroyCompositorFrameSink(FrameSinkId frame_sink_id) => ();
+  DestroyCompositorFrameSink(FrameSinkId frame_sink_id,
+      mojo_base.mojom.TimeTicks? request_time) => ();
 
   // Set up a BeginFrame relationship between two FrameSinkIds. In this case,
   // the child inherits the viz::BeginFrameSource from the parent if it doesn't
