@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/host/webauthn/remote_webauthn_native_messaging_host.h"
+
 #include <memory>
 
 #include "base/check_deref.h"
@@ -14,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -23,7 +26,6 @@
 #include "remoting/host/native_messaging/log_message_handler.h"
 #include "remoting/host/native_messaging/native_messaging_constants.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
-#include "remoting/host/webauthn/remote_webauthn_native_messaging_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -73,7 +75,7 @@ class MockWebAuthnProxy : public mojom::WebAuthnProxy {
  public:
   MOCK_METHOD(void,
               IsUserVerifyingPlatformAuthenticatorAvailable,
-              (IsUserVerifyingPlatformAuthenticatorAvailableCallback),
+              (IsUvpaaCallback),
               (override));
   MOCK_METHOD(void,
               Create,
@@ -130,18 +132,23 @@ class RemoteWebAuthnNativeMessagingHostTest
 
   void ResetReceiver();
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   MockWebAuthnProxy webauthn_proxy_;
-  raw_ptr<MockChromotingHostServicesProvider, DanglingUntriaged> api_provider_;
   MockChromotingSessionServices api_;
 
  private:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::IO};
   std::unique_ptr<RemoteWebAuthnNativeMessagingHost> host_;
   std::unique_ptr<base::RunLoop> response_run_loop_;
   mojo::Receiver<mojom::WebAuthnProxy> webauthn_proxy_receiver_{
       &webauthn_proxy_};
   base::Value::Dict latest_message_;
+
+ protected:
+  // `api_provider_` must be deleted before `host_`.
+  raw_ptr<MockChromotingHostServicesProvider> api_provider_;
 };
 
 RemoteWebAuthnNativeMessagingHostTest::RemoteWebAuthnNativeMessagingHostTest() {
@@ -274,14 +281,31 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, IsUvpaa) {
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest,
-       ClientDisconnectedWhenRequestIsPending_MessageSent) {
+       ClientDisconnectedWhenRequestIsPending_ClientDisconnectedMessageSent) {
   ExpectGetSessionServices();
   ExpectBindWebAuthnProxy();
   EXPECT_CALL(webauthn_proxy_, IsUserVerifyingPlatformAuthenticatorAvailable(_))
-      .WillOnce([&](mojom::WebAuthnProxy::
-                        IsUserVerifyingPlatformAuthenticatorAvailableCallback
-                            callback) { ResetReceiver(); });
+      .WillOnce([&](IsUvpaaCallback callback) { ResetReceiver(); });
   SendMessage(CreateRequestMessage(kIsUvpaaMessageType));
+
+  const base::Value::Dict& response = ReadMessage();
+  ASSERT_EQ(CHECK_DEREF(response.FindString(kMessageType)),
+            kClientDisconnectedMessageType);
+}
+
+TEST_F(RemoteWebAuthnNativeMessagingHostTest,
+       PendingReceiverNotBoundWithinTimeout_ClientDisconnectedMessageSent) {
+  ExpectGetSessionServices();
+  mojo::PendingReceiver<mojom::WebAuthnProxy> pending_receiver;
+  EXPECT_CALL(api_, BindWebAuthnProxy(_))
+      .WillOnce([&](mojo::PendingReceiver<mojom::WebAuthnProxy> pr) {
+        pending_receiver = std::move(pr);
+      });
+  EXPECT_CALL(webauthn_proxy_, IsUserVerifyingPlatformAuthenticatorAvailable(_))
+      .Times(0);
+
+  SendMessage(CreateRequestMessage(kIsUvpaaMessageType));
+  task_environment_.FastForwardBy(base::Minutes(1));
 
   const base::Value::Dict& response = ReadMessage();
   ASSERT_EQ(CHECK_DEREF(response.FindString(kMessageType)),
