@@ -245,8 +245,9 @@ Response CSSAgent::getStyleSheetText(const protocol::String& style_sheet_id,
     return Response::ServerError("Node id not found");
 
   auto sources = ui_element->GetSources();
-  if (static_cast<int>(sources.size()) <= stylesheet_id)
+  if (static_cast<int>(sources.size()) <= stylesheet_id || stylesheet_id < 0) {
     return Response::ServerError("Stylesheet id not found");
+  }
 
   if (GetSourceCode(sources[stylesheet_id].path_, result))
     return Response::Success();
