@@ -36,7 +36,7 @@
 #include "components/webauthn/core/browser/passkey_model_utils.h"
 #include "components/webauthn/core/browser/passkey_sync_bridge.h"
 #include "content/public/test/browser_test.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
@@ -93,11 +93,9 @@ bool PublicKeyForPasskeyEquals(
   sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted_data;
   CHECK(webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
       trusted_vault_key, passkey, &encrypted_data));
-  auto ec_key = crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
+  auto ec_key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
       base::as_byte_span(encrypted_data.private_key()));
-  CHECK(ec_key);
-  std::vector<uint8_t> ec_key_pub;
-  CHECK(ec_key->ExportPublicKey(&ec_key_pub));
+  std::vector<uint8_t> ec_key_pub = ec_key->ToSubjectPublicKeyInfo();
   return std::ranges::equal(ec_key_pub, expected_spki);
 }
 

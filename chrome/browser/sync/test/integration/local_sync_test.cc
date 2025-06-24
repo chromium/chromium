@@ -25,7 +25,6 @@
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
-#include "crypto/ec_private_key.h"
 
 // The local sync backend is currently only supported on Windows, Mac, Linux.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
