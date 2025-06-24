@@ -59,8 +59,11 @@ ContextProperties ContextImplOrt::GetContextProperties() {
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/SupportedDataTypes::All(),
        /*constant=*/SupportedDataTypes::All(),
-       /*arg_min_max_input=*/{},
-       /*arg_min_max_output=*/{},
+       /*arg_min_max_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
+       // ONNX ArgMin/Max only supports int64 output, int32 output is supported
+       // by inserting a cast operator.
+       /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
        /*batch_normalization_input=*/{},
        /*batch_normalization_mean=*/{},
        /*cast_input=*/{SupportedDataTypes::All(), kMaxRank},

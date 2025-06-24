@@ -22,6 +22,10 @@ namespace webnn::ort {
 
 namespace {
 
+// ArgMin/Max ops
+constexpr base::cstring_view kOpTypeArgMin = "ArgMin";
+constexpr base::cstring_view kOpTypeArgMax = "ArgMax";
+
 // Element-wise binary ops
 constexpr base::cstring_view kOpTypeAdd = "Add";
 constexpr base::cstring_view kOpTypeSub = "Sub";
@@ -245,6 +249,28 @@ std::string GraphBuilderOrt::CreateInitializerForShape(
   return CreateInitializer<int64_t>(new_shape_dims, new_shape_value);
 }
 
+void GraphBuilderOrt::AddCastNode(base::cstring_view name,
+                                  base::cstring_view input,
+                                  base::cstring_view output,
+                                  OperandDataType to_data_type) {
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  constexpr base::cstring_view kAttrTo = "to";
+  std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
+      kAttrTo, static_cast<int64_t>(WebnnToOnnxDataType(to_data_type)))};
+
+  model_editor_.AddNode(kOpTypeCast, name, inputs, outputs, attributes);
+}
+
+void GraphBuilderOrt::InsertCastNode(base::cstring_view input,
+                                     base::cstring_view output,
+                                     OperandDataType to_data_type) {
+  const std::string node_name =
+      GenerateNodeName(base::JoinString({kInserted, kOpTypeCast}, kUnderscore));
+  AddCastNode(node_name, input, output, to_data_type);
+}
+
 void GraphBuilderOrt::AddExpandNode(base::cstring_view node_name,
                                     base::cstring_view input,
                                     base::cstring_view output,
@@ -297,23 +323,55 @@ void GraphBuilderOrt::AddUnaryOperation(const T& operation,
   model_editor_.AddNode(op_type, node_name, inputs, outputs);
 }
 
+void GraphBuilderOrt::AddArgMinMaxOperation(
+    const mojom::ArgMinMax& arg_min_max) {
+  const std::string node_name = GenerateNodeName(arg_min_max.label);
+  const std::string input = GetOperandNameById(arg_min_max.input_operand_id);
+  const std::string output = GetOperandNameById(arg_min_max.output_operand_id);
+
+  CHECK(context_properties_.data_type_limits.arg_min_max_input.Supports(
+      GetOperand(arg_min_max.input_operand_id).descriptor));
+  OperandDataType output_data_type =
+      GetOperand(arg_min_max.output_operand_id).descriptor.data_type();
+  CHECK(context_properties_.data_type_limits.arg_min_max_output.Has(
+      output_data_type));
+
+  constexpr base::cstring_view kAttrAxis = "axis";
+  constexpr base::cstring_view kAttrKeepDims = "keepdims";
+  std::array<ScopedOrtOpAttr, 2> attributes = {
+      model_editor_.CreateAttribute(kAttrAxis,
+                                    static_cast<int64_t>(arg_min_max.axis)),
+      model_editor_.CreateAttribute(
+          kAttrKeepDims, static_cast<int64_t>(arg_min_max.keep_dimensions))};
+
+  // ONNX ArgMin/Max only supports int64 output.
+  bool need_cast = output_data_type != OperandDataType::kInt64;
+  const std::string int64_output = need_cast ? GenerateOperandName() : output;
+
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {int64_output.c_str()};
+
+  model_editor_.AddNode(arg_min_max.kind == mojom::ArgMinMax::Kind::kMax
+                            ? kOpTypeArgMax
+                            : kOpTypeArgMin,
+                        node_name, inputs, outputs, attributes);
+
+  if (need_cast) {
+    // Here cast ArgMin/Max output from int64 to int32 is safe since WebNN
+    // operand dimension must be in the range of int32.
+    // https://www.w3.org/TR/webnn/#valid-dimension
+    CHECK_EQ(output_data_type, OperandDataType::kInt32);
+    InsertCastNode(int64_output, output, output_data_type);
+  }
+}
+
 void GraphBuilderOrt::AddCastOperation(const mojom::ElementWiseUnary& cast) {
   const std::string node_name = GenerateNodeName(cast.label);
   const std::string input = GetOperandNameById(cast.input_operand_id);
   const std::string output = GetOperandNameById(cast.output_operand_id);
 
-  std::array<const char*, 1> inputs = {input.c_str()};
-  std::array<const char*, 1> outputs = {output.c_str()};
-
-  constexpr base::cstring_view kAttrTo = "to";
-  const OperandDataType output_data_type =
-      GetOperand(cast.output_operand_id).descriptor.data_type();
-  int64_t attr_to_data =
-      static_cast<int64_t>(WebnnToOnnxDataType(output_data_type));
-  std::array<ScopedOrtOpAttr, 1> attributes = {
-      model_editor_.CreateAttribute(kAttrTo, attr_to_data)};
-
-  model_editor_.AddNode(kOpTypeCast, node_name, inputs, outputs, attributes);
+  AddCastNode(node_name, input, output,
+              GetOperand(cast.output_operand_id).descriptor.data_type());
 }
 
 void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
@@ -948,6 +1006,10 @@ GraphBuilderOrt::BuildModel() {
     const DataTypeLimits& data_type_limits =
         context_properties_.data_type_limits;
     switch (operation->which()) {
+      case mojom::Operation::Tag::kArgMinMax: {
+        AddArgMinMaxOperation(*operation->get_arg_min_max());
+        break;
+      }
       case mojom::Operation::Tag::kClamp: {
         AddClampOperation(*operation->get_clamp());
         break;
@@ -1042,7 +1104,6 @@ GraphBuilderOrt::BuildModel() {
         AddTransposeOperation(*operation->get_transpose());
         break;
       }
-      case mojom::Operation::Tag::kArgMinMax:
       case mojom::Operation::Tag::kBatchNormalization:
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:

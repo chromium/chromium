@@ -112,20 +112,28 @@ class GraphBuilderOrt {
   // specifies the output's shape.
   std::string CreateInitializerForShape(base::span<const uint32_t> shape);
 
+  void AddCastNode(base::cstring_view name,
+                   base::cstring_view input,
+                   base::cstring_view output,
+                   OperandDataType to_data_type);
+  void InsertCastNode(base::cstring_view input,
+                      base::cstring_view output,
+                      OperandDataType to_data_type);
+
   void AddExpandNode(base::cstring_view node_name,
                      base::cstring_view input,
                      base::cstring_view output,
                      base::span<const uint32_t> shape);
-
   std::string CreateExpandNode(base::cstring_view input,
                                base::span<const uint32_t> shape);
+
   template <typename T>
   void AddBinaryOperation(const T& operation, base::cstring_view op_type);
   template <typename T>
   void AddUnaryOperation(const T& operation, base::cstring_view op_type);
 
+  void AddArgMinMaxOperation(const mojom::ArgMinMax& arg_min_max);
   void AddCastOperation(const mojom::ElementWiseUnary& cast);
-
   void AddClampOperation(const mojom::Clamp& clamp);
   void AddConcatOperation(const mojom::Concat& concat);
   void AddConv2dOperation(const mojom::Conv2d& conv2d);
