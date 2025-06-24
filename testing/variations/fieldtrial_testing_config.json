@@ -24354,6 +24354,25 @@
             ]
         }
     ],
+    "TabGroupSyncServiceDesktopMigrationRelaunch": [
+        {
+            "platforms": [
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGroupSyncServiceDesktopMigration"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabGroupsCollapseFreezing": [
         {
             "platforms": [

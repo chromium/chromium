@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -264,9 +265,9 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
 
   void WaitForTabGroupSyncServiceInitialized() {
     tab_groups::TabGroupSyncService* tab_group_service_1 =
-        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile1());
+        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile1());
     tab_groups::TabGroupSyncService* tab_group_service_2 =
-        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile2());
+        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile2());
     auto observer_1 =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
             tab_group_service_1);

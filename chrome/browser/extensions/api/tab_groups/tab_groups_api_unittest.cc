@@ -117,7 +117,7 @@ class TabGroupsApiUnitTest : public ExtensionServiceTestBase {
   void WaitForTabGroupSyncServiceInitialized() {
     auto observer =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
-            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
+            tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile()));
     observer->Wait();
   }
 
