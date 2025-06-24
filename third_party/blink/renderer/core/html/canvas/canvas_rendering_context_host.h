@@ -183,8 +183,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   bool ContextHasOpenLayers(const CanvasRenderingContext*) const;
 
-  void CreateCanvasResourceProvider2D();
-
   // Computes the digest that corresponds to the "input" of this canvas,
   // including the context type, and if applicable, canvas digest, and taint
   // bits.

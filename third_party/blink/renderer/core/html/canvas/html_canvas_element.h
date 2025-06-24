@@ -377,6 +377,7 @@ class CORE_EXPORT HTMLCanvasElement final
   // an instance variable of this class.
   CanvasResourceProvider* RecreateCanvasResourceProviderForCanvas2D(
       CanvasHibernationHandler& hibernation_handler);
+  void CreateCanvasResourceProviderForCanvas2D();
 
   void ColorSchemeMayHaveChanged();
 
