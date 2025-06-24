@@ -54,7 +54,18 @@ extern const base::FeatureParam<std::string> kActivityLogsURL;
 extern const base::FeatureParam<base::TimeDelta>
     kDataSharingGroupDataPeriodicPollingInterval;
 
+// Returns whether the data sharing functionality is enabled. This is true if
+// either the main data sharing feature (`kDataSharingFeature`) or the
+// join-only mode (`kDataSharingJoinOnly`) is enabled.
 bool IsDataSharingFunctionalityEnabled();
+
+// Returns whether the URL should be intercepted for versioning.
+// This returns false only when the client is considered out-of-date
+// (`kSharedDataTypesKillSwitch` is disabled) and the "Update Chrome" UI is
+// also disabled. In this scenario, the navigation throttle will not be
+// installed, and the user will see the web fallback for the sharing URL.
+// Note : Don't use this method for other versioning related checks.
+bool ShouldInterceptUrlForVersioning();
 
 }  // namespace data_sharing::features
 

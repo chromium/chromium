@@ -54,7 +54,8 @@ bool ShouldHandleShareURLNavigation(
 // static
 void DataSharingNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
-  if (features::IsDataSharingFunctionalityEnabled()) {
+  if (features::IsDataSharingFunctionalityEnabled() &&
+      features::ShouldInterceptUrlForVersioning()) {
     registry.AddThrottle(
         std::make_unique<DataSharingNavigationThrottle>(registry));
   }

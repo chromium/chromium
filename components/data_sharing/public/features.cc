@@ -49,25 +49,17 @@ BASE_FEATURE(kDataSharingEnableUpdateChromeUI,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDataSharingFunctionalityEnabled() {
-  // Check if any of the primary data sharing features are enabled i.e. user is allowed to
-  // create/join.
-  const bool is_primary_data_sharing_enabled =
-      base::FeatureList::IsEnabled(data_sharing::features::kDataSharingFeature) ||
-      base::FeatureList::IsEnabled(data_sharing::features::kDataSharingJoinOnly);
+  return base::FeatureList::IsEnabled(
+             data_sharing::features::kDataSharingFeature) ||
+         base::FeatureList::IsEnabled(
+             data_sharing::features::kDataSharingJoinOnly);
+}
 
-  const bool is_kill_switch_enabled =
-      base::FeatureList::IsEnabled(data_sharing::features::kSharedDataTypesKillSwitch);
-
-  // If the kill switch is disabled, then 'kDataSharingEnableUpdateChromeUI'
-  // must also be enabled for data sharing functionality to be enabled.
-  if (!is_kill_switch_enabled) {
-    return is_primary_data_sharing_enabled &&
-           base::FeatureList::IsEnabled(data_sharing::features::kDataSharingEnableUpdateChromeUI);
-  }
-
-  // If the kill switch is enabled, then data sharing functionality
-  // depends solely on whether a primary feature is enabled.
-  return is_primary_data_sharing_enabled;
+bool ShouldInterceptUrlForVersioning() {
+  return base::FeatureList::IsEnabled(
+             data_sharing::features::kSharedDataTypesKillSwitch) ||
+         base::FeatureList::IsEnabled(
+             data_sharing::features::kDataSharingEnableUpdateChromeUI);
 }
 
 constexpr base::FeatureParam<std::string> kDataSharingURL(
