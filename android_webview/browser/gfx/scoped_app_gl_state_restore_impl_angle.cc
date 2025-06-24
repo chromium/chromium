@@ -82,8 +82,7 @@ bool ClearGLErrors(bool warn, const char* msg) {
 namespace internal {
 
 ScopedAppGLStateRestoreImplAngle::ScopedAppGLStateRestoreImplAngle(
-    ScopedAppGLStateRestore::CallMode mode,
-    bool save_restore) {
+    ScopedAppGLStateRestore::CallMode mode) {
   os::InitializeGLBindings();
 
   os::ClearGLErrors(true, "Incoming GLError");

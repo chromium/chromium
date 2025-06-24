@@ -255,8 +255,7 @@ void FakeFunctor::Draw(WindowHooks* hooks) {
   params.height = committed_location_.height();
   if (!hooks->WillDrawOnRT(&params))
     return;
-  render_thread_manager_->DrawOnRT(/*save_restore=*/false, params,
-                                   OverlaysParams(),
+  render_thread_manager_->DrawOnRT(params, OverlaysParams(),
                                    ReportRenderingThreadsCallback());
   hooks->DidDrawOnRT();
 }
@@ -284,7 +283,7 @@ void FakeFunctor::ReleaseOnRT(base::OnceClosure callback) {
     RenderThreadManager::InsideHardwareReleaseReset release_reset(
         render_thread_manager_.get());
     render_thread_manager_->DestroyHardwareRendererOnRT(
-        false /* save_restore */, false /* abandon_context */);
+        false /* abandon_context */);
   }
   render_thread_manager_.reset();
   std::move(callback).Run();
@@ -306,8 +305,7 @@ void FakeFunctor::Invoke(WindowHooks* hooks) {
   DCHECK(render_thread_manager_);
   hooks->WillProcessOnRT();
   bool abandon_context = true;  // For test coverage.
-  render_thread_manager_->DestroyHardwareRendererOnRT(false /* save_restore */,
-                                                      abandon_context);
+  render_thread_manager_->DestroyHardwareRendererOnRT(abandon_context);
   hooks->DidProcessOnRT();
 }
 

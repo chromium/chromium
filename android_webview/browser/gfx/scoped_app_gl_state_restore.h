@@ -41,7 +41,7 @@ class ScopedAppGLStateRestore {
 
   static ScopedAppGLStateRestore* Current();
 
-  ScopedAppGLStateRestore(CallMode mode, bool save_restore);
+  explicit ScopedAppGLStateRestore(CallMode mode);
 
   ScopedAppGLStateRestore(const ScopedAppGLStateRestore&) = delete;
   ScopedAppGLStateRestore& operator=(const ScopedAppGLStateRestore&) = delete;

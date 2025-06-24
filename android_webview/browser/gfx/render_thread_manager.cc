@@ -191,7 +191,6 @@ void RenderThreadManager::UpdateViewTreeForceDarkStateOnRT(
 }
 
 void RenderThreadManager::DrawOnRT(
-    bool save_restore,
     const HardwareRendererDrawParams& params,
     const OverlaysParams& overlays_params,
     ReportRenderingThreadsCallback report_rendering_threads) {
@@ -200,7 +199,7 @@ void RenderThreadManager::DrawOnRT(
 
   std::optional<ScopedAppGLStateRestore> state_restore;
   if (!vulkan_context_provider_) {
-    state_restore.emplace(ScopedAppGLStateRestore::MODE_DRAW, save_restore);
+    state_restore.emplace(ScopedAppGLStateRestore::MODE_DRAW);
     if (state_restore->skip_draw()) {
       return;
     }
@@ -230,14 +229,12 @@ void RenderThreadManager::RemoveOverlaysOnRT(
     hardware_renderer_->RemoveOverlays(merge_transaction);
 }
 
-void RenderThreadManager::DestroyHardwareRendererOnRT(bool save_restore,
-                                                      bool abandon_context) {
+void RenderThreadManager::DestroyHardwareRendererOnRT(bool abandon_context) {
   GpuServiceWebView::GetInstance();
 
   std::optional<ScopedAppGLStateRestore> state_restore;
   if (!vulkan_context_provider_ && !abandon_context) {
-    state_restore.emplace(ScopedAppGLStateRestore::MODE_RESOURCE_MANAGEMENT,
-                          save_restore);
+    state_restore.emplace(ScopedAppGLStateRestore::MODE_RESOURCE_MANAGEMENT);
   }
   if (abandon_context && hardware_renderer_)
     hardware_renderer_->AbandonContext();

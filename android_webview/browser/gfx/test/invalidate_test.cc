@@ -346,7 +346,7 @@ class InvalidateTest
                          // `client` leaves scope.
                        },
                        std::move(client_)));
-    render_thread_manager_->DestroyHardwareRendererOnRT(false, false);
+    render_thread_manager_->DestroyHardwareRendererOnRT(false);
     TaskQueueWebView::GetInstance()->ResetRenderThreadForTesting();
   }
 
@@ -409,8 +409,7 @@ class InvalidateTest
     params.transform[15] = 1.0f;
     params.color_space = gfx::ColorSpace::CreateSRGB();
 
-    render_thread_manager_->DrawOnRT(/*save_restore=*/false, params,
-                                     OverlaysParams(),
+    render_thread_manager_->DrawOnRT(params, OverlaysParams(),
                                      ReportRenderingThreadsCallback());
 
     if (invalidated)
