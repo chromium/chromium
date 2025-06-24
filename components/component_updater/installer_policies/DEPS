@@ -2,6 +2,8 @@ include_rules = [
   "+components/autofill/core/browser",
   "+components/autofill/core/common",
   "+components/content_settings/core",
+  "+components/fingerprinting_protection_filter/common",
+  "+components/fingerprinting_protection_filter/ios",
   "+components/history_embeddings/core",
   "+components/lookalikes/core",
   "+components/omnibox/browser",

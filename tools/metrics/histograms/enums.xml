@@ -4725,6 +4725,15 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
 
 <!-- LINT.ThenChange(//components/fingerprinting_protection_filter/browser/fingerprinting_protection_page_activation_throttle:ExceptionSource) -->
 
+<!-- LINT.IfChange(FingerprintingProtectionWKComponentInstallationResult) -->
+
+<enum name="FingerprintingProtectionWKComponentInstallationResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kMissingJsonFile"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/component_updater/installer_policies/afp_content_rule_list_component_installer.h:InstallationResult) -->
+
 <enum name="FirebaseConfiguredState">
   <int value="0" label="Disabled"/>
   <int value="1" label="Enabled, at First Run"/>
