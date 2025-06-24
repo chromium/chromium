@@ -85,7 +85,7 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
   gfx::GpuMemoryBufferHandle handle_;
 
   // SkPixmap(s) for accessing memory.
-  std::vector<SkPixmap> pixmaps_;
+  const std::vector<SkPixmap> pixmaps_;
 };
 
 }  // namespace gpu
