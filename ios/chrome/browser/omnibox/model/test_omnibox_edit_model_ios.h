@@ -14,6 +14,7 @@
 class TestOmniboxEditModelIOS : public OmniboxEditModelIOS {
  public:
   TestOmniboxEditModelIOS(OmniboxControllerIOS* omnibox_controller,
+                          OmniboxClient* omnibox_client,
                           PrefService* pref_service,
                           OmniboxTextModel* text_model);
   ~TestOmniboxEditModelIOS() override;

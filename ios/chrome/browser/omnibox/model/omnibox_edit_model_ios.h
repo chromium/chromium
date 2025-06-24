@@ -29,12 +29,14 @@
 #import "url/gurl.h"
 
 @class OmniboxAutocompleteController;
+class OmniboxClient;
 class OmniboxControllerIOS;
 @class OmniboxTextController;
 
 class OmniboxEditModelIOS {
  public:
   OmniboxEditModelIOS(OmniboxControllerIOS* controller,
+                      OmniboxClient* client,
                       OmniboxTextModel* text_model);
   virtual ~OmniboxEditModelIOS();
   OmniboxEditModelIOS(const OmniboxEditModelIOS&) = delete;
@@ -260,6 +262,9 @@ class OmniboxEditModelIOS {
 
   // Owns this.
   raw_ptr<OmniboxControllerIOS> controller_;
+
+  // The omnibox client.
+  raw_ptr<OmniboxClient> client_;
 
   // The omnibox text model containing the text state.
   raw_ptr<OmniboxTextModel> text_model_;

@@ -51,6 +51,8 @@ using base::UserMetricsAction;
 @end
 
 @implementation OmniboxAutocompleteController {
+  /// Client of the omnibox.
+  raw_ptr<OmniboxClient> _omniboxClient;
   /// Controller of the omnibox.
   raw_ptr<OmniboxControllerIOS> _omniboxController;
   /// Omnibox edit model. Should only be used for autocomplete interactions.
@@ -69,10 +71,12 @@ using base::UserMetricsAction;
 
 - (instancetype)initWithOmniboxController:
                     (OmniboxControllerIOS*)omniboxController
+                            omniboxClient:(OmniboxClient*)omniboxClient
                          omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
                          omniboxTextModel:(OmniboxTextModel*)omniboxTextModel {
   self = [super init];
   if (self) {
+    _omniboxClient = omniboxClient;
     _omniboxController = omniboxController;
     _omniboxEditModel = omniboxEditModel;
     _omniboxTextModel = omniboxTextModel;
@@ -109,15 +113,12 @@ using base::UserMetricsAction;
   _omniboxEditModel = nullptr;
   _omniboxController = nullptr;
   _omniboxTextModel = nullptr;
+  _omniboxClient = nullptr;
 }
 
 - (AutocompleteController*)autocompleteController {
   return _omniboxController ? _omniboxController->autocomplete_controller()
                             : nullptr;
-}
-
-- (OmniboxClient*)client {
-  return _omniboxController ? _omniboxController->client() : nullptr;
 }
 
 - (void)updatePopupSuggestions {
@@ -152,7 +153,7 @@ using base::UserMetricsAction;
     didUpdateResultChangingDefaultMatch:(BOOL)defaultMatchChanged {
   TRACE_EVENT0("omnibox", "OmniboxAutocompleteController::OnResultChanged");
   DCHECK(autocompleteController == self.autocompleteController);
-  DCHECK(self.client);
+  DCHECK(_omniboxClient);
 
   const bool popup_was_open = _omniboxEditModel->PopupIsOpen();
 
@@ -174,8 +175,8 @@ using base::UserMetricsAction;
   }
 
   const bool popup_is_open = _omniboxEditModel->PopupIsOpen();
-  if (popup_was_open != popup_is_open && self.client) {
-    self.client->OnPopupVisibilityChanged(popup_is_open);
+  if (popup_was_open != popup_is_open && _omniboxClient) {
+    _omniboxClient->OnPopupVisibilityChanged(popup_is_open);
   }
 
   if (popup_was_open && !popup_is_open) {
@@ -192,11 +193,11 @@ using base::UserMetricsAction;
   // passed in to eliminate the potential for crashes on shutdown.
   // `should_preload` is set to `controller->done()` as prerender may only want
   // to start preloading a result after all Autocomplete results are ready.
-  if (OmniboxClient* client = self.client) {
-    client->OnResultChanged(autocompleteController->result(),
-                            defaultMatchChanged,
-                            /*should_preload=*/autocompleteController->done(),
-                            /*on_bitmap_fetched=*/base::DoNothing());
+  if (_omniboxClient) {
+    _omniboxClient->OnResultChanged(
+        autocompleteController->result(), defaultMatchChanged,
+        /*should_preload=*/autocompleteController->done(),
+        /*on_bitmap_fetched=*/base::DoNothing());
   }
 }
 
@@ -332,26 +333,25 @@ using base::UserMetricsAction;
 - (void)startAutocompleteWithText:(const std::u16string&)text
                    cursorPosition:(size_t)cursorPosition
         preventInlineAutocomplete:(bool)preventInlineAutocomplete {
-  OmniboxClient* client = self.client;
-  if (!client || !_omniboxTextModel) {
+  if (!_omniboxClient || !_omniboxTextModel) {
     return;
   }
 
   // Use text_model()->input during the refactoring while the edit model is
   // still using it crbug.com/390409559.
-  _omniboxTextModel->input =
-      AutocompleteInput(text, cursorPosition,
-                        client->GetPageClassification(/*is_prefetch=*/false),
-                        client->GetSchemeClassifier(),
-                        client->ShouldDefaultTypedNavigationsToHttps(),
-                        client->GetHttpsPortForTesting(),
-                        client->IsUsingFakeHttpsForHttpsUpgradeTesting());
+  _omniboxTextModel->input = AutocompleteInput(
+      text, cursorPosition,
+      _omniboxClient->GetPageClassification(/*is_prefetch=*/false),
+      _omniboxClient->GetSchemeClassifier(),
+      _omniboxClient->ShouldDefaultTypedNavigationsToHttps(),
+      _omniboxClient->GetHttpsPortForTesting(),
+      _omniboxClient->IsUsingFakeHttpsForHttpsUpgradeTesting());
   AutocompleteInput& input = _omniboxTextModel->input;
-  input.set_current_url(client->GetURL());
-  input.set_current_title(client->GetTitle());
+  input.set_current_url(_omniboxClient->GetURL());
+  input.set_current_title(_omniboxClient->GetTitle());
   input.set_prevent_inline_autocomplete(preventInlineAutocomplete);
   if (std::optional<lens::proto::LensOverlaySuggestInputs> suggestInputs =
-          client->GetLensOverlaySuggestInputs()) {
+          _omniboxClient->GetLensOverlaySuggestInputs()) {
     input.set_lens_overlay_suggest_inputs(*suggestInputs);
   }
 
@@ -361,8 +361,7 @@ using base::UserMetricsAction;
 - (void)startZeroSuggestRequestWithText:(const std::u16string&)text
                           userClobbered:(BOOL)userClobberedPermanentText {
   AutocompleteController* autocompleteController = self.autocompleteController;
-  OmniboxClient* client = self.client;
-  if (!autocompleteController || !client || !_omniboxTextModel) {
+  if (!autocompleteController || !_omniboxClient || !_omniboxTextModel) {
     return;
   }
 
@@ -374,7 +373,7 @@ using base::UserMetricsAction;
   }
 
   // Early exit if the page has not loaded yet, so we don't annoy users.
-  if (!client->CurrentPageExists()) {
+  if (!_omniboxClient->CurrentPageExists()) {
     return;
   }
 
@@ -391,18 +390,18 @@ using base::UserMetricsAction;
   // match can be wrong. The full page URL is anyways in set_current_url().
   // Don't attempt to use https as the default scheme for these requests.
   _omniboxTextModel->input = AutocompleteInput(
-      text, client->GetPageClassification(/*is_prefetch=*/false),
-      client->GetSchemeClassifier(),
+      text, _omniboxClient->GetPageClassification(/*is_prefetch=*/false),
+      _omniboxClient->GetSchemeClassifier(),
       /*should_use_https_as_default_scheme=*/false,
-      client->GetHttpsPortForTesting(),
-      client->IsUsingFakeHttpsForHttpsUpgradeTesting());
+      _omniboxClient->GetHttpsPortForTesting(),
+      _omniboxClient->IsUsingFakeHttpsForHttpsUpgradeTesting());
   AutocompleteInput& input = _omniboxTextModel->input;
-  input.set_current_url(client->GetURL());
-  input.set_current_title(client->GetTitle());
+  input.set_current_url(_omniboxClient->GetURL());
+  input.set_current_title(_omniboxClient->GetTitle());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   // Set the lens overlay suggest inputs, if available.
   if (std::optional<lens::proto::LensOverlaySuggestInputs> suggestInputs =
-          client->GetLensOverlaySuggestInputs()) {
+          _omniboxClient->GetLensOverlaySuggestInputs()) {
     input.set_lens_overlay_suggest_inputs(*suggestInputs);
   }
   [self startAutocompleteWithInput:input];
@@ -440,14 +439,13 @@ using base::UserMetricsAction;
                "OmniboxAutocompleteController::StartZeroSuggestPrefetch");
 
   AutocompleteController* autocompleteController = self.autocompleteController;
-  OmniboxClient* client = self.client;
-  if (!autocompleteController || !client) {
+  if (!autocompleteController || !_omniboxClient) {
     return;
   }
 
   auto page_classification =
-      client->GetPageClassification(/*is_prefetch=*/true);
-  GURL currentURL = client->GetURL();
+      _omniboxClient->GetPageClassification(/*is_prefetch=*/true);
+  GURL currentURL = _omniboxClient->GetURL();
   std::u16string text = base::UTF8ToUTF16(currentURL.spec());
 
   if (omnibox::IsNTPPage(page_classification)) {
@@ -455,7 +453,7 @@ using base::UserMetricsAction;
   }
 
   AutocompleteInput input(text, page_classification,
-                          client->GetSchemeClassifier());
+                          _omniboxClient->GetSchemeClassifier());
   input.set_current_url(currentURL);
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   autocompleteController->StartPrefetch(input);

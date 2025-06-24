@@ -35,16 +35,11 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 }  // namespace
 
-@interface OmniboxTextController ()
-
-/// The omnibox client.
-@property(nonatomic, assign, readonly) OmniboxClient* client;
-
-@end
-
 @implementation OmniboxTextController {
   /// Controller of the omnibox.
   raw_ptr<OmniboxControllerIOS> _omniboxController;
+  /// Client of the omnibox.
+  raw_ptr<OmniboxClient> _omniboxClient;
   /// Omnibox edit model. Should only be used for text interactions.
   raw_ptr<OmniboxEditModelIOS> _omniboxEditModel;
   /// Whether the popup was scrolled during this omnibox interaction.
@@ -65,12 +60,14 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 - (instancetype)initWithOmniboxController:
                     (OmniboxControllerIOS*)omniboxController
+                            omniboxClient:(OmniboxClient*)omniboxClient
                          omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
                          omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
                             inLensOverlay:(BOOL)inLensOverlay {
   self = [super init];
   if (self) {
     _omniboxController = omniboxController;
+    _omniboxClient = omniboxClient;
     _omniboxEditModel = omniboxEditModel;
     _omniboxTextModel = omniboxTextModel;
     _inLensOverlay = inLensOverlay;
@@ -82,7 +79,9 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 - (void)disconnect {
   _omniboxController = nullptr;
+  _omniboxClient = nullptr;
   _omniboxEditModel = nullptr;
+  _omniboxTextModel = nullptr;
 }
 
 - (void)updateAppearance {
@@ -140,16 +139,16 @@ const char kOmniboxFocusResultedInNavigation[] =
   }
   [self.omniboxAutocompleteController closeOmniboxPopup];
 
-  if (OmniboxClient* client = self.client) {
+  if (_omniboxClient) {
     RecordSuggestionsListScrolled(
-        client->GetPageClassification(/*is_prefetch=*/false),
+        _omniboxClient->GetPageClassification(/*is_prefetch=*/false),
         _suggestionsListScrolled);
   }
 
   if ((_omniboxTextModel->user_input_in_progress ||
        !_omniboxTextModel->in_revert) &&
-      self.client) {
-    self.client->OnInputStateChanged();
+      _omniboxClient) {
+    _omniboxClient->OnInputStateChanged();
   }
 
   UMA_HISTOGRAM_BOOLEAN(kOmniboxFocusResultedInNavigation,
@@ -184,12 +183,12 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 // Notifies the client about input changes.
 - (void)notifyClientOnUserInputInProgressChange:(BOOL)changedToUserInProgress {
-  if (changedToUserInProgress && self.client) {
-    self.client->OnInputInProgress(true);
+  if (changedToUserInProgress && _omniboxClient) {
+    _omniboxClient->OnInputInProgress(true);
 
     if (_omniboxTextModel->user_input_in_progress ||
         !_omniboxTextModel->in_revert) {
-      self.client->OnInputStateChanged();
+      _omniboxClient->OnInputStateChanged();
     }
   }
 }
@@ -254,7 +253,7 @@ const char kOmniboxFocusResultedInNavigation[] =
       notifyTextChanged:true];
   [self setCaretPos:std::min(current_permanent_url.length(), start)];
 
-  _omniboxController->client()->OnRevert();
+  _omniboxClient->OnRevert();
 }
 
 - (void)getInfoForCurrentText:(AutocompleteMatch*)match
@@ -294,9 +293,9 @@ const char kOmniboxFocusResultedInNavigation[] =
             ? _omniboxTextModel->user_text
             : _omniboxTextModel->url_for_editing;
 
-    _omniboxController->client()->GetAutocompleteClassifier()->Classify(
+    _omniboxClient->GetAutocompleteClassifier()->Classify(
         text_for_match_generation, false, true,
-        _omniboxController->client()->GetPageClassification(
+        _omniboxClient->GetPageClassification(
             /*is_prefetch=*/false),
         match, alternateNavigationURL);
   }
@@ -328,8 +327,8 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 - (void)onUserRemoveThumbnail {
   // Update the client state.
-  if (_omniboxController && _omniboxController->client()) {
-    _omniboxController->client()->OnThumbnailRemoved();
+  if (_omniboxClient) {
+    _omniboxClient->OnThumbnailRemoved();
   }
 
   // Update the popup for suggestion wrapping.
@@ -373,9 +372,8 @@ const char kOmniboxFocusResultedInNavigation[] =
   if (_omniboxEditModel) {
     // The omnibox edit model doesn't support accepting input with no text.
     // Delegate the call to the client instead.
-    if (OmniboxClient* client = self.client;
-        client && !self.textField.text.length) {
-      client->OnThumbnailOnlyAccept();
+    if (_omniboxClient && !self.textField.text.length) {
+      _omniboxClient->OnThumbnailOnlyAccept();
     } else {
       _omniboxEditModel->OpenSelection();
     }
@@ -425,9 +423,8 @@ const char kOmniboxFocusResultedInNavigation[] =
       if (textField.userText.length) {
         _omniboxEditModel->SetUserText(textField.userText.cr_UTF16String);
         [self startAutocompletePreventingInline:YES];
-      } else if (OmniboxClient* client = self.client;
-                 client &&
-                 client->GetPageClassification(/*is_prefetch=*/false) ==
+      } else if (_omniboxClient &&
+                 _omniboxClient->GetPageClassification(/*is_prefetch=*/false) ==
                      metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX) {
         // Zero suggest is only available with LENS_SIDE_PANEL_SEARCHBOX. The
         // lens omnibox should not be in a state where the text is empty and the
@@ -827,11 +824,6 @@ const char kOmniboxFocusResultedInNavigation[] =
   NSAttributedString* as = [[NSMutableAttributedString alloc]
       initWithString:[NSString cr_fromString16:displayedText]];
   [self.textField setText:as userTextLength:userText.size()];
-}
-
-/// Returns the omnibox client.
-- (OmniboxClient*)client {
-  return _omniboxController ? _omniboxController->client() : nullptr;
 }
 
 /// Notifes the client and asks the autocomplete controller to start with a new

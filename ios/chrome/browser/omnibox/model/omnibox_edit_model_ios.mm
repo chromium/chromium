@@ -80,8 +80,9 @@ using bookmarks::BookmarkModel;
 using metrics::OmniboxEventProto;
 
 OmniboxEditModelIOS::OmniboxEditModelIOS(OmniboxControllerIOS* controller,
+                                         OmniboxClient* client,
                                          OmniboxTextModel* text_model)
-    : controller_(controller), text_model_(text_model) {}
+    : controller_(controller), client_(client), text_model_(text_model) {}
 
 OmniboxEditModelIOS::~OmniboxEditModelIOS() = default;
 
@@ -92,7 +93,7 @@ void OmniboxEditModelIOS::set_text_controller(
 
 metrics::OmniboxEventProto::PageClassification
 OmniboxEditModelIOS::GetPageClassification() const {
-  return controller_->client()->GetPageClassification(/*is_prefetch=*/false);
+  return client_->GetPageClassification(/*is_prefetch=*/false);
 }
 
 AutocompleteMatch OmniboxEditModelIOS::CurrentMatch(
@@ -113,7 +114,7 @@ AutocompleteMatch OmniboxEditModelIOS::CurrentMatch(
 
 bool OmniboxEditModelIOS::ResetDisplayTexts() {
   const std::u16string old_display_text = GetPermanentDisplayText();
-  text_model_->url_for_editing = controller_->client()->GetFormattedFullURL();
+  text_model_->url_for_editing = client_->GetFormattedFullURL();
   // When there's new permanent text, and the user isn't interacting with the
   // omnibox, we want to revert the edit to show the new text.  We could simply
   // define "interacting" as "the omnibox has focus", but we still allow updates
@@ -149,9 +150,9 @@ void OmniboxEditModelIOS::OnChanged() {
                                                ? CurrentMatch(nullptr)
                                                : AutocompleteMatch();
 
-  controller_->client()->OnTextChanged(
-      current_match, text_model_->user_input_in_progress,
-      text_model_->user_text, autocomplete_controller()->result(), has_focus());
+  client_->OnTextChanged(current_match, text_model_->user_input_in_progress,
+                         text_model_->user_text,
+                         autocomplete_controller()->result(), has_focus());
 }
 
 bool OmniboxEditModelIOS::CurrentTextIsURL() const {
@@ -172,7 +173,7 @@ void OmniboxEditModelIOS::AdjustTextForCopy(int sel_min,
       /*is_keyword_selected=*/false,
       PopupIsOpen() ? std::optional<AutocompleteMatch>(CurrentMatch(nullptr))
                     : std::nullopt,
-      controller_->client(), url_from_text, write_url);
+      client_, url_from_text, write_url);
 }
 
 void OmniboxEditModelIOS::Revert() {
@@ -276,11 +277,11 @@ void OmniboxEditModelIOS::SetAutocompleteInput(AutocompleteInput input) {
 }
 
 PrefService* OmniboxEditModelIOS::GetPrefService() {
-  return controller_->client()->GetPrefs();
+  return client_->GetPrefs();
 }
 
 const PrefService* OmniboxEditModelIOS::GetPrefService() const {
-  return controller_->client()->GetPrefs();
+  return client_->GetPrefs();
 }
 
 AutocompleteController* OmniboxEditModelIOS::autocomplete_controller() const {
@@ -379,13 +380,12 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
   // Create a dummy AutocompleteInput for use in calling VerbatimMatchForInput()
   // to create an alternate navigational match.
   AutocompleteInput alternate_input(
-      input_text, GetPageClassification(),
-      controller_->client()->GetSchemeClassifier(),
-      controller_->client()->ShouldDefaultTypedNavigationsToHttps(), 0, false);
+      input_text, GetPageClassification(), client_->GetSchemeClassifier(),
+      client_->ShouldDefaultTypedNavigationsToHttps(), 0, false);
   // Somehow we can occasionally get here with no active tab.  It's not
   // clear why this happens.
-  alternate_input.set_current_url(controller_->client()->GetURL());
-  alternate_input.set_current_title(controller_->client()->GetTitle());
+  alternate_input.set_current_url(client_->GetURL());
+  alternate_input.set_current_title(client_->GetTitle());
 
   base::TimeDelta elapsed_time_since_last_change_to_default_match(
       now - autocomplete_controller()->last_time_default_match_changed());
@@ -467,14 +467,14 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
 #endif
   log.elapsed_time_since_user_focused_omnibox =
       elapsed_time_since_user_focused_omnibox;
-  log.ukm_source_id = controller_->client()->GetUKMSourceId();
+  log.ukm_source_id = client_->GetUKMSourceId();
 
   if ((disposition == WindowOpenDisposition::CURRENT_TAB) &&
-      controller_->client()->CurrentPageExists()) {
+      client_->CurrentPageExists()) {
     // If we know the destination is being opened in the current tab,
     // we can easily get the tab ID.  (If it's being opened in a new
     // tab, we don't know the tab ID yet.)
-    log.tab_id = controller_->client()->GetSessionID();
+    log.tab_id = client_->GetSessionID();
   }
   autocomplete_controller()->AddProviderAndTriggeringLogs(&log);
 
@@ -483,13 +483,13 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
 
   omnibox::LogIPv4PartsCount(user_text, destination_url, completed_length);
 
-  controller_->client()->OnURLOpenedFromOmnibox(&log);
+  client_->OnURLOpenedFromOmnibox(&log);
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
 
   LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);
   omnibox::answer_data_parser::LogAnswerUsed(match.answer_type);
 
-  TemplateURLService* service = controller_->client()->GetTemplateURLService();
+  TemplateURLService* service = client_->GetTemplateURLService();
   TemplateURL* template_url = match.GetTemplateURL(service, false);
   if (template_url) {
     // `match` is a Search navigation; log search engine usage metrics.
@@ -525,7 +525,7 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
     OmniboxAction::ExecutionContext context(
         *(autocomplete_controller()->autocomplete_provider_client()),
         base::BindOnce(&OmniboxClient::OnAutocompleteAccept,
-                       controller_->client()->AsWeakPtr()),
+                       client_->AsWeakPtr()),
         match_selection_timestamp, disposition);
     action->Execute(context);
   }
@@ -538,8 +538,7 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
   if (!action) {
     // Track whether the destination URL sends us to a search results page
     // using the default search provider.
-    TemplateURLService* template_url_service =
-        controller_->client()->GetTemplateURLService();
+    TemplateURLService* template_url_service = client_->GetTemplateURLService();
     if (template_url_service &&
         template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
             match.destination_url)) {
@@ -548,9 +547,9 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
       base::UmaHistogramBoolean("Omnibox.Search.OffTheRecord", is_incognito);
     }
 
-    BookmarkModel* bookmark_model = controller_->client()->GetBookmarkModel();
+    BookmarkModel* bookmark_model = client_->GetBookmarkModel();
     if (bookmark_model && bookmark_model->IsBookmarked(destination_url)) {
-      controller_->client()->OnBookmarkLaunched();
+      client_->OnBookmarkLaunched();
     }
 
     // This block should be the last call in OpenMatch, because controller_ is
@@ -559,7 +558,7 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
       // This calls RevertAll again.
       base::AutoReset<bool> tmp(&text_model_->in_revert, true);
 
-      controller_->client()->OnAutocompleteAccept(
+      client_->OnAutocompleteAccept(
           destination_url, match.post_content.get(), disposition,
           ui::PageTransitionFromInt(match.transition |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),

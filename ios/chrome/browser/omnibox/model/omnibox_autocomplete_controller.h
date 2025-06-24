@@ -18,6 +18,7 @@ class AutocompleteResult;
 @class AutocompleteResultWrapper;
 @protocol OmniboxAutocompleteControllerDelegate;
 @protocol OmniboxAutocompleteControllerDebuggerDelegate;
+class OmniboxClient;
 class OmniboxControllerIOS;
 class OmniboxEditModelIOS;
 @class OmniboxTextController;
@@ -48,6 +49,7 @@ struct OmniboxTextModel;
 /// Initializes with an OmniboxController.
 - (instancetype)initWithOmniboxController:
                     (OmniboxControllerIOS*)omniboxController
+                            omniboxClient:(OmniboxClient*)omniboxClient
                          omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
                          omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
     NS_DESIGNATED_INITIALIZER;

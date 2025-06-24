@@ -13,6 +13,7 @@
 
 @protocol AutocompleteSuggestion;
 @class OmniboxAutocompleteController;
+class OmniboxClient;
 class OmniboxControllerIOS;
 class OmniboxEditModelIOS;
 @protocol OmniboxFocusDelegate;
@@ -41,6 +42,7 @@ class OmniboxEditModelIOS;
 /// Temporary initializer, used during the refactoring. crbug.com/390409559
 - (instancetype)initWithOmniboxController:
                     (OmniboxControllerIOS*)omniboxController
+                            omniboxClient:(OmniboxClient*)omniboxClient
                          omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
                          omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
                             inLensOverlay:(BOOL)inLensOverlay

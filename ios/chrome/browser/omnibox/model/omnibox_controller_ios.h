@@ -26,8 +26,6 @@ class OmniboxControllerIOS : public AutocompleteController::Observer {
   OmniboxControllerIOS(const OmniboxControllerIOS&) = delete;
   OmniboxControllerIOS& operator=(const OmniboxControllerIOS&) = delete;
 
-  OmniboxClient* client() { return client_.get(); }
-
   AutocompleteController* autocomplete_controller() {
     return autocomplete_controller_.get();
   }
@@ -46,8 +44,6 @@ class OmniboxControllerIOS : public AutocompleteController::Observer {
   }
 
  private:
-  base::WeakPtr<OmniboxClient> client_;
-
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
 
   base::WeakPtrFactory<OmniboxControllerIOS> weak_ptr_factory_{this};

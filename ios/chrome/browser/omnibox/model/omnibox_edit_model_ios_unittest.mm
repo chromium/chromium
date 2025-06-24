@@ -124,10 +124,11 @@ class OmniboxEditModelIOSTest : public PlatformTest {
     omnibox_text_model_ =
         std::make_unique<OmniboxTextModel>(omnibox_client_.get());
     omnibox_edit_model_ = std::make_unique<TestOmniboxEditModelIOS>(
-        omnibox_controller_.get(), /*pref_service=*/nullptr,
-        omnibox_text_model_.get());
+        omnibox_controller_.get(), omnibox_client_.get(),
+        /*pref_service=*/nullptr, omnibox_text_model_.get());
     omnibox_text_controller_ = [[TestOmniboxTextController alloc]
         initWithOmniboxController:omnibox_controller_.get()
+                    omniboxClient:omnibox_client_.get()
                  omniboxEditModel:omnibox_edit_model_.get()
                  omniboxTextModel:omnibox_text_model_.get()
                     inLensOverlay:NO];

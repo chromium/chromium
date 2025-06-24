@@ -27,13 +27,12 @@
 OmniboxControllerIOS::OmniboxControllerIOS(
     OmniboxClient* client,
     base::TimeDelta autocomplete_stop_timer_duration)
-    : client_(client->AsWeakPtr()),
-      autocomplete_controller_(std::make_unique<AutocompleteController>(
-          client_->CreateAutocompleteProviderClient(),
+    : autocomplete_controller_(std::make_unique<AutocompleteController>(
+          client->CreateAutocompleteProviderClient(),
           AutocompleteClassifier::DefaultOmniboxProviders(),
           autocomplete_stop_timer_duration)) {
   // Register the `AutocompleteController` with `AutocompleteControllerEmitter`.
-  if (auto* emitter = client_->GetAutocompleteControllerEmitter()) {
+  if (auto* emitter = client->GetAutocompleteControllerEmitter()) {
     autocomplete_controller_->AddObserver(emitter);
   }
 }
