@@ -80,16 +80,9 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, TestRuntimeErrorFailsFast) {
                        "result.is_bool()");
 }
 
-// Test times out in debug builds: https://crbug.com/902310
-#if !defined(NDEBUG)
-#define MAYBE_TestFailsAsyncFast DISABLED_TestFailsAsyncFast
-#else
-#define MAYBE_TestFailsAsyncFast TestFailsAsyncFast
-#endif
-
 // Test that bogus javascript fails async test fast as well - no timeout waiting
 // for result.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, MAYBE_TestFailsAsyncFast) {
+IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, TestFailsAsyncFast) {
   AddLibrary(base::FilePath(FILE_PATH_LITERAL("sample_downloads.js")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIDownloadsURL)));
