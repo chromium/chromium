@@ -393,7 +393,9 @@ class PageContentAnnotationsServiceRemotePageMetadataTest
     : public PageContentAnnotationsServiceTest {
  public:
   PageContentAnnotationsServiceRemotePageMetadataTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kRemotePageMetadata);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+    features::kRemotePageMetadata,
+    {{"supported_locales", "*"}, {"supported_countries", "*"}});
   }
 
  private:
@@ -436,8 +438,9 @@ class PageContentAnnotationsServiceSalientImageMetadataTest
     : public PageContentAnnotationsServiceTest {
  public:
   PageContentAnnotationsServiceSalientImageMetadataTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPageContentAnnotationsPersistSalientImageMetadata);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kPageContentAnnotationsPersistSalientImageMetadata,
+      {{"supported_locales", "*"}, {"supported_countries", "*"}});
   }
 
  private:

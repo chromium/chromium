@@ -74,6 +74,19 @@ TEST(OptimizationGuideFeaturesTest, RemotePageMetadataEnabled) {
   EXPECT_FALSE(features::RemotePageMetadataEnabled("badlocale", "US"));
 }
 
+TEST(OptimizationGuideFeaturesTest, RemotePageMetadataEnabledWildcard) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kRemotePageMetadata,
+      {{"supported_locales", "*"}, {"supported_countries", "*"}});
+
+  EXPECT_TRUE(features::RemotePageMetadataEnabled("en-US", "CA"));
+  EXPECT_TRUE(features::RemotePageMetadataEnabled("", ""));
+  EXPECT_TRUE(features::RemotePageMetadataEnabled("en-US", "badcountry"));
+  EXPECT_TRUE(features::RemotePageMetadataEnabled("badlocale", "US"));
+}
+
 TEST(OptimizationGuideFeaturesTest,
      ShouldExecutePageVisibilityModelOnPageContentWithAllowlist) {
   base::test::ScopedFeatureList scoped_feature_list;
