@@ -1012,16 +1012,18 @@ const std::vector<std::string>& GetUserFacingUILocaleList() {
   return *available_locales;
 }
 
-void GetAcceptLanguagesForLocale(const std::string& display_locale,
-                                 std::vector<std::string>* locale_codes) {
+std::vector<std::string> GetAcceptLanguagesForLocale(
+    std::string_view display_locale) {
+  std::vector<std::string> result;
   for (std::string_view accept_language : kAcceptLanguageList) {
     if (!l10n_util::IsLocaleNameTranslated(accept_language, display_locale)) {
       // TODO(jungshik) : Put them at the end of the list with language codes
       // enclosed by brackets instead of skipping.
       continue;
     }
-    locale_codes->emplace_back(accept_language);
+    result.emplace_back(accept_language);
   }
+  return result;
 }
 
 void GetAcceptLanguages(std::vector<std::string>* locale_codes) {

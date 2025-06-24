@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -68,33 +69,18 @@ std::string CheckAndResolveLocales(const std::string& app_locale,
   std::vector<std::string> values = base::SplitString(
       languages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  std::vector<std::string> accept_language_codes;
-  l10n_util::GetAcceptLanguagesForLocale(app_locale, &accept_language_codes);
-  std::sort(accept_language_codes.begin(), accept_language_codes.end());
-
   // Remove unsupported language values.
-  auto value_iter = values.begin();
-  while (value_iter != values.end()) {
-    if (binary_search(accept_language_codes.begin(),
-                      accept_language_codes.end(), *value_iter)) {
-      ++value_iter;
-      continue;
+  auto accept_language_codes = base::MakeFlatSet<std::string>(
+      l10n_util::GetAcceptLanguagesForLocale(app_locale));
+  std::erase_if(values, [&accept_language_codes](const std::string& value) {
+    if (accept_language_codes.contains(value)) {
+      return false;
     }
-
-    // If a language code resolves to a supported backup locale, replace it
-    // with the resolved locale.
-    if (std::optional<std::string> resolved_locale =
-            l10n_util::CheckAndResolveLocale(*value_iter)) {
-      if (binary_search(accept_language_codes.begin(),
-                        accept_language_codes.end(), *resolved_locale)) {
-        *value_iter = *resolved_locale;
-        ++value_iter;
-        continue;
-      }
-    }
-    value_iter = values.erase(value_iter);
-  }
-
+    const std::optional<std::string> resolved_locale =
+        l10n_util::CheckAndResolveLocale(value);
+    return !resolved_locale ||
+           !accept_language_codes.contains(*resolved_locale);
+  });
   return base::JoinString(values, ",");
 }
 

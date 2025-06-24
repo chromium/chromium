@@ -135,31 +135,26 @@ class TranslatePrefsTest : public testing::Test {
 // on the given locale.
 TEST_F(TranslatePrefsTest, GetLanguageInfoListCorrectLocale) {
   std::vector<TranslateLanguageInfo> language_list;
-  std::vector<std::string> expected_codes;
 
-  l10n_util::GetAcceptLanguagesForLocale("en-US", &expected_codes);
-  TranslatePrefs::GetLanguageInfoList("en-US", true /* translate_allowed */,
+  TranslatePrefs::GetLanguageInfoList("en-US", /*translate_allowed=*/true,
                                       &language_list);
-  std::vector<std::string> codes = ExtractLanguageCodes(language_list);
-  EXPECT_THAT(codes, UnorderedElementsAreArray(expected_codes));
-
-  language_list.clear();
-  expected_codes.clear();
-  codes.clear();
-  l10n_util::GetAcceptLanguagesForLocale("ja", &expected_codes);
-  TranslatePrefs::GetLanguageInfoList("ja", true /* translate_allowed */,
-                                      &language_list);
-  codes = ExtractLanguageCodes(language_list);
-  EXPECT_THAT(codes, UnorderedElementsAreArray(expected_codes));
+  EXPECT_THAT(ExtractLanguageCodes(language_list),
+              UnorderedElementsAreArray(
+                  l10n_util::GetAcceptLanguagesForLocale("en-US")));
 
   language_list.clear();
-  expected_codes.clear();
-  codes.clear();
-  l10n_util::GetAcceptLanguagesForLocale("es-AR", &expected_codes);
-  TranslatePrefs::GetLanguageInfoList("es-AR", true /* translate_allowed */,
+  TranslatePrefs::GetLanguageInfoList("ja", /*translate_allowed=*/true,
                                       &language_list);
-  codes = ExtractLanguageCodes(language_list);
-  EXPECT_THAT(codes, UnorderedElementsAreArray(expected_codes));
+  EXPECT_THAT(
+      ExtractLanguageCodes(language_list),
+      UnorderedElementsAreArray(l10n_util::GetAcceptLanguagesForLocale("ja")));
+
+  language_list.clear();
+  TranslatePrefs::GetLanguageInfoList("es-AR", /*translate_allowed=*/true,
+                                      &language_list);
+  EXPECT_THAT(ExtractLanguageCodes(language_list),
+              UnorderedElementsAreArray(
+                  l10n_util::GetAcceptLanguagesForLocale("es-AR")));
 }
 
 // Check the output of GetLanguageInfoList().

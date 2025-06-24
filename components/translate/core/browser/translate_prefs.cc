@@ -481,8 +481,8 @@ void TranslatePrefs::GetLanguageInfoList(
   language_list->clear();
 
   // Collect the language codes from the supported accept-languages.
-  std::vector<std::string> language_codes;
-  l10n_util::GetAcceptLanguagesForLocale(app_locale, &language_codes);
+  std::vector<std::string> language_codes =
+      l10n_util::GetAcceptLanguagesForLocale(app_locale);
 
   // Collator used to sort display names in the given locale.
   UErrorCode error = U_ZERO_ERROR;

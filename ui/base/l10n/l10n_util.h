@@ -270,8 +270,8 @@ const std::vector<std::string>& GetUserFacingUILocaleList();
 
 // Returns a vector of locale codes usable for accept-languages.
 COMPONENT_EXPORT(UI_BASE)
-void GetAcceptLanguagesForLocale(const std::string& display_locale,
-                                 std::vector<std::string>* locale_codes);
+std::vector<std::string> GetAcceptLanguagesForLocale(
+    std::string_view display_locale);
 
 // Returns a vector of untranslated locale codes usable for accept-languages.
 COMPONENT_EXPORT(UI_BASE)

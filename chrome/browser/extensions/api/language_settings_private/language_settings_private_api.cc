@@ -486,8 +486,8 @@ LanguageSettingsPrivateMoveLanguageFunction::Run() {
 
   const std::string app_locale =
       ExtensionsBrowserClient::Get()->GetApplicationLocale();
-  std::vector<std::string> supported_language_codes;
-  l10n_util::GetAcceptLanguagesForLocale(app_locale, &supported_language_codes);
+  std::vector<std::string> supported_language_codes =
+      l10n_util::GetAcceptLanguagesForLocale(app_locale);
 
   const std::string& language_code = parameters->language_code;
   const language_settings_private::MoveType move_type = parameters->move_type;
