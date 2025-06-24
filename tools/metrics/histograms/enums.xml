@@ -15223,6 +15223,7 @@ from previous Chrome versions.
   <int value="453102772" label="OfflinePagesLoadSignalCollecting:disabled"/>
   <int value="453427119" label="EcheSWADisableStunServer:enabled"/>
   <int value="453601558" label="SupportToolScreenshot:enabled"/>
+  <int value="453842846" label="OmniboxRestoreInvisibleFocusOnly:enabled"/>
   <int value="454106312" label="UsernameFirstFlowFilling:enabled"/>
   <int value="454282924"
       label="AutofillEnableShowSaveCardSecurelyMessage:disabled"/>
@@ -19564,6 +19565,7 @@ from previous Chrome versions.
   <int value="2050985807" label="AllowPopupsDuringPageUnload:enabled"/>
   <int value="2051403297" label="ShowBluetoothDeviceBattery:disabled"/>
   <int value="2051886966" label="PwaInstallUseBottomSheet:enabled"/>
+  <int value="2052553086" label="OmniboxRestoreInvisibleFocusOnly:disabled"/>
   <int value="2053269084" label="EcheLauncher:disabled"/>
   <int value="2053479012" label="PersistDeviceBoundSessions:disabled"/>
   <int value="2054616439" label="OmniboxMobileParityUpdate:enabled"/>

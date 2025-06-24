@@ -1846,6 +1846,9 @@ extern const char kOmniboxMaxURLMatchesDescription[];
 extern const char kOmniboxDynamicMaxAutocompleteName[];
 extern const char kOmniboxDynamicMaxAutocompleteDescription[];
 
+extern const char kOmniboxRestoreInvisibleFocusOnlyName[];
+extern const char kOmniboxRestoreInvisibleFocusOnlyDescription[];
+
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];
 

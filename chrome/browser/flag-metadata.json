@@ -7450,6 +7450,14 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-restore-invisible-focus-only",
+    "owners": [
+      "agale@google.com",
+      "chrome-desktop-search@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "omnibox-rich-autocompletion-promising",
     "owners": [ "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 140
