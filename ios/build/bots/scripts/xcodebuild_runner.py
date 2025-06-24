@@ -14,6 +14,7 @@ import sys
 import time
 from typing import Tuple, List, Optional
 
+import constants
 import iossim_util
 import test_apps
 import test_runner_errors
@@ -453,6 +454,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     return test_apps.EgtestsApp(
         self.app_path,
         self.all_eg_test_names,
+        self.platform_type,
         included_tests=self.test_cases,
         env_vars=self.env_vars,
         test_args=self.test_args,
@@ -589,6 +591,12 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
     self.all_eg_test_names = []
     self.all_eg_test_names = self.fetch_test_names()
     self.resolve_eg_test_cases()
+
+    # SimulatorParallelTestRunner.get_launch_test_app() needs
+    # self.platform_type, which is set in its constructor, but it is not
+    # called by this constructor. Since device tests are only supported on iOS
+    # at the moment, just hardcode its value here.
+    self.platform_type = constants.IOSPlatformType.IPHONEOS
 
   def set_up(self):
     """Performs setup actions which must occur prior to every test launch."""

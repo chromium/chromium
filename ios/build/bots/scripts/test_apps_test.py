@@ -8,6 +8,7 @@ import mock
 import os
 import unittest
 
+import constants
 import test_apps
 import test_runner
 import test_runner_errors
@@ -123,7 +124,7 @@ class GetGTestFilterTest(test_runner_test.TestCase):
 
 
 class DeviceXCTestUnitTestsAppTest(test_runner_test.TestCase):
-  """Tests to test methods of SimulatorXCTestUnitTestsApp."""
+  """Tests to test methods of DeviceXCTestUnitTestsApp."""
 
   @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
   @mock.patch('xcode_util.xctest_path', return_value=_XCTEST_PATH)
@@ -179,7 +180,8 @@ class SimulatorXCTestUnitTestsAppTest(test_runner_test.TestCase):
   @mock.patch('os.path.exists', return_value=True)
   def test_fill_xctestrun_node(self, *args):
     """Tests fill_xctestrun_node method."""
-    test_app = test_apps.SimulatorXCTestUnitTestsApp(_TEST_APP_PATH)
+    test_app = test_apps.SimulatorXCTestUnitTestsApp(
+        _TEST_APP_PATH, constants.IOSPlatformType.IPHONEOS)
     expected_xctestrun_node = {
         'TestTargetName': {
             'CommandLineArguments': [
@@ -211,10 +213,47 @@ class SimulatorXCTestUnitTestsAppTest(test_runner_test.TestCase):
   @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
   @mock.patch('xcode_util.xctest_path', return_value=_XCTEST_PATH)
   @mock.patch('os.path.exists', return_value=True)
+  def test_fill_xctestrun_node_different_platform_type(self, *args):
+    """Tests fill_xctestrun_node method with a different platform_type
+    value.
+    """
+    test_app = test_apps.SimulatorXCTestUnitTestsApp(
+        _TEST_APP_PATH, constants.IOSPlatformType.TVOS)
+    expected_xctestrun_node = {
+        'TestTargetName': {
+            'CommandLineArguments': [
+                '--enable-run-ios-unittests-with-xctest',
+                '--gmock_verbose=error',
+                '--write-compiled-tests-json-to-writable-path'
+            ],
+            'IsAppHostedTestBundle': True,
+            'TestBundlePath': '__TESTHOST__%s' % _XCTEST_PATH,
+            'TestHostBundleIdentifier': _BUNDLE_ID,
+            'TestHostPath': '%s' % _TEST_APP_PATH,
+            'TestingEnvironmentVariables': {
+                'DYLD_INSERT_LIBRARIES':
+                    '__PLATFORMS__/AppleTVSimulator.platform/Developer/usr/lib/'
+                    'libXCTestBundleInject.dylib',
+                'DYLD_LIBRARY_PATH':
+                    '__PLATFORMS__/AppleTVSimulator.platform/Developer/Library',
+                'DYLD_FRAMEWORK_PATH':
+                    '__PLATFORMS__/AppleTVSimulator.platform/Developer/'
+                    'Library/Frameworks',
+                'XCInjectBundleInto':
+                    '__TESTHOST__/%s' % _MODULE_NAME
+            }
+        }
+    }
+    xctestrun_node = test_app.fill_xctestrun_node()
+    self.assertEqual(xctestrun_node, expected_xctestrun_node)
+
+  @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
+  @mock.patch('xcode_util.xctest_path', return_value=_XCTEST_PATH)
+  @mock.patch('os.path.exists', return_value=True)
   def test_repeat_arg_in_xctestrun_node(self, *args):
     """Tests fill_xctestrun_node method."""
     test_app = test_apps.SimulatorXCTestUnitTestsApp(
-        _TEST_APP_PATH, repeat_count=20)
+        _TEST_APP_PATH, constants.IOSPlatformType.IPHONEOS, repeat_count=20)
     xctestrun_node = test_app.fill_xctestrun_node()
     self.assertIn(
         '--gtest_repeat=20',
@@ -228,7 +267,8 @@ class GTestsAppTest(test_runner_test.TestCase):
   @mock.patch('os.path.exists', return_value=True)
   def test_repeat_count(self, _1, _2):
     """Tests correct arguments present when repeat_count."""
-    gtests_app = test_apps.GTestsApp('app_path', repeat_count=2)
+    gtests_app = test_apps.GTestsApp(
+        'app_path', constants.IOSPlatformType.IPHONEOS, repeat_count=2)
     xctestrun_data = gtests_app.fill_xctestrun_node()
     cmd_args = xctestrun_data[gtests_app.module_name +
                               '_module']['CommandLineArguments']
@@ -238,7 +278,9 @@ class GTestsAppTest(test_runner_test.TestCase):
   @mock.patch('os.path.exists', return_value=True)
   def test_remove_gtest_sharding_env_vars(self, _1, _2):
     gtests_app = test_apps.GTestsApp(
-        'app_path', env_vars=['GTEST_SHARD_INDEX=1', 'GTEST_TOTAL_SHARDS=2'])
+        'app_path',
+        constants.IOSPlatformType.IPHONEOS,
+        env_vars=['GTEST_SHARD_INDEX=1', 'GTEST_TOTAL_SHARDS=2'])
     assert all(key in gtests_app.env_vars
                for key in ['GTEST_SHARD_INDEX', 'GTEST_TOTAL_SHARDS'])
     gtests_app.remove_gtest_sharding_env_vars()
@@ -248,7 +290,8 @@ class GTestsAppTest(test_runner_test.TestCase):
   @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
   @mock.patch('os.path.exists', return_value=True)
   def test_remove_gtest_sharding_env_vars_non_exist(self, _1, _2):
-    gtests_app = test_apps.GTestsApp('app_path')
+    gtests_app = test_apps.GTestsApp('app_path',
+                                     constants.IOSPlatformType.IPHONEOS)
     assert not any(key in gtests_app.env_vars
                    for key in ['GTEST_SHARD_INDEX', 'GTEST_TOTAL_SHARDS'])
     gtests_app.remove_gtest_sharding_env_vars()
@@ -273,6 +316,7 @@ class EgtestsAppTest(test_runner_test.TestCase):
     egtests_app = test_apps.EgtestsApp(
         'app_path',
         _ALL_EG_TEST_NAMES,
+        constants.IOSPlatformType.IPHONEOS,
         host_app_path='host_app_path',
         repeat_count=2)
     cmd = egtests_app.command('outdir', 'id=UUID', 1)
@@ -290,6 +334,7 @@ class EgtestsAppTest(test_runner_test.TestCase):
     egtests_app = test_apps.EgtestsApp(
         'app_path',
         _ALL_EG_TEST_NAMES,
+        constants.IOSPlatformType.IPHONEOS,
         host_app_path='host_app_path',
         repeat_count=2)
     with self.assertRaises(test_runner_errors.XcodeUnsupportedFeatureError):
@@ -298,7 +343,8 @@ class EgtestsAppTest(test_runner_test.TestCase):
   def test_not_found_egtests_app(self):
     self.mock(os.path, 'exists', lambda _: False)
     with self.assertRaises(test_runner.AppNotFoundError):
-      test_apps.EgtestsApp(_TEST_APP_PATH, _ALL_EG_TEST_NAMES)
+      test_apps.EgtestsApp(_TEST_APP_PATH, _ALL_EG_TEST_NAMES,
+                           constants.IOSPlatformType.IPHONEOS)
 
   def test_not_found_plugins(self):
     self.mock(os.path, 'exists', lambda _: False)
@@ -316,7 +362,8 @@ class EgtestsAppTest(test_runner_test.TestCase):
   @mock.patch('os.listdir', autospec=True)
   def test_not_found_xctest(self, mock_listdir):
     mock_listdir.return_value = ['random_file']
-    egtest = test_apps.EgtestsApp(_TEST_APP_PATH, _ALL_EG_TEST_NAMES)
+    egtest = test_apps.EgtestsApp(_TEST_APP_PATH, _ALL_EG_TEST_NAMES,
+                                  constants.IOSPlatformType.IPHONEOS)
     with self.assertRaises(test_runner.XCTestPlugInNotFoundError):
       xcode_util.xctest_path(_TEST_APP_PATH)
 
@@ -328,6 +375,7 @@ class EgtestsAppTest(test_runner_test.TestCase):
     egtest = test_apps.EgtestsApp(
         _TEST_APP_PATH,
         _ALL_EG_TEST_NAMES,
+        constants.IOSPlatformType.IPHONEOS,
         host_app_path='/path/to/host_app.app')
     self.assertEqual(['@executable_path/libclang_rt.asan_iossim_dynamic.dylib'],
                      egtest._additional_inserted_libs())
@@ -335,9 +383,9 @@ class EgtestsAppTest(test_runner_test.TestCase):
   def test_xctestRunNode_without_filter(self):
     self.mock(xcode_util, 'xctest_path', lambda _: 'xctest-path')
     self.mock(test_apps.EgtestsApp, '_additional_inserted_libs', lambda _: [])
-    egtest_node = test_apps.EgtestsApp(
-        _TEST_APP_PATH,
-        _ALL_EG_TEST_NAMES).fill_xctestrun_node()['test_app_module']
+    egtest_node = test_apps.EgtestsApp(_TEST_APP_PATH, _ALL_EG_TEST_NAMES,
+                                       constants.IOSPlatformType.IPHONEOS
+                                      ).fill_xctestrun_node()['test_app_module']
     self.assertNotIn('OnlyTestIdentifiers', egtest_node)
     self.assertNotIn('SkipTestIdentifiers', egtest_node)
 
@@ -349,7 +397,9 @@ class EgtestsAppTest(test_runner_test.TestCase):
         'TestCase2/testMethod1', 'TestCase1/testMethod2'
     ]
     egtest_node = test_apps.EgtestsApp(
-        _TEST_APP_PATH, _ALL_EG_TEST_NAMES,
+        _TEST_APP_PATH,
+        _ALL_EG_TEST_NAMES,
+        constants.IOSPlatformType.IPHONEOS,
         included_tests=filtered_tests).fill_xctestrun_node()['test_app_module']
     self.assertEqual(filtered_tests, egtest_node['OnlyTestIdentifiers'])
     self.assertNotIn('SkipTestIdentifiers', egtest_node)
@@ -362,7 +412,9 @@ class EgtestsAppTest(test_runner_test.TestCase):
         'TestCase2/testMethod1', 'TestCase1/testMethod2'
     ]
     egtest_node = test_apps.EgtestsApp(
-        _TEST_APP_PATH, _ALL_EG_TEST_NAMES,
+        _TEST_APP_PATH,
+        _ALL_EG_TEST_NAMES,
+        constants.IOSPlatformType.IPHONEOS,
         excluded_tests=skipped_tests).fill_xctestrun_node()['test_app_module']
     self.assertEqual(skipped_tests, egtest_node['SkipTestIdentifiers'])
     self.assertNotIn('OnlyTestIdentifiers', egtest_node)
@@ -372,9 +424,9 @@ class EgtestsAppTest(test_runner_test.TestCase):
     self.mock(xcode_util, 'xctest_path', lambda _: 'xctest-path')
     self.mock(test_apps.EgtestsApp, '_additional_inserted_libs',
               lambda _: [asan_dylib])
-    egtest_node = test_apps.EgtestsApp(
-        _TEST_APP_PATH,
-        _ALL_EG_TEST_NAMES).fill_xctestrun_node()['test_app_module']
+    egtest_node = test_apps.EgtestsApp(_TEST_APP_PATH, _ALL_EG_TEST_NAMES,
+                                       constants.IOSPlatformType.IPHONEOS
+                                      ).fill_xctestrun_node()['test_app_module']
     self.assertEqual(
         asan_dylib,
         egtest_node['TestingEnvironmentVariables']['DYLD_INSERT_LIBRARIES'])
