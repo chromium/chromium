@@ -2271,7 +2271,8 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
   std::string additional_replacement;
   if (init_string_literal) {
     assert(original_element_type->isAnyCharacterType());
-    if (original_element_type.isConstant(ast_context)) {
+    if (original_element_type.isConstant(ast_context) ||
+        IsConstexpr(array_decl)) {
       replacement_text = llvm::formatv(
           "{0} {1}", GetStringViewType(new_element_type, ast_context),
           array_variable_as_string);
@@ -2979,7 +2980,8 @@ class Spanifier {
                  // Unsafe pointer arithmetic:
                  binaryOperation(
                      anyOf(hasOperatorName("+="), hasOperatorName("+")),
-                     hasLHS(lhs_expr_variations)),
+                     hasLHS(lhs_expr_variations),
+                     hasRHS(expr(hasType(isInteger())))),
                  unaryOperator(hasOperatorName("++"),
                                hasUnaryOperand(lhs_expr_variations)),
                  // Unsafe base::raw_ptr arithmetic:
