@@ -11,4 +11,4 @@ set -o pipefail
 # The commands below should output the built product to this directory.
 PREFIX="$1"
 
-mv ChromiumEnterpriseCompanion.app "$PREFIX"
+mv ChromiumEnterpriseCompanion_test.app "$PREFIX"

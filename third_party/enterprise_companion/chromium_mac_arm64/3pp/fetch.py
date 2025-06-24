@@ -7,7 +7,7 @@ import fetch_lib
 import sys
 
 PLATFORM = 'Mac_Arm'
-MIN_VERSION = 1439396
+MIN_VERSION = 1477904
 
 if __name__ == '__main__':
     sys.exit(fetch_lib.main(PLATFORM, MIN_VERSION))

@@ -77,12 +77,12 @@ def get_url(platform):
         json.dumps({
             'url': [
                 'https://storage.googleapis.com/storage/v1/b/'
-                'chromium-browser-snapshots/o/%s%%2F%s%%2Fenterprise_companion.zip?alt=media'
+                'chromium-browser-snapshots/o/%s%%2F%s%%2Fenterprise_companion_test.zip?alt=media'
                 % (platform, os.environ['_3PP_VERSION'])
             ],
             'ext':
             '.zip',
-            'name': ['enterprise_companion.zip']
+            'name': ['enterprise_companion_test.zip']
         }))
 
 

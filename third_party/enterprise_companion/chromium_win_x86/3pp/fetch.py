@@ -7,7 +7,7 @@ import fetch_lib
 import sys
 
 PLATFORM = 'Win'
-MIN_VERSION = 1439373
+MIN_VERSION = 1477889
 
 if __name__ == '__main__':
     sys.exit(fetch_lib.main(PLATFORM, MIN_VERSION))

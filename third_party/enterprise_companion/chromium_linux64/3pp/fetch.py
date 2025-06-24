@@ -7,7 +7,7 @@ import fetch_lib
 import sys
 
 PLATFORM = 'Linux_x64'
-MIN_VERSION = 1439416
+MIN_VERSION = 1477914
 
 if __name__ == '__main__':
     sys.exit(fetch_lib.main(PLATFORM, MIN_VERSION))

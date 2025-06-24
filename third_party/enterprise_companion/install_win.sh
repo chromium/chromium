@@ -11,4 +11,7 @@ set -o pipefail
 # The commands below should output the built product to this directory.
 PREFIX="$1"
 
-mv enterprise_companion.exe "$PREFIX"
+mv enterprise_companion_test.exe "$PREFIX"
+if [ -f icudtl.dat ]; then
+  mv icudtl.dat "$PREFIX"
+fi
