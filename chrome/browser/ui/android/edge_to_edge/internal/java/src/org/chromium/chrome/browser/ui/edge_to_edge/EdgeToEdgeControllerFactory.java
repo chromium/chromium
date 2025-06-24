@@ -88,7 +88,7 @@ public class EdgeToEdgeControllerFactory {
      * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
      *     browser controls heights.
      * @param fullscreenManager The {@link FullscreenManager} for provide the fullscreen state.
-     * @param isTablet Whether the device is a tablet.
+     * @param defaultVisibility Whether the bottom chin is visible by default.
      */
     public static SystemBarColorHelper createBottomChin(
             View androidView,
@@ -99,7 +99,7 @@ public class EdgeToEdgeControllerFactory {
             EdgeToEdgeController edgeToEdgeController,
             BottomControlsStacker bottomControlsStacker,
             FullscreenManager fullscreenManager,
-            boolean isTablet) {
+            boolean defaultVisibility) {
         assert EdgeToEdgeUtils.isBottomChinFeatureEnabled();
         return new EdgeToEdgeBottomChinCoordinator(
                 androidView,
@@ -110,7 +110,7 @@ public class EdgeToEdgeControllerFactory {
                 edgeToEdgeController,
                 bottomControlsStacker,
                 fullscreenManager,
-                isTablet);
+                defaultVisibility);
     }
 
     /**

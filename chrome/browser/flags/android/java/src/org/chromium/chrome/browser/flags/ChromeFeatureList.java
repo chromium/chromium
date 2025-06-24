@@ -1538,6 +1538,13 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sEdgeToEdgeEverywhereIsDebugging =
             newBooleanCachedFeatureParam(EDGE_TO_EDGE_EVERYWHERE, "e2e_everywhere_debug", false);
 
+    public static final IntCachedFeatureParam
+            sEdgeToEdgeTabletInvisibleBottomChinMinWidth =
+                    newIntCachedFeatureParam(
+                            EDGE_TO_EDGE_TABLET,
+                            "e2e_tablet_invisible_bottom_chin_min_width",
+                            -1);
+
     public static final IntCachedFeatureParam sEdgeToEdgeTabletMinWidthThreshold =
             newIntCachedFeatureParam(EDGE_TO_EDGE_TABLET, "e2e_tablet_width_threshold", -1);
 
@@ -1694,6 +1701,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeEverywhereIsDebugging,
                     sEdgeToEdgeEverywhereOemList,
                     sEdgeToEdgeEverywhereOemMinVersions,
+                    sEdgeToEdgeTabletInvisibleBottomChinMinWidth,
                     sEdgeToEdgeTabletMinWidthThreshold,
                     sMagicStackAndroidShowAllModules,
                     sMaliciousApkDownloadCheckTelemetryOnly,

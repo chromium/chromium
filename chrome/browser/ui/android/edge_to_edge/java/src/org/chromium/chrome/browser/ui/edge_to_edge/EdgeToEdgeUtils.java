@@ -146,8 +146,9 @@ public class EdgeToEdgeUtils {
             return false;
         }
 
-        // Not supported on tablet unless the flag is on.
-        if (!isEdgeToEdgeTabletEnabled() && isSupportedTablet(activity)) {
+        // Not supported on tablet unless the flag is on and it meets the minimum screen size.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
+                && (!isEdgeToEdgeTabletEnabled() || !EdgeToEdgeUtils.isSupportedTablet(activity))) {
             return false;
         }
 
@@ -176,13 +177,33 @@ public class EdgeToEdgeUtils {
         return ChromeFeatureList.sEdgeToEdgeTablet.isEnabled();
     }
 
-    /** Whether the device is a tablet and supports edge-to-edge. */
+    /**
+     * Whether the device is a tablet and supports edge-to-edge.
+     *
+     * <ul>
+     *   <li>width < MinWidthThreshold: e2e disabled.
+     *   <li>MinWidthThreshold <= width < InvisibleBottomChinMinWidth: e2e enabled and the bottom
+     *       chin is visible by default. Same as behavior on phone.
+     *   <li>InvisibleBottomChinMinWidth <= width: fully e2e and the bottom chin is invisible by
+     *       default.
+     * </ul>
+     */
     public static boolean isSupportedTablet(Context context) {
         int widthThreshold = ChromeFeatureList.sEdgeToEdgeTabletMinWidthThreshold.getValue();
         if (widthThreshold == -1) {
-            return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+            return true;
         }
         return DisplayUtil.getCurrentSmallestScreenWidth(context) >= widthThreshold;
+    }
+
+    /** Whether the device is a tablet and supports edge-to-edge. */
+    public static boolean defaultVisibilityOfBottomChinOnTablet(Context context) {
+        int widthThreshold =
+                ChromeFeatureList.sEdgeToEdgeTabletInvisibleBottomChinMinWidth.getValue();
+        if (widthThreshold == -1) {
+            return false;
+        }
+        return DisplayUtil.getCurrentSmallestScreenWidth(context) < widthThreshold;
     }
 
     /**
@@ -263,8 +284,9 @@ public class EdgeToEdgeUtils {
                     IneligibilityReason.NUM_TYPES);
         }
 
-        if (!EdgeToEdgeUtils.isEdgeToEdgeTabletEnabled()
-                && EdgeToEdgeUtils.isSupportedTablet(activity)) {
+        // Not supported on tablet unless the flag is on and it meets the minimum screen size.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
+                && (!isEdgeToEdgeTabletEnabled() || !EdgeToEdgeUtils.isSupportedTablet(activity))) {
             eligible = false;
             RecordHistogram.recordEnumeratedHistogram(
                     INELIGIBLE_REASON_HISTOGRAM,
