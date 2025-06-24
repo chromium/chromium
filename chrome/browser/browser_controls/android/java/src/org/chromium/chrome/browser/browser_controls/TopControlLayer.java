@@ -16,7 +16,7 @@ public interface TopControlLayer {
     int getTopControlType();
 
     /** Return the current height of the layer. */
-    int getHeight();
+    int getTopControlHeight();
 
     /** Whether the layer is visible in the UI. */
     @TopControlVisibility

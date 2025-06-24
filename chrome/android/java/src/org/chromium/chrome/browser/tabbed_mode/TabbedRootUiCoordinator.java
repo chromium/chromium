@@ -1274,7 +1274,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         : 0;
         final int tabStripHeight = mToolbarManager.getTabStripHeightSupplier().get();
         final int bookmarkBarHeight =
-                mBookmarkBarCoordinator != null ? mBookmarkBarCoordinator.getHeight() : 0;
+                mBookmarkBarCoordinator != null ? mBookmarkBarCoordinator.getTopControlHeight() : 0;
         topControlsNewHeight =
                 bookmarkBarHeight + toolbarHeight + tabStripHeight + mStatusIndicatorHeight;
         if (tabStripHeight > 0 && !isTablet) {
@@ -1766,7 +1766,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             if (mBookmarkBarVisibilityProvider != null) {
                 mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarCoordinator);
             }
-            mBookmarkBarHeightSupplier = mBookmarkBarCoordinator::getHeight;
+            mBookmarkBarHeightSupplier = mBookmarkBarCoordinator::getTopControlHeight;
         }
 
         if (mToolbarManager != null) {

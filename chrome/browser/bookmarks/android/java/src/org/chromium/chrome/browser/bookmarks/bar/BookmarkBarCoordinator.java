@@ -117,7 +117,7 @@ public class BookmarkBarCoordinator implements TopControlLayer, BookmarkBarVisib
                         activity,
                         allBookmarksButtonModel,
                         browserControlsStateProvider,
-                        this::getHeight,
+                        this::getTopControlHeight,
                         itemsModel,
                         mBookmarkBarItemsLayoutManager.getItemsOverflowSupplier(),
                         model,
@@ -176,7 +176,7 @@ public class BookmarkBarCoordinator implements TopControlLayer, BookmarkBarVisib
     }
 
     @Override
-    public int getHeight() {
+    public int getTopControlHeight() {
         return mView.getHeight();
     }
 

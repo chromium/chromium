@@ -254,7 +254,7 @@ public class StatusIndicatorCoordinator implements TopControlLayer {
     }
 
     @Override
-    public int getHeight() {
+    public int getTopControlHeight() {
         return mMediator.getEffectiveHeight();
     }
 

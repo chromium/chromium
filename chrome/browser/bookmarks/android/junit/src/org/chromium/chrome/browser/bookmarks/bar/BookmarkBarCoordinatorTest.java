@@ -222,7 +222,7 @@ public class BookmarkBarCoordinatorTest {
     @SmallTest
     public void testOnBookmarkBarHeightChanged() {
         // Verify initial state.
-        assertEquals("Verify initial state.", 0, mCoordinator.getHeight());
+        assertEquals("Verify initial state.", 0, mCoordinator.getTopControlHeight());
 
         // NOTE: the `mHeightChangeCallback` is expected to have been registered for observation
         // during `mCoordinator` construction and notified of initial height via posted task.
@@ -238,7 +238,7 @@ public class BookmarkBarCoordinatorTest {
         assertEquals(
                 "Verify state after height-changing layout.",
                 rect.height(),
-                mCoordinator.getHeight());
+                mCoordinator.getTopControlHeight());
         verify(mHeightChangeCallback).onResult(null);
 
         // Verify state after height-consistent layout.
@@ -248,7 +248,7 @@ public class BookmarkBarCoordinatorTest {
         assertEquals(
                 "Verify state after height-consistent layout.",
                 rect.height(),
-                mCoordinator.getHeight());
+                mCoordinator.getTopControlHeight());
         verifyNoMoreInteractions(mHeightChangeCallback);
     }
 

@@ -75,7 +75,7 @@ public class LoadProgressCoordinator implements TopControlLayer {
     }
 
     @Override
-    public int getHeight() {
+    public int getTopControlHeight() {
         // The height likely isn't relevant to the TopControlsStacker since the progress bar does
         // not contribute to the total height of the top controls, but we add it for consistency.
         return mProgressBarView.getHeight();
