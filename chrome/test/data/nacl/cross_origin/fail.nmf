@@ -1,7 +1,0 @@
-{
-  "program": {
-    "x86-32": {"url": "fail.nexe"},
-    "x86-64": {"url": "fail.nexe"},
-    "arm": {"url": "fail.nexe"}
-  }
-}

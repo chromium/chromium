@@ -1,5 +1,0 @@
-{
-  "program": {
-    "portable": {"pnacl-translate": {"url": "bad.pexe"}}
-  }
-}

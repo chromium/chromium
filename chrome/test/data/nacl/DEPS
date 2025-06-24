@@ -1,6 +1,0 @@
-include_rules = [
-  # Tests somtimes pull headers from the NaCl repo (nacl_check.h, etc).
-  "+native_client",
-  # NaCl modules include PPAPI headers.
-  "+ppapi",
-]

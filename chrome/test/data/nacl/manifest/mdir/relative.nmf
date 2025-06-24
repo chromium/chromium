@@ -1,8 +1,0 @@
-{
-  "program": {
-    "x86-32": {"url": "../ndir/relative.nexe"},
-    "x86-64": {"url": "../ndir/relative.nexe"},
-    "arm": {"url": "../ndir/relative.nexe"},
-    "mips32": {"url": "../ndir/relative.nexe"}
-  }
-}

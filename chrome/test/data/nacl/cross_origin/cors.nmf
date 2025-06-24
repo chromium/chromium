@@ -1,8 +1,0 @@
-{
-  "program": {
-    "x86-32": {"url": "cors.nexe"},
-    "x86-64": {"url": "cors.nexe"},
-    "arm": {"url": "cors.nexe"},
-    "mips32": {"url": "cors.nexe"}
-  }
-}

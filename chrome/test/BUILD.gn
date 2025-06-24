@@ -24,7 +24,6 @@ import("//components/captive_portal/core/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/lens/features.gni")
-import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/os_crypt/sync/features.gni")
@@ -4378,51 +4377,15 @@ if (!is_android) {
       deps += [ "//chrome/browser/ui/search_engine_choice" ]
     }
 
-    if (enable_nacl) {
+    if (is_chromeos) {
+      data += [ "//ash/webui/common/resources/cr.js" ]
       sources += [
-        "../browser/extensions/extension_nacl_browsertest.cc",
-        "../browser/nacl_host/test/gdb_debug_stub_browsertest.cc",
-        "nacl/nacl_browsertest.cc",
-        "nacl/nacl_browsertest_uma.cc",
-        "nacl/nacl_browsertest_util.cc",
-        "nacl/nacl_browsertest_util.h",
-        "nacl/pnacl_header_test.cc",
-        "nacl/pnacl_header_test.h",
+        "../browser/ui/views/extensions/dialogs/document_scanner_discovery_confirmation_dialog_browsertest.cc",
+        "../browser/ui/views/extensions/dialogs/document_scanner_start_scan_confirmation_dialog_browsertest.cc",
+        "../browser/ui/views/extensions/dialogs/request_file_system_dialog_browsertest.cc",
+        "//third_party/liblouis/wasm/liblouis_wrapper_browsertest.cc",
       ]
-      deps += [
-        "//components/nacl/browser",
-        "//components/nacl/renderer",
-        "//components/nacl/renderer/plugin:nacl_trusted_plugin",
-      ]
-
-      data_deps += [
-        "//chrome/test/data/nacl",
-        "//ppapi:ppapi_nacl_tests_all",
-        "//ppapi/native_client:irt",
-        "//ppapi/tests/extensions",
-      ]
-      if (is_chromeos) {
-        data += [ "//ash/webui/common/resources/cr.js" ]
-        sources += [
-          "../browser/ui/views/extensions/dialogs/document_scanner_discovery_confirmation_dialog_browsertest.cc",
-          "../browser/ui/views/extensions/dialogs/document_scanner_start_scan_confirmation_dialog_browsertest.cc",
-          "../browser/ui/views/extensions/dialogs/request_file_system_dialog_browsertest.cc",
-          "//third_party/liblouis/wasm/liblouis_wrapper_browsertest.cc",
-        ]
-        data_deps += [
-          "//components/nacl/loader:nacl_helper",
-          "//ppapi/native_client:irt",
-          "//third_party/liblouis:liblouis_test_data",
-        ]
-      }
-
-      if (is_linux || is_chromeos) {
-        sources += [ "../browser/nacl_host/test/nacl_gdb_browsertest.cc" ]
-        data_deps += [
-          "//chrome/browser/nacl_host/test:mock_nacl_gdb",
-          "//components/nacl/loader:nacl_helper",
-        ]
-      }
+      data_deps += [ "//third_party/liblouis:liblouis_test_data" ]
     }
 
     if (enable_extensions) {

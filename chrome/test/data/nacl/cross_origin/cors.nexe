@@ -1,3 +1,0 @@
-This is not a nexe, but we'll try to load it like one anyways.  Note that this
-file needs to be 64 bytes or larger for ELF parsing to give consistent errors on
-32-bit and 64-bit platforms.
