@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.FloatProperty;
@@ -14,6 +16,7 @@ import androidx.annotation.ColorInt;
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
@@ -33,6 +36,7 @@ import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
  * information for a particular tab group title indicator on the tab strip so it can draw itself
  * onto the GL canvas.
  */
+@NullMarked
 public class StripLayoutGroupTitle extends StripLayoutView {
 
     /** Delegate for additional group title functionality. */
@@ -105,7 +109,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     // Tab group's root Id this view refers to.
     // @TODO(crbug.com/379941150) Deprecate rootId and transition to using tabGroupId
     private int mRootId;
-    private final Token mTabGroupId;
+    private final Token mTabGroupId; // Non-null because we assert in the constructor
     private @Nullable String mTitle;
     @TabGroupColorId private int mColorId;
 
@@ -234,7 +238,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         mColorId = colorId;
 
         // Update the shared group avatar border color if a shared image tiles coordinator exists.
-        if (mSharedImageTilesCoordinator != null) {
+        if (mSharedImageTilesCoordinator != null && mSharedImageTilesConfigBuilder != null) {
             mSharedImageTilesCoordinator.updateConfig(
                     mSharedImageTilesConfigBuilder.setTabGroupColor(mContext, colorId).build());
         }
@@ -348,7 +352,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      */
     public void updateSharedTabGroup(
             String collaborationId,
-            @Nullable DataSharingService dataSharingService,
+            DataSharingService dataSharingService,
             CollaborationService collaborationService,
             Callback<ViewResourceAdapter> registerAvatarResource,
             Runnable updateGroupTitleBitmap) {
@@ -375,7 +379,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
                     if (result) {
                         // Capture and register the avatar bitmap if the group data is successfully
                         // fetched.
-                        View avatarView = mSharedImageTilesCoordinator.getView();
+                        View avatarView = assumeNonNull(mSharedImageTilesCoordinator).getView();
                         if (LocalizationUtils.isLayoutRtl()) {
                             avatarView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
                         }

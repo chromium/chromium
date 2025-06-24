@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.HapticFeedbackConstants;
@@ -12,6 +14,7 @@ import android.view.View;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -28,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@NullMarked
 public class StripLayoutUtils {
     // Position Constants.
     // The bottom indicator should align with the contents of the last tab in group. This value is
@@ -86,9 +90,6 @@ public class StripLayoutUtils {
      */
     public static int getNumOfTabsInGroup(
             TabGroupModelFilter modelFilter, StripLayoutGroupTitle stripLayoutGroupTitle) {
-        if (stripLayoutGroupTitle == null) {
-            return 0;
-        }
         return modelFilter.getTabCountForGroup(stripLayoutGroupTitle.getTabGroupId());
     }
 
@@ -100,7 +101,7 @@ public class StripLayoutUtils {
      */
     public static boolean isNonTrailingTabInGroup(
             TabGroupModelFilter modelFilter, TabModel tabModel, StripLayoutTab stripTab) {
-        Tab tab = tabModel.getTabById(stripTab.getTabId());
+        Tab tab = assumeNonNull(tabModel.getTabById(stripTab.getTabId()));
         if (modelFilter.isTabInTabGroup(tab)) {
             List<Tab> relatedTabs = modelFilter.getRelatedTabList(tab.getId());
             Tab lastTab = relatedTabs.get(relatedTabs.size() - 1);
@@ -147,7 +148,7 @@ public class StripLayoutUtils {
     static @Nullable StripLayoutGroupTitle findGroupTitleByCollaborationId(
             StripLayoutGroupTitle[] groupTitles,
             String collaborationId,
-            @Nullable TabGroupSyncService tabGroupSyncService) {
+            TabGroupSyncService tabGroupSyncService) {
         for (StripLayoutGroupTitle groupTitle : groupTitles) {
             SavedTabGroup savedTabGroup =
                     tabGroupSyncService.getGroup(new LocalTabGroupId(groupTitle.getTabGroupId()));

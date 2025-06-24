@@ -26,6 +26,7 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenuCoordinator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -55,6 +56,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  * @param <T> The type of the ID of the overflow menu's origin. For individual tabs, this is a tab
  *     ID. For tab groups, it's the tab group ID.
  */
+@NullMarked
 public abstract class TabOverflowMenuCoordinator<T> {
 
     /**
@@ -213,7 +215,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
     protected @Nullable TabGroupSyncService mTabGroupSyncService;
 
     private final @LayoutRes int mMenuLayout;
-    private final Context mContext;
+    private final @Nullable Context mContext;
     private final OnItemClickedCallback<T> mOnItemClickedCallback;
     private @Nullable OverflowMenuHolder<T> mMenuHolder;
 
@@ -338,7 +340,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
             boolean verticalOverlapAnchor,
             @StyleRes int animStyle,
             @HorizontalOrientation int horizontalOrientation,
-            @Nullable Activity activity) {
+            Activity activity) {
         createAndShowMenu(
                 anchorViewRectProvider,
                 id,
@@ -383,7 +385,9 @@ public abstract class TabOverflowMenuCoordinator<T> {
         ModelList modelList = new ModelList();
         configureMenuItems(modelList, id);
         // Apply offset from the background.
-        offsetPopupRect(mContext, isIncognito, anchorViewRectProvider.getRect());
+        if (mContext != null) {
+            offsetPopupRect(mContext, isIncognito, anchorViewRectProvider.getRect());
+        }
         mMenuHolder =
                 new OverflowMenuHolder<>(
                         anchorViewRectProvider,
@@ -441,6 +445,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
      * @return The DP measure {@param dimenRes}, converted to px.
      */
     protected int getDimensionPixelSize(@DimenRes int dimenRes) {
+        assert mContext != null : "context needs to be non-null to get pixel size";
         return mContext.getResources().getDimensionPixelSize(dimenRes);
     }
 

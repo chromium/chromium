@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 
 import android.app.Activity;
@@ -25,6 +26,8 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -75,14 +78,15 @@ import org.chromium.ui.widget.RectProvider;
  * A coordinator for the context menu on the tab strip by long-pressing on the group titles. It is
  * responsible for creating a list of menu items, setting up the menu and displaying the menu.
  */
+@NullMarked
 public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordinator {
-    private View mContentView;
-    private EditText mGroupTitleEditText;
-    private ColorPickerCoordinator mColorPickerCoordinator;
+    @MonotonicNonNull private View mContentView;
+    @MonotonicNonNull private Context mContext;
+    @MonotonicNonNull private EditText mGroupTitleEditText;
+    @MonotonicNonNull private ColorPickerCoordinator mColorPickerCoordinator;
     private TabGroupModelFilter mTabGroupModelFilter;
     private @Nullable Token mTabGroupId;
     private int mGroupRootId;
-    private Context mContext;
 
     // Title currently modified by the user through the edit box. This does not include previously
     // updated or default title.
@@ -114,12 +118,12 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             MultiInstanceManager multiInstanceManager,
             WindowAndroid windowAndroid,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            @Nullable DataSharingTabManager dataSharingTabManager,
+            DataSharingTabManager dataSharingTabManager,
             CollaborationService collaborationService) {
         super(
                 R.layout.tab_strip_group_menu_layout,
                 getMenuItemClickedCallback(
-                        windowAndroid.getActivity().get(),
+                        assumeNonNull(windowAndroid.getActivity().get()),
                         tabModelSupplier,
                         tabGroupModelFilter,
                         multiInstanceManager,
@@ -141,7 +145,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     /**
      * Creates the TabGroupContextMenuCoordinator object.
      *
-     * @param tabModel The tab model.
+     * @param tabModel The tab model. Should have a {@link Profile}.
      * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
      * @param multiInstanceManager The {@link MultiInstanceManager} that may be used to move the
      *     group to another window.
@@ -154,8 +158,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             TabGroupModelFilter tabGroupModelFilter,
             MultiInstanceManager multiInstanceManager,
             WindowAndroid windowAndroid,
-            @Nullable DataSharingTabManager dataSharingTabManager) {
-        Profile profile = tabModel.getProfile();
+            DataSharingTabManager dataSharingTabManager) {
+        Profile profile = assumeNonNull(tabModel.getProfile());
 
         @Nullable TabGroupSyncService tabGroupSyncService =
                 profile.isOffTheRecord() ? null : TabGroupSyncServiceFactory.getForProfile(profile);
@@ -223,13 +227,15 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                     RecordUserAction.record("MobileToolbarTabGroupMenu.MoveGroupToAnotherWindow");
                 }
                 TabModel tabModel = tabModelSupplier.get();
-                TabGroupMetadata tabGroupMetadata =
+                @Nullable TabGroupMetadata tabGroupMetadata =
                         TabGroupMetadataExtractor.extractTabGroupMetadata(
                                 tabGroupModelFilter.getTabsInGroup(tabGroupId),
                                 TabWindowManagerSingleton.getInstance().getIdForWindow(activity),
-                                tabModel.getTabAt(tabModel.index()).getId(),
+                                assumeNonNull(tabModel.getTabAt(tabModel.index())).getId(),
                                 TabShareUtils.isCollaborationIdValid(collaborationId));
-                multiInstanceManager.moveTabGroupToOtherWindow(tabGroupMetadata);
+                if (tabGroupMetadata != null) {
+                    multiInstanceManager.moveTabGroupToOtherWindow(tabGroupMetadata);
+                }
             } else if (menuId == org.chromium.chrome.R.id.share_group) {
                 // Create the group share flow and display the share bottom sheet.
                 dataSharingTabManager.createOrManageFlow(
@@ -245,7 +251,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                                 .ANDROID_TAB_GROUP_CONTEXT_MENU_MANAGE,
                         /* createGroupFinishedCallback= */ null);
                 RecordUserAction.record("MobileToolbarTabGroupMenu.ManageSharing");
-            } else if (menuId == R.id.recent_activity) {
+            } else if (menuId == R.id.recent_activity
+                    && TabShareUtils.isCollaborationIdValid(collaborationId)) {
                 dataSharingTabManager.showRecentActivity(activity, collaborationId);
                 RecordUserAction.record("MobileToolbarTabGroupMenu.RecentActivity");
             } else if (menuId == R.id.delete_shared_group) {
@@ -281,7 +288,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 /* verticalOverlapAnchor= */ false,
                 /* animStyle= */ ResourcesCompat.ID_NULL,
                 HorizontalOrientation.LAYOUT_DIRECTION,
-                mWindowAndroid.getActivity().get());
+                assumeNonNull(mWindowAndroid.getActivity().get()));
         RecordUserAction.record("MobileToolbarTabGroupMenu.Shown");
     }
 
@@ -290,9 +297,9 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         mContentView = contentView;
         mContext = contentView.getContext();
 
-        buildTitleEditor(isIncognito);
+        buildTitleEditor(mContentView, mContext, isIncognito);
 
-        buildColorEditor(isIncognito);
+        buildColorEditor(mContentView, mContext, isIncognito);
     }
 
     @Override
@@ -341,7 +348,9 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             // TODO(crbug.com/417272356): Update text; Currently shows "Move to new window" instead
             //  of "Move _group_ to new window."
-            Activity activity = mWindowAndroid.getActivity().get();
+            // This is called after showMenu, which assumes Activity is non-null, so it is OK to
+            // continue to make this assumption here.
+            Activity activity = assumeNonNull(mWindowAndroid.getActivity().get());
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             activity.getResources()
@@ -461,6 +470,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     }
 
     private void updateTabGroupColor() {
+        if (mColorPickerCoordinator == null) return;
         @TabGroupColorId int newColor = mColorPickerCoordinator.getSelectedColorSupplier().get();
         if (TabUiUtils.updateTabGroupColor(mTabGroupModelFilter, mGroupRootId, newColor)) {
             RecordUserAction.record("MobileToolbarTabGroupMenu.ColorChanged");
@@ -468,6 +478,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     }
 
     private void setSelectedColorItem(@TabGroupColorId int newColor) {
+        if (mColorPickerCoordinator == null) return;
         mColorPickerCoordinator.setSelectedColorItem(newColor);
     }
 
@@ -490,23 +501,23 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         // Flip `IsPresetTitleUsed`to prevent `TextWatcher` from treating `#setText` as a title
         // update.
         mIsPresetTitleUsed = true;
-        mGroupTitleEditText.setText(s);
+        if (mGroupTitleEditText != null) mGroupTitleEditText.setText(s);
     }
 
     private String getDefaultTitle() {
         return TabGroupTitleUtils.getDefaultTitle(
-                mContext, mTabGroupModelFilter.getTabCountForGroup(mTabGroupId));
+                assumeNonNull(mContext), mTabGroupModelFilter.getTabCountForGroup(mTabGroupId));
     }
 
     // TODO(crbug.com/358689769): Enable live editing and updating of the group title.
-    private void buildTitleEditor(boolean isIncognito) {
-        mGroupTitleEditText = mContentView.findViewById(R.id.tab_group_title);
+    private void buildTitleEditor(View contentView, Context context, boolean isIncognito) {
+        mGroupTitleEditText = contentView.findViewById(R.id.tab_group_title);
 
         // Set incognito style.
         if (isIncognito) {
             mGroupTitleEditText.setBackgroundTintList(
                     AppCompatResources.getColorStateList(
-                            mContext,
+                            context,
                             org.chromium.chrome.R.color.menu_edit_text_bg_tint_list_baseline));
             mGroupTitleEditText.setTextAppearance(
                     R.style.TextAppearance_TextLarge_Primary_Baseline_Light);
@@ -539,19 +550,19 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
     }
 
-    private void buildColorEditor(boolean isIncognito) {
+    private void buildColorEditor(View contentView, Context context, boolean isIncognito) {
         // Set horizontal padding to custom view to match list items.
         int horizontalPadding =
-                mContext.getResources()
+                context.getResources()
                         .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding);
 
         // TODO(crbug.com/357104424): Consider create ColorPickerCoordinator once during the first
         // call, and reuse it for subsequent calls.
         mColorPickerCoordinator =
                 new ColorPickerCoordinator(
-                        mContext,
+                        context,
                         TabGroupColorUtils.getTabGroupColorIdList(),
-                        ((ViewStub) mContentView.findViewById(R.id.color_picker_stub)).inflate(),
+                        ((ViewStub) contentView.findViewById(R.id.color_picker_stub)).inflate(),
                         ColorPickerType.TAB_GROUP,
                         isIncognito,
                         ColorPickerLayoutType.DYNAMIC,
@@ -566,6 +577,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         mColorPickerCoordinator.setSelectedColorItem(curGroupColor);
     }
 
+    @SuppressWarnings("NullAway")
     public void destroy() {
         if (mTabGroupModelFilter != null) {
             mTabGroupModelFilter.removeTabGroupObserver(mTabGroupModelFilterObserver);
@@ -573,11 +585,11 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         }
     }
 
-    EditText getGroupTitleEditTextForTesting() {
+    @Nullable EditText getGroupTitleEditTextForTesting() {
         return mGroupTitleEditText;
     }
 
-    ColorPickerCoordinator getColorPickerCoordinatorForTesting() {
+    @Nullable ColorPickerCoordinator getColorPickerCoordinatorForTesting() {
         return mColorPickerCoordinator;
     }
 

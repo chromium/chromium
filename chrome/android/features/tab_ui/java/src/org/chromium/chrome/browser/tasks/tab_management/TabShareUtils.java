@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.text.TextUtils;
 
 import org.chromium.base.Token;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -70,6 +71,7 @@ public class TabShareUtils {
      * @param collaborationId The collaboration id for the tab group in question.
      * @return Whether the provided collaboration id is valid or not.
      */
+    @Contract("null -> false")
     public static boolean isCollaborationIdValid(@Nullable String collaborationId) {
         return !TextUtils.isEmpty(collaborationId);
     }

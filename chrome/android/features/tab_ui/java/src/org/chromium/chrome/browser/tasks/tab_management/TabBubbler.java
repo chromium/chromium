@@ -29,7 +29,7 @@ public class TabBubbler extends TabObjectNotificationUpdater {
     private final ObservableSupplier<Token> mTabGroupIdSupplier;
 
     public TabBubbler(
-            @Nullable Profile profile,
+            Profile profile,
             TabListNotificationHandler tabListNotificationHandler,
             ObservableSupplier<Token> tabGroupIdSupplier) {
         super(profile, tabListNotificationHandler);
