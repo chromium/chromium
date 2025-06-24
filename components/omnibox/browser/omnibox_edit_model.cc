@@ -1963,19 +1963,16 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
           controller_->client()->GetTemplateURLService(), false);
       std::u16string replacement_string =
           turl ? turl->short_name() : match.contents;
+      bool ask_keyword = turl && turl->is_ask_starter_pack();
       // For featured search engines, we also want to add the shortcut name.
       if (AutocompleteMatch::IsFeaturedSearchType(match.type)) {
-        int message_id = (turl && turl->starter_pack_id() ==
-                                      template_url_starter_pack_data::kGemini)
-                             ? IDS_ACC_ASK_KEYWORD_MODE_WITH_SHORTCUT
-                             : IDS_ACC_KEYWORD_MODE_WITH_SHORTCUT;
+        int message_id = ask_keyword ? IDS_ACC_ASK_KEYWORD_MODE_WITH_SHORTCUT
+                                     : IDS_ACC_KEYWORD_MODE_WITH_SHORTCUT;
         return l10n_util::GetStringFUTF16(message_id, match.keyword,
                                           replacement_string);
       }
-      int message_id = (turl && turl->starter_pack_id() ==
-                                    template_url_starter_pack_data::kGemini)
-                           ? IDS_ACC_ASK_KEYWORD_MODE
-                           : IDS_ACC_KEYWORD_MODE;
+      int message_id =
+          ask_keyword ? IDS_ACC_ASK_KEYWORD_MODE : IDS_ACC_KEYWORD_MODE;
       return l10n_util::GetStringFUTF16(message_id, replacement_string);
     }
     case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION:

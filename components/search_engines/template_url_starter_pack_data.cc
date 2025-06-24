@@ -17,7 +17,7 @@
 namespace template_url_starter_pack_data {
 
 // Update this whenever a change is made to any starter pack data.
-const int kCurrentDataVersion = 12;
+const int kCurrentDataVersion = 13;
 
 // Only update this if there's an incompatible change that requires force
 // updating the user's starter pack data. This will overwrite any of the
@@ -77,8 +77,22 @@ const StarterPackEngine page = {
     .type = SEARCH_ENGINE_STARTER_PACK_PAGE,
 };
 
+const StarterPackEngine ai_mode = {
+    .name_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_AI_MODE_NAME,
+    .keyword_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_AI_MODE_KEYWORD,
+    .favicon_url = nullptr,
+    .search_url =
+        // TODO(crbug.com/426584087): Update URL query params when correct
+        //   values are known, these values are for realbox.
+    "https://www.google.com/"
+    "search?sourceid=chrome&udm=50&aep=42&q={searchTerms}",
+    .destination_url = "https://www.google.com",
+    .id = StarterPackId::kAiMode,
+    .type = SEARCH_ENGINE_STARTER_PACK_AI_MODE,
+};
+
 const StarterPackEngine* engines[] = {
-    &bookmarks, &history, &tabs, &gemini, &page,
+    &bookmarks, &history, &tabs, &gemini, &page, &ai_mode,
 };
 
 int GetDataVersion() {

@@ -55,6 +55,8 @@ const std::string kGeminiUrl =
     template_url_starter_pack_data::gemini.destination_url;
 const std::string kPageUrl =
     template_url_starter_pack_data::page.destination_url;
+const std::string kAiModeUrl =
+    template_url_starter_pack_data::ai_mode.destination_url;
 
 struct TestData {
   const std::u16string input;
@@ -233,7 +235,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPack) {
       {u"@gemini", {}},
 
       // Typing '@' should give all the starter pack suggestions.
-      {u"@", {kBookmarksUrl, kHistoryUrl, kTabsUrl}},
+      {u"@", {kAiModeUrl, kBookmarksUrl, kHistoryUrl, kTabsUrl}},
 
       // Typing a portion of "@bookmarks" should give the bookmarks suggestion.
       {std::u16string(kBookmarksKeyword, 0, 3), {kBookmarksUrl}},
@@ -269,7 +271,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
       {u"gemi", {}},
 
       // Typing '@' should give all the starter pack suggestions.
-      {u"@", {kBookmarksUrl, kGeminiUrl, kHistoryUrl, kTabsUrl}},
+      {u"@", {kAiModeUrl, kBookmarksUrl, kGeminiUrl, kHistoryUrl, kTabsUrl}},
 
       // Typing a portion of "@bookmarks" should give the bookmarks suggestion.
       {std::u16string(kBookmarksKeyword, 0, 3), {kBookmarksUrl}},
@@ -317,7 +319,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
   });
 
   auto expected_match_order = std::vector<std::string>{
-      kGeminiUrl, kHistoryUrl, kBookmarksUrl, kPageUrl, kTabsUrl,
+      kAiModeUrl, kGeminiUrl, kHistoryUrl, kBookmarksUrl, kPageUrl, kTabsUrl,
   };
   ASSERT_EQ(matches.size(), expected_match_order.size());
   for (size_t i = 0; i < matches.size(); i++) {
@@ -363,8 +365,8 @@ TEST_F(FeaturedSearchProviderTest, FeaturedEnterpriseSearch) {
       // alphabetical order). Re-ordering by relevance will be made
       // later on.
       {u"@",
-       {kBookmarksUrl, FeaturedUrlN(1), FeaturedUrlN(2), FeaturedUrlN(3),
-        FeaturedUrlN(4), kGeminiUrl, kHistoryUrl, kTabsUrl}},
+       {kAiModeUrl, kBookmarksUrl, FeaturedUrlN(1), FeaturedUrlN(2),
+        FeaturedUrlN(3), FeaturedUrlN(4), kGeminiUrl, kHistoryUrl, kTabsUrl}},
 
       // Typing a portion of "@featured" should give the featured engine
       // suggestions.
@@ -404,7 +406,7 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestStarterPackIPHSuggestion) {
   AddStarterPackEntriesToTemplateUrlService();
   std::vector<TestData> typing_scheme_cases = {
       // Typing '@' should give all the starter pack suggestions, and no IPH.
-      {u"@", {kBookmarksUrl, kGeminiUrl, kHistoryUrl, kTabsUrl}}};
+      {u"@", {kAiModeUrl, kBookmarksUrl, kGeminiUrl, kHistoryUrl, kTabsUrl}}};
   RunTest(typing_scheme_cases);
 }
 
@@ -484,8 +486,8 @@ TEST_F(FeaturedSearchProviderTest,
   std::vector<TestData> typing_scheme_cases = {
       // Typing '@' should give all the starter pack suggestions, and no IPH.
       {u"@",
-       {kBookmarksUrl, FeaturedUrlN(1), FeaturedUrlN(2), FeaturedUrlN(3),
-        kGeminiUrl, kHistoryUrl, kTabsUrl}}};
+       {kAiModeUrl, kBookmarksUrl, FeaturedUrlN(1), FeaturedUrlN(2),
+        FeaturedUrlN(3), kGeminiUrl, kHistoryUrl, kTabsUrl}}};
   RunTest(typing_scheme_cases);
 }
 
@@ -646,7 +648,7 @@ TEST_F(FeaturedSearchProviderTest,
   std::vector<TestData> typing_scheme_cases = {
       // Typing '@' should give all the starter pack suggestions, and no IPH.
       {u"@",
-       {kBookmarksUrl, FeaturedUrlN(1), FeaturedUrlN(4), kGeminiUrl,
+       {kAiModeUrl, kBookmarksUrl, FeaturedUrlN(1), FeaturedUrlN(4), kGeminiUrl,
         kHistoryUrl, kTabsUrl}}};
   RunTest(typing_scheme_cases);
 }
@@ -1006,6 +1008,7 @@ TEST_F(FeaturedSearchProviderTest, OffTheRecord_FeaturedEnterpriseSearch) {
   std::vector<TestData> typing_scheme_cases = {
       // Typing '@' should give all the starter pack suggestions (excluding
       // history), featured site search engine, and no IPH.
-      {u"@", {kBookmarksUrl, FeaturedUrlN(1), kGeminiUrl, kTabsUrl}}};
+      {u"@",
+       {kAiModeUrl, kBookmarksUrl, FeaturedUrlN(1), kGeminiUrl, kTabsUrl}}};
   RunTest(typing_scheme_cases);
 }

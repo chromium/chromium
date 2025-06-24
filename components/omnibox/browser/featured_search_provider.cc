@@ -72,8 +72,9 @@ constexpr int kIphRelevance = 5000;
 // Returns relevance for starter pack suggestions.
 int StarterPackRelevance(
     template_url_starter_pack_data::StarterPackId starter_pack_id) {
-  // TODO(crbug.com/421415393) 1460 reserved for ai mode starter pack.
   switch (starter_pack_id) {
+    case template_url_starter_pack_data::StarterPackId::kAiMode:
+      return 1460;
     case template_url_starter_pack_data::StarterPackId::kGemini:
       return 1459;
     case template_url_starter_pack_data::StarterPackId::kHistory:
@@ -94,8 +95,7 @@ int StarterPackRelevance(
 // Returns description for starter pack suggestions.
 std::u16string StarterPackDescription(const AutocompleteInput& input,
                                       const TemplateURL& template_url) {
-  if (template_url.starter_pack_id() ==
-      template_url_starter_pack_data::kGemini) {
+  if (template_url.is_ask_starter_pack()) {
     return l10n_util::GetStringFUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT,
                                       template_url.keyword(),
                                       template_url.short_name());

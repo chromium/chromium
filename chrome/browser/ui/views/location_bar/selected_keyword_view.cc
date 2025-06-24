@@ -48,8 +48,7 @@ SelectedKeywordView::GetKeywordLabelNames(const std::u16string& keyword,
   names.short_name =
       template_url ? template_url->AdjustedShortNameForLocaleDirection() : u"";
 
-  if (template_url && template_url->starter_pack_id() ==
-                          template_url_starter_pack_data::kGemini) {
+  if (template_url && template_url->is_ask_starter_pack()) {
     names.full_name = l10n_util::GetStringFUTF16(
         IDS_OMNIBOX_SELECTED_KEYWORD_ASK_TEXT, names.short_name);
   } else if (template_url && template_url->starter_pack_id() ==
@@ -105,16 +104,18 @@ void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
     return;
   }
 
-  // Use the search icon for most keywords. Use special icons for '@gemini',
-  // '@history', and search aggregator.
+  // Use the search icon for most keywords.
+  auto* vector_icon = &vector_icons::kSearchIcon;
+
   const TemplateURL* template_url =
       TemplateURLServiceFactory::GetForProfile(profile_)
           ->GetTemplateURLForKeyword(keyword_);
-
-  auto* vector_icon = &vector_icons::kSearchIcon;
   if (template_url && template_url->starter_pack_id() ==
                           template_url_starter_pack_data::kGemini) {
     vector_icon = &omnibox::kSparkIcon;
+  } else if (template_url && template_url->starter_pack_id() ==
+                                 template_url_starter_pack_data::kAiMode) {
+    vector_icon = &omnibox::kSearchSparkIcon;
   } else if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
                  profile_) &&
              history_embeddings::GetFeatureParameters().omnibox_scoped &&

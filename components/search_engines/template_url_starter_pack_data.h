@@ -27,6 +27,7 @@ typedef enum {
   kTabs = 3,
   kGemini = 4,
   kPage = 5,
+  kAiMode = 6,
 
   kMaxStarterPackId
 } StarterPackId;
@@ -50,6 +51,7 @@ extern const StarterPackEngine history;
 extern const StarterPackEngine tabs;
 extern const StarterPackEngine gemini;
 extern const StarterPackEngine page;
+extern const StarterPackEngine ai_mode;
 
 // Returns the current version of the starterpack data, so callers can know when
 // they need to re-merge.

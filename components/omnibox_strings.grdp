@@ -4,12 +4,17 @@
        referencing .grdp file or translation console pipeline breaks. -->
   <part file="omnibox_pedal_ui_strings.grdp" />
 
+<!-- Omnibox popup match descriptions. -->
   <message name="IDS_AUTOCOMPLETE_SEARCH_DESCRIPTION" desc="Description for the default search match.">
     <ph name="ENGINE">$1<ex>Google</ex></ph> Search
+  </message>
+  <message name="IDS_AUTOCOMPLETE_ASK_DESCRIPTION" desc="Description for matches from ask-keywords; e.g. gemini or ai mode.">
+    Ask <ph name="ENGINE">$1<ex>AI Mode</ex></ph>
   </message>
   <message name="IDS_AUTOCOMPLETE_SEARCH_IN_SIDE_PANEL_DESCRIPTION" desc="Description for search matches that open in side panel.">
     Search in side panel
   </message>
+
   <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL" desc="Label text for the action match that opens lens.">
     Ask Google about this page
   </message>
@@ -78,6 +83,10 @@
   <message name="IDS_EMPTY_KEYWORD_VALUE" desc="Shown in the location bar drop down when the user enters a string that matches a chrome keyword, but they haven't entered any text following the chrome keyword">
     &lt;Type search term&gt;
   </message>
+  <message name="IDS_EMPTY_STARTER_PACK_AI_MODE_VALUE" desc="Shown in the location bar drop down when the user enters a string that matches an ask-keyword, but they haven't entered any text following the chrome keyword">
+    &lt;Type a question&gt;
+  </message>
+
   <if expr="use_titlecase">
     <message name="IDS_LINK_FROM_CLIPBOARD" desc="The label in the omnibox dropdown explaining that the link has been extracted from the user's clipboard." meaning="Length: 35em">
       Link You Copied
@@ -480,6 +489,12 @@
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_PAGE_KEYWORD" desc = "The keyword required to trigger page context search in keyword mode. This will be prepended with an '@'." translateable="false">
     Page
   </message>
+  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_AI_MODE_NAME" desc = "The name of the Google AI Mode search engine as it appears on chrome://settings/searchEngines.">
+    AI Mode
+  </message>
+  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_AI_MODE_KEYWORD" desc = "The keyword required to trigger the Google AI Mode search engine. This will be stripped of whitespace and prepended with an '@'.">
+    AI Mode
+  </message>
   <message name="IDS_STARTER_PACK_PAGE_KEYWORD_TEXT" desc="The text shown at the front of the Omnibox when a user has selected the starter pack page keyword mode." translateable="false">
     Ask about this page
   </message>
@@ -509,7 +524,7 @@
     Type @ to search across <ph name="FEATURED_SEARCH_LIST">$1<ex>jira.atlassian.com, office.com, salesforce.com</ex></ph>
   </message>
 
-  <message name="IDS_OMNIBOX_FEATURED_ENTERPRISE_SEARCH_AGGREGATOR_IPH" desc = "The string displayed as the last row in the Omnibox as IPH directing users to the Enteprrise Search Aggregator search engine.">
+  <message name="IDS_OMNIBOX_FEATURED_ENTERPRISE_SEARCH_AGGREGATOR_IPH" desc = "The string displayed as the last row in the Omnibox as IPH directing users to the Enterprise Search Aggregator search engine.">
     Type <ph name="SEARCH_AGGREGATOR_KEYWORD">$1<ex>@work</ex></ph> to search or ask <ph name="SEARCH_AGGREGATOR_SHORT_NAME">$2<ex>Work</ex></ph>
   </message>
 
@@ -565,6 +580,9 @@
   </message>
   <message name="IDS_OMNIBOX_PAGE_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user has selected the @page starter pack match without further text input." translateable="false">
     Enter a question
+  </message>
+  <message name="IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user has selected the AI Mode starter pack without further text input.">
+    Ask anything
   </message>
 
   <!-- Strings for Android Hub Search. -->

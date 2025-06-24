@@ -664,6 +664,8 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
             return omnibox::kProductChromeRefreshIcon;
           case KEYWORD_MODE_STARTER_PACK_GEMINI:
             return omnibox::kSparkIcon;
+          case KEYWORD_MODE_STARTER_PACK_AI_MODE:
+            return omnibox::kSearchSparkIcon;
           default:
             break;
         }
@@ -1343,6 +1345,9 @@ std::u16string AutocompleteMatch::GetKeywordPlaceholder(
       break;
     case template_url_starter_pack_data::kPage:
       message_id = IDS_OMNIBOX_PAGE_SCOPE_PLACEHOLDER_TEXT;
+      break;
+    case template_url_starter_pack_data::kAiMode:
+      message_id = IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT;
       break;
     default:
       return u"";

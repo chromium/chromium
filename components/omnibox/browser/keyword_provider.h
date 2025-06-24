@@ -103,10 +103,10 @@ class KeywordProvider : public AutocompleteProvider {
       int relevance,
       bool deletable);
 
-  // Fills in the "destination_url" and "contents" fields of |match| with the
+  // Fills in the `destination_url` and `contents` fields of `match` with the
   // provided user input and keyword data.
-  void FillInURLAndContents(const std::u16string& remaining_input,
-                            const TemplateURL* element,
+  void FillInUrlAndContents(const std::u16string& remaining_input,
+                            const TemplateURL* turl,
                             AutocompleteMatch* match) const;
 
   TemplateURLService* GetTemplateURLService() const;

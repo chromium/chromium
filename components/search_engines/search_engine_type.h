@@ -97,6 +97,7 @@ enum SearchEngineType {
   SEARCH_ENGINE_MCAFEE = 77,
   SEARCH_ENGINE_FREESPOKE = 78,
   SEARCH_ENGINE_KAGI = 79,
+  SEARCH_ENGINE_STARTER_PACK_AI_MODE = 80,
 
   SEARCH_ENGINE_MAX  // Bounding value needed for UMA histogram macro.
 };
@@ -105,6 +106,7 @@ enum SearchEngineType {
 // Enum to record the type of search engine a user used in keyword mode. This
 // should be kept aligned with the `OmniboxBuiltinEngineType` enum in enums.xml.
 // Entries should not be renumbered and numeric values should never be reused.
+// LINT.IfChange(BuiltinEngineType)
 enum BuiltinEngineType {
   KEYWORD_MODE_NON_BUILT_IN = 0,
   KEYWORD_MODE_PREPOPULATED_ENGINE = 1,
@@ -113,9 +115,11 @@ enum BuiltinEngineType {
   KEYWORD_MODE_STARTER_PACK_TABS = 4,
   KEYWORD_MODE_STARTER_PACK_GEMINI = 5,
   KEYWORD_MODE_STARTER_PACK_PAGE = 6,
+  KEYWORD_MODE_STARTER_PACK_AI_MODE = 7,
 
   KEYWORD_MODE_ENGINE_TYPE_MAX  // Bounding value needed for UMA histogram
                                 // macro.
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxBuiltinEngineType)
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_TYPE_H_

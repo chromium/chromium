@@ -2862,7 +2862,7 @@ TEST_P(TemplateURLServiceTest, TemplateURLCountsOnStartupHistogram) {
   test_util()->ResetModel(true);
   VerifyTemplateUrlCountsHistograms(
       histogram_tester,
-      {{".StarterPack", 5},
+      {{".StarterPack", 6},
        {".Prepopulated", 5},
        {".SearchEngineSetByExtension", 0},
        {".NonFeaturedSiteSearchSetByPolicy", 1},

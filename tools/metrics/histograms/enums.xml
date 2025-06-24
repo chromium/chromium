@@ -21362,6 +21362,7 @@ Called by update_net_error_codes.py.-->
   <int value="77" label="McAfee"/>
   <int value="78" label="Freespoke"/>
   <int value="79" label="Kagi"/>
+  <int value="80" label="StarterPackAiMode"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/search_engines/search_engine_type.h:SearchEngineType) -->

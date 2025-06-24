@@ -396,7 +396,7 @@ AutocompleteMatch KeywordProvider::CreateAutocompleteMatch(
 
   // Create destination URL and popup entry content by substituting user input
   // into keyword templates.
-  FillInURLAndContents(remaining_input, template_url, &match);
+  FillInUrlAndContents(remaining_input, template_url, &match);
 
   // TODO(manukh) Consider not showing HISTORY_KEYWORD suggestions; i.e. not
   //   showing keyword matches for keywords that don't support replacement; they
@@ -410,43 +410,45 @@ AutocompleteMatch KeywordProvider::CreateAutocompleteMatch(
   return match;
 }
 
-void KeywordProvider::FillInURLAndContents(
+void KeywordProvider::FillInUrlAndContents(
     const std::u16string& remaining_input,
-    const TemplateURL* element,
+    const TemplateURL* turl,
     AutocompleteMatch* match) const {
-  DCHECK(!element->short_name().empty());
-  const TemplateURLRef& element_ref = element->url_ref();
-  DCHECK(element_ref.IsValid(GetTemplateURLService()->search_terms_data()));
+  DCHECK(!turl->short_name().empty());
+  const TemplateURLRef& turl_ref = turl->url_ref();
+  DCHECK(turl_ref.IsValid(GetTemplateURLService()->search_terms_data()));
   if (remaining_input.empty()) {
-    // Allow extension keyword providers to accept empty string input. This is
-    // useful to allow extensions to do something in the case where no input is
-    // entered.
-    if (element_ref.SupportsReplacement(
-            GetTemplateURLService()->search_terms_data()) &&
-        (element->type() != TemplateURL::OMNIBOX_API_EXTENSION)) {
-      // No query input; return a generic, no-destination placeholder.
+    // Null match; e.g. "<Type search term>".
+    if (turl->starter_pack_id() == template_url_starter_pack_data::kAiMode) {
+      match->contents.assign(
+          l10n_util::GetStringUTF16(IDS_EMPTY_STARTER_PACK_AI_MODE_VALUE));
+      match->contents_class.emplace_back(0, ACMatchClassification::DIM);
+    } else if (turl_ref.SupportsReplacement(
+                   GetTemplateURLService()->search_terms_data()) &&
+               (turl->type() != TemplateURL::OMNIBOX_API_EXTENSION)) {
+      // Substituting site search.
       match->contents.assign(
           l10n_util::GetStringUTF16(IDS_EMPTY_KEYWORD_VALUE));
       match->contents_class.emplace_back(0, ACMatchClassification::DIM);
     } else {
       // Keyword or extension that has no replacement text (aka a shorthand for
       // a URL).
-      match->destination_url = GURL(element->url());
-      match->contents.assign(element->short_name());
-      if (!element->short_name().empty())
+      match->destination_url = GURL(turl->url());
+      match->contents.assign(turl->short_name());
+      if (!turl->short_name().empty())
         match->contents_class.emplace_back(0, ACMatchClassification::MATCH);
     }
   } else {
     // Create destination URL by escaping user input and substituting into
     // keyword template URL.  The escaping here handles whitespace in user
-    // input, but we rely on later canonicalization functions to do more
-    // fixup to make the URL valid if necessary.
-    DCHECK(element_ref.SupportsReplacement(
+    // input, but we rely on later canonicalization functions to do more fixup
+    // to make the URL valid if necessary.
+    DCHECK(turl_ref.SupportsReplacement(
         GetTemplateURLService()->search_terms_data()));
     TemplateURLRef::SearchTermsArgs search_terms_args(remaining_input);
     search_terms_args.append_extra_query_params_from_command_line =
-        element == GetTemplateURLService()->GetDefaultSearchProvider();
-    match->destination_url = GURL(element_ref.ReplaceSearchTerms(
+        turl == GetTemplateURLService()->GetDefaultSearchProvider();
+    match->destination_url = GURL(turl_ref.ReplaceSearchTerms(
         search_terms_args, GetTemplateURLService()->search_terms_data()));
     match->contents = remaining_input;
     match->contents_class.emplace_back(0, ACMatchClassification::NONE);
@@ -454,8 +456,8 @@ void KeywordProvider::FillInURLAndContents(
 }
 
 TemplateURLService* KeywordProvider::GetTemplateURLService() const {
-  // Make sure the model is loaded. This is cheap and quickly bails out if
-  // the model is already loaded.
+  // Make sure the model is loaded. This is cheap and quickly bails out if the
+  // model is already loaded.
   model_->Load();
   return model_;
 }

@@ -116,6 +116,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="SearchTerms"/>
 </enum>
 
+<!-- LINT.IfChange(OmniboxBuiltinEngineType) -->
+
 <enum name="OmniboxBuiltinEngineType">
   <int value="0" label="Non built-in engine"/>
   <int value="1" label="Prepopulated Engine"/>
@@ -124,7 +126,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="@tabs starter pack engine"/>
   <int value="5" label="@gemini starter pack engine"/>
   <int value="6" label="@page starter pack engine"/>
+  <int value="7" label="@aimode starter pack engine"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/search_engines/search_engine_type.h:BuiltinEngineType) -->
 
 <enum name="OmniboxEnteredKeywordMode2">
   <int value="0" label="invalid"/>

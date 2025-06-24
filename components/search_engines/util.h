@@ -109,7 +109,7 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
     const TemplateURL* default_search_provider);
 
 // MergeEnginesFromStarterPackData merges search engines from the built-in
-// TemplateURLStarterPackData class into `template_urls`. Calls
+// `template_url_starter_pack_data` class into `template_urls`. Calls
 // CreateActionsFromCurrentStarterPackData() to collect actions and then applies
 // them on `template_urls`. MergeEgninesFromStarterPackData is invoked when the
 // version of the starter pack data changes. If `removed_keyword_guids` is not

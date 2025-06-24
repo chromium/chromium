@@ -202,8 +202,8 @@ class SearchTermLocation {
 };
 
 bool IsTemplateParameterString(const std::string& param) {
-  return (param.length() > 2) && (*(param.begin()) == kStartParameter) &&
-         (*(param.rbegin()) == kEndParameter);
+  return param.length() > 2 && *param.begin() == kStartParameter &&
+         *param.rbegin() == kEndParameter;
 }
 
 std::string YandexSearchPathFromDeviceFormFactor() {
@@ -1853,8 +1853,8 @@ SearchEngineType TemplateURL::GetEngineType(
 BuiltinEngineType TemplateURL::GetBuiltinEngineType() const {
   if (data().prepopulate_id != 0) {
     return KEYWORD_MODE_PREPOPULATED_ENGINE;
-  } else if (data().starter_pack_id != 0) {
-    switch (data().starter_pack_id) {
+  } else if (starter_pack_id() != 0) {
+    switch (starter_pack_id()) {
       case template_url_starter_pack_data::kBookmarks:
         return KEYWORD_MODE_STARTER_PACK_BOOKMARKS;
       case template_url_starter_pack_data::kHistory:
@@ -1865,6 +1865,8 @@ BuiltinEngineType TemplateURL::GetBuiltinEngineType() const {
         return KEYWORD_MODE_STARTER_PACK_GEMINI;
       case template_url_starter_pack_data::kPage:
         return KEYWORD_MODE_STARTER_PACK_PAGE;
+      case template_url_starter_pack_data::kAiMode:
+        return KEYWORD_MODE_STARTER_PACK_AI_MODE;
       default:
         // In theory, this code path should never be reached.  However, it's
         // possible that when expanding the starter pack, a new entry may
