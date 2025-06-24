@@ -58,13 +58,7 @@ extern "C" int __attribute__((weak)) __llvm_profile_write_file(void);
 
 #if defined(COMPILER_GCC)
 
-#if BUILDFLAG(IS_NACL)
-
-// Crash report accuracy is not guaranteed on NaCl.
-#define TRAP_SEQUENCE1_() __builtin_trap()
-#define TRAP_SEQUENCE2_() asm volatile("")
-
-#elif defined(ARCH_CPU_X86_FAMILY)
+#if defined(ARCH_CPU_X86_FAMILY)
 
 // TODO(crbug.com/40625592): In theory, it should be possible to use just
 // int3. However, there are a number of crashes with SIGILL as the exception
