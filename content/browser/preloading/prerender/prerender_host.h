@@ -341,6 +341,12 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // already received. These cases should be checked by `IsUrlMatch()`.
   bool IsNoVarySearchHintUrlMatch(const GURL& url) const;
 
+  // Returns true if the given `url` is the same origin as the initial_url.
+  bool IsUrlSameOrigin(const GURL& url) const;
+
+  // Returns true if the given `url` is the same site as the initial_url.
+  bool IsUrlSameSite(const GURL& url) const;
+
   // Called when the prerender pages asks the client to change the Accept Client
   // Hints. The instruction applies to the prerendering page before activation,
   // and will be persisted to the global setting upon activation.

@@ -1870,6 +1870,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Prerender hit finished"/>
 </enum>
 
+<!-- LINT.IfChange(PrerenderProcessReuseAvailability) -->
+
+<enum name="PrerenderProcessReuseAvailability">
+  <int value="0" label="Has matchable hosts"/>
+  <int value="1" label="Has same origin hosts"/>
+  <int value="2" label="Has same site hosts"/>
+  <int value="3" label="No same origin or same site hosts"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/preloading/prerender/prerender_host_registry.h:PrerenderProcessReuseAvailability) -->
+
 <!-- LINT.IfChange(PrerenderWaitingForHeadersFinishedReason) -->
 
 <enum name="PrerenderWaitingForHeadersFinishedReason">

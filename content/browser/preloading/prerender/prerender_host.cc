@@ -29,6 +29,7 @@
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
+#include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -1373,6 +1374,15 @@ bool PrerenderHost::IsNoVarySearchHintUrlMatch(const GURL& url) const {
   }
 
   return false;
+}
+
+bool PrerenderHost::IsUrlSameOrigin(const GURL& url) const {
+  return url::IsSameOriginWith(GetInitialUrl(), url);
+}
+
+bool PrerenderHost::IsUrlSameSite(const GURL& url) const {
+  return prerender_navigation_utils::IsSameSite(
+      url, url::Origin::Create(GetInitialUrl()));
 }
 
 void PrerenderHost::OnAcceptClientHintChanged(

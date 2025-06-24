@@ -1186,6 +1186,8 @@ FrameTreeNodeId PrerenderHostRegistry::FindPotentialHostToActivate(
       matchable_hosts.push_back(host.get());
     }
   }
+  RecordPotentialPrerenderProcessReuse(!matchable_hosts.empty(),
+                                       navigation_request.GetURL());
   if (matchable_hosts.empty()) {
     return FrameTreeNodeId();
   }
@@ -1196,7 +1198,6 @@ FrameTreeNodeId PrerenderHostRegistry::FindPotentialHostToActivate(
   base::UmaHistogramCounts100(
       "Prerender.Experimental.MatchableHostCountOnActivation",
       matchable_hosts.size());
-
   // Cannot activate if prerendering navigation has not started yet.
   if (!host->GetInitialNavigationId().has_value()) {
     CancelHost(host->frame_tree_node_id(),
@@ -2053,6 +2054,40 @@ void PrerenderHostRegistry::CancelHostsByOriginFilter(
   if (!ids_to_be_deleted.empty()) {
     CancelHosts(ids_to_be_deleted, PrerenderCancellationReason(final_status));
   }
+}
+
+void PrerenderHostRegistry::RecordPotentialPrerenderProcessReuse(
+    bool kHasMatchableHosts,
+    const GURL& navigation_url) {
+  static constexpr char kPrerenderProcessReuseUMAName[] =
+      "Prerender.Experimental.PrerenderProcessReuseAvailability";
+  if (kHasMatchableHosts) {
+    base::UmaHistogramEnumeration(
+        kPrerenderProcessReuseUMAName,
+        PrerenderProcessReuseAvailability::kHasMatchableHosts);
+    return;
+  }
+  bool has_same_origin_host =
+      std::find_if(prerender_host_by_frame_tree_node_id_.begin(),
+                   prerender_host_by_frame_tree_node_id_.end(),
+                   [&navigation_url](const auto& pair) {
+                     return pair.second->IsUrlSameOrigin(navigation_url);
+                   }) != prerender_host_by_frame_tree_node_id_.end();
+  bool has_same_site_host =
+      std::find_if(prerender_host_by_frame_tree_node_id_.begin(),
+                   prerender_host_by_frame_tree_node_id_.end(),
+                   [&navigation_url](const auto& pair) {
+                     return pair.second->IsUrlSameSite(navigation_url);
+                   }) != prerender_host_by_frame_tree_node_id_.end();
+  PrerenderProcessReuseAvailability availability =
+      PrerenderProcessReuseAvailability::kNoSameOriginOrSiteHosts;
+  if (has_same_origin_host) {
+    availability = PrerenderProcessReuseAvailability::kHasSameOriginHosts;
+  } else if (has_same_site_host) {
+    availability = PrerenderProcessReuseAvailability::kHasSameSiteHosts;
+  }
+
+  base::UmaHistogramEnumeration(kPrerenderProcessReuseUMAName, availability);
 }
 
 }  // namespace content

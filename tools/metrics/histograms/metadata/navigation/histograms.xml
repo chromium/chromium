@@ -3457,6 +3457,19 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
+<histogram name="Prerender.Experimental.PrerenderProcessReuseAvailability"
+    enum="PrerenderProcessReuseAvailability" expires_after="2025-12-31">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether there is a PrerenderHost matching the navigation or under
+    the same origin or same host as the navigation so that its renderer process
+    can be reused. The UMA is recorded when the navigation chooses one of the
+    hosts in PrerenderHostRegistry::FindPotentialHostToActivate().
+  </summary>
+</histogram>
+
 <histogram
     name="Prerender.Experimental.ReceivedPrerendersPerPrimaryPageChangedCount2{PreloadingTriggerType}{EagernessCategory}"
     units="count" expires_after="2025-08-24">

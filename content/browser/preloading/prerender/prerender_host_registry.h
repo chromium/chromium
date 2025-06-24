@@ -88,6 +88,19 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   using PassKey = base::PassKey<PrerenderHostRegistry>;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(PrerenderProcessReuseAvailability)
+  enum class PrerenderProcessReuseAvailability {
+    kHasMatchableHosts = 0,
+    kHasSameOriginHosts = 1,
+    kHasSameSiteHosts = 2,
+    kNoSameOriginOrSiteHosts = 3,
+    kMaxValue = kNoSameOriginOrSiteHosts,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PrerenderProcessReuseAvailability)
+
   explicit PrerenderHostRegistry(WebContents&);
   ~PrerenderHostRegistry() override;
 
@@ -350,6 +363,9 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+
+  void RecordPotentialPrerenderProcessReuse(bool has_machable_hosts,
+                                            const GURL& naivgation_url);
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();
 
