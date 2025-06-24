@@ -15,7 +15,6 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Pair;
 
 import androidx.activity.ComponentDialog;
 import androidx.test.espresso.intent.Intents;
@@ -329,9 +328,9 @@ public class ContextMenuTest extends AwParameterizedTest {
                         params,
                         /* usePopupWindow= */ false);
 
-        List<Pair<Integer, ModelList>> contextMenuState = populator.buildContextMenu();
+        List<ModelList> contextMenuState = populator.buildContextMenu();
 
-        ModelList items = contextMenuState.get(0).second;
+        ModelList items = contextMenuState.get(0);
         Integer[] actualItems = new Integer[items.size()];
 
         for (int i = 0; i < items.size(); i++) {

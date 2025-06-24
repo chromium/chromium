@@ -11,7 +11,6 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 
 import android.app.Activity;
 import android.graphics.Rect;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
@@ -88,7 +87,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             final WindowAndroid window,
             WebContents webContents,
             ContextMenuParams params,
-            List<Pair<Integer, ModelList>> items,
+            List<ModelList> items,
             Callback<Integer> onItemClicked,
             final Runnable onMenuShown,
             final Runnable onMenuClosed) {
@@ -137,12 +136,36 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         return offset - systemDecorHeight;
     }
 
-    // Shows the menu with chip.
+    /**
+     * Displays the context menu, potentially with a chip at the bottom.
+     *
+     * <p>This method handles the setup and display of the context menu, including: - Determining
+     * whether to use a popup window or a full-screen dialog. - Adjusting the layout for features
+     * like "interesttarget", which may reserve screen space. - Inflating and populating the menu
+     * with items. - Optionally displaying a chip (e.g., for Google Lens) if a {@link ChipDelegate}
+     * is provided and conditions are met. - Setting up listeners for menu events (shown, closed,
+     * item clicks). - Observing WebContents for events that should dismiss the menu (navigation,
+     * visibility change).
+     *
+     * @param window The {@link WindowAndroid} for the current activity.
+     * @param webContents The {@link WebContents} where the context menu was triggered.
+     * @param params The {@link ContextMenuParams} containing details about the context menu
+     *     trigger.
+     * @param items A list of {@link ModelList} representing the menu items, grouped into sections.
+     *     Each {@link ModelList} in {@param items} will be separated from the other {@link
+     *     ModelList}s by a horizontal divider.
+     * @param onItemClicked A {@link Callback} invoked when a menu item is clicked, passing the
+     *     item's ID.
+     * @param onMenuShown A {@link Runnable} executed when the menu becomes visible.
+     * @param onMenuClosed A {@link Runnable} executed when the menu is dismissed.
+     * @param chipDelegate An optional {@link ChipDelegate} to manage the display and interaction of
+     *     a chip. If null, no chip will be shown.
+     */
     void displayMenuWithChip(
             final WindowAndroid window,
             WebContents webContents,
             ContextMenuParams params,
-            List<Pair<Integer, ModelList>> items,
+            List<ModelList> items,
             Callback<Integer> onItemClicked,
             final Runnable onMenuShown,
             final Runnable onMenuClosed,
@@ -482,7 +505,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     @VisibleForTesting
     ModelList getItemList(
             Activity activity,
-            List<Pair<Integer, ModelList>> items,
+            List<ModelList> items,
             Callback<Integer> onItemClicked,
             boolean hasHeader) {
         ModelList itemList = new ModelList();
@@ -492,14 +515,15 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             itemList.add(new ListItem(ListItemType.HEADER, mHeaderCoordinator.getModel()));
         }
 
-        for (Pair<Integer, ModelList> group : items) {
-            // Add a divider
-            if (itemList.size() > 0) {
+        for (ModelList group : items) {
+            // Add a divider if there are already items in the list.
+            // (The first group should not have a divider above it.)
+            if (!itemList.isEmpty()) {
                 itemList.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
             }
 
             // Add the items in the group
-            itemList.addAll(group.second);
+            itemList.addAll(group);
         }
 
         for (ListItem item : itemList) {

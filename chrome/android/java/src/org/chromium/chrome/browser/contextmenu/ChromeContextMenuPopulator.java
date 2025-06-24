@@ -130,18 +130,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     // True when the tracker indicates IPH in the form of "new" label needs to be shown.
     private Boolean mShowEphemeralTabNewLabel;
 
-    /** Defines the Groups of each Context Menu Item */
-    @IntDef({ContextMenuGroup.LINK, ContextMenuGroup.IMAGE, ContextMenuGroup.VIDEO})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ContextMenuGroup {
-        int LINK = 0;
-        int IMAGE = 1;
-        int VIDEO = 2;
-    }
-
     /** Defines the context menu modes */
-    @IntDef({ContextMenuMode.NORMAL, ContextMenuMode.CUSTOM_TAB, ContextMenuMode.WEB_APP,
-            ContextMenuMode.NETWORK_BOUND_TAB})
+    @IntDef({
+        ContextMenuMode.NORMAL,
+        ContextMenuMode.CUSTOM_TAB,
+        ContextMenuMode.WEB_APP,
+        ContextMenuMode.NETWORK_BOUND_TAB
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ContextMenuMode {
         int NORMAL = 0; /* Default mode*/
@@ -367,10 +362,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public List<Pair<Integer, ModelList>> buildContextMenu() {
+    public List<ModelList> buildContextMenu() {
         mShowEphemeralTabNewLabel = null;
 
-        List<Pair<Integer, ModelList>> groupedItems = new ArrayList<>();
+        List<ModelList> groupedItems = new ArrayList<>();
 
         if (mParams.isPage() && shouldShowEmptySpaceContextMenu()) {
             ModelList pageGroup = new ModelList();
@@ -384,7 +379,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (mItemDelegate.isPrintSupported()) {
                 pageGroup.add(createListItem(Item.PRINT_PAGE));
             }
-            groupedItems.add(new Pair<>(R.string.contextmenu_page_title, pageGroup));
+            groupedItems.add(pageGroup);
         }
         if (mParams.isAnchor()) {
             ModelList linkGroup = new ModelList();
@@ -478,8 +473,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     || MailTo.isMailTo(mParams.getLinkUrl().getSpec())) {
                 linkGroup.add(createListItem(Item.COPY));
             }
-            if (linkGroup.size() > 0) {
-                groupedItems.add(new Pair<>(R.string.contextmenu_link_title, linkGroup));
+            if (!linkGroup.isEmpty()) {
+                groupedItems.add(linkGroup);
             }
         }
 
@@ -536,7 +531,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 imageGroup.add(createShareListItem(Item.SHARE_IMAGE, Item.DIRECT_SHARE_IMAGE));
             }
 
-            groupedItems.add(new Pair<>(R.string.contextmenu_image_title, imageGroup));
+            groupedItems.add(imageGroup);
         }
 
         if (mParams.isVideo()
@@ -549,7 +544,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             Item.SAVE_VIDEO,
                             /* showInProductHelp= */ false,
                             !mIsDownloadRestrictedByPolicy));
-            groupedItems.add(new Pair<>(R.string.contextmenu_video_title, videoGroup));
+            groupedItems.add(videoGroup);
         }
 
         if (mParams.getOpenedFromHighlight()) {
@@ -561,7 +556,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (mMode == ContextMenuMode.NORMAL) {
                 sharedHighlightingGroup.add(createListItem(Item.LEARN_MORE));
             }
-            groupedItems.add(new Pair<>(null, sharedHighlightingGroup));
+            groupedItems.add(sharedHighlightingGroup);
         }
 
         // Only add below items to the front of link group iff it's in the CUSTOM_TAB or WEB_APP
@@ -572,10 +567,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     groupedItems.isEmpty()
                             ? new ModelList()
                             : groupedItems.get(
-                                            mMode == ContextMenuMode.CUSTOM_TAB
-                                                    ? 0
-                                                    : groupedItems.size() - 1)
-                                    .second;
+                                    mMode == ContextMenuMode.CUSTOM_TAB
+                                            ? 0
+                                            : groupedItems.size() - 1);
             if (UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
                 if (mMode == ContextMenuMode.WEB_APP) {
                     items.add(createListItem(Item.OPEN_IN_CHROME));
@@ -595,15 +589,15 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     }
                 }
             }
-            if (groupedItems.isEmpty() && items.size() > 0) {
-                groupedItems.add(new Pair<>(R.string.contextmenu_link_title, items));
+            if (groupedItems.isEmpty() && !items.isEmpty()) {
+                groupedItems.add(items);
             }
         }
 
         if (shouldShowDeveloperMenu()) {
             ModelList developerGroup = new ModelList();
             developerGroup.add(createListItem(Item.INSPECT_ELEMENT));
-            groupedItems.add(new Pair<>(R.string.contextmenu_developer_title, developerGroup));
+            groupedItems.add(developerGroup);
         }
         return groupedItems;
     }

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import android.util.Pair;
 import android.view.View;
 
 import org.jni_zero.CalledByNative;
@@ -167,7 +166,7 @@ public class ContextMenuHelper {
     }
 
     private void displayContextMenu(float topContentOffsetPx) {
-        List<Pair<Integer, ModelList>> items = mCurrentPopulator.buildContextMenu();
+        List<ModelList> items = mCurrentPopulator.buildContextMenu();
         if (items.isEmpty()) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, mOnMenuClosed);
             // Only call if no items are populated. Otherwise call in mOnMenuShown callback.

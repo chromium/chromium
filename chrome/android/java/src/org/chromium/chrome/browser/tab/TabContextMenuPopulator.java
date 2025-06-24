@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.util.Pair;
-
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -39,8 +37,8 @@ public class TabContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public List<Pair<Integer, ModelList>> buildContextMenu() {
-        List<Pair<Integer, ModelList>> itemGroups = mPopulator.buildContextMenu();
+    public List<ModelList> buildContextMenu() {
+        List<ModelList> itemGroups = mPopulator.buildContextMenu();
         if (!mTab.isDestroyed()) {
             TabContextMenuData.getOrCreateForTab(mTab)
                     .setLastTriggeringTouchPositionDp(

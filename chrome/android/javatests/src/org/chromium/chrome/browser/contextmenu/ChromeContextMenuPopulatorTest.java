@@ -17,7 +17,6 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.app.Activity;
 import android.net.Uri;
-import android.util.Pair;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
@@ -169,7 +168,7 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     private void checkMenuOptions(List<Integer> disabled, int[]... groups) {
-        List<Pair<Integer, ModelList>> contextMenuState = mPopulator.buildContextMenu();
+        List<ModelList> contextMenuState = mPopulator.buildContextMenu();
 
         assertEquals(
                 "Number of groups doesn't match",
@@ -177,9 +176,9 @@ public class ChromeContextMenuPopulatorTest {
                 contextMenuState.size());
 
         for (int i = 0; i < contextMenuState.size(); i++) {
-            int[] availableInTab = new int[contextMenuState.get(i).second.size()];
-            for (int j = 0; j < contextMenuState.get(i).second.size(); j++) {
-                PropertyModel model = contextMenuState.get(i).second.get(j).model;
+            int[] availableInTab = new int[contextMenuState.get(i).size()];
+            for (int j = 0; j < contextMenuState.get(i).size(); j++) {
+                PropertyModel model = contextMenuState.get(i).get(j).model;
                 assertEquals(
                         "'" + model.get(TITLE) + "' has different enablement setting than expected",
                         !disabled.contains(model.get(MENU_ITEM_ID)),
@@ -207,9 +206,9 @@ public class ChromeContextMenuPopulatorTest {
 
             if (!Arrays.equals(expectedItemsInGroup, availableInTab)) {
                 StringBuilder generated_info = new StringBuilder();
-                for (int j = 0; j < contextMenuState.get(i).second.size(); j++) {
+                for (int j = 0; j < contextMenuState.get(i).size(); j++) {
                     generated_info.append("'");
-                    generated_info.append(contextMenuState.get(i).second.get(j).model.get(TITLE));
+                    generated_info.append(contextMenuState.get(i).get(j).model.get(TITLE));
                     generated_info.append("' ");
                 }
                 StringBuilder expected_info = new StringBuilder();

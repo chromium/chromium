@@ -10,7 +10,6 @@ import static org.chromium.android_webview.contextmenu.AwContextMenuItemProperti
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Pair;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
@@ -63,8 +62,8 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public List<Pair<Integer, ModelList>> buildContextMenu() {
-        List<Pair<Integer, ModelList>> groupedItems = new ArrayList<>();
+    public List<ModelList> buildContextMenu() {
+        List<ModelList> groupedItems = new ArrayList<>();
 
         ModelList items = new ModelList();
 
@@ -86,7 +85,7 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
                         R.string.context_menu_open_link,
                         mUsePopupWindow ? R.drawable.ic_open_in_new : 0));
 
-        groupedItems.add(new Pair<>(R.string.context_menu_link_title, items));
+        groupedItems.add(items);
 
         return groupedItems;
     }
