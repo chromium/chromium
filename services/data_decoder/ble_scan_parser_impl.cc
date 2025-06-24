@@ -40,7 +40,7 @@ constexpr char kUuidSuffix[] = "-0000-1000-8000-00805F9B34FB";
 
 BASE_FEATURE(kUseRustBleScanParser,
              "UseRustBleScanParser",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
