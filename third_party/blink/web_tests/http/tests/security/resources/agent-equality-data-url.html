@@ -18,7 +18,7 @@
 function onMessage(evt) {
   let iframeAgentId = evt.data;
   let message = [
-    'data scheme test',
+    window.location.href,
     internals.getAgentId(window),
     iframeAgentId
   ];

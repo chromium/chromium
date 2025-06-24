@@ -24,7 +24,7 @@
 function onMessage(evt) {
   let agentIdB = evt.data;
   let message = [
-    'cross-origin test',
+    window.location.href,
     internals.getAgentId(window),
     agentIdB
   ];
