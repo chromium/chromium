@@ -960,6 +960,11 @@
       status: "stable",
     },
     {
+      // Killswitch for https://crbug.com/414827239
+      name: "ColorInputDatalistLooksNormal",
+      status: "stable",
+    },
+    {
       name: "CompositeBGColorAnimation",
       public: true,
       status: "experimental",

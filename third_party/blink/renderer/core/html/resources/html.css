@@ -850,19 +850,23 @@ input[type="color" i]::-webkit-color-swatch {
     -webkit-user-modify: read-only !important;
 }
 
-input[type="color" i][list] {
-    appearance: auto;
-    inline-size: 94px;
-      block-size: 27px
-}
+@supports not blink-feature(ColorInputDatalistLooksNormal) {
 
-input[type="color" i][list]::-webkit-color-swatch-wrapper {
-    padding-inline-start: 8px;
-    padding-inline-end: 24px;
-}
+    input[type="color" i][list] {
+        appearance: auto;
+        inline-size: 94px;
+        block-size: 27px;
+    }
 
-input[type="color" i][list]::-webkit-color-swatch {
-    border-color: #000000;
+    input[type="color" i][list]::-webkit-color-swatch-wrapper {
+        padding-inline-start: 8px;
+        padding-inline-end: 24px;
+    }
+
+    input[type="color" i][list]::-webkit-color-swatch {
+        border-color: #000000;
+    }
+
 }
 
 input::-webkit-calendar-picker-indicator {

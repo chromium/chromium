@@ -168,7 +168,8 @@ void ColorInputType::HandleDOMActivateEvent(Event& event) {
 }
 
 AppearanceValue ColorInputType::AutoAppearance() const {
-  return GetElement().FastHasAttribute(html_names::kListAttr)
+  return (!RuntimeEnabledFeatures::ColorInputDatalistLooksNormalEnabled() &&
+          GetElement().FastHasAttribute(html_names::kListAttr))
              ? AppearanceValue::kMenulist
              : AppearanceValue::kSquareButton;
 }
