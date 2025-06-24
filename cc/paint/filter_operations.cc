@@ -110,64 +110,6 @@ bool FilterOperations::HasFilterThatMovesPixels() const {
   return false;
 }
 
-gfx::Rect FilterOperations::ExpandRectForPixelMovement(
-    const gfx::Rect& rect) const {
-  // Since this function is deprecated, we should only reach it if the
-  // replacement feature is not enabled.
-  DCHECK(!base::FeatureList::IsEnabled(features::kUseMapRectForPixelMovement));
-
-  gfx::RectF expanded_rect(rect);
-  expanded_rect.Outset(MaximumPixelMovement());
-  return gfx::ToEnclosingRect(expanded_rect);
-}
-
-float FilterOperations::MaximumPixelMovement() const {
-  float max_movement = 0.;
-  for (size_t i = 0; i < operations_.size(); ++i) {
-    const FilterOperation& op = operations_[i];
-    switch (op.type()) {
-      case FilterOperation::BLUR:
-        // |op.amount| here is the blur radius.
-        max_movement = fmax(max_movement, op.amount() * 3.f);
-        continue;
-      case FilterOperation::DROP_SHADOW:
-        // |op.amount| here is the blur radius.
-        max_movement = fmax(max_movement, fmax(std::abs(op.offset().x()),
-                                               std::abs(op.offset().y())) +
-                                              op.amount() * 3.f);
-        continue;
-      case FilterOperation::ZOOM:
-        max_movement = fmax(max_movement, op.zoom_inset());
-        continue;
-      case FilterOperation::REFERENCE:
-        // TODO(hendrikw): SkImageFilter needs a function that tells us how far
-        // the filter can move pixels. See crbug.com/523538 (sort of).
-        max_movement = fmax(max_movement, 100);
-        continue;
-      case FilterOperation::OFFSET:
-        // TODO(crbug.com/40244221): Work out how to correctly set maximum pixel
-        // movement when an offset filter may be combined with other pixel
-        // moving filters.
-        max_movement =
-            fmax(std::abs(op.offset().x()), std::abs(op.offset().y()));
-        continue;
-      case FilterOperation::OPACITY:
-      case FilterOperation::COLOR_MATRIX:
-      case FilterOperation::GRAYSCALE:
-      case FilterOperation::SEPIA:
-      case FilterOperation::SATURATE:
-      case FilterOperation::HUE_ROTATE:
-      case FilterOperation::INVERT:
-      case FilterOperation::BRIGHTNESS:
-      case FilterOperation::CONTRAST:
-      case FilterOperation::SATURATING_BRIGHTNESS:
-      case FilterOperation::ALPHA_THRESHOLD:
-        continue;
-    }
-  }
-  return max_movement;
-}
-
 bool FilterOperations::HasFilterThatAffectsOpacity() const {
   for (size_t i = 0; i < operations_.size(); ++i) {
     const FilterOperation& op = operations_[i];

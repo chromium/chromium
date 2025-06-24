@@ -88,12 +88,6 @@ BASE_FEATURE(kReclaimOldPrepaintTiles,
 const base::FeatureParam<int> kReclaimDelayInSeconds{&kSmallerInterestArea,
                                                      "reclaim_delay_s", 30};
 
-// This feature can be removed once M136 hits stable as long as no issues are
-// reported that require it to be disabled in finch.
-BASE_FEATURE(kUseMapRectForPixelMovement,
-             "UseMapRectForPixelMovement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEvictionThrottlesDraw,
              "EvictionThrottlesDraw",
              base::FEATURE_ENABLED_BY_DEFAULT);

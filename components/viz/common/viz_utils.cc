@@ -129,22 +129,6 @@ gfx::Rect GetTargetExpandedRectForPixelMovingFilters(
 gfx::Rect GetExpandedRectForPixelMovingFilters(
     const RenderPassDrawQuadInternal& rpdq,
     const cc::FilterOperations& filters) {
-  if (!base::FeatureList::IsEnabled(features::kUseMapRectForPixelMovement)) {
-    // ExpandRectForPixelMovement() has several problems that
-    // GetExpandedRectForPixelMovingFilters() by calling MapRect instead.
-    // 1. ExpandRectForPixelMovement's bounds propagation logic does not
-    //    perfectly match how the underlying SkImageFilters compose together.
-    // 2. It doesn't handle reference image filters, and assumes a fixed outset.
-    // 3. It is unaware of the RPDQ's filters_origin and filters_scale, which
-    //    define the matrix that must be passed into MapRect.
-    //
-    // When the MapRect feature is disabled, this preserves historic behavior
-    // for callsites that used to call ExpandRectForPixelMovement directly, or
-    // for callers of GetExpandedRectWithPixelMovingForegroundFilter (which is
-    // now equivalent to GetTargetExpandedRectForPixelMovingFilters).
-    return filters.ExpandRectForPixelMovement(rpdq.rect);
-  }
-
   SkMatrix local_matrix =
       SkMatrix::Translate(rpdq.filters_origin.x(), rpdq.filters_origin.y());
   local_matrix.postScale(rpdq.filters_scale.x(), rpdq.filters_scale.y());
