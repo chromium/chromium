@@ -20,6 +20,164 @@ constexpr base::FeatureState kDefaultEnabled =
 BASE_FEATURE(kGwpAsanMalloc, "GwpAsanMalloc", kDefaultEnabled);
 BASE_FEATURE(kGwpAsanPartitionAlloc, "GwpAsanPartitionAlloc", kDefaultEnabled);
 
+#if BUILDFLAG(IS_ANDROID)
+
+// Browser reservation params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserMaxAllocations{&kGwpAsanMalloc,
+                                        "BrowserMaxAllocations", 210};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserMaxMetadata{&kGwpAsanMalloc, "BrowserMaxMetadata",
+                                     765};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserTotalPages{&kGwpAsanMalloc, "BrowserTotalPages", 1536};
+
+// Browser sampling params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserAllocationSamplingMultiplier{
+        &kGwpAsanMalloc, "BrowserAllocationSamplingMultiplier", 1500};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserAllocationSamplingRange{
+        &kGwpAsanMalloc, "BrowserAllocationSamplingRange", 16};
+
+// Renderer sampling params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocRendererAllocationSamplingMultiplier{
+        &kGwpAsanMalloc, "RendererAllocationSamplingMultiplier", 1500};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocRendererAllocationSamplingRange{
+        &kGwpAsanMalloc, "RendererAllocationSamplingRange", 12};
+
+// Renderer sampling params (for PartitionAlloc, not PA-E).
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanPartitionAllocRendererAllocationSamplingMultiplier{
+        &kGwpAsanPartitionAlloc, "RendererAllocationSamplingMultiplier", 1500};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanPartitionAllocRendererAllocationSamplingRange{
+        &kGwpAsanPartitionAlloc, "RendererAllocationSamplingRange", 12};
+
+// GPU reservation params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuMaxAllocations{&kGwpAsanMalloc, "GpuMaxAllocations", 140};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuMaxMetadata{&kGwpAsanMalloc, "GpuMaxMetadata", 510};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuTotalPages{&kGwpAsanMalloc, "GpuTotalPages", 1024};
+
+// GPU sampling params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuAllocationSamplingMultiplier{
+        &kGwpAsanMalloc, "GpuAllocationSamplingMultiplier", 1500};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuAllocationSamplingRange{&kGwpAsanMalloc,
+                                             "GpuAllocationSamplingRange", 16};
+
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
+
+// Browser reservation params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserMaxAllocations{&kGwpAsanMalloc,
+                                        "BrowserMaxAllocations", 150};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserMaxMetadata{&kGwpAsanMalloc, "BrowserMaxMetadata",
+                                     630};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserTotalPages{&kGwpAsanMalloc, "BrowserTotalPages", 6144};
+
+// Browser sampling params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserAllocationSamplingMultiplier{
+        &kGwpAsanMalloc, "BrowserAllocationSamplingMultiplier", 1200};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserAllocationSamplingRange{
+        &kGwpAsanMalloc, "BrowserAllocationSamplingRange", 10};
+
+// Renderer sampling params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocRendererAllocationSamplingMultiplier{
+        &kGwpAsanMalloc, "RendererAllocationSamplingMultiplier", 800};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocRendererAllocationSamplingRange{
+        &kGwpAsanMalloc, "RendererAllocationSamplingRange", 10};
+
+// Renderer sampling params (for PartitionAlloc, not PA-E).
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanPartitionAllocRendererAllocationSamplingMultiplier{
+        &kGwpAsanPartitionAlloc, "RendererAllocationSamplingMultiplier", 800};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanPartitionAllocRendererAllocationSamplingRange{
+        &kGwpAsanPartitionAlloc, "RendererAllocationSamplingRange", 10};
+
+// GPU reservation params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuMaxAllocations{&kGwpAsanMalloc, "GpuMaxAllocations", 100};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuMaxMetadata{&kGwpAsanMalloc, "GpuMaxMetadata", 420};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuTotalPages{&kGwpAsanMalloc, "GpuTotalPages", 4096};
+
+// GPU sampling params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuAllocationSamplingMultiplier{
+        &kGwpAsanMalloc, "GpuAllocationSamplingMultiplier", 1200};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuAllocationSamplingRange{&kGwpAsanMalloc,
+                                             "GpuAllocationSamplingRange", 10};
+
+#else
+
+// Browser reservation params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserMaxAllocations{&kGwpAsanMalloc,
+                                        "BrowserMaxAllocations", 210};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserMaxMetadata{&kGwpAsanMalloc, "BrowserMaxMetadata",
+                                     765};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserTotalPages{&kGwpAsanMalloc, "BrowserTotalPages", 6144};
+
+// Browser sampling params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserAllocationSamplingMultiplier{
+        &kGwpAsanMalloc, "BrowserAllocationSamplingMultiplier", 800};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserAllocationSamplingRange{
+        &kGwpAsanMalloc, "BrowserAllocationSamplingRange", 10};
+
+// Renderer sampling params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocRendererAllocationSamplingMultiplier{
+        &kGwpAsanMalloc, "RendererAllocationSamplingMultiplier", 600};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocRendererAllocationSamplingRange{
+        &kGwpAsanMalloc, "RendererAllocationSamplingRange", 10};
+
+// Renderer sampling params (for PartitionAlloc, not PA-E).
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanPartitionAllocRendererAllocationSamplingMultiplier{
+        &kGwpAsanPartitionAlloc, "RendererAllocationSamplingMultiplier", 600};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanPartitionAllocRendererAllocationSamplingRange{
+        &kGwpAsanPartitionAlloc, "RendererAllocationSamplingRange", 10};
+
+// GPU reservation params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuMaxAllocations{&kGwpAsanMalloc, "GpuMaxAllocations", 140};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuMaxMetadata{&kGwpAsanMalloc, "GpuMaxMetadata", 510};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuTotalPages{&kGwpAsanMalloc, "GpuTotalPages", 4096};
+
+// GPU sampling params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuAllocationSamplingMultiplier{
+        &kGwpAsanMalloc, "GpuAllocationSamplingMultiplier", 800};
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuAllocationSamplingRange{&kGwpAsanMalloc,
+                                             "GpuAllocationSamplingRange", 10};
+
+#endif
+
 BASE_FEATURE(kExtremeLightweightUAFDetector,
              "ExtremeLightweightUAFDetector",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -14,6 +14,50 @@ namespace gwp_asan::internal {
 GWP_ASAN_EXPORT BASE_DECLARE_FEATURE(kGwpAsanMalloc);
 GWP_ASAN_EXPORT BASE_DECLARE_FEATURE(kGwpAsanPartitionAlloc);
 
+// GWP-ASan allows for per-process parameters.
+// If no per-process parameter is found, GWP-ASan falls back on
+// the global defaults codified in `gwp_asan.cc`.
+
+// Browser reservation params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserMaxAllocations;
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserMaxMetadata;
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserTotalPages;
+
+// Browser sampling params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserAllocationSamplingMultiplier;
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocBrowserAllocationSamplingRange;
+
+// Renderer sampling params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocRendererAllocationSamplingMultiplier;
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocRendererAllocationSamplingRange;
+
+// Renderer sampling params (for PartitionAlloc, not PA-E).
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanPartitionAllocRendererAllocationSamplingMultiplier;
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanPartitionAllocRendererAllocationSamplingRange;
+
+// GPU reservation params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuMaxAllocations;
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuMaxMetadata;
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuTotalPages;
+
+// GPU sampling params.
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuAllocationSamplingMultiplier;
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kGwpAsanMallocGpuAllocationSamplingRange;
+
 GWP_ASAN_EXPORT BASE_DECLARE_FEATURE(kExtremeLightweightUAFDetector);
 GWP_ASAN_EXPORT extern const base::FeatureParam<int>
     kExtremeLightweightUAFDetectorSamplingFrequency;
