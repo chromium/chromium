@@ -14,7 +14,7 @@ config("pgo_instrumentation_flags") {
 
   # Only add flags when chrome_pgo_phase == 1, so that variables we would use
   # are not required to be defined when we're not actually using PGO.
-  if (chrome_pgo_phase == 1 && is_clang && !is_nacl && is_a_target_toolchain) {
+  if (chrome_pgo_phase == 1 && is_clang && is_a_target_toolchain) {
     cflags = [ "-fprofile-generate" ]
     if (temporal_pgo_profile) {
       cflags += [
@@ -37,7 +37,7 @@ config("pgo_optimization_flags") {
 
   # Only add flags when chrome_pgo_phase == 2, so that variables we would use
   # are not required to be defined when we're not actually using PGO.
-  if (chrome_pgo_phase == 2 && is_clang && !is_nacl && is_a_target_toolchain) {
+  if (chrome_pgo_phase == 2 && is_clang && is_a_target_toolchain) {
     _pgo_target = ""
 
     # There are txt files used by //tools/update_pgo_profiles.py to decide which
