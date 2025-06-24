@@ -105,8 +105,11 @@ TEST_F(LocalFrameBackForwardCacheTest, EvictionOnV8ExecutionAtMicrotask) {
 
   // Freeze the frame and hook eviction.
   frame->GetPage()->GetPageScheduler()->SetPageVisible(false);
-  frame->GetPage()->GetPageScheduler()->SetPageFrozen(true);
+  // Set the BFCache state before freezing the page. The scheduler policy
+  // update, triggered by SetPageFrozen(), depends on this state to correctly
+  // handle queues that can run in BFCache.
   frame->GetPage()->GetPageScheduler()->SetPageBackForwardCached(true);
+  frame->GetPage()->GetPageScheduler()->SetPageFrozen(true);
   frame->HookBackForwardCacheEviction();
 
   auto* script_state = ToScriptStateForMainWorld(frame);

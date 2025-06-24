@@ -172,10 +172,11 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kWebGPU,
     TaskType::kInternalPostMessageForwarding,
     TaskType::kInternalNavigationCancellation,
-    TaskType::kInternalAutofill};
+    TaskType::kInternalAutofill,
+    TaskType::kBackForwardCachePostedMessage};
 
 static_assert(
-    static_cast<int>(TaskType::kMaxValue) == 88,
+    static_cast<int>(TaskType::kMaxValue) == 89,
     "When adding a TaskType, make sure that kAllFrameTaskTypes is updated.");
 
 void AppendToVectorTestTask(Vector<String>* vector, String value) {
@@ -300,14 +301,20 @@ class FrameSchedulerImplTest : public testing::Test {
 
   void StorePageInBackForwardCache() {
     page_scheduler_->SetPageVisible(false);
-    page_scheduler_->SetPageFrozen(true);
+    // Set the BFCache state before freezing the page. The scheduler policy
+    // update, triggered by SetPageFrozen(), depends on this state to correctly
+    // handle queues that can run in BFCache.
     page_scheduler_->SetPageBackForwardCached(true);
+    page_scheduler_->SetPageFrozen(true);
   }
 
   void RestorePageFromBackForwardCache() {
     page_scheduler_->SetPageVisible(true);
-    page_scheduler_->SetPageFrozen(false);
+    // Set the BFCache state before freezing the page. The scheduler policy
+    // update, triggered by SetPageFrozen(), depends on this state to correctly
+    // handle queues that can run in BFCache.
     page_scheduler_->SetPageBackForwardCached(false);
+    page_scheduler_->SetPageFrozen(false);
   }
 
   void TearDown() override {
@@ -1061,6 +1068,49 @@ TEST_F(FrameSchedulerImplTest, PageFreezeAndPageVisible) {
   EXPECT_EQ(1, counter);
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(5, counter);
+}
+
+TEST_F(FrameSchedulerImplTest, CanRunInBFCache_RunsWhenInBFCache) {
+  int counter = 0;
+  GetTaskQueue(TaskType::kBackForwardCachePostedMessage)
+      ->GetTaskRunnerWithDefaultTaskType()
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
+  PausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
+      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
+
+  StorePageInBackForwardCache();
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, counter);
+
+  RestorePageFromBackForwardCache();
+  task_environment_.FastForwardUntilNoTasksRemain();
+
+  EXPECT_EQ(2, counter);
+}
+
+TEST_F(FrameSchedulerImplTest, CanRunInBFCache_IsFrozenWhenNotInBFCache) {
+  int counter = 0;
+  GetTaskQueue(TaskType::kBackForwardCachePostedMessage)
+      ->GetTaskRunnerWithDefaultTaskType()
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
+  PausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
+      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
+
+  page_scheduler_->SetPageVisible(false);
+  page_scheduler_->SetPageFrozen(true);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0, counter);
+
+  page_scheduler_->SetPageFrozen(false);
+  task_environment_.FastForwardUntilNoTasksRemain();
+
+  EXPECT_EQ(2, counter);
 }
 
 TEST_F(FrameSchedulerImplTest, PagePostsCpuTasks) {
