@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.DelegatedInkTrail.LatencyImprovement.{Renderer}.{Prediction}"
-    units="ms" expires_after="2025-08-01">
+    units="ms" expires_after="2026-08-01">
   <owner>jonross@chromium.org</owner>
   <owner>sahir.vellani@microsoft.com</owner>
   <owner>gastonr@microsoft.com</owner>
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Direction}Prediction"
-    units="pixels" expires_after="2025-08-01">
+    units="pixels" expires_after="2026-08-01">
   <owner>jonross@chromium.org</owner>
   <owner>sahir.vellani@microsoft.com</owner>
   <owner>gastonr@microsoft.com</owner>
@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Type}Jitter"
-    units="pixels" expires_after="2025-08-01">
+    units="pixels" expires_after="2026-08-01">
   <owner>jonross@chromium.org</owner>
   <owner>sahir.vellani@microsoft.com</owner>
   <owner>gastonr@microsoft.com</owner>
@@ -231,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.{Renderer}.OutstandingPointsToDraw"
-    units="count" expires_after="2025-08-01">
+    units="count" expires_after="2026-08-01">
   <owner>jonross@chromium.org</owner>
   <owner>gastonr@microsoft.com</owner>
   <owner>gerchiko@microsoft.com</owner>
@@ -247,7 +247,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.DelegatedInkTrail.{Renderer}.TimeFromDelegatedInkToApiPaint"
-    units="ms" expires_after="2025-08-01">
+    units="ms" expires_after="2026-08-01">
   <owner>jonross@chromium.org</owner>
   <owner>gastonr@microsoft.com</owner>
   <owner>gerchiko@microsoft.com</owner>
@@ -266,7 +266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.{Renderer}.TimeToDrawPointsMillis"
-    units="ms" expires_after="2025-08-01">
+    units="ms" expires_after="2026-08-01">
   <owner>jonross@chromium.org</owner>
   <owner>gastonr@microsoft.com</owner>
   <owner>gerchiko@microsoft.com</owner>
