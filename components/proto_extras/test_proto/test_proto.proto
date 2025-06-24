@@ -45,4 +45,7 @@ message TestMessage {
   }
 
   uint64 uint64_field = 13;
+
+  map<int32, string> primitive_map_field = 14;
+  map<string, DependencyMessage> message_map_field = 15;
 }

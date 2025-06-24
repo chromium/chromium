@@ -51,4 +51,7 @@ message TestMessageProto2 {
   optional InnerMessage inner_message = 12;
   optional bool bool_field = 13;
   optional uint64 uint64_field = 17;
+
+  map<int32, string> primitive_map_field = 18;
+  map<string, EmbeddedMessage> message_map_field = 19;
 }
