@@ -13,6 +13,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/regmon/regmon_client.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"

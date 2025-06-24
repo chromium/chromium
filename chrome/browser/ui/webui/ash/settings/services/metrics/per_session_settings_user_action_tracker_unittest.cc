@@ -25,6 +25,7 @@
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/test/test_metrics_service_client.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "testing/gtest/include/gtest/gtest.h"

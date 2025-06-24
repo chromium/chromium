@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/policy_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

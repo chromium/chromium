@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"

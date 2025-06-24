@@ -55,6 +55,7 @@
 #include "components/account_id/account_id.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"

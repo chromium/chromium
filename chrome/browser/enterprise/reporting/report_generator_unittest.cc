@@ -22,6 +22,7 @@
 #include "components/enterprise/browser/reporting/report_request.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

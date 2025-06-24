@@ -21,6 +21,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gmock/include/gmock/gmock.h"

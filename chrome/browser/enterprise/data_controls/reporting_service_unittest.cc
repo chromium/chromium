@@ -15,6 +15,7 @@
 #include "components/enterprise/data_controls/core/browser/verdict.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"

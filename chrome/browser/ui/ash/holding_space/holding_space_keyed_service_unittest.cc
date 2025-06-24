@@ -68,6 +68,7 @@
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/testing_pref_store.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/test_helper.h"

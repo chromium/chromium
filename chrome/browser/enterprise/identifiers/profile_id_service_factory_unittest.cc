@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/identifiers/identifiers_prefs.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

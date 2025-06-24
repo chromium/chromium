@@ -9,6 +9,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/ash/smb_client/smb_service_test_base.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
