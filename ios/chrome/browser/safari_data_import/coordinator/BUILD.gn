@@ -4,8 +4,8 @@
 
 source_set("coordinator") {
   sources = [
-    "safari_data_import_coordinator.h",
-    "safari_data_import_coordinator.mm",
+    "safari_data_import_main_coordinator.h",
+    "safari_data_import_main_coordinator.mm",
     "safari_data_import_ui_handler.h",
   ]
   deps = [

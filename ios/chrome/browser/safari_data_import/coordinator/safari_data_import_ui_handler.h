@@ -7,7 +7,7 @@
 
 @protocol SafariDataImportUIHandler <NSObject>
 
-//. Alerts that the current Safari data import workflow was dismissed.
+/// Alerts that the current Safari data import workflow was dismissed.
 - (void)safariDataImportDidDismiss;
 
 @end

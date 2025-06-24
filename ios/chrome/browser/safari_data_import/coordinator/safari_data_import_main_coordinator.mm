@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_coordinator.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_main_coordinator.h"
 
 #import "base/check.h"
 #import "base/feature_list.h"
@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 
-@implementation SafariDataImportCoordinator {
+@implementation SafariDataImportMainCoordinator {
   /// UI blocker used while the workflow is presenting. This makes sure that the
   /// promos manager would not attempt to show another promo in the meantime.
   std::unique_ptr<ScopedUIBlocker> _UIBlocker;
@@ -25,7 +25,7 @@
   /// move  UIBlocker to mediator.
   _UIBlocker = std::make_unique<ScopedUIBlocker>(self.browser->GetSceneState(),
                                                  UIBlockerExtent::kProfile);
-  __weak SafariDataImportCoordinator* weakSelf = self;
+  __weak SafariDataImportMainCoordinator* weakSelf = self;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(^{
         [weakSelf.delegate safariImportWorkflowDidEndForCoordinator:weakSelf];

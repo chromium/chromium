@@ -126,7 +126,7 @@
 #import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_scene_agent.h"
 #import "ios/chrome/browser/promos_manager/ui_bundled/utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
-#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_coordinator.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_main_coordinator.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
@@ -387,7 +387,7 @@ void OnListFamilyMembersResponse(
                                PasswordCheckupCoordinatorDelegate,
                                PolicyWatcherBrowserAgentObserving,
                                ProfileStateObserver,
-                               SafariDataImportCoordinatorDelegate,
+                               SafariDataImportMainCoordinatorDelegate,
                                SceneUIProvider,
                                SceneURLLoadingServiceDelegate,
                                SettingsNavigationControllerDelegate,
@@ -422,7 +422,7 @@ void OnListFamilyMembersResponse(
   AccountMenuCoordinator* _accountMenuCoordinator;
 
   // The coordinator that manages the workflow importing data from Safari.
-  SafariDataImportCoordinator* _safariImportCoordinator;
+  SafariDataImportMainCoordinator* _safariImportCoordinator;
 }
 
 // Navigation View controller for the settings.
@@ -2387,8 +2387,8 @@ using UserFeedbackDataCallback =
     return;
   }
   CHECK(base::FeatureList::IsEnabled(kImportPasswordsFromSafari));
-  SafariDataImportCoordinator* safariDataImportCoordinator =
-      [[SafariDataImportCoordinator alloc]
+  SafariDataImportMainCoordinator* safariDataImportCoordinator =
+      [[SafariDataImportMainCoordinator alloc]
           initWithBaseViewController:self.activeViewController
                              browser:self.currentInterface.browser];
   safariDataImportCoordinator.delegate = self;
@@ -4469,7 +4469,7 @@ using UserFeedbackDataCallback =
 #pragma mark - SafariImportCoordinatorDelegate
 
 - (void)safariImportWorkflowDidEndForCoordinator:
-    (SafariDataImportCoordinator*)coordinator {
+    (SafariDataImportMainCoordinator*)coordinator {
   CHECK_EQ(coordinator, _safariImportCoordinator);
   [_safariImportCoordinator stop];
   _safariImportCoordinator = nil;
