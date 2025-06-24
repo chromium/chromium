@@ -126,6 +126,9 @@ class SupervisedUserNavigationObserver
   void GoBack() override;
   void RequestUrlAccessRemote(RequestUrlAccessRemoteCallback callback) override;
   void RequestUrlAccessLocal(RequestUrlAccessLocalCallback callback) override;
+#if BUILDFLAG(IS_ANDROID)
+  void LearnMore(LearnMoreCallback callback) override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // When a remote URL approval request is successfully created, this method is
   // called asynchronously.
@@ -136,6 +139,8 @@ class SupervisedUserNavigationObserver
   // Called when the url filter changes i.e. allowlist or denylist change to
   // clear up  entries in |requested_hosts_| which have been allowed.
   void MaybeUpdateRequestedHosts();
+
+  content::FrameTreeNodeId frame_tree_node_id();
 
   supervised_user::SupervisedUserService* supervised_user_service() const;
 

@@ -40,8 +40,11 @@ void SupervisedUserErrorPageControllerDelegateImpl::RequestUrlAccessLocal(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void SupervisedUserErrorPageControllerDelegateImpl::LearnMore() {
-  // TODO(crbug.com/426107993): Refer to help center article.
+void SupervisedUserErrorPageControllerDelegateImpl::LearnMore(
+    base::OnceClosure open_help_page) {
+  if (supervised_user_interface_) {
+    supervised_user_interface_->LearnMore(std::move(open_help_page));
+  }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

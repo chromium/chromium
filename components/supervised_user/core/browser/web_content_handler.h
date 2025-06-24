@@ -53,6 +53,12 @@ class WebContentHandler {
   // The action applies when localWebApprovalsEnabled is disabled.
   virtual void GoBack() = 0;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Opens a resource with additional information on what is currently
+  // displayed (typically, some help center article).
+  virtual void LearnMore(base::OnceClosure open_help_page) = 0;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Returns the interstitial navigation id.
   virtual int64_t GetInterstitialNavigationId() const = 0;
 

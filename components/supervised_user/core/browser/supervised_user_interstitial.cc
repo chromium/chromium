@@ -128,6 +128,15 @@ void SupervisedUserInterstitial::RequestUrlAccessLocal(
       filtering_behavior_reason_, std::move(callback));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void SupervisedUserInterstitial::LearnMore(base::OnceClosure open_help_page) {
+  web_content_handler_->LearnMore(std::move(open_help_page));
+  UMA_HISTOGRAM_ENUMERATION(kInterstitialCommandHistogramName,
+                            Commands::LEARN_MORE,
+                            Commands::HISTOGRAM_BOUNDING_VALUE);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void SupervisedUserInterstitial::OutputRequestPermissionSourceMetric() {
   RequestPermissionSource source;
   if (web_content_handler_->IsMainFrame()) {

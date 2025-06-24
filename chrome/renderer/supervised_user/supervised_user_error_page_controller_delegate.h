@@ -27,7 +27,7 @@ class SupervisedUserErrorPageControllerDelegate {
 
 #if BUILDFLAG(IS_ANDROID)
   // Called to open the learn more page for the user.
-  virtual void LearnMore() = 0;
+  virtual void LearnMore(base::OnceClosure open_help_page) = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 
  protected:

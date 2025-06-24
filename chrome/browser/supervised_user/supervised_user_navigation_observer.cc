@@ -409,29 +409,27 @@ void SupervisedUserNavigationObserver::FilterRenderFrame(
 }
 
 void SupervisedUserNavigationObserver::GoBack() {
-  auto* render_frame_host = receivers_.GetCurrentTargetFrame();
-  auto id = render_frame_host->GetFrameTreeNodeId();
-
   // Request can come only from the main frame.
-  if (!render_frame_host->IsInPrimaryMainFrame())
+  if (!receivers_.GetCurrentTargetFrame()->IsInPrimaryMainFrame()) {
     return;
+  }
 
-  if (base::Contains(supervised_user_interstitials_, id))
-    supervised_user_interstitials_[id]->GoBack();
+  content::FrameTreeNodeId frame_id = frame_tree_node_id();
+  if (base::Contains(supervised_user_interstitials_, frame_id)) {
+    supervised_user_interstitials_[frame_id]->GoBack();
+  }
 }
 
 void SupervisedUserNavigationObserver::RequestUrlAccessRemote(
     RequestUrlAccessRemoteCallback callback) {
-  auto* render_frame_host = receivers_.GetCurrentTargetFrame();
-  content::FrameTreeNodeId id = render_frame_host->GetFrameTreeNodeId();
-
-  if (!base::Contains(supervised_user_interstitials_, id)) {
-    DLOG(WARNING) << "Interstitial with id not found: " << id;
+  content::FrameTreeNodeId frame_id = frame_tree_node_id();
+  if (!base::Contains(supervised_user_interstitials_, frame_id)) {
+    DLOG(WARNING) << "Interstitial with id not found: " << frame_id;
     return;
   }
 
   supervised_user::SupervisedUserInterstitial* interstitial =
-      supervised_user_interstitials_[id].get();
+      supervised_user_interstitials_[frame_id].get();
   interstitial->RequestUrlAccessRemote(
       base::BindOnce(&SupervisedUserNavigationObserver::RequestCreated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -440,26 +438,43 @@ void SupervisedUserNavigationObserver::RequestUrlAccessRemote(
 
 void SupervisedUserNavigationObserver::RequestUrlAccessLocal(
     RequestUrlAccessLocalCallback callback) {
-  content::RenderFrameHost* render_frame_host =
-      receivers_.GetCurrentTargetFrame();
-  content::FrameTreeNodeId id = render_frame_host->GetFrameTreeNodeId();
-
-  if (!base::Contains(supervised_user_interstitials_, id)) {
-    DLOG(WARNING) << "Interstitial with id not found: " << id;
+  content::FrameTreeNodeId frame_id = frame_tree_node_id();
+  if (!base::Contains(supervised_user_interstitials_, frame_id)) {
+    DLOG(WARNING) << "Interstitial with id not found: " << frame_id;
     return;
   }
 
   supervised_user::SupervisedUserInterstitial* interstitial =
-      supervised_user_interstitials_[id].get();
+      supervised_user_interstitials_[frame_id].get();
   interstitial->RequestUrlAccessLocal(std::move(callback));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void SupervisedUserNavigationObserver::LearnMore(LearnMoreCallback callback) {
+  // Learn more can come only from the main frame.
+  if (!receivers_.GetCurrentTargetFrame()->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  content::FrameTreeNodeId frame_id = frame_tree_node_id();
+  if (!base::Contains(supervised_user_interstitials_, frame_id)) {
+    DLOG(WARNING) << "Interstitial with id not found: " << frame_id;
+    return;
+  }
+
+  supervised_user::SupervisedUserInterstitial* interstitial =
+      supervised_user_interstitials_[frame_id].get();
+  interstitial->LearnMore(std::move(callback));
+}
+#endif
 
 void SupervisedUserNavigationObserver::RequestCreated(
     RequestUrlAccessRemoteCallback callback,
     const std::string& host,
     bool successfully_created_request) {
-  if (successfully_created_request)
+  if (successfully_created_request) {
     requested_hosts_.insert(host);
+  }
   std::move(callback).Run(successfully_created_request);
 }
 
@@ -475,6 +490,11 @@ void SupervisedUserNavigationObserver::MaybeUpdateRequestedHosts() {
       iter++;
     }
   }
+}
+
+content::FrameTreeNodeId
+SupervisedUserNavigationObserver::frame_tree_node_id() {
+  return receivers_.GetCurrentTargetFrame()->GetFrameTreeNodeId();
 }
 
 supervised_user::SupervisedUserService*

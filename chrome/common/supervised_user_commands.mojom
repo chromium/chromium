@@ -9,13 +9,20 @@ module supervised_user.mojom;
 interface SupervisedUserCommands {
   // Go back to the previous page.
   GoBack();
+
   // Sends a remote URL approval request to the supervised user administrator to
   // view the current URL.
   // Expects a |request_issued| response indicating whether or not sending the
   // request was successful.
   RequestUrlAccessRemote() => (bool request_issued);
+
   // Starts a local, platform-specific URL approval flow.
   // |request_issued| indicates whether the flow was successfully initiated (not
   // the result of the approval flow).
   RequestUrlAccessLocal() => (bool request_issued);
+
+  // Opens a resource with additional information on what is currently displayed
+  // (typically, some help center article).
+  [EnableIf=is_android]
+  LearnMore() => ();
 };

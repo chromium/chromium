@@ -14,7 +14,7 @@ class WebContents;
 }  // namespace content
 
 // Implements common Web Content Handler functionality that can be shared
-// accross non-IOS platforms, but cannot belong in the base class due to
+// across non-IOS platforms, but cannot belong in the base class due to
 // prohibited dependencies in components.
 class ChromeSupervisedUserWebContentHandlerBase
     : public supervised_user::WebContentHandler {
@@ -31,6 +31,9 @@ class ChromeSupervisedUserWebContentHandlerBase
   int64_t GetInterstitialNavigationId() const override;
   void GoBack() override;
   void MaybeCloseLocalApproval() override;
+#if BUILDFLAG(IS_ANDROID)
+  void LearnMore(base::OnceClosure open_help_page) override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
  protected:
   ChromeSupervisedUserWebContentHandlerBase(content::WebContents* web_contents,
@@ -42,7 +45,7 @@ class ChromeSupervisedUserWebContentHandlerBase
   // Tries to navigate to the previous page (if one exists) and returns
   // if it was successful.
   bool AttemptMoveAwayFromCurrentFrameURL();
-  // Notifies the consumers of the intestitial.
+  // Notifies the consumers of the interstitial.
   void OnInterstitialDone();
 
   // The uniquely identifying global id for the frame.
