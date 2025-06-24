@@ -52,6 +52,20 @@ public class ScreenCapture {
         }
     }
 
+    private static class CaptureState {
+        public final int width;
+        public final int height;
+        public final int dpi;
+        public final int format;
+
+        CaptureState(int width, int height, int dpi, int format) {
+            this.width = width;
+            this.height = height;
+            this.dpi = dpi;
+            this.format = format;
+        }
+    }
+
     // Starting a MediaProjection session involves plumbing the results from the content picker,
     // which is done via ActivityResult. This class does not handle how that is achieved, but
     // requires this state to begin the session.
@@ -162,12 +176,15 @@ public class ScreenCapture {
             var windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             var windowMetrics = windowManager.getMaximumWindowMetrics();
             final Rect bounds = windowMetrics.getBounds();
-            int width = bounds.width();
-            int height = bounds.height();
-            int dpi = context.getResources().getConfiguration().densityDpi;
 
-            recreateListener(width, height, PixelFormat.RGBA_8888, dpi);
+            recreateListener(
+                    new CaptureState(
+                            bounds.width(),
+                            bounds.height(),
+                            context.getResources().getConfiguration().densityDpi,
+                            PixelFormat.RGBA_8888));
         }
+
         return true;
     }
 
@@ -308,6 +325,8 @@ public class ScreenCapture {
 
     @GuardedBy("mBackgroundLock")
     private void destroyListener() {
+        // Note that we can only close the ImageReader if we are guaranteed the native side will not
+        // try to access Images from it again.
         if (mImageReader != null) {
             mImageReader.close();
             mImageReader = null;
@@ -320,22 +339,27 @@ public class ScreenCapture {
     }
 
     @GuardedBy("mBackgroundLock")
-    private void recreateListener(int width, int height, int format, int dpi) {
+    private void recreateListener(CaptureState captureState) {
         destroyListener();
-        mImageReader = ImageReader.newInstance(width, height, format, /* maxImages= */ 2);
+        mImageReader =
+                ImageReader.newInstance(
+                        captureState.width,
+                        captureState.height,
+                        captureState.format,
+                        /* maxImages= */ 2);
         mImageReader.setOnImageAvailableListener(new ImageListener(), mBackgroundHandler);
 
         assert mMediaProjection != null;
         mVirtualDisplay =
                 mMediaProjection.createVirtualDisplay(
                         "ScreenCapture",
-                        width,
-                        height,
-                        dpi,
+                        captureState.width,
+                        captureState.height,
+                        captureState.dpi,
                         DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                         mImageReader.getSurface(),
-                        /* callback= */ null,
-                        /* handler= */ null);
+                        null,
+                        null);
     }
 
     @NativeMethods
