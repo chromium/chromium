@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -54,6 +56,8 @@ const CGFloat kSymbolPointSize = 18.0;
   [_buttonStackView addArrangedSubview:_voiceSearchButton];
   [_buttonStackView addArrangedSubview:_lensButton];
 
+  [self setupQuickActionsButtonsAccessibility];
+
   [_lensButton addTarget:self
                   action:@selector(openLensViewFinder)
         forControlEvents:UIControlEventTouchUpInside];
@@ -73,6 +77,14 @@ const CGFloat kSymbolPointSize = 18.0;
 }
 
 #pragma mark - Private
+
+- (void)setupQuickActionsButtonsAccessibility {
+  _incognitoButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_ACCNAME_NEW_INCOGNITO_TAB);
+  _lensButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
+  _voiceSearchButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_ACCNAME_VOICE_SEARCH);
+}
 
 // Creates a new horizontal button stack view.
 - (UIStackView*)createButtonStackView {
