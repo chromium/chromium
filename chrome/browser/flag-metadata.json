@@ -9533,7 +9533,7 @@
   {
     "name": "tab-group-sync-service-desktop-migration",
     "owners": [ "top-chrome-desktop-ui@google.com", "dljames@chromium.org", "dpenning@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "tab-groups-defer-remote-navigations",
