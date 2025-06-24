@@ -588,13 +588,11 @@ void GetKeyboardLayoutsForLocale(
     input_method::InputMethodManager* input_method_manager) {
   // Resolve `locale` on a background thread, then continue on the current
   // thread.
-  std::string (*get_application_locale)(const std::string&, bool) =
-      &l10n_util::GetApplicationLocale;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(get_application_locale, locale,
-                     false /* set_icu_locale */),
+      base::BindOnce(&l10n_util::GetApplicationLocale, locale,
+                     /*set_icu_locale=*/false),
       base::BindOnce(&GetKeyboardLayoutsForResolvedLocale, locale,
                      input_method_manager, std::move(callback)));
 }
