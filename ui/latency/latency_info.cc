@@ -236,7 +236,6 @@ void LatencyInfo::Terminate() {
     TRACE_EVENT_END(
         kTraceCategoriesForAsyncEvents, GetInputLatencyTrack(trace_id_),
         gpu_swap_end_timestamp, [this](perfetto::EventContext ctx) {
-          perfetto::Flow::Global(trace_id_)(ctx);
           auto* info = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                            ->set_chrome_latency_info();
           for (const auto& lc : latency_components_) {
