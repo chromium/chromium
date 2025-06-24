@@ -101,6 +101,8 @@ public class SelectPopupTest {
         verifyPopupShownState(false);
 
         // Click the select and wait for the popup to show.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(webContents));
         DOMUtils.clickNode(webContents, "select");
         verifyPopupShownState(true);
     }

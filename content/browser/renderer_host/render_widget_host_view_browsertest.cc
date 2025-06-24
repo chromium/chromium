@@ -395,13 +395,26 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   // is maintained as the fallback. The DelegatedFrameHost should have not have
   // a valid active viz::LocalSurfaceId until the first surface after navigation
   // has been embedded.
+  //
+  // However, if the navigation involves a change of RenderFrameHosts the
+  // surface will be evicted when committing the new RenderFrameHost (see also
+  // ` DelegatedFrameHostAndroid::ClearFallbackSurfaceForCommitPending()`).
   rwhva = static_cast<RenderWidgetHostViewAndroid*>(rwhvb);
   dfh = rwhva->delegated_frame_host_for_testing();
-  EXPECT_TRUE(dfh->HasPrimarySurface());
-  EXPECT_FALSE(dfh->IsPrimarySurfaceEvicted());
-  EXPECT_EQ(initial_local_surface_id,
-            dfh->content_layer()->surface_id().local_surface_id());
-  EXPECT_FALSE(dfh->SurfaceId().local_surface_id().is_valid());
+
+  if (ShouldCreateNewHostForAllFrames()) {
+    EXPECT_FALSE(dfh->HasPrimarySurface());
+    EXPECT_TRUE(dfh->IsPrimarySurfaceEvicted());
+    EXPECT_NE(initial_local_surface_id,
+              dfh->content_layer()->surface_id().local_surface_id());
+    EXPECT_TRUE(dfh->SurfaceId().local_surface_id().is_valid());
+  } else {
+    EXPECT_TRUE(dfh->HasPrimarySurface());
+    EXPECT_FALSE(dfh->IsPrimarySurfaceEvicted());
+    EXPECT_EQ(initial_local_surface_id,
+              dfh->content_layer()->surface_id().local_surface_id());
+    EXPECT_FALSE(dfh->SurfaceId().local_surface_id().is_valid());
+  }
 #endif
 
   // Showing the view should lead to a new surface being embedded.
@@ -495,7 +508,10 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   EXPECT_FALSE(dfh->HasPrimarySurface());
   EXPECT_TRUE(dfh->IsPrimarySurfaceEvicted());
   EXPECT_FALSE(dfh->content_layer()->surface_id().is_valid());
-  EXPECT_FALSE(dfh->SurfaceId().local_surface_id().is_valid());
+  // However, if the navigation involves a change of RenderFrameHosts (and thus
+  // RenderWidgetViewHosts) a new surface is embedded (see comment a bit above).
+  EXPECT_EQ(ShouldCreateNewHostForAllFrames(),
+            dfh->SurfaceId().local_surface_id().is_valid());
 #endif
 
   // Showing the view should lead to a new surface being embedded.
