@@ -460,7 +460,8 @@ cc_component("cc") {
 
   public_deps = [
     "//cc/base",
-    "//cc/mojom:layer_trees",
+    "//cc/mojom:mojom_browser_controls",
+    "//cc/mojom:mojom_layer_trees",
     "//cc/paint",
     "//components/viz/common",
     "//skia",

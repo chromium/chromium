@@ -521,5 +521,64 @@ TEST_F(LayerContextImplLayerTreePropertiesTest,
   EXPECT_EQ(result.error(), "Invalid max safe area inset bottom");
 }
 
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateBrowserControlsParams) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+  cc::BrowserControlsParams kDefaultParams;
+
+  // Initial update with default params.
+  auto update1 = CreateDefaultUpdate();
+  update1->browser_controls_params = kDefaultParams;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_EQ(active_tree->browser_controls_params(), kDefaultParams);
+
+  // Update to new params.
+  cc::BrowserControlsParams params2;
+  params2.top_controls_height = 50.f;
+  params2.top_controls_min_height = 10.f;
+  params2.bottom_controls_height = 30.f;
+  params2.bottom_controls_min_height = 5.f;
+  params2.animate_browser_controls_height_changes = true;
+  params2.browser_controls_shrink_blink_size = true;
+  params2.only_expand_top_controls_at_page_top = true;
+
+  auto update2 = CreateDefaultUpdate();
+  update2->browser_controls_params = params2;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(active_tree->browser_controls_params(), params2);
+
+  // Update to different params.
+  cc::BrowserControlsParams params3;
+  params3.top_controls_height = 60.f;
+  params3.top_controls_min_height = 0.f;
+  params3.bottom_controls_height = 0.f;
+  params3.bottom_controls_min_height = 0.f;
+  params3.animate_browser_controls_height_changes = false;
+  params3.browser_controls_shrink_blink_size = false;
+  params3.only_expand_top_controls_at_page_top = false;
+
+  auto update3 = CreateDefaultUpdate();
+  update3->browser_controls_params = params3;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(active_tree->browser_controls_params(), params3);
+
+  // Update back to default params.
+  auto update4 = CreateDefaultUpdate();
+  update4->browser_controls_params = kDefaultParams;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
+  EXPECT_EQ(active_tree->browser_controls_params(), kDefaultParams);
+
+  // Update with no change.
+  auto update5 = CreateDefaultUpdate();
+  update5->browser_controls_params = kDefaultParams;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update5)).has_value());
+  EXPECT_EQ(active_tree->browser_controls_params(), kDefaultParams);
+}
+
 }  // namespace
 }  // namespace viz

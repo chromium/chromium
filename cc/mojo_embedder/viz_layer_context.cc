@@ -1276,6 +1276,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->page_scale_transform = property_ids.page_scale_transform;
   update->display_transform_hint = tree.display_transform_hint();
   update->max_safe_area_inset_bottom = tree.max_safe_area_inset_bottom();
+  update->browser_controls_params = tree.browser_controls_params();
   update->inner_scroll = property_ids.inner_scroll;
   update->outer_clip = property_ids.outer_clip;
   update->outer_scroll = property_ids.outer_scroll;

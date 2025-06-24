@@ -28,16 +28,6 @@ IPC_STRUCT_TRAITS_END()
 
 IPC_ENUM_TRAITS_MAX_VALUE(cc::TouchAction, cc::TouchAction::kMax)
 
-IPC_STRUCT_TRAITS_BEGIN(cc::BrowserControlsParams)
-  IPC_STRUCT_TRAITS_MEMBER(top_controls_height)
-  IPC_STRUCT_TRAITS_MEMBER(top_controls_min_height)
-  IPC_STRUCT_TRAITS_MEMBER(bottom_controls_height)
-  IPC_STRUCT_TRAITS_MEMBER(bottom_controls_min_height)
-  IPC_STRUCT_TRAITS_MEMBER(animate_browser_controls_height_changes)
-  IPC_STRUCT_TRAITS_MEMBER(browser_controls_shrink_blink_size)
-  IPC_STRUCT_TRAITS_MEMBER(only_expand_top_controls_at_page_top)
-IPC_STRUCT_TRAITS_END()
-
 IPC_ENUM_TRAITS_MAX_VALUE(cc::BrowserControlsState,
                           cc::BrowserControlsState::kMaxValue)
 

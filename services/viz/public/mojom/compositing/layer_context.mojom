@@ -4,6 +4,7 @@
 
 module viz.mojom;
 
+import "cc/mojom/browser_controls_params.mojom";
 import "cc/mojom/ui_resource_id.mojom";
 import "services/viz/public/mojom/compositing/animation.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
@@ -124,6 +125,9 @@ struct LayerTreeUpdate {
 
   // The maximum safe area inset from the bottom of the screen.
   float max_safe_area_inset_bottom;
+
+  // Parameters for browser controls (URL bar, bottom bar, etc.).
+  cc.mojom.BrowserControlsParams browser_controls_params;
 
   // UIResource change requests accumulated since the last LayerTreeUpdate.
   array<TransferableUIResourceRequest> ui_resource_requests;

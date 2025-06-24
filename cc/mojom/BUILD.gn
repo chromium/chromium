@@ -23,7 +23,6 @@ mojom("mojom") {
   generate_java = true
   sources = [
     "browser_controls_offset_tag_modifications.mojom",
-    "browser_controls_params.mojom",
     "browser_controls_state.mojom",
     "overscroll_behavior.mojom",
     "render_frame_metadata.mojom",
@@ -31,6 +30,7 @@ mojom("mojom") {
   ]
 
   public_deps = [
+    ":mojom_browser_controls",
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom",
     "//skia/public/mojom",
@@ -75,16 +75,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "cc.mojom.BrowserControlsParams"
-          cpp = "::cc::BrowserControlsParams"
-        },
-      ]
-      traits_headers = [ "//cc/ipc/cc_param_traits_macros.h" ]
-      traits_public_deps = [ "//cc/ipc" ]
-    },
-    {
-      types = [
-        {
           mojom = "cc.mojom.BrowserControlsOffsetTagModifications"
           cpp = "::cc::BrowserControlsOffsetTagModifications"
         },
@@ -114,7 +104,30 @@ mojom("mojom") {
   blink_cpp_typemaps = shared_typemap
 }
 
-mojom("layer_trees") {
+mojom("mojom_browser_controls") {
+  generate_java = true
+  sources = [ "browser_controls_params.mojom" ]
+
+  export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/public/platform/web_common.h"
+
+  shared_typemaps = [
+    {
+      types = [
+        {
+          mojom = "cc.mojom.BrowserControlsParams"
+          cpp = "::cc::BrowserControlsParams"
+        },
+      ]
+      traits_headers = [ "browser_controls_params_mojom_traits.h" ]
+    },
+  ]
+  cpp_typemaps = shared_typemaps
+  blink_cpp_typemaps = shared_typemaps
+}
+
+mojom("mojom_layer_trees") {
   generate_java = true
   sources = [
     "element_id.mojom",

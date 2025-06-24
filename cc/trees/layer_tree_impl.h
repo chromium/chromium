@@ -669,6 +669,10 @@ class CC_EXPORT LayerTreeImpl {
   // the viewport.
   void GetViewportSelection(viz::Selection<gfx::SelectionBound>* selection);
 
+  const BrowserControlsParams& browser_controls_params() const {
+    return browser_controls_params_;
+  }
+
   bool browser_controls_shrink_blink_size() const {
     return browser_controls_params_.browser_controls_shrink_blink_size;
   }

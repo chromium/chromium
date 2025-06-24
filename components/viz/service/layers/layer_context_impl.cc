@@ -1782,6 +1782,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   if (layers.elastic_overscroll()->SetCurrent(update->elastic_overscroll)) {
     layers.set_needs_update_draw_properties();
   }
+  layers.SetBrowserControlsParams(update->browser_controls_params);
   layers.set_display_transform_hint(update->display_transform_hint);
   layers.SetMaxSafeAreaInsetBottom(update->max_safe_area_inset_bottom);
   layers.set_painted_device_scale_factor(update->painted_device_scale_factor);

@@ -341,6 +341,7 @@ mojom("mojom_platform") {
   if (is_android) {
     # Direct deps (instead of transitive deps) are necessary for java targets.
     public_deps += [
+      "//cc/mojom:mojom_browser_controls",
       "//services/media_session/public/mojom",
       "//services/network/public/mojom:cookies_mojom",
       "//services/network/public/mojom:mojom_attribution",
