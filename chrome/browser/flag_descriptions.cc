@@ -5532,11 +5532,6 @@ const char kTabStripGroupDragDropAndroidDescription[] =
     "into another window in split-screen mode or create a new window by "
     "dropping it on the edge of Chrome.";
 
-const char kTabStripGroupReorderAndroidName[] = "Tab Strip Group Reorder";
-const char kTabStripGroupReorderAndroidDescription[] =
-    "Enables long-pressing on tab strip tab group indicators to enter reorder "
-    "mode. Users will then be able to drag the tab group to reorder it.";
-
 const char kTabStripIncognitoMigrationName[] =
     "Tab Strip Incognito switcher migration to toolbar";
 const char kTabStripIncognitoMigrationDescription[] =

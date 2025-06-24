@@ -3235,9 +3235,6 @@ extern const char kTabStripDensityChangeAndroidDescription[];
 extern const char kTabStripGroupDragDropAndroidName[];
 extern const char kTabStripGroupDragDropAndroidDescription[];
 
-extern const char kTabStripGroupReorderAndroidName[];
-extern const char kTabStripGroupReorderAndroidDescription[];
-
 extern const char kTabStripIncognitoMigrationName[];
 extern const char kTabStripIncognitoMigrationDescription[];
 

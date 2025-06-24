@@ -10313,11 +10313,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripGroupDragDropAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripGroupDragDropAndroid)},
 
-    {"tab-strip-group-reorder-android",
-     flag_descriptions::kTabStripGroupReorderAndroidName,
-     flag_descriptions::kTabStripGroupReorderAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabStripGroupReorderAndroid)},
-
     {"tab-strip-incognito-migration",
      flag_descriptions::kTabStripIncognitoMigrationName,
      flag_descriptions::kTabStripIncognitoMigrationDescription, kOsAndroid,

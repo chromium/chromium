@@ -391,7 +391,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStripContextMenuAndroid,
     &kTabStripDensityChangeAndroid,
     &kTabStripGroupDragDropAndroid,
-    &kTabStripGroupReorderAndroid,
     &kTabStripIncognitoMigration,
     &kTabStripLayoutOptimization,
     &kTabStripTransitionInDesktopWindow,
@@ -1296,10 +1295,6 @@ BASE_FEATURE(kTabStripDensityChangeAndroid,
 
 BASE_FEATURE(kTabStripGroupDragDropAndroid,
              "TabStripGroupDragDropAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabStripGroupReorderAndroid,
-             "TabStripGroupReorderAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripLayoutOptimization,
