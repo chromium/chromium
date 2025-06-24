@@ -901,7 +901,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.DomStorage.BatchTaskGrowthSizeBytes" units="bytes"
+<histogram name="Storage.DomStorage.BatchTaskGrowthSizeBytes2" units="bytes"
     expires_after="2025-10-23">
   <owner>annasato@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
@@ -914,7 +914,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.DomStorage.IterationsToReach{Size}MB" units="count"
+<histogram name="Storage.DomStorage.IterationsToReach{Size}MB2" units="count"
     expires_after="2025-10-23">
   <owner>annasato@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>

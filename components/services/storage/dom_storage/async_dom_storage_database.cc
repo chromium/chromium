@@ -88,7 +88,7 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
                               batch.ApproximateSize() - current_batch_size;
                           base::UmaHistogramCustomCounts(
                               "Storage.DomStorage."
-                              "BatchTaskGrowthSizeBytes",
+                              "BatchTaskGrowthSizeBytes2",
                               growth, 1, 100 * 1024 * 1024, 50);
                           const size_t kTargetBatchSizesMB[] = {20, 100, 500};
                           for (size_t batch_size_mb : kTargetBatchSizesMB) {
@@ -98,7 +98,7 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
                                 batch.ApproximateSize() >= target_batch_size) {
                               base::UmaHistogramCounts10000(
                                   base::StringPrintf("Storage.DomStorage."
-                                                     "IterationsToReach%zuMB",
+                                                     "IterationsToReach%zuMB2",
                                                      batch_size_mb),
                                   iteration_count);
                             }
