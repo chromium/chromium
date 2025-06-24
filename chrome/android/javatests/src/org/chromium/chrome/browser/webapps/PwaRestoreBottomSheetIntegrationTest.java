@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -216,6 +217,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
+    @DisabledTest(message = "https://crbug.com/425736622")
     public void testBackButton() {
         // This test opens the dialog, clicks the Review button to expand the bottom sheet dialog
         // and then presses the Back in the OS twice to see what happens (first click should
@@ -248,6 +250,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
+    @DisabledTest(message = "https://crbug.com/425736622")
     public void testClickForwarding() {
         Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
 
@@ -283,6 +286,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
+    @DisabledTest(message = "https://crbug.com/425736622")
     public void testDeselectAll() throws Exception {
         Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
 
@@ -333,6 +337,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
+    @DisabledTest(message = "https://crbug.com/425736622")
     public void testRestoreClosesUi() throws Exception {
         Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
 
