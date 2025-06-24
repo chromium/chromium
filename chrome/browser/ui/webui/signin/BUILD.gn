@@ -459,7 +459,6 @@ source_set("unit_tests") {
     sources += [
       "managed_user_profile_notice_handler_unittest.cc",
       "profile_picker_handler_unittest.cc",
-      "signin_error_handler_unittest.cc",
       "turn_sync_on_helper_unittest.cc",
     ]
     deps += [
@@ -510,7 +509,10 @@ if (!is_chromeos) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "turn_sync_on_helper_browsertest.cc" ]
+    sources = [
+      "signin_error_handler_browsertest.cc",
+      "turn_sync_on_helper_browsertest.cc",
+    ]
 
     deps = [
       ":signin",

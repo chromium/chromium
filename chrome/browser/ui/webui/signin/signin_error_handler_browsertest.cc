@@ -8,13 +8,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/signin_error_ui.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/dialog_test_browser_window.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 
 namespace {
@@ -52,7 +53,7 @@ class TestingSigninErrorHandler : public SigninErrorHandler {
   bool browser_modal_dialog_did_close_ = false;
 };
 
-class SigninErrorHandlerTest : public BrowserWithTestWindowTest {
+class SigninErrorHandlerTest : public InProcessBrowserTest {
  public:
   SigninErrorHandlerTest()
       : web_ui_(new content::TestWebUI), handler_(nullptr) {}
@@ -60,18 +61,19 @@ class SigninErrorHandlerTest : public BrowserWithTestWindowTest {
   SigninErrorHandlerTest(const SigninErrorHandlerTest&) = delete;
   SigninErrorHandlerTest& operator=(const SigninErrorHandlerTest&) = delete;
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    chrome::NewTab(browser());
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             GURL(chrome::kChromeUINewTabURL)));
     web_ui()->set_web_contents(
         browser()->tab_strip_model()->GetActiveWebContents());
     signin_error_ui_ = std::make_unique<SigninErrorUI>(web_ui());
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     signin_error_ui_.reset();
     web_ui_.reset();
-    BrowserWithTestWindowTest::TearDown();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void CreateHandlerInBrowser() {
@@ -95,25 +97,20 @@ class SigninErrorHandlerTest : public BrowserWithTestWindowTest {
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
 
-  // BrowserWithTestWindowTest
-  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
-    return std::make_unique<DialogTestBrowserWindow>();
-  }
-
  private:
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<SigninErrorUI> signin_error_ui_;
   raw_ptr<TestingSigninErrorHandler, DanglingUntriaged> handler_;  // Not owned.
 };
 
-TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMore) {
+IN_PROC_BROWSER_TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMore) {
   // Before the test, there is only one new tab opened.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
             tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 
-  // Open learn more
+  // Open learn more.
   CreateHandlerInBrowser();
   base::Value::List args;
   handler()->HandleLearnMore(args);
@@ -127,18 +124,19 @@ TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMore) {
             tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 }
 
-TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMoreAfterBrowserRemoved) {
+IN_PROC_BROWSER_TEST_F(SigninErrorHandlerTest,
+                       InBrowserHandleLearnMoreAfterBrowserRemoved) {
   // Before the test, there is only one new tab opened.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
             tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 
-  // Inform the handler that the browser was removed;
+  // Inform the handler that the browser was removed.
   CreateHandlerInBrowser();
   handler()->OnBrowserRemoved(browser());
 
-  // Open learn more
+  // Open learn more.
   base::Value::List args;
   handler()->HandleLearnMore(args);
 
@@ -151,7 +149,7 @@ TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMoreAfterBrowserRemoved) {
             tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 }
 
-TEST_F(SigninErrorHandlerTest, InBrowserTestConfirm) {
+IN_PROC_BROWSER_TEST_F(SigninErrorHandlerTest, InBrowserTestConfirm) {
   CreateHandlerInBrowser();
   base::Value::List args;
   handler()->HandleConfirm(args);
