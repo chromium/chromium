@@ -98,14 +98,13 @@ void BindGoogleTtsStream(
 }
 
 void BindEnhancedNetworkTts(
-    content::RenderFrameHost* render_frame_host,
+    content::BrowserContext* browser_context,
     mojo::PendingReceiver<ash::enhanced_network_tts::mojom::EnhancedNetworkTts>
         receiver) {
   ash::enhanced_network_tts::EnhancedNetworkTtsImpl::GetInstance()
       .BindReceiverAndURLFactory(
           std::move(receiver),
-          Profile::FromBrowserContext(render_frame_host->GetBrowserContext())
-              ->GetURLLoaderFactory());
+          Profile::FromBrowserContext(browser_context)->GetURLLoaderFactory());
 }
 
 void BindRemoteAppsFactory(
@@ -248,7 +247,14 @@ void PopulateChromeFrameBindersForExtension(
   // Limit the binding to EnhancedNetworkTts Extension.
   if (extension->id() == extension_misc::kEnhancedNetworkTtsExtensionId) {
     binder_map->Add<ash::enhanced_network_tts::mojom::EnhancedNetworkTts>(
-        base::BindRepeating(&BindEnhancedNetworkTts));
+        base::BindRepeating(
+            [](content::RenderFrameHost* frame_host,
+               mojo::PendingReceiver<
+                   ash::enhanced_network_tts::mojom::EnhancedNetworkTts>
+                   receiver) {
+              BindEnhancedNetworkTts(frame_host->GetBrowserContext(),
+                                     std::move(receiver));
+            }));
   }
 
   if (ash::RemoteAppsImpl::IsMojoPrivateApiAllowed(render_frame_host,
@@ -307,6 +313,19 @@ void PopulateChromeServiceWorkerBindersForExtension(
         [](const content::ServiceWorkerVersionBaseInfo&,
            mojo::PendingReceiver<ash::language::mojom::LanguagePacks>
                receiver) { BindLanguagePacks(std::move(receiver)); }));
+  }
+
+  if (extension->id() == extension_misc::kEnhancedNetworkTtsExtensionId) {
+    binder_map->Add<ash::enhanced_network_tts::mojom::EnhancedNetworkTts>(
+        base::BindRepeating(
+            [](content::BrowserContext* browser_context,
+               const content::ServiceWorkerVersionBaseInfo&,
+               mojo::PendingReceiver<
+                   ash::enhanced_network_tts::mojom::EnhancedNetworkTts>
+                   receiver) {
+              BindEnhancedNetworkTts(browser_context, std::move(receiver));
+            },
+            browser_context));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
