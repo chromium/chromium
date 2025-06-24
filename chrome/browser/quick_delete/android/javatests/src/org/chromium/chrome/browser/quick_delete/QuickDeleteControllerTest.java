@@ -250,11 +250,7 @@ public class QuickDeleteControllerTest {
         // Return to a PageStation for InitialStateRule to reset properly.
         clearBrowsingDataSettings
                 .pressBackTo()
-                .arriveAt(
-                        WebPageStation.newBuilder()
-                                .withIsOpeningTabs(0)
-                                .withTabAlreadySelected(secondTab)
-                                .build());
+                .arriveAt(WebPageStation.newBuilder().withTabAlreadySelected(secondTab).build());
     }
 
     @Test

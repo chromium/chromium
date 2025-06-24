@@ -103,7 +103,7 @@ public abstract class HubBaseStation
         SwitchPaneButtonFacility button =
                 enterFacilitySync(
                         new SwitchPaneButtonFacility(contentDescription), /* trigger= */ null);
-        return travelToSync(destinationStation, button.buttonElement.getClickTrigger());
+        return button.buttonElement.clickTo().arriveAt(destinationStation);
     }
 
     /** Convenience method to select the Regular Tab Switcher pane. */

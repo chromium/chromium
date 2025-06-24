@@ -159,7 +159,9 @@ public class ElementFactoryUnitTest {
         Thread transitionThread =
                 new Thread(
                         () -> {
-                            sourceStation.travelToSync(destinationStation, null);
+                            Triggers.noopTo()
+                                    .withContext(sourceStation)
+                                    .arriveAt(destinationStation);
                         });
         final AtomicReference<Throwable> maybeException = new AtomicReference();
 

@@ -112,19 +112,21 @@ public abstract class TabSwitcherStation extends HubBaseStation {
             int index, PageStation.Builder<T> destinationBuilder) {
         recheckActiveConditions();
 
-        T destination =
-                destinationBuilder
-                        .withIncognito(mIsIncognito)
-                        .withIsOpeningTabs(0)
-                        .withIsSelectingTabs(1)
-                        .build();
+        return selectTabAtCardIndexTo(index)
+                .arriveAt(
+                        destinationBuilder
+                                .withIncognito(mIsIncognito)
+                                .initSelectingExistingTab()
+                                .build());
+    }
 
-        return travelToSync(
-                destination,
-                () -> {
-                    ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
-                            is(recyclerViewElement.get()), index, TAB_THUMBNAIL, click());
-                });
+    /** Click the thumbnail of the card at the given |index| to start a Trip. */
+    @CheckReturnValue
+    public TripBuilder selectTabAtCardIndexTo(int index) {
+        return runTo(
+                () ->
+                        ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
+                                is(recyclerViewElement.get()), index, TAB_THUMBNAIL, click()));
     }
 
     /**
@@ -187,11 +189,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
     public <T extends PageStation> T leaveHubToPreviousTabViaBack(
             PageStation.Builder<T> destinationBuilder) {
         T destination =
-                destinationBuilder
-                        .withIsOpeningTabs(0)
-                        .withIsSelectingTabs(1)
-                        .withIncognito(mIsIncognito)
-                        .build();
+                destinationBuilder.initSelectingExistingTab().withIncognito(mIsIncognito).build();
         return pressBackTo().withRetry().arriveAt(destination);
     }
 

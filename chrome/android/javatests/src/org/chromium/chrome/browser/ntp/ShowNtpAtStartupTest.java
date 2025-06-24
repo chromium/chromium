@@ -95,7 +95,7 @@ public class ShowNtpAtStartupTest {
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_UMA, true)
                         .build();
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startFromLauncherAtNtp();
         HomeSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         // Verifies that a NTP is created and set as the current Tab.
@@ -125,7 +125,7 @@ public class ShowNtpAtStartupTest {
                         .build();
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, modifiedNtpUrl}, 0);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startFromLauncherAtNtp();
         HomeSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         // Verifies that a new NTP is created and set as the active Tab.
@@ -153,7 +153,7 @@ public class ShowNtpAtStartupTest {
 
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, modifiedNtpUrl}, 1);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startFromLauncherAtNtp();
         HomeSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         // Verifies that no new NTP is created, and the existing NTP is reused and set as the
@@ -173,7 +173,7 @@ public class ShowNtpAtStartupTest {
     public void testSingleTabCardGoneAfterTabClosed_MagicStack() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startFromLauncherAtNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
 
@@ -232,7 +232,7 @@ public class ShowNtpAtStartupTest {
     public void testSingleTabModule() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startFromLauncherAtNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
 
@@ -256,7 +256,7 @@ public class ShowNtpAtStartupTest {
     public void testSingleTabModule_MagicStack() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startFromLauncherAtNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
 
@@ -338,7 +338,7 @@ public class ShowNtpAtStartupTest {
     @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE, ChromeFeatureList.MAGIC_STACK_ANDROID})
     public void testClickSingleTabCardCloseNtpHomeSurface() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startFromLauncherAtNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
 
@@ -382,7 +382,7 @@ public class ShowNtpAtStartupTest {
     public void testThumbnailRecaptureForSingleTabCardAfterMostRecentTabClosed()
             throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startFromLauncherAtNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
 

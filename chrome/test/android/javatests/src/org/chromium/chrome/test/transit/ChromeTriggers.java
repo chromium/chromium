@@ -13,6 +13,7 @@ import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.util.MenuUtils;
 
 /** Collection of Chrome-specific Triggers to start Transitions. */
@@ -56,5 +57,19 @@ public class ChromeTriggers {
                         station.getActivity()
                                 .getLayoutManager()
                                 .showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false));
+    }
+
+    /** Close all tabs in the current tab model programmatically. */
+    @CheckReturnValue
+    public static TripBuilder closeAllTabsProgrammaticallyTo(
+            Station<? extends ChromeTabbedActivity> station) {
+        return station.runOnUiThreadTo(
+                () ->
+                        station.getActivity()
+                                .getCurrentTabModel()
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeAllTabs().build(),
+                                        /* allowDialog= */ false));
     }
 }

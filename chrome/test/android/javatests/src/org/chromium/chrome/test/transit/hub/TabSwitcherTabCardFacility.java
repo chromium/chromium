@@ -38,6 +38,6 @@ public class TabSwitcherTabCardFacility extends TabSwitcherCardFacility {
                         .withIsSelectingTabs(isSelecting ? 1 : 0)
                         .withExpectedTitle(mTitle)
                         .build();
-        return mHostStation.travelToSync(destination, titleElement.getClickTrigger());
+        return titleElement.clickTo().arriveAt(destination);
     }
 }

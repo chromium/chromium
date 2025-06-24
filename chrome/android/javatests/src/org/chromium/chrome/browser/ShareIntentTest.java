@@ -80,9 +80,13 @@ public class ShareIntentTest {
         intent.putExtra(Intent.EXTRA_TEXT, "This is a share:\n" + url);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
-        mActivityTestRule.startWithIntent(
-                intent,
-                WebPageStation.newBuilder().withEntryPoint().withExpectedUrlSubstring(url).build());
+        mActivityTestRule
+                .startWithIntentTo(intent)
+                .arriveAt(
+                        WebPageStation.newBuilder()
+                                .withEntryPoint()
+                                .withExpectedUrlSubstring(url)
+                                .build());
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(

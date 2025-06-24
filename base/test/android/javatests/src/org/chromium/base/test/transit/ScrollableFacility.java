@@ -427,8 +427,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
         }
 
         assumeNonNull(itemOnScreenFacility.viewElement);
-        return mHostStation.travelToSync(
-                destination, itemOnScreenFacility.viewElement.getClickTrigger());
+        return itemOnScreenFacility.viewElement.clickTo().arriveAt(destination);
     }
 
     /** Get all {@link Item}s declared in this {@link ScrollableFacility}. */

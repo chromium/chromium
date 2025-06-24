@@ -37,8 +37,8 @@ public class SettingsActivityPublicTransitEntryPoints {
         sentinel.setAsEntryPoint();
 
         SettingsStation<MainSettings> entryPageStation = new SettingsStation<>(MainSettings.class);
-        return sentinel.travelToSync(
-                entryPageStation, mSettingsActivityTestRule::startSettingsActivity);
+        return sentinel.runTo(mSettingsActivityTestRule::startSettingsActivity)
+                .arriveAt(entryPageStation);
     }
 
     /**

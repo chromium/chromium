@@ -40,12 +40,8 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
     public IncognitoNewTabPageStation openNewTab() {
         recheckActiveConditions();
 
-        IncognitoNewTabPageStation page =
-                IncognitoNewTabPageStation.newBuilder()
-                        .withIsOpeningTabs(1)
-                        .withIsSelectingTabs(1)
-                        .build();
-
-        return travelToSync(page, newTabButtonElement.getClickTrigger());
+        return newTabButtonElement
+                .clickTo()
+                .arriveAt(IncognitoNewTabPageStation.newBuilder().initOpeningNewTab().build());
     }
 }

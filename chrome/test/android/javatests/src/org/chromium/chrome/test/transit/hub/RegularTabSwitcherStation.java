@@ -51,13 +51,9 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
     public RegularNewTabPageStation openNewTab() {
         recheckActiveConditions();
 
-        RegularNewTabPageStation page =
-                RegularNewTabPageStation.newBuilder()
-                        .withIsOpeningTabs(1)
-                        .withIsSelectingTabs(1)
-                        .build();
-
-        return travelToSync(page, newTabButtonElement.getClickTrigger());
+        return newTabButtonElement
+                .clickTo()
+                .arriveAt(RegularNewTabPageStation.newBuilder().initOpeningNewTab().build());
     }
 
     public ArchiveMessageCardFacility expectArchiveMessageCard() {

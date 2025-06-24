@@ -86,7 +86,7 @@ public class PopularUrlsTest {
         mStatus = new RunStatus(STATUS_FILE);
         mFailed = false;
         mDoShortWait = checkDoShortWait();
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startFromLauncherAtNtp();
     }
 
     @After

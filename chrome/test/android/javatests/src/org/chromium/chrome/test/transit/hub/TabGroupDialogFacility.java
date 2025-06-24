@@ -141,24 +141,18 @@ public class TabGroupDialogFacility<
     public RegularNewTabPageStation openNewRegularTab() {
         assert !mHostStation.isIncognito();
 
-        RegularNewTabPageStation page =
-                RegularNewTabPageStation.newBuilder()
-                        .withIsOpeningTabs(1)
-                        .withIsSelectingTabs(1)
-                        .build();
-        return mHostStation.travelToSync(page, newTabButtonElement.getClickTrigger());
+        return newTabButtonElement
+                .clickTo()
+                .arriveAt(RegularNewTabPageStation.newBuilder().initOpeningNewTab().build());
     }
 
     /** Create a new incognito tab and transition to the associated IncognitoNewTabPageStation. */
     public IncognitoNewTabPageStation openNewIncognitoTab() {
         assert mHostStation.isIncognito();
 
-        IncognitoNewTabPageStation page =
-                IncognitoNewTabPageStation.newBuilder()
-                        .withIsOpeningTabs(1)
-                        .withIsSelectingTabs(1)
-                        .build();
-        return mHostStation.travelToSync(page, newTabButtonElement.getClickTrigger());
+        return newTabButtonElement
+                .clickTo()
+                .arriveAt(IncognitoNewTabPageStation.newBuilder().initOpeningNewTab().build());
     }
 
     /** Press back to exit the facility. */

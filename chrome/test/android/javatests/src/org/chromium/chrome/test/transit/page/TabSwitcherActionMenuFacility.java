@@ -115,11 +115,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
             PageStation.Builder<T> pageStationBuilder) {
         return selectCloseTabTo()
                 .arriveAt(
-                        pageStationBuilder
-                                .withIncognito(false)
-                                .withIsOpeningTabs(0)
-                                .withIsSelectingTabs(1)
-                                .build());
+                        pageStationBuilder.withIncognito(false).initSelectingExistingTab().build());
     }
 
     public TripBuilder selectCloseTabTo() {
@@ -131,10 +127,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
     /** Select the "New tab" menu option to open a new Tab. */
     public RegularNewTabPageStation selectNewTab() {
         RegularNewTabPageStation destination =
-                RegularNewTabPageStation.newBuilder()
-                        .withIsOpeningTabs(1)
-                        .withIsSelectingTabs(1)
-                        .build();
+                RegularNewTabPageStation.newBuilder().initOpeningNewTab().build();
         return newTabMenuItemElement
                 .clickTo()
                 .waitForAnd(createTabCountChangedCondition(/* incognito= */ false, +1))
@@ -146,11 +139,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
         return newIncognitoTabMenuItemElement
                 .clickTo()
                 .waitForAnd(createTabCountChangedCondition(/* incognito= */ true, +1))
-                .arriveAt(
-                        IncognitoNewTabPageStation.newBuilder()
-                                .withIsOpeningTabs(1)
-                                .withIsSelectingTabs(1)
-                                .build());
+                .arriveAt(IncognitoNewTabPageStation.newBuilder().initOpeningNewTab().build());
     }
 
     /** Switches out of incognito tab model to regular tab model */
@@ -160,7 +149,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
         return switchOutOfIncognitoMenuItemElement
                 .clickTo()
                 .waitForAnd(createTabModelChangedCondition())
-                .arriveAt(destinationBuilder.withIsOpeningTabs(0).withIsSelectingTabs(1).build());
+                .arriveAt(destinationBuilder.initSelectingExistingTab().build());
     }
 
     /** Switches to incognito tab model from regular tab model */
@@ -170,7 +159,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
         return switchToIncognitoMenuItemElement
                 .clickTo()
                 .waitForAnd(createTabModelChangedCondition())
-                .arriveAt(destinationBuilder.withIsOpeningTabs(0).withIsSelectingTabs(1).build());
+                .arriveAt(destinationBuilder.initSelectingExistingTab().build());
     }
 
     private Condition createTabCountChangedCondition(boolean incognito, int change) {

@@ -36,12 +36,13 @@ public class MvtsTileFacility extends Facility<RegularNewTabPageStation> {
     /** Click the tile to navigate to its URL. */
     public WebPageStation clickToNavigateToWebPage() {
         assert mSiteSuggestion != null : String.format("Tile %d is not a site suggestion", mIndex);
-        return mHostStation.travelToSync(
-                WebPageStation.newBuilder()
-                        .initFrom(mHostStation)
-                        .withExpectedUrlSubstring(mSiteSuggestion.url.getPath())
-                        .build(),
-                tileElement.getClickTrigger());
+        return tileElement
+                .clickTo()
+                .arriveAt(
+                        WebPageStation.newBuilder()
+                                .initFrom(mHostStation)
+                                .withExpectedUrlSubstring(mSiteSuggestion.url.getPath())
+                                .build());
     }
 
     /**

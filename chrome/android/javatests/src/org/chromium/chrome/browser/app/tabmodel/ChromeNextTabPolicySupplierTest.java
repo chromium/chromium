@@ -29,7 +29,7 @@ public class ChromeNextTabPolicySupplierTest {
     @Test
     @SmallTest
     public void verifyOverviewModeBehaviorIsNotNull() {
-        RegularNewTabPageStation ntp = mActivityTestRule.startFromLauncher();
+        RegularNewTabPageStation ntp = mActivityTestRule.startFromLauncherAtNtp();
         Assert.assertNotNull(ntp.getActivity().getNextTabPolicySupplier().getLayoutStateProvider());
     }
 }

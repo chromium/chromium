@@ -6,9 +6,11 @@ package org.chromium.chrome.test.transit;
 
 import android.content.Intent;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.EntryPointSentinelStation;
-import org.chromium.base.test.transit.Station;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -29,8 +31,8 @@ public class ChromeTabbedActivityEntryPoints {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
 
-        WebPageStation entryPageStation = WebPageStation.newBuilder().withEntryPoint().build();
-        return sentinel.travelToSync(entryPageStation, ctaTestRule::startMainActivityOnBlankPage);
+        return sentinel.runTo(ctaTestRule::startMainActivityOnBlankPage)
+                .arriveAt(WebPageStation.newBuilder().withEntryPoint().build());
     }
 
     /** Start the ChromeTabbedActivity in a web page at the given |url|. */
@@ -40,22 +42,30 @@ public class ChromeTabbedActivityEntryPoints {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
 
-        WebPageStation entryPageStation =
-                WebPageStation.newBuilder().withEntryPoint().withExpectedUrlSubstring(url).build();
-        return sentinel.travelToSync(
-                entryPageStation, () -> ctaTestRule.startMainActivityWithURL(url));
+        return sentinel.runTo(() -> ctaTestRule.startMainActivityWithURL(url))
+                .arriveAt(
+                        WebPageStation.newBuilder()
+                                .withEntryPoint()
+                                .withExpectedUrlSubstring(url)
+                                .build());
     }
 
     /** Start the ChromeTabbedActivity in an NTP as if it was started from the launcher. */
-    public static RegularNewTabPageStation startFromLauncher(
+    public static RegularNewTabPageStation startFromLauncherAtNtp(
             ChromeTabbedActivityTestRule ctaTestRule) {
+        return startFromLauncherTo(ctaTestRule)
+                .arriveAt(RegularNewTabPageStation.newBuilder().withEntryPoint().build());
+    }
+
+    /** Start the ChromeTabbedActivity as if it was started from the launcher. */
+    @CheckReturnValue
+    public static TripBuilder startFromLauncherTo(ChromeTabbedActivityTestRule ctaTestRule) {
         disableFirstRunFlow();
 
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
-        RegularNewTabPageStation entryPageStation =
-                RegularNewTabPageStation.newBuilder().withEntryPoint().build();
-        return sentinel.travelToSync(entryPageStation, ctaTestRule::startMainActivityFromLauncher);
+
+        return sentinel.runTo(ctaTestRule::startMainActivityFromLauncher);
     }
 
     /**
@@ -63,43 +73,36 @@ public class ChromeTabbedActivityEntryPoints {
      * "chrome-native://newtab/".
      */
     public static RegularNewTabPageStation startOnNtp(ChromeTabbedActivityTestRule ctaTestRule) {
-        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
-        sentinel.setAsEntryPoint();
-        RegularNewTabPageStation entryPageStation =
-                RegularNewTabPageStation.newBuilder().withEntryPoint().build();
-        return sentinel.travelToSync(
-                entryPageStation, () -> ctaTestRule.startMainActivityWithURL(UrlConstants.NTP_URL));
-    }
-
-    /**
-     * Start the ChromeTabbedActivity with an Intent.
-     *
-     * <p>The caller needs to specify the expected state reached by passing |expectedStation|.
-     */
-    public static <T extends Station<?>> T startWithIntent(
-            ChromeTabbedActivityTestRule ctaTestRule, Intent intent, T expectedStation) {
         disableFirstRunFlow();
 
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
-        return sentinel.travelToSync(
-                expectedStation, () -> ctaTestRule.startActivityCompletely(intent));
+
+        return sentinel.runTo(() -> ctaTestRule.startMainActivityWithURL(UrlConstants.NTP_URL))
+                .arriveAt(RegularNewTabPageStation.newBuilder().withEntryPoint().build());
     }
 
-    /**
-     * Start the ChromeTabbedActivity with an Intent, adding a URL to it.
-     *
-     * <p>The caller needs to specify the expected state reached by passing |expectedStation|.
-     */
-    public static <T extends Station<?>> T startWithIntentPlusUrl(
-            ChromeTabbedActivityTestRule ctaTestRule,
-            Intent intent,
-            String url,
-            T expectedStation) {
+    /** Start the ChromeTabbedActivity with an Intent. */
+    @CheckReturnValue
+    public static TripBuilder startWithIntentTo(
+            ChromeTabbedActivityTestRule ctaTestRule, Intent intent) {
+        disableFirstRunFlow();
+
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
-        return sentinel.travelToSync(
-                expectedStation, () -> ctaTestRule.startMainActivityFromIntent(intent, url));
+        return sentinel.runTo(() -> ctaTestRule.startActivityCompletely(intent));
+    }
+
+    /** Start the ChromeTabbedActivity with an Intent, adding a URL to it. */
+    @CheckReturnValue
+    public static TripBuilder startWithIntentPlusUrlTo(
+            ChromeTabbedActivityTestRule ctaTestRule, Intent intent, String url) {
+        disableFirstRunFlow();
+
+        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
+        sentinel.setAsEntryPoint();
+
+        return sentinel.runTo(() -> ctaTestRule.startMainActivityFromIntent(intent, url));
     }
 
     /**
@@ -110,8 +113,7 @@ public class ChromeTabbedActivityEntryPoints {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
 
-        WebPageStation entryPageStation = WebPageStation.newBuilder().withEntryPoint().build();
-        return sentinel.travelToSync(entryPageStation, /* trigger= */ null);
+        return sentinel.noopTo().arriveAt(WebPageStation.newBuilder().withEntryPoint().build());
     }
 
     private static void disableFirstRunFlow() {

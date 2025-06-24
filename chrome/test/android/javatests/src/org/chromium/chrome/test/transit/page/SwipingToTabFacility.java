@@ -5,15 +5,14 @@
 package org.chromium.chrome.test.transit.page;
 
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.Transition;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.test.transit.layouts.LayoutTypeVisibleCondition;
 
 /** Represents the state while swiping the toolbar, moving between two tabs. */
 public class SwipingToTabFacility extends Facility<PageStation> {
-    private final Transition.Trigger mFinishDragTrigger;
+    private final Runnable mFinishDragTrigger;
 
-    public SwipingToTabFacility(Transition.Trigger finishDragTrigger) {
+    public SwipingToTabFacility(Runnable finishDragTrigger) {
         mFinishDragTrigger = finishDragTrigger;
     }
 
@@ -26,7 +25,11 @@ public class SwipingToTabFacility extends Facility<PageStation> {
 
     /** Finish the swipe to land at a {@link PageStation}. */
     public <T extends PageStation> T finishSwipe(PageStation.Builder<T> destinationBuilder) {
-        T destination = destinationBuilder.initFrom(mHostStation).withIsSelectingTabs(1).build();
-        return mHostStation.travelToSync(destination, mFinishDragTrigger);
+        return runTo(mFinishDragTrigger)
+                .arriveAt(
+                        destinationBuilder
+                                .initFrom(mHostStation)
+                                .initSelectingExistingTab()
+                                .build());
     }
 }

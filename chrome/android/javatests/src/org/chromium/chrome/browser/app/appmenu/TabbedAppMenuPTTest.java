@@ -98,7 +98,6 @@ public class TabbedAppMenuPTTest {
                 .arriveAt(
                         WebPageStation.newBuilder()
                                 .withIncognito(false)
-                                .withIsOpeningTabs(0)
                                 .withTabAlreadySelected(tab)
                                 .build());
     }

@@ -53,7 +53,7 @@ public class MainActivityWithURLTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP) // https://crbug.com/1392547
     public void testLaunchActivity() {
         // Launch chrome
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startFromLauncherAtNtp();
         String currentUrl =
                 ChromeTabUtils.getUrlStringOnUiThread(
                         mActivityTestRule.getActivity().getActivityTab());

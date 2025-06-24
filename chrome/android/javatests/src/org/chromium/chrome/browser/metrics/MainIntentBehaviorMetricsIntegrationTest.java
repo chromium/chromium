@@ -116,7 +116,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.writeLongSync(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_TIMESTAMP, timestamp);
         prefs.writeIntSync(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_COUNT, 10);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startFromLauncherAtNtp();
 
         assertEquals(
                 1,
@@ -138,7 +138,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.writeLongSync(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_TIMESTAMP, timestamp);
         prefs.writeIntSync(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_COUNT, 1);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startFromLauncherAtNtp();
 
         assertEquals(
                 0,
@@ -164,7 +164,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
             prefs.writeLongSync(
                     ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_TIMESTAMP, timestamp);
 
-            mActivityTestRule.startFromLauncher();
+            mActivityTestRule.startFromLauncherAtNtp();
 
             SettingsActivity settingsActivity = mSettingsActivityTestRule.startSettingsActivity();
             settingsActivity.finish();

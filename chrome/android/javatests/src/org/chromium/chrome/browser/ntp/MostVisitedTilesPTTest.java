@@ -110,7 +110,6 @@ public class MostVisitedTilesPTTest {
                         .arriveAt(
                                 RegularNewTabPageStation.newBuilder()
                                         .withIncognito(false)
-                                        .withIsOpeningTabs(0)
                                         .withTabAlreadySelected(
                                                 mostVisitedPage.loadedTabElement.get())
                                         .build());

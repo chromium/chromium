@@ -6,11 +6,13 @@ package org.chromium.chrome.test.transit;
 
 import android.content.Intent;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.test.transit.Station;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -75,35 +77,36 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
      *
      * @return the active entry {@link RegularNewTabPageStation}
      */
-    public RegularNewTabPageStation startFromLauncher() {
-        return ChromeTabbedActivityEntryPoints.startFromLauncher(mActivityTestRule);
+    public RegularNewTabPageStation startFromLauncherAtNtp() {
+        return ChromeTabbedActivityEntryPoints.startFromLauncherAtNtp(mActivityTestRule);
+    }
+
+    /** Start the ChromeTabbedActivity as if it was started from the launcher. */
+    @CheckReturnValue
+    public static TripBuilder startFromLauncherTo(ChromeTabbedActivityTestRule ctaTestRule) {
+        return ChromeTabbedActivityEntryPoints.startFromLauncherTo(ctaTestRule);
     }
 
     /**
-     * Start the test by launching Chrome with a given Intent and expecting it to reach the expected
-     * Station.
+     * Start the test by launching Chrome with a given Intent.
      *
      * @param intent the Intent to launch Chrome with
-     * @param expectedStation the state we expect Chrome to reach
-     * @return the active entry {@link Station}
      */
-    public <T extends Station<?>> T startWithIntent(Intent intent, T expectedStation) {
-        return ChromeTabbedActivityEntryPoints.startWithIntent(
-                mActivityTestRule, intent, expectedStation);
+    @CheckReturnValue
+    public TripBuilder startWithIntentTo(Intent intent) {
+        return ChromeTabbedActivityEntryPoints.startWithIntentTo(mActivityTestRule, intent);
     }
 
     /**
-     * Start the test by launching Chrome with a given Intent and expecting it to reach the expected
-     * Station.
+     * Start the test by launching Chrome with a given Intent and url.
      *
      * @param intent the Intent to launch Chrome with
-     * @param expectedStation the state we expect Chrome to reach
-     * @return the active entry {@link Station}
+     * @param url the URL to add to the Intent
      */
-    public <T extends Station<?>> T startWithIntentPlusUrl(
-            Intent intent, String url, T expectedStation) {
-        return ChromeTabbedActivityEntryPoints.startWithIntentPlusUrl(
-                mActivityTestRule, intent, url, expectedStation);
+    @CheckReturnValue
+    public TripBuilder startWithIntentPlusUrlTo(Intent intent, String url) {
+        return ChromeTabbedActivityEntryPoints.startWithIntentPlusUrlTo(
+                mActivityTestRule, intent, url);
     }
 
     /**

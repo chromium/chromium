@@ -81,7 +81,7 @@ public class HistoryPaneStation extends HubBaseStation {
     }
 
     /** One history entry in the history pane. */
-    public class HistoryEntryFacility extends Facility<HistoryPaneStation> {
+    public static class HistoryEntryFacility extends Facility<HistoryPaneStation> {
         public final ViewElement<HistoryItemView> itemElement;
         public final ViewElement<View> titleElement;
         public final ViewElement<View> iconElement;
@@ -102,12 +102,13 @@ public class HistoryPaneStation extends HubBaseStation {
 
         /** Select the entry to open. */
         public WebPageStation selectToOpenWebPage(PageStation previousPage, String url) {
-            return travelToSync(
-                    WebPageStation.newBuilder()
-                            .initFrom(previousPage)
-                            .withExpectedUrlSubstring(url)
-                            .build(),
-                    itemElement.getClickTrigger());
+            return itemElement
+                    .clickTo()
+                    .arriveAt(
+                            WebPageStation.newBuilder()
+                                    .initFrom(previousPage)
+                                    .withExpectedUrlSubstring(url)
+                                    .build());
         }
     }
 

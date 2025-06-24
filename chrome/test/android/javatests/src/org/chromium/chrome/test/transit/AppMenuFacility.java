@@ -142,18 +142,12 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
 
     /** Default behavior for "Open new tab". */
     protected RegularNewTabPageStation createNewTabPageStation() {
-        return RegularNewTabPageStation.newBuilder()
-                .withIsOpeningTabs(1)
-                .withIsSelectingTabs(1)
-                .build();
+        return RegularNewTabPageStation.newBuilder().initOpeningNewTab().build();
     }
 
     /** Default behavior for "Open new Incognito tab". */
     protected IncognitoNewTabPageStation createIncognitoNewTabPageStation() {
-        return IncognitoNewTabPageStation.newBuilder()
-                .withIsOpeningTabs(1)
-                .withIsSelectingTabs(1)
-                .build();
+        return IncognitoNewTabPageStation.newBuilder().initOpeningNewTab().build();
     }
 
     /** Default behavior for "Open new window". */

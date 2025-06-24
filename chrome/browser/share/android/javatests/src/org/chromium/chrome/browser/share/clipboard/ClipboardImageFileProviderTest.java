@@ -81,7 +81,7 @@ public class ClipboardImageFileProviderTest {
         bitmap.compress(Bitmap.CompressFormat.PNG, /*quality = (0-100) */ 100, baos);
         mTestImageData = baos.toByteArray();
 
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startFromLauncherAtNtp();
         FileProviderUtils.setFileProviderUtil(new FileProviderHelper());
     }
 

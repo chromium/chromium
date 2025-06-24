@@ -22,8 +22,8 @@ import java.util.List;
  * <p>As a {@link ConditionalState}, it has a defined lifecycle and must declare {@link Element}s
  * that determine its enter and exit {@link Condition}s.
  *
- * <p>Transitions should be done with {@link Station#travelToSync(Station, Trigger)}. The
- * transit-layer derived class should expose screen-specific methods for the test-layer to use.
+ * <p>Transitions should be done between Stations. The transit-layer derived class should expose
+ * screen-specific methods for the test-layer to use.
  *
  * @param <HostActivity> The activity this station is associate to.
  */
@@ -116,19 +116,6 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
         if (mActivityElement != null) {
             mActivityElement.requireToBeInNewTask();
         }
-    }
-
-    /**
-     * @deprecated Use {@link TripBuilder#arriveAt(Station, Facility[])} instead.
-     */
-    @Deprecated
-    public final <T extends Station<?>> T travelToSync(T destination, @Nullable Trigger trigger) {
-        destination.requireToBeInSameTask(this);
-        StationToStationTrip trip =
-                new StationToStationTrip(
-                        List.of(this), List.of(destination), TransitionOptions.DEFAULT, trigger);
-        trip.transitionSync();
-        return destination;
     }
 
     /**

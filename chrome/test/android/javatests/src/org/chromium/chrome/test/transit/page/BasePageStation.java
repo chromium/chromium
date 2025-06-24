@@ -137,7 +137,9 @@ public class BasePageStation<HostActivity extends ChromeActivity>
             return this;
         }
 
+        /** Do not wait for a tba to be selected; use the current tab. */
         public Builder<PageT> withTabAlreadySelected(Tab currentTab) {
+            mConfig.withIsOpeningTabs(0);
             mConfig.withTabAlreadySelected(currentTab);
             return this;
         }
@@ -167,12 +169,27 @@ public class BasePageStation<HostActivity extends ChromeActivity>
             return this;
         }
 
+        /** Wait for the |url| to be loaded on the current tab. */
         public Builder<PageT> initForLoadingUrlOnSameTab(
                 String url, BasePageStation<?> previousStation) {
             initFrom(previousStation);
             if (mConfig.mExpectedUrlSubstring == null) {
                 mConfig.withExpectedUrlSubstring(url);
             }
+            return this;
+        }
+
+        /** Wait for a new tab to be opened and selected. */
+        public Builder<PageT> initOpeningNewTab() {
+            mConfig.withIsOpeningTabs(1);
+            mConfig.withIsSelectingTabs(1);
+            return this;
+        }
+
+        /** Wait for an existing tab to be selected. */
+        public Builder<PageT> initSelectingExistingTab() {
+            mConfig.withIsOpeningTabs(0);
+            mConfig.withIsSelectingTabs(1);
             return this;
         }
 

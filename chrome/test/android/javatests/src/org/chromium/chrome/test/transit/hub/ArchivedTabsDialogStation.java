@@ -14,7 +14,6 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -58,16 +57,16 @@ public class ArchivedTabsDialogStation
         }
     }
 
-    public SettingsStation<TabArchiveSettingsFragment> openSettings(Trigger settingsTrigger) {
+    public SettingsStation<TabArchiveSettingsFragment> openSettings(Runnable settingsTrigger) {
         assert mTabArchiveSettings.shouldShowDialogIph();
-        return travelToSync(
-                new SettingsStation<>(TabArchiveSettingsFragment.class), settingsTrigger);
+        return runTo(settingsTrigger)
+                .arriveAt(new SettingsStation<>(TabArchiveSettingsFragment.class));
     }
 
     public RegularTabSwitcherStation closeDialog() {
-        return travelToSync(
-                RegularTabSwitcherStation.from(tabModelSelectorElement.get()),
-                closeButtonElement.getClickTrigger());
+        return closeButtonElement
+                .clickTo()
+                .arriveAt(RegularTabSwitcherStation.from(tabModelSelectorElement.get()));
     }
 
     // Private functions.

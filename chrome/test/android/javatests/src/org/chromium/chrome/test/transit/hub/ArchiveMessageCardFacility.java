@@ -23,7 +23,6 @@ public class ArchiveMessageCardFacility extends Facility<TabSwitcherStation> {
     }
 
     public ArchivedTabsDialogStation openArchivedTabsDialog() {
-        return mHostStation.travelToSync(
-                new ArchivedTabsDialogStation(), mTextElement.getClickTrigger());
+        return mTextElement.clickTo().arriveAt(new ArchivedTabsDialogStation());
     }
 }

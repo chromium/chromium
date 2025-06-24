@@ -39,10 +39,10 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabGroupDialogFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -179,10 +179,11 @@ public class QuickDeleteDialogDelegateTest {
     public void testQuickDeleteDialogView_WithoutTabsOrHistory() throws IOException {
         // Close all tabs, which goes to the tab switcher.
         RegularTabSwitcherStation tabSwitcher =
-                mPage.travelToSync(
-                        new RegularTabSwitcherStation(
-                                /* regularTabsExist= */ false, /* incognitoTabsExist= */ false),
-                        this::closeAllTabsProgrammatically);
+                ChromeTriggers.closeAllTabsProgrammaticallyTo(mPage)
+                        .arriveAt(
+                                new RegularTabSwitcherStation(
+                                        /* regularTabsExist= */ false,
+                                        /* incognitoTabsExist= */ false));
         assertEquals(0, getNumberOfTabsInCurrentTabModel());
 
         QuickDeleteDialogFacility dialog = tabSwitcher.openAppMenu().clearBrowsingData();
@@ -201,17 +202,6 @@ public class QuickDeleteDialogDelegateTest {
         // Return to a page for InitialStateRule to reset state.
         dialog.clickCancel();
         tabSwitcher.openNewTab();
-    }
-
-    private void closeAllTabsProgrammatically() {
-        runOnUiThreadBlocking(
-                () ->
-                        mActivity
-                                .getCurrentTabModel()
-                                .getTabRemover()
-                                .closeTabs(
-                                        TabClosureParams.closeAllTabs().build(),
-                                        /* allowDialog= */ false));
     }
 
     @Test
