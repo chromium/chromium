@@ -29,10 +29,7 @@ from cronet.tools.update_api import CLASS_RE  # pylint: disable=wrong-import-pos
 
 METHOD_RE = re.compile(r".* ([^ ]*)\(.*\)( .+)?;")
 
-# Allowed exceptions.  Adding anything to this list is dangerous and should be
-# avoided if possible.  For now these exceptions are for APIs that existed in
-# the first version of Cronet and will be supported forever.
-# TODO(pauljensen): Remove these.
+# Adding anything to this list is dangerous: do so only if you deeply understand Cronet's API/IMPL layering.
 ALLOWED_EXCEPTIONS = [
     'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect -> org/chromium/net/UrlRequest/cancel:()V',
     'org.chromium.net.urlconnection.CronetHttpURLConnection/getResponseMessage -> org/chromium/net/UrlResponseInfo/getHttpStatusText:()Ljava/lang/String;',
@@ -72,6 +69,38 @@ ALLOWED_EXCEPTIONS = [
     'org.chromium.net.impl.VersionSafeProxyOptions/createProxyOptionsProto -> org/chromium/net/Proxy/getScheme:()I',
     'org.chromium.net.impl.VersionSafeProxyCallback/onBeforeTunnelRequest -> org/chromium/net/Proxy$Callback/onBeforeTunnelRequest:()Ljava/util/List;',
     'org.chromium.net.impl.VersionSafeProxyCallback/onTunnelHeadersReceived -> org/chromium/net/Proxy$Callback/onTunnelHeadersReceived:(Ljava/util/List;I)Z',
+    'org.chromium.net.impl.VersionSafeCallbacks$UrlRequestStatusListener/onStatus -> org/chromium/net/UrlRequest$StatusListener/onStatus:(I)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$UrlRequestCallback/onRedirectReceived -> org/chromium/net/UrlRequest$Callback/onRedirectReceived:(Lorg/chromium/net/UrlRequest;Lorg/chromium/net/UrlResponseInfo;Ljava/lang/String;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$UrlRequestCallback/onResponseStarted -> org/chromium/net/UrlRequest$Callback/onResponseStarted:(Lorg/chromium/net/UrlRequest;Lorg/chromium/net/UrlResponseInfo;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$UrlRequestCallback/onReadCompleted -> org/chromium/net/UrlRequest$Callback/onReadCompleted:(Lorg/chromium/net/UrlRequest;Lorg/chromium/net/UrlResponseInfo;Ljava/nio/ByteBuffer;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$UrlRequestCallback/onSucceeded -> org/chromium/net/UrlRequest$Callback/onSucceeded:(Lorg/chromium/net/UrlRequest;Lorg/chromium/net/UrlResponseInfo;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$UrlRequestCallback/onFailed -> org/chromium/net/UrlRequest$Callback/onFailed:(Lorg/chromium/net/UrlRequest;Lorg/chromium/net/UrlResponseInfo;Lorg/chromium/net/CronetException;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$UrlRequestCallback/onCanceled -> org/chromium/net/UrlRequest$Callback/onCanceled:(Lorg/chromium/net/UrlRequest;Lorg/chromium/net/UrlResponseInfo;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$UploadDataProviderWrapper/getLength -> org/chromium/net/UploadDataProvider/getLength:()J',
+    'org.chromium.net.impl.VersionSafeCallbacks$UploadDataProviderWrapper/read -> org/chromium/net/UploadDataProvider/read:(Lorg/chromium/net/UploadDataSink;Ljava/nio/ByteBuffer;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$UploadDataProviderWrapper/rewind -> org/chromium/net/UploadDataProvider/rewind:(Lorg/chromium/net/UploadDataSink;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$UploadDataProviderWrapper/close -> org/chromium/net/UploadDataProvider/close:()V',
+    'org.chromium.net.impl.VersionSafeCallbacks$RequestFinishedInfoListener/org.chromium.net.impl.VersionSafeCallbacks$RequestFinishedInfoListener -> org/chromium/net/RequestFinishedInfo$Listener/getExecutor:()Ljava/util/concurrent/Executor;',
+    'org.chromium.net.impl.VersionSafeCallbacks$RequestFinishedInfoListener/onRequestFinished -> org/chromium/net/RequestFinishedInfo$Listener/onRequestFinished:(Lorg/chromium/net/RequestFinishedInfo;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$RequestFinishedInfoListener/getExecutor -> org/chromium/net/RequestFinishedInfo$Listener/getExecutor:()Ljava/util/concurrent/Executor;',
+    'org.chromium.net.impl.VersionSafeCallbacks$NetworkQualityThroughputListenerWrapper/org.chromium.net.impl.VersionSafeCallbacks$NetworkQualityThroughputListenerWrapper -> org/chromium/net/NetworkQualityThroughputListener/getExecutor:()Ljava/util/concurrent/Executor;',
+    'org.chromium.net.impl.VersionSafeCallbacks$NetworkQualityThroughputListenerWrapper/onThroughputObservation -> org/chromium/net/NetworkQualityThroughputListener/onThroughputObservation:(IJI)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$NetworkQualityThroughputListenerWrapper/getExecutor -> org/chromium/net/NetworkQualityThroughputListener/getExecutor:()Ljava/util/concurrent/Executor;',
+    'org.chromium.net.impl.VersionSafeCallbacks$NetworkQualityRttListenerWrapper/org.chromium.net.impl.VersionSafeCallbacks$NetworkQualityRttListenerWrapper -> org/chromium/net/NetworkQualityRttListener/getExecutor:()Ljava/util/concurrent/Executor;',
+    'org.chromium.net.impl.VersionSafeCallbacks$NetworkQualityRttListenerWrapper/onRttObservation -> org/chromium/net/NetworkQualityRttListener/onRttObservation:(IJI)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$NetworkQualityRttListenerWrapper/getExecutor -> org/chromium/net/NetworkQualityRttListener/getExecutor:()Ljava/util/concurrent/Executor;',
+    'org.chromium.net.impl.VersionSafeCallbacks$LibraryLoader/loadLibrary -> org/chromium/net/CronetEngine$Builder$LibraryLoader/loadLibrary:(Ljava/lang/String;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$BidirectionalStreamCallback/onStreamReady -> org/chromium/net/BidirectionalStream$Callback/onStreamReady:(Lorg/chromium/net/BidirectionalStream;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$BidirectionalStreamCallback/onResponseHeadersReceived -> org/chromium/net/BidirectionalStream$Callback/onResponseHeadersReceived:(Lorg/chromium/net/BidirectionalStream;Lorg/chromium/net/UrlResponseInfo;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$BidirectionalStreamCallback/onReadCompleted -> org/chromium/net/BidirectionalStream$Callback/onReadCompleted:(Lorg/chromium/net/BidirectionalStream;Lorg/chromium/net/UrlResponseInfo;Ljava/nio/ByteBuffer;Z)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$BidirectionalStreamCallback/onWriteCompleted -> org/chromium/net/BidirectionalStream$Callback/onWriteCompleted:(Lorg/chromium/net/BidirectionalStream;Lorg/chromium/net/UrlResponseInfo;Ljava/nio/ByteBuffer;Z)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$BidirectionalStreamCallback/onResponseTrailersReceived -> org/chromium/net/BidirectionalStream$Callback/onResponseTrailersReceived:(Lorg/chromium/net/BidirectionalStream;Lorg/chromium/net/UrlResponseInfo;Lorg/chromium/net/UrlResponseInfo$HeaderBlock;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$BidirectionalStreamCallback/onSucceeded -> org/chromium/net/BidirectionalStream$Callback/onSucceeded:(Lorg/chromium/net/BidirectionalStream;Lorg/chromium/net/UrlResponseInfo;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$BidirectionalStreamCallback/onFailed -> org/chromium/net/BidirectionalStream$Callback/onFailed:(Lorg/chromium/net/BidirectionalStream;Lorg/chromium/net/UrlResponseInfo;Lorg/chromium/net/CronetException;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$BidirectionalStreamCallback/onCanceled -> org/chromium/net/BidirectionalStream$Callback/onCanceled:(Lorg/chromium/net/BidirectionalStream;Lorg/chromium/net/UrlResponseInfo;)V',
+    'org.chromium.net.impl.VersionSafeCallbacks$ApiVersion/getMaximumAvailableApiLevel -> org/chromium/net/ApiVersion/getApiLevel:()I',
+    'org.chromium.net.impl.VersionSafeCallbacks$ApiVersion/getMaximumAvailableApiLevel -> org/chromium/net/ApiVersion/getMaximumAvailableApiLevel:()I',
+    'org.chromium.net.impl.VersionSafeCallbacks$ApiVersion/getCronetVersion -> org/chromium/net/ApiVersion/getCronetVersion:()Ljava/lang/String;',
 ]
 
 JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
@@ -103,9 +132,6 @@ def find_api_calls(dump, api_classes, bad_calls):
           # TODO(pauljensen): Look into enforcing restricting constructor calls.
           # https://crbug.com/674975
           if callee_method.startswith('"<init>"'):
-            continue
-          # Ignore VersionSafe calls
-          if 'VersionSafeCallbacks' in caller_class:
             continue
           bad_call = '%s/%s -> %s/%s' % (caller_class, caller_method,
                                          callee_class, callee_method)
