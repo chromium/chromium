@@ -6,11 +6,9 @@ package org.chromium.content.browser.accessibility;
 
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellActivityTestRule.NODE_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellActivityTestRule.RESULTS_NULL;
-import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sClassNameMatcher;
 
 import android.annotation.SuppressLint;
 
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -86,8 +84,10 @@ public class WebContentsAccessibilityTreeTest {
         //                 expectationFilePath,
         //                 expectationFile + ASSIST_DATA_FILE_SUFFIX);
 
-        // Generate full AccessibilityNodeInfo and AssistData trees
-        String accessibilityNodeInfoTree = generateAccessibilityNodeInfoTree();
+        // Generate full AccessibilityNodeInfo and AssistData trees.
+        String accessibilityNodeInfoTree =
+                mActivityTestRule.generateAccessibilityNodeInfoTree(
+                        sIncludeScreenSizeDependentAttributes);
         String assistDataTree = generateViewStructureTree();
         Assert.assertNotNull(RESULTS_NULL, accessibilityNodeInfoTree);
         Assert.assertNotNull(RESULTS_NULL, assistDataTree);
@@ -175,32 +175,6 @@ public class WebContentsAccessibilityTreeTest {
         performTest(inputFile, expectationFile, BASE_HTML_FILE_PATH);
     }
 
-    /**
-     * Generate the full AccessibilityNodeInfo tree as a String of text.
-     *
-     * @return String The AccessibilityNodeInfo tree in text form
-     */
-    private String generateAccessibilityNodeInfoTree() {
-        StringBuilder builder = new StringBuilder();
-
-        // Find the root node and generate its string.
-        int rootNodevvId =
-                mActivityTestRule.waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
-        AccessibilityNodeInfoCompat nodeInfo = createAccessibilityNodeInfo(rootNodevvId);
-        builder.append(
-                AccessibilityNodeInfoUtils.toString(
-                        nodeInfo, sIncludeScreenSizeDependentAttributes));
-
-        // Recursively generate strings for all descendants.
-        for (int i = 0; i < nodeInfo.getChildCount(); ++i) {
-            int childId = mActivityTestRule.getChildId(nodeInfo, i);
-            AccessibilityNodeInfoCompat childNodeInfo = createAccessibilityNodeInfo(childId);
-            recursivelyFormatTree(childNodeInfo, builder, "++");
-        }
-
-        return builder.toString();
-    }
-
     private String generateViewStructureTree() {
         TestViewStructure testViewStructure = new TestViewStructure();
         testViewStructure.setShouldIncludeScreenSizeDependentAttributes(
@@ -211,33 +185,6 @@ public class WebContentsAccessibilityTreeTest {
                 mActivityTestRule.mWcax::hasFinishedLatestAccessibilitySnapshotForTesting,
                 "Failed to get AssistData.");
         return testViewStructure.toString();
-    }
-
-    /**
-     * Recursively add AccessibilityNodeInfo descendants to the given builder.
-     *
-     * @param node Given object to print all descendants for
-     * @param builder builder to add generated Strings to
-     * @param indent prefix to indent each generation, e.g. "++"
-     */
-    private void recursivelyFormatTree(
-            AccessibilityNodeInfoCompat node, StringBuilder builder, String indent) {
-        builder.append("\n")
-                .append(indent)
-                .append(
-                        AccessibilityNodeInfoUtils.toString(
-                                node, sIncludeScreenSizeDependentAttributes));
-        for (int j = 0; j < node.getChildCount(); ++j) {
-            int childId = mActivityTestRule.getChildId(node, j);
-            AccessibilityNodeInfoCompat childNodeInfo = createAccessibilityNodeInfo(childId);
-            recursivelyFormatTree(childNodeInfo, builder, indent + "++");
-        }
-    }
-
-    // Helper method to create an AccessibilityNodeInfo object.
-    private AccessibilityNodeInfoCompat createAccessibilityNodeInfo(int virtualViewId) {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityTestRule.mNodeProvider.createAccessibilityNodeInfo(virtualViewId));
     }
 
     // ------------------ ACCNAME TESTS ------------------ //
