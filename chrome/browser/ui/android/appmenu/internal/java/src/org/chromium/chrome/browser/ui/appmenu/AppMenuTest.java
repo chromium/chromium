@@ -71,8 +71,6 @@ import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.ToastManager;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -923,44 +921,42 @@ public class AppMenuTest {
     @Test
     @SmallTest
     public void testCalculateHeightForItems_enoughSpace() throws Exception {
-        showMenuAndAssert();
+        int[] heightList = new int[3];
+        boolean[] canBeLastList = new boolean[3];
 
-        List<Integer> menuItemIds = new ArrayList<>();
-        List<Integer> heightList = new ArrayList<>();
-        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
+        heightList[0] = 10;
+        canBeLastList[0] = true;
+
+        heightList[1] = 10;
+        canBeLastList[1] = true;
+
+        heightList[2] = 10;
+        canBeLastList[2] = true;
 
         int height =
-                mAppMenuHandler
-                        .getAppMenu()
-                        .calculateHeightForItems(
-                                menuItemIds,
-                                heightList,
-                                /* groupDividerResourceId= */ -1,
-                                /* screenSpaceForItems= */ 35);
+                AppMenu.calculateHeightForItems(
+                        heightList, canBeLastList, /* screenSpaceForItems= */ 35);
         Assert.assertEquals(30, height);
     }
 
     @Test
     @SmallTest
     public void testCalculateHeightForItems_notEnoughSpaceForOneItem() throws Exception {
-        showMenuAndAssert();
+        int[] heightList = new int[3];
+        boolean[] canBeLastList = new boolean[3];
 
-        List<Integer> menuItemIds = new ArrayList<>();
-        List<Integer> heightList = new ArrayList<>();
-        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
+        heightList[0] = 10;
+        canBeLastList[0] = true;
+
+        heightList[1] = 10;
+        canBeLastList[1] = true;
+
+        heightList[2] = 10;
+        canBeLastList[2] = true;
 
         int height =
-                mAppMenuHandler
-                        .getAppMenu()
-                        .calculateHeightForItems(
-                                menuItemIds,
-                                heightList,
-                                /* groupDividerResourceId= */ -1,
-                                /* screenSpaceForItems= */ 26);
+                AppMenu.calculateHeightForItems(
+                        heightList, canBeLastList, /* screenSpaceForItems= */ 26);
         // The space only can fit the 1st and 2nd items and the partial 3rd item.
         Assert.assertEquals(25, height);
     }
@@ -968,22 +964,21 @@ public class AppMenuTest {
     @Test
     @SmallTest
     public void testCalculateHeightForItems_notEnoughSpaceForTwoItem() throws Exception {
-        showMenuAndAssert();
+        int[] heightList = new int[3];
+        boolean[] canBeLastList = new boolean[3];
 
-        List<Integer> menuItemIds = new ArrayList<>();
-        List<Integer> heightList = new ArrayList<>();
-        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
+        heightList[0] = 10;
+        canBeLastList[0] = true;
+
+        heightList[1] = 10;
+        canBeLastList[1] = true;
+
+        heightList[2] = 10;
+        canBeLastList[2] = true;
 
         int height =
-                mAppMenuHandler
-                        .getAppMenu()
-                        .calculateHeightForItems(
-                                menuItemIds,
-                                heightList,
-                                /* groupDividerResourceId= */ -1,
-                                /* screenSpaceForItems= */ 24);
+                AppMenu.calculateHeightForItems(
+                        heightList, canBeLastList, /* screenSpaceForItems= */ 24);
         // The space only can fit the full 1st item, the full 2nd items and the partial 3rd item.
         // The space for the 3rd item is 4, but since the menu is small enough, we show the maximum
         // available height instead of switching to the partial 3rd item.
@@ -993,23 +988,24 @@ public class AppMenuTest {
     @Test
     @SmallTest
     public void testCalculateHeightForItems_notEnoughSpaceForThreeItem() throws Exception {
-        showMenuAndAssert();
+        int[] heightList = new int[4];
+        boolean[] canBeLastList = new boolean[4];
 
-        List<Integer> menuItemIds = new ArrayList<>();
-        List<Integer> heightList = new ArrayList<>();
-        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 3, /* height= */ 10);
+        heightList[0] = 10;
+        canBeLastList[0] = true;
+
+        heightList[1] = 10;
+        canBeLastList[1] = true;
+
+        heightList[2] = 10;
+        canBeLastList[2] = true;
+
+        heightList[3] = 10;
+        canBeLastList[3] = true;
 
         int height =
-                mAppMenuHandler
-                        .getAppMenu()
-                        .calculateHeightForItems(
-                                menuItemIds,
-                                heightList,
-                                /* groupDividerResourceId= */ -1,
-                                /* screenSpaceForItems= */ 34);
+                AppMenu.calculateHeightForItems(
+                        heightList, canBeLastList, /* screenSpaceForItems= */ 34);
         // The space only can fit the full 1st item, the full 2nd item, the full 3rd item, and the
         // partial 4th item. But the space for 4th item is 4, which is not enough to show partial
         // 3rd item(5 = LAST_ITEM_SHOW_FRACTION * 10), we show the partial 3rd item instead.
@@ -1019,24 +1015,27 @@ public class AppMenuTest {
     @Test
     @SmallTest
     public void testCalculateHeightForItems_notEnoughSpaceForDivider() throws Exception {
-        showMenuAndAssert();
+        int[] heightList = new int[5];
+        boolean[] canBeLastList = new boolean[5];
 
-        List<Integer> menuItemIds = new ArrayList<>();
-        List<Integer> heightList = new ArrayList<>();
-        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 3, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 4, /* height= */ 10);
+        heightList[0] = 10;
+        canBeLastList[0] = true;
+
+        heightList[1] = 10;
+        canBeLastList[1] = true;
+
+        heightList[2] = 10;
+        canBeLastList[2] = true;
+
+        heightList[3] = 10;
+        canBeLastList[3] = false;
+
+        heightList[4] = 10;
+        canBeLastList[4] = true;
 
         int height =
-                mAppMenuHandler
-                        .getAppMenu()
-                        .calculateHeightForItems(
-                                menuItemIds,
-                                heightList,
-                                /* groupDividerResourceId= */ 3,
-                                /* screenSpaceForItems= */ 36);
+                AppMenu.calculateHeightForItems(
+                        heightList, canBeLastList, /* screenSpaceForItems= */ 36);
         // The space only can fit the 1st, 2nd, 3rd, and partial 4th item. But the 4th item is a
         // divider line, so we show only the partial 3rd item.
         Assert.assertEquals(25, height);
@@ -1045,23 +1044,24 @@ public class AppMenuTest {
     @Test
     @SmallTest
     public void testCalculateHeightForItems_showPartialDivider() throws Exception {
-        showMenuAndAssert();
+        int[] heightList = new int[4];
+        boolean[] canBeLastList = new boolean[4];
 
-        List<Integer> menuItemIds = new ArrayList<>();
-        List<Integer> heightList = new ArrayList<>();
-        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 3, /* height= */ 10);
+        heightList[0] = 10;
+        canBeLastList[0] = true;
+
+        heightList[1] = 10;
+        canBeLastList[1] = true;
+
+        heightList[2] = 10;
+        canBeLastList[2] = false;
+
+        heightList[3] = 10;
+        canBeLastList[3] = true;
 
         int height =
-                mAppMenuHandler
-                        .getAppMenu()
-                        .calculateHeightForItems(
-                                menuItemIds,
-                                heightList,
-                                /* groupDividerResourceId= */ 2,
-                                /* screenSpaceForItems= */ 26);
+                AppMenu.calculateHeightForItems(
+                        heightList, canBeLastList, /* screenSpaceForItems= */ 26);
         // The space only can fit the 1st, 2nd and the partial 3rd item. The third item
         // is a divider line, and the menu is small enough that we still want to use all available
         // space.
@@ -1072,23 +1072,24 @@ public class AppMenuTest {
     @SmallTest
     public void testCalculateHeightForItems_notEnoughSpaceForItemShowPartialDivider()
             throws Exception {
-        showMenuAndAssert();
+        int[] heightList = new int[4];
+        boolean[] canBeLastList = new boolean[4];
 
-        List<Integer> menuItemIds = new ArrayList<>();
-        List<Integer> heightList = new ArrayList<>();
-        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 3, /* height= */ 10);
+        heightList[0] = 10;
+        canBeLastList[0] = true;
+
+        heightList[1] = 10;
+        canBeLastList[1] = true;
+
+        heightList[2] = 10;
+        canBeLastList[2] = false;
+
+        heightList[3] = 10;
+        canBeLastList[3] = true;
 
         int height =
-                mAppMenuHandler
-                        .getAppMenu()
-                        .calculateHeightForItems(
-                                menuItemIds,
-                                heightList,
-                                /* groupDividerResourceId= */ 2,
-                                /* screenSpaceForItems= */ 34);
+                AppMenu.calculateHeightForItems(
+                        heightList, canBeLastList, /* screenSpaceForItems= */ 34);
         // The space only can fit the full 1st, 2nd and 3rd item and the partial 4th item.
         // But the space for 4th item is 4, which is not enough to show partial 4th item(5 =
         // LAST_ITEM_SHOW_FRACTION * 10), so we should show the partial 3rd item instead. The third
@@ -1100,22 +1101,21 @@ public class AppMenuTest {
     @Test
     @SmallTest
     public void testCalculateHeightForItems_minimalHight() throws Exception {
-        showMenuAndAssert();
+        int[] heightList = new int[3];
+        boolean[] canBeLastList = new boolean[3];
 
-        List<Integer> menuItemIds = new ArrayList<>();
-        List<Integer> heightList = new ArrayList<>();
-        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
+        heightList[0] = 10;
+        canBeLastList[0] = true;
+
+        heightList[1] = 10;
+        canBeLastList[1] = true;
+
+        heightList[2] = 10;
+        canBeLastList[2] = true;
 
         int height =
-                mAppMenuHandler
-                        .getAppMenu()
-                        .calculateHeightForItems(
-                                menuItemIds,
-                                heightList,
-                                /* groupDividerResourceId= */ -1,
-                                /* screenSpaceForItems= */ 4);
+                AppMenu.calculateHeightForItems(
+                        heightList, canBeLastList, /* screenSpaceForItems= */ 4);
         // The space is not enough for any item, but we still show 1 and half items at least.
         Assert.assertEquals(15, height);
     }
@@ -1124,22 +1124,21 @@ public class AppMenuTest {
     @SmallTest
     public void testCalculateHeightForItems_minimalHight_notEnoughSpaceForDivider()
             throws Exception {
-        showMenuAndAssert();
+        int[] heightList = new int[3];
+        boolean[] canBeLastList = new boolean[3];
 
-        List<Integer> menuItemIds = new ArrayList<>();
-        List<Integer> heightList = new ArrayList<>();
-        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
-        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
+        heightList[0] = 10;
+        canBeLastList[0] = true;
+
+        heightList[1] = 10;
+        canBeLastList[1] = false;
+
+        heightList[2] = 10;
+        canBeLastList[2] = true;
 
         int height =
-                mAppMenuHandler
-                        .getAppMenu()
-                        .calculateHeightForItems(
-                                menuItemIds,
-                                heightList,
-                                /* groupDividerResourceId= */ 1,
-                                /* screenSpaceForItems= */ 6);
+                AppMenu.calculateHeightForItems(
+                        heightList, canBeLastList, /* screenSpaceForItems= */ 6);
         // The space is not enough for any item, but we still show 1 and half items at least.
         Assert.assertEquals(15, height);
     }
@@ -1147,19 +1146,9 @@ public class AppMenuTest {
     @Test
     @SmallTest
     public void testCalculateHeightForItems_nagativeSpaceForZeroItems() throws Exception {
-        showMenuAndAssert();
-
-        List<Integer> menuItemIds = new ArrayList<>();
-        List<Integer> heightList = new ArrayList<>();
-
         int height =
-                mAppMenuHandler
-                        .getAppMenu()
-                        .calculateHeightForItems(
-                                menuItemIds,
-                                heightList,
-                                /* groupDividerResourceId= */ 1,
-                                /* screenSpaceForItems= */ -1);
+                AppMenu.calculateHeightForItems(
+                        new int[0], new boolean[0], /* screenSpaceForItems= */ -1);
         // Make sure there are no crashes.
         Assert.assertEquals(0, height);
     }
@@ -1204,12 +1193,6 @@ public class AppMenuTest {
         showMenuAndAssert();
         mRenderTestRule.render(
                 mAppMenuHandler.getAppMenu().getPopup().getContentView(), "app_menu_low_end_dark");
-    }
-
-    private void createMenuItem(
-            List<Integer> menuItemIds, List<Integer> heightList, int id, int height) {
-        menuItemIds.add(id);
-        heightList.add(height);
     }
 
     private void showMenuAndAssert() throws TimeoutException {

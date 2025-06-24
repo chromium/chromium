@@ -63,6 +63,7 @@ import java.util.function.Function;
 class AppMenuHandlerImpl
         implements AppMenuHandler,
                 AppMenuClickHandler,
+                AppMenu.AppMenuVisibilityDelegate,
                 StartStopWithNativeObserver,
                 ConfigurationChangedObserver {
 
@@ -271,21 +272,49 @@ class AppMenuHandlerImpl
         ContextThemeWrapper wrapper =
                 new ContextThemeWrapper(mContext, R.style.OverflowMenuThemeOverlay);
 
+        TypedArray a =
+                wrapper.obtainStyledAttributes(
+                        new int[] {android.R.attr.listPreferredItemHeightSmall});
+        int itemRowHeight = a.getDimensionPixelSize(0, 0);
+        a.recycle();
+
         if (mAppMenu == null) {
-            TypedArray a =
-                    wrapper.obtainStyledAttributes(
-                            new int[] {android.R.attr.listPreferredItemHeightSmall});
-            int itemRowHeight = a.getDimensionPixelSize(0, 0);
-            a.recycle();
-            mAppMenu = new AppMenu(itemRowHeight, this, mContext.getResources());
+            mAppMenu = new AppMenu(this, mContext.getResources());
             mAppMenuDragHelper = new AppMenuDragHelper(mContext, mAppMenu, itemRowHeight);
         }
         setupModelForHighlightAndClick(mModelList, mHighlightMenuId, this);
-        AppMenuAdapter adapter = new AppMenuAdapter(mModelList);
-        mAppMenu.updateMenu(mModelList, adapter);
 
+        AppMenuAdapter adapter = new AppMenuAdapter(mModelList);
         SparseArray<Function<Context, Integer>> customSizingProviders = new SparseArray<>();
         registerViewBinders(adapter, customSizingProviders, mDelegate.shouldShowIconBeforeItem());
+
+        AppMenu.InitialSizingHelper initialSizingHelper =
+                new AppMenu.InitialSizingHelper() {
+                    @Override
+                    public int getInitialHeightForView(int index) {
+                        if (mModelList == null) {
+                            assert false : "ModelList is null";
+                            return 0;
+                        }
+                        Function<Context, Integer> customSizingProvider =
+                                customSizingProviders.get(mModelList.get(index).type);
+                        if (customSizingProvider != null) {
+                            return customSizingProvider.apply(mContext);
+                        }
+                        return itemRowHeight;
+                    }
+
+                    @Override
+                    public boolean canBeLastVisibleInitialView(int index) {
+                        if (mModelList == null) {
+                            assert false : "ModelList is null";
+                            return false;
+                        }
+                        return mModelList.get(index).type != AppMenuItemType.DIVIDER;
+                    }
+                };
+
+        mAppMenu.updateMenu(initialSizingHelper, adapter);
 
         Point pt = new Point();
         display.getSize(pt);
@@ -307,7 +336,6 @@ class AppMenuHandlerImpl
                                     finalIsByPermanentButton,
                                     rotation,
                                     mAppRect.get(),
-                                    customSizingProviders,
                                     startDragging);
                             // https://github.com/uber/NullAway/issues/1190
                             assumeNonNull(mKeyboardVisibilityListener);
@@ -324,13 +352,13 @@ class AppMenuHandlerImpl
                     isByPermanentButton,
                     rotation,
                     mAppRect.get(),
-                    customSizingProviders,
                     startDragging);
         }
         return true;
     }
 
-    void appMenuDismissed() {
+    @Override
+    public void appMenuDismissed() {
         assumeNonNull(mAppMenuDragHelper);
         mAppMenuDragHelper.finishDragging();
         mDelegate.onMenuDismissed();
@@ -435,30 +463,20 @@ class AppMenuHandlerImpl
                 .buildAndShow();
     }
 
-    /**
-     * Called by AppMenu to report that the App Menu visibility has changed.
-     *
-     * @param isVisible Whether the App Menu is showing.
-     */
-    void onMenuVisibilityChanged(boolean isVisible) {
+    @Override
+    public void onMenuVisibilityChanged(boolean isVisible) {
         for (int i = 0; i < mObservers.size(); ++i) {
             mObservers.get(i).onMenuVisibilityChanged(isVisible);
         }
     }
 
-    /**
-     * A notification that the header view has been inflated.
-     * @param view The inflated view.
-     */
-    void onHeaderViewInflated(View view) {
+    @Override
+    public void onHeaderViewInflated(View view) {
         if (mDelegate != null) mDelegate.onHeaderViewInflated(this, view);
     }
 
-    /**
-     * A notification that the footer view has been inflated.
-     * @param view The inflated view.
-     */
-    void onFooterViewInflated(View view) {
+    @Override
+    public void onFooterViewInflated(View view) {
         if (mDelegate != null) mDelegate.onFooterViewInflated(this, view);
     }
 
@@ -612,7 +630,6 @@ class AppMenuHandlerImpl
             boolean isByPermanentButton,
             Integer rotation,
             Rect appRect,
-            SparseArray<Function<Context, Integer>> customSizingProviders,
             boolean startDragging) {
         // Use full size of window for abnormal appRect.
         if (appRect.left < 0 && appRect.top < 0) {
@@ -639,9 +656,7 @@ class AppMenuHandlerImpl
                 appRect,
                 footerResourceId,
                 headerResourceId,
-                mDelegate.getGroupDividerId(),
                 mHighlightMenuId,
-                customSizingProviders,
                 mDelegate.isMenuIconAtStart(),
                 mBrowserControlsStateProvider.getControlsPosition(),
                 addTopPaddingBeforeFirstRow());
