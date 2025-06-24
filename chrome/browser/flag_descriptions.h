@@ -4781,6 +4781,9 @@ extern const char kCrosPrivacyHubDescription[];
 extern const char kCrosSeparateGeoApiKeyName[];
 extern const char kCrosSeparateGeoApiKeyDescription[];
 
+extern const char kCrosCachedLocationProviderName[];
+extern const char kCrosCachedLocationProviderDescription[];
+
 extern const char kCrOSEnforceMonoAudioCaptureName[];
 extern const char kCrOSEnforceMonoAudioCaptureDescription[];
 

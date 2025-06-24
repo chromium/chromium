@@ -8808,6 +8808,7 @@ from previous Chrome versions.
       label="AndroidTabDeclutterAutoDeleteKillSwitch:disabled"/>
   <int value="-1930487223"
       label="EnableFrameSinkDesktopCapturerInCrd:disabled"/>
+  <int value="-1928515691" label="CachedLocationProvider:disabled"/>
   <int value="-1928198763" label="enable-async-dns"/>
   <int value="-1927968708" label="OmniboxPedalsAndroidBatch1:disabled"/>
   <int value="-1927080237" label="Vulkan:enabled"/>
@@ -15827,6 +15828,7 @@ from previous Chrome versions.
   <int value="691982483" label="WifiConnectMacAddressRandomization:disabled"/>
   <int value="693012666" label="QuickUnlockPin:disabled"/>
   <int value="693480759" label="PageInfoAboutThisSiteEn:disabled"/>
+  <int value="693570345" label="CachedLocationProvider:enabled"/>
   <int value="693894532" label="LauncherOmniboxPublishLogicLog:enabled"/>
   <int value="694016981" label="query-tiles-more-trending"/>
   <int value="694165544" label="NtpComprehensiveTheming:disabled"/>

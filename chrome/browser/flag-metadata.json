@@ -3054,6 +3054,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-cros-cached-location-provider",
+    "owners": [ "zauri@google.com", "cros-privacy-features-dev@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-cros-diacritics-use-replace-surrounding-text",
     "owners": ["jopalmer@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 120

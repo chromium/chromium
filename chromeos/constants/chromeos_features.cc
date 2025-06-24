@@ -24,6 +24,12 @@ BASE_FEATURE(kBluetoothWifiQSPodRefresh,
              "BluetoothWifiQSPodRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// System location provider will use caching to optimize GCP usage. This flag
+// will be enabled with Finch.
+BASE_FEATURE(kCachedLocationProvider,
+             "CachedLocationProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables cloud game features.
 BASE_FEATURE(kCloudGamingDevice,
              "CloudGamingDevice",
@@ -409,6 +415,10 @@ bool IsBatteryBadgeIconEnabled() {
 
 bool IsBluetoothWifiQSPodRefreshEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothWifiQSPodRefresh);
+}
+
+bool IsCachedLocationProviderEnabled() {
+  return base::FeatureList::IsEnabled(kCachedLocationProvider);
 }
 
 bool IsCloudGamingDeviceEnabled() {

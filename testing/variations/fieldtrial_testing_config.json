@@ -7260,6 +7260,21 @@
             ]
         }
     ],
+    "CrosCachedLocationProvider": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CachedLocationProvider"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrosSeparateGeoApiKey": [
         {
             "platforms": [

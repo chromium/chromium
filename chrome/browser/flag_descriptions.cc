@@ -8217,6 +8217,15 @@ const char kCrosSeparateGeoApiKeyDescription[] =
     "If enabled, ChromeOS system services and Chrome-on-ChromeOS will use "
     "different API keys and GCP endpoint to resolve location.";
 
+const char kCrosCachedLocationProviderName[] =
+    "Use Caching in System Location Provider to optimize GCP utilization";
+const char kCrosCachedLocationProviderDescription[] =
+    "If enabled, System Location Provider will cache last resolved location "
+    "and reuse it in subsequent calls, when deemed necessary. Cache eviction "
+    "algorithm will be based on elapsed time and proximity information such as"
+    "wifi/cellular scan data. Enabling this feature will NOT incur extra power "
+    "overhead.";
+
 const char kDisableIdleSocketsCloseOnMemoryPressureName[] =
     "Disable closing idle sockets on memory pressure";
 const char kDisableIdleSocketsCloseOnMemoryPressureDescription[] =
