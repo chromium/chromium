@@ -3835,7 +3835,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3402" label="OBSOLETE_BluetoothRemoteGATTCharacteristic_Uuid"/>
   <int value="3403" label="OBSOLETE_BluetoothRemoteGATTDescriptor_Uuid"/>
   <int value="3404" label="OBSOLETE_BluetoothRemoteGATTService_Uuid"/>
-  <int value="3405" label="GPUAdapter_Name"/>
+  <int value="3405" label="OBSOLETE_GPUAdapter_Name"/>
   <int value="3406" label="OBSOLETE_WindowScreenInternal"/>
   <int value="3407" label="OBSOLETE_WindowScreenPrimary"/>
   <int value="3408" label="ThirdPartyCookieRead"/>
@@ -6085,7 +6085,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5457" label="Summarizer_SharedContext"/>
   <int value="5458" label="Summarizer_Type"/>
   <int value="5459" label="CrossOriginSameSiteCookieAccessViaStorageAccessAPI"/>
-  <int value="5460" label="V8GPUAdapter_IsFallbackAdapter_AttributeGetter"/>
+  <int value="5460"
+      label="OBSOLETE_V8GPUAdapter_IsFallbackAdapter_AttributeGetter"/>
   <int value="5461" label="LanguageDetector_ExpectedInputLanguages"/>
   <int value="5462" label="ServiceWorkerPushEventListener"/>
   <int value="5463" label="ServiceWorkerPushSubscriptionChangeEventListener"/>

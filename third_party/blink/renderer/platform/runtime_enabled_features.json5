@@ -5609,10 +5609,6 @@
       name: "WebGLOnWebGPU",
     },
     {
-      name: "WebGPUAdapterInfoIsFallbackAdapter",
-      status: "stable",
-    },
-    {
       // Launch feature flag for WebGPU Compatibility Mode
       // https://chromestatus.com/feature/6436406437871616
       name: "WebGPUCompatibilityMode",
@@ -5620,10 +5616,6 @@
       status: "experimental",
       // Also enabled as part of all experimental WebGPU features.
       implied_by: ["WebGPUExperimentalFeatures"],
-    },
-    {
-      name: "WebGPUCopyBufferToBufferOverload",
-      status: "stable",
     },
     {
       // WebGPU developer features are deliberately not enabled by experimental

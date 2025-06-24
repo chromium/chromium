@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -47,20 +46,12 @@ class GPUCommandEncoder : public DawnObject<wgpu::CommandEncoder> {
   void copyBufferToBuffer(DawnObject<wgpu::Buffer>* source,
                           DawnObject<wgpu::Buffer>* destination,
                           ExceptionState& exception_state) {
-    if (!RuntimeEnabledFeatures::WebGPUCopyBufferToBufferOverloadEnabled()) {
-      exception_state.ThrowTypeError("Offsets and size are required.");
-      return;
-    }
     copyBufferToBuffer(source, 0, destination, 0, exception_state);
   }
   void copyBufferToBuffer(DawnObject<wgpu::Buffer>* source,
                           DawnObject<wgpu::Buffer>* destination,
                           uint64_t size,
                           ExceptionState& exception_state) {
-    if (!RuntimeEnabledFeatures::WebGPUCopyBufferToBufferOverloadEnabled()) {
-      exception_state.ThrowTypeError("Offsets are required.");
-      return;
-    }
     copyBufferToBuffer(source, 0, destination, 0, size, exception_state);
   }
   void copyBufferToBuffer(DawnObject<wgpu::Buffer>* source,
@@ -68,10 +59,6 @@ class GPUCommandEncoder : public DawnObject<wgpu::CommandEncoder> {
                           DawnObject<wgpu::Buffer>* destination,
                           uint64_t destination_offset,
                           ExceptionState& exception_state) {
-    if (!RuntimeEnabledFeatures::WebGPUCopyBufferToBufferOverloadEnabled()) {
-      exception_state.ThrowTypeError("Size is required.");
-      return;
-    }
     DCHECK(source);
     // Underflow in the size calculation is acceptable because a GPU validation
     // error will be fired if the resulting size is a very large positive

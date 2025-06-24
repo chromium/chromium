@@ -14,7 +14,7 @@
   [HighEntropy] readonly attribute DOMString description;
   readonly attribute unsigned long subgroupMinSize;
   readonly attribute unsigned long subgroupMaxSize;
-  [RuntimeEnabled=WebGPUAdapterInfoIsFallbackAdapter] readonly attribute boolean isFallbackAdapter;
+  readonly attribute boolean isFallbackAdapter;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString driver;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString backend;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString type;
