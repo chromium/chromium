@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/file_system_access/file_system_access_dangerous_file_dialog.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -44,15 +46,24 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
       file_system_access_ui_helper::GetUrlIdentityName(profile,
                                                        origin.GetURL());
 
+#if BUILDFLAG(IS_WIN)
+  std::u16string file_extension = base::WideToUTF16(
+      safe_browsing::FileTypePolicies::GetFileExtension(path_info.path));
+#else
+  std::u16string file_extension = base::ASCIIToUTF16(
+      safe_browsing::FileTypePolicies::GetFileExtension(path_info.path));
+#endif  // BUILDFLAG(IS_WIN)
+
   ui::DialogModel::Builder dialog_builder;
   dialog_builder
       .SetTitle(l10n_util::GetStringFUTF16(
           IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_TITLE,
           file_system_access_ui_helper::GetElidedPathForDisplayAsTitle(
               path_info)))
-      .AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
+      .AddParagraph(ui::DialogModelLabel::CreateWithReplacements(
           IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_TEXT,
-          ui::DialogModelLabel::CreateEmphasizedText(origin_identity_name)))
+          {ui::DialogModelLabel::CreateEmphasizedText(file_extension),
+           ui::DialogModelLabel::CreateEmphasizedText(origin_identity_name)}))
       .AddOkButton(
           std::move(accept_callback),
           ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
