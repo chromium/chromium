@@ -1563,6 +1563,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.ModelError{SyncDataType}" enum="SyncModelError"
+    expires_after="2026-07-01">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the type of model error encountered in {SyncDataType}.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType">
+    <variant name="" summary="Any type"/>
+  </token>
+</histogram>
+
 <histogram name="Sync.ModelLoadManager.LoadModelsElapsedTime" units="ms"
     expires_after="2025-09-23">
   <owner>ankushkush@google.com</owner>

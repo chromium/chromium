@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -388,10 +389,15 @@ void DataTypeController::RecordRunFailure() const {
 }
 
 void DataTypeController::LogModelErrorToHistogram(
-    const ModelError& error) const {
+    const ModelError& model_error) const {
   DCHECK(CalledOnValidThread());
-  // TODO(crbug.com/40886237): add a histogram per sync data type in subsequent
-  // CL.
+  // Log specific error type for all sync data types.
+  base::UmaHistogramSparse("Sync.ModelError",
+                           static_cast<int>(model_error.type()));
+  // Log specific error type for the current sync data type.
+  base::UmaHistogramSparse(
+      base::StrCat({"Sync.ModelError.", DataTypeToHistogramSuffix(type())}),
+      static_cast<int>(model_error.type()));
 }
 
 void DataTypeController::OnDelegateStarted(

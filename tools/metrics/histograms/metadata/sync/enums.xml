@@ -1186,6 +1186,27 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/model/client_tag_based_data_type_processor.cc:SyncMetadataConsistency) -->
 
+<!-- LINT.IfChange(SyncModelError) -->
+
+<enum name="SyncModelError">
+  <summary>Specific error types encountered by the sync data types.</summary>
+  <int value="0" label="kUnspecified"/>
+  <int value="1" label="kPasswordDbInitFailed"/>
+  <int value="2" label="kPasswordMergeDecryptionFailed"/>
+  <int value="3" label="kPasswordMergeUpdateFailed"/>
+  <int value="4" label="kPasswordIncrementalAddFailed"/>
+  <int value="5" label="kPasswordCleanupDbFailed"/>
+  <int value="6" label="kPasswordMergeReadFromDbFailed"/>
+  <int value="7" label="kPasswordMergeReadAfterCleanupFailed"/>
+  <int value="8" label="kPasswordCommitReadFailed"/>
+  <int value="9" label="kPasswordDebugReadFailed"/>
+  <int value="10" label="kPasswordMergeAddFailed"/>
+  <int value="11" label="kPasswordCleanupDecryptionFailed"/>
+  <int value="12" label="kPasswordIncrementalUpdateFailed"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/model/model_error.h:Type) -->
+
 <!-- LINT.IfChange(SyncPassphraseType) -->
 
 <enum name="SyncPassphraseType">

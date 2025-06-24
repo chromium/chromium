@@ -18,15 +18,35 @@ class ModelError {
   // This enum should be in sync with ModelErrorType in enums.xml. These
   // values are persisted to logs. Entries should not be renumbered and numeric
   // values should never be reused.
+
+  // LINT.IfChange(Type)
   enum class Type {
-    kUnspecified =
-        0,  // Default value if the error type is not set.
-            // TODO(crbug.com/425629291): Remove this value once we have
-            // implemented proper error handling for all datatypes.
-    kMaxValue = kUnspecified,
+    kUnspecified = 0,  // Default value if the error type is not set.
+                       // TODO(crbug.com/425629291): Remove this value once we
+                       // have implemented proper error handling for all data
+                       // types.
+
+    // Password error types.
+    kPasswordDbInitFailed = 1,
+    kPasswordMergeDecryptionFailed = 2,
+    kPasswordMergeUpdateFailed = 3,
+    kPasswordIncrementalAddFailed = 4,
+    kPasswordCleanupDbFailed = 5,
+    kPasswordMergeReadFromDbFailed = 6,
+    kPasswordMergeReadAfterCleanupFailed = 7,
+    kPasswordCommitReadFailed = 8,
+    kPasswordDebugReadFailed = 9,
+    kPasswordMergeAddFailed = 10,
+    kPasswordCleanupDecryptionFailed = 11,
+    kPasswordIncrementalUpdateFailed = 12,
+    kMaxValue = kPasswordIncrementalUpdateFailed,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncModelError)
+
   // Creates a set error object with the given location and message.
-  // DEPRECATED. Use the other constructor instead. See crbug.com/40886237.
+
+  // DEPRECATED. Use the constructor with ModelError::Type instead. See
+  // crbug.com/40886237.
   ModelError(const base::Location& location, const std::string& message);
 
   // Creates a set error object with the given location and error
