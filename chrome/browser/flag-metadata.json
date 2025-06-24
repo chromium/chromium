@@ -7769,13 +7769,13 @@
   },
   {
     "name": "pdf-ink2",
-    "owners": [ "andyphan@chromium.org", "awscreen@chromium.org", "thestig@chromium.org" ],
-    "expiry_milestone": 140
+    "owners": [ "andyphan@chromium.org", "thestig@chromium.org" ],
+    "expiry_milestone": 148
   },
   {
     "name": "pdf-oopif",
     "owners": [ "andyphan@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 144
   },
   {
     "name": "pdf-portfolio",
