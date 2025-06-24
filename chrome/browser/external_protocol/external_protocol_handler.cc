@@ -57,6 +57,10 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 namespace {
 
 // Anti-flood protection controls whether we accept requests for launching
@@ -195,7 +199,7 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
 #endif
       url);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID)
   // If the protocol navigation occurs in a new tab, close it.
   // Avoid calling CloseContents if the tab is not in this browser's tab strip
   // model; this can happen if the protocol was initiated by something
@@ -204,7 +208,11 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
   if (browser && web_contents->GetController().IsInitialNavigation() &&
       browser->tab_strip_model()->count() > 1 &&
       browser->tab_strip_model()->GetIndexOfWebContents(web_contents) !=
-          TabStripModel::kNoTab) {
+          TabStripModel::kNoTab
+#if BUILDFLAG(IS_CHROMEOS)
+      && chromeos::features::IsWebAppManifestProtocolHandlerSupportEnabled()
+#endif
+  ) {
     // Defer destruction of `WebContents` to avoid synchronously destroying
     // NavigationURLLoader(Impl) here. See https://issues.chromium.org/361600654
     content::GetUIThreadTaskRunner({})->PostTask(
