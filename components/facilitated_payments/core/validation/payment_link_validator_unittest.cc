@@ -14,7 +14,9 @@ TEST(PaymentLinkValidatorTest, validUrls) {
   const std::vector<GURL> kValidUrls = {
       GURL("duitnow://paynet.com.my?path=fake_path"),
       GURL("shopeepay://shopeepay.com.my?path=fake_path"),
-      GURL("tngd://tngdigital.com.my?path=fake_path")};
+      GURL("tngd://tngdigital.com.my?path=fake_path"),
+      GURL("https://www.itmx.co.th/facilitated-payment/"
+           "prompt-pay?path=fake_path")};
 
   for (const auto& link : kValidUrls) {
     EXPECT_NE(validator.GetScheme(link), PaymentLinkValidator::Scheme::kInvalid)
@@ -25,10 +27,17 @@ TEST(PaymentLinkValidatorTest, validUrls) {
 TEST(PaymentLinkValidatorTest, InvalidUrls) {
   PaymentLinkValidator validator;
   const std::vector<GURL> kInvalidUrls = {
-      GURL("duitnow://invalid.com"), GURL("https://www.google.com"),
+      GURL("duitnow://invalid.com"),
+      GURL("https://www.google.com"),
       GURL("shopeepay://wrongdomain.com/order"),
-      GURL("duitnow://")  // Empty after scheme
-  };
+      GURL("duitnow://"),  // Empty after scheme
+      GURL("https://www.itmx.co.th/facilitated-payment/"
+           "prompt-Pay?path=fake_path"),  // Case mismatch
+      GURL("https://www.itmx.co.th/facilitated-payment/"
+           "prompt-pay2?path=fake_path"),  // Incorrect path
+      GURL("https://www.itmx.co.th:8080/facilitated-payment/prompt-pay"),
+      GURL("https://localhost/facilitated-payment/prompt-pay?code=ABC"),
+      GURL("http://www.itmx.co.th/facilitated-payment/prompt-pay?code=ABC")};
 
   for (const auto& link : kInvalidUrls) {
     EXPECT_EQ(validator.GetScheme(link), PaymentLinkValidator::Scheme::kInvalid)

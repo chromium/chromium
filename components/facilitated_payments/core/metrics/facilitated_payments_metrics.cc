@@ -67,9 +67,12 @@ std::string SchemeToString(PaymentLinkValidator::Scheme scheme) {
       return "ShopeePay";
     case PaymentLinkValidator::Scheme::kTngd:
       return "Tngd";
+    case PaymentLinkValidator::Scheme::kPromptPay:
+      // TODO(crbug.com/427319124): Add tests for kPromptPay when adding metrics.
+      NOTREACHED();
     case PaymentLinkValidator::Scheme::kInvalid:
       // This case can't happen because `kInvalid` causes an early return in
-      // eWallet manager.
+      // the PaymentLinkManager.
       NOTREACHED();
   }
 }

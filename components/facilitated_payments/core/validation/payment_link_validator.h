@@ -19,6 +19,7 @@ class PaymentLinkValidator {
     kDuitNow = 1,
     kShopeePay = 2,
     kTngd = 3,
+    kPromptPay = 4,
   };
 
   PaymentLinkValidator();
