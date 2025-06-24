@@ -2,11 +2,43 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
+import("//components/offline_pages/buildflags/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 source_set("toolbar") {
-  sources = [ "chrome_location_bar_model_delegate.h" ]
+  sources = [
+    "chrome_location_bar_model_delegate.cc",
+    "chrome_location_bar_model_delegate.h",
+  ]
   public_deps = [ "//components/omnibox/browser:location_bar" ]
+  deps = [
+    "//base",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/login",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//components/google/core/common",
+    "//components/offline_pages/buildflags",
+    "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:features",
+    "//components/search",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/security_state/content",
+    "//components/security_state/core",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+
+  if (enable_offline_pages) {
+    deps += [ "//chrome:offline_pages_enum_javagen" ]
+  }
 
   if (!is_android) {
     sources += [
@@ -19,6 +51,7 @@ source_set("toolbar") {
       "toolbar_action_view_controller.h",
       "toolbar_action_view_delegate.h",
       "toolbar_actions_bar_bubble_delegate.h",
+      "toolbar_pref_names.cc",
       "toolbar_pref_names.h",
     ]
     public_deps += [
@@ -40,6 +73,10 @@ source_set("toolbar") {
       "//ui/base/mojom:ui_base_types",
       "//ui/menus",
     ]
+    deps += [
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/actions:actions_headers",
+    ]
   }
 
   if (enable_extensions_core) {
@@ -51,6 +88,156 @@ source_set("toolbar") {
       "//chrome/browser/profiles:profile",
       "//components/keyed_service/core",
       "//components/prefs",
+      "//extensions/browser",
+    ]
+    deps += [ "//extensions/common:common_constants" ]
+  }
+}
+
+source_set("impl") {
+  sources = []
+  deps = [ ":toolbar" ]
+
+  if (!is_android) {
+    sources += [
+      "app_menu_icon_controller.cc",
+      "app_menu_model.cc",
+      "back_forward_menu_model.cc",
+      "bookmark_sub_menu_model.cc",
+      "reading_list_sub_menu_model.cc",
+    ]
+
+    deps += [
+      "//base",
+      "//base:debugging_buildflags",
+      "//base:i18n",
+      "//build:branding_buildflags",
+      "//chrome/app:branded_strings",
+      "//chrome/app:command_ids",
+      "//chrome/app:generated_resources",
+      "//chrome/app/theme:theme_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/favicon",
+      "//chrome/browser/media/router:media_router_feature",
+      "//chrome/browser/prefs",
+      "//chrome/browser/profiles",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/search",
+      "//chrome/browser/search/background",
+      "//chrome/browser/sharing_hub",
+      "//chrome/browser/sync",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/bookmarks",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/global_error",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/safety_hub",
+      "//chrome/browser/ui/tabs:tab_model",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/toolbar/chrome_labs",
+      "//chrome/browser/ui/webui/whats_new",
+      "//chrome/browser/upgrade_detector",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+      "//chrome/browser/web_applications/proto",
+      "//chrome/common",
+      "//chrome/common:channel_info",
+      "//chrome/common:chrome_features",
+      "//chrome/common:constants",
+      "//chrome/common:non_code_constants",
+      "//components/bookmarks/common",
+      "//components/commerce/core:feature_list",
+      "//components/commerce/core:feature_utils",
+      "//components/dom_distiller/content/browser",
+      "//components/dom_distiller/core",
+      "//components/favicon_base",
+      "//components/feature_engagement/public",
+      "//components/feature_engagement/public:feature_constants",
+      "//components/lens:features",
+      "//components/omnibox/browser",
+      "//components/omnibox/browser:vector_icons",
+      "//components/password_manager/content/common",
+      "//components/password_manager/core/common",
+      "//components/password_manager/core/common:features",
+      "//components/policy/core/common:common_constants",
+      "//components/pref_registry",
+      "//components/prefs",
+      "//components/profile_metrics",
+      "//components/resources:components_scaled_resources",
+      "//components/resources:components_scaled_resources_grit",
+      "//components/saved_tab_groups/public:features",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/strings:components_strings",
+      "//components/user_education/common",
+      "//components/vector_icons",
+      "//components/version_info:channel",
+      "//components/webapps/browser",
+      "//components/webapps/common",
+      "//content/public/browser",
+      "//content/public/common",
+      "//extensions/common:extension_features",
+      "//media",
+      "//net",
+      "//ui/actions:actions_headers",
+      "//ui/base",
+      "//ui/base:features",
+      "//ui/base:types",
+      "//ui/color:color_headers",
+      "//ui/display",
+      "//ui/gfx",
+      "//ui/gfx:color_utils",
+      "//ui/menus",
+    ]
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/policy:system_features_disable_list" ]
+    }
+    if (enable_glic) {
+      deps += [
+        "//chrome/browser/glic",
+        "//chrome/browser/glic/resources:grit",
+        "//chrome/browser/glic/resources:grit_grit",
+      ]
+    }
+  }
+
+  if (enable_extensions_core) {
+    sources += [
+      "toolbar_actions_model.cc",
+      "toolbar_actions_model_factory.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/ui/extensions",
+    ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("test_support") {
+  sources = []
+  deps = []
+
+  if (enable_extensions) {
+    sources += [
+      "test_toolbar_action_view_controller.cc",
+      "test_toolbar_action_view_controller.h",
+      "test_toolbar_actions_bar_bubble_delegate.cc",
+      "test_toolbar_actions_bar_bubble_delegate.h",
+    ]
+    deps += [
+      ":toolbar",
+      "//chrome/browser/extensions",
       "//extensions/browser",
     ]
   }

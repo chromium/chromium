@@ -1830,6 +1830,11 @@ static_library("browser") {
     "//chrome/browser/ui/page_info:impl",
     "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/ui/safety_hub:impl",
+    "//chrome/browser/ui/toolbar:impl",
+
+    # TODO(crbug.com/369436587): Remove this dependency when
+    # c/b/translate/chrome_translate_client.h gets modularized.
+    "//chrome/browser/ui/toolbar/pinned_toolbar:impl",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/updates/announcement_notification:impl",
 
@@ -2093,6 +2098,11 @@ static_library("browser") {
     "//chrome/browser/ui/tab_contents:impl",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/tabs/tab_group_home:constants",
+    "//chrome/browser/ui/toolbar:impl",
+
+    # TODO(crbug.com/369436587): Remove this circular dependency when
+    # c/b/translate/chrome_translate_client.h gets modularized.
+    "//chrome/browser/ui/toolbar/pinned_toolbar:impl",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/webui/about",

@@ -7264,6 +7264,7 @@ test("unit_tests") {
   deps += [
     "//chrome/browser:flags",
     "//chrome/browser/serial",
+    "//chrome/browser/ui/toolbar:test_support",
   ]
 
   if (enable_glic) {

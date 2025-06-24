@@ -104,7 +104,6 @@ static_library("ui") {
     "tab_modal_confirm_dialog.h",
     "tab_ui_helper.cc",
     "tab_ui_helper.h",
-    "toolbar/chrome_location_bar_model_delegate.cc",
     "translate/partial_translate_bubble_model.h",
     "translate/partial_translate_bubble_model_impl.cc",
     "translate/partial_translate_bubble_model_impl.h",
@@ -399,6 +398,7 @@ static_library("ui") {
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tab_contents:impl",
     "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/toolbar:impl",
     "//chrome/browser/ui/toolbar/chrome_labs",
     "//chrome/browser/ui/unowned_user_data",
     "//chrome/browser/ui/webui",
@@ -724,6 +724,7 @@ static_library("ui") {
     "//chrome/browser/ui/bluetooth:impl",
     "//chrome/browser/ui/serial:impl",
     "//chrome/browser/ui/tab_contents:impl",
+    "//chrome/browser/ui/toolbar:impl",
     "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/profiles:profile_util_impl",
     "//chrome/browser/signin:impl",
@@ -1256,16 +1257,6 @@ static_library("ui") {
       "thumbnails/thumbnail_scheduler_impl.h",
       "thumbnails/thumbnail_tab_helper.cc",
       "thumbnails/thumbnail_tab_helper.h",
-      "toolbar/app_menu_icon_controller.cc",
-      "toolbar/app_menu_model.cc",
-      "toolbar/back_forward_menu_model.cc",
-      "toolbar/bookmark_sub_menu_model.cc",
-      "toolbar/pinned_toolbar/pinned_toolbar_actions_model.cc",
-      "toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.cc",
-      "toolbar/pinned_toolbar/pinned_translate_action_listener.cc",
-      "toolbar/pinned_toolbar/tab_search_toolbar_button_controller.cc",
-      "toolbar/reading_list_sub_menu_model.cc",
-      "toolbar/toolbar_pref_names.cc",
       "translate/translate_bubble_factory.cc",
       "translate/translate_bubble_factory.h",
       "uma_browsing_activity_observer.cc",
@@ -1685,6 +1676,7 @@ static_library("ui") {
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/toolbar/cast:impl",
       "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/toolbar/pinned_toolbar:impl",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/user_education:impl",
       "//chrome/browser/ui/views/new_tab_footer",
@@ -1893,6 +1885,7 @@ static_library("ui") {
       "//chrome/browser/ui/tabs:tab_group_impl",
       "//chrome/browser/ui/tabs:tab_model_impl",
       "//chrome/browser/ui/tabs:tab_strip_impl",
+      "//chrome/browser/ui/toolbar/pinned_toolbar:impl",
       "//chrome/browser/ui/bookmarks:impl",
       "//chrome/browser/ui/feature_first_run:impl",
 
@@ -5219,8 +5212,6 @@ static_library("ui") {
 
   if (enable_extensions_core) {
     sources += [
-      "toolbar/toolbar_actions_model.cc",
-      "toolbar/toolbar_actions_model_factory.cc",
       "webui/extensions/extension_icon_source.cc",
       "webui/extensions/extension_icon_source.h",
       "webui/extensions/extensions_internals_source.cc",
@@ -5770,6 +5761,7 @@ static_library("test_support") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/autofill/payments:test_support",
     "//chrome/browser/ui/find_bar:test_support",
+    "//chrome/browser/ui/toolbar:test_support",
     "//components/omnibox/browser",
     "//components/password_manager/core/browser",
     "//components/payments/content",
@@ -5872,16 +5864,6 @@ static_library("test_support") {
       "//services/metrics/public/mojom",
     ]
     public_deps += [ "//chrome/browser/ui/exclusive_access" ]
-  }
-
-  if (enable_extensions) {
-    sources += [
-      "toolbar/test_toolbar_action_view_controller.cc",
-      "toolbar/test_toolbar_action_view_controller.h",
-      "toolbar/test_toolbar_actions_bar_bubble_delegate.cc",
-      "toolbar/test_toolbar_actions_bar_bubble_delegate.h",
-    ]
-    deps += [ "//extensions/browser" ]
   }
 }
 

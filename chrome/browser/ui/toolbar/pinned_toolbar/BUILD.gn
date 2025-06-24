@@ -13,7 +13,6 @@ source_set("pinned_toolbar") {
       "pinned_translate_action_listener.h",
       "tab_search_toolbar_button_controller.h",
     ]
-
     public_deps += [
       "//base",
       "//chrome/browser/profiles:profile",
@@ -24,5 +23,29 @@ source_set("pinned_toolbar") {
       "//components/translate/content/browser",
       "//ui/actions:actions_headers",
     ]
+  }
+}
+
+source_set("impl") {
+  sources = []
+  public_deps = []
+
+  if (!is_android) {
+    sources += [
+      "pinned_toolbar_actions_model.cc",
+      "pinned_toolbar_actions_model_factory.cc",
+      "pinned_translate_action_listener.cc",
+      "tab_search_toolbar_button_controller.cc",
+    ]
+    deps = [
+      "//chrome/browser:primitives",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/toolbar",
+      "//chrome/browser/ui/views/page_action:page_action",
+      "//chrome/browser/ui/views/toolbar",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 }
