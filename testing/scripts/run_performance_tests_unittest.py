@@ -383,6 +383,27 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     self.assertDictEqual(network_dict, expected_dict)
 
   @mock.patch.object(binary_manager, 'FetchPath')
+  def testCrossbenchSkipInjectionWpr(self, mock_fetch_path):
+    mock_fetch_path.return_value = 'wpr_go_path'
+    fake_args = _create_crossbench_args() + [
+        '--wpr=fake.wprgo', '--skip-wpr-script-injection'
+    ]
+    options = run_performance_tests.parse_arguments(fake_args)
+    data_dir = run_performance_tests.PAGE_SETS_DATA
+    archive = str(data_dir / 'fake.wprgo')
+    expected_dict = {
+        'type': 'wpr',
+        'path': archive,
+        'wpr_go_bin': 'wpr_go_path',
+        'skip_injection': True
+    }
+
+    crossbench_test = run_performance_tests.CrossbenchTest(options, 'dir')
+
+    network_dict = json.loads(crossbench_test.network[0].split('=', 1)[1])
+    self.assertDictEqual(network_dict, expected_dict)
+
+  @mock.patch.object(binary_manager, 'FetchPath')
   def testCrossbenchGetTargetWpr(self, mock_fetch_path):
     mock_fetch_path.return_value = 'wpr_go_path'
     fake_args = _create_crossbench_args() + ['--wpr=foo']

@@ -827,7 +827,16 @@ class CrossbenchTest(object):
     if wpr_arg:
       # Replacing --wpr with --network.
       self.options.passthrough_args.remove(wpr_arg)
-    return [_create_network_json('wpr', path=archive, wpr_go_bin=wpr_go)]
+    skip_injection_arg = '--skip-wpr-script-injection'
+    skip_injection = _get_arg(args, skip_injection_arg)
+    if skip_injection:
+      self.options.passthrough_args.remove(skip_injection_arg)
+    return [
+        _create_network_json('wpr',
+                             path=archive,
+                             wpr_go_bin=wpr_go,
+                             skip_injection=bool(skip_injection))
+    ]
 
   def _check_for_embedder_arg(self):
     embedder_arg = _get_arg(self.options.passthrough_args, '--embedder=')
@@ -987,13 +996,19 @@ class CrossbenchTest(object):
         self.options.passthrough_args)
 
 
-def _create_network_json(config_type, path, url=None, wpr_go_bin=None):
+def _create_network_json(config_type,
+                         path,
+                         url=None,
+                         wpr_go_bin=None,
+                         skip_injection=False):
   network_dict = {'type': config_type}
   network_dict['path'] = path
   if url:
     network_dict['url'] = url
   if wpr_go_bin:
     network_dict['wpr_go_bin'] = wpr_go_bin
+  if skip_injection:
+    network_dict['skip_injection'] = True
   network_json = json.dumps(network_dict)
   return f'--network={network_json}'
 
