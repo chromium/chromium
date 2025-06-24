@@ -2683,7 +2683,7 @@ void DidReceiveFedCmNetworkResponse(
 
   DispatchToAgents(
       frame_tree_node_id, &protocol::NetworkHandler::LoadingComplete,
-      devtools_request_id, protocol::Network::ResourceTypeEnum::Other, status);
+      devtools_request_id, protocol::Network::ResourceTypeEnum::FedCM, status);
 }
 
 void OnFencedFrameReportRequestSent(
