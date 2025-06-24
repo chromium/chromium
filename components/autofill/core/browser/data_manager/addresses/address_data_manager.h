@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/strike_databases/strike_database_base.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -122,6 +123,9 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
       ProfileOrder order = ProfileOrder::kNone) const;
   std::vector<const AutofillProfile*> GetProfilesByRecordType(
       AutofillProfile::RecordType record_type,
+      ProfileOrder order = ProfileOrder::kNone) const;
+  std::vector<const AutofillProfile*> GetProfilesByRecordType(
+      DenseSet<AutofillProfile::RecordType> record_types,
       ProfileOrder order = ProfileOrder::kNone) const;
 
   // Returns the profiles to suggest to the user for filling, ordered by

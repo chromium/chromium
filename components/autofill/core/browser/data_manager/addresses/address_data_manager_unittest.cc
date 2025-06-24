@@ -307,12 +307,10 @@ TEST_F(AddressDataManagerTest, GetProfiles_Order) {
               testing::ElementsAre(Pointee(profile1), Pointee(profile2),
                                    Pointee(profile3)));
 
-  // `profile2` is first because it is a Home address.
-  // `profile1` is second because it is a Work address.
-  // `profile3` is last, even though it has the highest use count.
+  // For suggestions, H/W are always last.
   EXPECT_THAT(address_data_manager().GetProfilesToSuggest(),
-              testing::ElementsAre(Pointee(profile2), Pointee(profile1),
-                                   Pointee(profile3)));
+              testing::ElementsAre(Pointee(profile3), Pointee(profile2),
+                                   Pointee(profile1)));
 }
 
 // Test that profiles are not shown if |kAutofillProfileEnabled| is set to
