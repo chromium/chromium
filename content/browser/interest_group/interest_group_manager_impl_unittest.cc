@@ -25,6 +25,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/test_interest_group_observer.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
@@ -188,6 +189,9 @@ TEST_F(InterestGroupManagerImplTest, JoinInterestGroupWithNoAds) {
 }
 
 TEST_F(InterestGroupManagerImplTest, JoinInterestGroupWithOneAd) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kFledgeCacheKAnonHashedKeys);
+
   base::HistogramTester histograms;
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
@@ -222,8 +226,10 @@ TEST_F(InterestGroupManagerImplTest, JoinInterestGroupWithOneAd) {
 
 TEST_F(InterestGroupManagerImplTest,
        JoinInterestGroupWithOneAdAndSelectableBuyerAndSellerReportingIds) {
-  base::test::ScopedFeatureList feature_list{
-      blink::features::kFledgeAuctionDealSupport};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({blink::features::kFledgeAuctionDealSupport},
+                                {features::kFledgeCacheKAnonHashedKeys});
+
   base::HistogramTester histograms;
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
@@ -341,6 +347,9 @@ TEST_F(InterestGroupManagerImplTest, UpdateInterestGroupWithNoAds) {
 }
 
 TEST_F(InterestGroupManagerImplTest, UpdateInterestGroupWithOneAd) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kFledgeCacheKAnonHashedKeys);
+
   base::HistogramTester histograms;
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
@@ -381,8 +390,10 @@ TEST_F(InterestGroupManagerImplTest, UpdateInterestGroupWithOneAd) {
 
 TEST_F(InterestGroupManagerImplTest,
        UpdateInterestGroupWithOneAdAndSelectableBuyerAndSellerReportingIds) {
-  base::test::ScopedFeatureList feature_list{
-      blink::features::kFledgeAuctionDealSupport};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({blink::features::kFledgeAuctionDealSupport},
+                                {features::kFledgeCacheKAnonHashedKeys});
+
   base::HistogramTester histograms;
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));

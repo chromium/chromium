@@ -68,7 +68,7 @@ BASE_FEATURE(kFledgeBiddingAndAuctionNonceSupport,
 // until the TTL, provided the `kFledgeCacheKAnonHashedKeysTtl` parameter below.
 BASE_FEATURE(kFledgeCacheKAnonHashedKeys,
              "FledgeCacheKAnonHashedKeys",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // TTL for entries in the k-anon keys cache. This should typically be kept in
 // sync with the KAnonymityServiceQueryInterval parameter, which behaves in much
 // the same way, limiting the frequency of refresh of k-anon keys. Note that

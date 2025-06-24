@@ -2501,7 +2501,8 @@ TEST_F(AdAuctionServiceImplTest,
 
 TEST_F(AdAuctionServiceImplTest, UpdateAlwaysTriggersKAnonFetch) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kAlwaysUpdateKAnon);
+  feature_list.InitWithFeatures({features::kAlwaysUpdateKAnon},
+                                {features::kFledgeCacheKAnonHashedKeys});
 
   NavigateAndCommit(kUrlA);
   blink::InterestGroup interest_group = CreateInterestGroup();
