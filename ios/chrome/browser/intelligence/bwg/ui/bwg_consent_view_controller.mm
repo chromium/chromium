@@ -22,10 +22,8 @@ namespace {
 const CGFloat kMainStackHorizontalInset = 20.0;
 const CGFloat kMainStackSpacing = 16.0;
 
-// Icons size and names.
+// Icons attributs.
 const CGFloat kIconSize = 16.0;
-// TODO(crbug.com/414777888): Change info circle fill icon to page spark icon.
-constexpr NSString* const kInfoIconName = @"info.circle.fill";
 const CGFloat kIconImageViewTopPadding = 18.0;
 const CGFloat kIconImageViewWidth = 32.0;
 
@@ -144,15 +142,16 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
   };
 
   // TODO(crbug.com/414778685): Add strings.
-  NSRange firstLinkRange = [text rangeOfString:@"Google terms"];
-  [attributedText addAttributes:firstLinkAttributes range:firstLinkRange];
+  if (_isAccountManaged) {
+    NSRange linkRange = [text rangeOfString:@"Your Privacy"];
+    [attributedText addAttributes:linkAttributesManagedAccount range:linkRange];
+  } else {
+    NSRange firstLinkRange = [text rangeOfString:@"Google terms"];
+    [attributedText addAttributes:firstLinkAttributes range:firstLinkRange];
 
-  NSRange secondLinkRange = [text rangeOfString:@"Apps Privacy Notice"];
-  [attributedText addAttributes:secondLinkAttributes range:secondLinkRange];
-
-  NSRange linkRangeManagedAccount = [text rangeOfString:@"Your Privacy"];
-  [attributedText addAttributes:linkAttributesManagedAccount
-                          range:linkRangeManagedAccount];
+    NSRange secondLinkRange = [text rangeOfString:@"Apps Privacy Notice"];
+    [attributedText addAttributes:secondLinkAttributes range:secondLinkRange];
+  }
 
   return attributedText;
 }
@@ -189,11 +188,21 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
   boxesStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSString* firstTitle = kBWGConsentFirstBoxTitleText;
+
   NSString* firstBody = _isAccountManaged
                             ? kBWGConsentFirstBoxBodyTextManagedAccount
                             : kBWGConsentFirstBoxBodyTextNonManagedAccount;
+
+  UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
+      configurationWithPointSize:kIconSize
+                          weight:UIImageSymbolWeightMedium];
+
+  UIImageView* firstIconImageView = [[UIImageView alloc]
+      initWithImage:CustomSymbolWithConfiguration(kPhoneSparkleSymbol, config)];
+  firstIconImageView.contentMode = UIViewContentModeScaleAspectFit;
+
   UIView* firstBox =
-      [self createHorizontalBoxWithIcon:kInfoIconName
+      [self createHorizontalBoxWithIcon:firstIconImageView
                                 boxView:[self createBoxWithTitle:firstTitle
                                                         bodyText:firstBody]];
   [boxesStackView addArrangedSubview:firstBox];
@@ -204,8 +213,14 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
   NSString* secondBody = _isAccountManaged
                              ? kBWGConsentSecondBoxBodyTextManagedAccount
                              : kBWGConsentSecondBoxBodyTextNonManagedAccount;
+
+  UIImageView* secondIconImageView =
+      [[UIImageView alloc] initWithImage:DefaultSymbolWithConfiguration(
+                                             kCounterClockWiseSymbol, config)];
+  secondIconImageView.contentMode = UIViewContentModeScaleAspectFit;
+
   UIView* secondBox =
-      [self createHorizontalBoxWithIcon:kCounterClockWiseSymbol
+      [self createHorizontalBoxWithIcon:secondIconImageView
                                 boxView:[self createBoxWithTitle:secondTitle
                                                         bodyText:secondBody]];
   [boxesStackView addArrangedSubview:secondBox];
@@ -213,7 +228,7 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
 }
 
 // Creates horizontal stack view with icon and box view.
-- (UIView*)createHorizontalBoxWithIcon:(NSString*)iconName
+- (UIView*)createHorizontalBoxWithIcon:(UIImageView*)iconImageView
                                boxView:(UIView*)boxView {
   UIStackView* horizontalStackView = [[UIStackView alloc] init];
   horizontalStackView.distribution = UIStackViewDistributionFillProportionally;
@@ -221,12 +236,6 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
   horizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
   horizontalStackView.backgroundColor = [UIColor colorNamed:kGrey100Color];
 
-  UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
-      configurationWithPointSize:kIconSize
-                          weight:UIImageSymbolWeightRegular];
-
-  UIImageView* iconImageView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithConfiguration(iconName, config)];
   iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
     [iconImageView.widthAnchor constraintEqualToConstant:kIconSize],

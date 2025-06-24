@@ -112,6 +112,8 @@ NSString* const kPasswordManagerTrustedVaultWidgetPromoImage =
     @"password_manager_trusted_vault_widget_promo";
 NSString* const kPasswordManagerTrustedVaultWidgetPromoDisabledImage =
     @"password_manager_trusted_vault_widget_promo_disabled";
+NSString* const kPhoneSparkleSymbol = @"phone_sparkle";
+NSString* const kTextSearchSymbol = @"text_search";
 
 // Custom symbol names which can be configured with a color palette.
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";

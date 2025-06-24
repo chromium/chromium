@@ -26,7 +26,7 @@ const CGFloat kMainStackSpacing = 8.0;
 const CGFloat kMainTitleHorizontalPadding = 8.0;
 
 // Icons size.
-const CGFloat kIconSize = 20.0;
+const CGFloat kIconSize = 16.0;
 const CGFloat kWhiteInnerSize = 32.0;
 
 // Corner radius of icons.
@@ -51,6 +51,9 @@ const CGFloat kOuterBoxSize = 64.0;
 // Height of the separator line.
 const CGFloat kSeparatorHeight = 1.0;
 
+// Spacing between the scrollView and the buttons.
+const CGFloat kSpacingScrollViewAndButtons = 16.0;
+
 // Spacing between primary and secondary buttons.
 const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
 
@@ -63,7 +66,8 @@ NSString* const kBWGPromoFirstBoxTitleText = @"Sed do.";
 NSString* const kBWGPromoFirstBoxBodyText =
     @"Lorem ipsum dolor sit amet, consecte tur adipiscing purposes.";
 NSString* const kBWGPromoSecondBoxTitleText = @"consecte tur adipiscing";
-NSString* const kBWGPromoSecondBoxBodyText = @"orem ipsum dolor sit amet..";
+NSString* const kBWGPromoSecondBoxBodyText =
+    @"orem ipsum dolor sit amet. orem ipsum dolor sit amet.";
 
 }  // namespace
 
@@ -111,6 +115,8 @@ NSString* const kBWGPromoSecondBoxBodyText = @"orem ipsum dolor sit amet..";
   [self configureMainStackView];
   [self configureContentStackView];
   [_mainStackView addArrangedSubview:_contentScrollView];
+  [_mainStackView setCustomSpacing:kSpacingScrollViewAndButtons
+                         afterView:_contentScrollView];
   [self configureButtons];
 }
 
@@ -175,7 +181,15 @@ NSString* const kBWGPromoSecondBoxBodyText = @"orem ipsum dolor sit amet..";
   [_contentStackView addArrangedSubview:subTitle];
   [_contentStackView setCustomSpacing:kSpacingAfterSubTitle afterView:subTitle];
 
-  UIView* firstIconContainer = [self createIconContainerView];
+  UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
+      configurationWithPointSize:kIconSize
+                          weight:UIImageSymbolWeightMedium];
+
+  UIImageView* firstIconImageView = [[UIImageView alloc]
+      initWithImage:CustomSymbolWithConfiguration(kTextSearchSymbol, config)];
+
+  UIView* firstIconContainer =
+      [self createIconContainerView:firstIconImageView];
   UIStackView* firstTitleBodyStackView =
       [self createContentDescriptionWithTitle:kBWGPromoFirstBoxTitleText
                                          body:kBWGPromoFirstBoxBodyText];
@@ -188,7 +202,11 @@ NSString* const kBWGPromoSecondBoxBodyText = @"orem ipsum dolor sit amet..";
   UIView* separatorView = [self createSeparatorView];
   [_contentStackView addArrangedSubview:separatorView];
 
-  UIView* secondIconContainer = [self createIconContainerView];
+  UIImageView* secondIconImageView = [[UIImageView alloc]
+      initWithImage:DefaultSymbolWithConfiguration(kListBulletSymbol, config)];
+
+  UIView* secondIconContainer =
+      [self createIconContainerView:secondIconImageView];
   UIStackView* secondTitleBodyStackView =
       [self createContentDescriptionWithTitle:kBWGPromoSecondBoxTitleText
                                          body:kBWGPromoSecondBoxBodyText];
@@ -238,7 +256,7 @@ NSString* const kBWGPromoSecondBoxBodyText = @"orem ipsum dolor sit amet..";
 }
 
 // Creates the iconBox container view with the  inner box and icon.
-- (UIView*)createIconContainerView {
+- (UIView*)createIconContainerView:(UIImageView*)iconImageView {
   UIView* iconBox = [[UIView alloc] init];
   iconBox.backgroundColor = [UIColor colorNamed:kFaviconBackgroundColor];
   iconBox.clipsToBounds = YES;
@@ -257,16 +275,14 @@ NSString* const kBWGPromoSecondBoxBodyText = @"orem ipsum dolor sit amet..";
       NSDirectionalEdgeInsetsMake(kInnerBoxPadding, kInnerBoxPadding,
                                   kInnerBoxPadding, kInnerBoxPadding));
 
-  UIImageView* clockIconImageView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(kClockSymbol, kIconSize)];
-  clockIconImageView.contentMode = UIViewContentModeScaleAspectFit;
-  clockIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  [innerBox addSubview:clockIconImageView];
+  iconImageView.contentMode = UIViewContentModeScaleAspectFit;
+  iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  [innerBox addSubview:iconImageView];
 
   [NSLayoutConstraint activateConstraints:@[
-    [clockIconImageView.centerXAnchor
+    [iconImageView.centerXAnchor
         constraintEqualToAnchor:innerBox.centerXAnchor],
-    [clockIconImageView.centerYAnchor
+    [iconImageView.centerYAnchor
         constraintEqualToAnchor:innerBox.centerYAnchor],
     [innerBox.widthAnchor constraintEqualToConstant:kWhiteInnerSize],
     [innerBox.heightAnchor constraintEqualToConstant:kWhiteInnerSize],
