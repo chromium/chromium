@@ -1003,9 +1003,11 @@ bool InlineLayoutAlgorithm::AddAnyClearanceAfterLine(
   return true;
 }
 
-LayoutUnit InlineLayoutAlgorithm::SetupLineClampEllipsis() {
+// static
+InlineLayoutAlgorithm::LineClampEllipsis
+InlineLayoutAlgorithm::ShapeLineClampEllipsis(const InlineNode& node) {
   DCHECK(RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
-  const Font* font = node_.Style().GetFont();
+  const Font* font = node.Style().GetFont();
   const SimpleFontData* font_data = font->PrimaryFont();
   DCHECK(font_data);
   String ellipsis_text =
@@ -1013,14 +1015,18 @@ LayoutUnit InlineLayoutAlgorithm::SetupLineClampEllipsis() {
           ? String(base::span_from_ref(uchar::kHorizontalEllipsis))
           : String(u"...");
   HarfBuzzShaper shaper(ellipsis_text);
-  const ShapeResult* shape_result = shaper.Shape(font, Node().BaseDirection());
+  const ShapeResult* shape_result = shaper.Shape(font, node.BaseDirection());
   DCHECK(shape_result);
 
-  FontHeight text_metrics = font_data->GetFontMetrics().GetFontHeight(
-      Node().Style().GetFontBaseline());
+  FontHeight text_metrics =
+      font_data->GetFontMetrics().GetFontHeight(node.Style().GetFontBaseline());
 
-  line_clamp_ellipsis_.emplace(ellipsis_text, shape_result, text_metrics);
-  return shape_result->SnappedWidth();
+  return LineClampEllipsis(ellipsis_text, shape_result, text_metrics);
+}
+
+LayoutUnit InlineLayoutAlgorithm::SetupLineClampEllipsis() {
+  line_clamp_ellipsis_.emplace(ShapeLineClampEllipsis(Node()));
+  return line_clamp_ellipsis_->shape_result->SnappedWidth();
 }
 
 const LayoutResult* InlineLayoutAlgorithm::Layout() {

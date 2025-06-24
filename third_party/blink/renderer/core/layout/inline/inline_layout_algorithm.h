@@ -80,6 +80,8 @@ class CORE_EXPORT InlineLayoutAlgorithm final
     return line_clamp_ellipsis_;
   }
 
+  static LineClampEllipsis ShapeLineClampEllipsis(const InlineNode&);
+
  private:
   friend class LineWidthsTest;
 

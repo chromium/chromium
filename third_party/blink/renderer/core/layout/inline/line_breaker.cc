@@ -913,6 +913,9 @@ void LineBreaker::NextLine(LineInfo* line_info) {
   if (line_clamp_ellipsis_width_ && !CanFitOnLine()) {
     Rewind(0, line_info);
     line_info->SetIsLastLine(false);
+    // Overflow disables score and bisect line breaking, but since we
+    // replaced the whole line, we enable bisect.
+    disable_bisect_line_break_ = false;
   }
 
   if (!should_create_line_box) {
