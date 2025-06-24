@@ -529,10 +529,6 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
           '--height=800', '--config=' + _weston_config_file_path()
       ]
 
-      # TODO(crbug.com/334413759) Until bubble subsurfaces can be properly
-      # tested using weston, disable the feature when running tests there.
-      cmd.append('--disable-accelerated-subwindows-for-testing')
-
       if '--weston-use-gl' in cmd:
         # Runs Weston using hardware acceleration instead of SwiftShader.
         weston_cmd.append('--use-gl')

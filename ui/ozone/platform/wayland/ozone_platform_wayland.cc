@@ -80,9 +80,6 @@ namespace ui {
 
 namespace {
 
-constexpr char kDisableAcceleratedSubwindowsForTesting[] =
-    "disable-accelerated-subwindows-for-testing";
-
 class OzonePlatformWayland : public OzonePlatform,
                              public OSExchangeDataProviderFactoryOzone {
  public:
@@ -402,14 +399,7 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.needs_background_image =
           connection_->ShouldUseOverlayDelegation() &&
           connection_->viewporter();
-
-      properties.supports_subwindows_as_accelerated_widgets =
-          !base::CommandLine::ForCurrentProcess()->HasSwitch(
-              // TODO(crbug.com/334413759) This switch is used in
-              // testing/xvfb.py to disable accelerated subwindows when running
-              // tests in weston, as the tests still have some issues there with
-              // this feature enabled.
-              kDisableAcceleratedSubwindowsForTesting);
+      properties.supports_subwindows_as_accelerated_widgets = true;
       properties.supports_per_window_scaling =
           (connection_->UsePerSurfaceScaling() &&
            override_supports_per_window_scaling_for_test ==
