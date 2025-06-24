@@ -20,6 +20,8 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -721,6 +723,129 @@ TEST_F(iCloudKeychainTest, LargeBlobRWForICloudKeychain) {
       EXPECT_FALSE(*written);
       ASSERT_TRUE(read_blob.has_value());
       EXPECT_EQ(*read_blob, kReadBlob);
+    }
+  }
+}
+
+TEST_F(iCloudKeychainTest, HistogramMetricsForLargeBlob) {
+  if (@available(macOS 14.0, *)) {
+    static const uint8_t kAuthenticatorData[] = {
+        0x26, 0xbd, 0x72, 0x78, 0xbe, 0x46, 0x37, 0x61, 0xf1, 0xfa,
+        0xa1, 0xb1, 0x0a, 0xb4, 0xc4, 0xf8, 0x26, 0x70, 0x26, 0x9c,
+        0x41, 0x0c, 0x72, 0x6a, 0x1f, 0xd6, 0xe0, 0x58, 0x55, 0xe1,
+        0x9b, 0x46, 0x01, 0x00, 0x00, 0x0f, 0xdd,
+    };
+    static const uint8_t kSignature[] = {1, 2, 3, 4};
+    static const uint8_t kUserID[] = {5, 6, 7, 8};
+
+    CtapGetAssertionRequest request("rp.id", "{}");
+
+    // Helper that performs GetAssertion with the supplied options.
+    auto RunGetAssertion = [&](const CtapGetAssertionOptions& options,
+                               base::OnceCallback<void()> extra_fake_setup) {
+      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
+                                   kCredentialID);
+      std::move(extra_fake_setup).Run();
+      base::test::TestFuture<GetAssertionStatus,
+                             std::vector<AuthenticatorGetAssertionResponse>>
+          future;
+      authenticator_->GetAssertion(request, options, future.GetCallback());
+      EXPECT_TRUE(future.Wait());
+      EXPECT_EQ(future.Get<0>(), GetAssertionStatus::kSuccess);
+    };
+    // Emit failed large blob read.
+    {
+      base::HistogramTester histograms;
+
+      CtapGetAssertionOptions opts;
+      opts.large_blob_read = true;
+      RunGetAssertion(opts, base::DoNothing());
+      histograms.ExpectUniqueSample(
+          "WebAuthentication.MacOS.GetAssertion.LargeBlobSucceeded.Read", false,
+          1);
+    }
+    // Emit successful large blob read.
+    {
+      base::HistogramTester histograms;
+
+      CtapGetAssertionOptions opts;
+      opts.large_blob_read = true;
+      std::vector<uint8_t> kReadBlob = {0xAA, 0xBB};
+      RunGetAssertion(opts, base::BindLambdaForTesting([&] {
+                        fake_->set_large_blob_read_data(kReadBlob);
+                      }));
+      histograms.ExpectUniqueSample(
+          "WebAuthentication.MacOS.GetAssertion.LargeBlobSucceeded.Read", true,
+          1);
+    }
+    // Emit failed large blob write.
+    {
+      base::HistogramTester histograms;
+
+      CtapGetAssertionOptions opts;
+      opts.large_blob_write = std::vector<uint8_t>{0xEE, 0xFF};
+      RunGetAssertion(opts, base::BindLambdaForTesting([&] {
+                        fake_->set_large_blob_write_success(false);
+                      }));
+      histograms.ExpectUniqueSample(
+          "WebAuthentication.MacOS.GetAssertion.LargeBlobSucceeded.Write",
+          false, 1);
+    }
+    // Emit successful large blob write.
+    {
+      base::HistogramTester histograms;
+
+      CtapGetAssertionOptions opts;
+      opts.large_blob_write = std::vector<uint8_t>{0x01, 0x02};
+      RunGetAssertion(opts, base::BindLambdaForTesting([&] {
+                        fake_->set_large_blob_write_success(true);
+                      }));
+      histograms.ExpectUniqueSample(
+          "WebAuthentication.MacOS.GetAssertion.LargeBlobSucceeded.Write", true,
+          1);
+    }
+    // Helper that runs MakeCredential with a configurable fake state.
+    {
+      auto RunMake = [&](FakeSystemInterface::LargeBlobSupportState state) {
+        PublicKeyCredentialParams pk_params(
+            {PublicKeyCredentialParams::CredentialInfo()});
+
+        CtapMakeCredentialRequest mc_request(
+            "{}", {{1, 2, 3, 4}, "rp.id"},
+            {{4, 3, 2, 1}, "name", "displayName"}, pk_params);
+
+        MakeCredentialOptions mc_opts;
+        mc_opts.large_blob_support = LargeBlobSupport::kPreferred;
+
+        fake_->set_large_blob_support_state(state);
+        fake_->SetMakeCredentialResult(kAttestationObjectBytes, kCredentialID);
+
+        base::test::TestFuture<
+            MakeCredentialStatus,
+            std::optional<AuthenticatorMakeCredentialResponse>>
+            fut;
+        authenticator_->MakeCredential(mc_request, mc_opts, fut.GetCallback());
+        EXPECT_TRUE(fut.Wait());
+        EXPECT_EQ(fut.Get<0>(), MakeCredentialStatus::kSuccess);
+      };
+      // Emit large blob supported and enabled.
+      {
+        base::HistogramTester histograms;
+        RunMake(
+            FakeSystemInterface::LargeBlobSupportState::kSupportedAndEnabled);
+
+        histograms.ExpectUniqueSample(
+            "WebAuthentication.MacOS.MakeCredentialLargeBlobResult", true, 1);
+      }
+      // Emit large blob supported but disbled.
+      {
+        base::HistogramTester histograms;
+        RunMake(
+            FakeSystemInterface::LargeBlobSupportState::kSupportedButDisabled);
+
+        histograms.ExpectUniqueSample(
+            "WebAuthentication.MacOS.MakeCredentialLargeBlobResult", false, 1);
+      }
     }
   }
 }

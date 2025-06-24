@@ -155,9 +155,11 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     if (!SupportsLargeBlob()) {
       options.large_blob_support = LargeBlobSupport::kNotRequested;
     }
-    auto continuation =
-        base::BindOnce(&Authenticator::OnMakeCredentialComplete,
-                       weak_factory_.GetWeakPtr(), std::move(callback));
+    const bool large_blob_requested =
+        options.large_blob_support != LargeBlobSupport::kNotRequested;
+    auto continuation = base::BindOnce(
+        &Authenticator::OnMakeCredentialComplete, weak_factory_.GetWeakPtr(),
+        std::move(callback), large_blob_requested);
 
     // Authentication is not required for this operation, but it's a moment
     // when we can reasonably ask for it. If the user authorizes Chromium then
@@ -225,9 +227,10 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
         FIDO_LOG(DEBUG) << "iCKC: passkeys permission is denied";
         [[fallthrough]];
       case SystemInterface::kAuthAuthorized:
-        auto continuation =
-            base::BindOnce(&Authenticator::OnGetAssertionComplete,
-                           weak_factory_.GetWeakPtr(), std::move(callback));
+        auto continuation = base::BindOnce(
+            &Authenticator::OnGetAssertionComplete, weak_factory_.GetWeakPtr(),
+            options.large_blob_read, options.large_blob_write.has_value(),
+            std::move(callback));
         sys_interface->GetAssertion(window_, std::move(request),
                                     GetLargeBlobAssertionInputs(options),
                                     std::move(continuation));
@@ -248,9 +251,10 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
           PasskeyPermissionMetric::kApprovedDuringGet);
     }
 
-    auto continuation =
-        base::BindOnce(&Authenticator::OnGetAssertionComplete,
-                       weak_factory_.GetWeakPtr(), std::move(callback));
+    auto continuation = base::BindOnce(
+        &Authenticator::OnGetAssertionComplete, weak_factory_.GetWeakPtr(),
+        options.large_blob_read, options.large_blob_write.has_value(),
+        std::move(callback));
     sys_interface->GetAssertion(window_, std::move(request),
                                 GetLargeBlobAssertionInputs(options),
                                 std::move(continuation));
@@ -351,6 +355,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
 
  private:
   void OnMakeCredentialComplete(MakeCredentialCallback callback,
+                                bool large_blob_requested,
                                 ASAuthorization* authorization,
                                 NSError* error) {
     if (cancelled_) {
@@ -459,11 +464,18 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                 : std::nullopt;
       }
     }
+    if (large_blob_requested) {
+      base::UmaHistogramBoolean(
+          "WebAuthentication.MacOS.MakeCredentialLargeBlobResult",
+          response.large_blob_type.has_value());
+    }
     std::move(callback).Run(MakeCredentialStatus::kSuccess,
                             std::move(response));
   }
 
-  void OnGetAssertionComplete(GetAssertionCallback callback,
+  void OnGetAssertionComplete(bool large_blob_read_requested,
+                              bool large_blob_write_requested,
+                              GetAssertionCallback callback,
                               ASAuthorization* authorization,
                               NSError* error) {
     if (cancelled_) {
@@ -558,6 +570,15 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
           response.large_blob_written = large_blob_out.didWrite;
         }
       }
+    }
+    if (large_blob_read_requested) {
+      base::UmaHistogramBoolean(
+          "WebAuthentication.MacOS.GetAssertion.LargeBlobSucceeded.Read",
+          response.large_blob.has_value());
+    } else if (large_blob_write_requested) {
+      base::UmaHistogramBoolean(
+          "WebAuthentication.MacOS.GetAssertion.LargeBlobSucceeded.Write",
+          response.large_blob_written);
     }
     std::vector<AuthenticatorGetAssertionResponse> responses;
     responses.emplace_back(std::move(response));

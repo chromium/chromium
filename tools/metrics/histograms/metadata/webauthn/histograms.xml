@@ -373,6 +373,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebAuthentication.MacOS.GetAssertion.LargeBlobSucceeded.{Operation}"
+    enum="Boolean" expires_after="2025-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <summary>
+    Records whether a Large Blob {Operation} operation succeeded during a
+    WebAuthn getAssertion request on MacOS, using iCloud Keychain.
+  </summary>
+  <token key="Operation">
+    <variant name="Read" summary="read"/>
+    <variant name="Write" summary="write"/>
+  </token>
+</histogram>
+
+<histogram name="WebAuthentication.MacOS.MakeCredentialLargeBlobResult"
+    enum="Boolean" expires_after="2025-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <summary>
+    Records if the macOS platform reported large blob support upon request when
+    a passkey was created via WebAuthn makeCredential (iCloud Keychain).
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.MacOS.PasskeyPermission"
     enum="WebAuthenticationMacOSPasskeysPermission" expires_after="2025-11-02">
   <owner>agl@chromium.org</owner>
