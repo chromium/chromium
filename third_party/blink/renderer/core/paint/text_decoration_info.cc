@@ -321,8 +321,7 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
       gfx::PointF(local_origin_) + gfx::Vector2dF(0, line_offset);
   line_geometry_ = DecorationGeometry::Make(
       style, gfx::RectF(start_point, gfx::SizeF(width_, ResolvedThickness())),
-      double_offset, wavy_offset_factor, base::OptionalToPtr(spelling_wave),
-      LineColor());
+      double_offset, wavy_offset_factor, base::OptionalToPtr(spelling_wave));
   line_geometry_.antialias = antialias;
 }
 

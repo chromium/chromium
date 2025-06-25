@@ -90,7 +90,7 @@ void DrawLineAsRect(GraphicsContext& context,
 }
 
 // Prepares a path for a cubic Bezier curve repeated three times, yielding a
-// wavy pattern that we can cut into a tiling shader (PrepareWavyTileRecord).
+// wavy pattern that we can cut into a tiling shader.
 //
 // The result ignores the local origin, line offset, and (wavy) double offset,
 // so the midpoints are always at y=0.5, while the phase is shifted for either
@@ -157,9 +157,9 @@ WaveDefinition MakeWave(float thickness) {
   };
 }
 
-// Computes the wavy pattern rect, which is where the desired wavy pattern would
-// be found when painting the wavy stroke path at the origin, or in other words,
-// how far PrepareWavyTileRecord needs to translate in the opposite direction
+// Computes the wavy pattern rect, which is where the desired wavy pattern
+// would be found when painting the wavy stroke path at the origin, or in other
+// words, how far the tile needs to be translated in the opposite direction
 // when painting to ensure that nothing is painted at y<0.
 gfx::RectF ComputeWavyPatternRect(const float thickness,
                                   const WaveDefinition& wave,
@@ -175,72 +175,87 @@ gfx::RectF ComputeWavyPatternRect(const float thickness,
   return {0.f, top, wave.wavelength, bottom - top};
 }
 
-cc::PaintRecord PrepareWavyTileRecord(const Color& color,
-                                      const float thickness,
-                                      const Path& stroke_path,
-                                      const gfx::RectF& pattern_rect) {
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setColor(color.Rgb());
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setStrokeWidth(thickness);
-
-  PaintRecorder recorder;
-  cc::PaintCanvas* canvas = recorder.beginRecording();
-
-  // Translate the wavy pattern so that nothing is painted at y<0.
-  canvas->translate(-pattern_rect.x(), -pattern_rect.y());
-  canvas->drawPath(stroke_path.GetSkPath(), flags);
-
-  return recorder.finishRecordingAsPicture();
-}
-
 struct WavyParams {
   WaveDefinition wave;
   float thickness;
-  Color color;
 
   bool operator==(const WavyParams&) const = default;
   DISALLOW_NEW();
 };
 
-void ComputeWavyLineData(const WavyParams& params,
-                         DecorationGeometry& geometry) {
+class WavyGeometry {
+  DISALLOW_NEW();
+
+ public:
+  explicit WavyGeometry(const WavyParams& params)
+      : path_(WavyPath(params.wave)),
+        bounds_(ComputeWavyPatternRect(params.thickness, params.wave, path_)),
+        thickness_(params.thickness) {}
+
+  gfx::RectF PaintRect(const DecorationGeometry& geometry) const;
+
+  const cc::PaintRecord& TileRecord(const Color& color) const;
+  gfx::RectF TileRect() const {
+    // The wavy tile rect is the same size as the wavy pattern rect but at
+    // origin (0,0).
+    return gfx::RectF(bounds_.size());
+  }
+
+ private:
+  Path path_;
+  gfx::RectF bounds_;
+  float thickness_;
+  mutable cc::PaintRecord tile_record_;
+  mutable Color tile_record_color_;
+};
+
+gfx::RectF WavyGeometry::PaintRect(const DecorationGeometry& geometry) const {
+  // The offset from the local origin is the (wavy) double offset and the
+  // origin of the wavy pattern rect (around minus half the amplitude).
+  gfx::PointF origin =
+      geometry.line.origin() + bounds_.OffsetFromOrigin() +
+      gfx::Vector2dF{0.f, geometry.double_offset * geometry.wavy_offset_factor};
+  // Get the height of the wavy tile, and the width of the decoration.
+  gfx::SizeF size(geometry.line.width(), bounds_.height());
+  return {origin, size};
+}
+
+const cc::PaintRecord& WavyGeometry::TileRecord(const Color& color) const {
+  if (tile_record_color_ != color || tile_record_.empty()) {
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setColor(color.Rgb());
+    flags.setStyle(cc::PaintFlags::kStroke_Style);
+    flags.setStrokeWidth(thickness_);
+
+    PaintRecorder recorder;
+    cc::PaintCanvas* canvas = recorder.beginRecording();
+
+    // Translate the wavy pattern so that nothing is painted at y<0.
+    canvas->translate(-bounds_.x(), -bounds_.y());
+    canvas->drawPath(path_.GetSkPath(), flags);
+
+    tile_record_ = recorder.finishRecordingAsPicture();
+    tile_record_color_ = color;
+  }
+  return tile_record_;
+}
+
+const WavyGeometry& GetWavyGeometry(const DecorationGeometry& line_geometry) {
   struct WavyCache {
     WavyParams key;
-    gfx::RectF pattern_rect;
-    cc::PaintRecord tile_record;
+    WavyGeometry geometry;
+
     DISALLOW_NEW();
   };
 
   DEFINE_STATIC_LOCAL(std::optional<WavyCache>, wavy_cache, (std::nullopt));
 
-  if (wavy_cache && wavy_cache->key == params) {
-    geometry.wavy_pattern_rect = wavy_cache->pattern_rect;
-    geometry.wavy_tile_record = wavy_cache->tile_record;
-    return;
+  const WavyParams params{line_geometry.wavy_wave, line_geometry.Thickness()};
+  if (!wavy_cache || wavy_cache->key != params) {
+    wavy_cache.emplace(params, WavyGeometry(params));
   }
-
-  Path stroke_path = WavyPath(params.wave);
-  geometry.wavy_pattern_rect =
-      ComputeWavyPatternRect(params.thickness, params.wave, stroke_path);
-  geometry.wavy_tile_record = PrepareWavyTileRecord(
-      params.color, params.thickness, stroke_path, geometry.wavy_pattern_rect);
-  wavy_cache =
-      WavyCache{params, geometry.wavy_pattern_rect, geometry.wavy_tile_record};
-}
-
-// Returns the wavy paint rect, which has the height of the wavy tile rect but
-// the width needed by the actual decoration, for the DrawRect operation.
-gfx::RectF WavyPaintRect(const DecorationGeometry& geometry) {
-  // The offset from the local origin is the (wavy) double offset and the
-  // origin of the wavy pattern rect (around minus half the amplitude).
-  gfx::PointF origin =
-      geometry.line.origin() + geometry.wavy_pattern_rect.OffsetFromOrigin() +
-      gfx::Vector2dF{0.f, geometry.double_offset * geometry.wavy_offset_factor};
-  // Get the height of the wavy tile, and the width of the decoration.
-  gfx::SizeF size(geometry.line.width(), geometry.wavy_pattern_rect.height());
-  return {origin, size};
+  return wavy_cache->geometry;
 }
 
 }  // namespace
@@ -249,18 +264,15 @@ DecorationGeometry DecorationGeometry::Make(StrokeStyle style,
                                             const gfx::RectF& line,
                                             float double_offset,
                                             int wavy_offset_factor,
-                                            const WaveDefinition* custom_wave,
-                                            const Color& line_color) {
+                                            const WaveDefinition* custom_wave) {
   DecorationGeometry geometry;
   geometry.style = style;
   geometry.line = line;
   geometry.double_offset = double_offset;
 
   if (geometry.style == kWavyStroke) {
-    const WaveDefinition wave =
+    geometry.wavy_wave =
         custom_wave ? *custom_wave : MakeWave(geometry.Thickness());
-    WavyParams params{wave, geometry.Thickness(), line_color};
-    ComputeWavyLineData(params, geometry);
     geometry.wavy_offset_factor = wavy_offset_factor;
   }
   return geometry;
@@ -301,7 +313,7 @@ gfx::RectF DecorationLinePainter::Bounds(const DecorationGeometry& geometry) {
       // Returns the wavy bounds, which is the same size as the wavy paint rect
       // but at the origin needed by the actual decoration, for the global
       // transform.
-      return WavyPaintRect(geometry);
+      return GetWavyGeometry(geometry).PaintRect(geometry);
     case kDoubleStroke: {
       gfx::RectF double_line_rect = geometry.line;
       if (geometry.double_offset < 0) {
@@ -327,7 +339,7 @@ void DecorationLinePainter::Paint(const DecorationGeometry& geometry,
   // TODO(crbug.com/1346281) make other decoration styles work with PaintFlags
   switch (geometry.style) {
     case kWavyStroke:
-      PaintWavyTextDecoration(geometry, auto_dark_mode);
+      PaintWavyTextDecoration(geometry, color, auto_dark_mode);
       break;
     case kDottedStroke:
     case kDashedStroke:
@@ -356,18 +368,18 @@ void DecorationLinePainter::Paint(const DecorationGeometry& geometry,
 
 void DecorationLinePainter::PaintWavyTextDecoration(
     const DecorationGeometry& geometry,
+    const Color& color,
     const AutoDarkMode& auto_dark_mode) {
+  const WavyGeometry& wavy_geometry = GetWavyGeometry(geometry);
   // The wavy paint rect, which has the height of the wavy tile rect but the
   // width needed by the actual decoration, for the DrawRect operation.
-  const gfx::RectF paint_rect = WavyPaintRect(geometry);
-  // The wavy tile rect is the same size as the wavy pattern rect but at origin
-  // (0,0).
-  const gfx::RectF tile_rect(geometry.wavy_pattern_rect.size());
+  const gfx::RectF paint_rect = wavy_geometry.PaintRect(geometry);
+  const gfx::RectF tile_rect = wavy_geometry.TileRect();
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setShader(PaintShader::MakePaintRecord(
-      geometry.wavy_tile_record, gfx::RectFToSkRect(tile_rect),
+      wavy_geometry.TileRecord(color), gfx::RectFToSkRect(tile_rect),
       SkTileMode::kRepeat, SkTileMode::kDecal, nullptr));
 
   GraphicsContextStateSaver state_saver(context_);
