@@ -284,8 +284,7 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
       !(IsStartOfWrappedLine(start) &&
         ShouldTrimStartOfWrappedLine(text_spacing_trim_)) &&
       // Disable if the line start needs reshape.
-      result_->IsStartSafeToBreak() &&
-      RuntimeEnabledFeatures::LineBreakEarlyReturnEnabled()) [[unlikely]] {
+      result_->IsStartSafeToBreak()) [[unlikely]] {
 #if EXPENSIVE_DCHECKS_ARE_ON()
     result_->EnsurePositionData();
     const EdgeOffset first_safe = FirstSafeOffset(start);
