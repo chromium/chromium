@@ -46,6 +46,8 @@ constexpr char kHatsSurveyTriggerAutofillAddressUserPerception[] =
     "autofill-address-users-perception";
 constexpr char kHatsSurveyTriggerAutofillAddressUserDeclinedSuggestion[] =
     "autofill-address-users-perception";
+constexpr char kHatsSurveyTriggerAutofillAddressUserDeclinedSave[] =
+    "autofill-address-user-declined-save";
 constexpr char kHatsSurveyTriggerAutofillCreditCardUserPerception[] =
     "autofill-credit-card-users-perception";
 constexpr char kHatsSurveyTriggerAutofillPasswordUserPerception[] =
@@ -424,6 +426,10 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &::autofill::features::kAutofillAddressUserDeclinedSuggestionSurvey,
       kHatsSurveyTriggerAutofillAddressUserDeclinedSuggestion, std::nullopt);
+
+  survey_configs.emplace_back(
+      &::autofill::features::kAutofillAddressUserDeclinedSaveSurvey,
+      kHatsSurveyTriggerAutofillAddressUserDeclinedSave);
 
   survey_configs.emplace_back(
       &::autofill::features::kAutofillCreditCardUserPerceptionSurvey,

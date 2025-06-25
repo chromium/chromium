@@ -19,6 +19,7 @@
 extern const char kHatsSurveyTriggerAutofillAddress[];
 extern const char kHatsSurveyTriggerAutofillAddressUserPerception[];
 extern const char kHatsSurveyTriggerAutofillAddressUserDeclinedSuggestion[];
+extern const char kHatsSurveyTriggerAutofillAddressUserDeclinedSave[];
 extern const char kHatsSurveyTriggerAutofillCreditCardUserPerception[];
 extern const char kHatsSurveyTriggerAutofillPasswordUserPerception[];
 extern const char kHatsSurveyTriggerAutofillCard[];

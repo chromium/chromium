@@ -22,6 +22,8 @@ BASE_DECLARE_FEATURE(kAutofillAcrossIframesIosTriggerFormExtraction);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAddressSuggestionsOnTyping);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAddressUserDeclinedSaveSurvey);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAddressUserPerceptionSurvey);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiAlwaysTriggerServerModel);
