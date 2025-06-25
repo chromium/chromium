@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.ActivityIndicator.{Disposition}.{PermissionType}.{Action}"
-    enum="ActivityIndicatorState" expires_after="2025-07-13">
+    enum="ActivityIndicatorState" expires_after="2026-06-24">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
