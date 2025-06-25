@@ -2595,6 +2595,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-03-25">
   <owner>creis@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the duration between when the navigation starts to when the browser
     process finishes processing the DidCommitNavigation IPC, at which point the
@@ -2612,6 +2613,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-03-25">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the duration between {DurationFromTo}. Recorded at the point when a
     navigation finishes committing, i.e. finishes processing the
