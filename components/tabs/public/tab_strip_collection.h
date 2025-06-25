@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <unordered_map>
 
 #include "base/types/pass_key.h"
