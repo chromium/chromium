@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -125,6 +126,10 @@ void HostFrameSinkManager::InvalidateFrameSinkId(
     // the platform window (eg. XWindow or HWND) get destroyed before the
     // platform window is destroyed.
     mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_call;
+#if BUILDFLAG(IS_ANDROID)
+    SCOPED_UMA_HISTOGRAM_TIMER(
+        "Viz.SyncDestroyCompositorFrameSink.ExecutionTime");
+#endif
     frame_sink_manager_->DestroyCompositorFrameSink(frame_sink_id,
                                                     base::TimeTicks::Now());
 
