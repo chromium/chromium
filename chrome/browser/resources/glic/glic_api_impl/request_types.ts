@@ -242,6 +242,7 @@ export declare interface HostRequestTypes {
       positive: boolean,
     },
   };
+  glicBrowserOnClosedCaptionsShown: {};
   glicBrowserScrollTo: {
     request: {params: ScrollToParams},
   };
@@ -435,6 +436,7 @@ type HostRequestEnumNamesType = {
     SetClosedCaptioningSetting: 0,
     DropScrollToHighlight: 0,
     MaybeRefreshUserStatus: 0,
+    OnClosedCaptionsShown: 0,
   };
   return apiRequestTypes;
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType)

@@ -112,6 +112,11 @@ class GlicMetricsTest : public testing::Test {
   GlicMetricsTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {
+            features::kGlicClosedCaptioning,
+        },
+        {});
     testing::Test::SetUp();
     SetUpProfile();
     SetUpGlicMetrics();
@@ -141,6 +146,7 @@ class GlicMetricsTest : public testing::Test {
   }
 
   void TearDown() override {
+    scoped_feature_list_.Reset();
     delegate_ = nullptr;
     metrics_.reset();
     enabling_.reset();
@@ -181,6 +187,9 @@ class GlicMetricsTest : public testing::Test {
   raw_ptr<MockDelegate> delegate_;
   std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<GlicMetrics> metrics_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(GlicMetricsTest, Basic) {
@@ -366,6 +375,21 @@ TEST_F(GlicMetricsTest, SessionDuration_LogsError) {
   histogram_tester_.ExpectBucketCount("Glic.Metrics.Error",
                                       Error::kWindowCloseWithoutWindowOpen,
                                       /*expected_count=*/1);
+}
+
+TEST_F(GlicMetricsTest, ClosedCaptionsResponse_PrefLogsFalse) {
+  metrics_->LogClosedCaptionsShown();
+
+  histogram_tester_.ExpectUniqueSample("Glic.Response.ClosedCaptionsShown",
+                                       false, 1);
+}
+
+TEST_F(GlicMetricsTest, ClosedCaptionsResponse_PrefLogsTrue) {
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicClosedCaptioningEnabled, true);
+  metrics_->LogClosedCaptionsShown();
+
+  histogram_tester_.ExpectUniqueSample("Glic.Response.ClosedCaptionsShown",
+                                       true, 1);
 }
 
 TEST_F(GlicMetricsTest, ImpressionBeforeFreNotPermittedByPolicy) {
