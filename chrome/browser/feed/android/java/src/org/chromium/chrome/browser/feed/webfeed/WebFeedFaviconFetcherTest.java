@@ -14,8 +14,6 @@ import android.graphics.Color;
 
 import androidx.test.filters.SmallTest;
 
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +27,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.image_fetcher.ImageDataFetchResult;
+import org.chromium.components.image_fetcher.ImageFetchResult;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.url.GURL;
@@ -193,7 +193,12 @@ public class WebFeedFaviconFetcherTest {
         }
 
         @Override
-        public void fetchGif(final ImageFetcher.Params params, Callback<BaseGifImage> callback) {}
+        public void fetchImageWithRequestMetadata(
+                final ImageFetcher.Params params, Callback<ImageFetchResult> callback) {}
+
+        @Override
+        public void fetchGif(
+                final ImageFetcher.Params params, Callback<ImageDataFetchResult> callback) {}
 
         @Override
         public void clear() {}

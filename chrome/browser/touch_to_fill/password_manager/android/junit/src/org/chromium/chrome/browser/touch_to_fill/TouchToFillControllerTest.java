@@ -44,8 +44,6 @@ import android.graphics.drawable.BitmapDrawable;
 
 import androidx.annotation.Px;
 
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -75,6 +73,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.image_fetcher.ImageDataFetchResult;
+import org.chromium.components.image_fetcher.ImageFetchResult;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -908,7 +908,12 @@ public class TouchToFillControllerTest {
         }
 
         @Override
-        public void fetchGif(final ImageFetcher.Params params, Callback<BaseGifImage> callback) {}
+        public void fetchImageWithRequestMetadata(
+                final ImageFetcher.Params params, Callback<ImageFetchResult> callback) {}
+
+        @Override
+        public void fetchGif(
+                final ImageFetcher.Params params, Callback<ImageDataFetchResult> callback) {}
 
         @Override
         public void clear() {}

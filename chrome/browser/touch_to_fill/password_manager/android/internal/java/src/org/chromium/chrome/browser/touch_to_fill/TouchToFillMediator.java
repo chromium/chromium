@@ -29,6 +29,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -478,7 +479,7 @@ class TouchToFillMediator {
             }
         }
 
-        private void onImageFetched(Bitmap image) {
+        private void onImageFetched(@Nullable Bitmap image) {
             if (image != null) {
                 mAvatarImages.add(image);
             }

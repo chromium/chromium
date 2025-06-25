@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.logo.LogoCoordinator.VisibilityObserver;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.components.image_fetcher.ImageDataFetchResult;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
@@ -300,8 +301,12 @@ public class LogoMediator implements TemplateUrlServiceObserver {
             mImageFetcher.fetchGif(
                     ImageFetcher.Params.create(
                             mAnimatedLogoUrl, ImageFetcher.NTP_ANIMATED_LOGO_UMA_CLIENT_NAME),
-                    (@Nullable BaseGifImage animatedLogoImage) -> {
-                        if (mLogoBridge == null || animatedLogoImage == null) return;
+                    (ImageDataFetchResult animatedLogoImageFetchResult) -> {
+                        if (mLogoBridge == null || animatedLogoImageFetchResult.imageData == null) {
+                            return;
+                        }
+                        BaseGifImage animatedLogoImage =
+                                new BaseGifImage(animatedLogoImageFetchResult.imageData);
                         mLogoModel.set(LogoProperties.ANIMATED_LOGO, animatedLogoImage);
                     });
         } else if (mOnLogoClickUrl != null) {

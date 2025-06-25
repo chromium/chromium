@@ -14,14 +14,14 @@ import static org.mockito.Mockito.verify;
 
 import android.graphics.Bitmap;
 
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
-
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -47,10 +47,14 @@ public class ImageFetcherTest {
         }
 
         @Override
-        public void fetchGif(final Params params, Callback<BaseGifImage> callback) {}
+        public void fetchGif(final Params params, Callback<ImageDataFetchResult> callback) {}
 
         @Override
         public void fetchImage(final Params params, Callback<Bitmap> callback) {}
+
+        @Override
+        public void fetchImageWithRequestMetadata(
+                final Params params, Callback<ImageFetchResult> callback) {}
 
         @Override
         public void clear() {}
@@ -64,6 +68,7 @@ public class ImageFetcherTest {
         public void destroy() {}
     }
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ImageFetcherBridge mBridge;
 
     private final Bitmap mBitmap =
@@ -73,7 +78,6 @@ public class ImageFetcherTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mImageFetcher = Mockito.spy(new ImageFetcherForTest(mBridge));
     }
 

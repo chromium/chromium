@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.ImageType;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
+import org.chromium.components.image_fetcher.ImageFetchResult;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
@@ -86,10 +87,10 @@ public class AutofillImageFetcher {
                         bitmap ->
                                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                                         bitmap, iconSpecs, true);
-                Callback<@Nullable Bitmap> onImageFetched =
-                        bitmap ->
+                Callback<ImageFetchResult> onImageFetched =
+                        bitmapFetchResult ->
                                 treatAndCacheImage(
-                                        bitmap,
+                                        bitmapFetchResult.imageBitmap,
                                         resolvedUrl,
                                         treatImageFunction,
                                         /* imageTypeString= */ "CreditCardArt");
@@ -115,10 +116,10 @@ public class AutofillImageFetcher {
                     AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url).getSpec();
             Function<Bitmap, Bitmap> treatImageFunction =
                     bitmap -> AutofillImageFetcherUtils.treatPixAccountImage(bitmap);
-            Callback<@Nullable Bitmap> onImageFetched =
-                    bitmap ->
+            Callback<ImageFetchResult> onImageFetched =
+                    bitmapFetchResult ->
                             treatAndCacheImage(
-                                    bitmap,
+                                    bitmapFetchResult.imageBitmap,
                                     resolvedUrl,
                                     treatImageFunction,
                                     /* imageTypeString= */ "PixAccountImage");
@@ -144,10 +145,10 @@ public class AutofillImageFetcher {
                 String resolvedUrl = iconSpecs.getResolvedIconUrl(url).getSpec();
                 // TODO: crbug.com/404437211 - Make sure the valuable images are post-processed
                 // properly.
-                Callback<@Nullable Bitmap> onImageFetched =
-                        bitmap ->
+                Callback<ImageFetchResult> onImageFetched =
+                        bitmapFetchResult ->
                                 treatAndCacheImage(
-                                        bitmap,
+                                        bitmapFetchResult.imageBitmap,
                                         resolvedUrl,
                                         imageBitmap -> imageBitmap,
                                         /* imageTypeString= */ "ValuableImage");
@@ -197,7 +198,7 @@ public class AutofillImageFetcher {
      * @param resolvedUrl The final URL including any params to fetch the image.
      * @param onImageFetched The callback to be called with the fetched image.
      */
-    private void fetchImage(String resolvedUrl, Callback<@Nullable Bitmap> onImageFetched) {
+    private void fetchImage(String resolvedUrl, Callback<ImageFetchResult> onImageFetched) {
         if (mImagesCache.containsKey(resolvedUrl)) {
             return;
         }
@@ -209,7 +210,7 @@ public class AutofillImageFetcher {
         ImageFetcher.Params params =
                 ImageFetcher.Params.create(
                         resolvedUrl, ImageFetcher.AUTOFILL_IMAGE_FETCHER_UMA_CLIENT_NAME);
-        mImageFetcher.fetchImage(params, onImageFetched);
+        mImageFetcher.fetchImageWithRequestMetadata(params, onImageFetched);
     }
 
     /**
@@ -249,10 +250,10 @@ public class AutofillImageFetcher {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_RETRY_IMAGE_FETCH_ON_FAILURE)) {
             // Image fetching failed, and max retry attempts not reached -> retry fetch after a
             // delay.
-            Callback<@Nullable Bitmap> onImageFetched =
-                    fetchedBitmap ->
+            Callback<ImageFetchResult> onImageFetched =
+                    bitmapFetchResult ->
                             treatAndCacheImage(
-                                    fetchedBitmap,
+                                    bitmapFetchResult.imageBitmap,
                                     resolvedUrl,
                                     treatImageFunction,
                                     imageTypeString);

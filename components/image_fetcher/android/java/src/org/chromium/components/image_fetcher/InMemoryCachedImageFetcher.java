@@ -8,8 +8,6 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
 
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
-
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.build.annotations.NullMarked;
@@ -85,7 +83,7 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
     }
 
     @Override
-    public void fetchGif(final Params params, Callback<@Nullable BaseGifImage> callback) {
+    public void fetchGif(final Params params, Callback<ImageDataFetchResult> callback) {
         assert mBitmapCache != null && mImageFetcher != null : "fetchGif called after destroy";
         mImageFetcher.fetchGif(params, callback);
     }
@@ -110,6 +108,32 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
         } else {
             reportEvent(params.clientName, ImageFetcherEvent.JAVA_IN_MEMORY_CACHE_HIT);
             callback.onResult(cachedBitmap);
+        }
+    }
+
+    @Override
+    public void fetchImageWithRequestMetadata(
+            final Params params, Callback<ImageFetchResult> callback) {
+        assert mBitmapCache != null && mImageFetcher != null : "fetchImage called after destroy";
+        Bitmap cachedBitmap =
+                tryToGetBitmap(params.url, params.shouldResize, params.width, params.height);
+        if (cachedBitmap == null) {
+            mImageFetcher.fetchImageWithRequestMetadata(
+                    params,
+                    (ImageFetchResult bitmapFetchResult) -> {
+                        storeBitmap(
+                                bitmapFetchResult.imageBitmap,
+                                params.url,
+                                params.shouldResize,
+                                params.width,
+                                params.height);
+                        callback.onResult(bitmapFetchResult);
+                    });
+        } else {
+            reportEvent(params.clientName, ImageFetcherEvent.JAVA_IN_MEMORY_CACHE_HIT);
+            callback.onResult(
+                    new ImageFetchResult(
+                            cachedBitmap, new RequestMetadata("unknown", -1, "from_cache")));
         }
     }
 

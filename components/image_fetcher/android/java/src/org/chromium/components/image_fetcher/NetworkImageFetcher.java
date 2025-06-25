@@ -6,8 +6,6 @@ package org.chromium.components.image_fetcher;
 
 import android.graphics.Bitmap;
 
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
-
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -31,7 +29,7 @@ public class NetworkImageFetcher extends ImageFetcher {
 
     @Override
     public void fetchGif(
-            final ImageFetcher.Params params, Callback<@Nullable BaseGifImage> callback) {
+            final ImageFetcher.Params params, Callback<ImageDataFetchResult> callback) {
         getImageFetcherBridge().fetchGif(getConfig(), params, callback);
     }
 
@@ -44,6 +42,22 @@ public class NetworkImageFetcher extends ImageFetcher {
                         params,
                         (@Nullable Bitmap bitmapFromNative) -> {
                             callback.onResult(bitmapFromNative);
+                            getImageFetcherBridge()
+                                    .reportTotalFetchTimeFromNative(
+                                            params.clientName, startTimeMillis);
+                        });
+    }
+
+    @Override
+    public void fetchImageWithRequestMetadata(
+            final Params params, Callback<ImageFetchResult> callback) {
+        long startTimeMillis = System.currentTimeMillis();
+        getImageFetcherBridge()
+                .fetchImageWithRequestMetadata(
+                        getConfig(),
+                        params,
+                        (ImageFetchResult bitmapFromNativeFetchResult) -> {
+                            callback.onResult(bitmapFromNativeFetchResult);
                             getImageFetcherBridge()
                                     .reportTotalFetchTimeFromNative(
                                             params.clientName, startTimeMillis);

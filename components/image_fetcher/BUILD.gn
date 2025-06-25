@@ -8,11 +8,14 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/components/image_fetcher/CachedImageFetcher.java",
+    "android/java/src/org/chromium/components/image_fetcher/ImageDataFetchResult.java",
+    "android/java/src/org/chromium/components/image_fetcher/ImageFetchResult.java",
     "android/java/src/org/chromium/components/image_fetcher/ImageFetcher.java",
     "android/java/src/org/chromium/components/image_fetcher/ImageFetcherBridge.java",
     "android/java/src/org/chromium/components/image_fetcher/ImageFetcherFactory.java",
     "android/java/src/org/chromium/components/image_fetcher/InMemoryCachedImageFetcher.java",
     "android/java/src/org/chromium/components/image_fetcher/NetworkImageFetcher.java",
+    "android/java/src/org/chromium/components/image_fetcher/RequestMetadata.java",
   ]
   deps = [
     "//base:base_java",
