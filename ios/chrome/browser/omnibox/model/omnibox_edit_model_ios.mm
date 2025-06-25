@@ -198,27 +198,6 @@ void OmniboxEditModelIOS::OpenMatchForTesting(
             pasted_text, match_selection_timestamp);
 }
 
-void OmniboxEditModelIOS::OnPopupDataChanged(
-    const std::u16string& inline_autocompletion,
-    const std::u16string& additional_text,
-    const AutocompleteMatch& new_match) {
-  text_model_->current_match = new_match;
-  text_model_->inline_autocompletion = inline_autocompletion;
-
-  const std::u16string& user_text = text_model_->user_input_in_progress
-                                        ? text_model_->user_text
-                                        : text_model_->input.text();
-
-  [text_controller_
-      updateAutocompleteIfTextChanged:user_text
-                       autocompletion:text_model_->inline_autocompletion];
-  [text_controller_ setAdditionalText:additional_text];
-
-  // We need to invoke this in case the destination url changed (as could
-  // happen when control is toggled).
-  [text_controller_ onTextChanged];
-}
-
 bool OmniboxEditModelIOS::OnAfterPossibleChange(
     const OmniboxStateChanges& state_changes) {
   bool state_changed =

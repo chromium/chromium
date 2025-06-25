@@ -133,20 +133,6 @@ class OmniboxEditModelIOS {
     return text_model_->paste_state == OmniboxPasteState::kPasting;
   }
 
-  // Called when any relevant data changes.  This rolls together several
-  // separate pieces of data into one call so we can update all the UI
-  // efficiently. Specifically, it's invoked for autocompletion.
-  //   `inline_autocompletion` is the autocompletion.
-  //   `additional_text` is additional omnibox text to be displayed adjacent to
-  //     the omnibox view.
-  //   `new_match` is the selected match when the user is changing selection,
-  //     the default match if the user is typing, or an empty match when
-  //     selecting a header.
-  // Virtual to allow testing.
-  virtual void OnPopupDataChanged(const std::u16string& inline_autocompletion,
-                                  const std::u16string& additional_text,
-                                  const AutocompleteMatch& new_match);
-
   // Called by the OmniboxViewIOS after something changes, with details about
   // what state changes occurred.  Updates internal state, updates the popup if
   // necessary, and returns true if any significant changes occurred.  Note that

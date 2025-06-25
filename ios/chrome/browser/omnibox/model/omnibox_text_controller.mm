@@ -337,6 +337,26 @@ const char kOmniboxFocusResultedInNavigation[] =
       _omniboxTextModel->HasFocus());
 }
 
+- (void)onPopupDataChanged:(const std::u16string&)inlineAutocompletion
+            additionalText:(const std::u16string&)additionalText
+                  newMatch:(const AutocompleteMatch&)newMatch {
+  _omniboxTextModel->current_match = newMatch;
+  _omniboxTextModel->inline_autocompletion = inlineAutocompletion;
+
+  const std::u16string& userText = _omniboxTextModel->user_input_in_progress
+                                       ? _omniboxTextModel->user_text
+                                       : _omniboxTextModel->input.text();
+
+  [self
+      updateAutocompleteIfTextChanged:userText
+                       autocompletion:_omniboxTextModel->inline_autocompletion];
+  [self setAdditionalText:additionalText];
+
+  // We need to invoke this in case the destination url changed (as could
+  // happen when control is toggled).
+  [self onTextChanged];
+}
+
 #pragma mark - Autocomplete events
 
 - (void)setAdditionalText:(const std::u16string&)text {

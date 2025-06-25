@@ -97,14 +97,27 @@ class OmniboxEditModelIOS;
 /// Virtual for testing.
 - (void)setUserText:(const std::u16string&)text;
 
-// Returns the match for the current text. If the user has not edited the text
-// this is the match corresponding to the permanent text. Returns the
-// alternate nav URL, if `alternateNavURL` is non-NULL and there is such a
-// URL.
+/// Returns the match for the current text. If the user has not edited the text
+/// this is the match corresponding to the permanent text. Returns the
+/// alternate nav URL, if `alternateNavURL` is non-NULL and there is such a
+/// URL.
 - (AutocompleteMatch)currentMatch:(GURL*)alternateNavURL;
 
-// Invoked any time the text may have changed in the edit.
+/// Invoked any time the text may have changed in the edit.
 - (void)onTextChanged;
+
+/// Called when any relevant data changes.  This rolls together several
+/// separate pieces of data into one call so we can update all the UI
+/// efficiently. Specifically, it's invoked for autocompletion.
+///   `inline_autocompletion` is the autocompletion.
+///   `additional_text` is additional omnibox text to be displayed adjacent to
+///     the omnibox view.
+///   `new_match` is the selected match when the user is changing selection,
+///    the default match if the user is typing, or an empty match when
+///    selecting a header.
+- (void)onPopupDataChanged:(const std::u16string&)inlineAutocompletion
+            additionalText:(const std::u16string&)additionalText
+                  newMatch:(const AutocompleteMatch&)newMatch;
 
 #pragma mark - Autocomplete event
 

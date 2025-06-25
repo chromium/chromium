@@ -163,14 +163,17 @@ using base::UserMetricsAction;
     // know about new inline autocomplete text (blue highlight).
     if (const AutocompleteMatch* match =
             autocompleteController->result().default_match()) {
-      // OnPopupDataChanged() resets edit model's `current_match_` early
+      // onPopupDataChanged resets text model's `current_match_` early
       // on.  Therefore, copy match.inline_autocompletion to a temp to preserve
       // its value across the entire call.
-      _omniboxEditModel->OnPopupDataChanged(match->inline_autocompletion,
-                                            match->additional_text, *match);
+      [self.omniboxTextController
+          onPopupDataChanged:match->inline_autocompletion
+              additionalText:match->additional_text
+                    newMatch:*match];
     } else {
-      _omniboxEditModel->OnPopupDataChanged(std::u16string(), std::u16string(),
-                                            AutocompleteMatch());
+      [self.omniboxTextController onPopupDataChanged:std::u16string()
+                                      additionalText:std::u16string()
+                                            newMatch:AutocompleteMatch()];
     }
   }
 

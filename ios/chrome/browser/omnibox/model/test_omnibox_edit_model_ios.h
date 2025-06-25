@@ -26,10 +26,6 @@ class TestOmniboxEditModelIOS : public OmniboxEditModelIOS {
 
   void SetPopupIsOpen(bool open);
 
-  void OnPopupDataChanged(const std::u16string& inline_autocompletion,
-                          const std::u16string& additional_text,
-                          const AutocompleteMatch& match) override;
-
   const std::u16string& text() const { return text_; }
 
  protected:

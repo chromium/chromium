@@ -155,7 +155,9 @@ TEST_F(OmniboxEditModelIOSTest, DISABLED_InlineAutocompleteText) {
   // Test if the model updates the inline autocomplete text in the view.
   EXPECT_EQ(std::u16string(), omnibox_text_model_->inline_autocompletion);
   [omnibox_text_controller_ setUserText:u"he"];
-  model()->OnPopupDataChanged(u"llo", std::u16string(), {});
+  [omnibox_text_controller_ onPopupDataChanged:u"llo"
+                                additionalText:std::u16string()
+                                      newMatch:{}];
   EXPECT_EQ(u"hello", [omnibox_text_controller_ displayedText]);
   EXPECT_EQ(u"llo", omnibox_text_model_->inline_autocompletion);
 
@@ -165,7 +167,9 @@ TEST_F(OmniboxEditModelIOSTest, DISABLED_InlineAutocompleteText) {
                                     false,        true,        false};
   model()->OnAfterPossibleChange(state_changes);
   EXPECT_EQ(std::u16string(), omnibox_text_model_->inline_autocompletion);
-  model()->OnPopupDataChanged(u"lo", std::u16string(), {});
+  [omnibox_text_controller_ onPopupDataChanged:u"lo"
+                                additionalText:std::u16string()
+                                      newMatch:{}];
   EXPECT_EQ(u"hello", [omnibox_text_controller_ displayedText]);
   EXPECT_EQ(u"lo", omnibox_text_model_->inline_autocompletion);
 
@@ -174,7 +178,9 @@ TEST_F(OmniboxEditModelIOSTest, DISABLED_InlineAutocompleteText) {
   EXPECT_EQ(std::u16string(), omnibox_text_model_->inline_autocompletion);
 
   [omnibox_text_controller_ setUserText:u"he"];
-  model()->OnPopupDataChanged(u"llo", std::u16string(), {});
+  [omnibox_text_controller_ onPopupDataChanged:u"llo"
+                                additionalText:std::u16string()
+                                      newMatch:{}];
   EXPECT_EQ(u"hello", [omnibox_text_controller_ displayedText]);
   EXPECT_EQ(u"llo", omnibox_text_model_->inline_autocompletion);
 }
