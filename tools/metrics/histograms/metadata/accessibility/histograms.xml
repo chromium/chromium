@@ -3735,6 +3735,8 @@ even if they fit the naming pattern. -->
     Records the score for the ada boost model for negative scores (scores that
     prevent pages from showing). This model is used to determine if any given
     page is suitable for distillation. Recorded for every page load.
+
+    Note: Incorrect before M140.
   </summary>
 </histogram>
 
@@ -3746,6 +3748,8 @@ even if they fit the naming pattern. -->
     Records the score for the ada boost model for positive scores. This model is
     used to determine if any given page is suitable for distillation. Recorded
     for every page load.
+
+    Note: Incorrect before M140.
   </summary>
 </histogram>
 
@@ -3822,6 +3826,8 @@ even if they fit the naming pattern. -->
     Records the score for the ada boost model for negative scores (scores that
     prevent pages from showing). This model is used to determine if any given
     page is suitable for distillation. Recorded for every page load.
+
+    Note: Incorrect before M140.
   </summary>
 </histogram>
 
@@ -3833,6 +3839,8 @@ even if they fit the naming pattern. -->
     Records the score for the ada boost model for positive scores. This model is
     used to determine if any given page is suitable for distillation. Recorded
     for every page load.
+
+    Note: Incorrect before M140.
   </summary>
 </histogram>
 

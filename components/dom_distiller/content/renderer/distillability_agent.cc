@@ -118,8 +118,8 @@ void DumpDistillability(content::RenderFrame* render_frame,
                                     msg);
 }
 
-void RecordDistillabilityMetrics(int score,
-                                 int long_score,
+void RecordDistillabilityMetrics(double score,
+                                 double long_score,
                                  bool is_disitillable,
                                  ukm::UkmRecorder* ukm_recorder,
                                  ukm::SourceId source_id) {
