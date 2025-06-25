@@ -26,7 +26,6 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
     public final CallbackHelper headerInflatedCallback = new CallbackHelper();
     public int footerResourceId;
     public int headerResourceId;
-    public int groupDividerId;
     public boolean enableAppIconRow;
     public boolean iconBeforeItem;
 
@@ -146,11 +145,6 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
     @Override
     public int getHeaderResourceId() {
         return headerResourceId;
-    }
-
-    @Override
-    public int getGroupDividerId() {
-        return groupDividerId;
     }
 
     @Override

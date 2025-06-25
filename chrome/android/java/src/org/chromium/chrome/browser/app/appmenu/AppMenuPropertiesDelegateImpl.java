@@ -952,11 +952,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     @Override
-    public int getGroupDividerId() {
-        return R.id.divider_line_id;
-    }
-
-    @Override
     public boolean shouldShowFooter(int maxMenuHeight) {
         return true;
     }

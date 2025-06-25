@@ -69,19 +69,14 @@ public interface AppMenuPropertiesDelegate {
 
     /**
      * @return The resource ID for a layout the be used as the app menu header if there should be
-     *         one. 0 otherwise. The header will be displayed as the first item in the app menu. It
-     *         will be scrolled off as the menu scrolls.
+     *     one. 0 otherwise. The header will be displayed as the first item in the app menu. It will
+     *     be scrolled off as the menu scrolls.
      */
     int getHeaderResourceId();
 
     /**
-     * @return The resource ID for a layout the be used as the app menu divider. The divider will be
-     *         displayed as a line between menu item groups.
-     */
-    int getGroupDividerId();
-
-    /**
      * Determines whether the footer should be shown based on the maximum available menu height.
+     *
      * @param maxMenuHeight The maximum available height for the menu to draw.
      * @return Whether the footer, as specified in {@link #getFooterResourceId()}, should be shown.
      */
