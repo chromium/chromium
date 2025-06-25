@@ -1081,7 +1081,8 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_THEME_SETTINGS" desc="Title for the Theme settings. [CHAR_LIMIT=32]">
         Theme
       </message>
-      <message name="IDS_THEMES_SYSTEM_DEFAULT_TITLE" desc="Title for the System Default option. [CHAR_LIMIT=32]">
+      <message name="IDS_THEMES_SYSTEM_DEFAULT_TITLE" desc="Title for the System
+      Default option. [CHAR_LIMIT=32]" meaning="default theme">
         System default
       </message>
       <message name="IDS_THEMES_SYSTEM_DEFAULT_SUMMARY" desc="Summary for the System Default option.">
