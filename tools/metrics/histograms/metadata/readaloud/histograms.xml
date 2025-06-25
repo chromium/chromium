@@ -209,6 +209,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.PlaybackModeChange" enum="PlaybackMode"
+    expires_after="2026-04-07">
+  <owner>shlomib@google.com</owner>
+  <owner>juanmejia@google.com</owner>
+  <summary>
+    Histogram for recording what playback mode setting a user selects for the
+    ReadAloud playback. Emitted when the ReadAloud playback mode is changed.
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.ReadAloudError.{Phase}" enum="ReadAloudErrorCode"
     expires_after="2026-04-07">
   <owner>andreaxg@google.com</owner>

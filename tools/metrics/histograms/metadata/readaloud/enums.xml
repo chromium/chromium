@@ -26,6 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="PlaybackMode">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Standard"/>
+  <int value="2" label="Audio Overview"/>
+</enum>
+
 <enum name="PlaybackStoppedReason">
   <int value="0" label="UNKNOWN_REASON"/>
   <int value="1" label="MANUAL_CLOSE"/>
