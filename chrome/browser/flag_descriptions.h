@@ -3606,12 +3606,6 @@ extern const char kLaunchWindowsNativeHostsDirectlyDescription[];
 #endif  // ENABLE_EXTENSIONS
 
 #if BUILDFLAG(ENABLE_PRINTING)
-inline constexpr char kFastEnumeratePrintersName[] =
-    "Use faster method for printer enumeration";
-inline constexpr char kFastEnumeratePrintersDescription[] =
-    "When enumerating printers, use a faster method to acquire the basic "
-    "information for each printer.";
-
 extern const char kPrintWithPostScriptType42FontsName[];
 extern const char kPrintWithPostScriptType42FontsDescription[];
 
