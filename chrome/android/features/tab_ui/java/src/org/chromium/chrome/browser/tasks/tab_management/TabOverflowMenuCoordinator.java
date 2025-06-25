@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.DataSetObserver;
@@ -30,11 +31,13 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenuCoordinator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenuItemAdapter;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -158,6 +161,10 @@ public abstract class TabOverflowMenuCoordinator<T> {
             mMenuWindow.setHorizontalOverlapAnchor(horizontalOverlapAnchor);
             mMenuWindow.setVerticalOverlapAnchor(verticalOverlapAnchor);
             mMenuWindow.setPreferredHorizontalOrientation(horizontalOrientation);
+            mMenuWindow.setElevation(
+                    mContentView
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.tab_overflow_menu_elevation));
             // Override animation style or animate from anchor as default.
             if (animStyle == Resources.ID_NULL) {
                 mMenuWindow.setAnimateFromAnchor(true);
@@ -290,6 +297,11 @@ public abstract class TabOverflowMenuCoordinator<T> {
         final @DrawableRes int bgDrawableId =
                 isIncognito ? R.drawable.menu_bg_tinted_on_dark_bg : R.drawable.menu_bg_tinted;
 
+        if (!isIncognito) {
+            ColorStateList menuBgColor =
+                    ColorStateList.valueOf(SemanticColorUtils.getMenuBgColor(context));
+            return UiUtils.getTintedDrawable(context, bgDrawableId, menuBgColor);
+        }
         return AppCompatResources.getDrawable(context, bgDrawableId);
         // Lint.ThenChange cannot handle multiline comments.
         // LINT.ThenChange(//components/browser_ui/widget/android/java/res/values/dimens.xml|//components/browser_ui/widget/android/java/res/values-night/dimens.xml)
