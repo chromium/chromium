@@ -572,7 +572,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ads.InterestGroup.Auction.AdditionalBids.DecodeLatency"
     units="ms" expires_after="2025-07-13">
-  <owner>orrb@google.com</owner>
+  <owner>morlovich@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     Latency of each successfully decoded additional bid. This includes
@@ -601,7 +601,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ads.InterestGroup.Auction.AdditionalBids.Result"
     enum="AdditionalBidResult" expires_after="2025-07-13">
-  <owner>orrb@google.com</owner>
+  <owner>morlovich@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     Result of the decoding of each additional bid. This includes both error
@@ -760,7 +760,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ads.InterestGroup.Auction.ConfigPromises.CriticalPathLatency"
     units="ms" expires_after="2025-11-09">
-  <owner>orrb@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     Time between the start of the BiddingAndScoring phase and when configs
@@ -780,7 +780,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ads.InterestGroup.Auction.ConfigPromises.Latency" units="ms"
     expires_after="2025-11-09">
-  <owner>orrb@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     Time between the auction start time and when config promises are resolved.
@@ -1138,7 +1138,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ads.InterestGroup.Auction.NumNegativeInterestGroups"
     units="groups" expires_after="2025-11-09">
-  <owner>orrb@google.com</owner>
+  <owner>morlovich@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     The number of a user's negative interest group loaded into a FLEDGE auction.
@@ -1528,7 +1528,6 @@ chromium-metrics-reviews@google.com.
     name="Ads.InterestGroup.Auction.TrustedScoringSendCreativeScanningMetadata"
     enum="Boolean" expires_after="2026-01-28">
   <owner>morlovich@google.com</owner>
-  <owner>orrb@google.com</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     Whether request to V1 trusted scoring signals has been configured to include
@@ -2026,7 +2025,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ads.InterestGroup.NumSelectableBuyerAndSellerReportingIds"
     units="reporting_ids" expires_after="2025-12-14">
-  <owner>orrb@google.com</owner>
+  <owner>behamilton@google.com</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     The number of selectableBuyerAndSellerReportingIds on each ad. This is
