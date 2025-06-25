@@ -52,7 +52,7 @@ public class OpenInBrowserButtonController extends BaseButtonDataProvider {
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
                 buttonDrawable,
-                context.getString(R.string.menu_open_in_product),
+                context.getString(R.string.menu_open_in_product_default),
                 /* actionChipLabelResId= */ Resources.ID_NULL,
                 /* supportsTinting= */ true,
                 /* iphCommandBuilder= */ null,
