@@ -857,10 +857,14 @@ class VideoTextureBacking : public cc::TextureBacking {
     return raster_context_provider_;
   }
 
-  // Used only for recycling this TextureBacking - where we need to keep the
-  // texture/mailbox alive, but replace the SkImage. |access| is the access to
-  // the SharedImage backing this SkImage.
-  bool ReplaceAcceleratedSkImage(gpu::raster::RasterInterface* ri) {
+  // Create and replace SkImage and access for the non-gpu-rasterization case.
+  // Returns false when failing to create SkImage, and true if the creation
+  // is successful or not necessary.
+  bool BeginAccess(gpu::raster::RasterInterface* ri) {
+    if (raster_context_provider()->ContextCapabilities().gpu_rasterization) {
+      return true;
+    }
+
     GLuint texture = ri->CreateAndConsumeForGpuRaster(GetMailbox());
 
     auto access = std::make_unique<ScopedSharedImageAccess>(ri, texture);
@@ -1859,11 +1863,6 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
             std::move(client_shared_image), SkImageInfo(),
             raster_context_provider);
       }
-      bool success = cache_->texture_backing->ReplaceAcceleratedSkImage(ri);
-      if (!success) {
-        cache_.reset();
-        return false;
-      }
     } else if (!cache_->texture_backing) {
       SkImageInfo sk_image_info = SkImageInfo::Make(
           gfx::SizeToSkISize(cache_->coded_size), kRGBA_8888_SkColorType,
@@ -1875,6 +1874,12 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     }
     paint_image_builder.set_texture_backing(cache_->texture_backing,
                                             cc::PaintImage::GetNextContentId());
+
+    bool success = cache_->texture_backing->BeginAccess(ri);
+    if (!success) {
+      cache_.reset();
+      return false;
+    }
   } else {
     cache_.emplace(video_frame->unique_id());
     paint_image_builder.set_paint_image_generator(
