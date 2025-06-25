@@ -162,7 +162,8 @@ bool CreateWaitAndExitThread(base::TimeDelta duration) {
 }
 #endif
 
-void TerminateSelfOnDisconnect() {
+void TerminateSelfOnDisconnect(
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
   // For renderer/worker processes:
   // On POSIX, at least, one can install an unload handler which loops
   // forever and leave behind a renderer process which eats 100% CPU forever.
@@ -192,6 +193,28 @@ void TerminateSelfOnDisconnect() {
   __lsan_do_leak_check();
 #endif
 #else
+
+  if (base::FeatureList::IsEnabled(features::kKeepChildProcessAfterIPCReset)) {
+    // On Android, the browser process unbinds all service bindings to the child
+    // process to terminate the child process and AMS (ActivityManagerService)
+    // kills the child process. The child process should keep alive after IPC
+    // disconnection. Otherwise AMS tries to restart the child process
+    // immediately and kills it again when the service unbinding request
+    // arrives.
+
+    // The browser process must unbind all service bindings to the child process
+    // to terminate the child process if the mojo connection is disconnected.
+    // However, the child process may leak if mojo/RenderProcessHost have a bug.
+    // Leaked child processes will crash so that we can notice the leak and the
+    // bug.
+    io_task_runner->PostDelayedTask(
+        FROM_HERE, base::BindOnce([]() {
+          LOG(FATAL) << "child process leaks after channel error.";
+        }),
+        base::Minutes(1));
+    return;
+  }
+
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CLANG_PROFILING)
   // TerminateSelfOnDisconnect() is called upon an IPC `OnChannelError`. Then,
   // clang will dump the profile to a file in
@@ -208,11 +231,18 @@ void TerminateSelfOnDisconnect() {
 
 class SuicideOnChannelErrorFilter : public IPC::MessageFilter {
  public:
+  explicit SuicideOnChannelErrorFilter(
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner)
+      : io_task_runner_(std::move(io_task_runner)) {}
+
   // IPC::MessageFilter
-  void OnChannelError() override { TerminateSelfOnDisconnect(); }
+  void OnChannelError() override { TerminateSelfOnDisconnect(io_task_runner_); }
 
  protected:
   ~SuicideOnChannelErrorFilter() override = default;
+
+ private:
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 };
 
 #endif  // OS(POSIX)
@@ -747,10 +777,11 @@ void ChildThreadImpl::Init(const Options& options) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kProcessType)) {
     if (options.with_legacy_ipc_channel) {
-      channel_->AddFilter(new SuicideOnChannelErrorFilter());
+      channel_->AddFilter(new SuicideOnChannelErrorFilter(GetIOTaskRunner()));
     } else {
       child_process_host_.set_disconnect_handler(
-          base::BindOnce(&TerminateSelfOnDisconnect), GetIOTaskRunner());
+          base::BindOnce(&TerminateSelfOnDisconnect, GetIOTaskRunner()),
+          GetIOTaskRunner());
     }
   }
 #endif

@@ -300,6 +300,11 @@ BASE_FEATURE(kIOSurfaceCapturer,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// When enabled, child process will not terminate itself when IPC is reset.
+BASE_FEATURE(kKeepChildProcessAfterIPCReset,
+             "KeepChildProcessAfterIPCReset",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If this feature is enabled, media-device enumerations use a cache that is
 // invalidated upon notifications sent by base::SystemMonitor. If disabled, the
 // cache is considered invalid on every enumeration request.
