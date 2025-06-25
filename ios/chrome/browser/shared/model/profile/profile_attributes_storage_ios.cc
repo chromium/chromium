@@ -65,7 +65,46 @@ void IterateOverProfileAttributesImpl(
 }  // anonymous namespace
 
 ProfileAttributesStorageIOS::ProfileAttributesStorageIOS(PrefService* prefs)
-    : prefs_(prefs) {}
+    : prefs_(prefs) {
+  // Some users are crashing on startup because kProfileInfoCache values are
+  // not dictionaries (see https://crbug.com/426651506 for details). Iterate
+  // over the preference and remove all invalid values.
+  std::set<std::string> keys_to_remove;
+  for (const auto pair : prefs_->GetDict(prefs::kProfileInfoCache)) {
+    if (!pair.second.is_dict()) {
+      keys_to_remove.insert(pair.first);
+    }
+  }
+
+  // If there are any keys whose value is not a dictionary, then ...
+  if (!keys_to_remove.empty()) {
+    // ... first remove them from `kProfileInfoCache`, ...
+    {
+      ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
+      base::Value::Dict& dict = update.Get();
+      for (const auto& key : keys_to_remove) {
+        dict.Remove(key);
+      }
+    }
+
+    // ... second request the removal of the corresponding profiles,
+    // unless it was already requested.
+    {
+      ScopedListPrefUpdate update(prefs_, prefs::kProfilesToRemove);
+      base::Value::List& list = update.Get();
+      for (const auto& value : list) {
+        const std::string& key = value.GetString();
+        if (base::Contains(keys_to_remove, key)) {
+          keys_to_remove.erase(key);
+        }
+      }
+
+      for (const auto& key : keys_to_remove) {
+        list.Append(key);
+      }
+    }
+  }
+}
 
 ProfileAttributesStorageIOS::~ProfileAttributesStorageIOS() = default;
 

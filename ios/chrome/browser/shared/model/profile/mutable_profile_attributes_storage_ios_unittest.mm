@@ -65,6 +65,7 @@ constexpr char kTestProfile2[] = "Profile2";
 constexpr char kTestSceneId1[] = "scene-id1";
 constexpr char kTestSceneId2[] = "scene-id2";
 
+constexpr char kInvalidProfile[] = "InvalidProfile";
 constexpr char kUnknownProfile[] = "UnknownProfile";
 constexpr char kLegacyProfile[] = "LegacyProfile";
 
@@ -637,4 +638,19 @@ TEST_F(MutableProfileAttributesStorageIOSTest,
   EXPECT_EQ(storage.GetPersonalProfileName(), kTestProfile1);
   EXPECT_TRUE(storage.HasProfileWithName(kTestProfile1));
   EXPECT_EQ(storage.GetNumberOfProfiles(), 1u);
+}
+
+// Check that ProfileAttributesStorageIOS removes any key-value pair from
+// kProfileInfoCache where the value is not a dictionary (i.e. check that
+// the workaround for https://crbug.com/426651506 works).
+TEST_F(MutableProfileAttributesStorageIOSTest, RemoveInvalidValuesFromCache) {
+  pref_service()->SetDict(
+      prefs::kProfileInfoCache,
+      base::Value::Dict().Set(kInvalidProfile, "not a dictionary"));
+
+  MutableProfileAttributesStorageIOS storage(pref_service());
+
+  ASSERT_EQ(storage.GetNumberOfProfiles(), 0u);
+  ASSERT_TRUE(storage.IsProfileMarkedForDeletion(kInvalidProfile));
+  storage.EnsurePersonalProfileExists();
 }
