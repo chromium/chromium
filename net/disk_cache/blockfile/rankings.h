@@ -76,20 +76,13 @@ class Rankings {
     ScopedRankingsBlock(const ScopedRankingsBlock&) = delete;
     ScopedRankingsBlock& operator=(const ScopedRankingsBlock&) = delete;
 
-    ~ScopedRankingsBlock() {
-      rankings_->FreeRankingsBlock(get());
-    }
+    ~ScopedRankingsBlock();
 
     void set_rankings(Rankings* rankings) {
       rankings_ = rankings;
     }
 
-    // scoped_ptr::reset will delete the object.
-    void reset(CacheRankingsBlock* p = nullptr) {
-      if (p != get())
-        rankings_->FreeRankingsBlock(get());
-      std::unique_ptr<CacheRankingsBlock>::reset(p);
-    }
+    void reset(CacheRankingsBlock* p = nullptr);
 
    private:
     raw_ptr<Rankings> rankings_;
