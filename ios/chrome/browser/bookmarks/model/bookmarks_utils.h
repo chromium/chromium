@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARKS_UTILS_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARKS_UTILS_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <set>
 #include <vector>
