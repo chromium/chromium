@@ -519,12 +519,15 @@ CdmCapabilityOrStatus GetCdmCapability(
 
     intersection = base::STLSetIntersection<base::flat_set<EncryptionScheme>>(
         intersection, supported_schemes);
-  }
 
-  if (intersection.empty()) {
-    // Fail if no supported encryption scheme.
-    return base::unexpected(
-        CdmCapabilityQueryStatus::kNoSupportedEncryptionScheme);
+    // Check after every codec's intersection for encryption scheme is computed.
+    // If the intersection is empty for one codec, do not loop and check
+    // encryption scheme support for all other codecs, and return early.
+    if (intersection.empty()) {
+      // Fail if no supported encryption scheme.
+      return base::unexpected(
+          CdmCapabilityQueryStatus::kNoSupportedEncryptionScheme);
+    }
   }
 
   capability.encryption_schemes = intersection;

@@ -3374,6 +3374,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time spent to get CdmCapability for {KeySystem}. The value will be
     reported once per CDM instance for hw security in MediaFoundationService.
+    This value will only be reported for successful retrievals of the CDM
+    Capability.
   </summary>
   <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
 </histogram>
