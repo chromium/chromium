@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] style inheritance of pseudo elements
-  assert_equals: wrapper expected "0.05s" but got "0s"
-Harness: the test ran to completion.
-

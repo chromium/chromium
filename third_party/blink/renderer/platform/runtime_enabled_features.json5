@@ -5340,6 +5340,10 @@
       status: "stable",
     },
     {
+      name: "ViewTransitionAnimationDelayInherit",
+      status: "experimental",
+    },
+    {
       name: "ViewTransitionLongCallbackTimeoutForTesting",
       status: "test",
     },

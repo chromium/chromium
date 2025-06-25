@@ -44,6 +44,10 @@ class ViewTransitionStyleBuilder {
       const String& name,
       const CapturedCssProperties& captured_css_properites);
 
+  // Adds styles that normally would go into transition_animation.css, except
+  // that they are currently being flag guarded.
+  void AddFlagGuardedDefaultAnimationStyles();
+
   String Build();
 
  private:

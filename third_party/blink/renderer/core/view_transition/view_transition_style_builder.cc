@@ -212,4 +212,12 @@ void ViewTransitionStyleBuilder::AddGroupChildrenStyles(
   AddRules(GroupChildrenTagName(), name, builder.ReleaseString());
 }
 
+void ViewTransitionStyleBuilder::AddFlagGuardedDefaultAnimationStyles() {
+  if (RuntimeEnabledFeatures::ViewTransitionAnimationDelayInheritEnabled()) {
+    AddRules(ImagePairTagName(), "*", "animation-delay: inherit;");
+    AddRules(NewImageTagName(), "*", "animation-delay: inherit;");
+    AddRules(OldImageTagName(), "*", "animation-delay: inherit;");
+  }
+}
+
 }  // namespace blink
