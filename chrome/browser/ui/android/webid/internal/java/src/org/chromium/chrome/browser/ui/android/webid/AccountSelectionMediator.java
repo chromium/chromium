@@ -935,7 +935,8 @@ class AccountSelectionMediator {
 
         if (mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN) {
             assert mSelectedAccount != null;
-            assert mSelectedAccount.isSignIn();
+            assert mSelectedAccount.isIdpClaimedSignIn()
+                    || mSelectedAccount.isBrowserTrustedSignIn();
         }
 
         if (mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC) {

@@ -236,7 +236,7 @@ class AccountSelectionViewBinder {
             }
             if (model.get(AccountProperties.SHOW_IDP)
                     && account.getSecondaryDescription() != null) {
-                if (account.isSignIn()) {
+                if (account.isIdpClaimedSignIn() || account.isBrowserTrustedSignIn()) {
                     // Include a hint that this is a returning account.
                     secondaryDescription.setText(
                             view.getContext()

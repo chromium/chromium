@@ -300,7 +300,8 @@ TEST_F(ContentIdentityCredentialDelegateTest,
   IdentityRequestAccountPtr account = CreateTestAccount();
   // The delegated flow requires an IdP with a specific format.
   account->identity_provider->format = blink::mojom::Format::kSdJwt;
-  account->login_state = content::IdentityRequestAccount::LoginState::kSignUp;
+  account->idp_claimed_login_state =
+      content::IdentityRequestAccount::LoginState::kSignUp;
   std::vector<IdentityRequestAccountPtr> accounts = {account};
 
   EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
@@ -335,7 +336,8 @@ TEST_F(ContentIdentityCredentialDelegateTest,
       }));
 
   IdentityRequestAccountPtr account = CreateTestAccount();
-  account->login_state = content::IdentityRequestAccount::LoginState::kSignUp;
+  account->idp_claimed_login_state =
+      content::IdentityRequestAccount::LoginState::kSignUp;
   std::vector<IdentityRequestAccountPtr> accounts = {account};
 
   EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
@@ -356,7 +358,8 @@ TEST_F(ContentIdentityCredentialDelegateTest,
       }));
 
   IdentityRequestAccountPtr account = CreateTestAccount();
-  account->login_state = content::IdentityRequestAccount::LoginState::kSignIn;
+  account->idp_claimed_login_state =
+      content::IdentityRequestAccount::LoginState::kSignIn;
   std::vector<IdentityRequestAccountPtr> accounts = {account};
 
   EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));

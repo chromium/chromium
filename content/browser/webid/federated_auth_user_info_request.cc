@@ -231,15 +231,9 @@ void FederatedAuthUserInfoRequest::OnAccountsResponseReceived(
       ->SetUserInfoAccountsResponseTime(idp_config_url_,
                                         base::TimeTicks::Now());
 
-  // Populate the accounts login state.
+  // Populate the accounts' login state based on browser stored permission
+  // grants.
   for (auto& account : accounts) {
-    // We set the login state based on the IDP response if it sends
-    // back an approved_clients list. If it does not, we need to set
-    // it here based on browser state.
-    if (account->login_state) {
-      continue;
-    }
-
     LoginState login_state = LoginState::kSignUp;
     // Consider this a sign-in if we have seen a successful sign-up for
     // this account before.
@@ -248,7 +242,7 @@ void FederatedAuthUserInfoRequest::OnAccountsResponseReceived(
             url::Origin::Create(idp_config_url_), account->id)) {
       login_state = LoginState::kSignIn;
     }
-    account->login_state = login_state;
+    account->browser_trusted_login_state = login_state;
   }
 
   MaybeReturnAccounts(std::move(accounts));
@@ -305,13 +299,17 @@ void FederatedAuthUserInfoRequest::MaybeReturnAccounts(
 
 bool FederatedAuthUserInfoRequest::IsReturningAccount(
     const IdentityRequestAccount& account) {
-  // The |login_state| will only be |kSignUp| if IDP provides an
+  // The |idp_claimed_login_state| will be std::nullopt if the IDP doesn't
+  // provide an |approved_clients| list and the |browser_trusted_login_state|
+  // will be |kSignUp| if there are no browser stored permission grants. The
+  // |idp_claimed_login_state| will be |kSignUp| if IDP provides an
   // |approved_clients| AND the client id is NOT on the |approved_clients|
   // list, in which case we trust the IDP that we should treat the user as a
   // new user and shouldn't return the user info. This should override browser
   // local stored permission since a user can revoke their account out of
   // band.
-  if (account.login_state == LoginState::kSignUp) {
+  if (account.idp_claimed_login_state.value_or(
+          account.browser_trusted_login_state) == LoginState::kSignUp) {
     return false;
   }
 

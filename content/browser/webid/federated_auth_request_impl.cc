@@ -963,9 +963,13 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
           return !is_account2_new;
         }
         // Show returning accounts before non-returning.
-        if (account1->login_state == LoginState::kSignUp ||
-            account2->login_state == LoginState::kSignUp) {
-          return account1->login_state == LoginState::kSignIn;
+        if (account1->idp_claimed_login_state.value_or(
+                account1->browser_trusted_login_state) == LoginState::kSignUp ||
+            account2->idp_claimed_login_state.value_or(
+                account2->browser_trusted_login_state) == LoginState::kSignUp) {
+          return account1->idp_claimed_login_state.value_or(
+                     account1->browser_trusted_login_state) ==
+                 LoginState::kSignIn;
         }
         // Within returning accounts, prefer those with last used
         // timestamp.
@@ -1871,7 +1875,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
     // recording the account status on the mismatch UI.
     for (const auto& account : accounts_) {
       has_signin_account = false;
-      if (account->login_state == LoginState::kSignIn) {
+      if (account->idp_claimed_login_state.value_or(
+              account->browser_trusted_login_state) == LoginState::kSignIn) {
         has_signin_account = true;
         break;
       }
@@ -2251,8 +2256,9 @@ bool FederatedAuthRequestImpl::ShouldNotifyDevtoolsForDialogType(
 void FederatedAuthRequestImpl::AcceptAccountsDialogForDevtools(
     const GURL& config_url,
     const IdentityRequestAccount& account) {
-  bool is_sign_in =
-      account.login_state == IdentityRequestAccount::LoginState::kSignIn;
+  bool is_sign_in = account.idp_claimed_login_state.value_or(
+                        account.browser_trusted_login_state) ==
+                    IdentityRequestAccount::LoginState::kSignIn;
   OnAccountSelected(config_url, account.id, is_sign_in);
 }
 
@@ -2324,14 +2330,16 @@ bool FederatedAuthRequestImpl::GetAccountForAutoReauthn(
     }
   }
   for (const auto& account : accounts_) {
-    if (account->login_state == LoginState::kSignUp ||
+    if (account->idp_claimed_login_state.value_or(
+            account->browser_trusted_login_state) == LoginState::kSignUp ||
         account->is_filtered_out) {
       continue;
     }
-    // account.login_state could be set to kSignIn if the client is on the
-    // `approved_clients` list provided by IDP. However, in this case we have
-    // to trust the browser observed sign-in unless the IDP can be exempted.
-    // For example, they have third party cookies access on the RP site.
+    // account.idp_claimed_login_state will be set to kSignIn if the client is
+    // on the `approved_clients` list provided by IDP. However, in this case we
+    // have to trust the browser observed sign-in unless the IDP can be
+    // exempted. For example, they have third party cookies access on the RP
+    // site.
     if (!webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
             render_frame_host(),
             /*provider_url=*/

@@ -666,7 +666,9 @@ class TestDialogController
                 std::move(on_selected),
                 accounts[0]->identity_provider->idp_metadata.config_url,
                 accounts[0]->id,
-                accounts[0]->login_state == LoginState::kSignIn));
+                accounts[0]->idp_claimed_login_state.value_or(
+                    accounts[0]->browser_trusted_login_state) ==
+                    LoginState::kSignIn));
         break;
       }
       case AccountsDialogAction::kClose:
@@ -1430,7 +1432,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   int CountNumLoginStateIsSignin() {
     int num_sign_in_login_state = 0;
     for (const auto& account : all_accounts_for_display()) {
-      if (account->login_state == LoginState::kSignIn) {
+      if (account->idp_claimed_login_state.value_or(
+              account->browser_trusted_login_state) == LoginState::kSignIn) {
         ++num_sign_in_login_state;
       }
     }
@@ -2280,16 +2283,19 @@ TEST_F(FederatedAuthRequestImplTest, AllInvalidEndpoints) {
   EXPECT_EQ("Provider's FedCM config file is invalid.", messages[1]);
 }
 
-// Tests for Login State
-TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignUpForFirstTimeUser) {
+// Tests for browser trusted login states.
+TEST_F(FederatedAuthRequestImplTest,
+       BrowserTrustedLoginStateShouldBeSignUpForFirstTimeUser) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
-  EXPECT_EQ(LoginState::kSignUp, all_accounts_for_display()[0]->login_state);
+  EXPECT_EQ(LoginState::kSignUp,
+            all_accounts_for_display()[0]->browser_trusted_login_state);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.HasSigninAccount", false,
                                        1);
 }
 
-TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignInForReturningUser) {
+TEST_F(FederatedAuthRequestImplTest,
+       BrowserTrustedLoginStateShouldBeSignInForReturningUser) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -2299,7 +2305,8 @@ TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignInForReturningUser) {
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
-  EXPECT_EQ(LoginState::kSignIn, all_accounts_for_display()[0]->login_state);
+  EXPECT_EQ(LoginState::kSignIn,
+            all_accounts_for_display()[0]->browser_trusted_login_state);
 
   // CLIENT_METADATA only needs to be fetched for obtaining links to display in
   // the disclosure text. The disclosure text is not displayed for returning
@@ -2384,7 +2391,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnEmbargo) {
   RunAuthTest(kDefaultRequestParameters, expectation, kConfigurationValid);
 
   ASSERT_EQ(all_accounts_for_display().size(), 1u);
-  EXPECT_EQ(all_accounts_for_display()[0]->login_state, LoginState::kSignIn);
+  EXPECT_EQ(all_accounts_for_display()[0]->browser_trusted_login_state,
+            LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
   EXPECT_TRUE(test_auto_reauthn_permission_delegate_->embargoed_origins_.count(
       OriginFromString(kRpUrl)));
@@ -2424,7 +2432,8 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, expectation, kConfigurationValid);
 
   ASSERT_EQ(all_accounts_for_display().size(), 1u);
-  EXPECT_EQ(all_accounts_for_display()[0]->login_state, LoginState::kSignIn);
+  EXPECT_EQ(all_accounts_for_display()[0]->browser_trusted_login_state,
+            LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
 
   ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kOne,
@@ -2522,7 +2531,7 @@ TEST_F(FederatedAuthRequestImplTest,
       .WillOnce(Return(false));
 
   std::vector<IdentityRequestAccountPtr> multiple_accounts = kMultipleAccounts;
-  multiple_accounts[0]->login_state = LoginState::kSignIn;
+  multiple_accounts[0]->idp_claimed_login_state = LoginState::kSignIn;
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts = multiple_accounts;
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
@@ -2563,7 +2572,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnForZeroReturningUsers) {
               kConfigurationValid);
 
   ASSERT_EQ(all_accounts_for_display().size(), 1u);
-  EXPECT_EQ(all_accounts_for_display()[0]->login_state, LoginState::kSignUp);
+  EXPECT_EQ(all_accounts_for_display()[0]->browser_trusted_login_state,
+            LoginState::kSignUp);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 
   ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kZero,
@@ -2693,8 +2703,9 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Set IDP claims user is signed in.
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].accounts[0]->login_state =
-      LoginState::kSignIn;
+  configuration.idp_info[kProviderUrlFull]
+      .accounts[0]
+      ->idp_claimed_login_state = LoginState::kSignIn;
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
 
@@ -2738,8 +2749,9 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Set IDP claims user is signed in.
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].accounts[0]->login_state =
-      LoginState::kSignIn;
+  configuration.idp_info[kProviderUrlFull]
+      .accounts[0]
+      ->idp_claimed_login_state = LoginState::kSignIn;
   RequestExpectations expectation = kExpectationSuccess;
   expectation.is_auto_selected = true;
   RunAuthTest(kDefaultRequestParameters, expectation, configuration);
@@ -2764,7 +2776,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnForFirstTimeUser) {
               kConfigurationValid);
 
   ASSERT_EQ(all_accounts_for_display().size(), 1u);
-  EXPECT_EQ(all_accounts_for_display()[0]->login_state, LoginState::kSignUp);
+  EXPECT_EQ(all_accounts_for_display()[0]->browser_trusted_login_state,
+            LoginState::kSignUp);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 }
 
@@ -2789,7 +2802,8 @@ TEST_F(FederatedAuthRequestImplTest,
               kConfigurationValid);
 
   ASSERT_EQ(all_accounts_for_display().size(), 1u);
-  EXPECT_EQ(all_accounts_for_display()[0]->login_state, LoginState::kSignIn);
+  EXPECT_EQ(all_accounts_for_display()[0]->browser_trusted_login_state,
+            LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 
   ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kOne,
@@ -2826,7 +2840,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnWithCooldown) {
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
 
   ASSERT_EQ(all_accounts_for_display().size(), 1u);
-  EXPECT_EQ(all_accounts_for_display()[0]->login_state, LoginState::kSignIn);
+  EXPECT_EQ(all_accounts_for_display()[0]->browser_trusted_login_state,
+            LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 
   ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kOne,
@@ -3060,8 +3075,8 @@ TEST_F(FederatedAuthRequestImplTest,
   MockConfiguration configuration = kConfigurationValid;
   configuration.mediation_requirement = MediationRequirement::kSilent;
   std::vector<IdentityRequestAccountPtr> multiple_accounts = kMultipleAccounts;
-  multiple_accounts[0]->login_state = LoginState::kSignIn;
-  multiple_accounts[1]->login_state = LoginState::kSignIn;
+  multiple_accounts[0]->idp_claimed_login_state = LoginState::kSignIn;
+  multiple_accounts[1]->idp_claimed_login_state = LoginState::kSignIn;
   configuration.idp_info[kProviderUrlFull].accounts = multiple_accounts;
 
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -3089,14 +3104,16 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnMediationRequired) {
       .WillRepeatedly(Return(std::nullopt));
 
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].accounts[0]->login_state =
-      LoginState::kSignIn;
+  configuration.idp_info[kProviderUrlFull]
+      .accounts[0]
+      ->idp_claimed_login_state = LoginState::kSignIn;
   configuration.mediation_requirement = MediationRequirement::kRequired;
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
 
   ASSERT_EQ(all_accounts_for_display().size(), 1u);
-  EXPECT_EQ(all_accounts_for_display()[0]->login_state, LoginState::kSignIn);
+  EXPECT_EQ(all_accounts_for_display()[0]->idp_claimed_login_state,
+            LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 
   ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse,
@@ -3117,7 +3134,8 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
-  EXPECT_EQ(LoginState::kSignIn, all_accounts_for_display()[0]->login_state);
+  EXPECT_EQ(LoginState::kSignIn,
+            all_accounts_for_display()[0]->browser_trusted_login_state);
 
   ukm_loop.Run();
 
@@ -3199,7 +3217,8 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForUIExplicitlyDismissed) {
   ukm_loop.Run();
 
   ASSERT_TRUE(did_show_accounts_dialog());
-  EXPECT_EQ(all_accounts_for_display()[0]->login_state, LoginState::kSignUp);
+  EXPECT_EQ(all_accounts_for_display()[0]->browser_trusted_login_state,
+            LoginState::kSignUp);
 
   histogram_tester_.ExpectTotalCount(
       "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch",
@@ -3289,7 +3308,8 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
-  EXPECT_EQ(LoginState::kSignIn, all_accounts_for_display()[0]->login_state);
+  EXPECT_EQ(LoginState::kSignIn,
+            all_accounts_for_display()[0]->browser_trusted_login_state);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsVisible", 1, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsActive", 1, 1);
@@ -3317,7 +3337,8 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
-  EXPECT_EQ(LoginState::kSignIn, all_accounts_for_display()[0]->login_state);
+  EXPECT_EQ(LoginState::kSignIn,
+            all_accounts_for_display()[0]->browser_trusted_login_state);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsVisible", 0, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsActive", 1, 1);
@@ -3392,7 +3413,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSignedInOnBothIdpAndBrowser) {
   std::vector<IdentityRequestAccountPtr> all_accounts_for_display =
       std::vector<IdentityRequestAccountPtr>(kSingleAccount.begin(),
                                              kSingleAccount.end());
-  all_accounts_for_display[0]->login_state = LoginState::kSignIn;
+  all_accounts_for_display[0]->idp_claimed_login_state = LoginState::kSignIn;
   configuration.idp_info[kProviderUrlFull].accounts = all_accounts_for_display;
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
   EXPECT_FALSE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
@@ -3448,7 +3469,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForOnlyIdpClaimedSignIn) {
   std::vector<IdentityRequestAccountPtr> all_accounts_for_display =
       std::vector<IdentityRequestAccountPtr>(kSingleAccount.begin(),
                                              kSingleAccount.end());
-  all_accounts_for_display[0]->login_state = LoginState::kSignIn;
+  all_accounts_for_display[0]->idp_claimed_login_state = LoginState::kSignIn;
   configuration.idp_info[kProviderUrlFull].accounts = all_accounts_for_display;
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
   EXPECT_FALSE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
@@ -4443,7 +4464,7 @@ TEST_F(FederatedAuthRequestImplTest,
   // selected account should be that one (second IDP also has returning accounts
   // and no reordering should happen).
   MockConfiguration config = kConfigurationMultiIdpValid;
-  config.idp_info[kProviderUrlFull].accounts[0]->login_state =
+  config.idp_info[kProviderUrlFull].accounts[0]->idp_claimed_login_state =
       LoginState::kSignIn;
   RunAuthTest(kDefaultMultiIdpRequestParameters, kExpectationSuccess, config);
   EXPECT_EQ(2u, NumFetched(FetchedEndpoint::ACCOUNTS));
@@ -5533,8 +5554,9 @@ TEST_F(FederatedAuthRequestImplTest, AccountsSortedWithTimestamps) {
       .WillRepeatedly(Return(std::nullopt));
   // The third account is marked sign (as is the second), but since it has a
   // timestamp it should show first.
-  configuration.idp_info[kProviderUrlFull].accounts[2]->login_state =
-      LoginState::kSignIn;
+  configuration.idp_info[kProviderUrlFull]
+      .accounts[2]
+      ->idp_claimed_login_state = LoginState::kSignIn;
   EXPECT_CALL(
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
@@ -5963,8 +5985,9 @@ TEST_F(FederatedAuthRequestImplTest, PictureFetch) {
   configuration.idp_info[kProviderUrlFull].accounts[0]->picture =
       GURL(kAccountPicture);
   // This ensures we don't fetch client metadata, to test a different codepath.
-  configuration.idp_info[kProviderUrlFull].accounts[0]->login_state =
-      LoginState::kSignIn;
+  configuration.idp_info[kProviderUrlFull]
+      .accounts[0]
+      ->idp_claimed_login_state = LoginState::kSignIn;
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
   ASSERT_EQ(all_accounts_for_display().size(), 1u);
@@ -7479,13 +7502,16 @@ TEST_F(FederatedAuthRequestImplTest,
 
   ASSERT_EQ(all_accounts_for_display().size(), 3u);
   // Accounts are reordered to have sign-in users displayed first.
-  EXPECT_EQ(all_accounts_for_display()[0]->login_state, LoginState::kSignIn);
+  EXPECT_EQ(all_accounts_for_display()[0]->idp_claimed_login_state,
+            LoginState::kSignIn);
   EXPECT_EQ(all_accounts_for_display()[0]->browser_trusted_login_state,
             LoginState::kSignIn);
-  EXPECT_EQ(all_accounts_for_display()[1]->login_state, LoginState::kSignUp);
+  EXPECT_EQ(all_accounts_for_display()[1]->idp_claimed_login_state,
+            LoginState::kSignUp);
   EXPECT_EQ(all_accounts_for_display()[1]->browser_trusted_login_state,
             LoginState::kSignUp);
-  EXPECT_EQ(all_accounts_for_display()[2]->login_state, LoginState::kSignUp);
+  EXPECT_EQ(all_accounts_for_display()[2]->idp_claimed_login_state,
+            LoginState::kSignUp);
   EXPECT_EQ(all_accounts_for_display()[2]->browser_trusted_login_state,
             LoginState::kSignUp);
 
@@ -7514,14 +7540,17 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthDontWaitForCallback(parameters, configuration);
 
   ASSERT_EQ(all_accounts_for_display().size(), 3u);
-  EXPECT_EQ(all_accounts_for_display()[0]->login_state, LoginState::kSignIn);
+  EXPECT_EQ(all_accounts_for_display()[0]->idp_claimed_login_state,
+            LoginState::kSignIn);
   // This should be kSignUp regardless of IdP's claim.
   EXPECT_EQ(all_accounts_for_display()[0]->browser_trusted_login_state,
             LoginState::kSignUp);
-  EXPECT_EQ(all_accounts_for_display()[1]->login_state, LoginState::kSignUp);
+  EXPECT_EQ(all_accounts_for_display()[1]->idp_claimed_login_state,
+            LoginState::kSignUp);
   EXPECT_EQ(all_accounts_for_display()[1]->browser_trusted_login_state,
             LoginState::kSignUp);
-  EXPECT_EQ(all_accounts_for_display()[2]->login_state, LoginState::kSignUp);
+  EXPECT_EQ(all_accounts_for_display()[2]->idp_claimed_login_state,
+            LoginState::kSignUp);
   EXPECT_EQ(all_accounts_for_display()[2]->browser_trusted_login_state,
             LoginState::kSignUp);
 }
@@ -7555,14 +7584,17 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthDontWaitForCallback(parameters, configuration);
 
   ASSERT_EQ(all_accounts_for_display().size(), 3u);
-  EXPECT_EQ(all_accounts_for_display()[0]->login_state, LoginState::kSignIn);
+  EXPECT_EQ(all_accounts_for_display()[0]->idp_claimed_login_state,
+            LoginState::kSignIn);
   // This should be kSignIn to match IdP's claim due to it has 3PC access.
   EXPECT_EQ(all_accounts_for_display()[0]->browser_trusted_login_state,
             LoginState::kSignIn);
-  EXPECT_EQ(all_accounts_for_display()[1]->login_state, LoginState::kSignUp);
+  EXPECT_EQ(all_accounts_for_display()[1]->idp_claimed_login_state,
+            LoginState::kSignUp);
   EXPECT_EQ(all_accounts_for_display()[1]->browser_trusted_login_state,
             LoginState::kSignUp);
-  EXPECT_EQ(all_accounts_for_display()[2]->login_state, LoginState::kSignUp);
+  EXPECT_EQ(all_accounts_for_display()[2]->idp_claimed_login_state,
+            LoginState::kSignUp);
   EXPECT_EQ(all_accounts_for_display()[2]->browser_trusted_login_state,
             LoginState::kSignUp);
 }

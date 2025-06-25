@@ -167,7 +167,8 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
         /*login_hints=*/std::vector<std::string>(),
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>(),
-        /*login_state=*/content::IdentityRequestAccount::LoginState::kSignUp,
+        /*idp_claimed_login_state=*/
+        content::IdentityRequestAccount::LoginState::kSignUp,
         /*browser_trusted_login_state=*/
         content::IdentityRequestAccount::LoginState::kSignUp)};
   }
@@ -407,7 +408,7 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedButtonCallsDismiss) {
   // User selects an account, and then dismisses it. The expectation set for
   // dismiss callback should pass.
   controller->OnAccountSelected(GURL(kIdpEtldPlusOne), accounts[0]->id,
-                                *accounts[0]->login_state);
+                                *accounts[0]->idp_claimed_login_state);
   controller->OnDismiss(IdentityDialogController::DismissReason::kOther);
 }
 
@@ -432,7 +433,7 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedWidgetResetsDismiss) {
   // User selects an account, and then dismisses it. The expectation set for
   // dismiss callback should pass.
   controller->OnAccountSelected(GURL(kIdpEtldPlusOne), accounts[0]->id,
-                                *accounts[0]->login_state);
+                                *accounts[0]->idp_claimed_login_state);
   controller->OnDismiss(IdentityDialogController::DismissReason::kOther);
 }
 
@@ -531,7 +532,7 @@ TEST_F(IdentityDialogControllerTest,
 
     // User selects an account.
     controller->OnAccountSelected(GURL(kIdpEtldPlusOne), accounts_[0]->id,
-                                  *accounts_[0]->login_state);
+                                  *accounts_[0]->idp_claimed_login_state);
   }
   CheckForSampleAndReset(IdentityDialogController::UserAction::kSuccess);
 

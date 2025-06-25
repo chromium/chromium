@@ -30,7 +30,7 @@ public class Account {
     private final @Nullable String mSecondaryDescription;
     private final Bitmap mPictureBitmap;
     private final Bitmap mCircledBadgedPictureBitmap;
-    private final boolean mIsSignIn;
+    private final boolean mIsIdpClaimedSignIn;
     private final boolean mIsBrowserTrustedSignIn;
     private final boolean mIsFilteredOut;
     private final @IdentityRequestDialogDisclosureField int[] mFields;
@@ -46,12 +46,11 @@ public class Account {
      * @param pictureBitmap The Bitmap for the picture.
      * @param circledBadgedPictureBitmap The Bitmap for the circled and badged picture. This is only
      *     used when multiple IDPs are being used in the dialog.
-     * @param isSignIn Whether this account's login state is sign in or sign up. Unlike the other
-     *     fields this can be populated either by the IDP or by the browser based on its stored
-     *     permission grants.
+     * @param isIdpClaimedSignIn Whether this account's login state is sign in or sign up, populated
+     *     by the IDP through an approved clients list.
      * @param isBrowserTrustedSignIn Whether this account's login state is sign in or sign up,
-     *     trusted by the browser and either observed by the browser or claimed by IDP if the IDP
-     *     has third-party cookie access.
+     *     trusted by the browser and either observed by the browser through stored permission
+     *     grants or claimed by IDP if the IDP has third-party cookie access.
      * @param isFilteredOut Whether this account is filtered out or not. If true, the account must
      *     be shown disabled since it cannot be used by the user.
      * @param identityProviderData The IdentityProviderData corresponding to the IDP to which this
@@ -66,7 +65,7 @@ public class Account {
             @JniType("std::optional<std::string>") @Nullable String secondaryDescription,
             Bitmap pictureBitmap,
             Bitmap circledBadgedPictureBitmap,
-            boolean isSignIn,
+            boolean isIdpClaimedSignIn,
             boolean isBrowserTrustedSignIn,
             boolean isFilteredOut,
             @IdentityRequestDialogDisclosureField int[] fields,
@@ -78,7 +77,7 @@ public class Account {
         mSecondaryDescription = secondaryDescription;
         mPictureBitmap = pictureBitmap;
         mCircledBadgedPictureBitmap = circledBadgedPictureBitmap;
-        mIsSignIn = isSignIn;
+        mIsIdpClaimedSignIn = isIdpClaimedSignIn;
         mIsBrowserTrustedSignIn = isBrowserTrustedSignIn;
         mIsFilteredOut = isFilteredOut;
         mFields = fields;
@@ -113,8 +112,8 @@ public class Account {
         return mCircledBadgedPictureBitmap;
     }
 
-    public boolean isSignIn() {
-        return mIsSignIn;
+    public boolean isIdpClaimedSignIn() {
+        return mIsIdpClaimedSignIn;
     }
 
     public boolean isBrowserTrustedSignIn() {

@@ -247,7 +247,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
                             mNativeView,
                             account.getIdentityProviderData().getIdpMetadata().getConfigUrl(),
                             account.getId(),
-                            account.isSignIn());
+                            account.isIdpClaimedSignIn() || account.isBrowserTrustedSignIn());
         }
     }
 

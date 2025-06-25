@@ -72,7 +72,7 @@ class CONTENT_EXPORT IdentityRequestAccount
       std::vector<std::string> login_hints,
       std::vector<std::string> domain_hints,
       std::vector<std::string> labels,
-      std::optional<LoginState> login_state = std::nullopt,
+      std::optional<LoginState> idp_claimed_login_state = std::nullopt,
       LoginState browser_trusted_login_state = LoginState::kSignUp,
       std::optional<base::Time> last_used_timestamp = std::nullopt);
 
@@ -106,15 +106,18 @@ class CONTENT_EXPORT IdentityRequestAccount
   // actual available fields in the IDP accounts response.
   std::vector<IdentityRequestDialogDisclosureField> fields;
 
-  // The account login state. Unlike the other fields this one can be populated
-  // either by the IDP or by the browser based on its stored permission grants.
-  std::optional<LoginState> login_state;
+  // The account login state populated by the IDP through an approved clients
+  // list.
+  std::optional<LoginState> idp_claimed_login_state;
 
-  // The account login state that the browser can trust.
+  // The account login state populated by the browser based on stored permission
+  // grants.
   LoginState browser_trusted_login_state;
+
   // The last used timestamp, or nullopt if the account has not been used
   // before.
   std::optional<base::Time> last_used_timestamp;
+
   // Whether this account is filtered out or not. An account may be filtered out
   // due to login hint, domain hint, or account label.
   bool is_filtered_out = false;

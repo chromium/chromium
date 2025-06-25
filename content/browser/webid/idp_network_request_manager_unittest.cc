@@ -1718,15 +1718,15 @@ TEST_F(IdpNetworkRequestManagerTest, AccountSignedInStatus) {
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
   ASSERT_EQ(5ul, accounts.size());
-  ASSERT_TRUE(accounts[0]->login_state.has_value());
-  EXPECT_EQ(LoginState::kSignIn, *accounts[0]->login_state);
-  ASSERT_TRUE(accounts[1]->login_state.has_value());
-  EXPECT_EQ(LoginState::kSignUp, *accounts[1]->login_state);
-  ASSERT_TRUE(accounts[2]->login_state.has_value());
-  EXPECT_EQ(LoginState::kSignUp, *accounts[2]->login_state);
-  EXPECT_FALSE(accounts[3]->login_state.has_value());
-  ASSERT_TRUE(accounts[4]->login_state.has_value());
-  EXPECT_EQ(LoginState::kSignIn, *accounts[4]->login_state);
+  ASSERT_TRUE(accounts[0]->idp_claimed_login_state.has_value());
+  EXPECT_EQ(LoginState::kSignIn, *accounts[0]->idp_claimed_login_state);
+  ASSERT_TRUE(accounts[1]->idp_claimed_login_state.has_value());
+  EXPECT_EQ(LoginState::kSignUp, *accounts[1]->idp_claimed_login_state);
+  ASSERT_TRUE(accounts[2]->idp_claimed_login_state.has_value());
+  EXPECT_EQ(LoginState::kSignUp, *accounts[2]->idp_claimed_login_state);
+  EXPECT_FALSE(accounts[3]->idp_claimed_login_state.has_value());
+  ASSERT_TRUE(accounts[4]->idp_claimed_login_state.has_value());
+  EXPECT_EQ(LoginState::kSignIn, *accounts[4]->idp_claimed_login_state);
 }
 
 // Tests the token request implementation.

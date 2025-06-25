@@ -148,9 +148,9 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
         account->identity_provider->format &&
         *account->identity_provider->format == blink::mojom::Format::kSdJwt;
     bool is_returning_credential =
-        account->login_state &&
-        *account->login_state ==
-            content::IdentityRequestAccount::LoginState::kSignIn;
+        account->idp_claimed_login_state.value_or(
+            account->browser_trusted_login_state) ==
+        content::IdentityRequestAccount::LoginState::kSignIn;
     if (!delegated && !is_returning_credential) {
       continue;
     }

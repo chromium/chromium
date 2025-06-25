@@ -72,7 +72,7 @@ struct Config {
 
 Config kValidConfig = {
     /*accounts=*/
-    {{"account1", /*login_state=*/std::nullopt,
+    {{"account1", /*idp_claimed_login_state=*/std::nullopt,
       /*was_granted_sharing_permission=*/true}},
     /*config_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
     /*disconnect_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
@@ -389,7 +389,8 @@ TEST_F(FederatedAuthDisconnectRequestTest,
   const char kAccountId[] = "account";
 
   Config config = kValidConfig;
-  config.accounts = {{kAccountId, /*login_state=*/LoginState::kSignIn,
+  config.accounts = {{kAccountId,
+                      /*idp_claimed_login_state=*/LoginState::kSignIn,
                       /*was_granted_sharing_permission=*/false}};
 
   // Pretend the IdP was given third-party cookies access.

@@ -388,9 +388,8 @@ void FedCmAccountsFetcher::OnAccountsFetchSucceeded(
       !idp_info->provider->config->from_idp_registration_api &&
       !GetDisclosureFields(idp_info->provider->fields).empty()) {
     for (const auto& account : accounts) {
-      // ComputeLoginStates() should have populated the login_state.
-      DCHECK(account->login_state);
-      if (*account->login_state == LoginState::kSignUp) {
+      if (account->idp_claimed_login_state.value_or(
+              account->browser_trusted_login_state) == LoginState::kSignUp) {
         need_client_metadata |= true;
         break;
       }
@@ -555,7 +554,8 @@ void FedCmAccountsFetcher::ComputeLoginStates(
   // Populate the accounts login state.
   for (auto& account : accounts) {
     // Record when IDP and browser have different user sign-in states.
-    bool idp_claimed_sign_in = account->login_state == LoginState::kSignIn;
+    bool idp_claimed_sign_in =
+        account->idp_claimed_login_state == LoginState::kSignIn;
     account->last_used_timestamp = permission_delegate_->GetLastUsedTimestamp(
         render_frame_host_->GetLastCommittedOrigin(),
         federated_auth_request_impl_->GetEmbeddingOrigin(), idp_origin,
@@ -575,26 +575,20 @@ void FedCmAccountsFetcher::ComputeLoginStates(
               idp_config_url, SignInStateMatchStatus::kBrowserObservedSignIn);
     }
 
-    // We set the login state based on the IDP response if it sends
-    // back an approved_clients list. If it does not, we need to set
-    // it here based on browser state.
-    if (!account->login_state) {
-      // Consider this a sign-in if we have seen a successful sign-up for
-      // this account before.
-      account->login_state = account->last_used_timestamp.has_value()
-                                 ? LoginState::kSignIn
-                                 : LoginState::kSignUp;
-    }
-
     if (webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
             *render_frame_host_, /*provider_url=*/idp_config_url,
             federated_auth_request_impl_->GetEmbeddingOrigin(),
             render_frame_host_->GetLastCommittedOrigin(), account->id,
             permission_delegate_, api_permission_delegate_)) {
+      LoginState browser_observed_login_state =
+          account->last_used_timestamp.has_value() ? LoginState::kSignIn
+                                                   : LoginState::kSignUp;
       // At this moment we can trust login_state even though it's controlled
       // by IdP. If it's kSignUp, it could mean that the browser's sharing
       // permission is obsolete.
-      account->browser_trusted_login_state = account->login_state.value();
+      account->browser_trusted_login_state =
+          account->idp_claimed_login_state.value_or(
+              browser_observed_login_state);
     }
   }
 }
@@ -603,7 +597,8 @@ void FedCmAccountsFetcher::ComputeAccountFields(
     const std::vector<IdentityRequestDialogDisclosureField>& rp_fields,
     std::vector<IdentityRequestAccountPtr>& accounts) {
   for (const auto& account : accounts) {
-    if (account->login_state == LoginState::kSignIn) {
+    if (account->idp_claimed_login_state.value_or(
+            account->browser_trusted_login_state) == LoginState::kSignIn) {
       // We only show fields for signups.
       continue;
     }

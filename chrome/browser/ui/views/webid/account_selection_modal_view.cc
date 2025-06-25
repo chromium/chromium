@@ -654,7 +654,13 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
                                      /*should_hover=*/false,
                                      /*show_separator=*/false,
                                      /*is_request_permission_dialog=*/true));
-  if (account->login_state == Account::LoginState::kSignUp) {
+  // It must be that either the account's login state is kSignUp or that fields
+  // are empty if the account's login state is kSignIn.
+  CHECK(account->idp_claimed_login_state.value_or(
+            account->browser_trusted_login_state) ==
+            Account::LoginState::kSignUp ||
+        account->fields.empty());
+  if (!account->fields.empty()) {
     // Add disclosure label.
     std::unique_ptr<views::StyledLabel> disclosure_label =
         CreateDisclosureLabel(account);

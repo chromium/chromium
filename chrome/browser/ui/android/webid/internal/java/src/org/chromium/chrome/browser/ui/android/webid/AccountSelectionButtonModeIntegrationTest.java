@@ -202,7 +202,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                         /* secondaryDescription= */ null,
                         /* pictureBitmap= */ null,
                         /* circledBadgedPictureBitmap= */ null,
-                        /* isSignIn= */ true,
+                        /* isIdpClaimedSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ false,
                         /* isFilteredOut= */ false,
                         new int[0],

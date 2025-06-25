@@ -24,7 +24,7 @@ IdentityRequestAccount::IdentityRequestAccount(
     std::vector<std::string> login_hints,
     std::vector<std::string> domain_hints,
     std::vector<std::string> labels,
-    std::optional<LoginState> login_state,
+    std::optional<LoginState> idp_claimed_login_state,
     LoginState browser_trusted_login_state,
     std::optional<base::Time> last_used_timestamp)
     : id{id},
@@ -39,7 +39,7 @@ IdentityRequestAccount::IdentityRequestAccount(
       login_hints(std::move(login_hints)),
       domain_hints(std::move(domain_hints)),
       labels(std::move(labels)),
-      login_state{login_state},
+      idp_claimed_login_state{idp_claimed_login_state},
       browser_trusted_login_state{browser_trusted_login_state},
       last_used_timestamp{last_used_timestamp} {}
 
@@ -57,7 +57,7 @@ IdentityRequestAccount::IdentityRequestAccount(
       login_hints{{}},
       domain_hints{{}},
       labels{{}},
-      login_state{std::nullopt},
+      idp_claimed_login_state{std::nullopt},
       browser_trusted_login_state(LoginState::kSignUp),
       last_used_timestamp{std::nullopt} {}
 

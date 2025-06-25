@@ -329,7 +329,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
         /*login_hints=*/std::vector<std::string>(),
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>(),
-        /*login_state=*/idp_claimed_login_state,
+        /*idp_claimed_login_state=*/idp_claimed_login_state,
         /*browser_trusted_login_state=*/browser_trusted_login_state);
     if (idp_claimed_login_state == LoginState::kSignUp) {
       account->fields = idp->disclosure_fields;
@@ -348,7 +348,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>(),
-          /*login_state=*/account_info.second,
+          /*idp_claimed_login_state=*/account_info.second,
           /*browser_trusted_login_state=*/account_info.second));
       if (account_info.second == LoginState::kSignUp) {
         accounts.back()->fields = idp_data->disclosure_fields;

@@ -88,7 +88,7 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
       // TODO(crbug.com/398001374): Pass the circle cropped image here to avoid
       // duplication of code on Android.
       decoded_picture, circle_cropped_badged_picture,
-      account->login_state == Account::LoginState::kSignIn,
+      account->idp_claimed_login_state == Account::LoginState::kSignIn,
       account->browser_trusted_login_state == Account::LoginState::kSignIn,
       account->is_filtered_out, ConvertFieldsToJavaArray(env, account->fields),
       identity_provider);

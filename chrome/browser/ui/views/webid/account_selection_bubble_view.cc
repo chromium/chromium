@@ -695,9 +695,11 @@ void AccountSelectionBubbleView::AddAccounts(
   for (const auto& account : accounts) {
     // We notify the user that the account has been used in the past based on
     // the IdP's knowledge, e.g. `approved_clients` (or the browser knowledge if
-    // that one is not present). Thus we use the account's `login_state`.
+    // that one is not present).
     std::optional<std::u16string> last_used_string =
-        account->login_state == Account::LoginState::kSignIn
+        account->idp_claimed_login_state.value_or(
+            account->browser_trusted_login_state) ==
+                Account::LoginState::kSignIn
             ? std::make_optional<std::u16string>(
                   l10n_util::GetStringUTF16(IDS_USED_ON_THIS_SITE))
             : std::nullopt;
