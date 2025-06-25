@@ -263,9 +263,11 @@ base::flat_set<EncryptionScheme> GetSupportedEncryptionSchemes(
     bool is_hw_secure,
     VideoCodec video_codec,
     const std::string& robustness,
-    IsTypeSupportedCallback is_type_supported_cb) {
+    IsTypeSupportedCallback is_type_supported_cb,
+    const base::flat_set<EncryptionScheme>& schemes_to_query) {
   base::flat_set<EncryptionScheme> supported_schemes;
-  for (const auto scheme : kAllEncryptionSchemes) {
+
+  for (const auto scheme : schemes_to_query) {
     FeatureMap extra_features = {
         {kEncryptionSchemeQueryName, GetName(scheme)},
         {kEncryptionIvQueryName, base::NumberToString(GetIvSize(scheme))}};
@@ -384,6 +386,8 @@ CdmCapabilityOrStatus GetCdmCapability(
   // only support codecs that support clear lead for OS CDMs in HW security.
   // Software security always supports clear lead, and non OS CDMs for
   // hardware security always does NOT support clear lead.
+  bool checking_clear_lead = is_hw_secure && is_os_cdm;
+
   // For Audio Codecs:
   // The contract of the API is such that the encryption scheme is applied
   // to both audio and video. In terms of the current implementation, the
@@ -396,7 +400,7 @@ CdmCapabilityOrStatus GetCdmCapability(
   // for SWDRM. So for the OS_CDM, if the CDM is software secure, do not
   // pass in the cenc-clearlead because the codec checking might result in
   // an unsupported value, which is an oversight in the current PR impl.
-  if (is_hw_secure && is_os_cdm) {
+  if (checking_clear_lead) {
     extra_features.insert(
         {{kEncryptionSchemeQueryName, kClearLeadEncryptionScheme},
          {kEncryptionIvQueryName,
@@ -491,11 +495,30 @@ CdmCapabilityOrStatus GetCdmCapability(
   // of the encryption schemes which work for all codecs.
   base::flat_set<EncryptionScheme> intersection(
       std::begin(kAllEncryptionSchemes), std::end(kAllEncryptionSchemes));
-  for (const auto& [video_codec, _] : capability.video_codecs) {
-    const auto schemes = GetSupportedEncryptionSchemes(
-        is_hw_secure, video_codec, robustness, is_type_supported_cb);
+
+  for (const auto& [video_codec, codec_info] : capability.video_codecs) {
+    base::flat_set<EncryptionScheme> schemes_to_query = intersection;
+    base::flat_set<EncryptionScheme> supported_schemes;
+
+    // If this codec supports cenc-clearlead (we check only for OS HW secure
+    // CDMs), we know it supports cenc without querying and only need to query
+    // for the CBCS encryption scheme.
+    if (checking_clear_lead && codec_info.supports_clear_lead) {
+      supported_schemes.insert(EncryptionScheme::kCenc);
+      schemes_to_query.erase(EncryptionScheme::kCenc);
+    }
+
+    // This stores all the schemes that are supported via the IsTypeSupportedEx
+    // query. We then insert it into the supported schemes, which may or may not
+    // have been populated previously depending if we are querying for clearlead
+    // support on hardware secure OS CDMs.
+    const auto queried_schemes =
+        GetSupportedEncryptionSchemes(is_hw_secure, video_codec, robustness,
+                                      is_type_supported_cb, schemes_to_query);
+    supported_schemes.insert(queried_schemes.begin(), queried_schemes.end());
+
     intersection = base::STLSetIntersection<base::flat_set<EncryptionScheme>>(
-        intersection, schemes);
+        intersection, supported_schemes);
   }
 
   if (intersection.empty()) {
