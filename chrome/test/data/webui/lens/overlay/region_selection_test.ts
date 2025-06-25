@@ -9,9 +9,10 @@ import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js
 import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
 import type {CenterRotatedBox} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
 import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
@@ -27,6 +28,7 @@ suite('ManualRegionSelection', function() {
   let testBrowserProxy: TestLensOverlayBrowserProxy;
   let selectionOverlayElement: SelectionOverlayElement;
   let metrics: MetricsTracker;
+  let callbackRouterRemote: LensPageRemote;
 
   async function waitForEvent(eventName: string, options = {}) {
     return new Promise((resolve) => {
@@ -62,6 +64,9 @@ suite('ManualRegionSelection', function() {
     document.body.appendChild(selectionOverlayElement);
 
     metrics = fakeMetricsPrivate();
+    callbackRouterRemote =
+        testBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
+
 
     // Wait for the flash animation to finish to avoid racing against the
     // selection overlay setting the canvas size.
@@ -308,6 +313,49 @@ suite('ManualRegionSelection', function() {
     const action = await testBrowserProxy.handler.whenCalled(
         'recordUkmAndTaskCompletionForLensOverlayInteraction');
     assertEquals(UserAction.kFullScreenshotRegionSelection, action);
+  });
+
+  test('KeyboardSelectionHidesAccordingToPostSelectionUpdates', async () => {
+    // Should be displayed at start.
+    assertNotEquals(
+        getComputedStyle(
+            selectionOverlayElement.$.regionSelectionLayer.$.keyboardSelection)
+            .display,
+        'none');
+
+    const imageBounds = getImageBoundingRect(selectionOverlayElement);
+    const pointInOverlay = {
+      x: imageBounds.left + TAP_REGION_WIDTH / 2,
+      y: imageBounds.top + TAP_REGION_HEIGHT / 2,
+    };
+    const expectedRect: CenterRotatedBox = {
+      box: normalizedBox({
+        x: TAP_REGION_WIDTH / 2,
+        y: TAP_REGION_HEIGHT / 2,
+        width: TAP_REGION_WIDTH,
+        height: TAP_REGION_HEIGHT,
+      }),
+      rotation: 0,
+      coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+    };
+    await assertClickSendsRequest(pointInOverlay, expectedRect);
+
+    // Should be hidden after region selection.
+    assertEquals(
+        getComputedStyle(
+            selectionOverlayElement.$.regionSelectionLayer.$.keyboardSelection)
+            .display,
+        'none');
+
+    callbackRouterRemote.clearRegionSelection();
+    await flushTasks();
+
+    // Should be displayed after region selection is cleared.
+    assertNotEquals(
+        getComputedStyle(
+            selectionOverlayElement.$.regionSelectionLayer.$.keyboardSelection)
+            .display,
+        'none');
   });
 
   test('ClickShowsRegionWithCenterClampedToRegionWidthTopLeft', async () => {
