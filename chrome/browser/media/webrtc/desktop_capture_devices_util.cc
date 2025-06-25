@@ -240,73 +240,38 @@ std::string DeviceName(content::WebContents* web_contents,
   }
 }
 
-const char* GetDeviceId(bool disable_local_echo,
-                        bool suppress_local_audio_playback,
-                        bool restrict_own_audio) {
-  if (restrict_own_audio) {
-    return media::AudioDeviceDescription::kLoopbackWithoutChromeId;
-  } else if (disable_local_echo || suppress_local_audio_playback) {
-    return media::AudioDeviceDescription::kLoopbackWithMuteDeviceId;
+blink::MediaStreamDevice DesktopMediaIDToAudioMediaStreamDevice(
+    std::string device_id,
+    content::DesktopMediaID::Type desktop_media_id_type,
+    blink::mojom::MediaStreamType media_stream_type) {
+  if (desktop_media_id_type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
+    return blink::MediaStreamDevice(media_stream_type, device_id, "Tab audio");
   } else {
-    return media::AudioDeviceDescription::kLoopbackInputDeviceId;
+    return blink::MediaStreamDevice(media_stream_type, device_id,
+                                    "System Audio");
   }
 }
 
-}  // namespace
-
-std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
-    const content::MediaStreamRequest& request,
+void CreateMediaStreamCaptureIndicatorUI(
     content::WebContents* web_contents,
     const content::DesktopMediaID& media_id,
+    const blink::mojom::MediaStreamType video_type,
     bool capture_audio,
-    bool disable_local_echo,
-    bool suppress_local_audio_playback,
-    bool restrict_own_audio,
     bool display_notification,
     const std::u16string& application_title,
     bool captured_surface_control_active,
-    blink::mojom::StreamDevices& out_devices) {
+    blink::mojom::StreamDevices devices,
+    base::OnceCallback<void(blink::mojom::StreamDevices,
+                            std::unique_ptr<content::MediaStreamUI>)>
+        on_media_stream_capture_indicator_ui_created_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Add selected desktop source to the list.
-  blink::MediaStreamDevice device(
-      request.video_type, media_id.ToString(),
-      DeviceName(web_contents, request.video_type, media_id));
-  device.display_media_info = DesktopMediaIDToDisplayMediaInformation(
-      web_contents, url::Origin::Create(request.security_origin), media_id);
-  if (request.video_type != blink::mojom::MediaStreamType::NO_SERVICE) {
-    out_devices.video_device = device;
-  }
-
-  if (capture_audio) {
-    DCHECK_NE(request.audio_type, blink::mojom::MediaStreamType::NO_SERVICE);
-
-    if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
-      content::WebContentsMediaCaptureId web_id = media_id.web_contents_id;
-      // TODO(crbug.com/40244028): Deprecate disable_local_echo, support the
-      // same functionality based only on suppress_local_audio_playback.
-      web_id.disable_local_echo =
-          disable_local_echo || suppress_local_audio_playback;
-      out_devices.audio_device = blink::MediaStreamDevice(
-          request.audio_type, web_id.ToString(), "Tab audio");
-    } else {
-      // Use the special loopback device ID for system audio capture.
-      const char* device_id =
-          GetDeviceId(disable_local_echo, suppress_local_audio_playback,
-                      restrict_own_audio);
-      out_devices.audio_device = blink::MediaStreamDevice(
-          request.audio_type, device_id, "System Audio");
-    }
-    out_devices.audio_device->display_media_info =
-        DesktopMediaIDToDisplayMediaInformation(
-            web_contents, url::Origin::Create(request.security_origin),
-            media_id);
-  }
-
 #if BUILDFLAG(IS_ANDROID)
-  return MediaCaptureDevicesDispatcher::GetInstance()
-      ->GetMediaStreamCaptureIndicator()
-      ->RegisterMediaStream(web_contents, out_devices);
+  std::unique_ptr<content::MediaStreamUI> capture_indicator_ui =
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator()
+          ->RegisterMediaStream(web_contents, devices);
+  std::move(on_media_stream_capture_indicator_ui_created_callback)
+      .Run(std::move(devices), std::move(capture_indicator_ui));
 #else  // !BUILDFLAG(IS_ANDROID)
   // If required, register to display the notification for stream capture.
   std::unique_ptr<MediaStreamUI> notification_ui;
@@ -317,7 +282,7 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
         capturer_id = web_contents->GetPrimaryMainFrame()->GetGlobalId();
       }
       const bool app_preferred_current_tab =
-          request.video_type ==
+          video_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
       notification_ui =
           TabSharingUI::Create(capturer_id, media_id, application_title,
@@ -331,9 +296,133 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
     }
   }
 
-  return MediaCaptureDevicesDispatcher::GetInstance()
-      ->GetMediaStreamCaptureIndicator()
-      ->RegisterMediaStream(web_contents, out_devices,
-                            std::move(notification_ui), application_title);
+  std::unique_ptr<content::MediaStreamUI> capture_indicator_ui =
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator()
+          ->RegisterMediaStream(web_contents, devices,
+                                std::move(notification_ui), application_title);
+  std::move(on_media_stream_capture_indicator_ui_created_callback)
+      .Run(std::move(devices), std::move(capture_indicator_ui));
 #endif
+}
+
+void OnAudioDeviceIdObtained(
+    base::WeakPtr<content::WebContents> web_contents,
+    const content::DesktopMediaID& media_id,
+    const blink::mojom::MediaStreamType video_type,
+    const blink::mojom::MediaStreamType audio_type,
+    const GURL& security_origin,
+    bool display_notification,
+    const std::u16string& application_title,
+    bool captured_surface_control_active,
+    blink::mojom::StreamDevices devices,
+    base::OnceCallback<void(blink::mojom::StreamDevices,
+                            std::unique_ptr<content::MediaStreamUI>)>
+        on_media_stream_capture_indicator_ui_created_callback,
+    std::optional<std::string> audio_device_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!web_contents) {
+    // If the WebContents is destroyed, we don't need to do anything.
+    std::move(on_media_stream_capture_indicator_ui_created_callback)
+        .Run(std::move(devices), /*ui=*/nullptr);
+    return;
+  }
+
+  if (audio_device_id.has_value()) {
+    blink::MediaStreamDevice audio_device =
+        DesktopMediaIDToAudioMediaStreamDevice(audio_device_id.value(),
+                                               media_id.type, audio_type);
+    devices.audio_device = audio_device;
+    devices.audio_device->display_media_info =
+        DesktopMediaIDToDisplayMediaInformation(
+            web_contents.get(), url::Origin::Create(security_origin), media_id);
+  }
+  CreateMediaStreamCaptureIndicatorUI(
+      web_contents.get(), media_id, video_type,
+      /*capture_audio=*/audio_device_id.has_value(), display_notification,
+      application_title, captured_surface_control_active, std::move(devices),
+      std::move(on_media_stream_capture_indicator_ui_created_callback));
+}
+
+void GetAudioDeviceId(content::DesktopMediaID desktop_media_id,
+                      blink::mojom::MediaStreamType media_stream_type,
+                      bool disable_local_echo,
+                      bool suppress_local_audio_playback,
+                      bool restrict_own_audio,
+                      base::OnceCallback<void(std::optional<std::string>)>
+                          audio_device_id_obtained_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::optional<std::string> device_id;
+  if (desktop_media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
+    content::WebContentsMediaCaptureId web_id =
+        desktop_media_id.web_contents_id;
+    // TODO(crbug.com/40244028): Deprecate disable_local_echo, support the
+    // same functionality based only on suppress_local_audio_playback.
+    web_id.disable_local_echo =
+        disable_local_echo || suppress_local_audio_playback;
+    device_id = web_id.ToString();
+  } else {
+    // Use the special loopback device ID for system audio capture.
+    if (restrict_own_audio) {
+      device_id = media::AudioDeviceDescription::kLoopbackWithoutChromeId;
+    } else if (disable_local_echo || suppress_local_audio_playback) {
+      device_id = media::AudioDeviceDescription::kLoopbackWithMuteDeviceId;
+    } else {
+      device_id = media::AudioDeviceDescription::kLoopbackInputDeviceId;
+    }
+  }
+  std::move(audio_device_id_obtained_callback).Run(device_id);
+}
+
+}  // namespace
+
+void GetDevicesForDesktopCapture(
+    content::WebContents* web_contents,
+    const content::DesktopMediaID& media_id,
+    const blink::mojom::MediaStreamType video_type,
+    const blink::mojom::MediaStreamType audio_type,
+    const GURL& security_origin,
+    bool capture_audio,
+    bool disable_local_echo,
+    bool suppress_local_audio_playback,
+    bool restrict_own_audio,
+    bool display_notification,
+    const std::u16string& application_title,
+    bool captured_surface_control_active,
+    base::OnceCallback<void(blink::mojom::StreamDevices,
+                            std::unique_ptr<content::MediaStreamUI>)>
+        on_media_stream_capture_indicator_ui_created_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Add selected desktop source to the list.
+  blink::MediaStreamDevice device(
+      video_type, media_id.ToString(),
+      DeviceName(web_contents, video_type, media_id));
+  device.display_media_info = DesktopMediaIDToDisplayMediaInformation(
+      web_contents, url::Origin::Create(security_origin), media_id);
+  blink::mojom::StreamDevices devices;
+  if (video_type != blink::mojom::MediaStreamType::NO_SERVICE) {
+    devices.video_device = device;
+  }
+
+  if (capture_audio) {
+    DCHECK_NE(audio_type, blink::mojom::MediaStreamType::NO_SERVICE);
+    GetAudioDeviceId(
+        media_id, audio_type, disable_local_echo, suppress_local_audio_playback,
+        restrict_own_audio,
+        base::BindOnce(
+            &OnAudioDeviceIdObtained, web_contents->GetWeakPtr(), media_id,
+            video_type, audio_type, security_origin, display_notification,
+            application_title, captured_surface_control_active,
+            base::OwnedRef(devices),
+            std::move(on_media_stream_capture_indicator_ui_created_callback)));
+    return;
+  }
+
+  CreateMediaStreamCaptureIndicatorUI(
+      web_contents, media_id, video_type, capture_audio, display_notification,
+      application_title, captured_surface_control_active, std::move(devices),
+      std::move(on_media_stream_capture_indicator_ui_created_callback));
 }

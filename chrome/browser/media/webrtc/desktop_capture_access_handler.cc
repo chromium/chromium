@@ -693,24 +693,49 @@ void DesktopCaptureAccessHandler::AcceptRequest(
   DCHECK(web_contents);
 
   // TODO(crbug.com/40216442): Generalize to multiple streams.
-  blink::mojom::StreamDevicesSet stream_devices_set;
-  stream_devices_set.stream_devices.emplace_back(
-      blink::mojom::StreamDevices::New());
-  blink::mojom::StreamDevices& stream_devices =
-      *stream_devices_set.stream_devices[0];
-  std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
-      pending_request->request, web_contents, media_id, capture_audio,
+  // Create the callback before `pending_request` is moved to ensure that we
+  // have access to the `pending_request`'s variables' values.
+  auto get_devices_for_desktop_capture_callback = base::BindOnce(
+      &GetDevicesForDesktopCapture, web_contents, media_id,
+      pending_request->request.video_type, pending_request->request.audio_type,
+      pending_request->request.security_origin, capture_audio,
       pending_request->request.disable_local_echo,
-      /*suppress_local_audio_playback=*/false, /*restrict_own_audio=*/false,
+      /*suppress_local_audio_playback=*/false,
+      /*restrict_own_audio=*/false,
       pending_request->should_display_notification,
       pending_request->application_title,
-      pending_request->request.captured_surface_control_active, stream_devices);
-  DCHECK(stream_devices.audio_device.has_value() ||
-         stream_devices.video_device.has_value());
+      pending_request->request.captured_surface_control_active);
+
+  // base::Unretained(this) is safe because DesktopCaptureAccessHandler is owned
+  // by MediaCaptureDevicesDispatcher, which is a lazy singleton which is
+  // destroyed when the browser process terminates.
+  auto on_desktop_capture_devices_obtained_callback = base::BindOnce(
+      &DesktopCaptureAccessHandler::OnDesktopCaptureDevicesObtained,
+      base::Unretained(this), web_contents->GetWeakPtr(),
+      std::move(pending_request));
+  std::move(get_devices_for_desktop_capture_callback)
+      .Run(std::move(on_desktop_capture_devices_obtained_callback));
+}
+
+void DesktopCaptureAccessHandler::OnDesktopCaptureDevicesObtained(
+    base::WeakPtr<content::WebContents> web_contents,
+    std::unique_ptr<PendingAccessRequest> pending_request,
+    blink::mojom::StreamDevices devices,
+    std::unique_ptr<content::MediaStreamUI> ui) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!web_contents) {
+    return;
+  }
+
+  DCHECK(devices.audio_device.has_value() || devices.video_device.has_value());
 
   UpdateExtensionTrusted(pending_request->request,
                          pending_request->is_allowlisted_extension);
 
+  blink::mojom::StreamDevicesSet stream_devices_set;
+  stream_devices_set.stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  *(stream_devices_set.stream_devices[0]) = std::move(devices);
   std::move(pending_request->callback)
       .Run(stream_devices_set, MediaStreamRequestResult::OK, std::move(ui));
 }

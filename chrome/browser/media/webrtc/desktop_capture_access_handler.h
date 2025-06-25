@@ -97,6 +97,12 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
                                   int render_frame_id,
                                   int page_request_id);
 
+  void OnDesktopCaptureDevicesObtained(
+      base::WeakPtr<content::WebContents> web_contents,
+      std::unique_ptr<PendingAccessRequest> pending_request,
+      blink::mojom::StreamDevices devices,
+      std::unique_ptr<content::MediaStreamUI> ui);
+
   // Helper method to finalize processing an approved request.
   void AcceptRequest(content::WebContents* web_contents,
                      std::unique_ptr<PendingAccessRequest> pending_request,

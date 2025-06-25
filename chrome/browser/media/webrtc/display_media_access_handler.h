@@ -99,6 +99,16 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
   void AcceptRequest(content::WebContents* web_contents,
                      const content::DesktopMediaID& media_id);
 
+  void OnDesktopCaptureDevicesObtainedAfterAcceptRequest(
+      base::WeakPtr<content::WebContents> web_contents,
+      content::MediaStreamRequest request,
+      const content::DesktopMediaID& media_id,
+      blink::mojom::StreamDevices devices,
+      std::unique_ptr<content::MediaStreamUI> ui);
+
+  bool IsRequestFirstInQueue(const RequestsQueue& queue,
+                             const content::MediaStreamRequest& request) const;
+
   // Called after the user interacts with the media-picker.
   // - If the user chooses to share a tab/window/screen, `result.value()` holds
   //   the media-ID of the chosen surface.
@@ -109,6 +119,13 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
       base::WeakPtr<content::WebContents> web_contents,
       base::expected<content::DesktopMediaID,
                      blink::mojom::MediaStreamRequestResult> result);
+
+  void OnDesktopCaptureDevicesObtainedAfterBypassMediaSelectionDialog(
+      base::WeakPtr<content::WebContents> web_contents,
+      content::MediaStreamRequest request,
+      content::MediaResponseCallback callback,
+      blink::mojom::StreamDevices devices,
+      std::unique_ptr<content::MediaStreamUI> ui);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Called back after checking Data Leak Prevention (DLP) restrictions.

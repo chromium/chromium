@@ -348,31 +348,29 @@ TEST_P(MediaStreamCaptureIndicatorStreamTypeTest,
   const content::DesktopMediaID::Type& media_type = GetParam().media_type;
 
   content::WebContents* source = web_contents();
-  blink::mojom::StreamDevices devices;
-  std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
-      content::MediaStreamRequest(
-          /*render_process_id=*/0, /*render_frame_id=*/0, /*page_request_id=*/0,
-          /*url_origin=*/url::Origin(),
-          /*user_gesture=*/false,
-          blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
-          /*requested_audio_device_ids=*/{},
-          /*requested_video_device_ids=*/{"fake_device"},
-          blink::mojom::MediaStreamType::NO_SERVICE, video_stream_type,
-          /*disable_local_echo=*/false,
-          /*request_pan_tilt_zoom_permission=*/false,
-          /*captured_surface_control_active=*/false),
+  base::RunLoop run_loop;
+  auto on_devices_obtained_callback = base::BindLambdaForTesting(
+      [&](blink::mojom::StreamDevices devices,
+          std::unique_ptr<content::MediaStreamUI> ui) {
+        EXPECT_EQ(devices.video_device->type, video_stream_type);
+
+        (observer()->*(GetParam().observer_method))(source, 2);
+        ui->OnStarted(base::RepeatingClosure(),
+                      content::MediaStreamUI::SourceCallback(),
+                      /*label=*/std::string(), /*screen_capture_ids=*/{},
+                      content::MediaStreamUI::StateChangeCallback());
+        run_loop.Quit();
+      });
+  GetDevicesForDesktopCapture(
       source, content::DesktopMediaID(media_type, /*id=*/0),
+      /*video_type=*/video_stream_type,
+      /*audio_type=*/blink::mojom::MediaStreamType::NO_SERVICE,
+      /*security_origin*/ url::Origin().GetURL(),
       /*capture_audio=*/false, /*disable_local_echo=*/false,
       /*suppress_local_audio_playback=*/false, /*restrict_own_audio=*/false,
       /*display_notification=*/false, /*application_title=*/u"",
-      /*captured_surface_control_active=*/false, devices);
-  ASSERT_EQ(devices.video_device->type, video_stream_type);
-
-  (observer()->*(GetParam().observer_method))(source, 2);
-  ui->OnStarted(base::RepeatingClosure(),
-                content::MediaStreamUI::SourceCallback(),
-                /*label=*/std::string(), /*screen_capture_ids=*/{},
-                content::MediaStreamUI::StateChangeCallback());
+      /*captured_surface_control_active=*/false, on_devices_obtained_callback);
+  run_loop.Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
