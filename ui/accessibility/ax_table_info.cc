@@ -39,8 +39,9 @@ namespace {
 // nodes that are ignored, but we don't skp any other roles
 // in-between a table row and its cells.
 void FindCellsInRow(AXNode* node, std::vector<AXNode*>* cell_nodes) {
-  for (auto iter = node->UnignoredChildrenBegin();
-       iter != node->UnignoredChildrenEnd(); ++iter) {
+  for (auto iter = node->UnignoredChildrenBegin(),
+            end = node->UnignoredChildrenEnd();
+       iter != end; ++iter) {
     AXNode* child = iter.get();
     if (child->GetRole() == ax::mojom::Role::kGenericContainer) {
       FindCellsInRow(child, cell_nodes);
@@ -51,8 +52,9 @@ void FindCellsInRow(AXNode* node, std::vector<AXNode*>* cell_nodes) {
 }
 
 bool isRowlessTable(AXNode* node) {
-  for (auto iter = node->UnignoredChildrenBegin();
-       iter != node->UnignoredChildrenEnd(); ++iter) {
+  for (auto iter = node->UnignoredChildrenBegin(),
+            end = node->UnignoredChildrenEnd();
+       iter != end; ++iter) {
     AXNode* child = iter.get();
     if (child->GetRole() == ax::mojom::Role::kGenericContainer ||
         child->GetRole() == ax::mojom::Role::kGroup ||
@@ -81,8 +83,9 @@ bool isRowlessTable(AXNode* node) {
 void FindRows(AXNode* node,
               std::vector<raw_ptr<AXNode, VectorExperimental>>* row_node_list,
               AXNodeID& caption_node_id) {
-  for (auto iter = node->UnignoredChildrenBegin();
-       iter != node->UnignoredChildrenEnd(); ++iter) {
+  for (auto iter = node->UnignoredChildrenBegin(),
+            end = node->UnignoredChildrenEnd();
+       iter != end; ++iter) {
     AXNode* child = iter.get();
     if (child->GetRole() == ax::mojom::Role::kGenericContainer ||
         child->GetRole() == ax::mojom::Role::kGroup ||
@@ -136,8 +139,9 @@ void FindCellsForRowlessTable(
   int current_row = -1;
   int current_index = -1;
   base::queue<AXNode*> child_queue;
-  for (auto iter = grid_node->UnignoredChildrenBegin();
-       iter != grid_node->UnignoredChildrenEnd(); ++iter) {
+  for (auto iter = grid_node->UnignoredChildrenBegin(),
+            end = grid_node->UnignoredChildrenEnd();
+       iter != end; ++iter) {
     child_queue.push(iter.get());
     while (!child_queue.empty()) {
       auto* child = child_queue.front();
@@ -145,8 +149,9 @@ void FindCellsForRowlessTable(
       if (child->GetRole() == ax::mojom::Role::kGenericContainer ||
           child->GetRole() == ax::mojom::Role::kGroup) {
         // Add children of the container to the queue
-        for (auto container_itr = child->UnignoredChildrenBegin();
-             container_itr != child->UnignoredChildrenEnd(); ++container_itr) {
+        for (auto container_itr = child->UnignoredChildrenBegin(),
+                  container_end = child->UnignoredChildrenEnd();
+             container_itr != container_end; ++container_itr) {
           child_queue.push(container_itr.get());
         }
         continue;

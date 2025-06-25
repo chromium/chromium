@@ -421,8 +421,9 @@ void AXEventGenerator::OnIgnoredChanged(AXTree* tree,
   const bool was_in_invisible_subtree =
       !base::Contains(nodes_to_suppress_parent_changed_on_, node->id());
   if (was_in_invisible_subtree) {
-    for (auto iter = node->UnignoredChildrenBegin();
-         iter != node->UnignoredChildrenEnd(); ++iter) {
+    for (auto iter = node->UnignoredChildrenBegin(),
+              end = node->UnignoredChildrenEnd();
+         iter != end; ++iter) {
       AddEvent(iter.get(), Event::PARENT_CHANGED);
     }
   }

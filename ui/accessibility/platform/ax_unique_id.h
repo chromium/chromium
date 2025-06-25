@@ -27,6 +27,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXUniqueId final {
     return AXUniqueId(GetNextAXUniqueId(std::numeric_limits<int32_t>::max()));
   }
 
+  // Returns an instance matching the value of kInvalidAXNodeID.
+  static AXUniqueId CreateInvalid() { return AXUniqueId(AXPlatformNodeId()); }
+
   AXUniqueId() = delete;
   AXUniqueId(AXUniqueId&& other) noexcept
       : id_(std::exchange(other.id_, AXPlatformNodeId())) {}

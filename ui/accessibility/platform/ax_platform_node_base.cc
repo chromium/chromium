@@ -1597,8 +1597,9 @@ void AXPlatformNodeBase::UpdateComputedHypertext() const {
   // the character index of each embedded object character to the id of the
   // child object it points to.
   std::u16string hypertext;
-  for (AXPlatformNodeChildIterator child_iter = AXPlatformNodeChildrenBegin();
-       child_iter != AXPlatformNodeChildrenEnd(); ++child_iter) {
+  for (AXPlatformNodeChildIterator child_iter = AXPlatformNodeChildrenBegin(),
+                                   child_end = AXPlatformNodeChildrenEnd();
+       child_iter != child_end; ++child_iter) {
     // Similar to Firefox, we don't expose text nodes in IAccessible2 and ATK
     // hypertext with the embedded object character. We copy all of their text
     // instead.
@@ -1722,9 +1723,9 @@ int32_t AXPlatformNodeBase::GetHypertextOffsetFromChild(
   // cross-tree traversal is necessary.
   if (child->IsText()) {
     int32_t hypertext_offset = 0;
-    for (auto child_iter = AXPlatformNodeChildrenBegin();
-         child_iter != AXPlatformNodeChildrenEnd() && child_iter.get() != child;
-         ++child_iter) {
+    for (auto child_iter = AXPlatformNodeChildrenBegin(),
+              child_end = AXPlatformNodeChildrenEnd();
+         child_iter != child_end && child_iter.get() != child; ++child_iter) {
       if (child_iter->IsText()) {
         hypertext_offset +=
             static_cast<int32_t>(child_iter->GetHypertext().size());
@@ -1750,8 +1751,9 @@ int AXPlatformNodeBase::HypertextOffsetFromChildIndex(int child_index) const {
   // would be the case if we were to call GetChildAtIndex on each child.
   int hypertext_offset = 0;
   int endpoint_child_index = 0;
-  for (AXPlatformNodeChildIterator child_iter = AXPlatformNodeChildrenBegin();
-       child_iter != AXPlatformNodeChildrenEnd(); ++child_iter) {
+  for (AXPlatformNodeChildIterator child_iter = AXPlatformNodeChildrenBegin(),
+                                   child_end = AXPlatformNodeChildrenEnd();
+       child_iter != child_end; ++child_iter) {
     if (endpoint_child_index >= child_index) {
       break;
     }
@@ -1874,8 +1876,9 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
   // We can safely assume that the endpoint is in another part of the tree or
   // at common parent, and that this object is a descendant of common parent.
   std::optional<size_t> endpoint_index_in_common_parent;
-  for (auto child_iter = common_parent->AXPlatformNodeChildrenBegin();
-       child_iter != common_parent->AXPlatformNodeChildrenEnd(); ++child_iter) {
+  for (auto child_iter = common_parent->AXPlatformNodeChildrenBegin(),
+            child_end = common_parent->AXPlatformNodeChildrenEnd();
+       child_iter != child_end; ++child_iter) {
     if (endpoint_object->IsDescendantOf(child_iter.get())) {
       endpoint_index_in_common_parent = child_iter->GetIndexInParent();
       break;
@@ -1920,10 +1923,9 @@ AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
   }
 
   int current_hypertext_offset = hypertext_offset;
-  for (auto child_iter = AXPlatformNodeChildrenBegin();
-       child_iter != AXPlatformNodeChildrenEnd() &&
-       current_hypertext_offset >= 0;
-       ++child_iter) {
+  for (auto child_iter = AXPlatformNodeChildrenBegin(),
+            child_end = AXPlatformNodeChildrenEnd();
+       child_iter != child_end && current_hypertext_offset >= 0; ++child_iter) {
     int child_text_len = 1;
     if (child_iter->IsText())
       child_text_len =
@@ -2460,9 +2462,9 @@ int AXPlatformNodeBase::GetSelectedItems(
     int max_items,
     std::vector<AXPlatformNodeBase*>* out_selected_items) const {
   int selected_count = 0;
-  for (auto child_iter = AXPlatformNodeChildrenBegin();
-       child_iter != AXPlatformNodeChildrenEnd() && selected_count < max_items;
-       ++child_iter) {
+  for (auto child_iter = AXPlatformNodeChildrenBegin(),
+            child_end = AXPlatformNodeChildrenEnd();
+       child_iter != child_end && selected_count < max_items; ++child_iter) {
     if (!IsItemLike(child_iter->GetRole())) {
       selected_count += child_iter->GetSelectedItems(max_items - selected_count,
                                                      out_selected_items);

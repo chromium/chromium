@@ -742,13 +742,11 @@ struct AXTreeUpdateState {
 
   PendingStructureChanges* GetOrCreatePendingStructureChanges(
       AXNodeID node_id) {
-    auto iter = node_id_to_pending_data.find(node_id);
-    if (iter == node_id_to_pending_data.cend()) {
-      const AXNode* node = tree->GetFromId(node_id);
-      iter = node_id_to_pending_data
-                 .emplace(std::make_pair(
-                     node_id, std::make_unique<PendingStructureChanges>(node)))
-                 .first;
+    auto [iter, inserted] =
+        node_id_to_pending_data.try_emplace(node_id, nullptr);
+    if (inserted) {
+      iter->second =
+          std::make_unique<PendingStructureChanges>(tree->GetFromId(node_id));
     }
     return iter->second.get();
   }
@@ -1543,11 +1541,10 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     // descendants.
     absl::flat_hash_set<AXNodeID> cleared_computed_node_data_ids;
     for (AXNodeID node_id : update_state.node_data_changed_ids) {
-      AXNode* node = GetFromId(node_id);
-      while (node) {
-        if (cleared_computed_node_data_ids.insert(node->id()).second)
+      for (AXNode* node = GetFromId(node_id); node; node = node->parent()) {
+        if (cleared_computed_node_data_ids.insert(node->id()).second) {
           node->ClearComputedNodeData();
-        node = node->parent();
+        }
       }
     }
 
@@ -1692,15 +1689,17 @@ AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
   AXNode* table_node = const_cast<AXNode*>(const_table_node);
   AXTree* tree = const_cast<AXTree*>(this);
 
-  if (AXTableInfo* table_info =
-          base::FindPtrOrNull(table_info_map_, table_node->id())) {
+  auto [cached, inserted] =
+      table_info_map_.try_emplace(table_node->id(), nullptr);
+  if (!inserted) {
     // Get existing table info, and update if invalid because the
     // tree has changed since the last time we accessed it.
+    AXTableInfo* table_info = cached->second.get();
     if (!table_info->valid()) {
       if (!table_info->Update()) {
         // If Update() returned false, this is no longer a valid table.
         // Remove it from the map.
-        table_info_map_.erase(table_node->id());
+        table_info_map_.erase(cached);
         return nullptr;
       }
     }
@@ -1709,8 +1708,8 @@ AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
 
   AXTableInfo* table_info = AXTableInfo::Create(tree, table_node);
   DCHECK(table_info);
+  cached->second.reset(table_info);
 
-  table_info_map_[table_node->id()] = base::WrapUnique(table_info);
   return table_info;
 }
 
@@ -1738,10 +1737,12 @@ AXNode* AXTree::CreateNode(AXNode* parent,
   // index in parent to provide consistency with index_in_parent.
   auto node = std::make_unique<AXNode>(this, parent, id, index_in_parent,
                                        parent ? 0 : index_in_parent);
-  auto emplaced = id_map_.emplace(id, std::move(node));
+  auto* node_raw = node.get();
+  [[maybe_unused]] bool inserted =
+      id_map_.try_emplace(id, std::move(node)).second;
   // There should not have been a node already in the map with the same id.
-  DCHECK(emplaced.second);
-  return emplaced.first->second.get();
+  DCHECK(inserted);
+  return node_raw;
 }
 
 bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
@@ -2536,6 +2537,7 @@ void AXTree::MarkNodesForDestructionRecursive(AXNodeID node_id,
   if (!update_state->ShouldPendingNodeExistInTree(node_id))
     return;
 
+  // IncrementPendingDestroyNodeCount clears last_known_data, so capture it now.
   const AXNodeData& last_known_data =
       update_state->GetLastKnownPendingNodeData(node_id);
 
@@ -2628,8 +2630,10 @@ bool AXTree::CreateNewChildVector(
     update_state->should_clear_extra_announcement_nodes = true;
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  for (size_t i = 0; i < new_child_ids.size(); ++i) {
-    AXNodeID child_id = new_child_ids[i];
+  new_children->reserve(new_child_ids.size());
+  size_t i = 0;
+  for (AXNodeID child_id : new_child_ids) {
+    size_t index_in_parent = i++;
     AXNode* child = GetFromId(child_id);
     if (child) {
       if (child->parent() != node) {
@@ -2659,9 +2663,9 @@ bool AXTree::CreateNewChildVector(
         success = false;
         continue;
       }
-      child->SetIndexInParent(i);
+      child->SetIndexInParent(index_in_parent);
     } else {
-      child = CreateNode(node, child_id, i, update_state);
+      child = CreateNode(node, child_id, index_in_parent, update_state);
       update_state->pending_node_ids.insert(child->id());
     }
     new_children->push_back(child);
@@ -2704,9 +2708,10 @@ void AXTree::PopulateOrderedSetItemsMap(
   std::optional<int> ordered_set_min_level =
       ordered_set->GetHierarchicalLevel();
 
-  for (AXNode::UnignoredChildIterator child =
-           ordered_set->UnignoredChildrenBegin();
-       child != ordered_set->UnignoredChildrenEnd(); ++child) {
+  for (AXNode::UnignoredChildIterator
+           child = ordered_set->UnignoredChildrenBegin(),
+           end = ordered_set->UnignoredChildrenEnd();
+       child != end; ++child) {
     std::optional<int> child_level = child->GetHierarchicalLevel();
     if (child_level) {
       ordered_set_min_level = ordered_set_min_level
@@ -2758,9 +2763,10 @@ void AXTree::RecursivelyPopulateOrderedSetItemsMap(
       ordered_set != local_parent)
     return;
 
-  for (AXNode::UnignoredChildIterator itr =
-           local_parent->UnignoredChildrenBegin();
-       itr != local_parent->UnignoredChildrenEnd(); ++itr) {
+  for (AXNode::UnignoredChildIterator
+           itr = local_parent->UnignoredChildrenBegin(),
+           end = local_parent->UnignoredChildrenEnd();
+       itr != end; ++itr) {
     const AXNode* child = itr.get();
 
     // Invisible children should not be counted.

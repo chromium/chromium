@@ -205,8 +205,8 @@ void AXTreeFuzzerGenerator::RecursiveGenerateUpdate(
   }
 
   // Visit subtree.
-  for (auto iter = node->AllChildrenBegin(); iter != node->AllChildrenEnd();
-       ++iter) {
+  for (auto iter = node->AllChildrenBegin(), end = node->AllChildrenEnd();
+       iter != end; ++iter) {
     RecursiveGenerateUpdate(iter.get(), tree_update, fuzz_data, updated_nodes);
   }
 }

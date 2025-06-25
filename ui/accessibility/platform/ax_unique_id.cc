@@ -30,14 +30,12 @@ AXUniqueId::~AXUniqueId() {
 // static
 AXPlatformNodeId AXUniqueId::GetNextAXUniqueId(int32_t max_id) {
   static int32_t current_id = 0;
-  static bool has_wrapped = false;
 
   auto& assigned_ids = GetAssignedIds();
   const int32_t prev_id = current_id;
   do {
     if (current_id >= max_id) {
       current_id = 1;
-      has_wrapped = true;
     } else {
       ++current_id;
     }
@@ -46,10 +44,8 @@ AXPlatformNodeId AXUniqueId::GetNextAXUniqueId(int32_t max_id) {
            "cannot be equal to the most recently created ID.";
     // If it |has_wrapped| then we need to continue until we find the first
     // unassigned ID.
-  } while (has_wrapped &&
-           base::Contains(assigned_ids, AXPlatformNodeId(current_id)));
+  } while (!assigned_ids.insert(AXPlatformNodeId(current_id)).second);
 
-  assigned_ids.insert(AXPlatformNodeId(current_id));
   return AXPlatformNodeId(current_id);
 }
 
