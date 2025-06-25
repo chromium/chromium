@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/cast_receiver/browser/public/application_state_observer.h"
-#include "components/cast_receiver/browser/public/streaming_resolution_observer.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "services/network/public/cpp/network_context_getter.h"
 
@@ -24,14 +23,6 @@ class URLLoaderThrottle;
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace gfx {
-class Rect;
-}  // namespace gfx
-
-namespace media {
-struct VideoTransformation;
-}  // namespace media
 
 namespace media_control {
 class MediaBlocker;
@@ -50,8 +41,7 @@ class RuntimeApplication;
 // application types, as required for the functionality of the remainder of
 // this component, as well as responding to any callbacks from the application
 // process.
-class ApplicationClient : public StreamingResolutionObserver,
-                          public ApplicationStateObserver {
+class ApplicationClient : public ApplicationStateObserver {
  public:
   // This class handles managing the lifetime and interaction with the Renderer
   // process for application-specific objects. All functions of this object are
@@ -88,8 +78,6 @@ class ApplicationClient : public StreamingResolutionObserver,
   // As defined in ContentBrowserClientMixins.
   void AddApplicationStateObserver(ApplicationStateObserver* observer);
   void RemoveApplicationStateObserver(ApplicationStateObserver* observer);
-  void AddStreamingResolutionObserver(StreamingResolutionObserver* observer);
-  void RemoveStreamingResolutionObserver(StreamingResolutionObserver* observer);
   void OnWebContentsCreated(content::WebContents* web_contents);
   using CorsExemptHeaderCallback =
       base::RepeatingCallback<bool(std::string_view)>;
@@ -99,19 +87,12 @@ class ApplicationClient : public StreamingResolutionObserver,
       content::FrameTreeNodeId frame_tree_node_id,
       CorsExemptHeaderCallback is_cors_exempt_header_cb);
 
-  // StreamingResolutionObserver implementation:
-  void OnStreamingResolutionChanged(
-      const gfx::Rect& size,
-      const media::VideoTransformation& transformation) final;
-
   // ApplicationStateObserver implementation:
   void OnForegroundApplicationChanged(RuntimeApplication* app) final;
 
  private:
   network::NetworkContextGetter network_context_getter_;
 
-  base::ObserverList<StreamingResolutionObserver>
-      streaming_resolution_observer_list_;
   base::ObserverList<ApplicationStateObserver> application_state_observer_list_;
 
   base::WeakPtrFactory<ApplicationClient> weak_factory_;

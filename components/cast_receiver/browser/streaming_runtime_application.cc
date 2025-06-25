@@ -54,13 +54,6 @@ void StreamingRuntimeApplication::OnError() {
                   net::ERR_FAILED);
 }
 
-void StreamingRuntimeApplication::OnResolutionChanged(
-    const gfx::Rect& size,
-    const media::VideoTransformation& transformation) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  application_client().OnStreamingResolutionChanged(size, transformation);
-}
-
 void StreamingRuntimeApplication::Launch(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

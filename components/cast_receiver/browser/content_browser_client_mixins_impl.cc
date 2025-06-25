@@ -21,16 +21,6 @@ ContentBrowserClientMixinsImpl::ContentBrowserClientMixinsImpl(
 
 ContentBrowserClientMixinsImpl::~ContentBrowserClientMixinsImpl() = default;
 
-void ContentBrowserClientMixinsImpl::AddStreamingResolutionObserver(
-    StreamingResolutionObserver* observer) {
-  application_client_.AddStreamingResolutionObserver(observer);
-}
-
-void ContentBrowserClientMixinsImpl::RemoveStreamingResolutionObserver(
-    StreamingResolutionObserver* observer) {
-  application_client_.RemoveStreamingResolutionObserver(observer);
-}
-
 void ContentBrowserClientMixinsImpl::AddApplicationStateObserver(
     ApplicationStateObserver* observer) {
   application_client_.AddApplicationStateObserver(observer);

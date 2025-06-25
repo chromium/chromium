@@ -16,7 +16,6 @@ if (enable_cast_receiver) {
       "public/runtime_application.h",
       "public/runtime_application_dispatcher.h",
       "public/streaming_config_manager.h",
-      "public/streaming_resolution_observer.h",
     ]
     sources = [
       "application_client.cc",
@@ -119,9 +118,6 @@ source_set("unit_tests") {
 
   if (enable_cast_receiver) {
     deps += [ ":browser" ]
-    sources += [
-      "application_client_unittest.cc",
-      "streaming_receiver_session_client_unittest.cc",
-    ]
+    sources += [ "streaming_receiver_session_client_unittest.cc" ]
   }
 }

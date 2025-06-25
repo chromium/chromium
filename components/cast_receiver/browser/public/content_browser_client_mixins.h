@@ -26,7 +26,6 @@ namespace cast_receiver {
 
 class ApplicationClient;
 class ApplicationStateObserver;
-class StreamingResolutionObserver;
 
 // This class is responsible for providing all factory methods required for
 // creating the classes responsible for management and control of cast
@@ -52,17 +51,6 @@ class ContentBrowserClientMixins {
       ApplicationStateObserver* observer) = 0;
   virtual void RemoveApplicationStateObserver(
       ApplicationStateObserver* observer) = 0;
-
-  // Adds or removes a StreamingResolutionObserver. |observer| must not yet have
-  // been added, must be non-null, and is expected to remain valid for the
-  // duration of this instance's lifetime or until the associated Remove method
-  // below is called for a call to AddStreamingResolutionObserver(), and must
-  // have been previously added for a call to
-  // RemoveStreamingResolutionObserver().
-  virtual void AddStreamingResolutionObserver(
-      StreamingResolutionObserver* observer) = 0;
-  virtual void RemoveStreamingResolutionObserver(
-      StreamingResolutionObserver* observer) = 0;
 
   // To be called for every new WebContents creation.
   virtual void OnWebContentsCreated(content::WebContents* web_contents) = 0;

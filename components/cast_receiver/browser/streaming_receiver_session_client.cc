@@ -155,15 +155,6 @@ void StreamingReceiverSessionClient::OnStreamingConfigSet(
       << "Received updated streaming config during an ongoing session!";
 }
 
-void StreamingReceiverSessionClient::OnAudioConfigUpdated(
-    const ::media::AudioDecoderConfig& audio_config) {}
-
-void StreamingReceiverSessionClient::OnVideoConfigUpdated(
-    const ::media::VideoDecoderConfig& video_config) {
-  handler_->OnResolutionChanged(video_config.visible_rect(),
-                                video_config.video_transformation());
-}
-
 void StreamingReceiverSessionClient::OnStreamingSessionEnded() {
   // The streaming session will only "end" (as opposed to being "renegotated"
   // when a new config is sent or the stream changes between mirroring and

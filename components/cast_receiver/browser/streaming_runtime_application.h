@@ -41,9 +41,6 @@ class StreamingRuntimeApplication final
   // StreamingReceiverSessionClient::Handler implementation:
   void OnStreamingSessionStarted() override;
   void OnError() override;
-  void OnResolutionChanged(
-      const gfx::Rect& size,
-      const media::VideoTransformation& transformation) override;
 
   // Returns the network context used by |receiver_session_client_|.
   const network::NetworkContextGetter network_context_getter_;

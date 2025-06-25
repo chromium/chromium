@@ -71,16 +71,6 @@ ApplicationClient::ApplicationClient(
 
 ApplicationClient::~ApplicationClient() = default;
 
-void ApplicationClient::AddStreamingResolutionObserver(
-    StreamingResolutionObserver* observer) {
-  streaming_resolution_observer_list_.AddObserver(observer);
-}
-
-void ApplicationClient::RemoveStreamingResolutionObserver(
-    StreamingResolutionObserver* observer) {
-  streaming_resolution_observer_list_.RemoveObserver(observer);
-}
-
 void ApplicationClient::AddApplicationStateObserver(
     ApplicationStateObserver* observer) {
   application_state_observer_list_.AddObserver(observer);
@@ -120,14 +110,6 @@ ApplicationClient::CreateURLLoaderThrottles(
     }
   }
   return throttles;
-}
-
-void ApplicationClient::OnStreamingResolutionChanged(
-    const gfx::Rect& size,
-    const media::VideoTransformation& transformation) {
-  NotifyObservers(streaming_resolution_observer_list_,
-                  &StreamingResolutionObserver::OnStreamingResolutionChanged,
-                  size, transformation);
 }
 
 void ApplicationClient::OnForegroundApplicationChanged(

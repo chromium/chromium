@@ -136,7 +136,6 @@ void ReceiverSessionImpl::OnSessionInitialization(
                                            std::move(video_info));
 
   PreloadBuffersAndStartPlayback();
-  InformClientOfConfigChange();
 }
 
 void ReceiverSessionImpl::OnAudioBufferReceived(
@@ -202,20 +201,6 @@ void ReceiverSessionImpl::OnSessionReinitialization(
   }
 
   PreloadBuffersAndStartPlayback();
-  InformClientOfConfigChange();
-}
-
-void ReceiverSessionImpl::InformClientOfConfigChange() {
-  if (client_) {
-    if (audio_demuxer_stream_data_provider_) {
-      client_->OnAudioConfigUpdated(
-          audio_demuxer_stream_data_provider_->config());
-    }
-    if (video_demuxer_stream_data_provider_) {
-      client_->OnVideoConfigUpdated(
-          video_demuxer_stream_data_provider_->config());
-    }
-  }
 }
 
 void ReceiverSessionImpl::OnSessionEnded() {

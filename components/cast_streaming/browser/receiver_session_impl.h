@@ -79,9 +79,6 @@ class ReceiverSessionImpl final
   // Callback for mojom::DemuxerConnector::EnableReceiver()
   void OnReceiverEnabled();
 
-  // Informs the client of updated configs.
-  void InformClientOfConfigChange();
-
   // cast_streaming::CastStreamingSession::Client implementation.
   void OnSessionInitialization(
       StreamingInitializationInfo initialization_info,

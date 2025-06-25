@@ -58,12 +58,10 @@ CastRuntimeContentBrowserClient::CastRuntimeContentBrowserClient(
           cast_receiver::ContentBrowserClientMixins::Create(base::BindRepeating(
               &CastRuntimeContentBrowserClient::GetSystemNetworkContext,
               base::Unretained(this)))) {
-  cast_browser_client_mixins_->AddStreamingResolutionObserver(&observer_);
   cast_browser_client_mixins_->AddApplicationStateObserver(&observer_);
 }
 
 CastRuntimeContentBrowserClient::~CastRuntimeContentBrowserClient() {
-  cast_browser_client_mixins_->RemoveStreamingResolutionObserver(&observer_);
   cast_browser_client_mixins_->RemoveApplicationStateObserver(&observer_);
 }
 
@@ -144,9 +142,5 @@ void CastRuntimeContentBrowserClient::Observer::OnForegroundApplicationChanged(
   is_buffering_enabled_.store(enabled);
   DLOG(INFO) << "Buffering is " << (enabled ? "enabled" : "disabled");
 }
-
-void CastRuntimeContentBrowserClient::Observer::OnStreamingResolutionChanged(
-    const gfx::Rect& size,
-    const ::media::VideoTransformation& transformation) {}
 
 }  // namespace chromecast
