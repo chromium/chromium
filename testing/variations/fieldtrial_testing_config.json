@@ -10568,7 +10568,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "FullscreenSigninPromoManagerMigration"
+                        "FullscreenSigninPromoManagerMigration",
+                        "IPH_iOSPromoSigninFullscreen"
                     ]
                 }
             ]
