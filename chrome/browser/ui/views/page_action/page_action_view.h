@@ -52,9 +52,15 @@ class PageActionView : public IconLabelBubbleView,
   // expanding and collapsing).
   bool IsChipVisible() const;
 
+  // Reports the chip visibility change state at the beginning of the animation.
   using ChipVisibilityChanged = base::RepeatingCallback<void(PageActionView*)>;
   base::CallbackListSubscription AddChipVisibilityChangedCallback(
       ChipVisibilityChanged callback);
+
+  // Reports the chip visibility change state at the end of the animation.
+  using IsChipShowingChangedCallback =
+      base::RepeatingCallback<void(bool is_chip_showing)>;
+  void SetIsChipShowingChangedCallback(IsChipShowingChangedCallback callback);
 
   // PageActionModelObserver:
   void OnPageActionModelChanged(const PageActionModelInterface& model) override;
@@ -74,11 +80,19 @@ class PageActionView : public IconLabelBubbleView,
   gfx::Size GetMinimumSize() const override;
   bool IsBubbleShowing() const override;
   bool IsTriggerableEvent(const ui::Event& event) override;
+  void AnimationEnded(const gfx::Animation* animation) override;
 
   actions::ActionId GetActionId() const;
 
   views::View* GetLabelForTesting();
   gfx::SlideAnimation& GetSlideAnimationForTesting();
+
+  static base::PassKey<PageActionView> PassKeyForTesting() { return PassKey(); }
+
+ protected:
+  static base::PassKey<PageActionView> PassKey() {
+    return base::PassKey<PageActionView>();
+  }
 
  private:
   // The image associated with the `action_item_` size may be different from the
@@ -89,6 +103,10 @@ class PageActionView : public IconLabelBubbleView,
   // Changes to label visibility indicate that the chip state of this page
   // action changed. This handler ensures the view is updated accordingly.
   void OnLabelVisibilityChanged();
+
+  // Runs `is_chip_showing_changed_callback_` asynchronously to ensure that this
+  // notification will happen after PageActionModel::NotifyChange().
+  void NotifyIsChipShowingChange();
 
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
   base::ScopedObservation<PageActionModelInterface, PageActionModelObserver>
@@ -109,6 +127,12 @@ class PageActionView : public IconLabelBubbleView,
   // Client-provided callbacks for changes to chip state.
   base::RepeatingCallbackList<void(PageActionView*)>
       chip_visibility_changed_callbacks_;
+
+  // Used to notify when the chip state changes (expanded/hidden). The state is
+  // only reported when there is not an ongoing animation. It's initialized to
+  // base::DoNothing() for testing purpose.
+  IsChipShowingChangedCallback is_chip_showing_changed_callback_ =
+      base::DoNothing();
 
   // Used to record click event histogram. It's initialized to base::DoNothing()
   // for testing purpose.

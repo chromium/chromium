@@ -73,14 +73,24 @@ TEST_F(PageActionModelTest, VisibilityConditions) {
   EXPECT_FALSE(model_.GetVisible());
 }
 
+TEST_F(PageActionModelTest, ShouldChipBeVisible) {
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
+
+  model_.SetShouldShowSuggestionChip(PassKey(), true);
+  EXPECT_EQ(model_.ShouldShowSuggestionChip(), true);
+
+  model_.SetShouldShowSuggestionChip(PassKey(), false);
+  EXPECT_EQ(model_.ShouldShowSuggestionChip(), false);
+}
+
 TEST_F(PageActionModelTest, ChipVisibility) {
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
 
-  model_.SetShowSuggestionChip(PassKey(), true);
-  EXPECT_EQ(model_.GetShowSuggestionChip(), true);
+  model_.SetIsChipShowing(PassKey(), true);
+  EXPECT_EQ(model_.IsChipShowing(), true);
 
-  model_.SetShowSuggestionChip(PassKey(), false);
-  EXPECT_EQ(model_.GetShowSuggestionChip(), false);
+  model_.SetIsChipShowing(PassKey(), false);
+  EXPECT_EQ(model_.IsChipShowing(), false);
 }
 
 TEST_F(PageActionModelTest, ShouldAnnounceChip) {

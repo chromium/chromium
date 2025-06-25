@@ -104,12 +104,12 @@ void PageActionControllerImpl::ShowSuggestionChip(actions::ActionId action_id,
                                                   SuggestionChipConfig config) {
   PageActionModelInterface& model = FindPageActionModel(action_id);
   model.SetSuggestionChipConfig(PassKey(), config);
-  model.SetShowSuggestionChip(PassKey(), /*show=*/true);
+  model.SetShouldShowSuggestionChip(PassKey(), /*show=*/true);
 }
 
 void PageActionControllerImpl::HideSuggestionChip(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShowSuggestionChip(PassKey(),
-                                                       /*show=*/false);
+  FindPageActionModel(action_id).SetShouldShowSuggestionChip(PassKey(),
+                                                             /*show=*/false);
 }
 
 void PageActionControllerImpl::ActionItemChanged(
@@ -273,7 +273,8 @@ PageActionControllerImpl::CreatePageMetricsRecorder(
 }
 
 base::RepeatingCallback<void(PageActionTrigger)>
-PageActionControllerImpl::GetClickCallback(actions::ActionId action_id) {
+PageActionControllerImpl::GetClickCallback(base::PassKey<PageActionView>,
+                                           actions::ActionId action_id) {
   return base::BindRepeating(&PageActionControllerImpl::RecordClickMetric,
                              weak_factory_.GetWeakPtr(), action_id);
 }
@@ -296,6 +297,22 @@ int PageActionControllerImpl::GetVisibleEphemeralPageActionsCount() const {
     }
   }
   return visible_ephemeral_page_actions_count;
+}
+
+void PageActionControllerImpl::RegisterIsChipShowingChangedCallback(
+    base::PassKey<PageActionView>,
+    actions::ActionId action_id,
+    PageActionView* page_action_view) {
+  CHECK(page_action_view);
+  page_action_view->SetIsChipShowingChangedCallback(
+      base::BindRepeating(&PageActionControllerImpl::OnIsChipShowingChanged,
+                          weak_factory_.GetWeakPtr(), action_id));
+}
+
+void PageActionControllerImpl::OnIsChipShowingChanged(
+    actions::ActionId action_id,
+    bool is_chip_showing) {
+  FindPageActionModel(action_id).SetIsChipShowing(PassKey(), is_chip_showing);
 }
 
 std::ostream& operator<<(std::ostream& os, const SuggestionChipConfig& config) {

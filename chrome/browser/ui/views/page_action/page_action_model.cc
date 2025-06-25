@@ -32,12 +32,13 @@ void PageActionModel::SetShowRequested(base::PassKey<PageActionController>,
   NotifyChange();
 }
 
-void PageActionModel::SetShowSuggestionChip(base::PassKey<PageActionController>,
-                                            bool show) {
-  if (show_suggestion_chip_ == show) {
+void PageActionModel::SetShouldShowSuggestionChip(
+    base::PassKey<PageActionController>,
+    bool show) {
+  if (should_show_suggestion_chip_ == show) {
     return;
   }
-  show_suggestion_chip_ = show;
+  should_show_suggestion_chip_ = show;
   NotifyChange();
 }
 
@@ -115,8 +116,12 @@ bool PageActionModel::GetVisible() const {
          show_requested_ && !has_pinned_icon_;
 }
 
-bool PageActionModel::GetShowSuggestionChip() const {
-  return show_suggestion_chip_;
+bool PageActionModel::IsChipShowing() const {
+  return is_chip_showing_;
+}
+
+bool PageActionModel::ShouldShowSuggestionChip() const {
+  return should_show_suggestion_chip_;
 }
 
 bool PageActionModel::GetShouldAnimateChip() const {
@@ -198,6 +203,16 @@ void PageActionModel::SetShouldHidePageAction(
   }
 
   should_hide_ = should_hide;
+  NotifyChange();
+}
+
+void PageActionModel::SetIsChipShowing(base::PassKey<PageActionController>,
+                                       bool is_chip_showing) {
+  if (is_chip_showing_ == is_chip_showing) {
+    return;
+  }
+
+  is_chip_showing_ = is_chip_showing;
   NotifyChange();
 }
 

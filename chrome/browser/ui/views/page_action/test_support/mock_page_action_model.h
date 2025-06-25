@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,7 +21,8 @@ class MockPageActionModel : public PageActionModelInterface {
   ~MockPageActionModel() override;
 
   MOCK_METHOD(bool, GetVisible, (), (const, override));
-  MOCK_METHOD(bool, GetShowSuggestionChip, (), (const, override));
+  MOCK_METHOD(bool, IsChipShowing, (), (const, override));
+  MOCK_METHOD(bool, ShouldShowSuggestionChip, (), (const, override));
   MOCK_METHOD(bool, GetShouldAnimateChip, (), (const, override));
   MOCK_METHOD(bool, GetShouldAnnounceChip, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetText, (), (const, override));
@@ -46,13 +48,17 @@ class MockPageActionModel : public PageActionModelInterface {
               (base::PassKey<PageActionController>, bool requested),
               (override));
   MOCK_METHOD(void,
-              SetShowSuggestionChip,
+              SetShouldShowSuggestionChip,
               (base::PassKey<PageActionController>, bool show),
               (override));
   MOCK_METHOD(void,
               SetSuggestionChipConfig,
               (base::PassKey<PageActionController>,
                const SuggestionChipConfig& config),
+              (override));
+  MOCK_METHOD(void,
+              SetIsChipShowing,
+              (base::PassKey<PageActionController>, bool is_chip_showing),
               (override));
   MOCK_METHOD(void,
               SetHasPinnedIcon,

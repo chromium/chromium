@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
@@ -36,6 +37,7 @@ class ImageModel;
 
 namespace page_actions {
 
+class PageActionView;
 class PageActionModelFactory;
 class PageActionModelInterface;
 class PageActionModelObserver;
@@ -129,7 +131,15 @@ class PageActionController {
   // Provides a metric recording callback to the caller. The callback won't run
   // if the page action controller is destroyed.
   virtual base::RepeatingCallback<void(PageActionTrigger)> GetClickCallback(
+      base::PassKey<PageActionView>,
       actions::ActionId action_id) = 0;
+
+  // Subscribes this controller to get `page_action_view` complete chip
+  // visibility change (it final state after animation).
+  virtual void RegisterIsChipShowingChangedCallback(
+      base::PassKey<PageActionView>,
+      actions::ActionId action_id,
+      PageActionView* page_action_view) = 0;
 
   static base::PassKey<PageActionController> PassKeyForTesting() {
     return base::PassKey<PageActionController>();
@@ -185,7 +195,13 @@ class PageActionControllerImpl : public PageActionController,
       actions::ActionItem* action_item) override;
   void SetShouldHidePageActions(bool should_hide_page_actions) override;
   base::RepeatingCallback<void(PageActionTrigger)> GetClickCallback(
+      base::PassKey<PageActionView>,
       actions::ActionId action_id) override;
+
+  void RegisterIsChipShowingChangedCallback(
+      base::PassKey<PageActionView>,
+      actions::ActionId action_id,
+      PageActionView* page_action_view) override;
 
   // PinnedToolbarActionsModel::Observer
   void OnActionsChanged() override;
@@ -201,6 +217,10 @@ class PageActionControllerImpl : public PageActionController,
   void Register(actions::ActionId action_id,
                 bool is_tab_active,
                 bool is_ephemeral);
+
+  // Triggered when `page_action_view` chip state visibility has changed and
+  // completed animation to the new state.
+  void OnIsChipShowingChanged(actions::ActionId id, bool is_chip_showing);
 
   PageActionModelInterface& FindPageActionModel(
       actions::ActionId action_id) const;

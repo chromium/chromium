@@ -62,7 +62,13 @@ class MockPageActionController : public PageActionController {
   MOCK_METHOD(void, SetShouldHidePageActions, (bool), (override));
   MOCK_METHOD(base::RepeatingCallback<void(PageActionTrigger)>,
               GetClickCallback,
-              (actions::ActionId),
+              (base::PassKey<PageActionView>, actions::ActionId),
+              (override));
+  MOCK_METHOD(void,
+              RegisterIsChipShowingChangedCallback,
+              (base::PassKey<PageActionView>,
+               actions::ActionId,
+               PageActionView*),
               (override));
 };
 

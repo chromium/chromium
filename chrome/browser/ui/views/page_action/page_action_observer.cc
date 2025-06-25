@@ -20,11 +20,11 @@ page_actions::PageActionState ModelToState(
   page_actions::PageActionState state;
   state.action_id = action_id;
   state.showing = model.GetVisible();
-  state.chip_showing = model.GetShowSuggestionChip() && model.GetVisible();
+  state.chip_showing = model.IsChipShowing() && model.GetVisible();
   state.tooltip = model.GetVisible()
                       ? std::make_optional(model.GetTooltipText())
                       : std::nullopt;
-  state.label = model.GetShowSuggestionChip() && model.GetVisible()
+  state.label = model.IsChipShowing() && model.GetVisible()
                     ? std::make_optional(model.GetText())
                     : std::nullopt;
   return state;

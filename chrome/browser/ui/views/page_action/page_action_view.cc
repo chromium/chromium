@@ -8,6 +8,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -79,12 +80,20 @@ base::CallbackListSubscription PageActionView::AddChipVisibilityChangedCallback(
   return chip_visibility_changed_callbacks_.Add(std::move(callback));
 }
 
+void PageActionView::SetIsChipShowingChangedCallback(
+    IsChipShowingChangedCallback callback) {
+  is_chip_showing_changed_callback_ = std::move(callback);
+}
+
 void PageActionView::OnNewActiveController(PageActionController* controller) {
   observation_.Reset();
   action_item_controller_subscription_ = {};
   if (controller) {
-    click_callback_ =
-        controller->GetClickCallback(action_item_->GetActionId().value());
+    controller->RegisterIsChipShowingChangedCallback(
+        PassKey(), action_item_->GetActionId().value(), this);
+
+    click_callback_ = controller->GetClickCallback(
+        PassKey(), action_item_->GetActionId().value());
     controller->AddObserver(action_item_->GetActionId().value(), observation_);
     // TODO(crbug.com/388524315): Have the controller manage its own ActionItem
     // observation. See bug for more explanation.
@@ -108,8 +117,9 @@ void PageActionView::OnPageActionModelChanged(
   if (!model.GetVisible()) {
     ResetSlideAnimation(/*show=*/false);
   } else if (!model.GetShouldAnimateChip()) {
-    ResetSlideAnimation(/*show=*/model.GetShowSuggestionChip());
-  } else if (model.GetShowSuggestionChip()) {
+    ResetSlideAnimation(/*show=*/model.ShouldShowSuggestionChip());
+    NotifyIsChipShowingChange();
+  } else if (model.ShouldShowSuggestionChip()) {
     AnimateIn(/*string_id=*/std::nullopt);
   } else {
     AnimateOut();
@@ -195,6 +205,11 @@ void PageActionView::NotifyClick(const ui::Event& event) {
   click_callback_.Run(trigger_source);
 }
 
+void PageActionView::AnimationEnded(const gfx::Animation* animation) {
+  IconLabelBubbleView::AnimationEnded(animation);
+  NotifyIsChipShowingChange();
+}
+
 void PageActionView::UpdateIconImage() {
   if (observation_.GetSource() == nullptr ||
       observation_.GetSource()->GetImage().IsEmpty()) {
@@ -270,6 +285,13 @@ views::View* PageActionView::GetLabelForTesting() {
 
 gfx::SlideAnimation& PageActionView::GetSlideAnimationForTesting() {
   return slide_animation_;
+}
+
+void PageActionView::NotifyIsChipShowingChange() {
+  // Defer to avoid re-entrancy into PageActionModel::NotifyChange().
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(is_chip_showing_changed_callback_, IsChipVisible()));
 }
 
 BEGIN_METADATA(PageActionView)

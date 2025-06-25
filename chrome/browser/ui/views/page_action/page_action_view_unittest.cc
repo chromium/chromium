@@ -9,6 +9,8 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -176,7 +178,8 @@ class PageActionViewTest : public ChromeViewsTestBase {
         base::Seconds(0));
 
     ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
-    ON_CALL(mock_model_, GetShowSuggestionChip()).WillByDefault(Return(false));
+    ON_CALL(mock_model_, ShouldShowSuggestionChip())
+        .WillByDefault(Return(false));
     ON_CALL(mock_model_, GetShouldAnimateChip()).WillByDefault(Return(false));
     ON_CALL(mock_model_, GetText()).WillByDefault(ReturnRef(mock_string_));
     ON_CALL(mock_model_, GetAccessibleName())
@@ -307,13 +310,15 @@ TEST_F(PageActionViewTest, LabelVisibility) {
   EXPECT_FALSE(page_action_view()->GetVisible());
 
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_TRUE(page_action_view()->GetVisible());
   EXPECT_TRUE(page_action_view()->IsChipVisible());
 
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_TRUE(page_action_view()->GetVisible());
   EXPECT_FALSE(page_action_view()->IsChipVisible());
@@ -321,7 +326,8 @@ TEST_F(PageActionViewTest, LabelVisibility) {
 
 TEST_F(PageActionViewTest, ChipStateUpdatesBackgroundColor) {
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
 
@@ -330,7 +336,8 @@ TEST_F(PageActionViewTest, ChipStateUpdatesBackgroundColor) {
             page_action_view()->GetColorProvider()->GetColor(
                 kColorOmniboxIconBackgroundTonal));
 
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
 
   EXPECT_EQ(page_action_view()->GetBackground(), nullptr);
@@ -338,7 +345,8 @@ TEST_F(PageActionViewTest, ChipStateUpdatesBackgroundColor) {
 
 TEST_F(PageActionViewTest, ChipStateUpdatesForegroundColor) {
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
 
@@ -420,7 +428,8 @@ TEST_F(PageActionViewTest, UpdateBorderUsesChipPaddingForBitmapIcon) {
   EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(bitmap_image));
   ASSERT_FALSE(bitmap_image.IsVectorIcon());
 
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
 
   page_action_view()->OnPageActionModelChanged(*model());
@@ -446,7 +455,8 @@ TEST_F(PageActionViewTest, ChipCornerRadiiConsistentForVectorAndBitmapIcons) {
   const ui::ImageModel vector_image = ui::ImageModel::FromVectorIcon(
       vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kDefaultIconSize);
 
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
 
   EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(bitmap_image));
@@ -475,7 +485,8 @@ TEST_F(PageActionViewTest, MAYBE_ChipAnnouncements) {
   // Initialize the page action so that the chip is showing, but announcements
   // are disabled.
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetShouldAnnounceChip()).WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
@@ -488,13 +499,47 @@ TEST_F(PageActionViewTest, MAYBE_ChipAnnouncements) {
 
   // Hide the suggestion chip, then re-show it. This should trigger an
   // announcement.
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
 
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
+}
+
+TEST_F(PageActionViewTest, ChipExpandedCallbackNoAnimation) {
+  base::MockCallback<PageActionView::IsChipShowingChangedCallback>
+      mock_callback;
+  page_action_view()->SetIsChipShowingChangedCallback(mock_callback.Get());
+
+  base::RunLoop first_loop;
+  EXPECT_CALL(mock_callback, Run(/*is_chip_showing=*/true))
+      .WillOnce([&first_loop](bool) { first_loop.Quit(); });
+
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
+  EXPECT_CALL(*model(), GetAccessibleName())
+      .WillRepeatedly(ReturnRef(kTestText));
+
+  page_action_view()->OnPageActionModelChanged(*model());
+  first_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  base::RunLoop second_loop;
+  EXPECT_CALL(mock_callback, Run(/*is_chip_showing=*/false))
+      .WillOnce([&second_loop](bool) { second_loop.Quit(); });
+
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(false));
+
+  page_action_view()->OnPageActionModelChanged(*model());
+  second_loop.Run();
 }
 
 class PageActionViewTriggerTest : public PageActionViewTest {
@@ -616,7 +661,7 @@ class PageActionViewAnimationTest : public PageActionViewTest {
     // Make the visibility change instant.
     page_action_view()->GetSlideAnimationForTesting().SetSlideDuration(
         base::Seconds(0));
-    EXPECT_CALL(*model(), GetShowSuggestionChip())
+    EXPECT_CALL(*model(), ShouldShowSuggestionChip())
         .WillRepeatedly(Return(showing));
     EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
     EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
@@ -655,7 +700,8 @@ TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateOut) {
   SetInitialChipVisibility(true);
   ExtendAnimations();
 
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
 
   // The page action should be in the middle of animating and its chip should
@@ -679,7 +725,8 @@ TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateIn) {
   SetInitialChipVisibility(false);
   ExtendAnimations();
 
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
   page_action_view()->OnPageActionModelChanged(*model());
 
   // The page action should be in the middle of animating and its chip should
@@ -705,17 +752,84 @@ TEST_F(PageActionViewAnimationTest, AnimationsDisabled) {
 
   ExtendAnimations();
   EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(false));
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
   page_action_view()->OnPageActionModelChanged(*model());
 
   EXPECT_FALSE(page_action_view()->is_animating_label());
   EXPECT_TRUE(page_action_view()->IsChipVisible());
 
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
 
   EXPECT_FALSE(page_action_view()->is_animating_label());
   EXPECT_FALSE(page_action_view()->IsChipVisible());
+}
+
+TEST_F(PageActionViewAnimationTest, ChipExpandedCallbackAnimateIn) {
+  base::RunLoop run_loop;
+  base::MockCallback<PageActionView::IsChipShowingChangedCallback>
+      mock_callback;
+
+  // 1)  Start with the chip completely hidden (no animation).
+  SetInitialChipVisibility(false);
+
+  // 2)  Register the observer *after* the initial setup so we only count
+  //     the animate-in completion.
+  page_action_view()->SetIsChipShowingChangedCallback(mock_callback.Get());
+
+  // One call when the chip is fully expanded – quit the loop so the test waits
+  // for the async PostTask fired by the view.
+  EXPECT_CALL(mock_callback, Run(/*is_chip_showing=*/true))
+      .WillOnce([&run_loop](bool) { run_loop.Quit(); });
+
+  // 3)  Animate-in path.
+  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
+  ExtendAnimations();
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  // 4)  Fast-forward to the end → AnimationEnded() → callback fires.
+  FastForwardAnimation();
+  run_loop.Run();
+}
+
+TEST_F(PageActionViewAnimationTest, ChipExpandedCallbackAnimateOut) {
+  base::RunLoop run_loop;
+  base::MockCallback<PageActionView::IsChipShowingChangedCallback>
+      mock_callback;
+
+  // Register *before* the initial setup; we expect one "expanded" callback.
+  page_action_view()->SetIsChipShowingChangedCallback(mock_callback.Get());
+
+  // 1)  Start with the chip fully visible.
+  SetInitialChipVisibility(/*showing=*/true);
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  // 2)  Expect a second call after collapse.
+  {
+    testing::InSequence seq;
+
+    // (a) Still showing when the animation starts.
+    EXPECT_CALL(mock_callback, Run(/*is_chip_showing=*/true));
+
+    // (b) Hidden once the animation ends → quit the loop.
+    EXPECT_CALL(mock_callback, Run(/*is_chip_showing=*/false))
+        .WillOnce([&run_loop](bool) { run_loop.Quit(); });
+  }
+
+  // 3)  Animate-out path.
+  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
+  ExtendAnimations();
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  // 4)  Fast-forward to the end → AnimationEnded() → callback fires again.
+  FastForwardAnimation();
+  run_loop.Run();
 }
 
 }  // namespace

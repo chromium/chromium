@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_enums.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
 #include "chrome/browser/ui/views/page_action/test_support/test_page_action_properties_provider.h"
@@ -401,7 +402,8 @@ TEST_F(PageActionControllerTest, NotifyActionClickedLogsHistogram) {
   histogram_tester.ExpectTotalCount(specific_histogram, 0);
 
   controller()
-      ->GetClickCallback(kFirstActionItemId)
+      ->GetClickCallback(PageActionView::PassKeyForTesting(),
+                         kFirstActionItemId)
       .Run(PageActionTrigger::kMouse);
 
   histogram_tester.ExpectTotalCount(general_histogram, 1);
@@ -412,7 +414,8 @@ TEST_F(PageActionControllerTest, NotifyActionClickedLogsHistogram) {
                                       PageActionCTREvent::kClicked, 1);
 
   controller()
-      ->GetClickCallback(kFirstActionItemId)
+      ->GetClickCallback(PageActionView::PassKeyForTesting(),
+                         kFirstActionItemId)
       .Run(PageActionTrigger::kKeyboard);
 
   histogram_tester.ExpectTotalCount(general_histogram, 2);
@@ -506,7 +509,8 @@ TEST_F(PageActionControllerMockModelTest, ShowSuggestionChip) {
   controller().Initialize(tab_interface(), {kFirstActionItemId},
                           properties_provider_);
 
-  EXPECT_CALL(models().Get(kFirstActionItemId), SetShowSuggestionChip(_, true))
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowSuggestionChip(_, true))
       .Times(1);
   EXPECT_CALL(models().Get(kFirstActionItemId),
               SetSuggestionChipConfig(_,
@@ -517,7 +521,8 @@ TEST_F(PageActionControllerMockModelTest, ShowSuggestionChip) {
       .Times(1);
   controller().ShowSuggestionChip(kFirstActionItemId);
 
-  EXPECT_CALL(models().Get(kFirstActionItemId), SetShowSuggestionChip(_, true))
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowSuggestionChip(_, true))
       .Times(1);
   EXPECT_CALL(models().Get(kFirstActionItemId),
               SetSuggestionChipConfig(_,
@@ -530,7 +535,8 @@ TEST_F(PageActionControllerMockModelTest, ShowSuggestionChip) {
       kFirstActionItemId,
       {.should_animate = false, .should_announce_chip = true});
 
-  EXPECT_CALL(models().Get(kFirstActionItemId), SetShowSuggestionChip(_, false))
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowSuggestionChip(_, false))
       .Times(1);
   controller().HideSuggestionChip(kFirstActionItemId);
 }
