@@ -63,6 +63,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication",
+    "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model:model_internal",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/ui_bundled:coordinator",

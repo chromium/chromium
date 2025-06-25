@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
@@ -90,6 +91,11 @@
   DCHECK(_snapshotGeneratorDelegate);
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(
       _snapshotGeneratorDelegate);
+
+  FormSuggestionTabHelper::CreateForWebState(webState, @[
+    PasswordTabHelper::FromWebState(webState)->GetSuggestionProvider(),
+    AutofillTabHelper::FromWebState(webState)->GetSuggestionProvider(),
+  ]);
 
   PasswordTabHelper* passwordTabHelper =
       PasswordTabHelper::FromWebState(webState);
@@ -314,6 +320,8 @@
   if (editMenuTabHelper) {
     editMenuTabHelper->SetEditMenuBuilder(nil);
   }
+
+  FormSuggestionTabHelper::RemoveFromWebState(webState);
 }
 
 @end

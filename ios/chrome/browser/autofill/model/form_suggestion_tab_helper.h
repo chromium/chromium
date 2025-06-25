@@ -7,7 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "ios/web/public/web_state_observer.h"
+#import "base/scoped_observation.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol FormInputSuggestionsProvider;
@@ -39,6 +40,10 @@ class FormSuggestionTabHelper
 
   // The Objective-C password controller instance.
   __strong FormSuggestionController* controller_;
+
+  // Scoped WebState observation.
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_FORM_SUGGESTION_TAB_HELPER_H_

@@ -21,11 +21,12 @@ FormSuggestionTabHelper::FormSuggestionTabHelper(
     : controller_([[FormSuggestionController alloc]
           initWithWebState:web_state
                  providers:providers]) {
-  web_state->AddObserver(this);
+  CHECK(web_state->IsRealized());
+  web_state_observation_.Observe(web_state);
 }
 
 void FormSuggestionTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  web_state_observation_.Reset();
   [controller_ detachFromWebState];
-  web_state->RemoveObserver(this);
   controller_ = nil;
 }

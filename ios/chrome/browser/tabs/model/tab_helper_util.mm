@@ -305,11 +305,6 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     AutofillBottomSheetTabHelper::CreateForWebState(web_state);
     AutofillTabHelper::CreateForWebState(web_state);
 
-    FormSuggestionTabHelper::CreateForWebState(web_state, @[
-      PasswordTabHelper::FromWebState(web_state)->GetSuggestionProvider(),
-      AutofillTabHelper::FromWebState(web_state)->GetSuggestionProvider(),
-    ]);
-
     if (base::FeatureList::IsEnabled(kIOSPasskeyShim)) {
       PasskeyTabHelper::CreateForWebState(
           web_state, IOSPasskeyModelFactory::GetForProfile(profile));
