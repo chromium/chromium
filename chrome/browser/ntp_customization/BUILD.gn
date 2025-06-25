@@ -70,6 +70,7 @@ android_resources("java_resources") {
     "java/res/layout/ntp_customization_drag_handle_bar.xml",
     "java/res/layout/ntp_customization_feed_bottom_sheet.xml",
     "java/res/layout/ntp_customization_main_bottom_sheet.xml",
+    "java/res/layout/ntp_customization_mvt_bottom_sheet.xml",
     "java/res/layout/ntp_customization_ntp_cards_bottom_sheet.xml",
     "java/res/layout/ntp_customization_ntp_cards_list_item_layout.xml",
     "java/res/values-night/colors.xml",

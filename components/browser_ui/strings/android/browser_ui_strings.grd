@@ -1308,6 +1308,9 @@
       <message name="IDS_NTP_CUSTOMIZATION_SUBTITLE" desc="Subtitle of the new tab page customization bottom sheet">
         Quickly get to what matters to you
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MVT_SETTINGS_TITLE" desc="the title of the bottom sheet to customize the most visited tiles section on the new tab page">
+        My shortcuts
+      </message>
       <message name="IDS_NTP_CUSTOMIZATION_FEED_SETTINGS_TITLE" desc="Open setting page for feed section customization when clicked">
         Discover feed
       </message>
