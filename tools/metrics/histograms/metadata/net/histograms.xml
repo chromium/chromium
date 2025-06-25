@@ -7422,17 +7422,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSLClientCertSignatureAlgorithm"
-    enum="SSLSignatureAlgorithm" expires_after="2025-02-10">
+    enum="SSLSignatureAlgorithm" expires_after="2026-06-30">
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     For each non-resumption TLS handshake that sends a client certificate, the
     signature algorithm used by the client.
+
+    Warning: this histogram was expired from 2025-02-10 to 2025-06-25; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.SSLExtendedMainSecretSupported" enum="BooleanSupported"
-    expires_after="2025-12-21">
+    expires_after="2026-06-30">
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -7513,7 +7516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSLRenegotiationInfoSupported" enum="BooleanSupported"
-    expires_after="2025-08-20">
+    expires_after="2026-06-30">
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
