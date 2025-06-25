@@ -271,6 +271,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome rekomandon vendosjen në pauzë të skedës që ngadalëson shfletuesin}other{Chrome rekomandon vendosjen në pauzë të skedave që ngadalësojnë shfletuesin}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Për të marrë personalizimin dhe veçoritë e tjera, përfshi Chrome në "Aktivitetin e uebit dhe të aplikacioneve" dhe në shërbimet e lidhura të Google</translation>
+<translation id="4334241893986177674">Kërko në këtë pamje ekrani</translation>
 <translation id="4334294535648607276">Shkarkimi përfundoi</translation>
 <translation id="4337324600316876133">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet macOS 12 ose një version i mëvonshëm. Ky kompjuter përdor macOS 11.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> është shtuar te Chrome</translation>

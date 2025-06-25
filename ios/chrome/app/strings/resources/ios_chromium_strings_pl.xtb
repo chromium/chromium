@@ -174,6 +174,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim
 <translation id="5203244847421322551">Zapisuj i automatycznie uzupełniaj hasła w Chromium</translation>
 <translation id="5224391634244552924">Brak zapisanych haseł. Chromium może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
 <translation id="5259423875997548710">Wyszukaj elementy wizualne w Chromium.</translation>
+<translation id="5284913972719948193">Zaimportuj dane, aby używać haseł, historii, zakładek i kart kredytowych w Chromium</translation>
 <translation id="5308226104666789935">Chromium nie może sprawdzić dostępności aktualizacji</translation>
 <translation id="5311557153294205270">Dodaje wpisane adresy URL do zakładek w Chromium.</translation>
 <translation id="5383251701169024761">Aby mieć łatwy dostęp do zapisanych haseł w innych aplikacjach, użyj autouzupełniania w Chromium.</translation>
@@ -307,6 +308,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="865600487977764604">Dba o Twoje bezpieczeństwo w Chromium i może też je poprawiać w innych aplikacjach Google, gdy się w nich zalogujesz.</translation>
 <translation id="8663480472502753423">Zawsze używaj aktualnej wersji Chromium</translation>
 <translation id="8685813584220679697">Zaloguj się w na tej stronie i w Chromium.</translation>
+<translation id="8698780336333802489">Importuj do Chromium</translation>
 <translation id="8730503818204408000">Otwiera opcję Chromium pozwalającą ustawić Chromium jako przeglądarkę domyślną.</translation>
 <translation id="8754966941001340678">Chromium zaleca silniejszą ochronę</translation>
 <translation id="8759037115129007407">W tej chwili członek Twojej grupy rodzinnej nie może otrzymać haseł. Poproś go, aby zaktualizował Chromium i zsynchronizował hasła. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>

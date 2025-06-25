@@ -36,6 +36,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="1409338233051621926">Gusa Programu kisha uguse Programu chaguomsingi</translation>
 <translation id="1415402041810619267">URL imepunguzwa</translation>
 <translation id="1415855080660575082">Ruhusu Chrome ionyeshe vichupo vyako vya hivi majuzi kwenye kifaa chako ili vionekane katika orodha ya programu na matokeo ya utafutaji kwenye kifaa chako. Unaweza kuwasha au kuzima kipengele hiki kwenye mipangilio ya Chrome.</translation>
+<translation id="1432650420699700107">Tovuti zinaweza kuomba ruhusa ya kuunganisha na kifaa chochote kwenye mtandao wako wa karibu</translation>
 <translation id="1448064542941920355">Punguza ukuzaji</translation>
 <translation id="1464044141348608623">Usiruhusu tovuti zijue wakati unatumia kifaa chako</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{Tovuti <ph name="SITE_COUNT" />}other{Tovuti <ph name="SITE_COUNT" />}}</translation>
@@ -254,6 +255,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="3955321697524543127">Usiruhusu tovuti ziunganishe kwenye vifaa vya USB</translation>
 <translation id="3965467402665811906">Tovuti zinaweza kuomba zitumie taarifa ambazo zimehifadhi kukuhusu</translation>
 <translation id="3967822245660637423">Imemaliza kupakua</translation>
+<translation id="3969869202926863008">Ufikiaji wa mtandao wa karibu</translation>
 <translation id="3981465354637804599">Kwa kawaida tovuti huonyesha matangazo ili ziweze kutoa maudhui au huduma bila kulipia. Lakini, baadhi ya tovuti huonyesha matangazo yanayopotosha au yanayokatiza matumizi.</translation>
 <translation id="3987993985790029246">Nakili kiungo</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="6554732001434021288">Ilitembelewa mara ya mwisho siku <ph name="NUM_DAYS" /> zilizopita</translation>
 <translation id="656065428026159829">Angalia zaidi</translation>
 <translation id="6561560012278703671">Tumia kipengele cha kutuma na kupokea ujumbe bila sauti (huzuia vidokezo vya arifa visikusumbue)</translation>
+<translation id="6565144332292237355">Tovuti zinaweza kutumia kipengele hiki kutafuta na kuunganisha na kifaa chochote kwenye mtandao wako wa karibu</translation>
 <translation id="6593061639179217415">Tovuti ya kompyuta ya mezani</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Vidakuzi vinavyoruhusiwa katika tovuti <ph name="RWS_MEMBERS_COUNT" /> ya <ph name="RWS_OWNER" />}other{Vidakuzi vinavyoruhusiwa katika tovuti <ph name="RWS_MEMBERS_COUNT" /> za <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374">GB <ph name="GIGABYTES" /></translation>

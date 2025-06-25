@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">由於您並未連線至網絡，因此無法分享。</translation>
 <translation id="1668001730617725852">在新分頁群組中開啟</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯成<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">你現可從網址列打開「Google 智能鏡頭」，搜尋你看到的任何內容</translation>
 <translation id="1689333818294560261">暱稱</translation>
 <translation id="169048873465870056">要移除分頁並刪除群組嗎？</translation>
 <translation id="1698090540708020240">匯入密碼…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">帳戶 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，管理員可以查看某些資料。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新項目</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> 個帳戶正在使用同一個密碼</translation>
+<translation id="205013082884273671">搜尋畫面上的任何內容</translation>
 <translation id="2054044186557130763">登入 <ph name="NAME" /> (<ph name="EMAIL" />，由你的機構管理)。</translation>
 <translation id="2059166748188874810">自治市</translation>
 <translation id="2060638295449304809">此地址只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶 <ph name="USER_EMAIL" /></translation>
@@ -386,6 +388,7 @@
 <translation id="251837347827266434">系統會將你登出、關閉分頁，並刪除瀏覽資料</translation>
 <translation id="2520787026086861736">如要關閉設定，請前往「<ph name="BEGIN_LINK" />自動填入與密碼<ph name="END_LINK" />」</translation>
 <translation id="2523295204312809179">當你關閉分頁群組，分頁群組會自動儲存在這裡</translation>
+<translation id="2524699375503213836">從 Safari 匯入資料</translation>
 <translation id="2529021024822217800">全部開啟</translation>
 <translation id="2536991091671391962">您可在任何裝置上使用已儲存的密碼。密碼已儲存至 <ph name="EMAIL" /> 的「Google 密碼管理工具」。</translation>
 <translation id="2538103551183528357">隱藏密碼</translation>
@@ -459,6 +462,7 @@
 <translation id="2819667972867209401">如果開啟，資料就會儲存至你的 Google 帳戶。關閉後，資料只會儲存至此裝置，並在你登出後刪除。</translation>
 <translation id="2827760117436553203">要分開保存資料嗎？</translation>
 <translation id="2829172210806130158">搜尋畫面內容</translation>
+<translation id="2831109159746537587">請嘗試圈出或輕按要搜尋的圖片</translation>
 <translation id="2834399722155632105">3. 輕按 [密碼選項]</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />，<ph name="STATE" />，<ph name="URL" /></translation>
 <translation id="2841013758207633010">時間</translation>
@@ -1104,6 +1108,7 @@
 <translation id="5576885723883013398">新視窗</translation>
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="5579012242779565775">隱藏「閱讀清單」</translation>
+<translation id="5581786858144165447">詢問 AI 模式</translation>
 <translation id="5585019845078534178">付款卡</translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="559567008082979829">設定下載項目在一個月後刪除。</translation>

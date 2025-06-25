@@ -91,6 +91,7 @@ Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> brauzerini tanlang.</translation>
 <translation id="2986402782150919988">Chromega bukmarklar kiritish</translation>
 <translation id="3030414234702425231">Siz <ph name="SIGNOUT_MANAGED_DOMAIN" /> domenida boshqariladigan hisobdan chiqish arafasidasiz. Barcha Chrome maʼlumotlari ushbu qurilmadan tozalanadi, lekin Google hisobingizda saqlanib qoladi.</translation>
+<translation id="3042447686908081308">Chromega import qilish</translation>
 <translation id="3051521853355903257">Chromeda parollarni boshqarish</translation>
 <translation id="309672519329227863">Boshqa ilovalarda Chrome parollaringiz va boshqalarni oching.</translation>
 <translation id="3109170945534582468">Chrome amallari</translation>
@@ -338,6 +339,7 @@ Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Chr
 <translation id="9176561303811134420">Chromeda toʻlov usullarini boshqarish</translation>
 <translation id="9181628561061032322">Chromeda oxirgi varaqlarini ochadi.</translation>
 <translation id="948597495737267756">Chrome tarixi sahifasini ochadi</translation>
+<translation id="954347330803595209">Chromeda parollar, tarix, bukmarklar va kredit kartalardan foydalanish uchun maʼlumotlaringizni import qiling</translation>
 <translation id="97300214378190234">Har qaysi ilovada havola bosilganda Chrome ochilsin</translation>
 <translation id="997929539742564806">Chrome parol va kalitlarni avtomatik kiritishi orqali ilova va saytlarga tezroq kiring</translation>
 <translation id="998677222109959694">Chrome sozlamalarini boshqarish</translation>

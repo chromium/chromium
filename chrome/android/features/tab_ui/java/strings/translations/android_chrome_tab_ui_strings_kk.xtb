@@ -112,6 +112,7 @@
 <translation id="5556417849629758491">Дүкен туралы ақпаратты көру (опция экранның жоғарғы жағында орналасқан)</translation>
 <translation id="5627941783489838464">Қойындыларда өзгеріс жоқ.</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-нан <ph name="TABS_COUNT_ONE" /> сілтеме}other{Chrome-нан <ph name="TABS_COUNT_MANY" /> сілтеме}}</translation>
+<translation id="5746204836956568669">Жылдамырақ жұмыс істеу үшін <ph name="NUMBER_OF_TABS" /> қойындыны топтау қажет пе?</translation>
 <translation id="58326064309361797">Қойындыларды топтастыру үшін оларды сүйреңіз.</translation>
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5972844218283131174">Барлығын алып тастау</translation>
@@ -192,6 +193,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ай бұрын жаңартылды.}other{<ph name="NUM_MONTHS_MANY" /> ай бұрын жаңартылды.}}</translation>
 <translation id="8398929769197326728">Жаңа қалта – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Параметрлер</translation>
+<translation id="855081842937141170">Қойындыны бекіту</translation>
 <translation id="8633025649649592204">Соңғы іс-әрекеттер</translation>
 <translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8714939927607906138">Арзанырақ</translation>

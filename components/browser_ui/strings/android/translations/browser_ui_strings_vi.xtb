@@ -35,6 +35,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="1409338233051621926">Nhấn vào Ứng dụng rồi nhấn vào Ứng dụng mặc định</translation>
 <translation id="1415402041810619267">URL đã được cắt bớt</translation>
 <translation id="1415855080660575082">Cho phép Chrome chia sẻ các thẻ gần đây với thiết bị của bạn để xem các thẻ này trong danh sách ứng dụng và kết quả tìm kiếm trên thiết bị. Bạn có thể bật hoặc tắt tính năng này trong phần cài đặt của Chrome.</translation>
+<translation id="1432650420699700107">Các trang web có thể yêu cầu kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn</translation>
 <translation id="1448064542941920355">Giảm mức thu phóng</translation>
 <translation id="1464044141348608623">Không cho trang web biết khi bạn đang dùng thiết bị của mình</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> trang web}other{<ph name="SITE_COUNT" /> trang web}}</translation>
@@ -253,6 +254,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3955321697524543127">Không cho phép trang web kết nối với thiết bị USB</translation>
 <translation id="3965467402665811906">Các trang web có thể yêu cầu bạn cho phép sử dụng thông tin mà trang web đã lưu về bạn</translation>
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
+<translation id="3969869202926863008">Quyền truy cập mạng cục bộ</translation>
 <translation id="3981465354637804599">Các trang web thường hiện quảng cáo để có thể cung cấp miễn phí nội dung hoặc dịch vụ. Tuy nhiên, một số trang web được xác định là hiện quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm.</translation>
 <translation id="3987993985790029246">Sao chép đường liên kết</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -462,6 +464,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="6554732001434021288">Lần truy cập gần đây nhất: <ph name="NUM_DAYS" /> ngày trước</translation>
 <translation id="656065428026159829">Xem thêm</translation>
 <translation id="6561560012278703671">Dùng thông báo nhẹ nhàng hơn (chặn thông báo bật lên làm phiền bạn)</translation>
+<translation id="6565144332292237355">Các trang web có thể sử dụng tính năng này để tìm và kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn</translation>
 <translation id="6593061639179217415">Trang cho máy tính</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Đã cho phép <ph name="RWS_MEMBERS_COUNT" /> trang web của <ph name="RWS_OWNER" /> sử dụng cookie}other{Đã cho phép <ph name="RWS_MEMBERS_COUNT" /> trang web của <ph name="RWS_OWNER" /> sử dụng cookie}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

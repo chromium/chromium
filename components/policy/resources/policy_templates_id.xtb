@@ -280,6 +280,7 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
 <translation id="1207301487141109411">Cegah pemilihan avatar pengguna dari sistem file lokal, kamera, dan profil Google</translation>
 <translation id="1209096923317019235">Menetapkan aplikasi sebagai pengendali default untuk ekstensi file yang ditentukan</translation>
 <translation id="120937472976628837">Melaporkan info kipas</translation>
+<translation id="1211037010406094410">Izinkan penggantian WebGL berbasis software menggunakan SwiftShader</translation>
 <translation id="1214639335214075459">Aktifkan decoding video dengan hardware GPU</translation>
 <translation id="1214942205301731697">Jangan izinkan penggunaan mode developer di halaman ekstensi</translation>
 <translation id="1216919699175573511">Aktifkan dukungan Signed HTTP Exchange (SXG)</translation>
@@ -3634,11 +3635,6 @@ Jika kebijakan ini disetel, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" 
       Jika kebijakan ini tidak disetel, tidak akan ada batasan yang diterapkan.</translation>
 <translation id="3531084733660068324">Setelan pengawasan orang tua</translation>
 <translation id="3532827558833318911">Hapus Login Sandi</translation>
-<translation id="353291262171579310">Kebijakan ini mengontrol visibilitas notifikasi pengelolaan dalam footer Halaman Tab Baru (NTP). Secara default, footer NTP menampilkan informasi saat browser dikelola oleh organisasi (ditunjukkan dengan ikon bangunan dan "Dikelola oleh [nama domain]"). Hal ini dapat disesuaikan menggunakan kebijakan <ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" /> dan <ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />.
-
-Jika kebijakan ini tidak disetel atau disetel ke benar (true), browser terkelola akan menampilkan notifikasi “Dikelola oleh…” dengan ikon.
-
-Jika kebijakan ini disetel ke salah (false), notifikasi pengelolaan akan disembunyikan.</translation>
 <translation id="353611922042274900">Selalu tampilkan informasi sistem di layar login</translation>
 <translation id="3536263244905016305">Nonaktifkan pengoptimalan Web Proxy Auto-Discovery (WPAD)</translation>
 <translation id="3539103206548425861">Jika kebijakan disetel, video dapat diputar secara otomatis (tanpa persetujuan pengguna) dengan konten audio di <ph name="PRODUCT_NAME" />. Jika kebijakan <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> disetel ke Benar (True), kebijakan ini tidak akan berpengaruh. Jika kebijakan <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> disetel ke Salah (False), pola URL yang disetel di kebijakan ini tetap dapat diputar. Jika kebijakan ini berubah saat <ph name="PRODUCT_NAME" /> sedang berjalan, kebijakan hanya akan berlaku untuk tab yang baru dibuka.
@@ -3756,6 +3752,15 @@ Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph
 
 Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3606571057705314194">Pemilih profil dinonaktifkan saat browser dimulai</translation>
+<translation id="3607797531311171116">Kebijakan yang mengontrol apakah SwiftShader akan digunakan sebagai penggantian WebGL saat akselerasi GPU hardware tidak tersedia.
+
+SwiftShader telah digunakan untuk mendukung WebGL di sistem tanpa akselerasi GPU seperti sistem headless atau mesin virtual, tetapi telah dihentikan penggunaannya karena masalah keamanan. Mulai versi M139, pembuatan konteks WebGL akan gagal jika sebelumnya menggunakan SwiftShader. Kebijakan ini memungkinkan browser atau administrator menunda penghentian untuk sementara.
+
+Jika kebijakan ini disetel ke Aktif, SwiftShader akan digunakan sebagai pengganti WebGL berbasis software.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pembuatan konteks WebGL mungkin gagal jika akselerasi GPU hardware tidak tersedia. Halaman web mungkin tidak berfungsi dengan baik jika tidak menangani kegagalan pembuatan konteks WebGL dengan baik.
+
+Kebijakan ini adalah kebijakan sementara yang akan dihapus di masa mendatang.</translation>
 <translation id="3608206578291537084">Aktifkan Pipeline Pelaporan Terenkripsi</translation>
 <translation id="3608281460204780443">Tampilkan ikon Chrome Web Store di peluncur <ph name="PRODUCT_OS_NAME" /> dan di halaman tab baru</translation>
 <translation id="3612482251405108708">Memulai otomatis autentikasi ulang online di layar kunci</translation>
@@ -5597,6 +5602,7 @@ Penonaktifan decoding video dengan akselerasi hardware tidak disarankan karena a
           Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, audio mono mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
+<translation id="493253860646951791">Aktifkan dukungan untuk penggantian WebGL SwiftShader yang tidak aman</translation>
 <translation id="4933301190614090397">Mengontrol durasi (dalam detik) yang diizinkan untuk permintaan keepalive saat browser ditutup.
 
       Jika ditentukan, penutupan browser dapat diblokir hingga durasi dalam detik yang telah ditentukan,
@@ -6946,6 +6952,9 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihu
 <translation id="5740636973289452345">Aktifkan pelaporan informasi plugin dan ekstensi</translation>
 <translation id="5740716956489996914">Gunakan perilaku default saat menentukan apakah situs dapat membuat permintaan ke endpoint jaringan lokal</translation>
 <translation id="5741110260062082926">Nonaktifkan Orca</translation>
+<translation id="5746126833785204233">Jika kebijakan disetel ke Aktif, log tingkat aplikasi Kios akan dikumpulkan saat aplikasi kios berjalan di perangkat. Log akan dikumpulkan untuk semua jenis aplikasi kios.
+Log ini akan disimpan dalam file kiosk_apps.log yang terpisah.
+Jika kebijakan ini tidak disetel atau disetel ke Nonaktif, log tingkat aplikasi Kios tidak akan dikumpulkan.</translation>
 <translation id="5746149754419996562">Mengaktifkan kehadiran widget Sekilas Info pada <ph name="PRODUCT_OS_NAME" />. Secara khusus, widget dapat diakses melalui chip tanggal di rak.
 Jika kebijakan ini disetel ke aktif, widget Sekilas Info akan diaktifkan di <ph name="PRODUCT_OS_NAME" />.
 Jika kebijakan ini disetel ke nonaktif atau tidak disetel, widget Sekilas Info tidak akan diaktifkan di <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -7943,13 +7952,6 @@ di layar <ph name="LOG_IN" />.</translation>
 <translation id="6371005337713685988">Setelan Set Situs Terkait</translation>
 <translation id="6371561334154580937">Tampilkan dialog logout saat jendela terakhir ditutup.</translation>
 <translation id="6372105930898423193">Mengizinkan fitur AppCache untuk diaktifkan ulang meskipun dinonaktifkan secara default</translation>
-<translation id="6372676668820850849">Kebijakan ini mengontrol apakah partisi penyimpanan pihak ketiga diizinkan secara default.
-
-Jika kebijakan ini disetel ke nilai 1 - AllowPartitioning, atau tidak disetel, partisi penyimpanan pihak ketiga akan diizinkan secara default. Setelan default ini dapat diabaikan jika ada origin tingkat teratas tertentu yang ditetapkan dengan cara lain.
-
-Jika kebijakan ini disetel ke nilai 2 - BlockPartitioning, partisi penyimpanan pihak ketiga akan dinonaktifkan untuk semua konteks.
-
-Gunakan <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> untuk menonaktifkan partisi penyimpanan pihak ketiga bagi origin tingkat teratas tertentu. Untuk mengetahui informasi mendetail tentang partisi penyimpanan pihak ketiga, lihat https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="6373299801585455337">Aktifkan pelaporan info CPU perangkat</translation>
 <translation id="6374945506685352202">Daftar yang tidak diizinkan untuk jenis penginstalan ekstensi</translation>
 <translation id="6376540107659524656">Nonaktifkan SSH di Terminal System App</translation>
@@ -8231,6 +8233,7 @@ Waktu tunggu tidak ada aktivitas untuk memulai screensaver dan interval saat gam
 <translation id="6513453889192806240">Latensi HTTPS</translation>
 <translation id="6515357889978918016">Gambar <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Tunggu saluran target juga mengalami downgrade saluran rilis</translation>
+<translation id="6518286606938091609">Nonaktifkan dukungan untuk penggantian WebGL SwiftShader yang tidak aman</translation>
 <translation id="6518894783486860562">Untuk alasan keamanan, <ph name="SHOW_SUBAPPS_APP_API_NAME" />,
 <ph name="SHOW_SUBAPPS_REMOVE_API_NAME" />, dan <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> web API
 memerlukan gestur pengguna sebelumnya ("aktivasi sementara") untuk dipanggil atau jika tidak, akan
@@ -8822,6 +8825,7 @@ Jika kebijakan <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME"
 <translation id="6907778402784621686">Blokir konten tidak aman di situs ini</translation>
 <translation id="6908335885425855120">Penggunaan Penampil PDF iframe di luar proses</translation>
 <translation id="6908640907898649429">Mengonfigurasi penyedia penelusuran default. Anda dapat menentukan penyedia penelusuran default yang akan digunakan pengguna atau memilih menonaktifkan penelusuran default.</translation>
+<translation id="6910715067772088598">Nonaktifkan log aplikasi Kios</translation>
 <translation id="6913068954484253496">Izinkan <ph name="PRODUCT_NAME" /> untuk terhubung ke perangkat Cast di semua alamat IP.</translation>
 <translation id="6915493311660114995">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan
 mengizinkan permintaan Autentikasi Web di situs yang memiliki sertifikat TLS yang mengalami
@@ -8900,6 +8904,7 @@ Kebijakan ini akan dihapus pada masa mendatang, setelah fitur driver cetak di lu
       Jika tidak disetel, tidak akan ada printer perangkat dan kebijakan <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> yang lain akan diabaikan.</translation>
 <translation id="69525503251220566">Parameter menyediakan fitur telusuri pakai gambar untuk penyedia penelusuran default</translation>
 <translation id="6953102253399571439">Aktifkan pencetakan PIN secara default</translation>
+<translation id="695532899547292238">Aktifkan pengumpulan log aplikasi kios</translation>
 <translation id="6956272732789158625">Jangan izinkan situs apa pun menggunakan pembuatan kunci</translation>
 <translation id="6960996423652450945">Nonaktifkan sorotan tanda sisipan di layar login</translation>
 <translation id="6961602002757991199">Jika kebijakan disetel ke URL yang valid, <ph name="PRODUCT_NAME" /> akan mendownload daftar situs dari URL tersebut dan menerapkan aturan seolah-olah aturan tersebut disiapkan dengan kebijakan <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Kebijakan ini akan mencegah <ph name="PRODUCT_NAME" /> dan browser alternatif membuka satu sama lain.
@@ -9587,13 +9592,6 @@ baca lisan akan diaktifkan.</translation>
 <translation id="7463934096276667908">Mengaktifkan API layar penuh video berawalan</translation>
 <translation id="7464058117970792805">Aktifkan pratinjau cetak</translation>
 <translation id="7464991223784276288">Membatasi cookie dari URL yang cocok ke sesi saat ini</translation>
-<translation id="7467748623079596345">Kebijakan ini memungkinkan Anda menetapkan daftar pola URL yang menentukan origin tingkat teratas yang partisi penyimpanan pihak ketiganya (partisi penyimpanan iframe lintas origin) harus dinonaktifkan.
-
-Jika kebijakan ini tidak disetel atau jika origin tingkat teratas tidak cocok dengan salah satu pola URL, <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> akan berlaku.
-
-Untuk mengetahui informasi mendetail tentang pola yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Perlu diingat bahwa pola yang Anda cantumkan di sini dianggap sebagai origin, bukan URL, jadi Anda tidak perlu menentukan jalur.
-
-Untuk mengetahui informasi mendetail tentang partisi penyimpanan pihak ketiga, lihat https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="7468182772656807573">Menyetel kebijakan akan menentukan frekuensi pengiriman paket jaringan pemantauan, dalam milidetik. Rentang intervalnya dari 30 detik hingga 24 jam. Nilai di luar rentang ini akan dibulatkan ke rentang ini.
 
       Jika tidak disetel, interval default 3 menit akan berlaku.</translation>
@@ -9742,6 +9740,7 @@ Jika kebijakan ini dikosongkan, tidak akan ada pengecualian untuk <ph name="FLOA
 <translation id="7586199729147257934">Mengaktifkan penyediaan sertifikat klien untuk browser terkelola</translation>
 <translation id="7587345076013230465">Minta pengguna memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat di layar login</translation>
 <translation id="7587921466180902617">Aktifkan dogfood Screencast untuk pengguna Family Link</translation>
+<translation id="7588140323025689972">Aktifkan log aplikasi Kios</translation>
 <translation id="7595074040612182185">Jika kebijakan ini disetel, Anda akan dapat menetapkan daftar pola URL yang menentukan situs yang dapat menampilkan gambar.
 
       Jika kebijakan ini tidak disetel, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.

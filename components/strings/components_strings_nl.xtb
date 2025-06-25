@@ -2024,6 +2024,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4372948949327679948">Verwachte <ph name="VALUE_TYPE" /> waarde.</translation>
 <translation id="437620492464254965">Deuren en ramen</translation>
 <translation id="4377125064752653719">Je probeert <ph name="DOMAIN" /> te bereiken, maar het certificaat dat de server heeft geretourneerd, is ingetrokken door de uitgever. Dat betekent dat de veiligheidsgaranties die de server heeft geretourneerd, absoluut niet kunnen worden vertrouwd. Het kan zijn dat je met een hacker aan het communiceren bent.</translation>
+<translation id="4377869186417956230">Open het scherm met alle klantenkaarten via dit menu-item.</translation>
 <translation id="4378154925671717803">Telefoon</translation>
 <translation id="4382484599443659549">Pdf</translation>
 <translation id="4382833368532556056">Sla je bestanden vanaf nu op in cloudopslag</translation>
@@ -3140,6 +3141,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6326947323444967009">Chrome instellen als de standaardbrowser van het systeem in de iOS-instellingen</translation>
 <translation id="6327065120806001832">toegang tot lokaal netwerk</translation>
 <translation id="6328639280570009161">Probeer netwerkvoorspelling uit te zetten</translation>
+<translation id="6334834493885103305">Je kunt nu gespreid betalen met Affirm, Zip of Klarna</translation>
 <translation id="6335029926534404762">Sportschoenen</translation>
 <translation id="6336948221660696475">VR niet toegestaan</translation>
 <translation id="6337133576188860026">Hiermee wordt minder dan <ph name="SIZE" /> vrijgemaakt. Sommige sites kunnen langzamer worden geladen wanneer je ze weer bezoekt.</translation>
@@ -3305,6 +3307,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6587893660316489419">Envelop B5</translation>
 <translation id="6587923378399804057">Link die je hebt gekopieerd</translation>
 <translation id="6591833882275308647">Je <ph name="DEVICE_TYPE" /> wordt niet beheerd</translation>
+<translation id="6595495738567740002">Als je Google-cookies van dit apparaat wilt verwijderen, <ph name="BEGIN_LINK" />log je uit bij Chrome<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Opties voor versleuteling</translation>
 <translation id="6596573334527383067">Resultaten van gisteren tonen</translation>
 <translation id="6597665340361269064">90 graden</translation>
@@ -4009,6 +4012,7 @@ Aanvullende informatie:
 <translation id="7761159795823346334">Camera toestaan?</translation>
 <translation id="7761701407923456692">Het servercertificaat komt niet overeen met de URL.</translation>
 <translation id="7764225426217299476">Adres toevoegen</translation>
+<translation id="7765158879357617694">Verplaatsen</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7767278989746220252">Terras, gazon en tuin</translation>
 <translation id="776749070095465053">Textiel</translation>
@@ -4063,6 +4067,7 @@ Aanvullende informatie:
 <translation id="7878562273885520351">Je wachtwoord is mogelijk gehackt</translation>
 <translation id="7881044256965445977">Apparaten in je lokale netwerk zoeken en verbinding ermee maken</translation>
 <translation id="7882421473871500483">Bruin</translation>
+<translation id="7885670691503039914">Je krijgt e-mailmeldingen bij een prijsdaling op een site. Deze pagina wordt opgeslagen in de bookmarkmap <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Kies welke brede onderwerpcategorieën kunnen worden gebruikt om advertenties te personaliseren</translation>
 <translation id="7887683347370398519">Controleer je CVC-code en probeer het opnieuw</translation>
 <translation id="7887885240995164102">Scherm-in-scherm openen</translation>
@@ -4343,6 +4348,7 @@ Aanvullende informatie:
 <translation id="8364627913115013041">Niet ingesteld.</translation>
 <translation id="8366057325711477500">Wereldnieuws</translation>
 <translation id="836616551641291797">Meer informatie over hoe je browser wordt beheerd</translation>
+<translation id="8367705492654390392">Vraag iets</translation>
 <translation id="8368001212524806591">Prijs volgen</translation>
 <translation id="8368027906805972958">Onbekend of niet-ondersteund apparaat (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play-services</translation>
@@ -4657,6 +4663,7 @@ Aanvullende informatie:
 <translation id="8926389886865778422">Niet meer vragen</translation>
 <translation id="8932102934695377596">Je klok loopt achter</translation>
 <translation id="893332455753468063">Naam toevoegen</translation>
+<translation id="8938242527120341116">De contentfilters van je apparaat hebben <ph name="BLOCKED_URL" /> geblokkeerd</translation>
 <translation id="8942355029279167844">Je beheerder heeft toegestaan dat <ph name="APP_NAME" /> diagnostische gegevens verzamelt om de productfunctionaliteit te verbeteren. Zie <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> voor meer informatie.</translation>
 <translation id="8943282376843390568">Limoengroen</translation>
 <translation id="8949410982325929394">Toon</translation>
@@ -4692,6 +4699,7 @@ Aanvullende informatie:
 <translation id="9004367719664099443">VR-sessie is bezig</translation>
 <translation id="9005998258318286617">Kan pdf-document niet laden</translation>
 <translation id="9008201768610948239">Negeren</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Geen}=1{Van één site}other{Van # sites}}</translation>
 <translation id="9012194306129927220">Je kunt nu gespreid betalen met Affirm of Zip</translation>
 <translation id="9014705027639070815">Sites die je bezoekt, kunnen Chrome om informatie vragen zodat ze de prestaties van hun advertenties kunnen meten. Met Chrome kunnen sites beperkte typen gegevens verzamelen, bijvoorbeeld informatie over of je een aankoop hebt gedaan na bezoek aan een site.</translation>
 <translation id="9018120810758822233">Geef je beveiligingscode voor <ph name="CREDIT_CARD" /> op</translation>
@@ -4861,6 +4869,7 @@ Aanvullende informatie:
 <translation id="963837307749850257">Alle gebruikers</translation>
 <translation id="964050462028070434">Wachtwoorden en toegangscodes beheren…</translation>
 <translation id="969892804517981540">Officiële build</translation>
+<translation id="97054401902912338">Meer informatie over contentfilters</translation>
 <translation id="973788791897303708">Deze tabbladgroep is vol</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Geen}=1{1 item}other{# items}}</translation>
 <translation id="976522784004777030">5 x 8 inch</translation>

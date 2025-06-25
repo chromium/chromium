@@ -693,6 +693,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2157640075051554492">Aviseringar för prisbevakningar</translation>
 <translation id="21613918653299710">Bildgallerier online</translation>
 <translation id="2161656808144014275">Text</translation>
+<translation id="2162435186600002085">Primär sidhuvudslogotyp</translation>
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Kontrollera om det finns ett stavfel i <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Fullständig administrativ åtkomst</translation>
@@ -851,6 +852,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2400263725572336749">Lägg till pass</translation>
 <translation id="2400271059665846158">Hantera stamkundskort i Google Wallet</translation>
 <translation id="2400600116338235695">Får begära tillstånd att ansluta till en serieport</translation>
+<translation id="240450251994300576">Sekundär sidhuvudslogotyp</translation>
 <translation id="2404884497378469141">Testa att kopiera filerna igen</translation>
 <translation id="2413155254802890957">Tidigare</translation>
 <translation id="2413528052993050574">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat kan ha återkallats. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
@@ -981,6 +983,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2627847595568876492">Extraherar text från PDF …</translation>
 <translation id="2628224721443278970">Logga in på Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Det gick inte att hitta IP-adressen till servern på <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Skriv @ för att söka på <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tyg (halvblankt)</translation>
@@ -2027,6 +2030,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4372948949327679948">Ett <ph name="VALUE_TYPE" />-värde förväntades.</translation>
 <translation id="437620492464254965">Dörrar och fönster</translation>
 <translation id="4377125064752653719">Du försökte öppna <ph name="DOMAIN" />, men servern visade ett certifikat som har återkallats av utfärdaren. Det innebär att säkerhetsuppgifterna som servern visar inte är absolut tillförlitliga. Du kanske kommunicerar med en skadlig server.</translation>
+<translation id="4377869186417956230">Ändra till alla stamkundskort under det här menyalternativet.</translation>
 <translation id="4378154925671717803">Mobil</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Spara dina filer i molnlagring från och med nu</translation>
@@ -2266,6 +2270,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4827283332383516812">Radera kort</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> har valts</translation>
 <translation id="4831993743164297314">Papper för bildsättning</translation>
+<translation id="4832388034239846146">Uppdatera Chrome om du vill dela flikgrupper</translation>
 <translation id="483241715238664915">Aktivera varningar</translation>
 <translation id="4832961164064927107">Grillning</translation>
 <translation id="4834250788637067901">Betalningsmetoder, erbjudanden och adresser med Google Pay</translation>
@@ -2973,6 +2978,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6043357981274314628">Klart!</translation>
 <translation id="6044573915096792553">Storlek 12</translation>
 <translation id="6045164183059402045">Utskjutningsmall</translation>
+<translation id="6046892054959167494">Skriv <ph name="SEARCH_AGGREGATOR_KEYWORD" /> för att söka på eller fråga <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Sidan kan ha till syfte att försöka lura dig att installera mjukvara eller avslöja personliga uppgifter. <ph name="BEGIN_LINK" />Visa ändå<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4-kuvert</translation>
 <translation id="6049488691372270142">Sidvisning</translation>
@@ -3142,6 +3148,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6326947323444967009">Ställ in Chrome som standardwebbläsare i systeminställningarna för iOS</translation>
 <translation id="6327065120806001832">tillgång till lokalt nätverk</translation>
 <translation id="6328639280570009161">Prova att inaktivera nätverksförslag</translation>
+<translation id="6334834493885103305">Nu kan du betala över tid med Affirm, Zip eller Klarna</translation>
 <translation id="6335029926534404762">Sportskor</translation>
 <translation id="6336948221660696475">VR tillåts inte</translation>
 <translation id="6337133576188860026">Frigör mindre än <ph name="SIZE" />. Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
@@ -4011,6 +4018,7 @@ Mer information.
 <translation id="7761159795823346334">Vill du tillåta kamera?</translation>
 <translation id="7761701407923456692">Servercertifikatet överensstämmer inte med webbadressen.</translation>
 <translation id="7764225426217299476">Lägg till adress</translation>
+<translation id="7765158879357617694">Flytta</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7767278989746220252">Uteplatser och trädgård</translation>
 <translation id="776749070095465053">Tyg</translation>
@@ -4065,6 +4073,7 @@ Mer information.
 <translation id="7878562273885520351">Lösenordet kan vara utsatt för risk</translation>
 <translation id="7881044256965445977">Sök efter och anslut till enheter i det lokala nätverket</translation>
 <translation id="7882421473871500483">Brun</translation>
+<translation id="7885670691503039914">Du får aviseringar via e-post om priset sjunker på en webbplats. Den här sidan sparas i bokmärkesmappen <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Välj vilka breda kategorier av ämnen som kan användas för att anpassa annonser</translation>
 <translation id="7887683347370398519">Kontrollera CVC-koden och försök igen</translation>
 <translation id="7887885240995164102">Öppna bild-i-bild-läge</translation>
@@ -4345,6 +4354,7 @@ Mer information.
 <translation id="8364627913115013041">Inte angiven.</translation>
 <translation id="8366057325711477500">Världsnyheter</translation>
 <translation id="836616551641291797">Läs mer om hur webbläsaren hanteras</translation>
+<translation id="8367705492654390392">Fråga vad som helst</translation>
 <translation id="8368001212524806591">Bevaka pris</translation>
 <translation id="8368027906805972958">Enheten är okänd eller stöds inte (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play-tjänster</translation>
@@ -4660,6 +4670,7 @@ Mer information:
 <translation id="8926389886865778422">Fråga inte igen.</translation>
 <translation id="8932102934695377596">Klockan går efter</translation>
 <translation id="893332455753468063">Lägg till namn</translation>
+<translation id="8938242527120341116">Enhetens innehållsfilter blockerade <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">Administratören har tillåtit <ph name="APP_NAME" /> att samla in diagnostikdata i syfte att förbättra produktupplevelsen. Du hittar mer information på <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Limegrön</translation>
 <translation id="8949410982325929394">Ton</translation>
@@ -4865,6 +4876,7 @@ Mer information:
 <translation id="963837307749850257">Alla användare</translation>
 <translation id="964050462028070434">Hantera lösenord och nycklar …</translation>
 <translation id="969892804517981540">Officiell version</translation>
+<translation id="97054401902912338">Läs mer om innehållsfilter</translation>
 <translation id="973788791897303708">Den här flikgruppen är full</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ingen}=1{1 objekt}other{# objekt}}</translation>
 <translation id="976522784004777030">5 x 8 tum</translation>

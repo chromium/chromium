@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">توفير ما يصل إلى 60% من البيانات والاطّلاع على أخبار اليوم</translation>
 <translation id="1303339473099049190">يتعذّر العثور على كلمة المرور هذه. يجب إجراء تدقيق إملائي وإعادة المحاولة.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - تم الإرسال من <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">جمع علامات التبويب</translation>
 <translation id="1318262688555255786">يؤدي النقر على الزرّ إلى مشاركة رابط صفحة الويب "<ph name="PAGE_TITLE" />". المصدر: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">تم فتح مجلدات مسار حفظ الإشارات المرجعية بطول الشاشة.</translation>
 <translation id="1327257854815634930">يتم فتح سجلّ التنقُّل.</translation>
@@ -479,6 +480,7 @@
 <translation id="3169472444629675720">اقتراحات</translation>
 <translation id="3187472288455401631">قياس أداء الإعلانات</translation>
 <translation id="3189635831478931757">مجموعة علامات التبويب "<ph name="GROUP_TITLE" />"</translation>
+<translation id="3200536777393523575">هل المطلوب إغلاق النافذة الحالية؟</translation>
 <translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
 <translation id="3208584281581115441">التحقّق الآن</translation>
 <translation id="3211426585530211793">تم حذف العنصر <ph name="ITEM_TITLE" /></translation>
@@ -723,6 +725,7 @@
 <translation id="4351244548802238354">إغلاق مربع الحوار</translation>
 <translation id="4352287748243729941">هل تريد استخدام كلمة مرور <ph name="PROVIDER" />؟</translation>
 <translation id="4355272626458588338">يمكنك الرجوع إلى أي صفحة تهمك من خلال إضافة إشارة مرجعية لها.</translation>
+<translation id="4356503491090073318">رقم البطاقة*</translation>
 <translation id="4357206670025518404"><ph name="COUNT_NUMBER" />+</translation>
 <translation id="4359809482106103048">نظرة سريعة على الأمان</translation>
 <translation id="4378154925671717803">هاتف</translation>
@@ -740,6 +743,7 @@
 <translation id="4425140285732600465">تم تفعيل ميزة تتبُّع السعر. يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني.</translation>
 <translation id="4425173294238317796">ورقة تأكيد مفتاح المرور</translation>
 <translation id="442518031075347249">‏لن تتمكّن من استخدام بطاقتك الافتراضية هذه مجدّدًا مع خدمة Google Pay. <ph name="BEGIN_LINK1" />مزيد من المعلومات حول البطاقات الافتراضية<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{سيتم إغلاق "<ph name="TAB_TITLE" />" وعلامة تبويب واحدة أخرى (<ph name="TAB_COUNT_ONE" />)}zero{سيتم إغلاق "<ph name="TAB_TITLE" />" و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى}two{سيتم إغلاق "<ph name="TAB_TITLE" />" وعلامتَي تبويب (<ph name="TAB_COUNT_MANY" />) أخريَين}few{سيتم إغلاق "<ph name="TAB_TITLE" />" و<ph name="TAB_COUNT_MANY" /> علامات تبويب أخرى}many{سيتم إغلاق "<ph name="TAB_TITLE" />" و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى}other{سيتم إغلاق "<ph name="TAB_TITLE" />" و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى}}</translation>
 <translation id="4426508677408162512">كل الإشارات المرجعية</translation>
 <translation id="4430277756566635951">الحساب الذي تم اختياره حاليًا هو <ph name="EMAIL" />. اختَر حسابًا.</translation>
 <translation id="4452411734226507615">إغلاق علامة التبويب <ph name="TAB_TITLE" /></translation>
@@ -875,6 +879,7 @@
 <translation id="4987271110129728827">لم نتمكّن من العثور على تلك الصفحة. تحقّق من تهجئة الكلمات أو جرِّب البحث على الويب.</translation>
 <translation id="4988526792673242964">الصفحات</translation>
 <translation id="4991110219272367918">تم إغلاق نافذة خيار الموافقة أو عدم الموافقة على زيارة موقع إلكتروني.</translation>
+<translation id="4996042648402406470">الحصول على كلمات المرور</translation>
 <translation id="4996095658297597226">هل تريد استخدام كلمة المرور المُقترَحة؟</translation>
 <translation id="5001388021414335527">متابعة هذا الموقع الإلكتروني هنا</translation>
 <translation id="5004416275253351869">‏عناصر التحكم في النشاط على Google</translation>
@@ -925,10 +930,12 @@
 <translation id="5210286577605176222">الانتقال السريع إلى علامة التبويب السابقة</translation>
 <translation id="5210365745912300556">إغلاق علامة التبويب</translation>
 <translation id="5215957675041756913">التحكّم في بياناتك وحسابك</translation>
+<translation id="5218324087477576825">رقم البطاقة، مطلوب إدخاله</translation>
 <translation id="5221437554987713282">‏<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وأذونات أخرى <ph name="SEPARATOR" /> أزال Chrome هذه الأذونات لأنك لم تزُر هذا الموقع الإلكتروني مؤخرًا</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
 <translation id="5226378907213531272">ستفتح قفل شاشتك في كل مرة تستخدم فيها السيارة.</translation>
 <translation id="5227554086496586518">انقر للاطّلاع على نتائج البحث</translation>
+<translation id="5229736206150093143">أحدث النتائج</translation>
 <translation id="5233638681132016545">علامة تبويب جديدة</translation>
 <translation id="5235196193381275927">حدث خطأ أثناء تسجيل الدخول.</translation>
 <translation id="5246093389635966745">تعديل الاختصار على شريط الأدوات</translation>
@@ -1283,6 +1290,7 @@
 <translation id="676305334223455055">سجِّل الدخول للحصول على محتوى استنادًا إلى اهتماماتك</translation>
 <translation id="6764137532716892442">مجموعة علامات التبويب "<ph name="GROUP_TITLE" />" التي تمت مشاركتها وتتضمّن نشاطًا جديدًا</translation>
 <translation id="6767294960381293877">قائمة الأجهزة التي يمكن مشاركة علامة تبويب معها، مفتوحة على طول النصف السفلي من الشاشة.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{سيتم إغلاق <ph name="INCOGNITO_TAB_COUNT" /> علامة تبويب في وضع التصفّح المتخفي وعلامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />) أخرى}zero{سيتم إغلاق <ph name="INCOGNITO_TAB_COUNT" /> علامة تبويب في وضع التصفّح المتخفي و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى}two{سيتم إغلاق <ph name="INCOGNITO_TAB_COUNT" /> علامة تبويب في وضع التصفّح المتخفي وعلامتَي تبويب (<ph name="TAB_COUNT_MANY" />) أخريَين}few{سيتم إغلاق <ph name="INCOGNITO_TAB_COUNT" /> علامة تبويب في وضع التصفّح المتخفي و<ph name="TAB_COUNT_MANY" /> علامات تبويب أخرى}many{سيتم إغلاق <ph name="INCOGNITO_TAB_COUNT" /> علامة تبويب في وضع التصفّح المتخفي و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى}other{سيتم إغلاق <ph name="INCOGNITO_TAB_COUNT" /> علامة تبويب في وضع التصفّح المتخفي و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى}}</translation>
 <translation id="6785476624617658922">‏بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome</translation>
 <translation id="6786747875388722282">الإضافات</translation>
 <translation id="6795633245022906657">يتيح لك هذا الزر فتح علامة تبويب جديدة بسرعة. ولتعديل هذا الاختصار، انتقِل إلى "الإعدادات".</translation>
@@ -1402,6 +1410,7 @@
 <translation id="7224097611345298931">‏تم دمج كل كلمات المرور المحفوظة على هذا الجهاز فقط في Chrome و"<ph name="CHROME_CHANNEL" />". ويمكنك ملء جميع كلمات المرور المحفوظة تلقائيًا في كلا التطبيقين.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{هناك تنزيل واحد مُعلَّق}zero{هناك # تنزيل مُعلَّق}two{هناك تنزيلان (#) مُعلَّقان}few{هناك # عمليات تنزيل مُعلَّقة}many{هناك # تنزيلًا مُعلَّقًا}other{هناك # تنزيل مُعلَّق}}</translation>
 <translation id="7230064152164845085">التبديل إلى وضع التصفّح المتخفي</translation>
+<translation id="7230836263524391273">إخفاء "وضع القراءة"</translation>
 <translation id="7237724030342645845">‏توقُّف "مدير كلمات المرور في Google" عن العمل</translation>
 <translation id="72415438529550637">تم إغلاق اقتراح كلمة المرور.</translation>
 <translation id="7248671827512403053">تطبيق</translation>
@@ -1579,6 +1588,7 @@
 <translation id="7965838025086216108">‏يمكنك استخدام كلمات المرور المحفوظة على أي جهاز. تُحفظ كلمات المرور في تطبيق "مدير كلمات المرور في Google" لدى <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">تمت الإضافة إلى قائمة القراءة.</translation>
 <translation id="7968982339740310781">عرض التفاصيل</translation>
+<translation id="7969391000881506217">تاريخ انتهاء الصلاحية*</translation>
 <translation id="7971136598759319605">نشط قبل يوم واحد</translation>
 <translation id="7975379999046275268">معاينة صفحة <ph name="BEGIN_NEW" />ميزة جديدة<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">ستتلقّى تحذيرًا إذا كنت تستخدم كلمة مرور تم اختراقها في عملية اختراق للبيانات.</translation>
@@ -1738,6 +1748,7 @@
 <translation id="8565021320663436446">هل تريد إزالة "<ph name="MEMBER_FULL_NAME" />"؟</translation>
 <translation id="8570677896027847510">تعذَّر تنزيل الملف بشكل آمن</translation>
 <translation id="8571213806525832805">آخر 4 أسابيع</translation>
+<translation id="8580435650274205305">تاريخ انتهاء الصلاحية، مطلوب إدخاله</translation>
 <translation id="8582529315803410153">ستظهر لك علامات التبويب من الأجهزة الأخرى هنا</translation>
 <translation id="8585103689515290060">خدمات الملء التلقائي</translation>
 <translation id="859046281437143747">يمكنك تتبُّع سعر المنتج من خلال الزر "خيارات إضافية".</translation>

@@ -276,6 +276,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="1207301487141109411">Impedir que o avatar do usuário seja selecionado de imagens no sistema de arquivos local, na câmera e no perfil do Google</translation>
 <translation id="1209096923317019235">Atribui apps como gerenciadores padrão para as extensões de arquivo especificadas</translation>
 <translation id="120937472976628837">Enviar informações sobre o ventilador</translation>
+<translation id="1211037010406094410">Permitir a substituição do software WebGL usando o SwiftShader</translation>
 <translation id="1214639335214075459">Ativar decodificação de vídeo por hardware da GPU</translation>
 <translation id="1214942205301731697">Não permitir o uso do modo de desenvolvedor na página de extensões</translation>
 <translation id="1216919699175573511">Ativa a compatibilidade com Signed HTTP Exchange (SXG)</translation>
@@ -3620,11 +3621,6 @@ Se for definida, o <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> não p
       Se a política não for definida, nenhuma restrição vai ser aplicada.</translation>
 <translation id="3531084733660068324">Configurações de supervisão da família</translation>
 <translation id="3532827558833318911">Limpar login com senha</translation>
-<translation id="353291262171579310">Esta política controla a visibilidade do aviso de gerenciamento no rodapé da página "Nova guia" (NTP, na sigla em inglês). Por padrão, o rodapé da NTP exibe informações quando o navegador é gerenciado por uma organização (indicado por um ícone de edifício e "Gerenciado por [nome de domínio]"). Isso pode ser personalizado usando as políticas <ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" /> e <ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />.
-
-Se esta política for deixada sem definição ou for definida como "true", os navegadores gerenciados vão mostrar um aviso "Gerenciado por…" com um ícone.
-
-Se esta política for definida como "false", o aviso de gerenciamento será ocultado.</translation>
 <translation id="353611922042274900">Sempre mostrar informações do sistema na tela de login</translation>
 <translation id="3536263244905016305">Desativar a otimização de descoberta automática de proxies da Web (WPAD, na sigla em inglês)</translation>
 <translation id="3539103206548425861">Se a política for definida, será possível iniciar vídeos automaticamente (sem o consentimento do usuário) com conteúdo de áudio no <ph name="PRODUCT_NAME" />. Se a política <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> for definida como verdadeira, esta política não terá efeito. Se a política <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> for definida como falsa, todos os padrões de URL definidos nesta política terão permissão para serem iniciados. Se a política for modificada enquanto o <ph name="PRODUCT_NAME" /> estiver em execução, ela se aplicará apenas a guias abertas recentemente.
@@ -3743,6 +3739,15 @@ Se for deixada sem definição, o comportamento será determinado pela política
 
 Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3606571057705314194">Seletor de perfil desativado na inicialização</translation>
+<translation id="3607797531311171116">Essa política controla se o SwiftShader será usado como substituto do WebGL quando a aceleração de GPU de hardware não estiver disponível.
+
+O SwiftShader era usado para oferecer suporte ao WebGL em sistemas sem aceleração de GPU, como sistemas headless ou máquinas virtuais, mas foi descontinuado devido a problemas de segurança. A partir da versão M139, a criação de contexto do WebGL vai falhar, em vez de usar o SwiftShader. Essa política permite que o navegador ou administrador adie temporariamente a descontinuação.
+
+Se a política for ativada, o SwiftShader será usado como um substituto de software do WebGL.
+
+Se ela for desativada ou deixada sem definição, a criação do contexto do WebGL poderá falhar se a aceleração de GPU de hardware não estiver disponível. As páginas da Web podem apresentar comportamento indevido se não processarem corretamente a falha de criação de contexto do WebGL.
+
+Essa é uma política temporária que será removida no futuro.</translation>
 <translation id="3608206578291537084">Ativar o pipeline de geração de relatórios criptografados</translation>
 <translation id="3608281460204780443">Mostrar o ícone da Chrome Web Store no acesso rápido do <ph name="PRODUCT_OS_NAME" /> e na página "Nova guia"</translation>
 <translation id="3612482251405108708">Início automático da reautenticação on-line na tela de bloqueio</translation>
@@ -5585,6 +5590,7 @@ Não é recomendável desativar a decodificação de vídeo acelerada por hardwa
           Se você definir esta política, os usuários não poderão alterá-la nem substituí-la.
 
           Se esta política não for definida, o áudio mono ficará desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+<translation id="493253860646951791">Ativar o suporte ao SwiftShader, substituto do WebGL não seguro</translation>
 <translation id="4933301190614090397">Controla a duração (em segundos) permitida para solicitações de sinal de atividade no encerramento do navegador.
 
       Quando especificada, o encerramento do navegador pode ser bloqueado pelo número de segundos especificado
@@ -6930,6 +6936,9 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
 <translation id="5740636973289452345">Ativar relatórios sobre informações de extensões e plug-ins</translation>
 <translation id="5740716956489996914">Usar o comportamento padrão ao determinar se os sites podem fazer solicitações para endpoints de rede local</translation>
 <translation id="5741110260062082926">Desativar Orca</translation>
+<translation id="5746126833785204233">Se a política for ativada, os registros no nível do aplicativo de quiosque serão coletados quando ele estiver em execução no dispositivo. Isso é válido para todos os tipos de aplicativos de quiosque.
+Os registros são armazenados em um arquivo kiosk_apps.log separado.
+Se a política for deixada sem definição ou desativada, os registros no nível do aplicativo de quiosque não serão coletados.</translation>
 <translation id="5746149754419996562">Ativa a presença de widgets Glanceables no <ph name="PRODUCT_OS_NAME" />. Mais especificamente, os widgets acessíveis pelo ícone de data na estante.
 Quando esta política está ativada, os Glanceables são ativados no <ph name="PRODUCT_OS_NAME" />.
 Quando ela está desativada ou é deixada sem definição, os Glanceables não são ativados no <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -7922,13 +7931,6 @@ resolução de localização baseada no <ph name="IP" />.</translation>
 <translation id="6371005337713685988">Configurações dos conjuntos de sites relacionados</translation>
 <translation id="6371561334154580937">Mostrar a caixa de diálogo para saída na última janela fechada.</translation>
 <translation id="6372105930898423193">Permite que o recurso AppCache seja reativado mesmo se estiver desativado por padrão.</translation>
-<translation id="6372676668820850849">Esta política controla se o particionamento de armazenamento de terceiros é permitido por padrão.
-
-Se ela for definida como 1 (AllowPartitioning) ou deixada sem definição, o particionamento de armazenamento de terceiros será permitido por padrão. Esse padrão pode ser substituído para origens de nível superior específicas por outros meios.
-
-Se ela for definida como 2 (BlockPartitioning), o particionamento de armazenamento de terceiros será desativado em todos os contextos.
-
-Use <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> para desativar o particionamento de armazenamento de terceiros para origens de nível superior específicas. Para conferir informações detalhadas sobre o particionamento de armazenamento de terceiros, consulte https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="6373299801585455337">Ativar relatórios de informações da CPU do dispositivo</translation>
 <translation id="6374945506685352202">Lista de bloqueio para tipos de instalação de extensões</translation>
 <translation id="6376540107659524656">Desativar SSH no app Terminal System</translation>
@@ -8210,6 +8212,7 @@ O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de e
 <translation id="6513453889192806240">Latência de HTTPS</translation>
 <translation id="6515357889978918016">Imagem de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Esperar que o canal conclua o downgrade de canal</translation>
+<translation id="6518286606938091609">Desativar o suporte ao SwiftShader, substituto do WebGL não seguro</translation>
 <translation id="6518894783486860562">Por motivos de segurança, as APIs da Web
 <ph name="SHOW_SUBAPPS_APP_API_NAME" />,
 <ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> e
@@ -8799,6 +8802,7 @@ O uso de <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> será 
 <translation id="6907778402784621686">Bloquear conteúdo não seguro nesses sites</translation>
 <translation id="6908335885425855120">Usar o visualizador de PDF com iframe fora do processo</translation>
 <translation id="6908640907898649429">Configura o provedor de pesquisa padrão. É possível especificar o provedor de pesquisa padrão que será usado ou escolhido pelo usuário para desativar a pesquisa padrão.</translation>
+<translation id="6910715067772088598">Desativar registros do aplicativo de quiosque</translation>
 <translation id="6913068954484253496">Permitir que o <ph name="PRODUCT_NAME" /> conecte-se a dispositivos de transmissão em todos os endereços IP.</translation>
 <translation id="6915493311660114995">Se a política for ativada, o <ph name="PRODUCT_NAME" /> vai permitir
 solicitações de autenticação da Web em sites que tenham certificados TLS com
@@ -8877,6 +8881,7 @@ Esta política será removida após o lançamento do recurso de drivers de impre
       Se ela não for definida, não haverá nenhuma impressora e as outras políticas <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> serão ignoradas.</translation>
 <translation id="69525503251220566">Parâmetro que fornece recursos de pesquisa por imagem para o provedor de pesquisa padrão</translation>
 <translation id="6953102253399571439">Ativar impressão com PIN como padrão</translation>
+<translation id="695532899547292238">Ativar a coleta de registros do aplicativo de quiosque</translation>
 <translation id="6956272732789158625">Não permitir que nenhum site use a geração de chaves</translation>
 <translation id="6960996423652450945">Desativar o destaque do cursor de texto na tela de login</translation>
 <translation id="6961602002757991199">Se a política for definida como um URL válido, o <ph name="PRODUCT_NAME" /> fará o download da lista de sites desse URL e aplicará as regras como se tivessem sido configuradas com a política <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Essas políticas evitam que o <ph name="PRODUCT_NAME" /> e o navegador alternativo abram um ao outro.
@@ -9559,13 +9564,6 @@ a leitura em voz alta será ativada.</translation>
 <translation id="7463934096276667908">Ativa APIs prefixadas de tela cheia de vídeo</translation>
 <translation id="7464058117970792805">Ativar a visualização de impressão</translation>
 <translation id="7464991223784276288">Limita cookies de URLs correspondentes à sessão atual</translation>
-<translation id="7467748623079596345">Esta política permite definir uma lista de padrões de URL que especificam as origens de nível superior em que o particionamento de armazenamento de terceiros (do iframe de origem cruzada) precisa ser desativado.
-
-Se ela for deixada sem definição ou se uma origem de nível superior não corresponder a um dos padrões de URL, <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> será aplicado.
-
-Para informações detalhadas sobre padrões válidos, consulte https://chromeenterprise.google/intl/pt_br/policies/url-patterns/. Os padrões listados aqui são tratados como origens, não URLs. Assim, recomendamos que você não especifique um caminho.
-
-Para conferir informações detalhadas sobre o particionamento de armazenamento de terceiros, consulte https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="7468182772656807573">Se a política for definida, a frequência do envio de pacotes de monitoramento de rede será determinada, em milissegundos. Os intervalos variam de 30 segundos a 24 horas. Valores fora desse intervalo serão ajustados dentro dessa faixa.
 
       Se a política não for definida, o intervalo padrão será de 3 minutos.</translation>
@@ -9714,6 +9712,7 @@ Se a política não for definida, nenhuma exceção a <ph name="FLOATING_SSO_DOM
 <translation id="7586199729147257934">Permite o provisionamento de certificados do cliente para navegadores gerenciados</translation>
 <translation id="7587345076013230465">Pedir para o usuário selecionar o certificado do cliente sempre que a política de seleção automática corresponder a vários certificados na tela de login</translation>
 <translation id="7587921466180902617">Ativar o dogfood do Screencast para usuários do Family Link</translation>
+<translation id="7588140323025689972">Ativar registros do aplicativo de quiosque</translation>
 <translation id="7595074040612182185">Se a política for definida, será possível criar uma lista de padrões de URL que especificam sites que podem mostrar imagens.
 
       Se a política não tiver definição, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.

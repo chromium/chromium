@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Деректер трафигін 60%-ға дейін үнемдеңіз, бүгінгінің жаңалықтарын оқыңыз.</translation>
 <translation id="1303339473099049190">Ондай құпия сөзді табу мүмкін емес. Дұрыс жазылғанын тексеріп, қайта іздеп көріңіз.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – <ph name="DEVICE_NAME" /> құрылғысынан жіберілген.</translation>
+<translation id="1310482092992808703">Қойындыларды топтау</translation>
 <translation id="1318262688555255786"><ph name="PAGE_TITLE" /> веб-бетінің сілтемесін бөліседі. Дереккөз: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Бетбелгілерді сақтау ағыны толық ашылған.</translation>
 <translation id="1327257854815634930">Навигация тарихы ашылды.</translation>
@@ -1407,6 +1408,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7224097611345298931">Chrome және <ph name="CHROME_CHANNEL" /> үшін осы құрылғыға сақталған барлық құпия сөз біріктірілді. Дегенмен барлық сақталған құпия сөзді екі қолданбада да автотолтыруға болады.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 файл жүктеп алынуы керек}other{# файл жүктеп алынуы керек}}</translation>
 <translation id="7230064152164845085">Инкогнито режиміне ауысу</translation>
+<translation id="7230836263524391273">Оқу режимін жасыру</translation>
 <translation id="7237724030342645845">Google Password Manager жұмысы тоқтады</translation>
 <translation id="72415438529550637">Құпия сөз ұсынысы жабық.</translation>
 <translation id="7248671827512403053">Қолданба</translation>

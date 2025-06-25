@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">روی «برنامه‌ها» و سپس «برنامه‌های پیش‌فرض» تک‌ضرب بزنید</translation>
 <translation id="1415402041810619267">نشانی وب کوتاه‌شده</translation>
 <translation id="1415855080660575082">‏اجازه دهید Chrome برگه‌های اخیرتان را با دستگاهتان هم‌رسانی کند تا بتوانید آن‌ها را در فهرست برنامه‌ها و نتایج جستجوی دستگاهتان ببینید. می‌توانید این گزینه را در تنظیمات Chrome روشن یا خاموش کنید.</translation>
+<translation id="1432650420699700107">سایت‌ها می‌توانند برای وصل شدن به دستگاه‌های موجود در شبکه محلی شما درخواست دهند</translation>
 <translation id="1448064542941920355">کاهش بزرگ‌نمایی</translation>
 <translation id="1464044141348608623">به سایت‌ها اجازه داده نشود وقتی شما به‌طور فعال از دستگاه استفاده می‌کنید مطلع شوند</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> سایت}one{<ph name="SITE_COUNT" /> سایت}other{<ph name="SITE_COUNT" /> سایت}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">‏به سایت‌ها اجازه داده نشود به دستگاه‌های USB متصل شوند</translation>
 <translation id="3965467402665811906">سایت‌ها می‌توانند درخواست کنند از اطلاعاتی که درباره شما ذخیره کرده‌اند استفاده کنند</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
+<translation id="3969869202926863008">دسترسی به شبکه محلی</translation>
 <translation id="3981465354637804599">سایت‌ها معمولاً آگهی نشان می‌دهند تا بتوانند محتوا یا سرویس‌ها را به‌طور رایگان ارائه دهند. اما برخی‌از سایت‌ها به‌عنوان سایت‌هایی شناخته شده‌اند که آگهی‌های مزاحم یا گمراه‌کننده نمایش می‌دهند.</translation>
 <translation id="3987993985790029246">کپی پیوند</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> از ؟</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">آخرین بازدید: <ph name="NUM_DAYS" /> روز پیش</translation>
 <translation id="656065428026159829">موارد بیشتر</translation>
 <translation id="6561560012278703671">استفاده از پیام‌رسانی کم‌صداتر (درخواست‌های اعلان را مسدود می‌کند تا مزاحمتان نشود)</translation>
+<translation id="6565144332292237355">سایت‌ها می‌توانند از این ویژگی برای جستجو کردن و وصل شدن به دستگاه‌های موجود در شبکه محلی شما استفاده کنند</translation>
 <translation id="6593061639179217415">سایت مخصوص رایانه</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{کوکی‌ها برای <ph name="RWS_MEMBERS_COUNT" /> سایت <ph name="RWS_OWNER" /> مجاز هستند}one{کوکی‌ها برای <ph name="RWS_MEMBERS_COUNT" /> سایت <ph name="RWS_OWNER" /> مجاز هستند}other{کوکی‌ها برای <ph name="RWS_MEMBERS_COUNT" /> سایت <ph name="RWS_OWNER" /> مجاز هستند}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> گیگابایت</translation>

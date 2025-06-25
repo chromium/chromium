@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Fehler beim Teilen, weil keine Netzwerkverbindung besteht</translation>
 <translation id="1668001730617725852">In neuer Tabgruppe öffnen</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Du kannst Google Lens jetzt über die Adressleiste öffnen und nach allem suchen, was du siehst</translation>
 <translation id="1689333818294560261">Alias</translation>
 <translation id="169048873465870056">Tab entfernen und Gruppe löschen?</translation>
 <translation id="1698090540708020240">Passwörter importieren…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Das Konto <ph name="USER_EMAIL" /> wird von <ph name="HOSTED_DOMAIN" /> verwaltet – bestimmte Informationen sind für diese Domain sichtbar. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">neues Element</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> Konten mit demselben Passwort</translation>
+<translation id="205013082884273671">Suchen, was du auf dem Bildschirm siehst</translation>
 <translation id="2054044186557130763">Mit dem Konto „<ph name="NAME" />, <ph name="EMAIL" />, von deiner Organisation verwaltet“ anmelden.</translation>
 <translation id="2059166748188874810">Gemeinde</translation>
 <translation id="2060638295449304809">Diese Adresse wird nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto <ph name="USER_EMAIL" />.</translation>
@@ -459,6 +461,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2819667972867209401">Wenn diese Option aktiviert ist, werden Daten in deinem Google-Konto gespeichert. Ist sie deaktiviert, werden die Daten nur auf diesem Gerät gespeichert und gelöscht, wenn du dich abmeldest.</translation>
 <translation id="2827760117436553203">Daten getrennt halten?</translation>
 <translation id="2829172210806130158">Auf dem Bildschirm suchen</translation>
+<translation id="2831109159746537587">Zum Suchen kannst du das Bild einkreisen oder darauf tippen</translation>
 <translation id="2834399722155632105">3. Tippe auf „Passwortoptionen“</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Zeit</translation>
@@ -1104,6 +1107,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5576885723883013398">Neues Fenster</translation>
 <translation id="5578795271662203820">In <ph name="SEARCH_ENGINE" /> nach dem Bild suchen</translation>
 <translation id="5579012242779565775">Leseliste ausblenden</translation>
+<translation id="5581786858144165447">Mit dem KI-Modus fragen</translation>
 <translation id="5585019845078534178">Karten</translation>
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
 <translation id="559567008082979829">Du kannst festlegen, dass deine Downloads nach einem Monat gelöscht werden.</translation>

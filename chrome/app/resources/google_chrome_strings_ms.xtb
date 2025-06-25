@@ -120,6 +120,7 @@
 <translation id="2569974318947988067">Chrome akan cuba meningkatkan navigasi kepada HTTPS</translation>
 <translation id="2571392474191184472">Organisasi anda mengurus Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> telah pun dilog masuk ke profil Chrome ini. Untuk menjadikan penyemakan imbas anda terpisah, Chrome boleh membuat profil anda sendiri untuk anda.</translation>
+<translation id="2579190314336775785">Kata laluan hanya boleh dipadamkan di luar Chrome</translation>
 <translation id="2580411288591421699">Tidak dapat memasang versi Google Chrome yang sama yang kini dijalankan. Sila tutup Google Chrome dan cuba semula.</translation>
 <translation id="2586406160782125153">Tindakan ini akan memadamkan data semakan imbas anda daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Gagal mengcache pemasang yang dimuat turun. Ralat: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>

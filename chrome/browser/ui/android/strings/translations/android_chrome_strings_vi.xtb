@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Tiết kiệm tới 60% dữ liệu, đọc tin tức hôm nay</translation>
 <translation id="1303339473099049190">Không tìm thấy mật khẩu đó. Hãy kiểm tra chính tả rồi thử lại.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Gửi từ <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Nhóm các thẻ</translation>
 <translation id="1318262688555255786">Chia sẻ đường liên kết đến trang web <ph name="PAGE_TITLE" />. Nguồn: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Các thư mục của luồng lưu dấu trang đã mở trên toàn màn hình</translation>
 <translation id="1327257854815634930">Lịch sử di chuyển đang mở</translation>
@@ -1407,6 +1408,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7224097611345298931">Chúng tôi đã hợp nhất tất cả mật khẩu chỉ được lưu vào thiết bị này cho Chrome và <ph name="CHROME_CHANNEL" />. Bạn có thể chọn tự động điền tất cả mật khẩu đã lưu trên cả hai ứng dụng.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 tệp đang chờ tải xuống}other{# tệp đang chờ tải xuống}}</translation>
 <translation id="7230064152164845085">Chuyển sang chế độ Ẩn danh</translation>
+<translation id="7230836263524391273">Ẩn Chế độ đọc</translation>
 <translation id="7237724030342645845">Trình quản lý mật khẩu của Google đã ngừng hoạt động</translation>
 <translation id="72415438529550637">Nội dung đề xuất mật khẩu đã đóng.</translation>
 <translation id="7248671827512403053">Ứng dụng</translation>

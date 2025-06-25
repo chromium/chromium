@@ -278,6 +278,7 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 <translation id="1207301487141109411">Yerel dosya sisteminden, kameradan ve Google profilinden kullanıcı avatarı seçimini engelle</translation>
 <translation id="1209096923317019235">Uygulamaları, belirtilen dosya uzantıları için varsayılan işleyiciler olarak atar</translation>
 <translation id="120937472976628837">Pervane bilgilerini raporla</translation>
+<translation id="1211037010406094410">SwiftShader kullanarak yazılım WebGL yedeğine izin ver</translation>
 <translation id="1214639335214075459">GPU donanımı video kodu çözmeyi etkinleştir</translation>
 <translation id="1214942205301731697">Uzantılar sayfasında geliştirici modunun kullanılmasına izin verme</translation>
 <translation id="1216919699175573511">İmzalı HTTP Değişimi (SXG) desteğini etkinleştir</translation>
@@ -3538,11 +3539,6 @@ Bu politika ayarlanırsa <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 
       Politika ayarlanmazsa hiçbir kısıtlama uygulanmaz.</translation>
 <translation id="3531084733660068324">Ebeveyn gözetimi ayarları</translation>
 <translation id="3532827558833318911">Şifreyle Oturum Açma Bilgilerini Temizle</translation>
-<translation id="353291262171579310">Bu politika, Yeni Sekme Sayfası'nın altbilgi bölümündeki yönetim bildiriminin görünürlüğünü kontrol eder. Tarayıcı bir kuruluş tarafından yönetiliyorsa varsayılan olarak yeni sekme sayfası altbilgisinde bilgiler görüntülenir (bir bina simgesi ve "[alan adı] tarafından yönetiliyor" ifadesiyle belirtilir). Bu ayar, <ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" /> ve <ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" /> politikaları kullanılarak özelleştirilebilir.
-
-Bu politika ayarlanmadan bırakılır veya Doğru değerine ayarlanırsa yönetilen tarayıcılarda bir simgeyle birlikte "… tarafından yönetiliyor" bildirimi gösterilir.
-
-Bu politika, Yanlış değerine ayarlanırsa yönetim bildirimi gizlenir.</translation>
 <translation id="353611922042274900">Oturum açma ekranında sistem bilgilerini her zaman göster</translation>
 <translation id="3536263244905016305">Otomatik Web Proxy Keşfi (WPAD) optimizasyonunu devre dışı bırak</translation>
 <translation id="3539103206548425861">Politikayı ayarladığınızda <ph name="PRODUCT_NAME" /> ürününde sesli videolar otomatik (kullanıcı onayı olmadan) oynatılır. <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> True (Doğru) değerine ayarlandığında bu politika geçerliliğini yitirir. <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> False (Yanlış) değerine ayarlandığında bu politikadaki URL kalıpları oynatılabilir. <ph name="PRODUCT_NAME" /> çalışırken bu politika değiştirilirse sadece yeni açılan sekmelere uygulanır.
@@ -3661,6 +3657,15 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 
 Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="3606571057705314194">Başlangıçta profil seçiciyi devre dışı bırak</translation>
+<translation id="3607797531311171116">Donanım GPU hızlandırması kullanılamadığında SwiftShader'ın WebGL yedeği olarak kullanılıp kullanılmayacağını kontrol eden bir politika.
+
+SwiftShader, GPU hızlandırması olmayan sistemlerde (ör. gözetimsiz sistemler veya sanal makineler) WebGL'yi desteklemek için kullanılıyordu ancak güvenlik sorunları nedeniyle desteği sonlandırıldı. M139'dan itibaren, SwiftShader'in kullanılacağı durumlarda WebGL bağlamı oluşturulması başarısız olacaktır. Bu politika, tarayıcının veya yöneticinin desteği sonlandırma işlemini geçici olarak ertelemesine olanak tanır.
+
+Politika, Etkin değerine ayarlanırsa SwiftShader, yazılım WebGL yedeği olarak kullanılır.
+
+Politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa ve donanım GPU hızlandırması kullanılamıyorsa WebGL bağlamı oluşturulamaz. WebGL bağlamı oluşturma hatasını düzgün şekilde ele almayan web sayfaları hatalı davranabilir.
+
+Bu politika geçicidir ve gelecekte kaldırılacaktır.</translation>
 <translation id="3608206578291537084">Şifrelenmiş Raporlama Ardışık Düzeni'ni etkinleştir</translation>
 <translation id="3608281460204780443"><ph name="PRODUCT_OS_NAME" /> başlatıcıda ve yeni sekme sayfasında Chrome Web Mağazası simgesini göster</translation>
 <translation id="3612482251405108708">Kilit ekranında yeniden online kimlik doğrulamayı otomatik olarak başlat</translation>
@@ -5463,6 +5468,7 @@ Donanım hızlandırmalı video kodu çözme işleminin devre dışı bırakılm
           Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
 
           Bu politika ayarlanmadan bırakılırsa giriş ekranında mono ses başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman bunu etkinleştirebilir.</translation>
+<translation id="493253860646951791">Güvenli olmayan SwiftShader WebGL yedeğini etkinleştir</translation>
 <translation id="4933301190614090397">Tarayıcı kapanırken keepalive isteklerine tanınacak süreyi (saniye cinsinden) kontrol eder.
 
       Bir değer belirtildiğinde keepalive isteklerini işlemek üzere (https://fetch.spec.whatwg.org/#request-keepalive-flag)
@@ -6770,6 +6776,9 @@ Politika ayarlanmadan bırakılırsa başlangıçta Yeni Sekme sayfası açılı
 <translation id="5740636973289452345">Uzantı ve eklenti bilgilerinin raporlanmasını etkinleştir</translation>
 <translation id="5740716956489996914">Yerel ağın uç noktalarına istekte bulunup bulunamayacağını belirlerken varsayılan davranışı kullanın</translation>
 <translation id="5741110260062082926">Orca'yı devre dışı bırak</translation>
+<translation id="5746126833785204233">Politika, Etkin değerine ayarlanırsa cihazda bir kiosk uygulaması çalışırken Kiosk uygulama düzeyi günlükleri toplanır. Tüm kiosk uygulama türlerinin günlükleri toplanır.
+Bu günlükler ayrı bir kiosk_apps.log dosyasında saklanır.
+Bu politika ayarlanmadan bırakılır veya Devre Dışı değerine ayarlanırsa Kiosk uygulama düzeyi günlükleri toplanmaz.</translation>
 <translation id="5746149754419996562"><ph name="PRODUCT_OS_NAME" /> sisteminde Glanceables widget'larının kullanımını etkinleştirir. Widget'lara özel olarak raftaki tarih çipinden erişilebilirsiniz.
 Bu politika etkinleştirildiğinde <ph name="PRODUCT_OS_NAME" /> sisteminde Glanceables etkinleştirilir.
 Bu politika devre dışı bırakılır veya ayarlanmazsa <ph name="PRODUCT_OS_NAME" /> sisteminde Glanceables etkinleştirilmez.</translation>
@@ -7712,13 +7721,6 @@ UYARI: Bu ayarı değiştirirken dikkatli olun. Bu ayar, coğrafi konumla ilgili
 <translation id="6371005337713685988">İlgili Web Sitesi Grupları Ayarları</translation>
 <translation id="6371561334154580937">Son kapatılan pencerede oturum kapatma iletişimi göster.</translation>
 <translation id="6372105930898423193">AppCache özelliğinin, varsayılan olarak kapalı olsa bile yeniden etkinleştirilmesine olanak tanır.</translation>
-<translation id="6372676668820850849">Bu politika, üçüncü taraf depolama bölümlendirmesine varsayılan olarak izin verilip verilmeyeceğini kontrol eder.
-
-Bu politika, 1 - AllowPartitioning değerine ayarlanır veya ayarlanmadan bırakılırsa üçüncü taraf depolama bölümlendirmesine varsayılan olarak izin verilir. Bu varsayılan değer, belirli üst düzey kaynaklar için başka yöntemlerle geçersiz kılınabilir.
-
-Bu politika, 2 - BlockPartitioning değerine ayarlanırsa üçüncü taraf depolama bölümlendirmesi tüm bağlamlarda devre dışı bırakılır.
-
-Belirli üst düzey kaynaklar için üçüncü taraf depolama bölümlendirmesini devre dışı bırakmak istiyorsanız <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> politikasını kullanın. Üçüncü taraf depolama bölümlendirmesi hakkında ayrıntılı bilgi için https://developers.google.com/privacy-sandbox/cookies/storage-partitioning adresine göz atabilirsiniz.</translation>
 <translation id="6373299801585455337">Cihazın CPU bilgileri raporlamasını etkinleştir</translation>
 <translation id="6374945506685352202">Uzantı yükleme türleri için engellenenler listesi</translation>
 <translation id="6376540107659524656">Terminal Sistem Uygulaması'nda SSH'yi devre dışı bırak</translation>
@@ -7991,6 +7993,7 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
 <translation id="6513453889192806240">HTTPS Gecikmesi</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> resmi</translation>
 <translation id="6518102411616460786">Hedef kanalın kanal sürümü değişikliğini yakalamasını bekle</translation>
+<translation id="6518286606938091609">Güvenli olmayan SwiftShader WebGL yedeğini devre dışı bırak</translation>
 <translation id="6518894783486860562"><ph name="SHOW_SUBAPPS_APP_API_NAME" />,
 <ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> ve
 <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> web API'leri,
@@ -8576,6 +8579,7 @@ Politika, "3 - Sınırlı" değerine ayarlandığında, pil kullanım ömrünü 
 <translation id="6907778402784621686">Bu sitelerde güvenli olmayan içeriği engelle</translation>
 <translation id="6908335885425855120">İşlem dışı iFrame PDF görüntüleyiciyi kullan</translation>
 <translation id="6908640907898649429">Varsayılan arama sağlayıcıyı yapılandırır. Kullanıcının kullanacağı varsayılan arama sağlayıcıyı belirleyebilir veya varsayılan aramayı devre dışı bırakmayı seçebilirsiniz.</translation>
+<translation id="6910715067772088598">Kiosk uygulama günlüklerini devre dışı bırak</translation>
 <translation id="6913068954484253496"><ph name="PRODUCT_NAME" /> ürününün tüm IP adreslerindeki Yayın cihazlarına bağlanmasına izin ver</translation>
 <translation id="6915493311660114995">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" />
 hatalı TLS sertifikası içeren web sitelerinde (yani, güvenli olmadığı düşünülen web sitelerinde)
@@ -8654,6 +8658,7 @@ Bu politika, gelecekte işlem dışı yazıcı sürücüleri özelliği tamamen 
       Ayarlanmazsa cihaz yazıcısı olmaz ve diğer <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> politikaları dikkate alınmaz.</translation>
 <translation id="69525503251220566">Varsayılan arama sağlayıcısı için resme göre arama özelliği sağlayan parametre</translation>
 <translation id="6953102253399571439">Varsayılan olarak PIN ile yazdırmayı etkinleştir</translation>
+<translation id="695532899547292238">Kiosk uygulaması günlük toplama özelliğini etkinleştir</translation>
 <translation id="6956272732789158625">Hiçbir sitenin anahtar oluşturma işlevini kullanmasına izin verme</translation>
 <translation id="6960996423652450945">Giriş ekranında imleç vurgulamayı devre dışı bırak</translation>
 <translation id="6961602002757991199">Politika geçerli bir URL'ye ayarlanırsa <ph name="PRODUCT_NAME" />, site listesini o URL'den indirir ve kuralları, <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" /> politikasıyla yapılandırılmışlar gibi uygular. Bu politikalar <ph name="PRODUCT_NAME" /> ve alternatif tarayıcının birbirini açmasını engeller.
@@ -9331,13 +9336,6 @@ bırakılırsa sesli okuma etkinleştirilir.</translation>
 <translation id="7463934096276667908">Önekli video tam ekran API'lerini etkinleştirir</translation>
 <translation id="7464058117970792805">Yazdırma önizlemeyi etkinleştir</translation>
 <translation id="7464991223784276288">Eşleşen URL'lerden çerezleri geçerli oturumla sınırlama</translation>
-<translation id="7467748623079596345">Bu politika, üçüncü taraf depolama bölümlendirmesinin (çapraz kaynak iFrame depolamasını bölümlendirme) devre dışı bırakılması gereken üst düzey kaynakların belirtildiği bir URL kalıpları listesi oluşturmanıza olanak tanır.
-
-Bu politika ayarlanmadan bırakılır veya üst düzey bir kaynak, URL kalıplarından biriyle eşleşmezse <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> geçerli olur.
-
-Geçerli kalıplar hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Burada listelediğiniz kalıpların URL değil kaynak olarak değerlendirildiğini, bu yüzden bir yol belirtmemeniz gerektiğini unutmayın.
-
-Üçüncü taraf depolama bölümlendirmesi hakkında ayrıntılı bilgi için https://developers.google.com/privacy-sandbox/cookies/storage-partitioning adresine göz atabilirsiniz.</translation>
 <translation id="7468182772656807573">Politikanın ayarlanması, izleme amaçlı ağ paketlerinin ne sıklıkla gönderileceğini (milisaniye olarak) belirler. Sıklık 30 saniye ile 24 saat arasında değişir. Bu aralığın dışındaki değerler aralık içine kaydırılır.
 
       Ayarlanmazsa 3 dakikalık varsayılan sıklık geçerli olur.</translation>
@@ -9486,6 +9484,7 @@ Politika ayarlanmadan bırakılırsa <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POL
 <translation id="7586199729147257934">Yönetilen tarayıcılar için istemci sertifikalarının temel hazırlığını etkinleştirir</translation>
 <translation id="7587345076013230465">Otomatik seçim politikası, oturum açma ekranında birden fazla sertifikayla eşleştiğinde kullanıcıdan istemci sertifikasını seçmesini iste</translation>
 <translation id="7587921466180902617">Family Link kullanıcıları için Ekran Kaydı test sürümünü etkinleştir</translation>
+<translation id="7588140323025689972">Kiosk uygulama günlüklerini etkinleştir</translation>
 <translation id="7595074040612182185">Politikayı ayarlayarak, görselleri olan siteleri belirten URL kalıplarının listesini oluşturabilirsiniz.
 
       Politikayı ayarlamadan bırakırsanız <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> (etkinse) bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.

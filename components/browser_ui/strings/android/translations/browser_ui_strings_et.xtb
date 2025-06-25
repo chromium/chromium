@@ -36,6 +36,7 @@ Täiustatud kaitsega juhitage järgmisi Chrome’i seadeid:
 <translation id="1409338233051621926">Puudutage valikut Rakendused ja seejärel valikut Vaikerakendused</translation>
 <translation id="1415402041810619267">Lühendatud URL</translation>
 <translation id="1415855080660575082">Lubage Chrome’il jagada teie hiljutisi vahelehti teie seadmega, et näha neid seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes sisse või välja lülitada.</translation>
+<translation id="1432650420699700107">Saidid saavad küsida luba teie kohalikus võrgus mis tahes seadmega ühenduse loomiseks</translation>
 <translation id="1448064542941920355">Suumi vähendamine</translation>
 <translation id="1464044141348608623">Ära luba saitidel teada, millal seadet aktiivselt kasutan</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sait}other{<ph name="SITE_COUNT" /> saiti}}</translation>
@@ -254,6 +255,7 @@ Täiustatud kaitsega juhitage järgmisi Chrome’i seadeid:
 <translation id="3955321697524543127">Ära luba saitidel USB-seadmetega ühendust luua</translation>
 <translation id="3965467402665811906">Saidid saavad küsida luba kasutada teie kohta salvestatud teavet</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
+<translation id="3969869202926863008">Juurdepääs kohalikule võrgule</translation>
 <translation id="3981465354637804599">Tavaliselt esitavad saidid reklaame selleks, et sisu või teenuseid maksekohustuseta pakkuda. Mõned saidid aga kuvavad sekkuvaid või eksitavaid reklaame.</translation>
 <translation id="3987993985790029246">Kop. link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Täiustatud kaitsega juhitage järgmisi Chrome’i seadeid:
 <translation id="6554732001434021288">Viimati külastati <ph name="NUM_DAYS" /> päeva tagasi</translation>
 <translation id="656065428026159829">Kuva rohkem</translation>
 <translation id="6561560012278703671">Kasuta vaiksemat sõnumsidet (märguandeviibad blokeeritakse)</translation>
+<translation id="6565144332292237355">Saidid saavad selle funktsiooni abil otsida teie kohalikust võrgust seadmeid ja luua nendega ühenduse</translation>
 <translation id="6593061639179217415">Arvutisait</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Küpsisefailid on lubatud domeeni <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> saidi puhul}other{Küpsisefailid on lubatud domeeni <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> saidi puhul}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

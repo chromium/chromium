@@ -112,6 +112,7 @@
 <translation id="5556417849629758491">Angalia maelezo ya duka, chaguo hili linapatikana karibu na sehemu ya juu ya skrini</translation>
 <translation id="5627941783489838464">Hakuna masasisho ya vichupo</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Kiungo <ph name="TABS_COUNT_ONE" /> kutoka Chrome}other{Viungo <ph name="TABS_COUNT_MANY" /> kutoka Chrome}}</translation>
+<translation id="5746204836956568669">Ungependa kupanga vichupo <ph name="NUMBER_OF_TABS" /> katika vikundi ili vifanye kazi haraka?</translation>
 <translation id="58326064309361797">Buruta vichupo ili uviweke katika kikundi</translation>
 <translation id="5901630391730855834">Manjano</translation>
 <translation id="5972844218283131174">Acha kuchagua zote</translation>
@@ -192,6 +193,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Kilisasishwa mwezi <ph name="NUM_MONTHS_ONE" /> uliopita}other{Kilisasishwa miezi <ph name="NUM_MONTHS_MANY" /> iliyopita}}</translation>
 <translation id="8398929769197326728">Folda Mpya - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Mipangilio</translation>
+<translation id="855081842937141170">Bandikiza kichupo</translation>
 <translation id="8633025649649592204">Shughuli za hivi majuzi</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8714939927607906138">Bei nafuu</translation>

@@ -36,6 +36,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="1409338233051621926">Palieskite „Programos“, tada – „Numatytosios programos“</translation>
 <translation id="1415402041810619267">URL sutrumpintas</translation>
 <translation id="1415855080660575082">Leiskite „Chrome“ bendrinti naujausius skirtukus su įrenginiu, kad juos matytumėte įrenginio programų sąraše ir paieškos rezultatuose. Galite įjungti arba išjungti tai „Chrome“ nustatymuose.</translation>
+<translation id="1432650420699700107">Svetainės gali prašyti prisijungti prie bet kurio įrenginio vietiniame tinkle</translation>
 <translation id="1448064542941920355">Sumažinti mastelį</translation>
 <translation id="1464044141348608623">Neleisti svetainėms sužinoti, kada aktyviai naudojate įrenginį</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> svetainė}one{<ph name="SITE_COUNT" /> svetainė}few{<ph name="SITE_COUNT" /> svetainės}many{<ph name="SITE_COUNT" /> svetainės}other{<ph name="SITE_COUNT" /> svetainių}}</translation>
@@ -254,6 +255,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3955321697524543127">Neleisti svetainėms prisijungti prie USB įrenginių</translation>
 <translation id="3965467402665811906">Svetainės gali prašyti naudoti savo išsaugotą informaciją apie jus</translation>
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
+<translation id="3969869202926863008">Vietinio tinklo pasiekiamumas</translation>
 <translation id="3981465354637804599">Paprastai svetainėse rodomi skelbimai, kad būtų galima be piniginio mokėjimo teikti turinį ar paslaugas. Bet žinoma, kad kai kuriose svetainėse rodomi nepageidaujami arba klaidinantys skelbimai.</translation>
 <translation id="3987993985790029246">Kop. nuor.</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> iš ?</translation>
@@ -463,6 +465,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="6554732001434021288">Paskutinį kartą lankytasi prieš <ph name="NUM_DAYS" /> d.</translation>
 <translation id="656065428026159829">Žr. daugiau</translation>
 <translation id="6561560012278703671">Naudoti tylesnio susirašinėjimo funkcijas (blokuojami pranešimų įspėjimai, kad jūsų neblaškytų)</translation>
+<translation id="6565144332292237355">Svetainės gali naudoti šią funkciją, kad galėtų ieškoti ir prisijungti prie bet kurio įrenginio vietiniame tinkle</translation>
 <translation id="6593061639179217415">Svetainė kompiuteriams</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Slapukai leidžiami <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> svetainėje}one{Slapukai leidžiami <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> svetainėje}few{Slapukai leidžiami <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> svetainėse}many{Slapukai leidžiami <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> svetainės}other{Slapukai leidžiami <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> svetainių}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

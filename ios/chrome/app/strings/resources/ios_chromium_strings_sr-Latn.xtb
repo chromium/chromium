@@ -174,6 +174,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium
 <translation id="5203244847421322551">Sačuvaj i automatski popunjavaj lozinke u Chromium-u</translation>
 <translation id="5224391634244552924">Nema sačuvanih lozinki. Chromium može da proverava lozinke kada ih sačuvate.</translation>
 <translation id="5259423875997548710">Pretražite vizuelni materijal u Chromium-u.</translation>
+<translation id="5284913972719948193">Uvezite podatke da biste koristili lozinke, istoriju, obeleživače i kreditne kartice u Chromium-u</translation>
 <translation id="5308226104666789935">Chromium ne može da traži ažuriranja</translation>
 <translation id="5311557153294205270">Dodaje unete URL-ove u obeleživače u Chromium-u.</translation>
 <translation id="5383251701169024761">Da biste lako pristupali sačuvanim lozinkama u drugim aplikacijama, odaberite Chromium za automatsko popunjavanje.</translation>
@@ -307,6 +308,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="865600487977764604">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni.</translation>
 <translation id="8663480472502753423">Redovno ažuriraju Chromium</translation>
 <translation id="8685813584220679697">Prijavite se na ovaj sajt i u Chromium.</translation>
+<translation id="8698780336333802489">Uvezi u Chromium</translation>
 <translation id="8730503818204408000">Otvara podešavanje Chromium-a da bi ga podesilo kao podrazumevani pregledač.</translation>
 <translation id="8754966941001340678">Chromium preporučuje poboljšanu zaštitu</translation>
 <translation id="8759037115129007407">Član porodice trenutno ne može da prima lozinke. Zatražite mu da ažurira Chromium i sinhronizuje lozinke. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

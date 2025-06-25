@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Gagal berbagi karena tidak terhubung ke jaringan.</translation>
 <translation id="1668001730617725852">Buka di Grup Tab Baru</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ke <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Anda kini dapat membuka Google Lens langsung dari kolom URL dan menelusuri apa pun yang Anda lihat</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
 <translation id="169048873465870056">Hapus tab dan grup?</translation>
 <translation id="1698090540708020240">Impor sandi…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Akun <ph name="USER_EMAIL" /> dikelola oleh <ph name="HOSTED_DOMAIN" />, yang mungkin dapat melihat beberapa informasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">item baru</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> akun menggunakan sandi yang sama</translation>
+<translation id="205013082884273671">Telusuri apa pun di layar Anda</translation>
 <translation id="2054044186557130763">Login sebagai <ph name="NAME" /> <ph name="EMAIL" />, dikelola oleh organisasi Anda.</translation>
 <translation id="2059166748188874810">Kotamadya</translation>
 <translation id="2060638295449304809">Alamat ini hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan alamat di Akun Google Anda, <ph name="USER_EMAIL" /></translation>
@@ -459,6 +461,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="2819667972867209401">Jika diaktifkan, data akan disimpan di Akun Google Anda. Jika dinonaktifkan, data hanya disimpan di perangkat ini dan akan dihapus saat Anda logout.</translation>
 <translation id="2827760117436553203">Tetap pisahkan data?</translation>
 <translation id="2829172210806130158">Menelusuri layar Anda</translation>
+<translation id="2831109159746537587">Coba lingkari atau ketuk gambar untuk menelusuri</translation>
 <translation id="2834399722155632105">3. Ketuk Opsi Sandi</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Waktu</translation>
@@ -1104,6 +1107,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5576885723883013398">Jendela baru</translation>
 <translation id="5578795271662203820">Telusuri <ph name="SEARCH_ENGINE" /> untuk gambar ini</translation>
 <translation id="5579012242779565775">Sembunyikan Daftar bacaan</translation>
+<translation id="5581786858144165447">Mode Tanya AI</translation>
 <translation id="5585019845078534178">Kartu</translation>
 <translation id="5595485650161345191">Edit alamat</translation>
 <translation id="559567008082979829">Setel download Anda untuk dihapus setelah satu bulan.</translation>

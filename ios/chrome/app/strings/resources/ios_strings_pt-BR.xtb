@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">O compartilhamento falhou porque não há conexão de rede.</translation>
 <translation id="1668001730617725852">Abrir em um novo grupo de guias</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> para <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Agora você pode abrir o Google Lens na barra de endereço e pesquisar qualquer coisa que vê</translation>
 <translation id="1689333818294560261">Apelido</translation>
 <translation id="169048873465870056">Remover guia e excluir grupo?</translation>
 <translation id="1698090540708020240">Importar senhas…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">A conta <ph name="USER_EMAIL" /> é gerenciada por <ph name="HOSTED_DOMAIN" />, que pode ver algumas informações. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">novo item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> contas usando a mesma senha</translation>
+<translation id="205013082884273671">Pesquise o que quiser na tela</translation>
 <translation id="2054044186557130763">Faça login como <ph name="NAME" />, <ph name="EMAIL" />, gerenciado pela sua organização.</translation>
 <translation id="2059166748188874810">Município</translation>
 <translation id="2060638295449304809">O endereço está salvo apenas neste dispositivo. Salve na sua Conta do Google, <ph name="USER_EMAIL" />, para usar em outros dispositivos</translation>
@@ -336,7 +338,7 @@
 <translation id="2316129865977710310">Não.</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
 <translation id="2321086116217818302">Preparando senhas…</translation>
-<translation id="2323697864063408084">Receba notificações na tela de bloqueio e como banners para nunca perder o que é importante para você</translation>
+<translation id="2323697864063408084">Receba notificações na tela de bloqueio e como banners para não perder o que é importante</translation>
 <translation id="2326302612031521902">Seletor de unidade de medida</translation>
 <translation id="2330607597130465898">Sem proteção</translation>
 <translation id="233375395665273385">Excluir e sair</translation>
@@ -459,6 +461,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2819667972867209401">Quando essa opção está ativada, os dados são salvos na sua Conta do Google. Quando desativada, os dados são salvos apenas neste dispositivo e são excluídos quando você sai da conta.</translation>
 <translation id="2827760117436553203">Manter os dados separados?</translation>
 <translation id="2829172210806130158">Pesquisar na tela</translation>
+<translation id="2831109159746537587">Tente circular ou tocar na imagem para pesquisar</translation>
 <translation id="2834399722155632105">3. Toque em "Opções de senha"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Tempo</translation>
@@ -1104,6 +1107,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5576885723883013398">Nova janela</translation>
 <translation id="5578795271662203820">Pesquisar imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ocultar a lista de leitura</translation>
+<translation id="5581786858144165447">Perguntar ao Modo IA</translation>
 <translation id="5585019845078534178">Cards</translation>
 <translation id="5595485650161345191">Editar endereço</translation>
 <translation id="559567008082979829">Seus downloads serão excluídos após um mês.</translation>

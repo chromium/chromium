@@ -694,6 +694,7 @@
 <translation id="2157640075051554492">कीमत ट्रैक करने से जुड़ी सूचनाएं</translation>
 <translation id="21613918653299710">ऑनलाइन इमेज गैलरी</translation>
 <translation id="2161656808144014275">लेख संदेश</translation>
+<translation id="2162435186600002085">प्राइमरी हेडर लोगो</translation>
 <translation id="2162620598375156287">अब <ph name="SOURCE_WEBSITE" /> पर कीमत <ph name="CURRENT_PRICE" /> है</translation>
 <translation id="2164510882479075877">देखें कि <ph name="HOST_NAME" /> की स्पेलिंग गलत तो नहीं है.</translation>
 <translation id="2166049586286450108">पूरा एडमिन एक्सेस</translation>
@@ -852,6 +853,7 @@
 <translation id="2400263725572336749">पासपोर्ट की जानकारी जोड़ें</translation>
 <translation id="2400271059665846158">Google Wallet में अपने लॉयल्टी कार्ड मैनेज करें</translation>
 <translation id="2400600116338235695">साइट, सीरियल पोर्ट से कनेक्ट करने की अनुमति मांग सकती है</translation>
+<translation id="240450251994300576">सेकंडरी हेडर लोगो</translation>
 <translation id="2404884497378469141">अपनी फ़ाइलें फिर से कॉपी करने की कोशिश करें</translation>
 <translation id="2413155254802890957">पुराना</translation>
 <translation id="2413528052993050574">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" />; इसका सुरक्षा प्रमाणपत्र निरस्त कर दिया गया है. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
@@ -982,6 +984,7 @@
 <translation id="2627847595568876492">PDF फ़ाइल से टेक्स्ट निकाला जा रहा है...</translation>
 <translation id="2628224721443278970">Microsoft OneDrive में साइन इन करें</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> का सर्वर आईपी पता नहीं मिल सका.</translation>
+<translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> में खोजने के लिए @ टाइप करें</translation>
 <translation id="2639739919103226564">स्थिति:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">फ़ैब्रिक (सेमी-ग्लॉस)</translation>
@@ -2267,6 +2270,7 @@
 <translation id="4827283332383516812">कार्ड मिटाएं</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> आइटम को चुना गया</translation>
 <translation id="4831993743164297314">इमेज सेटर पेपर</translation>
+<translation id="4832388034239846146">टैब ग्रुप शेयर करने के लिए Chrome को अपडेट करें</translation>
 <translation id="483241715238664915">सुरक्षा चेतावनियां चालू करें</translation>
 <translation id="4832961164064927107">बारबेक्यू और ग्रिलिंग</translation>
 <translation id="4834250788637067901">Google Pay के ऑफ़र, इस पर सेव पेमेंट के तरीके और पते</translation>
@@ -2974,6 +2978,7 @@
 <translation id="6043357981274314628">हो गया!</translation>
 <translation id="6044573915096792553">आकार 12</translation>
 <translation id="6045164183059402045">इम्पोज़िशन टेम्प्लेट</translation>
+<translation id="6046892054959167494">खोजने या <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> से सवाल पूछने के लिए, <ph name="SEARCH_AGGREGATOR_KEYWORD" /> टाइप करें</translation>
 <translation id="6047927260846328439">यह सामग्री आपसे धोखे से सॉफ़्टवेयर इंस्‍टॉल करवाने या व्यक्तिगत जानकारी मुहैया करवाने की कोशिश कर सकती है. <ph name="BEGIN_LINK" />फिर भी दिखाएं<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="6049488691372270142">पेज डिलीवरी</translation>
@@ -3143,6 +3148,7 @@
 <translation id="6326947323444967009">iOS की सेटिंग में, Chrome को सिस्टम के डिफ़ॉल्ट ब्राउज़र के रूप में सेट करें</translation>
 <translation id="6327065120806001832">लोकल नेटवर्क का ऐक्सेस</translation>
 <translation id="6328639280570009161">नेटवर्क पूर्वानुमान को अक्षम करके देखें</translation>
+<translation id="6334834493885103305">अब Affirm, Zip या Klarna का इस्तेमाल करके, किस्तों में पेमेंट किया जा सकता है</translation>
 <translation id="6335029926534404762">ऐथलेटिक जूते</translation>
 <translation id="6336948221660696475">वीआर इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> से कम जगह खाली करता है. आपकी अगली विज़िट पर कुछ साइटें और भी धीमे लोड हो सकती हैं.</translation>
@@ -4006,12 +4012,13 @@
 <translation id="7755287808199759310">आपका अभिभावक इसे आपके लिए अनवरोधित कर सकता है</translation>
 <translation id="7755624218968747854">प्राइमरी रोल</translation>
 <translation id="7758069387465995638">हो सकता है कि फ़ायरवॉल या एंटीवायरस ने कनेक्शन को रोक दिया हो.</translation>
-<translation id="7759147511335618829">एमआईडीआई डिवाइस कंट्रोल और फिर से प्रोग्राम करना</translation>
+<translation id="7759147511335618829">एमआईडीआई डिवाइस कंट्रोल और रीप्रोग्राम करना</translation>
 <translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="776110834126722255">समर्थन नहीं है या रोक दिया गया है</translation>
 <translation id="7761159795823346334">क्या आप Chromium को कैमरा ऐक्सेस करने की अनुमति देना चाहते हैं?</translation>
 <translation id="7761701407923456692">सर्वर का प्रमाणपत्र यूआरएल से मेल नहीं खाता.</translation>
 <translation id="7764225426217299476">पता जोड़ें</translation>
+<translation id="7765158879357617694">ले जाएं</translation>
 <translation id="7766518757692125295">स्कर्ट</translation>
 <translation id="7767278989746220252">पैटियो, लॉन, और गार्डन</translation>
 <translation id="776749070095465053">फ़ैब्रिक</translation>
@@ -4066,6 +4073,7 @@
 <translation id="7878562273885520351">आपके पासवर्ड से छेड़छाड़ की जा सकती है</translation>
 <translation id="7881044256965445977">अपने लोकल नेटवर्क पर मौजूद किसी भी डिवाइस को खोजने और उससे कनेक्ट करने की अनुमति</translation>
 <translation id="7882421473871500483">भूरा</translation>
+<translation id="7885670691503039914">किसी भी साइट पर, प्रॉडक्ट की कीमत कम होने पर आपको ईमेल से सूचना मिलेगी. यह पेज, <ph name="LAST_BOOKMARKS_FOLDER" /> बुकमार्क फ़ोल्डर में सेव किया जाएगा.</translation>
 <translation id="7886897188117641322">चुनें कि आपको दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए, विषयों की किन कैटगरी का इस्तेमाल किया जाए</translation>
 <translation id="7887683347370398519">अपना कार्ड वेरीफ़िकेशन कोड (सीवीसी) जांचे और फिर से कोशिश करें</translation>
 <translation id="7887885240995164102">पिक्चर में पिक्चर चालू करें</translation>
@@ -4346,6 +4354,7 @@
 <translation id="8364627913115013041">सेट नहीं है.</translation>
 <translation id="8366057325711477500">दुनिया भर की खबरें</translation>
 <translation id="836616551641291797">आपका ब्राउज़र कैसे मैनेज किया जाता है, इस बारे में ज़्यादा जानें</translation>
+<translation id="8367705492654390392">किसी भी विषय के बारे में पूछें</translation>
 <translation id="8368001212524806591">कीमत ट्रैक करें</translation>
 <translation id="8368027906805972958">अज्ञात या काम न करने वाला डिवाइस (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play सेवाएं</translation>
@@ -4661,6 +4670,7 @@
 <translation id="8926389886865778422">दोबारा न पूछें</translation>
 <translation id="8932102934695377596">आपकी घड़ी पीछे है</translation>
 <translation id="893332455753468063">नाम जोड़ें</translation>
+<translation id="8938242527120341116">आपके डिवाइस के कॉन्टेंट फ़िल्टर ने <ph name="BLOCKED_URL" /> को ब्लॉक किया है</translation>
 <translation id="8942355029279167844">आपके एडमिन ने प्रॉडक्ट को बेहतर बनाने के लिए, गड़बड़ी की जानकारी वाला डेटा इकट्ठा करने की अनुमति <ph name="APP_NAME" /> को दी है. ज़्यादा जानकारी के लिए, <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> देखें.</translation>
 <translation id="8943282376843390568">नींबू पीला</translation>
 <translation id="8949410982325929394">टोन</translation>
@@ -4866,6 +4876,7 @@
 <translation id="963837307749850257">सभी उपयोगकर्ता</translation>
 <translation id="964050462028070434">पासवर्ड और पासकी मैनेज करें…</translation>
 <translation id="969892804517981540">आधिकारिक बिल्ड</translation>
+<translation id="97054401902912338">कॉन्टेंट फ़िल्टर के बारे में ज़्यादा जानें</translation>
 <translation id="973788791897303708">इस टैब ग्रुप में अब और लोग नहीं जोड़े जा सकते</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{कुछ नहीं}=1{1 आइटम}one{# आइटम}other{# आइटम}}</translation>
 <translation id="976522784004777030">5 x 8 इंच</translation>

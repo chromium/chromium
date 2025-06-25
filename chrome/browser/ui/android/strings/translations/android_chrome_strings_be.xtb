@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Чытайце сённяшнія навіны. Эканомце да 60% трафіка</translation>
 <translation id="1303339473099049190">Не ўдалося знайсці гэты пароль. Праверце правільнасць напісання і паўтарыце спробу.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – адпраўлена з прылады <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Згрупаваць укладкі</translation>
 <translation id="1318262688555255786">Абагуліць спасылку на вэб-старонку "<ph name="PAGE_TITLE" />". Крыніца: <ph name="PAGE_URL" />.</translation>
 <translation id="1320912611264252795">Укладка захоўвання закладкі разгорнута на ўвесь экран</translation>
 <translation id="1327257854815634930">Гісторыя навігацыі адкрыта</translation>
@@ -477,6 +478,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Вымярэнне паказчыкаў, звязаных з рэкламай</translation>
 <translation id="3189635831478931757">Група ўкладак "<ph name="GROUP_TITLE" />"</translation>
+<translation id="3200536777393523575">Закрыць гэта акно?</translation>
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
 <translation id="3208584281581115441">Праверыць</translation>
 <translation id="3211426585530211793">Выдалена: <ph name="ITEM_TITLE" /></translation>
@@ -721,6 +723,7 @@
 <translation id="4351244548802238354">Закрыць дыялогавае акно</translation>
 <translation id="4352287748243729941">Выкарыстаць пароль (<ph name="PROVIDER" />)?</translation>
 <translation id="4355272626458588338">Каб мець магчымасць вярнуцца да важнай для вас старонкі пазней, можна дадаць закладку</translation>
+<translation id="4356503491090073318">Нумар карткі*</translation>
 <translation id="4357206670025518404">+ <ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Кароткі агляд параметраў бяспекі</translation>
 <translation id="4378154925671717803">Тэлефон</translation>
@@ -738,6 +741,7 @@
 <translation id="4425140285732600465">Цана адсочваецца. Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі.</translation>
 <translation id="4425173294238317796">Аркуш з просьбай пацвердзіць стварэнне ключа доступу</translation>
 <translation id="442518031075347249">Вы больш не зможаце выкарыстоўваць віртуальную картку для аплаты праз Google Pay. <ph name="BEGIN_LINK1" />Даведацца больш пра віртуальныя карткі<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{"<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_ONE" /> укладка будуць закрыты}one{"<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладка будуць закрыты}few{"<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі будуць закрыты}many{"<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладак будуць закрыты}other{"<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі будуць закрыты}}</translation>
 <translation id="4426508677408162512">Усе закладкі</translation>
 <translation id="4430277756566635951">Зараз выбрана: <ph name="EMAIL" />. Выберыце ўліковы запіс.</translation>
 <translation id="4452411734226507615">Закрыць укладку "<ph name="TAB_TITLE" />"</translation>
@@ -873,6 +877,7 @@
 <translation id="4987271110129728827">Не ўдалося знайсці старонку. Праверце правільнасць напісання запыту або паспрабуйце выканаць пошук у інтэрнэце.</translation>
 <translation id="4988526792673242964">Старонкі</translation>
 <translation id="4991110219272367918">Старонка, на якой можна ўхваліць вэб-сайт, закрыта</translation>
+<translation id="4996042648402406470">Атрымаць</translation>
 <translation id="4996095658297597226">Выкарыстаць прапанаваны пароль?</translation>
 <translation id="5001388021414335527">Падпісацца на сайт можна тут</translation>
 <translation id="5004416275253351869">Параметры дзейнасці Google</translation>
@@ -923,10 +928,12 @@
 <translation id="5210286577605176222">Перайсці на папярэднюю ўкладку</translation>
 <translation id="5210365745912300556">Закрыць укладку</translation>
 <translation id="5215957675041756913">Кіраванне данымі і ўліковым запісам</translation>
+<translation id="5218324087477576825">Трэба ўказаць нумар карткі</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і іншыя <ph name="SEPARATOR" /> Браўзер Chrome адклікаў гэтыя дазволы, бо вы не наведвалі гэты сайт у апошні час</translation>
 <translation id="5222676887888702881">Выйсці</translation>
 <translation id="5226378907213531272">Вам трэба будзе разблакіраваць экран пры кожным выкарыстанні аўтамабіля</translation>
 <translation id="5227554086496586518">Націсніце, каб праглядзець вынікі пошуку</translation>
+<translation id="5229736206150093143">Апошнія вынікі</translation>
 <translation id="5233638681132016545">Новая ўкладка</translation>
 <translation id="5235196193381275927">Нешта пайшло не так падчас уваходу</translation>
 <translation id="5246093389635966745">Змяніць кнопку-ярлык на панэлі інструментаў</translation>
@@ -1281,6 +1288,7 @@
 <translation id="676305334223455055">Увайдзіце ва ўліковы запіс, каб атрымліваць змесціва на падставе сваіх інтарэсаў</translation>
 <translation id="6764137532716892442">Абагуленая група ўкладак "<ph name="GROUP_TITLE" />", у якой ёсць новыя дзеянні</translation>
 <translation id="6767294960381293877">Спіс прылад, з якімі можна абагуліць укладку, разгорнуты на палову экрана.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_ONE" />}one{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}few{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}many{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}other{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}}</translation>
 <translation id="6785476624617658922">Дадатковыя ўмовы выкарыстання Chrome і Chrome OS</translation>
 <translation id="6786747875388722282">Пашырэнні</translation>
 <translation id="6795633245022906657">Хуткае адкрыццё новай укладкі. Каб змяніць функцыю гэтай кнопкі, перайдзіце ў Налады.</translation>
@@ -1400,6 +1408,7 @@
 <translation id="7224097611345298931">Усе паролі для Chrome і <ph name="CHROME_CHANNEL" />, захаваныя толькі на гэтай прыладзе, былі аб’яднаны. Вы можаце выкарыстоўваць аўтазапаўненне для ўсіх захаваных пароляў у абедзвюх праграмах.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Чакаецца 1 спампоўка}one{Чакаецца # спампоўка}few{Чакаецца # спампоўкі}many{Чакаецца # спамповак}other{Чакаецца # спампоўкі}}</translation>
 <translation id="7230064152164845085">Пераключыцца ў рэжым інкогніта</translation>
+<translation id="7230836263524391273">Схаваць Рэжым чытання</translation>
 <translation id="7237724030342645845">Менеджар пароляў Google перастаў працаваць</translation>
 <translation id="72415438529550637">Прапанова пароля закрыта.</translation>
 <translation id="7248671827512403053">Праграма</translation>
@@ -1576,6 +1585,7 @@
 <translation id="7965838025086216108">Вы можаце выкарыстоўваць захаваныя паролі на любой прыладзе. Паролі захоўваюцца ў Менеджары пароляў Google для ўліковага запісу <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Дададзена ў спіс чытання</translation>
 <translation id="7968982339740310781">Паказаць падрабязныя звесткі</translation>
+<translation id="7969391000881506217">Тэрмін дзеяння*</translation>
 <translation id="7971136598759319605">Апошнія дзеянні: дзень таму</translation>
 <translation id="7975379999046275268">Перадпрагляд старонкі <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Папярэджвае, калі вы выкарыстоўваеце пароль, які быў раскрыты ў выніку ўцечкі даных.</translation>
@@ -1734,6 +1744,7 @@
 <translation id="8565021320663436446">Выдаліць гэтага карыстальніка (<ph name="MEMBER_FULL_NAME" />)?</translation>
 <translation id="8570677896027847510">Бяспечна спампаваць файл нельга</translation>
 <translation id="8571213806525832805">За апошнія 4 тыдні</translation>
+<translation id="8580435650274205305">Трэба ўвесці тэрмін дзеяння</translation>
 <translation id="8582529315803410153">Тут знаходзяцца вашы ўкладкі з іншых прылад</translation>
 <translation id="8585103689515290060">Службы аўтазапаўнення</translation>
 <translation id="859046281437143747">Адсочвайце цану, выкарыстоўваючы кнопку "Дадатковыя параметры"</translation>

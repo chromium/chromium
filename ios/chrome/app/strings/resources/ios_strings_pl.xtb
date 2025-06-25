@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Nie udało się udostępnić, bo nie masz połączenia z siecią.</translation>
 <translation id="1668001730617725852">Otwórz w nowej grupie kart</translation>
 <translation id="1674504678466460478">Z: <ph name="SOURCE_LANGUAGE" /> na: <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Teraz możesz otwierać Obiektyw Google z poziomu paska adresu i wyszukiwać wszystko, co widzisz</translation>
 <translation id="1689333818294560261">Pseudonim</translation>
 <translation id="169048873465870056">Usunąć kartę i grupę?</translation>
 <translation id="1698090540708020240">Importuj hasła…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Kontem <ph name="USER_EMAIL" /> zarządza domena <ph name="HOSTED_DOMAIN" />, która może wyświetlać niektóre informacje. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nowy element</translation>
 <translation id="2049727122989709386">Na <ph name="COUNT" /> kontach masz to samo hasło</translation>
+<translation id="205013082884273671">Wyszukaj dowolną rzecz na ekranie</translation>
 <translation id="2054044186557130763">Zaloguj się jako <ph name="NAME" /> <ph name="EMAIL" />, konto zarządzane przez Twoją organizację.</translation>
 <translation id="2059166748188874810">Gmina</translation>
 <translation id="2060638295449304809">Ten adres został zapisany tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz go na swoim koncie Google <ph name="USER_EMAIL" /></translation>
@@ -386,6 +388,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="251837347827266434">Nastąpi wylogowanie, karty zostaną zamknięte, a dane przeglądania – usunięte</translation>
 <translation id="2520787026086861736">Aby wyłączyć tę funkcję, otwórz <ph name="BEGIN_LINK" />Autouzupełnianie i hasła<ph name="END_LINK" /></translation>
 <translation id="2523295204312809179">Gdy zamkniesz grupę kart, zostanie ona automatycznie zapisana tutaj</translation>
+<translation id="2524699375503213836">Przenieś dane z Safari</translation>
 <translation id="2529021024822217800">Otwórz wszystkie</translation>
 <translation id="2536991091671391962">Zapisanych haseł możesz używać na dowolnym urządzeniu. Menedżer haseł Google zapisuje je na koncie <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Ukryte, hasło</translation>
@@ -459,6 +462,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2819667972867209401">Gdy ta opcja jest włączona, dane są zapisywane na Twoim koncie Google. Gdy jest wyłączona, dane są zapisywane tylko na tym urządzeniu i są usuwane po wylogowaniu.</translation>
 <translation id="2827760117436553203">Przechowywać dane osobno?</translation>
 <translation id="2829172210806130158">Wyszukiwanie zawartości ekranu</translation>
+<translation id="2831109159746537587">Zaznacz lub kliknij zdjęcie, aby wyszukać</translation>
 <translation id="2834399722155632105">3. Kliknij Opcje haseł</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Godzina</translation>
@@ -1104,6 +1108,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5576885723883013398">Nowe okno</translation>
 <translation id="5578795271662203820">Szukaj tej grafiki w <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ukryj opcję Do przeczytania</translation>
+<translation id="5581786858144165447">Tryb Zapytaj AI</translation>
 <translation id="5585019845078534178">Karty</translation>
 <translation id="5595485650161345191">Edytuj adres</translation>
 <translation id="559567008082979829">Ustaw pobierane pliki tak, aby były usuwane po miesiącu.</translation>

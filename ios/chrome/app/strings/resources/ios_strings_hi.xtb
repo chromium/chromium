@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">साझाकरण विफल रहा क्योंकि आप नेटवर्क से कनेक्ट नहीं हैं.</translation>
 <translation id="1668001730617725852">नए टैब ग्रुप में खोलें</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> से <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">अब सीधे पता बार से Google Lens को खोला जा सकता है और अपने सामने दिख रही किसी भी चीज़ के बारे में जानकारी खोजी जा सकती है</translation>
 <translation id="1689333818294560261">प्रचलित नाम</translation>
 <translation id="169048873465870056">क्या टैब को हटाकर ग्रुप मिटाना है?</translation>
 <translation id="1698090540708020240">पासवर्ड इंपोर्ट करें…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> खाते को <ph name="HOSTED_DOMAIN" /> मैनेज करता है. यह कुछ जानकारी देख सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">नया आइटम</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> खातों में ऐसे पासवर्ड का इस्तेमाल हो रहा है जो किसी दूसरे खाते के पासवर्ड से मेल खाता है</translation>
+<translation id="205013082884273671">स्क्रीन पर दिख रही किसी भी चीज़ के बारे में जानकारी खोजें</translation>
 <translation id="2054044186557130763"><ph name="NAME" /> <ph name="EMAIL" /> के तौर पर साइन इन करें. इसे आपका संगठन मैनेज करता है.</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2060638295449304809">यह पता सिर्फ़ इस डिवाइस में सेव किया गया है. अपने दूसरे डिवाइसों पर इसका इस्तेमाल करने के लिए, इसे अपने Google खाते <ph name="USER_EMAIL" /> में सेव करें</translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">इन टॉगल के चालू होने पर, इनका डेटा आपके Google खाते में सेव हो जाता है. इनके बंद होने पर, डेटा को सिर्फ़ इस डिवाइस पर सेव किया जाता है. आपके साइन आउट करने पर डेटा को मिटा दिया जाता है.</translation>
 <translation id="2827760117436553203">क्या आपको अपना मौजूदा ब्राउज़िंग डेटा अलग रखना है?</translation>
 <translation id="2829172210806130158">स्क्रीन पर मौजूद कॉन्टेंट के बारे में खोजें</translation>
+<translation id="2831109159746537587">इमेज में जिस चीज़ को खोजना है उस पर सर्कल बनाएं या टैप करें</translation>
 <translation id="2834399722155632105">3. Password Options पर टैप करें</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">समय</translation>

@@ -36,6 +36,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="1409338233051621926">Tryck på Appar och sedan på Standardappar</translation>
 <translation id="1415402041810619267">Webbadressen har trunkerats</translation>
 <translation id="1415855080660575082">Tillåt att Chrome delar dina senaste flikar med enheten så att du kan se dem i enhetens applista och sökresultat. Du kan aktivera eller inaktivera detta i Chrome-inställningarna.</translation>
+<translation id="1432650420699700107">Webbplatser får begära tillstånd att ansluta till enheter i det lokala nätverket</translation>
 <translation id="1448064542941920355">Minska zoom</translation>
 <translation id="1464044141348608623">Tillåt inte att webbplatser vet om du använder din enhet aktivt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webbplats}other{<ph name="SITE_COUNT" /> webbplatser}}</translation>
@@ -254,6 +255,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3955321697524543127">Tillåt inte att webbplatser ansluter till USB-enheter</translation>
 <translation id="3965467402665811906">Webbplatser får begära tillstånd att använda uppgifter som de har sparat om dig</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
+<translation id="3969869202926863008">Tillgång till lokalt nätverk</translation>
 <translation id="3981465354637804599">Webbplatser som visar annonser brukar göra det så att de kan tillhandahålla innehåll eller tjänster utan kostnad. Men vissa webbplatser kan visa påträngande eller vilseledande annonser.</translation>
 <translation id="3987993985790029246">Kopiera länk</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="6554732001434021288">Besöktes senast för <ph name="NUM_DAYS" /> dagar sedan</translation>
 <translation id="656065428026159829">Visa fler</translation>
 <translation id="6561560012278703671">Få mer diskreta meddelanden (blockera störande aviseringar)</translation>
+<translation id="6565144332292237355">Webbplatser kan använda den här funktionen för att söka efter och ansluta till enheter i det lokala nätverket</translation>
 <translation id="6593061639179217415">Datoranpassad webbplats</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies tillåts för <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-webbplats}other{Cookies tillåts för <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-webbplatser}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

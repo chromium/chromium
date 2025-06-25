@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Échec du partage, car vous n'êtes pas connecté au réseau.</translation>
 <translation id="1668001730617725852">Ouvrir dans un nouveau groupe d'onglets</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> vers <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Vous pouvez désormais ouvrir Google Lens depuis la barre d'adresse et effectuer une recherche sur tout ce que vous voyez</translation>
 <translation id="1689333818294560261">Pseudo</translation>
 <translation id="169048873465870056">Supprimer l'onglet et le groupe ?</translation>
 <translation id="1698090540708020240">Importer des mots de passe</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Le compte <ph name="USER_EMAIL" /> est géré par <ph name="HOSTED_DOMAIN" />, qui pourrait voir certaines informations. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nouvel élément</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> comptes utilisent le même mot de passe</translation>
+<translation id="205013082884273671">Effectuez une recherche sur n'importe quel élément à l'écran</translation>
 <translation id="2054044186557130763">Se connecter en tant que <ph name="NAME" />, <ph name="EMAIL" />, géré par votre organisation.</translation>
 <translation id="2059166748188874810">Municipalité</translation>
 <translation id="2060638295449304809">Cette adresse n'est enregistrée que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-la dans votre compte Google, <ph name="USER_EMAIL" />.</translation>
@@ -459,6 +461,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2819667972867209401">Lorsque cette option est activée, les données sont enregistrées dans votre compte Google. Désactivez-la pour n'enregistrer les données que sur cet appareil et les supprimer si vous vous déconnectez.</translation>
 <translation id="2827760117436553203">Conserver les données séparément ?</translation>
 <translation id="2829172210806130158">Rechercher sur l'écran</translation>
+<translation id="2831109159746537587">Essayez d'entourer ou d'appuyer sur l'image pour y effectuer une recherche</translation>
 <translation id="2834399722155632105">3. Appuyez sur "Options de mots de passe"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Heure</translation>
@@ -1104,6 +1107,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5576885723883013398">Nouvelle fenêtre</translation>
 <translation id="5578795271662203820">Rechercher l'image sur <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Masquer "Liste de lecture"</translation>
+<translation id="5581786858144165447">Demander au Mode IA</translation>
 <translation id="5585019845078534178">Cartes</translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
 <translation id="559567008082979829">Activer la suppression de vos téléchargements au bout d'un mois.</translation>

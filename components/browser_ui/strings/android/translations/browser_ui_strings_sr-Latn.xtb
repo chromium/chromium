@@ -36,6 +36,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="1409338233051621926">Dodirnite Aplikacije, pa Podrazumevane aplikacije</translation>
 <translation id="1415402041810619267">URL je skraćen</translation>
 <translation id="1415855080660575082">Dozvolite Chrome-u da deli nedavne kartice sa uređajem da biste ih videli na listi aplikacija i u rezultatima pretrage uređaja. To možete da uključite ili isključite u Chrome podešavanjima.</translation>
+<translation id="1432650420699700107">Sajtovi mogu da traže da se povežu sa bilo kojim uređajem na lokalnoj mreži</translation>
 <translation id="1448064542941920355">Smanjite zumiranje</translation>
 <translation id="1464044141348608623">Ne dozvolite sajtovima da znaju kada aktivno koristite uređaj</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sajt}one{<ph name="SITE_COUNT" /> sajt}few{<ph name="SITE_COUNT" /> sajta}other{<ph name="SITE_COUNT" /> sajtova}}</translation>
@@ -254,6 +255,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="3955321697524543127">Ne dozvoljavaj sajtovima da se povezuju sa USB uređajima</translation>
 <translation id="3965467402665811906">Sajtovi mogu da zatraže da koriste informacije koje su sačuvali o vama</translation>
 <translation id="3967822245660637423">Preuzimanje je dovršeno</translation>
+<translation id="3969869202926863008">Pristup lokalnoj mreži</translation>
 <translation id="3981465354637804599">Sajtovi obično prikazuju oglase da bi mogli da pružaju sadržaj ili usluge bez naknade. Ali, ima i sajtova koji prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase.</translation>
 <translation id="3987993985790029246">Kopiraj link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -422,6 +424,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="5968921426641056619">Unesite veb-adresu</translation>
 <translation id="5975083100439434680">Umanjivanje</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Uključite Discover fid</translation>
 <translation id="6015775454662021376">Kontrolišite pristup ovog sajta uređaju</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6042308850641462728">Još</translation>
@@ -463,6 +466,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="6554732001434021288">Poslednja poseta: pre <ph name="NUM_DAYS" /> dana</translation>
 <translation id="656065428026159829">Prikaži još</translation>
 <translation id="6561560012278703671">Koristite nenametljivu razmenu poruka (sprečava upite sa obaveštenjima da vas ometaju)</translation>
+<translation id="6565144332292237355">Sajtovi mogu da koriste ovu funkciju da bi tražili uređaje na lokalnoj mreži i povezivali se sa njima</translation>
 <translation id="6593061639179217415">Verzija sajta za računar</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Kolačići su dozvoljeni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sajt}one{Kolačići su dozvoljeni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sajt}few{Kolačići su dozvoljeni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sajta}other{Kolačići su dozvoljeni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sajtova}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

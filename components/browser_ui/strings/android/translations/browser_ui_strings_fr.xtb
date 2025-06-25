@@ -36,6 +36,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="1409338233051621926">Appuyer sur Applis, puis sur Applis par défaut</translation>
 <translation id="1415402041810619267">URL tronquée</translation>
 <translation id="1415855080660575082">Autorisez Chrome à partager vos onglets récents avec votre appareil pour les voir s'afficher dans la liste d'applis et les résultats de recherche de votre appareil. Vous pouvez activer ou désactiver cette option à tout moment dans les paramètres de Chrome.</translation>
+<translation id="1432650420699700107">Les sites peuvent demander à se connecter à n'importe quel appareil sur votre réseau local</translation>
 <translation id="1448064542941920355">Réduire le zoom</translation>
 <translation id="1464044141348608623">Ne pas autoriser les sites à savoir quand vous utilisez activement votre appareil</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
@@ -254,6 +255,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3955321697524543127">Ne pas autoriser les sites à se connecter à des appareils USB</translation>
 <translation id="3965467402665811906">Les sites peuvent demander à utiliser les informations qu'ils ont enregistrées vous concernant</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
+<translation id="3969869202926863008">Accès au réseau local</translation>
 <translation id="3981465354637804599">Les sites diffusent généralement des annonces en contrepartie de contenus ou services sans frais. Toutefois, certains sites sont connus pour afficher des annonces intrusives ou trompeuses.</translation>
 <translation id="3987993985790029246">Copier lien</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/ ?</translation>
@@ -463,6 +465,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="6554732001434021288">Dernière visite : il y a <ph name="NUM_DAYS" /> jours</translation>
 <translation id="656065428026159829">Voir plus</translation>
 <translation id="6561560012278703671">Activer les notifications discrètes (empêche les notifications de vous interrompre)</translation>
+<translation id="6565144332292237355">Les sites peuvent utiliser cette fonctionnalité pour rechercher les appareils sur votre réseau local et s'y connecter</translation>
 <translation id="6593061639179217415">Version pour ordinateur</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies autorisés pour <ph name="RWS_MEMBERS_COUNT" /> site <ph name="RWS_OWNER" />}one{Cookies autorisés pour <ph name="RWS_MEMBERS_COUNT" /> site <ph name="RWS_OWNER" />}other{Cookies autorisés pour <ph name="RWS_MEMBERS_COUNT" /> sites <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Go</translation>

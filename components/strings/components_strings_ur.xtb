@@ -2031,6 +2031,7 @@
 <translation id="4372948949327679948">متوقع <ph name="VALUE_TYPE" /> قدر۔</translation>
 <translation id="437620492464254965">دروازے اور کھڑکیاں</translation>
 <translation id="4377125064752653719">آپ نے <ph name="DOMAIN" /> تک رسائی کی کوشش کی، لیکن سرور کے ذریعے پیش کردہ سرٹیفیکیٹ کو اس کے جاری کنندہ نے منسوخ کر دیا ہے۔ اس کا مطلب ہے کہ سرور کے ذریعے پیش کردہ سیکیورٹی اسنادات پر مطلق طور پر بھروسہ نہیں کیا جانا چاہیے۔ ممکن ہے کہ آپ کی مواصلت ایک حملہ آور کے ساتھ ہو رہی ہو۔</translation>
+<translation id="4377869186417956230">اس مینیو آئٹم کے تحت تمام لائلٹی کارڈز کو تبدیل کریں۔</translation>
 <translation id="4378154925671717803">فون</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">آئندہ سے، اپنی فائلز کو کلاؤڈ اسٹوریج میں محفوظ کریں</translation>
@@ -3149,6 +3150,7 @@
 <translation id="6326947323444967009">‏iOS کی ترتیبات میں Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کریں</translation>
 <translation id="6327065120806001832">مقامی نیٹ ورک تک رسائی</translation>
 <translation id="6328639280570009161">نیٹ ورک کی پیشین گوئی غیر فعال کرنے کی کوشش کریں</translation>
+<translation id="6334834493885103305">‏اب آپ Affirm, Zip یا Klarna کا استعمال کر کے وقت کے ساتھ ادائیگی کر سکتے ہیں</translation>
 <translation id="6335029926534404762">ایتھلیٹک جوتے</translation>
 <translation id="6336948221660696475">‏‫VR کی اجازت نہیں دی گئی</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> سے کم بچت ہوتی ہے۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
@@ -4017,6 +4019,7 @@
 <translation id="7761159795823346334">کیمرے کی اجازت دیں؟</translation>
 <translation id="7761701407923456692">‏سرور سرٹیفکیٹ URL سے مماثل نہیں ہے۔</translation>
 <translation id="7764225426217299476">پتہ شامل کریں</translation>
+<translation id="7765158879357617694">منتقل کریں</translation>
 <translation id="7766518757692125295">اسکرٹ</translation>
 <translation id="7767278989746220252">آنگن، لان اور باغ</translation>
 <translation id="776749070095465053">فیبرک</translation>
@@ -4071,6 +4074,7 @@
 <translation id="7878562273885520351">لگتا ہے کسی نے آپ کے پاس ورڈ کے ساتھ چھیڑ چھاڑ کی ہے</translation>
 <translation id="7881044256965445977">اپنے مقامی نیٹ ورک پر کسی بھی آلے کو تلاش کریں اور اس سے منسلک ہوں</translation>
 <translation id="7882421473871500483">بھورا</translation>
+<translation id="7885670691503039914">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر، آپ کو ای میل الرٹس موصول ہوں گے۔ یہ صفحہ بُک مارک فولڈر <ph name="LAST_BOOKMARKS_FOLDER" /> میں محفوظ ہو جائے گا۔</translation>
 <translation id="7886897188117641322">منتخب کریں کہ اشتہارات کو ذاتی نوعیت کا بنانے میں مدد کے لیے موضوعات کے کون سے وسیع زمرے استعمال کیے جا سکتے ہیں</translation>
 <translation id="7887683347370398519">‏اپنا CVC چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="7887885240995164102">'تصویر میں تصویر' میں داخل ہوں</translation>
@@ -4351,6 +4355,7 @@
 <translation id="8364627913115013041">سیٹ نہیں ہے۔</translation>
 <translation id="8366057325711477500">عالمی خبریں</translation>
 <translation id="836616551641291797">آپ کا براؤزر کیسے نظم کیا جاتا ہے اس کے بارے میں مزید جانیں</translation>
+<translation id="8367705492654390392">کچھ بھی پوچھیں</translation>
 <translation id="8368001212524806591">قیمت ٹریک کریں</translation>
 <translation id="8368027906805972958">نا معلوم یا غیر تعاون یافتہ آلہ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">‏Google Play سروسز</translation>
@@ -4665,6 +4670,7 @@
 <translation id="8926389886865778422">دوبارہ سوال نہ کریں</translation>
 <translation id="8932102934695377596">آپ کی گھڑی پیچھے ہے</translation>
 <translation id="893332455753468063">نام شامل کریں</translation>
+<translation id="8938242527120341116">آپ کے آلے کے مواد کے فلٹرز بلاک ہیں <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">‏آپ کے منتظم نے <ph name="APP_NAME" /> کو پروڈکٹ کے تجربے کو بہتر بنانے کے لیے ڈائیگناسٹکس ڈیٹا جمع کرنے کی اجازت دے دی ہے۔ مزید معلومات کے لیے <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="8943282376843390568">لائم</translation>
 <translation id="8949410982325929394">ٹون</translation>
@@ -4870,6 +4876,7 @@
 <translation id="963837307749850257">تمام صارفین</translation>
 <translation id="964050462028070434">پاس ورڈز اور پاس کیز کا نظم کریں…</translation>
 <translation id="969892804517981540">آفیشل بلڈ</translation>
+<translation id="97054401902912338">مواد کے فلٹرز کے بارے میں مزید جانیں</translation>
 <translation id="973788791897303708">یہ ٹیب گروپ بھرا ہوا ہے</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{کوئی سائٹ نہیں}=1{1 آئٹم}other{# آئٹمز}}</translation>
 <translation id="976522784004777030">‏‎5 x 8 انچ</translation>

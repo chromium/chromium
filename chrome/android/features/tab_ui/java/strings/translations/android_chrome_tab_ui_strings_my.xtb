@@ -17,6 +17,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{ပြီးခဲ့သော <ph name="NUM_MINS_ONE" /> မိနစ်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_MINS_MANY" /> မိနစ်က ပြုလုပ်ထားသည်}}</translation>
 <translation id="1499635324672558517">ရုပ်ဖျက်တဘ်အားလုံး ပိတ်မလား။</translation>
 <translation id="1501480321619201731">အဖွဲ့ကို ဖျက်ရန်</translation>
+<translation id="1553638665176794706">{TABS_COUNT,plural, =1{အသုံးမပြုသောတဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{အသုံးမပြုသောတဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1645759014353344461">တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>
@@ -68,6 +69,7 @@
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{တဘ်အသစ် <ph name="ONE_ADDED" /> ခု}other{တဘ်အသစ် <ph name="MANY_ADDED" /> ခု}}</translation>
 <translation id="3613492231657284463">အသုံးမပြုသောတဘ်များ ဖျောက်ရန် ဒိုင်ယာလော့</translation>
 <translation id="3619255692378312441">သုံးခွင့် စီမံရန်</translation>
+<translation id="3649471731638882002">{TAB_COUNT,plural, =1{တဘ်ကို ပိတ်ရန်}other{တဘ်များကို ပိတ်ရန်}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">စာမျက်နှာအစမ်းကြည့်ရှုမှု မျှဝေရန်ပုံသေး။</translation>
 <translation id="3810973564298564668">စီမံရန်</translation>
@@ -80,6 +82,7 @@
 <translation id="4159784952369912983">ခရမ်း</translation>
 <translation id="427987768447457592">တဘ်အုပ်စုအသစ်</translation>
 <translation id="4371591986692297148">သုံးမနေပါ</translation>
+<translation id="4429658455677831355">{TAB_COUNT,plural, =1{တဘ် ပြန်ယူရန်}other{တဘ်များ ပြန်ယူရန်}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{ပြီးခဲ့သည့် <ph name="NUM_DAYS_ONE" /> ရက်က အပ်ဒိတ်လုပ်ထားသည်}other{ပြီးခဲ့သည့် <ph name="NUM_DAYS_MANY" /> ရက်က အပ်ဒိတ်လုပ်ထားသည်}}</translation>
 <translation id="4686942373615810936">ယခုလေးတင် ပြုလုပ်ထားသည်</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{၁ ရက် ကြာပြီးနောက် ပိတ်ပါ}other{<ph name="DAY_COUNT_MANY" /> ရက် ကြာပြီးနောက် ပိတ်ပါ}}</translation>
@@ -109,6 +112,7 @@
 <translation id="5556417849629758491">ဆိုင်အချက်အလက် ကြည့်ရန် ရွေးချယ်စရာကို ဖန်သားပြင်ထိပ်ပိုင်းအနီးတွင် ရနိုင်သည်</translation>
 <translation id="5627941783489838464">တဘ်အပ်ဒိတ် မရှိပါ</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome ထံမှ လင့်ခ် <ph name="TABS_COUNT_ONE" /> ခု}other{Chrome ထံမှ လင့်ခ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
+<translation id="5746204836956568669">ပိုမိုမြန်ဆန်စွာ လုပ်ဆောင်ရန် တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို အုပ်စုဖွဲ့မလား။</translation>
 <translation id="58326064309361797">တဘ်များကို အုပ်စုဖွဲ့ရန် ၎င်းတို့ကို ဖိဆွဲပါ</translation>
 <translation id="5901630391730855834">အၐါရောင်</translation>
 <translation id="5972844218283131174">အားလုံးမရွေးပါနှင့်</translation>
@@ -189,6 +193,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{ပြီးခဲ့သည့် <ph name="NUM_MONTHS_ONE" /> လက အပ်ဒိတ်လုပ်ထားသည်}other{ပြီးခဲ့သည့် <ph name="NUM_MONTHS_MANY" /> လက အပ်ဒိတ်လုပ်ထားသည်}}</translation>
 <translation id="8398929769197326728">ဖိုင်တွဲအသစ် - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
+<translation id="855081842937141170">တဘ် ပင်ထိုးရန်</translation>
 <translation id="8633025649649592204">မကြာသေးမီက လုပ်ဆောင်ချက်</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8714939927607906138">ကျသွားသော ဈေးနှုန်း</translation>
@@ -205,4 +210,5 @@
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် တဘ်အုပ်စုကို ဖြန့်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် တဘ်အုပ်စုကို ဖြန့်ပါ။}}</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 <translation id="992256792861109788">ပန်းရောင်</translation>
+<translation id="994514002078791059">{TAB_COUNT,plural, =1{အသုံးမပြုသောတဘ် ၁ ခုကို ပိတ်မလား။}other{အသုံးမပြုသောတဘ် <ph name="TAB_COUNT_MANY" /> ခုကို ပိတ်မလား။}}</translation>
 </translationbundle>

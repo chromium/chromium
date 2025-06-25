@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Error al compartir por falta de conexión a la red</translation>
 <translation id="1668001730617725852">Abrir en un nuevo grupo de pestañas</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Ahora puedes abrir Google Lens desde la barra de direcciones y buscar lo que ves</translation>
 <translation id="1689333818294560261">Sobrenombre</translation>
 <translation id="169048873465870056">¿Quieres quitar la pestaña y borrar el grupo?</translation>
 <translation id="1698090540708020240">Importar contraseñas…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> administra la cuenta <ph name="USER_EMAIL" />, por lo que es posible que pueda ver cierta información. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuevo elemento</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> cuentas usan la misma contraseña</translation>
+<translation id="205013082884273671">Busca lo que quieras en la pantalla</translation>
 <translation id="2054044186557130763">Acceder como <ph name="NAME" /> <ph name="EMAIL" />, administrada por tu organización.</translation>
 <translation id="2059166748188874810">Municipalidad</translation>
 <translation id="2060638295449304809">Esta dirección solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
@@ -459,6 +461,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2819667972867209401">Si se activa, los datos se guardarán en tu Cuenta de Google. Si se desactiva, los datos se guardan solo en este dispositivo y se borran si sales de tu cuenta.</translation>
 <translation id="2827760117436553203">¿Quieres mantener los datos separados?</translation>
 <translation id="2829172210806130158">Realiza una búsqueda directa en tu pantalla</translation>
+<translation id="2831109159746537587">Encierra en un círculo o presiona la imagen para buscar</translation>
 <translation id="2834399722155632105">3. Presiona Opciones de contraseña</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Hora</translation>
@@ -1104,6 +1107,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5576885723883013398">Nueva ventana</translation>
 <translation id="5578795271662203820">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ocultar la opción Lista de lectura</translation>
+<translation id="5581786858144165447">Preguntar al Modo IA</translation>
 <translation id="5585019845078534178">Tarjetas</translation>
 <translation id="5595485650161345191">Editar dirección</translation>
 <translation id="559567008082979829">Configura tus descargas para que se borren después de un mes.</translation>

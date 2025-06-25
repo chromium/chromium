@@ -724,6 +724,7 @@
 <translation id="2212735316055980242">ポリシーが見つかりません</translation>
 <translation id="2213606439339815911">エントリを取得しています...</translation>
 <translation id="2213612003795704869">ページが印刷されました</translation>
+<translation id="2214086901479959524">共有タブグループを引き続き使用するには、Chrome を更新してください</translation>
 <translation id="2215368073167343359">Google 自動入力</translation>
 <translation id="2215539479425228550">登山</translation>
 <translation id="2215727959747642672">ファイルの編集</translation>
@@ -802,6 +803,7 @@
 <translation id="2328651992442742497">許可（デフォルト）</translation>
 <translation id="2328955282645810595">建設用工具、動力工具</translation>
 <translation id="2330137317877982892">「<ph name="CREDIT_CARD" />」の有効期限は <ph name="EXPIRATION_DATE_ABBR" /> です</translation>
+<translation id="2334327033751265975">共有タブグループが再び利用可能になりました</translation>
 <translation id="2337852623177822836">管理者が指定する設定</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> がペア設定を要求しています</translation>
 <translation id="2344529975040861103">アカウントが Google Pay にリンクされているため、このカードを自動入力できます</translation>
@@ -2030,6 +2032,7 @@
 <translation id="4372948949327679948"><ph name="VALUE_TYPE" /> 値が想定されます。</translation>
 <translation id="437620492464254965">ドア、窓</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーから提示された証明書は発行元により取り消されています。これは、サーバーから提示されたセキュリティ認証情報が信頼できないことを示しており、悪意のあるユーザーと通信しようとしている可能性があります。</translation>
+<translation id="4377869186417956230">このメニュー項目のすべてのポイントカードに変更を加えます。</translation>
 <translation id="4378154925671717803">電話</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">今後は、クラウド ストレージにファイルを保存してください</translation>
@@ -3147,6 +3150,7 @@
 <translation id="6326947323444967009">iOS 設定で Chrome をシステムの既定のブラウザとして設定します</translation>
 <translation id="6327065120806001832">ローカル ネットワークへのアクセス</translation>
 <translation id="6328639280570009161">ネットワーク予測を無効にしてみてください</translation>
+<translation id="6334834493885103305">Affirm、Zip、または Klarna の分割払いを使用できます</translation>
 <translation id="6335029926534404762">スポーツ シューズ</translation>
 <translation id="6336948221660696475">VR は許可されていません</translation>
 <translation id="6337133576188860026">最大で <ph name="SIZE" /> を解放します。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
@@ -4017,6 +4021,7 @@
 <translation id="7761159795823346334">カメラの使用を許可しますか？</translation>
 <translation id="7761701407923456692">サーバーの証明書が URL と一致しません。</translation>
 <translation id="7764225426217299476">住所を追加</translation>
+<translation id="7765158879357617694">移動</translation>
 <translation id="7766518757692125295">スカート</translation>
 <translation id="7767278989746220252">パティオ、芝生、庭</translation>
 <translation id="776749070095465053">布</translation>
@@ -4071,6 +4076,7 @@
 <translation id="7878562273885520351">パスワードが不正使用される可能性があります</translation>
 <translation id="7881044256965445977">ローカル ネットワーク上のデバイスを検索して接続する</translation>
 <translation id="7882421473871500483">茶</translation>
+<translation id="7885670691503039914">値下げしたサイトがある場合、メールで通知します。このページはブックマーク フォルダ「<ph name="LAST_BOOKMARKS_FOLDER" />」に保存されます。</translation>
 <translation id="7886897188117641322">広告のパーソナライズに使用できるトピックの大まかなカテゴリを選択します</translation>
 <translation id="7887683347370398519">CVC を確認してからもう一度お試しください</translation>
 <translation id="7887885240995164102">ピクチャー イン ピクチャーを開始</translation>
@@ -4351,6 +4357,7 @@
 <translation id="8364627913115013041">未設定</translation>
 <translation id="8366057325711477500">世界のニュース</translation>
 <translation id="836616551641291797">ブラウザの管理方法の詳細</translation>
+<translation id="8367705492654390392">質問する</translation>
 <translation id="8368001212524806591">価格のトラッキング</translation>
 <translation id="8368027906805972958">不明またはサポートされていないデバイス（<ph name="DEVICE_ID" />）</translation>
 <translation id="8368476060205742148">Google Play 開発者サービス</translation>
@@ -4666,6 +4673,7 @@
 <translation id="8926389886865778422">再表示させない</translation>
 <translation id="8932102934695377596">時計が遅れています</translation>
 <translation id="893332455753468063">名前の追加</translation>
+<translation id="8938242527120341116">デバイスのコンテンツ フィルタにより <ph name="BLOCKED_URL" /> がブロックされました</translation>
 <translation id="8942355029279167844">管理者は、<ph name="APP_NAME" /> がサービス改善のために診断データを収集することを許可しています。詳しくは、<ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> をご覧ください。</translation>
 <translation id="8943282376843390568">ライム</translation>
 <translation id="8949410982325929394">トーン</translation>
@@ -4870,6 +4878,7 @@
 <translation id="963837307749850257">すべてのユーザー</translation>
 <translation id="964050462028070434">パスワードとパスキーを管理...</translation>
 <translation id="969892804517981540">Official Build</translation>
+<translation id="97054401902912338">コンテンツ フィルタの詳細</translation>
 <translation id="973788791897303708">このタブグループのユーザーは上限に達しました</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{なし}=1{1 件のアイテム}other{# 件のアイテム}}</translation>
 <translation id="976522784004777030">5x8 インチ</translation>

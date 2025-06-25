@@ -279,6 +279,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="1207301487141109411">Impedisci la selezione degli avatar degli utenti da file system locale, fotocamera e profilo Google</translation>
 <translation id="1209096923317019235">Assegna le app come gestori predefiniti per le estensioni dei file specificate</translation>
 <translation id="120937472976628837">Segnala informazioni sulla ventola</translation>
+<translation id="1211037010406094410">Consenti l'elemento di riserva software per WebGL utilizzando SwiftShader</translation>
 <translation id="1214639335214075459">Attiva decodifica video hardware GPU</translation>
 <translation id="1214942205301731697">Non consentire l'utilizzo della modalità sviluppatore nella pagina delle estensioni</translation>
 <translation id="1216919699175573511">Attiva il supporto per Signed HTTP Exchange (SXG)</translation>
@@ -862,7 +863,7 @@ Se la policy non viene configurata, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POL
 I pattern URL non devono essere in conflitto con <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />. Nessuna policy ha la precedenza se un URL presenta corrispondenze con entrambi.
 
 Visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns per informazioni dettagliate sui pattern URL validi. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
-<translation id="1578495851351913403">Se configuri questa policy, viene mostrata una nuova opzione di attivazione/disattivazione dell'interfaccia utente sotto ogni display nelle impostazioni di visualizzazione. La normale modalità Specchio trasforma tutti i display in un unico display, ma la nuova opzione di attivazione/disattivazione consente agli utenti di escludere un display dal mirroring e di visualizzarlo come display esteso.
+<translation id="1578495851351913403">Se configuri questa policy, viene mostrata una nuova opzione di attivazione/disattivazione dell'interfaccia utente sotto ogni display nelle impostazioni di visualizzazione. La normale modalità di mirroring trasforma tutti i display in un unico display, ma la nuova opzione consente agli utenti di escludere un display dal mirroring e di visualizzarlo come display esteso.
 
 Se la policy viene impostata su Enabled, verrà visualizzata l'opzione di attivazione/disattivazione per ogni display, in modo da escluderlo dalla modalità di mirroring, e gli utenti potranno scegliere un display da attivare.
 
@@ -1121,6 +1122,17 @@ policy era la versione 121. È stata rimossa nella versione 122.</translation>
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
 <translation id="1755310913456007816">Utilizza le impostazioni di controllo delle revoche online esistenti</translation>
 <translation id="1760951637494635692">Consenti l'API Serial su questi siti</translation>
+<translation id="1764415246330773476">Questa policy consente di stabilire la visibilità dell'avviso di gestione nel piè di pagina della pagina Nuova scheda. Per impostazione predefinita, il piè di pagina della pagina Nuova Scheda mostra le informazioni quando il browser è gestito da un'organizzazione (indicata dall'icona a forma di edificio e dalla dicitura "Gestito da [nome di dominio]"). Puoi personalizzare questo comportamento utilizzando le policy <ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" /> e <ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />.
+
+Se questa policy non viene impostata o se viene impostata su true, nei browser gestiti verrà visualizzata una notifica "Gestito da…" con un'icona.
+
+Se questa policy viene impostata su false, l'avviso di gestione verrà nascosto.
+
+Tieni presente che questa policy viene applicata solo ai browser gestiti, quindi non avrà alcun effetto per gli utenti gestiti su browser non gestiti.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="1765503534110351026">Questa policy è deprecata. Usa la policy <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Se la policy viene impostata, <ph name="PRODUCT_NAME" /> bypassa qualsiasi proxy per l'elenco di host fornito. Questa policy viene applicata se la policy <ph name="PROXY_SETTINGS_POLICY_NAME" /> non viene specificata e hai indicato <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> o <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> per <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -1984,6 +1996,15 @@ Se la policy viene impostata su disabled, gli utenti o le varianti <ph name="PRO
 <translation id="2377059627106831967">Consenti il raggruppamento delle finestre in sovraimpressione con AI generativa senza migliorare i modelli di AI.</translation>
 <translation id="2377109572344699022">Controlla l'utilizzo dell'API Direct Sockets</translation>
 <translation id="2382672620906337383">Il valore JavaScript setTimeout() non verrà bloccato finché non viene raggiunta una soglia di nidificazione superiore.</translation>
+<translation id="2383521405943565490">Questa policy consente di stabilire se il partizionamento dello spazio di archiviazione di terze parti è consentito per impostazione predefinita.
+
+Se la policy viene impostata su 1 - AllowPartitioning o se non viene configurata, il partizionamento dello spazio di archiviazione di terze parti è consentito per impostazione predefinita. È possibile eseguire l'override di questa impostazione predefinita per origini di primo livello specifiche in altri modi.
+
+Se la policy viene impostata su 2 - BlockPartitioning, il partizionamento dello spazio di archiviazione di terze parti viene disattivato per tutti i contesti.
+
+Utilizza <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> per disattivare il partizionamento dello spazio di archiviazione di terze parti per origini di primo livello specifiche. Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.
+
+Questa opzione verrà rimossa in Chrome 145 e al suo posto si consiglia di utilizzare il metodo requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puoi lasciare un feedback all'indirizzo https://crbug.com/425248669.</translation>
 <translation id="2386362615870139244">Consenti Wakelock dello schermo</translation>
 <translation id="2387469539700985783">Questa policy non influisce sui report generati da Android.</translation>
 <translation id="2388701318721126001">Se questa policy viene disattivata, non è possibile selezionare l'immagine di sfondo dell'utente <ph name="PRODUCT_OS_NAME" /> da un album di Google Foto.
@@ -3424,7 +3445,7 @@ Se la policy non viene impostata, non è possibile navigare nel browser se è at
       Quando la norma non viene impostata o non contiene intervalli di tempo:
       Le verifiche automatiche degli aggiornamenti non verranno bloccate da questa norma, ma potrebbero essere bloccate da altre norme.
       Fino a M88, questa funzionalità è attiva solo sui dispositivi <ph name="PRODUCT_OS_NAME" /> configurati come kiosk ad avvio automatico. Gli altri dispositivi non risulteranno limitati da questa norma. Tuttavia, a partire da M89, questa norma è attiva su tutti i dispositivi <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="3456705177754697344">Non rendere disponibile per l'utente l'opzione Escludi questo display in modalità Specchio</translation>
+<translation id="3456705177754697344">Non rendere disponibile per l'utente l'opzione Escludi questo display in modalità di mirroring</translation>
 <translation id="3459509316159669723">Stampa</translation>
 <translation id="3460485593332210712">Consenti Chrome for Testing</translation>
 <translation id="3461279434465463233">Segnala lo stato dell'alimentazione</translation>
@@ -3558,11 +3579,6 @@ Se questa policy viene configurata, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLIC
       Se la policy non viene configurata, non sarà applicata alcuna limitazione.</translation>
 <translation id="3531084733660068324">Impostazioni della supervisione dei genitori</translation>
 <translation id="3532827558833318911">Cancella l'accesso con password</translation>
-<translation id="353291262171579310">Questa policy consente di stabilire la visibilità dell'avviso di gestione nel piè di pagina della pagina Nuova scheda. Per impostazione predefinita, il piè di pagina della pagina Nuova Scheda mostra le informazioni quando il browser è gestito da un'organizzazione (indicata dall'icona a forma di edificio e dalla dicitura "Gestito da [nome di dominio]"). Puoi personalizzare questo comportamento utilizzando le policy <ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" /> e <ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />.
-
-Se questa policy non viene impostata o se viene impostata su true, nei browser gestiti verrà visualizzata una notifica "Gestito da…" con un'icona.
-
-Se questa policy viene impostata su false, l'avviso di gestione verrà nascosto.</translation>
 <translation id="353611922042274900">Mostra sempre le informazioni di sistema nella schermata di accesso</translation>
 <translation id="3536263244905016305">Disattiva l'ottimizzazione WPAD (Web Proxy Auto-Discovery)</translation>
 <translation id="3539103206548425861">Se la policy viene configurata, la riproduzione video automatica (senza il consenso dell'utente) con contenuti audio è consentita in <ph name="PRODUCT_NAME" />. Se la policy <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> viene impostata su true, tale policy non ha effetto. Se la policy <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> viene impostata su false, l'insieme di pattern URL in tale policy possono comunque essere riprodotti. Se la policy viene modificata mentre <ph name="PRODUCT_NAME" /> è in esecuzione, viene applicata solo alle nuove schede aperte.
@@ -3679,6 +3695,15 @@ Se la policy non viene configurata, il relativo comportamento viene determinato 
 
 Per maggiori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3606571057705314194">Selettore profilo disattivato all'avvio</translation>
+<translation id="3607797531311171116">Una policy che controlla se SwiftShader verrà utilizzato come elemento di riserva per WebGL quando l'accelerazione GPU hardware non è disponibile.
+
+SwiftShader è stato utilizzato per supportare WebGL su sistemi senza accelerazione GPU, come sistemi headless o macchine virtuali, ma è stato deprecato a causa di problemi di sicurezza. A partire dalla versione M139, la creazione del contesto di WebGL non sarà possibile quando altrimenti avrebbe utilizzato SwiftShader. Questa policy consente al browser o all'amministratore di rimandare temporaneamente il ritiro.
+
+Se la policy viene impostata su Attivata, SwiftShader verrà utilizzato come elemento di riserva software per WebGL.
+
+Se la policy viene impostata su Disattivata o se non viene configurata, la creazione del contesto di WebGL potrebbe non andare a buon fine se l'accelerazione GPU hardware non è disponibile. Le pagine web potrebbero non funzionare correttamente se non gestiscono in modo appropriato l'errore di creazione del contesto di WebGL.
+
+Si tratta di una policy temporanea che verrà rimossa in futuro.</translation>
 <translation id="3608206578291537084">Abilita la Pipeline di reporting criptato</translation>
 <translation id="3608281460204780443">Visualizza l'icona di Chrome Web Store in Avvio app di <ph name="PRODUCT_OS_NAME" /> e nella pagina Nuova scheda</translation>
 <translation id="3612482251405108708">Avvio automatico della riautenticazione online nella schermata di blocco</translation>
@@ -5472,6 +5497,7 @@ La disattivazione della decodifica video con accelerazione hardware non è consi
           Se imposti questa policy, gli utenti non potranno modificarla o ignorarla.
 
           Se questa policy non viene impostata, inizialmente l'audio in formato mono è disattivato nella schermata di accesso, ma l'utente può attivarlo in qualsiasi momento.</translation>
+<translation id="493253860646951791">Attiva il supporto per l'elemento di riserva SwiftShader per WebGL non sicuro</translation>
 <translation id="4933301190614090397">Consente di controllare la durata (in secondi) consentita per le richieste keepalive alla chiusura del browser.
 
       Se specificato, è possibile bloccare la chiusura del browser per un massimo di secondi specificati
@@ -5986,9 +6012,9 @@ Se non viene configurata, il valore predefinito è 0 e gli utenti sono liberi di
 <translation id="5258445772095084618">Consenti agli utenti non affiliati di usare le macchine virtuali necessarie per supportare le app Linux</translation>
 <translation id="5258651513421638932">Consenti la connessione della smart card da parte delle app isolate</translation>
 <translation id="5262320080678421295">Disattiva attendibilità nei certificati emessi dall'Infrastruttura a chiave pubblica precedente di Symantec Corporation</translation>
-<translation id="5265613843467285323">Mostra un'opzione di attivazione/disattivazione dell'interfaccia utente per escludere un display in modalità Specchio.</translation>
+<translation id="5265613843467285323">Mostra un'opzione di attivazione/disattivazione dell'interfaccia utente per escludere un display in modalità di mirroring.</translation>
 <translation id="5270408671043421978">Disattiva il precaricamento dell'immagine <ph name="ARC_VM" /></translation>
-<translation id="5272332743749468542">Rendi disponibile per l'utente l'opzione Escludi questo display in modalità Specchio</translation>
+<translation id="5272332743749468542">Rendi disponibile per l'utente l'opzione Escludi questo display in modalità di mirroring</translation>
 <translation id="5273744932022326215">Consente di attivare la funzione di accessibilità di evidenziazione del cursore nella schermata di accesso.
 
           Se questa policy è impostata su true, l'evidenziazione del cursore sarà sempre attivata sulla schermata di accesso.
@@ -6773,6 +6799,9 @@ Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istan
 <translation id="5740636973289452345">Attiva la generazione di report sulle informazioni relative a estensioni e plug-in</translation>
 <translation id="5740716956489996914">Usa il comportamento predefinito quando determini se i siti web possono effettuare richieste agli endpoint della rete locale</translation>
 <translation id="5741110260062082926">Disattiva Orca</translation>
+<translation id="5746126833785204233">Se la policy viene impostata su Attivata, i log a livello di applicazione kiosk vengono raccolti quando un'applicazione kiosk è in esecuzione sul dispositivo. I log verranno raccolti per tutti i tipi di applicazioni kiosk.
+Questi log vengono archiviati in un file kiosk_apps.log separato.
+Se questa policy non viene configurata o se viene impostata su Disattivata, i log a livello di applicazione kiosk non vengono raccolti.</translation>
 <translation id="5746149754419996562">Consente la presenza di widget Glanceables su <ph name="PRODUCT_OS_NAME" />. In particolare, i widget accessibili tramite il chip di data nella barra delle app.
 Se questa policy viene attivata, i Glanceables sono attivati su <ph name="PRODUCT_OS_NAME" />.
 Se questa policy viene disattivata o se non viene configurata, i Glanceables non sono attivi su <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -7720,13 +7749,6 @@ verrà usata soltanto la risoluzione della posizione basata sull'<ph name="IP" /
 <translation id="6371005337713685988">Impostazioni di insiemi di siti web correlati</translation>
 <translation id="6371561334154580937">Mostra finestra di dialogo di disconnessione nell'ultima finestra chiusa.</translation>
 <translation id="6372105930898423193">Consente di riattivare la funzionalità AppCache anche se è disattivata per impostazione predefinita.</translation>
-<translation id="6372676668820850849">Questa policy consente di stabilire se il partizionamento dello spazio di archiviazione di terze parti è consentito per impostazione predefinita.
-
-Se la policy viene impostata su 1 - AllowPartitioning o se non viene configurata, il partizionamento dello spazio di archiviazione di terze parti è consentito per impostazione predefinita. È possibile eseguire l'override di questa impostazione predefinita per origini di primo livello specifiche in altri modi.
-
-Se la policy viene impostata su 2 - BlockPartitioning, il partizionamento dello spazio di archiviazione di terze parti viene disattivato per tutti i contesti.
-
-Utilizza <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> per disattivare il partizionamento dello spazio di archiviazione di terze parti per origini di primo livello specifiche. Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="6373299801585455337">Attiva i report sulle informazioni relative alla CPU del dispositivo</translation>
 <translation id="6374945506685352202">Lista bloccata per i tipi di installazione delle estensioni</translation>
 <translation id="6376540107659524656">Disattiva SSH in Terminal System App</translation>
@@ -8000,6 +8022,7 @@ Il salvaschermo dell'utente mostra le immagini a cui fa riferimento la policy <p
 <translation id="6513453889192806240">Latenza HTTPS</translation>
 <translation id="6515357889978918016">Immagine <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Attendi che il canale di destinazione controlli il downgrade del canale</translation>
+<translation id="6518286606938091609">Disattiva il supporto per l'elemento di riserva SwiftShader per WebGL non sicuro</translation>
 <translation id="6518894783486860562">Per motivi di sicurezza, le API web
 <ph name="SHOW_SUBAPPS_APP_API_NAME" />,
 <ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> e
@@ -8252,6 +8275,15 @@ Se la policy viene impostata su True o se non viene configurata, gli utenti potr
 
 Se la policy viene impostata su False, il port forwarding nei container Crostini verrà disattivato.</translation>
 <translation id="6677291257287862684">Attiva i tasti permanenti nella schermata di accesso</translation>
+<translation id="6677886356657067286">Questa policy consente di impostare un elenco di pattern URL che specificano le origini di primo livello per le quali il partizionamento dello spazio di archiviazione di terze parti (partizionamento dello spazio di archiviazione di iframe multiorigine) deve essere disattivato.
+
+Se la policy non viene configurata o se un'origine di primo livello non corrisponde a uno dei pattern URL, viene applicato <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
+
+Visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns per informazioni dettagliate sui pattern validi. Tieni presente che i pattern elencati qui vengono considerati come origini, non URL, quindi non dovresti specificare un percorso.
+
+Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.
+
+Questa opzione verrà rimossa in Chrome 145 e al suo posto si consiglia di utilizzare il metodo requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puoi lasciare un feedback all'indirizzo https://crbug.com/425248669.</translation>
 <translation id="668153983584136017">Questa policy è deprecata perché l'algoritmo GREASE aggiornato è attivo per impostazione predefinita a partire dalla versione M103.
 Se la policy viene attivata, la funzionalità di aggiornamento del client hint dello user agent GREASE allinea l'algoritmo User-Agent GREASE alla specifica più recente.
       La specifica aggiornata potrebbe interrompere il funzionamento di alcuni siti web che limitano i caratteri consentiti per le richieste. Per ulteriori informazioni, consulta le specifiche: https://wicg.github.io/ua-client-hints/#grease
@@ -8585,6 +8617,7 @@ Se la policy <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /
 <translation id="6907778402784621686">Blocca contenuti non sicuri su questi siti</translation>
 <translation id="6908335885425855120">Utilizza Visualizzatore PDF iframe out-of-process</translation>
 <translation id="6908640907898649429">Configura il provider di ricerca predefinito. Puoi specificare il provider di ricerca predefinito che l'utente utilizzerà oppure scegliere di disattivare la ricerca predefinita.</translation>
+<translation id="6910715067772088598">Disattiva i log a livello di applicazione Kiosk</translation>
 <translation id="6913068954484253496">Consenti a <ph name="PRODUCT_NAME" /> di connettersi ai dispositivi Cast su tutti gli indirizzi IP.</translation>
 <translation id="6915493311660114995">Se la policy viene impostata su Enabled, <ph name="PRODUCT_NAME" /> consentirà le richieste di autenticazione web sui siti web che hanno certificati TLS con errori (ad esempio, siti web considerati non sicuri).
 
@@ -8660,6 +8693,7 @@ Questa policy verrà rimossa in futuro, una volta completata l'implementazione d
       Se la policy non viene configurata, non ci saranno stampanti per i dispositivi e le altre policy <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> verranno ignorate.</translation>
 <translation id="69525503251220566">Parametro che fornisce la funzione di ricerca tramite immagine per il provider di ricerca predefinito</translation>
 <translation id="6953102253399571439">Attiva la stampa PIN per impostazione predefinita</translation>
+<translation id="695532899547292238">Abilita la raccolta di log a livello di applicazione kiosk</translation>
 <translation id="6956272732789158625">Non consentire a nessun sito di utilizzare la generazione di chiavi</translation>
 <translation id="6960996423652450945">Disattiva l'evidenziazione del cursore del testo nella schermata di accesso</translation>
 <translation id="6961602002757991199">Se per la policy viene impostata un URL valido, <ph name="PRODUCT_NAME" /> scarica l'elenco dei siti da tale URL e applica le regole come se fossero state configurate con la policy <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Queste policy impediscono a <ph name="PRODUCT_NAME" /> e al browser alternativo di aprirsi a vicenda.
@@ -9322,13 +9356,6 @@ Se la policy non viene configurata, in pratica equivale a impostarla su "<ph nam
 <translation id="7463934096276667908">Abilita le API video a schermo intero con prefisso</translation>
 <translation id="7464058117970792805">Attiva anteprima di stampa</translation>
 <translation id="7464991223784276288">Limita i cookie degli URL corrispondenti alla sessione corrente</translation>
-<translation id="7467748623079596345">Questa policy consente di impostare un elenco di pattern URL che specificano le origini di primo livello per le quali il partizionamento dello spazio di archiviazione di terze parti (partizionamento dello spazio di archiviazione di iframe multiorigine) deve essere disattivato.
-
-Se la policy non viene configurata o se un'origine di primo livello non corrisponde a uno dei pattern URL, viene applicato <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
-
-Visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns per informazioni dettagliate sui pattern validi. Tieni presente che i pattern elencati qui vengono considerati come origini, non URL, quindi non dovresti specificare un percorso.
-
-Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="7468182772656807573">Questa policy consente di stabilire la frequenza di invio, in millisecondi, dei pacchetti di rete di monitoraggio. Gli intervalli sono compresi tra 30 secondi e 24 ore. I valori che non rientrano in questo intervallo verranno fatti rientrare nei limiti.
 
       Se la policy non viene configurata, viene applicato l'intervallo predefinito di 3 minuti.</translation>
@@ -9477,6 +9504,7 @@ Se la policy viene lasciata vuota, non sono consentite eccezioni a <ph name="FLO
 <translation id="7586199729147257934">Consente il provisioning dei certificati client per i browser gestiti</translation>
 <translation id="7587345076013230465">Richiedi all'utente di selezionare il certificato client quando la policy di selezione automatica corrisponde a più certificati nella schermata di accesso</translation>
 <translation id="7587921466180902617">Attiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
+<translation id="7588140323025689972">Abilita i log a livello di applicazione Kiosk</translation>
 <translation id="7595074040612182185">Se la policy viene configurata, puoi impostare un elenco di pattern URL che specificano i siti che possono mostrare immagini.
 
       Se la policy non viene configurata, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> si applica per tutti i siti, se impostata. In caso contrario, viene applicata l'impostazione personale dell'utente.

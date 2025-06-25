@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Save up to 60% data, read today's news</translation>
 <translation id="1303339473099049190">Can’t find that password. Check your spelling and try again.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Sent from <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Group tabs</translation>
 <translation id="1318262688555255786">Share link to web page <ph name="PAGE_TITLE" />. Source: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Bookmark save flow folders opened at full height</translation>
 <translation id="1327257854815634930">Navigation history is opened</translation>
@@ -1407,6 +1408,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7224097611345298931">All passwords saved only to this device for Chrome and <ph name="CHROME_CHANNEL" /> were merged. You can autofill all your saved passwords on both apps.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pending}other{# downloads pending}}</translation>
 <translation id="7230064152164845085">Switch to Incognito</translation>
+<translation id="7230836263524391273">Hide reading mode</translation>
 <translation id="7237724030342645845">Google Password Manager stopped working</translation>
 <translation id="72415438529550637">Password suggestion is closed.</translation>
 <translation id="7248671827512403053">Application</translation>

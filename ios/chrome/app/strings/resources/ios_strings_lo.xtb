@@ -461,7 +461,7 @@
 <translation id="2819667972867209401">ເມື່ອເປີດໄວ້, ລະບົບຈະບັນທຶກຂໍ້ມູນໃສ່ໃນບັນຊີ Google ຂອງທ່ານ. ເມື່ອປິດໄວ້, ລະບົບຈະບັນທຶກຂໍ້ມູນໄວ້ໃນອຸປະກອນເຄື່ອງນີ້ເທົ່ານັ້ນ ແລະ ຂໍ້ມູນຈະຖືກລຶບຫາກທ່ານອອກຈາກລະບົບ.</translation>
 <translation id="2827760117436553203">ເກັບຂໍ້ມູນແຍກກັນບໍ?</translation>
 <translation id="2829172210806130158">ຊອກຫາໃນໜ້າຈໍຂອງທ່ານ</translation>
-<translation id="2831109159746537587">ລອງອ້ອມວົງ ຫຼື ແຕະຮູບເພື່ອຊອກຫາ</translation>
+<translation id="2831109159746537587">ລອງຂີດວົງ ຫຼື ແຕະຮູບເພື່ອຊອກຫາ</translation>
 <translation id="2834399722155632105">3. ແຕະຕົວເລືອກລະຫັດຜ່ານ</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">ເວລາ</translation>
@@ -1107,6 +1107,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5576885723883013398">ໜ້າຈໍໃໝ່</translation>
 <translation id="5578795271662203820">ຄົ້ນ​ຫາ <ph name="SEARCH_ENGINE" /> ​ຮູບ​ນີ້</translation>
 <translation id="5579012242779565775">ເຊື່ອງ ລາຍຊື່ການອ່ານ</translation>
+<translation id="5581786858144165447">ຖາມໂໝດ AI</translation>
 <translation id="5585019845078534178">ບັດ</translation>
 <translation id="5595485650161345191">ແກ້ໄຂທີ່ຢູ່</translation>
 <translation id="559567008082979829">ຕັ້ງຄ່າໃຫ້ລະບົບລຶບການດາວໂຫຼດຂອງທ່ານຫຼັງຈາກຜ່ານໄປ 1 ເດືອນ.</translation>

@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Jagamine ebaõnnestus võrguühenduse puudumise tõttu.</translation>
 <translation id="1668001730617725852">Ava uues vahelehegrupis</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Nüüd saate aadressiribalt Google Lensi avada ja otsida kõike, mida näete</translation>
 <translation id="1689333818294560261">Hüüdnimi</translation>
 <translation id="169048873465870056">Kas eemaldada vaheleht ja kustutada grupp?</translation>
 <translation id="1698090540708020240">Paroolide importimine…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Kontot <ph name="USER_EMAIL" /> haldab <ph name="HOSTED_DOMAIN" />, millel võib olla võimalik teatud teavet vaadata. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">uus üksus</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> kontot kasutavad sama parooli</translation>
+<translation id="205013082884273671">Ekraanilt soovitud sisu otsimine</translation>
 <translation id="2054044186557130763">Logige sisse kasutajana <ph name="NAME" /> (<ph name="EMAIL" />), haldab teie organisatsioon.</translation>
 <translation id="2059166748188874810">Vald</translation>
 <translation id="2060638295449304809">See aadress on salvestatud ainult sellesse seadmesse. Selle kasutamiseks muudes seadmetes salvestage need oma Google’i kontole <ph name="USER_EMAIL" /></translation>
@@ -459,6 +461,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="2819667972867209401">Kui see on sees, salvestatakse andmed teie Google'i kontole. Kui see on väljas, salvestatakse andmed ainult sellesse seadmesse ja kustutatakse väljalogimisel.</translation>
 <translation id="2827760117436553203">Kas hoida andmed eraldi?</translation>
 <translation id="2829172210806130158">Ekraanilt otsimine</translation>
+<translation id="2831109159746537587">Otsimiseks proovige pildile ring ümber tõmmata või seda puudutada</translation>
 <translation id="2834399722155632105">3. Puudutage valikut Paroolivalikud.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Aeg</translation>
@@ -1104,6 +1107,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5576885723883013398">Uus aken</translation>
 <translation id="5578795271662203820">Otsi otsingust <ph name="SEARCH_ENGINE" /> kujutist</translation>
 <translation id="5579012242779565775">Peida valik „Lugemisloend“</translation>
+<translation id="5581786858144165447">AI-le küsimuse esitamise režiim</translation>
 <translation id="5585019845078534178">Kaardid</translation>
 <translation id="5595485650161345191">Muuda aadressi</translation>
 <translation id="559567008082979829">Saate seadistada oma allalaadimiste kustutamise ühe kuu möödudes.</translation>

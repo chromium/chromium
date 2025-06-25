@@ -724,6 +724,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2212735316055980242">Dasar tidak dijumpai</translation>
 <translation id="2213606439339815911">Mengambil entri…</translation>
 <translation id="2213612003795704869">Halaman dicetak</translation>
+<translation id="2214086901479959524">Kemas kinikan Chrome untuk terus menggunakan kumpulan tab kongsi anda</translation>
 <translation id="2215368073167343359">Autolengkap dengan Google</translation>
 <translation id="2215539479425228550">Mendaki &amp; Mendaki Gunung</translation>
 <translation id="2215727959747642672">Pengeditan fail</translation>
@@ -802,6 +803,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2328651992442742497">Dibenarkan (lalai)</translation>
 <translation id="2328955282645810595">Peralatan Berkuasa &amp; Pembinaan</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, tamat tempoh pada <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="2334327033751265975">Kumpulan tab kongsi anda tersedia semula</translation>
 <translation id="2337852623177822836">Tetapan dikawal oleh pentadbir anda</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> mahu digandingkan</translation>
 <translation id="2344529975040861103">Anda dapat membuat autolengkap kad ini kerana akaun anda dipautkan kepada Google Pay</translation>
@@ -3315,6 +3317,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6587893660316489419">Sampul B5</translation>
 <translation id="6587923378399804057">Pautan yang anda salin</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> anda tidak diurus</translation>
+<translation id="6595495738567740002">Untuk memadamkan kuki Google daripada peranti ini, <ph name="BEGIN_LINK" />log keluar dari Chrome<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Pilihan penyulitan</translation>
 <translation id="6596573334527383067">Paparkan hasil carian dari semalam</translation>
 <translation id="6597665340361269064">90 darjah</translation>
@@ -4019,6 +4022,7 @@ Butiran tambahan:
 <translation id="7761159795823346334">Benarkan kamera?</translation>
 <translation id="7761701407923456692">Sijil pelayan tidak sepadan dengan URL.</translation>
 <translation id="7764225426217299476">Tambahkan alamat</translation>
+<translation id="7765158879357617694">Alih</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7767278989746220252">Patio, Laman &amp; Taman</translation>
 <translation id="776749070095465053">Fabrik</translation>
@@ -4354,6 +4358,7 @@ Butiran tambahan:
 <translation id="8364627913115013041">Tidak ditetapkan.</translation>
 <translation id="8366057325711477500">Berita Dunia</translation>
 <translation id="836616551641291797">Ketahui lebih lanjut tentang cara penyemak imbas anda diurus</translation>
+<translation id="8367705492654390392">Tanya apa-apa sahaja</translation>
 <translation id="8368001212524806591">Jejak harga</translation>
 <translation id="8368027906805972958">Peranti tidak diketahui atau tidak disokong (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Perkhidmatan Google Play</translation>
@@ -4705,6 +4710,7 @@ Butiran tambahan:
 <translation id="9004367719664099443">Sesi VR sedang berlangsung</translation>
 <translation id="9005998258318286617">Gagal memuatkan dokumen PDF.</translation>
 <translation id="9008201768610948239">Abaikan</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Tiada}=1{Daripada 1 laman}other{Daripada # laman}}</translation>
 <translation id="9012194306129927220">Kini anda boleh melakukan bayaran ansuran menggunakan Affirm atau Zip</translation>
 <translation id="9014705027639070815">Laman yang anda lawati boleh meminta maklumat daripada Chrome untuk membantu mereka mengukur prestasi iklan mereka. Chrome membenarkan laman mengumpulkan jenis data yang terhad, seperti sama ada anda membuat pembelian atau tidak selepas melawat laman.</translation>
 <translation id="9018120810758822233">Masukkan kod keselamatan anda untuk <ph name="CREDIT_CARD" /></translation>

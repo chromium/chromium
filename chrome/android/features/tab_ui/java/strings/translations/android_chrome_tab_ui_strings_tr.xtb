@@ -17,6 +17,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> dakika önce oluşturuldu}other{<ph name="NUM_MINS_MANY" /> dakika önce oluşturuldu}}</translation>
 <translation id="1499635324672558517">Tüm Gizli sekmeler kapatılsın mı?</translation>
 <translation id="1501480321619201731">Grubu sil</translation>
+<translation id="1553638665176794706">{TABS_COUNT,plural, =1{Etkin olmayan <ph name="TABS_COUNT_ONE" /> öğe}other{Etkin olmayan <ph name="TABS_COUNT_MANY" /> öğe}}</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="161042844686301425">Camgöbeği</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> sekme gruplandı</translation>
@@ -68,6 +69,7 @@
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> yeni sekme}other{<ph name="MANY_ADDED" /> yeni sekme}}</translation>
 <translation id="3613492231657284463">Etkin olmayan sekmeleri gizle iletişim kutusu</translation>
 <translation id="3619255692378312441">Erişimi yönetin</translation>
+<translation id="3649471731638882002">{TAB_COUNT,plural, =1{Öğeyi kapat}other{Öğeleri kapat}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Paylaşım sayfası önizlemesinin küçük resmi.</translation>
 <translation id="3810973564298564668">Yönet</translation>
@@ -80,6 +82,7 @@
 <translation id="4159784952369912983">Mor</translation>
 <translation id="427987768447457592">Yeni sekme grubu</translation>
 <translation id="4371591986692297148">Etkin değil</translation>
+<translation id="4429658455677831355">{TAB_COUNT,plural, =1{Öğeyi geri yükle}other{Öğeleri geri yükle}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> gün önce güncellendi}other{<ph name="NUM_DAYS_MANY" /> gün önce güncellendi}}</translation>
 <translation id="4686942373615810936">Az önce oluşturuldu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 gün sonra kapat}other{<ph name="DAY_COUNT_MANY" /> gün sonra kapat}}</translation>
@@ -109,6 +112,7 @@
 <translation id="5556417849629758491">Mağaza bilgilerini görüntüleme seçeneği, ekranın üst kısmına yakın bir yerdedir</translation>
 <translation id="5627941783489838464">Sekme güncellemesi yok</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'dan <ph name="TABS_COUNT_ONE" /> bağlantı}other{Chrome'dan <ph name="TABS_COUNT_MANY" /> bağlantı}}</translation>
+<translation id="5746204836956568669">Daha hızlı çalışmak için <ph name="NUMBER_OF_TABS" /> sekme gruplandırılsın mı?</translation>
 <translation id="58326064309361797">Gruplandırmak için sekmeleri sürükleyin</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5972844218283131174">Tümünün seçimini kaldır</translation>
@@ -189,6 +193,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ay önce güncellendi}other{<ph name="NUM_MONTHS_MANY" /> ay önce güncellendi}}</translation>
 <translation id="8398929769197326728">Yeni Klasör - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Ayarlar</translation>
+<translation id="855081842937141170">Sekmeyi iğnele</translation>
 <translation id="8633025649649592204">Son işlem</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8714939927607906138">Daha düşük fiyat</translation>
@@ -205,4 +210,5 @@
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu genişletin.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu genişletin.}}</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="992256792861109788">Pembe</translation>
+<translation id="994514002078791059">{TAB_COUNT,plural, =1{Etkin olmayan 1 öğe kapatılsın mı?}other{Etkin olmayan <ph name="TAB_COUNT_MANY" /> öğe kapatılsın mı?}}</translation>
 </translationbundle>

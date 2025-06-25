@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">价格跟踪通知</translation>
 <translation id="21613918653299710">在线图库</translation>
 <translation id="2161656808144014275">文字</translation>
+<translation id="2162435186600002085">主要标题徽标</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> 上的现价为 <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">检查 <ph name="HOST_NAME" /> 中是否有拼写错误。</translation>
 <translation id="2166049586286450108">完全的管理员访问权限</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">添加护照</translation>
 <translation id="2400271059665846158">在 Google 钱包中管理您的会员卡</translation>
 <translation id="2400600116338235695">可以询问能否连接到串行端口</translation>
+<translation id="240450251994300576">次要标题徽标</translation>
 <translation id="2404884497378469141">尝试重新复制文件</translation>
 <translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能已被撤消。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">正在从 PDF 文件中提取文本…</translation>
 <translation id="2628224721443278970">登录 Microsoft OneDrive</translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的服务器 IP 地址。</translation>
+<translation id="2638567100095052009">输入 @ 即可在 <ph name="FEATURED_SEARCH_LIST" /> 中搜索</translation>
 <translation id="2639739919103226564">状态：</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">织物（半光）</translation>
@@ -2023,6 +2026,7 @@
 <translation id="4372948949327679948">应使用<ph name="VALUE_TYPE" />值。</translation>
 <translation id="437620492464254965">门窗</translation>
 <translation id="4377125064752653719">您尝试访问的是 <ph name="DOMAIN" />，但服务器出示的证书已被其颁发者吊销。这表明绝对不应该信任此服务器出示的安全凭据。您可能正在与攻击者进行通信。</translation>
+<translation id="4377869186417956230">更改为显示此菜单项下的所有会员卡。</translation>
 <translation id="4378154925671717803">电话</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">从现在起，请将您的文件保存到云端存储空间</translation>
@@ -2262,6 +2266,7 @@
 <translation id="4827283332383516812">删除卡</translation>
 <translation id="4830443836091007686">已选择 <ph name="ITEMS" /> 个</translation>
 <translation id="4831993743164297314">照排机用纸</translation>
+<translation id="4832388034239846146">如需分享标签页分组，请更新 Chrome</translation>
 <translation id="483241715238664915">开启警告</translation>
 <translation id="4832961164064927107">烧烤</translation>
 <translation id="4834250788637067901">Google Pay 中存储的付款方式、优惠和地址信息</translation>
@@ -2969,6 +2974,7 @@
 <translation id="6043357981274314628">已完成！</translation>
 <translation id="6044573915096792553">大小：12</translation>
 <translation id="6045164183059402045">拼版模板</translation>
+<translation id="6046892054959167494">输入 <ph name="SEARCH_AGGREGATOR_KEYWORD" /> 即可在“<ph name="SEARCH_AGGREGATOR_SHORT_NAME" />”中搜索或提问</translation>
 <translation id="6047927260846328439">此内容可能会试图诱骗您安装软件或透露个人信息。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 信封</translation>
 <translation id="6049488691372270142">页面传送</translation>
@@ -3137,6 +3143,7 @@
 <translation id="6326947323444967009">在 iOS 设置中将 Chrome 设置为系统的默认浏览器</translation>
 <translation id="6327065120806001832">本地网络访问权限</translation>
 <translation id="6328639280570009161">请尝试停用网络联想查询功能</translation>
+<translation id="6334834493885103305">现在，您可以使用 Affirm、Zip 或 Klarna 分期付款</translation>
 <translation id="6335029926534404762">运动鞋</translation>
 <translation id="6336948221660696475">不允许使用 VR</translation>
 <translation id="6337133576188860026">释放不到 <ph name="SIZE" /> 空间。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
@@ -4006,6 +4013,7 @@
 <translation id="7761159795823346334">允许使用摄像头？</translation>
 <translation id="7761701407923456692">服务器的证书与网址不相符。</translation>
 <translation id="7764225426217299476">添加地址</translation>
+<translation id="7765158879357617694">移动</translation>
 <translation id="7766518757692125295">裙式</translation>
 <translation id="7767278989746220252">庭院、草坪和花园</translation>
 <translation id="776749070095465053">织物</translation>
@@ -4060,6 +4068,7 @@
 <translation id="7878562273885520351">您的密码可能会被盗用</translation>
 <translation id="7881044256965445977">查找并连接到本地网络上的任何设备</translation>
 <translation id="7882421473871500483">棕色</translation>
+<translation id="7885670691503039914">当任一网站上的商品降价时，您会收到邮件提醒。该网页将保存到书签文件夹“<ph name="LAST_BOOKMARKS_FOLDER" />”中。</translation>
 <translation id="7886897188117641322">选择可用于帮助展示个性化广告的大类主题</translation>
 <translation id="7887683347370398519">请检查您的银行卡验证码 (CVC)，然后重试</translation>
 <translation id="7887885240995164102">进入“画中画”模式</translation>
@@ -4340,6 +4349,7 @@
 <translation id="8364627913115013041">未设置。</translation>
 <translation id="8366057325711477500">国际新闻</translation>
 <translation id="836616551641291797">详细了解您的浏览器的管理方式</translation>
+<translation id="8367705492654390392">请提出任何问题</translation>
 <translation id="8368001212524806591">跟踪价格</translation>
 <translation id="8368027906805972958">未知或不支持的设备 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play 服务</translation>
@@ -4655,6 +4665,7 @@
 <translation id="8926389886865778422">不再询问</translation>
 <translation id="8932102934695377596">您的时钟慢了</translation>
 <translation id="893332455753468063">添加名称</translation>
+<translation id="8938242527120341116">设备上的内容过滤器阻止了 <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">您的管理员已允许 <ph name="APP_NAME" /> 收集诊断数据以提升产品使用体验。有关详情，请参阅 <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />。</translation>
 <translation id="8943282376843390568">绿黄色</translation>
 <translation id="8949410982325929394">语气</translation>
@@ -4859,6 +4870,7 @@
 <translation id="963837307749850257">所有用户</translation>
 <translation id="964050462028070434">管理密码和通行密钥…</translation>
 <translation id="969892804517981540">正式版本</translation>
+<translation id="97054401902912338">详细了解内容过滤器</translation>
 <translation id="973788791897303708">此标签页分组已满</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{无}=1{1 项内容}other{# 项内容}}</translation>
 <translation id="976522784004777030">5 x 8 英寸</translation>

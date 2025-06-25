@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Yozuv tarmoq xatoligi sababli joylanmadi.</translation>
 <translation id="1668001730617725852">Yangi varaqlar guruhida ochish</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Endi manzillar qatoridan Google Lensni ochib, ekrandagi istalgan narsani qidirish mumkin</translation>
 <translation id="1689333818294560261">Nik</translation>
 <translation id="169048873465870056">Varaq olib tashlanib, guruh oʻchirilsinmi?</translation>
 <translation id="1698090540708020240">Parollarni import qilish…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Bu hisobni (<ph name="USER_EMAIL" />) <ph name="HOSTED_DOMAIN" /> boshqaradi va ayrim maʼlumotlarga ruxsat olishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">yangi element</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> ta hisob bir xil parolga ega</translation>
+<translation id="205013082884273671">Ekrandagi istalgan narsani qidiring</translation>
 <translation id="2054044186557130763">Tashkilot boshqaruvidagi <ph name="NAME" /> <ph name="EMAIL" /> hisobidan kiring.</translation>
 <translation id="2059166748188874810">Munitsipalitet</translation>
 <translation id="2060638295449304809">Bu manzil faqat mazkur qurilmada saqlangan. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda (<ph name="USER_EMAIL" />) saqlang</translation>
@@ -386,6 +388,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="251837347827266434">Hisobingizdan chiqasiz, varaqlar yopiladi va brauzer maʼlumotlari tozalanadi</translation>
 <translation id="2520787026086861736"><ph name="BEGIN_LINK" />Avtomatik kiritish va parollar<ph name="END_LINK" /> orqali faolsizlantirish mumkin.</translation>
 <translation id="2523295204312809179">Varaqlar guruhi yopilganda avtomatik shu yerda saqlanadi</translation>
+<translation id="2524699375503213836">Safaridan maʼlumotlaringizni import qiling</translation>
 <translation id="2529021024822217800">Hammasini ochish</translation>
 <translation id="2536991091671391962">Saqlangan parollardan istalgan qurilmada foydalanishingiz mumkin. Ular Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlangan.</translation>
 <translation id="2538103551183528357">Yashirin, parol</translation>
@@ -459,6 +462,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="2819667972867209401">Yoqilganda maʼlumotlar Google hisobingizda saqlanadi. Oʻchiq boʻlsa, maʼlumotlar faqat shu qurilmada saqlanadi va hisobdan chiqilganda tozalanadi.</translation>
 <translation id="2827760117436553203">Maʼlumotlar alohida saqlansinmi?</translation>
 <translation id="2829172210806130158">Ekrandan qidiring</translation>
+<translation id="2831109159746537587">Qidirish uchun rasmni chizib belgilang yoki bosing</translation>
 <translation id="2834399722155632105">3. Parol sozlamalarini bosing</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Vaqt</translation>

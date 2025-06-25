@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">ایپس پر تھپتھپائیں پھر ڈیفالٹ ایپس پر تھپتھپائیں</translation>
 <translation id="1415402041810619267">‏URL کو چھوٹا کیا گیا</translation>
 <translation id="1415855080660575082">‏اپنے آلے کی مدد سے Chrome کو اپنے حالیہ ٹیبز کا اشتراک کرنے کی اجازت دیں تاکہ وہ آپ کے آلے کی ایپس کی فہرست اور تلاش کے نتائج میں دکھائی دیں۔ آپ اسے Chrome کی ترتیبات میں کسی بھی وقت آن یا آف کر سکتے ہیں۔</translation>
+<translation id="1432650420699700107">سائٹس آپ کے مقامی نیٹ ورک پر کسی آلے سے منسلک ہونے کی استدعا کر سکتی ہیں</translation>
 <translation id="1448064542941920355">زوم آؤٹ کریں</translation>
 <translation id="1464044141348608623">آپ اپنے آلے کا فعال طور پر استعمال کب کر رہے ہیں سائٹس کو یہ جاننے کی اجازت نہ دیں</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> سائٹ}other{<ph name="SITE_COUNT" /> سائٹس}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">‏سائٹس کو USB آلات سے منسلک ہونے کی اجازت نہ دیں</translation>
 <translation id="3965467402665811906">سائٹس ان معلومات کو استعمال کرنے کے لیے پوچھ سکتی ہیں جو انہوں نے آپ کے بارے میں محفوظ کی ہیں</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
+<translation id="3969869202926863008">مقامی نیٹ ورک تک رسائی</translation>
 <translation id="3981465354637804599">سائٹس عام طور پر اشتہارات دکھاتی ہیں تاکہ وہ بغیر کسی قیمت کے مواد یا سروسز فراہم کر سکیں۔ لیکن کچھ سائٹس دخل اندازی کرنے والے یا گمراہ کن اشتہارات دکھانے کیلئے جانی جاتی ہیں۔</translation>
 <translation id="3987993985790029246">لنک کاپی کریں</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">سائٹ آخری بار <ph name="NUM_DAYS" /> دن پہلے ملاحظہ کی گئی</translation>
 <translation id="656065428026159829">مزید دیکھیں</translation>
 <translation id="6561560012278703671">پر سکون پیغام رسانی کا استعمال کریں (اطلاع کی پرامپٹس کو آپ کو خلل ڈالنے سے مسدود کرتا ہے)</translation>
+<translation id="6565144332292237355">آپ کے مقامی نیٹ ورک پر کوئی آلہ تلاش کرنے اور کسی آلے سے منسلک ہونے کیلئے، سائٹس اس خصوصیت کا استعمال کر سکتی ہیں</translation>
 <translation id="6593061639179217415">ڈیسک ٹاپ سائٹ</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> سائٹ کے لیے کوکیز کی اجازت ہے}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> سائٹس کے لیے کوکیز کی اجازت ہے}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

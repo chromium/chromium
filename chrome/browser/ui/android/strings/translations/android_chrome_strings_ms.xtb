@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Jimat sehingga 60% data, baca berita hari ini</translation>
 <translation id="1303339473099049190">Tidak menemukan kata laluan itu. Semak ejaan anda dan cuba lagi.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Dihantar daripada <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Himpunkan tab.</translation>
 <translation id="1318262688555255786">Kongsi pautan kepada halaman web <ph name="PAGE_TITLE" />. Sumber: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Folder aliran penyimpanan penanda halaman dibuka pada ketinggian penuh</translation>
 <translation id="1327257854815634930">Sejarah navigasi dibuka</translation>
@@ -497,6 +498,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3280562213547448728">Carian suara</translation>
 <translation id="3282568296779691940">Log masuk ke Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tab}}</translation>
+<translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda.}other{# kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}}</translation>
 <translation id="3293181007446299124">Sejarah penyemakan imbas anda dipastikan tertutup pada peranti anda dan penghantaran laporan dilengahkan untuk melindungi identiti anda</translation>
 <translation id="3301936297336370235">Pengesahan cadangan kata laluan</translation>
 <translation id="3302615849591357577">Pulihkan kumpulan tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />, sebagai kumpulan tab latar baharu.</translation>
@@ -580,6 +582,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="368329460027487650">Dilog keluar. Membuka pilihan untuk log masuk.</translation>
 <translation id="3684540848053703310">Helaian bawah cerapan harga ditutup</translation>
 <translation id="3687645719033307815">Anda sedang melihat pratonton halaman ini</translation>
+<translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{1 penanda halaman disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda.}other{# penanda halaman disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}}</translation>
 <translation id="3692944402865947621">Muat turun <ph name="FILE_NAME" /> gagal kerana lokasi storan tidak dapat dicapai.</translation>
 <translation id="3697705478071004188">Isih mengikut Laman</translation>
 <translation id="3699022356773522638">Muat turun fail?</translation>
@@ -780,6 +783,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4619564267100705184">Sahkan orang itu ialah anda</translation>
 <translation id="4624065194742029982">Inkognito Chrome</translation>
 <translation id="4634124774493850572">Gunakan kata laluan</translation>
+<translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{1 kata laluan dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}other{# kata laluan dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 kata laluan yang terjejas}other{# kata laluan yang terjejas}}</translation>
 <translation id="4641919525231168205">Akses halaman seterusnya</translation>
 <translation id="4642472735733036929">Penjejakan harga dihentikan</translation>
@@ -862,6 +866,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4913169188695071480">Berhenti memuat semula</translation>
 <translation id="4925120120285606924">Tangkapan skrin <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Anda boleh menyimpan imej dan fail untuk dilihat di luar talian atau dikongsi pada apl yang lain</translation>
+<translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 penanda halaman dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}other{# penanda halaman dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}}</translation>
 <translation id="4932247056774066048">Oleh sebab anda log keluar daripada akaun yang diurus oleh <ph name="DOMAIN_NAME" />, data Chrome anda akan dipadamkan daripada peranti ini. Data tersebut akan kekal dalam Google Account anda.</translation>
 <translation id="4943703118917034429">Realiti Maya</translation>
 <translation id="4943872375798546930">Tiada hasil carian</translation>
@@ -1320,6 +1325,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="687838958001010630">Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab</translation>
 <translation id="6880903702195291049">Kebenaran nampak baik</translation>
 <translation id="6883204995689174413">Kongsi</translation>
+<translation id="6883264411109586397">{ITEMS_COUNT,plural, =1{1 item disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda.}other{# item disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}}</translation>
 <translation id="6883606786470492001">Urus topik iklan anda dan tetapan lain untuk mengehadkan perkara yang boleh dipelajari oleh laman tentang anda untuk memaparkan iklan diperibadikan kepada anda</translation>
 <translation id="6883906387682976294">Nyahlanggan pemberitahuan daripada laman ini</translation>
 <translation id="688398477366397178">Benarkan laman web mengetahui bahasa tuturan anda. Laman web ini akan menunjukkan kandungan dalam bahasa tersebut, jika boleh.</translation>
@@ -1682,6 +1688,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="834313815369870491">Jangan terjemah laman</translation>
 <translation id="8348430946834215779">Jika boleh, gunakan HTTPS dan dapatkan amaran sebelum memuatkan laman yang tidak menyokong tetapan ini</translation>
 <translation id="8354977102499939946">Cari menggunakan suara anda dengan pantas. Untuk mengedit pintasan ini, pergi ke Tetapan.</translation>
+<translation id="8357329300499507091">Anda boleh mempunyai maksimum <ph name="MAX_WINDOW_COUNT" /> tetingkap. Untuk memulihkan tetingkap baharu, kurangkan jumlah bilangan tetingkap merentas aktif dan tidak aktif kepada <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> atau kurang. Tetingkap tidak aktif dipadamkan selepas 6 bulan.</translation>
 <translation id="8361737703487394103">Langkau kepada tab tertentu (1–8)</translation>
 <translation id="8368001212524806591">Jejak harga</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> kumpulan tab}other{<ph name="TAB_GROUPS_MANY" /> kumpulan tab}}</translation>
@@ -1743,6 +1750,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8565021320663436446">Alih keluar <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Fail tidak dapat dimuat turun dengan selamat</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
+<translation id="8576426273246268132">Anda boleh mempunyai maksimum <ph name="MAX_WINDOW_COUNT" /> tetingkap. Untuk membuka tetingkap baharu, kurangkan jumlah bilangan tetingkap merentas aktif dan tidak aktif kepada <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> atau kurang.</translation>
 <translation id="8580435650274205305">Tarikh tamat tempoh, diperlukan</translation>
 <translation id="8582529315803410153">Anda dapat menemukan tab anda daripada peranti lain di sini</translation>
 <translation id="8585103689515290060">Perkhidmatan autolengkap</translation>

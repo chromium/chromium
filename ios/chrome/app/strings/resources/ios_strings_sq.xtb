@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Ndarja dështoi për shkak se nuk je i lidhur në rrjet.</translation>
 <translation id="1668001730617725852">Hape në një grup të ri skedash</translation>
 <translation id="1674504678466460478">Nga <ph name="SOURCE_LANGUAGE" /> në <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Tani mund të hapësh "Lenten e Google" nga shiriti i adresave dhe të kërkosh gjithçka që sheh</translation>
 <translation id="1689333818294560261">Pseudonimi</translation>
 <translation id="169048873465870056">Të hiqet skeda dhe të fshihet grupi?</translation>
 <translation id="1698090540708020240">Importo fjalëkalimet…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Llogaria <ph name="USER_EMAIL" /> menaxhohet nga <ph name="HOSTED_DOMAIN" />, që mund të jetë në gjendje të shikojë disa informacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">artikull i ri</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> llogari po përdorin të njëjtin fjalëkalim</translation>
+<translation id="205013082884273671">Kërko gjithçka në ekran</translation>
 <translation id="2054044186557130763">Identifikohu si <ph name="NAME" /> (<ph name="EMAIL" />), menaxhohet nga organizata jote.</translation>
 <translation id="2059166748188874810">Komunë</translation>
 <translation id="2060638295449304809">Kjo adresë ruhet vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje në "Llogarinë tënde të Google", <ph name="USER_EMAIL" /></translation>
@@ -459,6 +461,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2819667972867209401">Kur është aktivizuar, të dhënat ruhen në "Llogarinë tënde të Google". Kur është çaktivizuar, të dhënat ruhen vetëm në këtë pajisje dhe fshihen nëse del nga llogaria.</translation>
 <translation id="2827760117436553203">Të mbahen veçmas të dhënat?</translation>
 <translation id="2829172210806130158">Kërko në ekranin tënd</translation>
+<translation id="2831109159746537587">Provo të qarkosh ose të trokasësh te fotografia për të kërkuar</translation>
 <translation id="2834399722155632105">3. Trokit tek "Opsionet e fjalëkalimeve"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Koha</translation>
@@ -1104,6 +1107,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5576885723883013398">Dritare e re</translation>
 <translation id="5578795271662203820">Kërko në <ph name="SEARCH_ENGINE" /> për këtë imazh</translation>
 <translation id="5579012242779565775">Fshih "Listën e leximit"</translation>
+<translation id="5581786858144165447">Pyet "Modalitetin e IA-së"</translation>
 <translation id="5585019845078534178">Kartat</translation>
 <translation id="5595485650161345191">Redakto adresën</translation>
 <translation id="559567008082979829">Cakto që shkarkimet e tua të fshihen pas një muaji</translation>

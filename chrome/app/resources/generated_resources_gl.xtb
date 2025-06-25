@@ -52,6 +52,7 @@
 <translation id="1031362278801463162">Cargando vista previa</translation>
 <translation id="1032605640136438169">Revísaas</translation>
 <translation id="103279545524624934">Libera espazo en disco para iniciar as aplicacións para Android.</translation>
+<translation id="1033060461778467949">Mover pestana á vista dividida</translation>
 <translation id="1033780634303702874">Acceder aos teus dispositivos en serie</translation>
 <translation id="1034484273907870301">Franxa de pestanas con miniaturas para o modo de tableta</translation>
 <translation id="1035289631433631911">Ferramenta Transferencia de contido</translation>
@@ -1914,6 +1915,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2312219318583366810">URL da páxina</translation>
 <translation id="2314165183524574721">Visibilidade actual configurada como Oculto</translation>
 <translation id="2314774579020744484">Idioma que se usa ao traducir páxinas</translation>
+<translation id="2316090909467242775">Proba este contrasinal de recuperación</translation>
 <translation id="2316129865977710310">Non, grazas</translation>
 <translation id="2316433409811863464">Emisión da aplicación</translation>
 <translation id="2316709634732130529">Utilizar contrasinal suxerido</translation>
@@ -2607,6 +2609,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Atopouse 1 sitio con moitas notificacións}other{Atopáronse {NUM_SITES} sitios con moitas notificacións}}</translation>
 <translation id="2778471504622896352">Engadir aplicacións remotas ao menú de aplicacións de ChromeOS</translation>
 <translation id="2779728796406650689">Esta opción permite que o Asistente de Google forneza respostas adaptadas cando lle fagas preguntas.</translation>
+<translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Produciuse un erro ao instalar a aplicación Linux</translation>
 <translation id="2783952358106015700">Utiliza a chave de seguranza coa aplicación <ph name="APP_NAME" /></translation>
@@ -3539,6 +3542,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3462413494201477527">Queres cancelar a configuración da conta?</translation>
 <translation id="346298925039590474">Esta rede de telefonía móbil estará dispoñible para todos os usuarios deste dispositivo</translation>
 <translation id="3464145797867108663">Engadir perfil de traballo</translation>
+<translation id="34673353983913587">Antes de gardar o teu novo contrasinal, é necesario que volvas verificar a túa identidade no sitio</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Teléfono Android</translation>
 <translation id="3469583217479686109">Ferramenta de selección</translation>
@@ -3566,6 +3570,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3487007233252413104">función anónima</translation>
 <translation id="3487649228420469005">Completouse a análise</translation>
 <translation id="3488199663160411179">nome</translation>
+<translation id="3489457144969823485">As aplicacións de Chrome deixaron de funcionar en dispositivos ChromeOS en xullo de 2025. Recomendámosche usar unha aplicación alternativa.</translation>
 <translation id="3490695139702884919">Descargando… <ph name="PERCENT" /> %</translation>
 <translation id="3491171603443463516">Os datos locais poderán restaurarse se esqueces o contrasinal ou o PIN</translation>
 <translation id="3491616972057195633">Teclas de rebote</translation>
@@ -4036,6 +4041,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> extensións</translation>
 <translation id="3794792524918736965">Activar Windows Hello</translation>
 <translation id="379509625511193653">Non</translation>
+<translation id="3795624560191557077">Recentemente cambiaches un contrasinal que se atopou nunha violación da seguranza dos datos pública. Se tes problemas, o xestor de contrasinais de Google pode axudarche a iniciar sesión.</translation>
 <translation id="3796215473395753611">alt + frecha arriba</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, usa a Frecha dereita para oír unha mostra da voz</translation>
 <translation id="3796648294839530037">Redes favoritas:</translation>
@@ -4834,6 +4840,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="435527878592612277">Seleccionar a túa foto</translation>
 <translation id="4356100841225547054">Desactivar o volume</translation>
 <translation id="4357583358198801992">Mostrar grupos de pestanas</translation>
+<translation id="4357812592970409234">Máis información sobre o fondo da páxina Nova pestana</translation>
 <translation id="4358361163731478742">Ningunha aplicación admite a selección de idioma</translation>
 <translation id="4358643842961018282">O dispositivo está actualizado</translation>
 <translation id="4358995225307748864">Selecciona unha aplicación para abrila</translation>
@@ -4906,6 +4913,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4406883609789734330">Subtítulos instantáneos</translation>
 <translation id="4408599188496843485">A&amp;xuda</translation>
 <translation id="4409271659088619928">O teu motor de busca é <ph name="DSE" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
+<translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />. Avisarémoste cando se inicie a gravación.}=2{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Avisarémoste cando se inicie a gravación.}=3{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e 1 aplicación máis. Avisarémoste cando se inicie a gravación.}other{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e # aplicacións máis. Avisarémoste cando se inicie a gravación.}}</translation>
 <translation id="4409697491990005945">Marxes</translation>
 <translation id="4409779593816003679">Contrasinais e &amp;Autocompletar</translation>
 <translation id="4410545552906060960">Utiliza un número (PIN) en lugar dun contrasinal para desbloquear o dispositivo. Para definir o PIN máis tarde, vai a Configuración.</translation>
@@ -5856,6 +5864,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5088534251099454936">PKCS n.º 1 SHA-512 con cifrado RSA</translation>
 <translation id="5090637338841444533">Permiso denegado para facer un seguimento da posición da cámara</translation>
 <translation id="5091636240353511739">Mostrar o PIN</translation>
+<translation id="5093417502834168387">Tes problemas para iniciar sesión? Proba con outro método</translation>
 <translation id="5093477827231450397">Lista de sitios que bloqueaches e que non queres que lles suxiran anuncios a outros sitios</translation>
 <translation id="5093569275467863761">Submarco de incógnito almacenado na memoria caché de páxinas anteriores e seguintes: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Podes abrir e editar ficheiros compatibles con esta aplicación desde Ficheiros ou outras aplicacións. Para controlar os ficheiros que se abren nesta aplicación de forma predeterminada, consulta <ph name="BEGIN_LINK" />como definir aplicacións predeterminadas no teu dispositivo<ph name="END_LINK" />.</translation>
@@ -6791,6 +6800,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5785583009707899920">Utilidades dos ficheiros de Chrome</translation>
 <translation id="5787146423283493983">Acordo de claves</translation>
 <translation id="5787420647064736989">Nome do dispositivo</translation>
+<translation id="5787582109651427233">Visita Google Wallet para engadir e xestionar <ph name="BEGIN_LINK_LOYALTY_CARDS" />tarxetas de fidelidade<ph name="END_LINK_LOYALTY_CARDS" /> ou <ph name="BEGIN_LINK_PAYMENT_METHODS" />métodos de pago<ph name="END_LINK_PAYMENT_METHODS" /> de Google Pay</translation>
 <translation id="5788367137662787332">É posible que polo menos unha partición do dispositivo <ph name="DEVICE_LABEL" /> non estea instalada.</translation>
 <translation id="5789581866075720267">Para importar os contrasinais a <ph name="BRAND" /> neste dispositivo, selecciona un ficheiro CSV.</translation>
 <translation id="5790085346892983794">Correcto</translation>
@@ -6983,6 +6993,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5916664084637901428">Si</translation>
 <translation id="59174027418879706">Activado</translation>
 <translation id="5919305207330938913">Todos os datos recompilados utilizaranse de acordo coa <ph name="BEGIN_LINK" />Política de privacidade<ph name="END_LINK" /> de Google.</translation>
+<translation id="5919486630433391408">A persoa administradora desactivou as actualizacións do firmware.</translation>
 <translation id="5920543303088087579">O administrador desactivou a conexión a esta rede</translation>
 <translation id="5922963926582976524">Desconectar rede da zona wifi instantánea</translation>
 <translation id="5924047253200400718">Obter axuda<ph name="SCANNING_STATUS" /></translation>
@@ -7275,6 +7286,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6131511889181741773">Salpicadura</translation>
 <translation id="6132251717264923430">Fixouse o botón</translation>
 <translation id="6132714462430777655">Queres omitir a inscrición do centro educativo?</translation>
+<translation id="6134418895482326458">Ocultar pé da páxina Nova pestana</translation>
 <translation id="6134428719487602109">Quita todas as contas de usuario e restablece o teu Chromebook como se fose novo.</translation>
 <translation id="6135826623269483856">Permiso denegado para xestionar ventás en todas as pantallas</translation>
 <translation id="6136114942382973861">Pechar barra de descargas</translation>
@@ -7631,6 +7643,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6388577073199278153">Non se puido acceder á conta do teu operador móbil</translation>
 <translation id="6390020764191254941">Mover pestana a ventá nova</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Para ningún sitio}=1{Para <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> e 1 sitio máis}other{Para <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> e {COUNT} sitios máis}}</translation>
+<translation id="6390533465682072118">Recuperación</translation>
 <translation id="6391131092053186625">O IMEI do dispositivo é <ph name="IMEI_NUMBER" />. Este número pode usarse para axudar a activar o servizo.</translation>
 <translation id="6393156038355142111">Suxerir contrasinal seguro</translation>
 <translation id="6393550101331051049">Permiso concedido para mostrar contido inseguro</translation>
@@ -7715,6 +7728,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6455521402703088376">Desactivada • O programador anulou a publicación desta extensión</translation>
 <translation id="6455894534188563617">&amp;Novo cartafol</translation>
 <translation id="645705751491738698">Continuar bloqueando JavaScript</translation>
+<translation id="6457572529564180082">Non se pode iniciar <ph name="APP_NAME" /></translation>
 <translation id="6458606150257356946">Pegar de todas as formas</translation>
 <translation id="6458701200018867744">Produciuse un erro ao cargar o rexistro (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Utilizar selección para buscar</translation>
@@ -8007,6 +8021,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6667187897999649121">Polo de agora, só podes compartir contrasinais cos membros da familia. <ph name="BEGIN_LINK" />Crea un grupo familiar<ph name="END_LINK" /> cun máximo de seis membros para tirardes proveito dos teus produtos e subscricións de Google.</translation>
 <translation id="666731172850799929">Abrir en <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Os datos trátanse igual ca no sitio web que estás vendo</translation>
+<translation id="6669637573228217624">Cargar un ficheiro</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> xa está dispoñible</translation>
 <translation id="6670767097276846646">Algunhas extensións poden engadir motores de busca a Chrome</translation>
 <translation id="6670983860904543332">As actualizacións automáticas proporciónanche as funcións máis recentes. Explora o máis destacado das últimas actualizacións.</translation>
@@ -8145,6 +8160,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6771503742377376720">É unha autoridade de certificación</translation>
 <translation id="6772974422346500939">Abrir e editar</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
+<translation id="677394079035748956">O sitio necesita un contrasinal dun só uso</translation>
 <translation id="6774710250118040929">Engadir un contrasinal novo</translation>
 <translation id="6775163072363532304">Os dispositivos dispoñibles aparecerán aquí.</translation>
 <translation id="6775992990195573904">Ordena as túas pestanas</translation>
@@ -8225,6 +8241,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6811792477922751991">Usar tecla do menú de aplicacións para modificar o comportamento das teclas de función</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> non se pode executar como raíz.</translation>
 <translation id="6812841287760418429">Manter os cambios</translation>
+<translation id="681360534161436378">{NUM_APPS,plural,offset:2 =1{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />.}=2{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />.}=3{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e 1 aplicación máis.}other{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e # aplicacións máis.}}</translation>
 <translation id="6813907279658683733">Pantalla completa</translation>
 <translation id="6814754908910736855">Información de clientes de Wi-Fi Direct:</translation>
 <translation id="6815376457351236663">Abrir de todas formas</translation>
@@ -9263,6 +9280,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7566118625369982896">Xestionar ligazóns da aplicación Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Crear combinación de teclas</translation>
+<translation id="7567100268516475532">Mover pestana á vista dividida</translation>
 <translation id="7568014768212280234">Este grupo de pestanas está cheo. Os novos membros non se poden unir coa ligazón</translation>
 <translation id="7568759527730933493">Usa unha conexión segura para buscar o enderezo IP dun sitio no DNS (Sistema de nomes de dominios) Para esta acción utilízase un fornecedor de servizos xestionado en <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. As conexións seguras non se usan para algúns dominios configurados pola persoa administradora.</translation>
 <translation id="756876171895853918">Personalizar avatar</translation>
@@ -10405,6 +10423,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8339288417038613756">Tamaño da pantalla e do texto</translation>
 <translation id="833986336429795709">Para abrir esta ligazón, escoller unha aplicación</translation>
 <translation id="8340547030807793004">Máis accións para <ph name="DEVICE" /></translation>
+<translation id="8341804784147620576">Mostrar atallos de busca</translation>
 <translation id="8342221978608739536">Non se intentou</translation>
 <translation id="8342861492835240085">Seleccionar unha colección</translation>
 <translation id="8345848587667658367">Xa podes acceder ás aplicacións, ás notificacións, ao contido multimedia e ás fotos recentes do teu teléfono</translation>
@@ -10916,6 +10935,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8702825062053163569">Bloqueouse o teu dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="8703346390800944767">Omitir anuncio</translation>
 <translation id="8703372953981978786">Esta ligazón non funciona</translation>
+<translation id="8703766890819308134">Mostrar atallos de busca</translation>
 <translation id="8704662571571150811">Dominios</translation>
 <translation id="8705331520020532516">Número de serie</translation>
 <translation id="8705580154597116082">Unha wifi está dispoñible a través do teléfono</translation>
@@ -11631,6 +11651,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9182556968660520230">Non permitir que os sitios reproduzan contido protexido</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicación}other{# aplicacións}}</translation>
+<translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />. Non te avisaremos cando se inicie a gravación.}=2{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Non te avisaremos cando se inicie a gravación.}=3{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e 1 aplicación máis. Non te avisaremos cando se inicie a gravación.}other{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e # aplicacións máis. Non te avisaremos cando se inicie a gravación.}}</translation>
 <translation id="9186963452600581158">Iniciar sesión cunha Conta de Google infantil</translation>
 <translation id="9187967020623675250">As teclas non coinciden. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Escoita comentarios de voz para poder utilizar o dispositivo sen mirar a pantalla. Os comentarios están dispoñibles en braille cun dispositivo conectado. Para activar e desactivar ChromeVox, utiliza a combinación Control + Alt + Z. Para navegar, preme Buscar + Frecha esquerda ou Frecha dereita. Para seleccionar (activar) a función, preme Buscar + Espazo.</translation>

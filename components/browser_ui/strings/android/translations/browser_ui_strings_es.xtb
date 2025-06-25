@@ -36,6 +36,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="1409338233051621926">Toca Aplicaciones y, a continuación, Aplicaciones predeterminadas</translation>
 <translation id="1415402041810619267">URL truncada</translation>
 <translation id="1415855080660575082">Permite que Chrome comparta tus pestañas recientes con tu dispositivo para que aparezcan en la lista de aplicaciones y en los resultados de búsqueda de tu dispositivo. Puedes activar o desactivar esta opción en la configuración de Chrome.</translation>
+<translation id="1432650420699700107">Los sitios pueden solicitar permiso para conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="1448064542941920355">Reducir zoom</translation>
 <translation id="1464044141348608623">No permitir que los sitios sepan cuándo usas activamente tu dispositivo</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sitio}other{<ph name="SITE_COUNT" /> sitios}}</translation>
@@ -254,6 +255,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="3955321697524543127">No permitir que los sitios se conecten a dispositivos USB</translation>
 <translation id="3965467402665811906">Los sitios pueden solicitar permiso para usar la información que hayan guardado sobre ti</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
+<translation id="3969869202926863008">Acceso a la red local</translation>
 <translation id="3981465354637804599">Los sitios suelen mostrar anuncios para poder ofrecer contenido o servicios sin coste económico. Sin embargo, algunos sitios se caracterizan por mostrar anuncios invasivos o engañosos.</translation>
 <translation id="3987993985790029246">Copiar enlace</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="6554732001434021288">Última visita: hace <ph name="NUM_DAYS" /> días</translation>
 <translation id="656065428026159829">Ver más</translation>
 <translation id="6561560012278703671">Usar notificaciones más discretas (bloquea las notificaciones emergentes para que no te interrumpan)</translation>
+<translation id="6565144332292237355">Los sitios pueden usar esta función para buscar y conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="6593061639179217415">Sitio para ordenadores</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies permitidas en <ph name="RWS_MEMBERS_COUNT" /> sitio de <ph name="RWS_OWNER" />}other{Cookies permitidas en <ph name="RWS_MEMBERS_COUNT" /> sitios de <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

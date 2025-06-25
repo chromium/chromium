@@ -36,6 +36,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="1409338233051621926">Tik op Apps en daarna op Standaard-apps</translation>
 <translation id="1415402041810619267">URL afgekapt</translation>
 <translation id="1415855080660575082">Sta toe dat Chrome je recente tabbladen deelt met je apparaat zodat je ze kunt zien in de app-lijst en zoekresultaten van je apparaat. Je kunt dit altijd aan- of uitzetten in de Chrome-instellingen.</translation>
+<translation id="1432650420699700107">Sites kunnen vragen of ze verbinding mogen maken met apparaten in je lokale netwerk</translation>
 <translation id="1448064542941920355">Zoomniveau verkleinen</translation>
 <translation id="1464044141348608623">Niet toestaan dat sites weten wanneer je je apparaat actief gebruikt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
@@ -254,6 +255,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3955321697524543127">Niet toestaan dat sites verbinding maken met USB-apparaten</translation>
 <translation id="3965467402665811906">Sites kunnen vragen of ze informatie over je mogen gebruiken</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
+<translation id="3969869202926863008">Toegang tot lokaal netwerk</translation>
 <translation id="3981465354637804599">Sites kiezen er vaak voor advertenties te tonen zodat ze hun content en services kosteloos kunnen aanbieden. Het is wel bekend dat bepaalde sites opdringerige of misleidende advertenties tonen.</translation>
 <translation id="3987993985790029246">Link kopiëren</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> van ?</translation>
@@ -422,6 +424,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="5968921426641056619">Webadres opgeven</translation>
 <translation id="5975083100439434680">Uitzoomen</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Discover-feed aanzetten</translation>
 <translation id="6015775454662021376">De toegang van deze site tot je apparaat beheren</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6042308850641462728">Meer</translation>
@@ -463,6 +466,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="6554732001434021288">Laatst bezocht: <ph name="NUM_DAYS" /> dagen geleden</translation>
 <translation id="656065428026159829">Meer bekijken</translation>
 <translation id="6561560012278703671">Stillere berichten gebruiken (zorgt ervoor dat je niet wordt gestoord door meldingprompts)</translation>
+<translation id="6565144332292237355">Sites kunnen deze functie gebruiken om apparaten in je lokale netwerk te zoeken en verbinding ermee te maken</translation>
 <translation id="6593061639179217415">Desktopsite</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies toegestaan voor <ph name="RWS_MEMBERS_COUNT" /> site van <ph name="RWS_OWNER" />}other{Cookies toegestaan voor <ph name="RWS_MEMBERS_COUNT" /> sites van <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

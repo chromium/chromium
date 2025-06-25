@@ -267,6 +267,7 @@
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome, Tarayıcınızı Yavaşlatan Sekmeyi Duraklatmanızı Öneriyor}other{Chrome, Tarayıcınızı Yavaşlatan Sekmeleri Duraklatmanızı Öneriyor}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Kişiselleştirme ve diğer özelliklerden yararlanmak için Chrome'u Web ve Uygulama Etkinliği'nin yanı sıra bağlı Google hizmetlerine ekleyin</translation>
+<translation id="4334241893986177674">Bu ekran görüntüsünde arama yapın</translation>
 <translation id="4334294535648607276">İndirme işlemi tamamlandı.</translation>
 <translation id="4337324600316876133">Gelecekteki Google Chrome güncellemelerini almak için macOS 12 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar macOS 11 kullanıyor.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> Chrome'a eklendi</translation>

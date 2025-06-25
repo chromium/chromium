@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Spar op til 60 % data, og læs dagens nyheder</translation>
 <translation id="1303339473099049190">Adgangskoden blev ikke fundet. Tjek stavningen, og prøv igen.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – sendt fra <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Gruppér faner</translation>
 <translation id="1318262688555255786">Del linket til websiden <ph name="PAGE_TITLE" />. Kilde: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Mapper i flow til lagring af bogmærker er åbnet i fuld højde</translation>
 <translation id="1327257854815634930">Navigationsoversigt er åbnet</translation>
@@ -477,6 +478,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Annoncemåling</translation>
 <translation id="3189635831478931757">Fanegruppe: <ph name="GROUP_TITLE" /></translation>
+<translation id="3200536777393523575">Vil du lukke det aktuelle vindue?</translation>
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
 <translation id="3208584281581115441">Tjek nu</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> blev slettet</translation>
@@ -721,6 +723,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4351244548802238354">Luk dialogboksen</translation>
 <translation id="4352287748243729941">Vil du bruge din adgangskode til <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Du kan vende tilbage til en side, der er vigtig for dig, ved at tilføje et bogmærke.</translation>
+<translation id="4356503491090073318">Kortnummer*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Sikkerhedsoverblik</translation>
 <translation id="4378154925671717803">Telefon</translation>
@@ -738,6 +741,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4425140285732600465">Der holdes øje med prisen. Få besked, hvis prisen falder på et website.</translation>
 <translation id="4425173294238317796">Felt til bekræftelse af adgangsnøgle</translation>
 <translation id="442518031075347249">Du vil ikke længere kunne bruge dit virtuelle kort med Google Pay. <ph name="BEGIN_LINK1" />Få flere oplysninger om virtuelle kort<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_ONE" /> anden fane lukkes}one{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_MANY" /> anden fane lukkes}other{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_MANY" /> andre faner lukkes}}</translation>
 <translation id="4426508677408162512">Alle bogmærker</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> er valgt i øjeblikket. Vælg en konto.</translation>
 <translation id="4452411734226507615">Luk fanen <ph name="TAB_TITLE" /></translation>
@@ -873,6 +877,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4987271110129728827">Siden kan ikke findes. Tjek stavningen, eller prøv med en websøgning.</translation>
 <translation id="4988526792673242964">Sider</translation>
 <translation id="4991110219272367918">Mulighed for at godkende eller ikke godkende et website – lukket</translation>
+<translation id="4996042648402406470">Hent</translation>
 <translation id="4996095658297597226">Vil du bruge den foreslåede adgangskode?</translation>
 <translation id="5001388021414335527">Følg dette website her</translation>
 <translation id="5004416275253351869">Aktivitetsadministration på Google</translation>
@@ -923,10 +928,12 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5210286577605176222">Gå til den forrige fane</translation>
 <translation id="5210365745912300556">Luk fanen</translation>
 <translation id="5215957675041756913">Administrer dine data og din konto</translation>
+<translation id="5218324087477576825">Kortnummer, påkrævet</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og andre <ph name="SEPARATOR" /> Chrome har fjernet disse tilladelser, fordi du ikke har besøgt websitet for nylig</translation>
 <translation id="5222676887888702881">Log ud</translation>
 <translation id="5226378907213531272">Du skal låse din skærm op, hver gang du bruger bilen</translation>
 <translation id="5227554086496586518">Tryk for at se søgeresultaterne</translation>
+<translation id="5229736206150093143">Seneste resultater</translation>
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5235196193381275927">Noget gik galt under login</translation>
 <translation id="5246093389635966745">Rediger genvej til værktøjslinje</translation>
@@ -1281,6 +1288,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="676305334223455055">Log ind for at få indhold baseret på dine interesser</translation>
 <translation id="6764137532716892442">Delt <ph name="GROUP_TITLE" />-fanegruppe med ny aktivitet</translation>
 <translation id="6767294960381293877">Åben liste i halv højde over enheder, der skal deles en fane med.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_ONE" /> anden fane lukkes}one{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_MANY" /> anden fane lukkes}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_MANY" /> andre faner lukkes}}</translation>
 <translation id="6785476624617658922">Yderligere servicevilkår for Google Chrome og ChromeOS</translation>
 <translation id="6786747875388722282">Udvidelser</translation>
 <translation id="6795633245022906657">Åbn hurtigt en ny fane. Gå til Indstillinger for at redigere denne genvej.</translation>
@@ -1400,6 +1408,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7224097611345298931">Alle adgangskoder til Chrome og <ph name="CHROME_CHANNEL" />, som kun er gemt på denne enhed, er blevet flettet. Du kan udfylde alle dine gemte adgangskoder automatisk i begge apps.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download afventer}one{# download afventer}other{# downloads afventer}}</translation>
 <translation id="7230064152164845085">Skift til inkognito</translation>
+<translation id="7230836263524391273">Skjul Læsetilstand</translation>
 <translation id="7237724030342645845">Google Adgangskodeadministrator stoppede med at fungere</translation>
 <translation id="72415438529550637">Adgangskodeforslaget er lukket.</translation>
 <translation id="7248671827512403053">Applikation</translation>
@@ -1576,6 +1585,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7965838025086216108">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i Google Adgangs­kode­admin­istrator for <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Føjet til læseliste</translation>
 <translation id="7968982339740310781">Se oplysninger</translation>
+<translation id="7969391000881506217">Udløbsdato*</translation>
 <translation id="7971136598759319605">Aktiv for 1 dag siden</translation>
 <translation id="7975379999046275268">Se forhåndsvisning af siden <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Advarer dig, hvis du bruger en adgangskode, der er blevet kompromitteret som følge af et brud på datasikkerheden.</translation>
@@ -1734,6 +1744,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8565021320663436446">Vil du fjerne <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Filen kan ikke downloades sikkert</translation>
 <translation id="8571213806525832805">Seneste 4 uger</translation>
+<translation id="8580435650274205305">Udløbsdato, påkrævet</translation>
 <translation id="8582529315803410153">Her kan du se dine faner fra andre enheder</translation>
 <translation id="8585103689515290060">Tjenester til autofyld</translation>
 <translation id="859046281437143747">Hold øje med prisen ved hjælp af knappen Flere valgmuligheder</translation>

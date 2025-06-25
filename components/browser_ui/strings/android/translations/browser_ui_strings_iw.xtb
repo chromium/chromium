@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">לוחצים על "אפליקציות" ואז על "אפליקציות ברירת מחדל"</translation>
 <translation id="1415402041810619267">‏כתובת ה-URL קוצרה</translation>
 <translation id="1415855080660575082">‏‫Chrome יכול לשתף את הכרטיסיות האחרונות עם המכשיר שלך כדי שתהיה לך אפשרות לראות אותן ברשימת האפליקציות במכשיר ובתוצאות החיפוש. ניתן להפעיל או להשבית את האפשרות הזו בהגדרות Chrome.</translation>
+<translation id="1432650420699700107">אתרים יכולים לבקש הרשאה להתחבר לכל מכשיר ברשת המקומית</translation>
 <translation id="1448064542941920355">הקטנת הזום</translation>
 <translation id="1464044141348608623">לא לאפשר לאתרים לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{באתר אחד (<ph name="SITE_COUNT" />)}one{ב-<ph name="SITE_COUNT" /> אתרים}two{ב-<ph name="SITE_COUNT" /> אתרים}other{ב-<ph name="SITE_COUNT" /> אתרים}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">‏לא לאפשר לאתרים להתחבר למכשירי USB</translation>
 <translation id="3965467402665811906">אתרים יכולים לבקש הרשאה להשתמש במידע שנשמר עליך</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
+<translation id="3969869202926863008">גישה לרשת המקומית</translation>
 <translation id="3981465354637804599">אתרים מציגים בדרך כלל מודעות כדי שיוכלו לספק תוכן או שירותים בחינם. עם זאת, ידוע שאתרים מסוימים מציגים מודעות שמפריעות או מטעות.</translation>
 <translation id="3987993985790029246">העתקת קישור</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -464,6 +466,7 @@
 <translation id="6554732001434021288">הביקור האחרון התבצע לפני <ph name="NUM_DAYS" /> ימים</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
 <translation id="6561560012278703671">הצגת התראות שקטה יותר (למניעת הקפצה של חלוניות מפריעות)</translation>
+<translation id="6565144332292237355">אתרים יכולים להשתמש בתכונה הזו כדי לחפש מכשירים ברשת המקומית ולהתחבר אליהם</translation>
 <translation id="6593061639179217415">אתר מותאם למחשב</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{‏קובצי cookie מותרים לאתר אחד (<ph name="RWS_MEMBERS_COUNT" />) של <ph name="RWS_OWNER" />}one{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}two{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}other{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>

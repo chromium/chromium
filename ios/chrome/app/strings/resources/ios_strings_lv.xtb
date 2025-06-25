@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Nevarēja kopīgot, jo nav izveidots savienojums ar tīklu.</translation>
 <translation id="1668001730617725852">Atvērt jaunā ciļņu grupā</translation>
 <translation id="1674504678466460478">No <ph name="SOURCE_LANGUAGE" /> uz <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Tagad varat atvērt Google Lens no adreses joslas un meklēt ekrānā redzamo saturu.</translation>
 <translation id="1689333818294560261">Apzīmējums</translation>
 <translation id="169048873465870056">Vai noņemt cilni un dzēst grupu?</translation>
 <translation id="1698090540708020240">Importēt paroles…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Kontu <ph name="USER_EMAIL" /> pārvalda domēnam <ph name="HOSTED_DOMAIN" /> atbilstošā organizācija, kas, iespējams, var skatīt noteiktu informāciju. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">jauns vienums</translation>
 <translation id="2049727122989709386">Vēl <ph name="COUNT" /> kontos tiek izmantota tā pati parole.</translation>
+<translation id="205013082884273671">Varat meklēt jebkādu ekrānā redzamo saturu</translation>
 <translation id="2054044186557130763">Pierakstieties ar kontu <ph name="NAME" />, <ph name="EMAIL" /> (pārvalda jūsu organizācija).</translation>
 <translation id="2059166748188874810">Pašvaldība</translation>
 <translation id="2060638295449304809">Šī adrese ir saglabāta tikai šajā ierīcē. Lai varētu izmantot šo adresi citās ierīcēs, saglabājiet to savā Google kontā <ph name="USER_EMAIL" />.</translation>
@@ -459,6 +461,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="2819667972867209401">Ja šis iestatījums ir ieslēgts, dati tiek saglabāti jūsu Google kontā. Ja tas ir izslēgts, dati tiek saglabāti tikai šajā ierīcē un tiek dzēsti, kad izrakstāties.</translation>
 <translation id="2827760117436553203">Vai glabāt datus atsevišķi?</translation>
 <translation id="2829172210806130158">Meklējiet ekrānā.</translation>
+<translation id="2831109159746537587">Lai meklētu, apvelciet objektu vai pieskarieties attēlam</translation>
 <translation id="2834399722155632105">3. Pieskarieties pogai Paroles iespējas.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Laiks</translation>
@@ -1104,6 +1107,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5576885723883013398">Jauns logs</translation>
 <translation id="5578795271662203820">Meklēt šo attēlu ar <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Paslēpt vienumu “Lasīšanas saraksts”</translation>
+<translation id="5581786858144165447">Jautāt MI režīmam</translation>
 <translation id="5585019845078534178">Kartes</translation>
 <translation id="5595485650161345191">Rediģēt adresi</translation>
 <translation id="559567008082979829">Iestatiet, lai lejupielādes tiktu dzēstas pēc viena mēneša.</translation>

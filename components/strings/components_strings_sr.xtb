@@ -2030,6 +2030,7 @@
 <translation id="4372948949327679948">Очекивана вредност je <ph name="VALUE_TYPE" />.</translation>
 <translation id="437620492464254965">Врата и прозори</translation>
 <translation id="4377125064752653719">Покушали сте да контактирате <ph name="DOMAIN" />, али је издавач опозвао сертификат који је сервер навео. То значи да никако не треба имати поверења у безбедносне акредитиве које је сервер навео. Могуће је да комуницирате са нападачем.</translation>
+<translation id="4377869186417956230">Пређите на све картице лојалности у оквиру ове ставке менија.</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Од сада чувајте фајлове у простору у клауду</translation>
@@ -3146,6 +3147,7 @@
 <translation id="6326947323444967009">Подесите Chrome као подразумевани прегледач система у подешавањима iOS-а</translation>
 <translation id="6327065120806001832">приступ локалној мрежи</translation>
 <translation id="6328639280570009161">Покушајте да онемогућите предвиђање мреже</translation>
+<translation id="6334834493885103305">Сада можете да плаћате на рате уз Affirm, Zip или Klarna</translation>
 <translation id="6335029926534404762">Спортска обућа</translation>
 <translation id="6336948221660696475">ВР није дозвољен</translation>
 <translation id="6337133576188860026">Ослобађа мање од <ph name="SIZE" />. Неки сајтови ће се можда спорије учитавати кад их следећи пут посетите.</translation>
@@ -3311,6 +3313,7 @@
 <translation id="6587893660316489419">Коверта B5</translation>
 <translation id="6587923378399804057">Линк који сте копирали</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" />-ом се не управља</translation>
+<translation id="6595495738567740002">Да бисте избрисали Google колачиће са овог уређаја, <ph name="BEGIN_LINK" />одјавите се из Chrome-а<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Опције шифровања</translation>
 <translation id="6596573334527383067">Прикажите резултате од јуче</translation>
 <translation id="6597665340361269064">90 степени</translation>
@@ -4015,6 +4018,7 @@
 <translation id="7761159795823346334">Желите ли да дозволите камеру?</translation>
 <translation id="7761701407923456692">Сертификат сервера се не подудара са URL адресом.</translation>
 <translation id="7764225426217299476">Додајте адресу</translation>
+<translation id="7765158879357617694">Премести</translation>
 <translation id="7766518757692125295">Обод</translation>
 <translation id="7767278989746220252">Терасе, травњаци и баште</translation>
 <translation id="776749070095465053">Тканина</translation>
@@ -4069,6 +4073,7 @@
 <translation id="7878562273885520351">Лозинка је можда компромитована</translation>
 <translation id="7881044256965445977">Потражите уређаје на локалној мрежи и повежите се са њима</translation>
 <translation id="7882421473871500483">Браон</translation>
+<translation id="7885670691503039914">Добијаћете упозорења имејлом ако се цена снизи на било ком сајту. Ова страница ће бити сачувана у фолдеру обележивача <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Одаберите широке категорије тема које могу да се користе за персонализацију огласа</translation>
 <translation id="7887683347370398519">Проверите CVC и покушајте поново</translation>
 <translation id="7887885240995164102">Покрени режим слике у слици</translation>
@@ -4349,6 +4354,7 @@
 <translation id="8364627913115013041">Није подешено.</translation>
 <translation id="8366057325711477500">Вести из света</translation>
 <translation id="836616551641291797">Сазнајте више о томе како се управља прегледачем</translation>
+<translation id="8367705492654390392">Питајте било шта</translation>
 <translation id="8368001212524806591">Прати цену</translation>
 <translation id="8368027906805972958">Непознат или неподржан уређај (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play услуге</translation>
@@ -4664,6 +4670,7 @@
 <translation id="8926389886865778422">Не питај ме поново</translation>
 <translation id="8932102934695377596">Сат вам касни</translation>
 <translation id="893332455753468063">Додајте име</translation>
+<translation id="8938242527120341116">Филтери садржаја уређаја су блокирали <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">Администратор је дозволио да <ph name="APP_NAME" /> прикупља дијагностичке податке ради побољшања доживљаја производа. Више информација потражите на <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Јаркозелена</translation>
 <translation id="8949410982325929394">Тон</translation>
@@ -4699,6 +4706,7 @@
 <translation id="9004367719664099443">ВР сесија је у току</translation>
 <translation id="9005998258318286617">Учитавање PDF документа није успело.</translation>
 <translation id="9008201768610948239">Игнориши</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Ниједан}=1{Са 1 сајта}one{Са # сајта}few{Са # сајта}other{Са # сајтова}}</translation>
 <translation id="9012194306129927220">Сада можете да плаћате на рате уз Affirm или Zip</translation>
 <translation id="9014705027639070815">Сајтови које посећујете могу да затраже од Chrome-а информације које им помажу да измере учинак огласа. Chrome омогућава сајтовима да прикупљају ограничене типове података, на пример, да ли сте обавили куповину после посете сајту.</translation>
 <translation id="9018120810758822233">Унесите безбедносни кôд за: <ph name="CREDIT_CARD" /></translation>
@@ -4869,6 +4877,7 @@
 <translation id="963837307749850257">Сви корисници</translation>
 <translation id="964050462028070434">Управљајте лозинкама и приступним кодовима…</translation>
 <translation id="969892804517981540">Званична верзија</translation>
+<translation id="97054401902912338">Сазнајте више о филтерима садржаја</translation>
 <translation id="973788791897303708">Ова група картица је пуна</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{None}=1{1 ставка}one{# ставка}few{# ставке}other{# ставки}}</translation>
 <translation id="976522784004777030">5×8 in</translation>

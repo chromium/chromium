@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Ahorra hasta un 60% de datos y lee las noticias de hoy</translation>
 <translation id="1303339473099049190">No se encontró esa contraseña. Revisa la ortografía y vuelve a intentarlo.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Enviado desde <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Agrupar pestañas</translation>
 <translation id="1318262688555255786">Compartir el vínculo a la página web <ph name="PAGE_TITLE" />. Fuente: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Las carpetas del flujo para guardar favoritos están totalmente abiertas</translation>
 <translation id="1327257854815634930">Está abierto el Historial de navegación</translation>
@@ -477,6 +478,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3169472444629675720">Descubre</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> grupo de pestañas</translation>
+<translation id="3200536777393523575">¿Quieres cerrar la ventana actual?</translation>
 <translation id="3207960819495026254">Agregada a favoritos</translation>
 <translation id="3208584281581115441">Verificar ahora</translation>
 <translation id="3211426585530211793">Se borró <ph name="ITEM_TITLE" /></translation>
@@ -721,6 +723,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4351244548802238354">Cerrar cuadro de diálogo</translation>
 <translation id="4352287748243729941">¿Quieres usar la contraseña de <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Agrega un favorito para poder regresar a una página que consideres importante</translation>
+<translation id="4356503491090073318">Número de tarjeta*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Seguridad de un vistazo</translation>
 <translation id="4378154925671717803">Teléfono</translation>
@@ -738,6 +741,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4425140285732600465">Sigues el precio. Recibe alertas si baja el precio en algún sitio.</translation>
 <translation id="4425173294238317796">Hoja de confirmación de la llave de acceso</translation>
 <translation id="442518031075347249">Ya no podrás usar tu tarjeta virtual con Google Pay. <ph name="BEGIN_LINK1" />Obtén más información sobre las tarjetas virtuales<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{Se cerrarán <ph name="TAB_TITLE" /> y <ph name="TAB_COUNT_ONE" /> pestaña más}other{Se cerrarán <ph name="TAB_TITLE" /> y <ph name="TAB_COUNT_MANY" /> pestañas más}}</translation>
 <translation id="4426508677408162512">Todos los favoritos</translation>
 <translation id="4430277756566635951">Selección actual: <ph name="EMAIL" />. Elige una cuenta.</translation>
 <translation id="4452411734226507615">Cierra la pestaña <ph name="TAB_TITLE" /></translation>
@@ -873,6 +877,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4987271110129728827">No se puede encontrar la página. Revisa la ortografía o intenta realizar una búsqueda web.</translation>
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="4991110219272367918">Opción para aprobar o no un sitio web cerrado</translation>
+<translation id="4996042648402406470">Obtener</translation>
 <translation id="4996095658297597226">¿Quieres usar la contraseña sugerida?</translation>
 <translation id="5001388021414335527">Sigue este sitio aquí</translation>
 <translation id="5004416275253351869">Controles de actividad de Google</translation>
@@ -923,10 +928,12 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5210286577605176222">Ir a la pestaña anterior</translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5215957675041756913">Controla tus datos y tu cuenta</translation>
+<translation id="5218324087477576825">El número de tarjeta es obligatorio</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y más <ph name="SEPARATOR" /> Chrome quitó estos permisos porque no visitaste el sitio recientemente</translation>
 <translation id="5222676887888702881">Salir</translation>
 <translation id="5226378907213531272">Se desbloqueará la pantalla cada vez que uses el automóvil</translation>
 <translation id="5227554086496586518">Presiona para ver los resultados de la búsqueda.</translation>
+<translation id="5229736206150093143">Últimos resultados</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5235196193381275927">Se produjo un error durante el acceso</translation>
 <translation id="5246093389635966745">Editar la combinación de teclas de la barra de herramientas</translation>
@@ -1281,6 +1288,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="676305334223455055">Accede para recibir noticias basadas en tus intereses</translation>
 <translation id="6764137532716892442">Grupo de pestañas compartido <ph name="GROUP_TITLE" /> con actividad nueva</translation>
 <translation id="6767294960381293877">La lista de dispositivos con los que se puede compartir una pestaña está abierta a media altura.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{Se cerrarán <ph name="INCOGNITO_TAB_COUNT" /> pestaña de incógnito y <ph name="TAB_COUNT_ONE" /> pestaña más}other{Se cerrarán <ph name="INCOGNITO_TAB_COUNT" /> pestaña de incógnito y <ph name="TAB_COUNT_MANY" /> pestañas más}}</translation>
 <translation id="6785476624617658922">Condiciones del Servicio Adicionales de Chrome y ChromeOS</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6795633245022906657">Abre rápidamente una nueva pestaña. Para editar este atajo, ve a Configuración.</translation>
@@ -1576,6 +1584,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7965838025086216108">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Administrador de contraseñas de Google de <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Se agregó a la lista de lectura</translation>
 <translation id="7968982339740310781">Ver los detalles</translation>
+<translation id="7969391000881506217">Fecha de vencimiento*</translation>
 <translation id="7971136598759319605">Activo hace 1 día</translation>
 <translation id="7975379999046275268">Vista previa de página <ph name="BEGIN_NEW" />Nueva<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Te advierte si usas una contraseña que fue hackeada en una violación de la seguridad de los datos.</translation>
@@ -1734,6 +1743,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8565021320663436446">¿Quieres quitar a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">No es posible descargar el archivo de forma segura</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
+<translation id="8580435650274205305">La fecha de vencimiento es obligatoria</translation>
 <translation id="8582529315803410153">Aquí encontrarás las pestañas que se abrieron en otros dispositivos</translation>
 <translation id="8585103689515290060">Servicios de autocompletado</translation>
 <translation id="859046281437143747">Desde el botón Más opciones, realiza un seguimiento del precio</translation>

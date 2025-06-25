@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">No s'ha pogut compartir perquè no esteu connectat a la xarxa.</translation>
 <translation id="1668001730617725852">Obre en un grup de pestanyes nou</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Ara pots obrir Google Lens des de la barra d'adreces i cercar qualsevol cosa que vegis</translation>
 <translation id="1689333818294560261">Àlies</translation>
 <translation id="169048873465870056">Vols suprimir la pestanya i el grup?</translation>
 <translation id="1698090540708020240">Importa les contrasenyes…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> gestiona el compte <ph name="USER_EMAIL" />, així que és possible que vegi algunes dades. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">element nou</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> comptes utilitzen la mateixa contrasenya</translation>
+<translation id="205013082884273671">Cerca qualsevol cosa de la pantalla</translation>
 <translation id="2054044186557130763">Inicia la sessió com a <ph name="NAME" /> <ph name="EMAIL" />, gestionat per la teva organització.</translation>
 <translation id="2059166748188874810">Municipi</translation>
 <translation id="2060638295449304809">Aquesta adreça només es desa en aquest dispositiu. Per utilitzar-la en altres dispositius teus, desa-la al teu Compte de Google (<ph name="USER_EMAIL" />).</translation>
@@ -459,6 +461,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2819667972867209401">Si aquesta opció està activada, les dades es desen al teu Compte de Google. Si està desactivada, les dades només es desen en aquest dispositiu i se suprimeixen si tanques la sessió.</translation>
 <translation id="2827760117436553203">Vols mantenir les dades separades?</translation>
 <translation id="2829172210806130158">Fes cerques a la pantalla</translation>
+<translation id="2831109159746537587">Prova d'encerclar o de tocar la imatge per cercar</translation>
 <translation id="2834399722155632105">3. Toca Opcions de contrasenya</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Hora</translation>
@@ -1104,6 +1107,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5576885723883013398">Finestra nova</translation>
 <translation id="5578795271662203820">Cerca aquesta imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Amaga l'opció Llista de lectura</translation>
+<translation id="5581786858144165447">Pregunta al mode IA</translation>
 <translation id="5585019845078534178">Targetes</translation>
 <translation id="5595485650161345191">Edita l'adreça</translation>
 <translation id="559567008082979829">Configura les baixades perquè se suprimeixin al cap d'un mes.</translation>

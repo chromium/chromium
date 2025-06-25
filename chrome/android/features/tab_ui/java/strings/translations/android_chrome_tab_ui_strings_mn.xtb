@@ -112,6 +112,7 @@
 <translation id="5556417849629758491">Дэлгэцийн дээд хэсгийн ойролцоо боломжтой дэлгүүрийн мэдээллийг үзэх сонголт</translation>
 <translation id="5627941783489838464">Табын ямар ч шинэчлэлт байхгүй</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-н <ph name="TABS_COUNT_ONE" /> холбоос}other{Chrome-н <ph name="TABS_COUNT_MANY" /> холбоос}}</translation>
+<translation id="5746204836956568669">Илүү хурдан ажиллахын тулд <ph name="NUMBER_OF_TABS" /> табыг бүлэглэх үү?</translation>
 <translation id="58326064309361797">Бүлэглэхийн тулд табыг чирж зөөнө үү</translation>
 <translation id="5901630391730855834">Шар</translation>
 <translation id="5972844218283131174">Бүх сонголтыг цуцлах</translation>
@@ -192,6 +193,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> сарын өмнө шинэчилсэн}other{<ph name="NUM_MONTHS_MANY" /> сарын өмнө шинэчилсэн}}</translation>
 <translation id="8398929769197326728">Шинэ фолдер - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
+<translation id="855081842937141170">Цонхыг эхэнд авчрах</translation>
 <translation id="8633025649649592204">Саяхны үйл ажиллагаа</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8714939927607906138">Илүү хямд үнэ</translation>

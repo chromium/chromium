@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">விலைக் கண்காணிப்பு அறிவிப்புகள்</translation>
 <translation id="21613918653299710">ஆன்லைன் பட கேலரிகள்</translation>
 <translation id="2161656808144014275">உரை</translation>
+<translation id="2162435186600002085">முதன்மைத் தலைப்பு லோகோ</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> தளத்தில் தற்போதைய விலை: <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> என்பதில் எழுத்துப்பிழை உள்ளதா எனப் பார்க்கவும்.</translation>
 <translation id="2166049586286450108">முழு நிர்வாகி அணுகல்</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">பாஸ்போர்ட் தகவலைச் சேர்த்தல்</translation>
 <translation id="2400271059665846158">Google Walletடில் உங்கள் லாயல்டி கார்டுகளை நிர்வகிக்கலாம்</translation>
 <translation id="2400600116338235695">சீரியல் போர்ட்டுகளுடன் இணைய முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
+<translation id="240450251994300576">இரண்டாவது தலைப்பு லோகோ</translation>
 <translation id="2404884497378469141">ஃபைல்களை மீண்டும் நகலெடுக்க முயலவும்</translation>
 <translation id="2413155254802890957">பழைய முகவரி</translation>
 <translation id="2413528052993050574">இது <ph name="DOMAIN" /> தான் என்பதை இந்தச் சேவையகம் உறுதிப்படுத்தவில்லை; இதன் பாதுகாப்புச் சான்றிதழ் திரும்பப்பெறப்பட்டிருக்கலாம். இது தவறான உள்ளமைவால் ஏற்பட்டிருக்கலாம் அல்லது தீங்கிழைப்பவர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம்.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">PDF ஃபைலில் இருந்து வார்த்தைகளைப் பிரித்தெடுக்கிறது...</translation>
 <translation id="2628224721443278970">Microsoft OneDriveவில் உள்நுழை</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> இன் சேவையக IP முகவரியைக் கண்டறிய முடியவில்லை.</translation>
+<translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> முழுவதிலும் தேட @ என்று டைப் செய்யவும்</translation>
 <translation id="2639739919103226564">நிலை:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">செமி க்ளாஸ்ஸி ஃபேப்ரிக்</translation>
@@ -2023,6 +2026,7 @@
 <translation id="4372948949327679948">எதிர்பார்த்த <ph name="VALUE_TYPE" /> மதிப்பு.</translation>
 <translation id="437620492464254965">கதவுகள் &amp; ஜன்னல்கள்</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> ஐ அடைய முயற்சி செய்தீர்கள். ஆனால் சேவையகம் வழங்கிய சான்றிதழானது அதன் வழங்குநரால் நிராகரிக்கப்பட்டது. அதாவது, சேவையகம் வழங்கிய பாதுகாப்பு நம்பிக்கைச்சான்றுகளை நிச்சயமாக எக்காரணத்தைக்கொண்டும் நம்பக்கூடாது. போலியான ஒன்றுடன் நீங்கள் தகவல் பரிமாற்றம் செய்துகொண்டிருக்கக்கூடும்.</translation>
+<translation id="4377869186417956230">இந்த மெனு விருப்பத்தின் கீழ் எல்லா லாயல்டி கார்டுகளையும் காட்டும்படித் தேர்வுசெய்யலாம்.</translation>
 <translation id="4378154925671717803">மொபைல்</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">இனி உங்கள் ஃபைல்களைக் கிளவுடு சேமிப்பகத்தில் சேமியுங்கள்</translation>
@@ -2262,6 +2266,7 @@
 <translation id="4827283332383516812">கார்டை நீக்குதல்</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> தேர்ந்தெடுக்கப்பட்டுள்ளன</translation>
 <translation id="4831993743164297314">இமேஜ் செட்டர் காகிதம்</translation>
+<translation id="4832388034239846146">பக்கக் குழுக்களைப் பகிர Chromeமைப் புதுப்பிக்கவும்</translation>
 <translation id="483241715238664915">எச்சரிக்கைகளை இயக்கு</translation>
 <translation id="4832961164064927107">பார்பிக்யூ மற்றும் கிரில்லிங்</translation>
 <translation id="4834250788637067901">Google Payயைப் பயன்படுத்தும் பேமெண்ட் முறைகள், ஆஃபர்கள் மற்றும் முகவரிகள்</translation>
@@ -2969,6 +2974,7 @@
 <translation id="6043357981274314628">முடிந்தது!</translation>
 <translation id="6044573915096792553">அளவு: 12</translation>
 <translation id="6045164183059402045">இம்ப்பொசிஷன் டெம்ப்ளேட்</translation>
+<translation id="6046892054959167494">தேட <ph name="SEARCH_AGGREGATOR_KEYWORD" /> என்று டைப் செய்யவும் அல்லது <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> இடம் கேட்கவும்</translation>
 <translation id="6047927260846328439">இந்த உள்ளடக்கம், உங்களை ஏமாற்றி மென்பொருளை நிறுவ வைக்கலாம் அல்லது தனிப்பட்ட தகவலை வெளிப்படுத்தச் செய்யலாம். <ph name="BEGIN_LINK" />பரவாயில்லை, காட்டு<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">என்வெலப் B4</translation>
 <translation id="6049488691372270142">பக்க டெலிவரி</translation>
@@ -3137,6 +3143,7 @@
 <translation id="6326947323444967009">iOS அமைப்புகளுக்குச் சென்று சிஸ்டத்தின் இயல்பு உலாவியாக Chromeமை அமைக்கலாம்</translation>
 <translation id="6327065120806001832">லோக்கல் நெட்வொர்க் அணுகல்</translation>
 <translation id="6328639280570009161">நெட்வொர்க் யூகத்தை முடக்க முயலவும்</translation>
+<translation id="6334834493885103305">நீங்கள் இப்போது Affirm, Zip, Klarna ஆகியவற்றின் மூலம் பிறகு பணம் செலுத்தலாம்</translation>
 <translation id="6335029926534404762">தடகள வீரர்களுக்கான ஷூக்கள்</translation>
 <translation id="6336948221660696475">VR அனுமதிக்கப்படவில்லை</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />க்கும் குறைவான அளவைக் காலியாக்கும். நீங்கள் அடுத்த முறை பார்வையிடும் போது, சில தளங்கள் மிகவும் மெதுவாக ஏற்றப்படலாம்.</translation>
@@ -4006,6 +4013,7 @@
 <translation id="7761159795823346334">கேமரா அணுகலை வழங்கவா?</translation>
 <translation id="7761701407923456692">சேவையகச் சான்றிதழ் URL உடன் பொருந்தவில்லை.</translation>
 <translation id="7764225426217299476">முகவரியைச் சேர்</translation>
+<translation id="7765158879357617694">நகர்த்து</translation>
 <translation id="7766518757692125295">ஸ்கர்ட்</translation>
 <translation id="7767278989746220252">வெளி முற்றம், புல்வெளி &amp; தோட்டம்</translation>
 <translation id="776749070095465053">ஃபேப்ரிக்</translation>
@@ -4060,6 +4068,7 @@
 <translation id="7878562273885520351">உங்கள் கடவுச்சொல் திருடப்பட்டிருக்கலாம்</translation>
 <translation id="7881044256965445977">உங்கள் லோக்கல் நெட்வொர்க்கில் உள்ள எந்தவொரு சாதனத்தையும் தேடி இணைக்க விரும்புகிறது</translation>
 <translation id="7882421473871500483">பழுப்பு</translation>
+<translation id="7885670691503039914">எந்தத் தளத்தில் விலை குறைந்தாலும் அதுகுறித்த மின்னஞ்சல் விழிப்பூட்டல்களைப் பெறுவீர்கள். <ph name="LAST_BOOKMARKS_FOLDER" /> புக்மார்க் ஃபோல்டரில் இந்தப் பக்கம் சேமிக்கப்படும்.</translation>
 <translation id="7886897188117641322">விளம்பரங்களைப் பிரத்தியேகமாக்க உதவுவதற்குப் பயன்படுத்தக்கூடிய பரவலான தலைப்பு வகைகளைத் தேர்வுசெய்யலாம்</translation>
 <translation id="7887683347370398519">CVCஐச் சோதித்து, மீண்டும் முயற்சிக்கவும்</translation>
 <translation id="7887885240995164102">பிக்ச்சர்-இன்-பிக்ச்சர் பயன்முறைக்கு செல்</translation>
@@ -4340,6 +4349,7 @@
 <translation id="8364627913115013041">அமைக்கப்படவில்லை.</translation>
 <translation id="8366057325711477500">உலகச் செய்திகள்</translation>
 <translation id="836616551641291797">உங்கள் உலாவி எவ்வாறு நிர்வகிக்கப்படுகிறது என்பது குறித்து மேலும் அறியலாம்</translation>
+<translation id="8367705492654390392">எதை வேண்டுமானாலும் கேளுங்கள்</translation>
 <translation id="8368001212524806591">விலையைக் கண்காணி</translation>
 <translation id="8368027906805972958">அறியாத அல்லது ஆதரிக்கப்படாத சாதனம் (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play சேவைகள்</translation>
@@ -4654,6 +4664,7 @@
 <translation id="8926389886865778422">மீண்டும் கேட்கவேண்டாம்</translation>
 <translation id="8932102934695377596">உங்கள் கடிகாரம் மிகவும் பின்தங்கி இருக்கிறது</translation>
 <translation id="893332455753468063">பெயரைச் சேர்க்கவும்</translation>
+<translation id="8938242527120341116">உங்கள் சாதனத்தின் உள்ளடக்க ஃபில்டர் தடுக்கப்பட்டுள்ளது <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">தயாரிப்பு அனுபவத்தை மேம்படுத்துவதற்காகப் பகுப்பாய்வுத் தரவைச் சேகரிக்க, <ph name="APP_NAME" /> ஆப்ஸுக்கு உங்கள் நிர்வாகி அனுமதி வழங்கியுள்ளார். கூடுதல் தகவல்களுக்கு <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> என்ற தளத்திற்குச் செல்லவும்.</translation>
 <translation id="8943282376843390568">சுண்ணாம்பு நிறம்</translation>
 <translation id="8949410982325929394">தொனி</translation>
@@ -4860,6 +4871,7 @@
 <translation id="963837307749850257">எல்லாப் பயனர்களுக்கும்</translation>
 <translation id="964050462028070434">கடவுச்சொற்களையும் கடவுக்குறியீடுகளையும் நிர்வகியுங்கள்…</translation>
 <translation id="969892804517981540">அதிகாரப்பூர்வ கட்டமைப்பு</translation>
+<translation id="97054401902912338">உள்ளடக்க ஃபில்டர்களைப் பற்றி மேலும் அறிக</translation>
 <translation id="973788791897303708">இந்தப் பக்கக் குழு நிரம்பிவிட்டது</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ஏதுமில்லை}=1{1 உருப்படி}other{# உருப்படிகள்}}</translation>
 <translation id="976522784004777030">5 x 8 இன்ச்</translation>

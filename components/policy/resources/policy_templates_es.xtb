@@ -278,6 +278,7 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
 <translation id="1207301487141109411">Impedir que se seleccione el avatar del usuario desde el sistema de archivos local, la cámara o el perfil de Google.</translation>
 <translation id="1209096923317019235">Asigna aplicaciones como controladores predeterminados de extensiones de archivo especificadas</translation>
 <translation id="120937472976628837">Enviar información sobre ventiladores</translation>
+<translation id="1211037010406094410">Permitir la alternativa de WebGL por software con SwiftShader</translation>
 <translation id="1214639335214075459">Habilitar decodificación de vídeo del hardware GPU</translation>
 <translation id="1214942205301731697">No permitir el uso del modo Desarrollador en la página de extensiones</translation>
 <translation id="1216919699175573511">Habilitar compatibilidad con Signed HTTP Exchange (SXG)</translation>
@@ -3480,11 +3481,6 @@ Si se establece esta política, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NA
       Si la política no se establece, no se aplicará ninguna restricción.</translation>
 <translation id="3531084733660068324">Ajustes de supervisión parental</translation>
 <translation id="3532827558833318911">Borrar datos de inicio de sesión con contraseña</translation>
-<translation id="353291262171579310">Esta política controla la visibilidad del aviso de gestión en el pie de página de la página Nueva pestaña (NTP). De forma predeterminada, el pie de página de NTP muestra información cuando el navegador lo gestiona una organización (lo indica un icono de un edificio y el texto "Gestionado por [nombre de dominio]"). Se puede personalizar con las políticas <ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" /> y <ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />.
-
-Si no se establece esta política o se le asigna el valor true, los navegadores gestionados mostrarán el aviso "Gestionado por" con un icono.
-
-Si se le asigna el valor false, el aviso de gestión se ocultará.</translation>
 <translation id="353611922042274900">Mostrar siempre información del sistema en la pantalla de inicio de sesión</translation>
 <translation id="3536263244905016305">Inhabilitar la optimización de detección automática de proxy web (WPAD)</translation>
 <translation id="3539103206548425861">Si se establece esta política, los vídeos podrán reproducirse automáticamente (sin el consentimiento del usuario) con contenido de audio en <ph name="PRODUCT_NAME" />. Si se asigna el valor "True" a <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" />, esta política no tendrá efecto. Si se asigna el valor "False" a <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" />, todos los patrones de URL establecidos en esta política podrán reproducir contenido. Si se realizan cambios en esta política mientras <ph name="PRODUCT_NAME" /> está abierto, solo se aplicarán al abrir pestañas nuevas.
@@ -3603,6 +3599,15 @@ Si no se define esta política, su comportamiento lo determinará la política <
 
 Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3606571057705314194">Selector de perfil inhabilitado al iniciar</translation>
+<translation id="3607797531311171116">Política que controla si SwiftShader se usará como alternativa de WebGL cuando la aceleración por hardware de la GPU no esté disponible.
+
+SwiftShader se ha usado para admitir WebGL en sistemas sin aceleración de GPU, como sistemas sin cabezales o máquinas virtuales, pero se ha dejado de usar debido a problemas de seguridad. A partir de la versión M139, la creación de contexto de WebGL fallará cuando, de otro modo, se habría usado SwiftShader. Esta política permite al navegador o al administrador posponer temporalmente la discontinuación.
+
+Si se habilita esta política, SwiftShader se usará como alternativa de software de WebGL.
+
+Si se inhabilita esta política o no se define, es posible que no se pueda crear el contexto de WebGL si la aceleración por hardware de la GPU no está disponible. Las páginas web pueden comportarse mal si no gestionan correctamente el error de creación de contexto de WebGL.
+
+Esta es una política temporal que se eliminará en el futuro.</translation>
 <translation id="3608206578291537084">Habilitar el flujo de procesamiento de informes cifrados</translation>
 <translation id="3608281460204780443">Mostrar el icono de Chrome Web Store en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /> y en la página Nueva pestaña</translation>
 <translation id="3612482251405108708">Inicio automático de la reautenticación online en la pantalla de bloqueo</translation>
@@ -5378,6 +5383,7 @@ No se recomienda inhabilitar la decodificación de vídeo acelerada por hardware
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no se le asigna ningún valor, el modo de audio en mono se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlo en cualquier momento.</translation>
+<translation id="493253860646951791">Habilitar la compatibilidad con la alternativa no segura de SwiftShader para WebGL</translation>
 <translation id="4933301190614090397">Controla la duración (en segundos) permitida para las solicitudes keepalive al cerrar el navegador.
 
       Si se especifica un valor, se podrá bloquear el cierre del navegador durante el número de segundos
@@ -7635,13 +7641,6 @@ ADVERTENCIA: Ten cuidado al cambiar este ajuste, ya que podría interferir en ot
 <translation id="6371005337713685988">Configuración de Conjuntos de sitios web relacionados</translation>
 <translation id="6371561334154580937">Muestra el cuadro de diálogo de cierre de sesión cuando se cierra la última ventana.</translation>
 <translation id="6372105930898423193">Permite volver a habilitar la función AppCache aunque esté desactivada de forma predeterminada.</translation>
-<translation id="6372676668820850849">Esta política controla si se permite la partición del almacenamiento de terceros de forma predeterminada.
-
-Si se le asigna el valor 1 (AllowPartitioning) a esta política o no se define, se permitirá la partición del almacenamiento de terceros de forma predeterminada. Este valor predeterminado se puede anular para orígenes de nivel superior específicos de otras maneras.
-
-Si se le asigna el valor 2 (BlockPartitioning), la partición del almacenamiento de terceros se inhabilitará en todos los contextos.
-
-Usa <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> para inhabilitar la partición del almacenamiento de terceros en orígenes de nivel superior específicos. Para obtener información detallada sobre la partición del almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="6373299801585455337">Habilitar los informes sobre la CPU del dispositivo</translation>
 <translation id="6374945506685352202">Lista de bloqueados de tipos de instalación de extensiones</translation>
 <translation id="6376540107659524656">Inhabilitar SSH en la aplicación del sistema Terminal</translation>
@@ -7914,6 +7913,7 @@ El tiempo de espera de inactividad para que se inicie el salvapantallas y el int
 <translation id="6513453889192806240">Latencia de HTTPS</translation>
 <translation id="6515357889978918016">Imagen de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Esperar a que la versión actual iguale a la versión inferior objetivo</translation>
+<translation id="6518286606938091609">Inhabilitar la compatibilidad con la alternativa WebGL de SwiftShader no segura</translation>
 <translation id="6518894783486860562">Por motivos de seguridad, para llamar a las APIs web <ph name="SHOW_SUBAPPS_APP_API_NAME" />, <ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> y <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> se requiere un gesto previo del usuario ("activación temporal"). De lo contrario, se producirá un error. Además, se pedirá al usuario que confirme la operación mediante un cuadro de diálogo de confirmación.
 
 Si se define esta política, los administradores pueden especificar los orígenes desde los que se puede llamar a estas APIs sin ningún gesto previo del usuario ni solicitarle confirmación.
@@ -9212,13 +9212,6 @@ Si la política no se establece, será lo mismo que asignarle el valor <ph name=
 <translation id="7463934096276667908">Habilita las APIs de pantalla completa de vídeos con prefijo</translation>
 <translation id="7464058117970792805">Habilitar vista previa de impresión</translation>
 <translation id="7464991223784276288">Limitar las cookies de las URL coincidentes de la sesión actual</translation>
-<translation id="7467748623079596345">Esta política te permite definir una lista de patrones de URL que especifiquen orígenes de nivel superior en los que se debe inhabilitar la partición del almacenamiento de terceros (la partición del almacenamiento de un iframe de orígenes cruzados).
-
-Si no se define esta política o si un origen de nivel superior no coincide con uno de los patrones de URL, se aplicará <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
-
-Para obtener información detallada sobre los patrones válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Los patrones que indiques aquí se tratarán como orígenes, no como URLs, así que no especifiques una ruta.
-
-Para obtener información detallada sobre la partición del almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="7468182772656807573">Si se define esta política, determinará la frecuencia con la que se envían paquetes de red de monitorización (en milisegundos). Los intervalos se sitúan entre 30 segundos y 24 horas. Cualquier valor fuera de este intervalo se redondeará al límite correspondiente.
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 3 minutos.</translation>

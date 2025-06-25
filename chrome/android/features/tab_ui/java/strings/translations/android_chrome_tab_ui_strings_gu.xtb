@@ -193,6 +193,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> મહિના પહેલાં અપડેટ કરવામાં આવ્યું}one{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં અપડેટ કરવામાં આવ્યું}other{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં અપડેટ કરવામાં આવ્યું}}</translation>
 <translation id="8398929769197326728">નવું ફોલ્ડર - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
+<translation id="855081842937141170">ટૅબ પિન કરો</translation>
 <translation id="8633025649649592204">તાજેતરની પ્રવૃત્તિ</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8714939927607906138">ઓછી કિંમત</translation>

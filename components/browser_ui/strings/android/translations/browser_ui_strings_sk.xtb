@@ -36,6 +36,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="1409338233051621926">Klepnite na Aplikácie a potom na Predvolené aplikácie</translation>
 <translation id="1415402041810619267">Skrátená webová adresa</translation>
 <translation id="1415855080660575082">Povoľte Chromu zdieľať vaše nedávne karty so zariadením, aby sa v ňom mohli zobrazovať v zozname aplikácií a výsledkoch vyhľadávania. Túto možnosť môžete zapnúť alebo vypnúť v nastaveniach Chromu.</translation>
+<translation id="1432650420699700107">Weby môžu žiadať o povolenie pripojiť sa k akémukoľvek zariadeniu vo vašej miestnej sieti</translation>
 <translation id="1448064542941920355">Znížiť úroveň lupy</translation>
 <translation id="1464044141348608623">Nepovoliť webom zisťovať, kedy aktívne používate zariadenie</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webe}few{<ph name="SITE_COUNT" /> weboch}many{<ph name="SITE_COUNT" /> sites}other{<ph name="SITE_COUNT" /> weboch}}</translation>
@@ -254,6 +255,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="3955321697524543127">Nepovoliť webom pripájať sa k zariadeniam s rozhraním USB</translation>
 <translation id="3965467402665811906">Weby môžu žiadať o používanie informácií, ktoré o vás uložili</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
+<translation id="3969869202926863008">Prístup k miestnej sieti</translation>
 <translation id="3981465354637804599">Weby zvyčajne zobrazujú reklamy, aby mohli poskytovať obsah či služby bez peňažného poplatku. Niektoré weby sú však známe tým, že zobrazujú obťažujúce alebo zavádzajúce reklamy.</translation>
 <translation id="3987993985790029246">Kopírovať odkaz</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="6554732001434021288">Naposledy navštívené pred <ph name="NUM_DAYS" /> dňami</translation>
 <translation id="656065428026159829">Zobraziť viac</translation>
 <translation id="6561560012278703671">Používať tichší režim (blokovať rušivé výzvy na odber upozornení)</translation>
+<translation id="6565144332292237355">Weby môžu pomocou tejto funkcie vyhľadávať zariadenia vo vašej miestnej sieti a pripájať sa k nim</translation>
 <translation id="6593061639179217415">Web pre počítače</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Boli povolené súbory cookie pre <ph name="RWS_MEMBERS_COUNT" /> web vlastníka <ph name="RWS_OWNER" />}few{Boli povolené súbory cookie pre <ph name="RWS_MEMBERS_COUNT" /> weby vlastníka <ph name="RWS_OWNER" />}many{Cookies allowed for <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sites}other{Boli povolené súbory cookie pre <ph name="RWS_MEMBERS_COUNT" /> webov vlastníka <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

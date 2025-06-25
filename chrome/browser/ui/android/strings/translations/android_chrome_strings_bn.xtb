@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">সর্বাধিক ৬০ শতাংশ ডেটা সাশ্রয় করুন, আজকের খবর পড়ুন</translation>
 <translation id="1303339473099049190">ওই পাসওয়ার্ডটি খুঁজে পাওয়া যায়নি। বানান পরীক্ষা করে আবার চেষ্টা করে দেখুন।</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> থেকে পাঠানো হয়েছে</translation>
+<translation id="1310482092992808703">ট্যাবগুলি গ্রুপ করুন</translation>
 <translation id="1318262688555255786"><ph name="PAGE_TITLE" /> ওয়েবপেজে লিঙ্ক শেয়ার করুন। সোর্স: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">বুকমার্ক সেভ ফ্লো ফোল্ডার পূর্ণ উচ্চতায় খোলা হয়েছে</translation>
 <translation id="1327257854815634930">নেভিগেশনের ইতিহাস খোলা হয়েছে</translation>
@@ -1407,6 +1408,7 @@
 <translation id="7224097611345298931">Chrome-এর জন্য শুধু এই ডিভাইসে সবকটি পাসওয়ার্ড সেভ এবং <ph name="CHROME_CHANNEL" /> মার্জ করা হয়েছে। আপনি দুটি অ্যাপেই আপনার সেভ করা সবকটি পাসওয়ার্ড অটোফিল করতে পারবেন।</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{১টি ডাউনলোড বাকি আছে}one{#টি ডাউনলোড বাকি আছে}other{#টি ডাউনলোড বাকি আছে}}</translation>
 <translation id="7230064152164845085">ছদ্মবেশী মোডে যান</translation>
+<translation id="7230836263524391273">রিডিং মোড লুকান</translation>
 <translation id="7237724030342645845">Google Password Manager কাজ করা বন্ধ করে দিয়েছে</translation>
 <translation id="72415438529550637">পাসওয়ার্ড সাজেশন দেওয়ার সুবিধা বন্ধ করা আছে।</translation>
 <translation id="7248671827512403053">অ্যাপ্লিকেশান</translation>

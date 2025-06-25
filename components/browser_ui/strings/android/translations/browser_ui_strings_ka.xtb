@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">შეეხეთ აპებს, შემდეგ კი — ნაგულისხმევ აპებს</translation>
 <translation id="1415402041810619267">URL შემოკლებულია</translation>
 <translation id="1415855080660575082">ნება დართეთ Chrome-ს, გააზიაროს ბოლოდროინდელი ჩანართები თქვენს მოწყობილობაში, რათა ნახოთ ისინი თქვენი მოწყობილობის აპების სიასა და ძიების შედეგებში. ამ პარამეტრის ჩართვა/გამორთვა შეგიძლიათ Chrome-ის პარამეტრებიდან.</translation>
+<translation id="1432650420699700107">საიტებმა შეიძლება ითხოვოს თქვენს ლოკალურ ქსელში ჩართულ ნებისმიერ მოწყობილობასთან დაკავშირება</translation>
 <translation id="1448064542941920355">მასშტაბის შემცირება</translation>
 <translation id="1464044141348608623">საიტებისთვის თქვენ მიერ თქვენი მოწყობილობის აქტიურად გამოყენების შესახებ ინფორმაციის გაგების აკრძალვა</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ვებსაიტზე}other{<ph name="SITE_COUNT" /> ვებსაიტზე}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">საიტებისთვის USB მოწყობილობებთან დაკავშირების აკრძალვა</translation>
 <translation id="3965467402665811906">საიტებს შეუძლია ნებართვის მოთხოვნა მათ მიერ თქვენ შესახებ შენახული ინფორმაციის გამოსაყენებლად</translation>
 <translation id="3967822245660637423">ჩამოტვირთვა დასრულდა</translation>
+<translation id="3969869202926863008">ლოკალურ ქსელზე წვდომა</translation>
 <translation id="3981465354637804599">როგორც წესი, საიტების მიერ რეკლამის ჩვენება ხდება იმიტომ, რომ ისინი კონტენტსა თუ სერვისებს უფასოდ გთავაზობენ. მიუხედავად ამისა, ზოგიერთ საიტზე არსებული რეკლამა მომაბეზრებელი ან შეცდომაში შემყვანია.</translation>
 <translation id="3987993985790029246">ბმულის კოპირება</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -422,6 +424,7 @@
 <translation id="5968921426641056619">შეიყვანეთ ვებ-მისამართი</translation>
 <translation id="5975083100439434680">დაშორება</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> — <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Discover არხის ჩართვა</translation>
 <translation id="6015775454662021376">გაანკონტროლეთ ამ საიტის თქვენს მოწყობილობაზე წვდომა</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6042308850641462728">სხვა</translation>
@@ -463,6 +466,7 @@
 <translation id="6554732001434021288">ბოლო ვიზიტი იყო <ph name="NUM_DAYS" /> დღის წინ</translation>
 <translation id="656065428026159829">მეტის ნახვა</translation>
 <translation id="6561560012278703671">ჩუმი შეტყობინების გამოყენება (დაბლოკავს შეტყობინებებთან დაკავშირებულ ხელისშემშლელ მოთხოვნებს)</translation>
+<translation id="6565144332292237355">საიტებს შეუძლია გამოიყენოს ეს ფუნქცია, რათა მოძებნოს მოწყობილობები თქვენს ლოკალურ ქსელში და დაუკავშირდეს მათ</translation>
 <translation id="6593061639179217415">დესკტოპის საიტი</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{ქუქი-ჩანაწერები დაშვებულია <ph name="RWS_OWNER" />-ის <ph name="RWS_MEMBERS_COUNT" /> საიტისთვის}other{ქუქი-ჩანაწერები დაშვებულია <ph name="RWS_OWNER" />-ის <ph name="RWS_MEMBERS_COUNT" /> საიტისთვის}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> გბაიტი</translation>

@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">اعلان‌های ردیابی قیمت</translation>
 <translation id="21613918653299710">گالری تصاویر آنلاین</translation>
 <translation id="2161656808144014275">نوشتار</translation>
+<translation id="2162435186600002085">نشان‌واره سرصفحه اصلی</translation>
 <translation id="2162620598375156287">اکنون با قیمت <ph name="CURRENT_PRICE" /> در <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">احتمال وجود غلط املائی در <ph name="HOST_NAME" /> را بررسی کنید.</translation>
 <translation id="2166049586286450108">دسترسی کامل سرپرست</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">افزودن گذرنامه</translation>
 <translation id="2400271059665846158">‏کارت‌های وفاداری‌تان را در «کیف پول Google» مدیریت کنید</translation>
 <translation id="2400600116338235695">می‌تواند برای اتصال به درگاه‌های سریال درخواست دهد</translation>
+<translation id="240450251994300576">نشان‌واره سرصفحه فرعی</translation>
 <translation id="2404884497378469141">فایل‌ها را دوباره کپی کنید</translation>
 <translation id="2413155254802890957">قدیمی</translation>
 <translation id="2413528052993050574">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ ممکن است گواهی امنیتی آن باطل شده باشد. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی اتصال شما را قطع کرده است.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">‏درحال استخراج نوشتار از PDF…</translation>
 <translation id="2628224721443278970">‏ورود به سیستم Microsoft OneDrive</translation>
 <translation id="2634124572758952069">‏نشانی IP سرور <ph name="HOST_NAME" /> پیدا نشد.</translation>
+<translation id="2638567100095052009">برای جستجو در <ph name="FEATURED_SEARCH_LIST" />،‏ @ را تایپ کنید</translation>
 <translation id="2639739919103226564">وضعیت:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">پارچه (نیمه‌براق)</translation>
@@ -2027,6 +2030,7 @@
 <translation id="4372948949327679948">مقدار مورد انتظار <ph name="VALUE_TYPE" />.</translation>
 <translation id="437620492464254965">درب و پنجره</translation>
 <translation id="4377125064752653719">شما سعی در دسترسی به <ph name="DOMAIN" /> را داشتید، اما صادر کننده، گواهی ارائه شده از سوی سرور را باطل کرده است. یعنی اصلاً نباید به اطلاعات کاربری که این سرور ارائه می‌کند اطمینان کرد. ممکن است شما با مهاجمی در ارتباط باشید.</translation>
+<translation id="4377869186417956230">تغییر به همه کارت‌های وفاداری در این گزینه منو.</translation>
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ازاین‌پس فایل‌هایتان را در فضای ذخیره‌سازی ابری ذخیره کنید</translation>
@@ -2266,6 +2270,7 @@
 <translation id="4827283332383516812">حذف کارت</translation>
 <translation id="4830443836091007686">‫<ph name="ITEMS" /> مورد انتخاب شد</translation>
 <translation id="4831993743164297314">کاغذ تصویرنگار</translation>
+<translation id="4832388034239846146">‏برای هم‌رسانی گروه‌های زبانه‌ها، Chrome را به‌روزرسانی کنید</translation>
 <translation id="483241715238664915">روشن کردن هشدارها</translation>
 <translation id="4832961164064927107">باربیکیو و کباب کردن</translation>
 <translation id="4834250788637067901">‏روش‌های پرداخت، پیشنهادها، و نشانی‌های استفاده‌شده در Google Pay</translation>
@@ -2973,6 +2978,7 @@
 <translation id="6043357981274314628">تمام!</translation>
 <translation id="6044573915096792553">اندازه ۱۲</translation>
 <translation id="6045164183059402045">الگوی چاپ مضاعف</translation>
+<translation id="6046892054959167494">برای جستجو کردن یا پرسیدن <ph name="SEARCH_AGGREGATOR_SHORT_NAME" />،‏ <ph name="SEARCH_AGGREGATOR_KEYWORD" /> را تایپ کنید</translation>
 <translation id="6047927260846328439">شاید محتوای این صفحه تلاش کند شما را فریب دهد تا نرم‌افزاری نصب کنید یا اطلاعات شخصی را افشا سازید. <ph name="BEGIN_LINK" />درهرصورت نمایش داده شود<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">پاکت بی۴</translation>
 <translation id="6049488691372270142">ارائه صفحه</translation>
@@ -3142,6 +3148,7 @@
 <translation id="6326947323444967009">‏Chrome را در تنظیمات iOS به‌عنوان مرورگر پیش‌فرض سیستم تنظیم کنید</translation>
 <translation id="6327065120806001832">دسترسی به شبکه محلی</translation>
 <translation id="6328639280570009161">غیرفعال کردن پیش‌بینی شبکه را امتحان کنید</translation>
+<translation id="6334834493885103305">‏ازاین‌پس می‌توانید بااستفاده از Affirm،‏ Zip، یا Klarna قسطی پرداخت کنید</translation>
 <translation id="6335029926534404762">کفش ورزشی</translation>
 <translation id="6336948221660696475">«واقعیت مجازی» مجاز نشد</translation>
 <translation id="6337133576188860026">کمتر از <ph name="SIZE" /> از فضا را آزاد می‌کند. ممکن است برخی از سایت‌ها در بازدیدهای بعدی کندتر بارگیری شوند.</translation>
@@ -4011,6 +4018,7 @@
 <translation id="7761159795823346334">دوربین مجاز شود؟</translation>
 <translation id="7761701407923456692">گواهی سرور با نشانی وب مطابقت ندارد.</translation>
 <translation id="7764225426217299476">افزودن نشانی</translation>
+<translation id="7765158879357617694">انتقال</translation>
 <translation id="7766518757692125295">«اسکیرت»</translation>
 <translation id="7767278989746220252">ایوان، چمن، و باغ</translation>
 <translation id="776749070095465053">پارچه</translation>
@@ -4065,6 +4073,7 @@
 <translation id="7878562273885520351">ممکن است گذرواژه‌تان درمعرض خطر باشد</translation>
 <translation id="7881044256965445977">جستجو کردن و متصل شدن به هر دستگاهی در شبکه محلی</translation>
 <translation id="7882421473871500483">قهوه‌ای</translation>
+<translation id="7885670691503039914">اگر قیمت در هر سایتی کاهش پیدا کند، هشدار ایمیلی دریافت خواهید کرد. این صفحه در پوشه نشانک <ph name="LAST_BOOKMARKS_FOLDER" /> ذخیره خواهد شد.</translation>
 <translation id="7886897188117641322">انتخاب کنید کدام دسته‌های گسترده از موضوع‌ها می‌توانند برای کمک به شخصی‌سازی کردن آگهی‌ها استفاده شوند</translation>
 <translation id="7887683347370398519">‏CVC را بررسی کرده و دوباره امتحان کنید</translation>
 <translation id="7887885240995164102">ورود به تصویر در تصویر</translation>
@@ -4345,6 +4354,7 @@
 <translation id="8364627913115013041">تنظیم نشده.</translation>
 <translation id="8366057325711477500">اخبار جهان</translation>
 <translation id="836616551641291797">درباره نحوه مدیریت مرورگرتان بیشتر بدانید</translation>
+<translation id="8367705492654390392">هرچه می‌خواهید بپرسید</translation>
 <translation id="8368001212524806591">پیگیری قیمت</translation>
 <translation id="8368027906805972958">دستگاه ناشناس یا پشتیبانی‌نشده (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">‏خدمات Google Play</translation>
@@ -4659,6 +4669,7 @@
 <translation id="8926389886865778422">دوباره سؤال نشود</translation>
 <translation id="8932102934695377596">ساعت شما عقب است</translation>
 <translation id="893332455753468063">افزودن نام</translation>
+<translation id="8938242527120341116">فیلترهای محتوای دستگاهتان <ph name="BLOCKED_URL" /> را مسدود کرده‌اند</translation>
 <translation id="8942355029279167844">‏سرپرستتان به <ph name="APP_NAME" /> اجازه داده است تا برای بهبود تجربه استفاده از محصول، داده‌های عیب‌یابی را جمع‌آوری کند. برای دریافت اطلاعات بیشتر، به <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> بروید.</translation>
 <translation id="8943282376843390568">لیمویی</translation>
 <translation id="8949410982325929394">لحن</translation>
@@ -4864,6 +4875,7 @@
 <translation id="963837307749850257">همه کاربران</translation>
 <translation id="964050462028070434">مدیریت گذرواژه‌ها و گذرکلیدها…</translation>
 <translation id="969892804517981540">ساخت رسمی</translation>
+<translation id="97054401902912338">درباره فیلترهای محتوا بیشتر بدانید</translation>
 <translation id="973788791897303708">این گروه برگه پر است</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{هیچ‌کدام}=1{۱ مورد}one{# مورد}other{# مورد}}</translation>
 <translation id="976522784004777030">۸ × ۵ اینچ</translation>

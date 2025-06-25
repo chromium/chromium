@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Přečtěte si dnešní zprávy a ušetřete až 60 % dat</translation>
 <translation id="1303339473099049190">Dané heslo nebylo nalezeno. Zkontrolujte ho a zkuste to znovu.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – odesláno ze zařízení <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Seskupit karty</translation>
 <translation id="1318262688555255786">Sdílet odkaz na webovou stránku <ph name="PAGE_TITLE" />. Zdroj: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Složky v postupu uložení záložky otevřené na celou výšku</translation>
 <translation id="1327257854815634930">Historie navigace je otevřená</translation>
@@ -477,6 +478,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Měření reklam</translation>
 <translation id="3189635831478931757">Skupina karet <ph name="GROUP_TITLE" /></translation>
+<translation id="3200536777393523575">Zavřít aktuální okno?</translation>
 <translation id="3207960819495026254">Přidáno do záložek</translation>
 <translation id="3208584281581115441">Zkontrolovat</translation>
 <translation id="3211426585530211793">Položka <ph name="ITEM_TITLE" /> byla smazána</translation>
@@ -721,6 +723,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4351244548802238354">Zavřít dialogové okno</translation>
 <translation id="4352287748243729941">Použít heslo <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Na stránky, které si přidáte do záložek, se budete moci snadno rychle vrátit</translation>
+<translation id="4356503491090073318">Číslo karty*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Bezpečnost na první pohled</translation>
 <translation id="4378154925671717803">Telefon</translation>
@@ -738,6 +741,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4425140285732600465">Sledování ceny. Pokud cena na některém webu klesne, dostanete upozornění.</translation>
 <translation id="4425173294238317796">Tabulka k potvrzení přístupového klíče</translation>
 <translation id="442518031075347249">Virtuální kartu již se službou Google Pay nebudete moci používat. <ph name="BEGIN_LINK1" />Další informace o virtuálních kartách<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{Karta <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_ONE" /> další budou zavřeny}few{Karta <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> další budou zavřeny}many{Karta <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> další bude zavřeno}other{Karta <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> dalších bude zavřeno}}</translation>
 <translation id="4426508677408162512">Všechny záložky</translation>
 <translation id="4430277756566635951">Momentálně vybráno: <ph name="EMAIL" />. Vyberte účet.</translation>
 <translation id="4452411734226507615">Zavřít kartu <ph name="TAB_TITLE" /></translation>
@@ -873,6 +877,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4987271110129728827">Stránku nelze najít. Zkontrolujte, zda jste neudělali překlep, nebo ji zkuste vyhledat na webu.</translation>
 <translation id="4988526792673242964">Stránky</translation>
 <translation id="4991110219272367918">Možnost schválit nebo neschválit web byla zavřena</translation>
+<translation id="4996042648402406470">Získat</translation>
 <translation id="4996095658297597226">Použít navrhované heslo?</translation>
 <translation id="5001388021414335527">Zde můžete web sledovat</translation>
 <translation id="5004416275253351869">Ovládací prvky aktivity Google</translation>
@@ -923,10 +928,12 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5210286577605176222">Přejít na předchozí kartu</translation>
 <translation id="5210365745912300556">Zavřít kartu</translation>
 <translation id="5215957675041756913">Ovládání dat a účtu</translation>
+<translation id="5218324087477576825">Číslo karty, povinné</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další <ph name="SEPARATOR" /> Chrome tato oprávnění odebral, protože jste tento web v poslední době nenavštívili</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
 <translation id="5226378907213531272">Při každém použití auta bude potřeba odemknout obrazovku</translation>
 <translation id="5227554086496586518">Klepnutím zobrazíte výsledky vyhledávání</translation>
+<translation id="5229736206150093143">Nejnovější výsledky</translation>
 <translation id="5233638681132016545">Nová karta</translation>
 <translation id="5235196193381275927">Při přihlašování se něco pokazilo</translation>
 <translation id="5246093389635966745">Upravit zkratku lišty</translation>
@@ -1281,6 +1288,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="676305334223455055">Pokud chcete dostávat zprávy na základě svých zájmů, přihlaste se</translation>
 <translation id="6764137532716892442">Sdílená skupina karet <ph name="GROUP_TITLE" /> s novou aktivitou</translation>
 <translation id="6767294960381293877">Seznam zařízení, se kterými se má karta sdílet, otevřený na poloviční výšku.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{Zavřou se anonymní (<ph name="INCOGNITO_TAB_COUNT" />) a další (<ph name="TAB_COUNT_ONE" />) karty}few{Zavřou se anonymní (<ph name="INCOGNITO_TAB_COUNT" />) a další (<ph name="TAB_COUNT_MANY" />) karty}many{Zavřou se anonymní (<ph name="INCOGNITO_TAB_COUNT" />) a další (<ph name="TAB_COUNT_MANY" />) karty}other{Zavřou se anonymní (<ph name="INCOGNITO_TAB_COUNT" />) a další (<ph name="TAB_COUNT_MANY" />) karty}}</translation>
 <translation id="6785476624617658922">Dodatečné smluvní podmínky prohlížeče Google Chrome a systému ChromeOS</translation>
 <translation id="6786747875388722282">Rozšíření</translation>
 <translation id="6795633245022906657">Rychle otevřít novou kartu. Tuto zkratku můžete upravit v Nastavení.</translation>
@@ -1400,6 +1408,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7224097611345298931">Všechna hesla uložená pouze na tomto zařízení pro Chrome a <ph name="CHROME_CHANNEL" /> byla sloučena. V obou aplikacích můžete automaticky vyplňovat všechna uložená hesla.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nevyřízené stahování}few{# nevyřízená stahování}many{# nevyřízeného stahování}other{# nevyřízených stahování}}</translation>
 <translation id="7230064152164845085">Přejít do anonymního režimu</translation>
+<translation id="7230836263524391273">Skrýt režim čtení</translation>
 <translation id="7237724030342645845">Správce hesel Google přestal fungovat</translation>
 <translation id="72415438529550637">Návrh hesla je zavřen.</translation>
 <translation id="7248671827512403053">Aplikace</translation>
@@ -1576,6 +1585,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7965838025086216108">Uložená hesla můžete používat v libovolném zařízení. Ukládají se do Správce hesel Google pro účet <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Přidáno do seznamu četby</translation>
 <translation id="7968982339740310781">Zobrazit podrobnosti</translation>
+<translation id="7969391000881506217">Datum konce platnosti*</translation>
 <translation id="7971136598759319605">Aktivní včera</translation>
 <translation id="7975379999046275268">Zobrazit náhled stránky <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Upozorní vás, pokud používáte heslo, které bylo prozrazeno při porušení zabezpečení dat.</translation>
@@ -1734,6 +1744,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8565021320663436446">Odstranit účet <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Soubor nelze bezpečně stáhnout</translation>
 <translation id="8571213806525832805">Poslední 4 týdny</translation>
+<translation id="8580435650274205305">Datum konce platnosti je povinné</translation>
 <translation id="8582529315803410153">Tady najdete své karty z jiných zařízení</translation>
 <translation id="8585103689515290060">Služby automatického vyplňování</translation>
 <translation id="859046281437143747">Pomocí nabídky Další možnosti lze sledovat cenu</translation>

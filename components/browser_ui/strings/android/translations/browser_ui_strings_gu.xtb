@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">પહેલા ઍપ અને પછી ડિફૉલ્ટ ઍપ પર ટૅપ કરો</translation>
 <translation id="1415402041810619267">URL ટૂંકી કરી છે</translation>
 <translation id="1415855080660575082">તમારા તાજેતરના ટૅબ તમારી ડિવાઇસની ઍપની સૂચિ અને શોધ પરિણામોમાં દેખાય તે માટે Chromeને તમારા ડિવાઇસ સાથે તે શેર કરવાની મંજૂરી આપો. Chrome સેટિંગમાં તમે આને ચાલુ અથવા બંધ કરી શકો છો.</translation>
+<translation id="1432650420699700107">સાઇટ તમારા સ્થાનિક નેટવર્ક પરના કોઈપણ ડિવાઇસ સાથે કનેક્ટ થવા માટે પૂછી શકે છે</translation>
 <translation id="1448064542941920355">નાનું-મોટું કરવાની ટકાવારી ઘટાડો</translation>
 <translation id="1464044141348608623">સાઇટને તમે સક્રિય રીતે તમારા ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તે જાણવાની મંજૂરી આપશો નહીં</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> સાઇટ}one{<ph name="SITE_COUNT" /> સાઇટ}other{<ph name="SITE_COUNT" /> સાઇટ}}</translation>
@@ -254,6 +255,7 @@
 <translation id="3955321697524543127">સાઇટને USB ડિવાઇસ સાથે કનેક્ટ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="3965467402665811906">આ સાઇટ, તેમણે તમારા વિશે સાચવેલી માહિતીનો ઉપયોગ કરવા માટે પૂછી શકે છે</translation>
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
+<translation id="3969869202926863008">સ્થાનિક નેટવર્કનો ઍક્સેસ</translation>
 <translation id="3981465354637804599">તેઓ કોઈ કિંમત વિના કન્ટેન્ટ કે સેવાઓ આપી શકે તે માટે સાઇટ સામાન્ય રીતે જાહેરાતો બતાવે છે. પણ કેટલીક સાઇટ ખલેલ પહોંચાડનારી કે ભ્રામક જાહેરાતો બતાવવા માટે જાણીતી હોય છે.</translation>
 <translation id="3987993985790029246">લિંક કૉપિ કરો</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@
 <translation id="6554732001434021288">છેલ્લે <ph name="NUM_DAYS" /> દિવસ પહેલાં મુલાકાત લીધી</translation>
 <translation id="656065428026159829">વધુ જુઓ</translation>
 <translation id="6561560012278703671">ગુપચુપ મેસેજિંગનો ઉપયોગ કરો (તમને ખલેલ પહોંચાડે તેવા નોટિફિકેશન સંકેતોને બ્લૉક કરે છે)</translation>
+<translation id="6565144332292237355">સાઇટ તમારા સ્થાનિક નેટવર્ક પરના કોઈપણ ડિવાઇસને શોધવા અને તેની સાથે કનેક્ટ કરવા માટે આ સુવિધાનો ઉપયોગ કરી શકે છે</translation>
 <translation id="6593061639179217415">ડેસ્કટૉપ સાઇટ</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" />ની <ph name="RWS_MEMBERS_COUNT" /> સાઇટ માટે કુકીને મંજૂરી આપી}one{<ph name="RWS_OWNER" />ની <ph name="RWS_MEMBERS_COUNT" /> સાઇટ માટે કુકીને મંજૂરી આપી}other{<ph name="RWS_OWNER" />ની <ph name="RWS_MEMBERS_COUNT" /> સાઇટ માટે કુકીને મંજૂરી આપી}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

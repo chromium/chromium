@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Okoa hadi asilimia 60 ya data, soma habari za leo</translation>
 <translation id="1303339473099049190">Imeshindwa kupata nenosiri hilo. Angalia maendelezo yako kisha ujaribu tena.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Imetumwa kutoka <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Weka vichupo pamoja</translation>
 <translation id="1318262688555255786">Ruhusu ufikiaji wa kiungo cha ukurasa wa wavuti wa <ph name="PAGE_TITLE" />. Chanzo: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Folda za utaratibu wa kuhifadhi alamisho zimefunguliwa kwenye skrini nzima</translation>
 <translation id="1327257854815634930">Historia ya uelekezaji imefunguliwa</translation>
@@ -1407,6 +1408,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7224097611345298931">Manenosiri yote yaliyohifadhiwa kwenye kifaa hiki pekee ya Chrome na <ph name="CHROME_CHANNEL" /> yameunganishwa. Unaweza kujaza kiotomatiki manenosiri yako yote uliyohifadhi kwenye programu zote mbili.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Inasubiri kupakua faili 1}other{Inasubri kupakua faili #}}</translation>
 <translation id="7230064152164845085">Nenda kwenye Hali ya Faraghani</translation>
+<translation id="7230836263524391273">Ficha Hali ya Kusoma</translation>
 <translation id="7237724030342645845">Kidhibiti cha Manenosiri cha Google kimeacha kufanya kazi</translation>
 <translation id="72415438529550637">Pendekezo la nenosiri limefungwa.</translation>
 <translation id="7248671827512403053">Programu</translation>

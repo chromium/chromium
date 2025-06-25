@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">Сповіщення про відстеження цін</translation>
 <translation id="21613918653299710">Галереї зображень в Інтернеті</translation>
 <translation id="2161656808144014275">Текст</translation>
+<translation id="2162435186600002085">Логотип основного заголовка</translation>
 <translation id="2162620598375156287">Поточна ціна на сайті <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">Перевірте, чи немає описки в імені хосту <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Повний адміністративний доступ</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">Додати паспортні дані</translation>
 <translation id="2400271059665846158">Керуйте своїми картками постійного покупця в Google Гаманці</translation>
 <translation id="2400600116338235695">Може просити дозвіл підключатися до послідовних портів</translation>
+<translation id="240450251994300576">Логотип додаткового заголовка</translation>
 <translation id="2404884497378469141">Спробуйте повторно скопіювати файли</translation>
 <translation id="2413155254802890957">Старі дані</translation>
 <translation id="2413528052993050574">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Можливо, його сертифікат безпеки відкликано. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">Отримання тексту з файлу PDF…</translation>
 <translation id="2628224721443278970">Увійти в Microsoft OneDrive</translation>
 <translation id="2634124572758952069">IP-адресу сервера <ph name="HOST_NAME" /> не знайдено.</translation>
+<translation id="2638567100095052009">Введіть @, щоб шукати на вебсайтах <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Статус:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Тканина (напівглянцева)</translation>
@@ -2027,6 +2030,7 @@
 <translation id="4372948949327679948">Очікуване значення: <ph name="VALUE_TYPE" />.</translation>
 <translation id="437620492464254965">Двері й вікна</translation>
 <translation id="4377125064752653719">Ви пробували зв’язатися з доменом <ph name="DOMAIN" />, проте сервер надав сертифікат, відкликаний його видавцем. Це означає, що не варто довіряти обліковим даним системи захисту, наданим сервером. Можливо, ви обмінюєтеся даними зі зловмисником.</translation>
+<translation id="4377869186417956230">Відкрити екран з усіма картками постійного покупця в цьому пункті меню.</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Відтепер зберігайте файли в хмарному сховищі</translation>
@@ -2266,6 +2270,7 @@
 <translation id="4827283332383516812">Видалити картку</translation>
 <translation id="4830443836091007686">Вибрано <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Папір для іміджсетера</translation>
+<translation id="4832388034239846146">Щоб ділитися групами вкладок, оновіть Chrome</translation>
 <translation id="483241715238664915">Увімкнути попередження</translation>
 <translation id="4832961164064927107">Барбекю й гриль</translation>
 <translation id="4834250788637067901">Способи оплати, пропозиції і адреси з Google Pay</translation>
@@ -2973,6 +2978,7 @@
 <translation id="6043357981274314628">Готово</translation>
 <translation id="6044573915096792553">Розмір 12</translation>
 <translation id="6045164183059402045">Шаблон накладення</translation>
+<translation id="6046892054959167494">Введіть <ph name="SEARCH_AGGREGATOR_KEYWORD" />, щоб здійснити пошук, або скажіть <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Цей вміст може оманливим шляхом змусити вас установити програмну або надати особисту інформацію. <ph name="BEGIN_LINK" />Усе одно показати<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Конверт B4</translation>
 <translation id="6049488691372270142">Подача сторінки</translation>
@@ -3142,6 +3148,7 @@
 <translation id="6326947323444967009">Зробити Chrome веб-переглядачем системи за умовчанням у налаштуваннях iOS</translation>
 <translation id="6327065120806001832">доступ до локальної мережі</translation>
 <translation id="6328639280570009161">Спробуйте вимкнути прогнозування мережі.</translation>
+<translation id="6334834493885103305">Тепер ви можете сплачувати частинами за допомогою сервісів Affirm, Zip і Klarna</translation>
 <translation id="6335029926534404762">Спортивне взуття</translation>
 <translation id="6336948221660696475">Заборонено використовувати віртуальну реальність</translation>
 <translation id="6337133576188860026">Звільняє менше <ph name="SIZE" />. Деякі сайти можуть завантажуватися повільніше під час наступного відвідування.</translation>
@@ -4011,6 +4018,7 @@
 <translation id="7761159795823346334">Дозволити доступ до камери?</translation>
 <translation id="7761701407923456692">Сертифікат сервера не відповідає URL-адресі.</translation>
 <translation id="7764225426217299476">Додати адресу</translation>
+<translation id="7765158879357617694">Перемістити</translation>
 <translation id="7766518757692125295">З полями</translation>
 <translation id="7767278989746220252">Тераси, газони й сади</translation>
 <translation id="776749070095465053">Тканина</translation>
@@ -4065,6 +4073,7 @@
 <translation id="7878562273885520351">Ваш пароль можуть зламати</translation>
 <translation id="7881044256965445977">Шукати пристрої в локальній мережі й підключатися до них</translation>
 <translation id="7882421473871500483">Коричневий</translation>
+<translation id="7885670691503039914">Якщо на якомусь сайті знизиться ціна, ви отримаєте сповіщення електронною поштою. Цю сторінку буде збережено в папці закладок "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="7886897188117641322">Виберіть загальні категорії тем, які можна використовувати для персоналізації реклами</translation>
 <translation id="7887683347370398519">Перевірте код CVC й повторіть спробу</translation>
 <translation id="7887885240995164102">Увімкнути режим "Картинка в картинці"</translation>
@@ -4345,6 +4354,7 @@
 <translation id="8364627913115013041">Не встановлено.</translation>
 <translation id="8366057325711477500">Світові новини</translation>
 <translation id="836616551641291797">Дізнайтесь, як відбувається керування вашим веб-переглядачем</translation>
+<translation id="8367705492654390392">Поставте запитання</translation>
 <translation id="8368001212524806591">Відстеження цін</translation>
 <translation id="8368027906805972958">Невідомий чи непідтримуваний пристрій (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Сервіси Google Play</translation>
@@ -4660,6 +4670,7 @@
 <translation id="8926389886865778422">Не запитувати знову</translation>
 <translation id="8932102934695377596">Ваш годинник відстає</translation>
 <translation id="893332455753468063">Додайте ім’я</translation>
+<translation id="8938242527120341116">Фільтри контенту на вашому пристрої заблокували URL-адресу <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">Адміністратор надав додатку <ph name="APP_NAME" /> дозвіл збирати дані діагностики, щоб покращувати роботу продукту. Докладніше читайте на сторінці <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Лаймовий</translation>
 <translation id="8949410982325929394">Тон</translation>
@@ -4865,6 +4876,7 @@
 <translation id="963837307749850257">Усі користувачі</translation>
 <translation id="964050462028070434">Керувати паролями та ключами доступу…</translation>
 <translation id="969892804517981540">Офіційне складання</translation>
+<translation id="97054401902912338">Докладніше про фільтри контенту</translation>
 <translation id="973788791897303708">Ця група вкладок заповнена</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Немає}=1{1 запис}one{# запис}few{# записи}many{# записів}other{# запису}}</translation>
 <translation id="976522784004777030">5 x 8 дюйм.</translation>

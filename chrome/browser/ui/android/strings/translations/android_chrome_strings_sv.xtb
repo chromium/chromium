@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Spara upp till 60 % data och läs dagens nyheter</translation>
 <translation id="1303339473099049190">Det gick inte att hitta lösenordet. Kontrollera stavningen och försök igen.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Skickades från <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Gruppera flikar</translation>
 <translation id="1318262688555255786">Dela länk till webbsidan <ph name="PAGE_TITLE" />. Källa: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Mappar i flöde för att spara bokmärken har öppnats över hela skärmen</translation>
 <translation id="1327257854815634930">Navigeringshistoriken har öppnats</translation>
@@ -477,6 +478,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Annonsmätning</translation>
 <translation id="3189635831478931757">Flikgruppen <ph name="GROUP_TITLE" /></translation>
+<translation id="3200536777393523575">Vill du stänga det aktuella fönstret?</translation>
 <translation id="3207960819495026254">Bokmärkt</translation>
 <translation id="3208584281581115441">Kontrollera nu</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> raderades</translation>
@@ -722,6 +724,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4351244548802238354">Stäng dialogrutan</translation>
 <translation id="4352287748243729941">Vill du använda lösenordet för <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>
+<translation id="4356503491090073318">Kortnummer*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Säkerhetsöversikt</translation>
 <translation id="4378154925671717803">Mobil</translation>
@@ -739,6 +742,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4425140285732600465">Bevakar pris. Få aviseringar när priset sjunker på en webbplats.</translation>
 <translation id="4425173294238317796">Bekräftelseark för nyckel</translation>
 <translation id="442518031075347249">Du kommer inte längre att kunna använda det virtuella kortet med Google Pay. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> och <ph name="TAB_COUNT_ONE" /> flik till stängs}other{<ph name="TAB_TITLE" /> och <ph name="TAB_COUNT_MANY" /> flikar till stängs}}</translation>
 <translation id="4426508677408162512">Alla bokmärken</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> är valt just nu. Välj ett konto.</translation>
 <translation id="4452411734226507615">Stäng fliken <ph name="TAB_TITLE" /></translation>
@@ -874,6 +878,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4987271110129728827">Sidan hittades inte. Kontrollera stavningen eller testa att söka på webben.</translation>
 <translation id="4988526792673242964">Sidor</translation>
 <translation id="4991110219272367918">Alternativ för att godkänna eller inte godkänna en webbplats har stängts</translation>
+<translation id="4996042648402406470">Hämta</translation>
 <translation id="4996095658297597226">Vill du använda det föreslagna lösenordet?</translation>
 <translation id="5001388021414335527">Följ denna webbplats här</translation>
 <translation id="5004416275253351869">Googles aktivitetsinställningar</translation>
@@ -924,10 +929,12 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5210286577605176222">Hoppa till föregående flik</translation>
 <translation id="5210365745912300556">Stäng flik</translation>
 <translation id="5215957675041756913">Styra din data och ditt konto</translation>
+<translation id="5218324087477576825">Kortnummer, obligatoriskt</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> med flera <ph name="SEPARATOR" /> Chrome har tagit bort dessa behörigheter eftersom du inte har besökt webbplatsen nyligen</translation>
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="5226378907213531272">Du låser upp skärmen varje gång du använder bilen</translation>
 <translation id="5227554086496586518">Tryck för att visa sökresultat</translation>
+<translation id="5229736206150093143">Senaste resultat</translation>
 <translation id="5233638681132016545">Ny flik</translation>
 <translation id="5235196193381275927">Något gick fel vid inloggningen</translation>
 <translation id="5246093389635966745">Redigera genväg i verktygsfältet</translation>
@@ -1282,6 +1289,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="676305334223455055">Logga in om du vill få innehåll utifrån dina intressen</translation>
 <translation id="6764137532716892442">Delade flikgruppen <ph name="GROUP_TITLE" /> med ny aktivitet</translation>
 <translation id="6767294960381293877">Listan över enheter som fliken kan delas med öppnades och tar upp halva skärmen.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitoflik och <ph name="TAB_COUNT_ONE" /> annan flik stängs}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitoflik och <ph name="TAB_COUNT_MANY" /> andra flikar stängs}}</translation>
 <translation id="6785476624617658922">Ytterligare villkor för Chrome och ChromeOS</translation>
 <translation id="6786747875388722282">Tillägg</translation>
 <translation id="6795633245022906657">Öppna en ny flik snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>
@@ -1401,6 +1409,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7224097611345298931">Alla lösenord som endast sparats på den här enheten för Chrome och <ph name="CHROME_CHANNEL" /> slogs samman. Du kan fylla i alla sparade lösenord automatiskt i båda apparna.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nedladdning väntar}other{# nedladdningar väntar}}</translation>
 <translation id="7230064152164845085">Byt till inkognito</translation>
+<translation id="7230836263524391273">Dölj läsläget</translation>
 <translation id="7237724030342645845">Google Lösenordshantering har slutat fungera</translation>
 <translation id="72415438529550637">Lösenordsförslaget har stängts.</translation>
 <translation id="7248671827512403053">Program</translation>
@@ -1577,6 +1586,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7965838025086216108">Du kan använda sparade lösenord på vilken enhet som helst. De sparas i Google Lösenordshantering för <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Har lagts till i läslistan</translation>
 <translation id="7968982339740310781">Visa information</translation>
+<translation id="7969391000881506217">Sista giltighetsdatum*</translation>
 <translation id="7971136598759319605">Aktiv för 1 dag sedan</translation>
 <translation id="7975379999046275268">Förhandsgranska sida <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Varnar dig om du använder ett lösenord som har läckt ut i samband med ett dataintrång.</translation>
@@ -1735,6 +1745,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8565021320663436446">Vill du ta bort <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Det går inte att ladda ned filen på ett säkert sätt</translation>
 <translation id="8571213806525832805">Senaste fyra veckorna</translation>
+<translation id="8580435650274205305">Sista giltighetsdatum, obligatoriskt</translation>
 <translation id="8582529315803410153">Flikar från andra enheter visas här</translation>
 <translation id="8585103689515290060">Autofylltjänster</translation>
 <translation id="859046281437143747">Bevaka pris via knappen Flera alternativ</translation>

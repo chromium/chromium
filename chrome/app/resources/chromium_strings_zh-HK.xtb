@@ -248,6 +248,7 @@
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4285930937574705105">不明錯誤導致安裝失敗。如果目前 Chromium 正在執行，請關閉 Chromium，然後再試一次。</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
+<translation id="4334241893986177674">搵呢張螢幕截圖</translation>
 <translation id="4334294535648607276">下載完成。</translation>
 <translation id="439358628917130594">在使用這部裝置前，<ph name="MANAGER" /> 要求您仔細閱讀並接受下列《服務條款》。這些條款不會擴展、修改或限制《Chromium 作業系統條款》。</translation>
 <translation id="4407044323746248786">仍要結束 Chromium 嗎？</translation>
@@ -576,6 +577,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8704119203788522458">這是您專屬的 Chromium</translation>
 <translation id="8719993436687031146">要登入 Chromium 嗎？</translation>
 <translation id="8747073452963259673">搜尋區域嘅左下角：距左側 <ph name="LEFT" />%，距底部 <ph name="BOTTOM" />%</translation>
+<translation id="8768722695577490596">密碼只能在 Chromium 以外的環境刪除</translation>
 <translation id="878572486461146056">安裝錯誤：網絡管理員已套用防止安裝的群組政策：<ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium 需要取得權限，才能讓這個網站存取您的相機和麥克風</translation>
 <translation id="8818550178040858407">要登入 Chromium 嗎？</translation>

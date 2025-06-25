@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Dijeljenje nije uspjelo jer niste povezani s mrežom.</translation>
 <translation id="1668001730617725852">Otvori u novoj grupi kartica</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Sada možete otvoriti Google objektiv iz adresne trake i pretraživati sve što vidite</translation>
 <translation id="1689333818294560261">Nadimak</translation>
 <translation id="169048873465870056">Želite li ukloniti karticu i izbrisati grupu?</translation>
 <translation id="1698090540708020240">Uvoz zaporki...</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Računom <ph name="USER_EMAIL" /> upravlja domena <ph name="HOSTED_DOMAIN" /> koja možda može pregledavati neke podatke. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nova stavka</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> računa koristi istu zaporku</translation>
+<translation id="205013082884273671">Pretražite bilo što na zaslonu</translation>
 <translation id="2054044186557130763">Prijavite se kao <ph name="NAME" />, s računom <ph name="EMAIL" /> kojim upravlja vaša organizacija.</translation>
 <translation id="2059166748188874810">Općina</translation>
 <translation id="2060638295449304809">Adresa se sprema samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, spremite je na svoj Google račun <ph name="USER_EMAIL" /></translation>
@@ -459,6 +461,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="2819667972867209401">Kada je postavka uključena, podaci se spremaju na vaš Google račun. Kad je isključeno, podaci se spremaju samo na ovaj uređaj i brišu se ako se odjavite.</translation>
 <translation id="2827760117436553203">Želite li da podaci budu odvojeni?</translation>
 <translation id="2829172210806130158">Pretražite zaslon</translation>
+<translation id="2831109159746537587">Zaokružite ili dodirnite sliku da biste pretražili</translation>
 <translation id="2834399722155632105">3. Dodirnite Opcije zaporke</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Vrijeme</translation>
@@ -1104,6 +1107,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5576885723883013398">Novi prozor</translation>
 <translation id="5578795271662203820">Potraži sliku na usluzi <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Sakrij stavku Popis za čitanje</translation>
+<translation id="5581786858144165447">Pitajte pomoću AI načina</translation>
 <translation id="5585019845078534178">Kartice</translation>
 <translation id="5595485650161345191">Uređivanje adrese</translation>
 <translation id="559567008082979829">Postavite da se preuzimanja brišu nakon mjesec dana.</translation>

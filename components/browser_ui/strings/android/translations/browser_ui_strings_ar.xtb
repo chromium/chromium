@@ -36,6 +36,7 @@
 <translation id="1409338233051621926">انقر على "التطبيقات"، ثم انقر على "التطبيقات التلقائية"</translation>
 <translation id="1415402041810619267">‏تم اقتطاع عنوان URL</translation>
 <translation id="1415855080660575082">‏يمكنك السماح لمتصفِّح Chrome بمشاركة علامات التبويب الأخيرة مع جهازك لعرضها في قائمة التطبيقات ونتائج البحث. ويمكنك تفعيل أو إيقاف هذه الميزة من خلال إعدادات Chrome.</translation>
+<translation id="1432650420699700107">السماح للمواقع الإلكترونية بطلب الاتصال بأي جهاز على الشبكة المحلية</translation>
 <translation id="1448064542941920355">تصغير</translation>
 <translation id="1464044141348608623">عدم السماح للمواقع الإلكترونية بمعرفة متى تستخدم جهازك بشكل نشط</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{موقع إلكتروني واحد (<ph name="SITE_COUNT" />)}zero{<ph name="SITE_COUNT" /> موقع إلكتروني}two{موقعَين إلكترونيَين (<ph name="SITE_COUNT" />)}few{<ph name="SITE_COUNT" /> مواقع إلكترونية}many{<ph name="SITE_COUNT" /> موقعًا إلكترونيًا}other{<ph name="SITE_COUNT" /> موقع إلكتروني}}</translation>
@@ -255,6 +256,7 @@
 <translation id="3955321697524543127">‏عدم السماح للمواقع الإلكترونية بالاتصال بأجهزة USB</translation>
 <translation id="3965467402665811906">السماح للمواقع الإلكترونية بطلب استخدام المعلومات التي تم حفظها عنك</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
+<translation id="3969869202926863008">الوصول إلى الشبكة المحلية</translation>
 <translation id="3981465354637804599">تعرض المواقع الإلكترونية الإعلانات عادةً لتتمكَّن من توفير محتوى أو خدمات بدون أي تكلفة، إلا أن بعض المواقع الإلكترونية تُعرَف بعرضها إعلانات مضلِّلة أو غير مرغوب فيها.</translation>
 <translation id="3987993985790029246">نسخ الرابط</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -464,6 +466,7 @@
 <translation id="6554732001434021288">تمّت زيارة الموقع الإلكتروني آخر مرّة قبل <ph name="NUM_DAYS" /> يوم.</translation>
 <translation id="656065428026159829">عرض المزيد</translation>
 <translation id="6561560012278703671">استخدام طريقة أقل بروزًا لإرسال الإشعارات (منع رسائل الإشعارات من إزعاجك)</translation>
+<translation id="6565144332292237355">يمكن للمواقع الإلكترونية استخدام هذه الميزة للبحث عن أي جهاز على الشبكة المحلية والاتصال به</translation>
 <translation id="6593061639179217415">موقع مصمَّم للكمبيوتر</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{تم السماح باستخدام ملفات تعريف الارتباط لموقع إلكتروني واحد (<ph name="RWS_MEMBERS_COUNT" />) ضمن مجموعة "<ph name="RWS_OWNER" />"}zero{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> موقع إلكتروني ضمن مجموعة "<ph name="RWS_OWNER" />"}two{تم السماح باستخدام ملفات تعريف الارتباط لموقعَين إلكترونيَّين (<ph name="RWS_MEMBERS_COUNT" />) ضمن مجموعة "<ph name="RWS_OWNER" />"}few{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> مواقع إلكترونية ضمن مجموعة "<ph name="RWS_OWNER" />"}many{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> موقعًا إلكترونيًّا ضمن مجموعة "<ph name="RWS_OWNER" />"}other{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> موقع إلكتروني ضمن مجموعة "<ph name="RWS_OWNER" />"}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> غيغابايت</translation>

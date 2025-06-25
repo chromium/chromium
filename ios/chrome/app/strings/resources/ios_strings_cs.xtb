@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Sdílení se nezdařilo, protože nejste připojeni k síti.</translation>
 <translation id="1668001730617725852">Otevřít v nové skupině karet</translation>
 <translation id="1674504678466460478">Z: <ph name="SOURCE_LANGUAGE" /> do: <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Teď můžete otevřít Google Lens z adresního řádku a vyhledat cokoli, co vidíte</translation>
 <translation id="1689333818294560261">Přezdívka</translation>
 <translation id="169048873465870056">Odstranit kartu a smazat skupinu?</translation>
 <translation id="1698090540708020240">Importovat hesla…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Účet <ph name="USER_EMAIL" /> spravuje doména <ph name="HOSTED_DOMAIN" />, která může mít přístup k některým informacím. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nová položka</translation>
 <translation id="2049727122989709386">V následujícím počtu účtů používáte stejné heslo <ph name="COUNT" /></translation>
+<translation id="205013082884273671">Vyhledejte cokoli na obrazovce</translation>
 <translation id="2054044186557130763">Přihlásit se jako <ph name="NAME" /> <ph name="EMAIL" />, spravováno vaší organizací.</translation>
 <translation id="2059166748188874810">Samosprávná oblast</translation>
 <translation id="2060638295449304809">Tahle adresa je uložená jen na tomhle zařízení. Pokud ji chcete používat i na jiných zařízeních, uložte ji do svého účtu Google <ph name="USER_EMAIL" />.</translation>
@@ -459,6 +461,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="2819667972867209401">Když je tato funkce zapnutá, ukládají se data do vašeho účtu Google. Když je vypnutá, ukládají se pouze do tohoto zařízení, a pokud se odhlásíte, budou smazána.</translation>
 <translation id="2827760117436553203">Nechat údaje oddělené?</translation>
 <translation id="2829172210806130158">Vyhledat na obrazovce</translation>
+<translation id="2831109159746537587">Zkuste vyhledávat zakroužkováním nebo klepnutím na obrázek</translation>
 <translation id="2834399722155632105">3. Klepněte na Volby hesel.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Čas</translation>
@@ -1104,6 +1107,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5576885723883013398">Nové okno</translation>
 <translation id="5578795271662203820">Hledat obrázek pomocí <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Skrýt možnost Seznam četby</translation>
+<translation id="5581786858144165447">Zeptat se režimu AI</translation>
 <translation id="5585019845078534178">Karty</translation>
 <translation id="5595485650161345191">Upravit adresu</translation>
 <translation id="559567008082979829">Nastaví automatické mazání stažených souborů po jednom měsíci.</translation>

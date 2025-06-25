@@ -112,6 +112,7 @@
 <translation id="5556417849629758491">Xem thông tin cửa hàng, tùy chọn này nằm ở gần đầu màn hình</translation>
 <translation id="5627941783489838464">Không có thông tin cập nhật về thẻ</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> đường liên kết từ Chrome}other{<ph name="TABS_COUNT_MANY" /> đường liên kết từ Chrome}}</translation>
+<translation id="5746204836956568669">Nhóm <ph name="NUMBER_OF_TABS" /> thẻ lại với nhau để làm việc nhanh hơn?</translation>
 <translation id="58326064309361797">Kéo các thẻ để nhóm lại với nhau</translation>
 <translation id="5901630391730855834">Vàng</translation>
 <translation id="5972844218283131174">Bỏ chọn tất cả</translation>
@@ -192,6 +193,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Cập nhật <ph name="NUM_MONTHS_ONE" /> tháng trước}other{Cập nhật <ph name="NUM_MONTHS_MANY" /> tháng trước}}</translation>
 <translation id="8398929769197326728">Thư mục mới – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Cài đặt</translation>
+<translation id="855081842937141170">Ghim thẻ</translation>
 <translation id="8633025649649592204">Hoạt động gần đây</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8714939927607906138">Giá thấp hơn</translation>

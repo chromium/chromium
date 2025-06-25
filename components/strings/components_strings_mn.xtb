@@ -2031,6 +2031,7 @@
 <translation id="4372948949327679948">Хүлээгдэж буй <ph name="VALUE_TYPE" /> утга.</translation>
 <translation id="437620492464254965">Хаалга болон цонхнууд</translation>
 <translation id="4377125064752653719">Та <ph name="DOMAIN" />-тай холбогдох оролдлого хийсэн хэдий ч Серверээс өгсөн гэрчилгээг гаргагч этгээдээс цуцалсан байна. Энэ нь серверийн аюулгүй байдлын найдвартай эсэхэд огт итгэх хэрэггүй гэсэн үг юм. Та халдагчтай харилцаж байж болно.</translation>
+<translation id="4377869186417956230">Энэ цэсийн зүйлийн доорх бүх лояалти картын өөрчлөлт.</translation>
 <translation id="4378154925671717803">Утас</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Одооноос файлаа үүлэн хадгалах санд хадгална уу</translation>
@@ -3147,6 +3148,7 @@
 <translation id="6326947323444967009">iOS-н тохиргоонд Chrome-г системийн өгөгдмөл хөтөч болгон тохируулна уу</translation>
 <translation id="6327065120806001832">дотоод сүлжээний хандалт</translation>
 <translation id="6328639280570009161">Сүлжээний таамаглалыг идэвхгүй болгох гээд үзээрэй</translation>
+<translation id="6334834493885103305">Одоо та Affirm, Zip, Klarna-г ашиглан цагийн явцад төлж болно</translation>
 <translation id="6335029926534404762">Биеийн тамирын гутал</translation>
 <translation id="6336948221660696475">VR-г ашиглахыг зөвшөөрөөгүй</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />-с бага зай гаргана. Зарим сайтад зочлох үед удаан ачаалж болзошгүй.</translation>
@@ -4015,6 +4017,7 @@
 <translation id="7761159795823346334">Камерыг зөвшөөрөх үү?</translation>
 <translation id="7761701407923456692">Серверийн гэрчилгээ нь холбоостой таарахгүй байна.</translation>
 <translation id="7764225426217299476">Хаяг нэмэх</translation>
+<translation id="7765158879357617694">Зөөх</translation>
 <translation id="7766518757692125295">Хормой</translation>
 <translation id="7767278989746220252">Доторх хашаа, зүлэг болон цэцэрлэг</translation>
 <translation id="776749070095465053">Даавуу</translation>
@@ -4069,6 +4072,7 @@
 <translation id="7878562273885520351">Таны нууц үгийг хулгайлсан байна</translation>
 <translation id="7881044256965445977">Таны дотоод сүлжээнд холбогдсон дурын төхөөрөмжийг хайж, холбогдох</translation>
 <translation id="7882421473871500483">Бор</translation>
+<translation id="7885670691503039914">Хэрэв аль нэг сайт дээр үнэ буурсан тохиолдолд та имэйлээр илгээх сэрэмжлүүлэг авна. Энэ хуудсыг <ph name="LAST_BOOKMARKS_FOLDER" /> хавчуургын фолдерт хадгална.</translation>
 <translation id="7886897188117641322">Зарыг хувийн болгоход туслахын тулд ямар сэдвүүдийн өргөн хүрээтэй ангиллыг ашиглаж болохыг сонгоно уу</translation>
 <translation id="7887683347370398519">CVC-гээ шалгаад дахин оролдоно уу</translation>
 <translation id="7887885240995164102">Дэлгэц доторх дэлгэц горимд орох</translation>
@@ -4349,6 +4353,7 @@
 <translation id="8364627913115013041">Тохиргоо хийгдээгүй.</translation>
 <translation id="8366057325711477500">Дэлхийн мэдээ</translation>
 <translation id="836616551641291797">Таны хөтчийг хэрхэн удирддаг талаар нэмэлт мэдээлэл авах</translation>
+<translation id="8367705492654390392">Хүссэн зүйлээ асуугаарай</translation>
 <translation id="8368001212524806591">Үнэ хянах</translation>
 <translation id="8368027906805972958">Үл мэдэгдэх эсвэл дэмжигдээгүй төхөөрөмж (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play үйлчилгээ</translation>
@@ -4663,6 +4668,7 @@
 <translation id="8926389886865778422">Дахиж бүү асуу</translation>
 <translation id="8932102934695377596">Таны цаг хоцорч байна</translation>
 <translation id="893332455753468063">Нэр нэмэх</translation>
+<translation id="8938242527120341116">Таны төхөөрөмжийн контентын шүүлтүүр <ph name="BLOCKED_URL" />-г блоклосон</translation>
 <translation id="8942355029279167844">Таны администратор бүтээгдэхүүний туршлагыг сайжруулахын тулд <ph name="APP_NAME" />-д оношилгооны өгөгдлийг цуглуулахыг зөвшөөрсөн байна. Нэмэлт мэдээлэл авахын тулд <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />-г харна уу.</translation>
 <translation id="8943282376843390568">Нимбэгний ногоон</translation>
 <translation id="8949410982325929394">Өнгө аяс</translation>
@@ -4868,6 +4874,7 @@
 <translation id="963837307749850257">Бүх хэрэглэгч</translation>
 <translation id="964050462028070434">Нууц үг болон Passkey-г удирдах…</translation>
 <translation id="969892804517981540">Албан ёсоор бий болгох</translation>
+<translation id="97054401902912338">Контентын шүүлтүүрийн талаар нэмэлт мэдээлэл авах</translation>
 <translation id="973788791897303708">Энэ табын бүлэг дүүрсэн байна</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Байхгүй}=1{1 зүйл}other{# зүйл}}</translation>
 <translation id="976522784004777030">5 x 8 инч</translation>

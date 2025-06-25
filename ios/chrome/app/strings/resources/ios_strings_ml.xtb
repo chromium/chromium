@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">നിങ്ങൾ ഒരു നെറ്റ്‌വർക്കുമായി കണക്റ്റ് ചെയ്യാത്തതിനാൽ പങ്കിടൽ പരാജയപ്പെട്ടു.</translation>
 <translation id="1668001730617725852">പുതിയ ടാബ് ഗ്രൂപ്പിൽ തുറക്കുക</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> എന്നതിൽ നിന്ന് <ph name="TARGET_LANGUAGE" /> എന്നതിലേക്ക്</translation>
+<translation id="168389590065701766">നിങ്ങളുടെ വിലാസ ബാറിൽ നിന്ന് ഇപ്പോൾ Google Lens തുറന്ന്, കാണുന്നതെന്തും തിരയാം</translation>
 <translation id="1689333818294560261">വിളിപ്പേര്</translation>
 <translation id="169048873465870056">ടാബ് നീക്കം ചെയ്ത് ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="1698090540708020240">പാസ്‌വേഡുകൾ ഇമ്പോർട്ട് ചെയ്യുക…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="HOSTED_DOMAIN" /> ആണ്, അതിന് ചില വിവരങ്ങൾ കാണാനായേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">പുതിയ ഇനം</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> അക്കൗണ്ടുകൾ ഒരേ പാസ്‌വേഡ് ഉപയോഗിക്കുന്നു</translation>
+<translation id="205013082884273671">നിങ്ങളുടെ സ്ക്രീനിൽ കാണുന്നതെന്തും തിരയൂ</translation>
 <translation id="2054044186557130763">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്ന, <ph name="NAME" /> <ph name="EMAIL" /> ആയി സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="2059166748188874810">മുൻസിപ്പാലിറ്റി</translation>
 <translation id="2060638295449304809">ഈ വിലാസം ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, അത് നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന Google Account-ൽ സംരക്ഷിക്കുക</translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">ഓണായിരിക്കുമ്പോൾ, ഡാറ്റ നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കും. ഓഫായിരിക്കുമ്പോൾ, ഈ ഉപകരണത്തിൽ മാത്രമേ ഡാറ്റ സംരക്ഷിക്കൂ, സൈൻ ഔട്ട് ചെയ്താൽ ഇല്ലാതാക്കുകയും ചെയ്യും.</translation>
 <translation id="2827760117436553203">ഡാറ്റ പ്രത്യേകം സൂക്ഷിക്കണോ?</translation>
 <translation id="2829172210806130158">നിങ്ങളുടെ സ്ക്രീൻ തിരയുക</translation>
+<translation id="2831109159746537587">തിരയാൻ ചിത്രത്തിൽ വട്ടമിടുക അല്ലെങ്കിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="2834399722155632105">3. പാസ്‌വേഡ് ഓപ്ഷനുകൾ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">സമയം</translation>
@@ -1104,6 +1107,7 @@
 <translation id="5576885723883013398">പുതിയ വിൻഡോ</translation>
 <translation id="5578795271662203820">ഈ ചിത്രത്തിനായി <ph name="SEARCH_ENGINE" />-ൽ തിരയുക</translation>
 <translation id="5579012242779565775">'വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ്' മറയ്ക്കുക</translation>
+<translation id="5581786858144165447">AI-യോട് ചോദിക്കൂ മോഡ്</translation>
 <translation id="5585019845078534178">കാർഡുകൾ</translation>
 <translation id="5595485650161345191">വിലാസം എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="559567008082979829">ഒരു മാസത്തിന് ശേഷം ഇല്ലാതാക്കുന്നതിനായി നിങ്ങളുടെ ഡൗൻലോഡുകൾ സജ്ജീകരിക്കുക.</translation>

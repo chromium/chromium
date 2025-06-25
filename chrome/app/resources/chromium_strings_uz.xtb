@@ -244,6 +244,7 @@
 <translation id="4281844954008187215">Xizmat shartlari</translation>
 <translation id="4285930937574705105">Noma’lum xatolik tufayli o‘rnatish amalga oshmadi. Agar hozirda Chromium ishlab turgan bo‘lsa, iltimos brauzeringizni yoping va qaytadan urinib ko‘ring.</translation>
 <translation id="4304713468139749426">Parollar menejeri</translation>
+<translation id="4334241893986177674">Bu skrinshotni qidirish</translation>
 <translation id="4334294535648607276">Yuklab olindi.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini oʻqib, qabul qilishingizni talab qiladi. Bu shartlar Google ChromiumOS shartlarini kengaytirmaydi, oʻzgartirmaydi yoki cheklamaydi.</translation>
 <translation id="4407044323746248786">Chromium baribir yopilsinmi?</translation>
@@ -572,6 +573,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8704119203788522458">Bu sizning shaxsiy Chromium brauzeringiz</translation>
 <translation id="8719993436687031146">Chromium hisobiga kirasizmi?</translation>
 <translation id="8747073452963259673">qidiruv hududining pastki chap burchagi: chap <ph name="LEFT" />%, past <ph name="BOTTOM" />%</translation>
+<translation id="8768722695577490596">Parollarni faqat Chromium tashqarisida oʻchirish mumkin</translation>
 <translation id="878572486461146056">Oʻrnatishda xato: Tarmoq administratori oʻrnatishlarni taqiqlovchi guruh siyosatini tatbiq qilgan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Bu sayt kamera va mikrofoningizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="8818550178040858407">Chromium hisobiga kirasizmi?</translation>

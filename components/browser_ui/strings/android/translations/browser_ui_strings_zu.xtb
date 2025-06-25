@@ -36,6 +36,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="1409338233051621926">Thepa Ama-App bese uthepha ama-app Azenzekelayo</translation>
 <translation id="1415402041810619267">I-URL inciphisiwe</translation>
 <translation id="1415855080660575082">Vumela iChrome yabelane nedivayisi yakho ngamathebhu amuva ukuze uwabone ohlwini lwama-app akudivayisi yakho nasemiphumeleni yosesho. Ungakuvula noma ukuvale noma nini lokhu kumasethingi eChrome.</translation>
+<translation id="1432650420699700107">Amasayithi angacela ukuxhuma kunoma iyiphi idivayisi kunethiwekhi yakho yendawo</translation>
 <translation id="1448064542941920355">Nciphisa ukusondeza</translation>
 <translation id="1464044141348608623">Ungavumeli amasayithi ukuthi azi uma usebenzisa ifoni yakho</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{Isayithi engu-<ph name="SITE_COUNT" />}one{Amasayithi angu-<ph name="SITE_COUNT" />}other{Amasayithi angu-<ph name="SITE_COUNT" />}}</translation>
@@ -254,6 +255,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="3955321697524543127">Ungavumeli amasayithi ukuba axhume kumadivayisi we-USB</translation>
 <translation id="3965467402665811906">Amasayithi angacela ukusebenzisa ulwazi alulondolozile ngawe</translation>
 <translation id="3967822245660637423">Ukulanda kuqedile</translation>
+<translation id="3969869202926863008">Ukufinyelela kwamanethiwekhi endawo</translation>
 <translation id="3981465354637804599">Ngokuvamile amasayithi abonisa izikhangiso ukuze ahlinzeke ngekhontenti noma ngamasevisi mahhala. Kodwa, amanye amasayithi aziwa ngokubonisa izikhangiso ezisongelayo noma ezilahlekisayo.</translation>
 <translation id="3987993985790029246">Kopisha isixhumanisi</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="6554732001434021288">Kugcine ukuvakashelwa ezinsukwini ezi-<ph name="NUM_DAYS" /> ezedlule</translation>
 <translation id="656065428026159829">Bona okwengeziwe</translation>
 <translation id="6561560012278703671">Sebenzisa umlayezo wokushiya (ivimbela isaziso esiyalela kusuka ekukuphazamiseni)</translation>
+<translation id="6565144332292237355">Amasayithi angasebenzisa lesi sakhi ukuze abheke futhi axhume kunoma iyiphi idivayisi kunethiwekhi yakho yendawo</translation>
 <translation id="6593061639179217415">Isayithi ledeskithophu</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Amakhukhi avunyelwe angu-<ph name="RWS_MEMBERS_COUNT" /> kusayithi ka-<ph name="RWS_OWNER" />}one{Amakhukhi avunyelwe angu-<ph name="RWS_MEMBERS_COUNT" /> kumasayithi ka-<ph name="RWS_OWNER" />}other{Amakhukhi avunyelwe angu-<ph name="RWS_MEMBERS_COUNT" /> kumasayithi ka-<ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

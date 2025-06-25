@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Kurse deri në 60% të të dhënave, lexo lajmet e sotme</translation>
 <translation id="1303339473099049190">Ai fjalëkalim nuk mund të gjendet. Kontrollo drejtshkrimin dhe provo përsëri.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Dërguar nga <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">Grupo skedat</translation>
 <translation id="1318262688555255786">Ndaj lidhjen në faqen e uebit <ph name="PAGE_TITLE" />. Burimi: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Fluksi i ruajtjes së faqeshënuesve i hapur në lartësi të plotë</translation>
 <translation id="1327257854815634930">Historiku i navigimit është i hapur</translation>
@@ -477,6 +478,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Matja e reklamave</translation>
 <translation id="3189635831478931757">Grupi i skedave "<ph name="GROUP_TITLE" />"</translation>
+<translation id="3200536777393523575">Të mbyllet dritarja aktuale?</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
 <translation id="3208584281581115441">Kontrollo tani</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> u fshi</translation>
@@ -721,6 +723,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4351244548802238354">Mbyll dialogun</translation>
 <translation id="4352287748243729941">Të përdoret fjalëkalimi yt i <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Mund të kthehesh te një faqe që është e rëndësishme për ty duke shtuar një faqeshënues</translation>
+<translation id="4356503491090073318">Numri i kartës*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Siguria shkurtimisht</translation>
 <translation id="4378154925671717803">Telefoni</translation>
@@ -738,6 +741,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4425140285732600465">Çmimi po monitorohet. Merr sinjalizime nëse ulet çmimi në ndonjë sajt.</translation>
 <translation id="4425173294238317796">Fleta e konfirmimit të çelësit të kalimit</translation>
 <translation id="442518031075347249">Nuk do të mund ta përdorësh më kartën virtuale me Google Pay. <ph name="BEGIN_LINK1" />Mëso më shumë rreth kartave virtuale<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> dhe <ph name="TAB_COUNT_ONE" /> skedë tjetër do të mbyllen}other{<ph name="TAB_TITLE" /> dhe <ph name="TAB_COUNT_MANY" /> skeda të tjera do të mbyllen}}</translation>
 <translation id="4426508677408162512">Të gjithë faqeshënuesit</translation>
 <translation id="4430277756566635951">Aktualisht është zgjedhur <ph name="EMAIL" />. Zgjidh një llogari.</translation>
 <translation id="4452411734226507615">Mbyll skedën <ph name="TAB_TITLE" /></translation>
@@ -873,6 +877,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4987271110129728827">Faqja nuk mund të gjendet. Kontrollo drejtshkrimin ose provo të kërkosh në ueb.</translation>
 <translation id="4988526792673242964">Faqet</translation>
 <translation id="4991110219272367918">Opsioni për të miratuar ose jo një uebsajt u mbyll</translation>
+<translation id="4996042648402406470">Merre</translation>
 <translation id="4996095658297597226">Të përdoren fjalëkalimet e sugjeruara?</translation>
 <translation id="5001388021414335527">Ndiqe këtë sajt këtu</translation>
 <translation id="5004416275253351869">Kontrollet e aktivitetit të Google</translation>
@@ -923,10 +928,12 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5210286577605176222">Kalo te skeda e mëparshme</translation>
 <translation id="5210365745912300556">Mbyll skedën</translation>
 <translation id="5215957675041756913">Kontrollo të dhënat dhe llogarinë tënde</translation>
+<translation id="5218324087477576825">Kërkohet numri i kartës</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> etj. <ph name="SEPARATOR" /> Chrome i hoqi këto leje sepse nuk e ke vizituar së fundi</translation>
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5226378907213531272">Do ta shkyçësh ekranin sa herë që përdor makinën</translation>
 <translation id="5227554086496586518">Trokit për të parë rezultatet e kërkimit</translation>
+<translation id="5229736206150093143">Rezultatet më të fundit</translation>
 <translation id="5233638681132016545">Skedë e re</translation>
 <translation id="5235196193381275927">Ndodhi një gabim gjatë identifikimit</translation>
 <translation id="5246093389635966745">Shkurtorja e modifikimit të shiritit të veglave</translation>
@@ -1281,6 +1288,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="676305334223455055">Identifikohu për të marrë përmbajtje bazuar në interesat e tu</translation>
 <translation id="6764137532716892442">Grupi i ndarë i skedave "<ph name="GROUP_TITLE" />" me aktivitet të ri</translation>
 <translation id="6767294960381293877">Lista e pajisjeve për të ndarë një skedë e hapur në gjysmë lartësi.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> skedë "e fshehtë" dhe <ph name="TAB_COUNT_ONE" /> skedë tjetër do të mbyllen}other{<ph name="INCOGNITO_TAB_COUNT" /> skeda "të fshehta" dhe <ph name="TAB_COUNT_MANY" /> skeda të tjera do të mbyllen}}</translation>
 <translation id="6785476624617658922">"Kushtet shtesë të shërbimit" të Chrome dhe të ChromeOS</translation>
 <translation id="6786747875388722282">Shtesat</translation>
 <translation id="6795633245022906657">Hap me shpejtësi një skedë të re. Për ta modifikuar këtë shkurtore, shko te "Cilësimet".</translation>
@@ -1400,6 +1408,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7224097611345298931">Të gjitha fjalëkalimet e ruajtura vetëm në këtë pajisje për Chrome dhe <ph name="CHROME_CHANNEL" /> janë shkrirë. Mund të plotësosh automatikisht të gjitha fjalëkalimet e ruajtura në të dyja aplikacionet.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 shkarkim në pritje}other{# shkarkime në pritje}}</translation>
 <translation id="7230064152164845085">Kalo te modaliteti "I fshehtë"</translation>
+<translation id="7230836263524391273">Fshih "Modalitetin e leximit"</translation>
 <translation id="7237724030342645845">"Menaxheri i fjalëkalimeve i Google" ndaloi së funksionuari</translation>
 <translation id="72415438529550637">Sugjerimi i fjalëkalimit u mbyll.</translation>
 <translation id="7248671827512403053">Aplikacion</translation>
@@ -1576,6 +1585,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7965838025086216108">Fjalëkalimet e ruajtura mund t'i përdorësh në çdo pajisje. Ato ruhen në "Menaxherin e fjalëkalimeve të Google" për <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">U shtua te lista e leximit</translation>
 <translation id="7968982339740310781">Shiko detajet</translation>
+<translation id="7969391000881506217">Data e skadimit*</translation>
 <translation id="7971136598759319605">Aktiv 1 ditë më parë</translation>
 <translation id="7975379999046275268">Shiko paraprakisht faqen <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Të paralajmëron nëse ti përdor një fjalëkalim që është komprometuar në një nxjerrje të paautorizuar të të dhënave.</translation>
@@ -1734,6 +1744,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8565021320663436446">Të hiqet <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Skedari nuk mund të shkarkohet në mënyrë të sigurt</translation>
 <translation id="8571213806525832805">4 javët e fundit</translation>
+<translation id="8580435650274205305">Kërkohet data e skadimit</translation>
 <translation id="8582529315803410153">Këtu do të gjesh skedat e tua nga pajisjet e tjera</translation>
 <translation id="8585103689515290060">Shërbimet e plotësimit automatik</translation>
 <translation id="859046281437143747">Monitoro çmimin nga butoni "Opsione të tjera"</translation>

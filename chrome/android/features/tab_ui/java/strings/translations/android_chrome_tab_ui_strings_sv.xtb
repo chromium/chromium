@@ -17,6 +17,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Skapades för <ph name="NUM_MINS_ONE" /> minut sedan}other{Skapades för <ph name="NUM_MINS_MANY" /> minuter sedan}}</translation>
 <translation id="1499635324672558517">Vill du stänga alla inkognitoflikar?</translation>
 <translation id="1501480321619201731">Ta bort grupp</translation>
+<translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> inaktivt objekt}other{<ph name="TABS_COUNT_MANY" /> inaktiva objekt}}</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="161042844686301425">Cyanblå</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> flikar har grupperats</translation>
@@ -68,6 +69,7 @@
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ny flik}other{<ph name="MANY_ADDED" /> nya flikar}}</translation>
 <translation id="3613492231657284463">Dölj dialogrutan för inaktiva flikar</translation>
 <translation id="3619255692378312441">Hantera åtkomst</translation>
+<translation id="3649471731638882002">{TAB_COUNT,plural, =1{Stäng objekt}other{Stäng objekt}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatyr för förhandsgranskning av delningsblad.</translation>
 <translation id="3810973564298564668">Hantera</translation>
@@ -80,6 +82,7 @@
 <translation id="4159784952369912983">Lila</translation>
 <translation id="427987768447457592">Ny flikgrupp</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
+<translation id="4429658455677831355">{TAB_COUNT,plural, =1{Återställ objekt}other{Återställ objekt}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Uppdaterades för <ph name="NUM_DAYS_ONE" /> dag sedan}other{Uppdaterades för <ph name="NUM_DAYS_MANY" /> dagar sedan}}</translation>
 <translation id="4686942373615810936">Skapades just nu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Stäng efter 1 dag}other{Stäng efter <ph name="DAY_COUNT_MANY" /> dagar}}</translation>
@@ -109,6 +112,7 @@
 <translation id="5556417849629758491">Visa butiksinformation. Alternativet visas högt upp på skärmen</translation>
 <translation id="5627941783489838464">Inga flikuppdateringar</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> länk från Chrome}other{<ph name="TABS_COUNT_MANY" /> länkar från Chrome}}</translation>
+<translation id="5746204836956568669">Vill du gruppera <ph name="NUMBER_OF_TABS" /> flikar för att jobba snabbare?</translation>
 <translation id="58326064309361797">Gruppera flikar genom att dra dem</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5972844218283131174">Avmarkera alla</translation>
@@ -189,6 +193,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Uppdaterades för <ph name="NUM_MONTHS_ONE" /> månad sedan}other{Uppdaterades för <ph name="NUM_MONTHS_MANY" /> månader sedan}}</translation>
 <translation id="8398929769197326728">Ny mapp – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Inställningar</translation>
+<translation id="855081842937141170">Fäst flik</translation>
 <translation id="8633025649649592204">Senaste aktiviteterna</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8714939927607906138">Lägre pris</translation>
@@ -205,4 +210,5 @@
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Utöka flikgruppen med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />.}other{Utöka flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="992256792861109788">Rosa</translation>
+<translation id="994514002078791059">{TAB_COUNT,plural, =1{Vill du stänga 1 inaktivt objekt?}other{Vill du stänga <ph name="TAB_COUNT_MANY" /> inaktiva objekt?}}</translation>
 </translationbundle>

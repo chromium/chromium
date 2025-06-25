@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">Датагаа 60% хүртэл хэмнэж, өнөөдрийн мэдээг уншаарай</translation>
 <translation id="1303339473099049190">Тийм нууц үг олж чадсангүй. Үсгийн алдаагаа шалгаад дахин оролдоно уу.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />-с илгээсэн</translation>
+<translation id="1310482092992808703">Бүлэг таб</translation>
 <translation id="1318262688555255786"><ph name="PAGE_TITLE" /> веб хуудасны холбоосыг хуваалцана уу. Эх сурвалж: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Хавчуурганы хадгалах урсгалын фолдеруудыг бүтэн өндөртэйгээр нээсэн</translation>
 <translation id="1327257854815634930">Навигацын түүх нээлттэй байна</translation>
@@ -1407,6 +1408,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7224097611345298931">Chrome болон <ph name="CHROME_CHANNEL" />-д зориулж энэ төхөөрөмжид хадгалсан бүх нууц үгийг нэгтгэсэн. Та хоёр аппад хоёуланд нь хадгалсан бүх нууц үгээ автоматаар бөглөх боломжтой.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 таталт хүлээгдэж байна}other{# таталт хүлээгдэж байна}}</translation>
 <translation id="7230064152164845085">Нууцлалтай горим руу сэлгэх</translation>
+<translation id="7230836263524391273">Унших горимыг нуух</translation>
 <translation id="7237724030342645845">Google Нууц үгний менежер ажиллахаа больсон</translation>
 <translation id="72415438529550637">Нууц үгний зөвлөмжийг хаасан.</translation>
 <translation id="7248671827512403053">Аппликейшн</translation>

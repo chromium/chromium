@@ -614,7 +614,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2036983605131262583">Rullo alterno</translation>
 <translation id="2040463897538655645">Dispositivo di archiviazione rimovibile</translation>
 <translation id="2040894699575719559">Posizione bloccata</translation>
-<translation id="2041788246978549610">Usa i microfoni disponibili (<ph name="MICS_COUNT" />)</translation>
+<translation id="2041788246978549610">Usare i microfoni disponibili (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Vassoio 7</translation>
 <translation id="2043896419861982462">Per nascondere le opzioni di pagamento differito, vai alle <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Busta Personal</translation>
@@ -693,6 +693,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2157640075051554492">Notifiche per il monitoraggio dei prezzi</translation>
 <translation id="21613918653299710">Gallerie di immagini online</translation>
 <translation id="2161656808144014275">Testo</translation>
+<translation id="2162435186600002085">Logo intestazione principale</translation>
 <translation id="2162620598375156287">Ora a <ph name="CURRENT_PRICE" /> su <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Controlla eventuali errori di battitura in <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Accesso amministrativo completo</translation>
@@ -851,6 +852,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2400263725572336749">Aggiungi passaporto</translation>
 <translation id="2400271059665846158">Gestisci le tue carte fedeltà in Google Wallet</translation>
 <translation id="2400600116338235695">Può chiedere di connettersi alle porte seriali</translation>
+<translation id="240450251994300576">Logo intestazione secondario</translation>
 <translation id="2404884497378469141">Prova a copiare di nuovo i file</translation>
 <translation id="2413155254802890957">Precedente</translation>
 <translation id="2413528052993050574">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza potrebbe essere revocato. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
@@ -981,6 +983,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2627847595568876492">Estrazione del testo dal PDF in corso…</translation>
 <translation id="2628224721443278970">Accedi a Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Impossibile trovare l'indirizzo IP del server di <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Digita @ per cercare in <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Stato:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tessuto (semilucido)</translation>
@@ -1223,7 +1226,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignorata perché l'elenco disable contiene un pattern uguale a "*", che equivale a disattivare la policy.</translation>
 <translation id="3098944373717628099">I tuoi file locali verranno eliminati tra 1 ora</translation>
-<translation id="3099619114405539473">Utilizza le videocamere disponibili (<ph name="CAMERAS_COUNT" />)</translation>
+<translation id="3099619114405539473">Usare le videocamere disponibili (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Conto di risparmio</translation>
 <translation id="3103188521861412364">Azioni e obbligazioni</translation>
 <translation id="3103535543639438037">Confronta prodotti simili uno di fianco all'altro</translation>
@@ -2024,6 +2027,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4372948949327679948">È previsto il valore <ph name="VALUE_TYPE" />.</translation>
 <translation id="437620492464254965">Porte e finestre</translation>
 <translation id="4377125064752653719">Hai tentato di accedere a <ph name="DOMAIN" /> ma il server ha presentato un certificato revocato dall'autorità di certificazione. Ciò significa che le credenziali di sicurezza presentate dal server non sono assolutamente attendibili. Potresti avere stabilito una comunicazione con un utente malintenzionato.</translation>
+<translation id="4377869186417956230">Passa a tutte le carte fedeltà in questa voce di menu.</translation>
 <translation id="4378154925671717803">Telefono</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">D'ora in poi, salva i tuoi file sullo spazio di archiviazione sul cloud</translation>
@@ -2263,6 +2267,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4827283332383516812">Elimina carta</translation>
 <translation id="4830443836091007686">Gruppo selezionato: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Carta per imagesetter</translation>
+<translation id="4832388034239846146">Per condividere gruppi di schede, aggiorna Chrome</translation>
 <translation id="483241715238664915">Attiva gli avvisi</translation>
 <translation id="4832961164064927107">BBQ e grigliate</translation>
 <translation id="4834250788637067901">Metodi di pagamento, offerte e indirizzi che utilizzano Google Pay</translation>
@@ -2970,6 +2975,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6043357981274314628">Operazione completata.</translation>
 <translation id="6044573915096792553">Dimensione 12</translation>
 <translation id="6045164183059402045">Modello imposizione</translation>
+<translation id="6046892054959167494">Digita <ph name="SEARCH_AGGREGATOR_KEYWORD" /> per cercare o chiedi a <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Questi contenuti potrebbero cercare di indurti con l'inganno a installare software o a rivelare informazioni personali. <ph name="BEGIN_LINK" />Mostra comunque<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Busta B4</translation>
 <translation id="6049488691372270142">Consegna pagina</translation>
@@ -3138,6 +3144,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6326947323444967009">Imposta Chrome come browser predefinito del sistema nelle impostazioni di iOS</translation>
 <translation id="6327065120806001832">accesso alla rete locale</translation>
 <translation id="6328639280570009161">Prova a disattivare la previsione della rete</translation>
+<translation id="6334834493885103305">Ora puoi pagare nel tempo utilizzando Affirm, Zip o Klarna</translation>
 <translation id="6335029926534404762">Scarpe da atletica</translation>
 <translation id="6336948221660696475">VR non consentita</translation>
 <translation id="6337133576188860026">Consente di liberare meno di <ph name="SIZE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
@@ -4007,6 +4014,7 @@ Ulteriori dettagli:
 <translation id="7761159795823346334">Vuoi consentire l'accesso alla fotocamera?</translation>
 <translation id="7761701407923456692">Il certificato del server non corrisponde all'URL.</translation>
 <translation id="7764225426217299476">Aggiungi indirizzo</translation>
+<translation id="7765158879357617694">Sposta</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7767278989746220252">Patio, prato e giardino</translation>
 <translation id="776749070095465053">Tessuto</translation>
@@ -4061,6 +4069,7 @@ Ulteriori dettagli:
 <translation id="7878562273885520351">La tua password potrebbe essere stata compromessa</translation>
 <translation id="7881044256965445977">Cerca e connettiti a qualsiasi dispositivo sulla rete locale</translation>
 <translation id="7882421473871500483">Marrone</translation>
+<translation id="7885670691503039914">Riceverai avvisi via email se il prezzo calerà su qualsiasi sito. Questa pagina verrà salvata nella cartella dei preferiti "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="7886897188117641322">Scegli quali categorie di argomenti possono essere utilizzate per personalizzare gli annunci</translation>
 <translation id="7887683347370398519">Controlla il tuo codice CVC e riprova</translation>
 <translation id="7887885240995164102">Attiva Picture in picture</translation>
@@ -4341,6 +4350,7 @@ Ulteriori dettagli:
 <translation id="8364627913115013041">Non impostato.</translation>
 <translation id="8366057325711477500">Notizie dal mondo</translation>
 <translation id="836616551641291797">Scopri di più su come viene gestito il tuo browser</translation>
+<translation id="8367705492654390392">Chiedi qualsiasi cosa</translation>
 <translation id="8368001212524806591">Monitora prezzo</translation>
 <translation id="8368027906805972958">Dispositivo sconosciuto o non supportato (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play Services</translation>
@@ -4655,6 +4665,7 @@ Ulteriori dettagli:
 <translation id="8926389886865778422">Non visualizzare più questo avviso</translation>
 <translation id="8932102934695377596">L'orologio è indietro</translation>
 <translation id="893332455753468063">Aggiungi nome</translation>
+<translation id="8938242527120341116">I filtri dei contenuti del tuo dispositivo hanno bloccato <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">L'amministratore ha autorizzato <ph name="APP_NAME" /> a raccogliere dati diagnostici per migliorare l'esperienza con il prodotto. Per ulteriori informazioni, visita la pagina <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Giallo-verde</translation>
 <translation id="8949410982325929394">Tono</translation>
@@ -4859,6 +4870,7 @@ Ulteriori dettagli:
 <translation id="963837307749850257">Tutti gli utenti</translation>
 <translation id="964050462028070434">Gestisci password e passkey…</translation>
 <translation id="969892804517981540">Build ufficiale</translation>
+<translation id="97054401902912338">Scopri di più sui filtri dei contenuti</translation>
 <translation id="973788791897303708">Questo gruppo di schede è al completo</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nessuno}=1{1 elemento}other{# elementi}}</translation>
 <translation id="976522784004777030">5 x 8 in</translation>

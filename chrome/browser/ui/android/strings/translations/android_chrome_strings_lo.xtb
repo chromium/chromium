@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">ປະຢັດອິນເຕີເນັດສູງສຸດ 60%, ອ່ານຂ່າວຂອງມື້ນີ້</translation>
 <translation id="1303339473099049190">ບໍ່ສາມາດຊອກເຫັນລະຫັດຜ່ານນັ້ນ. ກະລຸນາກວດການສະກົດຄຳຂອງທ່ານ ແລ້ວລອງໃໝ່.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - ສົ່ງມາຈາກ <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">ຈັດກຸ່ມແຖບ</translation>
 <translation id="1318262688555255786">ແບ່ງປັນລິ້ງໄປຫາໜ້າເວັບ <ph name="PAGE_TITLE" />. ແຫຼ່ງທີ່ມາ: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">ເປີດຂັ້ນຕອນການບັນທຶກບຸກມາກແບບເຕັມຄວາມສູງແລ້ວ</translation>
 <translation id="1327257854815634930">ປະຫວັດການນຳທາງເປີດຢູ່</translation>
@@ -1407,6 +1408,7 @@
 <translation id="7224097611345298931">ລະຫັດຜ່ານທັງໝົດທີ່ບັນທຶກສະເພາະໃນອຸປະກອນນີ້ສຳລັບ Chrome ແລະ <ph name="CHROME_CHANNEL" /> ຖືກຮວມເຂົ້າກັນແລ້ວ. ທ່ານສາມາດຕື່ມລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ທັງໝົດຂອງທ່ານໂດຍອັດຕະໂນມັດໄດ້ໃນທັງ 2 ແອັບ.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ການດາວໂຫຼດຍັງຄ້າງຢູ່}other{# ການດາວໂຫຼດຍັງຄ້າງຢູ່}}</translation>
 <translation id="7230064152164845085">ສະຫຼັບເປັນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
+<translation id="7230836263524391273">ເຊື່ອງໂໝດການອ່ານ</translation>
 <translation id="7237724030342645845">ຕົວຈັດການລະຫັດຜ່ານ Google ຢຸດເຮັດວຽກ</translation>
 <translation id="72415438529550637">ການແນະນຳລະຫັດຜ່ານປິດຢູ່.</translation>
 <translation id="7248671827512403053">ແອັບພລິເຄຊັນ</translation>

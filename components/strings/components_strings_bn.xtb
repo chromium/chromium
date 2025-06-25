@@ -2031,6 +2031,7 @@
 <translation id="4372948949327679948">প্রত্যাশিত <ph name="VALUE_TYPE" /> মান৷</translation>
 <translation id="437620492464254965">দরজা ও জানলা</translation>
 <translation id="4377125064752653719">আপনি <ph name="DOMAIN" />-এ পৌঁছানোর প্রচেষ্টা করেছেন, তবে সার্ভারটি যে সার্টিফিকেটটি উপস্থাপন করেছে সেটির জারিকর্তা সেটিকে প্রত্যাহার করেছে৷ এর অর্থ হ'ল সার্ভারটি যে সুরক্ষা প্রমানপত্র উপস্থাপন করেছে তা কোনওমতেই বিশ্বাসযোগ্য নয়৷ হতে পারে আপনি একজন আক্রমণকারীর সাথে যোগাযোগ করছেন৷</translation>
+<translation id="4377869186417956230">এই মেনু আইটেমের সব লয়ালটি কার্ডে পরিবর্তন করুন।</translation>
 <translation id="4378154925671717803">ফোন</translation>
 <translation id="4382484599443659549">পিডিএফ</translation>
 <translation id="4382833368532556056">এখন থেকে আপনার ফাইল ক্লাউড স্টোরেজে সেভ করুন</translation>
@@ -3147,6 +3148,7 @@
 <translation id="6326947323444967009">iOS সেটিংসে Chrome-কে সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে সেট করুন</translation>
 <translation id="6327065120806001832">স্থানীয় নেটওয়ার্ক অ্যাক্সেস</translation>
 <translation id="6328639280570009161">নেটওয়ার্ক পূর্বানুমান নিষ্ক্রিয় করার চেষ্টা করুন</translation>
+<translation id="6334834493885103305">আপনি এখন Affirm, Zip বা Klarna ব্যবহার করে কিস্তিতে পেমেন্ট করতে পারবেন</translation>
 <translation id="6335029926534404762">অ্যাথলিট জুতো</translation>
 <translation id="6336948221660696475">ভিআর (VR) ব্যবহার করার অনুমতি নেই</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />-এর চেয়ে কম জায়গা খালি করে। পরের বার যখন দেখবেন তখন কিছু সাইট লোড হতে দেরি হতে পারে।</translation>
@@ -4016,6 +4018,7 @@
 <translation id="7761159795823346334">ক্যামেরা অ্যাক্সেসের অনুমতি দেবেন?</translation>
 <translation id="7761701407923456692">সার্ভারের সার্টিফিকেট ইউআরএল-এর সাথে মেলে না৷</translation>
 <translation id="7764225426217299476">ঠিকানা যোগ করুন</translation>
+<translation id="7765158879357617694">সরান</translation>
 <translation id="7766518757692125295">স্কার্ট</translation>
 <translation id="7767278989746220252">উঠোন, লন ও বাগান</translation>
 <translation id="776749070095465053">ফ্যাব্রিক</translation>
@@ -4070,6 +4073,7 @@
 <translation id="7878562273885520351">আপনার পাসওয়ার্ড অন্য কেউ পরিবর্তন করার চেষ্টা করেছে</translation>
 <translation id="7881044256965445977">আপনার স্থানীয় নেটওয়ার্কে, যেকোনও ডিভাইস খুঁজুন ও কানেক্ট করুন</translation>
 <translation id="7882421473871500483">খয়েরি</translation>
+<translation id="7885670691503039914">কোনও সাইটে দাম কমলে আপনি সেই বিষয়ে ইমেল বিজ্ঞপ্তি পাবেন। এই পৃষ্ঠা <ph name="LAST_BOOKMARKS_FOLDER" /> বুকমার্ক ফোল্ডারে সেভ করা হবে।</translation>
 <translation id="7886897188117641322">পছন্দমতো বিজ্ঞাপন দেখানোর জন্য কোনও বিষয়ের কোন কোন বিস্তারিত বিভাগ ব্যবহার করা যেতে পারে তা বেছে নিন</translation>
 <translation id="7887683347370398519">আপনার CVC পরীক্ষা করে আবার চেষ্টা করুন</translation>
 <translation id="7887885240995164102">'ছবির-মধ্যে-ছবি' মোডে প্রবেশ করুন</translation>
@@ -4350,6 +4354,7 @@
 <translation id="8364627913115013041">সেট করা নেই৷</translation>
 <translation id="8366057325711477500">আন্তর্জাতিক খবর</translation>
 <translation id="836616551641291797">আপনার ব্রাউজার কীভাবে ম্যানেজ করা হয় সেই বিষয়ে আরও জানুন</translation>
+<translation id="8367705492654390392">যেকোনও কিছু জিজ্ঞাসা করুন</translation>
 <translation id="8368001212524806591">দাম ট্র্যাক করুন</translation>
 <translation id="8368027906805972958">অপরিচিত বা কাজ করে না এমন ডিভাইস (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play পরিষেবাদি</translation>
@@ -4664,6 +4669,7 @@
 <translation id="8926389886865778422">আর জিজ্ঞাসা করবেন না</translation>
 <translation id="8932102934695377596">আপনার ঘড়ির সময় পিছিয়ে রয়েছে</translation>
 <translation id="893332455753468063">নাম যোগ করুন</translation>
+<translation id="8938242527120341116">আপনার ডিভাইসের কন্টেন্ট ফিল্টার <ph name="BLOCKED_URL" />-কে ব্লক করেছে</translation>
 <translation id="8942355029279167844">আপনার অ্যাডমিন প্রোডাক্ট ব্যবহারের অভিজ্ঞতাকে আরও উন্নত করার লক্ষ্যে <ph name="APP_NAME" />-কে ডায়াগনস্টিক ডেটা সংগ্রহ করার অনুমতি দিয়েছে। আরও তথ্যের জন্য, <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> লিঙ্কে গিয়ে দেখুন।</translation>
 <translation id="8943282376843390568">লাইম</translation>
 <translation id="8949410982325929394">টোন</translation>
@@ -4869,6 +4875,7 @@
 <translation id="963837307749850257">সকল ব্যবহারকারী</translation>
 <translation id="964050462028070434">পাসওয়ার্ড ও 'পাসকী' ম্যানেজ করুন…</translation>
 <translation id="969892804517981540">অফিসিয়াল বিল্ড</translation>
+<translation id="97054401902912338">কন্টেন্ট ফিল্টার সম্পর্কে আরও জানুন</translation>
 <translation id="973788791897303708">এই ট্যাব গ্রুপে আর জায়গা নেই</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{কিছুই নয়}=1{১টি আইটেম}one{#টি আইটেম}other{#টি আইটেম}}</translation>
 <translation id="976522784004777030">৫ x ৮ ইঞ্চি</translation>

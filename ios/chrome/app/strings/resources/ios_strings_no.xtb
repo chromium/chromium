@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Delingen mislyktes fordi du ikke er tilkoblet nettverket.</translation>
 <translation id="1668001730617725852">Åpne i en ny fanegruppe</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Nå kan du åpne Google Lens fra adressefeltet og søke etter hva som helst du ser</translation>
 <translation id="1689333818294560261">Kallenavn</translation>
 <translation id="169048873465870056">Vil du fjerne fanen og slette gruppen?</translation>
 <translation id="1698090540708020240">Importer passord …</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332">Kontoen <ph name="USER_EMAIL" /> administreres av <ph name="HOSTED_DOMAIN" />, som kan se visse typer informasjon. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nytt element</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> kontoer bruker det samme passordet</translation>
+<translation id="205013082884273671">Søk etter hva som helst på skjermen</translation>
 <translation id="2054044186557130763">Logg på som <ph name="NAME" /> <ph name="EMAIL" />, som administreres av organisasjonen din.</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2060638295449304809">Denne adressen er bare lagret på denne enheten. For å bruke den på andre enheter, lagre den i Google-kontoen din (<ph name="USER_EMAIL" />).</translation>
@@ -459,6 +461,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2819667972867209401">Når dette er på, lagres data i Google-kontoen din. Når dette er av, lagres data bare på denne enheten og slettes hvis du logger av.</translation>
 <translation id="2827760117436553203">Vil du holde dataene adskilt?</translation>
 <translation id="2829172210806130158">Søk på skjermen</translation>
+<translation id="2831109159746537587">Tegn en sirkel rundt eller trykk på bildet for å søke</translation>
 <translation id="2834399722155632105">3. Trykk på Passordvalg</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Klokkeslett</translation>
@@ -1104,6 +1107,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5576885723883013398">Nytt vindu</translation>
 <translation id="5578795271662203820">Søk etter dette bildet i <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Skjul leselisten</translation>
+<translation id="5581786858144165447">Spør AI-modus</translation>
 <translation id="5585019845078534178">Kort</translation>
 <translation id="5595485650161345191">Rediger adresse</translation>
 <translation id="559567008082979829">Angi at nedlastingene dine skal slettes etter én måned.</translation>

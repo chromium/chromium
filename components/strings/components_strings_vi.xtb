@@ -2030,6 +2030,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4372948949327679948">Giá trị <ph name="VALUE_TYPE" /> mong đợi.</translation>
 <translation id="437620492464254965">Cửa chính và cửa sổ</translation>
 <translation id="4377125064752653719">Bạn đã cố truy cập vào <ph name="DOMAIN" /> nhưng chứng chỉ mà máy chủ xuất trình đã bị nhà phát hành thu hồi. Điều này có nghĩa là giấy ủy nhiệm bảo mật mà máy chủ xuất trình hoàn toàn không đáng tin cậy. Bạn có thể đang giao tiếp với kẻ tấn công.</translation>
+<translation id="4377869186417956230">Chuyển đến màn hình hiển thị tất cả thẻ khách hàng thân thiết ở mục này trong trình đơn.</translation>
 <translation id="4378154925671717803">Điện thoại</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Từ bây giờ, hãy lưu tệp của bạn vào bộ nhớ trên đám mây</translation>
@@ -3147,6 +3148,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6326947323444967009">Đặt Chrome làm trình duyệt mặc định của hệ thống trong phần cài đặt iOS</translation>
 <translation id="6327065120806001832">quyền truy cập mạng cục bộ</translation>
 <translation id="6328639280570009161">Thử tắt dự đoán mạng</translation>
+<translation id="6334834493885103305">Giờ đây, bạn có thể thanh toán trong thời gian dài bằng Affirm, Zip hoặc Klarna</translation>
 <translation id="6335029926534404762">Giày thể thao</translation>
 <translation id="6336948221660696475">Không cho phép sử dụng thực tế ảo</translation>
 <translation id="6337133576188860026">Giải phóng dưới <ph name="SIZE" /> dung lượng. Một số trang web có thể tải chậm hơn vào lần tới bạn truy cập.</translation>
@@ -4016,6 +4018,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7761159795823346334">Cho phép dùng máy ảnh?</translation>
 <translation id="7761701407923456692">Chứng chỉ của máy chủ không phù hợp với URL.</translation>
 <translation id="7764225426217299476">Thêm địa chỉ</translation>
+<translation id="7765158879357617694">Di chuyển</translation>
 <translation id="7766518757692125295">Viền</translation>
 <translation id="7767278989746220252">Sân trong, bãi cỏ và vườn cây</translation>
 <translation id="776749070095465053">Vải</translation>
@@ -4070,6 +4073,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7878562273885520351">Mật khẩu của bạn có thể bị xâm phạm</translation>
 <translation id="7881044256965445977">Tìm và kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn</translation>
 <translation id="7882421473871500483">Nâu</translation>
+<translation id="7885670691503039914">Bạn sẽ nhận được thông báo qua email nếu giá giảm trên bất cứ trang web nào. Trang này sẽ được lưu vào thư mục dấu trang <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Chọn những loại chủ đề chính mà các trang web có thể dùng để cá nhân hoá quảng cáo</translation>
 <translation id="7887683347370398519">Kiểm tra CVC của bạn và thử lại</translation>
 <translation id="7887885240995164102">Vào chế độ hình trong hình</translation>
@@ -4350,6 +4354,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8364627913115013041">Chưa đặt.</translation>
 <translation id="8366057325711477500">Tin tức thế giới</translation>
 <translation id="836616551641291797">Tìm hiểu thêm về cách quản lý trình duyệt</translation>
+<translation id="8367705492654390392">Đặt câu hỏi bất kỳ</translation>
 <translation id="8368001212524806591">Theo dõi giá</translation>
 <translation id="8368027906805972958">Thiết bị không xác định hoặc không được hỗ trợ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Dịch vụ Google Play</translation>
@@ -4665,6 +4670,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8926389886865778422">Đừng hỏi lại</translation>
 <translation id="8932102934695377596">Đồng hồ của bạn chạy chậm</translation>
 <translation id="893332455753468063">Thêm tên</translation>
+<translation id="8938242527120341116">Bộ lọc nội dung trên thiết bị của bạn đã chặn <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">Quản trị viên đã cho phép <ph name="APP_NAME" /> thu thập dữ liệu chẩn đoán để nâng cao trải nghiệm sử dụng sản phẩm. Hãy truy cập vào <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> để biết thêm thông tin.</translation>
 <translation id="8943282376843390568">Vàng chanh</translation>
 <translation id="8949410982325929394">Âm báo</translation>
@@ -4870,6 +4876,7 @@ Thông tin chi tiết bổ sung:
 <translation id="963837307749850257">Tất cả người dùng</translation>
 <translation id="964050462028070434">Quản lý mật khẩu và khoá đăng nhập…</translation>
 <translation id="969892804517981540">Phiên bản chính thức</translation>
+<translation id="97054401902912338">Tìm hiểu thêm về bộ lọc nội dung</translation>
 <translation id="973788791897303708">Nhóm thẻ này đã đầy</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Không có}=1{1 mục}other{# mục}}</translation>
 <translation id="976522784004777030">5 x 8 inch</translation>

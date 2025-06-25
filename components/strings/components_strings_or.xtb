@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">ମୂଲ୍ୟ ଟ୍ରାକିଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ</translation>
 <translation id="21613918653299710">ଅନଲାଇନ ଇମେଜ ଗ୍ୟାଲେରୀଗୁଡ଼ିକ</translation>
 <translation id="2161656808144014275">ଟେକ୍ସଟ୍</translation>
+<translation id="2162435186600002085">ପ୍ରାଥମିକ ହେଡର ଲୋଗୋ</translation>
 <translation id="2162620598375156287">ବର୍ତ୍ତମାନ <ph name="SOURCE_WEBSITE" />ରେ <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" />ରେ ଟାଇପିଂ ତ୍ରୁଟି ଅଛି କି ନାହିଁ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="2166049586286450108">ସମ୍ପୂର୍ଣ୍ଣ ବ୍ୟବସ୍ଥାପକ ଆକ୍ସେସ୍</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">ପାସପୋର୍ଟ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2400271059665846158">Google Walletରେ ଥିବା ଆପଣଙ୍କ ଲୟାଲ୍ଟି କାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2400600116338235695">ସିରିଅଲ୍ ପୋର୍ଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
+<translation id="240450251994300576">ଦ୍ୱିତୀୟ ହେଡର ଲୋଗୋ</translation>
 <translation id="2404884497378469141">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ପୁଣି କପି କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="2413155254802890957">ପୁରୁଣା</translation>
 <translation id="2413528052993050574">ଏହି ସର୍ଭର୍ ଏହା ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ, ଏହା ଏକ <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ ପ୍ରତ୍ୟାହାର କରାଯାଇଥାଇପାରେ। ଏହା ଏକ ଭୁଲ୍ କନଫିଗ୍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">PDFରୁ ଟେକ୍ସଟକୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଉଛି...</translation>
 <translation id="2628224721443278970">Microsoft OneDriveରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />ର ସର୍ଭର୍ IP ଠିକଣା ମିଳିଲା ନାହିଁ।</translation>
+<translation id="2638567100095052009">ସମଗ୍ର <ph name="FEATURED_SEARCH_LIST" />ରେ ସର୍ଚ୍ଚ କରିବାକୁ @ ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="2639739919103226564">ସ୍ଥିତି:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">ଫେବ୍ରିକ (ସେମି-ଗ୍ଲସ)</translation>
@@ -2024,6 +2027,7 @@
 <translation id="4372948949327679948">ଆଶା କରାଯାଉଥିବା <ph name="VALUE_TYPE" /> ମୂଲ୍ୟ।</translation>
 <translation id="437620492464254965">କବାଟ ଏବଂ ଝରକା</translation>
 <translation id="4377125064752653719">ଆପଣ <ph name="DOMAIN" />ରେ ପହଞ୍ଚିବାକୁ ଚେଷ୍ଟା କରିଥିଲେ, କିନ୍ତୁ ସର୍ଭର୍ ଉପସ୍ଥାପନା କରିଥିବା ସାର୍ଟିଫିକେଟ୍, ତାହାର ଜାରିକର୍ତ୍ତାଙ୍କ ଦ୍ୱାରା ପ୍ରତ୍ୟାଖ୍ୟାନ କରିଦିଆଯାଇଛି। ଏହାର ଅର୍ଥ ହେଉଛି, ସର୍ଭର୍ ଉପସ୍ଥାପନା କରୁଥିବା ସୁରକ୍ଷା କ୍ରେଡେନ୍‍ସିଆଲ୍ ଉପରେ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ବିଶ୍ଵାସ କରିବା ଉଚିତ ନୁହେଁ। ଆପଣ ଜଣେ ଆକ୍ରମଣକାରୀଙ୍କ ସହ କଥା କରୁଥାଇପାରନ୍ତି।</translation>
+<translation id="4377869186417956230">ଏହି ମେନୁ ଆଇଟମ ଅଧୀନରେ ଥିବା ସମସ୍ତ ଲୟାଲ୍ଟି କାର୍ଡରେ ପରିବର୍ତ୍ତନ କରନ୍ତୁ।</translation>
 <translation id="4378154925671717803">ଫୋନ୍</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ବର୍ତ୍ତମାନଠାରୁ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ କ୍ଲାଉଡ ଷ୍ଟୋରେଜରେ ସେଭ କରନ୍ତୁ</translation>
@@ -2263,6 +2267,7 @@
 <translation id="4827283332383516812">କାର୍ଡ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> ଚୟନ କରାଯାଇଛି</translation>
 <translation id="4831993743164297314">ଇମେଜ ସେଟର କାଗଜ</translation>
+<translation id="4832388034239846146">ଟାବ ଗ୍ରୁପଗୁଡ଼ିକୁ ସେୟାର କରିବା ପାଇଁ, Chromeକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="483241715238664915">ଚେତାବନୀ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="4832961164064927107">BBQ ଏବଂ ଗ୍ରିଲିଂ</translation>
 <translation id="4834250788637067901">Google Pay ବ୍ୟବହାର କରୁଥିବା ପେମେଣ୍ଟ ପଦ୍ଧତି, ଅଫର ଏବଂ ଠିକଣାଗୁଡ଼ିକ</translation>
@@ -2970,6 +2975,7 @@
 <translation id="6043357981274314628">ହୋଇଗଲା!</translation>
 <translation id="6044573915096792553">ଆକାର 12</translation>
 <translation id="6045164183059402045">ଇମ୍ପୋଜିସନ୍ ଟେମ୍ପଲେଟ୍</translation>
+<translation id="6046892054959167494">ସର୍ଚ୍ଚ କରିବାକୁ <ph name="SEARCH_AGGREGATOR_KEYWORD" /> ଟାଇପ କରନ୍ତୁ କିମ୍ବା <ph name="SEARCH_AGGREGATOR_SHORT_NAME" />କୁ ପଚାରନ୍ତୁ</translation>
 <translation id="6047927260846328439">ଏହି ବିଷୟବସ୍ତୁ ଆପଣଙ୍କୁ ଧୋକା ଦେଇ ସଫ୍ଟୱେର୍ ଇନ୍‍ଷ୍ଟଲ୍‌ କରାଇବା କିମ୍ବା ବ୍ୟକ୍ତିଗତ ସୂଚନା ପ୍ରକାଶ କରାଇବାକୁ ଚେଷ୍ଟା କରିପାରେ। <ph name="BEGIN_LINK" />ଯେକୌଣସି ଉପାୟରେ ଦେଖାନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">ଏନଭେଲପ B4</translation>
 <translation id="6049488691372270142">ପୃଷ୍ଠା ଡେଲିଭେରୀ</translation>
@@ -3138,6 +3144,7 @@
 <translation id="6326947323444967009">iOS ସେଟିଂସରେ Chromeକୁ ସିଷ୍ଟମର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="6327065120806001832">ସ୍ଥାନୀୟ ନେଟୱାର୍କକୁ ଆକ୍ସେସ</translation>
 <translation id="6328639280570009161">ନେଟ୍‌ୱର୍କ ପୁର୍ବାନୁମାନ ଅକ୍ଷମ କରି ଦେଖନ୍ତୁ</translation>
+<translation id="6334834493885103305">ବର୍ତ୍ତମାନ ଆପଣ Affirm Zip କିମ୍ବା Klarna ବ୍ୟବହାର କରି ସମୟ ଅନୁସାରେ ପେମେଣ୍ଟ କରିପାରିବେ</translation>
 <translation id="6335029926534404762">ଆଥଲେଟିକ ଜୋତା</translation>
 <translation id="6336948221660696475">VRକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />ଠାରୁ କମ୍ ଖାଲି କରନ୍ତି। କିଛି ଆପଣଙ୍କର ପରବର୍ତ୍ତୀ ଭ୍ରମଣ ସମୟରେ ଆହୁରି ଧୀରେ ଲୋଡ୍ ହୋଇପାରନ୍ତି।</translation>
@@ -4006,6 +4013,7 @@
 <translation id="7761159795823346334">କ୍ୟାମେରା ଅନୁମତି ଦେବେ?</translation>
 <translation id="7761701407923456692">ସର୍ଭରର ସାର୍ଟିଫିକେଟ୍‌ URL ସହ ମେଳ ହେଉନାହିଁ</translation>
 <translation id="7764225426217299476">ଠିକଣା ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="7765158879357617694">ନିଅନ୍ତୁ</translation>
 <translation id="7766518757692125295">ସ୍କର୍ଟ୍</translation>
 <translation id="7767278989746220252">ପାଟିଓ, ଲନ ଏବଂ ବଗିଚା</translation>
 <translation id="776749070095465053">ଫେବ୍ରିକ</translation>
@@ -4060,6 +4068,7 @@
 <translation id="7878562273885520351">ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡରେ ହେର୍‍ଫେର୍‌ କରାଯାଇଥାଇପାରେ</translation>
 <translation id="7881044256965445977">ଆପଣଙ୍କ ସ୍ଥାନୀୟ ନେଟୱାର୍କରେ ଯେ କୌଣସି ଡିଭାଇସକୁ ଖୋଜନ୍ତୁ ଏବଂ କନେକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="7882421473871500483">ବାଦାମୀ</translation>
+<translation id="7885670691503039914">ଯଦି କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ପାଏ, ତେବେ ଆପଣ ଇମେଲ ଆଲର୍ଟ ପାଇବେ। ଏହି ପୃଷ୍ଠାଟି ବୁକମାର୍କ ଫୋଲ୍ଡର <ph name="LAST_BOOKMARKS_FOLDER" />ରେ ସେଭ କରାଯିବ।</translation>
 <translation id="7886897188117641322">ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ବିଷୟଗୁଡ଼ିକର କେଉଁ ବ୍ୟାପକ ବର୍ଗଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ତାହା ବାଛନ୍ତୁ</translation>
 <translation id="7887683347370398519">ଆପଣଙ୍କର CVC ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="7887885240995164102">ପିକଚର୍-ଇନ୍-ପିକଚର୍ ଲେଖନ୍ତୁ</translation>
@@ -4340,6 +4349,7 @@
 <translation id="8364627913115013041">ସେଟ୍ ହୋଇନାହିଁ।</translation>
 <translation id="8366057325711477500">ବିଶ୍ଵ ସମାଚାର</translation>
 <translation id="836616551641291797">ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ କିପରି ପରିଚାଳନା କରାଯାଏ ସେ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
+<translation id="8367705492654390392">ଯେ କୌଣସି ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ</translation>
 <translation id="8368001212524806591">ମୂଲ୍ୟ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="8368027906805972958">ଅଜଣା କିମ୍ବା ଅସମର୍ଥିତ ଡିଭାଇସ୍ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play ସେବା</translation>
@@ -4654,6 +4664,7 @@
 <translation id="8926389886865778422">ପୁର୍ନବାର ପଚାରନ୍ତୁ ନାହିଁ</translation>
 <translation id="8932102934695377596">ଆପଣଙ୍କର ଘଣ୍ଟାର ସମୟ ପଛରେ ଅଛି</translation>
 <translation id="893332455753468063">ନାମ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="8938242527120341116">ଆପଣଙ୍କର ଡିଭାଇସାର ବିଷୟବସ୍ତୁ ଫିଲ୍ଟରଗୁଡ଼ିକୁ <ph name="BLOCKED_URL" /> ଦ୍ଵାରା ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="8942355029279167844">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP_NAME" />କୁ ପ୍ରଡକ୍ଟ ବ୍ୟବହାରର ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଡାଟା ସଂଗ୍ରହ କରିବାକୁ ଅନୁମତି ଦେଇଛନ୍ତି। ଅଧିକ ସୂଚନା ପାଇଁ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ଦେଖନ୍ତୁ।</translation>
 <translation id="8943282376843390568">ଲାଇମ୍‌</translation>
 <translation id="8949410982325929394">ଟୋନ</translation>
@@ -4858,6 +4869,7 @@
 <translation id="963837307749850257">ସମସ୍ତ ୟୁଜର</translation>
 <translation id="964050462028070434">ପାସୱାର୍ଡ ଏବଂ ପାସକୀ'ଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ…</translation>
 <translation id="969892804517981540">ଅଫିସିଆଲ୍ ବିଲ୍ଡ</translation>
+<translation id="97054401902912338">ବିଷୟବସ୍ତୁ ଫିଲ୍ଟରଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="973788791897303708">ଏହି ଟାବ ଗ୍ରୁପ ପୂର୍ଣ୍ଣ ଅଛି</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{କିଛିନାହିଁ}=1{1ଟି ଆଇଟମ୍}other{#ଟି ଆଇଟମ୍}}</translation>
 <translation id="976522784004777030">5 x 8 ଇଞ୍ଚ</translation>

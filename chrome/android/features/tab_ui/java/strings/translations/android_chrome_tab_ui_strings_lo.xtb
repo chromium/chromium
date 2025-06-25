@@ -112,6 +112,7 @@
 <translation id="5556417849629758491">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ, ມີຕົວເລືອກຢູ່ເທິງສຸດຂອງໜ້າຈໍ</translation>
 <translation id="5627941783489838464">ບໍ່ມີການອັບເດດແຖບ</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ລິ້ງຈາກ Chrome}other{<ph name="TABS_COUNT_MANY" /> ລິ້ງຈາກ Chrome}}</translation>
+<translation id="5746204836956568669">ຈັດກຸ່ມແຖບ <ph name="NUMBER_OF_TABS" /> ແຖບເພື່ອໃຫ້ເຮັດວຽກໄດ້ໄວຂຶ້ນບໍ?</translation>
 <translation id="58326064309361797">ລາກແຖບເພື່ອຈັດກຸ່ມພວກມັນ</translation>
 <translation id="5901630391730855834">ສີ​ເຫຼືອງ</translation>
 <translation id="5972844218283131174">ເຊົາເລືອກທັງໝົດ</translation>
@@ -192,6 +193,7 @@
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{ອັບເດດເມື່ອ <ph name="NUM_MONTHS_ONE" /> ເດືອນກ່ອນ}other{ອັບເດດເມື່ອ <ph name="NUM_MONTHS_MANY" /> ເດືອນກ່ອນ}}</translation>
 <translation id="8398929769197326728">ໂຟນເດີໃໝ່ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
+<translation id="855081842937141170">ປັກໝຸດແຖບ</translation>
 <translation id="8633025649649592204">ການເຄື່ອນໄຫວຫຼ້າສຸດ</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8714939927607906138">ລາຄາຕໍ່າກວ່າ</translation>

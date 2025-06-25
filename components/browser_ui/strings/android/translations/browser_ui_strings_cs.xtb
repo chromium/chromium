@@ -36,6 +36,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="1409338233051621926">Klepněte na Aplikace a potom na Výchozí aplikace</translation>
 <translation id="1415402041810619267">Zkrácená adresa URL</translation>
 <translation id="1415855080660575082">Umožněte Chromu sdílet nedávno použité karty se zařízením, abyste je na něm viděli v seznamu aplikací a ve výsledcích vyhledávání. Tuto funkci můžete zapnout nebo vypnout v nastavení Chromu.</translation>
+<translation id="1432650420699700107">Weby můžou žádat o připojení k libovolnému zařízení v místní síti</translation>
 <translation id="1448064542941920355">Snížit přiblížení</translation>
 <translation id="1464044141348608623">Weby nemohou zjišťovat, kdy aktivně používáte své zařízení</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web}few{<ph name="SITE_COUNT" /> weby}many{<ph name="SITE_COUNT" /> webu}other{<ph name="SITE_COUNT" /> webů}}</translation>
@@ -254,6 +255,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="3955321697524543127">Nepovolovat webům připojení k zařízením USB</translation>
 <translation id="3965467402665811906">Weby mohou žádat o použití informací, které o vás uložily</translation>
 <translation id="3967822245660637423">Stahování bylo dokončeno</translation>
+<translation id="3969869202926863008">Přístup k místní síti</translation>
 <translation id="3981465354637804599">Weby obvykle zobrazují reklamy, aby mohly poskytovat obsah nebo služby bez dalších poplatků. Některé weby ale zobrazují rušivé nebo zavádějící reklamy.</translation>
 <translation id="3987993985790029246">Kopírovat odkaz</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -463,6 +465,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="6554732001434021288">Naposledy navštíveno před <ph name="NUM_DAYS" /> dny</translation>
 <translation id="656065428026159829">Zobrazit další</translation>
 <translation id="6561560012278703671">Použít méně rušivou zprávu (blokuje žádosti o zobrazení oznámení)</translation>
+<translation id="6565144332292237355">Weby můžou tuhle funkci použít k vyhledání a připojení k libovolnému zařízení v místní síti</translation>
 <translation id="6593061639179217415">Stránky pro počítač</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Soubory cookie jsou povoleny pro <ph name="RWS_MEMBERS_COUNT" /> web <ph name="RWS_OWNER" />}few{Soubory cookie jsou povoleny pro <ph name="RWS_MEMBERS_COUNT" /> weby <ph name="RWS_OWNER" />}many{Soubory cookie jsou povoleny pro <ph name="RWS_MEMBERS_COUNT" /> webu <ph name="RWS_OWNER" />}other{Soubory cookie jsou povoleny pro <ph name="RWS_MEMBERS_COUNT" /> webů <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

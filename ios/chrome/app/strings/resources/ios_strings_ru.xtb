@@ -239,7 +239,7 @@
 <translation id="1956138802718275401">Доступ к паролям с главного экрана</translation>
 <translation id="1959441496380398824">Нажмите на дату и удерживайте ее.</translation>
 <translation id="1962348300797608157">Пользователь <ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> передал вам пароль для сайта <ph name="WEBSITE" />.</translation>
-<translation id="1962969542251276847">Блокировать экран</translation>
+<translation id="1962969542251276847">Заблок. экран</translation>
 <translation id="1963976881984600709">Стандартная защита</translation>
 <translation id="1966313166384086081">данные сайтов</translation>
 <translation id="1967461193809857427">{count,plural, =1{Открыть вкладку, которую вы просматривали в Android?}one{Открыть вкладки, которые вы просматривали в Android?}few{Открыть вкладки, которые вы просматривали в Android?}many{Открыть вкладки, которые вы просматривали в Android?}other{Открыть вкладки, которые вы просматривали в Android?}}</translation>
@@ -1107,6 +1107,7 @@
 <translation id="5576885723883013398">Новое окно</translation>
 <translation id="5578795271662203820">Найти это изображение в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Скрыть раздел "Список для чтения"</translation>
+<translation id="5581786858144165447">Режим "Спросить ИИ"</translation>
 <translation id="5585019845078534178">Карточки</translation>
 <translation id="5595485650161345191">Изменить адрес</translation>
 <translation id="559567008082979829">Удалять файлы, скачанные более одного месяца назад</translation>

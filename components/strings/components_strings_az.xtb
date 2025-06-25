@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">Qiymət izləmə bildirişləri</translation>
 <translation id="21613918653299710">Onlayn Görüntü Qalleriyaları</translation>
 <translation id="2161656808144014275">Mətn</translation>
+<translation id="2162435186600002085">Əsas Başlıq Loqosu</translation>
 <translation id="2162620598375156287">İndi <ph name="SOURCE_WEBSITE" /> saytında <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> hostunda orfoqrafik səhv olub-olmadığını yoxlayın.</translation>
 <translation id="2166049586286450108">Tam Admin Girişi</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">Pasport əlavə edin</translation>
 <translation id="2400271059665846158">Google Pulqabıda loyallıq kartlarınızı idarə edin</translation>
 <translation id="2400600116338235695">Saytlar ardıcıl portlara qoşulmaq üçün icazə istəyə bilər</translation>
+<translation id="240450251994300576">İkinci Dərəcəli Başlıq Loqosu</translation>
 <translation id="2404884497378469141">Faylları yenidən kopyalayın</translation>
 <translation id="2413155254802890957">Köhnə</translation>
 <translation id="2413528052993050574">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmir; təhlükəsizlik sertifikatı ləğv edilə bilər. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">PDF-dən mətn çıxarılır...</translation>
 <translation id="2628224721443278970">Microsoft OneDrive-a daxil olun</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> serverinin IP ünvanı tapılmadı.</translation>
+<translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> üzrə axtarış etmək üçün @ daxil edin</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Parça (yarıparlaq)</translation>
@@ -2023,6 +2026,7 @@
 <translation id="4372948949327679948">Gözlənilən <ph name="VALUE_TYPE" /> dəyəri.</translation>
 <translation id="437620492464254965">Qapı və pəncərələr</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> domeninə daxil olmağa çalışdınız, onun sertifikatı geri alınıb. Bu o deməkdir ki, güvənlik kredensiallarına kəsinliklə inanmaq olmaz. Ola bilər ki, hücumçu ilə əlaqəyə girirsiniz.</translation>
+<translation id="4377869186417956230">Bu menyu elementindəki bütün loyallıq kartlarına dəyişin.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">İndidən etibarən fayllarınızı bulud yaddaşında saxlayın</translation>
@@ -2262,6 +2266,7 @@
 <translation id="4827283332383516812">Kartı silin</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> seçilib</translation>
 <translation id="4831993743164297314">Fototipləmə maşını kağızı</translation>
+<translation id="4832388034239846146">Tab qruplarını paylaşmaq üçün Chrome-u güncəlləyin</translation>
 <translation id="483241715238664915">Xəbərdarlıqları aktiv edin</translation>
 <translation id="4832961164064927107">Barbekü və Qril</translation>
 <translation id="4834250788637067901">Google Pay istifadə edən ödəniş metodları, təkliflər və ünvanlar</translation>
@@ -2969,6 +2974,7 @@
 <translation id="6043357981274314628">Hazırdır!</translation>
 <translation id="6044573915096792553">Ölçü 12</translation>
 <translation id="6045164183059402045">Tətbiq şablonu</translation>
+<translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> axtarışı və ya sorğusu üçün <ph name="SEARCH_AGGREGATOR_KEYWORD" /> daxil edin</translation>
 <translation id="6047927260846328439">Bu kontent Sizi proqram təminatı quraşdırmaq və ya şəxsi məlumatı aşkar etmək üçün aldatmağa cəhd edə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Zərf B4</translation>
 <translation id="6049488691372270142">Səhifə çatdırılması</translation>
@@ -3138,6 +3144,7 @@
 <translation id="6326947323444967009">iOS ayarlarında Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
 <translation id="6327065120806001832">lokal şəbəkə girişi</translation>
 <translation id="6328639280570009161">Şəbəkə proqnozunu deaktiv etməyə çalışın</translation>
+<translation id="6334834493885103305">Artıq Affirm, Zip və ya Klarna vasitəsilə hissə-hissə ödəyə bilərsiniz</translation>
 <translation id="6335029926534404762">Atletik ayaqqabılar</translation>
 <translation id="6336948221660696475">VR icazəsi verilmədi</translation>
 <translation id="6337133576188860026">Maksimum <ph name="SIZE" /> boşaldılır. Növbəti dəfə daxil olarkən bəzi saytlar daha yavaş yüklənə bilər.</translation>
@@ -4006,6 +4013,7 @@
 <translation id="7761159795823346334">Kamera icazəsi verilsin?</translation>
 <translation id="7761701407923456692">Serverin sertifikatı URL ilə uyğun gəlmir.</translation>
 <translation id="7764225426217299476">Ünvan əlavə edin</translation>
+<translation id="7765158879357617694">Daşıyın</translation>
 <translation id="7766518757692125295">Ətək</translation>
 <translation id="7767278989746220252">Veranda, çəmənlik və bağ</translation>
 <translation id="776749070095465053">Parça</translation>
@@ -4060,6 +4068,7 @@
 <translation id="7878562273885520351">Parolunuz təhlükədə ola bilər</translation>
 <translation id="7881044256965445977">Lokal şəbəkədə istənilən cihazı axtarın və ona qoşulun</translation>
 <translation id="7882421473871500483">Qəhvəyi</translation>
+<translation id="7885670691503039914">Hər hansı saytda qiymət enərsə, e-poçt xəbərdarlıqları alacaqsınız. Bu səhifə <ph name="LAST_BOOKMARKS_FOLDER" /> əlfəcin qovluğunda yadda saxlanılacaq.</translation>
 <translation id="7886897188117641322">Reklamları fərdiləşdirmək üçün istifadə olunacaq geniş mövzu kateqoriyalarını seçin</translation>
 <translation id="7887683347370398519">CVC kodunuzu yoxlayın və yenidən cəhd edin</translation>
 <translation id="7887885240995164102">Şəkildə şəkil xüsusiyyətinə daxil olun</translation>
@@ -4340,6 +4349,7 @@
 <translation id="8364627913115013041">Ayarlanmayıb</translation>
 <translation id="8366057325711477500">Dünya Xəbərləri</translation>
 <translation id="836616551641291797">Brauzerinizin necə idarə olunduğu haqqında ətraflı məlumat əldə edin</translation>
+<translation id="8367705492654390392">İstədiyinizi soruşun</translation>
 <translation id="8368001212524806591">Qiyməti izləyin</translation>
 <translation id="8368027906805972958">Naməlum və ya dəstəklənməyən cihaz (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play xidmətləri</translation>
@@ -4654,6 +4664,7 @@
 <translation id="8926389886865778422">Daha soruşmayın</translation>
 <translation id="8932102934695377596">Saatınız geridədir</translation>
 <translation id="893332455753468063">Ad əlavə edin</translation>
+<translation id="8938242527120341116">Cihazınızın kontent filtrləri bloklanıb <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">Admininiz <ph name="APP_NAME" /> tətbiqinə məhsul üzrə təcrübəni yaxşılaşdırmaq üçün diaqnostik datanı toplamaq icazəsi verib. Ətraflı məlumat üçün <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ünvanına baxın.</translation>
 <translation id="8943282376843390568">Yaşıl Limon</translation>
 <translation id="8949410982325929394">Ton</translation>
@@ -4859,6 +4870,7 @@
 <translation id="963837307749850257">Bütün istifadəçilər</translation>
 <translation id="964050462028070434">Parolları və Giriş Açarlarını idarə edin…</translation>
 <translation id="969892804517981540">Rəsmi Quruluş</translation>
+<translation id="97054401902912338">Kontent filtrləri haqqında ətraflı məlumat</translation>
 <translation id="973788791897303708">Bu tap qrupu doludur</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Yoxdur}=1{1 element}other{# element}}</translation>
 <translation id="976522784004777030">5 x 8 düym</translation>

@@ -693,6 +693,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2157640075051554492">Notificacións de seguimento de prezos</translation>
 <translation id="21613918653299710">Galerías de imaxes en liña</translation>
 <translation id="2161656808144014275">Texto</translation>
+<translation id="2162435186600002085">Logotipo da cabeceira principal</translation>
 <translation id="2162620598375156287">Agora <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Comproba que <ph name="HOST_NAME" /> estea ben escrito.</translation>
 <translation id="2166049586286450108">Acceso de administrador completo</translation>
@@ -851,6 +852,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2400263725572336749">Engadir un pasaporte</translation>
 <translation id="2400271059665846158">Xestiona as tarxetas de fidelidade en Google Wallet</translation>
 <translation id="2400600116338235695">Pode pedirche permiso para conectarse a portos en serie</translation>
+<translation id="240450251994300576">Logotipo da cabeceira secundaria</translation>
 <translation id="2404884497378469141">Proba a copiar os ficheiros de novo</translation>
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque quizais se revogase o certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
@@ -981,6 +983,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2627847595568876492">Extraendo texto do PDF...</translation>
 <translation id="2628224721443278970">Iniciar sesión en Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Non se puido atopar o enderezo IP do servidor de <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Escribe @ para facer unha busca en <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Estado:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tecido (semibrillo)</translation>
@@ -2027,6 +2030,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="437620492464254965">Portas e ventás</translation>
 <translation id="4377125064752653719">Tentaches acceder a <ph name="DOMAIN" />, pero este emisor revogou o certificado presentado polo servidor. Isto significa que as credenciais de seguranza presentadas polo servidor non son de confianza. É posible que te esteas comunicando cun hacker.</translation>
+<translation id="4377869186417956230">Cambia a todas as tarxetas de fidelidade neste elemento do menú.</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">A partir de agora, garda os teus ficheiros no almacenamento na nube</translation>
@@ -2266,6 +2270,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4827283332383516812">Eliminar a tarxeta</translation>
 <translation id="4830443836091007686">Elementos seleccionados: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Papel de filmadora</translation>
+<translation id="4832388034239846146">Para compartir grupos de pestanas, actualiza Chrome</translation>
 <translation id="483241715238664915">Activar advertencias</translation>
 <translation id="4832961164064927107">Grelladas e churrascadas</translation>
 <translation id="4834250788637067901">Métodos de pago, ofertas e enderezos que usan Google Pay</translation>
@@ -2973,6 +2978,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6043357981274314628">Feito!</translation>
 <translation id="6044573915096792553">Tamaño 12</translation>
 <translation id="6045164183059402045">Modelo de imposición</translation>
+<translation id="6046892054959167494">Escribe <ph name="SEARCH_AGGREGATOR_KEYWORD" /> para facer buscas ou pregúntalle a <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">É posible que con este contido se pretenda enganarte para instalar software ou revelar información persoal. <ph name="BEGIN_LINK" />Mostrar igualmente<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Sobre B4</translation>
 <translation id="6049488691372270142">Entrega da páxina</translation>
@@ -3142,6 +3148,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6326947323444967009">Establecer Chrome como navegador predeterminado do sistema na configuración de iOS</translation>
 <translation id="6327065120806001832">acceso á rede local</translation>
 <translation id="6328639280570009161">Proba a desactivar a predición da rede</translation>
+<translation id="6334834493885103305">Xa podes pagar a prazos con Affirm, Zip ou Klarna</translation>
 <translation id="6335029926534404762">Zapatillas deportivas</translation>
 <translation id="6336948221660696475">Non se permitiu a RV</translation>
 <translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. É posible que algúns sitios carguen de forma máis lenta a próxima vez que os visites.</translation>
@@ -4010,6 +4017,7 @@ Detalles adicionais:
 <translation id="7761159795823346334">Queres permitir o acceso á cámara?</translation>
 <translation id="7761701407923456692">O certificado do servidor non coincide co URL.</translation>
 <translation id="7764225426217299476">Engadir enderezo</translation>
+<translation id="7765158879357617694">Mover</translation>
 <translation id="7766518757692125295">Saia</translation>
 <translation id="7767278989746220252">Patio e xardín</translation>
 <translation id="776749070095465053">Tecido</translation>
@@ -4064,6 +4072,7 @@ Detalles adicionais:
 <translation id="7878562273885520351">Pode que o teu contrasinal estea en perigo</translation>
 <translation id="7881044256965445977">Busca calquera dispositivo da túa rede local e conéctate a el</translation>
 <translation id="7882421473871500483">Marrón</translation>
+<translation id="7885670691503039914">Recibirás alertas por correo electrónico se baixa o prezo en calquera sitio. Esta páxina gardarase no cartafol de marcadores <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Selecciona as categorías amplas de temas que se poden usar para axudar a personalizar os anuncios</translation>
 <translation id="7887683347370398519">Comproba o CVC e téntao de novo</translation>
 <translation id="7887885240995164102">Acceder ao modo de pantalla superposta</translation>
@@ -4344,6 +4353,7 @@ Detalles adicionais:
 <translation id="8364627913115013041">Sen configurar.</translation>
 <translation id="8366057325711477500">Noticias internacionais</translation>
 <translation id="836616551641291797">Máis información sobre como se xestiona o teu navegador</translation>
+<translation id="8367705492654390392">Pregunta o que queiras</translation>
 <translation id="8368001212524806591">Facer seguimento do prezo</translation>
 <translation id="8368027906805972958">Dispositivo descoñecido ou non compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Servizos de Google Play</translation>
@@ -4658,6 +4668,7 @@ Detalles adicionais:
 <translation id="8926389886865778422">Non preguntar de novo</translation>
 <translation id="8932102934695377596">O reloxo está atrasado</translation>
 <translation id="893332455753468063">Engade un nome</translation>
+<translation id="8938242527120341116">Os filtros de contido do teu dispositivo bloquearon <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">O teu administrador permitiu que a aplicación <ph name="APP_NAME" /> recompile datos de diagnóstico para mellorar a experiencia do produto. Consulta <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> para obter máis información.</translation>
 <translation id="8943282376843390568">Verde lima</translation>
 <translation id="8949410982325929394">Ton</translation>
@@ -4863,6 +4874,7 @@ Detalles adicionais:
 <translation id="963837307749850257">Todos os usuarios</translation>
 <translation id="964050462028070434">Xestionar contrasinais e claves de acceso…</translation>
 <translation id="969892804517981540">Compilación oficial</translation>
+<translation id="97054401902912338">Máis información sobre os filtros de contido</translation>
 <translation id="973788791897303708">Este grupo de pestanas está cheo</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ningún}=1{1 elemento}other{# elementos}}</translation>
 <translation id="976522784004777030">5 x 8 polgadas</translation>

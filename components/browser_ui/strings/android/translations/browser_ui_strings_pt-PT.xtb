@@ -36,6 +36,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="1409338233051621926">Toque em Apps e, de seguida, em Apps predefinidas</translation>
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1415855080660575082">Permita que o Chrome partilhe os seus separadores recentes com o seu dispositivo para os ver na lista de apps e nos resultados da pesquisa do dispositivo. Pode ativar ou desativar esta opção nas definições do Chrome.</translation>
+<translation id="1432650420699700107">Os sites podem pedir para fazer ligação aos dispositivos na sua rede local</translation>
 <translation id="1448064542941920355">Diminuir zoom</translation>
 <translation id="1464044141348608623">Não permitir que os sites saibam quando está a utilizar ativamente o dispositivo</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
@@ -254,6 +255,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="3955321697524543127">Não permitir que os sites estabeleçam ligação a dispositivos USB</translation>
 <translation id="3965467402665811906">Os sites podem pedir para usar as informações guardadas sobre si</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
+<translation id="3969869202926863008">Acesso à rede local</translation>
 <translation id="3981465354637804599">Normalmente, os sites mostram anúncios para poderem fornecer conteúdos ou serviços sem custo financeiro. No entanto, alguns sites são conhecidos por mostrarem anúncios intrusivos ou enganadores.</translation>
 <translation id="3987993985790029246">Cop. link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="6554732001434021288">Última visita há <ph name="NUM_DAYS" /> dias</translation>
 <translation id="656065428026159829">Ver mais</translation>
 <translation id="6561560012278703671">Usar mensagens mais discretas (impede interrupções de pedidos de notificação)</translation>
+<translation id="6565144332292237355">Os sites podem usar esta funcionalidade para procurar e fazer ligação aos dispositivos na sua rede local</translation>
 <translation id="6593061639179217415">Site para computador</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies permitidos para <ph name="RWS_MEMBERS_COUNT" /> site de <ph name="RWS_OWNER" />}other{Cookies permitidos para <ph name="RWS_MEMBERS_COUNT" /> sites de <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

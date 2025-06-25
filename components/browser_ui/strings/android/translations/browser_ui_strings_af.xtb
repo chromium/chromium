@@ -36,6 +36,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="1409338233051621926">Tik op Apps en tik dan op Verstekapps</translation>
 <translation id="1415402041810619267">URL is afgekap</translation>
 <translation id="1415855080660575082">Laat Chrome jou onlangse oortjies met jou toestel deel om dit in jou toestel se applys en soekresultate te sien. Jy kan dit in Chrome-instellings aan- of afskakel.</translation>
+<translation id="1432650420699700107">Werwe kan vra om aan enige toestel op jou plaaslike netwerk te koppel</translation>
 <translation id="1448064542941920355">Verklein zoem</translation>
 <translation id="1464044141348608623">Moenie werwe toelaat om te weet wanneer jy jou toestel aktief gebruik nie</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> werf}other{<ph name="SITE_COUNT" /> werwe}}</translation>
@@ -254,6 +255,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="3955321697524543127">Moenie werwe toelaat om aan USB-toestelle te koppel nie</translation>
 <translation id="3965467402665811906">Werwe kan vra om inligting te gebruik wat hulle oor jou gestoor het</translation>
 <translation id="3967822245660637423">Aflaai is voltooi</translation>
+<translation id="3969869202926863008">Plaaslike netwerktoegang</translation>
 <translation id="3981465354637804599">Werwe wys gewoonlik advertensies sodat hulle inhoud of dienste kosteloos kan verskaf. Sommige werwe is egter bekend daarvoor dat hulle indringende of misleidende advertensies wys.</translation>
 <translation id="3987993985790029246">Kopieer skakel</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> van ?</translation>
@@ -463,6 +465,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="6554732001434021288">Laas <ph name="NUM_DAYS" /> dae gelede besoek</translation>
 <translation id="656065428026159829">Sien meer</translation>
 <translation id="6561560012278703671">Gebruik stiller boodskappe (keer dat kennisgewingporboodskappe jou onderbreek)</translation>
+<translation id="6565144332292237355">Werwe kan hierdie kenmerk gebruik om enige toestel op jou plaaslike netwerk te soek en daaraan te koppel</translation>
 <translation id="6593061639179217415">Werkskermwerf</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Webkoekies word toegelaat vir <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-werf}other{Webkoekies word toegelaat vir <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-werwe}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

@@ -36,6 +36,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="1409338233051621926">Ketik Apl kemudian ketik Apl lalai</translation>
 <translation id="1415402041810619267">URL terpangkas</translation>
 <translation id="1415855080660575082">Benarkan Chrome berkongsi tab terbaharu anda dengan peranti anda untuk melihat tab tersebut dalam senarai apl dan hasil carian peranti anda. Anda boleh menghidupkan atau mematikan ciri ini dalam tetapan Chrome.</translation>
+<translation id="1432650420699700107">Laman boleh meminta untuk menyambung kepada mana-mana peranti pada rangkaian setempat anda</translation>
 <translation id="1448064542941920355">Zum keluar</translation>
 <translation id="1464044141348608623">Jangan benarkan laman mengetahui waktunya anda aktif menggunakan peranti</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> laman}other{<ph name="SITE_COUNT" /> laman}}</translation>
@@ -254,6 +255,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3955321697524543127">Jangan benarkan laman menyambung kepada peranti USB</translation>
 <translation id="3965467402665811906">Laman boleh meminta untuk menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
+<translation id="3969869202926863008">Akses rangkaian setempat</translation>
 <translation id="3981465354637804599">Laman biasanya memaparkan iklan agar dapat memberikan kandungan atau perkhidmatan percuma. Akan tetapi, sesetengah laman diketahui memaparkan iklan yang mengganggu atau mengelirukan.</translation>
 <translation id="3987993985790029246">Salin pautan</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -422,6 +424,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="5968921426641056619">Masukkan alamat web</translation>
 <translation id="5975083100439434680">Zum keluar</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Hidupkan suapan Discover</translation>
 <translation id="6015775454662021376">Kawal akses tapak ini kepada peranti anda</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6042308850641462728">Lagi</translation>
@@ -463,6 +466,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="6554732001434021288">Terakhir dilawati <ph name="NUM_DAYS" /> hari yang lalu</translation>
 <translation id="656065428026159829">Lihat lagi</translation>
 <translation id="6561560012278703671">Gunakan pemesejan yang lebih senyap (menyekat gesaan pemberitahuan daripada mengganggu anda)</translation>
+<translation id="6565144332292237355">Laman boleh menggunakan ciri ini untuk menemukan dan menyambung kepada mana-mana peranti pada rangkaian setempat anda</translation>
 <translation id="6593061639179217415">Tapak desktop</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Kuki dibenarkan untuk <ph name="RWS_MEMBERS_COUNT" /> laman <ph name="RWS_OWNER" />}other{Kuki dibenarkan untuk <ph name="RWS_MEMBERS_COUNT" /> laman <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

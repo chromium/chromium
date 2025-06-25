@@ -2030,6 +2030,7 @@
 <translation id="4372948949327679948">અપેક્ષિત <ph name="VALUE_TYPE" /> મૂલ્ય.</translation>
 <translation id="437620492464254965">દરવાજા અને બારીઓ</translation>
 <translation id="4377125064752653719">તમે <ph name="DOMAIN" /> પર પહોંચવાનો પ્રયાસ કર્યો, પણ સર્વર દ્વારા પ્રસ્તુત કરવામાં આવેલું પ્રમાણપત્ર તેના રજૂકર્તા દ્વારા જ રદ કરવામાં આવ્યું છે. આનો અર્થ છે કે સર્વરે પ્રસ્તુત કરેલા સુરક્ષા પ્રમાણપત્રો પૂર્ણપણે વિશ્વસનીય નથી. તમે કોઈ હુમલાખોર જોડે વાત કરતા હોઈ શકો છો.</translation>
+<translation id="4377869186417956230">આ મેનૂ આઇટમ હેઠળ આવતા બધા લૉયલ્ટિ કાર્ડમાં ફેરફાર કરો.</translation>
 <translation id="4378154925671717803">ફોન</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">હવેથી, તમારી ફાઇલોને ક્લાઉડ સ્ટોરેજ પર સાચવો</translation>
@@ -4017,6 +4018,7 @@
 <translation id="7761159795823346334">શું કૅમેરાની મંજૂરી આપીએ?</translation>
 <translation id="7761701407923456692">સર્વરનું પ્રમાણપત્ર URL સાથે મેળ ખાતું નથી.</translation>
 <translation id="7764225426217299476">સરનામું ઉમેરો</translation>
+<translation id="7765158879357617694">સ્થાન</translation>
 <translation id="7766518757692125295">સ્કર્ટ</translation>
 <translation id="7767278989746220252">પૅટિયો, લૉન અને બગીચો</translation>
 <translation id="776749070095465053">કાપડ</translation>
@@ -4352,6 +4354,7 @@
 <translation id="8364627913115013041">સેટ નથી.</translation>
 <translation id="8366057325711477500">વૈશ્વિક ન્યૂઝ</translation>
 <translation id="836616551641291797">તમારું બ્રાઉઝર કેવી રીતે મેનેજ થાય છે તે વિશે વધુ જાણો</translation>
+<translation id="8367705492654390392">કંઈપણ પૂછો</translation>
 <translation id="8368001212524806591">કિંમત ટ્રૅક કરો</translation>
 <translation id="8368027906805972958">અજાણ્યું અથવા અસમર્થિત ડિવાઇસ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play સેવાઓ</translation>
@@ -4666,6 +4669,7 @@
 <translation id="8926389886865778422">ફરિથી પુછશો નહીં</translation>
 <translation id="8932102934695377596">તમારી ઘડિયાળ પાછળ છે</translation>
 <translation id="893332455753468063">નામ ઉમેરો</translation>
+<translation id="8938242527120341116">તમારા ડિવાઇસના કન્ટેન્ટના ફિલ્ટરને <ph name="BLOCKED_URL" /> દ્વારા બ્લૉક કરવામાં આવ્યા છે</translation>
 <translation id="8942355029279167844">પ્રોડક્ટના અનુભવને બહેતર બનાવવા માટે તમારા વ્યવસ્થાપક દ્વારા <ph name="APP_NAME" />ને નિદાનનો ડેટા એકત્ર કરવાની મંજૂરી આપી છે. વધુ માહિતી માટે <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> જુઓ.</translation>
 <translation id="8943282376843390568">લાઇમ</translation>
 <translation id="8949410982325929394">ટોન</translation>
@@ -4871,6 +4875,7 @@
 <translation id="963837307749850257">બધા વપરાશકર્તાઓ</translation>
 <translation id="964050462028070434">પાસવર્ડ અને પાસકી મેનેજ કરો…</translation>
 <translation id="969892804517981540">આધિકારિક બિલ્ડ</translation>
+<translation id="97054401902912338">કન્ટેન્ટના ફિલ્ટર વિશે વધુ જાણો</translation>
 <translation id="973788791897303708">આ ટૅબનું ગ્રૂપ ભરાઈ ગયું છે</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{કોઈ નહીં}=1{1 આઇટમ}one{# આઇટમ}other{# આઇટમ}}</translation>
 <translation id="976522784004777030">5 x 8 ઇંચ</translation>

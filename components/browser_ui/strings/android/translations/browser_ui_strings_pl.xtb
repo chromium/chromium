@@ -36,6 +36,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="1409338233051621926">Kliknij Aplikacje, a potem Aplikacje domyślne</translation>
 <translation id="1415402041810619267">URL obcięty</translation>
 <translation id="1415855080660575082">Pozwól Chrome udostępniać ostatnie karty swojemu urządzeniu, aby były one widoczne na nim na liście aplikacji i w wynikach wyszukiwania. Tę funkcję możesz w każdej chwili włączyć lub wyłączyć w ustawieniach Chrome.</translation>
+<translation id="1432650420699700107">Strony mogą prosić o zgodę na połączenie z dowolnym urządzeniem w sieci lokalnej</translation>
 <translation id="1448064542941920355">Zmniejsz powiększenie</translation>
 <translation id="1464044141348608623">Nie zezwalaj witrynom na sprawdzanie, kiedy używasz urządzenia</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> witryna}few{<ph name="SITE_COUNT" /> witryny}many{<ph name="SITE_COUNT" /> witryn}other{<ph name="SITE_COUNT" /> witryny}}</translation>
@@ -254,6 +255,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3955321697524543127">Nie zezwalaj witrynom na łączenie się z urządzeniami USB</translation>
 <translation id="3965467402665811906">Strony mogą prosić o zgodę na używanie zapisanych o Tobie informacji</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
+<translation id="3969869202926863008">Dostęp przez sieć lokalną</translation>
 <translation id="3981465354637804599">Strony zwykle wyświetlają reklamy, aby mogły dostarczać treści i usługi bezpłatnie. Istnieją jednak strony, które wyświetlają reklamy uciążliwe lub wprowadzające w błąd.</translation>
 <translation id="3987993985790029246">Skopiuj link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -422,6 +424,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="5968921426641056619">Podaj adres internetowy</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Włącz karty Discover</translation>
 <translation id="6015775454662021376">Zarządzaj dostępem tej strony do Twojego urządzenia</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6042308850641462728">Więcej</translation>
@@ -463,6 +466,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="6554732001434021288">Ostatnio używano <ph name="NUM_DAYS" /> dni temu</translation>
 <translation id="656065428026159829">Pokaż więcej</translation>
 <translation id="6561560012278703671">Pokazuj wiadomości dyskretnie (blokuje powiadomienia, by Ci nie przeszkadzały)</translation>
+<translation id="6565144332292237355">Witryny mogą używać tej funkcji do wyszukiwania urządzeń w Twojej sieci lokalnej i łączenia się z nimi</translation>
 <translation id="6593061639179217415">Wersja na komputer</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Pliki cookie dozwolone w przypadku <ph name="RWS_MEMBERS_COUNT" /> witryny <ph name="RWS_OWNER" />}few{Pliki cookie dozwolone w przypadku <ph name="RWS_MEMBERS_COUNT" /> witryn <ph name="RWS_OWNER" />}many{Pliki cookie dozwolone w przypadku <ph name="RWS_MEMBERS_COUNT" /> witryn <ph name="RWS_OWNER" />}other{Pliki cookie dozwolone w przypadku <ph name="RWS_MEMBERS_COUNT" /> witryny <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

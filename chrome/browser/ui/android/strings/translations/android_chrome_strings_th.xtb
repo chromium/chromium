@@ -74,6 +74,7 @@
 <translation id="1298077576058087471">อ่านข่าววันนี้ ประหยัดอินเทอร์เน็ตได้ถึง 60%</translation>
 <translation id="1303339473099049190">ไม่พบรหัสผ่านดังกล่าว โปรดตรวจสอบการสะกดแล้วลองอีกครั้ง</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - ส่งจาก <ph name="DEVICE_NAME" /></translation>
+<translation id="1310482092992808703">จัดกลุ่มแท็บ</translation>
 <translation id="1318262688555255786">แชร์ลิงก์ไปยังหน้าเว็บ <ph name="PAGE_TITLE" /> แหล่งที่มา: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">ขั้นตอนการบันทึกบุ๊กมาร์กเปิดอยู่ที่ระดับเต็มความสูง</translation>
 <translation id="1327257854815634930">ประวัติการนำทางเปิดอยู่</translation>
@@ -1407,6 +1408,7 @@
 <translation id="7224097611345298931">รหัสผ่านทั้งหมดที่บันทึกไว้เฉพาะในอุปกรณ์นี้สำหรับ Chrome และ <ph name="CHROME_CHANNEL" /> ได้มีการผสานรวมเข้าด้วยกันแล้ว คุณป้อนรหัสผ่านที่บันทึกไว้ทั้งหมดโดยอัตโนมัติได้ในทั้ง 2 แอป</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ดาวน์โหลดรอดำเนินการ 1 รายการ}other{ดาวน์โหลดรอดำเนินการ # รายการ}}</translation>
 <translation id="7230064152164845085">เปลี่ยนไปใช้โหมดไม่ระบุตัวตน</translation>
+<translation id="7230836263524391273">ซ่อนโหมดการอ่าน</translation>
 <translation id="7237724030342645845">เครื่องมือจัดการรหัสผ่านบน Google หยุดทำงาน</translation>
 <translation id="72415438529550637">คําแนะนํารหัสผ่านปิดอยู่</translation>
 <translation id="7248671827512403053">แอปพลิเคชัน</translation>

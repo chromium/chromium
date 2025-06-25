@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">మీరు ఇంటర్నెట్‌కు కనెక్ట్ చేయనందున షేరింగ్ విఫలమైంది.</translation>
 <translation id="1668001730617725852">కొత్త ట్యాబ్ గ్రూప్‌లో తెరవండి</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> నుండి <ph name="TARGET_LANGUAGE" />లోకి</translation>
+<translation id="168389590065701766">ఇప్పుడు మీ అడ్రస్ బార్‌లో మీరు Google Lensను తెరిచి, మీకు కనిపించే దేని గురించి అయినా సెర్చ్ చేయవచ్చు</translation>
 <translation id="1689333818294560261">మారుపేరు</translation>
 <translation id="169048873465870056">ట్యాబ్‌ను తీసివేసి, గ్రూప్‌ను తొలగించాలా?</translation>
 <translation id="1698090540708020240">పాస్‌వర్డ్‌లను దిగుమతి చేయండి…</translation>
@@ -267,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> ఖాతా <ph name="HOSTED_DOMAIN" /> ద్వారా మేనేజ్ చేయబడుతుంది, ఇది కొంత సమాచారాన్ని చూడగలదు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">కొత్త ఐటెమ్</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> ఖాతాలు ఒకే పాస్‌వర్డ్‌ను ఉపయోగిస్తున్నాయి</translation>
+<translation id="205013082884273671">మీ స్క్రీన్‌లో ఉన్న దేని గురించి అయినా సెర్చ్ చేయండి</translation>
 <translation id="2054044186557130763">మీ సంస్థ మేనేజ్ చేసే <ph name="NAME" />, <ph name="EMAIL" />‌గా సైన్ ఇన్ చేయండి.</translation>
 <translation id="2059166748188874810">మున్సిపాలిటీ</translation>
 <translation id="2060638295449304809">ఈ అడ్రస్ ఈ పరికరంలో మాత్రమే సేవ్ అయింది. దీన్ని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, మీ Google ఖాతాలో దీన్ని సేవ్ చేయండి, <ph name="USER_EMAIL" /></translation>
@@ -459,6 +461,7 @@
 <translation id="2819667972867209401">ఆన్‌లో ఉన్నప్పుడు, మీ Google ఖాతాలో డేటా సేవ్ చేయబడుతుంది. ఆఫ్‌లో ఉన్నప్పుడు, డేటా ఈ పరికరంలో మాత్రమే సేవ్ అవుతుంది, మీరు సైన్ అవుట్ చేస్తే తొలగించబడుతుంది.</translation>
 <translation id="2827760117436553203">డేటాను వేరుగా ఉంచాలా?</translation>
 <translation id="2829172210806130158">మీ స్క్రీన్‌ను సెర్చ్ చేయండి</translation>
+<translation id="2831109159746537587">సెర్చ్ చేయడానికి ఫోటో చుట్టూ సర్కిల్ చేసి లేదా ట్యాప్ చేసి ట్రై చేయండి</translation>
 <translation id="2834399722155632105">3. పాస్‌వర్డ్ ఆప్షన్‌లను ట్యాప్ చేయండి</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">సమయం</translation>
@@ -1104,6 +1107,7 @@
 <translation id="5576885723883013398">కొత్త విండో</translation>
 <translation id="5578795271662203820">ఈ చిత్రం కోసం <ph name="SEARCH_ENGINE" />లో వెతకండి</translation>
 <translation id="5579012242779565775">చదవాల్సిన లిస్ట్‌ను దాచండి</translation>
+<translation id="5581786858144165447">AI మోడ్‌ను అడగండి</translation>
 <translation id="5585019845078534178">కార్డ్‌లు</translation>
 <translation id="5595485650161345191">అడ్రస్‌ను ఎడిట్ చేయండి</translation>
 <translation id="559567008082979829">మీ డౌన్‌లోడ్‌లను ఒక నెల తర్వాత తొలగించేలా సెట్ చేసుకోండి.</translation>

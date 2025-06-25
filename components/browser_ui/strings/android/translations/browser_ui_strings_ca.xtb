@@ -36,6 +36,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="1409338233051621926">Toca Aplicacions i, a continuació, toca Aplicacions predeterminades</translation>
 <translation id="1415402041810619267">L'URL s'ha truncat</translation>
 <translation id="1415855080660575082">Permet que Chrome comparteixi les pestanyes recents amb el teu dispositiu per veure-les als resultats de la cerca i a la llista d'aplicacions del dispositiu. Pots activar o desactivar aquesta opció a la configuració de Chrome.</translation>
+<translation id="1432650420699700107">Els llocs web poden demanar permís per connectar-se a qualsevol dispositiu de la teva xarxa local</translation>
 <translation id="1448064542941920355">Redueix el zoom</translation>
 <translation id="1464044141348608623">No permetis que els llocs web sàpiguen quan estàs utilitzant el dispositiu de manera activa</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> lloc web}other{<ph name="SITE_COUNT" /> llocs web}}</translation>
@@ -254,6 +255,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="3955321697524543127">No permetis que els llocs web es connectin a dispositius USB</translation>
 <translation id="3965467402665811906">Els llocs web poden demanar-te permís per utilitzar la informació que han desat sobre tu</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
+<translation id="3969869202926863008">Accés a la xarxa local</translation>
 <translation id="3981465354637804599">Els llocs web solen mostrar anuncis per proporcionar contingut o serveis sense cost econòmic, tot i que se sap que alguns llocs web mostren anuncis intrusius o enganyosos.</translation>
 <translation id="3987993985790029246">Copia l'enllaç</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -463,6 +465,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="6554732001434021288">Darrera visita: fa <ph name="NUM_DAYS" /> dies</translation>
 <translation id="656065428026159829">Mostra'n més</translation>
 <translation id="6561560012278703671">Utilitza missatges més discrets (bloqueja les sol·licituds de notificacions per evitar interrupcions)</translation>
+<translation id="6565144332292237355">Els llocs web poden utilitzar aquesta funció per cercar qualsevol dispositiu a la teva xarxa local i connectar-s'hi</translation>
 <translation id="6593061639179217415">Lloc web per a ordinador</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Es permeten les galetes per a <ph name="RWS_MEMBERS_COUNT" /> lloc web de <ph name="RWS_OWNER" />}other{Es permeten les galetes per a <ph name="RWS_MEMBERS_COUNT" /> llocs web de <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
