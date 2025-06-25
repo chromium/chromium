@@ -73,7 +73,12 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
 
   // Sets the resource ids of the images used in the header in light and dark
   // mode.
+  // TODO(crbug.com/427581151): Remove this function once all callsites are
+  // converted to use the Lottie version. Then rename the Lottie function.
   void SetBubbleHeader(int light_image_id, int dark_image_id);
+
+  // Similar to SetBubbleHeader but specifically used for lottie illustrations.
+  void SetBubbleHeaderLottie(int lottie_image_id);
 
  private:
   // views::BubbleDialogDelegateView:

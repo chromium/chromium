@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -287,7 +288,7 @@ ui::ImageModel PasswordSaveUpdateView::GetWindowIcon() {
 void PasswordSaveUpdateView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
-  SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
+  SetBubbleHeaderLottie(IDR_SAVE_PASSWORD_LOTTIE);
 }
 
 void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {

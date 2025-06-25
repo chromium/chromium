@@ -29,6 +29,10 @@
         <structure type="lottie" name="IDR_WEBAUTHN_GPM_INCOGNITO" file="resources/webauthn/gpm_incognito.json" compress="brotli" />
         <structure type="lottie" name="IDR_WEBAUTHN_GPM_PIN_LOCKED_LIGHT" file="resources/webauthn/gpm_pin_locked_light.json" compress="brotli" />
         <structure type="lottie" name="IDR_WEBAUTHN_GPM_PIN_LOCKED_DARK" file="resources/webauthn/gpm_pin_locked_dark.json" compress="brotli" />
+
+        <!-- Autofill Lottie resources-->
+        <structure type="lottie" name="IDR_SAVE_PASSWORD_LOTTIE" file="resources/autofill/autofill_save_password.json" compress="brotli"/>
+
       </if>
     </structures>
     <includes>

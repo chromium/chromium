@@ -268,7 +268,24 @@ void PasswordBubbleViewBase::SetBubbleHeader(int light_image_id,
 
   gfx::Size preferred_size = image_view->GetPreferredSize();
   if (preferred_size.width()) {
-    float scale =
+    const float scale =
+        static_cast<float>(ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_BUBBLE_PREFERRED_WIDTH)) /
+        preferred_size.width();
+    preferred_size = gfx::ScaleToRoundedSize(preferred_size, scale);
+    image_view->SetImageSize(preferred_size);
+  }
+  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
+}
+
+void PasswordBubbleViewBase::SetBubbleHeaderLottie(int lottie_image_id) {
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  auto image_view = std::make_unique<views::ImageView>(
+      bundle.GetThemedLottieImageNamed(lottie_image_id));
+
+  gfx::Size preferred_size = image_view->GetPreferredSize();
+  if (preferred_size.width()) {
+    const float scale =
         static_cast<float>(ChromeLayoutProvider::Get()->GetDistanceMetric(
             views::DISTANCE_BUBBLE_PREFERRED_WIDTH)) /
         preferred_size.width();
