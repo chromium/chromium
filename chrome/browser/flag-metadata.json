@@ -8310,8 +8310,8 @@
   },
   {
     "name": "read-anything-images-via-algorithm",
-    "owners": [ "abigailbklein@google.com", "francisjp@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 136
+    "owners": [ "lwinston@google.com", "kristslee@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 145
   },
   {
     "name": "read-anything-read-aloud",
