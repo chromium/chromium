@@ -96,15 +96,6 @@
 #include "components/chromeos_camera/gpu_mjpeg_decode_accelerator_factory.h"
 #include "components/chromeos_camera/mojo_jpeg_encode_accelerator_service.h"
 #include "components/chromeos_camera/mojo_mjpeg_decode_accelerator_service.h"
-
-#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
-#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decoder.h"
-#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
-#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
-#include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
-#include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager_proxy.h"
-#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
@@ -209,11 +200,6 @@ GpuServiceImpl::GpuServiceImpl(
       clear_shader_cache_(base::FeatureList::IsEnabled(
           features::kClearGrShaderDiskCacheOnInvalidPrefix)) {
   DCHECK(!io_runner_->BelongsToCurrentThread());
-
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  protected_buffer_manager_ = new arc::ProtectedBufferManager();
-#endif  // BUILDFLAG(IS_CHROMEOS) &&
-        // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 #if BUILDFLAG(ENABLE_VULKAN)
   if (vulkan_implementation_) {
@@ -598,108 +584,6 @@ void GpuServiceImpl::SetVisibilityChangedCallback(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-void GpuServiceImpl::CreateArcVideoDecodeAccelerator(
-    mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
-  main_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &GpuServiceImpl::CreateArcVideoDecodeAcceleratorOnMainThread,
-          weak_ptr_, std::move(vda_receiver)));
-}
-
-void GpuServiceImpl::CreateArcVideoDecoder(
-    mojo::PendingReceiver<arc::mojom::VideoDecoder> vd_receiver) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
-  main_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GpuServiceImpl::CreateArcVideoDecoderOnMainThread,
-                     weak_ptr_, std::move(vd_receiver)));
-}
-
-void GpuServiceImpl::CreateArcVideoEncodeAccelerator(
-    mojo::PendingReceiver<arc::mojom::VideoEncodeAccelerator> vea_receiver) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
-  main_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &GpuServiceImpl::CreateArcVideoEncodeAcceleratorOnMainThread,
-          weak_ptr_, std::move(vea_receiver)));
-}
-
-void GpuServiceImpl::CreateArcVideoProtectedBufferAllocator(
-    mojo::PendingReceiver<arc::mojom::VideoProtectedBufferAllocator>
-        pba_receiver) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
-  main_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &GpuServiceImpl::CreateArcVideoProtectedBufferAllocatorOnMainThread,
-          weak_ptr_, std::move(pba_receiver)));
-}
-
-void GpuServiceImpl::CreateArcProtectedBufferManager(
-    mojo::PendingReceiver<arc::mojom::ProtectedBufferManager> pbm_receiver) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
-  main_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &GpuServiceImpl::CreateArcProtectedBufferManagerOnMainThread,
-          weak_ptr_, std::move(pbm_receiver)));
-}
-
-void GpuServiceImpl::CreateArcVideoDecodeAcceleratorOnMainThread(
-    mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver) {
-  CHECK(main_runner_->BelongsToCurrentThread());
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<arc::GpuArcVideoDecodeAccelerator>(
-          gpu_preferences_, gpu_channel_manager_->gpu_driver_bug_workarounds(),
-          protected_buffer_manager_),
-      std::move(vda_receiver));
-}
-
-void GpuServiceImpl::CreateArcVideoDecoderOnMainThread(
-    mojo::PendingReceiver<arc::mojom::VideoDecoder> vd_receiver) {
-  DCHECK(main_runner_->BelongsToCurrentThread());
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<arc::GpuArcVideoDecoder>(protected_buffer_manager_),
-      std::move(vd_receiver));
-}
-
-void GpuServiceImpl::CreateArcVideoEncodeAcceleratorOnMainThread(
-    mojo::PendingReceiver<arc::mojom::VideoEncodeAccelerator> vea_receiver) {
-  DCHECK(main_runner_->BelongsToCurrentThread());
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<arc::GpuArcVideoEncodeAccelerator>(
-          gpu_preferences_, gpu_channel_manager_->gpu_driver_bug_workarounds()),
-      std::move(vea_receiver));
-}
-
-void GpuServiceImpl::CreateArcVideoProtectedBufferAllocatorOnMainThread(
-    mojo::PendingReceiver<arc::mojom::VideoProtectedBufferAllocator>
-        pba_receiver) {
-  DCHECK(main_runner_->BelongsToCurrentThread());
-  auto gpu_arc_video_protected_buffer_allocator =
-      arc::GpuArcVideoProtectedBufferAllocator::Create(
-          protected_buffer_manager_);
-  if (!gpu_arc_video_protected_buffer_allocator)
-    return;
-  mojo::MakeSelfOwnedReceiver(
-      std::move(gpu_arc_video_protected_buffer_allocator),
-      std::move(pba_receiver));
-}
-
-void GpuServiceImpl::CreateArcProtectedBufferManagerOnMainThread(
-    mojo::PendingReceiver<arc::mojom::ProtectedBufferManager> pbm_receiver) {
-  DCHECK(main_runner_->BelongsToCurrentThread());
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<arc::GpuArcProtectedBufferManagerProxy>(
-          protected_buffer_manager_),
-      std::move(pbm_receiver));
-}
-#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-
 void GpuServiceImpl::CreateJpegDecodeAccelerator(
     mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
         jda_receiver) {

@@ -83,30 +83,6 @@ interface GpuService {
   // If no channel can be identified, do nothing.
   CloseChannel(int32 client_id);
 
-  // Create a new ARC VideoDecodeAccelerator and binds it to |vda|.
-  [EnableIf=enable_arc_media]
-  CreateArcVideoDecodeAccelerator(
-      pending_receiver<arc.mojom.VideoDecodeAccelerator> vda);
-
-  // Create a new ARC VideoDecoder and binds it to |vd|.
-  [EnableIf=enable_arc_media]
-  CreateArcVideoDecoder(pending_receiver<arc.mojom.VideoDecoder> vd);
-
-  // Create a new ARC VideoEncodeAccelerator and binds it to |vea|.
-  [EnableIf=enable_arc_media]
-  CreateArcVideoEncodeAccelerator(
-      pending_receiver<arc.mojom.VideoEncodeAccelerator> vea);
-
-  // Create a new ARC VideoProtectedBufferAllocator and binds it to |pba|.
-  [EnableIf=enable_arc_media]
-  CreateArcVideoProtectedBufferAllocator(
-      pending_receiver<arc.mojom.VideoProtectedBufferAllocator> pba);
-
-  // Create a new ARC ProtectedBufferManager and binds it to |pbm|.
-  [EnableIf=enable_arc_media]
-  CreateArcProtectedBufferManager(
-      pending_receiver<arc.mojom.ProtectedBufferManager> pbm);
-
   // Creates a new MjpegDecodeAccelerator and binds it to |jda|.
   [EnableIf=is_chromeos]
   CreateJpegDecodeAccelerator(

@@ -57,12 +57,6 @@
 #include "ui/gl/direct_composition_support.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS)
-namespace arc {
-class ProtectedBufferManager;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace gpu {
 class DawnContextProvider;
 class GpuMemoryBufferFactory;
@@ -182,22 +176,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
       const gpu::GpuDiskCacheHandle& handle) override;
   void CloseChannel(int32_t client_id) override;
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  void CreateArcVideoDecodeAccelerator(
-      mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver)
-      override;
-  void CreateArcVideoDecoder(
-      mojo::PendingReceiver<arc::mojom::VideoDecoder> vd_receiver) override;
-  void CreateArcVideoEncodeAccelerator(
-      mojo::PendingReceiver<arc::mojom::VideoEncodeAccelerator> vea_receiver)
-      override;
-  void CreateArcVideoProtectedBufferAllocator(
-      mojo::PendingReceiver<arc::mojom::VideoProtectedBufferAllocator>
-          pba_receiver) override;
-  void CreateArcProtectedBufferManager(
-      mojo::PendingReceiver<arc::mojom::ProtectedBufferManager> pbm_receiver)
-      override;
-#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   void CreateJpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           jda_receiver) override;
@@ -432,21 +410,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   bool IsNativeBufferSupported(gfx::BufferFormat format,
                                gfx::BufferUsage usage);
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  void CreateArcVideoDecodeAcceleratorOnMainThread(
-      mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver);
-  void CreateArcVideoDecoderOnMainThread(
-      mojo::PendingReceiver<arc::mojom::VideoDecoder> vd_receiver);
-  void CreateArcVideoEncodeAcceleratorOnMainThread(
-      mojo::PendingReceiver<arc::mojom::VideoEncodeAccelerator> vea_receiver);
-  void CreateArcVideoProtectedBufferAllocatorOnMainThread(
-      mojo::PendingReceiver<arc::mojom::VideoProtectedBufferAllocator>
-          pba_receiver);
-  void CreateArcProtectedBufferManagerOnMainThread(
-      mojo::PendingReceiver<arc::mojom::ProtectedBufferManager> pbm_receiver);
-#endif  // BUILDFLAG(IS_CHROMEOS) &&
-        // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-
 #if BUILDFLAG(IS_WIN)
   void RequestDXGIInfoOnMainThread(RequestDXGIInfoCallback callback);
 #endif
@@ -592,11 +555,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   gpu::GpuMemoryBufferConfigurationSet supported_gmb_configurations_;
   bool supported_gmb_configurations_inited_ = false;
-
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  scoped_refptr<arc::ProtectedBufferManager> protected_buffer_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS) &&
-        // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
   VisibilityChangedCallback visibility_changed_callback_;
 
