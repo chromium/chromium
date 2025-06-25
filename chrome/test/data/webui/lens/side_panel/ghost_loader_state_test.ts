@@ -14,7 +14,7 @@ import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestLensSidePanelBrowserProxy} from './test_side_panel_browser_proxy.js';
 
-suite('SearchboxBackButton', () => {
+suite('GhostLoaderState', () => {
   let testBrowserProxy: TestLensSidePanelBrowserProxy;
   let lensSidePanelElement: LensSidePanelAppElement;
 
@@ -90,7 +90,7 @@ suite('SearchboxBackButton', () => {
     assertFalse(isVisible(getSearchboxGhostLoaderElement()));
   });
 
-  test('click resets ghost loader loading state', async () => {
+  test('query autocomplete resets ghost loader loading state', async () => {
     const ghostLoader = lensSidePanelElement.shadowRoot!
                             .querySelector<SearchboxGhostLoaderElement>(
                                 'cr-searchbox-ghost-loader')!;
@@ -100,9 +100,10 @@ suite('SearchboxBackButton', () => {
     assertTrue(isVisible(ghostLoader.shadowRoot!.getElementById('errorState')));
     // Click into the searchbox.
     lensSidePanelElement.$.searchbox.dispatchEvent(
-        new KeyboardEvent('mousedown', {
+        new CustomEvent('query-autocomplete', {
           bubbles: true,
-          cancelable: true,
+          composed: true,
+          detail: {inputValue: ''},
         }));
 
     await waitAfterNextRender(lensSidePanelElement);
