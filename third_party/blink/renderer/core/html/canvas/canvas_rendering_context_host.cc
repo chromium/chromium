@@ -35,6 +35,17 @@
 
 namespace blink {
 
+namespace {
+
+bool CanUseGPU() {
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
+      SharedGpuContext::ContextProviderWrapper();
+  return context_provider_wrapper &&
+         !context_provider_wrapper->ContextProvider().IsContextLost();
+}
+
+}  // namespace
+
 CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type,
                                                        const gfx::Size& size)
     : host_type_(host_type), size_(size) {}
@@ -259,6 +270,16 @@ bool CanvasRenderingContextHost::ContextHasOpenLayers(
 bool CanvasRenderingContextHost::IsContextLost() const {
   CanvasRenderingContext* context = RenderingContext();
   return !context || context->isContextLost();
+}
+
+void CanvasRenderingContextHost::SetPreferred2DRasterMode(RasterModeHint hint) {
+  // TODO(junov): move code that switches between CPU and GPU rasterization
+  // to here.
+  preferred_2d_raster_mode_ = hint;
+}
+
+bool CanvasRenderingContextHost::ShouldTryToUseGpuRaster() const {
+  return preferred_2d_raster_mode_ == RasterModeHint::kPreferGPU && CanUseGPU();
 }
 
 std::unique_ptr<CanvasResourceProvider>

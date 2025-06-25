@@ -18,18 +18,6 @@ namespace blink {
 
 class CanvasResourceProvider;
 
-// Specifies whether the provider should rasterize paint commands on the CPU
-// or GPU. This is used to support software raster with GPU compositing.
-enum class RasterMode {
-  kGPU,
-  kCPU,
-};
-
-enum class RasterModeHint {
-  kPreferGPU,
-  kPreferCPU,
-};
-
 class PLATFORM_EXPORT CanvasResourceHost {
  public:
   CanvasResourceHost();
@@ -61,9 +49,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual bool PrintedInCurrentTask() const = 0;
   virtual bool IsHibernating() const { return false; }
 
-  bool ShouldTryToUseGpuRaster() const;
-  void SetPreferred2DRasterMode(RasterModeHint);
-
   // Called when the CC texture layer that this instance is holding (if any)
   // should be cleared. Subclasses that can hold a CC texture layer should
   // override this method. Should only be called if the context is
@@ -72,9 +57,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   virtual void SetTransferToGPUTextureWasInvoked() {}
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
-
- private:
-  RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
 };
 
 }  // namespace blink

@@ -33,6 +33,11 @@ class PlainTextPainter;
 class StaticBitmapImage;
 class UniqueFontSelector;
 
+enum class RasterModeHint {
+  kPreferGPU,
+  kPreferCPU,
+};
+
 class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
                                                public CanvasResourceHost,
                                                public CanvasImageSource,
@@ -147,6 +152,9 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   gfx::Size Size() const { return size_; }
   virtual void SetSize(gfx::Size size) { size_ = size; }
 
+  bool ShouldTryToUseGpuRaster() const;
+  void SetPreferred2DRasterMode(RasterModeHint);
+
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider>);
   void ResetResourceProviderForCanvas2D() override {
@@ -191,6 +199,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = HostType::kNone;
   gfx::Size size_;
+  RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
 };
 
 }  // namespace blink
