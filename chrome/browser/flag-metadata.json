@@ -4196,7 +4196,7 @@
   {
     "name": "enable-root-ns-dns-proxy",
     "owners": [ "jasongustaman@chromium.org", "cros-networking@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "enable-run-on-os-login",
