@@ -461,6 +461,14 @@ void GPUExternalTexture::OnSourceInvalidated() {
 }
 
 void GPUExternalTexture::RemoveFromCache() {
+  // HTMLVE relies on posted delay task to destroy outdated GPUExternalTexture.
+  // This task might be executed after GPUExternalTexture is destroyed (e.g.
+  // ExternalTextureCache destroyed).
+  // Prevent calling destroy on already destructed GPUExternalTexture.
+  if (IsDestroyed()) {
+    return;
+  }
+
   if (video_) {
     cache_->Remove(video_);
   } else if (frame_) {
