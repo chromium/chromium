@@ -67,7 +67,7 @@ public interface TabUngrouper {
      * {@link #ungroupTabGroup(Token, boolean, boolean, TabModelActionListener)} without the {@code
      * listener}
      */
-    default void ungroupTabs(Token tabGroupId, boolean trailing, boolean allowDialog) {
+    default void ungroupTabGroup(Token tabGroupId, boolean trailing, boolean allowDialog) {
         ungroupTabGroup(tabGroupId, trailing, allowDialog, /* listener= */ null);
     }
 }

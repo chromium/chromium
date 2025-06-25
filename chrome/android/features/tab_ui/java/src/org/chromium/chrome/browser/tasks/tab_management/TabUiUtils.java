@@ -139,7 +139,7 @@ public class TabUiUtils {
         if (!filter.tabGroupExists(tabGroupId)) return;
 
         filter.getTabUngrouper()
-                .ungroupTabs(tabGroupId, /* trailing= */ true, /* allowDialog= */ true);
+                .ungroupTabGroup(tabGroupId, /* trailing= */ false, /* allowDialog= */ true);
     }
 
     /**

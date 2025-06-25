@@ -4414,7 +4414,7 @@ public class TabListMediatorUnitTest {
                 /* collaborationId= */ null,
                 /* listViewTouchTracker= */ null);
         verify(mIncognitoTabUngrouper)
-                .ungroupTabs(TAB_GROUP_ID, /* trailing= */ true, /* allowDialog= */ true);
+                .ungroupTabGroup(TAB_GROUP_ID, /* trailing= */ false, /* allowDialog= */ true);
     }
 
     @Test
