@@ -222,9 +222,11 @@ void PageHandler::OnModelAssetsLoaded(
   params->performance_hint = performance_hint;
   GetService().LoadModel(
       std::move(params), std::move(model),
-      base::BindOnce(&PageHandler::OnModelLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(weights)));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&PageHandler::OnModelLoaded,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         std::move(weights)),
+          on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary));
 }
 
 void PageHandler::OnModelLoaded(

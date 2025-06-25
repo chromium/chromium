@@ -13,6 +13,9 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 
@@ -89,7 +92,12 @@ ModelFile& ModelFile::operator=(const ModelFile& other) {
 
 ModelFile::ModelFile(ModelFile&&) = default;
 ModelFile& ModelFile::operator=(ModelFile&&) = default;
-ModelFile::~ModelFile() = default;
+ModelFile::~ModelFile() {
+  if (IsFile() && file().IsValid()) {
+    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                               base::DoNothingWithBoundArgs(std::move(file())));
+  }
+}
 
 base::File& ModelFile::file() {
   CHECK(std::holds_alternative<base::File>(file_));
