@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
 #include "chrome/browser/enterprise/watermark/watermark_features.h"
@@ -157,4 +158,29 @@ IN_PROC_BROWSER_TEST_P(WatermarkSettingsBrowserTest, GetColors) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, WatermarkSettingsBrowserTest, testing::Bool());
+class WatermarkSettingsCommandLineBrowserTest : public InProcessBrowserTest {
+ public:
+  SkAlpha PercentageToSkAlpha(int percent_value) {
+    return std::clamp(percent_value, 0, 100) * 255 / 100;
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII("watermark-fill-opacity", "50");
+    command_line->AppendSwitchASCII("watermark-outline-opacity", "60");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kEnableWatermarkCustomization};
+};
+
+IN_PROC_BROWSER_TEST_F(WatermarkSettingsCommandLineBrowserTest, GetColors) {
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  EXPECT_EQ(GetFillColor(prefs), SkColorSetA(SkColorSetRGB(0x00, 0x00, 0x00),
+                                             PercentageToSkAlpha(50)));
+  EXPECT_EQ(GetOutlineColor(prefs), SkColorSetA(SkColorSetRGB(0xff, 0xff, 0xff),
+                                                PercentageToSkAlpha(60)));
+}
+
 }  // namespace enterprise_watermark
