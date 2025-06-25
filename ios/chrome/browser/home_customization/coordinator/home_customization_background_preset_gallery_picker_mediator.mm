@@ -48,7 +48,9 @@
   _homeBackgroundImageService->FetchCollectionsImages(
       base::BindOnce(^(const HomeBackgroundImageService::CollectionImageMap&
                            collectionMapParam) {
-        [weakself onCollectionDataReceived:collectionMapParam];
+        if (!collectionMapParam.empty()) {
+          [weakself onCollectionDataReceived:collectionMapParam];
+        }
       }));
 }
 

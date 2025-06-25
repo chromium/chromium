@@ -25,6 +25,8 @@ source_set("ui") {
     "home_customization_background_preset_gallery_picker_view_controller.mm",
     "home_customization_background_preset_header_view.h",
     "home_customization_background_preset_header_view.mm",
+    "home_customization_background_skeleton_cell.h",
+    "home_customization_background_skeleton_cell.mm",
     "home_customization_collection_configurator.h",
     "home_customization_collection_configurator.mm",
     "home_customization_color_palette_configuration.h",

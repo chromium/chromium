@@ -93,9 +93,6 @@ const CGFloat kFeedsWidth = 70.0;
 
   // The background image of the cell.
   UIImageView* _backgroundImageView;
-
-  // Tracks whether the cell has already been configured with option.
-  BOOL _isConfigured;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -202,10 +199,10 @@ const CGFloat kFeedsWidth = 70.0;
                          colorPalette:
                              (HomeCustomizationColorPaletteConfiguration*)
                                  colorPalette {
-  if (_isConfigured) {
+  if (_backgroundConfiguration) {
     return;
   }
-  _backgroundConfiguration = option;
+
   BOOL imageBackground = !option.thumbnailURL.is_empty();
 
   logoVendor.usesMonochromeLogo = colorPalette || imageBackground;
@@ -217,8 +214,6 @@ const CGFloat kFeedsWidth = 70.0;
     logoView.tintColor = [UIColor whiteColor];
   } else if (colorPalette) {
     logoView.tintColor = colorPalette.darkColor;
-  } else {
-    logoView.tintColor = logoView.tintColor;
   }
 
   // Insert the logo view right after the spacer.
@@ -230,7 +225,8 @@ const CGFloat kFeedsWidth = 70.0;
   ]];
 
   [self.innerContentView setCustomSpacing:kOmniboxTopMargin afterView:logoView];
-  _isConfigured = YES;
+
+  _backgroundConfiguration = option;
 }
 
 - (void)updateBackgroundImage:(UIImage*)image {

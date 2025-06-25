@@ -8,6 +8,11 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
+namespace {
+// The minimum width the text label can have.
+CGFloat kLabelMinWidth = 105.0;
+}  // namespace
+
 @implementation HomeCustomizationBackgroundPresetHeaderView {
   // Text label.
   UILabel* _textLabel;
@@ -16,18 +21,32 @@
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    self.layer.masksToBounds = YES;
+    self.translatesAutoresizingMaskIntoConstraints = NO;
     _textLabel = [self createTextLabel];
 
     [self addSubview:_textLabel];
 
-    AddSameConstraints(self, _textLabel);
+    [NSLayoutConstraint activateConstraints:@[
+      [self.topAnchor constraintEqualToAnchor:_textLabel.topAnchor],
+      [self.bottomAnchor constraintEqualToAnchor:_textLabel.bottomAnchor],
+      [_textLabel.widthAnchor
+          constraintGreaterThanOrEqualToConstant:kLabelMinWidth]
+    ]];
   }
   return self;
+}
+
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  _textLabel.layer.cornerRadius = _textLabel.frame.size.height / 2.0;
+  _textLabel.layer.masksToBounds = YES;
 }
 
 #pragma mark - Setters
 
 - (void)setText:(NSString*)text {
+  _textLabel.backgroundColor = [UIColor clearColor];
   _textLabel.text = text;
 }
 
@@ -36,6 +55,11 @@
 // Returns the text label view.
 - (UILabel*)createTextLabel {
   UILabel* textLabel = [[UILabel alloc] init];
+  // When the text is empty, we set it to a single space to avoid hiding the
+  // label. This ensures the width constraint is respected and the label remains
+  // visible.
+  textLabel.text = @" ";
+  textLabel.backgroundColor = [UIColor colorNamed:kGrey100Color];
   textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   textLabel.textAlignment = NSTextAlignmentLeft;
   textLabel.font =

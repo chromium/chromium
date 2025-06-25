@@ -21,8 +21,9 @@ class GURL;
 // A unique identifier for the background configuration.
 @property(readonly, nonatomic, copy) NSString* configurationID;
 
-// The type of background customization picker used to create the configuration.
-@property(readonly, nonatomic) HomeCustomizationBackgroundStyle backgroundType;
+// The style of background customization picker used to create the
+// configuration.
+@property(readonly, nonatomic) HomeCustomizationBackgroundStyle backgroundStyle;
 
 // A pointer to a GURL that points to the low-resolution version (thumbnail)
 // of the background image.
