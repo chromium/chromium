@@ -34,7 +34,7 @@ function openActionMenu(entry: SettingsSearchEngineEntryElement):
 /**
  * Checks that the given button is hidden.
  */
-function testButtonHidden(
+function assertButtonHidden(
     entry: SettingsSearchEngineEntryElement, buttonId: string,
     searchEngine?: SearchEngine) {
   if (searchEngine) {
@@ -46,17 +46,17 @@ function testButtonHidden(
 }
 
 /**
- * Checks that the given button is disabled.
+ * Returns whether the given button is disabled.
  */
-function testButtonDisabled(
+function isButtonDisabled(
     entry: SettingsSearchEngineEntryElement, buttonId: string,
-    searchEngine?: SearchEngine) {
+    searchEngine?: SearchEngine): boolean {
   if (searchEngine) {
     entry.engine = searchEngine;
   }
   const button = entry.shadowRoot!.querySelector<HTMLButtonElement>(buttonId);
   assertTrue(!!button);
-  assertTrue(button.disabled);
+  return button.disabled;
 }
 
 suite('SearchEngineEntryTest', function() {
@@ -152,40 +152,41 @@ suite('SearchEngineEntryTest', function() {
   });
 
   test('Remove_Hidden', function() {
-    testButtonHidden(
+    assertButtonHidden(
         entry, '#delete', createSampleSearchEngine({canBeRemoved: false}));
   });
 
   test('Activate_Hidden', function() {
-    testButtonHidden(
+    assertButtonHidden(
         entry, '#activate', createSampleSearchEngine({canBeActivated: false}));
   });
 
   test('Deactivate_Hidden', function() {
-    testButtonHidden(
+    assertButtonHidden(
         entry, '#deactivate',
         createSampleSearchEngine({canBeDeactivated: false}));
   });
 
   test('Edit_Hidden', function() {
-    testButtonHidden(
+    assertButtonHidden(
         entry, '#editIconButton',
         createSampleSearchEngine({canBeActivated: true}));
 
-    testButtonHidden(
+    assertButtonHidden(
         entry, '#editIconButton',
         createSampleSearchEngine({isStarterPack: true}));
   });
 
   test('MakeDefault_Disabled', function() {
-    testButtonDisabled(
-        entry, '#makeDefault', createSampleSearchEngine({canBeDefault: false}));
+    assertTrue(isButtonDisabled(
+        entry, '#makeDefault',
+        createSampleSearchEngine({canBeDefault: false})));
   });
 
   test('Edit_Disabled', function() {
-    testButtonDisabled(
+    assertTrue(isButtonDisabled(
         entry, '#editIconButton',
-        createSampleSearchEngine({canBeEdited: false}));
+        createSampleSearchEngine({canBeEdited: false})));
   });
 
   // Test that clicking the "activate" button fires an activate event.
@@ -451,11 +452,11 @@ suite('EnterpriseSiteSearchEntryTests', function() {
   // Verifies that the "Activate" button is hidden for all managed engines.
   test('ActivateButtonBehavior', function() {
     entry.engine = createSampleManagedSearchEngine();
-    testButtonHidden(entry, '#activate');
+    assertButtonHidden(entry, '#activate');
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ true);
-    testButtonHidden(entry, '#activate');
+    assertButtonHidden(entry, '#activate');
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ false);
-    testButtonHidden(entry, '#activate');
+    assertButtonHidden(entry, '#activate');
   });
 
   // Verifies the visibility and functionality of the "edit" button for managed
@@ -464,11 +465,11 @@ suite('EnterpriseSiteSearchEntryTests', function() {
   test('EditButtonBehavior', async function() {
     // Test for managed engine (Edit button should be hidden).
     entry.engine = createSampleManagedSearchEngine();
-    testButtonHidden(entry, '#editIconButton');
+    assertButtonHidden(entry, '#editIconButton');
 
     // Test for featured overridable engine (Edit button should be hidden).
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ true);
-    testButtonHidden(entry, '#editIconButton');
+    assertButtonHidden(entry, '#editIconButton');
 
     // Test for unfeatured overridable engine (Edit button should be visible and
     // functional).
@@ -485,33 +486,40 @@ suite('EnterpriseSiteSearchEntryTests', function() {
     assertEquals(editButton, e.detail.anchorElement);
   });
 
-  // Verifies that the action menu (three-dot menu) is visible for overridable
-  // engines and hidden for managed engines.
+  // Verifies that the action menu (three-dot menu) is visible. Non-overridable
+  // managed engines should have the menu disabled.
   test('ActionMenuBehavior', function() {
-    // Test for managed engine (Menu should be hidden).
+    // Test for managed engine (Menu should be visible and disabled).
     entry.engine = createSampleManagedSearchEngine();
-    testButtonHidden(entry, 'cr-icon-button.icon-more-vert');
+    const menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
+        'cr-icon-button.icon-more-vert');
+    assertTrue(isVisible(menuButton));
+    assertTrue(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
 
-    // Test for featured overridable engine (Action menu should be visible).
+    // Test for featured overridable engine (Action menu should be visible and
+    // not disabled).
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ true);
     const menuButtonFeatured = entry.shadowRoot!.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
     assertTrue(isVisible(menuButtonFeatured));
+    assertFalse(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
 
-    // Test for unfeatured overridable engine (Action menu should be visible).
+    // Test for unfeatured overridable engine (Action menu should be visible and
+    // not disabled).
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ false);
     const menuButtonUnfeatured = entry.shadowRoot!.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
     assertTrue(isVisible(menuButtonUnfeatured));
+    assertFalse(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
   });
 
   // Verifies that the "Make Default" button is disabled for all overridable
   // engines.
   test('MakeDefaultDisabled_Overridable', function() {
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ true);
-    testButtonDisabled(entry, '#makeDefault');
+    assertTrue(isButtonDisabled(entry, '#makeDefault'));
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ false);
-    testButtonDisabled(entry, '#makeDefault');
+    assertTrue(isButtonDisabled(entry, '#makeDefault'));
   });
 
   // Verifies that clicking the "Deactivate" button in the action menu fires a
@@ -545,7 +553,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
     // Test for featured engine (Remove button should be hidden).
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ true);
     openActionMenu(entry);
-    testButtonHidden(entry, 'button#delete.dropdown-item');
+    assertButtonHidden(entry, 'button#delete.dropdown-item');
 
     // Test for unfeatured engine (Remove button should be visible and
     // functional).
@@ -572,7 +580,6 @@ suite('EnterpriseSiteSearchEntryTests', function() {
     const testViewDetails =
         async (engine: SearchEngine, shouldBeVisible: boolean) => {
       entry.engine = engine;
-      openActionMenu(entry);
       if (shouldBeVisible) {
         const managedEngine = entry.engine;
         const viewDetailsButton =
@@ -588,7 +595,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
             entry.shadowRoot!.querySelector('cr-icon-button'),
             e.detail.anchorElement);
       } else {
-        testButtonHidden(entry, '#viewDetailsButton');
+        assertButtonHidden(entry, '#viewDetailsButton');
       }
     };
 

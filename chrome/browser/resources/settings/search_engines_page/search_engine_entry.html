@@ -92,9 +92,8 @@
             </cr-policy-indicator>
           </template>
           <cr-icon-button class="icon-more-vert" on-click="onDotsClick_"
-              disabled$="[[engine.default]]" title="$i18n{moreActions}"
-              aria-label="[[getMoreActionsAriaLabel_(engine)]]"
-              hidden="[[!showDots_]]">
+              disabled$="[[disableDots_]]" title="$i18n{moreActions}"
+              aria-label="[[getMoreActionsAriaLabel_(engine)]]">
           </cr-icon-button>
           <cr-action-menu role-description="$i18n{menu}">
             <button class="dropdown-item" on-click="onMakeDefaultClick_"
