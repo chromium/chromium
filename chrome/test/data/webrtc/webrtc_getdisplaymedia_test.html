@@ -74,21 +74,6 @@
     return logAndReturn(`${!!audio_track}`);
   }
 
-  function getAudioTrackLabel() {
-    if (!audio_track) {
-      return logAndReturn("error-no-audio-track");
-    }
-    return logAndReturn(audio_track['label']);
-  }
-
-  function getAudioDeviceId() {
-    if (!audio_track) {
-      return logAndReturn("error-no-audio-track");
-    }
-    const settings = audio_track.getSettings();
-    return logAndReturn(settings['deviceId']);
-  }
-
   function getVideoTrackType() {
     if (!video_track) {
       return logAndReturn("error-no-video-track");
@@ -258,7 +243,7 @@
     </tr>
   </table>
   <br/>
-    <iframe id="allowedFrame" src="webrtc_getdisplaymedia_embedded_document.html" allow="display-capture"></iframe>
+    <iframe id="allowedFrame" src="webrtc_getdisplaymedia_embedded_document.html"></iframe>
     <iframe id="disallowedFrame" src="webrtc_getdisplaymedia_embedded_document.html" allow="display-capture 'none'"></iframe>
 </body>
 </html>
