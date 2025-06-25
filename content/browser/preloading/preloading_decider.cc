@@ -25,6 +25,7 @@
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerenderer_impl.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading.h"
@@ -449,8 +450,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   // to |on_standby_candidates_| to be later considered by the heuristics logic.
   auto should_mark_as_on_standby = [&](const auto& candidate) {
     SpeculationCandidateKey key{candidate->url, candidate->action};
-    if (candidate->eagerness !=
-            blink::mojom::SpeculationEagerness::kImmediate &&
+    if (!IsImmediateSpeculationEagerness(candidate->eagerness) &&
         processed_candidates_.find(key) == processed_candidates_.end()) {
       // A PreloadingPrediction is intentionally not created for these
       // candidates. Non-immediate rules aren't predictions per se, but a
@@ -505,9 +505,8 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   // Move immediage candidates to the front. This will avoid unnecessarily
   // marking some non-immediate candidates as on-standby when there is an
   // immediate candidate with the same URL that will be processed immediately.
-  std::ranges::stable_partition(candidates, [&](const auto& candidate) {
-    return candidate->eagerness ==
-           blink::mojom::SpeculationEagerness::kImmediate;
+  std::ranges::stable_partition(candidates, [](const auto& candidate) {
+    return IsImmediateSpeculationEagerness(candidate->eagerness);
   });
 
   // The candidates remaining after this call will be all immediate candidates,
@@ -521,8 +520,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   std::map<SpeculationCandidateKey, std::vector<std::optional<std::string>>>
       tags_map_for_immediate_preloading;
   for (auto& candidate : candidates) {
-    if (candidate->eagerness !=
-        blink::mojom::SpeculationEagerness::kImmediate) {
+    if (!IsImmediateSpeculationEagerness(candidate->eagerness)) {
       continue;
     }
 
@@ -533,8 +531,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   }
 
   for (auto& candidate : candidates) {
-    if (candidate->eagerness !=
-        blink::mojom::SpeculationEagerness::kImmediate) {
+    if (!IsImmediateSpeculationEagerness(candidate->eagerness)) {
       continue;
     }
 
@@ -815,22 +812,21 @@ void PreloadingDecider::OnPreloadDiscarded(SpeculationCandidateKey key) {
       std::move(it->second);
   processed_candidates_.erase(it);
   for (const auto& candidate : candidates) {
-    if (candidate->eagerness !=
-        blink::mojom::SpeculationEagerness::kImmediate) {
+    if (!IsImmediateSpeculationEagerness(candidate->eagerness)) {
       AddStandbyCandidate(candidate);
     }
     // TODO(crbug.com/40064525): Add support for the case where |candidate|'s
-    // eagerness is kImmediate. In a scenario where the prefetch evicted is a
-    // non-immediate prefetch, we could theoretically reprefetch using the
-    // immediate candidate (and have it use the immediate prefetch quota). In
-    // that scenario, perhaps not evicting and just making the prefetch use the
-    // immediate limit might be a better option too. In the case where an
-    // immediate prefetch is evicted, we don't want to immediately try and
-    // reprefetch the candidate; it would defeat the purpose of evicting in the
-    // first place, and due to a possible-rentrancy into
+    // eagerness is immediate one like `kImmediate`. In a scenario where the
+    // prefetch evicted is a non-immediate prefetch, we could theoretically
+    // reprefetch using the immediate candidate (and have it use the immediate
+    // prefetch quota). In that scenario, perhaps not evicting and just making
+    // the prefetch use the immediate limit might be a better option too. In the
+    // case where an immediate prefetch is evicted, we don't want to immediately
+    // try and reprefetch the candidate; it would defeat the purpose of evicting
+    // in the first place, and due to a possible-rentrancy into
     // PrefetchService::Prefetch(), it could cause us to exceed the limit.
 
-    // TODO(crbug.com/40275452): Add implementation for the kImmediate case for
+    // TODO(crbug.com/40275452): Add implementation for immediate cases for
     // prerender.
   }
 }

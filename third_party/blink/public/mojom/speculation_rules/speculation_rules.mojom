@@ -45,12 +45,15 @@ enum SpeculationTargetHint {
 };
 
 // Shows how eager the developer is to perform the speculation action.
+// `kEager` has a less eagerness than `kImmediate` though has a larger number
+// for historical reasons. See crbug.com/40287486.
 // NOTE: These values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused.
 enum SpeculationEagerness {
   kConservative = 0,
   kModerate = 1,
   kImmediate = 2,
+  kEager = 3,
 };
 
 // Specifies the way in which speculation rules were injected.

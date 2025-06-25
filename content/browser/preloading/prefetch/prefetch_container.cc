@@ -1777,6 +1777,9 @@ void PrefetchContainer::MakeResourceRequest(
           return net::RequestPriority::MEDIUM;
         case blink::mojom::SpeculationEagerness::kModerate:
           return net::RequestPriority::LOW;
+        // TODO(crbug.com/40287486, crbug.com/406927300): Set appropriate value
+        // after changing the behavior for `kEager`
+        case blink::mojom::SpeculationEagerness::kEager:
         case blink::mojom::SpeculationEagerness::kImmediate:
           return net::RequestPriority::IDLE;
       }

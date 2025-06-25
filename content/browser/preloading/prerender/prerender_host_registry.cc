@@ -29,6 +29,7 @@
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/preloading/prerender/prerender_new_tab_handle.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_util.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -1871,18 +1872,9 @@ PrerenderHostRegistry::GetPrerenderLimitGroup(
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
     case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       CHECK(eagerness.has_value());
-      switch (eagerness.value()) {
-        // Separate the limits of speculation rules into two categories:
-        // immediate, which are triggered immediately after adding the rule, and
-        // non-immediate(moderate, conservative), which wait for a specific user
-        // action to trigger, aiming to apply the appropriate corresponding
-        // limits for these attributes.
-        case blink::mojom::SpeculationEagerness::kImmediate:
-          return PrerenderLimitGroup::kSpeculationRulesImmediate;
-        case blink::mojom::SpeculationEagerness::kModerate:
-        case blink::mojom::SpeculationEagerness::kConservative:
-          return PrerenderLimitGroup::kSpeculationRulesNonImmediate;
-      }
+      return IsImmediateSpeculationEagerness(eagerness.value())
+                 ? PrerenderLimitGroup::kSpeculationRulesImmediate
+                 : PrerenderLimitGroup::kSpeculationRulesNonImmediate;
     case PreloadingTriggerType::kEmbedder:
       return PrerenderLimitGroup::kEmbedder;
   }

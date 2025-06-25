@@ -56,6 +56,7 @@
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_no_vary_search_hint_commit_deferring_condition.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_util.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -10761,6 +10762,42 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kImmediate) {
   EXPECT_TRUE(prerender_observer.was_activated());
 }
 
+// Tests speculation rules prerendering where the eagerness is "eager".
+// Currently, its behavior is the same as that of "immediate".
+// TODO(crbug.com/40287486): Update this test after the behavior changes.
+IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kEager) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+
+  // Navigate to an initial page, insert an anchor to the prerender page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  InsertAnchor(prerendering_url);
+
+  RenderFrameHostImpl* rfh = current_frame_host();
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(rfh);
+
+  // Add speculation rules with the eagerness.
+  // When the eagerness is "immediate", speculation candidates will never be
+  // kept in the |on_standby_candidates_| on |PreloadingDecider|, and
+  // |PrerenderHost| will be created immediately.
+  AddPrerenderWithEagernessAsync(prerendering_url,
+                                 blink::mojom::SpeculationEagerness::kEager);
+  WaitForPrerenderLoadCompletion(prerendering_url);
+  EXPECT_TRUE(HasHostForUrl(prerendering_url));
+  EXPECT_FALSE(preloading_decider->IsOnStandByForTesting(
+      prerendering_url, blink::mojom::SpeculationAction::kPrerender));
+
+  // Activate the prerendered page by clicking the anchor.
+  FrameTreeNodeId host_id = GetHostForUrl(prerendering_url);
+  test::PrerenderHostObserver prerender_observer(*web_contents(), host_id);
+  PointerDownToAnchor(prerendering_url);
+  PointerUpToAnchor(prerendering_url);
+  prerender_observer.WaitForActivation();
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
+  EXPECT_TRUE(prerender_observer.was_activated());
+}
+
 // Tests speculation rules prerendering where the eagerness is "moderate".
 IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kModerate) {
   const GURL initial_url = GetUrl("/empty.html");
@@ -11294,6 +11331,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     PrerenderBackForwardCacheRestorationBrowserTest,
     testing::Values(blink::mojom::SpeculationEagerness::kImmediate,
+                    blink::mojom::SpeculationEagerness::kEager,
                     blink::mojom::SpeculationEagerness::kModerate,
                     blink::mojom::SpeculationEagerness::kConservative),
     [](const testing::TestParamInfo<blink::mojom::SpeculationEagerness>& info) {
@@ -11330,8 +11368,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
 
   // Add speculation rules and wait to be loaded.
   AddPrerenderWithEagernessAsync(prerendering_url, GetSpeculationEagerness());
-  if (GetSpeculationEagerness() ==
-      blink::mojom::SpeculationEagerness::kImmediate) {
+  if (IsImmediateSpeculationEagerness(GetSpeculationEagerness())) {
     WaitForPrerenderLoadCompletion(prerendering_url);
     ASSERT_TRUE(HasHostForUrl(prerendering_url));
   } else {
@@ -11352,8 +11389,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), next_url);
   ExpectRestored(FROM_HERE);
 
-  if (GetSpeculationEagerness() ==
-      blink::mojom::SpeculationEagerness::kImmediate) {
+  if (IsImmediateSpeculationEagerness(GetSpeculationEagerness())) {
     // Prerendering will be processed by retriggering.
     WaitForPrerenderLoadCompletion(prerendering_url);
     FrameTreeNodeId host_id_retriggered = GetHostForUrl(prerendering_url);
@@ -11388,11 +11424,11 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
 
 // Test whether speculation rules prerendering is processed again on pages
 // restored from BFCache via backward navigation.
-// When the eagerness is kImmediate(default), speculation rules prerendering
-// will no longer be processed after restoration. For non-immediate cases
-// (kModerate, kConservative), candidates are stored between restoration unless
-// they were triggered by user action. However, once after processed by user
-// action, then they will not be processed again until they are retriggered
+// When immediate eagerness like `kImmediate` (default), speculation rules
+// prerendering will no longer be processed after restoration. For non-immediate
+// cases (kModerate, kConservative), candidates are stored between restoration
+// unless they were triggered by user action. However, once after processed by
+// user action, then they will not be processed again until they are retriggered
 // (crbug.com/1449163 for more information).
 IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
                        RestoredViaBackwardNavigation) {
@@ -11406,8 +11442,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
   InsertAnchor(prerendering_url_a);
   InsertAnchor(prerendering_url_b);
 
-  if (GetSpeculationEagerness() ==
-      blink::mojom::SpeculationEagerness::kImmediate) {
+  if (IsImmediateSpeculationEagerness(GetSpeculationEagerness())) {
     // Add speculation rules and wait to be loaded.
     AddPrerenderWithEagernessAsync(prerendering_url_a,
                                    GetSpeculationEagerness());

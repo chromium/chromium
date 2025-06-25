@@ -22,6 +22,7 @@
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -262,8 +263,7 @@ void PrefetchDocumentManager::PrefetchUrl(
           web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 
   attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());
-  CHECK(prefetch_type.GetEagerness() !=
-            blink::mojom::SpeculationEagerness::kImmediate ||
+  CHECK(!IsImmediateSpeculationEagerness(prefetch_type.GetEagerness()) ||
         creating_predictor == enacting_predictor);
 
   // `PreloadingPrediction` is added in `PreloadingDecider`.
@@ -333,8 +333,8 @@ void PrefetchDocumentManager::OnEligibilityCheckComplete(bool is_eligible) {
 void PrefetchDocumentManager::OnPrefetchSuccessful(
     PrefetchContainer* prefetch) {
   referring_page_metrics_.prefetch_successful_count++;
-  if (prefetch->GetPrefetchType().GetEagerness() ==
-      blink::mojom::SpeculationEagerness::kImmediate) {
+  if (IsImmediateSpeculationEagerness(
+          prefetch->GetPrefetchType().GetEagerness())) {
     completed_immediate_prefetches_.push_back(prefetch->GetWeakPtr());
   } else {
     completed_non_immediate_prefetches_.push_back(prefetch->GetWeakPtr());
@@ -351,8 +351,8 @@ PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
           Visibility::VISIBLE) {
     return std::make_tuple(false, nullptr);
   }
-  if (prefetch->GetPrefetchType().GetEagerness() ==
-      blink::mojom::SpeculationEagerness::kImmediate) {
+  if (IsImmediateSpeculationEagerness(
+          prefetch->GetPrefetchType().GetEagerness())) {
     return std::make_tuple(completed_immediate_prefetches_.size() <
                                kMaxNumberOfImmediatePrefetchesPerPage,
                            nullptr);
@@ -383,8 +383,8 @@ void PrefetchDocumentManager::PrefetchWillBeDestroyed(
   prefetch_destruction_callback_.Run(prefetch->GetURL());
 
   std::vector<base::WeakPtr<PrefetchContainer>>& completed_prefetches =
-      prefetch->GetPrefetchType().GetEagerness() ==
-              blink::mojom::SpeculationEagerness::kImmediate
+      IsImmediateSpeculationEagerness(
+          prefetch->GetPrefetchType().GetEagerness())
           ? completed_immediate_prefetches_
           : completed_non_immediate_prefetches_;
   auto it = std::ranges::find(completed_prefetches, prefetch->key(),

@@ -216,7 +216,9 @@ base::TimeDelta PrefetchBlockUntilHeadTimeout(
   int timeout_in_milliseconds = 0;
   if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
     switch (prefetch_type.GetEagerness()) {
+      // TODO(crbug.com/40287486): Create a specific param for `kEager`.
       case blink::mojom::SpeculationEagerness::kImmediate:
+      case blink::mojom::SpeculationEagerness::kEager:
         timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
             features::kPrefetchUseContentRefactor,
             "block_until_head_timeout_immediate_prefetch", 1000);
@@ -241,6 +243,9 @@ base::TimeDelta PrefetchBlockUntilHeadTimeout(
 }
 
 // These strings (including `embedder_histogram_suffix`) are persisted to logs.
+// `kEager` is treated the same as `kImmediate` here for historical reasons.
+// TODO(crbug.com/40287486): Change records for `kEager` or create updated
+// metrics that handle `kEager` separately.
 // LINT.IfChange
 std::string GetMetricsSuffixTriggerTypeAndEagerness(
     const PrefetchType prefetch_type,
@@ -249,6 +254,7 @@ std::string GetMetricsSuffixTriggerTypeAndEagerness(
     case PreloadingTriggerType::kSpeculationRule:
       switch (prefetch_type.GetEagerness()) {
         case blink::mojom::SpeculationEagerness::kImmediate:
+        case blink::mojom::SpeculationEagerness::kEager:
           return "SpeculationRule_Immediate";
         case blink::mojom::SpeculationEagerness::kModerate:
           return "SpeculationRule_Moderate";
@@ -258,6 +264,7 @@ std::string GetMetricsSuffixTriggerTypeAndEagerness(
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
       switch (prefetch_type.GetEagerness()) {
         case blink::mojom::SpeculationEagerness::kImmediate:
+        case blink::mojom::SpeculationEagerness::kEager:
           return "SpeculationRuleFromIsolatedWorld_Immediate";
         case blink::mojom::SpeculationEagerness::kModerate:
           return "SpeculationRuleFromIsolatedWorld_Moderate";
@@ -267,6 +274,7 @@ std::string GetMetricsSuffixTriggerTypeAndEagerness(
     case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       switch (prefetch_type.GetEagerness()) {
         case blink::mojom::SpeculationEagerness::kImmediate:
+        case blink::mojom::SpeculationEagerness::kEager:
           return "SpeculationRuleFromAutoSpeculationRules_Immediate";
         case blink::mojom::SpeculationEagerness::kModerate:
           return "SpeculationRuleFromAutoSpeculationRules_Moderate";

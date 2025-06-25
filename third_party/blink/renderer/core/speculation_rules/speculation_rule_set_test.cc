@@ -3991,11 +3991,11 @@ TEST_F(SpeculationRuleSetTest, Eagerness) {
               HasURL(kUrl1),
               HasEagerness(blink::mojom::SpeculationEagerness::kConservative)),
           AllOf(HasURL(kUrl2),
-                HasEagerness(blink::mojom::SpeculationEagerness::kImmediate)),
+                HasEagerness(blink::mojom::SpeculationEagerness::kEager)),
           AllOf(HasURL(kUrl3),
                 HasEagerness(blink::mojom::SpeculationEagerness::kModerate)),
           AllOf(HasURL(kUrl4),
-                HasEagerness(blink::mojom::SpeculationEagerness::kImmediate)),
+                HasEagerness(blink::mojom::SpeculationEagerness::kEager)),
           AllOf(HasURL(kUrl5),
                 HasEagerness(blink::mojom::SpeculationEagerness::kImmediate)),
           AllOf(

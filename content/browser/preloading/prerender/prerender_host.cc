@@ -30,6 +30,7 @@
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_util.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -1453,7 +1454,10 @@ base::TimeDelta PrerenderHost::WaitUntilHeadTimeout() {
   if (IsSpeculationRuleType(attributes_.trigger_type)) {
     CHECK(eagerness().has_value());
     switch (eagerness().value()) {
+      // Currently, `kImmediate` and `kEager` behaves the same.
+      // TODO(crbug.com/40287486): Separate these behaviors.
       case blink::mojom::SpeculationEagerness::kImmediate:
+      case blink::mojom::SpeculationEagerness::kEager:
         timeout_in_milliseconds =
             features::kPrerender2NoVarySearchWaitForHeadersTimeoutEagerPrerender
                 .Get();

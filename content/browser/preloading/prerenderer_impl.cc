@@ -27,6 +27,7 @@
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/preloading/prerender/prerender_new_tab_handle.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_util.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents.h"
@@ -351,17 +352,10 @@ bool PrerendererImpl::MaybePrerender(
         candidate->no_vary_search_hint);
   }
 
-  const bool should_warm_up_compositor = [&] {
-    switch (candidate->eagerness) {
-      case blink::mojom::SpeculationEagerness::kImmediate:
-        return base::FeatureList::IsEnabled(
-            features::kPrerender2WarmUpCompositorForImmediate);
-      case blink::mojom::SpeculationEagerness::kModerate:
-      case blink::mojom::SpeculationEagerness::kConservative:
-        return base::FeatureList::IsEnabled(
-            features::kPrerender2WarmUpCompositorForNonImmediate);
-    }
-  }();
+  const bool should_warm_up_compositor = base::FeatureList::IsEnabled(
+      IsImmediateSpeculationEagerness(candidate->eagerness)
+          ? features::kPrerender2WarmUpCompositorForImmediate
+          : features::kPrerender2WarmUpCompositorForNonImmediate);
 
   PrerenderAttributes attributes(
       candidate->url,
@@ -545,6 +539,9 @@ void PrerendererImpl::RecordReceivedPrerendersCountToMetrics() {
     int moderate =
         received_prerenders_by_eagerness_[trigger_type][static_cast<size_t>(
             blink::mojom::SpeculationEagerness::kModerate)];
+    int eager =
+        received_prerenders_by_eagerness_[trigger_type][static_cast<size_t>(
+            blink::mojom::SpeculationEagerness::kEager)];
     int immediate =
         received_prerenders_by_eagerness_[trigger_type][static_cast<size_t>(
             blink::mojom::SpeculationEagerness::kImmediate)];
@@ -561,7 +558,7 @@ void PrerendererImpl::RecordReceivedPrerendersCountToMetrics() {
     //     function will be called per PrimaryPageChanged).
     //
     // Avoids recording these cases uniformly.
-    if (conservative + moderate + immediate == 0) {
+    if (conservative + moderate + eager + immediate == 0) {
       continue;
     }
 
@@ -570,8 +567,10 @@ void PrerendererImpl::RecordReceivedPrerendersCountToMetrics() {
         conservative, trigger_type, "Conservative");
     RecordReceivedPrerendersPerPrimaryPageChangedCount(moderate, trigger_type,
                                                        "Moderate");
-    RecordReceivedPrerendersPerPrimaryPageChangedCount(immediate, trigger_type,
-                                                       "Immediate");
+    // `kEager` is treated as `kImmediate` here for historical reasons.
+    // TODO(crbug.com/40287486): Create new metrics to separate them.
+    RecordReceivedPrerendersPerPrimaryPageChangedCount(
+        eager + immediate, trigger_type, "Immediate");
   }
 }
 
