@@ -203,6 +203,7 @@ public class ScreenCapture {
 
     private final HandlerThread mBackgroundThread = new HandlerThread("ScreenCapture");
     private @Nullable Handler mBackgroundHandler;
+    private final Thread mCaptureThread;
 
     @GuardedBy("mBackgroundLock")
     private @Nullable MediaProjection mMediaProjection;
@@ -218,6 +219,7 @@ public class ScreenCapture {
 
     private ScreenCapture(long nativeDesktopCapturerAndroid) {
         mNativeDesktopCapturerAndroid = nativeDesktopCapturerAndroid;
+        mCaptureThread = Thread.currentThread();
     }
 
     public static void onForegroundServiceRunning(boolean running) {
@@ -256,6 +258,8 @@ public class ScreenCapture {
 
     @CalledByNative
     boolean startCapture() {
+        assert mCaptureThread.getId() == Thread.currentThread().getId();
+
         final PickState pickState = sNextPickState.getAndSet(null);
         assert pickState != null;
 
@@ -306,6 +310,8 @@ public class ScreenCapture {
 
     @CalledByNative
     void destroy() {
+        assert mCaptureThread.getId() == Thread.currentThread().getId();
+
         if (mBackgroundThread != null) {
             // End the background thread before taking `mBackgroundLock` since messages run
             // on this thread may need to take `mBackgroundLock` and could deadlock
@@ -348,6 +354,7 @@ public class ScreenCapture {
 
     @GuardedBy("this.mBackgroundLock")
     private void destroyListener() {
+        assert mCaptureThread.getId() == Thread.currentThread().getId();
         // Note that we can only close the ImageHandler if we are guaranteed the native side will
         // not try to access Images from it again.
         if (mImageHandler != null) {
@@ -362,6 +369,7 @@ public class ScreenCapture {
 
     @GuardedBy("mBackgroundLock")
     private void recreateListener(CaptureState captureState) {
+        assert mCaptureThread.getId() == Thread.currentThread().getId();
         destroyListener();
         mImageHandler = new ImageHandler(captureState);
 
