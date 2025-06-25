@@ -11,6 +11,7 @@
 #import <memory>
 
 class AuthenticationService;
+@protocol SingleSignOnService;
 
 namespace ios::provider {
 enum class BWGPageContextState;
@@ -37,6 +38,9 @@ class PageContext;
 
 // The authentication service to be used.
 @property(nonatomic, assign) AuthenticationService* authService;
+
+// The SingleSignOnService instance.
+@property(nonatomic, strong) id<SingleSignOnService> singleSignOnService;
 
 // The state of the BWG PageContext.
 @property(nonatomic, assign)

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_configuration.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
@@ -47,6 +48,8 @@ void BwgService::PresentOverlayOnViewController(
   BWGConfiguration* config = [[BWGConfiguration alloc] init];
   config.baseViewController = base_view_controller;
   config.authService = auth_service_;
+  config.singleSignOnService =
+      GetApplicationContext()->GetSingleSignOnService();
 
   std::unique_ptr<optimization_guide::proto::PageContext> pageContext = nullptr;
   if (expected_page_context.has_value()) {
@@ -57,8 +60,8 @@ void BwgService::PresentOverlayOnViewController(
     config.BWGPageContextState = BWGPageContextFromPageContextWrapperError(
         expected_page_context.error());
   }
-
   config.uniquePageContext = std::move(pageContext);
+
   ios::provider::StartBwgOverlay(config);
 }
 
