@@ -18,6 +18,10 @@ namespace blink {
 void ScriptPromiseTester::WaitUntilSettled() {
   auto* isolate = script_state_->GetIsolate();
   while (state_ == State::kNotSettled) {
+    if (exception_state_ && exception_state_->HadException()) {
+      state_ = State::kRejected;
+      break;
+    }
     script_state_->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
         isolate);
     test::RunPendingTasks();

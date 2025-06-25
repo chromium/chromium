@@ -28,9 +28,11 @@ class ScriptPromiseTester final {
  public:
   template <typename IDLType>
   ScriptPromiseTester(ScriptState* script_state,
-                      ScriptPromise<IDLType> script_promise)
+                      ScriptPromise<IDLType> script_promise,
+                      ExceptionState* exception_state = nullptr)
       : script_state_(script_state),
-        value_object_(MakeGarbageCollected<ScriptValueObject>()) {
+        value_object_(MakeGarbageCollected<ScriptValueObject>()),
+        exception_state_(exception_state) {
     CHECK(script_state);
     if (script_promise.IsEmpty()) {
       return;
@@ -117,6 +119,7 @@ class ScriptPromiseTester final {
   // tests with `ScriptPromiseTester` that pump the message loop and invoke GCs
   // without stack.
   Persistent<ScriptValueObject> value_object_;
+  ExceptionState* exception_state_;
 
   base::WeakPtrFactory<ScriptPromiseTester> weak_factory_{this};
 };
