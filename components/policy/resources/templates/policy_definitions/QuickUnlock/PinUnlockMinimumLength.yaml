@@ -3,6 +3,7 @@ desc: |-
   Setting the policy enforces the minimum PIN length chosen. (Values below 1 are rounded up to the minimum of 1.)
 
         Leaving the policy unset enforces a minimal PIN length of 6 digits, the recommended minimum.
+default: 6
 example_value: 6
 features:
   dynamic_refresh: true

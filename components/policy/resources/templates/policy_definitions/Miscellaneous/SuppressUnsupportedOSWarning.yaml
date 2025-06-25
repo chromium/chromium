@@ -3,6 +3,7 @@ desc: |-
   Setting the policy to Enabled suppresses the warning that appears when <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is running on an unsupported computer or operating system.
 
         Setting the policy to Disabled or leaving it unset means the warnings appear on unsupported systems.
+default: false
 example_value: true
 features:
   dynamic_refresh: false

@@ -4,6 +4,7 @@ desc: |-
   Setting the policy to Enabled means share discovery (the Network File Shares feature for <ph name="PRODUCT_NAME">$2<ex>Google ChromeOS</ex></ph>) uses the <ph name="NETBIOS_PROTOCOL">NetBIOS Name Query Request protocol</ph> to discover shares on the network. Setting the policy to Disabled means share discovery won't use this protocol to discover shares.
 
         Leaving the policy unset means the behavior defaults to off for managed users and on for other users.
+default: true
 example_value: true
 features:
   dynamic_refresh: true

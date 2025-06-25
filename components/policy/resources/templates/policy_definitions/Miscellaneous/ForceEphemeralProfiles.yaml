@@ -7,6 +7,7 @@ desc: |-
         If the user has enabled sync all this data is preserved in their sync profile just like with regular profiles. Incognito mode is also available if not explicitly disabled by policy.
 
         If the policy is set to disabled or left not set signing in leads to regular profiles.
+default: false
 example_value: true
 features:
   dynamic_refresh: false

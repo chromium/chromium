@@ -5,6 +5,7 @@ desc: |2-
         If this policy is enabled, user will be able to fully connect their Thunderbolt/USB4 peripheral device through PCIe tunneling.
 
         If policy is left unset, defaults to false and the user will be able to select whichever state (true/false) for this setting.
+default: null
 device_only: true
 example_value: false
 features:
@@ -17,6 +18,8 @@ items:
 - caption: Disables PCIe tunneling for Thunderbolt/USB4 peripheral devices, limiting
     the device capabilities
   value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - jimmyxgong@chromium.org
 - cros-peripheral@google.com

@@ -2,9 +2,10 @@ caption: Allow media autoplay
 desc: |-
   Setting the policy to True lets <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> autoplay media. Setting the policy to False stops <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> from autoplaying media.
 
-         By default, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> doesn't autoplay media. But, for certain URL patterns, you can use the <ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME">AutoplayAllowlist</ph> policy to change this setting.
+  If this policy is left unset, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> doesn't autoplay media. But, for certain URL patterns, you can use the <ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME">AutoplayAllowlist</ph> policy to change this setting.
 
-        If this policy changes while <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is running, it only applies to newly opened tabs.
+  If this policy changes while <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is running, it only applies to newly opened tabs.
+default: null
 example_value: true
 features:
   dynamic_refresh: true
@@ -16,6 +17,8 @@ items:
   value: true
 - caption: Do not allow Chrome to autoplay media
   value: false
+- caption: Do not allow Chrome to autoplay media unless the URL is specified in the <ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME">AutoplayAllowlist</ph> policy
+  value: null
 owners:
 - fbeaufort@chromium.org
 - beccahughes@chromium.org

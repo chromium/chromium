@@ -5,6 +5,7 @@ desc: |-
         Setting the policy to Disabled results in no collection or uploading of such logs.
 
         Leaving the policy unset on versions up to and including M76 means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> defaults to not being able to collect and upload these logs. Starting at M77, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> defaults to being able to collect and upload these logs from most profiles affected by cloud-based, user-level enterprise policies. From M77 up to and including M80, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can also collect and upload these logs by default from profiles affected by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> on-premise management.
+default: true
 example_value: true
 features:
   dynamic_refresh: true

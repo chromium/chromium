@@ -5,6 +5,7 @@ desc: |-
   Setting the policy to Disabled or leaving it unset renders <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph> browser enrollment optional and doesn't block <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> launch process if failed.
 
   Machine scope cloud policy enrollment on desktop uses this policy. See https://support.google.com/chrome/a/answer/9301891 for details.
+default: false
 example_value: true
 features:
   dynamic_refresh: false

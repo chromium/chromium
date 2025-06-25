@@ -11,6 +11,7 @@ desc: |-
         If you set this policy as mandatory, users cannot change or override it.
 
         If the policy is left not set, the shelf will be be positioned at the bottom of the screen by default and the user can change the shelf's position.
+default: null
 example_value: Bottom
 features:
   can_be_recommended: true

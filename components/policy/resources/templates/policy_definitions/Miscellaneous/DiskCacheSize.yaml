@@ -7,6 +7,7 @@ desc: |-
         If not set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses the default size. Users can change that setting using the --disk-cache-size flag.
 
         Note: The value specified in this policy is used as a hint to various cache subsystems in the browser. Therefore the actual total disk consumption of all caches will be higher but within the same order of magnitude as the value specified.
+default: null
 example_value: 104857600
 features:
   dynamic_refresh: false

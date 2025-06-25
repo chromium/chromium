@@ -3,6 +3,7 @@ desc: |-
   Setting the policy to True prevents users from writing to external storage devices.
 
         Unless external storage is blocked, if you set ExternalStorageReadOnly to False or leave it unset, users can create and modify files of physically writable, external storage devices. (You can block external storage by setting ExternalStorageDisable to True.)
+default: false
 example_value: true
 features:
   dynamic_refresh: true

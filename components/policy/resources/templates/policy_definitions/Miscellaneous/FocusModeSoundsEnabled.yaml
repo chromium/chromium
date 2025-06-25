@@ -10,6 +10,7 @@ desc: |-
   Setting the policy to EnabledFocusSoundsOnly will enable the sound feature with just Focus Sounds.
 
   Setting the policy to Disabled will disable sounds in Focus Mode.
+default: disabled
 example_value: focus-sounds
 features:
   dynamic_refresh: true

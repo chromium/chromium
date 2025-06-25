@@ -5,6 +5,7 @@ desc: |-
         Setting the policy to Disabled or leaving it unset means gnubby authentication requests won't be proxied.
 
         Note that this feature requires additional components which are not available outside of the Google network environment in order to work properly.
+default: false
 example_value: true
 features:
   dynamic_refresh: true

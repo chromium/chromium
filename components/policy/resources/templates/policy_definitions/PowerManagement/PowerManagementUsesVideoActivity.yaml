@@ -5,6 +5,7 @@ desc: |-
   Setting the policy to Enabled or leaving it unset means the user is not considered idle while video plays. This prevents the idle delay, screen dim delay, screen off delay, and screen lock delay from being reached and the corresponding actions from being taken.
 
         Setting the policy to Disabled means the system can consider users idle despite video activity.
+default: true
 example_value: true
 features:
   dynamic_refresh: true

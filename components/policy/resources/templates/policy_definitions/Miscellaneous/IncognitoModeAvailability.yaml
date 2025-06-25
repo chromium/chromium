@@ -9,6 +9,7 @@ desc: |-
         If 'Forced' is selected, pages may be opened ONLY in Incognito mode. Note that 'Forced' does not work for Android-on-Chrome
 
         Note: On iOS, if the policy is changed during a session, it will only take effect on relaunch.
+default: 0
 example_value: 1
 features:
   dynamic_refresh: true

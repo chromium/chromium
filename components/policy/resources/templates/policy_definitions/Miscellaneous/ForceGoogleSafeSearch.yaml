@@ -3,6 +3,7 @@ desc: |-
   Setting the policy to Enabled means SafeSearch in Google Search is always active, and users can't change this setting.
 
         Setting the policy to Disabled or leaving it unset means SafeSearch in Google Search is not enforced.
+default: false
 example_value: false
 features:
   can_be_recommended: false

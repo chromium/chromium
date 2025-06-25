@@ -3,6 +3,7 @@ desc: |-
   If this policy is set to Enabled or not configured, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will enable guest logins. Guest logins are <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> profiles where all windows are in incognito mode.
 
   If this policy is set to Disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not allow guest profiles to be started.
+default: true
 example_value: true
 features:
   dynamic_refresh: true

@@ -7,6 +7,7 @@ desc: |2-
         This policy should not be used for devices used by the general public.
 
         If the policy is set to True or not set, the privacy warning notification in the auto-launched managed-guest session will be pinned until the user dismisses it.
+default: true
 device_only: true
 example_value: false
 features:

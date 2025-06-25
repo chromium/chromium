@@ -11,6 +11,7 @@ desc: |-
   This policy supports dynamic refresh.
 
   This policy is a temporary measure and will be removed in future versions of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+default: null
 owners:
 - bashi@chromium.org
 - file://net/OWNERS
@@ -29,5 +30,7 @@ items:
   value: true
 - caption: Do not use the <ph name="HAPPY_EYEBALLS_V3">Happy Eyeballs V3</ph> algorithm.
   value: false
+- caption: Allow <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to decide
+  value: null
 example_value: true
 tags: []

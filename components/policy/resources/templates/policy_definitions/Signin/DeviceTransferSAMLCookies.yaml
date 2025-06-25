@@ -11,6 +11,7 @@ desc: |-
         When this policy is set to false or unset, cookies set by the IdP are transferred to the user's profile during their first login on a device only.
 
         This policy affects users whose domain matches the device's enrollment domain only. For all other users, cookies set by the IdP are transferred to the user's profile during their first login on the device only.
+default: false
 device_only: true
 example_value: true
 features:

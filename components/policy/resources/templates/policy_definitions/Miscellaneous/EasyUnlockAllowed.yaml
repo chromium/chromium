@@ -6,6 +6,7 @@ desc: |-
         If you disable this setting, users will not be allowed to use Smart Lock.
 
         If this policy is left not set, the default is not allowed for enterprise-managed users and allowed for non-managed users.
+default: true
 example_value: true
 features:
   dynamic_refresh: true

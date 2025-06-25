@@ -5,6 +5,7 @@ desc: |-
         When this policy is set to true, the icons are hidden.
 
         When this policy is set to false or is not configured, the icons are visible.
+default: false
 example_value: true
 features:
   dynamic_refresh: true

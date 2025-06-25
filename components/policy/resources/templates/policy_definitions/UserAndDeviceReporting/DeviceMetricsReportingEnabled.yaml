@@ -5,7 +5,8 @@ desc: |-
 
   For managed devices, this policy is enabled by default and sends metrics to Google.
 
-  For unmanaged devices, the user can make the decision to send the metrics.
+  For unmanaged devices, the user can make the decision to send the metrics when the policy is unset.
+default: null
 device_only: true
 example_value: true
 features:
@@ -15,6 +16,8 @@ items:
   value: true
 - caption: Never send metrics to Google
   value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - cros-reporting-eng@google.com
 - lbaraz@chromium.org

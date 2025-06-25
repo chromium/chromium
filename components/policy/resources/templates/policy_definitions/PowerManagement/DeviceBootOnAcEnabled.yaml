@@ -5,6 +5,7 @@ desc: |-
         Setting the policy to Disabled keeps boot on AC off.
 
         If you set this policy, users can't change it. If not set, boot on AC is off, and users can't turn it on.
+default: false
 device_only: true
 example_value: false
 features:

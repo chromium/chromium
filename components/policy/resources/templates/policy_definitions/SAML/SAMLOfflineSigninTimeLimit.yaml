@@ -9,6 +9,7 @@ desc: |-
         This policy affects only users who authenticated using SAML.
 
         The policy value should be specified in seconds.
+default: 1209600
 example_value: 32
 features:
   dynamic_refresh: true

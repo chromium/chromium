@@ -5,6 +5,7 @@ desc: |-
         Leaving the policy unset results in the use of <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME">DefaultCookiesSetting</ph> for all sites, if it's set. If not, the user's personal setting applies. URLs not covered by the patterns specified also result in the use of defaults.
 
         While no specific policy takes precedence, see <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME">CookiesBlockedForUrls</ph> and <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME">CookiesAllowedForUrls</ph>. URL patterns among these 3 policies must not conflict.
+default: null
 example_value: 1
 features:
   dynamic_refresh: true

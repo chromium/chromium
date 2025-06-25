@@ -5,6 +5,7 @@ desc: |-
         Setting the policy to False or leaving it unset allows the window to launch.
 
         Note: The browser window might not launch due to other policies or command-line flags.
+default: false
 example_value: true
 features:
   dynamic_refresh: false

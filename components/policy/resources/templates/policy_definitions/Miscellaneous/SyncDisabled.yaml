@@ -8,6 +8,7 @@ desc: |-
         If the policy is set to Disabled or not set, users are allowed to choose whether to use <ph name="CHROME_SYNC_NAME">Chrome Sync</ph>.
 
         Note: Do not turn on this policy when <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME">RoamingProfileSupportEnabled</ph> is Enabled, because that feature shares the same client-side functionality. The Google-hosted synchronization is off completely in this case.
+default: false
 example_value: true
 features:
   dynamic_refresh: true

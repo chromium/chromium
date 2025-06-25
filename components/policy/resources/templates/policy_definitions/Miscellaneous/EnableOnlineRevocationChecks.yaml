@@ -5,6 +5,7 @@ desc: |-
         Setting the policy to False or leaving it unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> won't perform online revocation checks in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 19 and later.
 
         Note: <ph name="OCSP_CRL_LABEL">OCSP/CRL</ph> checks provide no effective security benefit.
+default: false
 example_value: false
 features:
   dynamic_refresh: true

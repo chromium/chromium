@@ -9,6 +9,7 @@ desc: |-
         In case signing in to a different account shouldn't be allowed via the Incognito mode, consider blocking that mode using the IncognitoModeAvailability policy.
 
         Note that users will be able to access Google services in an unauthenticated state by blocking their cookies.
+default: true
 example_value: false
 features:
   dynamic_refresh: false

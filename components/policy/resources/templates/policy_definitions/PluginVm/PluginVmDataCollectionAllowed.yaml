@@ -4,6 +4,7 @@ desc: |-
 
         If the policy is set to false or left unset, <ph name="PLUGIN_VM_NAME">PluginVm</ph> is not allowed to collect data.
         If set to true, <ph name="PLUGIN_VM_NAME">PluginVm</ph> might collect <ph name="PLUGIN_VM_NAME">PluginVm</ph> usage data that is then combined and thoroughly analyzed to improve <ph name="PLUGIN_VM_NAME">PluginVm</ph> experience.
+default: false
 example_value: false
 features:
   dynamic_refresh: true

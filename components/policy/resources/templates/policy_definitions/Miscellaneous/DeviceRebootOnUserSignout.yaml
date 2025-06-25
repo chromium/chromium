@@ -6,6 +6,7 @@ desc: "\n      This policy, when set to ArcSession, forces the device to reboot 
   \      If left unset, it has no effect and no reboot is forced on user sign out.\
   \ The same applies if set to Never.\n      This policy has effect only for unaffiliated\
   \ users.\n      "
+default: 1
 device_only: true
 example_value: 2
 features:

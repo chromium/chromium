@@ -18,6 +18,7 @@ desc: |-
 
   See https://github.com/explainers-by-googlers/local-network-access for <ph
   name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> restrictions.
+default: false
 
 supported_on:
 - chrome.*:138-

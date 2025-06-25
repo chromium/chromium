@@ -6,6 +6,7 @@ desc: "This feature enables suggestions for new content to explore. Includes app
   \ then suggestions for new content to explore will be disabled.\n      If this policy\
   \ is left unset, then suggestions for new content to explore will be disabled for\
   \ managed users and enabled for other users.\n      "
+default: true
 example_value: false
 features:
   can_be_recommended: true

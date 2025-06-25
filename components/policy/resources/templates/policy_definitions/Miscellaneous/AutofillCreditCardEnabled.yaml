@@ -3,6 +3,7 @@ desc: |-
   Setting the policy to True or leaving it unset means users can control autofill suggestions for credit cards in the UI.
 
         Setting the policy to False means autofill never suggests or fills credit card information, nor will it save additional credit card information that users might submit while browsing the web.
+default: true
 example_value: false
 features:
   can_be_recommended: true

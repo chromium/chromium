@@ -5,6 +5,7 @@ desc: |-
         Setting the policy to False or leaving it unset prevents extensions from using this API.
 
         Note: This policy also applies to component extensions, such as the Hangout Services extension.
+default: false
 example_value: true
 features:
   dynamic_refresh: true

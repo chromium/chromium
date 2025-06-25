@@ -7,6 +7,7 @@ desc: |-
         Setting the policy to Disabled or leaving it unset keeps advanced battery charge mode off.
 
         Users are unable to change this setting.
+default: false
 device_only: true
 example_value: false
 features:

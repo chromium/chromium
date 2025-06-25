@@ -3,6 +3,7 @@ desc: |-
   If this policy is set to true or not configured, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and <ph name="LACROS_NAME">Lacros</ph> will allow to add a new person from the user manager.
 
         If this policy is set to false, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and <ph name="LACROS_NAME">Lacros</ph> will not allow adding a new person from the user manager.
+default: true
 example_value: true
 features:
   dynamic_refresh: true

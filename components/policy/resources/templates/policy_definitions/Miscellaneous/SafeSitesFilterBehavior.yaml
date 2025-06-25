@@ -9,6 +9,7 @@ desc: |-
   * Filter sites for adult content, pornographic sites are filtered
 
   The policy applies to both the URL the user navigates to and to iframes. The <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph> policy takes precedence over this policy and can be used to override verdicts from the Google Safe Search API.
+default: 0
 example_value: 0
 features:
   dynamic_refresh: true

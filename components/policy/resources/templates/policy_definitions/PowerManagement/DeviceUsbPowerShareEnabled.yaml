@@ -9,6 +9,7 @@ desc: |-
         Setting the policy to Disabled means no power is supplied.
 
         Leaving the policy unset means the policy is on, and users can't turn it off.
+default: true
 device_only: true
 example_value: true
 features:

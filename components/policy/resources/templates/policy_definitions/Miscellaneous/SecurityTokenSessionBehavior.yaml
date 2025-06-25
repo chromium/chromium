@@ -6,6 +6,7 @@ desc: 'Specifies what happens when a user who is authenticating via a security t
   screen is locked until the user authenticates again. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT">LOGOUT</ph>:
   The session is ended and the user is logged out. If this policy is not set, it defaults
   to <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE">IGNORE</ph>.'
+default: IGNORE
 example_value: LOGOUT
 features:
   dynamic_refresh: true

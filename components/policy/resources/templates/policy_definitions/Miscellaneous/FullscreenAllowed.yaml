@@ -5,6 +5,7 @@ desc: |-
   Setting the policy to True or leaving it unset means that, with appropriate permissions, users, apps, and extensions can enter Fullscreen mode (in which only web content appears).
 
         Setting the policy to False means users, apps, and extensions can't enter Fullscreen mode.
+default: true
 example_value: true
 features:
   dynamic_refresh: true

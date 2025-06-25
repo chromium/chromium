@@ -5,6 +5,7 @@ desc: |-
   If a browser relaunch or device restart is needed to finalize a pending update and the current version has been outdated for more than the number of days specified by this setting, the <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME">RelaunchNotificationPeriod</ph> policy is overridden to 2 hours. If the <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME">RelaunchNotification</ph> policy is set to 1 ('Required'), users will be forced to relaunch or restart at the end of the period.
 
   If not set, or if the release age cannot be determined, the <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME">RelaunchNotificationPeriod</ph> policy will be used for all updates.
+default: null
 example_value: 7
 features:
   dynamic_refresh: true

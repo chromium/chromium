@@ -14,6 +14,7 @@ desc: |-
         As of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 119, this setting also controls whether developer mode for Isolated Web Apps can be activated and used.
 
         As of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 128, this setting will not control developer mode on extensions page if <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME">ExtensionDeveloperModeSettings</ph> policy is set.
+default: 0
 example_value: 2
 features:
   dynamic_refresh: true

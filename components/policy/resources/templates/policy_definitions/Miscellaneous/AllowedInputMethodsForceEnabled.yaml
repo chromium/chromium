@@ -5,6 +5,7 @@ desc: |-
   Setting the policy to false or not setting it doesn't enforce any enabled input methods and <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME">AllowedInputMethods</ph> policy only configures which input methods are available to the user.
 
   If <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME">AllowedInputMethods</ph> policy is unset or set to an empty list, this policy is ignored and users can enable any input methods.
+default: false
 device_only: false
 example_value: true
 features:

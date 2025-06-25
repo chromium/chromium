@@ -3,6 +3,7 @@ desc: |-
   Setting the policy to enabled means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can collect WebRTC text logs from Google services such as Google Meet and upload them to Google. These logs have diagnostic information for debugging issues with audio or video meetings in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, such as textual metadata describing incoming and outgoing WebRTC streams, WebRTC specific log entries and additional system information. These logs have no audio or video content from the meeting.
   Setting the policy to disabled results in no uploading of such logs to Google. Logs would still accumulate locally on the user's device.
   Leaving the policy unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> defaults to being able to collect and upload these logs.
+default: true
 example_value: true
 features:
   dynamic_refresh: true

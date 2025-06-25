@@ -5,6 +5,7 @@ desc: |-
   <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> keyboards
   and are disabled by default if the policy is unset. If you set this policy,
   users cannot change or override it.
+default: 0
 example_value: 0
 features:
   can_be_recommended: true

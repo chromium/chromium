@@ -5,6 +5,7 @@ desc: |-
         Leaving the policy unset (if supported on the device) applies the standard battery charge mode, and users can't change it.
 
         Note: If Custom battery charge mode is selected, then also specify <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME">DeviceBatteryChargeCustomStartCharging</ph> and <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME">DeviceBatteryChargeCustomStopCharging</ph>.
+default: 1
 device_only: true
 example_value: 1
 features:

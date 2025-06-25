@@ -3,6 +3,7 @@ desc: |-
   Setting the policy to True displays a big, red sign-out button in the system tray during active sessions while the screen isn't locked.
 
         Setting the policy to False or leaving it unset means no button appears.
+default: false
 example_value: true
 features:
   dynamic_refresh: true

@@ -12,6 +12,7 @@ desc: |-
             If the policy is set to false or not set, users will not have PIN auto-submit on the lock and login screen.
 
             If this policy is set, users will not have the option of enabling the feature.
+default: false
 example_value: true
 features:
   can_be_recommended: true

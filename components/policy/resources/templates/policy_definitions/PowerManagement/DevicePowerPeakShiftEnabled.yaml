@@ -5,6 +5,7 @@ desc: |-
         Setting the policy to Disabled keeps power peak shift off.
 
         If unset, power peak shift is off at first. Users can't change this setting.
+default: false
 device_only: true
 example_value: false
 features:

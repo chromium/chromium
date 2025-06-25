@@ -9,6 +9,7 @@ desc: |-
 
   This policy is specific to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and does not affect <ph name="GOOGLE_UPDATE_NAME">Google Update</ph> because they are independent applications.
   <ph name="GOOGLE_UPDATE_NAME">Google Update</ph> has a separate policy with the same name.
+default: false
 example_value: false
 features:
   dynamic_refresh: true
