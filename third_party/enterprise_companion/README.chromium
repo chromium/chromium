@@ -2,7 +2,7 @@ Name: Chrome Enterprise Companion App
 URL: https://chromium.googlesource.com/chromium/src/+/main/chrome/enterprise_companion/README.md
 Version: N/A
 Revision: DEPS
-Update Mechanism: Manual (crbug.com/425922779)
+Update Mechanism: Manual (https://crbug.com/425922779)
 License: BSD-3-Clause
 License File: LICENSE
 Security Critical: no

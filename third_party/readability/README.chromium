@@ -3,7 +3,7 @@ Short Name (OPTIONAL): readability
 URL: https://github.com/mozilla/readability
 Version: 0.6.0
 Revision: 04fd32f72b448c12b02ba6c40928b67e510bac49
-Update Mechanism: Manual (crbug.com/422813143)
+Update Mechanism: Manual (https://crbug.com/422813143)
 License: Apache-2.0
 License File: LICENSE
 Shipped: yes
