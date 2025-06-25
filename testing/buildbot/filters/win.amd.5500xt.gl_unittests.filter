@@ -1,3 +1,2 @@
 # crbug.com/329691945
--DCompPresenterPixelTest/DCompPresenterPixelTest.SoftwareVideoSwapchain/0
--DCompPresenterPixelTest/DCompPresenterPixelTest.SoftwareVideoSwapchain/1
+-DCompPresenterPixelTest.SoftwareVideoSwapchain/*
