@@ -1551,7 +1551,8 @@ class MAYBE_GlicApiTestWithOneTabMoreDebounceDelay
         {{
             features::kGlicTabFocusDataDedupDebounce,
             {
-                {features::kGlicTabFocusDataDebounceDelayMs.name, "100"},
+                // Set an arbitrarily high debounce delay to avoid flakiness.
+                {features::kGlicTabFocusDataDebounceDelayMs.name, "1000"},
             },
         }},
         /*disabled_features=*/
