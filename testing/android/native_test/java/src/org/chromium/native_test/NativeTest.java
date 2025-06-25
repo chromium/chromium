@@ -172,13 +172,16 @@ public class NativeTest {
     }
 
     private void runTests(Activity activity) {
+        String commandLineFlags = mCommandLineFlags.toString();
+        Log.i(TAG, "test run starting with command line flags: %s", commandLineFlags);
         NativeTestJni.get()
                 .runTests(
-                        mCommandLineFlags.toString(),
+                        commandLineFlags,
                         mCommandLineFilePath,
                         mStdoutFilePath,
                         activity.getApplicationContext(),
                         UrlUtils.getIsolatedTestRoot());
+        Log.i(TAG, "test run finished with command line flags: %s", commandLineFlags);
         activity.finish();
         mReporter.testRunFinished(Process.myPid());
     }
