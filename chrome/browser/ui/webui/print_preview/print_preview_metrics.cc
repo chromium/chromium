@@ -6,10 +6,8 @@
 
 #include <optional>
 
-#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -108,17 +106,6 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
       ReportPrintSettingHistogram(is_color.value()
                                       ? PrintSettingsBuckets::kColor
                                       : PrintSettingsBuckets::kBlackAndWhite);
-    }
-
-    // Record whether the printing backend does not understand the printer's
-    // color capabilities. Do this only once per device.
-    static base::NoDestructor<base::flat_set<std::string>> seen_devices;
-    auto result =
-        seen_devices->insert(*print_settings.FindString(kSettingDeviceName));
-    bool is_new_device = result.second;
-    if (is_new_device) {
-      base::UmaHistogramBoolean("Printing.CUPS.UnknownPpdColorModel",
-                                unknown_color_model);
     }
   }
 

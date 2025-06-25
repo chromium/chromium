@@ -427,18 +427,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Printing.CUPS.UnknownPpdColorModel" enum="Boolean"
-    expires_after="2025-07-27">
-  <owner>awscreen@chromium.org</owner>
-  <owner>thestig@chromium.org</owner>
-  <summary>
-    Records instances in which print preview encounters an unknown PPD color
-    model. Recorded after print settings are received from print preview. Note
-    that this this histogram expired on 2021-02-01 and was extended on
-    2021-03-30.
-  </summary>
-</histogram>
-
 <histogram name="Printing.CUPS.UsbSetupSource" enum="UsbPrinterSetupSource"
     expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
