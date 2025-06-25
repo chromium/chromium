@@ -108,7 +108,6 @@ class PixAccountLinkingManagerTest : public testing::Test {
 };
 
 TEST_F(PixAccountLinkingManagerTest, SuccessPathShowsPrompt) {
-  EXPECT_CALL(*device_delegate(), SetOnReturnToChromeCallback);
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt);
 
   manager()->MaybeShowPixAccountLinkingPrompt();
@@ -134,13 +133,17 @@ TEST_F(PixAccountLinkingManagerTest,
   manager()->MaybeShowPixAccountLinkingPrompt();
 }
 
-TEST_F(PixAccountLinkingManagerTest, UserNotReturnedToChrome_PromptNotShown) {
-  // Simulate user not returning to Chrome, so the callback is never run.
-  ON_CALL(*device_delegate(), SetOnReturnToChromeCallback)
-      .WillByDefault([](base::OnceClosure callback) {});
+TEST_F(PixAccountLinkingManagerTest,
+       NoPaymentsProfile_ServerEligibilityNotChecked_PromptShown) {
+  payments_data_manager_->ClearPaymentsCustomerData();
 
-  EXPECT_CALL(*device_delegate(), SetOnReturnToChromeCallback);
-  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
+  // Backend call for GetDetailsForPaymentInstrument should not be called if
+  // user is not a payments customer. But, the prompt should still be shown.
+  EXPECT_CALL(
+      *multiple_request_payments_network_interface(),
+      GetDetailsForCreatePaymentInstrument(testing::_, testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt);
 
   manager()->MaybeShowPixAccountLinkingPrompt();
 }
@@ -178,6 +181,16 @@ TEST_F(PixAccountLinkingManagerTest,
   manager()->MaybeShowPixAccountLinkingPrompt();
 }
 
+TEST_F(PixAccountLinkingManagerTest, UserNotReturnedToChrome_PromptNotShown) {
+  // Simulate user not returning to Chrome, so the callback is never run.
+  EXPECT_CALL(*device_delegate(), SetOnReturnToChromeCallback)
+      .WillOnce([](base::OnceClosure callback) {});
+
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
+
+  manager()->MaybeShowPixAccountLinkingPrompt();
+}
+
 TEST_F(PixAccountLinkingManagerTest, OnAccepted) {
   EXPECT_CALL(client(), DismissPrompt);
   EXPECT_CALL(*device_delegate(), LaunchPixAccountLinkingPage);
@@ -197,57 +210,6 @@ TEST_F(PixAccountLinkingManagerTest, PromptDeclined_UserPrefUpdated) {
   // Verify that declining the prompt disables the account linking user pref.
   EXPECT_FALSE(autofill::prefs::IsFacilitatedPaymentsPixAccountLinkingEnabled(
       pref_service_.get()));
-}
-
-TEST_F(PixAccountLinkingManagerTest,
-       GetDetailsForCreatePaymentInstrumentBackendRequest) {
-  EXPECT_CALL(
-      *multiple_request_payments_network_interface(),
-      GetDetailsForCreatePaymentInstrument(testing::_, testing::_, testing::_));
-
-  manager()->MaybeShowPixAccountLinkingPrompt();
-}
-
-TEST_F(PixAccountLinkingManagerTest,
-       OnGetDetailsForCreatePaymentInstrumentResponseReceived_Eligible) {
-  test_api().OnGetDetailsForCreatePaymentInstrumentResponseReceived(
-      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
-      true);
-
-  EXPECT_TRUE(test_api().is_eligible_for_pix_account_linking().value());
-}
-
-TEST_F(PixAccountLinkingManagerTest,
-       OnGetDetailsForCreatePaymentInstrumentResponseReceived_NotEligible) {
-  test_api().OnGetDetailsForCreatePaymentInstrumentResponseReceived(
-      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
-      false);
-
-  EXPECT_FALSE(test_api().is_eligible_for_pix_account_linking().value());
-}
-
-TEST_F(
-    PixAccountLinkingManagerTest,
-    GetDetailsForCreatePaymentInstrumentResponseNotReceived_EligibilityNotSet) {
-  EXPECT_EQ(test_api().is_eligible_for_pix_account_linking(), std::nullopt);
-}
-
-TEST_F(
-    PixAccountLinkingManagerTest,
-    NoPaymentsCustomerData_GetDetailsForCreatePaymentInstrumentNotCalled_AccountLinkingEligible) {
-  payments_data_manager_->ClearPaymentsCustomerData();
-  // Backend call for GetDetailsForPaymentInstrument should not be called if
-  // user is not a payments customer.
-  EXPECT_CALL(
-      *multiple_request_payments_network_interface(),
-      GetDetailsForCreatePaymentInstrument(testing::_, testing::_, testing::_))
-      .Times(0);
-
-  manager()->MaybeShowPixAccountLinkingPrompt();
-
-  // If a user is not a payments customer, they are eligible for account linking
-  // by default.
-  EXPECT_TRUE(test_api().is_eligible_for_pix_account_linking().value());
 }
 
 }  // namespace payments::facilitated
