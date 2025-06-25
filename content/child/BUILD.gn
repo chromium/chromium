@@ -23,7 +23,6 @@ target(link_target_type, "child") {
   visibility = [
     ":*",
     "//content/gpu/*",
-    "//content/ppapi_plugin/*",
     "//content/public/child:child_sources",
     "//content/renderer/*",
     "//content/utility/*",

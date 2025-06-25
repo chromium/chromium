@@ -37,7 +37,6 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -719,24 +718,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Returns the PrerenderHostRegistry to start/cancel prerendering. This
   // doesn't return nullptr except for some tests.
   virtual PrerenderHostRegistry* GetPrerenderHostRegistry();
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  virtual void OnPepperInstanceCreated(RenderFrameHostImpl* source,
-                                       int32_t pp_instance) {}
-  virtual void OnPepperInstanceDeleted(RenderFrameHostImpl* source,
-                                       int32_t pp_instance) {}
-  virtual void OnPepperStartsPlayback(RenderFrameHostImpl* source,
-                                      int32_t pp_instance) {}
-  virtual void OnPepperStopsPlayback(RenderFrameHostImpl* source,
-                                     int32_t pp_instance) {}
-  virtual void OnPepperPluginCrashed(RenderFrameHostImpl* source,
-                                     const base::FilePath& plugin_path,
-                                     base::ProcessId plugin_pid) {}
-  virtual void OnPepperPluginHung(RenderFrameHostImpl* source,
-                                  int plugin_child_id,
-                                  const base::FilePath& path,
-                                  bool is_hung) {}
-#endif
 
   // The load progress for the main frame was changed.
   virtual void DidChangeLoadProgressForMainFrame(RenderFrameHostImpl* source) {}

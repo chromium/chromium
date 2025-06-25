@@ -281,15 +281,4 @@ bool ChromeContentBrowserClientPluginsPart::IsPluginAllowedToUseDevChannelAPIs(
   return channel <= version_info::Channel::DEV;
 }
 
-void ChromeContentBrowserClientPluginsPart::DidCreatePpapiPlugin(
-    content::BrowserPpapiHost* browser_host) {
-#if BUILDFLAG(ENABLE_PPAPI)
-  browser_host->GetPpapiHost()->AddHostFactoryFilter(
-      std::unique_ptr<ppapi::host::HostFactory>(
-          new ChromeBrowserPepperHostFactory(browser_host)));
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(ENABLE_PPAPI)
-}
-
 }  // namespace plugins

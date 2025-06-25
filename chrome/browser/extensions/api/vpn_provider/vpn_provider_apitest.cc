@@ -37,7 +37,6 @@
 #include "chromeos/ash/components/network/shill_property_handler.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/pepper_vpn_provider_resource_host_proxy.h"
 #include "content/public/browser/vpn_service_proxy.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -474,62 +473,6 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, VpnSuccess) {
   ASSERT_TRUE(catcher.GetNextResult());
 
   EXPECT_FALSE(IsConfigConnected());
-}
-
-class FakePepperVpnProviderResourceHostProxy
-    : public content::PepperVpnProviderResourceHostProxy {
- public:
-  FakePepperVpnProviderResourceHostProxy(
-      base::test::TestFuture<bool>* unbind,
-      base::test::TestFuture<std::vector<char>>* data)
-      : unbind_(unbind), data_(data) {}
-
-  void SendOnUnbind() override { unbind_->SetValue(true); }
-
-  void SendOnPacketReceived(const std::vector<char>& data) override {
-    data_->SetValue(data);
-  }
-
- private:
-  raw_ptr<base::test::TestFuture<bool>> unbind_;
-  raw_ptr<base::test::TestFuture<std::vector<char>>> data_;
-};
-
-IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, PepperProxy) {
-  base::test::TestFuture<bool> unbind;
-  base::test::TestFuture<std::vector<char>> data;
-  // This class will be used as a receiver for mojo::SelfOwnedReceiver.
-  // Therefore it's unsafe to keep these TestFuture-s as members (especially
-  // |unbind|).
-  auto pepper_proxy =
-      std::make_unique<FakePepperVpnProviderResourceHostProxy>(&unbind, &data);
-
-  extensions::ResultCatcher catcher;
-
-  // Create config and imitate the platform sending a
-  // PLATFORM_MESSAGE_CONNECTED.
-  EXPECT_TRUE(RunTest("createConfigConnectForBind"));
-  ASSERT_TRUE(catcher.GetNextResult());
-  OnPlatformMessage(kTestConfig, api_vpn::PlatformMessage::kConnected);
-  ASSERT_TRUE(catcher.GetNextResult());
-
-  // Synchronously bind the fake pepper proxy.
-  base::RunLoop run_loop;
-  service()->GetVpnServiceProxy()->Bind(
-      extension_id(), {}, kTestConfig, run_loop.QuitClosure(),
-      base::DoNothing(), std::move(pepper_proxy));
-  run_loop.Run();
-
-  // Assert that packets are routed through the proxy.
-  OnPacketReceived(kTestConfig,
-                   std::vector<char>{std::begin(kPacket), std::end(kPacket)});
-  ASSERT_TRUE(data.Wait());
-
-  // Assert that pepper proxy receives an OnUnbind event on
-  // PLATFORM_MESSAGE_DISCONNECTED.
-  OnPlatformMessage(kTestConfig, api_vpn::PlatformMessage::kDisconnected);
-  ASSERT_TRUE(catcher.GetNextResult());
-  ASSERT_TRUE(unbind.Wait());
 }
 
 class TestEventObserverForExtension

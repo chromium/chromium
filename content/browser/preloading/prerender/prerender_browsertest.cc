@@ -135,10 +135,6 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/common/pepper_plugin.mojom.h"
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 using ::testing::Exactly;
 
 namespace content {
@@ -7532,59 +7528,6 @@ void LoadAndWaitForPrerenderDestroyed(test::PrerenderTestHelper* helper,
                     .is_null());
   }
 }
-
-#if BUILDFLAG(ENABLE_PPAPI)
-// Tests that we will cancel the prerendering if the prerendering page attempts
-// to use plugins.
-//
-// TODO(crbug.com/40180674): This does not cover embedders that override
-// `ContentRendererClient::OverrideCreatePlugin()` (such as for Chrome's PDF
-// viewer), as cancellation depends on the renderer attempting to bind
-// `content::mojom::PepperHost`.
-IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
-                       PluginsCancelPrerendering) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  LoadAndWaitForPrerenderDestroyed(
-      prerender_helper(), GetUrl("/prerender/page-with-embedded-plugin.html"),
-      GetTargetHint());
-  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kMojoBinderPolicy);
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
-      PrerenderCancelledInterface::kUnknown, 1);
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledUnknownInterface."
-      "SpeculationRule",
-      InterfaceNameHasher(mojom::PepperHost::Name_), 1);
-
-  LoadAndWaitForPrerenderDestroyed(
-      prerender_helper(), GetUrl("/prerender/page-with-object-plugin.html"),
-      GetTargetHint());
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kMojoBinderPolicy, 2);
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
-      PrerenderCancelledInterface::kUnknown, 2);
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledUnknownInterface."
-      "SpeculationRule",
-      InterfaceNameHasher(mojom::PepperHost::Name_), 2);
-
-  // Run JavaScript code to inject a new iframe to load a page, and see if it
-  // correctly runs and results in making a navigation request in the iframe. If
-  // the initiator is still working normally after prerendering cancellation,
-  // this request should arrive.
-  RenderFrameHostImpl* main_frame_host = current_frame_host();
-  EXPECT_TRUE(AddTestUtilJS(main_frame_host));
-  EXPECT_TRUE(ExecJs(main_frame_host, "add_iframe_async('/title1.html')",
-                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
-  WaitForRequest(GetUrl("/title1.html"), 1);
-}
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 #if BUILDFLAG(IS_ANDROID)
 // On Android the Notification constructor throws an exception regardless of

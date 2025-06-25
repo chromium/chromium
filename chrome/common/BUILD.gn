@@ -535,6 +535,7 @@ static_library("url_constants") {
     "//content/public/common",
     "//extensions/buildflags",
     "//net:buildflags",
+    "//ppapi/buildflags:buildflags",
     "//printing/buildflags",
   ]
   deps = [

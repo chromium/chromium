@@ -7,13 +7,8 @@
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/common/webplugininfo.h"
-#include "ppapi/buildflags/buildflags.h"
 
 namespace content {
-
-#if BUILDFLAG(ENABLE_PPAPI)
-ContentPluginInfo::EntryPoints::EntryPoints() = default;
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 ContentPluginInfo::ContentPluginInfo() = default;
 ContentPluginInfo::ContentPluginInfo(const ContentPluginInfo& other) = default;

@@ -60,8 +60,6 @@ ProcessTypeForUma CurrentProcessType() {
     return ProcessTypeForUma::kSandboxHelper;
   if (process_type == switches::kGpuProcess)
     return ProcessTypeForUma::kGpu;
-  if (process_type == switches::kPpapiPluginProcess)
-    return ProcessTypeForUma::kPpapiPlugin;
   NOTREACHED() << "Unexpected process type: " << process_type;
 }
 

@@ -783,12 +783,6 @@ class BLINK_EXPORT WebLocalFrameClient {
     return v8::Local<v8::Object>();
   }
 
-  // Returns true if it has a focused plugin. |rect| is an output parameter to
-  // get a caret bounds from the focused plugin.
-  virtual bool GetCaretBoundsFromFocusedPlugin(gfx::Rect& rect) {
-    return false;
-  }
-
   // Update the current frame selection to the browser if it has changed since
   // the last call. Note that this only synchronizes the selection, if the
   // TextInputState may have changed call DidChangeSelection instead.
@@ -817,10 +811,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // layout that happened after an interesting document lifecycle change (see
   // WebMeaningfulLayout for details.)
   virtual void DidMeaningfulLayout(WebMeaningfulLayout) {}
-
-  // Notification that the BeginMainFrame completed, was committed into the
-  // compositor (thread) and submitted to the display compositor.
-  virtual void DidCommitAndDrawCompositorFrame() {}
 
   // Inform the widget that it was hidden.
   virtual void WasHidden() {}

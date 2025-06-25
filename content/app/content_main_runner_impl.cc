@@ -107,7 +107,6 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/first_party_sets/local_set_declaration.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
@@ -164,11 +163,6 @@
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 #include "third_party/webrtc_overrides/init_webrtc.h"  // nogncheck
 
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "content/common/pepper_plugin_list.h"
-#include "content/public/common/content_plugin_info.h"
-#endif
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/content_client.h"
@@ -210,9 +204,6 @@
 
 namespace content {
 extern int GpuMain(MainFunctionParams);
-#if BUILDFLAG(ENABLE_PPAPI)
-extern int PpapiPluginMain(MainFunctionParams);
-#endif
 extern int RendererMain(MainFunctionParams);
 extern int UtilityMain(MainFunctionParams);
 }  // namespace content
@@ -336,8 +327,6 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
       // becomes a renderer process.
       switches::kForceDeviceScaleFactor,
       switches::kLoggingLevel,
-      switches::kPpapiInProcess,
-      switches::kRegisterPepperPlugins,
       switches::kV,
       switches::kVModule,
   };
@@ -392,25 +381,6 @@ void InitializeZygoteSandboxForBrowserProcess(
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_PPAPI)
-// Loads the (native) libraries but does not initialize them (i.e., does not
-// call PPP_InitializeModule). This is needed by the zygote on Linux to get
-// access to the plugins before entering the sandbox.
-void PreloadPepperPlugins() {
-  std::vector<ContentPluginInfo> plugins;
-  ComputePepperPluginList(&plugins);
-  for (const auto& plugin : plugins) {
-    if (!plugin.is_internal) {
-      base::NativeLibraryLoadError error;
-      base::NativeLibrary library =
-          base::LoadNativeLibrary(plugin.path, &error);
-      LOG_IF(ERROR, !library) << "Unable to load plugin " << plugin.path.value()
-                              << " " << error.ToString();
-    }
-  }
-}
-#endif  // BUILDFLAG(ENABLE_PPAPI)
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 // Loads registered library CDMs but does not initialize them. This is needed by
 // the zygote on Linux to get access to the CDMs before entering the sandbox.
@@ -444,10 +414,6 @@ void PreSandboxInit() {
   // allowed by the sandbox.
   base::GetMaxNumberOfInotifyWatches();
 
-#if BUILDFLAG(ENABLE_PPAPI)
-  // Ensure access to the Pepper plugins before the sandbox is turned on.
-  PreloadPepperPlugins();
-#endif
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   // Ensure access to the library CDMs before the sandbox is turned on.
   PreloadLibraryCdms();
@@ -601,9 +567,6 @@ NO_STACK_PROTECTOR int RunZygote(ContentMainDelegate* delegate) {
     {switches::kGpuProcess, GpuMain},
     {switches::kRendererProcess, RendererMain},
     {switches::kUtilityProcess, UtilityMain},
-#if BUILDFLAG(ENABLE_PPAPI)
-    {switches::kPpapiPluginProcess, PpapiPluginMain},
-#endif
   };
 
   std::vector<std::unique_ptr<ZygoteForkDelegate>> zygote_fork_delegates;
@@ -750,9 +713,6 @@ NO_STACK_PROTECTOR int RunOtherNamedProcessTypeMain(
     InstallConsoleControlHandler(/*is_browser_process=*/false);
 #endif
   static const auto kMainFunctions = std::to_array<MainFunction>({
-#if BUILDFLAG(ENABLE_PPAPI)
-      {switches::kPpapiPluginProcess, PpapiPluginMain},
-#endif  // BUILDFLAG(ENABLE_PPAPI)
       {switches::kUtilityProcess, UtilityMain},
       {switches::kRendererProcess, RendererMain},
       {switches::kGpuProcess, GpuMain},

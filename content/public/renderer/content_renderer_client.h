@@ -294,16 +294,6 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual std::unique_ptr<blink::WebPrescientNetworking>
   CreatePrescientNetworking(RenderFrame* render_frame);
 
-  // Returns true if the given Pepper plugin is external (requiring special
-  // startup steps).
-  virtual bool IsExternalPepperPlugin(const std::string& module_name);
-
-  // Returns true if the given Pepper plugin should process content from
-  // different origins in different PPAPI processes. This is generally a
-  // worthwhile precaution when the plugin provides an active scripting
-  // language.
-  virtual bool IsOriginIsolatedPepperPlugin(const base::FilePath& plugin_path);
-
   // Allows embedder to register the key system(s) it supports.
   virtual std::unique_ptr<media::KeySystemSupportRegistration>
   GetSupportedKeySystems(RenderFrame* render_frame,

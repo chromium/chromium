@@ -240,7 +240,6 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/net_buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "render_frame_host_impl.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -334,10 +333,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "content/browser/renderer_host/render_frame_host_impl_ppapi_support.h"
 #endif
 
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
@@ -12974,15 +12969,6 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
     // platform nodes corresponding to the blink nodes will have the same IDs.
   }
 }
-
-#if BUILDFLAG(ENABLE_PPAPI)
-RenderFrameHostImplPpapiSupport& RenderFrameHostImpl::GetPpapiSupport() {
-  if (!ppapi_support_) {
-    ppapi_support_ = std::make_unique<RenderFrameHostImplPpapiSupport>(*this);
-  }
-  return *ppapi_support_;
-}
-#endif
 
 void RenderFrameHostImpl::RequestAXTreeSnapshot(
     AXTreeSnapshotCallback callback,

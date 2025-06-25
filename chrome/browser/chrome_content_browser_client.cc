@@ -305,7 +305,6 @@
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_main_parts.h"
-#include "content/public/browser/browser_ppapi_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browser_url_handler.h"
@@ -4913,43 +4912,6 @@ ChromeContentBrowserClient::GetLocalTracesDirectory() {
   }
   DCHECK(!user_data_dir.empty());
   return user_data_dir;
-}
-
-void ChromeContentBrowserClient::DidCreatePpapiPlugin(
-    content::BrowserPpapiHost* browser_host) {
-#if BUILDFLAG(ENABLE_PLUGINS)
-  ChromeContentBrowserClientPluginsPart::DidCreatePpapiPlugin(browser_host);
-#endif
-}
-
-content::BrowserPpapiHost*
-ChromeContentBrowserClient::GetExternalBrowserPpapiHost(int plugin_process_id) {
-  // TODO(crbug.com/423859723): Remove method.
-  return nullptr;
-}
-
-bool ChromeContentBrowserClient::AllowPepperSocketAPI(
-    content::BrowserContext* browser_context,
-    const GURL& url,
-    bool private_api,
-    const content::SocketPermissionRequest* params) {
-#if BUILDFLAG(ENABLE_PLUGINS) && BUILDFLAG(ENABLE_EXTENSIONS)
-  return ChromeContentBrowserClientPluginsPart::AllowPepperSocketAPI(
-      browser_context, url, private_api, params);
-#else
-  return false;
-#endif
-}
-
-bool ChromeContentBrowserClient::IsPepperVpnProviderAPIAllowed(
-    content::BrowserContext* browser_context,
-    const GURL& url) {
-#if BUILDFLAG(ENABLE_PLUGINS) && BUILDFLAG(ENABLE_EXTENSIONS)
-  return ChromeContentBrowserClientPluginsPart::IsPepperVpnProviderAPIAllowed(
-      browser_context, url);
-#else
-  return false;
-#endif
 }
 
 std::unique_ptr<content::VpnServiceProxy>

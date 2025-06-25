@@ -5,7 +5,6 @@
 import("//build/config/cast.gni")
 import("//build/config/ui.gni")  # For the toolkit_views variables.
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//ppapi/buildflags/buildflags.gni")  # For the enable_plugins variable.
 import("//printing/buildflags/buildflags.gni")
 import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 
@@ -211,7 +210,6 @@ static_library("web_test_browser") {
     "//net",
     "//net:net_resources",
     "//net:test_support",
-    "//ppapi/buildflags",
     "//sandbox",
     "//services/device/public/cpp:test_support",
     "//services/device/public/cpp/compute_pressure:buildflags",
@@ -232,15 +230,6 @@ static_library("web_test_browser") {
     "//ui/shell_dialogs:shell_dialogs",
     "//url",
   ]
-
-  # TODO(crbug.com/40139469): Blink test plugin must be migrated from PPAPI.
-  if (enable_ppapi) {
-    deps += [
-      "//content/ppapi_plugin",
-      "//ppapi:blink_deprecated_test_plugin",
-      "//ppapi:blink_test_plugin",
-    ]
-  }
 
   if (is_mac) {
     deps += [ "//ui/display:test_support" ]

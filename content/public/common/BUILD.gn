@@ -345,10 +345,7 @@ source_set("common_sources") {
       "content_plugin_info.cc",
       "content_plugin_info.h",
     ]
-
-    if (enable_ppapi) {
-      deps += [ "//ppapi/c" ]
-    }
+    public_deps += [ "//ppapi/buildflags" ]
   }
 
   if (use_clang_profiling_inside_sandbox) {

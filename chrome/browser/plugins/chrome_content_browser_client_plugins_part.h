@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PLUGINS_CHROME_CONTENT_BROWSER_CLIENT_PLUGINS_PART_H_
 
 #include "chrome/browser/chrome_content_browser_client_parts.h"
-#include "content/public/browser/browser_ppapi_host.h"
 #include "content/public/common/socket_permission_request.h"
 
 namespace plugins {
@@ -42,8 +41,6 @@ class ChromeContentBrowserClientPluginsPart
   static bool IsPluginAllowedToCallRequestOSFileHandle(
       content::BrowserContext* browser_context,
       const GURL& url);
-
-  static void DidCreatePpapiPlugin(content::BrowserPpapiHost* browser_host);
 
  private:
   void ExposeInterfacesToRendererForRenderFrameHost(

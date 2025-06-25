@@ -795,7 +795,6 @@ class CORE_EXPORT WebFrameWidgetImpl
       override;
   void BeginUpdateLayers() override;
   void EndUpdateLayers() override;
-  void DidCommitAndDrawCompositorFrame() override;
   void DidObserveFirstScrollDelay(
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override;

@@ -25,8 +25,8 @@ enum ProcessType {
   PROCESS_TYPE_ZYGOTE,
   PROCESS_TYPE_SANDBOX_HELPER,
   PROCESS_TYPE_GPU,
-  PROCESS_TYPE_PPAPI_PLUGIN,
-  PROCESS_TYPE_PPAPI_BROKER,
+  PROCESS_TYPE_PPAPI_PLUGIN,  // Deprecated
+  PROCESS_TYPE_PPAPI_BROKER,  // Deprecated
   // Custom process types used by the embedder should start from here.
   PROCESS_TYPE_CONTENT_END,
   // If any embedder has more than 10 custom process types, update this.

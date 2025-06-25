@@ -2365,19 +2365,6 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(MediaSessionImplSyncBrowserTest,
-                       PepperPlayerNotAddedIfFocusFailed) {
-  SetSyncAudioFocusResult(AudioFocusDelegate::AudioFocusResult::kFailed);
-
-  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
-      media::MediaContentType::kPepper);
-  int player_id = player_observer->StartNewPlayer();
-
-  EXPECT_FALSE(AddPlayer(player_observer.get(), player_id));
-
-  EXPECT_FALSE(media_session_->HasPepper());
-}
-
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest, Async_RequestFailure_Gain) {
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
       media::MediaContentType::kPersistent);
@@ -2902,23 +2889,6 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
-                       PositionStateWithPepperPlayer) {
-  media_session::MediaPosition expected_position(
-      /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
-      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
-
-  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
-      media::MediaContentType::kPepper);
-  int player_id = player_observer->StartNewPlayer();
-  SetPosition(player_observer.get(), player_id, expected_position);
-  AddPlayer(player_observer.get(), player_id);
-
-  // Pepper players should be ignored for position data.
-  media_session::test::MockMediaSessionMojoObserver observer(*media_session_);
-  observer.WaitForEmptyPosition();
-}
-
-IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
                        PositionStateRouteWithTwoPlayers_OneShot) {
   media_session::MediaPosition expected_position(
       /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
@@ -2940,33 +2910,6 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
     // If we add an OneShot player then we should become empty again.
     media_session::test::MockMediaSessionMojoObserver observer(*media_session_);
     player_observer->SetMediaContentType(media::MediaContentType::kOneShot);
-    StartNewPlayer(player_observer.get());
-    observer.WaitForEmptyPosition();
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
-                       PositionStateRouteWithTwoPlayers_Pepper) {
-  media_session::MediaPosition expected_position(
-      /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
-      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
-
-  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
-      media::MediaContentType::kPersistent);
-  int player_id = player_observer->StartNewPlayer();
-  SetPosition(player_observer.get(), player_id, expected_position);
-
-  {
-    // With one normal player we should use the position that one provides.
-    media_session::test::MockMediaSessionMojoObserver observer(*media_session_);
-    AddPlayer(player_observer.get(), player_id);
-    observer.WaitForExpectedPosition(expected_position);
-  }
-
-  {
-    // If we add a Papper player then we should become empty again.
-    media_session::test::MockMediaSessionMojoObserver observer(*media_session_);
-    player_observer->SetMediaContentType(media::MediaContentType::kPepper);
     StartNewPlayer(player_observer.get());
     observer.WaitForEmptyPosition();
   }

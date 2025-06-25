@@ -544,16 +544,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   base::FilePath GetNetLogDefaultDirectory() override;
   base::FilePath GetFirstPartySetsDirectory() override;
   std::optional<base::FilePath> GetLocalTracesDirectory() override;
-  void DidCreatePpapiPlugin(content::BrowserPpapiHost* browser_host) override;
-  content::BrowserPpapiHost* GetExternalBrowserPpapiHost(
-      int plugin_process_id) override;
-  bool AllowPepperSocketAPI(
-      content::BrowserContext* browser_context,
-      const GURL& url,
-      bool private_api,
-      const content::SocketPermissionRequest* params) override;
-  bool IsPepperVpnProviderAPIAllowed(content::BrowserContext* browser_context,
-                                     const GURL& url) override;
   std::unique_ptr<content::VpnServiceProxy> GetVpnServiceProxy(
       content::BrowserContext* browser_context) override;
   std::unique_ptr<ui::SelectFilePolicy> CreateSelectFilePolicy(

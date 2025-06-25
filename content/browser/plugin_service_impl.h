@@ -15,16 +15,11 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/plugin_service.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(ENABLE_PLUGINS)
 #error "Plugins should be enabled"
-#endif
-
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "content/browser/ppapi_plugin_process_host.h"
 #endif
 
 namespace content {
@@ -71,28 +66,6 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
                               bool add_at_beginning) override;
   void UnregisterInternalPlugin(const base::FilePath& path) override;
   void GetInternalPlugins(std::vector<WebPluginInfo>* plugins) override;
-  bool PpapiDevChannelSupported(BrowserContext* browser_context,
-                                const GURL& document_url) override;
-
-#if BUILDFLAG(ENABLE_PPAPI)
-  // Returns the plugin process host corresponding to the plugin process that
-  // has been started by this service. This will start a process to host the
-  // 'plugin_path' if needed. If the process fails to start, the return value
-  // is NULL.
-  PpapiPluginProcessHost* FindOrStartPpapiPluginProcess(
-      int render_process_id,
-      const base::FilePath& plugin_path,
-      const base::FilePath& profile_data_directory,
-      const std::optional<url::Origin>& origin_lock);
-
-  // Opens a channel to a plugin process for the given mime type, starting
-  // a new plugin process if necessary.
-  void OpenChannelToPpapiPlugin(int render_process_id,
-                                const base::FilePath& plugin_path,
-                                const base::FilePath& profile_data_directory,
-                                const std::optional<url::Origin>& origin_lock,
-                                PpapiPluginProcessHost::PluginClient* client);
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   // Used to monitor plugin stability.
   void RegisterPluginCrash(const base::FilePath& plugin_path);
@@ -112,16 +85,6 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   // list yet.  It's generated lazily.
   PluginServiceImpl();
   ~PluginServiceImpl() override;
-
-#if BUILDFLAG(ENABLE_PPAPI)
-  // Returns the plugin process host corresponding to the plugin process that
-  // has been started by this service. Returns NULL if no process has been
-  // started.
-  PpapiPluginProcessHost* FindPpapiPluginProcess(
-      const base::FilePath& plugin_path,
-      const base::FilePath& profile_data_directory,
-      const std::optional<url::Origin>& origin_lock);
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   void RegisterPlugins();
 

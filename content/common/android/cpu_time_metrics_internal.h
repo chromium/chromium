@@ -37,8 +37,8 @@ enum class ProcessTypeForUma {
   kZygote,
   kSandboxHelper,
   kGpu,
-  kPpapiPlugin,
-  kPpapiBroker,
+  kPpapiPlugin,  // deprecated
+  kPpapiBroker,  // deprecated
   kMaxValue = kPpapiBroker,
 };
 

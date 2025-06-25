@@ -326,28 +326,6 @@ TEST_F(MediaSessionImplTest, NotifyDelegateOnStateChange) {
   EXPECT_EQ(MediaSessionInfo::SessionState::kInactive, delegate->GetState());
 }
 
-TEST_F(MediaSessionImplTest, PepperForcesDuckAndRequestsFocus) {
-  int player_id = player_observer_->StartNewPlayer();
-
-  {
-    player_observer_->SetMediaContentType(media::MediaContentType::kPepper);
-    MockMediaSessionMojoObserver observer(*GetMediaSession());
-    GetMediaSession()->AddPlayer(player_observer_.get(), player_id);
-    observer.WaitForState(MediaSessionInfo::SessionState::kActive);
-    player_observer_->SetMediaContentType(media::MediaContentType::kPersistent);
-  }
-
-  EXPECT_TRUE(GetForceDuck(GetMediaSession()));
-
-  {
-    MockMediaSessionMojoObserver observer(*GetMediaSession());
-    GetMediaSession()->RemovePlayer(player_observer_.get(), player_id);
-    observer.WaitForState(MediaSessionInfo::SessionState::kInactive);
-  }
-
-  EXPECT_FALSE(GetForceDuck(GetMediaSession()));
-}
-
 TEST_F(MediaSessionImplTest, RegisterObserver) {
   // There is no way to get the number of mojo observers so we should just
   // remove them all and check if the mojo observers interface ptr set is

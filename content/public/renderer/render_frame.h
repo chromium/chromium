@@ -41,8 +41,6 @@ class AssociatedInterfaceRegistry;
 class BrowserInterfaceBrokerProxy;
 class WebFrame;
 class WebLocalFrame;
-class WebPlugin;
-struct WebPluginParams;
 class WebView;
 }  // namespace blink
 
@@ -56,7 +54,6 @@ namespace content {
 class RenderAccessibility;
 struct RenderFrameMediaPlaybackOptions;
 class RenderFrameVisitor;
-struct WebPluginInfo;
 
 // A class that takes a snapshot of the accessibility tree. Accessibility
 // support in Blink is enabled for the lifetime of this object, which can
@@ -136,12 +133,6 @@ class CONTENT_EXPORT RenderFrame :
 
   // Issues a request to show the virtual keyboard.
   virtual void ShowVirtualKeyboard() = 0;
-
-  // Create a new Pepper plugin depending on |info|. Returns NULL if no plugin
-  // was found.
-  virtual blink::WebPlugin* CreatePlugin(
-      const WebPluginInfo& info,
-      const blink::WebPluginParams& params) = 0;
 
   // Execute a string of JavaScript in this frame's context.
   virtual void ExecuteJavaScript(const std::u16string& javascript) = 0;

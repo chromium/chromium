@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message_start.h"
+#include "ppapi/buildflags/buildflags.h"
 
 // Include once to get the type definitions
 #include "tools/ipc_fuzzer/message_lib/all_messages.h"

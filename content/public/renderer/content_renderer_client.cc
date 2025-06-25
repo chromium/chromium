@@ -194,22 +194,6 @@ ContentRendererClient::CreatePrescientNetworking(RenderFrame* render_frame) {
   return nullptr;
 }
 
-bool ContentRendererClient::IsExternalPepperPlugin(
-    const std::string& module_name) {
-  return false;
-}
-
-bool ContentRendererClient::IsOriginIsolatedPepperPlugin(
-    const base::FilePath& plugin_path) {
-  // Hosting plugins in-process is inherently incompatible with attempting to
-  // process-isolate plugins from different origins.
-  auto* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(switches::kPpapiInProcess))
-    return false;
-
-  return true;
-}
-
 std::unique_ptr<media::KeySystemSupportRegistration>
 ContentRendererClient::GetSupportedKeySystems(
     RenderFrame* render_frame,

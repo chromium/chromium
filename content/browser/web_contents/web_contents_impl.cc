@@ -179,7 +179,6 @@
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "partition_alloc/buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_destination.h"
@@ -251,10 +250,6 @@
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 #include "content/browser/date_time_chooser/date_time_chooser.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "content/browser/media/session/pepper_playback_observer.h"
 #endif
 
 #if BUILDFLAG(ENABLE_VR)
@@ -1406,10 +1401,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   TRACE_EVENT0("content", "WebContentsImpl::WebContentsImpl");
   WebContentsOfBrowserContext::Attach(*this);
   node_.SetFocusedFrameTree(&primary_frame_tree_);
-#if BUILDFLAG(ENABLE_PPAPI)
-  pepper_playback_observer_ = std::make_unique<PepperPlaybackObserver>(this);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
   safe_area_insets_host_ = SafeAreaInsetsHost::Create(this);
 #endif
@@ -1538,12 +1529,6 @@ WebContentsImpl::~WebContentsImpl() {
   // Currently the only instances of the non-primary FrameTrees are for
   // prerendering. Shutdown them by destructing PrerenderHostRegistry.
   prerender_host_registry_.reset();
-
-#if BUILDFLAG(ENABLE_PPAPI)
-  // Call this before WebContentsDestroyed() is broadcasted since
-  // AudioFocusManager will be destroyed after that.
-  pepper_playback_observer_.reset();
-#endif  // defined(ENABLED_PLUGINS)
 
   // If audio is playing then notify external observers of the audio stream
   // disappearing.
@@ -8261,60 +8246,6 @@ void WebContentsImpl::OpenColorChooser(
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(ENABLE_PPAPI)
-void WebContentsImpl::OnPepperInstanceCreated(RenderFrameHostImpl* source,
-                                              int32_t pp_instance) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnPepperInstanceCreated",
-                        "render_frame_host", source);
-  observers_.NotifyObservers(&WebContentsObserver::PepperInstanceCreated);
-  pepper_playback_observer_->PepperInstanceCreated(source, pp_instance);
-}
-
-void WebContentsImpl::OnPepperInstanceDeleted(RenderFrameHostImpl* source,
-                                              int32_t pp_instance) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnPepperInstanceDeleted",
-                        "render_frame_host", source);
-  observers_.NotifyObservers(&WebContentsObserver::PepperInstanceDeleted);
-  pepper_playback_observer_->PepperInstanceDeleted(source, pp_instance);
-}
-
-void WebContentsImpl::OnPepperPluginHung(RenderFrameHostImpl* source,
-                                         int plugin_child_id,
-                                         const base::FilePath& path,
-                                         bool is_hung) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnPepperPluginHung",
-                        "render_frame_host", source);
-  observers_.NotifyObservers(&WebContentsObserver::PluginHungStatusChanged,
-                             plugin_child_id, path, is_hung);
-}
-
-void WebContentsImpl::OnPepperStartsPlayback(RenderFrameHostImpl* source,
-                                             int32_t pp_instance) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnPepperStartsPlayback",
-                        "render_frame_host", source);
-  pepper_playback_observer_->PepperStartsPlayback(source, pp_instance);
-}
-
-void WebContentsImpl::OnPepperStopsPlayback(RenderFrameHostImpl* source,
-                                            int32_t pp_instance) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnPepperStopsPlayback",
-                        "render_frame_host", source);
-  pepper_playback_observer_->PepperStopsPlayback(source, pp_instance);
-}
-
-void WebContentsImpl::OnPepperPluginCrashed(RenderFrameHostImpl* source,
-                                            const base::FilePath& plugin_path,
-                                            base::ProcessId plugin_pid) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnPepperPluginCrashed",
-                        "render_frame_host", source);
-  // TODO(nick): Eliminate the |plugin_pid| parameter, which can't be trusted,
-  // and is only used by WebTestControlHost.
-  observers_.NotifyObservers(&WebContentsObserver::PluginCrashed, plugin_path,
-                             plugin_pid);
-}
-
-#endif  // BUILDFLAG(ENABLE_PPAPI)
-
 void WebContentsImpl::UpdateFaviconURL(
     RenderFrameHostImpl* source,
     const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
@@ -8624,9 +8555,6 @@ void WebContentsImpl::RenderFrameDeleted(
     observers_.NotifyObservers(&WebContentsObserver::RenderFrameDeleted,
                                render_frame_host);
   }
-#if BUILDFLAG(ENABLE_PPAPI)
-  pepper_playback_observer_->RenderFrameDeleted(render_frame_host);
-#endif
 
   if (safe_area_insets_host_) {
     safe_area_insets_host_->RenderFrameDeleted(render_frame_host);

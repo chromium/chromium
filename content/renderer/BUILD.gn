@@ -122,8 +122,6 @@ target(link_target_type, "renderer") {
     "renderer_main_platform_delegate.h",
     "renderer_navigation_metrics_manager.cc",
     "renderer_navigation_metrics_manager.h",
-    "sad_plugin.cc",
-    "sad_plugin.h",
     "service_worker/controller_service_worker_connector.cc",
     "service_worker/controller_service_worker_connector.h",
     "service_worker/embedded_worker_instance_client_impl.cc",

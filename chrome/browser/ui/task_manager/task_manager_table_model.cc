@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
 
 #include <stddef.h>
@@ -19,6 +18,7 @@
 #include "base/i18n/string_search.h"
 #include "base/i18n/time_formatting.h"
 #include "base/i18n/unicodestring.h"
+#include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"

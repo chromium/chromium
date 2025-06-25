@@ -129,9 +129,6 @@ class MediaSessionImpl : public MediaSession,
   // Returns if the session is currently suspended.
   CONTENT_EXPORT bool IsSuspended() const;
 
-  // Returns whether the session has Pepper instances.
-  CONTENT_EXPORT bool HasPepper() const;
-
   // WebContentsObserver implementation
   void WebContentsDestroyed() override;
   void RenderFrameDeleted(RenderFrameHost* rfh) override;
@@ -450,9 +447,6 @@ class MediaSessionImpl : public MediaSession,
   // ducking.
   double GetVolumeMultiplier() const;
 
-  CONTENT_EXPORT bool AddPepperPlayer(MediaSessionPlayerObserver* observer,
-                                      int player_id);
-
   CONTENT_EXPORT bool AddOneShotPlayer(MediaSessionPlayerObserver* observer,
                                        int player_id);
 
@@ -567,9 +561,6 @@ class MediaSessionImpl : public MediaSession,
   // Standard video playback (e.g. WebMediaPlayerImpl players).
   std::map<PlayerIdentifier, media_session::mojom::AudioFocusType>
       normal_players_;
-
-  // Pepper players (PPAPI players).
-  base::flat_set<PlayerIdentifier> pepper_players_;
 
   // Players that are playing in the web contents but we cannot control (e.g.
   // MediaStream).

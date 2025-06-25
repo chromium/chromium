@@ -45,7 +45,6 @@
 #include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/blink/public/common/features.h"
@@ -82,10 +81,6 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/child/sandboxed_process_thread_type_handler.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "content/renderer/pepper/pepper_plugin_registry.h"
 #endif
 
 #if BUILDFLAG(MOJO_RANDOM_DELAYS_ENABLED)
@@ -216,10 +211,6 @@ int RendererMain(MainFunctionParams parameters) {
 
   platform.PlatformInitialize();
 
-#if BUILDFLAG(ENABLE_PPAPI)
-  // Load pepper plugins before engaging the sandbox.
-  PepperPluginRegistry::GetInstance();
-#endif
   // Initialize WebRTC before engaging the sandbox.
   // NOTE: On linux, this call could already have been made from
   // zygote_main_linux.cc.  However, calling multiple times from the same thread

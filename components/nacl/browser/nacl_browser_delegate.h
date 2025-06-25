@@ -8,12 +8,15 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "content/public/browser/browser_ppapi_host.h"
 
 class GURL;
 
 namespace base {
 class FilePath;
+}
+
+namespace content {
+class BrowserPpapiHost;
 }
 
 namespace ppapi {

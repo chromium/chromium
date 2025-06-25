@@ -44,32 +44,7 @@
 #include "content/public/common/webplugininfo.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "content/browser/ppapi_plugin_process_host.h"
-#include "content/common/pepper_plugin_list.h"
-#include "ppapi/shared_impl/ppapi_permissions.h"
-#endif  // BUILDFLAG(ENABLE_PPAPI)
-
 namespace content {
-
-namespace {
-
-#if BUILDFLAG(ENABLE_PPAPI)
-int CountPpapiPluginProcessesForProfile(
-    const base::FilePath& plugin_path,
-    const base::FilePath& profile_data_directory) {
-  int count = 0;
-  for (PpapiPluginProcessHostIterator iter; !iter.Done(); ++iter) {
-    if (iter->plugin_path() == plugin_path &&
-        iter->profile_data_directory() == profile_data_directory) {
-      ++count;
-    }
-  }
-  return count;
-}
-#endif  // BUILDFLAG(ENABLE_PPAPI)
-
-}  // namespace
 
 // static
 PluginService* PluginService::GetInstance() {
@@ -102,85 +77,6 @@ void PluginServiceImpl::Init() {
 
   RegisterPlugins();
 }
-
-#if BUILDFLAG(ENABLE_PPAPI)
-PpapiPluginProcessHost* PluginServiceImpl::FindPpapiPluginProcess(
-    const base::FilePath& plugin_path,
-    const base::FilePath& profile_data_directory,
-    const std::optional<url::Origin>& origin_lock) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  for (PpapiPluginProcessHostIterator iter; !iter.Done(); ++iter) {
-    if (iter->plugin_path() == plugin_path &&
-        iter->profile_data_directory() == profile_data_directory &&
-        (!iter->origin_lock() || iter->origin_lock() == origin_lock)) {
-      return *iter;
-    }
-  }
-  return nullptr;
-}
-
-PpapiPluginProcessHost* PluginServiceImpl::FindOrStartPpapiPluginProcess(
-    int render_process_id,
-    const base::FilePath& plugin_path,
-    const base::FilePath& profile_data_directory,
-    const std::optional<url::Origin>& origin_lock) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (filter_ && !filter_->CanLoadPlugin(render_process_id, plugin_path)) {
-    VLOG(1) << "Unable to load ppapi plugin: " << plugin_path.MaybeAsASCII();
-    return nullptr;
-  }
-
-  // Validate that the plugin is actually registered.
-  const ContentPluginInfo* info = GetRegisteredPluginInfo(plugin_path);
-  if (!info) {
-    VLOG(1) << "Unable to find ppapi plugin registration for: "
-            << plugin_path.MaybeAsASCII();
-    return nullptr;
-  }
-
-  PpapiPluginProcessHost* plugin_host =
-      FindPpapiPluginProcess(plugin_path, profile_data_directory, origin_lock);
-  if (plugin_host)
-    return plugin_host;
-
-  // Avoid fork bomb.
-  if (origin_lock.has_value() && CountPpapiPluginProcessesForProfile(
-                                     plugin_path, profile_data_directory) >=
-                                     max_ppapi_processes_per_profile_) {
-    return nullptr;
-  }
-
-  // This plugin isn't loaded by any plugin process, so create a new process.
-  plugin_host = PpapiPluginProcessHost::CreatePluginHost(
-      *info, profile_data_directory, origin_lock);
-  if (!plugin_host) {
-    VLOG(1) << "Unable to create ppapi plugin process for: "
-            << plugin_path.MaybeAsASCII();
-  }
-
-  return plugin_host;
-}
-
-void PluginServiceImpl::OpenChannelToPpapiPlugin(
-    int render_process_id,
-    const base::FilePath& plugin_path,
-    const base::FilePath& profile_data_directory,
-    const std::optional<url::Origin>& origin_lock,
-    PpapiPluginProcessHost::PluginClient* client) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  PpapiPluginProcessHost* plugin_host = FindOrStartPpapiPluginProcess(
-      render_process_id, plugin_path, profile_data_directory, origin_lock);
-  if (plugin_host) {
-    plugin_host->OpenChannelToPlugin(client);
-  } else {
-    // Send error.
-    client->OnPpapiChannelOpened(IPC::ChannelHandle(), base::kNullProcessId, 0);
-  }
-}
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 bool PluginServiceImpl::GetPluginInfoArray(
     const GURL& url,
@@ -276,11 +172,7 @@ std::vector<WebPluginInfo> PluginServiceImpl::GetPluginsSynchronous() {
 void PluginServiceImpl::RegisterPlugins() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if BUILDFLAG(ENABLE_PPAPI)
-  ComputePepperPluginList(&plugins_);
-#else
   GetContentClient()->AddPlugins(&plugins_);
-#endif  // BUILDFLAG(ENABLE_PPAPI)
   for (const auto& plugin : plugins_)
     RegisterInternalPlugin(plugin.ToWebPluginInfo(), /*add_at_beginning=*/true);
 }
@@ -294,24 +186,7 @@ const ContentPluginInfo* PluginServiceImpl::GetRegisteredPluginInfo(
     if (plugin.path == plugin_path)
       return &plugin;
   }
-
-#if BUILDFLAG(ENABLE_PPAPI)
-  // We did not find the plugin in our list. But wait! the plugin can also
-  // be a latecomer, as it happens with pepper flash. This information
-  // can be obtained from the PluginList singleton and we can use it to
-  // construct it and add it to the list. This same deal needs to be done
-  // in the renderer side in PepperPluginRegistry.
-  WebPluginInfo webplugin_info;
-  if (!GetPluginInfoByPath(plugin_path, &webplugin_info))
-    return nullptr;
-  ContentPluginInfo new_pepper_info;
-  if (!MakePepperPluginInfo(webplugin_info, &new_pepper_info))
-    return nullptr;
-  plugins_.push_back(new_pepper_info);
-  return &plugins_.back();
-#else
   return nullptr;
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
 void PluginServiceImpl::SetFilter(PluginServiceFilter* filter) {
@@ -376,14 +251,6 @@ void PluginServiceImpl::GetInternalPlugins(
     std::vector<WebPluginInfo>* plugins) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PluginList::Singleton()->GetInternalPlugins(plugins);
-}
-
-bool PluginServiceImpl::PpapiDevChannelSupported(
-    BrowserContext* browser_context,
-    const GURL& document_url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return GetContentClient()->browser()->IsPluginAllowedToUseDevChannelAPIs(
-      browser_context, document_url);
 }
 
 }  // namespace content

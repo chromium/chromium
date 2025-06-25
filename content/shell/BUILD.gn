@@ -845,22 +845,6 @@ if (is_apple) {
 }
 
 if (is_mac) {
-  if (enable_ppapi) {
-    bundle_data("content_shell_framework_plugins") {
-      sources = [
-        "$root_out_dir/blink_deprecated_test_plugin.plugin",
-        "$root_out_dir/blink_test_plugin.plugin",
-      ]
-
-      outputs = [ "{{bundle_contents_dir}}/{{source_file_part}}" ]
-
-      public_deps = [
-        "//ppapi:blink_deprecated_test_plugin",
-        "//ppapi:blink_test_plugin",
-      ]
-    }
-  }
-
   content_shell_framework_name = "$content_shell_product_name Framework"
   content_shell_helper_name = "$content_shell_product_name Helper"
 
@@ -925,10 +909,6 @@ if (is_mac) {
       ":content_shell_framework_resources",
       ":content_shell_swiftshader_binaries",
     ]
-
-    if (enable_ppapi) {
-      deps += [ ":content_shell_framework_plugins" ]
-    }
 
     if (!is_component_build) {
       # Specify a sensible install_name for static builds. The library is

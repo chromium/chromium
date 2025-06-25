@@ -18,6 +18,7 @@ executable("ipc_message_list") {
   deps = [
     "//chrome/common/safe_browsing:proto",
     "//components/nacl/common:buildflags",
+    "//ppapi/buildflags",
     "//tools/ipc_fuzzer/message_lib:ipc_message_lib",
   ]
   sources = [ "message_list.cc" ]

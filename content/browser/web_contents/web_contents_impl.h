@@ -69,7 +69,6 @@
 #include "net/base/load_states.h"
 #include "net/base/network_handle.h"
 #include "partition_alloc/buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
@@ -175,10 +174,6 @@ class CreateNewWindowParams;
 
 #if BUILDFLAG(IS_ANDROID)
 class WebContentsAndroid;
-#endif
-
-#if BUILDFLAG(ENABLE_PPAPI)
-class PepperPlaybackObserver;
 #endif
 
 // CreatedWindow holds the WebContentsImpl and target url between IPC calls to
@@ -926,23 +921,6 @@ class CONTENT_EXPORT WebContentsImpl
   GetActiveTopLevelDocumentsInBrowsingContextGroup(
       RenderFrameHostImpl* render_frame_host) override;
   PrerenderHostRegistry* GetPrerenderHostRegistry() override;
-#if BUILDFLAG(ENABLE_PPAPI)
-  void OnPepperInstanceCreated(RenderFrameHostImpl* source,
-                               int32_t pp_instance) override;
-  void OnPepperInstanceDeleted(RenderFrameHostImpl* source,
-                               int32_t pp_instance) override;
-  void OnPepperStartsPlayback(RenderFrameHostImpl* source,
-                              int32_t pp_instance) override;
-  void OnPepperStopsPlayback(RenderFrameHostImpl* source,
-                             int32_t pp_instance) override;
-  void OnPepperPluginCrashed(RenderFrameHostImpl* source,
-                             const base::FilePath& plugin_path,
-                             base::ProcessId plugin_pid) override;
-  void OnPepperPluginHung(RenderFrameHostImpl* source,
-                          int plugin_child_id,
-                          const base::FilePath& path,
-                          bool is_hung) override;
-#endif  // BUILDFLAG(ENABLE_PPAPI)
   void DidChangeLoadProgressForMainFrame(
       RenderFrameHostImpl* render_frame_host) override;
   void DidFailLoadWithError(RenderFrameHostImpl* render_frame_host,
@@ -2532,11 +2510,6 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Manages media players, CDMs, and power save blockers for media.
   std::unique_ptr<MediaWebContentsObserver> media_web_contents_observer_;
-
-#if BUILDFLAG(ENABLE_PPAPI)
-  // Observes pepper playback changes, and notifies MediaSession.
-  std::unique_ptr<PepperPlaybackObserver> pepper_playback_observer_;
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   // RenderWidgetHostInputEventRouter is uniquely owned by WebContentsImpl in
   // the browser process.

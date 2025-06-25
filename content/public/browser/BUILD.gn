@@ -571,6 +571,7 @@ source_set("browser_sources") {
     "//media/mojo/mojom:remoting",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
+    "//ppapi/buildflags",
     "//sandbox/policy/mojom",
     "//services/audio/public/mojom",
     "//services/cert_verifier/public/mojom",
@@ -640,14 +641,6 @@ source_set("browser_sources") {
       "plugin_service.h",
       "plugin_service_filter.h",
     ]
-  }
-
-  if (enable_ppapi) {
-    sources += [
-      "browser_ppapi_host.h",
-      "pepper_vpn_provider_resource_host_proxy.h",
-    ]
-    deps += [ "//ppapi/c" ]
   }
 
   if (is_posix || is_fuchsia) {

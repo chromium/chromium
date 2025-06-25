@@ -272,12 +272,6 @@
 #include "content/browser/renderer_host/plugin_registry_impl.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "content/browser/plugin_service_impl.h"
-#include "content/browser/renderer_host/pepper/pepper_renderer_connection.h"
-#include "ppapi/shared_impl/ppapi_switches.h"  // nogncheck
-#endif
-
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 #include "ipc/ipc_logging.h"
 #endif
@@ -2012,13 +2006,6 @@ void RenderProcessHostImpl::ResetChannelProxy() {
 
 void RenderProcessHostImpl::CreateMessageFilters() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if BUILDFLAG(ENABLE_PPAPI)
-  pepper_renderer_connection_ = base::MakeRefCounted<PepperRendererConnection>(
-      GetDeprecatedID(), PluginServiceImpl::GetInstance(), GetBrowserContext(),
-      GetStoragePartition());
-  AddFilter(pepper_renderer_connection_.get());
-#endif
-
   // TODO(crbug.com/40169214): Move this initialization out of
   // CreateMessageFilters().
   p2p_socket_dispatcher_host_ =
@@ -3534,7 +3521,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kNoZygote,
       switches::kOverrideLanguageDetection,
       switches::kPerfettoDisableInterning,
-      switches::kPpapiInProcess,
       switches::kProfilingAtStart,
       switches::kProfilingFile,
       switches::kProfilingFlush,
@@ -3608,9 +3594,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
 
       network::switches::kForcePermissionPolicyUnloadDefaultEnabled,
 
-#if BUILDFLAG(ENABLE_PPAPI)
-      switches::kEnablePepperTesting,
-#endif
       switches::kWebRtcMaxCaptureFramerate,
       switches::kEnableLowEndDeviceMode,
       switches::kDisableLowEndDeviceMode,

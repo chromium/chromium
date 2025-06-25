@@ -9,7 +9,6 @@ import("//content/public/common/zygote/features.gni")
 import("//ipc/features.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//ppapi/buildflags/buildflags.gni")
 import("//sandbox/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
@@ -71,7 +70,6 @@ source_set("common") {
   ]
 
   sources = [
-    "all_messages.h",
     "background_fetch/background_fetch_types.cc",
     "background_fetch/background_fetch_types.h",
     "color_parser.cc",
@@ -81,7 +79,6 @@ source_set("common") {
     "content_constants_internal.cc",
     "content_constants_internal.h",
     "content_export.h",
-    "content_ipc_logging.cc",
     "content_navigation_policy.cc",
     "content_navigation_policy.h",
     "content_param_traits.cc",
@@ -246,7 +243,6 @@ source_set("common") {
     "//media/midi:mojo",
     "//mojo/public/cpp/system",
     "//net",
-    "//ppapi/buildflags",
     "//sandbox",
     "//sandbox:sandbox_buildflags",
     "//services/network/public/cpp",
@@ -363,13 +359,6 @@ source_set("common") {
     libs += [ "android" ]
   }
 
-  if (is_debug && !is_component_build && enable_ppapi) {
-    # Content depends on the PPAPI message logging stuff; if this isn't here,
-    # some unit test binaries won't compile. This only worked in release mode
-    # because logging is disabled there.
-    deps += [ "//ppapi/proxy:ipc_sources" ]
-  }
-
   if (!is_chromeos) {
     sources -= [ "cursors/webcursor_ash.cc" ]
   }
@@ -408,21 +397,6 @@ source_set("common") {
 
   if (is_mac || is_win || is_android || is_fuchsia || is_ios) {
     sources -= [ "font_list_fontconfig.cc" ]
-  }
-
-  if (enable_ppapi) {
-    sources += [
-      "pepper_file_util.cc",
-      "pepper_file_util.h",
-      "pepper_plugin_list.cc",
-      "pepper_plugin_list.h",
-      "pepper_renderer_instance_data.cc",
-      "pepper_renderer_instance_data.h",
-    ]
-    deps += [
-      "//ppapi/proxy:ipc",
-      "//ppapi/shared_impl",
-    ]
   }
 
   if (is_mac) {
@@ -519,10 +493,6 @@ mojom("mojo_bindings") {
     enabled_features += [ "is_non_android_posix" ]
   }
 
-  if (enable_plugins) {
-    sources += [ "pepper_plugin.mojom" ]
-  }
-
   cpp_typemaps = [
     {
       types = [
@@ -611,7 +581,6 @@ mojom("mojo_bindings") {
         # transitive allowance, so those targets' own public_deps aren't included in
         # the set of implied dependencies.
         "//content/common:buildflags",
-        "//ppapi/buildflags",
         "//ui/events/blink",
       ]
     },

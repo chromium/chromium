@@ -55,7 +55,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/fenced_frame_test_util.h"
-#include "content/public/test/ppapi_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_utils.h"

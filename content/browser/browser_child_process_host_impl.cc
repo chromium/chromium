@@ -115,9 +115,6 @@ memory_instrumentation::mojom::ProcessType GetCoordinatorClientProcessType(
       return memory_instrumentation::mojom::ProcessType::UTILITY;
     case PROCESS_TYPE_GPU:
       return memory_instrumentation::mojom::ProcessType::GPU;
-    case PROCESS_TYPE_PPAPI_PLUGIN:
-    case PROCESS_TYPE_PPAPI_BROKER:
-      return memory_instrumentation::mojom::ProcessType::PLUGIN;
     default:
       NOTREACHED();
   }

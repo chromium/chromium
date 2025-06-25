@@ -20,13 +20,8 @@
 #include "content/shell/browser/shell.h"
 #include "media/media_buildflags.h"
 #include "net/test/embedded_test_server/http_request.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "content/test/ppapi/ppapi_test.h"
-#endif
 
 namespace content {
 namespace {
@@ -183,39 +178,6 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
   // ResourceType::kObject and ResourceType::kFavicon are tested in src/chrome's
   // ChromeAcceptHeaderTest.ObjectAndFavicon.
 }
-
-#if BUILDFLAG(ENABLE_PPAPI)
-// Checks Accept header for ResourceType::kPluginResource.
-IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, PluginAcceptHeader) {
-  net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTP);
-  server.ServeFilesFromSourceDirectory("ppapi/tests");
-  base::Lock plugin_accept_header_lock;
-  std::string plugin_accept_header;
-  server.RegisterRequestMonitor(base::BindLambdaForTesting(
-      [&](const net::test_server::HttpRequest& request) {
-        // Note this callback runs on the EmbeddedTestServer's background
-        // thread.
-        base::AutoLock lock(plugin_accept_header_lock);
-        if (request.relative_url == "/test_url_loader_data/hello.txt") {
-          auto it = request.headers.find("Accept");
-          if (it != request.headers.end())
-            plugin_accept_header = it->second;
-        }
-      }));
-  ASSERT_TRUE(server.Start());
-
-  RunTestURL(
-      server.GetURL(BuildQuery("/test_case.html?", "URLLoader_BasicGET")));
-
-  {
-    base::AutoLock lock(plugin_accept_header_lock);
-    ASSERT_EQ("*/*", plugin_accept_header);
-  }
-
-  // Since the server uses local variables.
-  ASSERT_TRUE(server.ShutdownAndWaitUntilComplete());
-}
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 }  //  namespace
 }  //  namespace content

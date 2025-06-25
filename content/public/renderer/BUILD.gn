@@ -85,15 +85,6 @@ target(link_target_type, "renderer_sources") {
     sources += [ "plugin_ax_tree_action_target_adapter.h" ]
   }
 
-  if (enable_ppapi) {
-    sources += [
-      "pepper_plugin_instance.h",
-      "ppapi_gfx_conversion.h",
-      "renderer_ppapi_host.h",
-    ]
-    deps += [ "//ppapi/c" ]
-  }
-
   if (is_android) {
     sources += [ "seccomp_sandbox_status_android.h" ]
 

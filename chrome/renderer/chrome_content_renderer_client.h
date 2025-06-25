@@ -170,8 +170,6 @@ class ChromeContentRendererClient
                                   uint64_t salt) override;
   std::unique_ptr<blink::WebPrescientNetworking> CreatePrescientNetworking(
       content::RenderFrame* render_frame) override;
-  bool IsExternalPepperPlugin(const std::string& module_name) override;
-  bool IsOriginIsolatedPepperPlugin(const base::FilePath& plugin_path) override;
   std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
   CreateWebSocketHandshakeThrottleProvider() override;
   bool ShouldUseCodeCacheWithHashing(

@@ -719,23 +719,6 @@ static_library("test_support") {
     ]
   }
 
-  if (enable_ppapi) {
-    sources += [
-      "../public/test/ppapi_test_utils.cc",
-      "../public/test/ppapi_test_utils.h",
-      "ppapi_unittest.cc",
-      "ppapi_unittest.h",
-    ]
-    deps += [
-      "//content/ppapi_plugin",
-      "//ppapi/c",
-      "//ppapi/host",
-      "//ppapi/proxy",
-      "//ppapi/proxy:test_support",
-      "//ppapi/shared_impl:test_support",
-    ]
-  }
-
   if (use_atk) {
     configs += [
       "//build/config/linux/atk",
@@ -2048,37 +2031,6 @@ test("content_browsertests") {
     data_deps += [ "//media/cdm/library_cdm/clear_key_cdm" ]
   }
 
-  if (enable_ppapi) {
-    sources += [
-      "../renderer/pepper/fake_pepper_plugin_instance.cc",
-      "../renderer/pepper/fake_pepper_plugin_instance.h",
-      "../renderer/pepper/mock_renderer_ppapi_host.cc",
-      "../renderer/pepper/mock_renderer_ppapi_host.h",
-      "../renderer/pepper/pepper_device_enumeration_host_helper_unittest.cc",
-      "../renderer/pepper/pepper_file_chooser_host_unittest.cc",
-      "../renderer/pepper/pepper_graphics_2d_host_unittest.cc",
-      "../renderer/pepper/pepper_url_request_unittest.cc",
-      "../renderer/pepper/pepper_webplugin_impl_browsertest.cc",
-      "../test/ppapi/ppapi_browsertest.cc",
-      "../test/ppapi/ppapi_test.cc",
-      "../test/ppapi/ppapi_test.h",
-    ]
-    deps += [
-      "//ppapi/c",
-      "//ppapi/host",
-      "//ppapi/proxy",
-      "//ppapi/proxy:ipc",
-      "//ppapi/proxy:test_support",
-      "//ppapi/shared_impl:test_support",
-    ]
-    data_deps += [ "//ppapi:ppapi_tests" ]
-    data += [
-      "//ppapi/tests/test_case.html",
-      "//ppapi/tests/test_page.css",
-      "//ppapi/tests/test_url_loader_data/",
-    ]
-  }
-
   if (enable_screen_capture) {
     if (is_android || is_linux || is_chromeos || is_mac || is_win) {
       sources += [
@@ -3370,28 +3322,6 @@ test("content_unittests") {
     deps += [
       "//printing",
       "//printing/backend",
-    ]
-  }
-
-  if (enable_ppapi) {
-    sources += [
-      "../browser/renderer_host/pepper/browser_ppapi_host_test.cc",
-      "../browser/renderer_host/pepper/browser_ppapi_host_test.h",
-      "../browser/renderer_host/pepper/pepper_file_system_browser_host_unittest.cc",
-      "../browser/renderer_host/pepper/pepper_gamepad_host_unittest.cc",
-      "../browser/renderer_host/pepper/pepper_printing_host_unittest.cc",
-      "../browser/renderer_host/pepper/pepper_proxy_lookup_helper_unittest.cc",
-      "../browser/renderer_host/pepper/quota_reservation_unittest.cc",
-      "../renderer/pepper/event_conversion_unittest.cc",
-      "../renderer/pepper/host_var_tracker_unittest.cc",
-      "../renderer/pepper/mock_resource.h",
-      "../renderer/pepper/v8_var_converter_unittest.cc",
-    ]
-    deps += [
-      "//ppapi/c",
-      "//ppapi/host",
-      "//ppapi/proxy:test_support",
-      "//ppapi/shared_impl:test_support",
     ]
   }
 

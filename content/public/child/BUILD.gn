@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ppapi/buildflags/buildflags.gni")
-
 # See //content/BUILD.gn for how this works.
 group("child") {
   if (is_component_build) {
@@ -12,9 +10,6 @@ group("child") {
     public_deps = [ ":child_sources" ]
     if (!is_android) {
       public_deps += [ "//content/gpu" ]
-    }
-    if (enable_ppapi) {
-      public_deps += [ "//content/ppapi_plugin" ]
     }
   }
 }

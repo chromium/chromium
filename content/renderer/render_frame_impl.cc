@@ -82,7 +82,6 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/public/renderer/window_features_converter.h"
 #include "content/renderer/accessibility/ax_tree_snapshotter_impl.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
@@ -130,7 +129,6 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/content_decoding_interceptor.h"
 #include "services/network/public/cpp/features.h"
@@ -248,14 +246,6 @@
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-microtask-queue.h"
-
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "content/renderer/pepper/pepper_browser_connection.h"
-#include "content/renderer/pepper/pepper_plugin_instance_impl.h"
-#include "content/renderer/pepper/pepper_plugin_registry.h"
-#include "content/renderer/pepper/pepper_webplugin_impl.h"
-#include "content/renderer/pepper/plugin_module.h"
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include <cpu-features.h>
@@ -1935,9 +1925,6 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
           std::make_unique<RenderAccessibilityManager>(this)),
       weak_wrapper_resource_load_info_notifier_(
           std::make_unique<blink::WeakWrapperResourceLoadInfoNotifier>(this)),
-#if BUILDFLAG(ENABLE_PPAPI)
-      focused_pepper_plugin_(nullptr),
-#endif
       navigation_client_impl_(nullptr),
       media_factory_(
           this,
@@ -2014,10 +2001,6 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
   TRACE_EVENT1("navigation,rail", "RenderFrameImpl::Initialize", "frame_token",
                frame_token_);
 
-#if BUILDFLAG(ENABLE_PPAPI)
-  new PepperBrowserConnection(this);
-#endif
-
   RegisterMojoInterfaces();
 
   {
@@ -2064,47 +2047,6 @@ void RenderFrameImpl::GetInterface(
 blink::WebFrameWidget* RenderFrameImpl::GetLocalRootWebFrameWidget() {
   return frame_->LocalRoot()->FrameWidget();
 }
-
-#if BUILDFLAG(ENABLE_PPAPI)
-void RenderFrameImpl::PepperPluginCreated(RendererPpapiHost* host) {
-  for (auto& observer : observers_)
-    observer.DidCreatePepperPlugin(host);
-}
-
-void RenderFrameImpl::PepperTextInputTypeChanged(
-    PepperPluginInstanceImpl* instance) {
-  if (instance != focused_pepper_plugin_)
-    return;
-
-  GetLocalRootWebFrameWidget()->UpdateTextInputState();
-}
-
-void RenderFrameImpl::PepperCaretPositionChanged(
-    PepperPluginInstanceImpl* instance) {
-  if (instance != focused_pepper_plugin_)
-    return;
-  GetLocalRootWebFrameWidget()->UpdateSelectionBounds();
-}
-
-void RenderFrameImpl::PepperCancelComposition(
-    PepperPluginInstanceImpl* instance) {
-  if (instance != focused_pepper_plugin_)
-    return;
-  GetLocalRootWebFrameWidget()->CancelCompositionForPepper();
-}
-
-void RenderFrameImpl::PepperSelectionChanged(
-    PepperPluginInstanceImpl* instance) {
-  if (instance != focused_pepper_plugin_)
-    return;
-
-  // We have no reason to believe the locally cached last synced selection is
-  // invalid so we do not need to force the update if it matches our last synced
-  // value.
-  SyncSelectionIfRequired(blink::SyncCondition::kNotForced);
-}
-
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 void RenderFrameImpl::ScriptedPrint() {
   bool user_initiated = GetLocalRootWebFrameWidget()->HandlingInputEvent();
@@ -2388,20 +2330,6 @@ void RenderFrameImpl::DidMeaningfulLayout(
     observer.DidMeaningfulLayout(layout_type);
 }
 
-void RenderFrameImpl::DidCommitAndDrawCompositorFrame() {
-#if BUILDFLAG(ENABLE_PPAPI)
-  // Notify all instances that we painted. The same caveats apply as for
-  // ViewFlushedPaint regarding instances closing themselves, so we take
-  // similar precautions.
-  PepperPluginSet plugins = active_pepper_instances_;
-  for (PepperPluginInstanceImpl* plugin : plugins) {
-    if (base::Contains(active_pepper_instances_, plugin)) {
-      plugin->ViewInitiatedPaint();
-    }
-  }
-#endif
-}
-
 RenderFrame* RenderFrameImpl::GetMainRenderFrame() {
   WebFrame* main_frame = GetWebView()->MainFrame();
   DCHECK(main_frame);
@@ -2458,31 +2386,6 @@ const blink::RendererPreferences& RenderFrameImpl::GetRendererPreferences()
 
 void RenderFrameImpl::ShowVirtualKeyboard() {
   GetLocalRootWebFrameWidget()->ShowVirtualKeyboard();
-}
-
-blink::WebPlugin* RenderFrameImpl::CreatePlugin(
-    const WebPluginInfo& info,
-    const blink::WebPluginParams& params) {
-#if BUILDFLAG(ENABLE_PPAPI)
-  std::optional<url::Origin> origin_lock;
-  if (GetContentClient()->renderer()->IsOriginIsolatedPepperPlugin(info.path)) {
-    origin_lock = url::Origin::Create(GURL(params.url));
-  }
-
-  bool pepper_plugin_was_registered = false;
-  scoped_refptr<PluginModule> pepper_module(PluginModule::Create(
-      this, info, origin_lock, &pepper_plugin_was_registered,
-      GetTaskRunner(blink::TaskType::kNetworking)));
-  if (pepper_plugin_was_registered) {
-    if (pepper_module.get()) {
-      return new PepperWebPluginImpl(pepper_module.get(), params, this);
-    }
-  }
-#if BUILDFLAG(IS_CHROMEOS)
-  LOG(WARNING) << "Pepper module/plugin creation failed.";
-#endif
-#endif  // BUILDFLAG(ENABLE_PPAPI)
-  return nullptr;
 }
 
 void RenderFrameImpl::ExecuteJavaScript(const std::u16string& javascript) {
@@ -3550,22 +3453,7 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
                                                            &plugin)) {
     return plugin;
   }
-
-#if BUILDFLAG(ENABLE_PPAPI)
-  WebPluginInfo info;
-  std::string mime_type;
-  bool found = false;
-  GetPepperHost()->GetPluginInfo(params.url, params.mime_type.Utf8(), &found,
-                                 &info, &mime_type);
-  if (!found)
-    return nullptr;
-
-  WebPluginParams params_to_use = params;
-  params_to_use.mime_type = WebString::FromUTF8(mime_type);
-  return CreatePlugin(info, params_to_use);
-#else
   return nullptr;
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
 std::unique_ptr<blink::WebMediaPlayer> RenderFrameImpl::CreateMediaPlayer(
@@ -4962,24 +4850,12 @@ void RenderFrameImpl::WasHidden() {
   frame_->WasHidden();
   for (auto& observer : observers_)
     observer.WasHidden();
-
-#if BUILDFLAG(ENABLE_PPAPI)
-  for (PepperPluginInstanceImpl* plugin : active_pepper_instances_) {
-    plugin->PageVisibilityChanged(false);
-  }
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
 void RenderFrameImpl::WasShown() {
   frame_->WasShown();
   for (auto& observer : observers_)
     observer.WasShown();
-
-#if BUILDFLAG(ENABLE_PPAPI)
-  for (PepperPluginInstanceImpl* plugin : active_pepper_instances_) {
-    plugin->PageVisibilityChanged(true);
-  }
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
 void RenderFrameImpl::OnFrameVisibilityChanged(
@@ -6143,13 +6019,6 @@ void RenderFrameImpl::SyncSelectionIfRequired(blink::SyncCondition force_sync) {
   std::u16string text;
   size_t offset;
   gfx::Range range;
-#if BUILDFLAG(ENABLE_PPAPI)
-  if (focused_pepper_plugin_) {
-    focused_pepper_plugin_->GetSurroundingText(&text, &range);
-    offset = 0;  // Pepper API does not support offset reporting.
-    // TODO(kinaba): cut as needed.
-  } else
-#endif
   {
     WebInputMethodController* controller = frame_->GetInputMethodController();
     WebRange selection = controller->GetSelectionOffsets();
@@ -6774,45 +6643,6 @@ bool RenderFrameImpl::IsAccessibilityEnabled() const {
       ui::AXMode::kWebContents);
 }
 
-#if BUILDFLAG(ENABLE_PPAPI)
-
-mojom::PepperHost* RenderFrameImpl::GetPepperHost() {
-  if (!pepper_host_remote_.is_bound())
-    GetRemoteAssociatedInterfaces()->GetInterface(&pepper_host_remote_);
-  return pepper_host_remote_.get();
-}
-
-void RenderFrameImpl::PepperInstanceCreated(
-    PepperPluginInstanceImpl* instance,
-    mojo::PendingAssociatedRemote<mojom::PepperPluginInstance> mojo_instance,
-    mojo::PendingAssociatedReceiver<mojom::PepperPluginInstanceHost>
-        mojo_host) {
-  active_pepper_instances_.insert(instance);
-  GetPepperHost()->InstanceCreated(
-      instance->pp_instance(), std::move(mojo_instance), std::move(mojo_host));
-}
-
-void RenderFrameImpl::PepperInstanceDeleted(
-    PepperPluginInstanceImpl* instance) {
-  active_pepper_instances_.erase(instance);
-
-  if (focused_pepper_plugin_ == instance)
-    PepperFocusChanged(instance, false);
-}
-
-void RenderFrameImpl::PepperFocusChanged(PepperPluginInstanceImpl* instance,
-                                         bool focused) {
-  if (focused)
-    focused_pepper_plugin_ = instance;
-  else if (focused_pepper_plugin_ == instance)
-    focused_pepper_plugin_ = nullptr;
-
-  GetLocalRootWebFrameWidget()->UpdateTextInputState();
-  GetLocalRootWebFrameWidget()->UpdateSelectionBounds();
-}
-
-#endif  // BUILDFLAG(ENABLE_PPAPI)
-
 std::unique_ptr<blink::WebSocketHandshakeThrottle>
 RenderFrameImpl::CreateWebSocketHandshakeThrottle() {
   // Lazily create the provider.
@@ -6828,16 +6658,6 @@ RenderFrameImpl::CreateWebSocketHandshakeThrottle() {
   return websocket_handshake_throttle_provider_->CreateThrottle(
       frame_->GetLocalFrameToken(),
       GetTaskRunner(blink::TaskType::kInternalDefault));
-}
-
-bool RenderFrameImpl::GetCaretBoundsFromFocusedPlugin(gfx::Rect& rect) {
-#if BUILDFLAG(ENABLE_PPAPI)
-  if (focused_pepper_plugin_) {
-    rect = focused_pepper_plugin_->GetCaretBounds();
-    return true;
-  }
-#endif
-  return false;
 }
 
 void RenderFrameImpl::AddMessageToConsoleImpl(

@@ -12,7 +12,6 @@
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "media/gpu/buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -72,9 +71,6 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::mojom::Sandbox::kOnDeviceModelExecution ||
       sandbox_type_ == sandbox::mojom::Sandbox::kCdm ||
       sandbox_type_ == sandbox::mojom::Sandbox::kPrintCompositor ||
-#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
-      sandbox_type_ == sandbox::mojom::Sandbox::kPpapi ||
-#endif
 #if BUILDFLAG(IS_FUCHSIA)
       sandbox_type_ == sandbox::mojom::Sandbox::kVideoCapture ||
 #endif

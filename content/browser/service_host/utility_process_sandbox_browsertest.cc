@@ -21,7 +21,6 @@
 #include "content/test/sandbox_status.test-mojom.h"
 #include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -104,9 +103,6 @@ class UtilityProcessSandboxBrowserTest
         break;
 
       case Sandbox::kCdm:
-#if BUILDFLAG(ENABLE_PPAPI)
-      case Sandbox::kPpapi:
-#endif
       case Sandbox::kOnDeviceModelExecution:
       case Sandbox::kPrintCompositor:
       case Sandbox::kService:

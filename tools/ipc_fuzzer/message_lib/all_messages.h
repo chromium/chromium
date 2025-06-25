@@ -18,4 +18,3 @@
 #include "components/nacl/common/buildflags.h"
 
 #include "chrome/common/all_messages.h"
-#include "content/common/all_messages.h"

@@ -1046,7 +1046,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
         }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-        return render_frame->CreatePlugin(info, params);
+        return nullptr;
       }
       case chrome::mojom::PluginStatus::kDisabled: {
         if (info.path.value() == ChromeContentClient::kPDFExtensionPluginPath) {
@@ -1308,32 +1308,6 @@ ChromeContentRendererClient::CreatePrescientNetworking(
     content::RenderFrame* render_frame) {
   return std::make_unique<network_hints::WebPrescientNetworkingImpl>(
       render_frame);
-}
-
-bool ChromeContentRendererClient::IsExternalPepperPlugin(
-    const std::string& module_name) {
-  // TODO(bbudge) remove this when the trusted NaCl plugin has been removed.
-  // We must defer certain plugin events for NaCl instances since we switch
-  // from the in-process to the out-of-process proxy after instantiating them.
-  return module_name == "Native Client";
-}
-
-bool ChromeContentRendererClient::IsOriginIsolatedPepperPlugin(
-    const base::FilePath& plugin_path) {
-  // Hosting plugins in-process is inherently incompatible with attempting to
-  // process-isolate plugins from different origins.
-  auto* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(switches::kPpapiInProcess)) {
-    // The kPpapiInProcess switch should only be used by tests.  In particular,
-    // we expect that the PDF plugin should always be isolated in the product
-    // (and that the switch won't interfere with PDF isolation).
-    CHECK_NE(ChromeContentClient::kPDFInternalPluginPath, plugin_path.value());
-
-    return false;
-  }
-
-  // Isolate all the other plugins (including the PDF plugin + test plugins).
-  return true;
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS) && BUILDFLAG(ENABLE_EXTENSIONS)

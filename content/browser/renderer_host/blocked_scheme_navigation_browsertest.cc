@@ -34,6 +34,7 @@
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"

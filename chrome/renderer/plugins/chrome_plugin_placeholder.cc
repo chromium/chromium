@@ -317,7 +317,7 @@ void ChromePluginPlaceholder::ContextMenuClosed(
 }
 
 blink::WebPlugin* ChromePluginPlaceholder::CreatePlugin() {
-  return render_frame()->CreatePlugin(GetPluginInfo(), GetPluginParams());
+  return nullptr;
 }
 
 gin::ObjectTemplateBuilder ChromePluginPlaceholder::GetObjectTemplateBuilder(

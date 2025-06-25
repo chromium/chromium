@@ -44,8 +44,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "and a consenting server for bi-directional communication."
           trigger:
             "A handshake is performed every time a new connection is "
-            "established via the Javascript or PPAPI WebSocket API. Any web "
-            "page or extension can create a WebSocket connection."
+            "established via the Javascript. Any web page or extension can "
+            "create a WebSocket connection."
           data: "The path and sub-protocols requested when the WebSocket was "
                 "created, plus the origin of the creating page."
           destination: OTHER
