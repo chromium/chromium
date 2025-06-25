@@ -85,6 +85,7 @@ std::vector<const ModuleCache::Module*> ModuleCache::GetModules() const {
   result.reserve(native_modules_.size());
   for (const std::unique_ptr<const Module>& module : native_modules_)
     result.push_back(module.get());
+  base::AutoLock locker(lock_);
   for (const std::unique_ptr<const Module>& module : non_native_modules_)
     result.push_back(module.get());
   return result;
@@ -97,6 +98,7 @@ void ModuleCache::UpdateNonNativeModules(
   flat_set<const Module*> defunct_modules_set(defunct_modules.begin(),
                                               defunct_modules.end());
 
+  base::AutoLock locker(lock_);
   // Reorder the modules to be removed to the last slots in the set, then move
   // them to the inactive modules, then erase the moved-from modules from the
   // set. This is a variation on the standard erase-remove idiom, which is
@@ -149,9 +151,12 @@ void ModuleCache::AddCustomNativeModule(std::unique_ptr<const Module> module) {
 
 const ModuleCache::Module* ModuleCache::GetExistingModuleForAddress(
     uintptr_t address) const {
-  const auto non_native_module_loc = non_native_modules_.find(address);
-  if (non_native_module_loc != non_native_modules_.end())
-    return non_native_module_loc->get();
+  {
+    base::AutoLock locker(lock_);
+    const auto non_native_module_loc = non_native_modules_.find(address);
+    if (non_native_module_loc != non_native_modules_.end())
+      return non_native_module_loc->get();
+  }
 
   const auto native_module_loc = native_modules_.find(address);
   if (native_module_loc != native_modules_.end())
