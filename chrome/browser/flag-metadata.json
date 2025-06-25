@@ -2433,7 +2433,7 @@
   {
     "name": "drive-fs-mirroring",
     "owners": [ "wenbojie@chromium.org", "fdegros@chromium.org", "simmonsjosh@google.com"],
-    "expiry_milestone": 133
+    "expiry_milestone": 150
   },
   {
     "name": "drive-fs-show-cse-files",
