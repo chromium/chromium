@@ -555,6 +555,7 @@ AutocompleteController::AutocompleteController(
       zero_suggest_provider_(nullptr),
       on_device_head_provider_(nullptr),
       history_fuzzy_provider_(nullptr),
+      contextual_search_provider_(nullptr),
       stop_timer_duration_(kAutocompleteDefaultStopTimerDuration),
       notify_changed_debouncer_(false, 200),
       is_cros_launcher_(is_cros_launcher),
@@ -1307,8 +1308,9 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
     providers_.push_back(unscoped_extension_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH) {
-    providers_.push_back(
-        new ContextualSearchProvider(provider_client_.get(), this));
+    contextual_search_provider_ =
+        new ContextualSearchProvider(provider_client_.get(), this);
+    providers_.push_back(contextual_search_provider_.get());
   }
 }
 

@@ -40,6 +40,10 @@ class ContextualSearchProvider : public BaseSearchProvider {
   void Stop(AutocompleteStopReason stop_reason) override;
   void AddProviderInfo(ProvidersInfo* provider_info) const override;
 
+  // Whether or not the Lens action (i.e. "Ask Google about this page") is
+  // present in the Omnibox toolbelt.
+  bool HasToolbeltLensAction() const;
+
  protected:
   ~ContextualSearchProvider() override;
 
