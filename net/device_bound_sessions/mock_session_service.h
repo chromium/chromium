@@ -56,8 +56,7 @@ class SessionServiceMock : public SessionService {
       (override));
   MOCK_METHOD(void,
               DeleteSessionAndNotify,
-              (const SchemefulSite& site,
-               const Session::Id& id,
+              (const SessionKey& session_key,
                SessionService::OnAccessCallback per_request_callback),
               (override));
   MOCK_METHOD(void,

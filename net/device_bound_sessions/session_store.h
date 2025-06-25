@@ -52,8 +52,7 @@ class NET_EXPORT SessionStore {
   using RestoreSessionBindingKeyCallback = base::OnceCallback<void(
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>)>;
   virtual void RestoreSessionBindingKey(
-      const SchemefulSite& site,
-      const Session::Id& session_id,
+      const SessionKey& session_key,
       RestoreSessionBindingKeyCallback callback) = 0;
 
  protected:

@@ -188,7 +188,7 @@ class SessionStoreImplTest : public testing::Test {
   void RestoreSessionBindingKey(const SchemefulSite& site, Session* session) {
     base::RunLoop run_loop;
     store_->RestoreSessionBindingKey(
-        site, session->id(),
+        SessionKey{site, session->id()},
         base::BindLambdaForTesting(
             [&run_loop,
              &session](unexportable_keys::ServiceErrorOr<

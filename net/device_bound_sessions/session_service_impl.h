@@ -87,8 +87,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       base::OnceCallback<void(const std::vector<SessionKey>&)> callback)
       override;
   void DeleteSessionAndNotify(
-      const SchemefulSite& site,
-      const Session::Id& id,
+      const SessionKey& session_key,
       SessionService::OnAccessCallback per_request_callback) override;
   void DeleteAllSessions(
       std::optional<base::Time> created_after_time,
@@ -100,8 +99,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   base::ScopedClosureRunner AddObserver(
       const GURL& url,
       base::RepeatingCallback<void(const SessionAccess&)> callback) override;
-  Session* GetSession(const SchemefulSite& site,
-                      const Session::Id& session_id) const;
+  Session* GetSession(const SessionKey& session_key) const;
 
  private:
   friend class SessionServiceImplWithStoreTest;
@@ -136,12 +134,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       base::expected<SessionParams, SessionError> params_or_error);
   void OnRefreshRequestCompletion(
       OnAccessCallback on_access_callback,
-      SchemefulSite site,
-      Session::Id session_id,
+      SessionKey session_key,
       base::expected<SessionParams, SessionError> params_or_error);
 
   void AddSession(const SchemefulSite& site, std::unique_ptr<Session> session);
-  void UnblockDeferredRequests(const Session::Id& session_id,
+  void UnblockDeferredRequests(const SessionKey& session_key,
                                RefreshResult result);
 
   // Get all the unexpired sessions for a given site. This also removes
@@ -162,7 +159,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void NotifySessionAccess(
       SessionService::OnAccessCallback per_request_callback,
       SessionAccess::AccessType access_type,
-      const SchemefulSite& site,
+      const SessionKey& session_key,
       const Session& session);
 
   // Remove an observer by site and pointer.
@@ -176,22 +173,20 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // Helper function encapsulating the processing of refresh
   SessionError::ErrorType OnRefreshRequestCompletionInternal(
       OnAccessCallback on_access_callback,
-      const SchemefulSite& site,
-      const Session::Id& session_id,
+      const SessionKey& session_key,
       base::expected<SessionParams, SessionError> params_or_error);
 
   // Callback after unwrapping a session key. `on_access_callback` is
   // used to notify the browser that this request led to usage of a
   // session.
   void OnSessionKeyRestored(URLRequest* request,
-                            const SchemefulSite& site,
-                            const Session::Id& session_id,
+                            const SessionKey& session_key,
                             OnAccessCallback on_access_callback,
                             Session::KeyIdOrError key_id_or_error);
 
   // Helper function for starting a refresh
   void RefreshSessionInternal(URLRequest* request,
-                              const SchemefulSite& site,
+                              const SessionKey& session_key,
                               Session* session,
                               unexportable_keys::UnexportableKeyId key_id);
 

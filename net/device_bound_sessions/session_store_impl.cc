@@ -271,8 +271,7 @@ SessionStore::SessionsMap SessionStoreImpl::GetAllSessions() const {
 }
 
 void SessionStoreImpl::RestoreSessionBindingKey(
-    const SchemefulSite& site,
-    const Session::Id& session_id,
+    const SessionKey& session_key,
     RestoreSessionBindingKeyCallback callback) {
   auto key_id_or_error = base::unexpected(ServiceError::kKeyNotFound);
   if (db_status_ != DBStatus::kSuccess) {
@@ -282,8 +281,8 @@ void SessionStoreImpl::RestoreSessionBindingKey(
 
   // Retrieve the session's persisted binding key and unwrap it.
   proto::SiteSessions site_proto;
-  if (session_data_->TryGetData(site.Serialize(), &site_proto)) {
-    auto it = site_proto.sessions().find(*session_id);
+  if (session_data_->TryGetData(session_key.site.Serialize(), &site_proto)) {
+    auto it = site_proto.sessions().find(*session_key.id);
     if (it != site_proto.sessions().end()) {
       // Unwrap the binding key asynchronously.
       std::vector<uint8_t> wrapped_key(it->second.wrapped_key().begin(),
