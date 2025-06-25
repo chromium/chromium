@@ -11,9 +11,12 @@ from contextlib import contextmanager
 from typing import Optional
 
 from chrome.test.variations.drivers import DriverFactory
+from chrome.test.variations.test_utils.helper import timeout
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver import ChromeOptions
+
+_DRIVER_CREATION_TIMEOUT_SEC = 30
 
 @attr.attrs()
 class DesktopDriverFactory(DriverFactory):
@@ -21,6 +24,9 @@ class DesktopDriverFactory(DriverFactory):
   channel: Optional[str] = attr.attrib()
   crash_dump_dir: Optional[str] = attr.attrib()
 
+  @timeout(_DRIVER_CREATION_TIMEOUT_SEC)
+  def _get_driver(self, options):
+    return webdriver.Chrome(service=self.get_driver_service(), options=options)
 
   @contextmanager
   def create_driver(
@@ -47,8 +53,7 @@ class DesktopDriverFactory(DriverFactory):
     try:
       logging.info('Launching Chrome w/ caps: %s',
                    options.to_capabilities())
-      driver = webdriver.Chrome(service=self.get_driver_service(),
-                                options=options)
+      driver = self._get_driver(options)
       yield driver
     except WebDriverException as e:
       # Report this to be part of test result.
