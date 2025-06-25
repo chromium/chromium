@@ -27,6 +27,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
@@ -78,6 +79,7 @@ import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
@@ -211,6 +213,7 @@ public class EdgeToEdgeControllerTest {
     @Captor private ArgumentCaptor<Rect> mSafeAreaRectCaptor;
 
     @Mock private View mViewMock;
+    @Mock private Resources mResources;
 
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private LayoutManager mLayoutManager;
@@ -788,6 +791,36 @@ public class EdgeToEdgeControllerTest {
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
         mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
         watcher.assertExpected();
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    public void supportFormFactor() {
+        assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        assertTrue(
+                "e2e bottom chin should be enabled on tablet",
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    public void supportFormFactor_disabled() {
+        assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        assertFalse(
+                "e2e bottom chin should be disabled on tablet when feature is disabled",
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET + ":e2e_tablet_width_threshold/10000")
+    public void supportFormFactor_minWidth() {
+        assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        assertFalse(
+                "e2e bottom chin should be disabled on tablet when width is less than min width",
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity));
     }
 
     @Test
