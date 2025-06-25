@@ -206,7 +206,7 @@ class LocationBarMediator
     private boolean mUrlFocusedWithPastedText;
     private boolean mIsUrlFocusChangeInProgress;
     private final boolean mIsTablet;
-    private final boolean mIsComposeplateEnabled;
+    private boolean mIsComposeplateEnabled;
     private boolean mShouldShowLensButtonWhenUnfocused;
     private boolean mShouldShowMicButtonWhenUnfocused;
     // Whether the microphone and bookmark buttons should be shown in the tablet location bar. These
@@ -268,8 +268,6 @@ class LocationBarMediator
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mOfflineDownloader = offlineDownloader;
-
-        mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet);
     }
 
     /**
@@ -1127,6 +1125,7 @@ class LocationBarMediator
     private void setProfile(Profile profile) {
         if (profile == null || !mNativeInitialized) return;
 
+        mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet, profile);
         assumeNonNull(mOmniboxPrerender);
         mOmniboxPrerender.initializeForProfile(profile);
 

@@ -239,7 +239,7 @@ public class NewTabPageLayout extends LinearLayout
         mWindowAndroid = windowAndroid;
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
-        mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet);
+        mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet, profile);
         if (mIsComposeplateEnabled) {
             mComposeplateUrlSupplier = composeplateUrlSupplier;
         }
