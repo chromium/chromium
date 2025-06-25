@@ -286,11 +286,9 @@ TEST_F(QuickSettingsFooterTest, BatteryButtonState) {
   SimulateUserLogin(kRegularUserLoginInfo);
   SetUpView();
 
-  const bool use_smart_charging_ui =
-      ash::features::IsAdaptiveChargingEnabled() &&
-      Shell::Get()
-          ->adaptive_charging_controller()
-          ->is_adaptive_delaying_charge();
+  const bool use_smart_charging_ui = Shell::Get()
+                                         ->adaptive_charging_controller()
+                                         ->is_adaptive_delaying_charge();
 
   if (use_smart_charging_ui) {
     EXPECT_TRUE(views::IsViewClass<QsBatteryIconView>(GetBatteryButton()));

@@ -1588,10 +1588,8 @@ void Shell::Init(
       mouse_cursor_filter_.get(),
       AccessibilityEventHandlerManager::HandlerType::kCursor);
 
-  if (features::IsAdaptiveChargingEnabled()) {
-    adaptive_charging_controller_ =
-        std::make_unique<AdaptiveChargingController>();
-  }
+  adaptive_charging_controller_ =
+      std::make_unique<AdaptiveChargingController>();
 
   // Create Controllers that may need root window.
   // TODO(oshima): Move as many controllers before creating

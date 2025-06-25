@@ -18,12 +18,6 @@
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 
 namespace ash::features {
-// Enables the UI and logic that minimizes the amount of time the device spends
-// at full battery. This preserves battery lifetime.
-BASE_FEATURE(kAdaptiveCharging,
-             "AdaptiveCharging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the UI for additional on-device parental controls that can be used to
 // enable or block ARC++ apps.
 BASE_FEATURE(kOnDeviceAppControls,
@@ -3320,10 +3314,6 @@ bool IsAudioSelectionImprovementEnabled() {
 
 bool Is16DesksEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagement16Desks);
-}
-
-bool IsAdaptiveChargingEnabled() {
-  return base::FeatureList::IsEnabled(kAdaptiveCharging);
 }
 
 bool IsOnDeviceAppControlsEnabled() {

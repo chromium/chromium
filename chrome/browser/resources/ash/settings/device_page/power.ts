@@ -149,10 +149,10 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
         computed: 'hasSingleOption_(batteryIdleOptions_)',
       },
 
-      adaptiveChargingEnabled_: {
+      adaptiveChargingSupported_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isAdaptiveChargingEnabled');
+          return loadTimeData.getBoolean('isAdaptiveChargingSupported');
         },
       },
 
@@ -202,7 +202,7 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
 
   private acIdleManaged_: boolean;
   private acIdleOptions_: IdleOption[];
-  private adaptiveChargingEnabled_: boolean;
+  private adaptiveChargingSupported_: boolean;
   private adaptiveChargingManaged_: boolean;
   private adaptiveChargingPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private readonly batteryChargeLimitAvailable_: boolean;
@@ -522,13 +522,13 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
         break;
       case 'idle':
         if (!batteryPresent && this.batterySaverHidden_ &&
-            !this.adaptiveChargingEnabled_) {
+            !this.adaptiveChargingSupported_) {
           classes.push('first');
         }
         break;
       case 'acIdle':
         if (!batteryPresent && this.batterySaverHidden_ &&
-            !this.adaptiveChargingEnabled_) {
+            !this.adaptiveChargingSupported_) {
           classes.push('first');
         }
         classes.push('dropdown-row');

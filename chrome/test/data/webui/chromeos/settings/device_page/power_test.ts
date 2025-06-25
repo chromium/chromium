@@ -119,7 +119,7 @@ suite('<settings-power>', () => {
   setup(async () => {
     // Adaptive charging setting should be shown.
     loadTimeData.overrideValues({
-      isAdaptiveChargingEnabled: true,
+      isAdaptiveChargingSupported: true,
     });
 
     browserProxy = new TestDevicePageBrowserProxy();

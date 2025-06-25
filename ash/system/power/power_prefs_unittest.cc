@@ -218,8 +218,7 @@ class PowerPrefsTest : public NoSessionAshTestBase {
 
   // NoSessionAshTestBase:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kQuickDim, features::kAdaptiveCharging}, {});
+    feature_list_.InitWithFeatures({features::kQuickDim}, {});
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
     HumanPresenceDBusClient::InitializeFake();
     FakeHumanPresenceDBusClient::Get()->Reset();

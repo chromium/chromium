@@ -9,7 +9,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
 
 namespace ash {
@@ -17,9 +16,7 @@ namespace ash {
 // Pixel tests for the quick settings footer.
 class QuickSettingsFooterPixelTest : public AshTestBase {
  public:
-  QuickSettingsFooterPixelTest() {
-    feature_list_.InitAndDisableFeature(features::kAdaptiveCharging);
-  }
+  QuickSettingsFooterPixelTest() = default;
 
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -57,8 +54,6 @@ class QuickSettingsFooterPixelTest : public AshTestBase {
   QuickSettingsFooter* GetFooter() { return footer_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
   // Owned by view hierarchy.
   raw_ptr<QuickSettingsFooter, DanglingUntriaged> footer_ = nullptr;
 };

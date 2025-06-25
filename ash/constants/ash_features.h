@@ -1041,7 +1041,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ArePromiseIconsForWebAppsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ForceOnDeviceAppControlsForAllRegions();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreImprovedScreenCaptureSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool Is16DesksEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdaptiveChargingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOnDeviceAppControlsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdjustSplitViewForVKEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowAmbientEQEnabled();

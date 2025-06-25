@@ -190,11 +190,10 @@ void PowerSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString("powerBatterySaverLearnMoreUrl",
                          chrome::kCrosBatterySaverLearnMoreURL);
 
-  html_source->AddBoolean("isAdaptiveChargingEnabled",
-                          ash::features::IsAdaptiveChargingEnabled() &&
-                              Shell::Get()
-                                  ->adaptive_charging_controller()
-                                  ->IsAdaptiveChargingSupported());
+  html_source->AddBoolean("isAdaptiveChargingSupported",
+                          Shell::Get()
+                              ->adaptive_charging_controller()
+                              ->IsAdaptiveChargingSupported());
 
   html_source->AddBoolean("isBatteryChargeLimitAvailable",
                           ash::features::IsBatteryChargeLimitAvailable());
@@ -257,8 +256,7 @@ void PowerSection::PowerChanged(
     // GetLastStatus, so make sure its not nullopt.
     DCHECK(chromeos::PowerManagerClient::Get()->GetLastStatus());
     if (!has_observed_power_status_) {
-      if (ash::features::IsAdaptiveChargingEnabled() &&
-          Shell::Get()
+      if (Shell::Get()
               ->adaptive_charging_controller()
               ->IsAdaptiveChargingSupported()) {
         updater.AddSearchTags(GetPowerWithAdaptiveChargingSearchConcepts());
