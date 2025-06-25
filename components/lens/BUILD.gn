@@ -70,10 +70,7 @@ component("features") {
     "lens_features.h",
   ]
 
-  deps = [
-    "//base",
-    "//components/omnibox/common",
-  ]
+  deps = [ "//base" ]
 }
 
 mojom("lens_mojo") {

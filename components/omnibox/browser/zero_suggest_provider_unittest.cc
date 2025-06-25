@@ -1154,16 +1154,12 @@ TEST_F(ZeroSuggestProviderTest, SyncMatchesOnly) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/
-      {omnibox_feature_configs::kOmniboxContextualSuggestions,
+      {omnibox_feature_configs::ContextualSearch::kOmniboxContextualSuggestions,
        omnibox_feature_configs::ContextualSearch::
            kOmniboxZeroSuggestSynchronousMatchesOnly,
        omnibox::kZeroSuggestPrefetchingOnSRP,
        omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
-  // Reset the config to use the `ScopedFeatureList` values above.
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::ContextualSearch>
-      config;
 
   auto clear_matches = [&]() {
     while (!provider_->matches().empty()) {

@@ -44,7 +44,7 @@ BASE_FEATURE(ContextualSearch::kContextualSuggestionsAblateOthersWhenPresent,
 
 // Meta-feature that enables/disables the other related features if set.
 // When not overridden, each feature is enabled/disabled separately.
-BASE_FEATURE(kOmniboxContextualSuggestions,
+BASE_FEATURE(ContextualSearch::kOmniboxContextualSuggestions,
              "OmniboxContextualSuggestions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -187,7 +187,7 @@ MiaZPS::MiaZPS() {
           .Get();
 }
 
-BASE_FEATURE(kOmniboxToolbelt,
+BASE_FEATURE(Toolbelt::kOmniboxToolbelt,
              "OmniboxToolbelt",
              base::FEATURE_DISABLED_BY_DEFAULT);
 

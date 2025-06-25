@@ -11,7 +11,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/omnibox/common/omnibox_feature_configs.h"
 
 namespace lens::features {
 
@@ -897,11 +896,7 @@ bool UseLensOverlayForVideoFrameSearch() {
 
 bool IsOmniboxEntryPointEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayOmniboxEntryPoint) &&
-         kIsOmniboxEntryPointEnabled.Get() &&
-         omnibox_feature_configs::Toolbelt::Get()
-                 .ActiveOmniboxPopupLensEntryType() ==
-             omnibox_feature_configs::Toolbelt::OmniboxPopupLensEntryType::
-                 kNone;
+         kIsOmniboxEntryPointEnabled.Get();
 }
 
 bool IsOmniboxEntrypointAlwaysVisible() {

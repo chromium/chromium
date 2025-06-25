@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURE_CONFIGS_H_
 #define COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURE_CONFIGS_H_
 
-#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
@@ -119,11 +118,6 @@ struct CalcProvider : Config<CalcProvider> {
   size_t num_non_calc_inputs;
 };
 
-// Declared outside of `ContextualSearch` in order to allow exporting for lens
-// component.
-COMPONENT_EXPORT(OMNIBOX_COMMON)
-BASE_DECLARE_FEATURE(kOmniboxContextualSuggestions);
-
 // A config struct for features related to contextual search in omnibox.
 struct ContextualSearch : Config<ContextualSearch> {
   ContextualSearch();
@@ -132,6 +126,7 @@ struct ContextualSearch : Config<ContextualSearch> {
   ~ContextualSearch();
 
   DECLARE_FEATURE(kContextualSuggestionsAblateOthersWhenPresent);
+  DECLARE_FEATURE(kOmniboxContextualSuggestions);
   DECLARE_FEATURE(kStarterPackPage);
   DECLARE_FEATURE(kContextualZeroSuggestLensFulfillment);
   DECLARE_FEATURE(kContextualSearchProviderAsyncSuggestInputs);
@@ -230,12 +225,10 @@ struct MiaZPS : Config<MiaZPS> {
   bool suppress_psuggest_backfill_with_mia;
 };
 
-// Declared outside of `Toolbelt` in order to allow exporting for lens
-// component.
-COMPONENT_EXPORT(OMNIBOX_COMMON) BASE_DECLARE_FEATURE(kOmniboxToolbelt);
-
 // A config struct for the omnibox toolbelt.
 struct Toolbelt : Config<Toolbelt> {
+  DECLARE_FEATURE(kOmniboxToolbelt);
+
   Toolbelt();
 
   // Whether the toolbelt is to be included in the omnibox.
@@ -265,29 +258,6 @@ struct Toolbelt : Config<Toolbelt> {
   bool show_bookmarks_action_on_ntp;
   bool show_tabs_action_on_non_ntp;
   bool show_tabs_action_on_ntp;
-
-  enum class OmniboxPopupLensEntryType {
-    kNone,
-    kContextualMatch,
-    kToolbeltAction,
-  };
-
-  // Helper to figure out which entry point should be enabled. To avoid circular
-  // dependencies, this can't check whether the omnibox's RHS lens page action
-  // is enabled. That's ok, because the RHS lens has the lowest priority. Code
-  // that wants to check if the RHS lens is enabled (i.e.
-  // `lens::features::IsOmniboxEntryPointEnabled()`) will have to check its
-  // feature as well as `ActiveOmniboxPopupLensEntryType() == kNone`. While
-  // components/omnibox code can check just `ActiveOmniboxPopupLensEntryType()`.
-  OmniboxPopupLensEntryType ActiveOmniboxPopupLensEntryType() const {
-    if (show_lens_action_on_non_ntp || show_lens_action_on_ntp) {
-      return OmniboxPopupLensEntryType::kToolbeltAction;
-    }
-    if (ContextualSearch::Get().show_open_lens_action) {
-      return OmniboxPopupLensEntryType::kContextualMatch;
-    }
-    return OmniboxPopupLensEntryType::kNone;
-  }
 };
 
 // If enabled, adjusts the indentation of the omnibox input and matches to fix

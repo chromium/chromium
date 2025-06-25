@@ -1,6 +1,5 @@
 include_rules = [
   "+components/base32",
-  "+components/omnibox/common",
   "+components/prefs",
   "+components/signin/public/identity_manager",
   "+components/sync",
