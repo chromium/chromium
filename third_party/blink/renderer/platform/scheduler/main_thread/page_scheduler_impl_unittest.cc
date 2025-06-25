@@ -87,7 +87,6 @@ class MockPageSchedulerDelegate : public PageScheduler::Delegate {
   MockPageSchedulerDelegate() {}
 
  private:
-  bool RequestBeginMainFrameNotExpected(bool) override { return false; }
   void OnSetPageFrozen(bool is_frozen) override {}
   bool IsOrdinary() const override { return true; }
 };

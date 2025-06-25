@@ -428,13 +428,6 @@ bool PageSchedulerImpl::OptedOutFromAggressiveThrottling() const {
   return opted_out_from_aggressive_throttling_;
 }
 
-bool PageSchedulerImpl::RequestBeginMainFrameNotExpected(bool new_state) {
-  CHECK(!base::FeatureList::IsEnabled(kUseWidgetSchedulerForIdlePeriodSignals));
-  if (!delegate_)
-    return false;
-  return delegate_->RequestBeginMainFrameNotExpected(new_state);
-}
-
 scoped_refptr<WidgetScheduler> PageSchedulerImpl::CreateWidgetScheduler(
     WidgetScheduler::Delegate* delegate) {
   return main_thread_scheduler_->CreateWidgetScheduler(delegate);

@@ -96,10 +96,6 @@ class PLATFORM_EXPORT FrameWidget {
       base::OnceCallback<void(const viz::FrameTimingDetails&)>
           presentation_callback) = 0;
 
-  // Enable or disable BeginMainFrameNotExpected signals from the compositor,
-  // which are consumed by the blink scheduler.
-  virtual void RequestBeginMainFrameNotExpected(bool request) = 0;
-
   // A stable numeric Id for the local root's compositor. For tracing/debugging
   // purposes.
   virtual int GetLayerTreeId() = 0;

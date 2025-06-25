@@ -1101,11 +1101,6 @@ void ChromeClientImpl::NotifyPresentationTime(LocalFrame& frame,
   widget->NotifyPresentationTime(std::move(callback));
 }
 
-void ChromeClientImpl::RequestBeginMainFrameNotExpected(LocalFrame& frame,
-                                                        bool request) {
-  frame.GetWidgetForLocalRoot()->RequestBeginMainFrameNotExpected(request);
-}
-
 int ChromeClientImpl::GetLayerTreeId(LocalFrame& frame) {
   return frame.GetWidgetForLocalRoot()->GetLayerTreeId();
 }

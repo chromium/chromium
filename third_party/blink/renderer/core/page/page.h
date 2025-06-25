@@ -404,7 +404,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   // PageScheduler::Delegate implementation.
   bool IsOrdinary() const override;
-  bool RequestBeginMainFrameNotExpected(bool new_state) override;
   void OnSetPageFrozen(bool is_frozen) override;
 
   void AddAutoplayFlags(int32_t flags);

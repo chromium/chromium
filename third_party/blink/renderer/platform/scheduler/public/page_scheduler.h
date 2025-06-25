@@ -28,9 +28,6 @@ class PLATFORM_EXPORT PageScheduler {
 
     // An "ordinary" page is a fully-featured page owned by a web view.
     virtual bool IsOrdinary() const = 0;
-    // Returns true if the request has been succcessfully relayed to the
-    // compositor.
-    virtual bool RequestBeginMainFrameNotExpected(bool new_state) = 0;
     virtual void OnSetPageFrozen(bool is_frozen) = 0;
   };
 
@@ -76,10 +73,6 @@ class PLATFORM_EXPORT PageScheduler {
   virtual bool IsExemptFromBudgetBasedThrottling() const = 0;
 
   virtual bool OptedOutFromAggressiveThrottlingForTest() const = 0;
-
-  // Returns true if the request has been succcessfully relayed to the
-  // compositor.
-  virtual bool RequestBeginMainFrameNotExpected(bool new_state) = 0;
 
   // Returns AgentGroupScheduler
   virtual AgentGroupScheduler& GetAgentGroupScheduler() = 0;

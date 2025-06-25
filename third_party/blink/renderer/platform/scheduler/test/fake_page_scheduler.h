@@ -73,9 +73,6 @@ class FakePageScheduler : public PageScheduler {
   bool OptedOutFromAggressiveThrottlingForTest() const override {
     return false;
   }
-  bool RequestBeginMainFrameNotExpected(bool new_state) override {
-    return false;
-  }
   AgentGroupScheduler& GetAgentGroupScheduler() override {
     return *agent_group_scheduler_;
   }

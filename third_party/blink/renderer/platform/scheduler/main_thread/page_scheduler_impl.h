@@ -85,7 +85,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   bool IsAudioPlaying() const override;
   bool IsExemptFromBudgetBasedThrottling() const override;
   bool OptedOutFromAggressiveThrottlingForTest() const override;
-  bool RequestBeginMainFrameNotExpected(bool new_state) override;
   scoped_refptr<WidgetScheduler> CreateWidgetScheduler(
       WidgetScheduler::Delegate*) override;
 

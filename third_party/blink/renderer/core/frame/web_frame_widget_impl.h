@@ -238,7 +238,6 @@ class CORE_EXPORT WebFrameWidgetImpl
                      base::OnceCallback<void(bool)>,
                      bool speculative) override;
   bool SpeculativeDecodeRequestInFlight() const override;
-  void RequestBeginMainFrameNotExpected(bool request) final;
   int GetLayerTreeId() final;
   const cc::LayerTreeSettings* GetLayerTreeSettings() final;
   void UpdateBrowserControlsState(

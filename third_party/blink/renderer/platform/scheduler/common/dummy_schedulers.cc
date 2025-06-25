@@ -187,7 +187,6 @@ class DummyPageScheduler : public PageScheduler {
     return false;
   }
   bool IsInBackForwardCache() const override { return false; }
-  bool RequestBeginMainFrameNotExpected(bool) override { return false; }
   AgentGroupScheduler& GetAgentGroupScheduler() override {
     return *agent_group_scheduler_;
   }

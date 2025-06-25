@@ -585,12 +585,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void NotifyPresentationTime(LocalFrame& frame,
                                       ReportTimeCallback callback) {}
 
-  // Enable or disable BeginMainFrameNotExpected signals from the compositor of
-  // the local root of |frame|. These signals would be consumed by the blink
-  // scheduler.
-  virtual void RequestBeginMainFrameNotExpected(LocalFrame& frame,
-                                                bool request) = 0;
-
   // A stable numeric Id for |frame|'s local root's compositor. For
   // tracing/debugging purposes.
   virtual int GetLayerTreeId(LocalFrame& frame) = 0;

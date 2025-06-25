@@ -309,9 +309,6 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void NotifyPresentationTime(LocalFrame& frame,
                               ReportTimeCallback callback) override;
 
-  void RequestBeginMainFrameNotExpected(LocalFrame& frame,
-                                        bool request) override;
-
   void DidUpdateTextAutosizerPageInfo(
       const mojom::blink::TextAutosizerPageInfo& page_info) override;
 

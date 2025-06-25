@@ -1469,15 +1469,6 @@ bool Page::IsOrdinary() const {
   return is_ordinary_;
 }
 
-bool Page::RequestBeginMainFrameNotExpected(bool new_state) {
-  if (!main_frame_ || !main_frame_->IsLocalFrame())
-    return false;
-
-  chrome_client_->RequestBeginMainFrameNotExpected(*DeprecatedLocalMainFrame(),
-                                                   new_state);
-  return true;
-}
-
 void Page::AddAutoplayFlags(int32_t value) {
   autoplay_flags_ |= value;
 }

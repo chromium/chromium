@@ -256,9 +256,6 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void RegisterPopupOpeningObserver(PopupOpeningObserver*) override {}
   void UnregisterPopupOpeningObserver(PopupOpeningObserver*) override {}
   void NotifyPopupOpeningObservers() const override {}
-
-  void RequestBeginMainFrameNotExpected(LocalFrame& frame,
-                                        bool request) override {}
   int GetLayerTreeId(LocalFrame& frame) override { return 0; }
   void SetCursorForPlugin(const ui::Cursor&, LocalFrame*) override {}
   void InstallSupplements(LocalFrame&) override {}
