@@ -964,6 +964,10 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
         @"Skipped for iPhone (the manual fill button has no title on iPhone) "
         @"or when the Keyboard Accessory Upgrade feature is disabled.");
   }
+  if (@available(iOS 19.0, *)) {
+    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
 
   [self loadAddressPage];
 
