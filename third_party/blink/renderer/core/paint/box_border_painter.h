@@ -17,6 +17,7 @@
 namespace blink {
 
 class ComputedStyle;
+class StyledStrokeData;
 
 typedef unsigned BorderEdgeFlags;
 
@@ -48,6 +49,15 @@ class BoxBorderPainter {
                           Color color,
                           EBorderStyle style,
                           const AutoDarkMode& auto_dark_mode);
+
+  // DrawLineWithStyle() only operates on horizontal or vertical lines and uses
+  // the current stroke color. For dotted or dashed stroke, the line need to be
+  // top-to-down or left-to-right to get correct interval of dots/dashes.
+  static void DrawLineWithStyle(GraphicsContext& context,
+                                const gfx::Point&,
+                                const gfx::Point&,
+                                const StyledStrokeData&,
+                                const AutoDarkMode& auto_dark_mode);
 
  private:
   // For PaintBorder().

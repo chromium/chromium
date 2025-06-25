@@ -722,7 +722,8 @@ class ComplexOutlinePainter {
     int joint_offset = (width_ + 1) / 2;
     ExtendLineAtEndpoint(adjusted_line.start, adjusted_line.end, joint_offset);
     ExtendLineAtEndpoint(adjusted_line.end, adjusted_line.start, joint_offset);
-    context_.DrawLine(
+    BoxBorderPainter::DrawLineWithStyle(
+        context_,
         gfx::ToRoundedPoint(gfx::SkPointToPointF(adjusted_line.start)),
         gfx::ToRoundedPoint(gfx::SkPointToPointF(adjusted_line.end)),
         styled_stroke, auto_dark_mode);
