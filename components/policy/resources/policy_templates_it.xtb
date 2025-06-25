@@ -871,7 +871,7 @@ Se la policy non viene configurata, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POL
 I pattern URL non devono essere in conflitto con <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />. Nessuna policy ha la precedenza se un URL presenta corrispondenze con entrambi.
 
 Visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns per informazioni dettagliate sui pattern URL validi. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
-<translation id="1578495851351913403">Se configuri questa policy, viene mostrata una nuova opzione di attivazione/disattivazione dell'interfaccia utente sotto ogni display nelle impostazioni di visualizzazione. La normale modalità Specchio trasforma tutti i display in un unico display, ma la nuova opzione di attivazione/disattivazione consente agli utenti di escludere un display dal mirroring e di visualizzarlo come display esteso.
+<translation id="1578495851351913403">Se configuri questa policy, viene mostrata una nuova opzione di attivazione/disattivazione dell'interfaccia utente sotto ogni display nelle impostazioni di visualizzazione. La normale modalità di mirroring trasforma tutti i display in un unico display, ma la nuova opzione consente agli utenti di escludere un display dal mirroring e di visualizzarlo come display esteso.
 
 Se la policy viene impostata su Enabled, verrà visualizzata l'opzione di attivazione/disattivazione per ogni display, in modo da escluderlo dalla modalità di mirroring, e gli utenti potranno scegliere un display da attivare.
 
@@ -3457,7 +3457,7 @@ Se la policy non viene impostata, non è possibile navigare nel browser se è at
       Quando la norma non viene impostata o non contiene intervalli di tempo:
       Le verifiche automatiche degli aggiornamenti non verranno bloccate da questa norma, ma potrebbero essere bloccate da altre norme.
       Fino a M88, questa funzionalità è attiva solo sui dispositivi <ph name="PRODUCT_OS_NAME" /> configurati come kiosk ad avvio automatico. Gli altri dispositivi non risulteranno limitati da questa norma. Tuttavia, a partire da M89, questa norma è attiva su tutti i dispositivi <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="3456705177754697344">Non rendere disponibile per l'utente l'opzione Escludi questo display in modalità Specchio</translation>
+<translation id="3456705177754697344">Non rendere disponibile per l'utente l'opzione Escludi questo display in modalità di mirroring</translation>
 <translation id="3459509316159669723">Stampa</translation>
 <translation id="3460485593332210712">Consenti Chrome for Testing</translation>
 <translation id="3461279434465463233">Segnala lo stato dell'alimentazione</translation>
@@ -5994,9 +5994,9 @@ Se non viene configurata, il valore predefinito è 0 e gli utenti sono liberi di
 <translation id="5258445772095084618">Consenti agli utenti non affiliati di usare le macchine virtuali necessarie per supportare le app Linux</translation>
 <translation id="5258651513421638932">Consenti la connessione della smart card da parte delle app isolate</translation>
 <translation id="5262320080678421295">Disattiva attendibilità nei certificati emessi dall'Infrastruttura a chiave pubblica precedente di Symantec Corporation</translation>
-<translation id="5265613843467285323">Mostra un'opzione di attivazione/disattivazione dell'interfaccia utente per escludere un display in modalità Specchio.</translation>
+<translation id="5265613843467285323">Mostra un'opzione di attivazione/disattivazione dell'interfaccia utente per escludere un display in modalità di mirroring.</translation>
 <translation id="5270408671043421978">Disattiva il precaricamento dell'immagine <ph name="ARC_VM" /></translation>
-<translation id="5272332743749468542">Rendi disponibile per l'utente l'opzione Escludi questo display in modalità Specchio</translation>
+<translation id="5272332743749468542">Rendi disponibile per l'utente l'opzione Escludi questo display in modalità di mirroring</translation>
 <translation id="5273744932022326215">Consente di attivare la funzione di accessibilità di evidenziazione del cursore nella schermata di accesso.
 
           Se questa policy è impostata su true, l'evidenziazione del cursore sarà sempre attivata sulla schermata di accesso.

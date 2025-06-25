@@ -1673,7 +1673,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">Pri pripájaní zdieľaného úložiska sa vyskytla chyba. Uvedené úložisko sa v sieti nenašlo.</translation>
 <translation id="2148756636027685713">Formátovanie bolo dokončené</translation>
-<translation id="2148892889047469596">Prenášanie karty</translation>
+<translation id="2148892889047469596">Prenos karty</translation>
 <translation id="2149973817440762519">Upraviť záložku</translation>
 <translation id="2150139952286079145">Hľadať ciele</translation>
 <translation id="2150661552845026580">Pridať rozšírenie <ph name="EXTENSION_NAME" />?</translation>
@@ -4276,6 +4276,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3948334586359655083">Na tejto karte sa prehráva zvuk</translation>
 <translation id="3948507072814225786">Web <ph name="ORIGIN" /> môže upravovať súbory v nasledujúcich priečinkoch</translation>
 <translation id="3948985214866944547">Väčšina ľudí blokuje zdieľanie presnej polohy pre tento web</translation>
+<translation id="394930357226768495">Zobrazovať návrhy a výsledky od vašej organizácie</translation>
 <translation id="394984172568887996">Importované z Internet Explorera</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> a zvýšte tak bezpečnosť pri sťahovaní súborov</translation>
 <translation id="3950479158728806902">Automaticky vytvorte prístupový kľúč a prihláste sa rýchlejšie</translation>
@@ -4610,7 +4611,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4195001808989442226">Steam pre Chromebook (beta) sa nedá otvoriť</translation>
 <translation id="4195378859392041564">Kliknite na ľubovoľný kláves myšou a potom si ho prispôsobte stlačením klávesa na klávesnici</translation>
 <translation id="4195643157523330669">Otvoriť na novej karte</translation>
-<translation id="4195814663415092787">Pokračovať tam, kde ste prestali</translation>
+<translation id="4195814663415092787">Pokračujte tam, kde ste prestali</translation>
 <translation id="4198268995694216131">Ďalšie weby</translation>
 <translation id="4198420883535766848">Odstrániť kartu zo zoznamu</translation>
 <translation id="4200609364258658652">Kopírovať snímku videa</translation>
@@ -5684,7 +5685,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4959262764292427323">Heslá sa ukladajú do účtu Google, takže ich môžete používať v ľubovoľnom zariadení</translation>
 <translation id="4960020053211143927">Niektoré aplikácie to nepodporujú</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
-<translation id="4961318399572185831">Prenášanie obrazovky</translation>
+<translation id="4961318399572185831">Prenos obrazovky</translation>
 <translation id="496185450405387901">Túto aplikáciu nainštaloval váš správca.</translation>
 <translation id="4963603093937263654">V zariadení <ph name="DEVICE_NAME" /> musíte zapnúť upozornenia</translation>
 <translation id="4963789650715167449">Odstrániť aktuálnu kartu</translation>

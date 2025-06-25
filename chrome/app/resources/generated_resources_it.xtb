@@ -1231,7 +1231,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1841616161104323629">Record del dispositivo mancante.</translation>
 <translation id="1841705068325380214">L'estensione <ph name="EXTENSION_NAME" /> è stata disattivata</translation>
 <translation id="184183613002882946">No, mantieni 1 sensore</translation>
-<translation id="1842681835432895345">Escludi questo display in modalità Specchio</translation>
+<translation id="1842681835432895345">Escludi questo display in modalità di mirroring</translation>
 <translation id="184273675144259287">Sostituisci app e file Linux con un backup precedente</translation>
 <translation id="1842766183094193446">Vuoi attivare questa modalità demo?</translation>
 <translation id="1843048149176045210">Copia link di download</translation>
@@ -4274,6 +4274,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3948334586359655083">Questa scheda sta riproducendo contenuti audio</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> può modificare i file nelle seguenti cartelle</translation>
 <translation id="3948985214866944547">La maggior parte degli utenti blocca la condivisione della posizione esatta per questo sito</translation>
+<translation id="394930357226768495">Mostra suggerimenti e risultati della tua organizzazione</translation>
 <translation id="394984172568887996">Importati da IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> per rendere più sicuro il download dei file</translation>
 <translation id="3950479158728806902">Crea automaticamente una passkey per accedere più velocemente</translation>
@@ -7097,7 +7098,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6005045517426700202">Edificio in mattoni</translation>
 <translation id="6006392003290068688">Autorizzazioni per <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> rimosse</translation>
 <translation id="6006484371116297560">Classico</translation>
-<translation id="6007053304250788613">È possibile escludere un solo display in modalità Specchio</translation>
+<translation id="6007053304250788613">È possibile escludere un solo display in modalità di mirroring</translation>
 <translation id="6007240208646052708">La ricerca vocale nella tua lingua non è disponibile.</translation>
 <translation id="6010651352520077187">Quando l'opzione è attiva, Google Traduttore propone di tradurre i siti nella tua lingua preferita. Può anche tradurre automaticamente i siti.</translation>
 <translation id="6011193465932186973">Impronta digitale</translation>
