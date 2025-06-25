@@ -384,7 +384,8 @@ export class AppElement extends AppElementBase implements
 
     if (url && element.nodeName === 'A') {
       element.setAttribute('href', url);
-      element.onclick = () => {
+      element.onclick = (event: MouseEvent) => {
+        event.preventDefault();
         chrome.readingMode.onLinkClicked(nodeId);
       };
     }
