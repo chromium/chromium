@@ -1,21 +1,27 @@
 # This yaml file is used to package binaries from Xcode.app.
+#
 # To use this:
 #   1) Make sure Xcode is fully updated (via the app store or otherwise).
-#   2) Move Xcode.app to the same directory as this file,
-#      and rename Xcode.app to xcode_binaries. Or make a symlink:
+#   2) Move Xcode.app to the same directory as this file, and rename Xcode.app
+#      to xcode_binaries. Or make a symlink:
 #      $ rm -rf build/xcode_binaries && \
 #        ln -s /Applications/Xcode.app build/xcode_binaries
-#   3) Call `cipd create --pkg-def build/xcode_binaries.yaml \
-#            -ref <xcode version num> -ref <xcode build version>`
-#      a.) The version information can be found in "About Xcode",
-#          or by running `xcodebuild -version`
+#   3) Create the package and upload it to CIPD:
+#      $ cipd create --pkg-def build/xcode_binaries.yaml \
+#            -ref ${xcode_version} -ref ${xcode_build_version} \
+#            -ref sdk_${sdk_version} -ref sdk_${sdk_build_version}
+#      ${xcode_version} and ${xcode_build_version} can be found in "About
+#      Xcode", or by running `xcodebuild -version`. ${sdk_version} can be found
+#      by running `xcrun --show-sdk-version`. ${sdk_build_version} can be found
+#      by running `xcrun --show-sdk-build-version`.
+#
 # To deploy the newly created cipd package across the fleet, modify
 # ./mac_toolchain.py to point to the new cipd hash, and update the
 # mac_sdk_official_* variables in build/config/mac/mac_sdk.gni.
 #
 # Note that the Chromium build looks for the mac binaries in
-# build/mac_files/xcode_binaries; it won't see the build/xcode_binaries that
-# you just created. In order to use the new toolchain version, you still need to
+# build/mac_files/xcode_binaries; it won't see the build/xcode_binaries that you
+# just created. In order to use the new toolchain version, you still need to
 # `gclient runhooks` after updating the hash in mac_toolchain.py.
 #
 # The ACLs for this package are determined by the directory structure. The
@@ -25,8 +31,8 @@ description: A hermetic deployment of all Xcode binaries used to build Chromium.
 root: "xcode_binaries"
 data:
   - dir: Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
-  - dir: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/bison
-  - dir: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/metal
+  - dir: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/bison/
+  - dir: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/metal/
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/air-lld
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bison
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/gm4
@@ -55,12 +61,12 @@ data:
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/libexec/migcom
   - file: Contents/Developer/usr/bin/atos
   - file: Contents/Developer/usr/bin/notarytool
-  - file: Contents/Resources/en.lproj/License.rtf
   - file: Contents/Resources/LicenseInfo.plist
-  - dir: Contents/SharedFrameworks/CoreSymbolicationDT.framework
-  - dir: Contents/SharedFrameworks/DebugSymbolsDT.framework
-  - dir: Contents/SharedFrameworks/MallocStackLoggingDT.framework
-  - dir: Contents/SharedFrameworks/SymbolicationDT.framework
+  - file: Contents/Resources/en.lproj/License.rtf
+  - dir: Contents/SharedFrameworks/CoreSymbolicationDT.framework/
+  - dir: Contents/SharedFrameworks/DebugSymbolsDT.framework/
+  - dir: Contents/SharedFrameworks/MallocStackLoggingDT.framework/
+  - dir: Contents/SharedFrameworks/SymbolicationDT.framework/
   - file: Contents/version.plist
 # llvm-size and size are run on swarming, those are symlinked to out of
 # isolated tree and produce invalid symlinks if we don't use copy mode here.
