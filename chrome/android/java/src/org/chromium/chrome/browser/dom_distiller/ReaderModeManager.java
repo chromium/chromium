@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.messages.DismissReason;
@@ -405,7 +406,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     }
 
     /** A notification that the prompt was dismissed without being used. */
-    public void onClosed() {
+    private void onClosed() {
         mIsDismissed = true;
     }
 
@@ -630,6 +631,12 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
             navigateToReaderMode();
         }
         RecordUserAction.record("MobileReaderModeActivated");
+        if (mHasBeenNotifiedOfCpa && !mIsReaderModeButtonShowingOnToolbar) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "CustomTab.AdaptiveToolbarButton.FallbackUi",
+                    AdaptiveToolbarButtonVariant.READER_MODE,
+                    AdaptiveToolbarButtonVariant.MAX_VALUE);
+        }
     }
 
     private boolean shouldUseRegularTabsForDistillation() {
