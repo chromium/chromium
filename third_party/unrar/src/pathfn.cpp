@@ -294,6 +294,7 @@ void GetRarDataPath(std::wstring &Path,bool Create)
 {
   Path.clear();
 
+  // This option to change %AppData% location is documented in wunrar.chm.
   HKEY hKey;
   if (RegOpenKeyEx(HKEY_CURRENT_USER,L"Software\\WinRAR\\Paths",0,
                    KEY_QUERY_VALUE,&hKey)==ERROR_SUCCESS)
@@ -804,7 +805,8 @@ static void GenArcName(std::wstring &ArcName,const std::wstring &GenerateMask,ui
     Pos++;          // Skip '+' in the beginning of time mask.
   }
 
-  std::wstring Mask=!GenerateMask.empty() ? GenerateMask.substr(Pos):L"yyyymmddhhmmss";
+  // Set the default mask for -ag or -ag+, use the specified otherwise.
+  std::wstring Mask=GenerateMask.size()>Pos ? GenerateMask.substr(Pos):L"yyyymmddhhmmss";
 
   bool QuoteMode=false;
   uint MAsMinutes=0; // By default we treat 'M' as months.
@@ -1081,12 +1083,6 @@ void MakeNameCompatible(std::wstring &Name)
     if (I+1==Name.size() || IsPathDiv(Name[I+1]))
       while (I>=0 && (Name[I]=='.' || Name[I]==' '))
       {
-        if (I==0 && Name[I]==' ')
-        {
-          // Windows 10 Explorer can't rename or delete " " files and folders.
-          Name[I]='_'; // Convert " /path" to "_/path".
-          break;
-        }
         if (Name[I]=='.')
         {
           // 2024.05.01: Permit ./path1, path1/./path2, ../path1,
@@ -1099,8 +1095,9 @@ void MakeNameCompatible(std::wstring &Name)
               I==3 && IsDriveLetter(Name)))
             break;
         }
-        Name.erase(I,1);
-        I--;
+
+        Name[I]='_';
+        break;
       }
 
   // Rename reserved device names, such as aux.txt to _aux.txt.

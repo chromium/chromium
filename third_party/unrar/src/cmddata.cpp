@@ -69,9 +69,9 @@ void CommandData::ParseCommandLine(bool Preprocess,int argc, char *argv[])
       break;
     if (!FirstParam) // First parameter is the executable name.
       if (Preprocess)
-        PreprocessArg(Param.data());
+        PreprocessArg(Param.c_str());
       else
-        ParseArg(Param.data());
+        ParseArg(Param.c_str());
   }
 #else
   for (int I=1;I<argc;I++)
@@ -79,9 +79,9 @@ void CommandData::ParseCommandLine(bool Preprocess,int argc, char *argv[])
     std::wstring Arg;
     CharToWide(argv[I],Arg);
     if (Preprocess)
-      PreprocessArg(Arg.data());
+      PreprocessArg(Arg.c_str());
     else
-      ParseArg(Arg.data());
+      ParseArg(Arg.c_str());
   }
 #endif
   if (!Preprocess)

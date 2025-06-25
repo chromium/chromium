@@ -144,10 +144,10 @@ index 065350f94af55..5c539faf0d82a 100644
  
  
 diff --git a/third_party/unrar/src/extract.cpp b/third_party/unrar/src/extract.cpp
-index c433fb8963e8a..80ce16530d0d8 100644
+index 8e5ba74940de4..31eab75264ef8 100644
 --- a/third_party/unrar/src/extract.cpp
 +++ b/third_party/unrar/src/extract.cpp
-@@ -665,6 +665,11 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+@@ -671,6 +671,11 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
        ExtrFile=LinksToDirs(DestFileName,Cmd->ExtrPath,LastCheckedSymlink);
  
      File CurFile;
@@ -159,7 +159,7 @@ index c433fb8963e8a..80ce16530d0d8 100644
  
      bool LinkEntry=Arc.FileHead.RedirType!=FSREDIR_NONE;
      if (LinkEntry && (Arc.FileHead.RedirType!=FSREDIR_FILECOPY))
-@@ -893,6 +898,9 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+@@ -899,6 +904,9 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
              UnstoreFile(DataIO,Arc.FileHead.UnpSize);
            else
            {
@@ -169,7 +169,7 @@ index c433fb8963e8a..80ce16530d0d8 100644
              try
              {
                Unp->Init(Arc.FileHead.WinSize,Arc.FileHead.Solid);
-@@ -903,6 +911,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+@@ -909,6 +917,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
                  uiMsg(UIERROR_EXTRDICTOUTMEM,Arc.FileName,uint(Arc.FileHead.WinSize/0x40000000+(Arc.FileHead.WinSize%0x40000000!=0 ? 1 : 0)));
                throw;
              }

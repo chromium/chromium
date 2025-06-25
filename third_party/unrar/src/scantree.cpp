@@ -508,6 +508,12 @@ void ScanTree::ScanError(bool &Error)
     std::wstring FullName;
     // This conversion works for wildcard masks too.
     ConvertNameToFull(CurMask,FullName);
+
+    // 2025.04.29: remove the trailing mask, so we issue errors like
+    // "Cannot read contents of "c:\dir"" instead of "c:\path\dir\file.ext",
+    // when searching for file.ext in inaccessible c:\path\dir.
+    RemoveNameFromPath(FullName);
+
     uiMsg(UIERROR_DIRSCAN,FullName);
     ErrHandler.SysErrMsg();
   }

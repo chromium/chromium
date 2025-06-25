@@ -1,7 +1,7 @@
 #ifndef _RAR_OPTIONS_
 #define _RAR_OPTIONS_
 
-#define DEFAULT_RECOVERY     -3
+#define DEFAULT_RECOVERY      3
 
 #define DEFAULT_RECVOLUMES  -10
 
@@ -137,7 +137,7 @@ class RAROptions
     OVERWRITE_MODE Overwrite;
     int Method;
     HASH_TYPE HashType;
-    int Recovery;
+    uint Recovery;
     int RecVolNumber;
     ARC_METADATA ArcMetadata;
     bool DisablePercentage;
