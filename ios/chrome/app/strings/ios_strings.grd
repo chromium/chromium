@@ -1044,14 +1044,29 @@
       <message name="IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON" desc="Text for the BWG Consent primary button.">
         Yes, I'm in
       </message>
-      <message name="IDS_IOS_BWG_FIRST_RUN_SECONDARY_BUTTON" desc="Text for the BWG First Run secondary button.">
-        No thanks
-      </message>
       <message name="IDS_IOS_BWG_IPH_TEXT" desc="Text for the BWG In-Product Help bubble.">
         You can open Gemini here
       </message>
+      <message name="IDS_IOS_BWG_PROMO_FIRST_BOX_BODY" desc="Text for the BWG Promo first box body.">
+        Get relevant answers based on the content of the page you're on
+      </message>
+      <message name="IDS_IOS_BWG_PROMO_FIRST_BOX_TITLE" desc="Text for the BWG Promo first box title.">
+        Ask about any page
+      </message>
+      <message name="IDS_IOS_BWG_PROMO_MAIN_TITLE" desc="Text for the BWG Promo main title.">
+        Get answers faster with Gemini in Chrome
+      </message>
       <message name="IDS_IOS_BWG_PROMO_PRIMARY_BUTTON" desc="Text for the BWG Promo primary button.">
-        Try it out
+        Get started
+      </message>
+      <message name="IDS_IOS_BWG_PROMO_SECONDARY_BUTTON" desc="Text for the BWG Promo secondary button.">
+        Cancel
+      </message>
+      <message name="IDS_IOS_BWG_PROMO_SECOND_BOX_BODY" desc="Text for the BWG Promo first box body.">
+        Get key takeaways and insights that help you understand any topic
+      </message>
+      <message name="IDS_IOS_BWG_PROMO_SECOND_BOX_TITLE" desc="Text for the BWG Promo second box title.">
+        Summarize
       </message>
       <message name="IDS_IOS_CALL_OMNIBOX_ACTION" desc="Call suggestion action button [iOS only]">
         Call

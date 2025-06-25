@@ -22,9 +22,6 @@ namespace {
 const CGFloat kMainStackHorizontalInset = 20.0;
 const CGFloat kMainStackSpacing = 8.0;
 
-// Horizontal padding for the main title and sub title.
-const CGFloat kMainTitleHorizontalPadding = 8.0;
-
 // Icons size.
 const CGFloat kIconSize = 16.0;
 const CGFloat kWhiteInnerSize = 32.0;
@@ -42,8 +39,6 @@ const CGFloat kContentHorizontalStackSpacing = 8.0;
 const CGFloat kTitleBodyVerticalSpacing = 4.0;
 // Padding within the vertical title body stack view.
 const CGFloat kTitleBodyBoxContentPadding = 12.0;
-// Spacing after the subTitle.
-const CGFloat kSpacingAfterSubTitle = 16.0;
 
 // Size of the outer box containing the icon.
 const CGFloat kOuterBoxSize = 64.0;
@@ -56,18 +51,6 @@ const CGFloat kSpacingScrollViewAndButtons = 16.0;
 
 // Spacing between primary and secondary buttons.
 const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
-
-// TODO(crbug.com/414778685): Add strings.
-// String constants for UI elements.
-NSString* const kBWGPromoMainTitleText = @"Lorem ipsum dolor sit amet.";
-NSString* const kBWGPromoSubTitleText =
-    @"Lorem ipsum dolor sit amet, consecte tur adipiscing purposes. Sed do.";
-NSString* const kBWGPromoFirstBoxTitleText = @"Sed do.";
-NSString* const kBWGPromoFirstBoxBodyText =
-    @"Lorem ipsum dolor sit amet, consecte tur adipiscing purposes.";
-NSString* const kBWGPromoSecondBoxTitleText = @"consecte tur adipiscing";
-NSString* const kBWGPromoSecondBoxBodyText =
-    @"orem ipsum dolor sit amet. orem ipsum dolor sit amet.";
 
 }  // namespace
 
@@ -168,8 +151,7 @@ NSString* const kBWGPromoSecondBoxBodyText =
 
   [_contentScrollView addSubview:_contentStackView];
 
-  AddSameConstraintsWithInsets(_contentStackView, _contentScrollView,
-                               NSDirectionalEdgeInsetsMake(0, 0, 0, 0));
+  AddSameConstraints(_contentStackView, _contentScrollView);
 
   [NSLayoutConstraint activateConstraints:@[
     [_contentStackView.widthAnchor
@@ -177,9 +159,6 @@ NSString* const kBWGPromoSecondBoxBodyText =
   ]];
 
   [_contentStackView addArrangedSubview:[self createMainTitle]];
-  UIView* subTitle = [self createSubTitle];
-  [_contentStackView addArrangedSubview:subTitle];
-  [_contentStackView setCustomSpacing:kSpacingAfterSubTitle afterView:subTitle];
 
   UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
       configurationWithPointSize:kIconSize
@@ -190,9 +169,12 @@ NSString* const kBWGPromoSecondBoxBodyText =
 
   UIView* firstIconContainer =
       [self createIconContainerView:firstIconImageView];
-  UIStackView* firstTitleBodyStackView =
-      [self createContentDescriptionWithTitle:kBWGPromoFirstBoxTitleText
-                                         body:kBWGPromoFirstBoxBodyText];
+  UIStackView* firstTitleBodyStackView = [self
+      createContentDescriptionWithTitle:l10n_util::GetNSString(
+                                            IDS_IOS_BWG_PROMO_FIRST_BOX_TITLE)
+
+                                   body:l10n_util::GetNSString(
+                                            IDS_IOS_BWG_PROMO_FIRST_BOX_BODY)];
   UIStackView* firstContentHorizontalStackView =
       [self createContentHorizontalStackViewWithIconContainer:firstIconContainer
                                                titleBodyStack:
@@ -207,9 +189,12 @@ NSString* const kBWGPromoSecondBoxBodyText =
 
   UIView* secondIconContainer =
       [self createIconContainerView:secondIconImageView];
-  UIStackView* secondTitleBodyStackView =
-      [self createContentDescriptionWithTitle:kBWGPromoSecondBoxTitleText
-                                         body:kBWGPromoSecondBoxBodyText];
+  UIStackView* secondTitleBodyStackView = [self
+      createContentDescriptionWithTitle:l10n_util::GetNSString(
+                                            IDS_IOS_BWG_PROMO_SECOND_BOX_TITLE)
+
+                                   body:l10n_util::GetNSString(
+                                            IDS_IOS_BWG_PROMO_SECOND_BOX_BODY)];
   UIStackView* secondContentHorizontalStackView = [self
       createContentHorizontalStackViewWithIconContainer:secondIconContainer
                                          titleBodyStack:
@@ -220,10 +205,10 @@ NSString* const kBWGPromoSecondBoxBodyText =
 // Creates the main title.
 - (UIView*)createMainTitle {
   UILabel* mainTitleLabel = [[UILabel alloc] init];
-  mainTitleLabel.text = kBWGPromoMainTitleText;
+  mainTitleLabel.text = l10n_util::GetNSString(IDS_IOS_BWG_PROMO_MAIN_TITLE);
   mainTitleLabel.textAlignment = NSTextAlignmentCenter;
-  mainTitleLabel.adjustsFontSizeToFitWidth = YES;
   mainTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  mainTitleLabel.numberOfLines = 0;
 
   mainTitleLabel.font =
       PreferredFontForTextStyle(UIFontTextStyleTitle2, UIFontWeightBold);
@@ -233,26 +218,8 @@ NSString* const kBWGPromoSecondBoxBodyText =
 
   [titleContainerView addSubview:mainTitleLabel];
 
-  AddSameConstraintsWithInsets(
-      mainTitleLabel, titleContainerView,
-      NSDirectionalEdgeInsetsMake(0, kMainTitleHorizontalPadding, 0,
-                                  kMainTitleHorizontalPadding));
+  AddSameConstraints(mainTitleLabel, titleContainerView);
   return titleContainerView;
-}
-
-// Creates the sub title.
-- (UIView*)createSubTitle {
-  UILabel* subTitleLabel = [[UILabel alloc] init];
-  subTitleLabel.text = kBWGPromoSubTitleText;
-  subTitleLabel.numberOfLines = 2;
-  subTitleLabel.textAlignment = NSTextAlignmentCenter;
-  subTitleLabel.adjustsFontSizeToFitWidth = YES;
-  subTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  subTitleLabel.textColor = [UIColor colorNamed:kGrey800Color];
-  subTitleLabel.font =
-      PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightRegular);
-
-  return subTitleLabel;
 }
 
 // Creates the iconBox container view with the  inner box and icon.
@@ -360,8 +327,8 @@ NSString* const kBWGPromoSecondBoxBodyText =
 // Creates the secondary button.
 - (UIButton*)createSecondaryButton {
   UIButton* secondaryButton = [BWGUIUtils
-      createSecondaryButtonWithTitle:
-          l10n_util::GetNSString(IDS_IOS_BWG_FIRST_RUN_SECONDARY_BUTTON)];
+      createSecondaryButtonWithTitle:l10n_util::GetNSString(
+                                         IDS_IOS_BWG_PROMO_SECONDARY_BUTTON)];
   [secondaryButton addTarget:self
                       action:@selector(didTapSecondaryButton:)
             forControlEvents:UIControlEventTouchUpInside];
