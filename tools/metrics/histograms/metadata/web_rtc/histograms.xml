@@ -1077,21 +1077,6 @@ chromium-metrics-reviews@google.com.
   <token key="CapturerType" variants="CapturerType"/>
 </histogram>
 
-<histogram name="WebRTC.DesktopCapture.IsZeroHzActive.{CapturerType}"
-    enum="BooleanActive" expires_after="2025-06-30">
-  <owner>henrika@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    A boolean is recorded to this histogram for each captured video frame where
-    the desktop media source is given by {CapturerType}. Only recorded for
-    capturers that support detection of whether 0Hz is active or not which
-    requires that each captured frame must contain a representation of what
-    regions have been updated since the last frame. Windows WGC is an example of
-    a capturer which does not support this.
-  </summary>
-  <token key="CapturerType" variants="CapturerType"/>
-</histogram>
-
 <histogram name="WebRTC.DesktopCapture.RefreshRate.{CapturerType}" units="fps"
     expires_after="2025-12-07">
   <owner>henrika@chromium.org</owner>
@@ -1767,39 +1752,6 @@ chromium-metrics-reviews@google.com.
     is captured. Once the slideshow stops, the editor will be captured again.
     This is recorded the first time this feature is activated, but only once per
     screensharing session.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Screenshare.ZeroHz.DelayMs" units="ms"
-    expires_after="2025-11-21">
-  <owner>henrika@chromium.org</owner>
-  <owner>handellm@google.com</owner>
-  <summary>
-    The number of milliseconds from the point a frame is received in
-    FrameCadenceAdapterImpl::OnFrame() until it is delivered for encoding in
-    ZeroHertzAdapterMode::SendFrameNow(). Recorded for each frame which is not a
-    repeated frame when 0Hz screen share is enabled.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Screenshare.ZeroHz.QueueOverload" enum="Boolean"
-    expires_after="2025-02-10">
-  <owner>henrika@chromium.org</owner>
-  <owner>handellm@google.com</owner>
-  <summary>
-    This histogram logs whether a queue overload was detected or not when
-    delivering a captured frame to the Video Stream Encoder for encoding.
-    Recorded for each captured frame when 0Hz screen share is enabled.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Screenshare.ZeroHz.TimeUntilFirstFrameMs" units="ms"
-    expires_after="2024-11-03">
-  <owner>handellm@google.com</owner>
-  <owner>ilnik@chromium.org</owner>
-  <summary>
-    The number of milliseconds from the point a zero-Hz frame cadence adapter is
-    created until the first frame arrives from a connected source.
   </summary>
 </histogram>
 

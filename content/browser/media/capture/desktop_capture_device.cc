@@ -111,17 +111,6 @@ void BindWakeLockProvider(
   GetDeviceService().BindWakeLockProvider(std::move(receiver));
 }
 
-void LogDesktopCaptureZeroHzIsActive(DesktopMediaID::Type capturer_type,
-                                     bool zero_hz_is_active) {
-  if (capturer_type == DesktopMediaID::TYPE_SCREEN) {
-    UMA_HISTOGRAM_BOOLEAN("WebRTC.DesktopCapture.IsZeroHzActive.Screen",
-                          zero_hz_is_active);
-  } else {
-    UMA_HISTOGRAM_BOOLEAN("WebRTC.DesktopCapture.IsZeroHzActive.Window",
-                          zero_hz_is_active);
-  }
-}
-
 void LogDesktopCaptureFrameIsRefresh(DesktopMediaID::Type capturer_type,
                                      bool is_refresh_frame) {
   if (capturer_type == DesktopMediaID::TYPE_SCREEN) {
@@ -558,9 +547,6 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
       !frame_is_refresh && frame->updated_region().is_empty();
   VLOG(2) << __func__ << " [SUCCESS]" << (frame_is_refresh ? "[RRF]" : "")
           << (zero_hertz_is_active ? "[0Hz]" : "");
-  if (zero_hertz_is_supported()) {
-    LogDesktopCaptureZeroHzIsActive(capturer_type_, zero_hertz_is_active);
-  }
   if (zero_hertz_is_active) {
     ScheduleNextCaptureFrame();
     return;
