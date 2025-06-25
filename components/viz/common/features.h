@@ -35,6 +35,9 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kTransferableResourcePassAlphaTypeDirectly);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawQuadSplitLimit);
 
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kEnableBackdropFiltersCullingOptimization);
+
 enum class DelegatedCompositingMode {
   // Enable delegated compositing.
   kFull,
@@ -150,6 +153,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoLateBeginFrames);
 VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
 #endif
 VIZ_COMMON_EXPORT int DrawQuadSplitLimit();
+VIZ_COMMON_EXPORT bool IsBackdropFiltersCullingOptimizationEnabled();
 VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
 VIZ_COMMON_EXPORT bool IsVizDirectCompositorThreadIpcNonRootEnabled();
 #if BUILDFLAG(IS_WIN)

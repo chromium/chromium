@@ -103,6 +103,10 @@ BASE_FEATURE(kDrawQuadSplitLimit,
              "DrawQuadSplitLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableBackdropFiltersCullingOptimization,
+             "EnableBackdropFiltersCullingOptimization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<DelegatedCompositingMode>::Option
     kDelegatedCompositingModeOption[] = {
         {DelegatedCompositingMode::kFull, "full"},
@@ -464,6 +468,12 @@ int DrawQuadSplitLimit() {
       kDrawQuadSplitLimit, kDrawQuadSplit, kDefaultDrawQuadSplitLimit);
   return std::clamp(split_limit, kMinDrawQuadSplitLimit,
                     kMaxDrawQuadSplitLimit);
+}
+
+bool IsBackdropFiltersCullingOptimizationEnabled() {
+  static bool is_enabled =
+      base::FeatureList::IsEnabled(kEnableBackdropFiltersCullingOptimization);
+  return is_enabled;
 }
 
 bool IsDelegatedCompositingEnabled() {
