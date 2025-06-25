@@ -453,7 +453,7 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       const SkBitmap& region_bitmap);
 
   // Plays the overlay close animation and then invokes the callback.
-  void TriggerOverlayCloseAnimation(base::OnceClosure callback);
+  void TriggerOverlayFadeOutAnimation(base::OnceClosure callback);
 
   // Closes the overlay UI and sets state to kOff. This method is the final
   // cleanup of closing the overlay UI. This resets all state internal to the
@@ -549,6 +549,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Handles the progress of the page content upload. Notifies the side panel
   // to update the progress bar.
   void HandlePageContentUploadProgress(uint64_t position, uint64_t total);
+
+  // Hides the overlay view and restores input to the tab contents web view.
+  void HideOverlay();
 
  private:
   // Data class for constructing overlay and storing overlay state for
@@ -717,9 +720,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Called when the UI needs to show the overlay via a view that is a child of
   // the tab contents view.
   void ShowOverlay();
-
-  // Hides the overlay view and restores input to the tab contents web view.
-  void HideOverlay();
 
   // Hide the shared overlay view if it is not being used by another tab. This
   // is determined by checking if any of the children of the overlay view are
