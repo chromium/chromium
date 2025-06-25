@@ -15848,6 +15848,24 @@
             ]
         }
     ],
+    "OmahaMinSdkVersionAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "min_sdk_version": "29"
+                    },
+                    "enable_features": [
+                        "OmahaMinSdkVersionAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmitBlurEventOnElementRemoval": [
         {
             "platforms": [
