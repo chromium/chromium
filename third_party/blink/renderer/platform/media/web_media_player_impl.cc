@@ -1953,12 +1953,6 @@ void WebMediaPlayerImpl::StopForDemuxerReset() {
                                  std::move(media_thread_mem_dumper_));
 }
 
-bool WebMediaPlayerImpl::IsSecurityOriginCryptographic() const {
-  return url::Origin(frame_->GetSecurityOrigin())
-      .GetURL()
-      .SchemeIsCryptographic();
-}
-
 void WebMediaPlayerImpl::UpdateLoadedUrl(const GURL& url) {
   demuxer_manager_->SetLoadedUrl(url);
 }

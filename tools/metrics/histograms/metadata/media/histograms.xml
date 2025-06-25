@@ -4126,7 +4126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.Adaptation" enum="AdaptationReason"
-    expires_after="2025-07-27">
+    expires_after="2025-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4136,7 +4136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.AdvancedFeatureTags" enum="AdvancedFeatureTagType"
-    expires_after="2025-07-27">
+    expires_after="2025-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4148,7 +4148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.CrossOriginContent" enum="Boolean"
-    expires_after="2025-09-28">
+    expires_after="2025-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4158,7 +4158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.EncryptionMode" enum="HLSEncryptionMode"
-    expires_after="2025-07-27">
+    expires_after="2025-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4169,7 +4169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.InitializationError" enum="HlsDemuxerStatus"
-    expires_after="2025-10-26">
+    expires_after="2025-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4177,20 +4177,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.HLS.InvalidRenditions" units="count"
-    expires_after="2024-12-31">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs whether there are no selectable renditions in a multivariant playlist.
-    Recorded only when a multivariant playlist contains no valid selection.
-    Recorded whenever MediaPlayer successfully plays multivariant HLS media that
-    the built-in player would not be able to play.
-  </summary>
-</histogram>
-
 <histogram name="Media.HLS.LiveContent" enum="Boolean"
-    expires_after="2025-10-26">
+    expires_after="2025-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4210,7 +4198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.ParserError" units="sparse"
-    expires_after="2025-10-26">
+    expires_after="2025-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4220,7 +4208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.PlaybackError" enum="HlsDemuxerStatus"
-    expires_after="2025-10-26">
+    expires_after="2025-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4229,19 +4217,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.HLS.PlaylistSegmentExtension" enum="PlaylistSegmentType"
-    expires_after="2024-12-31">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs the type of extension for segments in a top-level-media playlist. This
-    histogram is _not_ recorded when the top level manifest is a multivariant
-    playlist. Recorded whenever MediaPlayer successfully plays HLS media.
-  </summary>
-</histogram>
-
 <histogram name="Media.HLS.UnparsableManifest" units="sparse"
-    expires_after="2025-07-27">
+    expires_after="2025-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -7362,47 +7339,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.WebMediaPlayerImpl.HLS.HasAccessControl" enum="Boolean"
-    expires_after="2025-03-09">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    When an HLS manifest is found during loading (on Android only), and the
-    response is CORS cross-origin, this histogram records whether the response
-    included an Access-Control-Allow-Origin header. Such requests are likely to
-    be supported by fetch() if the mode is correctly configured.
-  </summary>
-</histogram>
-
-<histogram name="Media.WebMediaPlayerImpl.HLS.IsCorsCrossOrigin" enum="Boolean"
-    expires_after="2025-03-09">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    When an HLS manifest is found during loading (on Android only), records
-    whether the request was CORS cross-origin. These are cases that could not be
-    implemented using fetch(). Note: subresources referenced by the manifest are
-    not considered; they may have different origins or CORS configurations.
-  </summary>
-</histogram>
-
-<histogram name="Media.WebMediaPlayerImpl.HLS.IsMixedContent" enum="Boolean"
-    expires_after="2025-03-09">
-  <owner>cassew@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    When an HLS manifest is found during loading (on Android only), records
-    whether the request would be mixed content. These are cases that could not
-    be implemented using fetch(). Note: subresources referenced by the manifest
-    are not considered; they may have different origins.
-  </summary>
-</histogram>
-
 <histogram name="Media.WebMediaPlayerImpl.HLS{Variant}.MimeType"
-    enum="MimeTypeOfHlsManifest" expires_after="2025-11-16">
+    enum="MimeTypeOfHlsManifest" expires_after="2025-12-31">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>

@@ -1793,7 +1793,6 @@ TEST_F(MultiBufferDataSourceTest, ResponseTypeBasic) {
   ReceiveData(kDataSize);
   ReadAt(0);
   EXPECT_TRUE(loading());
-  EXPECT_FALSE(data_source_->IsCorsCrossOrigin());
 
   FinishLoading();
 }
@@ -1813,7 +1812,6 @@ TEST_F(MultiBufferDataSourceTest, ResponseTypeCors) {
   ReceiveData(kDataSize);
   ReadAt(0);
   EXPECT_TRUE(loading());
-  EXPECT_FALSE(data_source_->IsCorsCrossOrigin());
 
   FinishLoading();
 }
@@ -1833,7 +1831,6 @@ TEST_F(MultiBufferDataSourceTest, ResponseTypeDefault) {
   ReceiveData(kDataSize);
   ReadAt(0);
   EXPECT_TRUE(loading());
-  EXPECT_FALSE(data_source_->IsCorsCrossOrigin());
 
   FinishLoading();
 }
@@ -1853,7 +1850,6 @@ TEST_F(MultiBufferDataSourceTest, ResponseTypeOpaque) {
   ReceiveData(kDataSize);
   ReadAt(0);
   EXPECT_TRUE(loading());
-  EXPECT_TRUE(data_source_->IsCorsCrossOrigin());
 
   FinishLoading();
 }
@@ -1873,7 +1869,6 @@ TEST_F(MultiBufferDataSourceTest, ResponseTypeOpaqueRedirect) {
   ReceiveData(kDataSize);
   ReadAt(0);
   EXPECT_TRUE(loading());
-  EXPECT_TRUE(data_source_->IsCorsCrossOrigin());
 
   FinishLoading();
 }

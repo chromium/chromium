@@ -161,7 +161,13 @@ void DemuxerManager::OnPipelineError(PipelineStatus error) {
     // HLS content is considered CORS, but that will change.
     loaded_url_ = GetDataSourceUrlAfterRedirects().value();
     client_->UpdateLoadedUrl(loaded_url_);
-    PopulateHlsHistograms(client_->IsSecurityOriginCryptographic());
+
+    if (auto* co_data_source = data_source_->GetAsCrossOriginDataSource()) {
+      MimeType mime_type =
+          TranslateMimeTypeToHistogramEnum(co_data_source->GetMimeType());
+      base::UmaHistogramEnumeration("Media.WebMediaPlayerImpl.HLS.MimeType",
+                                    mime_type);
+    }
 
     // The data source must be stopped after the client, after which the
     // old demuxer and data source can be freed.
@@ -208,41 +214,6 @@ void DemuxerManager::SetLoadedUrl(GURL url) {
 const GURL& DemuxerManager::LoadedUrl() const {
   return loaded_url_;
 }
-
-#if BUILDFLAG(ENABLE_HLS_DEMUXER)
-
-void DemuxerManager::PopulateHlsHistograms(bool cryptographic_url) {
-  DCHECK(data_source_);
-
-  if (auto* co_data_source = data_source_->GetAsCrossOriginDataSource()) {
-    MimeType mime_type =
-        TranslateMimeTypeToHistogramEnum(co_data_source->GetMimeType());
-    base::UmaHistogramEnumeration("Media.WebMediaPlayerImpl.HLS.MimeType",
-                                  mime_type);
-
-    bool is_cross_origin = co_data_source->IsCorsCrossOrigin();
-    UMA_HISTOGRAM_BOOLEAN("Media.WebMediaPlayerImpl.HLS.IsCorsCrossOrigin",
-                          is_cross_origin);
-    if (is_cross_origin) {
-      UMA_HISTOGRAM_BOOLEAN("Media.WebMediaPlayerImpl.HLS.HasAccessControl",
-                            co_data_source->HasAccessControl());
-      base::UmaHistogramEnumeration(
-          "Media.WebMediaPlayerImpl.HLS.CorsCrossOrigin.MimeType", mime_type);
-    }
-  } else {
-    UMA_HISTOGRAM_BOOLEAN("Media.WebMediaPlayerImpl.HLS.IsCorsCrossOrigin",
-                          false);
-  }
-
-  bool is_mixed_content =
-      cryptographic_url &&
-      (!loaded_url_.SchemeIsCryptographic() ||
-       GetDataSourceUrlAfterRedirects()->SchemeIsCryptographic());
-  UMA_HISTOGRAM_BOOLEAN("Media.WebMediaPlayerImpl.HLS.IsMixedContent",
-                        is_mixed_content);
-}
-
-#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 std::optional<double> DemuxerManager::GetDemuxerDuration() {
   if (!demuxer_) {

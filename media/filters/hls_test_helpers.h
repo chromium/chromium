@@ -21,8 +21,6 @@ class MockDataSource : public CrossOriginDataSource {
   ~MockDataSource() override;
   MockDataSource();
   // Mocked methods from CrossOriginDataSource
-  MOCK_METHOD(bool, IsCorsCrossOrigin, (), (const, override));
-  MOCK_METHOD(bool, HasAccessControl, (), (const, override));
   MOCK_METHOD(const std::string&, GetMimeType, (), (const, override));
   MOCK_METHOD(void,
               Initialize,

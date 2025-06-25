@@ -27,7 +27,6 @@
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 #include "base/threading/sequence_bound.h"
 #include "media/filters/hls_data_source_provider.h"
-#include "media/filters/hls_media_player_tag_recorder.h"
 #include "url/gurl.h"
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
@@ -62,8 +61,6 @@ class MEDIA_EXPORT DemuxerManager {
     // Used for controlling the client when a demuxer swap happens.
     virtual void StopForDemuxerReset() = 0;
     virtual void RestartForHls() = 0;
-
-    virtual bool IsSecurityOriginCryptographic() const = 0;
 
 #if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
     virtual void AddMediaTrack(const media::MediaTrack&) = 0;
@@ -111,7 +108,6 @@ class MEDIA_EXPORT DemuxerManager {
   void SetLoadedUrl(GURL url);
   const GURL& LoadedUrl() const;
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  void PopulateHlsHistograms(bool cryptographic_url);
   PipelineStatus SelectHlsFallbackMechanism(bool cryptographic_url);
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
   void DisallowFallback();

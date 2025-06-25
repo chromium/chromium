@@ -287,16 +287,8 @@ bool MultiBufferDataSource::HasSingleOrigin() {
   return single_origin_;
 }
 
-bool MultiBufferDataSource::IsCorsCrossOrigin() const {
-  return url_data_->is_cors_cross_origin();
-}
-
 void MultiBufferDataSource::OnRedirect(RedirectCB callback) {
   redirect_cb_ = std::move(callback);
-}
-
-bool MultiBufferDataSource::HasAccessControl() const {
-  return url_data_->has_access_control();
 }
 
 bool MultiBufferDataSource::PassedTimingAllowOriginCheck() {
@@ -309,7 +301,7 @@ bool MultiBufferDataSource::WouldTaintOrigin() {
   // See https://github.com/whatwg/fetch/issues/737.
   if (!HasSingleOrigin() && cors_mode() == UrlData::CORS_UNSPECIFIED)
     return true;
-  return IsCorsCrossOrigin();
+  return url_data_->is_cors_cross_origin();
 }
 
 UrlData::CorsMode MultiBufferDataSource::cors_mode() const {

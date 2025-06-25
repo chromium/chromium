@@ -59,8 +59,6 @@ class PLATFORM_EXPORT MultiBufferDataSource
   ~MultiBufferDataSource() override;
 
   // CrossOriginDataSource overrides.
-  bool IsCorsCrossOrigin() const override;
-  bool HasAccessControl() const override;
   const std::string& GetMimeType() const override {
     return url_data_->mime_type();
   }
