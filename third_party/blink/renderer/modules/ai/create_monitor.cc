@@ -20,14 +20,17 @@ namespace blink {
 
 CreateMonitor::CreateMonitor(
     ExecutionContext* context,
+    AbortSignal* abort_signal,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : ExecutionContextClient(context),
+      abort_signal_(abort_signal),
       task_runner_(task_runner),
       receiver_(this, context) {}
 
 void CreateMonitor::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
+  visitor->Trace(abort_signal_);
   visitor->Trace(receiver_);
 }
 
@@ -41,6 +44,10 @@ ExecutionContext* CreateMonitor::GetExecutionContext() const {
 
 void CreateMonitor::OnDownloadProgressUpdate(uint64_t downloaded_bytes,
                                              uint64_t total_bytes) {
+  if (abort_signal_ && abort_signal_->aborted()) {
+    return;
+  }
+
   CHECK_EQ(total_bytes, kNormalizedDownloadProgressMax);
   CHECK_LE(downloaded_bytes, kNormalizedDownloadProgressMax);
   CHECK_GE(downloaded_bytes, 0u);

@@ -51,8 +51,8 @@ class AIWritingAssistanceCreateClient
         task_runner_(
             GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)) {
     if (options->hasMonitor()) {
-      monitor_ = MakeGarbageCollected<CreateMonitor>(GetExecutionContext(),
-                                                     task_runner_);
+      monitor_ = MakeGarbageCollected<CreateMonitor>(
+          GetExecutionContext(), options->getSignalOr(nullptr), task_runner_);
       // If an exception is thrown, don't initiate the model download.
       // `AICreateMonitorCallback`'s `Invoke` will automatically reject the
       // promise with the thrown exception.

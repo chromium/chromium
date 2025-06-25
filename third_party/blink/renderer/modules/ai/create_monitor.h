@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_CREATE_MONITOR_H_
 
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -21,6 +22,7 @@ class CreateMonitor final : public EventTarget,
 
  public:
   CreateMonitor(ExecutionContext* context,
+                AbortSignal* abort_signal,
                 scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~CreateMonitor() override = default;
 
@@ -41,6 +43,7 @@ class CreateMonitor final : public EventTarget,
  private:
   std::optional<uint64_t> last_downloaded_bytes_;
 
+  Member<AbortSignal> abort_signal_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoReceiver<mojom::blink::ModelDownloadProgressObserver, CreateMonitor>
       receiver_;

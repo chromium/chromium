@@ -122,8 +122,8 @@ CreateTranslatorClient::CreateTranslatorClient(
       receiver_(this, GetExecutionContext()),
       task_runner_(AIInterfaceProxy::GetTaskRunner(GetExecutionContext())) {
   if (options->hasMonitor()) {
-    monitor_ = MakeGarbageCollected<CreateMonitor>(GetExecutionContext(),
-                                                   task_runner_);
+    monitor_ = MakeGarbageCollected<CreateMonitor>(
+        GetExecutionContext(), options->getSignalOr(nullptr), task_runner_);
 
     // If an exception is thrown, don't initiate language detection model
     // download. `AICreateMonitorCallback`'s `Invoke` will automatically

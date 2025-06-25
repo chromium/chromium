@@ -74,8 +74,8 @@ class LanguageDetectorCreateTask
         task_runner_(AIInterfaceProxy::GetTaskRunner(GetExecutionContext())),
         options_(options) {
     if (options->hasMonitor()) {
-      monitor_ = MakeGarbageCollected<CreateMonitor>(GetExecutionContext(),
-                                                     task_runner_);
+      monitor_ = MakeGarbageCollected<CreateMonitor>(
+          GetExecutionContext(), options->getSignalOr(nullptr), task_runner_);
 
       // If an exception is thrown, don't initiate language detection model
       // download. `CreateMonitorCallback`'s `Invoke` will automatically
