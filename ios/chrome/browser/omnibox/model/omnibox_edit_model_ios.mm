@@ -96,28 +96,6 @@ OmniboxEditModelIOS::GetPageClassification() const {
   return client_->GetPageClassification(/*is_prefetch=*/false);
 }
 
-bool OmniboxEditModelIOS::ResetDisplayTexts() {
-  const std::u16string old_display_text = GetPermanentDisplayText();
-  text_model_->url_for_editing = client_->GetFormattedFullURL();
-  // When there's new permanent text, and the user isn't interacting with the
-  // omnibox, we want to revert the edit to show the new text.  We could simply
-  // define "interacting" as "the omnibox has focus", but we still allow updates
-  // when the omnibox has focus as long as the user hasn't begun editing, and
-  // isn't seeing zerosuggestions (because changing this text would require
-  // changing or hiding those suggestions).  When the omnibox doesn't have
-  // focus, we assume the user may have abandoned their interaction and it's
-  // always safe to change the text; this also prevents someone toggling "Show
-  // URL" (which sounds as if it might be persistent) from seeing just that URL
-  // forever afterwards.
-  return (GetPermanentDisplayText() != old_display_text) &&
-         (!has_focus() ||
-          (!text_model_->user_input_in_progress && !PopupIsOpen()));
-}
-
-std::u16string OmniboxEditModelIOS::GetPermanentDisplayText() const {
-  return text_model_->url_for_editing;
-}
-
 bool OmniboxEditModelIOS::CurrentTextIsURL() const {
   // If !user_text_model_->inputin_progress_, we can determine if the text is a
   // URL without starting the autocomplete system. This speeds browser startup.

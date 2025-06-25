@@ -90,7 +90,7 @@ const char kOmniboxFocusResultedInNavigation[] =
   }
   // If Siri is thinking, treat that as user input being in progress.  It is
   // unsafe to modify the text field while voice entry is pending.
-  if (_omniboxEditModel->ResetDisplayTexts()) {
+  if ([self resetDisplayTexts]) {
     // Revert everything to the baseline look.
     [self revertAll];
   } else if (!_omniboxEditModel->has_focus()) {
@@ -99,7 +99,7 @@ const char kOmniboxFocusResultedInNavigation[] =
     // not currently focused.
     NSAttributedString* as = [[NSMutableAttributedString alloc]
         initWithString:base::SysUTF16ToNSString(
-                           _omniboxEditModel->GetPermanentDisplayText())];
+                           _omniboxTextModel->url_for_editing)];
     [self.textField setText:as userTextLength:[as length]];
   }
 }
@@ -355,6 +355,27 @@ const char kOmniboxFocusResultedInNavigation[] =
   // We need to invoke this in case the destination url changed (as could
   // happen when control is toggled).
   [self onTextChanged];
+}
+
+- (bool)resetDisplayTexts {
+  const std::u16string old_display_text = _omniboxTextModel->url_for_editing;
+  if (_omniboxClient) {
+    _omniboxTextModel->url_for_editing = _omniboxClient->GetFormattedFullURL();
+  }
+  // When there's new permanent text, and the user isn't interacting with the
+  // omnibox, we want to revert the edit to show the new text.  We could simply
+  // define "interacting" as "the omnibox has focus", but we still allow updates
+  // when the omnibox has focus as long as the user hasn't begun editing, and
+  // isn't seeing zerosuggestions (because changing this text would require
+  // changing or hiding those suggestions).  When the omnibox doesn't have
+  // focus, we assume the user may have abandoned their interaction and it's
+  // always safe to change the text; this also prevents someone toggling "Show
+  // URL" (which sounds as if it might be persistent) from seeing just that URL
+  // forever afterwards.
+  return (_omniboxTextModel->url_for_editing != old_display_text) &&
+         (!_omniboxTextModel->HasFocus() ||
+          (!_omniboxTextModel->user_input_in_progress &&
+           !_omniboxAutocompleteController.hasSuggestions));
 }
 
 #pragma mark - Autocomplete events

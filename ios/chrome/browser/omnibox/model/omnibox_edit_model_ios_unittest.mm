@@ -223,7 +223,7 @@ TEST_F(OmniboxEditModelIOSTest, CurrentMatch) {
   {
     location_bar_model()->set_url(GURL("http://www.example.com/"));
     location_bar_model()->set_url_for_display(u"example.com");
-    model()->ResetDisplayTexts();
+    [omnibox_text_controller_ resetDisplayTexts];
     model()->Revert();
 
     EXPECT_EQ(u"http://www.example.com/",
@@ -240,7 +240,7 @@ TEST_F(OmniboxEditModelIOSTest, CurrentMatch) {
   {
     location_bar_model()->set_url(GURL("https://www.google.com/"));
     location_bar_model()->set_url_for_display(u"google.com");
-    model()->ResetDisplayTexts();
+    [omnibox_text_controller_ resetDisplayTexts];
     model()->Revert();
 
     EXPECT_EQ(u"https://www.google.com/",
@@ -259,14 +259,14 @@ TEST_F(OmniboxEditModelIOSTest, DisplayText) {
   location_bar_model()->set_url(GURL("https://www.example.com/"));
   location_bar_model()->set_url_for_display(u"example.com");
 
-  EXPECT_TRUE(model()->ResetDisplayTexts());
+  EXPECT_TRUE([omnibox_text_controller_ resetDisplayTexts]);
   model()->Revert();
 
   EXPECT_TRUE(model()->CurrentTextIsURL());
 
   // iOS OmniboxEditModel always provides the full URL as the OmniboxView
   // permanent display text.
-  EXPECT_EQ(u"https://www.example.com/", model()->GetPermanentDisplayText());
+  EXPECT_EQ(u"https://www.example.com/", omnibox_text_model_->url_for_editing);
   EXPECT_EQ(u"https://www.example.com/",
             [omnibox_text_controller_ displayedText]);
   EXPECT_FALSE(model()->user_input_in_progress());

@@ -83,15 +83,6 @@ class OmniboxEditModelIOS {
     return text_model_->user_input_in_progress;
   }
 
-  // Resets the permanent display texts `url_for_editing_` to those provided by
-  // the controller. Returns true if the display text shave changed and the
-  // change should be immediately user-visible, because either the user is not
-  // editing or the edit does not have focus.
-  bool ResetDisplayTexts();
-
-  // Returns the permanent display text for the current page and Omnibox state.
-  std::u16string GetPermanentDisplayText() const;
-
   // Reverts the edit model back to its unedited state (permanent text showing,
   // no user input in progress).
   void Revert();

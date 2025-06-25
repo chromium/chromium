@@ -119,6 +119,12 @@ class OmniboxEditModelIOS;
             additionalText:(const std::u16string&)additionalText
                   newMatch:(const AutocompleteMatch&)newMatch;
 
+/// Resets the permanent display texts `url_for_editing` to those provided by
+/// the controller. Returns true if the display text shave changed and the
+/// change should be immediately user-visible, because either the user is not
+/// editing or the edit does not have focus.
+- (bool)resetDisplayTexts;
+
 #pragma mark - Autocomplete event
 
 /// Sets the additional text.
