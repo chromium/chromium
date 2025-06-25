@@ -766,6 +766,7 @@ ios_builder(
     builderless = True,
     cpu = cpu.ARM64,
     contact_team_email = "cobalt-appletv@google.com",
+    xcode = xcode.x16betabots,
 )
 
 ios_builder(

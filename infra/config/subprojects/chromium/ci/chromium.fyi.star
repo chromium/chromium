@@ -1630,7 +1630,7 @@ fyi_ios_builder(
     ),
     contact_team_email = "cobalt-appletv@google.com",
     execution_timeout = 3 * time.hour,
-    xcode = xcode.xcode_default,
+    xcode = xcode.x16betabots,
 )
 
 fyi_ios_builder(
