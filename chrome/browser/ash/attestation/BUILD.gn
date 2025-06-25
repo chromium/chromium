@@ -170,6 +170,7 @@ source_set("test_with_shadow_variables") {
     "//chromeos/ash/components/attestation:test_support",
     "//chromeos/ash/components/settings",
     "//content/test:test_support",
+    "//crypto:test_support",
     "//testing/gtest",
     "//third_party/securemessage",
     "//third_party/securemessage:securemessage_cpp_protobuf",
