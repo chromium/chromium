@@ -59,10 +59,11 @@ public class TabSwitcherListEditorFacility<HostStationT extends TabSwitcherStati
     }
 
     private String getSelectionModeNumberText() {
-        if (getNumTabsSelected() == 0) {
-            return "Select tabs";
+        int totalItemCount = mTabIdsSelected.size() + mTabGroupsSelected.size();
+        if (totalItemCount == 0) {
+            return "Select items";
         } else {
-            return TabGroupUtil.getNumberOfTabsString(getNumTabsSelected());
+            return TabGroupUtil.getNumberOfItemsString(totalItemCount);
         }
     }
 

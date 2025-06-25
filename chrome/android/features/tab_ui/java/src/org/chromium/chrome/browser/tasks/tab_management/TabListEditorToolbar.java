@@ -42,15 +42,6 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
     private @Nullable View mNextFocusableView;
     @ColorInt private int mBackgroundColor;
     @StringRes private int mBackButtonAccessibilityString;
-    private @Nullable RelatedTabCountProvider mRelatedTabCountProvider;
-
-    public interface RelatedTabCountProvider {
-        /**
-         * @param itemIds the selected items.
-         * @return the count of tabs including related tabs.
-         */
-        int getRelatedTabCount(List<TabListEditorItemSelectionId> itemIds);
-    }
 
     public TabListEditorToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -66,8 +57,8 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
         mMenuButton = findViewById(R.id.list_menu_button);
 
         // Can be overridden by #setToolbarTitle.
-        mNumberRollView.setStringForZero(R.string.tab_selection_editor_toolbar_select_tabs);
-        mNumberRollView.setString(R.plurals.tab_selection_editor_tabs_count);
+        mNumberRollView.setStringForZero(R.string.tab_selection_editor_toolbar_select_items);
+        mNumberRollView.setString(R.plurals.tab_selection_editor_item_count);
 
         // Move the number roll view into a LinearLayout to manage spacing.
         LinearLayout.LayoutParams params =
@@ -108,10 +99,8 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
     public void onSelectionStateChange(List<TabListEditorItemSelectionId> selectedItems) {
         super.onSelectionStateChange(selectedItems);
 
-        if (mRelatedTabCountProvider == null) return;
-
-        int selectedCount = mRelatedTabCountProvider.getRelatedTabCount(selectedItems);
-        mNumberRollView.setNumber(selectedCount, /* animate= */ true);
+        // All entities (tabs and tab groups) are treated as singular items on selection.
+        mNumberRollView.setNumber(selectedItems.size(), /* animate= */ true);
     }
 
     @Override
@@ -174,14 +163,6 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
      */
     public void setTextColorStateList(ColorStateList colorStateList) {
         mNumberRollView.setTextColorStateList(colorStateList);
-    }
-
-    /**
-     * Set provider for related tab count.
-     * @param relatedTabCountProvider The provider to call to get the related tab count.
-     */
-    public void setRelatedTabCountProvider(RelatedTabCountProvider relatedTabCountProvider) {
-        mRelatedTabCountProvider = relatedTabCountProvider;
     }
 
     /** Set the title of the toolbar when no tabs are selected. */

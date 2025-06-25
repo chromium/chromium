@@ -2268,7 +2268,7 @@ public class TabGridDialogTest {
                 .resultRobot
                 .verifyTabListEditorIsVisible()
                 .verifyToolbarSelectionTextWithResourceId(
-                        R.string.tab_selection_editor_toolbar_select_tabs)
+                        R.string.tab_selection_editor_toolbar_select_items)
                 .verifyAdapterHasItemCount(count);
     }
 

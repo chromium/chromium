@@ -238,8 +238,8 @@
       </message>
 
       <!-- Tab Selection Editor strings -->
-      <message name="IDS_TAB_SELECTION_EDITOR_TOOLBAR_SELECT_TABS" desc="Label shown on Tab Selection Editor Toolbar asking user to select tabs from the list.">
-        Select tabs
+      <message name="IDS_TAB_SELECTION_EDITOR_TOOLBAR_SELECT_ITEMS" desc="Label shown on Tab Selection Editor Toolbar asking user to select tabs and tab groups denoted as items from the list.">
+        Select items
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_BACK_BUTTON" desc="Accessibility string for the back button in the Tab Selection Editor Toolbar. Tap this button to exit out of the multi-select mode">
         Hide multi-select mode
@@ -287,10 +287,10 @@
           other {Bookmark <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
         }
       </message>
-      <message name="IDS_TAB_SELECTION_EDITOR_TABS_COUNT" desc="The text for the selection counter shown in the Tab Selection Editor Toolbar. This shows the number of selected tabs including those within selected groups.">
+      <message name="IDS_TAB_SELECTION_EDITOR_ITEM_COUNT" desc="The text for the selection counter shown in the Tab Selection Editor Toolbar. This shows the number of selected tabs and tab groups as singular items.">
         {TABS_COUNT, plural,
-          =1 {<ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> tab}
-          other {<ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> tabs}
+          =1 {<ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> item}
+          other {<ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> items}
         }
       </message>
       <message name="IDS_TAB_SELECTION_EDITOR_GROUP_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Group' is a verb. When the user taps the menu item, Chrome creates a new group that contains the selected tabs. [CHAR_LIMIT=27]">

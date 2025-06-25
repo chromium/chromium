@@ -16,6 +16,15 @@ public class TabGroupUtil {
     }
 
     /**
+     * Returns a String pluralizing a number of items saying "0 items", "1 item", "2 items", etc.
+     *
+     * <p>English-specific, for testing.
+     */
+    public static String getNumberOfItemsString(int numberOfItems) {
+        return numberOfItems != 1 ? String.format("%d items", numberOfItems) : "1 item";
+    }
+
+    /**
      * Returns the message shown on the snackbar when tabs get grouped, e.g. "3 tabs grouped".
      *
      * <p>English-specific, for testing.

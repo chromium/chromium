@@ -481,7 +481,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
-        mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
+        mRobot.resultRobot.verifyToolbarSelectionText("2 items");
 
         mRobot.actionRobot.clickToolbarNavigationButton(
                 R.string.accessibility_archived_tabs_dialog_back_button);
@@ -508,7 +508,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         Espresso.pressBack();
 
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
-        mRobot.resultRobot.verifyToolbarSelectionText("1 tab");
+        mRobot.resultRobot.verifyToolbarSelectionText("1 item");
 
         mRobot.actionRobot.clickToolbarMenuButton();
         mRobot.resultRobot
@@ -517,7 +517,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         Espresso.pressBack();
 
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
-        mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
+        mRobot.resultRobot.verifyToolbarSelectionText("2 items");
 
         mRobot.actionRobot.clickToolbarMenuButton();
         mRobot.resultRobot
@@ -545,7 +545,7 @@ public class ArchivedTabsDialogCoordinatorTest {
                         "Tabs.CloseArchivedTabsMenuItem.TabCount", 2);
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
-        mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
+        mRobot.resultRobot.verifyToolbarSelectionText("2 items");
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close items");
         mRobot.resultRobot
                 .verifyAdapterHasItemCount(1)
@@ -577,7 +577,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.actionRobot.clickItemAtAdapterPosition(2);
-        mRobot.resultRobot.verifyToolbarSelectionText("3 tabs");
+        mRobot.resultRobot.verifyToolbarSelectionText("3 items");
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close items");
         mRobot.resultRobot.verifyUndoSnackbarWithTextIsShown("3 tabs closed");
 
@@ -607,7 +607,7 @@ public class ArchivedTabsDialogCoordinatorTest {
                         "Tabs.RestoreArchivedTabsMenuItem.TabCount", 2);
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
-        mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
+        mRobot.resultRobot.verifyToolbarSelectionText("2 items");
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore items");
         mRobot.resultRobot.verifyAdapterHasItemCount(1);
         assertEquals(3, mRegularTabModel.getCount());
@@ -909,7 +909,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.actionRobot.clickItemAtAdapterPosition(2);
-        mRobot.resultRobot.verifyToolbarSelectionText("3 tabs");
+        mRobot.resultRobot.verifyToolbarSelectionText("3 items");
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close items");
 
         // Assert that the group was archived and emit an event with the new archive status.
@@ -954,7 +954,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.actionRobot.clickItemAtAdapterPosition(2);
-        mRobot.resultRobot.verifyToolbarSelectionText("3 tabs");
+        mRobot.resultRobot.verifyToolbarSelectionText("3 items");
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close items");
 
         // Assert that the group was archived and emit an event with the new archive status.
@@ -1042,7 +1042,7 @@ public class ArchivedTabsDialogCoordinatorTest {
                         .build();
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
-        mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
+        mRobot.resultRobot.verifyToolbarSelectionText("2 items");
 
         // Mock the sync backend being initialized so the tab group is restored via
         // createNewTabGroup and LocalTabGroupMutationHelper, reflected in the regular tab model.

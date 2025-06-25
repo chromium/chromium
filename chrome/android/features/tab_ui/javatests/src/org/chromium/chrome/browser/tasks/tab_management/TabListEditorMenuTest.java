@@ -107,8 +107,8 @@ public class TabListEditorMenuTest {
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(5)
-                    .setDescription("New selection icons")
+                    .setRevision(6)
+                    .setDescription("Toolbar string update")
                     .build();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

@@ -143,8 +143,8 @@ public class SelectableTabListEditorTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
-                    .setRevision(11)
-                    .setDescription("Border radius update.")
+                    .setRevision(12)
+                    .setDescription("Toolbar string update.")
                     .build();
 
     @Mock private Callback<RecyclerViewPosition> mSetRecyclerViewPosition;
@@ -356,7 +356,7 @@ public class SelectableTabListEditorTest {
                 .verifyToolbarActionViewDisabled(R.id.tab_list_editor_group_menu_item)
                 .verifyToolbarActionViewWithText(R.id.tab_list_editor_group_menu_item, "Group tabs")
                 .verifyToolbarSelectionTextWithResourceId(
-                        R.string.tab_selection_editor_toolbar_select_tabs)
+                        R.string.tab_selection_editor_toolbar_select_items)
                 .verifyAdapterHasItemCount(tabs.size())
                 .verifyHasAtLeastNItemVisible(1);
         mRobot.actionRobot.clickToolbarMenuButton();
@@ -420,13 +420,13 @@ public class SelectableTabListEditorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.resultRobot
                 .verifyItemSelectedAtAdapterPosition(0)
-                .verifyToolbarSelectionText("1 tab");
+                .verifyToolbarSelectionText("1 item");
 
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.resultRobot
                 .verifyItemNotSelectedAtAdapterPosition(0)
                 .verifyToolbarSelectionTextWithResourceId(
-                        R.string.tab_selection_editor_toolbar_select_tabs);
+                        R.string.tab_selection_editor_toolbar_select_items);
     }
 
     @Test
@@ -442,23 +442,23 @@ public class SelectableTabListEditorTest {
         mRobot.actionRobot.clickActionButtonAdapterPosition(0, R.id.action_button);
         mRobot.resultRobot
                 .verifyItemSelectedAtAdapterPosition(0)
-                .verifyToolbarSelectionText("1 tab");
+                .verifyToolbarSelectionText("1 item");
 
         mRobot.actionRobot.clickActionButtonAdapterPosition(1, R.id.action_button);
         mRobot.resultRobot
                 .verifyItemSelectedAtAdapterPosition(1)
-                .verifyToolbarSelectionText("2 tabs");
+                .verifyToolbarSelectionText("2 items");
 
         mRobot.actionRobot.clickActionButtonAdapterPosition(1, R.id.action_button);
         mRobot.resultRobot
                 .verifyItemNotSelectedAtAdapterPosition(1)
-                .verifyToolbarSelectionText("1 tab");
+                .verifyToolbarSelectionText("1 item");
 
         mRobot.actionRobot.clickActionButtonAdapterPosition(0, R.id.action_button);
         mRobot.resultRobot
                 .verifyItemNotSelectedAtAdapterPosition(0)
                 .verifyToolbarSelectionTextWithResourceId(
-                        R.string.tab_selection_editor_toolbar_select_tabs);
+                        R.string.tab_selection_editor_toolbar_select_items);
     }
 
     @Test
@@ -683,7 +683,7 @@ public class SelectableTabListEditorTest {
 
         mRobot.resultRobot
                 .verifyToolbarActionViewEnabled(closeId)
-                .verifyToolbarSelectionText("5 tabs");
+                .verifyToolbarSelectionText("3 items");
 
         View close = mTabListEditorLayout.getToolbar().findViewById(closeId);
         assertEquals("Close 5 selected tabs", close.getContentDescription());
@@ -728,7 +728,7 @@ public class SelectableTabListEditorTest {
 
         mRobot.resultRobot
                 .verifyToolbarActionViewEnabled(groupId)
-                .verifyToolbarSelectionText("5 tabs");
+                .verifyToolbarSelectionText("4 items");
 
         View close = mTabListEditorLayout.getToolbar().findViewById(groupId);
         assertEquals("Group 5 selected tabs", close.getContentDescription());
@@ -790,7 +790,7 @@ public class SelectableTabListEditorTest {
 
         mRobot.resultRobot
                 .verifyToolbarActionViewEnabled(groupId)
-                .verifyToolbarSelectionText("9 tabs");
+                .verifyToolbarSelectionText("6 items");
 
         View group = mTabListEditorLayout.getToolbar().findViewById(groupId);
         assertEquals("Group 9 selected tabs", group.getContentDescription());
@@ -891,7 +891,7 @@ public class SelectableTabListEditorTest {
 
         mRobot.resultRobot
                 .verifyToolbarActionViewEnabled(shareId)
-                .verifyToolbarSelectionText("1 tab");
+                .verifyToolbarSelectionText("1 item");
 
         View share = mTabListEditorLayout.getToolbar().findViewById(shareId);
         assertEquals("Share 1 selected tab", share.getContentDescription());
@@ -1086,7 +1086,7 @@ public class SelectableTabListEditorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(0).clickItemAtAdapterPosition(1);
         mRobot.resultRobot
                 .verifyToolbarActionViewDisabled(shareId)
-                .verifyToolbarSelectionText("2 tabs");
+                .verifyToolbarSelectionText("2 items");
     }
 
     @Test
@@ -1225,7 +1225,7 @@ public class SelectableTabListEditorTest {
 
         mRobot.resultRobot
                 .verifyToolbarActionViewEnabled(bookmarkId)
-                .verifyToolbarSelectionText("3 tabs");
+                .verifyToolbarSelectionText("2 items");
 
         View bookmark = mTabListEditorLayout.getToolbar().findViewById(bookmarkId);
         assertEquals("Bookmark 3 selected tabs", bookmark.getContentDescription());
@@ -1409,7 +1409,7 @@ public class SelectableTabListEditorTest {
                 .verifyItemSelectedAtAdapterPosition(0)
                 .verifyItemSelectedAtAdapterPosition(1)
                 .verifyItemSelectedAtAdapterPosition(2)
-                .verifyToolbarSelectionText("3 tabs");
+                .verifyToolbarSelectionText("3 items");
         TabListRecyclerView tabListRecyclerView =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -1427,7 +1427,7 @@ public class SelectableTabListEditorTest {
                 .verifyItemNotSelectedAtAdapterPosition(0)
                 .verifyItemNotSelectedAtAdapterPosition(1)
                 .verifyItemNotSelectedAtAdapterPosition(2)
-                .verifyToolbarSelectionText("Select tabs");
+                .verifyToolbarSelectionText("Select items");
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
         ChromeRenderTestRule.sanitize(mTabListEditorLayout);
@@ -1787,7 +1787,7 @@ public class SelectableTabListEditorTest {
         mRobot.resultRobot
                 .verifyAdapterHasItemCount(2)
                 .verifyItemSelectedAtAdapterPosition(0)
-                .verifyToolbarSelectionText("1 tab");
+                .verifyToolbarSelectionText("1 item");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1797,7 +1797,7 @@ public class SelectableTabListEditorTest {
         mRobot.resultRobot
                 .verifyAdapterHasItemCount(2)
                 .verifyItemNotSelectedAtAdapterPosition(0)
-                .verifyToolbarSelectionText("Select tabs");
+                .verifyToolbarSelectionText("Select items");
 
         mRobot.actionRobot.clickActionButtonAdapterPosition(0, R.id.action_button);
         mRobot.resultRobot.verifyAdapterHasItemCount(1).verifyItemNotSelectedAtAdapterPosition(0);
@@ -1810,7 +1810,7 @@ public class SelectableTabListEditorTest {
         mRobot.resultRobot
                 .verifyAdapterHasItemCount(1)
                 .verifyItemSelectedAtAdapterPosition(0)
-                .verifyToolbarSelectionText("1 tab");
+                .verifyToolbarSelectionText("1 item");
     }
 
     @Test

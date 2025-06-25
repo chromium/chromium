@@ -214,14 +214,6 @@ class TabListEditorMediator
         mResetHandler = resetHandler;
 
         mModel.set(TabListEditorProperties.TOOLBAR_NAVIGATION_LISTENER, mNavigationClickListener);
-        if (mActionOnRelatedTabs) {
-            mModel.set(
-                    TabListEditorProperties.RELATED_TAB_COUNT_PROVIDER,
-                    (itemIdList) -> {
-                        return TabListEditorAction.getTabCountIncludingRelatedTabs(
-                                mCurrentTabGroupModelFilterSupplier.get(), itemIdList);
-                    });
-        }
         updateColors(mCurrentTabGroupModelFilterSupplier.get().getTabModel().isIncognito());
     }
 
@@ -252,7 +244,7 @@ class TabListEditorMediator
         mModel.set(TabListEditorProperties.IS_VISIBLE, true);
         mModel.set(
                 TabListEditorProperties.TOOLBAR_TITLE,
-                mContext.getString(R.string.tab_selection_editor_toolbar_select_tabs));
+                mContext.getString(R.string.tab_selection_editor_toolbar_select_items));
         updateColors(mCurrentTabGroupModelFilterSupplier.get().getTabModel().isIncognito());
     }
 

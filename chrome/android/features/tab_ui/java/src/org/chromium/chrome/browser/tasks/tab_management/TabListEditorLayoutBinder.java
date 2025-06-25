@@ -44,10 +44,6 @@ public class TabListEditorLayoutBinder {
                     .setTextColorStateList(model.get(TabListEditorProperties.TOOLBAR_TEXT_TINT));
         } else if (TabListEditorProperties.TOOLBAR_BUTTON_TINT == propertyKey) {
             view.getToolbar().setButtonTint(model.get(TabListEditorProperties.TOOLBAR_BUTTON_TINT));
-        } else if (TabListEditorProperties.RELATED_TAB_COUNT_PROVIDER == propertyKey) {
-            view.getToolbar()
-                    .setRelatedTabCountProvider(
-                            model.get(TabListEditorProperties.RELATED_TAB_COUNT_PROVIDER));
         } else if (TabListEditorProperties.TOOLBAR_TITLE == propertyKey) {
             view.getToolbar().setTitle(model.get(TabListEditorProperties.TOOLBAR_TITLE));
         } else if (TabListEditorProperties.TOP_MARGIN == propertyKey) {
