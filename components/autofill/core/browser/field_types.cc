@@ -231,19 +231,10 @@ bool IsFillableFieldType(FieldType field_type) {
     case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
     case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
     case DELIVERY_INSTRUCTIONS:
-    case PASSPORT_NUMBER:
     case LOYALTY_MEMBERSHIP_PROGRAM:
     case LOYALTY_MEMBERSHIP_PROVIDER:
     case LOYALTY_MEMBERSHIP_ID:
     case EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
-    case VEHICLE_LICENSE_PLATE:
-    case VEHICLE_VIN:
-    case VEHICLE_MAKE:
-    case VEHICLE_MODEL:
-    case VEHICLE_YEAR:
-    case VEHICLE_PLATE_STATE:
-    case DRIVERS_LICENSE_REGION:
-    case DRIVERS_LICENSE_NUMBER:
       return true;
 
     case CREDIT_CARD_NAME_FULL:
@@ -279,6 +270,26 @@ bool IsFillableFieldType(FieldType field_type) {
     case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
       return true;
 
+    // Autofill AI types.
+    case DRIVERS_LICENSE_EXPIRATION_DATE:
+    case DRIVERS_LICENSE_ISSUE_DATE:
+    case DRIVERS_LICENSE_NAME_TAG:
+    case DRIVERS_LICENSE_NUMBER:
+    case DRIVERS_LICENSE_REGION:
+    case PASSPORT_EXPIRATION_DATE:
+    case PASSPORT_ISSUE_DATE:
+    case PASSPORT_ISSUING_COUNTRY:
+    case PASSPORT_NAME_TAG:
+    case PASSPORT_NUMBER:
+    case VEHICLE_LICENSE_PLATE:
+    case VEHICLE_MAKE:
+    case VEHICLE_MODEL:
+    case VEHICLE_OWNER_TAG:
+    case VEHICLE_PLATE_STATE:
+    case VEHICLE_VIN:
+    case VEHICLE_YEAR:
+      return true;
+
     // Not fillable credential fields.
     case NOT_PASSWORD:
     case NOT_USERNAME:
@@ -301,14 +312,6 @@ bool IsFillableFieldType(FieldType field_type) {
     case PRICE:
     case NUMERIC_QUANTITY:
     case SEARCH_TERM:
-    case PASSPORT_NAME_TAG:
-    case PASSPORT_ISSUING_COUNTRY:
-    case PASSPORT_EXPIRATION_DATE:
-    case PASSPORT_ISSUE_DATE:
-    case VEHICLE_OWNER_TAG:
-    case DRIVERS_LICENSE_NAME_TAG:
-    case DRIVERS_LICENSE_EXPIRATION_DATE:
-    case DRIVERS_LICENSE_ISSUE_DATE:
     case UNKNOWN_TYPE:
     case MAX_VALID_FIELD_TYPE:
       return false;
