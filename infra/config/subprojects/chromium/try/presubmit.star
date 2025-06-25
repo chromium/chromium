@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.android builder group."""
 
-load("//lib/builders.star", "os")
 load("//lib/branches.star", "branches")
-load("//lib/try.star", "try_")
+load("//lib/builders.star", "os")
 load("//lib/consoles.star", "consoles")
+load("//lib/try.star", "try_")
 load("//project.star", "PLATFORMS", "platform")
 load("../fallback-cq.star", "fallback_cq")
 
@@ -95,7 +95,6 @@ try_.presubmit_builder(
                 "cfg_file": [
                     "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg",
                     "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_windows.cfg",
-                    "buildtools/reclient_cfgs/nacl/rewrapper_linux.cfg",
                 ],
             },
         ],
