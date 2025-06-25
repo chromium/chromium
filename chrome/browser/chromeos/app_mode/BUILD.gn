@@ -16,6 +16,8 @@ static_library("app_mode") {
     "chrome_kiosk_external_loader_broker.h",
     "kiosk_app_external_loader.cc",
     "kiosk_app_external_loader.h",
+    "kiosk_app_level_logs_manager.cc",
+    "kiosk_app_level_logs_manager.h",
     "kiosk_app_level_logs_manager_wrapper.cc",
     "kiosk_app_level_logs_manager_wrapper.h",
     "kiosk_app_service_launcher.cc",

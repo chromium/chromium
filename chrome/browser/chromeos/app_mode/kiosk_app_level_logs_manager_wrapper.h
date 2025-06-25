@@ -9,10 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/app_mode/cancellable_job.h"
-#include "chrome/browser/ash/app_mode/kiosk_app.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/load_profile.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -48,7 +45,8 @@ class KioskAppLevelLogsManagerWrapper : public ProfileManagerObserver {
 
   void OnPolicyChanged();
 
-  bool log_collection_enabled_ = false;
+  // Handles collection and storage of kiosk app level logs.
+  std::unique_ptr<KioskAppLevelLogsManager> logs_manager_;
 
   // The profile whose kiosk app logs should be collected. It is set by the
   // `OnProfileAdded` method if the profile is not set in the constructor.
