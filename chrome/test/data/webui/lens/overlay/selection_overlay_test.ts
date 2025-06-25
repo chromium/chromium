@@ -802,6 +802,28 @@ suite('SelectionOverlay', function() {
           selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
     });
 
+    test(
+        'verify that select text in detected text options keyboard accessible',
+        async () => {
+          await simulateDrag(
+              selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
+          const keyUpEvent = new KeyboardEvent('keyup', {
+            key: 'Enter',
+            code: 'Enter',
+          });
+          selectionOverlayElement.$.selectTextContextMenuItem.dispatchEvent(
+              keyUpEvent);
+
+          const textQuery = await testBrowserProxy.handler.whenCalled(
+              'issueTextSelectionRequest');
+          assertDeepEquals('hello there test', textQuery);
+          assertEquals(
+              1,
+              testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+          assertFalse(selectionOverlayElement
+                          .getShowSelectedRegionContextMenuForTesting());
+        });
+
     test('verify that translate in detected text options works', async () => {
       await simulateDrag(selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
       selectionOverlayElement.handleTranslateDetectedTextForTesting();

@@ -448,14 +448,16 @@
       on-pointerenter="handlePointerEnterButton"
       on-pointerleave="handlePointerLeaveButton"
     >
-      <div class="context-menu-item" role="menuitem" on-pointerup="handleCopy">
+      <div
+        class="context-menu-item" role="menuitem" tabindex="0"
+        on-pointerup="handleCopy" on-keyup="handleCopy">
         <span class="menu-item-icon copy"></span>
         <span class="menu-item-label">$i18n{copy}</span>
       </div>
       <div
         class="context-menu-item translate-context-menu-item"
-        role="menuitem"
-        on-pointerup="handleTranslate"
+        role="menuitem" tabindex="0" on-pointerup="handleTranslate"
+        on-keyup="handleTranslate"
       >
         <span class="menu-item-icon translate"></span>
         <span class="menu-item-label">$i18n{translate}</span>
@@ -473,8 +475,8 @@
       <div
         id="copyDetectedTextContextMenuItem"
         class="context-menu-item detected-text-context-menu-option"
-        role="menuitem"
-        on-pointerup="handleCopyDetectedText"
+        role="menuitem" tabindex="0" on-pointerup="handleCopyDetectedText"
+        on-keyup="handleCopyDetectedText"
       >
         <span class="menu-item-icon copy"></span>
         <span class="menu-item-label">$i18n{copyText}</span>
@@ -482,32 +484,32 @@
       <div
         id="selectTextContextMenuItem"
         class="context-menu-item detected-text-context-menu-option"
-        role="menuitem"
-        on-pointerup="handleSelectText"
+        role="menuitem" tabindex="0" on-pointerup="handleSelectText"
+        on-keyup="handleSelectText"
       >
         <span class="menu-item-icon text"></span>
         <span class="menu-item-label">$i18n{selectText}</span>
       </div>
       <div
         class="context-menu-item translate-context-menu-item detected-text-context-menu-option"
-        role="menuitem"
-        on-pointerup="handleTranslateDetectedText"
+        role="menuitem" tabindex="0" on-pointerup="handleTranslateDetectedText"
+        on-keyup="handleTranslateDetectedText"
       >
         <span class="menu-item-icon translate"></span>
         <span class="menu-item-label">$i18n{translate}</span>
       </div>
       <div
         class="context-menu-item copy-as-image-context-menu-item"
-        role="menuitem"
-        on-pointerup="handleCopyAsImage"
+        role="menuitem" tabindex="0" on-pointerup="handleCopyAsImage"
+        on-keyup="handleCopyAsImage"
       >
         <span class="menu-item-icon copy-image"></span>
         <span class="menu-item-label">$i18n{copyAsImage}</span>
       </div>
       <div
         class="context-menu-item save-as-image-context-menu-item"
-        role="menuitem"
-        on-pointerup="handleSaveAsImage"
+        role="menuitem" tabindex="0" on-pointerup="handleSaveAsImage"
+        on-keyup="handleSaveAsImage"
       >
         <span class="menu-item-icon download"></span>
         <span class="menu-item-label">$i18n{saveAsImage}</span>
