@@ -199,10 +199,10 @@ TEST_F(PermissionsParserTest, UnsupportedOptionalPermissionWarning) {
   scoped_refptr<Extension> extension(LoadAndExpectWarning(
       "unsupported_optional_api_permission.json",
       ErrorUtils::FormatErrorMessage(
-          manifest_errors::kPermissionCannotBeOptional, "debugger")));
+          manifest_errors::kPermissionCannotBeOptional, "geolocation")));
 
-  // Check that the debugger was not included in the optional permissions as it
-  // is not allowed to be optional.
+  // Check that the geolocation was not included in the optional permissions as
+  // it is not allowed to be optional.
   std::set<std::string> optional_api_names =
       PermissionsParser::GetOptionalPermissions(extension.get())
           .GetAPIsAsStrings();

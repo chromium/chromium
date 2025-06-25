@@ -56,8 +56,8 @@ constexpr char kExtensionManifest[] = R"({
   \"name\" : \"Extension\",
   \"manifest_version\": 3,
   \"version\": \"0.1\",
-  \"permissions\": [ \"example.com\", \"downloads\"],
-  \"optional_permissions\" : [\"audio\"]})";
+  \"permissions\": [ \"example.com\", \"cookies\"],
+  \"optional_permissions\" : [\"notifications\"]})";
 
 constexpr char kBlockAllExtensionSettings[] = R"({
   "*": {
@@ -77,13 +77,13 @@ constexpr char kBlockedManifestTypeExtensionSettings[] = R"({
   }
 })";
 
-constexpr char kBlockedDownloadsPermissionsExtensionSettings[] = R"({
+constexpr char kBlockedCookiesPermissionsExtensionSettings[] = R"({
   "*": {
-    "blocked_permissions": ["downloads"]
+    "blocked_permissions": ["cookies"]
   }
 })";
 
-constexpr char kBlockedAudioPermissionsExtensionSettings[] = R"({
+constexpr char kBlockedNotificationsPermissionsExtensionSettings[] = R"({
   "*": {
     "blocked_permissions": ["audio"]
   }
@@ -297,8 +297,7 @@ TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionBlockedByManifestType) {
 }
 
 TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionBlockedByPermission) {
-  SetExtensionSettings(kBlockedDownloadsPermissionsExtensionSettings,
-                       profile());
+  SetExtensionSettings(kBlockedCookiesPermissionsExtensionSettings, profile());
   auto function =
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
   std::optional<base::Value> response = RunFunctionAndReturnValue(
@@ -308,7 +307,8 @@ TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionBlockedByPermission) {
 
 TEST_F(WebstorePrivateGetExtensionStatusTest,
        ExtensionNotBlockedByOptionalPermission) {
-  SetExtensionSettings(kBlockedAudioPermissionsExtensionSettings, profile());
+  SetExtensionSettings(kBlockedNotificationsPermissionsExtensionSettings,
+                       profile());
   auto function =
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
   std::optional<base::Value> response = RunFunctionAndReturnValue(
@@ -628,7 +628,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
 
 TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
        ExtensionBlockedByPermission) {
-  SetExtensionSettings(kBlockedDownloadsPermissionsExtensionSettings);
+  SetExtensionSettings(kBlockedCookiesPermissionsExtensionSettings);
 
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
@@ -645,7 +645,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
 
 TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
        ExtensionNotBlockedByOptionalPermission) {
-  SetExtensionSettings(kBlockedAudioPermissionsExtensionSettings);
+  SetExtensionSettings(kBlockedNotificationsPermissionsExtensionSettings);
 
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);

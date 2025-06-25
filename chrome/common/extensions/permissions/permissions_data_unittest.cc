@@ -61,6 +61,7 @@ GURL GetFaviconURL(const char* path) {
   return GURL(chrome::kChromeUIFaviconURL).ReplaceComponents(replace_path);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 bool CheckSocketPermission(scoped_refptr<Extension> extension,
                            SocketPermissionRequest::OperationType type,
                            const char* host,
@@ -69,6 +70,7 @@ bool CheckSocketPermission(scoped_refptr<Extension> extension,
   return extension->permissions_data()->CheckAPIPermissionWithParam(
       APIPermissionID::kSocket, &param);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Creates and returns an extension with the given |id|, |host_permissions|, and
 // manifest |location|.
@@ -294,6 +296,8 @@ TEST(PermissionsDataTest, EffectiveHostPermissions) {
           tab_url));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Desktop Android does not support the sockets API nor its permission.
 TEST(PermissionsDataTest, SocketPermissions) {
   std::string error;
 
@@ -326,6 +330,7 @@ TEST(PermissionsDataTest, SocketPermissions) {
                                     SocketPermissionRequest::UDP_SEND_TO,
                                     "239.255.255.250", 1900));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST(PermissionsDataTest, IsRestrictedUrl) {
   scoped_refptr<const Extension> extension = GetExtensionWithHostPermission(
@@ -1463,7 +1468,9 @@ class CaptureVisiblePageTest : public testing::Test {
 
   const Extension& active_tab() { return *active_tab_; }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   const Extension& page_capture() { return *page_capture_; }
+#endif
 
   static constexpr int kTabId = 42;
 
@@ -1477,22 +1484,30 @@ class CaptureVisiblePageTest : public testing::Test {
                       .AddAPIPermission("activeTab")
                       .SetID(std::string(32, 'b'))
                       .Build();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    // TODO(crbug.com/427298257): Desktop Android does not yet support page
+    // capture nor its permission.
     page_capture_ = ExtensionBuilder("page capture")
                         .AddAPIPermission("pageCapture")
                         .AddAPIPermission("activeTab")
                         .SetID(std::string(32, 'd'))
                         .Build();
+#endif
   }
 
   void TearDown() override {
     all_urls_ = nullptr;
     active_tab_ = nullptr;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     page_capture_ = nullptr;
+#endif
   }
 
   scoped_refptr<const Extension> all_urls_;
   scoped_refptr<const Extension> active_tab_;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   scoped_refptr<const Extension> page_capture_;
+#endif
 };
 
 TEST_F(CaptureVisiblePageTest, URLsCapturableWithEitherActiveTabOrAllURLs) {
@@ -1530,11 +1545,13 @@ TEST_F(CaptureVisiblePageTest, URLsCapturableWithEitherActiveTabOrAllURLs) {
         CanCapture(active_tab(), url,
                    extensions::CaptureRequirement::kActiveTabOrAllUrls));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     EXPECT_TRUE(CanCapture(page_capture(), url,
                            extensions::CaptureRequirement::kPageCapture));
     GrantActiveTab(page_capture(), url);
     EXPECT_TRUE(CanCapture(page_capture(), url,
                            extensions::CaptureRequirement::kPageCapture));
+#endif
   }
 }
 
@@ -1588,6 +1605,7 @@ TEST_F(CaptureVisiblePageTest, URLsCapturableOnlyWithActiveTab) {
         CanCapture(active_tab(), url,
                    extensions::CaptureRequirement::kActiveTabOrAllUrls));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     EXPECT_FALSE(CanCapture(page_capture(), url,
                             extensions::CaptureRequirement::kPageCapture));
     GrantActiveTab(page_capture(), url);
@@ -1596,6 +1614,7 @@ TEST_F(CaptureVisiblePageTest, URLsCapturableOnlyWithActiveTab) {
     ClearActiveTab(page_capture());
     EXPECT_FALSE(CanCapture(page_capture(), url,
                             extensions::CaptureRequirement::kPageCapture));
+#endif
   }
 }
 
@@ -1616,6 +1635,7 @@ TEST_F(CaptureVisiblePageTest, ChromeUntrustedSchemeNotCaptured) {
   EXPECT_FALSE(CanCapture(active_tab(), chrome_untrusted_url,
                           extensions::CaptureRequirement::kActiveTabOrAllUrls));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   EXPECT_FALSE(CanCapture(page_capture(), chrome_untrusted_url,
                           extensions::CaptureRequirement::kPageCapture));
   GrantActiveTab(page_capture(), chrome_untrusted_url);
@@ -1624,6 +1644,7 @@ TEST_F(CaptureVisiblePageTest, ChromeUntrustedSchemeNotCaptured) {
   ClearActiveTab(page_capture());
   EXPECT_FALSE(CanCapture(page_capture(), chrome_untrusted_url,
                           extensions::CaptureRequirement::kPageCapture));
+#endif
 }
 
 TEST_F(CaptureVisiblePageTest, SelfExtensionURLs) {
@@ -1651,6 +1672,7 @@ TEST_F(CaptureVisiblePageTest, SelfExtensionURLs) {
     EXPECT_TRUE(
         CanCapture(all_urls(), get_blob_url_for_extension(all_urls()),
                    extensions::CaptureRequirement::kActiveTabOrAllUrls));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     EXPECT_TRUE(CanCapture(page_capture(),
                            page_capture().ResolveExtensionURL("foo.html"),
                            extensions::CaptureRequirement::kPageCapture));
@@ -1660,6 +1682,7 @@ TEST_F(CaptureVisiblePageTest, SelfExtensionURLs) {
     EXPECT_TRUE(CanCapture(page_capture(),
                            get_blob_url_for_extension(page_capture()),
                            extensions::CaptureRequirement::kPageCapture));
+#endif
   }
 
   const GURL active_tab_extension_urls[] = {
@@ -1685,6 +1708,7 @@ TEST_F(CaptureVisiblePageTest, SelfExtensionURLs) {
         CanCapture(active_tab(), url,
                    extensions::CaptureRequirement::kActiveTabOrAllUrls));
   }
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   const GURL page_capture_extension_urls[] = {
       page_capture().ResolveExtensionURL("foo.html"),
   };
@@ -1695,6 +1719,7 @@ TEST_F(CaptureVisiblePageTest, SelfExtensionURLs) {
     EXPECT_TRUE(CanCapture(page_capture(), url,
                            extensions::CaptureRequirement::kPageCapture));
   }
+#endif
 }
 
 TEST_F(CaptureVisiblePageTest, NoPermissions) {
@@ -1722,8 +1747,10 @@ TEST_F(CaptureVisiblePageTest, PolicyBlockedURLs) {
         context_id, blocked_patterns, URLPatternSet());
     active_tab().permissions_data()->SetContextId(context_id);
     active_tab().permissions_data()->SetUsesDefaultHostRestrictions();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     page_capture().permissions_data()->SetContextId(context_id);
     page_capture().permissions_data()->SetUsesDefaultHostRestrictions();
+#endif
   }
 
   const GURL test_urls[] = {
@@ -1747,6 +1774,7 @@ TEST_F(CaptureVisiblePageTest, PolicyBlockedURLs) {
         CanCapture(active_tab(), url,
                    extensions::CaptureRequirement::kActiveTabOrAllUrls));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     EXPECT_FALSE(CanCapture(page_capture(), url,
                             extensions::CaptureRequirement::kPageCapture));
     GrantActiveTab(page_capture(), url);
@@ -1755,6 +1783,7 @@ TEST_F(CaptureVisiblePageTest, PolicyBlockedURLs) {
     ClearActiveTab(page_capture());
     EXPECT_FALSE(CanCapture(page_capture(), url,
                             extensions::CaptureRequirement::kPageCapture));
+#endif
   }
 }
 

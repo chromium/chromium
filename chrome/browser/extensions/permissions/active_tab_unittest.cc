@@ -80,9 +80,12 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
         extension(CreateTestExtension("deadbeef", true, false)),
         another_extension(CreateTestExtension("feedbeef", true, false)),
         extension_without_active_tab(
-            CreateTestExtension("badbeef", false, false)),
-        extension_with_tab_capture(
-            CreateTestExtension("cafebeef", true, true)) {}
+            CreateTestExtension("badbeef", false, false)) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    // Desktop Android does not yet support tab capture API or permission.
+    extension_with_tab_capture = CreateTestExtension("cafebeef", true, true);
+#endif
+  }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -98,7 +101,9 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
     extension_registrar->AddExtension(extension);
     extension_registrar->AddExtension(another_extension);
     extension_registrar->AddExtension(extension_without_active_tab);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     extension_registrar->AddExtension(extension_with_tab_capture);
+#endif
   }
 
   int tab_id() {
@@ -185,8 +190,10 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
   // An extension without the activeTab permission.
   scoped_refptr<const Extension> extension_without_active_tab;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // An extension with both the activeTab and tabCapture permission.
   scoped_refptr<const Extension> extension_with_tab_capture;
+#endif
 };
 
 TEST_F(ActiveTabTest, GrantToSinglePage) {
@@ -408,6 +415,8 @@ TEST_F(ActiveTabTest, SameDocumentNavigations) {
   EXPECT_TRUE(IsAllowed(extension, chromium_h1));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Desktop Android does not yet support the tab capture API or permission.
 TEST_F(ActiveTabTest, ChromeUrlGrants) {
   GURL internal(chrome::kChromeUIVersionURL);
   NavigateAndCommit(internal);
@@ -425,6 +434,7 @@ TEST_F(ActiveTabTest, ChromeUrlGrants) {
   EXPECT_FALSE(permissions_data->HasAPIPermissionForTab(
       tab_id() + 1, APIPermissionID::kTabCaptureForTab));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that an extension can have it's active tab permission cleared.
 TEST_F(ActiveTabTest, ClearActiveExtensionAndNotify) {

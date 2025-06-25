@@ -18,13 +18,17 @@
     "channel": "stable",
     "contexts": ["privileged_extension"],
     "extension_types": ["platform_app"],
-    "noparent": true
+    "noparent": true,
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   }, {
     "channel": "stable",
     "component_extensions_auto_granted": false,
     "contexts": ["privileged_extension"],
     "extension_types": ["extension"],
     "noparent": true,
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"],
     "allowlist": [
       "2FC374607C2DF285634B67C64A2E356C607091C3",  // Quickoffice
       "3727DD3E564B6055387425027AD74C58784ACC15",  // Quickoffice internal
@@ -35,13 +39,17 @@
     "channel": "stable",
     "contexts": ["privileged_extension"],
     "extension_types": ["platform_app"],
-    "noparent": true
+    "noparent": true,
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   }, {
     "channel": "stable",
     "contexts": ["privileged_extension"],
     "extension_types": ["extension"],
     "noparent": true,
     "component_extensions_auto_granted": false,
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"],
     "allowlist": [
       "B9EF10DDFEA11EF77873CC5009809E5037FC4C7A",  // Google input tools
       "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // Official xkb extension
@@ -52,7 +60,9 @@
     "noparent": true,
     "internal": true,
     "channel": "stable",
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   },
   "app.currentWindowInternal.setShape": {
     "dependencies": ["permission:app.window.shape"],
@@ -71,7 +81,9 @@
   "appViewGuestInternal": {
     "internal": true,
     "channel": "stable",
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   },
   "audio": {
     "dependencies": ["permission:audio"],
@@ -80,22 +92,30 @@
   "automationInternal": {
     "internal": true,
     "dependencies": ["manifest:automation"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   },
   "automation": {
     "dependencies": ["manifest:automation"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   },
   "bluetooth": [{
     "dependencies": ["manifest:bluetooth"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
       "chrome://bluetooth-pairing/*",
       "chrome://os-settings/*"
-    ]
+    ],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   }],
   "bluetoothLowEnergy": {
     "dependencies": ["manifest:bluetooth"],
@@ -115,7 +135,9 @@
   }],
   "bluetoothSocket": {
     "dependencies": ["manifest:bluetooth"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   },
   "cecPrivate": {
     "dependencies": ["permission:cecPrivate"],
@@ -194,7 +216,9 @@
         "chrome://feedback/*",
         "chrome://cast-feedback/*",
         "chrome://os-feedback/*"
-      ]
+      ],
+      // "desktop_android" is not supported.
+      "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
     }
   ],
   "feedbackPrivate.openFeedback": {
@@ -230,7 +254,9 @@
     {
       "internal": true,
       "channel": "stable",
-      "contexts": ["privileged_extension"]
+      "contexts": ["privileged_extension"],
+      // "desktop_android" is not supported.
+      "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
     }, {
       "internal": true,
       "channel": "stable",
@@ -250,7 +276,9 @@
         "chrome://parent-access/*",
         "chrome://password-change/*",
         "chrome://lock-reauth/*"
-      ]
+      ],
+      // "desktop_android" is not supported.
+      "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
     }, {
       "internal": true,
       "channel": "stable",
@@ -259,7 +287,9 @@
       ],
       "matches": [
         "chrome-untrusted://boca-app/*"
-      ]
+      ],
+      // "desktop_android" is not supported.
+      "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
     }, {
       // This feature is used by the Controlled Frame API and is specifically
       // enabled by //chrome.
@@ -271,7 +301,9 @@
       ],
       // This feature is only enabled if the embedder's delegated check returns
       // true.
-      "requires_delegated_availability_check": true
+      "requires_delegated_availability_check": true,
+      // "desktop_android" is not supported.
+      "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
     }
   ],
   "hid": {
@@ -460,7 +492,9 @@
   },
   "mimeHandlerPrivate": {
     "dependencies": ["manifest:mime_types_handler"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   },
   "mojoPrivate": {
     "contexts": ["privileged_extension"],
@@ -679,33 +713,45 @@
   },
   "sockets.tcp": [{
     "dependencies": ["manifest:sockets"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   },{
     "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
       "chrome-untrusted://terminal/*"
-    ]
+    ],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   }],
   "sockets.tcpServer": [{
     "dependencies": ["manifest:sockets"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   },{
     "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
       "chrome-untrusted://terminal/*"
-    ]
+    ],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   }],
   "sockets.udp": [{
     "dependencies": ["manifest:sockets"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   },{
     "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
       "chrome-untrusted://terminal/*"
-    ]
+    ],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   }],
   "storage": {
     "dependencies": ["permission:storage"],

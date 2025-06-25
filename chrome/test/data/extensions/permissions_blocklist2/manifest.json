@@ -3,7 +3,7 @@
   "permissions": [
     "tabs",
     "bookmarks",
-    "downloads",
+    "cookies",
     "management"
   ],
   "optional_permissions": [

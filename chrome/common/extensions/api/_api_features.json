@@ -28,6 +28,7 @@
     "contexts": ["privileged_extension"],
     "platforms": ["chromeos"]
   },
+  // NOTE: C++ source is under api/extension_action not api/action.
   "action": {
     "dependencies": ["manifest:action"],
     "contexts": ["privileged_extension"]
@@ -106,7 +107,9 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://settings/*"
-    ]
+    ],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   }],
   "autotestPrivate": {
     "dependencies": ["permission:autotestPrivate"],
@@ -119,7 +122,9 @@
       "chrome://bookmarks/*",
       "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://read-later.top-chrome/*"
-    ]
+    ],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   },
   "bookmarks": [{
     "dependencies": ["permission:bookmarks"],
@@ -741,7 +746,9 @@
   },
   "omnibox": {
     "dependencies": ["manifest:omnibox"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
   },
   "pageAction": {
     "dependencies": ["manifest:page_action"],

@@ -6,7 +6,7 @@
   ],
   "optional_permissions": [
     "history",
-    "downloads"
+    "cookies"
   ],
   "manifest_version": 3,
   "version": "1.0"

@@ -321,6 +321,9 @@ class PermissionsApiHostAccessRequestsTest : public PermissionsApiTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371432404): Port to desktop Android once
+// the webNavigation API and permission are supported.
 IN_PROC_BROWSER_TEST_F(PermissionsApiHostAccessRequestsTest,
                        InvalidAddHostAccessRequests) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -328,6 +331,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiHostAccessRequestsTest,
   ASSERT_TRUE(RunExtensionTest("permissions/add_host_access_request"))
       << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(PermissionsApiHostAccessRequestsTest,
                        InvalidRemoveHostAccessRequests) {

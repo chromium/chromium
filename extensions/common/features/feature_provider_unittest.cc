@@ -142,7 +142,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
   // A permission that isn't part of the manifest returns NOT_PRESENT.
-  feature = provider->GetFeature("serial");
+  feature = provider->GetFeature("unlimitedStorage");
   ASSERT_TRUE(feature);
   EXPECT_EQ(Feature::NOT_PRESENT,
             feature

@@ -95,9 +95,9 @@ TEST(ComplexFeatureTest, Dependencies) {
   }
 
   {
-    // Rule which depends on an platform-app-only feature (serial).
+    // Rule which depends on an platform-app-only feature (videoCapture).
     std::unique_ptr<SimpleFeature> simple_feature(new SimpleFeature());
-    simple_feature->set_dependencies({"permission:serial"});
+    simple_feature->set_dependencies({"permission:videoCapture"});
     features.push_back(simple_feature.release());
   }
 
@@ -113,7 +113,7 @@ TEST(ComplexFeatureTest, Dependencies) {
               Feature::GetCurrentPlatform(), kUnspecifiedContextId)
           .result());
 
-  // Available to platform apps because of the serial rule.
+  // Available to platform apps because of the videoCapture rule.
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
                 ->IsAvailableToManifest(HashedExtensionId(std::string(32, 'b')),

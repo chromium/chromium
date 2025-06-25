@@ -4684,7 +4684,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionExtensionUpdate) {
   {
     // Block one of the required permissions of 'permissions_blocklist2'.
     ManagementPrefUpdater pref(profile_->GetTestingPrefService());
-    pref.AddBlockedPermission("*", "downloads");
+    pref.AddBlockedPermission("*", "cookies");
   }
 
   // Install 'permissions_blocklist' again, should be updated.
@@ -4748,22 +4748,20 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionPolicyUpdate) {
 
   std::unique_ptr<const PermissionSet> active_permissions =
       prefs()->GetDesiredActivePermissions(ext1);
-  EXPECT_TRUE(
-      active_permissions->HasAPIPermission(APIPermissionID::kDownloads));
+  EXPECT_TRUE(active_permissions->HasAPIPermission(APIPermissionID::kCookie));
 
-  // Set policy to block 'downloads' permission.
+  // Set policy to block 'cookies' permission.
   {
     ManagementPrefUpdater pref(profile_->GetTestingPrefService());
-    pref.AddBlockedPermission("*", "downloads");
+    pref.AddBlockedPermission("*", "cookies");
   }
 
   task_environment()->RunUntilIdle();
 
-  // 'ext1' should still be enabled, but with 'downloads' permission revoked.
+  // 'ext1' should still be enabled, but with 'cookies' permission revoked.
   EXPECT_TRUE(registry->enabled_extensions().GetByID(ext1));
   active_permissions = prefs()->GetDesiredActivePermissions(ext1);
-  EXPECT_FALSE(
-      active_permissions->HasAPIPermission(APIPermissionID::kDownloads));
+  EXPECT_FALSE(active_permissions->HasAPIPermission(APIPermissionID::kCookie));
 
   // 'ext2' should be disabled because one of its required permissions is
   // blocked.
