@@ -112,16 +112,10 @@ bool InputTypeIsCancelable(InputEvent::InputType input_type) {
                                             const InputEventInit* initializer,
                                             ExceptionState& exception_state) {
   InputEvent* result;
-  if (RuntimeEnabledFeatures::InputEventConstructorThrowsEnabled()) {
-    CHECK(!exception_state.HadException());
-    result =
-        MakeGarbageCollected<InputEvent>(type, initializer, exception_state);
-    if (exception_state.HadException()) {
-      return nullptr;
-    }
-  } else {
-    result =
-        MakeGarbageCollected<InputEvent>(type, initializer, IGNORE_EXCEPTION);
+  CHECK(!exception_state.HadException());
+  result = MakeGarbageCollected<InputEvent>(type, initializer, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
   }
   return result;
 }
