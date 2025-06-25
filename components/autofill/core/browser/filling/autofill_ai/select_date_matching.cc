@@ -31,18 +31,29 @@ struct Sequence {
 
   size_t offset = 0;
   size_t length = 0;
+  // Whether the sequence is strictly increasing (or empty).
+  bool increasing = true;
 };
 
-// Returns a longest sequence of non-negative consecutive integers in `nums`.
-// E.g., returns {.offset = 3, .length = 3} for {-1, 1, 2, 3, 5, 1, 2, 3}.
+// Returns a longest sequence of non-negative integers in `nums` where neighbors
+// differ by 1 and that is either increasing or decreasing. E.g., returns
+// {.offset = 1, .length = 3} for {-1, 1, 2, 3, 5, 1, 2, 3}.
 Sequence GetLongestConsecutiveNonNegativeSequence(base::span<const int> nums) {
   Sequence longest;
   Sequence current;
+
+  auto is_consecutive = [nums](size_t index, bool check_three) {
+    return std::abs(nums[index - 1] - nums[index]) == 1 &&
+           (!check_three || (nums[index] - nums[index - 1] ==
+                             nums[index - 1] - nums[index - 2]));
+  };
+
   for (size_t i = 0; i < nums.size(); ++i) {
     if (nums[i] < 0) {
       continue;
     }
-    if (i == 0 || nums[i - 1] < 0 || nums[i - 1] + 1 != nums[i]) {
+    if (i == 0 || nums[i - 1] < 0 ||
+        !is_consecutive(i, /*check_three=*/current.length >= 2)) {
       if (longest.length < current.length) {
         longest = current;
       }
@@ -54,6 +65,9 @@ Sequence GetLongestConsecutiveNonNegativeSequence(base::span<const int> nums) {
   if (longest.length < current.length) {
     longest = current;
   }
+
+  longest.increasing =
+      longest.length <= 1 || nums[longest.offset] < nums[longest.offset + 1];
   return longest;
 }
 
@@ -114,7 +128,7 @@ DatePartRange GetYearRange(base::span<const SelectOption> options) {
     Sequence seq = GetLongestConsecutiveNonNegativeSequence(nums);
     uint32_t first_value = year_offset(nums, seq);
     if (first_value != 0 && !is_month_or_day()) {
-      return {seq.subspan(options), first_value};
+      return {seq.subspan(options), first_value, seq.increasing};
     }
   }
   {
@@ -122,7 +136,7 @@ DatePartRange GetYearRange(base::span<const SelectOption> options) {
     Sequence seq = GetLongestConsecutiveNonNegativeSequence(nums);
     uint32_t first_value = year_offset(nums, seq);
     if (first_value != 0 && !is_month_or_day()) {
-      return {seq.subspan(options), first_value};
+      return {seq.subspan(options), first_value, seq.increasing};
     }
   }
   return {};

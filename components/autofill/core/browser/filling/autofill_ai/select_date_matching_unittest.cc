@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/filling/autofill_ai/select_date_matching.h"
 
+#include <numeric>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -31,7 +32,8 @@ Matcher<SelectOption> IsOption(const SelectOption& option) {
 }
 
 Matcher<DatePartRange> IsDatePartRange(base::span<const SelectOption> options,
-                                       uint32_t first_value) {
+                                       uint32_t first_value,
+                                       bool is_increasing = true) {
   std::vector<Matcher<SelectOption>> matchers;
   matchers.reserve(options.size());
   for (const SelectOption& option : options) {
@@ -39,7 +41,8 @@ Matcher<DatePartRange> IsDatePartRange(base::span<const SelectOption> options,
   }
   return AllOf(
       Field("options", &DatePartRange::options, ElementsAreArray(matchers)),
-      Field("first_value", &DatePartRange::first_value, first_value));
+      Field("first_value", &DatePartRange::first_value, first_value),
+      Field("is_increasing", &DatePartRange::is_increasing, is_increasing));
 }
 
 Matcher<DatePartRange> IsEmptyDatePartRange() {
@@ -48,16 +51,15 @@ Matcher<DatePartRange> IsEmptyDatePartRange() {
                      std::numeric_limits<uint32_t>::max()));
 }
 
-// Creates a range containing [min, min+1, ..., max] (both inclusive).
-std::vector<std::string> Range(int min, int max) {
-  std::vector<std::string> v;
-  if (min <= max) {
-    v.reserve(max - min + 1);
-    while (min <= max) {
-      v.push_back(base::NumberToString(min++));
-    }
+// Creates a range containing [a, ..., b] (both inclusive) that is  strictly
+// increasing if a <= b or strictly decreasing.
+std::vector<std::string> Range(int a, int b) {
+  std::vector<int> v(std::abs(a - b) + 1);
+  std::iota(v.begin(), v.end(), std::min(a, b));
+  if (a > b) {
+    std::ranges::reverse(v);
   }
-  return v;
+  return base::ToVector(v, [](int x) { return base::NumberToString(x); });
 }
 
 // Repeats `s` `num` times.
@@ -171,6 +173,14 @@ TEST_F(SelectDateMatchingTest, YearValueNumbersYYYY) {
   EXPECT_THAT(GetDayRange(options), IsEmptyDatePartRange());
 }
 
+TEST_F(SelectDateMatchingTest, YearValueNumbersYYYYDecreasing) {
+  std::vector<SelectOption> options = OB::Values(Range(2099, 2000));
+  EXPECT_THAT(GetYearRange(options),
+              IsDatePartRange(options, 2099, /*is_increasing=*/false));
+  EXPECT_THAT(GetMonthRange(options), IsEmptyDatePartRange());
+  EXPECT_THAT(GetDayRange(options), IsEmptyDatePartRange());
+}
+
 TEST_F(SelectDateMatchingTest, YearValueNumbersShortYYYY) {
   std::vector<SelectOption> options = OB::Values(Range(2025, 2030));
   EXPECT_THAT(GetYearRange(options), IsDatePartRange(options, 2025));
@@ -189,6 +199,14 @@ TEST_F(SelectDateMatchingTest, YearTextNumbersYYYY) {
 TEST_F(SelectDateMatchingTest, YearValueNumbersYY) {
   std::vector<SelectOption> options = OB::Values(Range(0, 99));
   EXPECT_THAT(GetYearRange(options), IsDatePartRange(options, 2000));
+  EXPECT_THAT(GetMonthRange(options), IsEmptyDatePartRange());
+  EXPECT_THAT(GetDayRange(options), IsEmptyDatePartRange());
+}
+
+TEST_F(SelectDateMatchingTest, YearValueNumbersYYDecreasing) {
+  std::vector<SelectOption> options = OB::Values(Range(99, 0));
+  EXPECT_THAT(GetYearRange(options),
+              IsDatePartRange(options, 2099, /*is_increasing=*/false));
   EXPECT_THAT(GetMonthRange(options), IsEmptyDatePartRange());
   EXPECT_THAT(GetDayRange(options), IsEmptyDatePartRange());
 }

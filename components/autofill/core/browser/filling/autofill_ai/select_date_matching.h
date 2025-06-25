@@ -17,15 +17,15 @@
 namespace autofill {
 
 // `DatePartRange` and `Get{Year,Month,Day}Range()` scan <option>s for elements
-// that look like parts of days.
+// that look like parts of a date.
 //
 // The functions are mutually exclusive: for given `options`, at most one of
 // `Get{Year,Month,Day}Range(options)` returns a non-empty range.
 //
-// The matching is heuristical. The main ingredient is looking for sequences of
-// options whose values increase by 1 in every step. For example, if we find
-// such a sequence that has length 31 and starts at 1 or 0, this is considered a
-// month. For further details,  see the implementations.
+// The matching algorithm is heuristic. It identifies sequences of options where
+// values all increment or decrement by one at each step. For example, if we
+// find such a sequence that has length 31 and starts at 1 or 0, this is
+// considered a month. For further details, see the implementations.
 
 // Represents a sequence of SelectOptions that represent years, months, or
 // days.
@@ -35,14 +35,18 @@ struct DatePartRange {
  public:
   // Returns the SelectOption that represents a normalized `value`.
   //
-  // For example, if `options.size() == 50` and `value_offset == 2025`, this
-  // range represents the years 2025, 2026, ..., 2075, and `get_by_value(2026)`
-  // returns the `options[1]`.
+  // For example, if `options.size() == 50`, `value_offset == 2025` and
+  // `is_increasing`, this range represents the years 2025, 2026, ..., 2075, and
+  // `get_by_value(2026)` returns `options[1]`.
   base::optional_ref<const SelectOption> get_by_value(uint32_t value) const {
-    if (value < first_value || value >= first_value + options.size()) {
+    // This might underflow, but underflow is well-defined for uint32_t. In
+    // that case, `index` exceeds the size of `options`.
+    const size_t index =
+        is_increasing ? value - first_value : first_value - value;
+    if (index >= options.size()) {
       return std::nullopt;
     }
-    return options[value - first_value];
+    return options[index];
   }
 
   // A subspan of a field's options that has represents a sequence of years,
@@ -56,6 +60,9 @@ struct DatePartRange {
   // `SelectOption{.text = u"2025"}` or `SelectOption{.text = u"25"}`, then
   // in both cases it is 2025.
   uint32_t first_value = std::numeric_limits<uint32_t>::max();
+
+  // Whether the values in `options` are increasing or decreasing.
+  bool is_increasing = true;
 };
 
 // Returns a subspan of `options` that represents years.
