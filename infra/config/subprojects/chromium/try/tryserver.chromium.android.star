@@ -965,24 +965,6 @@ try_.builder(
     ),
 )
 
-# TODO(crbug.com/425745287): Remove this builder after android-10-arm64-rel
-# run properly as an optional CQ builder.
-try_.builder(
-    name = "android-pie-arm64-dbg",
-    # branch_selector = branches.selector.ANDROID_BRANCHES,
-    mirrors = [
-        "ci/Android arm64 Builder (dbg)",
-        "ci/android-pie-arm64-dbg",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Android arm64 Builder (dbg)",
-        ],
-    ),
-    builderless = False,
-    cores = 16,
-)
-
 try_.builder(
     name = "android-webview-10-x86-rel-tests",
     mirrors = [
