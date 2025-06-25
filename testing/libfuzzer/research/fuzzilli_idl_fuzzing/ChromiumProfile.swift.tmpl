@@ -144,7 +144,7 @@ let fastCallables : [(group: ILType, method: String)] = [
 {%- for operation in interface.operations -%}
 {%- if operation.is_static == False -%}
 {%- if 'NoAllocDirectCall' in operation.extended_attributes %}
-  (group: js{{interface.identifier}}, method: "{{operation.identifier}}"),
+  (group: js{{interface.identifier}}.instanceType, method: "{{operation.identifier}}"),
 {%- endif %}
 {%- endif -%}
 {%- endfor -%}
@@ -165,7 +165,7 @@ fileprivate let FastApiCallFuzzer = ProgramTemplate("FastApiCallFuzzer") { b in
         b.doReturn(apiCall)
     }
 
-    let args = b.randomVariables(n: Int.random(in: 0...5))
+    let args = b.randomJsVariables(n: Int.random(in: 0...5))
     b.callFunction(f, withArgs: args)
 
     b.eval("%PrepareFunctionForOptimization(%@)", with: [f]);

@@ -143,8 +143,8 @@ class ILType(SwiftExpression):
     return ILType(property='nothing')
 
   @staticmethod
-  def anything() -> ILType:
-    return ILType(property='anything')
+  def jsAnything() -> ILType:
+    return ILType(property='jsAnything')
 
   @staticmethod
   def undefined() -> ILType:
@@ -246,7 +246,7 @@ SIMPLE_TYPE_TO_ILTYPE = {
     'void': ILType.undefined(),
     'object': ILType.object(),
     'undefined': ILType.undefined(),
-    'any': ILType.anything(),
+    'any': ILType.jsAnything(),
     'byte': ILType.integer(),
     'octet': ILType.integer(),
     'short': ILType.integer(),
