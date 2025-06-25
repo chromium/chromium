@@ -189,7 +189,6 @@ browser_exposed_mojom_targets = [
   "//device/vr/public/mojom:xr_common",
   "//extensions/common:mojom",
   "//extensions/common/api:mojom",
-  "//gpu/ipc/common:gmb_interface",
   "//gpu/ipc/common:gpu_channel_mojom",
   "//gpu/ipc/common:gpu_preferences_interface",
   "//gpu/ipc/common:interfaces",

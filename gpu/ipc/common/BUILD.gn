@@ -316,21 +316,6 @@ mojom("gpu_channel_mojom") {
   cpp_configs = [ "//gpu:gpu_implementation" ]
 }
 
-mojom("gmb_interface") {
-  generate_java = true
-  visibility = [
-    "//gpu/*",
-    "//services/*",
-  ]
-  sources = [ "client_gmb_interface.mojom" ]
-  deps = [
-    ":surface_handle",
-    "//mojo/public/mojom/base",
-    "//ui/gfx/geometry/mojom",
-    "//ui/gfx/mojom",
-  ]
-}
-
 mojom("shared_image_pool_client_interface") {
   generate_java = true
   visibility = [
