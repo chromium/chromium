@@ -12445,6 +12445,21 @@
             ]
         }
     ],
+    "IOSFeedbackGWSVariationsIds": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FeedbackIncludeGWSVariations"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFullscreenImprovement": [
         {
             "platforms": [
