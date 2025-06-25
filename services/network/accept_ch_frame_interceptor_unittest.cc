@@ -4,6 +4,8 @@
 
 #include "services/network/accept_ch_frame_interceptor.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,6 +27,8 @@ class AcceptCHFrameInterceptorTest : public testing::Test {
   void TearDown() override { interceptor_.reset(); }
 
   std::unique_ptr<AcceptCHFrameInterceptor> interceptor_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kOffloadAcceptCHFrameCheck};
 };
 
 TEST_F(AcceptCHFrameInterceptorTest, NeedsObserverCheckNullOpt) {

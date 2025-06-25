@@ -149,6 +149,7 @@ bool AcceptCHFrameInterceptor::NeedsObserverCheck(
   if (!enabled_client_hints_.has_value()) {
     return true;
   }
+  CHECK(base::FeatureList::IsEnabled(features::kOffloadAcceptCHFrameCheck));
   return !std::all_of(hints.cbegin(), hints.cend(), [&](const auto& h) {
     return base::Contains(*enabled_client_hints_, h);
   });
