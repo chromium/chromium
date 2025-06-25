@@ -36,7 +36,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/numerics/byte_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -4001,16 +4000,9 @@ BackingStore::Database::Database(BackingStore& backing_store,
       metadata_(std::move(metadata)) {}
 BackingStore::Database::~Database() = default;
 
-std::string BackingStore::Database::GetObjectStoreLockIdKey(
+PartitionedLockId BackingStore::Database::GetLockId(
     int64_t object_store_id) const {
-  // These keys used to attempt to be bytewise-comparable, which is why
-  // it uses big-endian encoding here. There was a goal to match the
-  // existing leveldb key scheme used by IndexedDB. This is no longer a goal.
-  std::array<uint8_t, 16u> chars;
-  auto [db, obj] = base::span(chars).split_at<8u>();
-  db.copy_from(base::U64ToBigEndian(static_cast<uint64_t>(*metadata_.id)));
-  obj.copy_from(base::U64ToBigEndian(static_cast<uint64_t>(object_store_id)));
-  return std::string(chars.begin(), chars.end());
+  return GetObjectStoreLockId(*metadata_.id, object_store_id);
 }
 
 const blink::IndexedDBDatabaseMetadata& BackingStore::Database::GetMetadata() {

@@ -28,7 +28,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
@@ -76,76 +75,8 @@ using blink::IndexedDBObjectStoreMetadata;
 namespace content::indexed_db {
 namespace {
 
-std::vector<PartitionedLockManager::PartitionedLockRequest>
-BuildLockRequestsForLevelDb(const std::u16string& database_name,
-                            const BackingStore::Database& backing_store_db,
-                            blink::mojom::IDBTransactionMode mode,
-                            const std::set<int64_t>& scope) {
-  // NB: LevelDB lock IDs are potentially persisted to disk - see
-  // `LevelDBPartitionedLock`.
-  const constexpr int kDatabaseLockPartition = 0;
-  PartitionedLockId database_lock_id{kDatabaseLockPartition,
-                                     base::UTF16ToUTF8(database_name)};
-  if (mode == blink::mojom::IDBTransactionMode::VersionChange) {
-    return {{std::move(database_lock_id),
-             PartitionedLockManager::LockType::kExclusive}};
-  }
-  std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests;
-  lock_requests.reserve(1 + scope.size());
-  lock_requests.emplace_back(std::move(database_lock_id),
-                             PartitionedLockManager::LockType::kShared);
-  const constexpr int kObjectStoreLockPartition = 1;
-  const auto object_store_lock_type =
-      mode == blink::mojom::IDBTransactionMode::ReadOnly
-          ? PartitionedLockManager::LockType::kShared
-          : PartitionedLockManager::LockType::kExclusive;
-  for (int64_t object_store_id : scope) {
-    lock_requests.emplace_back(
-        PartitionedLockId{
-            kObjectStoreLockPartition,
-            backing_store_db.GetObjectStoreLockIdKey(object_store_id)},
-        object_store_lock_type);
-  }
-  return lock_requests;
-}
-
-std::vector<PartitionedLockManager::PartitionedLockRequest>
-BuildLockRequestsForSqlite(uint32_t database_id,
-                           blink::mojom::IDBTransactionMode mode,
-                           const std::set<int64_t>& scope) {
-  // TODO(crbug.com/427608926): Refactor `PartitionedLockId` to not need `key`
-  // to be a string.
-  const constexpr int kMetadataLockPartition = 0;
-  PartitionedLockId metadata_lock_id{kMetadataLockPartition,
-                                     base::StringPrintf("%u", database_id)};
-  if (mode == blink::mojom::IDBTransactionMode::VersionChange) {
-    return {{std::move(metadata_lock_id),
-             PartitionedLockManager::LockType::kExclusive}};
-  }
-  std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests{
-      {std::move(metadata_lock_id), PartitionedLockManager::LockType::kShared}};
-  if (mode == blink::mojom::IDBTransactionMode::ReadWrite) {
-    const constexpr int kWriteOperationsLockPartition = 1;
-    lock_requests.emplace_back(
-        PartitionedLockId{kWriteOperationsLockPartition,
-                          base::StringPrintf("%u", database_id)},
-        PartitionedLockManager::LockType::kExclusive);
-  }
-  lock_requests.reserve(lock_requests.size() + scope.size());
-  const constexpr int kObjectStoreLockPartition = 2;
-  const auto object_store_lock_type =
-      mode == blink::mojom::IDBTransactionMode::ReadOnly
-          ? PartitionedLockManager::LockType::kShared
-          : PartitionedLockManager::LockType::kExclusive;
-  for (int64_t object_store_id : scope) {
-    lock_requests.emplace_back(
-        PartitionedLockId{
-            kObjectStoreLockPartition,
-            base::StringPrintf("%u|%lld", database_id, object_store_id)},
-        object_store_lock_type);
-  }
-  return lock_requests;
-}
+// Used to generated IDs for `Database` objects, for use with PartitionedLockId.
+uint32_t g_unique_id = 0;
 
 // Values returned to the IDB client may contain a primary key value generated
 // by IDB. This is optional and only done when using a key generator. This key
@@ -200,10 +131,8 @@ blink::mojom::IDBErrorPtr CreateIDBErrorPtr(blink::mojom::IDBException code,
 Database::OpenCursorOperationParams::OpenCursorOperationParams() = default;
 Database::OpenCursorOperationParams::~OpenCursorOperationParams() = default;
 
-Database::Database(uint32_t id_for_locks,
-                   const std::u16string& name,
-                   BucketContext& bucket_context)
-    : id_for_locks_(id_for_locks),
+Database::Database(const std::u16string& name, BucketContext& bucket_context)
+    : id_for_locks_(g_unique_id++),
       name_(name),
       bucket_context_(bucket_context),
       connection_coordinator_(this, bucket_context) {}
@@ -225,16 +154,6 @@ int64_t Database::version() const {
 
 bool Database::IsInitialized() const {
   return backing_store_db_ != nullptr;
-}
-
-std::vector<PartitionedLockManager::PartitionedLockRequest>
-Database::BuildLockRequestsForTransaction(
-    blink::mojom::IDBTransactionMode mode,
-    const std::set<int64_t>& scope) const {
-  return bucket_context_->ShouldUseSqlite()
-             ? BuildLockRequestsForSqlite(id_for_locks_, mode, scope)
-             : BuildLockRequestsForLevelDb(name_, *backing_store_db_, mode,
-                                           scope);
 }
 
 bool Database::OnlyHasOneClient() const {
@@ -288,8 +207,7 @@ void Database::RegisterAndScheduleTransaction(Transaction* transaction) {
   DCHECK_NE(transaction->mode(),
             blink::mojom::IDBTransactionMode::VersionChange);
   std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
-      BuildLockRequestsForTransaction(transaction->mode(),
-                                      transaction->scope());
+      transaction->BuildLockRequests();
 
   RequireBlockingTransactionClientsToBeActive(transaction, lock_requests);
 

@@ -69,10 +69,8 @@ class BackingStore {
     // Memory-cached metadata for this database.
     virtual const blink::IndexedDBDatabaseMetadata& GetMetadata() = 0;
 
-    // Generates the lock ID key for the given object store. Not called on
-    // SQLite backing stores.
-    virtual std::string GetObjectStoreLockIdKey(
-        int64_t object_store_id) const = 0;
+    // Generates a lock ID for the given object store.
+    virtual PartitionedLockId GetLockId(int64_t object_store_id) const = 0;
 
     // Creates a transaction on this database.
     virtual std::unique_ptr<Transaction> CreateTransaction(

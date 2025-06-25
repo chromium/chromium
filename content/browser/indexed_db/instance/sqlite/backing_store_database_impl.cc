@@ -4,7 +4,7 @@
 
 #include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_transaction_impl.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/indexed_db/status.h"
@@ -26,7 +26,7 @@ BackingStoreDatabaseImpl::GetMetadata() {
   return placeholder_metadata_;
 }
 
-std::string BackingStoreDatabaseImpl::GetObjectStoreLockIdKey(
+PartitionedLockId BackingStoreDatabaseImpl::GetLockId(
     int64_t object_store_id) const {
   NOTREACHED();
 }

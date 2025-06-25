@@ -309,7 +309,8 @@ class DatabaseTest : public ::testing::Test {
         /*file_system_access_context=*/mojo::NullRemote());
 
     bucket_context_->InitBackingStoreIfNeeded(true);
-    db_ = bucket_context_->CreateAndAddDatabase(u"db");
+    db_ = bucket_context_->AddDatabase(
+        u"db", std::make_unique<Database>(u"db", *bucket_context_));
   }
 
   void TearDown() override { db_ = nullptr; }
@@ -690,8 +691,8 @@ class DatabaseOperationTest : public DatabaseTest {
                 blink::mojom::IDBTransactionMode::VersionChange)));
 
     std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
-        db_->BuildLockRequestsForTransaction(
-            blink::mojom::IDBTransactionMode::VersionChange, /*scope=*/{});
+        {{GetDatabaseLockId(db_->metadata().name),
+          PartitionedLockManager::LockType::kExclusive}};
     db_->lock_manager().AcquireLocks(
         std::move(lock_requests), *transaction_->mutable_locks_receiver(),
         base::BindOnce(&Transaction::Start, transaction_->AsWeakPtr()));

@@ -95,7 +95,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
     // indexed_db::BackingStore::Database:
     const blink::IndexedDBDatabaseMetadata& GetMetadata() override;
-    std::string GetObjectStoreLockIdKey(int64_t object_store_id) const override;
+    PartitionedLockId GetLockId(int64_t object_store_id) const override;
     std::unique_ptr<Transaction> CreateTransaction(
         blink::mojom::IDBTransactionDurability durability,
         blink::mojom::IDBTransactionMode mode) override;

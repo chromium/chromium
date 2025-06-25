@@ -37,6 +37,7 @@
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-shared.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
+#include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/callback_helpers.h"
@@ -159,9 +160,13 @@ Transaction::Transaction(
 
   database_ = connection_->database();
   if (database_) {
-    for (const PartitionedLockManager::PartitionedLockRequest& lock_request :
-         database_->BuildLockRequestsForTransaction(mode_, scope())) {
-      lock_ids_.insert(lock_request.lock_id);
+    if (mode_ == blink::mojom::IDBTransactionMode::VersionChange) {
+      lock_ids_.insert(GetDatabaseLockId(database_->name()));
+    } else {
+      for (const PartitionedLockManager::PartitionedLockRequest& lock_request :
+           BuildLockRequests()) {
+        lock_ids_.insert(lock_request.lock_id);
+      }
     }
   }
 
@@ -1137,6 +1142,37 @@ void Transaction::CloseOpenCursors() {
   for (Cursor* cursor : open_cursors) {
     cursor->Close();
   }
+}
+
+std::vector<PartitionedLockManager::PartitionedLockRequest>
+Transaction::BuildLockRequests() const {
+  // Locks for version change transactions are covered by `ConnectionRequest`.
+  DCHECK_NE(mode(), blink::mojom::IDBTransactionMode::VersionChange);
+  std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests;
+  lock_requests.reserve(1 + scope().size());
+  lock_requests.emplace_back(GetDatabaseLockId(database_->name()),
+                             PartitionedLockManager::LockType::kShared);
+  const auto object_store_lock_type =
+      mode() == blink::mojom::IDBTransactionMode::ReadOnly
+          ? PartitionedLockManager::LockType::kShared
+          : PartitionedLockManager::LockType::kExclusive;
+  for (int64_t object_store : scope()) {
+    if (bucket_context_->ShouldUseSqlite()) {
+      lock_requests.emplace_back(
+          // TODO(crbug.com/40253999): this matches a constant in
+          // indexed_db_leveldb_coding.cc. Refactor lock partitioning so the
+          // constant isn't copied.
+          PartitionedLockId{/*kObjectStoreLockPartition=*/1,
+                            base::StringPrintf("%d|%d", object_store,
+                                               database_->id_for_locks())},
+          object_store_lock_type);
+    } else {
+      lock_requests.emplace_back(
+          database_->backing_store_db()->GetLockId(object_store),
+          object_store_lock_type);
+    }
+  }
+  return lock_requests;
 }
 
 void Transaction::OnSchedulingPriorityUpdated(int new_priority) {

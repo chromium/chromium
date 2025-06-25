@@ -31,6 +31,7 @@
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
+#include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
@@ -127,9 +128,8 @@ class ConnectionCoordinator::ConnectionRequest {
     }
 
     std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
-        db_->BuildLockRequestsForTransaction(
-            blink::mojom::IDBTransactionMode::VersionChange,
-            /*scope=*/{});
+        {{GetDatabaseLockId(db_->name()),
+          PartitionedLockManager::LockType::kExclusive}};
     state_ = RequestState::kPendingLocks;
 
     db_->lock_manager().AcquireLocks(

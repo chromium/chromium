@@ -95,7 +95,8 @@ class TransactionTest : public testing::Test {
   void TearDown() override { db_ = nullptr; }
 
   void SetDatabaseUnderTest(std::u16string name) {
-    db_ = bucket_context_->CreateAndAddDatabase(name);
+    db_ = bucket_context_->AddDatabase(
+        name, std::make_unique<Database>(name, *bucket_context_));
   }
 
   storage::BucketInfo GetOrCreateBucket(
@@ -647,9 +648,12 @@ TEST_F(TransactionTest, AbortCancelsLockRequest) {
   const int64_t object_store_id = 1ll;
 
   // Acquire a lock to block the transaction's lock acquisition.
-  std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
-      connection->database()->BuildLockRequestsForTransaction(
-          blink::mojom::IDBTransactionMode::ReadWrite, {object_store_id});
+  std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests;
+  lock_requests.emplace_back(GetDatabaseLockId(u"name"),
+                             PartitionedLockManager::LockType::kShared);
+  lock_requests.emplace_back(
+      db_->backing_store_db()->GetLockId(object_store_id),
+      PartitionedLockManager::LockType::kExclusive);
   bool locks_received = false;
   PartitionedLockHolder temp_lock_receiver;
   lock_manager().AcquireLocks(lock_requests, temp_lock_receiver,
