@@ -267,7 +267,17 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
           /*delegate_for_full_sync_mode=*/
           std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
               delegate),
-          /*delegate_for_transport_mode=*/nullptr));
+      // TODO(crbug.com/424698545): This special-casing shouldn't be necessary
+      // for ChromeOS, but currently the transport mode delegate may be
+      // exercised in some unexpected cases.
+#if BUILDFLAG(IS_CHROMEOS)
+          /*delegate_for_transport_mode=*/nullptr
+#else   // BUILDFLAG(IS_CHROMEOS)
+          /*delegate_for_transport_mode=*/
+          std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+              delegate)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+          ));
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

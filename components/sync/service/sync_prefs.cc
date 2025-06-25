@@ -755,10 +755,9 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
           syncer::kSeparateLocalAndAccountThemes);
 #endif
     case UserSelectableType::kApps:
+      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
     case UserSelectableType::kCookies:
-      // These types are not supported in transport mode yet.
-      // TODO(crbug.com/420912307): `kApps` should be allowed in
-      // `kReplaceSyncPromosWithSignInPromos` is enabled.
+      // `kCookies` is not supported in transport mode (ChromeOS-only type).
       return false;
   }
   NOTREACHED();

@@ -1132,6 +1132,10 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::SESSIONS);
     allowed_types.Put(syncer::USER_EVENTS);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
+    allowed_types.Put(syncer::WEB_APPS);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
+
     if (data_sharing::features::IsDataSharingFunctionalityEnabled()) {
       allowed_types.Put(syncer::SHARED_TAB_GROUP_DATA);
       allowed_types.Put(syncer::COLLABORATION_GROUP);
@@ -1169,8 +1173,9 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
 #endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/420912307): Allow `syncer::WEB_APKS` if
-  // `syncer::kWebApkBackupAndRestoreBackend` is enabled.
+  if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
+    allowed_types.Put(syncer::WEB_APKS);
+  }
 #else   // BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
     allowed_types.Put(syncer::THEMES);

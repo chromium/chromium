@@ -65,6 +65,8 @@ proto::InstallState GetExpectedInstallState() {
 #endif
 }
 
+// TODO(crbug.com/420912307): Add test coverage for the signed-in-non-syncing
+// state.
 class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
  public:
   SingleClientWebAppsSyncTest() : WebAppsSyncTestBase(SINGLE_CLIENT) {}
