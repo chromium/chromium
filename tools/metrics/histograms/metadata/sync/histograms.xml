@@ -281,7 +281,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.BookmarkAccountStorageMoveDialog.Download.{Action}"
     enum="BooleanHit" expires_after="2026-01-01">
-  <owner>amelies@chromium.org</owner>
+  <owner>amelies@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records that the user {Action} the dialog which asks them to confirm whether
@@ -303,7 +303,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.BookmarkAccountStorageMoveDialog.Upload.{Action}"
     enum="BookmarkAccountStorageMoveDialogType" expires_after="2026-01-01">
-  <owner>amelies@chromium.org</owner>
+  <owner>amelies@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records that the user {Action} the dialog which asks them to confirm whether
