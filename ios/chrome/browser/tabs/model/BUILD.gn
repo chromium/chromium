@@ -254,3 +254,11 @@ source_set("tab_sync_util") {
     "//ios/chrome/browser/synced_sessions/model",
   ]
 }
+
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
