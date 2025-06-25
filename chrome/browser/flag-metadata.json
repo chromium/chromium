@@ -3283,7 +3283,7 @@
   {
     "name": "enable-enterprise-badging-for-ntp-footer",
     "owners": ["esalma@google.com","cbe-magic@google.com"],
-    "expiry_milestone": 139
+    "expiry_milestone": 141
   },
   {
     "name": "enable-enterprise-profile-badging-for-avatar",
