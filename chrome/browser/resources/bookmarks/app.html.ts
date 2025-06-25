@@ -17,7 +17,7 @@ export function getHtml(this: BookmarksAppElement) {
     <div id="sidebar-folders" role="tree" aria-label="$i18n{sidebarAxLabel}">
       <bookmarks-folder-node item-id="0" depth="-1"></bookmarks-folder-node>
     </div>
-    <managed-footnote tabindex="0"></managed-footnote>
+    <managed-footnote></managed-footnote>
   </div>
   <cr-splitter id="splitter"></cr-splitter>
   <bookmarks-list @scroll="${this.onListScroll_}"></bookmarks-list>
