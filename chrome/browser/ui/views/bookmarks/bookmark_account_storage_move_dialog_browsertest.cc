@@ -121,6 +121,21 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogPixelTest,
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogPixelTest,
+                       InvokeUi_TruncateLongFolderName) {
+  set_baseline("6653664");
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  set_node(
+      bookmark_model->AddFolder(bookmark_model->account_bookmark_bar_node(),
+                                /*index=*/0, u"Account Folder"));
+  set_target_folder(bookmark_model->AddFolder(
+      bookmark_model->bookmark_bar_node(),
+      /*index=*/0, u"Long long long long long local Folder"));
+
+  ShowAndVerifyUi();
+}
+
 class SingleBookmarkUploadDialogPixelTest
     : public BookmarkAccountStorageMoveDialogPixelTest {
   void ShowUi(const std::string& name) override {
@@ -131,6 +146,7 @@ class SingleBookmarkUploadDialogPixelTest
 };
 
 IN_PROC_BROWSER_TEST_F(SingleBookmarkUploadDialogPixelTest, InvokeUi) {
+  set_baseline("6653664");
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   set_node(bookmark_model->AddURL(bookmark_model->bookmark_bar_node(),

@@ -33,6 +33,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -42,6 +43,7 @@
 namespace {
 
 const int kAvatarSize = 16;
+const int kBookmarkTitleMaxLength = 30;
 
 void RecordDialogMetrics(std::string_view action,
                          BookmarkAccountStorageMoveDialogType type,
@@ -110,13 +112,16 @@ void ShowDialogOnRegularProfile(
               : (node->is_folder()
                      ? IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_FOLDER_SUBTITLE
                      : IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_SUBTITLE),
-          target_folder->GetTitle());
+          gfx::TruncateString(target_folder->GetTitle(),
+                              kBookmarkTitleMaxLength, gfx::CHARACTER_BREAK));
       break;
     }
     case BookmarkAccountStorageMoveDialogType::kUpload: {
       body_text = l10n_util::GetStringFUTF16(
           IDS_BOOKMARK_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE,
-          node->GetTitle());
+          gfx::TruncateString(node->GetTitle(), kBookmarkTitleMaxLength,
+                              gfx::CHARACTER_BREAK),
+          target_folder->GetTitle());
     }
   }
 
