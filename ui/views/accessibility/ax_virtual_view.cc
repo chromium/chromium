@@ -221,6 +221,17 @@ Widget* AXVirtualView::GetWidget() const {
   return nullptr;
 }
 
+ViewAccessibility* AXVirtualView::GetViewAccessibilityParent() const {
+  if (parent_view_) {
+    return parent_view_;
+  }
+  if (virtual_parent_view_) {
+    return virtual_parent_view_;
+  }
+  // This virtual view hasn't been added to a parent view yet.
+  return nullptr;
+}
+
 void AXVirtualView::NotifyEvent(ax::mojom::Event event_type,
                                 bool send_native_event) {
   // If `ready_to_notify_events_` is false, it means we are initializing

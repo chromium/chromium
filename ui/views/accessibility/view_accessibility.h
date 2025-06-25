@@ -515,6 +515,18 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   virtual Widget* GetWidget() const;
 
+  // Returns the ViewAccessibility object associated with the parent view (or
+  // virtual view). Returns nullptr if this is the root view or the parent is
+  // not set yet.
+  // TODO(crbug.com/40672441): Rename to GetParent once ViewsAX is completed and
+  // AXVirtualView no longer needs to extend AXPlatformNodeDelegate.
+  virtual ViewAccessibility* GetViewAccessibilityParent() const;
+
+  // Returns the ViewAccessibility object associated with the first ancestor
+  // view (or virtual view) that is not ignored. Returns nullptr if this is the
+  // root view or the parent is not set yet.
+  ViewAccessibility* GetUnignoredParent() const;
+
   //
   // Methods for managing virtual views.
   //

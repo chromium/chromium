@@ -1485,6 +1485,24 @@ Widget* ViewAccessibility::GetWidget() const {
   return view_->GetWidget();
 }
 
+ViewAccessibility* ViewAccessibility::GetViewAccessibilityParent() const {
+  if (!view_) {
+    return nullptr;
+  }
+  if (auto* parent = view_->parent()) {
+    return &parent->GetViewAccessibility();
+  }
+  return nullptr;
+}
+
+ViewAccessibility* ViewAccessibility::GetUnignoredParent() const {
+  ViewAccessibility* parent = GetViewAccessibilityParent();
+  while (parent && parent->GetIsIgnored()) {
+    parent = parent->GetViewAccessibilityParent();
+  }
+  return parent;
+}
+
 gfx::NativeViewAccessible ViewAccessibility::GetFocusedDescendant() {
   CHECK(view_);
   if (focused_virtual_child_) {

@@ -123,6 +123,9 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
   gfx::NativeViewAccessible GetNativeObject() const override;
 
   Widget* GetWidget() const override;
+  // TODO(crbug.com/40672441): Rename to GetParent once ViewsAX is completed and
+  // AXVirtualView no longer needs to extend AXPlatformNodeDelegate.
+  ViewAccessibility* GetViewAccessibilityParent() const override;
 
   // ui::AXPlatformNodeDelegate. Note that
   // - Some of these functions have Mac-specific implementations in
