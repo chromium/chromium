@@ -178,6 +178,9 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
 
     public void setAnimatingView(ToolbarProgressBarAnimatingView animatingView) {
         mAnimatingView = animatingView;
+        if (useGradientDrawable()) {
+            mAnimatingView.setCornerRadius((float) mProgressBarHeight / 2);
+        }
         setProgressBarColors();
     }
 

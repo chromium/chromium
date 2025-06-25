@@ -12,7 +12,7 @@ import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
@@ -29,7 +29,7 @@ import org.chromium.ui.interpolators.Interpolators;
 @NullMarked
 public class ToolbarProgressBarAnimatingView extends ImageView {
     /** The drawable inside this ImageView. */
-    private final ColorDrawable mAnimationDrawable;
+    private final GradientDrawable mAnimationDrawable;
 
     /** The fraction of the total time that the slow animation should take. */
     private static final float SLOW_ANIMATION_FRACTION = 0.60f;
@@ -109,8 +109,9 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
         mIsRtl = LocalizationUtils.isLayoutRtl();
         mDpToPx = getResources().getDisplayMetrics().density;
 
-        mAnimationDrawable = new ColorDrawable(Color.WHITE);
-
+        mAnimationDrawable = new GradientDrawable();
+        mAnimationDrawable.setColor(Color.WHITE);
+        mAnimationDrawable.setShape(GradientDrawable.RECTANGLE);
         setImageDrawable(mAnimationDrawable);
         setAlpha(0.0f);
 
@@ -170,8 +171,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
             mAnimatorSet.setStartDelay(0);
 
             // Reset position.
-            setScaleX(0.0f);
-            setTranslationX(0.0f);
+            mAnimationDrawable.setBounds(0, 0, 0, 0);
             mAnimatorSet.start();
 
             // Fade in to look nice on sites that trigger many loads that end quickly.
@@ -232,8 +232,14 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
             animatorCenter += Math.abs(animatorLeft - leftBound) / 2.0f;
         }
 
-        setScaleX(animatingWidth);
-        setTranslationX(animatorCenter);
+        // Calculate the final left and right bounds for the drawable based on the clipped values.
+        float leftBounds = animatorCenter - (animatingWidth / 2.0f);
+        float rightBonds = animatorCenter + (animatingWidth / 2.0f);
+
+        // Set the bounds of the GradientDrawable directly. This ensures that the drawable
+        // is drawn at the correct position and width, maintaining its intrinsic corner radius.
+        // The top and bottom bounds are set to 0 and the height of the ImageView, respectively.
+        mAnimationDrawable.setBounds((int) leftBounds, 0, (int) rightBonds, getHeight());
     }
 
     /**
@@ -247,10 +253,9 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
     public void cancelAnimation() {
         mIsCanceled = true;
         mAnimatorSet.cancel();
-        // Reset position and alpha.
-        setScaleX(0.0f);
-        setTranslationX(0.0f);
         animate().cancel();
+        // Reset position and alpha.
+        mAnimationDrawable.setBounds(0, 0, 0, 0);
         setAlpha(0.0f);
         mLastAnimatedFraction = 0.0f;
         mProgressWidth = 0;
@@ -273,5 +278,14 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
      */
     public void setColor(int color) {
         mAnimationDrawable.setColor(color);
+    }
+
+    /**
+     * Set the corner radius of the animated view.
+     *
+     * @param cornerRadius The desired corner radius for the animated progress.
+     */
+    public void setCornerRadius(float cornerRadius) {
+        mAnimationDrawable.setCornerRadius(cornerRadius);
     }
 }
