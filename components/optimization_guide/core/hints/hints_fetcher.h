@@ -53,6 +53,19 @@ class HintsFetcher {
 
   virtual ~HintsFetcher();
 
+  // If the hints for a host expire at time T, then they are eligible for
+  // refresh at T - kFetchRefreshDuration.
+  static constexpr base::TimeDelta kFetchRefreshDuration = base::Hours(1);
+  // The maximum number of hosts allowed to be requested by the client to the
+  // remote Optimization Guide Service.
+  static constexpr size_t kMaxHosts = 30;
+  // The maximum number of URLs allowed to be requested by the client to the
+  // remote Optimization Guide Service.
+  static constexpr size_t kMaxUrls = 30;
+  // The maximum number of hosts allowed to be stored as covered by the hints
+  // fetcher.
+  static constexpr size_t kMaxCoveredHosts = 200;
+
   // Requests hints from the Optimization Guide Service if a request for them is
   // not already in progress. Returns whether a new request was issued.
   // |hints_fetched_callback| is run once when the outcome of this request is

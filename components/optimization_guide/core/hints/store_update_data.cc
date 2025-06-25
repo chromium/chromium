@@ -95,7 +95,7 @@ void StoreUpdateData::MoveHintIntoUpdateData(proto::Hint&& hint) {
     if (hint.has_max_cache_duration()) {
       expiry_duration = base::Seconds(hint.max_cache_duration().seconds());
     } else {
-      expiry_duration = features::StoredFetchedHintsFreshnessDuration();
+      expiry_duration = kMaxStoreDuration;
     }
     entry_proto.set_expiry_time_secs((base::Time::Now() + expiry_duration)
                                          .ToDeltaSinceWindowsEpoch()

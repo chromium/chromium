@@ -15,8 +15,8 @@
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/optimization_guide/core/hints/hints_fetcher.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/salient_image_metadata.pb.h"
@@ -332,9 +332,7 @@ void ImageServiceImpl::FetchOptimizationGuideImage(mojom::ClientId client_id,
   auto& request_list = unsent_opt_guide_requests_[client_id];
   request_list.push_back(std::move(request));
 
-  if (request_list.size() >=
-      optimization_guide::features::
-          MaxUrlsForOptimizationGuideServiceHintsFetch()) {
+  if (request_list.size() >= optimization_guide::HintsFetcher::kMaxUrls) {
     // Erasing the timer also cancels the timer callback.
     opt_guide_timers_.erase(client_id);
     ProcessAllBatchedOptimizationGuideRequests(client_id);

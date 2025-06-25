@@ -36,10 +36,6 @@ bool IsUserPermittedToFetchFromRemoteOptimizationGuide(
     return true;
   }
 
-  if (!features::IsRemoteFetchingEnabled()) {
-    return false;
-  }
-
   if (!switches::ShouldSkipGoogleApiKeyConfigurationCheck() &&
       !google_apis::HasAPIKeyConfigured()) {
     return false;

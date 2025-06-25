@@ -513,9 +513,6 @@ class SignatureModelPredictionServiceBrowserTest
                                           {optimization_guide::features::
                                                kOptimizationHints,
                                            {}},
-                                          {optimization_guide::features::
-                                               kRemoteOptimizationGuideFetching,
-                                           {}},
                                           {features::
                                                kCpssUseTfliteSignatureRunner,
                                            {}}},

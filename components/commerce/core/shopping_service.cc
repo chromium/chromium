@@ -50,8 +50,8 @@
 #include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "components/commerce/core/web_wrapper.h"
 #include "components/grit/components_resources.h"
+#include "components/optimization_guide/core/hints/hints_fetcher.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
@@ -868,8 +868,7 @@ void ShoppingService::GetUpdatedProductInfoForBookmarks(
 }
 
 size_t ShoppingService::GetMaxProductBookmarkUpdatesPerBatch() {
-  return optimization_guide::features::
-      MaxUrlsForOptimizationGuideServiceHintsFetch();
+  return optimization_guide::HintsFetcher::kMaxUrls;
 }
 
 void ShoppingService::GetAllPriceTrackedBookmarks(

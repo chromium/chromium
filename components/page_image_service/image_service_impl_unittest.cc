@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/optimization_guide/core/hints/hints_fetcher.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -444,8 +445,7 @@ TEST_F(ImageServiceImplTest, OptimizationGuideBatchingRespectsMaxUrls) {
 
   std::vector<GURL> responses;
 
-  size_t max_batch = optimization_guide::features::
-      MaxUrlsForOptimizationGuideServiceHintsFetch();
+  size_t max_batch = optimization_guide::HintsFetcher::kMaxUrls;
   // Fetch one LESS than the max batch size, to verify no requests are sent.
   for (size_t i = 0; i < max_batch - 1; ++i) {
     image_service_->FetchImageFor(

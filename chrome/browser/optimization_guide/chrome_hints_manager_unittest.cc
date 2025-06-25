@@ -56,12 +56,7 @@ class ChromeHintsManagerFetchingTest
  public:
   ChromeHintsManagerFetchingTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{
-             optimization_guide::features::kRemoteOptimizationGuideFetching,
-             {{"max_concurrent_page_navigation_fetches", "2"},
-              {"max_urls_for_optimization_guide_service_hints_fetch", "30"}},
-         },
-         {optimization_guide::features::kOptimizationHints,
+        {{optimization_guide::features::kOptimizationHints,
           {{"max_host_keyed_hint_cache_size", "1"}}}},
         {});
   }

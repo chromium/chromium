@@ -115,8 +115,8 @@ void RecordLifecycleState(proto::OptimizationTarget optimization_target,
 bool ShouldFetchModels(bool off_the_record,
                        bool component_updates_enabled,
                        bool should_check_google_api_key_configuration) {
-  return features::IsRemoteFetchingEnabled() && !off_the_record &&
-         features::IsModelDownloadingEnabled() && component_updates_enabled &&
+  return !off_the_record && features::IsModelDownloadingEnabled() &&
+         component_updates_enabled &&
          (!should_check_google_api_key_configuration ||
           google_apis::HasAPIKeyConfigured());
 }

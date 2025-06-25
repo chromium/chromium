@@ -272,8 +272,7 @@ class LanguageDetectionModelServiceBrowserTest
   LanguageDetectionModelServiceBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {translate::kTFLiteLanguageDetectionEnabled,
-         optimization_guide::features::kOptimizationHints,
-         optimization_guide::features::kRemoteOptimizationGuideFetching},
+         optimization_guide::features::kOptimizationHints},
         {});
   }
 

@@ -162,12 +162,6 @@ void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
         optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
         optimization_guide_logger, "FEATURE_FLAG Hints component disabled");
   }
-  if (!optimization_guide::features::IsRemoteFetchingEnabled()) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
-        optimization_guide_logger,
-        "FEATURE_FLAG remote fetching feature disabled");
-  }
   if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
           is_off_the_record, pref_service)) {
     OPTIMIZATION_GUIDE_LOG(

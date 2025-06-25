@@ -162,14 +162,13 @@ void OptimizationGuideWebContentsObserver::
   if (optimization_guide::features::IsSRPFetchingEnabled() &&
       google_util::IsGoogleSearchUrl(
           web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL())) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &OptimizationGuideWebContentsObserver::FetchHintsUsingManager,
             weak_factory_.GetWeakPtr(),
             optimization_guide_keyed_service_->GetHintsManager(),
-            web_contents()->GetPrimaryPage().GetWeakPtr()),
-        optimization_guide::features::GetOnloadDelayForHintsFetching());
+            web_contents()->GetPrimaryPage().GetWeakPtr()));
   }
 }
 

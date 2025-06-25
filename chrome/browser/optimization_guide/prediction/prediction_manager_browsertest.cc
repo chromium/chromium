@@ -310,7 +310,6 @@ class PredictionManagerBrowserTest : public PredictionManagerBrowserTestBase {
   void InitializeFeatureList() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {optimization_guide::features::kOptimizationHints, {}},
-        {optimization_guide::features::kRemoteOptimizationGuideFetching, {}},
         {optimization_guide::features::kOptimizationTargetPrediction,
          {{"fetch_startup_delay_ms", "8000"}}},
     };
@@ -435,7 +434,6 @@ class PredictionManagerModelDownloadingBrowserTest
   void InitializeFeatureList() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kOptimizationHints, {}},
-        {features::kRemoteOptimizationGuideFetching, {}},
         {features::kOptimizationTargetPrediction, {}},
         {features::kOptimizationGuideModelDownloading,
          {{"unrestricted_model_downloading", "true"}}},

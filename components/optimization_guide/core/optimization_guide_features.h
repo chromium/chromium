@@ -34,8 +34,6 @@ namespace features {
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationHints);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kRemoteOptimizationGuideFetching);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideFetchingForSRP);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationTargetPrediction);
@@ -137,16 +135,6 @@ base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldBatchUpdateHintsForActiveTabsAndTopHosts();
 
-// The maximum number of hosts allowed to be requested by the client to the
-// remote Optimization Guide Service.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-size_t MaxHostsForOptimizationGuideServiceHintsFetch();
-
-// The maximum number of URLs allowed to be requested by the client to the
-// remote Optimization Guide Service.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-size_t MaxUrlsForOptimizationGuideServiceHintsFetch();
-
 // Whether hints fetching for search results is enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsSRPFetchingEnabled();
@@ -155,23 +143,9 @@ bool IsSRPFetchingEnabled();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 size_t MaxResultsForSRPFetch();
 
-// The maximum number of hosts allowed to be stored as covered by the hints
-// fetcher.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-size_t MaxHostsForRecordingSuccessfullyCovered();
-
-// The amount of time a fetched hint will be considered fresh enough
-// to be used and remain in the OptimizationGuideStore.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta StoredFetchedHintsFreshnessDuration();
-
 // The API key for the One Platform Optimization Guide Service.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::string GetOptimizationGuideServiceAPIKey();
-
-// The host for the One Platform Optimization Guide Service for hints.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-GURL GetOptimizationGuideServiceGetHintsURL();
 
 // The host for the One Platform Optimization Guide Service for Models and Host
 // Model Features.
@@ -186,11 +160,6 @@ bool IsOptimizationTargetPredictionEnabled();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsOptimizationHintsEnabled();
 
-// Returns true if the feature to fetch from the remote Optimization Guide
-// Service is enabled. This controls the fetching of both hints and models.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsRemoteFetchingEnabled();
-
 // Returns true if the feature to use push notifications is enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsPushNotificationsEnabled();
@@ -200,43 +169,6 @@ bool IsPushNotificationsEnabled();
 // a bloom filter.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 int MaxServerBloomFilterByteSize();
-
-// Returns the duration of the time window before hints expiration during which
-// the hosts should be refreshed. Example: If the hints for a host expire at
-// time T, then they are eligible for refresh at T -
-// GetHostHintsFetchRefreshDuration().
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta GetHostHintsFetchRefreshDuration();
-
-// Returns the duration of the time window between fetches for hints for the
-// URLs opened in active tabs.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta GetActiveTabsFetchRefreshDuration();
-
-// Returns the max duration since the time a tab has to be shown to be
-// considered active for a hints refresh.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta GetActiveTabsStalenessTolerance();
-
-// Returns the max number of concurrent fetches to the remote Optimization Guide
-// Service that should be allowed for batch updates
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-size_t MaxConcurrentBatchUpdateFetches();
-
-// Returns the max number of concurrent fetches to the remote Optimization Guide
-// Service that should be allowed for navigations.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-size_t MaxConcurrentPageNavigationFetches();
-
-// Returns the minimum random delay before starting to fetch for hints for
-// active tabs.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta ActiveTabsHintsFetchRandomMinDelay();
-
-// Returns the maximum random delay before starting to fetch for hints for
-// active tabs.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta ActiveTabsHintsFetchRandomMaxDelay();
 
 // Returns whether fetching hints for active tabs should happen on deferred
 // startup. Otherwise active tabs hints will be fetched after a random interval
@@ -353,11 +285,6 @@ bool IsUnrestrictedModelDownloadingEnabled();
 // for a user using |locale| as their browser language.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale);
-
-// The time to wait beyond the onload event before sending the hints request for
-// link predictions.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta GetOnloadDelayForHintsFetching();
 
 // Returns whether the metadata validation fetch feature is host keyed.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

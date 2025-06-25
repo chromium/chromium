@@ -30,6 +30,10 @@ class StoreUpdateData {
 
   ~StoreUpdateData();
 
+  // The amount of time a fetched hint will be considered fresh enough
+  // to be used and remain in the OptimizationGuideStore.
+  static constexpr base::TimeDelta kMaxStoreDuration = base::Days(1);
+
   // Creates an update data object for a component hint update.
   static std::unique_ptr<StoreUpdateData> CreateComponentStoreUpdateData(
       const base::Version& component_version);

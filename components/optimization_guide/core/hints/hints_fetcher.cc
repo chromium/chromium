@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/default_clock.h"
 #include "components/optimization_guide/core/hints/hints_processing_util.h"
+#include "components/optimization_guide/core/hints/store_update_data.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -121,7 +122,6 @@ HintsFetcher::HintsFetcher(
   CHECK(optimization_guide_service_url_.SchemeIs(url::kHttpsScheme) ||
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kOptimizationGuideServiceGetHintsURL));
-  DCHECK(features::IsRemoteFetchingEnabled());
 }
 
 HintsFetcher::~HintsFetcher() {
@@ -230,10 +230,8 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
     return false;
   }
 
-  DCHECK_GE(features::MaxHostsForOptimizationGuideServiceHintsFetch(),
-            filtered_hosts.size());
-  DCHECK_GE(features::MaxUrlsForOptimizationGuideServiceHintsFetch(),
-            valid_urls.size());
+  DCHECK_GE(kMaxHosts, filtered_hosts.size());
+  DCHECK_GE(kMaxUrls, valid_urls.size());
 
   if (optimization_types.empty()) {
     OPTIMIZATION_GUIDE_LOG(optimization_guide_common::mojom::LogSource::HINTS,
@@ -406,8 +404,7 @@ void HintsFetcher::HandleResponse(const std::string& get_hints_response_data,
     }
 
     // Check cache duration and update.
-    base::TimeDelta valid_duration =
-        features::StoredFetchedHintsFreshnessDuration();
+    base::TimeDelta valid_duration = StoreUpdateData::kMaxStoreDuration;
     if (get_hints_response->has_max_cache_duration()) {
       valid_duration =
           base::Seconds(get_hints_response->max_cache_duration().seconds());
@@ -453,12 +450,10 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
 
   // Ensure there is enough space in the dictionary pref for the
   // most recent set of hosts to be stored.
-  if (hosts_fetched_list->size() + hosts_fetched_.size() >
-      features::MaxHostsForRecordingSuccessfullyCovered()) {
+  if (hosts_fetched_list->size() + hosts_fetched_.size() > kMaxCoveredHosts) {
     entries_to_remove.clear();
     size_t num_entries_to_remove =
-        hosts_fetched_list->size() + hosts_fetched_.size() -
-        features::MaxHostsForRecordingSuccessfullyCovered();
+        hosts_fetched_list->size() + hosts_fetched_.size() - kMaxCoveredHosts;
     for (auto it : *hosts_fetched_list) {
       if (entries_to_remove.size() >= num_entries_to_remove) {
         break;
@@ -477,8 +472,7 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
         HashHostForDictionary(host),
         host_invalid_time.ToDeltaSinceWindowsEpoch().InSecondsF());
   }
-  DCHECK_LE(hosts_fetched_list->size(),
-            features::MaxHostsForRecordingSuccessfullyCovered());
+  DCHECK_LE(hosts_fetched_list->size(), kMaxCoveredHosts);
   hosts_fetched_.clear();
 }
 
@@ -509,8 +503,7 @@ std::vector<GURL> HintsFetcher::GetSizeLimitedURLsForFetching(
     const std::vector<GURL>& urls) const {
   std::vector<GURL> valid_urls;
   for (size_t i = 0; i < urls.size(); i++) {
-    if (valid_urls.size() >=
-        features::MaxUrlsForOptimizationGuideServiceHintsFetch()) {
+    if (valid_urls.size() >= kMaxUrls) {
       base::UmaHistogramCounts100(
           "OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedUrls." +
               GetStringNameForRequestContext(request_context_),
@@ -549,8 +542,7 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
   target_hosts.reserve(hosts.size());
 
   for (size_t i = 0; i < hosts.size(); i++) {
-    if (target_hosts.size() >=
-        features::MaxHostsForOptimizationGuideServiceHintsFetch()) {
+    if (target_hosts.size() >= kMaxHosts) {
       base::UmaHistogramCounts100(
           "OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedHosts." +
               GetStringNameForRequestContext(request_context_),
@@ -586,8 +578,7 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
       base::Time host_valid_time =
           base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(*value));
       host_hints_due_for_refresh =
-          (host_valid_time - features::GetHostHintsFetchRefreshDuration() <=
-           time_clock_->Now());
+          (host_valid_time - kFetchRefreshDuration <= time_clock_->Now());
     }
     if (host_hints_due_for_refresh) {
       target_hosts.push_back(host);
@@ -598,8 +589,7 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
           base::StrCat({"Skipped refreshing hints for host:", host}));
     }
   }
-  DCHECK_GE(features::MaxHostsForOptimizationGuideServiceHintsFetch(),
-            target_hosts.size());
+  DCHECK_GE(kMaxHosts, target_hosts.size());
   return target_hosts;
 }
 

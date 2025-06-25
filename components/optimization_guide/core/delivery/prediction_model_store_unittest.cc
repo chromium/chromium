@@ -64,9 +64,7 @@ class PredictionModelStoreTest : public testing::Test {
  public:
   PredictionModelStoreTest() {
     feature_list_.InitWithFeatures(
-        {features::kRemoteOptimizationGuideFetching,
-         features::kOptimizationGuideModelDownloading},
-        {});
+        {features::kOptimizationGuideModelDownloading}, {});
   }
 
   void SetUp() override {

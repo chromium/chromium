@@ -499,32 +499,6 @@ class PredictionManagerTestBase : public testing::Test {
   bool component_updates_enabled_ = true;
 };
 
-class PredictionManagerRemoteFetchingDisabledTest
-    : public PredictionManagerTestBase {
- public:
-  PredictionManagerRemoteFetchingDisabledTest() {
-    // This needs to be done before any tasks are run that might check if a
-    // feature is enabled, to avoid tsan errors.
-    feature_list_.InitWithFeatures(
-        {}, {features::kRemoteOptimizationGuideFetching});
-  }
-};
-
-TEST_F(PredictionManagerRemoteFetchingDisabledTest, RemoteFetchingDisabled) {
-  CreatePredictionManager();
-
-  prediction_manager()->SetPredictionModelFetcherForTesting(
-      BuildTestPredictionModelFetcher(
-          PredictionModelFetcherEndState::kFetchSuccessWithModels));
-
-  FakeOptimizationTargetModelObserver observer;
-  prediction_manager()->AddObserverForOptimizationTargetModel(
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt, &observer);
-  SetStoreInitialized();
-
-  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
-}
-
 class PredictionManagerModelDownloadingDisabledTest
     : public PredictionManagerTestBase {
  public:
@@ -559,7 +533,6 @@ class PredictionManagerTest : public PredictionManagerTestBase {
     // feature is enabled, to avoid tsan errors.
 
     std::vector<base::test::FeatureRef> enabled_features = {
-        features::kRemoteOptimizationGuideFetching,
         features::kOptimizationGuideModelDownloading,
     };
     feature_list_.InitWithFeatures(enabled_features, {});

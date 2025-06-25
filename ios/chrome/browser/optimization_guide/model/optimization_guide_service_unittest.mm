@@ -92,8 +92,6 @@ class OptimizationGuideServiceTest : public PlatformTest {
     std::vector<base::test::FeatureRef> enabled_features;
     enabled_features.push_back(
         optimization_guide::features::kOptimizationHints);
-    enabled_features.push_back(
-        optimization_guide::features::kRemoteOptimizationGuideFetching);
     if (url_keyed_anonymized_data_collection_enabled_) {
       testing_prefs->SetBoolean(
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,

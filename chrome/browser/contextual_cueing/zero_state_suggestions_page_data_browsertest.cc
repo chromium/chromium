@@ -49,8 +49,7 @@ class ZeroStateSuggestionsPageDataBrowserTest
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{contextual_cueing::kContextualCueing, {}},
-         {contextual_cueing::kGlicZeroStateSuggestions, zss_params},
-         {optimization_guide::features::kRemoteOptimizationGuideFetching, {}}},
+         {contextual_cueing::kGlicZeroStateSuggestions, zss_params}},
         /*disabled_features=*/{});
   }
 

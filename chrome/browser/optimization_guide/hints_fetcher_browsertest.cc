@@ -44,6 +44,7 @@
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/filters/test_hints_component_creator.h"
 #include "components/optimization_guide/core/hints/fake_hints_fetcher.h"
+#include "components/optimization_guide/core/hints/hints_manager.h"
 #include "components/optimization_guide/core/hints/optimization_guide_store.h"
 #include "components/optimization_guide/core/hints/top_host_provider.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -398,8 +399,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     optimization_guide::proto::GetHintsRequest hints_request;
     EXPECT_TRUE(hints_request.ParseFromString(request.content));
     EXPECT_FALSE(hints_request.hosts().empty() && hints_request.urls().empty());
-    EXPECT_GE(optimization_guide::features::
-                  MaxHostsForOptimizationGuideServiceHintsFetch(),
+    EXPECT_GE(optimization_guide::HintsFetcher::kMaxHosts,
               static_cast<size_t>(hints_request.hosts().size()));
 
     // Only verify the hints if there are hosts in the request.
@@ -534,18 +534,12 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
   void SetUp() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {optimization_guide::features::kOptimizationHints, {}},
-        {
-            optimization_guide::features::kRemoteOptimizationGuideFetching,
-            {{"max_concurrent_page_navigation_fetches", "2"},
-             {"max_urls_for_optimization_guide_service_hints_fetch", "30"},
-             // This delay is set to 0 to avoid flaky timeouts in
-             // HintsFetcherSearchPagePrerenderingBrowserTest.
-             {"onload_delay_for_hints_fetching_ms", "0"},
-             {"batch_update_hints_for_top_hosts", "true"}},
-        }};
+        {*optimization_guide::kHintsMaxConcurrentNavigationFetches.feature,
+         {{optimization_guide::kHintsMaxConcurrentNavigationFetches.name,
+           "2"}}},
+        {optimization_guide::kHintsBatchUpdateForActiveTabsAndTopHosts, {}},
+    };
     PopulateEnabledFeatures(&enabled_features);
-
-    // Enable OptimizationHintsFetching with |kRemoteOptimizationGuideFetching|.
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features_);
     // Call to inherited class to match same set up with feature flags added.
@@ -1508,21 +1502,20 @@ class HintsFetcherSearchPageDisabledBrowserTest
  public:
   HintsFetcherSearchPageDisabledBrowserTest() = default;
   void SetUp() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {optimization_guide::features::kOptimizationHints, {}},
+        {blink::features::kNavigationPredictor,
+         {{"random_anchor_sampling_period", "1"},
+          {"traffic_client_enabled_percent", "100"}}},
+        {*optimization_guide::kHintsMaxConcurrentNavigationFetches.feature,
+         {{optimization_guide::kHintsMaxConcurrentNavigationFetches.name,
+           "2"}}},
+        {optimization_guide::kHintsBatchUpdateForActiveTabsAndTopHosts, {}},
+    };
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        // Enabled.
-        {{optimization_guide::features::kOptimizationHints, {}},
-         {blink::features::kNavigationPredictor,
-          {{"random_anchor_sampling_period", "1"},
-           {"traffic_client_enabled_percent", "100"}}},
-         {
-             optimization_guide::features::kRemoteOptimizationGuideFetching,
-             {{"max_concurrent_page_navigation_fetches", "2"},
-              {"max_urls_for_optimization_guide_service_hints_fetch", "30"},
-              {"batch_update_hints_for_top_hosts", "true"}},
-         }},
+        enabled_features,
         // Disabled.
         {optimization_guide::features::kOptimizationGuideFetchingForSRP});
-
     HintsFetcherDisabledBrowserTest::SetUp();
   }
 
@@ -1623,21 +1616,18 @@ class HintsFetcherSearchPageLimitedURLsBrowserTest
   HintsFetcherSearchPageLimitedURLsBrowserTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        // Enabled.
-        {{optimization_guide::features::kOptimizationHints, {}},
-         {
-             optimization_guide::features::kRemoteOptimizationGuideFetching,
-             {{"max_concurrent_page_navigation_fetches", "2"},
-              {"max_urls_for_optimization_guide_service_hints_fetch", "30"},
-              {"batch_update_hints_for_top_hosts", "true"}},
-         },
-         {
-             optimization_guide::features::kOptimizationGuideFetchingForSRP,
-             {{"max_urls_for_srp_fetch", "1"}},
-         }},
-        // Disabled.
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {optimization_guide::features::kOptimizationHints, {}},
+        {
+            optimization_guide::features::kOptimizationGuideFetchingForSRP,
+            {{"max_urls_for_srp_fetch", "1"}},
+        },
+        {*optimization_guide::kHintsMaxConcurrentNavigationFetches.feature,
+         {{optimization_guide::kHintsMaxConcurrentNavigationFetches.name,
+           "2"}}},
+        {optimization_guide::kHintsBatchUpdateForActiveTabsAndTopHosts, {}},
+    };
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
 
     HintsFetcherDisabledBrowserTest::SetUp();
   }

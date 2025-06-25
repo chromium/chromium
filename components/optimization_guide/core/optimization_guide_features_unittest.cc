@@ -38,33 +38,6 @@ class OptimizationGuideFeaturesTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
 };
 
-TEST_F(OptimizationGuideFeaturesTest,
-       TestGetOptimizationGuideServiceGetHintsURLHTTPSOnly) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kRemoteOptimizationGuideFetching,
-      {{"optimization_guide_service_url", "http://NotAnHTTPSServer.com"}});
-
-  EXPECT_EQ(features::GetOptimizationGuideServiceGetHintsURL().spec(),
-            kOptimizationGuideServiceGetHintsDefaultURL);
-  EXPECT_TRUE(features::GetOptimizationGuideServiceGetHintsURL().SchemeIs(
-      url::kHttpsScheme));
-}
-
-TEST_F(OptimizationGuideFeaturesTest,
-       TestGetOptimizationGuideServiceGetHintsURLViaFinch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  std::string optimization_guide_service_url = "https://finchserver.com/";
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kRemoteOptimizationGuideFetching,
-      {{"optimization_guide_service_url", optimization_guide_service_url}});
-
-  EXPECT_EQ(features::GetOptimizationGuideServiceGetHintsURL().spec(),
-            optimization_guide_service_url);
-}
-
 TEST_F(OptimizationGuideFeaturesTest, ModelQualityLoggingDefault) {
   base::test::ScopedFeatureList scoped_feature_list;
 

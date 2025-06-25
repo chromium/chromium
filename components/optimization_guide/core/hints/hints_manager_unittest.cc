@@ -310,8 +310,7 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
         {
             {features::kOptimizationHints,
              GetOptimizationHintsDefaultFeatureParams()},
-            {features::kRemoteOptimizationGuideFetching,
-             {{"batch_update_hints_for_top_hosts", "true"}}},
+            {kHintsBatchUpdateForActiveTabsAndTopHosts, {}},
         },
         /*disabled_features=*/{});
 
@@ -1534,33 +1533,6 @@ TEST_F(HintsManagerTest,
             optimization_type_decision);
 }
 
-class HintsManagerFetchingDisabledTest : public HintsManagerTest {
- public:
-  HintsManagerFetchingDisabledTest() {
-    scoped_list_.InitAndDisableFeature(
-        features::kRemoteOptimizationGuideFetching);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_list_;
-};
-
-TEST_F(HintsManagerFetchingDisabledTest,
-       HintsFetchNotAllowedIfFeatureIsNotEnabled) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
-
-  CreateHintsManager(std::make_unique<FakeTopHostProvider>(
-      std::vector<std::string>({"example1.com", "example2.com"})));
-  InitializeWithDefaultConfig("1.0.0");
-
-  // Force timer to expire and schedule a hints fetch.
-  MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
-  EXPECT_EQ(0, top_host_provider()->get_num_top_hosts_called());
-  // Hints fetcher should not even be created.
-  EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
-}
-
 TEST_F(HintsManagerTest,
        CanApplyOptimizationAsyncReturnsRightAwayIfNotAllowedToFetch) {
   base::HistogramTester histogram_tester;
@@ -1748,13 +1720,16 @@ class HintsManagerFetchingTest : public HintsManagerTest {
   HintsManagerFetchingTest() {
     scoped_list_.InitWithFeaturesAndParameters(
         {
-            {
-                features::kRemoteOptimizationGuideFetching,
-                {{"batch_update_hints_for_top_hosts", "true"},
-                 {"max_concurrent_page_navigation_fetches", "2"},
-                 {"max_concurrent_batch_update_fetches",
-                  base::NumberToString(batch_concurrency_limit_)}},
-            },
+            {kHintsBatchUpdateForActiveTabsAndTopHosts, {}},
+            {*kHintsMaxConcurrentNavigationFetches.feature,
+             {
+                 {kHintsMaxConcurrentNavigationFetches.name, "2"},
+             }},
+            {*kHintsMaxConcurrentBatchUpdateFetches.feature,
+             {
+                 {kHintsMaxConcurrentBatchUpdateFetches.name,
+                  base::NumberToString(batch_concurrency_limit_)},
+             }},
         },
         {});
   }
@@ -3539,9 +3514,8 @@ TEST_F(HintsManagerFetchingTest,
 class HintsManagerFetchingNoBatchUpdateTest : public HintsManagerTest {
  public:
   HintsManagerFetchingNoBatchUpdateTest() {
-    scoped_list_.InitAndEnableFeatureWithParameters(
-        features::kRemoteOptimizationGuideFetching,
-        {{"batch_update_hints_for_top_hosts", "false"}});
+    scoped_list_.InitAndDisableFeature(
+        kHintsBatchUpdateForActiveTabsAndTopHosts);
   }
 
  private:
@@ -3765,13 +3739,15 @@ class HintsManagerProactivePersonalizationFetchingTest
   HintsManagerProactivePersonalizationFetchingTest() {
     scoped_list_.InitWithFeaturesAndParameters(
         {
-            {
-                features::kRemoteOptimizationGuideFetching,
-                {{"batch_update_hints_for_top_hosts", "true"},
-                 {"max_concurrent_page_navigation_fetches", "2"},
-                 {"max_concurrent_batch_update_fetches",
-                  base::NumberToString(batch_concurrency_limit_)}},
-            },
+            {kHintsBatchUpdateForActiveTabsAndTopHosts, {}},
+            {*kHintsMaxConcurrentNavigationFetches.feature,
+             {
+                 {kHintsMaxConcurrentNavigationFetches.name, "2"},
+             }},
+            {*kHintsMaxConcurrentBatchUpdateFetches.feature,
+             {
+                 {kHintsMaxConcurrentBatchUpdateFetches.name, "2"},
+             }},
             {
                 features::kOptimizationGuideProactivePersonalizedHintsFetching,
                 {{"allowed_optimization_types", "SHOPPING_DISCOUNTS"}},
@@ -3786,14 +3762,11 @@ class HintsManagerProactivePersonalizationFetchingTest
                        identity_test_env()->identity_manager());
   }
 
-  size_t batch_concurrency_limit() const { return batch_concurrency_limit_; }
-
   signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
   }
 
  private:
-  size_t batch_concurrency_limit_ = 2;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   signin::IdentityTestEnvironment identity_test_env_;
