@@ -39,6 +39,11 @@ bool CSPSourceListAllowEvalHash(
     const network::mojom::blink::CSPHashSource& hash);
 
 CORE_EXPORT
+bool CSPSourceListAllowUrlHash(
+    const network::mojom::blink::CSPSourceList& source_list,
+    const network::mojom::blink::CSPHashSource& url_hash);
+
+CORE_EXPORT
 bool CSPSourceListIsNone(
     const network::mojom::blink::CSPSourceList& source_list);
 

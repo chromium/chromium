@@ -113,6 +113,18 @@ bool CSPSourceListAllowEvalHash(
   return false;
 }
 
+bool CSPSourceListAllowUrlHash(
+    const network::mojom::blink::CSPSourceList& source_list,
+    const network::mojom::blink::CSPHashSource& url_hash_value) {
+  for (const network::mojom::blink::CSPHashSourcePtr& url_hash :
+       source_list.url_hashes) {
+    if (*url_hash == url_hash_value) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool CSPSourceListIsNone(
     const network::mojom::blink::CSPSourceList& source_list) {
   return !source_list.sources.size() && !source_list.allow_self &&

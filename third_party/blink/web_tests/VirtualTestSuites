@@ -5942,7 +5942,8 @@
       "Win"
     ],
     "bases": [
-      "external/wpt/content-security-policy/unsafe-eval/tentative"
+      "external/wpt/content-security-policy/unsafe-eval/tentative",
+      "external/wpt/content-security-policy/script-src/tentative"
     ],
     "args": [
       "--enable-features=ScriptSrcHashesV1"

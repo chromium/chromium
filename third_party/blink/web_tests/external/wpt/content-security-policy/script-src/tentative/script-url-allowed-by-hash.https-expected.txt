@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] script-src should allow script by its url hash - header
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] A parseable url-hash should ignore hostname allowlists - header
+  assert_equals: expected "CSP_VIOLATION" but got "SCRIPT_RAN"
+[FAIL] default-src should allow script by its url hash - header
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] script-src-elem should allow script by its url hash - header
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] script-src should allow script by its url hash - metatag
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] A parseable url-hash should ignore hostname allowlists - metatag
+  assert_equals: expected "CSP_VIOLATION" but got "SCRIPT_RAN"
+[FAIL] default-src should allow script by its url hash - metatag
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] script-src-elem should allow script by its url hash - metatag
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+Harness: the test ran to completion.
+

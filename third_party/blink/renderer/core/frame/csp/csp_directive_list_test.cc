@@ -398,6 +398,11 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithHash) {
 
       // At least one integrity hash must be present.
       {"'sha256-yay'", "https://a.com/file", "", false},
+
+      // script-src doesn't support url hashes by default.
+      {"'url-sha256-yay'", "https://a.com/file", "", false},
+      {"'url-sha256-IyodCgwKGmOP0Vm8YUQbOET0U+HGD3THhrHT5RqRzbA='",
+       "https://a.com/file", "", false},
   };
 
   ContentSecurityPolicy* context =

@@ -788,9 +788,12 @@ mojom::CSPSourceListPtr ParseSourceList(
 
     auto url_hash = mojom::CSPHashSource::New();
     if (ParseURLHash(expression, url_hash.get())) {
-      if (directive_name == CSPDirectiveName::ScriptSrcV2) {
+      if (base::FeatureList::IsEnabled(
+              network::features::kCSPScriptSrcHashesInV1) ||
+          directive_name == CSPDirectiveName::ScriptSrcV2) {
         directive->url_hashes.push_back(std::move(url_hash));
-      } else {
+      } else if (base::FeatureList::IsEnabled(
+                     network::features::kCSPScriptSrcV2)) {
         parsing_errors.emplace_back(base::StringPrintf(
             "The Content-Security-Policy directive '%s' contains %s as a "
             "source expression that is permitted only for 'script-src-v2' "
