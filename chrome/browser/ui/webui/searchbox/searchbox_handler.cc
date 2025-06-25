@@ -502,9 +502,11 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean("searchboxCr23SteadyStateShadow",
                      ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
 
-  source->AddBoolean("searchboxShowComposeAnimation",
-                     profile->GetPrefs()->GetInteger(
-                         prefs::kNtpComposeButtonShownCountPrefName) < 3);
+  source->AddBoolean(
+      "searchboxShowComposeAnimation",
+      profile->GetPrefs()->GetInteger(
+          prefs::kNtpComposeButtonShownCountPrefName) <
+          ntp_features::kNtpSearchboxComposeEntrypointMaxAnimationsParam.Get());
 }
 
 // static

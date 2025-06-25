@@ -467,6 +467,11 @@ const base::FeatureParam<int>
         "NtpMicrosoftFilesModuleMaxNonInsightsFilesForCombinedParam",
         4);
 
+const base::FeatureParam<int> kNtpSearchboxComposeEntrypointMaxAnimationsParam(
+    &ntp_features::kNtpSearchboxComposeEntrypoint,
+    "NtpSearchboxComposeEntrypointMaxAnimationsParam",
+    3);
+
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
       kNtpModulesLoadTimeoutMilliseconds,
