@@ -5606,7 +5606,7 @@
   {
     "name": "history-opt-in-educational-tip",
     "owners": [ "myuu@google.com", "chrome-signin-mobile-team@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 141
   },
   {
     "name": "history-page-history-sync-promo",
