@@ -1801,6 +1801,10 @@ BASE_FEATURE(kUseChromiumUpdater,
 BASE_FEATURE(kWebAppManifestIconUpdating,
              "WebAppManifestIconUpdating",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebAppUsePrimaryIcon,
+             "WebAppPrimaryIcon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
