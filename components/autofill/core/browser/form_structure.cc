@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
+#include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/form_processing/label_processing_util.h"
 #include "components/autofill/core/browser/form_processing/name_processing_util.h"
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
@@ -973,6 +974,16 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "May run AutofillAI model: "
            << ToYesOrNo(form.may_run_autofill_ai_model());
   }
+  std::map<const AutofillField*, std::vector<AttributeType>>
+      field_to_attribute_types;
+  for (const auto& [section, entities_and_fields] :
+       DetermineAttributeTypes(form.fields())) {
+    for (const auto& [entity, fields] : entities_and_fields) {
+      for (const AutofillFieldWithAttributeType& f : fields) {
+        field_to_attribute_types[&*f.field].push_back(f.type);
+      }
+    }
+  }
   for (size_t i = 0; i < form.field_count(); ++i) {
     buffer << Tag{"tr"};
     buffer << Tag{"td"} << "Field " << i << ": " << CTag{};
@@ -1037,6 +1048,16 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
             field->GetAutofillAiServerTypePredictions()) {
       buffer << Tr{}
              << "Autofill AI Type:" << FieldTypeToStringView(*autofill_ai_type);
+    }
+    if (auto it = field_to_attribute_types.find(&*field);
+        it != field_to_attribute_types.end()) {
+      auto attribute_type_to_string = [](AttributeType t) {
+        return base::StrCat(
+            {t.entity_type().name_as_string(), ": ", t.name_as_string()});
+      };
+      buffer << Tr{} << "Autofill AI AttributeType:"
+             << base::JoinString(
+                    base::ToVector(it->second, attribute_type_to_string), "; ");
     }
     if (base::optional_ref<const std::u16string> format_string =
             field->format_string()) {
