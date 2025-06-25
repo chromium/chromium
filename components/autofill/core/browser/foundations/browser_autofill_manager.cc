@@ -1755,7 +1755,7 @@ void BrowserAutofillManager::FillOrPreviewField(
                !client().GetValuablesDataManager()->GetLoyaltyCards().empty()) {
       LogEmailOrLoyaltyCardSuggestionAccepted(
           autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
-              kLoyaltyCardSelected);
+              kEmailSelected);
     }
   }
 }
