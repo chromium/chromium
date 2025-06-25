@@ -1011,5 +1011,6 @@
     </service>  # DIFF-ANCHOR: 2a1cd701
     <uses-library android:name="androidx.window.extensions" android:required="false"/>
     <uses-library android:name="androidx.window.sidecar" android:required="false"/>
+    <uses-library android:name="com.android.extensions.xr" android:required="false"/>
   </application>
 </manifest>
