@@ -224,7 +224,6 @@ BASE_FEATURE(kEnableDrDc,
              base::FEATURE_ENABLED_BY_DEFAULT
 #elif BUILDFLAG(IS_MAC)
              // DrDC will not be running if Graphite is disabled on Mac.
-             // Feature incomplete. DO NOT ENABLE!
              base::FEATURE_DISABLED_BY_DEFAULT
 #else
              // NOT SUPPORTED. DO NOT ENABLE!
