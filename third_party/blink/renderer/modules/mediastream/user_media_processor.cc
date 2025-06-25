@@ -701,7 +701,6 @@ void UserMediaProcessor::SetupAudioInput() {
   StreamControls* const stream_controls =
       current_request_info_->stream_controls();
   stream_controls->exclude_system_audio = request->exclude_system_audio();
-  stream_controls->window_audio_preference = request->window_audio_preference();
 
   stream_controls->suppress_local_audio_playback =
       request->suppress_local_audio_playback();

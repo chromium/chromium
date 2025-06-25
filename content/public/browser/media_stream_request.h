@@ -103,11 +103,6 @@ struct CONTENT_EXPORT MediaStreamRequest {
   // system-audio should nevertheless not be offered to the user.
   bool exclude_system_audio = false;
 
-  // If audio is requested, |window_audio_preference| can indicate that
-  // audio should be offered to the user when sharing a window surface.
-  blink::mojom::WindowAudioPreference window_audio_preference =
-      blink::mojom::WindowAudioPreference::kExclude;
-
   // Flag to indicate that the current tab should be excluded from the list of
   // tabs offered to the user.
   bool exclude_self_browser_surface = false;

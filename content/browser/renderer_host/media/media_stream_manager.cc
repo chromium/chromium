@@ -657,8 +657,6 @@ class MediaStreamManager::DeviceRequest {
         stream_controls_.suppress_local_audio_playback;
     ui_request_->restrict_own_audio = stream_controls_.restrict_own_audio;
     ui_request_->exclude_system_audio = stream_controls_.exclude_system_audio;
-    ui_request_->window_audio_preference =
-        stream_controls_.window_audio_preference;
     ui_request_->exclude_self_browser_surface =
         stream_controls_.exclude_self_browser_surface;
     ui_request_->preferred_display_surface =
@@ -682,8 +680,6 @@ class MediaStreamManager::DeviceRequest {
         /*request_pan_tilt_zoom_permission=*/false,
         captured_surface_control_active_);
     ui_request_->exclude_system_audio = stream_controls_.exclude_system_audio;
-    ui_request_->window_audio_preference =
-        stream_controls_.window_audio_preference;
   }
 
   bool HasUIRequest() const { return ui_request_.get() != nullptr; }
@@ -818,8 +814,6 @@ class MediaStreamManager::DeviceRequest {
     stream_controls_.suppress_local_audio_playback = false;
     stream_controls_.restrict_own_audio = false;
     stream_controls_.exclude_system_audio = false;
-    stream_controls_.window_audio_preference =
-        blink::mojom::WindowAudioPreference::kExclude;
   }
 
   // TODO(crbug.com/40247147): Remove this method from DeviceRequest when
