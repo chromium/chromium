@@ -32,7 +32,6 @@ using chrome_test_util::AddToReadingListButton;
 using chrome_test_util::BackButton;
 using chrome_test_util::CancelButton;
 using chrome_test_util::CloseTabMenuButton;
-using chrome_test_util::CopyActivityButton;
 using chrome_test_util::InactiveTabGrid;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::ShareButton;
