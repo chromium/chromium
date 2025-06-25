@@ -80,7 +80,6 @@
 #include "components/memory_system/initializer.h"
 #include "components/memory_system/parameters.h"
 #include "components/metrics/persistent_histograms.h"
-#include "components/nacl/common/buildflags.h"
 #include "components/sampling_profiler/thread_profiler.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "components/version_info/channel.h"
@@ -146,11 +145,6 @@
 #include "components/webui/about/credit_utils.h"
 #endif
 
-#if BUILDFLAG(ENABLE_NACL) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-#include "components/nacl/common/nacl_paths.h"
-#include "components/nacl/zygote/nacl_fork_delegate_linux.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
@@ -206,11 +200,6 @@
 #include "extensions/common/constants.h"
 #endif
 
-#if BUILDFLAG(ENABLE_NACL)
-#include "components/nacl/common/nacl_switches.h"
-#include "components/nacl/renderer/plugin/ppapi_entrypoints.h"
-#endif
-
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/child/pdf_child_init.h"
 #endif
@@ -228,8 +217,6 @@ base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
     g_chrome_content_gpu_client = LAZY_INSTANCE_INITIALIZER;
 base::LazyInstance<ChromeContentRendererClient>::DestructorAtExit
     g_chrome_content_renderer_client = LAZY_INSTANCE_INITIALIZER;
-
-extern int NaClMain(content::MainFunctionParams);
 
 const char* const ChromeMainDelegate::kNonWildcardDomainNonPortSchemes[] = {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -284,10 +271,6 @@ void AdjustLinuxOOMScore(const std::string& process_type) {
   } else if (process_type == switches::kUtilityProcess ||
              process_type == switches::kGpuProcess) {
     score = content::kMiscOomScore;
-#if BUILDFLAG(ENABLE_NACL)
-  } else if (process_type == switches::kNaClLoaderProcess) {
-    score = content::kPluginOomScore;
-#endif
   } else if (process_type == switches::kZygoteProcess || process_type.empty()) {
     // For zygotes and unlabeled process types, we want to still make
     // them killable by the OOM killer.
@@ -321,9 +304,6 @@ bool SubprocessNeedsResourceBundle(const std::string& process_type) {
 #if BUILDFLAG(IS_MAC)
   // Mac needs them too for scrollbar related images and for sandbox
   // profiles.
-#if BUILDFLAG(ENABLE_NACL)
-      process_type == switches::kNaClLoaderProcess ||
-#endif
       process_type == switches::kGpuProcess ||
 #endif
       process_type == switches::kPpapiPluginProcess ||
@@ -1154,9 +1134,6 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   ash::RegisterPathProvider();
   chromeos::dbus_paths::RegisterPathProvider();
 #endif
-#if BUILDFLAG(ENABLE_NACL) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-  nacl::RegisterPathProvider();
-#endif
 
   ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
       kNonWildcardDomainNonPortSchemes, kNonWildcardDomainNonPortSchemesSize);
@@ -1361,18 +1338,10 @@ void ChromeMainDelegate::PreSandboxStartup() {
     // Initialize ResourceBundle which handles files loaded from external
     // sources.  The language should have been passed in to us from the
     // browser process as a command line flag.
-#if !BUILDFLAG(ENABLE_NACL)
     DUMP_WILL_BE_CHECK(command_line.HasSwitch(switches::kLang) ||
                        process_type == switches::kZygoteProcess ||
                        process_type == switches::kGpuProcess ||
                        process_type == switches::kPpapiPluginProcess);
-#else
-    DUMP_WILL_BE_CHECK(command_line.HasSwitch(switches::kLang) ||
-                       process_type == switches::kZygoteProcess ||
-                       process_type == switches::kGpuProcess ||
-                       process_type == switches::kNaClLoaderProcess ||
-                       process_type == switches::kPpapiPluginProcess);
-#endif
 
     // TODO(markusheintz): The command line flag --lang is actually processed
     // by the CommandLinePrefStore, and made available through the PrefService
@@ -1517,12 +1486,6 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
       DUMP_WILL_BE_NOTREACHED();
     }
   }
-
-#if BUILDFLAG(ENABLE_NACL)
-  ChromeContentClient::SetNaClEntryFunctions(nacl_plugin::PPP_GetInterface,
-                                             nacl_plugin::PPP_InitializeModule,
-                                             nacl_plugin::PPP_ShutdownModule);
-#endif
 }
 
 std::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
@@ -1532,26 +1495,18 @@ std::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
   NOTREACHED();  // Android provides a subclass and shares no codehere.
 #else
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_LINUX) && \
-                          !BUILDFLAG(IS_CHROMEOS))
-  static const MainFunction kMainFunctions[] = {
 #if BUILDFLAG(IS_MAC)
+  static const MainFunction kMainFunctions[] = {
       {switches::kRelauncherProcess, mac_relauncher::internal::RelauncherMain},
       {switches::kCodeSignCloneCleanupProcess,
        code_sign_clone_manager::internal::ChromeCodeSignCloneCleanupMain},
-#elif BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
-      // This entry is not needed on Linux, where the NaCl loader
-      // process is launched via nacl_helper instead.
-      {switches::kNaClLoaderProcess, NaClMain},
-#endif
   };
 
   for (size_t i = 0; i < std::size(kMainFunctions); ++i) {
     if (process_type == kMainFunctions[i].name)
       return kMainFunctions[i].function(std::move(main_function_params));
   }
-#endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_LINUX)
-        // && !BUILDFLAG(IS_CHROMEOS))
+#endif  // BUILDFLAG(IS_MAC)
 
   return std::move(main_function_params);
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1584,9 +1539,6 @@ void ChromeMainDelegate::ProcessExiting(const std::string& process_type) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void ChromeMainDelegate::ZygoteStarting(
     std::vector<std::unique_ptr<content::ZygoteForkDelegate>>* delegates) {
-#if BUILDFLAG(ENABLE_NACL)
-  nacl::AddNaClZygoteForkDelegates(delegates);
-#endif
 }
 
 void ChromeMainDelegate::ZygoteForked() {

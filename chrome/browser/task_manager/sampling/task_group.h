@@ -22,7 +22,6 @@
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
 #include "chrome/browser/task_manager/sampling/task_group_sampler.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
-#include "components/nacl/common/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/task_manager/sampling/arc_shared_sampler.h"
@@ -137,13 +136,6 @@ class TaskGroup {
   int64_t hard_faults_per_second() const { return hard_faults_per_second_; }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_NACL)
-  int nacl_debug_stub_port() const { return nacl_debug_stub_port_; }
-  void set_nacl_debug_stub_port(int stub_port) {
-    nacl_debug_stub_port_ = stub_port;
-  }
-#endif  // BUILDFLAG(ENABLE_NACL)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   int open_fd_count() const { return open_fd_count_; }
   void set_open_fd_count(int open_fd_count) { open_fd_count_ = open_fd_count; }
@@ -159,11 +151,6 @@ class TaskGroup {
 
   void RefreshWindowsHandles();
 
-#if BUILDFLAG(ENABLE_NACL)
-  // |child_process_unique_id| see Task::GetChildProcessUniqueID().
-  void RefreshNaClDebugStubPort(int child_process_unique_id);
-  void OnRefreshNaClDebugStubPortDone(int port);
-#endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   void OnOpenFdCountRefreshDone(int open_fd_count);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
@@ -232,9 +219,6 @@ class TaskGroup {
   int64_t user_peak_handles_;
   int64_t hard_faults_per_second_;
 #endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(ENABLE_NACL)
-  int nacl_debug_stub_port_;
-#endif  // BUILDFLAG(ENABLE_NACL)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   // The number of file descriptors currently open by the process.
   int open_fd_count_;

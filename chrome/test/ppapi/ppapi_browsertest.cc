@@ -20,7 +20,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,12 +28,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/nacl/nacl_browsertest_util.h"
 #include "chrome/test/ppapi/ppapi_test.h"
 #include "chrome/test/ppapi/ppapi_test_select_file_dialog_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/nacl/common/buildflags.h"
-#include "components/nacl/common/nacl_switches.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_view_host.h"
@@ -107,7 +103,6 @@ using content::RenderViewHost;
     }
 
 // Disable all NaCl tests for --disable-nacl flag
-#if !BUILDFLAG(ENABLE_NACL)
 #define MAYBE_PPAPI_NACL(test_name) DISABLED_##test_name
 #define MAYBE_PPAPI_PNACL(test_name) DISABLED_##test_name
 
@@ -116,53 +111,6 @@ using content::RenderViewHost;
 #define TEST_PPAPI_NACL_DISALLOWED_SOCKETS(test_name)
 #define TEST_PPAPI_NACL_WITH_SSL_SERVER(test_name)
 #define TEST_PPAPI_NACL_SUBTESTS(test_name, run_statement)
-
-#else
-
-#define MAYBE_PPAPI_NACL(test_name) test_name
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || defined(ADDRESS_SANITIZER)
-// http://crbug.com/633067, http://crbug.com/727989, http://crbug.com/1076806
-#define MAYBE_PPAPI_PNACL(test_name) DISABLED_##test_name
-#else
-#define MAYBE_PPAPI_PNACL(test_name) test_name
-#endif
-
-// NaCl based PPAPI tests (direct-to-native NaCl only, no PNaCl)
-#define TEST_PPAPI_NACL_NATIVE(test_name) \
-    IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, test_name) { \
-      RunTestViaHTTP(STRIP_PREFIXES(test_name)); \
-    }
-
-// NaCl based PPAPI tests
-#define TEST_PPAPI_NACL(test_name)                                           \
-  TEST_PPAPI_NACL_NATIVE(test_name)                                          \
-  IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClTest, MAYBE_PPAPI_PNACL(test_name)) { \
-    RunTestViaHTTP(STRIP_PREFIXES(test_name));                               \
-  }
-
-// NaCl based PPAPI tests
-#define TEST_PPAPI_NACL_SUBTESTS(test_name, run_statement)                   \
-  IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, test_name) { run_statement; }  \
-  IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClTest, MAYBE_PPAPI_PNACL(test_name)) { \
-    run_statement;                                                           \
-  }
-
-// NaCl based PPAPI tests with disallowed socket API
-#define TEST_PPAPI_NACL_DISALLOWED_SOCKETS(test_name) \
-    IN_PROC_BROWSER_TEST_F(PPAPINaClTestDisallowedSockets, test_name) { \
-      RunTestViaHTTP(STRIP_PREFIXES(test_name)); \
-    }
-
-// NaCl based PPAPI tests with SSL server
-#define TEST_PPAPI_NACL_WITH_SSL_SERVER(test_name)                           \
-  IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, test_name) {                   \
-    RunTestWithSSLServer(STRIP_PREFIXES(test_name));                         \
-  }                                                                          \
-  IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClTest, MAYBE_PPAPI_PNACL(test_name)) { \
-    RunTestWithSSLServer(STRIP_PREFIXES(test_name));                         \
-  }
-
-#endif  // !BUILDFLAG(ENABLE_NACL)
 
 //
 // Interface tests.
@@ -1956,80 +1904,3 @@ TEST_PPAPI_NACL(MAYBE_MessageHandler)
 
 TEST_PPAPI_NACL(MessageLoop_Basics)
 TEST_PPAPI_NACL(MessageLoop_Post)
-
-#if BUILDFLAG(ENABLE_NACL)
-class PackagedAppTest : public extensions::ExtensionBrowserTest {
- public:
-  explicit PackagedAppTest(const std::string& toolchain)
-      : toolchain_(toolchain) {
-    feature_list_.InitAndEnableFeature(kNaclAllow);
-  }
-
-  void LaunchTestingApp(const std::string& extension_dirname) {
-    base::FilePath data_dir;
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathService::Get(chrome::DIR_GEN_TEST_DATA, &data_dir));
-    }
-    base::FilePath app_dir = data_dir.AppendASCII("ppapi")
-                                     .AppendASCII("tests")
-                                     .AppendASCII("extensions")
-                                     .AppendASCII(extension_dirname)
-                                     .AppendASCII(toolchain_);
-
-    const extensions::Extension* extension = LoadExtension(app_dir);
-    ASSERT_TRUE(extension);
-
-    apps::AppLaunchParams params(
-        extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
-    params.command_line = *base::CommandLine::ForCurrentProcess();
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->BrowserAppLauncher()
-        ->LaunchAppWithParamsForTesting(std::move(params));
-  }
-
-  void RunTests(const std::string& extension_dirname) {
-    ExtensionTestMessageListener listener("PASS");
-    LaunchTestingApp(extension_dirname);
-    EXPECT_TRUE(listener.WaitUntilSatisfied());
-  }
-
- protected:
-  std::string toolchain_;
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class NewlibPackagedAppTest : public PackagedAppTest {
- public:
-  NewlibPackagedAppTest() : PackagedAppTest("newlib") { }
-};
-
-// Load a packaged app, and wait for it to successfully post a "hello" message
-// back.
-#if !defined(NDEBUG)
-// flaky on debug builds: crbug.com/709447
-IN_PROC_BROWSER_TEST_F(NewlibPackagedAppTest, DISABLED_SuccessfulLoad) {
-#else
-IN_PROC_BROWSER_TEST_F(NewlibPackagedAppTest,
-                       MAYBE_PPAPI_NACL(SuccessfulLoad)) {
-#endif
-  RunTests("packaged_app");
-}
-
-IN_PROC_BROWSER_TEST_F(NewlibPackagedAppTest,
-                       MAYBE_PPAPI_NACL(MulticastPermissions)) {
-  RunTests("multicast_permissions");
-}
-
-IN_PROC_BROWSER_TEST_F(NewlibPackagedAppTest,
-                       MAYBE_PPAPI_NACL(NoSocketPermissions)) {
-  RunTests("no_socket_permissions");
-}
-
-IN_PROC_BROWSER_TEST_F(NewlibPackagedAppTest,
-                       MAYBE_PPAPI_NACL(SocketPermissions)) {
-  RunTests("socket_permissions");
-}
-
-#endif

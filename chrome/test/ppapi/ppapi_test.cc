@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -29,8 +28,6 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
-#include "components/nacl/common/buildflags.h"
-#include "components/nacl/common/nacl_switches.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -143,7 +140,7 @@ PPAPITestBase::PPAPITestBase() {
   // These are needed to test that the right NetworkAnonymizationKey is used.
   scoped_feature_list_.InitWithFeatures(
       // enabled_features
-      {net::features::kPartitionConnectionsByNetworkIsolationKey, kNaclAllow},
+      {net::features::kPartitionConnectionsByNetworkIsolationKey},
       // disabled_features
       {});
 }
@@ -362,50 +359,26 @@ void OutOfProcessPPAPIPrivateTest::SetUpCommandLine(
 
 void PPAPINaClTest::SetUpCommandLine(base::CommandLine* command_line) {
   PPAPITestBase::SetUpCommandLine(command_line);
-#if BUILDFLAG(ENABLE_NACL)
-  // Enable running (non-portable) NaCl outside of the Chrome web store.
-  command_line->AppendSwitch(switches::kEnableNaCl);
-  command_line->AppendSwitchASCII(switches::kAllowNaClSocketAPI, "127.0.0.1");
-  command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
-#endif
 }
 
 void PPAPINaClTest::RunTest(const std::string& test_case) {
-#if BUILDFLAG(ENABLE_NACL)
-  PPAPITestBase::RunTest(test_case);
-#endif
 }
 
 void PPAPINaClTest::RunTestViaHTTP(const std::string& test_case) {
-#if BUILDFLAG(ENABLE_NACL)
-  PPAPITestBase::RunTestViaHTTP(test_case);
-#endif
 }
 
 void PPAPINaClTest::RunTestWithSSLServer(const std::string& test_case) {
-#if BUILDFLAG(ENABLE_NACL)
-  PPAPITestBase::RunTestWithSSLServer(test_case);
-#endif
 }
 
 void PPAPINaClTest::RunTestWithWebSocketServer(const std::string& test_case) {
-#if BUILDFLAG(ENABLE_NACL)
-  PPAPITestBase::RunTestWithWebSocketServer(test_case);
-#endif
 }
 
 void PPAPINaClTest::RunTestIfAudioOutputAvailable(
     const std::string& test_case) {
-#if BUILDFLAG(ENABLE_NACL)
-  PPAPITestBase::RunTestIfAudioOutputAvailable(test_case);
-#endif
 }
 
 void PPAPINaClTest::RunTestViaHTTPIfAudioOutputAvailable(
     const std::string& test_case) {
-#if BUILDFLAG(ENABLE_NACL)
-  PPAPITestBase::RunTestViaHTTPIfAudioOutputAvailable(test_case);
-#endif
 }
 
 // Append the correct mode and testcase string

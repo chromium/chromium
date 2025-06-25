@@ -114,8 +114,6 @@
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/lens/lens_features.h"
 #include "components/media_device_salt/media_device_salt_service.h"
-#include "components/nacl/browser/nacl_browser.h"
-#include "components/nacl/browser/pnacl_host.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
@@ -242,16 +240,6 @@ namespace {
 
 // Timeout after which the histogram for slow tasks is recorded.
 const base::TimeDelta kSlowTaskTimeout = base::Seconds(180);
-
-// Generic functions but currently only used when ENABLE_NACL.
-#if BUILDFLAG(ENABLE_NACL)
-// Convenience method to create a callback that can be run on any thread and
-// will post the given |callback| back to the UI thread.
-base::OnceClosure UIThreadTrampoline(base::OnceClosure callback) {
-  return base::BindPostTask(content::GetUIThreadTaskRunner({}),
-                            std::move(callback));
-}
-#endif  // BUILDFLAG(ENABLE_NACL)
 
 // Returned by ChromeBrowsingDataRemoverDelegate::GetOriginTypeMatcher().
 bool DoesOriginMatchEmbedderMask(uint64_t origin_type_mask,
@@ -1171,18 +1159,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       }
     }
 
-#if BUILDFLAG(ENABLE_NACL)
-    if (filter_builder->MatchesMostOriginsAndDomains()) {
-      nacl::NaClBrowser::GetInstance()->ClearValidationCache(UIThreadTrampoline(
-          CreateTaskCompletionClosure(TracingDataType::kNaclCache)));
-
-      pnacl::PnaclHost::GetInstance()->ClearTranslationCacheEntriesBetween(
-          delete_begin_, delete_end_,
-          UIThreadTrampoline(
-              CreateTaskCompletionClosure(TracingDataType::kPnaclCache)));
-    }
-#endif
-
     if (filter_builder->MatchesMostOriginsAndDomains()) {
       browsing_data::RemovePrerenderCacheData(
           prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
@@ -1661,10 +1637,6 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "Synchronous";
     case TracingDataType::kHistory:
       return "History";
-    case TracingDataType::kNaclCache:
-      return "NaclCache";
-    case TracingDataType::kPnaclCache:
-      return "PnaclCache";
     case TracingDataType::kAutofillData:
       return "AutofillData";
     case TracingDataType::kAutofillOrigins:

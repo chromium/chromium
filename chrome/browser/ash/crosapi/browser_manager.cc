@@ -71,7 +71,6 @@
 #include "components/component_updater/ash/component_manager_ash.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/nacl/common/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/device_ownership_waiter.h"

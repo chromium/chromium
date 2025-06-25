@@ -48,7 +48,6 @@
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #include "components/component_updater/installer_policies/plus_address_blocklist_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
-#include "components/nacl/common/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -139,19 +138,6 @@ void RegisterComponentsForUpdate() {
   RegisterWidevineCdmComponent(cus);
 #endif  // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
 
-#if BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS)
-  // PNaCl on Chrome OS is on rootfs and there is no need to download it. But
-  // Chrome4ChromeOS on Linux doesn't contain PNaCl so enable component
-  // installer when running on Linux. See crbug.com/422121 for more details.
-  if (!base::SysInfo::IsRunningOnChromeOS()) {
-#endif  // BUILDFLAG(IS_CHROMEOS)
-    RegisterPnaclComponent(cus);
-#if BUILDFLAG(IS_CHROMEOS)
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_ANDROID)
-
   RegisterSubresourceFilterComponent(cus);
   RegisterOnDeviceHeadSuggestComponent(
       cus, g_browser_process->GetApplicationLocale());
@@ -181,11 +167,17 @@ void RegisterComponentsForUpdate() {
     component_updater::DeleteStatefulLacros(path);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    // NaCl and PNaCl are no longer supported on Windows and Mac, clean up
-    // remaining component.
-    DeletePnaclComponent(path);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    // NaCl and PNaCl are no longer supported, clean up remaining component.
+#if BUILDFLAG(IS_CHROMEOS)
+    // PNaCl on Chrome OS is on rootfs and there is no need to clean it up. But
+    // Chrome4ChromeOS on Linux doesn't contain PNaCl so clean up component
+    // installer when running on Linux. See crbug.com/422121 for more details.
+    if (!base::SysInfo::IsRunningOnChromeOS()) {
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      DeletePnaclComponent(path);
+#if BUILDFLAG(IS_CHROMEOS)
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
   RegisterSSLErrorAssistantComponent(cus);
 

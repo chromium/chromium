@@ -37,8 +37,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/nacl/browser/nacl_browser.h"
-#include "components/nacl/common/buildflags.h"
-#include "components/nacl/common/nacl_switches.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/common/result_codes.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -388,13 +386,7 @@ TaskManagerTableModel::TaskManagerTableModel(
       table_view_delegate_(delegate),
       table_model_observer_(nullptr),
       stringifier_(new TaskManagerValuesStringifier),
-#if BUILDFLAG(ENABLE_NACL)
-      is_nacl_debugging_flag_enabled_(
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kEnableNaClDebug)),
-#else
       is_nacl_debugging_flag_enabled_(false),
-#endif  // BUILDFLAG(ENABLE_NACL)
       display_category_(initial_display_category) {
   DCHECK(delegate);
   StartUpdating();

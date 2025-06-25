@@ -20,8 +20,6 @@ include_rules = [
   "+chrome/common/chrome_icon_resources_win.h",
   # Anything from this dir.
   "+chrome/install_static",
-  # For BUILDFLAG(ENABLE_NACL)
-  "+components/nacl/common/buildflags.h",
 ]
 
 specific_include_rules = {

@@ -153,29 +153,6 @@ TEST_F(TaskGroupTest, SharedAsyncRefresh) {
   EXPECT_TRUE(task_group_->AreBackgroundCalculationsDone());
 }
 
-// Ensure that if NaCl is enabled then calling Refresh with a NaCl Task active
-// results in asynchronous completion. Also verifies that if NaCl is disabled
-// then completion is synchronous.
-TEST_F(TaskGroupTest, NaclRefreshWithTask) {
-  CreateTaskGroup(false);
-  FakeTask fake_task(base::Process::Current().Pid(), Task::NACL,
-                     false /* is_running_in_vm */);
-  task_group_->AddTask(&fake_task);
-
-  task_group_->Refresh(gpu::VideoMemoryUsageStats(), base::TimeDelta(),
-                       REFRESH_TYPE_NACL);
-#if BUILDFLAG(ENABLE_NACL)
-  EXPECT_FALSE(task_group_->AreBackgroundCalculationsDone());
-
-  ASSERT_FALSE(background_refresh_complete_);
-  run_loop_->Run();
-
-  EXPECT_TRUE(background_refresh_complete_);
-#endif  // BUILDFLAG(ENABLE_NACL)
-
-  EXPECT_TRUE(task_group_->AreBackgroundCalculationsDone());
-}
-
 // Test the task has correct network usage rate when zero bytes read and sent.
 TEST_F(TaskGroupTest, NetworkBytesSentReadZero) {
   CreateTaskGroup(false);

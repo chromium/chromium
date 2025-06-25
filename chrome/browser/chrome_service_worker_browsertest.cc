@@ -43,7 +43,6 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/nacl/common/buildflags.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
@@ -896,88 +895,6 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest, FaviconOtherOrigin) {
       embedded_test_server()->GetURL("www.example.com", "/fav.png").spec();
   EXPECT_EQ("", ExecuteFaviconFetchTest(url));
 }
-
-#if BUILDFLAG(ENABLE_NACL)
-// This test registers a service worker and then loads a controlled iframe that
-// creates a PNaCl plugin in an <embed> element. Once loaded, the PNaCl plugin
-// is ordered to do a resource request for "/echo". The service worker records
-// all the fetch events it sees. Since requests for plug-ins and requests
-// initiated by plug-ins should not be interecepted by service workers, we
-// expect that the the service worker only see the navigation request for the
-// iframe.
-class ChromeServiceWorkerFetchPPAPITest : public ChromeServiceWorkerFetchTest {
- public:
-  ChromeServiceWorkerFetchPPAPITest(const ChromeServiceWorkerFetchPPAPITest&) =
-      delete;
-  ChromeServiceWorkerFetchPPAPITest& operator=(
-      const ChromeServiceWorkerFetchPPAPITest&) = delete;
-
- protected:
-  ChromeServiceWorkerFetchPPAPITest() = default;
-  ~ChromeServiceWorkerFetchPPAPITest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ChromeServiceWorkerFetchTest::SetUpCommandLine(command_line);
-    // Use --enable-nacl flag to ensure the PNaCl module can load (without
-    // needing to use an OT token)
-    command_line->AppendSwitch(switches::kEnableNaCl);
-  }
-
-  void SetUpOnMainThread() override {
-    base::FilePath document_root;
-    ASSERT_TRUE(ui_test_utils::GetRelativeBuildDirectory(&document_root));
-    embedded_test_server()->AddDefaultHandlers(
-        document_root.Append(FILE_PATH_LITERAL("nacl_test_data"))
-            .Append(FILE_PATH_LITERAL("pnacl")));
-    ChromeServiceWorkerFetchTest::SetUpOnMainThread();
-    test_page_url_ = GetURL("/pnacl_url_loader.html");
-  }
-
-  std::string GetNavigationRequestString(const std::string& fragment) const {
-    return RequestString(test_page_url_ + fragment, "navigate", "include", "");
-  }
-
-  std::string ExecutePNACLUrlLoaderTest(const std::string& mode) {
-    content::DOMMessageQueue message_queue;
-    EXPECT_TRUE(content::ExecJs(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        base::StringPrintf("reportOnFetch = false;"
-                           "var iframe = document.createElement('iframe');"
-                           "iframe.src='%s#%s';"
-                           "document.body.appendChild(iframe);",
-                           test_page_url_.c_str(), mode.c_str())));
-
-    std::string json;
-    EXPECT_TRUE(message_queue.WaitForMessage(&json));
-
-    base::Value result =
-        base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS).value();
-
-    EXPECT_TRUE(result.is_string());
-    EXPECT_EQ(base::StringPrintf("OnOpen%s", mode.c_str()), result.GetString());
-    return EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                  "reportRequests();")
-        .ExtractString();
-  }
-
- private:
-  std::string test_page_url_;
-};
-
-// Flaky on Windows and Linux ASan. https://crbug.com/1113802
-IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerFetchPPAPITest,
-                       DISABLED_NotInterceptedByServiceWorker) {
-  // Only the navigation to the iframe should be intercepted by the service
-  // worker. The request for the PNaCl manifest ("/pnacl_url_loader.nmf"),
-  // the request for the compiled code ("/pnacl_url_loader_newlib_pnacl.pexe"),
-  // and any other requests initiated by the plug-in ("/echo") should not be
-  // seen by the service worker.
-  const std::string fragment =
-      "NotIntercepted";  // this string is not important.
-  EXPECT_EQ(GetNavigationRequestString("#" + fragment),
-            ExecutePNACLUrlLoaderTest(fragment));
-}
-#endif  // BUILDFLAG(ENABLE_NACL)
 
 class ChromeServiceWorkerNavigationHintTest : public ChromeServiceWorkerTest {
  protected:

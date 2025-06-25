@@ -11,27 +11,13 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/ppapi_utils.h"
 #include "chrome/common/pref_names.h"
-#include "components/nacl/common/buildflags.h"
 #include "components/prefs/pref_service.h"
 
-namespace {
-
-#if BUILDFLAG(ENABLE_NACL)
-bool ShouldNaClBeAllowed() {
-  return base::FeatureList::IsEnabled(kNaclAllow);
-}
-#endif
-
-}  // namespace
+// TODO(crbug.com/423859723): Remove this file.
 
 BASE_FEATURE(kNaclAllow, "NaclAllow", base::FEATURE_DISABLED_BY_DEFAULT);
 
 void ChromeBrowserMainExtraPartsNaclDeprecation::PostEarlyInitialization() {
-#if BUILDFLAG(ENABLE_NACL)
-  if (!ShouldNaClBeAllowed()) {
-    DisallowNacl();
-  }
-#endif  // BUILDFLAG(ENABLE_NACL)
 }
 
 void ChromeBrowserMainExtraPartsNaclDeprecation::PostMainMessageLoopRun() {

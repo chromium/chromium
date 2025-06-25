@@ -31,7 +31,6 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
-#include "components/nacl/common/buildflags.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/browsing_data_remover.h"

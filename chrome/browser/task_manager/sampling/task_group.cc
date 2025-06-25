@@ -18,10 +18,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "gpu/ipc/common/memory_stats.h"
 
-#if BUILDFLAG(ENABLE_NACL)
-#include "components/nacl/browser/nacl_browser.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
@@ -39,9 +35,6 @@ const int kBackgroundRefreshTypesMask =
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
     REFRESH_TYPE_FD_COUNT |
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#if BUILDFLAG(ENABLE_NACL)
-    REFRESH_TYPE_NACL |
-#endif  // BUILDFLAG(ENABLE_NACL)
     REFRESH_TYPE_PRIORITY;
 
 #if BUILDFLAG(IS_WIN)
@@ -73,13 +66,6 @@ void GetWindowsHandles(base::ProcessHandle handle,
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(ENABLE_NACL)
-int GetNaClDebugStubPortOnProcessThread(int process_id) {
-  return nacl::NaClBrowser::GetInstance()->GetProcessGdbDebugStubPort(
-      process_id);
-}
-#endif  // BUILDFLAG(ENABLE_NACL)
 
 }  // namespace
 
@@ -114,9 +100,6 @@ TaskGroup::TaskGroup(
       user_peak_handles_(-1),
       hard_faults_per_second_(-1),
 #endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(ENABLE_NACL)
-      nacl_debug_stub_port_(nacl::kGdbDebugStubPortUnknown),
-#endif  // BUILDFLAG(ENABLE_NACL)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
       open_fd_count_(-1),
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
@@ -206,19 +189,10 @@ void TaskGroup::Refresh(const gpu::VideoMemoryUsageStats& gpu_memory_stats,
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-// 4- Refresh the NACL debug stub port (if enabled). This calls out to
-//    NaClBrowser on the browser's IO thread, completing asynchronously.
-#if BUILDFLAG(ENABLE_NACL)
-  if (TaskManagerObserver::IsResourceRefreshEnabled(REFRESH_TYPE_NACL,
-                                                    refresh_flags)) {
-    RefreshNaClDebugStubPort(tasks_[0]->GetChildProcessUniqueID());
-  }
-#endif  // BUILDFLAG(ENABLE_NACL)
-
   int64_t shared_refresh_flags =
       refresh_flags & shared_sampler_->GetSupportedFlags();
 
-  // 5- Refresh resources via SharedSampler if the current platform
+  // 4- Refresh resources via SharedSampler if the current platform
   // implementation supports that. The actual work is done on the worker thread.
   // At the moment this is supported only on OS_WIN.
   if (shared_refresh_flags != 0) {
@@ -228,11 +202,11 @@ void TaskGroup::Refresh(const gpu::VideoMemoryUsageStats& gpu_memory_stats,
 
   // The remaining resource refreshes are time consuming and cannot be done on
   // the UI thread. Do them all on the worker thread using the TaskGroupSampler.
-  // 6-  CPU usage.
-  // 7-  Memory usage.
-  // 8-  Idle Wakeups per second.
-  // 9-  (Linux and ChromeOS only) The number of file descriptors current open.
-  // 10- Process priority (foreground vs. background).
+  // 5-  CPU usage.
+  // 6-  Memory usage.
+  // 7-  Idle Wakeups per second.
+  // 8-  (Linux and ChromeOS only) The number of file descriptors current open.
+  // 9- Process priority (foreground vs. background).
   if (worker_thread_sampler_)
     worker_thread_sampler_->Refresh(refresh_flags);
 }
@@ -282,25 +256,6 @@ void TaskGroup::RefreshWindowsHandles() {
                     &user_current_handles_, &user_peak_handles_);
 #endif  // BUILDFLAG(IS_WIN)
 }
-
-#if BUILDFLAG(ENABLE_NACL)
-void TaskGroup::RefreshNaClDebugStubPort(int child_process_unique_id) {
-  // Note this needs to be in a PostTask to avoid a use-after-free (see
-  // https://crbug.com/1221406).
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&TaskGroup::OnRefreshNaClDebugStubPortDone,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                GetNaClDebugStubPortOnProcessThread(
-                                    child_process_unique_id)));
-}
-
-void TaskGroup::OnRefreshNaClDebugStubPortDone(int nacl_debug_stub_port) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  nacl_debug_stub_port_ = nacl_debug_stub_port;
-  OnBackgroundRefreshTypeFinished(REFRESH_TYPE_NACL);
-}
-#endif  // BUILDFLAG(ENABLE_NACL)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 void TaskGroup::OnOpenFdCountRefreshDone(int open_fd_count) {

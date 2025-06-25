@@ -12,7 +12,6 @@
 
 #include "build/build_config.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/nacl/common/buildflags.h"
 #include "ui/base/models/table_model.h"
 
 namespace task_manager {
@@ -232,18 +231,6 @@ inline constexpr std::array kColumns = {
                     .sortable = true,
                     .initial_sort_is_ascending = false,
                     .default_visibility = false},
-
-#if BUILDFLAG(ENABLE_NACL)
-    TableColumnData{.id = IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN,
-                    .align = ui::TableColumn::RIGHT,
-                    .width = -1,
-                    .percent = 0,
-                    .min_width = std::size("32767") * kCharWidth,
-                    .max_width = -1,
-                    .sortable = true,
-                    .initial_sort_is_ascending = true,
-                    .default_visibility = false},
-#endif  // BUILDFLAG(ENABLE_NACL)
 
     TableColumnData{
         .id = IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN,

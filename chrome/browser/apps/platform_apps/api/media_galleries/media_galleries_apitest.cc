@@ -35,7 +35,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/nacl/common/buildflags.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/storage_monitor.h"
@@ -54,11 +53,6 @@
 #include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(ENABLE_NACL)
-#include "base/command_line.h"
-#include "ppapi/shared_impl/ppapi_switches.h"
-#endif
 
 using extensions::PlatformAppBrowserTest;
 using storage_monitor::StorageInfo;
@@ -247,65 +241,6 @@ class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
   std::unique_ptr<EnsureMediaDirectoriesExists>
       ensure_media_directories_exists_;
 };
-
-#if BUILDFLAG(ENABLE_NACL)
-class MediaGalleriesPlatformAppPpapiTest
-    : public MediaGalleriesPlatformAppBrowserTest {
- public:
-  MediaGalleriesPlatformAppPpapiTest() {
-    feature_list_.InitAndEnableFeature(kNaclAllow);
-  }
-
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    MediaGalleriesPlatformAppBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kEnablePepperTesting);
-  }
-
-  void SetUpOnMainThread() override {
-    MediaGalleriesPlatformAppBrowserTest::SetUpOnMainThread();
-
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_GEN_TEST_DATA, &app_dir_));
-    app_dir_ = app_dir_.AppendASCII("ppapi")
-                   .AppendASCII("tests")
-                   .AppendASCII("extensions")
-                   .AppendASCII("media_galleries")
-                   .AppendASCII("newlib");
-  }
-
-  const base::FilePath& app_dir() const { return app_dir_; }
-
- private:
-  base::FilePath app_dir_;
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppPpapiTest, SendFilesystem) {
-  RemoveAllGalleries();
-  MakeSingleFakeGallery(NULL);
-
-  const extensions::Extension* extension = LoadExtension(app_dir());
-  ASSERT_TRUE(extension);
-
-  extensions::ResultCatcher catcher;
-  apps::AppLaunchParams params(
-      extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
-  params.command_line = *base::CommandLine::ForCurrentProcess();
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParamsForTesting(std::move(params));
-
-  bool result = true;
-  if (!catcher.GetNextResult()) {
-    message_ = catcher.message();
-    result = false;
-  }
-  content::RunAllPendingInMessageLoop();  // avoid race on exit in registry.
-  ASSERT_TRUE(result) << message_;
-}
-
-#endif  // BUILDFLAG(ENABLE_NACL)
 
 // Test is flaky, it fails on certain bots, namely WinXP Tests(1) and Linux
 // (dbg)(1)(32).  See crbug.com/354425.

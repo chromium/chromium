@@ -8472,23 +8472,6 @@ const char kDcheckIsFatalDescription[] =
     "rather than crashing. If enabled, DCHECKs will crash the calling process.";
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
-#if BUILDFLAG(ENABLE_NACL)
-const char kNaclName[] = "Native Client";
-const char kNaclDescription[] =
-    "Support Native Client for all web applications, even those that were not "
-    "installed from the Chrome Web Store.";
-const char kVerboseLoggingInNaclName[] = "Verbose logging in Native Client";
-const char kVerboseLoggingInNaclDescription[] =
-    "Control the level of verbose logging in Native Client modules for "
-    "debugging purposes.";
-const char kVerboseLoggingInNaclChoiceDefault[] = "Default";
-const char kVerboseLoggingInNaclChoiceLow[] = "Low";
-const char kVerboseLoggingInNaclChoiceMedium[] = "Medium";
-const char kVerboseLoggingInNaclChoiceHigh[] = "High";
-const char kVerboseLoggingInNaclChoiceHighest[] = "Highest";
-const char kVerboseLoggingInNaclChoiceDisabled[] = "Disabled";
-#endif  // ENABLE_NACL
-
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 const char kEnableOopPrintDriversName[] =
     "Enables Out-of-Process Printer Drivers";

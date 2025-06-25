@@ -123,8 +123,6 @@
 #include "components/lens/lens_features.h"
 #include "components/manta/features.h"
 #include "components/mirroring/service/mirroring_features.h"
-#include "components/nacl/common/buildflags.h"
-#include "components/nacl/common/nacl_switches.h"
 #include "components/network_session_configurator/common/network_features.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_field_trial.h"
@@ -1162,28 +1160,6 @@ const FeatureEntry::FeatureVariation kDynamicSearchUpdateAnimationVariations[] =
      {"150ms", kDynamicSearchUpdateAnimationDuration_150,
       std::size(kDynamicSearchUpdateAnimationDuration_150), nullptr}};
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(ENABLE_NACL)
-// Note: This needs to be kept in sync with parsing in
-// content/common/zygote/zygote_communication_linux.cc
-const FeatureEntry::Choice kVerboseLoggingInNaclChoices[] = {
-    {flag_descriptions::kVerboseLoggingInNaclChoiceDefault, "", ""},
-    {flag_descriptions::kVerboseLoggingInNaclChoiceLow,
-     switches::kVerboseLoggingInNacl, switches::kVerboseLoggingInNaclChoiceLow},
-    {flag_descriptions::kVerboseLoggingInNaclChoiceMedium,
-     switches::kVerboseLoggingInNacl,
-     switches::kVerboseLoggingInNaclChoiceMedium},
-    {flag_descriptions::kVerboseLoggingInNaclChoiceHigh,
-     switches::kVerboseLoggingInNacl,
-     switches::kVerboseLoggingInNaclChoiceHigh},
-    {flag_descriptions::kVerboseLoggingInNaclChoiceHighest,
-     switches::kVerboseLoggingInNacl,
-     switches::kVerboseLoggingInNaclChoiceHighest},
-    {flag_descriptions::kVerboseLoggingInNaclChoiceDisabled,
-     switches::kVerboseLoggingInNacl,
-     switches::kVerboseLoggingInNaclChoiceDisabled},
-};
-#endif  // ENABLE_NACL
 
 const FeatureEntry::Choice kSiteIsolationOptOutChoices[] = {
     {flag_descriptions::kSiteIsolationOptOutChoiceDefault, "", ""},
@@ -4917,14 +4893,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebrtcPipeWireCameraDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kWebRtcPipeWireCamera)},
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
-#if BUILDFLAG(ENABLE_NACL)
-    {"enable-nacl", flag_descriptions::kNaclName,
-     flag_descriptions::kNaclDescription, kOsAll,
-     SINGLE_VALUE_TYPE(switches::kEnableNaCl)},
-    {"verbose-logging-in-nacl", flag_descriptions::kVerboseLoggingInNaclName,
-     flag_descriptions::kVerboseLoggingInNaclDescription, kOsAll,
-     MULTI_VALUE_TYPE(kVerboseLoggingInNaclChoices)},
-#endif  // ENABLE_NACL
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     {"web-hid-in-web-view", flag_descriptions::kEnableWebHidInWebViewName,
      flag_descriptions::kEnableWebHidInWebViewDescription, kOsAll,
@@ -5635,9 +5603,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kOfflineItemsInNotifications)},
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
-     BUILDFLAG(IS_ANDROID)) &&                        \
-    !BUILDFLAG(IS_NACL)
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
     {"mojo-linux-sharedmem", flag_descriptions::kMojoLinuxChannelSharedMemName,
      flag_descriptions::kMojoLinuxChannelSharedMemDescription,
      kOsCrOS | kOsLinux | kOsAndroid,

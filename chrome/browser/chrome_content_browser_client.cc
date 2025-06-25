@@ -597,13 +597,6 @@
 #include "components/captive_portal/content/captive_portal_url_loader_throttle.h"
 #endif
 
-#if BUILDFLAG(ENABLE_NACL)
-#include "components/nacl/browser/nacl_host_message_filter.h"
-#include "components/nacl/browser/nacl_process_host.h"
-#include "components/nacl/common/nacl_process_type.h"
-#include "components/nacl/common/nacl_switches.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
@@ -1815,14 +1808,6 @@ void ChromeContentBrowserClient::RenderProcessWillLaunch(
       std::make_unique<base::UserDataAdapter<AudioDebugRecordingsHandler>>(
           audio_debug_recordings_handler));
 
-#if BUILDFLAG(ENABLE_NACL)
-  if (IsNaclAllowed() && !profile->IsSystemProfile()) {
-    host->AddFilter(new nacl::NaClHostMessageFilter(host->GetDeprecatedID(),
-                                                    profile->IsOffTheRecord(),
-                                                    profile->GetPath()));
-  }
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
   // Register CrashMemoryMetricsCollector to report oom related metrics.
   host->SetUserData(
@@ -2913,10 +2898,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     command_line->AppendSwitch(switches::kEnableDistillabilityService);
 #endif
 
-#if BUILDFLAG(ENABLE_NACL)
-    AppendDisableNaclSwitchIfNecessary(command_line);
-#endif
-
     // Please keep this in alphabetical order.
     static const char* const kSwitchNames[] = {
         autofill::switches::kIgnoreAutocompleteOffForAutofill,
@@ -2943,9 +2924,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         variations::switches::kEnableBenchmarkingApi,
         switches::kEnableDistillabilityService,
         switches::kEnableNaCl,
-#if BUILDFLAG(ENABLE_NACL)
-        switches::kEnableNaClDebug,
-#endif
         switches::kEnableNetBenchmarking,
         switches::kExtensionAiDataCollection,
         switches::kExtensionExperimentalActor,
@@ -2953,9 +2931,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         chromeos::switches::
             kTelemetryExtensionPwaOriginOverrideForTesting,  // For tests only.
         switches::kForceAppMode,
-#endif
-#if BUILDFLAG(ENABLE_NACL)
-        switches::kForcePNaClSubzero,
 #endif
         switches::kForceUIDirection,
         switches::kIgnoreGooglePortNumbers,
@@ -2982,21 +2957,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif
     MaybeAppendSecureOriginsAllowlistSwitch(command_line);
   } else if (process_type == switches::kZygoteProcess) {
-    // It would be preferable to call AppendDisableNaclSwitchIfNecessary to
-    // disable NaCl for the zygote process. Unfortunately that method depends on
-    // state (including policy) that is determined after the zygote is forked.
-    // Instead we rely on renderers overriding the zygote state.
-
-    // Load (in-process) Pepper plugins in-process in the zygote pre-sandbox.
-#if BUILDFLAG(ENABLE_NACL)
-    static const char* const kSwitchNames[] = {
-        switches::kEnableNaClDebug,
-        switches::kForcePNaClSubzero,
-        switches::kVerboseLoggingInNacl,
-    };
-
-    command_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
     // This is called before feature flags are parsed, so pass them in their raw
     // form.
@@ -4964,18 +4924,7 @@ void ChromeContentBrowserClient::DidCreatePpapiPlugin(
 
 content::BrowserPpapiHost*
 ChromeContentBrowserClient::GetExternalBrowserPpapiHost(int plugin_process_id) {
-#if BUILDFLAG(ENABLE_NACL)
-  content::BrowserChildProcessHostIterator iter(PROCESS_TYPE_NACL_LOADER);
-  while (!iter.Done()) {
-    nacl::NaClProcessHost* host =
-        static_cast<nacl::NaClProcessHost*>(iter.GetDelegate());
-    if (host->process() && host->process()->GetData().id == plugin_process_id) {
-      // Found the plugin.
-      return host->browser_ppapi_host();
-    }
-    ++iter;
-  }
-#endif
+  // TODO(crbug.com/423859723): Remove method.
   return nullptr;
 }
 

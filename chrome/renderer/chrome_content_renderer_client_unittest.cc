@@ -33,15 +33,6 @@
 #include "extensions/common/manifest_constants.h"
 #endif
 
-#if BUILDFLAG(ENABLE_NACL)
-#include "third_party/blink/public/web/web_plugin_params.h"
-#endif
-
-#if BUILDFLAG(ENABLE_NACL)
-using blink::WebPluginParams;
-using blink::WebString;
-#endif
-
 using content::WebPluginInfo;
 using content::WebPluginMimeType;
 
@@ -51,21 +42,9 @@ using extensions::mojom::ManifestLocation;
 
 namespace {
 
-#if BUILDFLAG(ENABLE_NACL)
-const bool kNaClRestricted = false;
-const bool kNaClUnrestricted = true;
-const bool kExtensionNotFromWebStore = false;
-const bool kExtensionFromWebStore = true;
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 const bool kNotHostedApp = false;
 const bool kHostedApp = true;
-#endif
-
-#if BUILDFLAG(ENABLE_NACL)
-const char kExtensionUrl[] = "chrome-extension://extension_id/background.html";
-
 #endif
 
 void AddContentTypeHandler(content::WebPluginInfo* info,
@@ -166,81 +145,4 @@ TEST_F(ChromeContentRendererClientTest, NaClRestriction) {
               ChromeContentRendererClient::GetNaClContentHandlerURL(
                   "application/x-foo", info));
   }
-#if BUILDFLAG(ENABLE_NACL)
-  // --enable-nacl allows all NaCl apps.
-  {
-    EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
-        GURL(), kNaClUnrestricted,
-        CreateExtension(kExtensionNotFromWebStore).get()));
-  }
-  // Unpacked extensions are allowed without --enable-nacl.
-  {
-    EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
-        GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(ManifestLocation::kUnpacked,
-                                    kExtensionNotFromWebStore)
-            .get()));
-  }
-  // Component extensions are allowed without --enable-nacl.
-  {
-    EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
-        GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(ManifestLocation::kComponent,
-                                    kExtensionNotFromWebStore)
-            .get()));
-  }
-  {
-    EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
-        GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(ManifestLocation::kExternalComponent,
-                                    kExtensionNotFromWebStore)
-            .get()));
-  }
-  // Extensions that are force installed by policy are allowed without
-  // --enable-nacl.
-  {
-    EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
-        GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(ManifestLocation::kExternalPolicy,
-                                    kExtensionNotFromWebStore)
-            .get()));
-    EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
-        GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(ManifestLocation::kExternalPolicyDownload,
-                                    kExtensionNotFromWebStore)
-            .get()));
-  }
-  // CWS extensions are allowed without --enable-nacl if called from an
-  // extension url.
-  {
-    EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
-        GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtension(kExtensionFromWebStore).get()));
-  }
-  // Other URLs (including previously-whitelisted URLs) are blocked
-  // without --enable-nacl.
-  {
-    EXPECT_FALSE(ChromeContentRendererClient::IsNativeNaClAllowed(
-        GURL("https://plus.google.com.evil.com/foo1"), kNaClRestricted,
-        nullptr));
-    EXPECT_FALSE(ChromeContentRendererClient::IsNativeNaClAllowed(
-        GURL("https://talkgadget.google.com/hangouts/foo1"), kNaClRestricted,
-        nullptr));
-  }
-  // Non chrome-extension:// URLs belonging to hosted apps are allowed for
-  // webstore installed hosted apps.
-  {
-    EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
-        GURL("http://example.com/test.html"), kNaClRestricted,
-        CreateHostedApp(kExtensionFromWebStore, "http://example.com/").get()));
-    EXPECT_FALSE(ChromeContentRendererClient::IsNativeNaClAllowed(
-        GURL("http://example.com/test.html"), kNaClRestricted,
-        CreateHostedApp(kExtensionNotFromWebStore, "http://example.com/")
-            .get()));
-    EXPECT_FALSE(ChromeContentRendererClient::IsNativeNaClAllowed(
-        GURL("http://example.evil.com/test.html"), kNaClRestricted,
-        CreateHostedApp(kExtensionNotFromWebStore, "http://example.com/")
-            .get()));
-  }
-#endif  // BUILDFLAG(ENABLE_NACL)
 }

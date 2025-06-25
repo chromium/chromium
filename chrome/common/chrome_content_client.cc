@@ -75,12 +75,6 @@
 #include "extensions/common/constants.h"
 #endif
 
-#if BUILDFLAG(ENABLE_NACL)
-#include "components/nacl/common/nacl_constants.h"
-#include "components/nacl/common/nacl_process_type.h"
-#include "ppapi/shared_impl/ppapi_permissions.h"  // nogncheck
-#endif
-
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/common/content_plugin_info.h"
 #endif
@@ -102,28 +96,11 @@
 
 namespace {
 
-#if BUILDFLAG(ENABLE_NACL)
-content::ContentPluginInfo::GetInterfaceFunc g_nacl_get_interface;
-content::ContentPluginInfo::PPP_InitializeModuleFunc g_nacl_initialize_module;
-content::ContentPluginInfo::PPP_ShutdownModuleFunc g_nacl_shutdown_module;
-#endif
-
 }  // namespace
 
 ChromeContentClient::ChromeContentClient() = default;
 
 ChromeContentClient::~ChromeContentClient() = default;
-
-#if BUILDFLAG(ENABLE_NACL)
-void ChromeContentClient::SetNaClEntryFunctions(
-    content::ContentPluginInfo::GetInterfaceFunc get_interface,
-    content::ContentPluginInfo::PPP_InitializeModuleFunc initialize_module,
-    content::ContentPluginInfo::PPP_ShutdownModuleFunc shutdown_module) {
-  g_nacl_get_interface = get_interface;
-  g_nacl_initialize_module = initialize_module;
-  g_nacl_shutdown_module = shutdown_module;
-}
-#endif
 
 void ChromeContentClient::SetActiveURL(const GURL& url,
                                        std::string top_origin) {
@@ -161,34 +138,6 @@ void ChromeContentClient::AddPlugins(
   pdf_info.mime_types.push_back(pdf_mime_type);
   plugins->push_back(pdf_info);
 #endif  // BUILDFLAG(ENABLE_PDF)
-
-#if BUILDFLAG(ENABLE_NACL)
-  // By default NaCl plugin info is loaded in every process. There is now logic
-  // in ChromeBrowserMainExtraPartsNaclDeprecation which checks some runtime
-  // conditions to see if NaCl should be disabled. If so, it sets a command line
-  // flag which is propagated to all relevant child processes. If this comment
-  // line flag has been set, then NaCl plugin info is not loaded.
-  if (IsNaclAllowed()) {
-    content::ContentPluginInfo nacl;
-    // The nacl plugin is now built into the Chromium binary.
-    nacl.is_internal = true;
-    nacl.path = base::FilePath(nacl::kInternalNaClPluginFileName);
-    nacl.name = nacl::kNaClPluginName;
-    content::WebPluginMimeType nacl_mime_type(nacl::kNaClPluginMimeType,
-                                              nacl::kNaClPluginExtension,
-                                              nacl::kNaClPluginDescription);
-    nacl.mime_types.push_back(nacl_mime_type);
-    content::WebPluginMimeType pnacl_mime_type(nacl::kPnaclPluginMimeType,
-                                               nacl::kPnaclPluginExtension,
-                                               nacl::kPnaclPluginDescription);
-    nacl.mime_types.push_back(pnacl_mime_type);
-    nacl.internal_entry_points.get_interface = g_nacl_get_interface;
-    nacl.internal_entry_points.initialize_module = g_nacl_initialize_module;
-    nacl.internal_entry_points.shutdown_module = g_nacl_shutdown_module;
-    nacl.permissions = ppapi::PERMISSION_PRIVATE | ppapi::PERMISSION_DEV;
-    plugins->push_back(nacl);
-  }
-#endif  // BUILDFLAG(ENABLE_NACL)
 }
 
 void ChromeContentClient::AddContentDecryptionModules(
@@ -347,15 +296,7 @@ gfx::Image& ChromeContentClient::GetNativeImageNamed(int resource_id) {
 }
 
 std::string ChromeContentClient::GetProcessTypeNameInEnglish(int type) {
-#if BUILDFLAG(ENABLE_NACL)
-  switch (type) {
-    case PROCESS_TYPE_NACL_LOADER:
-      return "Native Client module";
-    case PROCESS_TYPE_NACL_BROKER:
-      return "Native Client broker";
-  }
-#endif
-
+  // TODO(crbug.com/423859723): Remove this method.
   NOTREACHED() << "Unknown child process type!";
 }
 

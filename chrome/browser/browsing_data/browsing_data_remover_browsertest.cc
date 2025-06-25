@@ -45,7 +45,6 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/nacl/common/buildflags.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/prefs/pref_service.h"
@@ -1118,10 +1117,6 @@ const std::vector<std::string_view> kDoesNotSupportOriginFilteringDelegate{
     "WebrtcEventLogs",
 #if BUILDFLAG(IS_CHROMEOS)
     "TpmAttestationKeys",
-#endif
-#if BUILDFLAG(ENABLE_NACL)
-    "NaclCache",
-    "PnaclCache",
 #endif
 };
 

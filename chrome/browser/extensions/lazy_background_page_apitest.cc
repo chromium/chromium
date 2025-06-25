@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions.h"
@@ -41,7 +40,6 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
-#include "components/nacl/common/buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -121,9 +119,7 @@ class LoadedIncognitoObserver : public ExtensionRegistryObserver {
 
 class LazyBackgroundPageApiTest : public ExtensionApiTest {
  public:
-  LazyBackgroundPageApiTest() {
-    feature_list_.InitAndEnableFeature(kNaclAllow);
-  }
+  LazyBackgroundPageApiTest() {}
 
   LazyBackgroundPageApiTest(const LazyBackgroundPageApiTest&) = delete;
   LazyBackgroundPageApiTest& operator=(const LazyBackgroundPageApiTest&) =
@@ -441,85 +437,6 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_WaitForRequest) {
   // Lazy Background Page has been shut down.
   EXPECT_FALSE(pm->GetBackgroundHostForExtension(last_loaded_extension_id()));
 }
-
-// Tests that the lazy background page stays alive while a NaCl module exists in
-// its DOM.
-#if BUILDFLAG(ENABLE_NACL)
-
-IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, NaClInBackgroundPage) {
-  {
-    base::FilePath extdir;
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_GEN_TEST_DATA, &extdir));
-    extdir = extdir.AppendASCII("ppapi/tests/extensions/load_unload/newlib");
-    ExtensionHostTestHelper host_helper(profile());
-    host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
-    ASSERT_TRUE(LoadExtension(extdir));
-    // Wait for the background page to cycle.
-    host_helper.WaitForDocumentElementAvailable();
-    host_helper.WaitForHostDestroyed();
-  }
-
-  // The NaCl module is loaded, and the Lazy Background Page stays alive.
-  {
-    ExtensionTestMessageListener nacl_module_loaded("nacl_module_loaded");
-    ExtensionActionTestHelper::Create(browser())->Press(
-        last_loaded_extension_id());
-    EXPECT_TRUE(nacl_module_loaded.WaitUntilSatisfied());
-    content::RunAllTasksUntilIdle();
-    EXPECT_TRUE(IsBackgroundPageAlive(last_loaded_extension_id()));
-  }
-
-  // The NaCl module is detached from DOM, and the Lazy Background Page shuts
-  // down.
-  {
-    ExtensionHostTestHelper host_helper(profile());
-    host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
-    ExtensionActionTestHelper::Create(browser())->Press(
-        last_loaded_extension_id());
-    host_helper.WaitForHostDestroyed();
-  }
-
-  // The Lazy Background Page has been shut down.
-  EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
-}
-
-// Tests that the lazy background page shuts down when all visible views with
-// NaCl modules are closed.
-IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, NaClInView) {
-  // The extension is loaded and should've opened a new tab to an extension
-  // page, and the Lazy Background Page stays alive.
-  {
-    base::FilePath extdir;
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_GEN_TEST_DATA, &extdir));
-    extdir = extdir.AppendASCII("ppapi/tests/extensions/popup/newlib");
-    ResultCatcher catcher;
-    const Extension* extension = LoadExtension(extdir);
-    ASSERT_TRUE(extension);
-    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-    EXPECT_EQ(extension->ResolveExtensionURL("popup.html"),
-              browser()
-                  ->tab_strip_model()
-                  ->GetActiveWebContents()
-                  ->GetLastCommittedURL());
-    EXPECT_TRUE(IsBackgroundPageAlive(last_loaded_extension_id()));
-  }
-
-  // Close the new tab.
-  {
-    ExtensionHostTestHelper host_helper(profile(), last_loaded_extension_id());
-    host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
-    browser()->tab_strip_model()->CloseWebContentsAt(
-        browser()->tab_strip_model()->active_index(),
-        TabCloseTypes::CLOSE_NONE);
-    host_helper.WaitForHostDestroyed();
-  }
-
-  // The Lazy Background Page has been shut down.
-  EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
-}
-#endif
 
 // Tests that the lazy background page stays alive until all visible views are
 // closed.

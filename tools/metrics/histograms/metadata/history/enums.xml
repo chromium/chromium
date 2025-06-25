@@ -75,8 +75,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kSynchronous"/>
   <int value="2" label="kHistory"/>
   <int value="3" label="(Obsolete) kHostNameResolution"/>
-  <int value="4" label="kNaclCache"/>
-  <int value="5" label="kPnaclCache"/>
+  <int value="4" label="(Obsolete) kNaclCache"/>
+  <int value="5" label="(Obsolete) kPnaclCache"/>
   <int value="6" label="kAutofillData"/>
   <int value="7" label="kAutofillOrigins"/>
   <int value="8" label="(Obsolete) kPluginData"/>

@@ -47,7 +47,6 @@
 #include "components/crx_file/crx_verifier.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
-#include "components/nacl/common/buildflags.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registry.h"
@@ -76,10 +75,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_manager.h"
-#endif
-
-#if BUILDFLAG(ENABLE_NACL)
-#include "chrome/browser/nacl_host/nacl_infobar_delegate.h"
 #endif
 
 class InfoBarsTest : public InProcessBrowserTest {
@@ -249,11 +244,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::NACL_INFOBAR_DELEGATE:
-#if BUILDFLAG(ENABLE_NACL)
-      NaClInfoBarDelegate::Create(GetInfoBarManager());
-#else
       ADD_FAILURE() << "This infobar is not supported when NaCl is disabled.";
-#endif
       break;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -410,12 +401,6 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_incognito_connectability) {
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_theme_installed) {
   ShowAndVerifyUi();
 }
-
-#if BUILDFLAG(ENABLE_NACL)
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_nacl) {
-  ShowAndVerifyUi();
-}
-#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_hung_plugin) {
