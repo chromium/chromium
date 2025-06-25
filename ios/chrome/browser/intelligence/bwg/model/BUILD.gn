@@ -6,6 +6,7 @@ source_set("model") {
   sources = [
     "bwg_service.h",
     "bwg_service.mm",
+    "bwg_session_delegate.h",
   ]
   deps = [
     "//components/keyed_service/core",

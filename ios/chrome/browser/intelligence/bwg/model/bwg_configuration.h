@@ -20,6 +20,8 @@ namespace optimization_guide::proto {
 class PageContext;
 }  // namespace optimization_guide::proto
 
+@protocol BWGSessionDelegate;
+
 // BWGConfiguration is a configuration class that holds all the data necessary
 // to start the BWG overlay.
 @interface BWGConfiguration : NSObject
@@ -39,6 +41,9 @@ class PageContext;
 // The state of the BWG PageContext.
 @property(nonatomic, assign)
     ios::provider::BWGPageContextState BWGPageContextState;
+
+// Delegate for BWG events.
+@property(nonatomic, weak) id<BWGSessionDelegate> BWGSessionDelegate;
 
 @end
 
