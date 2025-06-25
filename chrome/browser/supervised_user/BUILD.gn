@@ -2,8 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
+
+source_set("supervised_user") {
+  sources = []
+  public_deps = []
+
+  if (enable_extensions_core) {
+    sources += [ "supervised_user_extensions_metrics_recorder.h" ]
+    public_deps += [ "//extensions/browser" ]
+  }
+}
 
 static_library("test_support") {
   testonly = true

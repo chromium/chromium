@@ -8257,10 +8257,9 @@ static_library("browser") {
   }
 
   if (enable_extensions_core) {
-    sources += [
-      "supervised_user/supervised_user_extensions_metrics_recorder.cc",
-      "supervised_user/supervised_user_extensions_metrics_recorder.h",
-    ]
+    sources +=
+        [ "supervised_user/supervised_user_extensions_metrics_recorder.cc" ]
+    deps += [ "//chrome/browser/supervised_user" ]
   }
 
   if (enable_extensions) {

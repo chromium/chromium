@@ -1962,6 +1962,9 @@ static_library("ui") {
       "views/supervised_user/parent_permission_dialog_view.cc",
       "views/supervised_user/parent_permission_dialog_view.h",
     ]
+
+    public_deps += [ "//chrome/browser/supervised_user" ]
+
     deps += [ "//chromeos/ui/vector_icons" ]
   }
 

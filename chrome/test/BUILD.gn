@@ -3866,6 +3866,7 @@ if (!is_android) {
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
       "//chrome/browser/infobars:test_support",
+      "//chrome/browser/supervised_user",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/toolbar",
@@ -9414,6 +9415,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/affiliations",
       "//chrome/browser/extensions/api/cookies:helpers",
+      "//chrome/browser/supervised_user",
       "//chrome/browser/ui/global_error:test_support",
       "//chrome/browser/ui/web_applications:unit_tests",
       "//chrome/browser/web_applications:unit_tests",
