@@ -34,8 +34,8 @@ NewTabFooterWebView::~NewTabFooterWebView() {
 }
 
 void NewTabFooterWebView::ShowUI(base::TimeTicks load_start, GURL url) {
+  attached_tab_url_ = url;
   ShowUI();
-  contents_wrapper_->GetWebUIController()->AttachedTabStateUpdated(url);
   base::UmaHistogramMediumTimes("NewTabPage.Footer.ShownTime",
                                 base::TimeTicks::Now() - load_start);
 }
@@ -52,6 +52,12 @@ void NewTabFooterWebView::ShowUI() {
                                      browser_);
   }
 
+  if (!contents_wrapper_->GetWebUIController()) {
+    return;
+  }
+
+  contents_wrapper_->GetWebUIController()->AttachedTabStateUpdated(
+      attached_tab_url_);
   SetVisible(true);
   contents_wrapper_->web_contents()->WasShown();
 }
