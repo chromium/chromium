@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v6.0.0...chromium-bidi-v6.1.0) (2025-06-25)
+
+
+### Features
+
+* implement `browsingContext.downloadFinished` event ([#3427](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3427)) ([ea566e5](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ea566e5f88bf70ee501b928ab14d2ec8730039b7))
+
 ## [6.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v5.3.1...chromium-bidi-v6.0.0) (2025-06-16)
 
 
