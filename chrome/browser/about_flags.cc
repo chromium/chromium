@@ -6870,8 +6870,8 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-contextual-suggestions",
      flag_descriptions::kOmniboxContextualSuggestionsName,
      flag_descriptions::kOmniboxContextualSuggestionsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox_feature_configs::ContextualSearch::
-                            kOmniboxContextualSuggestions)},
+     FEATURE_VALUE_TYPE(
+         omnibox_feature_configs::kOmniboxContextualSuggestions)},
 
     {"lens-overlay-omnibox-entry-point",
      flag_descriptions::kLensOverlayOmniboxEntryPointName,
@@ -6880,10 +6880,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"omnibox-toolbelt", flag_descriptions::kOmniboxToolbeltName,
      flag_descriptions::kOmniboxToolbeltDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox_feature_configs::Toolbelt::kOmniboxToolbelt,
-         kOmniboxToolbeltVariations,
-         "OmniboxToolbelt")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox_feature_configs::kOmniboxToolbelt,
+                                    kOmniboxToolbeltVariations,
+                                    "OmniboxToolbelt")},
 
     {"omnibox-domain-suggestions",
      flag_descriptions::kOmniboxDomainSuggestionsName,

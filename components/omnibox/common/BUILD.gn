@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("common") {
+  defines = [ "IS_OMNIBOX_COMMON_IMPL" ]
+
   sources = [
     "omnibox_feature_configs.cc",
     "omnibox_feature_configs.h",
