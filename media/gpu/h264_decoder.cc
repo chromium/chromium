@@ -1043,6 +1043,18 @@ bool H264Decoder::FinishPicture(scoped_refptr<H264Picture> pic) {
     recovery_frame_cnt_.reset();
   }
 
+  if (pic->idr && recovery_frame_num_) {
+    // The pictures after the IDR picture in decode order is guaranteed to be
+    // correct. We don't recover at the recovery frame even if it's before the
+    // IDR picture (i.e. dropping correct frames before the IDR frame) for
+    // simplifying the implementation.
+    // As the frames in |dpb_| will not be output so we drop them here. It's
+    // safe to clear DPB because IDR and later frames don't reference frames
+    // before IDR.
+    recovery_frame_num_.reset();
+    dpb_.Clear();
+  }
+
   // The ownership of pic will either be transferred to DPB - if the picture is
   // still needed (for output and/or reference) - or we will release it
   // immediately if we manage to output it here and won't have to store it for
