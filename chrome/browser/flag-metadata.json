@@ -3156,8 +3156,8 @@
   },
   {
     "name": "enable-delegated-compositing",
-    "owners": [ "petermcneeley@chromium.org" ],
-    "expiry_milestone": 140
+    "owners": [ "petermcneeley@chromium.org", "hitawala@chromium.org" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-desk-button",
