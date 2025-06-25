@@ -225,7 +225,9 @@ void LensRegionSearchController::OnCaptureCompleted(
     switch (entry_point_) {
       case lens::AmbientSearchEntryPoint::
           LENS_OVERLAY_LOCATION_BAR_ACCESSIBILITY_FALLBACK:
-        lens_entry_point = lens::EntryPoint::CHROME_LENS_OVERLAY_LOCATION_BAR;
+        if (!lens::features::IsLensOverlayKeyboardSelectionEnabled()) {
+          lens_entry_point = lens::EntryPoint::CHROME_LENS_OVERLAY_LOCATION_BAR;
+        }
         break;
       default:
         // The other possible values of `entry_point_` should not be possible

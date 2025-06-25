@@ -196,9 +196,10 @@ void LensOverlayPageActionIconView::UpdateImpl() {
 
 void LensOverlayPageActionIconView::OnExecuting(
     PageActionIconView::ExecuteSource source) {
-  // If the user entered Lens through the keyboard, we want to open Lens Web
-  // in a new tab.
-  if (source == PageActionIconView::EXECUTE_SOURCE_KEYBOARD) {
+  // If the user entered Lens through the keyboard and keyboard selection is not
+  // enabled, we want to open Lens Web in a new tab.
+  if (source == PageActionIconView::EXECUTE_SOURCE_KEYBOARD &&
+      !lens::features::IsLensOverlayKeyboardSelectionEnabled()) {
     if (!lens_region_search_controller_) {
       lens_region_search_controller_ =
           std::make_unique<lens::LensRegionSearchController>();

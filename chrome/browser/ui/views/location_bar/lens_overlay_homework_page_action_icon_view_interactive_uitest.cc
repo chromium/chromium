@@ -134,7 +134,7 @@ class LensOverlayHomeworkPageActionIconViewTest
              lens::features::kLensOverlayEduActionChip,
              {{"url-allow-filters", "[\"*\"]"},
               {"url-path-match-allow-filters", "[\"select\"]"}})},
-        {});
+        {lens::features::kLensOverlayKeyboardSelection});
   }
 };
 
