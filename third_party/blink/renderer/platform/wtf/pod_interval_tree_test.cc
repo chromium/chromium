@@ -38,7 +38,6 @@ namespace blink {
 
 using tree_test_helpers::InitRandom;
 using tree_test_helpers::NextRandom;
-using WTF::PODInterval;
 
 #ifndef NDEBUG
 template <>
@@ -51,16 +50,16 @@ struct ValueToString<void*> {
 
 TEST(PodIntevalTreeTest, TestInsertion) {
   PodIntervalTree<float> tree;
-  tree.Add(PODInterval<float>(2, 4));
+  tree.Add(PodInterval<float>(2, 4));
   ASSERT_TRUE(tree.CheckInvariants());
 }
 
 TEST(PodIntevalTreeTest, TestInsertionAndQuery) {
   PodIntervalTree<float> tree;
-  tree.Add(PODInterval<float>(2, 4));
+  tree.Add(PodInterval<float>(2, 4));
   ASSERT_TRUE(tree.CheckInvariants());
-  Vector<PODInterval<float>> overlap =
-      tree.AllOverlaps(PODInterval<float>(1, 3));
+  Vector<PodInterval<float>> overlap =
+      tree.AllOverlaps(PodInterval<float>(1, 3));
   EXPECT_EQ(1U, overlap.size());
   EXPECT_EQ(2, overlap[0].Low());
   EXPECT_EQ(4, overlap[0].High());
@@ -83,12 +82,12 @@ TEST(PodIntevalTreeTest, TestInsertionAndQuery) {
 
 TEST(PodIntevalTreeTest, TestQueryAgainstZeroSizeInterval) {
   PodIntervalTree<float> tree;
-  tree.Add(PODInterval<float>(1, 2.5));
-  tree.Add(PODInterval<float>(3.5, 5));
-  tree.Add(PODInterval<float>(2, 4));
+  tree.Add(PodInterval<float>(1, 2.5));
+  tree.Add(PodInterval<float>(3.5, 5));
+  tree.Add(PodInterval<float>(2, 4));
   ASSERT_TRUE(tree.CheckInvariants());
-  Vector<PODInterval<float>> result =
-      tree.AllOverlaps(PODInterval<float>(3, 3));
+  Vector<PodInterval<float>> result =
+      tree.AllOverlaps(PodInterval<float>(3, 3));
   EXPECT_EQ(1U, result.size());
   EXPECT_EQ(2, result[0].Low());
   EXPECT_EQ(4, result[0].High());
@@ -160,7 +159,7 @@ TEST(PodIntevalTreeTest, TestQueryingOfComplexUserData) {
   data1.b = 6;
   tree.Add(tree.CreateInterval(2, 4, data1));
   ASSERT_TRUE(tree.CheckInvariants());
-  Vector<PODInterval<float, UserData1>> overlaps =
+  Vector<PodInterval<float, UserData1>> overlaps =
       tree.AllOverlaps(tree.CreateInterval(3, 5, data1));
   EXPECT_EQ(1U, overlaps.size());
   EXPECT_EQ(5, overlaps[0].Data().a);
@@ -222,16 +221,16 @@ void TreeInsertionAndDeletionTest(int32_t seed, int tree_size) {
   int maximum_value = tree_size;
   // Build the tree
   PodIntervalTree<int> tree;
-  Vector<PODInterval<int>> added_elements;
-  Vector<PODInterval<int>> removed_elements;
+  Vector<PodInterval<int>> added_elements;
+  Vector<PodInterval<int>> removed_elements;
   for (int i = 0; i < tree_size; i++) {
     int left = NextRandom(maximum_value);
     int length = NextRandom(maximum_value);
-    PODInterval<int> interval(left, left + length);
+    PodInterval<int> interval(left, left + length);
     tree.Add(interval);
 #ifdef DEBUG_INSERTION_AND_DELETION_TEST
     DLOG(ERROR) << "*** Adding element "
-                << ValueToString<PODInterval<int>>::ToString(interval);
+                << ValueToString<PodInterval<int>>::ToString(interval);
 #endif
     added_elements.push_back(interval);
   }
@@ -241,7 +240,7 @@ void TreeInsertionAndDeletionTest(int32_t seed, int tree_size) {
     int index = NextRandom(added_elements.size());
 #ifdef DEBUG_INSERTION_AND_DELETION_TEST
     DLOG(ERROR) << "*** Removing element "
-                << ValueToString<PODInterval<int>>::ToString(
+                << ValueToString<PodInterval<int>>::ToString(
                        added_elements[index]);
 #endif
     ASSERT_TRUE(tree.Contains(added_elements[index]))
@@ -264,7 +263,7 @@ void TreeInsertionAndDeletionTest(int32_t seed, int tree_size) {
       int index = NextRandom(removed_elements.size());
 #ifdef DEBUG_INSERTION_AND_DELETION_TEST
       DLOG(ERROR) << "*** Adding element "
-                  << ValueToString<PODInterval<int>>::ToString(
+                  << ValueToString<PodInterval<int>>::ToString(
                          removed_elements[index]);
 #endif
       tree.Add(removed_elements[index]);
@@ -274,7 +273,7 @@ void TreeInsertionAndDeletionTest(int32_t seed, int tree_size) {
       int index = NextRandom(added_elements.size());
 #ifdef DEBUG_INSERTION_AND_DELETION_TEST
       DLOG(ERROR) << "*** Removing element "
-                  << ValueToString<PODInterval<int>>::ToString(
+                  << ValueToString<PodInterval<int>>::ToString(
                          added_elements[index]);
 #endif
       ASSERT_TRUE(tree.Contains(added_elements[index]))

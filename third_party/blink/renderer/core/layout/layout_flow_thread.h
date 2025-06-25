@@ -179,8 +179,7 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
 
   LayoutMultiColumnSetList multi_column_set_list_;
 
-  typedef WTF::PODInterval<LayoutUnit, LayoutMultiColumnSet*>
-      MultiColumnSetInterval;
+  using MultiColumnSetInterval = PodInterval<LayoutUnit, LayoutMultiColumnSet*>;
   using MultiColumnSetIntervalTree =
       PodIntervalTree<LayoutUnit, LayoutMultiColumnSet*>;
 

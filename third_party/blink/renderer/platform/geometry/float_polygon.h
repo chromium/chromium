@@ -64,7 +64,7 @@ class PLATFORM_EXPORT FloatPolygon {
   bool IsEmpty() const { return empty_; }
 
  private:
-  typedef WTF::PODInterval<float, FloatPolygonEdge*> EdgeInterval;
+  using EdgeInterval = PodInterval<float, FloatPolygonEdge*>;
   using EdgeIntervalTree = PodIntervalTree<float, FloatPolygonEdge*>;
 
   Vector<gfx::PointF> vertices_;
