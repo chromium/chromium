@@ -36,9 +36,9 @@ import gn_helpers
 
 # Typically these should track the versions that works on the slowest release
 # channel, i.e. Android Studio stable.
-_DEFAULT_ANDROID_GRADLE_PLUGIN_VERSION = '7.3.1'
+_DEFAULT_ANDROID_GRADLE_PLUGIN_VERSION = '7.4.2'
 _DEFAULT_KOTLIN_GRADLE_PLUGIN_VERSION = '1.8.0'
-_DEFAULT_GRADLE_WRAPPER_VERSION = '7.4'
+_DEFAULT_GRADLE_WRAPPER_VERSION = '8.9'
 
 _DEPOT_TOOLS_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'third_party',
                                  'depot_tools')
