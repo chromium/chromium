@@ -8,6 +8,7 @@
 
 #import <algorithm>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "components/omnibox/common/omnibox_features.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_container_view.h"
@@ -276,6 +278,17 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
 #pragma mark - Public
 
+- (void)setIsGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
+  if (_isGoogleDefaultSearchEngine == isGoogleDefaultSearchEngine) {
+    return;
+  }
+
+  _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
+
+  [self removeAllFakeboxButtonsFromStack];
+  [self addFakeboxButtonsToStack];
+}
+
 - (instancetype)initWithUseNewBadgeForLensButton:
     (BOOL)useNewBadgeForLensButton {
   self = [super initWithFrame:CGRectZero];
@@ -421,48 +434,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
         constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
   ]];
 
-  if (self.shouldShowMIAEntrypoint) {
-    self.miaButton =
-        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-    [self.miaButton
-        setAccessibilityLabel:l10n_util::GetNSString(IDS_IOS_ACCNAME_MIA)];
-    [self.miaButton setAccessibilityIdentifier:@"MIA"];
-
-    [_buttonStack addArrangedSubview:self.miaButton];
-    if (self.useInlineMIA) {
-      [self addMIAAndVoiceDivider];
-    } else if (self.useSingleButtonMIA) {
-      [self updateAnimationOnMIAButton];
-    }
-  }
-
-  BOOL displayOtherActions = !self.useSingleButtonMIA;
-
-  if (displayOtherActions) {
-    // Voice search.
-    self.voiceSearchButton =
-        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-    [_buttonStack addArrangedSubview:self.voiceSearchButton];
-  }
-
-  // Lens.
-  const BOOL useLens =
-      lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
-          LensEntrypoint::NewTabPage, self.isGoogleDefaultSearchEngine);
-  if (useLens && displayOtherActions) {
-    [self addVoiceAndLensDivider];
-    self.lensButton =
-        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-    [_buttonStack addArrangedSubview:self.lensButton];
-    if (_useNewBadgeForLensButton) {
-      [self.lensButton addTarget:self
-                          action:@selector(lensButtonWithNewBadgeTapped:)
-                forControlEvents:UIControlEventTouchUpInside];
-    }
-  }
-
-  [self updateButtonsForUserInterfaceStyle:self.traitCollection
-                                               .userInterfaceStyle];
+  [self addFakeboxButtonsToStack];
 
   // Constraints.
   AddSameConstraints(self.fakeToolbar, searchField);
@@ -901,6 +873,77 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
 #pragma mark - Private
 
+// Empties the fakebox buttons stack.
+- (void)removeAllFakeboxButtonsFromStack {
+  for (UIView* arrangedSubview in _buttonStack.arrangedSubviews) {
+    [arrangedSubview removeFromSuperview];
+  }
+}
+
+// Adds the necessary buttons to the fakebox stack.
+- (void)addFakeboxButtonsToStack {
+  if (self.shouldShowMIAEntrypoint) {
+    self.miaButton =
+        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+    [self.miaButton
+        setAccessibilityLabel:l10n_util::GetNSString(IDS_IOS_ACCNAME_MIA)];
+    [self.miaButton setAccessibilityIdentifier:@"MIA"];
+
+    [_buttonStack addArrangedSubview:self.miaButton];
+    if (self.useInlineMIA) {
+      [self addMIAAndVoiceDivider];
+    } else if (self.useSingleButtonMIA) {
+      [self updateAnimationOnMIAButton];
+    }
+  }
+
+  BOOL displayOtherActions = !self.useSingleButtonMIA;
+
+  if (displayOtherActions) {
+    // Voice search.
+    self.voiceSearchButton =
+        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+    [_buttonStack addArrangedSubview:self.voiceSearchButton];
+  }
+
+  // Lens.
+  const BOOL useLens =
+      lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+          LensEntrypoint::NewTabPage, self.isGoogleDefaultSearchEngine);
+  if (useLens && displayOtherActions) {
+    [self addVoiceAndLensDivider];
+    self.lensButton =
+        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+    [_buttonStack addArrangedSubview:self.lensButton];
+    if (_useNewBadgeForLensButton) {
+      [self.lensButton addTarget:self
+                          action:@selector(lensButtonWithNewBadgeTapped:)
+                forControlEvents:UIControlEventTouchUpInside];
+    }
+  }
+
+  [self updateButtonsForUserInterfaceStyle:self.traitCollection
+                                               .userInterfaceStyle];
+
+  [self addActionsToFakeboxButtons];
+}
+
+// Registers the actions for the fakebox buttons.
+- (void)addActionsToFakeboxButtons {
+  [self.voiceSearchButton addTarget:self
+                             action:@selector(loadVoiceSearch:)
+                   forControlEvents:UIControlEventTouchUpInside];
+  [self.voiceSearchButton addTarget:self
+                             action:@selector(preloadVoiceSearch:)
+                   forControlEvents:UIControlEventTouchDown];
+  [self.lensButton addTarget:self
+                      action:@selector(openLensViewFinder)
+            forControlEvents:UIControlEventTouchUpInside];
+  [self.miaButton addTarget:self
+                     action:@selector(openMIA)
+           forControlEvents:UIControlEventTouchUpInside];
+}
+
 // Gets the fonts for the pinned and unpinned fakebox hint label, and sets
 // the correct one.
 - (void)updateHintLabelFonts {
@@ -1159,6 +1202,28 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   } else {
     return kHintLabelOmniboxLeadingSpace;
   }
+}
+
+#pragma mark - Action handling
+
+- (void)openMIA {
+  [self.NTPShortcutsHandler openMIA];
+}
+
+- (void)openLensViewFinder {
+  [self.NTPShortcutsHandler openLensViewFinder];
+}
+
+- (void)loadVoiceSearch:(id)sender {
+  UIView* voiceSearchButton = base::apple::ObjCCastStrict<UIView>(sender);
+  [self.NTPShortcutsHandler loadVoiceSearchFromView:voiceSearchButton];
+}
+
+- (void)preloadVoiceSearch:(id)sender {
+  [sender removeTarget:self
+                action:@selector(preloadVoiceSearch:)
+      forControlEvents:UIControlEventTouchDown];
+  [self.NTPShortcutsHandler preloadVoiceSearch];
 }
 
 @end

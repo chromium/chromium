@@ -314,6 +314,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
     self.headerView = [[NewTabPageHeaderView alloc]
         initWithUseNewBadgeForLensButton:_useNewBadgeForLensButton];
+    self.headerView.NTPShortcutsHandler = self.NTPShortcutsHandler;
     self.headerView.isGoogleDefaultSearchEngine =
         self.isGoogleDefaultSearchEngine;
     self.headerView.placeholderText = self.placeholderText;
@@ -356,6 +357,11 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   }
 }
 
+- (void)setIsGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
+  _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
+  self.headerView.isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
+}
+
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   // Check if the identity disc button was properly set before the view appears.
@@ -388,6 +394,12 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
   self.headerView.tabGroupIndicatorView = view;
+}
+
+- (void)setNTPShortcutsHandler:
+    (id<NewTabPageShortcutsHandler>)NTPShortcutsHandler {
+  _NTPShortcutsHandler = NTPShortcutsHandler;
+  self.headerView.NTPShortcutsHandler = NTPShortcutsHandler;
 }
 
 #pragma mark - FakeboxButtonsSnapshotProvider
@@ -458,23 +470,10 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
       [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
   [self.fakeOmnibox addInteraction:scribbleInteraction];
 
-  [self.headerView.voiceSearchButton addTarget:self
-                                        action:@selector(loadVoiceSearch:)
-                              forControlEvents:UIControlEventTouchUpInside];
-  [self.headerView.voiceSearchButton addTarget:self
-                                        action:@selector(preloadVoiceSearch:)
-                              forControlEvents:UIControlEventTouchDown];
   if (self.headerView.lensButton) {
-    [self.headerView.lensButton addTarget:self
-                                   action:@selector(openLens)
-                         forControlEvents:UIControlEventTouchUpInside];
     [self.layoutGuideCenter referenceView:self.headerView.lensButton
                                 underName:kFakeboxLensIconGuide];
   }
-
-  [self.headerView.miaButton addTarget:self
-                                action:@selector(openMIA)
-                      forControlEvents:UIControlEventTouchUpInside];
 
   [self updateVoiceSearchDisplay];
 }
@@ -627,28 +626,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
   button.accessibilityLabel = self.identityDiscAccessibilityLabel;
   button.clipsToBounds = YES;
-}
-
-- (void)openMIA {
-  [self.NTPShortcutsHandler openMIA];
-}
-
-- (void)openLens {
-  [self.NTPShortcutsHandler openLensViewFinder];
-}
-
-- (void)loadVoiceSearch:(id)sender {
-  DCHECK(self.voiceSearchIsEnabled);
-  UIView* voiceSearchButton = base::apple::ObjCCastStrict<UIView>(sender);
-  [self.NTPShortcutsHandler loadVoiceSearchFromView:voiceSearchButton];
-}
-
-- (void)preloadVoiceSearch:(id)sender {
-  DCHECK(self.voiceSearchIsEnabled);
-  [sender removeTarget:self
-                action:@selector(preloadVoiceSearch:)
-      forControlEvents:UIControlEventTouchDown];
-  [self.NTPShortcutsHandler preloadVoiceSearch];
 }
 
 - (void)fakeTapViewTapped {

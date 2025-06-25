@@ -9,6 +9,7 @@
 
 @class GradientView;
 @class TabGroupIndicatorView;
+@protocol NewTabPageShortcutsHandler;
 @class OmniboxContainerView;
 
 // Header view for the NTP. The header view contains all views that are
@@ -65,6 +66,9 @@
 // Should be set to YES if an animation will run that requires animating the
 // font scale, for example, during a fakebox defocus animation.
 @property(nonatomic, assign) BOOL allowFontScaleAnimation;
+
+// Handles the actions for the NTP shortcuts, like Lens or voice search.
+@property(nonatomic, weak) id<NewTabPageShortcutsHandler> NTPShortcutsHandler;
 
 // Adds the separator to the searchField. Must be called after the searchField
 // is added as a subview.
