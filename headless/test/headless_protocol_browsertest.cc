@@ -273,8 +273,7 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeSessionStorage,
 HEADLESS_PROTOCOL_TEST(VirtualTimeStarvation,
                        "emulation/virtual-time-starvation.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeVideo, "emulation/virtual-time-video.js")
-// Flaky on all platforms. https://crbug.com/1295644
-HEADLESS_PROTOCOL_TEST(DISABLED_VirtualTimeErrorLoop,
+HEADLESS_PROTOCOL_TEST(VirtualTimeErrorLoop,
                        "emulation/virtual-time-error-loop.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeFetchStream,
                        "emulation/virtual-time-fetch-stream.js")
