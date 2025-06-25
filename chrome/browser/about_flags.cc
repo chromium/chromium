@@ -3185,16 +3185,6 @@ const FeatureEntry::FeatureVariation
         {"threshold 0.9", kLauncherLocalImageSearchRelevance_90,
          std::size(kLauncherLocalImageSearchRelevance_90), nullptr}};
 
-const FeatureEntry::FeatureParam kEolIncentiveOffer[] = {
-    {"incentive_type", "offer"}};
-const FeatureEntry::FeatureParam kEolIncentiveNoOffer[] = {
-    {"incentive_type", "no_offer"}};
-
-const FeatureEntry::FeatureVariation kEolIncentiveVariations[] = {
-    {"with offer", kEolIncentiveOffer, std::size(kEolIncentiveOffer), nullptr},
-    {"with no offer", kEolIncentiveNoOffer, std::size(kEolIncentiveNoOffer),
-     nullptr}};
-
 const FeatureEntry::FeatureParam kCampbell9dot[] = {{"icon", "9dot"}};
 const FeatureEntry::FeatureParam kCampbellHero[] = {{"icon", "hero"}};
 const FeatureEntry::FeatureParam kCampbellAction[] = {{"icon", "action"}};
@@ -9106,11 +9096,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::kLauncherItemSuggest,
                                     kLauncherItemSuggestVariations,
                                     "LauncherItemSuggest")},
-    {"eol-incentive", flag_descriptions::kEolIncentiveName,
-     flag_descriptions::kEolIncentiveDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kEolIncentive,
-                                    kEolIncentiveVariations,
-                                    "EolIncentive")},
     {"shelf-auto-hide-separation",
      flag_descriptions::kShelfAutoHideSeparationName,
      flag_descriptions::kShelfAutoHideSeparationDescription, kOsCrOS,

@@ -575,7 +575,6 @@ suite('<os-about-page> AllBuilds', () => {
       aboutBrowserProxy.setEndOfLifeInfo({
         hasEndOfLife: true,
         aboutPageEndOfLifeMessage: '',
-        shouldShowEndOfLifeIncentive: false,
         shouldShowOfferText: false,
         isExtendedUpdatesDatePassed: false,
         isExtendedUpdatesOptInRequired: false,
@@ -588,7 +587,6 @@ suite('<os-about-page> AllBuilds', () => {
       aboutBrowserProxy.setEndOfLifeInfo({
         hasEndOfLife: false,
         aboutPageEndOfLifeMessage: '',
-        shouldShowEndOfLifeIncentive: false,
         shouldShowOfferText: false,
         isExtendedUpdatesDatePassed: false,
         isExtendedUpdatesOptInRequired: false,
@@ -618,26 +616,12 @@ suite('<os-about-page> AllBuilds', () => {
       aboutBrowserProxy.setEndOfLifeInfo({
         hasEndOfLife: false,
         aboutPageEndOfLifeMessage: '',
-        shouldShowEndOfLifeIncentive: false,
         shouldShowOfferText: false,
         isExtendedUpdatesDatePassed: false,
         isExtendedUpdatesOptInRequired: false,
       });
       await initPage();
       await assertEndOfLifeIncentive(false);
-    });
-
-    test('End of life incentive is shown', async () => {
-      aboutBrowserProxy.setEndOfLifeInfo({
-        hasEndOfLife: false,
-        aboutPageEndOfLifeMessage: '',
-        shouldShowEndOfLifeIncentive: true,
-        shouldShowOfferText: false,
-        isExtendedUpdatesDatePassed: false,
-        isExtendedUpdatesOptInRequired: false,
-      });
-      await initPage();
-      await assertEndOfLifeIncentive(true);
     });
   });
 
@@ -918,7 +902,6 @@ suite('<os-about-page> AllBuilds', () => {
               aboutBrowserProxy.setEndOfLifeInfo({
                 hasEndOfLife: tc.eolPassed,
                 aboutPageEndOfLifeMessage: '',
-                shouldShowEndOfLifeIncentive: false,
                 shouldShowOfferText: false,
                 isExtendedUpdatesDatePassed: tc.extDatePassed,
                 isExtendedUpdatesOptInRequired: tc.optInRequired,

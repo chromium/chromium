@@ -25,7 +25,6 @@ EolNoticeQuickSettingsView::EolNoticeQuickSettingsView()
           base::BindRepeating([](const ui::Event& event) {
             Shell::Get()->system_tray_model()->client()->ShowEolInfoPage();
           })) {
-  Shell::Get()->system_tray_model()->client()->RecordEolNoticeShown();
 }
 
 EolNoticeQuickSettingsView::~EolNoticeQuickSettingsView() = default;

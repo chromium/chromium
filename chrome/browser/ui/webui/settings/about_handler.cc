@@ -61,7 +61,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/eol/eol_incentive_util.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/browser/ash/image_source/image_source.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -90,8 +89,6 @@
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
-
-using ash::eol_incentive_util::EolIncentiveType;
 
 // The directory containing the regulatory labels for supported
 // models/regions, relative to chromeos-assets directory
@@ -373,10 +370,6 @@ void AboutHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getEndOfLifeInfo",
       base::BindRepeating(&AboutHandler::HandleGetEndOfLifeInfo,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "openEndOfLifeIncentive",
-      base::BindRepeating(&AboutHandler::HandleOpenEndOfLifeIncentive,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "launchReleaseNotes",
@@ -739,7 +732,6 @@ void AboutHandler::OnGetEndOfLifeInfo(
   // Response values.
   bool eol_passed = false;
   std::u16string eol_message;
-  bool show_eol_incentive = false;
   bool show_offer_text = false;
   bool extended_date_passed = false;
   bool extended_opt_in_required = false;
@@ -757,25 +749,11 @@ void AboutHandler::OnGetEndOfLifeInfo(
     } else {
       eol_message = GetEndOfLifeMessage(eol_info.eol_date);
     }
-    const EolIncentiveType eolIncentiveType =
-        ash::eol_incentive_util::ShouldShowEolIncentive(
-            profile_, eol_info.eol_date, clock_->Now());
-    show_eol_incentive =
-        (eolIncentiveType == EolIncentiveType::kEolPassedRecently ||
-         eolIncentiveType == EolIncentiveType::kEolPassed) &&
-        eol_passed &&
-        base::FeatureList::IsEnabled(ash::features::kEolIncentiveSettings);
-    show_offer_text =
-        (ash::features::kEolIncentiveParam.Get() !=
-             ash::features::EolIncentiveParam::kNoOffer &&
-         eolIncentiveType == EolIncentiveType::kEolPassedRecently);
-    eol_incentive_shows_offer_ = show_offer_text;
   }
 
   base::Value::Dict response;
   response.Set("hasEndOfLife", eol_passed);
   response.Set("aboutPageEndOfLifeMessage", eol_message);
-  response.Set("shouldShowEndOfLifeIncentive", show_eol_incentive);
   response.Set("shouldShowOfferText", show_offer_text);
   response.Set("isExtendedUpdatesDatePassed", extended_date_passed);
   response.Set("isExtendedUpdatesOptInRequired", extended_opt_in_required);
@@ -794,16 +772,6 @@ std::u16string AboutHandler::GetEndOfLifeMessage(base::Time eol_date) const {
                                     base::TimeFormatMonthAndYearForTimeZone(
                                         eol_date, icu::TimeZone::getGMT()),
                                     eol_url);
-}
-
-void AboutHandler::HandleOpenEndOfLifeIncentive(const base::Value::List& args) {
-  DCHECK(args.empty());
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(eol_incentive_shows_offer_
-               ? chrome::kEolIncentiveNotificationOfferURL
-               : chrome::kEolIncentiveNotificationNoOfferURL),
-      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void AboutHandler::HandleIsManagedAutoUpdateEnabled(

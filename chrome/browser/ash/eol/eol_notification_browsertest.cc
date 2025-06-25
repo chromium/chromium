@@ -45,40 +45,6 @@ namespace {
 
 constexpr char kEolNotificationId[] = "chrome://product_eol";
 
-enum class TestCase {
-  kIncentivesDisabled,
-  kIncentivesWithoutOffer,
-  kIncentivesWithOffer,
-  kIncentivesWithOfferAndAUEWarning,
-};
-
-// Returns the "incentive_type" feature param to be used for a test case.
-std::string GetTestFeatureParamString(TestCase test_case) {
-  switch (test_case) {
-    case TestCase::kIncentivesDisabled:
-      NOTREACHED();
-    case TestCase::kIncentivesWithoutOffer:
-      return "no_offer";
-    case TestCase::kIncentivesWithOffer:
-      return "offer";
-    case TestCase::kIncentivesWithOfferAndAUEWarning:
-      return "offer_with_warning";
-  }
-}
-
-// Sets up a test's scoped feature list to run enable the provided test case.
-void SetUpScopedFeatureListForTestCase(
-    TestCase test_case,
-    base::test::ScopedFeatureList* scoped_feature_list) {
-  if (test_case == TestCase::kIncentivesDisabled) {
-    scoped_feature_list->InitAndDisableFeature(features::kEolIncentive);
-  } else {
-    scoped_feature_list->InitAndEnableFeatureWithParameters(
-        features::kEolIncentive,
-        {{"incentive_type", GetTestFeatureParamString(test_case)}});
-  }
-}
-
 // Possible results for `EolStatusMixin::SetUpTime()`.
 enum class TimeSetupResult {
   kSuccess,
@@ -233,97 +199,30 @@ class EolStatusMixin : public InProcessBrowserTestMixin {
 }  // namespace
 
 // Tests that verify EOL notifications for regular users on non-managed devices.
-class EolNotificationTest : public MixinBasedInProcessBrowserTest,
-                            public ::testing::WithParamInterface<TestCase> {
+class EolNotificationTest : public MixinBasedInProcessBrowserTest {
  public:
-  EolNotificationTest() {
-    SetUpScopedFeatureListForTestCase(GetParam(), &scoped_feature_list_);
-  }
-
-  bool NotificationHasClaimButton() {
-    return GetParam() != TestCase::kIncentivesDisabled;
-  }
+  EolNotificationTest() = default;
 
   std::u16string GetEolApproachingNotificationTitle(
       const std::u16string& eol_month) const {
-    switch (GetParam()) {
-      case TestCase::kIncentivesDisabled:
         return u"Updates end " + eol_month;
-      case TestCase::kIncentivesWithoutOffer:
-        return u"Security updates end soon. Upgrade to a new Chromebook.";
-      case TestCase::kIncentivesWithOffer:
-        return u"Save $50 or more on a new Chromebook, when you upgrade today";
-      case TestCase::kIncentivesWithOfferAndAUEWarning:
-        return u"Security updates end soon. Save $50 or more on a new "
-               u"Chromebook.";
     }
-  }
 
-  std::u16string GetEolApproachingNotificationMessage(
-      const std::string& eol_month) const {
-    switch (GetParam()) {
-      case TestCase::kIncentivesDisabled:
-        return u"You'll still be able to use this Chrome device after that "
-               u"time, but it will no longer get automatic software and "
-               u"security updates";
-      case TestCase::kIncentivesWithoutOffer:
-        return base::UTF8ToUTF16(base::StringPrintf(
-            "You will stop getting security and software updates for this "
-            "Chromebook in %s. Upgrade your Chromebook for the best "
-            "experience.",
-            eol_month.c_str()));
-      case TestCase::kIncentivesWithOffer:
-      case TestCase::kIncentivesWithOfferAndAUEWarning:
-        return base::UTF8ToUTF16(
-            base::StringPrintf("You will stop getting security updates for "
-                               "this Chromebook in %s. Time to upgrade for "
-                               "the latest security and software. Offer "
-                               "terms apply.",
-                               eol_month.c_str()));
+    std::u16string GetEolApproachingNotificationMessage() const {
+      return u"You'll still be able to use this Chrome device after that "
+             u"time, but it will no longer get automatic software and "
+             u"security updates";
     }
-  }
 
   std::u16string GetRecentEolNotificationTitle() const {
-    switch (GetParam()) {
-      case TestCase::kIncentivesDisabled:
         return u"Final software update";
-      case TestCase::kIncentivesWithoutOffer:
-        return u"Security updates have ended. Upgrade to a new Chromebook.";
-      case TestCase::kIncentivesWithOffer:
-        return u"Save $50 or more on a new Chromebook, when you upgrade today";
-      case TestCase::kIncentivesWithOfferAndAUEWarning:
-        return u"Security updates have ended. Save $50 or more on a new "
-               u"Chromebook.";
     }
-  }
 
   std::u16string GetRecentEolNotificationMessage() const {
-    switch (GetParam()) {
-      case TestCase::kIncentivesDisabled:
         return u"This is the last automatic software and security update for "
                u"this Chrome device. To get future updates, upgrade to a "
                u"newer model.";
-      case TestCase::kIncentivesWithoutOffer:
-        return u"Your Chromebook is no longer receiving security and software "
-               u"updates. Upgrade your Chromebook for the best experience.";
-      case TestCase::kIncentivesWithOffer:
-      case TestCase::kIncentivesWithOfferAndAUEWarning:
-        return u"Your Chromebook is no longer receiving security updates. "
-               u"Time to upgrade for the latest security and software. "
-               u"Offer terms apply.";
     }
-  }
-
-  bool ShowsNotificationWithOffer() const {
-    switch (GetParam()) {
-      case TestCase::kIncentivesDisabled:
-      case TestCase::kIncentivesWithoutOffer:
-        return false;
-      case TestCase::kIncentivesWithOffer:
-      case TestCase::kIncentivesWithOfferAndAUEWarning:
-        return true;
-    }
-  }
 
  protected:
   EolStatusMixin eol_status_mixin_{&mixin_host_};
@@ -338,22 +237,10 @@ class EolNotificationTest : public MixinBasedInProcessBrowserTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    EolNotificationTest,
-    ::testing::Values(TestCase::kIncentivesDisabled,
-                      TestCase::kIncentivesWithoutOffer,
-                      TestCase::kIncentivesWithOffer,
-                      TestCase::kIncentivesWithOfferAndAUEWarning));
-
 // Tests that verify EOL notifications are not shown on managed devices.
-class ManagedDeviceEolNotificationTest
-    : public MixinBasedInProcessBrowserTest,
-      public ::testing::WithParamInterface<TestCase> {
+class ManagedDeviceEolNotificationTest : public MixinBasedInProcessBrowserTest {
  public:
-  ManagedDeviceEolNotificationTest() {
-    SetUpScopedFeatureListForTestCase(GetParam(), &scoped_feature_list_);
-  }
+  ManagedDeviceEolNotificationTest() = default;
 
  protected:
   EolStatusMixin eol_status_mixin_{&mixin_host_};
@@ -372,23 +259,11 @@ class ManagedDeviceEolNotificationTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ManagedDeviceEolNotificationTest,
-    ::testing::Values(TestCase::kIncentivesDisabled,
-                      TestCase::kIncentivesWithoutOffer,
-                      TestCase::kIncentivesWithOffer,
-                      TestCase::kIncentivesWithOfferAndAUEWarning));
-
 // Tests that verify EOL notifications with incentives are not shown for child
 // users.
-class ChildUserEolNotificationTest
-    : public MixinBasedInProcessBrowserTest,
-      public ::testing::WithParamInterface<TestCase> {
+class ChildUserEolNotificationTest : public MixinBasedInProcessBrowserTest {
  public:
-  ChildUserEolNotificationTest() {
-    SetUpScopedFeatureListForTestCase(GetParam(), &scoped_feature_list_);
-  }
+  ChildUserEolNotificationTest() = default;
 
  protected:
   EolStatusMixin eol_status_mixin_{&mixin_host_};
@@ -403,14 +278,6 @@ class ChildUserEolNotificationTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ChildUserEolNotificationTest,
-    ::testing::Values(TestCase::kIncentivesDisabled,
-                      TestCase::kIncentivesWithoutOffer,
-                      TestCase::kIncentivesWithOffer,
-                      TestCase::kIncentivesWithOfferAndAUEWarning));
-
 class SuppressedNotificationTest : public MixinBasedInProcessBrowserTest {
  protected:
   EolStatusMixin eol_status_mixin_{&mixin_host_};
@@ -420,7 +287,7 @@ class SuppressedNotificationTest : public MixinBasedInProcessBrowserTest {
       LoggedInUserMixin::LogInType::kConsumer};
 };
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNotificationForEolApproaching) {
+IN_PROC_BROWSER_TEST_F(EolNotificationTest, ShowNotificationForEolApproaching) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
                 /*now_string=*/"12 May 2023", /*eol_string=*/"01 June 2023",
@@ -440,24 +307,10 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNotificationForEolApproaching) {
 
   EXPECT_EQ(GetEolApproachingNotificationTitle(u"June 2023"),
             notification->title());
-  EXPECT_EQ(GetEolApproachingNotificationMessage("June 2023"),
-            notification->message());
-
-  if (NotificationHasClaimButton()) {
-    notification_display_service->SimulateClick(
-        NotificationHandler::Type::TRANSIENT, notification->id(),
-        /*action_index=*/0, /*reply=*/std::nullopt);
-    content::WebContents* active_contents =
-        chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(active_contents);
-    EXPECT_EQ(ShowsNotificationWithOffer()
-                  ? chrome::kEolIncentiveNotificationOfferURL
-                  : chrome::kEolIncentiveNotificationNoOfferURL,
-              active_contents->GetVisibleURL());
-  }
+  EXPECT_EQ(GetEolApproachingNotificationMessage(), notification->message());
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest, NoTrayNoticeWhenEolApproaches) {
+IN_PROC_BROWSER_TEST_F(EolNotificationTest, NoTrayNoticeWhenEolApproaches) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
                 /*now_string=*/"12 May 2023", /*eol_string=*/"01 June 2023",
@@ -469,7 +322,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, NoTrayNoticeWhenEolApproaches) {
       VIEW_ID_QS_EOL_NOTICE_BUTTON, /*open_tray=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest,
+IN_PROC_BROWSER_TEST_F(EolNotificationTest,
                        PRE_EolApproachingNotificationNotReshown) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
@@ -492,7 +345,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
       /*action_index=*/0, /*reply=*/std::nullopt);
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest,
+IN_PROC_BROWSER_TEST_F(EolNotificationTest,
                        EolApproachingNotificationNotReshown) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
@@ -512,7 +365,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
   EXPECT_FALSE(notification);
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest,
+IN_PROC_BROWSER_TEST_F(EolNotificationTest,
                        ShowEolApproachingNotificationForNewUsers) {
   ASSERT_EQ(
       TimeSetupResult::kSuccess,
@@ -546,7 +399,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
             active_contents->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowRecentEolNotification) {
+IN_PROC_BROWSER_TEST_F(EolNotificationTest, ShowRecentEolNotification) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
@@ -566,22 +419,9 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowRecentEolNotification) {
 
   EXPECT_EQ(GetRecentEolNotificationTitle(), notification->title());
   EXPECT_EQ(GetRecentEolNotificationMessage(), notification->message());
-
-  if (NotificationHasClaimButton()) {
-    notification_display_service->SimulateClick(
-        NotificationHandler::Type::TRANSIENT, notification->id(),
-        /*action_index=*/0, /*reply=*/std::nullopt);
-    content::WebContents* active_contents =
-        chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(active_contents);
-    EXPECT_EQ(ShowsNotificationWithOffer()
-                  ? chrome::kEolIncentiveNotificationOfferURL
-                  : chrome::kEolIncentiveNotificationNoOfferURL,
-              active_contents->GetVisibleURL());
-  }
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest,
+IN_PROC_BROWSER_TEST_F(EolNotificationTest,
                        PRE_RecentEolNotificationNotReshown) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
@@ -605,13 +445,12 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
       /*action_index=*/0, /*reply=*/std::nullopt);
 
   // Verify quick settings notice still shows.
-  EXPECT_EQ(
-      GetParam() != TestCase::kIncentivesDisabled,
+  EXPECT_FALSE(
       SystemTrayTestApi().IsBubbleViewVisible(VIEW_ID_QS_EOL_NOTICE_BUTTON,
                                               /*open_tray=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest, RecentEolNotificationNotReshown) {
+IN_PROC_BROWSER_TEST_F(EolNotificationTest, RecentEolNotificationNotReshown) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
@@ -627,38 +466,10 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, RecentEolNotificationNotReshown) {
 
   std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
-  EXPECT_EQ(GetParam() == TestCase::kIncentivesDisabled, !!notification);
+  EXPECT_TRUE(!!notification);
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest, PRE_ShowTrayNoticeSoonAfterEol) {
-  ASSERT_EQ(TimeSetupResult::kSuccess,
-            eol_status_mixin_.SetUpTime(
-                /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
-                /*profile_creation_string=*/"05 December 2021"));
-  logged_in_user_mixin_.LogInUser();
-  base::RunLoop().RunUntilIdle();
-
-  const bool incentives_enabled = GetParam() != TestCase::kIncentivesDisabled;
-  SystemTrayTestApi tray_test_api;
-  ASSERT_EQ(incentives_enabled,
-            tray_test_api.IsBubbleViewVisible(VIEW_ID_QS_EOL_NOTICE_BUTTON,
-                                              /*open_tray=*/true));
-  if (!incentives_enabled) {
-    return;
-  }
-
-  tray_test_api.ClickBubbleView(VIEW_ID_QS_EOL_NOTICE_BUTTON);
-
-  content::WebContents* active_contents =
-      chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(active_contents);
-  EXPECT_EQ(ShowsNotificationWithOffer()
-                ? chrome::kEolIncentiveNotificationOfferURL
-                : chrome::kEolIncentiveNotificationNoOfferURL,
-            active_contents->GetVisibleURL());
-}
-
-IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowTrayNoticeSoonAfterEol) {
+IN_PROC_BROWSER_TEST_F(EolNotificationTest, PRE_ShowTrayNoticeSoonAfterEol) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
@@ -667,12 +478,24 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowTrayNoticeSoonAfterEol) {
   base::RunLoop().RunUntilIdle();
 
   SystemTrayTestApi tray_test_api;
-  EXPECT_EQ(GetParam() != TestCase::kIncentivesDisabled,
-            tray_test_api.IsBubbleViewVisible(VIEW_ID_QS_EOL_NOTICE_BUTTON,
-                                              /*open_tray=*/true));
+  ASSERT_FALSE(tray_test_api.IsBubbleViewVisible(VIEW_ID_QS_EOL_NOTICE_BUTTON,
+                                                 /*open_tray=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest, NoTrayNoticeOnLockScreen) {
+IN_PROC_BROWSER_TEST_F(EolNotificationTest, ShowTrayNoticeSoonAfterEol) {
+  ASSERT_EQ(TimeSetupResult::kSuccess,
+            eol_status_mixin_.SetUpTime(
+                /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
+                /*profile_creation_string=*/"05 December 2021"));
+  logged_in_user_mixin_.LogInUser();
+  base::RunLoop().RunUntilIdle();
+
+  SystemTrayTestApi tray_test_api;
+  EXPECT_FALSE(tray_test_api.IsBubbleViewVisible(VIEW_ID_QS_EOL_NOTICE_BUTTON,
+                                                 /*open_tray=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(EolNotificationTest, NoTrayNoticeOnLockScreen) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
@@ -688,7 +511,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, NoTrayNoticeOnLockScreen) {
                                                  /*open_tray=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest, NoTrayNoticeBeforeLogin) {
+IN_PROC_BROWSER_TEST_F(EolNotificationTest, NoTrayNoticeBeforeLogin) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
@@ -700,7 +523,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, NoTrayNoticeBeforeLogin) {
                                                  /*open_tray=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest, NoTrayNoticeForNewUsers) {
+IN_PROC_BROWSER_TEST_F(EolNotificationTest, NoTrayNoticeForNewUsers) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
@@ -713,7 +536,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, NoTrayNoticeForNewUsers) {
                                                  /*open_tray=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest,
+IN_PROC_BROWSER_TEST_F(EolNotificationTest,
                        ShowRecentEolNotificationForNewUsers) {
   ASSERT_EQ(
       TimeSetupResult::kSuccess,
@@ -746,7 +569,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
             active_contents->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNonRecentEolNotification) {
+IN_PROC_BROWSER_TEST_F(EolNotificationTest, ShowNonRecentEolNotification) {
   ASSERT_EQ(
       TimeSetupResult::kSuccess,
       eol_status_mixin_.SetUpTime(/*now_string=*/"03 July 2023",
@@ -779,33 +602,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNonRecentEolNotification) {
             active_contents->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_P(EolNotificationTest, PRE_ShowTrayNoticeLongAfterEol) {
-  ASSERT_EQ(TimeSetupResult::kSuccess,
-            eol_status_mixin_.SetUpTime(
-                /*now_string=*/"03 August 2023", /*eol_string=*/"01 June 2023",
-                /*profile_creation_string=*/"05 December 2021"));
-  logged_in_user_mixin_.LogInUser();
-  base::RunLoop().RunUntilIdle();
-
-  const bool incentives_enabled = GetParam() != TestCase::kIncentivesDisabled;
-  SystemTrayTestApi tray_test_api;
-  ASSERT_EQ(incentives_enabled,
-            tray_test_api.IsBubbleViewVisible(VIEW_ID_QS_EOL_NOTICE_BUTTON,
-                                              /*open_tray=*/true));
-  if (!incentives_enabled) {
-    return;
-  }
-
-  tray_test_api.ClickBubbleView(VIEW_ID_QS_EOL_NOTICE_BUTTON);
-
-  content::WebContents* active_contents =
-      chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(active_contents);
-  EXPECT_EQ(chrome::kEolIncentiveNotificationNoOfferURL,
-            active_contents->GetVisibleURL());
-}
-
-IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowTrayNoticeLongAfterEol) {
+IN_PROC_BROWSER_TEST_F(EolNotificationTest, PRE_ShowTrayNoticeLongAfterEol) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
                 /*now_string=*/"03 August 2023", /*eol_string=*/"01 June 2023",
@@ -814,12 +611,24 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowTrayNoticeLongAfterEol) {
   base::RunLoop().RunUntilIdle();
 
   SystemTrayTestApi tray_test_api;
-  EXPECT_EQ(GetParam() != TestCase::kIncentivesDisabled,
-            tray_test_api.IsBubbleViewVisible(VIEW_ID_QS_EOL_NOTICE_BUTTON,
-                                              /*open_tray=*/true));
+  ASSERT_FALSE(tray_test_api.IsBubbleViewVisible(VIEW_ID_QS_EOL_NOTICE_BUTTON,
+                                                 /*open_tray=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(ManagedDeviceEolNotificationTest,
+IN_PROC_BROWSER_TEST_F(EolNotificationTest, ShowTrayNoticeLongAfterEol) {
+  ASSERT_EQ(TimeSetupResult::kSuccess,
+            eol_status_mixin_.SetUpTime(
+                /*now_string=*/"03 August 2023", /*eol_string=*/"01 June 2023",
+                /*profile_creation_string=*/"05 December 2021"));
+  logged_in_user_mixin_.LogInUser();
+  base::RunLoop().RunUntilIdle();
+
+  SystemTrayTestApi tray_test_api;
+  EXPECT_FALSE(tray_test_api.IsBubbleViewVisible(VIEW_ID_QS_EOL_NOTICE_BUTTON,
+                                                 /*open_tray=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(ManagedDeviceEolNotificationTest,
                        NoEolApproachingNotification) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
@@ -839,7 +648,7 @@ IN_PROC_BROWSER_TEST_P(ManagedDeviceEolNotificationTest,
   EXPECT_FALSE(notification);
 }
 
-IN_PROC_BROWSER_TEST_P(ManagedDeviceEolNotificationTest,
+IN_PROC_BROWSER_TEST_F(ManagedDeviceEolNotificationTest,
                        NoEolPassedNotification) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
@@ -859,7 +668,7 @@ IN_PROC_BROWSER_TEST_P(ManagedDeviceEolNotificationTest,
   EXPECT_FALSE(notification);
 }
 
-IN_PROC_BROWSER_TEST_P(ManagedDeviceEolNotificationTest, NoTrayNotice) {
+IN_PROC_BROWSER_TEST_F(ManagedDeviceEolNotificationTest, NoTrayNotice) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
@@ -871,7 +680,7 @@ IN_PROC_BROWSER_TEST_P(ManagedDeviceEolNotificationTest, NoTrayNotice) {
       VIEW_ID_QS_EOL_NOTICE_BUTTON, /*open_tray=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(ChildUserEolNotificationTest,
+IN_PROC_BROWSER_TEST_F(ChildUserEolNotificationTest,
                        NoEolApproachingNotification) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
@@ -893,7 +702,7 @@ IN_PROC_BROWSER_TEST_P(ChildUserEolNotificationTest,
   EXPECT_EQ(u"Updates end June 2023", notification->title());
 }
 
-IN_PROC_BROWSER_TEST_P(ChildUserEolNotificationTest, NoEolPassedNotification) {
+IN_PROC_BROWSER_TEST_F(ChildUserEolNotificationTest, NoEolPassedNotification) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
@@ -914,7 +723,7 @@ IN_PROC_BROWSER_TEST_P(ChildUserEolNotificationTest, NoEolPassedNotification) {
   EXPECT_EQ(u"Final software update", notification->title());
 }
 
-IN_PROC_BROWSER_TEST_P(ChildUserEolNotificationTest, NoTrayNotice) {
+IN_PROC_BROWSER_TEST_F(ChildUserEolNotificationTest, NoTrayNotice) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
             eol_status_mixin_.SetUpTime(
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",

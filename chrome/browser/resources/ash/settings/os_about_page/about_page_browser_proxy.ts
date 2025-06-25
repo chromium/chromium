@@ -50,7 +50,6 @@ export interface AboutPageUpdateInfo {
 export interface EndOfLifeInfo {
   hasEndOfLife: boolean;
   aboutPageEndOfLifeMessage: string;
-  shouldShowEndOfLifeIncentive: boolean;
   shouldShowOfferText: boolean;
   isExtendedUpdatesDatePassed: boolean;
   isExtendedUpdatesOptInRequired: boolean;
@@ -215,11 +214,6 @@ export interface AboutPageBrowserProxy {
   getEndOfLifeInfo(): Promise<EndOfLifeInfo>;
 
   /**
-   * Called when the end of life incentive button is clicked.
-   */
-  endOfLifeIncentiveButtonClicked(): void;
-
-  /**
    * Request TPM firmware update status from the browser. It results in one or
    * more 'tpm-firmware-update-status-changed' WebUI events.
    */
@@ -344,10 +338,6 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
 
   getEndOfLifeInfo(): Promise<EndOfLifeInfo> {
     return sendWithPromise('getEndOfLifeInfo');
-  }
-
-  endOfLifeIncentiveButtonClicked(): void {
-    chrome.send('openEndOfLifeIncentive');
   }
 
   checkInternetConnection(): Promise<boolean> {

@@ -203,7 +203,6 @@ build_webui("build") {
     "os_about_page/consumer_auto_update_toggle_dialog.ts",
     "os_about_page/detailed_build_info_subpage.ts",
     "os_about_page/edit_hostname_dialog.ts",
-    "os_about_page/eol_offer_section.ts",
     "os_about_page/os_about_page.ts",
     "os_about_page/update_warning_dialog.ts",
     "os_apps_page/android_apps_subpage.ts",

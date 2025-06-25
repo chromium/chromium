@@ -20,7 +20,6 @@ import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 import '../os_settings_icons.html.js';
 import '../os_reset_page/os_powerwash_dialog.js';
-import './eol_offer_section.js';
 import './update_warning_dialog.js';
 import '../crostini_page/crostini_settings_card.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
@@ -153,11 +152,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
       },
 
       showEolIncentive_: {
-        type: Boolean,
-        value: false,
-      },
-
-      shouldShowOfferText_: {
         type: Boolean,
         value: false,
       },
@@ -306,7 +300,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
   private regulatoryInfo_: RegulatoryInfo|null;
   private hasEndOfLife_: boolean;
   private showEolIncentive_: boolean;
-  private shouldShowOfferText_: boolean;
   private hasDeferredUpdate_: boolean;
   private eolMessageWithMonthAndYear_: string;
   private hasInternetConnection_: boolean;
@@ -362,8 +355,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
     this.aboutBrowserProxy_.getEndOfLifeInfo().then(result => {
       this.hasEndOfLife_ = !!result.hasEndOfLife;
       this.eolMessageWithMonthAndYear_ = result.aboutPageEndOfLifeMessage || '';
-      this.showEolIncentive_ = !!result.shouldShowEndOfLifeIncentive;
-      this.shouldShowOfferText_ = !!result.shouldShowOfferText;
       this.isExtendedUpdatesDatePassed_ = !!result.isExtendedUpdatesDatePassed;
       this.isExtendedUpdatesOptInRequired_ =
           !!result.isExtendedUpdatesOptInRequired;

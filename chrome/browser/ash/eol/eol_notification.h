@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/eol/eol_incentive_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
@@ -70,18 +69,6 @@ class EolNotification final : public message_center::NotificationObserver {
 
   // Conditionally shows the appropriate EOL notification.
   void MaybeShowEolNotification(base::Time eol_date);
-
-  // Shows the EOL incentive notification when the correct criteria are met. If
-  // the final EOL incentive date has passed and the final incenteve was not
-  // shown, then a normal EOL notification is shown.
-  void MaybeShowEolIncentiveNotification(
-      base::Time eol_date,
-      eol_incentive_util::EolIncentiveType incentive_type);
-
-  // Creates the EOL incentive notification.
-  void ShowIncentiveNotification(
-      base::Time eol_date,
-      eol_incentive_util::EolIncentiveType incentive_type);
 
   // Resets all notification dismissed prefs back to false.
   void ResetDismissedPrefs();

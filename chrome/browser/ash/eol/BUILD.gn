@@ -8,8 +8,6 @@ assert(is_chromeos)
 
 static_library("eol") {
   sources = [
-    "eol_incentive_util.cc",
-    "eol_incentive_util.h",
     "eol_notification.cc",
     "eol_notification.h",
   ]

@@ -188,8 +188,6 @@ void TestSystemTrayClient::ShowEolInfoPage() {
   ++show_eol_info_count_;
 }
 
-void TestSystemTrayClient::RecordEolNoticeShown() {}
-
 void TestSystemTrayClient::ShowGraphicsTabletSettings() {
   ++show_graphics_tablet_settings_count_;
 }

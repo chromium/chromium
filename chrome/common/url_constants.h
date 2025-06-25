@@ -761,14 +761,6 @@ inline constexpr char kEchoLearnMoreURL[] =
 inline constexpr char16_t kEolNotificationURL[] =
     u"https://www.google.com/chromebook/older/";
 
-// The URL for the EOL incentive with offer.
-inline constexpr char kEolIncentiveNotificationOfferURL[] =
-    "https://www.google.com/chromebook/renew-chromebook-offer";
-
-// The URL for the EOL incentive with no offer.
-inline constexpr char kEolIncentiveNotificationNoOfferURL[] =
-    "https://www.google.com/chromebook/renew-chromebook";
-
 // The URL for Auto Update Policy.
 inline constexpr char16_t kAutoUpdatePolicyURL[] =
     u"https://support.google.com/chrome/a?p=auto-update-policy";

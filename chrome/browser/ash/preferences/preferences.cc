@@ -548,11 +548,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(::prefs::kFirstEolWarningDismissed, false);
   registry->RegisterBooleanPref(::prefs::kSecondEolWarningDismissed, false);
 
-  registry->RegisterBooleanPref(
-      ::prefs::kEolApproachingIncentiveNotificationDismissed, false);
-  registry->RegisterBooleanPref(::prefs::kEolPassedFinalIncentiveDismissed,
-                                false);
-
   // Extended Updates prefs.
   registry->RegisterBooleanPref(prefs::kExtendedUpdatesNotificationDismissed,
                                 false);

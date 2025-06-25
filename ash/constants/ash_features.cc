@@ -856,21 +856,6 @@ BASE_FEATURE(kEphemeralNetworkPolicies,
              "kEphemeralNetworkPolicies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Device End Of Lifetime incentive notifications.
-BASE_FEATURE(kEolIncentive, "EolIncentive", base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<EolIncentiveParam>::Option eol_incentive_options[] = {
-    {EolIncentiveParam::kNoOffer, "no_offer"},
-    {EolIncentiveParam::kOffer, "offer"},
-    {EolIncentiveParam::kOfferWithWarning, "offer_with_warning"}};
-const base::FeatureParam<EolIncentiveParam> kEolIncentiveParam{
-    &kEolIncentive, "incentive_type", EolIncentiveParam::kNoOffer,
-    &eol_incentive_options};
-
-BASE_FEATURE(kEolIncentiveSettings,
-             "EolIncentiveSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Control whether the eSIM activation dialog supports submitting an empty code.
 BASE_FEATURE(kESimEmptyActivationCodeSupported,
              "ESimEmptyActivationCodeSupported",
@@ -3669,10 +3654,6 @@ bool IsEcheSWADebugModeEnabled() {
 
 bool IsEcheSWAMeasureLatencyEnabled() {
   return base::FeatureList::IsEnabled(kEcheSWAMeasureLatency);
-}
-
-bool IsEOLIncentiveEnabled() {
-  return base::FeatureList::IsEnabled(kEolIncentive);
 }
 
 bool IsESimEmptyActivationCodeSupportEnabled() {

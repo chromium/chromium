@@ -127,7 +127,6 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowChannelInfoGiveFeedback() override;
   void ShowAudioSettings() override;
   void ShowEolInfoPage() override;
-  void RecordEolNoticeShown() override;
   bool IsUserFeedbackEnabled() override;
   void ShowGraphicsTabletSettings() override;
   void ShowMouseSettings() override;
@@ -180,9 +179,6 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   std::string last_enterprise_account_domain_manager_;
 
   std::unique_ptr<EnterpriseAccountObserver> enterprise_account_observer_;
-
-  // Whether the eol incentive is due to a recently pasesed end of life date.
-  bool eol_incentive_recently_passed_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SYSTEM_SYSTEM_TRAY_CLIENT_IMPL_H_

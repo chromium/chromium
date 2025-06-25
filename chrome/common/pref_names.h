@@ -961,11 +961,6 @@ inline constexpr char kSecondEolWarningDismissed[] =
 inline constexpr char kEolNotificationDismissed[] =
     "eol_notification_dismissed";
 
-inline constexpr char kEolApproachingIncentiveNotificationDismissed[] =
-    "approaching_eol_incentive_dismissed";
-inline constexpr char kEolPassedFinalIncentiveDismissed[] =
-    "passed_eol_incentive_dismissed";
-
 // A boolean pref that controls whether the PIN autosubmit feature is enabled.
 // This feature, when enabled, exposes the user's PIN length by showing how many
 // digits are necessary to unlock the device. Can be recommended.

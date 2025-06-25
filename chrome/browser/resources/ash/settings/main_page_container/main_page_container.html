@@ -104,10 +104,6 @@
   iron-icon {
     margin-inline-start: 16px;
   }
-
-  eol-offer-section {
-    margin-top: 20px;
-  }
 </style>
 
 <!-- Singleton element for languages data and API. -->
@@ -119,8 +115,7 @@
 
 <div id="mainPageContainer">
   <template is="dom-if" if="[[computeShowUpdateRequiredEolBanner_(
-      isShowingSubpage_, showUpdateRequiredEolBanner_,
-      showEOLIncentive_)]]">
+      isShowingSubpage_, showUpdateRequiredEolBanner_)]]">
     <div id="updateRequiredEolBanner"
         class="settings-box two-line banner">
       <div class="eol-warning-icon">
@@ -134,11 +129,6 @@
           aria-describedby="bannerText">
       </cr-icon-button>
     </div>
-  </template>
-  <template is="dom-if" if="[[computeShowEolIncentive_(isShowingSubpage_,
-      showEolIncentive_)]]">
-    <eol-offer-section should-show-offer-text="[[shouldShowOfferText_]]">
-    </eol-offer-section>
   </template>
   <div id="secondaryUserBanner" class="settings-box two-line banner"
       hidden="[[!showSecondaryUserBanner_]]">

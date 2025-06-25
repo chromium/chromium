@@ -3418,26 +3418,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.EndOfLife.IncentiveButtonClicked"
-    enum="EolIncentiveButtonType" expires_after="2023-12-10">
-  <owner>mmourgos@chromium.org</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <summary>
-    Tracks the number of times that each end of life incentive button has been
-    clicked. Recorded when the button is clicked to open the incentive url.
-  </summary>
-</histogram>
-
-<histogram name="Ash.EndOfLife.IncentiveShowSource"
-    enum="EolIncentiveShowSource" expires_after="2024-11-03">
-  <owner>mmourgos@chromium.org</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <summary>
-    Tracks the number of times that each end of life incentive type is shown.
-    Recorded as soon as the end of life incentive is shown on the screen.
-  </summary>
-</histogram>
-
 <histogram name="Ash.EssentialSearch.Status" enum="EssentialSearchStatus"
     expires_after="2025-08-31">
   <owner>mohammedabdon@chromium.org</owner>

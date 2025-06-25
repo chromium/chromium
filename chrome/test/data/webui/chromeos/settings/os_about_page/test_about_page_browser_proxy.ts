@@ -34,7 +34,6 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
   private endOfLifeInfo_: EndOfLifeInfo = {
     hasEndOfLife: false,
     aboutPageEndOfLifeMessage: '',
-    shouldShowEndOfLifeIncentive: false,
     shouldShowOfferText: false,
     isExtendedUpdatesDatePassed: false,
     isExtendedUpdatesOptInRequired: false,

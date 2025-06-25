@@ -80,7 +80,6 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowAudioSettings() override;
   bool IsUserFeedbackEnabled() override;
   void ShowEolInfoPage() override;
-  void RecordEolNoticeShown() override;
   void ShowGraphicsTabletSettings() override;
   void ShowMouseSettings() override;
   void ShowTouchpadSettings() override;
