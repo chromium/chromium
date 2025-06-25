@@ -86,10 +86,8 @@ dependencies {
     compileLatest 'androidx.navigation:navigation-runtime:+'
     compileLatest 'androidx.paging:paging-compose:+'
     compileLatest 'androidx.paging:paging-runtime:+'
-    // Take pdf library 1.0.0-alpha06 until beta release is thoroughly tested.
-    // TODO(https://crbug.com/383610568): Switch to beta version of pdf library once ready.
-    compile 'androidx.pdf:pdf-viewer:1.0.0-alpha06'
-    compile 'androidx.pdf:pdf-viewer-fragment:1.0.0-alpha06'
+    compileLatest 'androidx.pdf:pdf-viewer:+'
+    compileLatest 'androidx.pdf:pdf-viewer-fragment:+'
     compileLatest 'androidx.preference:preference:+'
     // Privacy Sandbox is less stable than others. Use only release versions.
     compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta11'
