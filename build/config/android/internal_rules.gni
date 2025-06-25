@@ -176,8 +176,19 @@ template("write_build_config") {
       ]
     }
   } else {
+    _deps_configs = []
+    if (defined(invoker.config_deps)) {
+      _deps += invoker.config_deps
+      foreach(_dep, invoker.config_deps) {
+        _dep_label = get_label_info(_dep, "label_no_toolchain")
+        _dep_gen_dir = get_label_info(_dep, "target_gen_dir")
+        _dep_name = get_label_info(_dep, "name")
+        _dep_config = "$_dep_gen_dir/$_dep_name.params.json"
+
+        _deps_configs += [ _dep_config ]
+      }
+    }
     if (defined(invoker.possible_config_deps)) {
-      _deps_configs = []
       foreach(_possible_dep, invoker.possible_config_deps) {
         _dep_label = get_label_info(_possible_dep, "label_no_toolchain")
         if (filter_exclude([ _dep_label ], java_target_patterns) == []) {
@@ -189,8 +200,8 @@ template("write_build_config") {
           _deps_configs += [ _dep_config ]
         }
       }
-      _inputs += _deps_configs
     }
+    _inputs += _deps_configs
     if (defined(invoker.possible_config_public_deps)) {
       _public_deps_configs = []
       foreach(_possible_dep, invoker.possible_config_public_deps) {

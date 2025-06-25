@@ -737,71 +737,53 @@ android_resource_sizes_test("resource_sizes_cronet_sample_apk") {
   data_deps = [ ":cronet_sample_apk" ]
 }
 
-action("httpengine_combine_proguard_flags") {
-  script = "//components/cronet/tools/generate_proguard_file.py"
-
-  # This will combine all the proguard configs found through the
-  # transitive dependencies of those targets.
-  deps = [
-    ":cronet_build_config_and_jni_registration_java",
-    ":repackage_api",
-    ":repackage_native_impl",
-  ]
-
-  outputs = [ "$target_gen_dir/httpengine_combined_proguard.cfg" ]
-  sources = []
-  depfile = "$target_out_dir/$target_name.d"
-  _build_config_deps = []
-  foreach(dep, deps) {
-    _dep_label = get_label_info(dep, "label_no_toolchain")
-    _build_config_deps += [ "$_dep_label$build_config_target_suffix" ]
-    _dep_gen_dir = get_label_info(dep, "target_gen_dir")
-    _dep_name = get_label_info(dep, "name")
-    sources += [ "$_dep_gen_dir/$_dep_name.build_config.json" ]
+# This will combine all the proguard configs found through the
+# transitive dependencies of those targets.
+template("collect_proguard_configs") {
+  _build_config_target = "${target_name}__build_config"
+  _build_config = "$target_gen_dir/${target_name}.build_config.json"
+  write_build_config(_build_config_target) {
+    type = "dist_jar"
+    build_config = _build_config
+    requires_android = true
+    proguard_enabled = true
+    config_deps = [
+      ":cronet_build_config_and_jni_registration_java",
+      ":repackage_api",
+      ":repackage_native_impl",
+    ]
   }
-  deps += _build_config_deps
-  args = [
-           "--output_file",
-           rebase_path(outputs[0], root_build_dir),
-           "--aosp-mode",
-           "--dep_file",
-           rebase_path(depfile, root_build_dir),
-         ] + rebase_path(sources, root_build_dir)
+
+  action(target_name) {
+    script = "//components/cronet/tools/generate_proguard_file.py"
+
+    outputs = [ invoker.output ]
+    sources = [ _build_config ]
+    depfile = "$target_out_dir/$target_name.d"
+    deps = [ ":$_build_config_target" ]
+    args = [
+      "--output_file",
+      rebase_path(invoker.output, root_build_dir),
+      "--dep_file",
+      rebase_path(depfile, root_build_dir),
+      rebase_path(_build_config, root_build_dir),
+    ]
+    if (invoker.aosp_mode) {
+      args += [ "--aosp-mode" ]
+    }
+  }
+}
+
+collect_proguard_configs("httpengine_combine_proguard_flags") {
+  output = "$target_gen_dir/httpengine_combined_proguard.cfg"
+  aosp_mode = true
 }
 
 # TODO(b/313416274): Change the output name to something else
 # that doesn't actually exist.
-action("cronet_combine_proguard_flags") {
-  script = "//components/cronet/tools/generate_proguard_file.py"
-
-  # This will combine all the proguard configs found through the
-  # transitive dependencies of those targets.
-  deps = [
-    ":cronet_build_config_and_jni_registration_java",
-    ":repackage_api",
-    ":repackage_native_impl",
-  ]
-
-  # TODO(b/313416274): Change the output name to something else
-  # that doesn't actually exist.
-  outputs = [ "$target_gen_dir/cronet_impl_native_proguard.cfg" ]
-  sources = []
-  depfile = "$target_out_dir/$target_name.d"
-  _build_config_deps = []
-  foreach(dep, deps) {
-    _dep_label = get_label_info(dep, "label_no_toolchain")
-    _build_config_deps += [ "$_dep_label$build_config_target_suffix" ]
-    _dep_gen_dir = get_label_info(dep, "target_gen_dir")
-    _dep_name = get_label_info(dep, "name")
-    sources += [ "$_dep_gen_dir/$_dep_name.build_config.json" ]
-  }
-  deps += _build_config_deps
-  args = [
-           "--output_file",
-           rebase_path(outputs[0], root_build_dir),
-           "--dep_file",
-           rebase_path(depfile, root_build_dir),
-         ] + rebase_path(sources, root_build_dir)
+collect_proguard_configs("cronet_combine_proguard_flags") {
+  output = "$target_gen_dir/cronet_impl_native_proguard.cfg"
+  aosp_mode = false
 }
 
 action("httpengine_combined_proguard_flags_golden_test") {
