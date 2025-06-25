@@ -345,9 +345,9 @@ class SessionRestoreImpl : public BrowserListObserver {
       // Restore and show the browser.
       const int initial_tab_count = 0;
       bool did_show_browser = false;
-      RestoreTabsToBrowser(*(*i), browser, /*is_active_browser=*/false,
-                           initial_tab_count, restored_tabs, &new_group_ids,
-                           did_show_browser);
+      RestoreTabsToBrowser(*(*i), browser, initial_tab_count,
+                           /*is_active_browser=*/false, restored_tabs,
+                           &new_group_ids, did_show_browser);
       NotifySessionServiceOfRestoredTabs(browser, initial_tab_count);
     }
 
