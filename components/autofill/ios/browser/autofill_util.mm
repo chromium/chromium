@@ -252,11 +252,9 @@ std::variant<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
   }
 
   // Action is optional.
-  std::u16string action;
-  if (const std::string* action_ptr = form.FindString("action")) {
-    action = base::UTF8ToUTF16(*action_ptr);
+  if (const std::string* action = form.FindString("action")) {
+    form_data.set_action(GURL(*action));
   }
-  form_data.set_action(GURL(action));
 
   // Optional fields.
   if (const std::string* name_attribute = form.FindString("name_attribute")) {
