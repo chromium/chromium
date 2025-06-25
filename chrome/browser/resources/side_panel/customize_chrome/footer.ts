@@ -57,7 +57,7 @@ export class FooterElement extends CrLitElement {
     super.connectedCallback();
     this.setFooterSettingsListenerId_ =
         this.callbackRouter_.setFooterSettings.addListener(
-            (visible: boolean, disable: boolean) => {
+            (visible: boolean, disable: boolean, _: boolean) => {
               this.show_ = visible || disable;
               this.disable_ = disable;
             });

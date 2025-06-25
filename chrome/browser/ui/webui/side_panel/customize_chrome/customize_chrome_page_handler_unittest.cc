@@ -183,7 +183,9 @@ class MockPage : public side_panel::mojom::CustomizeChromePage {
   MOCK_METHOD(void,
               NtpManagedByNameUpdated,
               (const std::string&, const std::string&));
-  MOCK_METHOD(void, SetFooterSettings, (bool visible, bool disable));
+  MOCK_METHOD(void,
+              SetFooterSettings,
+              (bool visible, bool disable, bool extension_policy_enabled));
 
   mojo::Receiver<side_panel::mojom::CustomizeChromePage> receiver_{this};
 };
@@ -919,7 +921,13 @@ TEST_F(CustomizeChromePageHandlerTest, SetFooterVisible_False) {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-TEST_F(CustomizeChromePageHandlerTest, SetFooterSettings) {
+// TSAN hangs on RunUntilIdle() in SetUp().
+#if defined(THREAD_SANITIZER)
+#define MAYBE_SetFooterSettings DISABLED_SetFooterSettings
+#else
+#define MAYBE_SetFooterSettings SetFooterSettings
+#endif
+TEST_F(CustomizeChromePageHandlerTest, MAYBE_SetFooterSettings) {
   // To trigger the footer's managed state, we need to enable the relevant flag
   // and set the management authority to a value that indicates the browser is
   // managed.
@@ -943,6 +951,21 @@ TEST_F(CustomizeChromePageHandlerTest, SetFooterSettings) {
       prefs::kNTPFooterManagementNoticeEnabled, true);
   mock_page_.FlushForTesting();
   EXPECT_TRUE(managed);
+
+  bool extension_policy_enabled = false;
+  EXPECT_CALL(mock_page_, SetFooterSettings)
+      .Times(2)
+      .WillRepeatedly(SaveArg<2>(&extension_policy_enabled));
+
+  profile().GetPrefs()->SetBoolean(prefs::kNTPFooterExtensionAttributionEnabled,
+                                   true);
+  mock_page_.FlushForTesting();
+  EXPECT_TRUE(extension_policy_enabled);
+
+  profile().GetPrefs()->SetBoolean(prefs::kNTPFooterExtensionAttributionEnabled,
+                                   false);
+  mock_page_.FlushForTesting();
+  EXPECT_FALSE(extension_policy_enabled);
 }
 #endif
 

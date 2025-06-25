@@ -77,7 +77,7 @@ export function getHtml(this: AppElement) {
         </div>
       </div>
     ` : ''}
-    ${(this.footerEnabled_ && this.isSourceTabExtension_()) ? html`
+    ${this.showFooter_ ? html`
       <hr class="sp-cards-separator">
       <div id="footer" class="section sp-card">
         <sp-heading hide-back-button>

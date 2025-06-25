@@ -22,6 +22,7 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -79,11 +80,14 @@ export class AppElement extends AppElementBase {
       page_: {type: String},
       modulesEnabled_: {type: Boolean},
       selectedCollection_: {type: Object},
+      extensionPolicyEnabled_: {type: Boolean},
       extensionsCardEnabled_: {type: Boolean},
       footerEnabled_: {type: Boolean},
       wallpaperSearchEnabled_: {type: Boolean},
       newTabPageType_: {type: NewTabPageType},
       showEditTheme_: {type: Boolean},
+      showFooter_: {type: Boolean},
+      showFooterForManagedBrowser_: {type: Boolean},
     };
   }
 
@@ -100,8 +104,7 @@ export class AppElement extends AppElementBase {
   protected accessor selectedCollection_: BackgroundCollection|null = null;
   protected accessor extensionsCardEnabled_: boolean =
       loadTimeData.getBoolean('extensionsCardEnabled');
-  // TODO(crbug.com/400952431) Footer section is hidden until the first time the
-  // user has a 3P NTP or non-default and non-3P themed 1P NTP
+  protected accessor extensionPolicyEnabled_: boolean = false;
   protected accessor footerEnabled_: boolean =
       loadTimeData.getBoolean('footerEnabled');
   protected accessor wallpaperSearchEnabled_: boolean =
@@ -109,8 +112,12 @@ export class AppElement extends AppElementBase {
   protected accessor newTabPageType_: NewTabPageType =
       NewTabPageType.kFirstPartyWebUI;
   protected accessor showEditTheme_: boolean = true;
+  protected accessor showFooter_: boolean = false;
+  protected accessor showFooterForManagedBrowser_: boolean = false;
+
   private scrollToSectionListenerId_: number|null = null;
   private attachedTabStateUpdatedId_: number|null = null;
+  private setFooterSettingsListenerId_: number|null = null;
   private setThemeEditableId_: number|null = null;
   private pageHandler_: CustomizeChromePageHandlerInterface =
       CustomizeChromeApiProxy.getInstance().handler;
@@ -165,6 +172,16 @@ export class AppElement extends AppElementBase {
                                          this.showEditTheme_ = isThemeEditable;
                                        });
 
+    this.setFooterSettingsListenerId_ =
+        CustomizeChromeApiProxy.getInstance()
+            .callbackRouter.setFooterSettings.addListener(
+                (_: boolean, showEnterpriseBadging: boolean,
+                 extensionPolicyEnabled: boolean) => {
+                  this.showFooterForManagedBrowser_ = showEnterpriseBadging;
+                  this.extensionPolicyEnabled_ = extensionPolicyEnabled;
+                });
+    this.pageHandler_.updateFooterSettings();
+
     // We wait for load because `scrollIntoView` above requires the page to be
     // laid out.
     window.addEventListener('load', () => {
@@ -205,14 +222,34 @@ export class AppElement extends AppElementBase {
     assert(this.setThemeEditableId_);
     CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
         this.setThemeEditableId_);
+
+    assert(this.setFooterSettingsListenerId_);
+    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
+        this.setFooterSettingsListenerId_);
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('footerEnabled_') ||
+        changedPrivateProperties.has('newTabPageType_') ||
+        changedPrivateProperties.has('showFooterForManagedBrowser_') ||
+        changedPrivateProperties.has('extensionPolicyEnabled_')) {
+      this.showFooter_ = this.computeShowFooter_();
+    }
+  }
+
+  protected computeShowFooter_(): boolean {
+    return this.footerEnabled_ &&
+        ((this.extensionPolicyEnabled_ &&
+          this.newTabPageType_ === NewTabPageType.kExtension) ||
+         this.showFooterForManagedBrowser_);
   }
 
   protected isSourceTabFirstPartyNtp_(): boolean {
     return this.newTabPageType_ === NewTabPageType.kFirstPartyWebUI;
-  }
-
-  protected isSourceTabExtension_(): boolean {
-    return this.newTabPageType_ === NewTabPageType.kExtension;
   }
 
   protected async onBackClick_() {

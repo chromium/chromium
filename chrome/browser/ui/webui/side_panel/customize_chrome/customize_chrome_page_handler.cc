@@ -140,6 +140,10 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       prefs::kNtpFooterVisible,
       base::BindRepeating(&CustomizeChromePageHandler::UpdateFooterSettings,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kNTPFooterExtensionAttributionEnabled,
+      base::BindRepeating(&CustomizeChromePageHandler::UpdateFooterSettings,
+                          base::Unretained(this)));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   PrefService* local_state = g_browser_process->local_state();
@@ -494,7 +498,9 @@ void CustomizeChromePageHandler::SetFooterVisible(bool visible) {
 void CustomizeChromePageHandler::UpdateFooterSettings() {
   page_->SetFooterSettings(
       profile_->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible),
-      enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_));
+      enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_),
+      profile_->GetPrefs()->GetBoolean(
+          prefs::kNTPFooterExtensionAttributionEnabled));
 }
 
 void CustomizeChromePageHandler::SetModulesVisible(bool visible) {
