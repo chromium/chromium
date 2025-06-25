@@ -443,6 +443,19 @@ void CastMirroringServiceHost::CreateAudioStreamForDesktop(
   mojo::MessagePipe pipe_to_audio_service;
   mojo::MessagePipe pipe_to_mirroring_service;
 
+  // Temporary logic to make the launch of CatapAudioInputStream for Cast
+  // independent of the launch of the same feature for getDisplayMedia().
+  // TODO(https://crbug.com/425902990): Remove the usage of
+  // `kLoopbackWithMuteDeviceIdCast` once CatapAudioInputStream is launched for
+  // both Cast and getDisplayMedia().
+#if BUILDFLAG(IS_MAC)
+  const char* loopback_id =
+      media::AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast;
+#else  // IS_MAC
+  const char* loopback_id =
+      media::AudioDeviceDescription::kLoopbackWithMuteDeviceId;
+#endif
+
   // This does the mostly the same thing as the similar insane glob of code in
   // the CreateAudioStreamForTab() method. Here, system-wide audio is requested
   // from the platform, and so the CreateInputStream() API is used instead of
@@ -457,8 +470,7 @@ void CastMirroringServiceHost::CreateAudioStreamForDesktop(
           std::move(pipe_to_audio_service.handle1)),
       mojo::PendingRemote<AudioInputStreamClient>(
           std::move(pipe_to_mirroring_service.handle0), 0),
-      mojo::NullRemote(), mojo::NullRemote(),
-      media::AudioDeviceDescription::kLoopbackWithMuteDeviceId, params,
+      mojo::NullRemote(), mojo::NullRemote(), loopback_id, params,
       total_segments, false, nullptr,
       base::BindOnce(
           [](mojo::PendingRemote<mojom::AudioStreamCreatorClient> requestor,

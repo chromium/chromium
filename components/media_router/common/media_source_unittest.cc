@@ -153,7 +153,10 @@ TEST(MediaSourceTest, ForDesktopWithAudio) {
 }
 
 TEST(MediaSourceTest, ForUnchosenDesktop) {
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC)
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(media::kMacCatapLoopbackAudioForCast);
+#elif BUILDFLAG(IS_LINUX)
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(media::kPulseaudioLoopbackForCast);
 #endif

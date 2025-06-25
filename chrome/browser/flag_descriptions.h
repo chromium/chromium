@@ -3634,14 +3634,14 @@ extern const char kImmersiveFullscreenDescription[];
 extern const char kMacAccessibilityAPIMigrationName[];
 extern const char kMacAccessibilityAPIMigrationDescription[];
 
-extern const char kMacCatapSystemAudioLoopbackCaptureName[];
-extern const char kMacCatapSystemAudioLoopbackCaptureDescription[];
+extern const char kMacCatapLoopbackAudioForCastName[];
+extern const char kMacCatapLoopbackAudioForCastDescription[];
+
+extern const char kMacCatapLoopbackAudioForScreenShareName[];
+extern const char kMacCatapLoopbackAudioForScreenShareDescription[];
 
 extern const char kMacImeLiveConversionFixName[];
 extern const char kMacImeLiveConversionFixDescription[];
-
-extern const char kMacLoopbackAudioForScreenShareName[];
-extern const char kMacLoopbackAudioForScreenShareDescription[];
 
 extern const char kMacPWAsNotificationAttributionName[];
 extern const char kMacPWAsNotificationAttributionDescription[];

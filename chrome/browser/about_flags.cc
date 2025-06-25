@@ -5848,15 +5848,15 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
-    {"mac-catap-system-audio-loopback-capture",
-     flag_descriptions::kMacCatapSystemAudioLoopbackCaptureName,
-     flag_descriptions::kMacCatapSystemAudioLoopbackCaptureDescription, kOsMac,
-     FEATURE_VALUE_TYPE(features::kMacCatapSystemAudioLoopbackCapture)},
+    {"mac-catap-loopback-audio-for-cast",
+     flag_descriptions::kMacCatapLoopbackAudioForCastName,
+     flag_descriptions::kMacCatapLoopbackAudioForCastDescription, kOsMac,
+     FEATURE_VALUE_TYPE(media::kMacCatapLoopbackAudioForCast)},
 
-    {"mac-loopback-audio-for-screen-share",
-     flag_descriptions::kMacLoopbackAudioForScreenShareName,
-     flag_descriptions::kMacLoopbackAudioForScreenShareDescription, kOsMac,
-     FEATURE_VALUE_TYPE(media::kMacLoopbackAudioForScreenShare)},
+    {"mac-catap-loopback-audio-for-screen-share",
+     flag_descriptions::kMacCatapLoopbackAudioForScreenShareName,
+     flag_descriptions::kMacCatapLoopbackAudioForScreenShareDescription, kOsMac,
+     FEATURE_VALUE_TYPE(media::kMacCatapLoopbackAudioForScreenShare)},
 
     {"use-sc-content-sharing-picker",
      flag_descriptions::kUseSCContentSharingPickerName,

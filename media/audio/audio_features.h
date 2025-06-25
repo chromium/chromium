@@ -17,10 +17,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAAudioInput);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAAudioPerStreamDeviceSelection);
 #endif
 
-#if BUILDFLAG(IS_MAC)
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapSystemAudioLoopbackCapture);
-#endif
-
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebAudioRemoveAudioDestinationResampler);
 
 }  // namespace features
@@ -28,7 +24,8 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebAudioRemoveAudioDestinationResampler);
 namespace media {
 
 #if BUILDFLAG(IS_MAC)
-MEDIA_EXPORT bool IsMacCatapSystemAudioLoopbackCaptureEnabled();
+MEDIA_EXPORT bool IsMacCatapSystemLoopbackCaptureSupported();
+MEDIA_EXPORT bool IsMacSckSystemLoopbackCaptureSupported();
 #endif
 
 // Returns true if system audio loopback capture is implemented for the current

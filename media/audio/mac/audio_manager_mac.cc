@@ -51,6 +51,21 @@
 #include "media/base/media_switches.h"
 
 namespace media {
+namespace {
+bool IsCatapLoopbackAudioEnabledForDevice(const std::string& device_id) {
+  // TODO(https://crbug.com/425902990): Remove check of
+  // `kLoopbackWithMuteDeviceIdCast` once CatapAudioInputStream is launched
+  // for both Cast and getDisplayMedia.
+  if (!IsMacCatapSystemLoopbackCaptureSupported()) {
+    return false;
+  }
+
+  if (device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast) {
+    return base::FeatureList::IsEnabled(kMacCatapLoopbackAudioForCast);
+  }
+  return base::FeatureList::IsEnabled(kMacCatapLoopbackAudioForScreenShare);
+}
+}  // namespace
 
 // Maximum number of output streams that can be open simultaneously.
 static const int kMaxOutputStreams = 50;
@@ -669,7 +684,7 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
     const std::string& device_id) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (AudioDeviceDescription::IsLoopbackDevice(device_id)) {
-    if (IsMacCatapSystemAudioLoopbackCaptureEnabled()) {
+    if (IsCatapLoopbackAudioEnabledForDevice(device_id)) {
       return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                              ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
                              kCatapLoopbackDefaultFramesPerBuffer);
@@ -882,7 +897,7 @@ AudioInputStream* AudioManagerMac::MakeLowLatencyInputStream(
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
 
   if (AudioDeviceDescription::IsLoopbackDevice(device_id)) {
-    if (IsMacCatapSystemAudioLoopbackCaptureEnabled()) {
+    if (IsCatapLoopbackAudioEnabledForDevice(device_id)) {
       return CreateCatapAudioInputStream(
           params, device_id, log_callback,
           base::BindOnce(&AudioManagerBase::ReleaseInputStream,

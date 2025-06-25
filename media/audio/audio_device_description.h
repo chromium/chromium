@@ -37,6 +37,14 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   // will mute system audio during capturing.
   static const char kLoopbackWithMuteDeviceId[];
 
+  // Temporary loopback ID that is used by Cast on macOS to make the launches of
+  // CatapAudioInputStream for getDisplayMedia() and Cast independent. Similar
+  // to |kLoopbackInputDeviceId|, with only difference that this ID will mute
+  // system audio during capturing.
+  // TODO(https://crbug.com/425902990): Remove `kLoopbackWithMuteDeviceIdCast`
+  // once CatapAudioInputStream is launched for both Cast and getDisplayMedia().
+  static const char kLoopbackWithMuteDeviceIdCast[];
+
   // Similar to |kLoopbackInputDeviceId|, but without audio from Chrome.
   // Only supported on Windows, Mac and ChromeOS.
   static const char kLoopbackWithoutChromeId[];

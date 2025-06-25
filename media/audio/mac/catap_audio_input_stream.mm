@@ -221,6 +221,7 @@ CatapAudioInputStream::CatapAudioInputStream(
       default_output_device_id_(default_output_device_id) {
   CHECK(device_id_ == AudioDeviceDescription::kLoopbackInputDeviceId ||
         device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceId ||
+        device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast ||
         device_id == AudioDeviceDescription::kLoopbackWithoutChromeId ||
         device_id == AudioDeviceDescription::kLoopbackAllDevicesId);
   CHECK(!log_callback_.is_null());
@@ -332,7 +333,8 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   if (params_.channels() == 1) {
     [tap_description_ setMono:YES];
   }
-  if (device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceId) {
+  if (device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceId ||
+      device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast) {
     // No audio is sent to the hardware (e.g, speakers) while the audio is
     // captured.
     [tap_description_ setMuteBehavior:CATapMuted];

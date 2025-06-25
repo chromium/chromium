@@ -51,13 +51,6 @@ BASE_FEATURE(kAAudioPerStreamDeviceSelection,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_MAC)
-// Enables system audio loopback capture using the macOS CoreAudio tap API.
-BASE_FEATURE(kMacCatapSystemAudioLoopbackCapture,
-             "MacCatapSystemAudioLoopbackCapture",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // This feature flag controls whether the WebAudio destination resampler is
 // bypassed. When enabled, if the WebAudio context's sample rate differs from
 // the hardware's sample rate, the resampling step that normally occurs within
@@ -75,13 +68,11 @@ BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
 
 namespace media {
 #if BUILDFLAG(IS_MAC)
-bool IsMacCatapSystemAudioLoopbackCaptureEnabled() {
-  return (base::mac::MacOSVersion() >= 14'02'00 &&
-          base::FeatureList::IsEnabled(
-              features::kMacCatapSystemAudioLoopbackCapture));
+bool IsMacCatapSystemLoopbackCaptureSupported() {
+  return (base::mac::MacOSVersion() >= 14'02'00);
 }
 
-bool IsMacSckSystemAudioLoopbackCaptureEnabled() {
+bool IsMacSckSystemLoopbackCaptureSupported() {
   // Only supported on macOS 13.0+.
   // Disabled on macOS 15.0 due to problems with permission prompt.
   // The override feature is useful for testing on unsupported versions.
@@ -95,12 +86,8 @@ bool IsSystemLoopbackCaptureSupported() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(USE_CRAS)
   return true;
 #elif BUILDFLAG(IS_MAC)
-  // For system audio loopback to be enabled in getDisplayMedia(), the feature
-  // kMacLoopbackAudioForScreenShare must also be enabled.
-  // TODO(crbug.com/365602111): Implement SCContentPicker compatible capture
-  // for MacOS 15.
-  return IsMacSckSystemAudioLoopbackCaptureEnabled() ||
-         IsMacCatapSystemAudioLoopbackCaptureEnabled();
+  return (IsMacSckSystemLoopbackCaptureSupported() ||
+          IsMacCatapSystemLoopbackCaptureSupported());
 #elif BUILDFLAG(IS_LINUX) && defined(USE_PULSEAUDIO)
   return true;
 #else

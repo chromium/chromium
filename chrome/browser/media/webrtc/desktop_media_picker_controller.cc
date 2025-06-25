@@ -91,8 +91,14 @@ bool DesktopMediaPickerController::IsSystemAudioCaptureSupported(
     return false;
   }
 #if BUILDFLAG(IS_MAC)
- return request_source == Params::RequestSource::kCast ||
-     base::FeatureList::IsEnabled(media::kMacLoopbackAudioForScreenShare);
+  if (request_source == Params::RequestSource::kCast) {
+    return (media::IsMacSckSystemLoopbackCaptureSupported() ||
+            base::FeatureList::IsEnabled(media::kMacCatapLoopbackAudioForCast));
+  } else {
+    return (media::IsMacCatapSystemLoopbackCaptureSupported() &&
+            base::FeatureList::IsEnabled(
+                media::kMacCatapLoopbackAudioForScreenShare));
+  }
 #elif BUILDFLAG(IS_LINUX)
   if (request_source == Params::RequestSource::kCast) {
     return base::FeatureList::IsEnabled(media::kPulseaudioLoopbackForCast);

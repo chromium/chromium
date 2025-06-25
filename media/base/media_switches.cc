@@ -358,10 +358,16 @@ BASE_FEATURE(kResumeBackgroundVideo,
 );
 
 #if BUILDFLAG(IS_MAC)
-// Enables system audio sharing using ScreenCaptureKit when screen sharing on
-// macOS 13.0+.
-BASE_FEATURE(kMacLoopbackAudioForScreenShare,
-             "MacLoopbackAudioForScreenShare",
+// Enables system audio loopback capture using the macOS CoreAudio tap API for
+// Cast.
+BASE_FEATURE(kMacCatapLoopbackAudioForCast,
+             "MacCatapLoopbackAudioForCast",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables system audio loopback capture using the macOS CoreAudio tap API for
+// screen share.
+BASE_FEATURE(kMacCatapLoopbackAudioForScreenShare,
+             "MacCatapLoopbackAudioForScreenShare",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use the built-in MacOS screen-sharing picker (SCContentSharingPicker). This
