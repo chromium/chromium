@@ -48,11 +48,12 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
                 notifyUpdateStatusChanged();
             };
 
-    /*
+    /**
      * The current state of updates for Chrome. This can change during runtime and may be {@code
      * null} if the status hasn't been determined yet.
      */
     private UpdateStatusProvider.@Nullable UpdateStatus mUpdateStatus;
+
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final @Nullable SigninManager mSigninManager;
 

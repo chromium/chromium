@@ -136,7 +136,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         mContentScrollableView = mContentView.findViewById(R.id.share_sheet_scrollview);
     }
 
-    /*
+    /**
      * Creates a new share sheet view with two rows based on the provided PropertyModels.
      *
      * @param activity The activity the share sheet belongs to.
@@ -146,7 +146,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
      * @param fileContentType The MIME type of the file(s) being shared.
      * @param detailedContentType The {@link DetailedContentType} of the content being shared.
      * @param shareSheetLinkToggleCoordinator The {@link ShareSheetLinkToggleCoordinator} for
-     *         whether to show the toggle and the default enabled status.
+     *     whether to show the toggle and the default enabled status.
      */
     void createRecyclerViews(
             List<PropertyModel> firstPartyModels,

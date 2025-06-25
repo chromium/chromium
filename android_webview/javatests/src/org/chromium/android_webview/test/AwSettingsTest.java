@@ -3946,17 +3946,19 @@ public class AwSettingsTest {
         }
     }
 
-    /*
+    /**
      * Verifies the following statements about a setting:
+     * 
+     * <pre>
      *  - initially, the setting has a default value;
      *  - the setting can be switched to an alternate value and back;
      *  - switching a setting in the first WebView doesn't affect the setting
      *    state in the second WebView and vice versa.
-     *
+     * </pre>
      * @param helper0 Test helper for the first ContentView
      * @param helper1 Test helper for the second ContentView
      */
-    private void runPerViewSettingsTest(
+     private void runPerViewSettingsTest(
             AwSettingsTestHelper<?> helper0, AwSettingsTestHelper<?> helper1) throws Throwable {
         helper0.ensureSettingHasInitialValue();
         helper1.ensureSettingHasInitialValue();
@@ -4026,8 +4028,9 @@ public class AwSettingsTest {
         }
     }
 
-    /*
+    /**
      * Verifies the number of resource requests made to the content provider.
+     *
      * @param resource Resource name
      * @param expectedCount Expected resource requests count
      */

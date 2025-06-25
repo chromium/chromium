@@ -166,7 +166,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         return (ContentView) getContainerView();
     }
 
-    /* Destroy and clean up {@link DragStateTracker} to the content view. */
+    /** Destroy and clean up {@link DragStateTracker} to the content view. */
     @Override
     public void destroy() {
         super.destroy();

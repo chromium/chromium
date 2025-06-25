@@ -82,7 +82,7 @@ public class PageContentProviderImplUnitTest {
         when(mActivityTabProvider.get()).thenReturn(mTab);
     }
 
-    @Test()
+    @Test
     public void testInvalidUrl() {
         var result =
                 mProvider.query(
@@ -91,7 +91,7 @@ public class PageContentProviderImplUnitTest {
         assertCursorContainsErrorMessage(result, "Invalid URI");
     }
 
-    @Test()
+    @Test
     public void testUrlAfterExpiration() throws InterruptedException {
         var contentUri =
                 PageContentProviderImpl.getContentUriForUrl(

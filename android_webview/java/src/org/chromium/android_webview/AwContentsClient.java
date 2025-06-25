@@ -94,11 +94,9 @@ public abstract class AwContentsClient {
         this(Looper.myLooper());
     }
 
-    /**
-     *
-     * See {@link android.webkit.WebChromeClient}. */
+    /** See {@link android.webkit.WebChromeClient}. */
     public interface CustomViewCallback {
-        /* See {@link android.webkit.WebChromeClient}. */
+        /** See {@link android.webkit.WebChromeClient}. */
         public void onCustomViewHidden();
     }
 

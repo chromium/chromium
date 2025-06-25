@@ -22,10 +22,10 @@ public class LensUtils {
     /** See function for details. */
     private static boolean sFakePassableLensEnvironmentForTesting;
 
-    /*
+    /**
      * If true, short-circuit the version name intent check to always return a high enough version.
-     * Also hardcode the device OS check to return true.
-     * Used by test cases.
+     * Also hardcode the device OS check to return true. Used by test cases.
+     *
      * @param shouldFake Whether to fake the version check.
      */
     public static void setFakePassableLensEnvironmentForTesting(final boolean shouldFake) {
@@ -91,10 +91,10 @@ public class LensUtils {
         return shouldLogUkmByFeature(ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS);
     }
 
-    /*
-     * Whether to log UKM pings for lens-related behavior.
-     * If in the experiment will log by default and will only be disabled
-     * if the parameter is not absent and set to true.
+    /**
+     * Whether to log UKM pings for lens-related behavior. If in the experiment will log by default
+     * and will only be disabled if the parameter is not absent and set to true.
+     *
      * @param featureName The feature that uses the UKM reporting.
      */
     public static boolean shouldLogUkmByFeature(String featureName) {

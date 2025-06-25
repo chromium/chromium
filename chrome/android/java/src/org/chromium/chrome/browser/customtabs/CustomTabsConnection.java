@@ -329,10 +329,10 @@ public class CustomTabsConnection {
         return json;
     }
 
-    /*
+    /**
      * Logging for page load metrics callback, if service has enabled logging.
      *
-     * No rate-limiting, can be spammy if the app is misbehaved.
+     * <p>No rate-limiting, can be spammy if the app is misbehaved.
      *
      * @param args arguments of the callback.
      */

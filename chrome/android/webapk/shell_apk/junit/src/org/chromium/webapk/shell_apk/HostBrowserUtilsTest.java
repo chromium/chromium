@@ -247,8 +247,10 @@ public class HostBrowserUtilsTest {
                 packageAndComponent.getComponentName().getClassName());
     }
 
-    /* Tests that {@link #getBrowserLaunchIntentWithoutFlagsAndExtras()} returns an
-     * ACTION_START_WEBAPK intent with the right package name for bound WebAPKs. */
+    /**
+     * Tests that {@link #getBrowserLaunchIntentWithoutFlagsAndExtras()} returns an
+     * ACTION_START_WEBAPK intent with the right package name for bound WebAPKs.
+     */
     @Test
     public void testBrowserLaunchIntentForBoundWebApk() {
         Intent intent =
@@ -265,9 +267,10 @@ public class HostBrowserUtilsTest {
         Assert.assertNull(intent.getData());
     }
 
-    /* Tests that {@link #getBrowserLaunchIntentWithoutFlagsAndExtras()} returns an
-     * ACTION_VIEW intent with the right ComponentName, Selector, and StartUrl for
-     * unbound WebAPKs. */
+    /**
+     * Tests that {@link #getBrowserLaunchIntentWithoutFlagsAndExtras()} returns an ACTION_VIEW
+     * intent with the right ComponentName, Selector, and StartUrl for unbound WebAPKs.
+     */
     @Test
     public void testBrowserLaunchIntentForUnboundWebApk() {
         Uri startUrl = Uri.parse("https://example.com/");

@@ -120,13 +120,14 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         return Pair.create(bitmap, /* maskable= */ false);
     }
 
-    /*
+    /**
      * Shows the Universal Install Bottom Sheet.
+     *
      * @param showBeforeAppTypeKnown When true, this will show the dialog synchronously from the
-     * ctor. This can be used to simulate what happens if the app type check finishes after the
-     * dialog has appeared (timeout).
+     *     ctor. This can be used to simulate what happens if the app type check finishes after the
+     *     dialog has appeared (timeout).
      * @param webAppAlreadyInstalled When true, the dialog will behave as if the app has already
-     * been installed.
+     *     been installed.
      */
     private void showPwaUniversalInstallBottomSheet(
             boolean showBeforeAppTypeKnown, boolean webAppAlreadyInstalled) throws Exception {

@@ -1340,7 +1340,7 @@ public class NewTabPage
         return mHomeModulesContainer.getVisibility() == View.VISIBLE;
     }
 
-    /* Destroy the single tab card on the {@link NewTabPageLayout}. */
+    /** Destroy the single tab card on the {@link NewTabPageLayout}. */
     @VisibleForTesting
     void destroySingleTabCard() {
         mSingleTabCardContainer.removeAllViews();

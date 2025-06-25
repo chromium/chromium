@@ -94,9 +94,9 @@ public class JavascriptOptimizerFeatureTest {
         assertFalse(queryJavascriptOptimizersEnabledForActiveWebContents());
     }
 
-    /*
-     * Test that specifying an exception in site settings has higher priority than the
-     * {@link OsAdditionalSecurityPermissionProvider}-provided setting.
+    /**
+     * Test that specifying an exception in site settings has higher priority than the {@link
+     * OsAdditionalSecurityPermissionProvider}-provided setting.
      */
     @Test
     @MediumTest

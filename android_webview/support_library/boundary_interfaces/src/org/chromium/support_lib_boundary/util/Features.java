@@ -112,7 +112,7 @@ public class Features {
     /**
      * @deprecated Feature was renamed to WEB_MESSAGE_ARRAY_BUFFER. Do not reuse feature name.
      */
-    @Deprecated()
+    @Deprecated
     public static final String WEB_MESSAGE_GET_MESSAGE_PAYLOAD = "WEB_MESSAGE_GET_MESSAGE_PAYLOAD";
 
     // JsReplyProxy.postMessageWithPayload
@@ -215,7 +215,7 @@ public class Features {
     /**
      * @deprecated Feature was never launched. Do not reuse feature name.
      */
-    @Deprecated()
+    @Deprecated
     public static final String REQUESTED_WITH_HEADER_CONTROL = "REQUESTED_WITH_HEADER_CONTROL";
 
     // WebSettingsCompat.setRequestedWithHeaderAllowList
@@ -260,7 +260,7 @@ public class Features {
     public static final String MULTI_PROFILE = "MULTI_PROFILE";
 
     // WebSettingsCompat.enableRestrictSensitiveWebContent
-    @Deprecated()
+    @Deprecated
     public static final String RESTRICT_SENSITIVE_WEB_CONTENT = "RESTRICT_SENSITIVE_WEB_CONTENT";
 
     // WebSettingsCompat.setUserAgentMetadataFromMap

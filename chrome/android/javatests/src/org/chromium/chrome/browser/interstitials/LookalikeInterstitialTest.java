@@ -35,7 +35,7 @@ import org.chromium.net.test.EmbeddedTestServer;
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
 })
 @ParameterizedCommandLineFlags({
-    @Switches(),
+    @Switches,
     @Switches("enable-features=" + ChromeFeatureList.LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI),
 })
 public class LookalikeInterstitialTest {

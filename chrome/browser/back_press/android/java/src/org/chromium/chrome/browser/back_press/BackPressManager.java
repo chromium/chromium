@@ -329,9 +329,9 @@ public class BackPressManager implements Destroyable {
         return mOnSystemNavigationCallback;
     }
 
-    /*
+    /**
      * @param fallbackOnBackPressed Callback executed when a handler claims to intercept back press
-     *         but no handler succeeds.
+     *     but no handler succeeds.
      */
     public void setFallbackOnBackPressed(Runnable runnable) {
         mFallbackOnBackPressed = runnable;

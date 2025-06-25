@@ -29,7 +29,7 @@ public class PlayerSwipeRefreshHandler implements OverscrollHandler {
     // A handler to delegate refreshes event to.
     private final Runnable mRefreshCallback;
 
-    /*
+    /**
      * Constructs a new instance of the handler.
      *
      * @param context The Context to create tha handler for.

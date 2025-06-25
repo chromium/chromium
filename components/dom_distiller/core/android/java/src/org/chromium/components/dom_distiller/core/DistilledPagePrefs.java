@@ -76,8 +76,9 @@ public final class DistilledPagePrefs {
         mObserverMap = new HashMap<Observer, DistilledPagePrefsObserverWrapper>();
     }
 
-    /*
+    /**
      * Adds the observer to listen to changes in DistilledPagePrefs.
+     *
      * @return whether the observerMap was changed as a result of the call.
      */
     public boolean addObserver(Observer obs) {
@@ -93,8 +94,9 @@ public final class DistilledPagePrefs {
         return true;
     }
 
-    /*
+    /**
      * Removes the observer and unregisters it from DistilledPagePrefs changes.
+     *
      * @return whether the observer was removed as a result of the call.
      */
     public boolean removeObserver(Observer obs) {

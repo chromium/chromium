@@ -28,8 +28,9 @@ public interface PaymentResponseHelperInterface {
 
     /** The callback that output the payment response. */
     interface PaymentResponseResultCallback {
-        /*
+        /**
          * Called when the payment response is generated.
+         *
          * @param response The payment response to send to the merchant.
          */
         void onPaymentResponseReady(PaymentResponse response);

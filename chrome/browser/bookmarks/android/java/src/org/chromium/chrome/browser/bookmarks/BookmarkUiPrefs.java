@@ -71,7 +71,7 @@ public class BookmarkUiPrefs {
         /** Called when the current {@link BookmarkRowDisplayPref} changes. */
         default void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {}
 
-        // Called when the current {@link BookmarkRowSortOrder} changes. */
+        /** Called when the current {@link BookmarkRowSortOrder} changes. */
         default void onBookmarkRowSortOrderChanged(@BookmarkRowSortOrder int sortOrder) {}
     }
 

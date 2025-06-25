@@ -42,7 +42,7 @@ class MerchantTrustMessageContext {
                 : mNavigationHandle.getUrl().getSpec();
     }
 
-    /* Returns the {@link WebContents} for which the message is intended to be shown. */
+    /** Returns the {@link WebContents} for which the message is intended to be shown. */
     @Nullable WebContents getWebContents() {
         return mWebContents;
     }

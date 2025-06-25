@@ -848,10 +848,10 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
 
         /** Observer to be notified when the OptionSection changes focus state. */
         public interface FocusChangedObserver {
-            /*
+            /**
              * Called when the OptionSection view gets or loses focus.
              *
-             * @param dataType  The type of the data contained in the section.
+             * @param dataType The type of the data contained in the section.
              * @param willFocus Whether the section is getting the focus.
              */
             void onFocusChanged(@PaymentRequestUi.DataType int dataType, boolean willFocus);

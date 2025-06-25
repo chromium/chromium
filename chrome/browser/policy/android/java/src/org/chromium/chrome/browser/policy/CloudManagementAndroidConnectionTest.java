@@ -21,8 +21,10 @@ public final class CloudManagementAndroidConnectionTest {
     private static final String SAVED_CLIENT_ID = "saved-client-id";
     private static final String GSERVICES_ANDROID_ID = "gservices-android-id";
 
-    /* Simple implementation of {@link CloudManagementAndroidConnection} that overrides {@link
-     * generateClientIdInternal} for easier testing. */
+    /**
+     * Simple implementation of {@link CloudManagementAndroidConnection} that overrides {@link
+     * generateClientIdInternal} for easier testing.
+     */
     private static class FakeCloudManagementAndroidConnectionDelegate
             implements CloudManagementAndroidConnectionDelegate {
         @Override

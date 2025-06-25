@@ -98,13 +98,13 @@ public class JourneyLogger {
                 .setSelectedMethod(mJourneyLoggerAndroid, JourneyLogger.this, category);
     }
 
-    /*
+    /**
      * Records what user information were requested by the merchant to complete the Payment Request.
      *
      * @param requestShipping Whether the merchant requested a shipping address.
-     * @param requestEmail    Whether the merchant requested an email address.
-     * @param requestPhone    Whether the merchant requested a phone number.
-     * @param requestName     Whether the merchant requestes a name.
+     * @param requestEmail Whether the merchant requested an email address.
+     * @param requestPhone Whether the merchant requested a phone number.
+     * @param requestName Whether the merchant requests a name.
      */
     public void setRequestedInformation(
             boolean requestShipping,
@@ -121,11 +121,11 @@ public class JourneyLogger {
                         requestName);
     }
 
-    /*
+    /**
      * Records what types of payment methods were requested by the merchant in the Payment Request.
      *
-     * @param methodTypes The list of types of the payment methods, defined in
-     *        {@link PaymentMethodCategories}.
+     * @param methodTypes The list of types of the payment methods, defined in {@link
+     *     PaymentMethodCategories}.
      */
     public void setRequestedPaymentMethods(List<Integer> methodTypes) {
         int[] methods = new int[methodTypes.size()];

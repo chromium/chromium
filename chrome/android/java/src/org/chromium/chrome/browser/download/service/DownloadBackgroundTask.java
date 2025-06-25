@@ -112,7 +112,7 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
         callback.taskFinished(needsReschedule);
     }
 
-    @VisibleForTesting()
+    @VisibleForTesting
     protected ProfileKey getProfileKey() {
         return ProfileKeyUtil.getLastUsedRegularProfileKey();
     }

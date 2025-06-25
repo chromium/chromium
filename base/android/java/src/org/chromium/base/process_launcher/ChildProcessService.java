@@ -399,11 +399,12 @@ public class ChildProcessService {
         System.exit(0);
     }
 
-    /*
+    /**
      * Returns the communication channel to the service. Note that even if multiple clients were to
      * connect, we should only get one call to this method. So there is no need to synchronize
      * member variables that are only set in this method and accessed from binder methods, as binder
      * methods can't be called until this method returns.
+     *
      * @param intent The intent that was used to bind to the service.
      * @return the binder used by the client to setup the connection.
      */

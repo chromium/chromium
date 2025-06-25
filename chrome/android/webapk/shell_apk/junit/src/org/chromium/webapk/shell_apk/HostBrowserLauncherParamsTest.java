@@ -22,7 +22,7 @@ import java.util.ArrayList;
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HostBrowserLauncherParamsTest {
-    /*
+    /**
      * Test that {@link HostBrowserLauncherParams#createGETWebShareTargetUriString()} handles adding
      * query parameters to an action url with different path formats.
      */
@@ -53,7 +53,7 @@ public class HostBrowserLauncherParamsTest {
         Assert.assertEquals("https://www.chromium.org/base/wst.html/?title=mytitle&foo=bar", uri);
     }
 
-    /*
+    /**
      * Test that {@link HostBrowserLauncherParams#createGETWebShareTargetUriString()} skips null
      * names or values.
      */
@@ -72,9 +72,9 @@ public class HostBrowserLauncherParamsTest {
         Assert.assertEquals("https://www.chromium.org/wst?hello=world", uri);
     }
 
-    /*
-     * Test that {@link HostBrowserLauncherParams#createGETWebShareTargetUriString()} can handle
-     * the case where both values in every pair are null.
+    /**
+     * Test that {@link HostBrowserLauncherParams#createGETWebShareTargetUriString()} can handle the
+     * case where both values in every pair are null.
      */
     @Test
     public void testCreateWebShareTargetUriStringAllNull() {
@@ -87,9 +87,9 @@ public class HostBrowserLauncherParamsTest {
         Assert.assertEquals("https://www.chromium.org/wst", uri);
     }
 
-    /*
-     * Test that {@link HostBrowserLauncherParams#createGETWebShareTargetUriString()} can handle
-     * the cases where some keys in all pair are null.
+    /**
+     * Test that {@link HostBrowserLauncherParams#createGETWebShareTargetUriString()} can handle the
+     * cases where some keys in all pair are null.
      */
     @Test
     public void testCreateWebShareTargetUriStringAllNullWithSomeElementNotNull() {
@@ -102,7 +102,7 @@ public class HostBrowserLauncherParamsTest {
         Assert.assertEquals("https://www.chromium.org/wst", uri);
     }
 
-    /*
+    /**
      * Test that {@link HostBrowserLauncherParams#createGETWebShareTargetUriString()} handles
      * replacing the query string of an action url with an existing query.
      */
@@ -117,7 +117,7 @@ public class HostBrowserLauncherParamsTest {
         Assert.assertEquals("https://www.chromium.org/wst?hello=world&foobar=baz", uri);
     }
 
-    /*
+    /**
      * Test that {@link HostBrowserLauncherParams#createGETWebShareTargetUriString()} escapes
      * characters.
      */
@@ -135,7 +135,7 @@ public class HostBrowserLauncherParamsTest {
                 uri);
     }
 
-    /*
+    /**
      * Test that {@link HostBrowserLauncherParams#computeStartUrlForShareTarget()} computes the
      * correct start url for both GET and POST method.
      */

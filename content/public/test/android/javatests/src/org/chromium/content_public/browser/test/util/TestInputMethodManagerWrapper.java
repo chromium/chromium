@@ -40,11 +40,11 @@ public class TestInputMethodManagerWrapper implements InputMethodManagerWrapper 
     private final ArrayList<EditorInfo> mEditorInfoList = new ArrayList<>();
 
     /**
-     * Interface passed that helps this class create {@link InputConnection} instance.
-     * This helps the wrapper avoid cross-reference {@link ImeAdapter} object.
+     * Interface passed that helps this class create {@link InputConnection} instance. This helps
+     * the wrapper avoid cross-reference {@link ImeAdapter} object.
      */
     public interface InputConnectionProvider {
-        /*
+        /**
          * @param info {@link EditInfo} object used to create a new {@link InputConnection}.
          * @return a newly created {@link InputConnection} instance.
          */

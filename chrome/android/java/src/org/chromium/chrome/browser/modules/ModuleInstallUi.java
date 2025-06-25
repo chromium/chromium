@@ -49,7 +49,7 @@ public class ModuleInstallUi {
         void onFailureUiResponse(boolean retry);
     }
 
-    /*
+    /**
      * Creates new UI.
      *
      * @param delegate Delegate providing the WindowAndroid and Context to display the UI.
