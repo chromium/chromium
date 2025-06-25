@@ -21,7 +21,6 @@ import("//build/toolchain/rbe.gni")
 import("//build/util/generate_wrapper.gni")
 import("//chrome/enterprise_companion/buildflags.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
-import("//components/nacl/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
@@ -579,20 +578,6 @@ group("gn_all") {
         deps += [ "//extensions/shell:app_shell" ]
       }
 
-      # TODO(https://crbug.com/1299021): These dependencies might be
-      # redundant given that we were able to disable them, apparently without
-      # negative consequences, for the ARM32-NaCl-on-ARM64 case.
-      if (enable_nacl) {
-        if (target_cpu != "arm64") {
-          deps += [ "//components/nacl/loader:nacl_loader_unittests" ]
-        }
-
-        if (is_linux || is_chromeos) {
-          # TODO(dpranke): Figure out what platforms should actually have this.
-          deps += [ "//components/nacl/loader:nacl_helper" ]
-        }
-      }
-
       if (media_use_ffmpeg && !is_android) {
         deps += [ "//media:ffmpeg_regression_tests" ]
       }
@@ -802,11 +787,6 @@ group("gn_all") {
       if (is_chromeos) {
         deps += [ "//chrome/services/ipp_parser/public/cpp:fuzzers" ]
       }
-    }
-
-    # TODO(https://crbug.com/1299021): Remove the special case for arm64.
-    if (enable_nacl && target_cpu != "arm64") {
-      deps += [ "//native_client_sdk/src:nacl_core_sdk" ]
     }
 
     if (((is_linux || is_chromeos) && use_ozone) || is_fuchsia) {
