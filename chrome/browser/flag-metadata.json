@@ -9181,7 +9181,7 @@
   {
     "name": "skia-graphite",
     "owners": [ "sunnyps@chromium.org", "blundell@chromium.org", "chrome-skia-graphite@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 170
   },
   {
     "name": "skia-graphite-precompilation",
