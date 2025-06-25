@@ -173,25 +173,23 @@ BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
           [](ScriptPromiseResolver<IDLSequence<BrowsingTopic>>* resolver,
              BrowsingTopicsDocumentSupplement* supplement,
              base::TimeTicks start_time,
-             mojom::blink::GetBrowsingTopicsResultPtr result) {
+             mojom::blink::BrowsingTopicsDocumentService::
+                 GetBrowsingTopicsResult result) {
             DCHECK(resolver);
             DCHECK(supplement);
 
-            if (result->is_error_message()) {
+            if (!result.has_value()) {
               ScriptState* script_state = resolver->GetScriptState();
               ScriptState::Scope scope(script_state);
 
               resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
                   script_state->GetIsolate(),
-                  DOMExceptionCode::kInvalidAccessError,
-                  result->get_error_message()));
+                  DOMExceptionCode::kInvalidAccessError, result.error()));
               return;
             }
 
-            DCHECK(result->is_browsing_topics());
-
             HeapVector<Member<BrowsingTopic>> result_array;
-            for (const auto& topic : result->get_browsing_topics()) {
+            for (const auto& topic : result.value()) {
               BrowsingTopic* result_topic = BrowsingTopic::Create();
               result_topic->setTopic(topic->topic);
               result_topic->setVersion(topic->version);

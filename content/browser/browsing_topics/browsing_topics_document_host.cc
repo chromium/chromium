@@ -5,6 +5,7 @@
 #include "content/browser/browsing_topics/browsing_topics_document_host.h"
 
 #include "base/functional/bind.h"
+#include "base/types/expected.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/document_service.h"
@@ -66,10 +67,9 @@ void BrowsingTopicsDocumentHost::GetBrowsingTopics(
       // covered in this condition but they should have already been checked in
       // `CreateMojoService()`.
       !render_frame_host().GetPage().IsPrimary()) {
-    std::move(callback).Run(
-        blink::mojom::GetBrowsingTopicsResult::NewErrorMessage(
-            "document.browsingTopics() is only allowed in the outermost page "
-            "and when the page is active."));
+    std::move(callback).Run(base::unexpected(
+        "document.browsingTopics() is only allowed in the outermost page "
+        "and when the page is active."));
     return;
   }
 
@@ -78,8 +78,7 @@ void BrowsingTopicsDocumentHost::GetBrowsingTopics(
   if (render_frame_host().GetStoragePartition() !=
       render_frame_host().GetBrowserContext()->GetDefaultStoragePartition()) {
     std::move(callback).Run(
-        blink::mojom::GetBrowsingTopicsResult::NewBrowsingTopics(
-            std::vector<blink::mojom::EpochTopicPtr>()));
+        base::ok(std::vector<blink::mojom::EpochTopicPtr>()));
     return;
   }
 
@@ -90,9 +89,7 @@ void BrowsingTopicsDocumentHost::GetBrowsingTopics(
       browsing_topics::ApiCallerSource::kJavaScript,
       /*get_topics=*/true, observe, topics);
 
-  std::move(callback).Run(
-      blink::mojom::GetBrowsingTopicsResult::NewBrowsingTopics(
-          std::move(topics)));
+  std::move(callback).Run(base::ok(std::move(topics)));
 }
 
 BrowsingTopicsDocumentHost::~BrowsingTopicsDocumentHost() = default;
