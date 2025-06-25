@@ -271,6 +271,10 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
 - (void)setSearchBarText:(NSString*)text {
   _searchBar.text = text;
+  if ([_searchBar.delegate respondsToSelector:@selector(searchBar:
+                                                    textDidChange:)]) {
+    [_searchBar.delegate searchBar:_searchBar textDidChange:text];
+  }
 }
 
 #pragma mark - UIView

@@ -2004,6 +2004,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _mode = mode;
 
   if (previousMode == TabGridMode::kSearch) {
+    _searchText = nil;
     self.remoteTabsViewController.searchTerms = nil;
     self.regularTabsViewController.searchText = nil;
     self.incognitoTabsViewController.searchText = nil;
