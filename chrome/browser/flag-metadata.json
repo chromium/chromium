@@ -6772,30 +6772,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "nearby-webrtc",
-    "owners": [
-      "chromeos-cross-device-eng@google.com",
-      "jackshira@google.com"
-    ],
-    "expiry_milestone": 133
-  },
-  {
-    "name": "nearby-wifi-direct",
-    "owners": [
-      "chromeos-cross-device-eng@google.com",
-      "jackshira@google.com"
-    ],
-    "expiry_milestone": 133
-  },
-  {
-    "name": "nearby-wifi-lan",
-    "owners": [
-      "chromeos-cross-device-eng@google.com",
-      "jackshira@google.com"
-    ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "new-content-for-checkerboarded-scrolls",
     "owners": [
       "gastonr@microsoft.com",

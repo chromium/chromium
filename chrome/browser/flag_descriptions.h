@@ -4480,15 +4480,6 @@ extern const char kEnableNearbyBluetoothClassicAdvertisingDescription[];
 extern const char kEnableNearbyMdnsName[];
 extern const char kEnableNearbyMdnsDescription[];
 
-extern const char kEnableNearbyWebRtcName[];
-extern const char kEnableNearbyWebRtcDescription[];
-
-extern const char kEnableNearbyWifiDirectName[];
-extern const char kEnableNearbyWifiDirectDescription[];
-
-extern const char kEnableNearbyWifiLanName[];
-extern const char kEnableNearbyWifiLanDescription[];
-
 extern const char kNearbyPresenceName[];
 extern const char kNearbyPresenceDescription[];
 

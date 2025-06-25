@@ -8484,18 +8484,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNearbyPresenceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kNearbyPresence)},
 
-    {"nearby-webrtc", flag_descriptions::kEnableNearbyWebRtcName,
-     flag_descriptions::kEnableNearbyWebRtcDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kNearbySharingWebRtc)},
-
-    {"nearby-wifi-direct", flag_descriptions::kEnableNearbyWifiDirectName,
-     flag_descriptions::kEnableNearbyWifiDirectDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kNearbySharingWifiDirect)},
-
-    {"nearby-wifi-lan", flag_descriptions::kEnableNearbyWifiLanName,
-     flag_descriptions::kEnableNearbyWifiLanDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kNearbySharingWifiLan)},
-
     {"pcie-billboard-notification",
      flag_descriptions::kPcieBillboardNotificationName,
      flag_descriptions::kPcieBillboardNotificationDescription, kOsCrOS,
