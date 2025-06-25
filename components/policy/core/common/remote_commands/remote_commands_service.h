@@ -72,9 +72,8 @@ class POLICY_EXPORT RemoteCommandsService
     kBrowserRotateAttestationCredential = 20,
     kFetchCrdAvailabilityInfo = 21,
     kFetchSupportPacket = 22,
-    kBrowserRestart = 23,
     // Used by UMA histograms. Shall refer to the last enumeration.
-    kMaxValue = kBrowserRestart,
+    kMaxValue = kFetchSupportPacket
   };
 
   // Signature type that will be used for the requests.

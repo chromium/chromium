@@ -3190,9 +3190,6 @@ message RemoteCommand {
     // Fetch the logs from the Support Tool on managed ChromeOS devices.
     FETCH_SUPPORT_PACKET = 16;
 
-    // Restart the browser.
-    BROWSER_RESTART = 17;
-
     // Please update metrics after adding a new item - see the comment above.
   }
 

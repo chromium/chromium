@@ -108,7 +108,6 @@ chromium-metrics-reviews@google.com.
 
 <variants name="Enterprise_RemoteCommandType">
   <variant name=".BrowserClearBrowsingData" summary="Clear Browsing Data"/>
-  <variant name=".BrowserRestart" summary="Browser restart"/>
   <variant name=".BrowserRotateAttestationCredential"
       summary="Rotate Attestation Credential"/>
   <variant name=".CommandEchoTest" summary="Command echo test"/>

@@ -6926,8 +6926,6 @@ static_library("browser") {
       "enterprise/profile_management/profile_management_features.h",
       "enterprise/profile_management/profile_management_navigation_throttle.cc",
       "enterprise/profile_management/profile_management_navigation_throttle.h",
-      "enterprise/remote_commands/browser_restart_job.cc",
-      "enterprise/remote_commands/browser_restart_job.h",
       "enterprise/remote_commands/rotate_attestation_credential_job.cc",
       "enterprise/remote_commands/rotate_attestation_credential_job.h",
       "enterprise/signals/signals_aggregator_factory.cc",
