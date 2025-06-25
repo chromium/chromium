@@ -1936,7 +1936,6 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
               syncer::kSeparateLocalAndAccountSearchEngines) &&
           existing_turl->GetLocalData()) {
         Update(existing_turl, TemplateURL(*existing_turl->GetLocalData()));
-        MaybeUpdateDSEViaPrefs(existing_turl);
       } else if (existing_turl != GetDefaultSearchProvider()) {
         Remove(existing_turl);
       } else {
@@ -1960,22 +1959,16 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       data.id = kInvalidTemplateURLID;
 
       // If flag is enabled, add `data` as account data member instead.
-      TemplateURL* added =
-          base::FeatureList::IsEnabled(
-              syncer::kSeparateLocalAndAccountSearchEngines)
-              ? Add(std::make_unique<TemplateURL>(std::nullopt, data))
-              : Add(std::make_unique<TemplateURL>(data));
-      if (added) {
-        MaybeUpdateDSEViaPrefs(added);
-      }
+      base::FeatureList::IsEnabled(
+          syncer::kSeparateLocalAndAccountSearchEngines)
+          ? Add(std::make_unique<TemplateURL>(std::nullopt, data))
+          : Add(std::make_unique<TemplateURL>(data));
     } else {
       // Since we've already found |existing_turl| by GUID, this Update() should
       // always return true, but we still don't want to crash if it fails.
       DCHECK(existing_turl);
       bool update_success = Update(existing_turl, *turl);
       DCHECK(update_success);
-
-      MaybeUpdateDSEViaPrefs(existing_turl);
     }
   }
 
@@ -2736,12 +2729,6 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
     }
   }
 
-  // Even if the DSE is controlled by an extension or policy, update the user
-  // preferences as they may take over later.
-  if (default_search_provider_source_ != DefaultSearchManager::FROM_FALLBACK) {
-    MaybeUpdateDSEViaPrefs(existing_turl);
-  }
-
   return true;
 }
 
@@ -2752,21 +2739,6 @@ bool TemplateURLService::UpdateData(TemplateURL* existing_turl,
                       TemplateURL(existing_turl->GetLocalData(), new_data))
              : Update(existing_turl,
                       TemplateURL(new_data, existing_turl->GetAccountData()));
-}
-
-void TemplateURLService::MaybeUpdateDSEViaPrefs(TemplateURL* synced_turl) {
-  // The DSE is not synced anymore when the `kSearchEngineChoiceTrigger` feature
-  // is enabled.
-  // TODO(b/341011768): Remove DSE sync code.
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)) {
-    return;
-  }
-
-  if (synced_turl->sync_guid() ==
-      prefs_->GetString(prefs::kDefaultSearchProviderGUID)) {
-    default_search_manager_.SetUserSelectedDefaultSearchEngine(
-        synced_turl->data());
-  }
 }
 
 void TemplateURLService::UpdateKeywordSearchTermsForURL(
@@ -3399,12 +3371,9 @@ void TemplateURLService::MergeInSyncTemplateURL(
             syncer::kSeparateLocalAndAccountSearchEngines)
             ? std::make_unique<TemplateURL>(std::nullopt, data)
             : std::make_unique<TemplateURL>(data);
-    TemplateURL* added = added_ptr.get();
     base::AutoReset<DefaultSearchChangeOrigin> change_origin(
         &dsp_change_origin_, DSP_CHANGE_SYNC_ADD);
-    if (Add(std::move(added_ptr))) {
-      MaybeUpdateDSEViaPrefs(added);
-    }
+    Add(std::move(added_ptr));
   }
 }
 

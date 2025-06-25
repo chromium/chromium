@@ -767,11 +767,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // local value or the account value.
   bool UpdateData(TemplateURL* existing_turl, TemplateURLData new_data);
 
-  // If the TemplateURL's sync GUID matches the kSyncedDefaultSearchProviderGUID
-  // preference it will be used to update the DSE in prefs.
-  // OnDefaultSearchChange may be triggered as a result.
-  void MaybeUpdateDSEViaPrefs(TemplateURL* synced_turl);
-
   // Iterates through the TemplateURLs to see if one matches the visited url.
   // For each TemplateURL whose url matches the visited url
   // SetKeywordSearchTermsForURL is invoked.
