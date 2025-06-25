@@ -2842,6 +2842,9 @@ extern const char kAndroidThemeModuleDescription[];
 extern const char kAppSpecificHistoryName[];
 extern const char kAppSpecificHistoryDescription[];
 
+extern const char kAutomotiveBackButtonBarStreamlineName[];
+extern const char kAutomotiveBackButtonBarStreamlineDescription[];
+
 extern const char kAuxiliaryNavigationStaysInBrowserName[];
 extern const char kAuxiliaryNavigationStaysInBrowserDescription[];
 

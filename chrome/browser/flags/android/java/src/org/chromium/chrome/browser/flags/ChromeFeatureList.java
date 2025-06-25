@@ -257,6 +257,8 @@ public abstract class ChromeFeatureList {
             "AutofillThirdPartyModeContentProvider";
     public static final String AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID =
             "AutofillVirtualViewStructureAndroid";
+    public static final String AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE =
+            "AutomotiveBackButtonBarStreamline";
     public static final String AVOID_RELAYOUT_DURING_FOCUS_ANIMATION =
             "AvoidRelayoutDuringFocusAnimation";
     public static final String BACKGROUND_THREAD_POOL_FIELD_TRIAL =
@@ -719,6 +721,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER, false, true);
     public static final CachedFlag sAsyncNotificationManagerForDownload =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER_FOR_DOWNLOAD, false, true);
+    public static final CachedFlag sAutomotiveBackButtonBarStreamline =
+            newCachedFlag(AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE, false);
     public static final CachedFlag sBackgroundThreadPoolFieldTrial =
             newCachedFlag(BACKGROUND_THREAD_POOL_FIELD_TRIAL, false);
     public static final CachedFlag sBatchTabRestore =
@@ -1028,6 +1032,7 @@ public abstract class ChromeFeatureList {
                     sAndroidWindowPopupLargeScreen,
                     sAppSpecificHistory,
                     sAsyncNotificationManager,
+                    sAutomotiveBackButtonBarStreamline,
                     sBackgroundThreadPoolFieldTrial,
                     sBatchTabRestore,
                     sBlockIntentsWhileLocked,

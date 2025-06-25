@@ -232,6 +232,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAppSpecificHistory,
     &kAsyncNotificationManager,
     &kAsyncNotificationManagerForDownload,
+    &kAutomotiveBackButtonBarStreamline,
     &kAuxiliarySearchDonation,
     &kBatchTabRestore,
     &kBlockIntentsWhileLocked,
@@ -670,6 +671,10 @@ BASE_FEATURE(kAsyncNotificationManager,
 
 BASE_FEATURE(kAsyncNotificationManagerForDownload,
              "AsyncNotificationManagerForDownload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAutomotiveBackButtonBarStreamline,
+             "AutomotiveBackButtonBarStreamline",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAuxiliarySearchDonation,

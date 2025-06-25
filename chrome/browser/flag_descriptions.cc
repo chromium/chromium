@@ -4884,6 +4884,12 @@ const char kAppSpecificHistoryName[] = "Allow app specific history";
 const char kAppSpecificHistoryDescription[] =
     "If enabled, history results will also be categorized by application.";
 
+const char kAutomotiveBackButtonBarStreamlineName[] =
+    "AutomotiveBackButtonBarStreamline";
+const char kAutomotiveBackButtonBarStreamlineDescription[] =
+    "If enabled, streamline the Android Automotive back button bar on CaRMA "
+    "devices when not in full screen.";
+
 const char kAuxiliaryNavigationStaysInBrowserName[] =
     "Prevent app opening for auxiliary navigations that start in the browser";
 const char kAuxiliaryNavigationStaysInBrowserDescription[] =

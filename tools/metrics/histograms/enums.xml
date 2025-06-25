@@ -10023,6 +10023,7 @@ from previous Chrome versions.
   <int value="-1477491889" label="cast-streaming-force-enable-hardware-vp9"/>
   <int value="-1476930281" label="Windows10CustomTitlebar:enabled"/>
   <int value="-1475773986" label="FeedBoCSigninInterstitial:enabled"/>
+  <int value="-1475681031" label="AutomotiveBackButtonBarStreamline:enabled"/>
   <int value="-1474724634"
       label="OverrideLanguagePrefsForHrefTranslate:enabled"/>
   <int value="-1473878093" label="HideArcMediaNotifications:disabled"/>
@@ -15810,6 +15811,7 @@ from previous Chrome versions.
   <int value="680773835" label="EnablePolicyTestPage:enabled"/>
   <int value="681622885" label="FullscreenExitUI:enabled"/>
   <int value="682549212" label="ash-enable-cursor-motion-blur"/>
+  <int value="682563468" label="AutomotiveBackButtonBarStreamline:disabled"/>
   <int value="682916740" label="PdfUnseasoned:disabled"/>
   <int value="683013217" label="AllowPopupsDuringPageUnload:disabled"/>
   <int value="683366957" label="ExoSurroundingTextOffset:disabled"/>

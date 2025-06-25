@@ -12613,6 +12613,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"cpa-spec-update", flag_descriptions::kCpaSpecUpdateName,
      flag_descriptions::kCpaSpecUpdateDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCpaSpecUpdate)},
+
+    // Android Automotive back button bar streamline.
+    {"automotive-back-button-bar-streamline",
+     flag_descriptions::kAutomotiveBackButtonBarStreamlineName,
+     flag_descriptions::kAutomotiveBackButtonBarStreamlineDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAutomotiveBackButtonBarStreamline)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
