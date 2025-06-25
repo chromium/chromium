@@ -843,6 +843,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   }
   _defaultSearchEngineName = defaultSearchEngineName;
   self.headerView.placeholderText = self.placeholderText;
+  self.accessibilityButton.accessibilityLabel = self.placeholderText;
 }
 
 - (void)setDefaultSearchEngineImage:(UIImage*)image {
