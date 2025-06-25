@@ -64,8 +64,10 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -103,7 +105,8 @@ public class AppHeaderCoordinatorBrowserTest {
                     .build();
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -112,6 +115,7 @@ public class AppHeaderCoordinatorBrowserTest {
     private final Rect mWidestUnoccludedRect = new Rect();
     private final Rect mWindowRect = new Rect();
     private int mTestAppHeaderHeight;
+    private WebPageStation mPage;
 
     @Before
     public void setup() {
@@ -122,7 +126,7 @@ public class AppHeaderCoordinatorBrowserTest {
         doAnswer(args -> mWidestUnoccludedRect).when(mInsetsRectProvider).getWidestUnoccludedRect();
         doAnswer(args -> mWindowRect).when(mInsetsRectProvider).getWindowRect();
 
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
 
         // Initialize the strip height for testing. This is due to bots might have different
         // densities.
