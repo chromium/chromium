@@ -204,7 +204,10 @@ export function getHtml(this: ReadAnythingToolbarElement) {
           iron-icon="cr:add"
           @click="${this.onFontSizeIncreaseClick_}">
       </cr-icon-button>
-      <cr-button class="text-button" role="menuitem" id="font-size-reset"
+      <cr-button role="menuitem"
+          id="font-size-reset"
+          aria-label="$i18n{fontResetTooltip}"
+          title="$i18n{fontResetTooltip}"
           @click="${this.onFontResetClick_}">
         $i18n{fontResetTitle}
       </cr-button>

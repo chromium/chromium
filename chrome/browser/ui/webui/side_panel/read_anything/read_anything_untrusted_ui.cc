@@ -57,6 +57,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"yellowColorTitle", IDS_READING_MODE_YELLOW_COLOR_LABEL},
       {"blueColorTitle", IDS_READING_MODE_BLUE_COLOR_LABEL},
       {"fontResetTitle", IDS_READING_MODE_FONT_RESET},
+      {"fontResetTooltip", IDS_READING_MODE_FONT_RESET_TOOLTIP},
       {"autoHighlightTitle", IDS_READING_MODE_AUTO_HIGHLIGHT_LABEL},
       {"wordHighlightTitle", IDS_READING_MODE_WORD_HIGHLIGHT_LABEL},
       {"phraseHighlightTitle", IDS_READING_MODE_PHRASE_HIGHLIGHT_LABEL},
