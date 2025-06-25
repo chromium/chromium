@@ -160,8 +160,9 @@ template("androidx_android_aar_prebuilt") {
     # "primary_text_default_material_dark".
     resource_overlay = true
 
-    if (target_name == "androidx_pdf_pdf_viewer_java") {
-      # Target has AIDL, but we do not support it yet: http://crbug.com/644439
+    if (target_name == "androidx_pdf_pdf_viewer_java" ||
+        target_name == "androidx_pdf_pdf_document_service_java") {
+      # Target has AIDL, which we do not need (and don't support).
       ignore_aidl = true
     }
   }
