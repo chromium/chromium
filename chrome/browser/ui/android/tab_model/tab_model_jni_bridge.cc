@@ -285,20 +285,13 @@ void TabModelJniBridge::CloseTab(int index) {
 std::vector<tabs::TabInterface*> TabModelJniBridge::GetAllTabs() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  ScopedJavaLocalRef<jobjectArray> jtabs =
+  std::vector<TabAndroid*> tab_androids =
       Java_TabModelJniBridge_getAllTabs(env, jobj);
 
   std::vector<tabs::TabInterface*> tabs;
-  if (jtabs) {
-    size_t numTabs = SafeGetArrayLength(env, jtabs);
-    tabs.reserve(numTabs);
-
-    jobjectArray jarray = jtabs.obj();
-    for (size_t i = 0; i < numTabs; i++) {
-      ScopedJavaLocalRef<jobject> jtab(env,
-                                       env->GetObjectArrayElement(jarray, i));
-      tabs.push_back(TabAndroid::GetNativeTab(env, jtab));
-    }
+  tabs.reserve(tab_androids.size());
+  for (TabAndroid* tab_android : tab_androids) {
+    tabs.push_back(static_cast<tabs::TabInterface*>(tab_android));
   }
   return tabs;
 }

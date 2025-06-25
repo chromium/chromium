@@ -1030,9 +1030,8 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public Tab[] getAllTabs() {
-        Tab[] tabs = new Tab[mTabs.size()];
-        return mTabs.toArray(tabs);
+    public List<Tab> getAllTabs() {
+        return mTabs;
     }
 
     private void notifyOnFinishingMultipleTabClosure(

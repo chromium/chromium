@@ -452,8 +452,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     protected void moveTabToIndex(int index, int newIndex) {}
 
     @Override
-    protected Tab[] getAllTabs() {
-        return new Tab[0];
+    protected List<Tab> getAllTabs() {
+        return Collections.emptyList();
     }
 
     // TabGroupModelFilter overrides.

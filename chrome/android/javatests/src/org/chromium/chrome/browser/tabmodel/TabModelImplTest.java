@@ -47,7 +47,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /** Tests for {@link TabModelImpl}. */
@@ -332,7 +331,7 @@ public class TabModelImplTest {
         TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    List<Tab> group0 = Arrays.asList(mTabModelJni.getAllTabs());
+                    List<Tab> group0 = mTabModelJni.getAllTabs();
                     filter.mergeListOfTabsToGroup(group0, group0.get(0), false);
                 });
         createTab();
@@ -505,8 +504,8 @@ public class TabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(3, mTabModelJni.getCount());
-                    Tab[] tabs = mTabModelJni.getAllTabs();
-                    assertEquals(3, tabs.length);
+                    List<Tab> tabs = mTabModelJni.getAllTabs();
+                    assertEquals(3, tabs.size());
                 });
     }
 
@@ -519,12 +518,12 @@ public class TabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(3, mTabModelJni.getCount());
-                    Tab[] tabs = mTabModelJni.getAllTabs();
-                    assertEquals(3, tabs.length);
+                    List<Tab> tabs = mTabModelJni.getAllTabs();
+                    assertEquals(3, tabs.size());
 
                     int i = 0;
                     for (Tab tab : mTabModelJni) {
-                        assertEquals(tabs[i], tab);
+                        assertEquals(tabs.get(i), tab);
                         i++;
                     }
                 });

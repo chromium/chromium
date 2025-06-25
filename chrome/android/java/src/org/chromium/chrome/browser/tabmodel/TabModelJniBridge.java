@@ -368,7 +368,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         getTabRemover().closeTabs(params, /* allowDialog= */ false);
 
         // Open a new tab if all tabs are closed.
-        for (Tab tab : getAllTabs()) {
+        for (Tab tab : this) {
             if (!tab.isCustomTab()) {
                 return;
             }
@@ -419,7 +419,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     protected abstract void moveTabToIndex(int index, int newIndex);
 
     @CalledByNative
-    protected abstract Tab[] getAllTabs();
+    protected abstract @JniType("std::vector<TabAndroid*>") List<Tab> getAllTabs();
 
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
