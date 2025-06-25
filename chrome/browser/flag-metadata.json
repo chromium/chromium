@@ -74,20 +74,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "adjust-can-create-canvas2d-resource-provider",
-    "owners": [
-      "blundell@chromium.org",
-      "jpgravel@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "adjust-get-or-create-2dcanvas-provider",
-    "owners": [
-      "blundell@chromium.org",
-      "jpgravel@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "ai-settings-enterprise-disabled-ui",
     "owners": [
       "dullweber@chromium.org",
@@ -6136,13 +6122,6 @@
       "name": "ipp-first-setup-for-usb-printers",
       "owners": [ "pawliczek@chromium.org", "project-bolton@google.com" ],
       "expiry_milestone": 140
-  },
-  {
-    "name": "is-paintable-checks-resource-provider",
-    "owners": [
-      "blundell@chromium.org",
-      "jpgravel@chromium.org" ],
-    "expiry_milestone": 140
   },
   {
     "name": "isolate-origins",
