@@ -368,12 +368,15 @@ public class NewTabPageLayout extends LinearLayout
                     mFakeSearchBox.getPaddingTop(),
                     mFakeSearchBox.getPaddingEnd(),
                     mFakeSearchBox.getPaddingBottom());
+            mFakeSearchBoxEditText.setTextAppearance(
+                    R.style.TextAppearance_FakeSearchBoxTextMedium);
         } else {
             mFakeSearchBox.setPaddingRelative(
                     getResources().getDimensionPixelSize(R.dimen.fake_search_box_start_padding),
                     mFakeSearchBox.getPaddingTop(),
                     mFakeSearchBox.getPaddingEnd(),
                     mFakeSearchBox.getPaddingBottom());
+            mFakeSearchBoxEditText.setTextAppearance(R.style.TextAppearance_FakeSearchBoxText);
         }
     }
 
