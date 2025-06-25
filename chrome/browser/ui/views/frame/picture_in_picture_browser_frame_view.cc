@@ -81,6 +81,8 @@ constexpr int kContentSettingIconSize = 16;
 
 // The height of the controls bar at the top of the window.
 constexpr int kTopControlsHeight = 34;
+// The vertical margin for IconLabelBubbleView to have 24px height.
+constexpr int KIconViewVerticalMargin = 5;
 
 constexpr int kResizeBorder = 10;
 constexpr int kResizeAreaCornerSize = 16;
@@ -479,9 +481,11 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   location_icon_view_ = top_bar_container_view_->AddChildView(
       std::make_unique<LocationIconView>(font_list, this, this));
   // The PageInfo icon should be 8px from the left of the window and 4px from
-  // the right of the origin.
-  location_icon_view_->SetProperty(views::kMarginsKey,
-                                   gfx::Insets::TLBR(0, 8, 0, 4));
+  // the right of the origin. Meanwhile, it should have vertical margins set to
+  // keep the hover-over highlight circular.
+  location_icon_view_->SetProperty(
+      views::kMarginsKey, gfx::Insets::TLBR(KIconViewVerticalMargin, 8,
+                                            KIconViewVerticalMargin, 4));
 
   // For file URLs, we want to elide the tail, since the file name and/or query
   // part of the file URL can be made to look like an origin for spoofing. For
@@ -541,8 +545,16 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
         std::move(model), this, this, browser_view->browser(), font_list);
 
     // The ContentSettingImageView loses 4px of margin that we don't want to
-    // lose in the document picture-in-picture toolbar.
-    image_view->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 4));
+    // lose in the document picture-in-picture toolbar. Meanwhile, it should
+    // have vertical margins set to keep the hover-over highlight circular.
+    // Otherwise, the highlight will occupy the full height of the top control.
+    image_view->SetProperty(views::kMarginsKey,
+                            gfx::Insets::TLBR(KIconViewVerticalMargin, 0,
+                                              KIconViewVerticalMargin, 4));
+    // Adjust internal padding on each side to 4px to ensure a min size of
+    // 24x24, consistent with other icon views. The default paddings are
+    // narrower.
+    image_view->SetBorder(views::CreateEmptyBorder((gfx::Insets(4))));
 
     content_setting_views_.push_back(
         button_container_view_->AddChildView(std::move(image_view)));
