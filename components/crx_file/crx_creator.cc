@@ -13,14 +13,14 @@
 #include "components/crx_file/crx3.pb.h"
 #include "components/crx_file/crx_file.h"
 #include "crypto/hash.h"
-#include "crypto/rsa_private_key.h"
-#include "crypto/signature_creator.h"
+#include "crypto/keypair.h"
+#include "crypto/sign.h"
 
 namespace crx_file {
 
 namespace {
 
-std::string GetCrxId(const std::string& key) {
+std::string GetCrxId(base::span<const uint8_t> key) {
   const auto full_hash = crypto::hash::Sha256(key);
   const auto truncated_hash = base::span(full_hash).first<16>();
   return std::string(base::as_string_view(truncated_hash));
@@ -30,20 +30,18 @@ constexpr size_t kFileBufferSize = 1 << 12;
 
 // Read to the end of the file, updating the signer.
 CreatorResult ReadAndSignArchive(base::File* file,
-                                 crypto::SignatureCreator* signer,
+                                 crypto::sign::Signer& signer,
                                  std::vector<uint8_t>* signature) {
   std::array<uint8_t, kFileBufferSize> buffer;
   std::optional<size_t> read;
   while ((read = file->ReadAtCurrentPos(buffer)).value_or(0) > 0) {
-    if (!signer->Update(buffer.data(), base::checked_cast<int>(*read))) {
-      return CreatorResult::ERROR_SIGNING_FAILURE;
-    }
+    signer.Update(base::span(buffer).first(*read));
   }
   if (!read.has_value()) {
     return CreatorResult::ERROR_SIGNING_FAILURE;
   }
-  return signer->Final(signature) ? CreatorResult::OK
-                                  : CreatorResult::ERROR_SIGNING_FAILURE;
+  *signature = signer.Finish();
+  return CreatorResult::OK;
 }
 
 bool WriteArchive(base::File* out, base::File* in) {
@@ -62,18 +60,17 @@ bool WriteArchive(base::File* out, base::File* in) {
   return read.has_value() && read.value() == 0;
 }
 
-CreatorResult SignArchiveAndCreateHeader(const base::FilePath& output_path,
-                                         base::File* file,
-                                         crypto::RSAPrivateKey* signing_key,
-                                         CrxFileHeader* header) {
+CreatorResult SignArchiveAndCreateHeader(
+    const base::FilePath& output_path,
+    base::File* file,
+    const crypto::keypair::PrivateKey& signing_key,
+    CrxFileHeader* header) {
   // Get the public key.
-  std::vector<uint8_t> public_key;
-  signing_key->ExportPublicKey(&public_key);
-  const std::string public_key_str(public_key.begin(), public_key.end());
+  std::vector<uint8_t> public_key = signing_key.ToSubjectPublicKeyInfo();
 
   // Assemble SignedData section.
   SignedData signed_header_data;
-  signed_header_data.set_crx_id(GetCrxId(public_key_str));
+  signed_header_data.set_crx_id(GetCrxId(public_key));
   const std::string signed_header_data_str =
       signed_header_data.SerializeAsString();
   const auto signed_header_size_octets =
@@ -81,28 +78,24 @@ CreatorResult SignArchiveAndCreateHeader(const base::FilePath& output_path,
 
   // Create a signer, init with purpose, SignedData length, run SignedData
   // through, run ZIP through.
-  auto signer = crypto::SignatureCreator::Create(
-      signing_key, crypto::SignatureCreator::HashAlgorithm::SHA256);
-  signer->Update(reinterpret_cast<const uint8_t*>(kSignatureContext),
-                 std::size(kSignatureContext));
-  signer->Update(signed_header_size_octets.data(),
-                 signed_header_size_octets.size());
-  signer->Update(
-      reinterpret_cast<const uint8_t*>(signed_header_data_str.data()),
-      signed_header_data_str.size());
+  crypto::sign::Signer signer(crypto::sign::SignatureKind::RSA_PKCS1_SHA256,
+                              signing_key);
+  signer.Update(base::as_byte_span(kSignatureContext));
+  signer.Update(signed_header_size_octets);
+  signer.Update(base::as_byte_span(signed_header_data_str));
 
   if (!file->IsValid()) {
     return CreatorResult::ERROR_FILE_NOT_READABLE;
   }
   std::vector<uint8_t> signature;
   const CreatorResult signing_result =
-      ReadAndSignArchive(file, signer.get(), &signature);
+      ReadAndSignArchive(file, signer, &signature);
   if (signing_result != CreatorResult::OK) {
     return signing_result;
   }
   AsymmetricKeyProof* proof = header->add_sha256_with_rsa();
-  proof->set_public_key(public_key_str);
-  proof->set_signature(std::string(signature.begin(), signature.end()));
+  proof->set_public_key(base::as_string_view(public_key));
+  proof->set_signature(base::as_string_view(signature));
   header->set_signed_header_data(signed_header_data_str);
   return CreatorResult::OK;
 }
@@ -134,7 +127,7 @@ CreatorResult WriteCRX(const CrxFileHeader& header,
 CreatorResult CreateCrxWithVerifiedContentsInHeader(
     const base::FilePath& output_path,
     const base::FilePath& zip_path,
-    crypto::RSAPrivateKey* signing_key,
+    const crypto::keypair::PrivateKey& signing_key,
     const std::string& verified_contents) {
   CrxFileHeader header;
   base::File file(zip_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
@@ -155,7 +148,7 @@ CreatorResult CreateCrxWithVerifiedContentsInHeader(
 
 CreatorResult Create(const base::FilePath& output_path,
                      const base::FilePath& zip_path,
-                     crypto::RSAPrivateKey* signing_key) {
+                     const crypto::keypair::PrivateKey& signing_key) {
   CrxFileHeader header;
   base::File file(zip_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                                 base::File::FLAG_WIN_SHARE_DELETE);

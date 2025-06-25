@@ -12,12 +12,10 @@
 #include <string>
 #include <vector>
 
+#include "crypto/keypair.h"
+
 namespace base {
 class FilePath;
-}
-
-namespace crypto {
-class RSAPrivateKey;
 }
 
 namespace extensions {
@@ -78,12 +76,12 @@ class ExtensionCreator {
   bool ValidateExtension(const base::FilePath& extension_dir, int run_flags);
 
   // Reads private key from `private_key_path`.
-  std::unique_ptr<crypto::RSAPrivateKey> ReadInputKey(
+  std::optional<crypto::keypair::PrivateKey> ReadInputKey(
       const base::FilePath& private_key_path);
 
   // Generates a key pair and writes the private key to `private_key_path`
   // if provided.
-  std::unique_ptr<crypto::RSAPrivateKey> GenerateKey(
+  std::optional<crypto::keypair::PrivateKey> GenerateKey(
       const base::FilePath& private_key_path);
 
   // Creates temporary zip file for the extension.
@@ -97,7 +95,7 @@ class ExtensionCreator {
   // std::nullopt.
   bool CreateCrx(
       const base::FilePath& zip_path,
-      crypto::RSAPrivateKey* private_key,
+      const crypto::keypair::PrivateKey& private_key,
       const base::FilePath& crx_path,
       const std::optional<std::string>& compressed_verified_contents);
 
@@ -106,7 +104,7 @@ class ExtensionCreator {
   bool CreateCrxAndPerformCleanup(
       const base::FilePath& extension_dir,
       const base::FilePath& crx_path,
-      crypto::RSAPrivateKey* private_key,
+      const crypto::keypair::PrivateKey& private_key,
       const std::optional<std::string>& compressed_verified_contents);
 
   // Holds a message for any error that is raised during Run(...).

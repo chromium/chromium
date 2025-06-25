@@ -44,7 +44,7 @@ class ExtensionCreatorTest : public testing::Test {
   }
 
   // Helper functions to call private methods of ExtensionCreator.
-  std::unique_ptr<crypto::RSAPrivateKey> ReadInputKey(
+  std::optional<crypto::keypair::PrivateKey> ReadInputKey(
       const base::FilePath& private_key_path) {
     return extension_creator_->ReadInputKey(private_key_path);
   }
@@ -68,7 +68,7 @@ class ExtensionCreatorTest : public testing::Test {
 TEST_F(ExtensionCreatorTest, ReadInputKeyPathNonExistent) {
   const base::FilePath file_path =
       CreateTestPath().Append(FILE_PATH_LITERAL("non_existent.pem"));
-  EXPECT_EQ(nullptr, ReadInputKey(file_path));
+  EXPECT_EQ(std::nullopt, ReadInputKey(file_path));
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_NO_EXISTS),
             extension_creator()->error_message());
 }
@@ -86,7 +86,7 @@ TEST_F(ExtensionCreatorTest, ReadInputKeyDangerousPath) {
   ASSERT_TRUE(base::WriteFile(file_path_dangerous, kTestData));
 
   // If a path includes parent reference `..`, reading the path must fail.
-  EXPECT_EQ(nullptr, ReadInputKey(file_path_dangerous));
+  EXPECT_EQ(std::nullopt, ReadInputKey(file_path_dangerous));
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_FAILED_TO_READ),
             extension_creator()->error_message());
 }
@@ -100,19 +100,19 @@ TEST_F(ExtensionCreatorTest, ReadInputKeyInvalidPEMFormat) {
   const char kTestData[] = "-----BEGIN foo";
   ASSERT_TRUE(base::WriteFile(file_path, kTestData));
 
-  EXPECT_EQ(nullptr, ReadInputKey(file_path));
+  EXPECT_EQ(std::nullopt, ReadInputKey(file_path));
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_INVALID),
             extension_creator()->error_message());
 }
 
 TEST_F(ExtensionCreatorTest, ReadInputKeyNotPKCSFormat) {
-  EXPECT_EQ(nullptr, ReadInputKey(GetTestFile("not_pkcs.pem")));
+  EXPECT_EQ(std::nullopt, ReadInputKey(GetTestFile("not_pkcs.pem")));
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_INVALID_FORMAT),
             extension_creator()->error_message());
 }
 
 TEST_F(ExtensionCreatorTest, ReadInputKeyPKCSFormat) {
-  EXPECT_NE(nullptr, ReadInputKey(GetTestFile("pkcs8.pem")));
+  EXPECT_NE(std::nullopt, ReadInputKey(GetTestFile("pkcs8.pem")));
   EXPECT_TRUE(extension_creator()->error_message().empty());
 }
 

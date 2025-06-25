@@ -17,8 +17,7 @@
 #include "base/strings/string_util.h"
 #include "components/crx_file/crx_creator.h"
 #include "components/crx_file/id_util.h"
-#include "crypto/rsa_private_key.h"
-#include "crypto/signature_creator.h"
+#include "crypto/keypair.h"
 #include "extensions/browser/extension_creator_filter.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_l10n_util.h"
@@ -26,10 +25,6 @@
 #include "extensions/strings/grit/extensions_strings.h"
 #include "third_party/zlib/google/zip.h"
 #include "ui/base/l10n/l10n_util.h"
-
-namespace {
-const int kRSAKeySize = 2048;
-}
 
 namespace extensions {
 
@@ -102,56 +97,44 @@ bool ExtensionCreator::ValidateExtension(const base::FilePath& extension_dir,
       extension_dir, *extension.get()->manifest()->value(), &error_message_);
 }
 
-std::unique_ptr<crypto::RSAPrivateKey> ExtensionCreator::ReadInputKey(
+std::optional<crypto::keypair::PrivateKey> ExtensionCreator::ReadInputKey(
     const base::FilePath& private_key_path) {
   if (!base::PathExists(private_key_path)) {
     error_message_ =
         l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_NO_EXISTS);
-    return nullptr;
+    return std::nullopt;
   }
 
   std::string private_key_contents;
   if (!base::ReadFileToString(private_key_path, &private_key_contents)) {
     error_message_ =
         l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_FAILED_TO_READ);
-    return nullptr;
+    return std::nullopt;
   }
 
   std::string private_key_bytes;
   if (!Extension::ParsePEMKeyBytes(private_key_contents, &private_key_bytes)) {
     error_message_ =
         l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_INVALID);
-    return nullptr;
+    return std::nullopt;
   }
 
-  std::unique_ptr<crypto::RSAPrivateKey> private_key =
-      crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(std::vector<uint8_t>(
-          private_key_bytes.begin(), private_key_bytes.end()));
-  if (!private_key) {
+  auto private_key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
+      base::as_byte_span(private_key_bytes));
+  if (!private_key || !private_key->IsRsa()) {
     error_message_ =
         l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_INVALID_FORMAT);
-    return nullptr;
+    return std::nullopt;
   }
 
   return private_key;
 }
 
-std::unique_ptr<crypto::RSAPrivateKey> ExtensionCreator::GenerateKey(
+std::optional<crypto::keypair::PrivateKey> ExtensionCreator::GenerateKey(
     const base::FilePath& output_private_key_path) {
-  std::unique_ptr<crypto::RSAPrivateKey> key_pair(
-      crypto::RSAPrivateKey::Create(kRSAKeySize));
-  if (!key_pair) {
-    error_message_ =
-        l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_FAILED_TO_GENERATE);
-    return nullptr;
-  }
+  auto key_pair = crypto::keypair::PrivateKey::GenerateRsa2048();
 
-  std::vector<uint8_t> private_key_vector;
-  if (!key_pair->ExportPrivateKey(&private_key_vector)) {
-    error_message_ =
-        l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_FAILED_TO_EXPORT);
-    return nullptr;
-  }
+  std::vector<uint8_t> private_key_vector = key_pair.ToPrivateKeyInfo();
   std::string private_key_bytes(
       reinterpret_cast<char*>(&private_key_vector.front()),
       private_key_vector.size());
@@ -160,20 +143,20 @@ std::unique_ptr<crypto::RSAPrivateKey> ExtensionCreator::GenerateKey(
   if (!Extension::ProducePEM(private_key_bytes, &private_key)) {
     error_message_ =
         l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_FAILED_TO_OUTPUT);
-    return nullptr;
+    return std::nullopt;
   }
   std::string pem_output;
   if (!Extension::FormatPEMForFileOutput(private_key, &pem_output, false)) {
     error_message_ =
         l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_FAILED_TO_OUTPUT);
-    return nullptr;
+    return std::nullopt;
   }
 
   if (!output_private_key_path.empty()) {
     if (!base::WriteFile(output_private_key_path, pem_output)) {
       error_message_ =
           l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_FAILED_TO_OUTPUT);
-      return nullptr;
+      return std::nullopt;
     }
   }
 
@@ -204,7 +187,7 @@ bool ExtensionCreator::CreateZip(const base::FilePath& extension_dir,
 
 bool ExtensionCreator::CreateCrx(
     const base::FilePath& zip_path,
-    crypto::RSAPrivateKey* private_key,
+    const crypto::keypair::PrivateKey& private_key,
     const base::FilePath& crx_path,
     const std::optional<std::string>& compressed_verified_contents) {
   crx_file::CreatorResult result;
@@ -235,7 +218,7 @@ bool ExtensionCreator::CreateCrx(
 bool ExtensionCreator::CreateCrxAndPerformCleanup(
     const base::FilePath& extension_dir,
     const base::FilePath& crx_path,
-    crypto::RSAPrivateKey* private_key,
+    const crypto::keypair::PrivateKey& private_key,
     const std::optional<std::string>& compressed_verified_contents) {
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
@@ -266,7 +249,7 @@ bool ExtensionCreator::Run(const base::FilePath& extension_dir,
   }
 
   // Initialize Key Pair
-  std::unique_ptr<crypto::RSAPrivateKey> key_pair;
+  std::optional<crypto::keypair::PrivateKey> key_pair;
   if (!private_key_path.value().empty()) {
     key_pair = ReadInputKey(private_key_path);
   } else {
@@ -277,7 +260,7 @@ bool ExtensionCreator::Run(const base::FilePath& extension_dir,
     return false;
   }
 
-  return CreateCrxAndPerformCleanup(extension_dir, crx_path, key_pair.get(),
+  return CreateCrxAndPerformCleanup(extension_dir, crx_path, *key_pair,
                                     std::nullopt);
 }
 

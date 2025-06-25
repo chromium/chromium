@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 #include "components/crx_file/crx_creator.h"
+
 #include "base/base64.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "components/crx_file/crx_verifier.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/keypair.h"
+#include "crypto/test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -37,17 +39,15 @@ namespace crx_file {
 using CrxCreatorTest = ::testing::Test;
 
 TEST_F(CrxCreatorTest, Create) {
-  // Set up a signing key.
-  auto signing_key = crypto::RSAPrivateKey::Create(4096);
-  std::vector<uint8_t> public_key;
-  signing_key->ExportPublicKey(&public_key);
-  const std::string expected_public_key = base::Base64Encode(public_key);
+  auto private_key = crypto::test::FixedRsa4096PrivateKeyForTesting();
+  auto expected_public_key =
+      base::Base64Encode(private_key.ToSubjectPublicKeyInfo());
 
   // Create a CRX File.
   base::FilePath temp_file;
   EXPECT_TRUE(base::CreateTemporaryFile(&temp_file));
   EXPECT_EQ(CreatorResult::OK,
-            Create(temp_file, TestFile("sample.zip"), signing_key.get()));
+            Create(temp_file, TestFile("sample.zip"), private_key));
 
   // Test that the created file can be verified.
   const std::vector<std::vector<uint8_t>> keys;
@@ -64,11 +64,9 @@ TEST_F(CrxCreatorTest, Create) {
 }
 
 TEST_F(CrxCreatorTest, VerifyCrxWithVerifiedContents) {
-  // Set up a signing key.
-  auto signing_key = crypto::RSAPrivateKey::Create(4096);
-  std::vector<uint8_t> public_key;
-  signing_key->ExportPublicKey(&public_key);
-  const std::string expected_public_key = base::Base64Encode(public_key);
+  auto private_key = crypto::test::FixedRsa4096PrivateKeyForTesting();
+  const std::string expected_public_key =
+      base::Base64Encode(private_key.ToSubjectPublicKeyInfo());
 
   // Create a CRX File.
   base::FilePath temp_file;
@@ -77,7 +75,7 @@ TEST_F(CrxCreatorTest, VerifyCrxWithVerifiedContents) {
       kTestCompressedVerifiedContents);
   EXPECT_EQ(CreatorResult::OK,
             CreateCrxWithVerifiedContentsInHeader(
-                temp_file, TestFile("sample.zip"), signing_key.get(),
+                temp_file, TestFile("sample.zip"), private_key,
                 test_compressed_verified_contents));
 
   // Test that the created file can be verified.

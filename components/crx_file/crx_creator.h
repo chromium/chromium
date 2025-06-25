@@ -11,9 +11,9 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace crypto {
-class RSAPrivateKey;
-}  // namespace crypto
+namespace crypto::keypair {
+class PrivateKey;
+}  // namespace crypto::keypair
 
 namespace crx_file {
 
@@ -30,7 +30,7 @@ enum class CreatorResult {
 CreatorResult CreateCrxWithVerifiedContentsInHeader(
     const base::FilePath& output_path,
     const base::FilePath& zip_path,
-    crypto::RSAPrivateKey* signing_key,
+    const crypto::keypair::PrivateKey& signing_key,
     const std::string& verified_contents);
 
 // Create a CRX3 file at |output_path|, using the contents of the ZIP archive
@@ -38,7 +38,7 @@ CreatorResult CreateCrxWithVerifiedContentsInHeader(
 // |signing_key|.
 CreatorResult Create(const base::FilePath& output_path,
                      const base::FilePath& zip_path,
-                     crypto::RSAPrivateKey* signing_key);
+                     const crypto::keypair::PrivateKey& signing_key);
 
 }  // namespace crx_file
 

@@ -274,9 +274,6 @@
       <message name="IDS_EXTENSION_PRIVATE_KEY_FAILED_TO_EXPORT" desc="Warning displayed in pack dialog when exporting a private key failed.">
         Failed to export private key.
       </message>
-      <message name="IDS_EXTENSION_PRIVATE_KEY_FAILED_TO_GENERATE" desc="Warning displayed in pack dialog when generating a random RSA private key failed.">
-        Yikes! Failed to generate random RSA private key.
-      </message>
       <message name="IDS_EXTENSION_PRIVATE_KEY_FAILED_TO_OUTPUT" desc="Warning displayed in pack dialog when outputing a private key failed.">
         Failed to output private key.
       </message>
