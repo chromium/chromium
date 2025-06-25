@@ -14,7 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "build/buildflag.h"
 #include "net/base/cache_type.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,6 +36,10 @@ class Entry;
 class MemBackendImpl;
 class SimpleBackendImpl;
 class SimpleFileTracker;
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+class SqlBackendImpl;
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 }  // namespace disk_cache
 
@@ -65,7 +71,14 @@ class DiskCacheTest : public PlatformTest, public net::WithTaskEnvironment {
 // Provides basic support for cache related tests.
 class DiskCacheTestWithCache : public DiskCacheTest {
  public:
-  enum class BackendToTest { kBlockfile, kSimple, kMemory };
+  enum class BackendToTest {
+    kBlockfile,
+    kSimple,
+    kMemory,
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+    kSql
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
+  };
   static std::string BackendToTestName(BackendToTest backend_to_test);
 
  protected:
@@ -212,6 +225,9 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   raw_ptr<disk_cache::BackendImpl> cache_impl_ = nullptr;
   std::unique_ptr<disk_cache::SimpleFileTracker> simple_file_tracker_;
   raw_ptr<disk_cache::SimpleBackendImpl> simple_cache_impl_ = nullptr;
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  raw_ptr<disk_cache::SqlBackendImpl> sql_cache_impl_ = nullptr;
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
   raw_ptr<disk_cache::MemBackendImpl> mem_cache_ = nullptr;
 
   uint32_t mask_ = 0;

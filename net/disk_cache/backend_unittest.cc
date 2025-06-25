@@ -48,6 +48,7 @@
 #include "net/disk_cache/blockfile/entry_impl.h"
 #include "net/disk_cache/blockfile/experiments.h"
 #include "net/disk_cache/blockfile/mapped_file.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/disk_cache_test_base.h"
 #include "net/disk_cache/disk_cache_test_util.h"
@@ -59,6 +60,7 @@
 #include "net/disk_cache/simple/simple_synchronous_entry.h"
 #include "net/disk_cache/simple/simple_test_util.h"
 #include "net/disk_cache/simple/simple_util.h"
+#include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -85,6 +87,20 @@ using testing::Field;
 #else
 #define MAYBE_NonEmptyCorruptSimpleCacheDoesNotRecover \
   NonEmptyCorruptSimpleCacheDoesNotRecover
+#endif
+
+// Some tests use methods that are not implemented in SQLBackend. Therefore,
+// this macro is used to skip such tests.
+// TODO(crbug.com/422065015): Remove this macro once such methods are
+// implemented.
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+#define SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED()                                 \
+  if (GetParam() == BackendToTest::kSql) {                                    \
+    LOG(INFO) << "Skipping test for SQL backend as it's not implemented yet"; \
+    return;                                                                   \
+  }
+#else
+#define SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED()
 #endif
 
 using base::Time;
@@ -407,6 +423,11 @@ bool DiskCacheBackendTest::EnumerateAndMatchKeys(
 }
 
 int DiskCacheBackendTest::GetEntryMetadataSize(std::string key) {
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  if (backend_to_test() == BackendToTest::kSql) {
+    return disk_cache::kSqlBackendStaticResourceSize + key.size();
+  }
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
   // For blockfile and memory backends, it is just the key size.
   if (backend_to_test() != BackendToTest::kSimple) {
     return key.size();
@@ -1202,6 +1223,7 @@ void DiskCacheBackendTest::BackendSetSize() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, SetSize) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   BackendSetSize();
 }
 
@@ -1699,6 +1721,7 @@ void DiskCacheBackendTest::BackendEnumerations() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, Enumerations) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   BackendEnumerations();
 }
 
@@ -1708,11 +1731,13 @@ TEST_F(DiskCacheBackendTest, NewEvictionEnumerations) {
 }
 
 TEST_P(DiskCacheGenericBackendTest, ShaderCacheEnumerations) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   SetCacheType(net::SHADER_CACHE);
   BackendEnumerations();
 }
 
 TEST_P(DiskCacheGenericBackendTest, AppCacheEnumerations) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   if (backend_to_test() == BackendToTest::kSimple) {
     // No timestamps in simple in APP_CACHE mode, so can't run this test.
     return;
@@ -1820,6 +1845,7 @@ void DiskCacheBackendTest::BackendDoomMidEnumeration() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, DoomEnumerations) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   BackendDoomMidEnumeration();
 }
 
@@ -1829,11 +1855,13 @@ TEST_F(DiskCacheBackendTest, NewEvictionDoomEnumerations) {
 }
 
 TEST_P(DiskCacheGenericBackendTest, ShaderCacheDoomEnumerations) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   SetCacheType(net::SHADER_CACHE);
   BackendDoomMidEnumeration();
 }
 
 TEST_P(DiskCacheGenericBackendTest, AppCacheDoomEnumerations) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   SetCacheType(net::APP_CACHE);
   BackendDoomMidEnumeration();
 }
@@ -1978,6 +2006,7 @@ void DiskCacheBackendTest::BackendFixEnumerators() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, FixEnumerators) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   BackendFixEnumerators();
 }
 
@@ -2047,6 +2076,7 @@ TEST_F(DiskCacheBackendTest, DoomEntriesSinceSparse) {
 }
 
 TEST_P(DiskCacheGenericBackendTest, DoomAllSparse) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitSparseCache(nullptr, nullptr);
   EXPECT_THAT(DoomAllEntries(), IsOk());
   EXPECT_EQ(0, GetEntryCount());
@@ -2231,6 +2261,7 @@ void DiskCacheBackendTest::BackendCalculateSizeOfAllEntries() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, CalculateSizeOfAllEntries) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   if (backend_to_test() == BackendToTest::kSimple) {
     // Use net::APP_CACHE to make size estimations deterministic via
     // non-optimistic writes.
@@ -3326,6 +3357,7 @@ void DiskCacheBackendTest::BackendEviction() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, BackendEviction) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   BackendEviction();
 }
 
@@ -4025,6 +4057,7 @@ TEST_F(DiskCacheBackendTest, BlockfileCacheOverSimpleCache) {
 
 // Tests basic functionality of the enumeration API.
 TEST_P(DiskCacheGenericBackendTest, EnumerationBasics) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
   std::set<std::string> key_pool;
   ASSERT_TRUE(CreateSetOfRandomEntries(&key_pool));
@@ -4061,6 +4094,7 @@ TEST_P(DiskCacheGenericBackendTest, EnumerationBasics) {
 // Tests that the enumerations are not affected by dooming an entry in the
 // middle.
 TEST_P(DiskCacheGenericBackendTest, EnumerationWhileDoomed) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
   std::set<std::string> key_pool;
   ASSERT_TRUE(CreateSetOfRandomEntries(&key_pool));
@@ -4633,6 +4667,7 @@ void DiskCacheBackendTest::BackendDeadOpenNextEntry() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, BackendDeadOpenNextEntry) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   BackendDeadOpenNextEntry();
 }
 
@@ -4670,6 +4705,7 @@ void DiskCacheBackendTest::BackendIteratorConcurrentDoom() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, IteratorConcurrentDoom) {
+  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   if (backend_to_test() == BackendToTest::kBlockfile) {
     // Init in normal mode, bug not reproducible with kNoRandom. Still need to
     // let the test fixture know the new eviction algorithm will be on.
@@ -5596,12 +5632,292 @@ TEST_P(DiskCacheGenericBackendTest, NoCloseFromWithinCreate) {
   RunUntilIdle();
 }
 
+// Test that CreateEntry returns ERR_FAILED when an active entry with the same
+// key already exists.
+TEST_P(DiskCacheGenericBackendTest, BackendCreateEntryFailsActiveEntryExists) {
+  InitCache();
+
+  const std::string kKey = "my_key";
+  disk_cache::Entry* entry1;
+  ASSERT_THAT(CreateEntry(kKey, &entry1), IsOk());
+  ASSERT_TRUE(entry1);
+
+  // Attempt to create an entry with the same key.
+  // This should fail because an active entry with this key already exists.
+  disk_cache::Entry* entry2 = nullptr;
+  EXPECT_THAT(CreateEntry(kKey, &entry2), IsError(net::ERR_FAILED));
+  EXPECT_EQ(nullptr, entry2);
+
+  entry1->Close();
+}
+
+// Tests that calling DoomEntry immediately after CreateEntry works correctly.
+TEST_P(DiskCacheGenericBackendTest, BackendCreateThenDoomEntry) {
+  InitCache();
+  ASSERT_EQ(0, GetEntryCount());
+
+  const std::string kKey = "test_key_for_create_then_doom";
+
+  TestEntryResultCompletionCallback create_cb;
+  EntryResult create_result_handle =
+      cache_->CreateEntry(kKey, net::HIGHEST, create_cb.callback());
+
+  net::TestCompletionCallback doom_cb;
+  int doom_rv_handle =
+      cache_->DoomEntry(kKey, net::HIGHEST, doom_cb.callback());
+
+  // Wait for both operations to complete.
+  EntryResult final_create_result =
+      create_cb.GetResult(std::move(create_result_handle));
+  int final_doom_rv = doom_cb.GetResult(doom_rv_handle);
+  // Doom operation should succeed.
+  ASSERT_THAT(final_doom_rv, IsOk());
+
+  // Entry creation should succeed.
+  ASSERT_THAT(final_create_result.net_error(), IsOk());
+  disk_cache::Entry* created_entry = final_create_result.ReleaseEntry();
+  ASSERT_TRUE(created_entry);
+
+  // Close the entry.
+  created_entry->Close();
+
+  // Attempting to open the entry should fail.
+  disk_cache::Entry* opened_entry = nullptr;
+  ASSERT_THAT(OpenEntry(kKey, &opened_entry), IsError(net::ERR_FAILED));
+  ASSERT_FALSE(opened_entry);
+
+  ASSERT_EQ(0, GetEntryCount());
+}
+
+// Tests calling DoomEntriesBetween immediately after CreateEntry,
+// where the time range includes the created entry.
+TEST_P(DiskCacheGenericBackendTest,
+       BackendCreateThenDoomEntriesBetweenInRange) {
+  InitCache();
+  ASSERT_EQ(0, GetEntryCount());
+
+  const std::string kKey = "test_key_doom_between_in_range";
+
+  // Define a time range that will definitely include the new entry's
+  // last_used time.
+  base::Time time_before_create = base::Time::Now();
+  AddDelay();
+  TestEntryResultCompletionCallback create_cb;
+  EntryResult create_result_handle =
+      cache_->CreateEntry(kKey, net::HIGHEST, create_cb.callback());
+
+  net::TestCompletionCallback doom_cb;
+  int doom_rv_handle = cache_->DoomEntriesBetween(
+      time_before_create, base::Time::Max(), doom_cb.callback());
+
+  EntryResult final_create_result =
+      create_cb.GetResult(std::move(create_result_handle));
+  int final_doom_rv = doom_cb.GetResult(doom_rv_handle);
+
+  ASSERT_THAT(final_create_result.net_error(), IsOk());
+  disk_cache::Entry* created_entry = final_create_result.ReleaseEntry();
+  ASSERT_TRUE(created_entry);
+
+  ASSERT_THAT(final_doom_rv, IsOk());
+
+  // Verify that the entry is doomed and cannot be opened even if
+  // `created_entry` exists.
+  {
+    disk_cache::Entry* opened_entry = nullptr;
+    ASSERT_THAT(OpenEntry(kKey, &opened_entry), IsError(net::ERR_FAILED))
+        << "Entry should have been doomed.";
+    ASSERT_FALSE(opened_entry);
+    ASSERT_EQ(0, GetEntryCount());
+  }
+
+  created_entry->Close();
+
+  // Closing the doomed entry should not change the outcome.
+  {
+    disk_cache::Entry* opened_entry = nullptr;
+    ASSERT_THAT(OpenEntry(kKey, &opened_entry), IsError(net::ERR_FAILED))
+        << "Entry should have been doomed.";
+    ASSERT_FALSE(opened_entry);
+    ASSERT_EQ(0, GetEntryCount());
+  }
+}
+
+// Tests calling DoomEntriesBetween immediately after CreateEntry,
+// where the time range does NOT include the created entry.
+TEST_P(DiskCacheGenericBackendTest,
+       BackendCreateThenDoomEntriesBetweenOutOfRange) {
+  InitCache();
+  ASSERT_EQ(0, GetEntryCount());
+
+  const std::string kKey = "test_key_doom_between_out_of_range";
+
+  Time time_before_create_and_doom_range = Time::Now();
+  AddDelay();
+  Time time_after_doom_range_before_create = Time::Now();
+  AddDelay();
+
+  TestEntryResultCompletionCallback create_cb;
+  EntryResult create_result_handle =
+      cache_->CreateEntry(kKey, net::HIGHEST, create_cb.callback());
+
+  // Define a time range that is entirely before the entry creation.
+  net::TestCompletionCallback doom_cb;
+  int doom_rv_handle = cache_->DoomEntriesBetween(
+      time_before_create_and_doom_range, time_after_doom_range_before_create,
+      doom_cb.callback());
+
+  EntryResult final_create_result =
+      create_cb.GetResult(std::move(create_result_handle));
+  int final_doom_rv = doom_cb.GetResult(doom_rv_handle);
+
+  ASSERT_THAT(final_create_result.net_error(), IsOk());
+  disk_cache::Entry* created_entry = final_create_result.ReleaseEntry();
+  ASSERT_TRUE(created_entry);
+  created_entry->Close();
+
+  ASSERT_THAT(final_doom_rv, IsOk());
+
+  disk_cache::Entry* opened_entry = nullptr;
+  ASSERT_THAT(OpenEntry(kKey, &opened_entry), IsOk())
+      << "Entry should NOT have been doomed.";
+  ASSERT_TRUE(opened_entry);
+  opened_entry->Close();
+  ASSERT_EQ(1, GetEntryCount());
+}
+
+// Tests calling two DoomEntriesBetween operations immediately after
+// CreateEntry. The first DoomEntriesBetween hits the created entry. The second
+// DoomEntriesBetween misses (targets a different time range). Both callbacks
+// should complete successfully.
+TEST_P(DiskCacheGenericBackendTest,
+       BackendCreateThenDoomEntriesBetweenTwiceHitAndMiss) {
+  InitCache();
+  ASSERT_EQ(0, GetEntryCount());
+
+  const std::string kKey = "test_key_doom_between_twice_hit_miss";
+
+  // Define a time range for the "miss" case that is before entry creation.
+  base::Time time_for_second_doom_start_miss = base::Time::Now();
+  AddDelay();
+  base::Time time_for_second_doom_end_miss = base::Time::Now();
+  AddDelay();  // Ensure this range is distinct and in the past relative to
+               // creation.
+
+  // Time before creating the entry for the "hit" case.
+  base::Time time_before_create_hit = base::Time::Now();
+  AddDelay();  // Ensure entry's last_used time is after time_before_create_hit.
+
+  TestEntryResultCompletionCallback create_cb;
+  EntryResult create_result_handle =
+      cache_->CreateEntry(kKey, net::HIGHEST, create_cb.callback());
+
+  // First DoomEntriesBetween: should hit the entry.
+  // Range: [time_before_create_hit, Time::Max())
+  net::TestCompletionCallback doom_cb1;
+  int doom_rv_handle1 = cache_->DoomEntriesBetween(
+      time_before_create_hit, base::Time::Max(), doom_cb1.callback());
+
+  // Second DoomEntriesBetween: should miss the entry.
+  // Range is set to be before the entry was created.
+  net::TestCompletionCallback doom_cb2;
+  int doom_rv_handle2 = cache_->DoomEntriesBetween(
+      time_for_second_doom_start_miss, time_for_second_doom_end_miss,
+      doom_cb2.callback());
+
+  // Wait for all operations to complete.
+  EntryResult final_create_result =
+      create_cb.GetResult(std::move(create_result_handle));
+  int final_doom_rv1 = doom_cb1.GetResult(doom_rv_handle1);
+  int final_doom_rv2 = doom_cb2.GetResult(doom_rv_handle2);
+
+  // Entry creation should succeed.
+  ASSERT_THAT(final_create_result.net_error(), IsOk());
+  disk_cache::Entry* created_entry = final_create_result.ReleaseEntry();
+  ASSERT_TRUE(created_entry);
+  created_entry->Close();
+
+  ASSERT_THAT(final_doom_rv1, IsOk());
+  ASSERT_THAT(final_doom_rv2, IsOk());
+
+  disk_cache::Entry* opened_entry = nullptr;
+  ASSERT_THAT(OpenEntry(kKey, &opened_entry), IsError(net::ERR_FAILED))
+      << "Entry should have been doomed by the first DoomEntriesBetween.";
+  ASSERT_FALSE(opened_entry);
+  ASSERT_EQ(0, GetEntryCount());
+}
+
+// Tests calling DoomEntry multiple times immediately after a failed OpenEntry
+// for a non-existent key. For Blockfile and Memory backends, DoomEntry is
+// expected to fail. For other backends, it is expected to succeed. All
+// callbacks should complete.
+TEST_P(DiskCacheGenericBackendTest,
+       BackendFailedOpenThenMultipleDoomsNonExistentEntry) {
+  InitCache();
+  ASSERT_EQ(0, GetEntryCount());
+
+  const std::string kNonExistentKey = "this_key_does_not_exist";
+
+  // 1. Attempt to Open a non-existent entry.
+  TestEntryResultCompletionCallback open_cb;
+  EntryResult open_result_handle =
+      cache_->OpenEntry(kNonExistentKey, net::HIGHEST, open_cb.callback());
+
+  // 2. Immediately call DoomEntry twice for the same non-existent key.
+  net::TestCompletionCallback doom_cb1;
+  int doom_rv_handle1 =
+      cache_->DoomEntry(kNonExistentKey, net::HIGHEST, doom_cb1.callback());
+
+  net::TestCompletionCallback doom_cb2;
+  int doom_rv_handle2 =
+      cache_->DoomEntry(kNonExistentKey, net::HIGHEST, doom_cb2.callback());
+
+  // 3. Wait for all operations to complete.
+  EntryResult final_open_result =
+      open_cb.GetResult(std::move(open_result_handle));
+  int final_doom_rv1 = doom_cb1.GetResult(doom_rv_handle1);
+  int final_doom_rv2 = doom_cb2.GetResult(doom_rv_handle2);
+
+  // 4. Assert the results.
+  ASSERT_THAT(final_open_result.net_error(), IsError(net::ERR_FAILED));
+  ASSERT_FALSE(final_open_result.ReleaseEntry());
+
+  if (GetParam() == BackendToTest::kBlockfile ||
+      GetParam() == BackendToTest::kMemory) {
+    EXPECT_THAT(final_doom_rv1, IsError(net::ERR_FAILED));
+    EXPECT_THAT(final_doom_rv2, IsError(net::ERR_FAILED));
+  } else {
+    EXPECT_THAT(final_doom_rv1, IsOk());
+    EXPECT_THAT(final_doom_rv2, IsOk());
+  }
+
+  // 5. Ensure the cache is still empty.
+  ASSERT_EQ(0, GetEntryCount());
+}
+
+// Tests calling DoomEntry for a non-existent key.
+TEST_P(DiskCacheGenericBackendTest, BackendDoomNonExistentEntry) {
+  InitCache();
+  const std::string kNonExistentKey = "this_key_does_not_exist";
+
+  if (GetParam() == BackendToTest::kBlockfile ||
+      GetParam() == BackendToTest::kMemory) {
+    EXPECT_THAT(DoomEntry(kNonExistentKey), IsError(net::ERR_FAILED));
+  } else {
+    EXPECT_THAT(DoomEntry(kNonExistentKey), IsOk());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no name */,
     DiskCacheGenericBackendTest,
     testing::Values(BackendToTest::kBlockfile,
                     BackendToTest::kSimple,
-                    BackendToTest::kMemory),
+                    BackendToTest::kMemory
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+                    ,
+                    BackendToTest::kSql
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
+                    ),
     [](const testing::TestParamInfo<BackendToTest>& info) {
       return DiskCacheTestWithCache::BackendToTestName(info.param);
     });
