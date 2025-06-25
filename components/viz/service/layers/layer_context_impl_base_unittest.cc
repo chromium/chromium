@@ -95,17 +95,17 @@ void LayerContextImplTest::SetUp() {
   compositor_frame_sink_support_ = std::make_unique<CompositorFrameSinkSupport>(
       &dummy_client_, &frame_sink_manager_, kDefaultFrameSinkId,
       /*is_root=*/true);
+  auto settings = mojom::LayerContextSettings::New();
+  settings->draw_mode_is_gpu = true;
+  settings->enable_edge_anti_aliasing = true;
   layer_context_impl_ = LayerContextImpl::CreateForTesting(
-      compositor_frame_sink_support_.get(), /*draw_mode_is_gpu=*/true,
-      /*enable_edge_anti_aliasing=*/true);
+      compositor_frame_sink_support_.get(), std::move(settings));
 }
 
-void LayerContextImplTest::RecreateLayerContextImplWithParams(
-    bool draw_mode_is_gpu,
-    bool enable_edge_anti_aliasing) {
+void LayerContextImplTest::RecreateLayerContextImplWithSettings(
+    mojom::LayerContextSettingsPtr settings) {
   layer_context_impl_ = LayerContextImpl::CreateForTesting(
-      compositor_frame_sink_support_.get(), draw_mode_is_gpu,
-      enable_edge_anti_aliasing);
+      compositor_frame_sink_support_.get(), std::move(settings));
 }
 
 void LayerContextImplTest::ResetTestState() {

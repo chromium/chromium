@@ -20,6 +20,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 
 namespace cc {
@@ -43,15 +44,13 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   // `compositor_sink` with client connection details given by `context`.
   LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
                    mojom::PendingLayerContext& context,
-                   bool draw_mode_is_gpu,
-                   bool enable_edge_anti_aliasing);
+                   mojom::LayerContextSettingsPtr settings);
 
   // Static factory method for testing purposes. The created object's lifetime
   // is not managed by this function.
   static std::unique_ptr<LayerContextImpl> CreateForTesting(
       CompositorFrameSinkSupport* compositor_sink,
-      bool draw_mode_is_gpu,
-      bool enable_edge_anti_aliasing);
+      mojom::LayerContextSettingsPtr settings);
 
   ~LayerContextImpl() override;
 
@@ -74,8 +73,7 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   // to.
   LayerContextImpl(
       CompositorFrameSinkSupport* compositor_sink,
-      bool draw_mode_is_gpu,
-      bool enable_edge_anti_aliasing,
+      mojom::LayerContextSettingsPtr settings,
       mojo::PendingAssociatedReceiver<mojom::LayerContext> receiver_pipe,
       mojo::PendingAssociatedRemote<mojom::LayerContextClient> client_pipe);
 

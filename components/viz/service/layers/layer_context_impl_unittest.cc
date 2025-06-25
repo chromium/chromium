@@ -31,6 +31,7 @@
 #include "components/viz/service/layers/layer_context_impl_base_unittest.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -181,25 +182,29 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_F(LayerContextImplTest, DrawModeIsGpuForwardedViaSettings) {
-  RecreateLayerContextImplWithParams(/*draw_mode_is_gpu=*/true,
-                                     /*enable_edge_anti_aliasing=*/true);
+  auto settings = mojom::LayerContextSettings::New();
+  settings->draw_mode_is_gpu = true;
+  RecreateLayerContextImplWithSettings(std::move(settings));
   cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
   EXPECT_TRUE(host_impl->settings().display_tree_draw_mode_is_gpu);
 
-  RecreateLayerContextImplWithParams(/*draw_mode_is_gpu=*/false,
-                                     /*enable_edge_anti_aliasing=*/true);
+  settings = mojom::LayerContextSettings::New();
+  settings->draw_mode_is_gpu = false;
+  RecreateLayerContextImplWithSettings(std::move(settings));
   host_impl = layer_context_impl_->host_impl();
   EXPECT_FALSE(host_impl->settings().display_tree_draw_mode_is_gpu);
 }
 
 TEST_F(LayerContextImplTest, EnableEdgeAntiAliasingForwardedViaSettings) {
-  RecreateLayerContextImplWithParams(/*draw_mode_is_gpu=*/true,
-                                     /*enable_edge_anti_aliasing=*/true);
+  auto settings = mojom::LayerContextSettings::New();
+  settings->enable_edge_anti_aliasing = true;
+  RecreateLayerContextImplWithSettings(std::move(settings));
   cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
   EXPECT_TRUE(host_impl->settings().enable_edge_anti_aliasing);
 
-  RecreateLayerContextImplWithParams(/*draw_mode_is_gpu=*/true,
-                                     /*enable_edge_anti_aliasing=*/false);
+  settings = mojom::LayerContextSettings::New();
+  settings->enable_edge_anti_aliasing = false;
+  RecreateLayerContextImplWithSettings(std::move(settings));
   host_impl = layer_context_impl_->host_impl();
   EXPECT_FALSE(host_impl->settings().enable_edge_anti_aliasing);
 }

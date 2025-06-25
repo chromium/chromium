@@ -191,8 +191,8 @@ class LayerContextImplTest : public testing::Test {
 
  protected:
   cc::LayerImpl* GetLayerFromActiveTree(int layer_id);
-  void RecreateLayerContextImplWithParams(bool draw_mode_is_gpu,
-                                          bool enable_edge_anti_aliasing);
+  void RecreateLayerContextImplWithSettings(
+      mojom::LayerContextSettingsPtr settings);
 
   FakeCompositorFrameSinkClient dummy_client_;
   FrameSinkManagerImpl frame_sink_manager_;
