@@ -4,3 +4,5 @@ dom
 fast
 paint
 scrollbars
+virtual/android/url-bar
+virtual/fluent-overlay-scrollbar
