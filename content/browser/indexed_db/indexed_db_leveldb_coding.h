@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
@@ -133,19 +132,6 @@ CONTENT_EXPORT int CompareIndexKeys(std::string_view a, std::string_view b);
 
 // Logging support.
 std::string IndexedDBKeyToDebugString(std::string_view key);
-
-// TODO(estade): these lock id factories have nothing to do with level db
-// coding and don't belong in this file.
-
-// We can't use the database ID for the database lock because we need to hold
-// this lock before we start reading/writing the database metadata, at which
-// point we don't yet know the ID, but do know the name (which is unique
-// anyway).
-CONTENT_EXPORT PartitionedLockId
-GetDatabaseLockId(std::u16string database_name);
-// Note: this one is only to be used by the LevelDB backing store.
-CONTENT_EXPORT PartitionedLockId GetObjectStoreLockId(int64_t database_id,
-                                                      int64_t object_store_id);
 
 // TODO(dmurph): Modify all decoding methods to return something more sensible,
 // as it is not obvious that they modify the input slice to remove the decoded

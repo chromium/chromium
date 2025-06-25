@@ -25,7 +25,7 @@ class BackingStoreDatabaseImpl : public BackingStore::Database {
 
   // BackingStore::Database:
   const blink::IndexedDBDatabaseMetadata& GetMetadata() override;
-  PartitionedLockId GetLockId(int64_t object_store_id) const override;
+  std::string GetObjectStoreLockIdKey(int64_t object_store_id) const override;
   std::unique_ptr<BackingStore::Transaction> CreateTransaction(
       blink::mojom::IDBTransactionDurability durability,
       blink::mojom::IDBTransactionMode mode) override;

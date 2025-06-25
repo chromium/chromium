@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -57,7 +58,9 @@ class CONTENT_EXPORT Database {
 
   static const int64_t kMinimumIndexId = 30;
 
-  Database(const std::u16string& name, BucketContext& bucket_context);
+  Database(uint32_t id_for_locks,
+           const std::u16string& name,
+           BucketContext& bucket_context);
 
   Database(const Database&) = delete;
   Database& operator=(const Database&) = delete;
@@ -74,6 +77,12 @@ class CONTENT_EXPORT Database {
   const std::u16string& name() const { return name_; }
   int64_t version() const;
   bool IsInitialized() const;
+
+  // Builds the set of lock requests for the given transaction `mode` and
+  // `scope`. `scope` is used iff `mode` is not `VersionChange`.
+  std::vector<PartitionedLockManager::PartitionedLockRequest>
+  BuildLockRequestsForTransaction(blink::mojom::IDBTransactionMode mode,
+                                  const std::set<int64_t>& scope) const;
 
   const list_set<Connection*>& connections() const { return connections_; }
 
@@ -187,8 +196,6 @@ class CONTENT_EXPORT Database {
 
   bool CanBeDestroyed();
 
-  uint32_t id_for_locks() const { return id_for_locks_; }
-
  protected:
   friend class Transaction;
   friend class ConnectionCoordinator::ConnectionRequest;
@@ -276,9 +283,6 @@ class CONTENT_EXPORT Database {
   // has any transaction objects.
   void ConnectionClosed(Connection* connection);
 
-  std::vector<PartitionedLockManager::PartitionedLockRequest>
-  BuildLockRequestsFromTransaction(Transaction* transaction) const;
-
   // In rare cases there are a very large number of queued
   // requests/transactions, so calculations related to blocking or blocked
   // clients can be expensive. See crbug.com/384476946. This method is used for
@@ -299,7 +303,7 @@ class CONTENT_EXPORT Database {
       int64_t object_store_id) const;
 
   // This ID uniquely identifies this database within this process. It's not
-  // persisted anywhere.
+  // persisted anywhere. Only used when the backing store is SQLite.
   uint32_t id_for_locks_;
   std::u16string name_;
 

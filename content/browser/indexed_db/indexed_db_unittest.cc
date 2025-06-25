@@ -1585,27 +1585,6 @@ TEST_P(IndexedDBTestFirstOrThirdParty,
   EXPECT_TRUE(base::DirectoryExists(test_path));
 }
 
-TEST(PartitionedLockManager, TestRangeDifferences) {
-  PartitionedLockId lock_id_db1;
-  PartitionedLockId lock_id_db2;
-  PartitionedLockId lock_id_db1_os1;
-  PartitionedLockId lock_id_db1_os2;
-  for (int64_t i = 0; i < 512; ++i) {
-    lock_id_db1 = GetDatabaseLockId(
-        base::ASCIIToUTF16(base::StringPrintf("%" PRIx64, i)));
-    lock_id_db2 = GetDatabaseLockId(
-        base::ASCIIToUTF16(base::StringPrintf("%" PRIx64, i + 1)));
-    lock_id_db1_os1 = GetObjectStoreLockId(i, i);
-    lock_id_db1_os2 = GetObjectStoreLockId(i, i + 1);
-    EXPECT_NE(lock_id_db1, lock_id_db2);
-    EXPECT_NE(lock_id_db1, lock_id_db1_os1);
-    EXPECT_NE(lock_id_db1, lock_id_db1_os2);
-    EXPECT_NE(lock_id_db1_os1, lock_id_db1_os2);
-    EXPECT_NE(lock_id_db1_os1, lock_id_db2);
-    EXPECT_NE(lock_id_db1_os2, lock_id_db2);
-  }
-}
-
 TEST_P(IndexedDBTest, BasicFactoryCreationAndTearDown) {
   const blink::StorageKey storage_key_1 =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");

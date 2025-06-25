@@ -6620,6 +6620,21 @@ crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex_getA
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex_reverse_cursor.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/reading-autoincrement-indexes-cursors.any.html [ Pass ]
 
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-across-connections.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-across-connections.any.worker.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-across-databases.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-across-databases.any.worker.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-mixed-scopes.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-mixed-scopes.any.worker.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-ordering.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-ordering.any.worker.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-ro-waits-for-rw.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-ro-waits-for-rw.any.worker.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-rw-scopes.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-rw-scopes.any.worker.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-within-database.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-within-database.any.worker.html [ Pass ]
+
 # Sheriff 2022-08-06
 crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
 
