@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -26,7 +27,6 @@
 #include "content/public/test/web_contents_tester.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -64,50 +64,40 @@ constexpr uint8_t kCredId2[] = {'e', 'f', 'g', 'h'};
 constexpr uint8_t kCredIdGpm[] = {'a', 'd', 'e', 'm'};
 constexpr char kRpId[] = "example.com";
 const device::DiscoverableCredentialMetadata user1{
-    device::AuthenticatorType::kOther, kRpId,
-    device::fido_parsing_utils::Materialize(kCredId1),
-    device::PublicKeyCredentialUserEntity(
-        device::fido_parsing_utils::Materialize(kUserId),
-        kUserName1,
-        /*display_name=*/std::nullopt),
+    device::AuthenticatorType::kOther, kRpId, base::ToVector(kCredId1),
+    device::PublicKeyCredentialUserEntity(base::ToVector(kUserId),
+                                          kUserName1,
+                                          /*display_name=*/std::nullopt),
     /*provider_name=*/std::nullopt};
 const device::DiscoverableCredentialMetadata user2{
-    device::AuthenticatorType::kOther, kRpId,
-    device::fido_parsing_utils::Materialize(kCredId2),
-    device::PublicKeyCredentialUserEntity(
-        device::fido_parsing_utils::Materialize(kUserId),
-        kUserName2,
-        /*display_name=*/std::nullopt),
+    device::AuthenticatorType::kOther, kRpId, base::ToVector(kCredId2),
+    device::PublicKeyCredentialUserEntity(base::ToVector(kUserId),
+                                          kUserName2,
+                                          /*display_name=*/std::nullopt),
     /*provider_name=*/std::nullopt};
 const device::DiscoverableCredentialMetadata userGpm{
-    device::AuthenticatorType::kEnclave, kRpId,
-    device::fido_parsing_utils::Materialize(kCredIdGpm),
-    device::PublicKeyCredentialUserEntity(
-        device::fido_parsing_utils::Materialize(kUserId),
-        kUserName1,
-        /*display_name=*/std::nullopt),
+    device::AuthenticatorType::kEnclave, kRpId, base::ToVector(kCredIdGpm),
+    device::PublicKeyCredentialUserEntity(base::ToVector(kUserId),
+                                          kUserName1,
+                                          /*display_name=*/std::nullopt),
     /*provider_name=*/std::nullopt};
 
 PasskeyCredential CreatePasskey(std::vector<uint8_t> cred_id,
                                 std::string username,
                                 PasskeyCredential::Source source =
                                     PasskeyCredential::Source::kAndroidPhone) {
-  return PasskeyCredential(
-      source, PasskeyCredential::RpId(std::string(kRpId)),
-      PasskeyCredential::CredentialId(std::move(cred_id)),
-      PasskeyCredential::UserId(
-          device::fido_parsing_utils::Materialize(kUserId)),
-      PasskeyCredential::Username(std::move(username)));
+  return PasskeyCredential(source, PasskeyCredential::RpId(std::string(kRpId)),
+                           PasskeyCredential::CredentialId(std::move(cred_id)),
+                           PasskeyCredential::UserId(base::ToVector(kUserId)),
+                           PasskeyCredential::Username(std::move(username)));
 }
 
 const PasskeyCredential passkey1 =
-    CreatePasskey(device::fido_parsing_utils::Materialize(kCredId1),
-                  kUserName1);
+    CreatePasskey(base::ToVector(kCredId1), kUserName1);
 const PasskeyCredential passkey2 =
-    CreatePasskey(device::fido_parsing_utils::Materialize(kCredId2),
-                  kUserName2);
+    CreatePasskey(base::ToVector(kCredId2), kUserName2);
 const PasskeyCredential passkeyGpm =
-    CreatePasskey(device::fido_parsing_utils::Materialize(kCredIdGpm),
+    CreatePasskey(base::ToVector(kCredIdGpm),
                   kUserName1,
                   PasskeyCredential::Source::kGooglePasswordManager);
 
