@@ -2383,7 +2383,7 @@
   {
     "name": "display-edge-to-edge-fullscreen",
     "owners": [ "wzwonarz@google.com", "cros-web-apps-krk@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "document-picture-in-picture-animate-resize",
