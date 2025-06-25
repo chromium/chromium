@@ -91,7 +91,6 @@ source_set("impl") {
     "tools/tool_callbacks.h",
     "tools/tool_controller.cc",
     "tools/tool_request.cc",
-    "tools/tool_request_visitor_functor.h",
     "tools/type_tool_request.cc",
     "tools/type_tool_request.h",
     "tools/wait_tool.cc",
@@ -106,7 +105,6 @@ source_set("impl") {
     ":actor",
     "//chrome/browser:browser_process",
     "//chrome/browser/actor/ui:event_dispatcher",
-    "//chrome/browser/actor/ui:tool_request_variant",
     "//chrome/browser/optimization_guide:optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
@@ -124,12 +122,6 @@ source_set("impl") {
     "//third_party/perfetto/protos/perfetto/config:zero_gen",
     "//third_party/perfetto/protos/perfetto/trace/perfetto:zero_gen",
     "//url",
-  ]
-
-  allow_circular_includes_from = [
-    # TODO(crbug.com/427726384): See if we can factor ToolRequest objects out of
-    # actor:impl, which could clean up this circular dependency.
-    "//chrome/browser/actor/ui:tool_request_variant",
   ]
   if (enable_glic) {
     deps += [ "//chrome/browser/glic:glic" ]

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/actor/tools/click_tool_request.h"
 
-#include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 
 namespace actor {
@@ -20,10 +19,6 @@ ClickToolRequest::ClickToolRequest(TabHandle tab_handle,
       click_count_(count) {}
 
 ClickToolRequest::~ClickToolRequest() = default;
-
-void ClickToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
-  f.Apply(*this);
-}
 
 std::string ClickToolRequest::JournalEvent() const {
   return "Click";

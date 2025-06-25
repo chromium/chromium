@@ -13,15 +13,12 @@
 #include "url/gurl.h"
 
 namespace actor {
-class ToolRequestVisitorFunctor;
 
 // Navigates a specified tab to a specified URL.
 class NavigateToolRequest : public TabToolRequest {
  public:
   NavigateToolRequest(tabs::TabHandle tab_handle, GURL url);
   ~NavigateToolRequest() override;
-
-  void Apply(ToolRequestVisitorFunctor& f) const override;
 
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,

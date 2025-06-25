@@ -4,7 +4,6 @@
 
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 
-#include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 
 namespace actor {
@@ -20,10 +19,6 @@ ScrollToolRequest::ScrollToolRequest(TabHandle tab_handle,
       distance_(distance) {}
 
 ScrollToolRequest::~ScrollToolRequest() = default;
-
-void ScrollToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
-  f.Apply(*this);
-}
 
 std::string ScrollToolRequest::JournalEvent() const {
   return "Scroll";

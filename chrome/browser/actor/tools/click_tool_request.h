@@ -12,7 +12,6 @@
 #include "chrome/common/actor.mojom-forward.h"
 
 namespace actor {
-class ToolRequestVisitorFunctor;
 
 class ClickToolRequest : public PageToolRequest {
  public:
@@ -24,8 +23,6 @@ class ClickToolRequest : public PageToolRequest {
                    ClickType type,
                    ClickCount count);
   ~ClickToolRequest() override;
-
-  void Apply(ToolRequestVisitorFunctor& f) const override;
 
   // ToolRequest
   std::string JournalEvent() const override;

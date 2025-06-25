@@ -13,7 +13,6 @@
 #include "url/gurl.h"
 
 namespace actor {
-class ToolRequestVisitorFunctor;
 
 // Invokes a history back or forward traversal in a specified tab.
 class HistoryToolRequest : public TabToolRequest {
@@ -25,8 +24,6 @@ class HistoryToolRequest : public TabToolRequest {
 
   HistoryToolRequest(tabs::TabHandle handle, Direction direction);
   ~HistoryToolRequest() override;
-
-  void Apply(ToolRequestVisitorFunctor& f) const override;
 
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,

@@ -13,14 +13,11 @@
 #include "chrome/common/actor.mojom-forward.h"
 
 namespace actor {
-class ToolRequestVisitorFunctor;
 
 class WaitToolRequest : public ToolRequest {
  public:
   explicit WaitToolRequest(base::TimeDelta wait_duration);
   ~WaitToolRequest() override;
-
-  void Apply(ToolRequestVisitorFunctor& f) const override;
 
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,

@@ -12,7 +12,6 @@
 #include "chrome/common/actor.mojom-forward.h"
 
 namespace actor {
-class ToolRequestVisitorFunctor;
 
 // Simulates a mouse press, move, release sequence. As this is a PageTool, the
 // sequence can only span a local subtree (i.e. cannot drag and drop between
@@ -23,8 +22,6 @@ class DragAndReleaseToolRequest : public PageToolRequest {
                             const Target& from_target,
                             const Target& to_target);
   ~DragAndReleaseToolRequest() override;
-
-  void Apply(ToolRequestVisitorFunctor& f) const override;
 
   // ToolRequest
   std::string JournalEvent() const override;
