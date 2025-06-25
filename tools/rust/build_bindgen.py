@@ -26,8 +26,9 @@ from build import (CheckoutGitRepo, DownloadAndUnpack, LLVM_BUILD_TOOLS_DIR,
                    DownloadDebianSysroot, RunCommand)
 from update import (RmTree)
 
-# The git hash to use.
-BINDGEN_GIT_VERSION = 'f93d5dfa6d5d7409bea584f3eab38e1fc52b8360'
+# The git hash to use.  See https://github.com/rust-lang/rust-bindgen/tags.
+# The current hash below corresponds to version 0.72.0
+BINDGEN_GIT_VERSION = 'd0e7d6b5b763e93dd38f9ece05230979ede95a0a'
 BINDGEN_GIT_REPO = ('https://chromium.googlesource.com/external/' +
                     'github.com/rust-lang/rust-bindgen')
 
@@ -191,13 +192,14 @@ def main():
         RmTree(build_dir)
 
     print(f'Building bindgen in {build_dir} ...')
+    static_feature = ",static" if ('windows' not in RustTargetTriple()) else ""
     cargo_args = [
         'build',
         f'--manifest-path={BINDGEN_SRC_DIR}/Cargo.toml',
         f'--target-dir={build_dir}',
         f'--target={RustTargetTriple()}',
         f'--no-default-features',
-        f'--features=logging',
+        f'--features=logging' + static_feature,
         '--release',
         '--bin',
         'bindgen',
