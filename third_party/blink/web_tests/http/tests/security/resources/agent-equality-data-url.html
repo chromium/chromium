@@ -1,12 +1,6 @@
 <!DOCTYPE html>
-<html>
-<head>
 <title>data scheme test</title>
-</head>
-<body>
-<iframe src="data:text/html,&lt;script&gt;window.parent.postMessage(internals.getAgentId(window), '*');&lt;/script&gt;">
-</iframe>
-<script>
+<iframe src="data:text/html,&lt;script&gt;window.parent.postMessage(internals.getAgentId(window), '*');&lt;/script&gt;"></iframe><script>
 // This test loads an iframe whose src attribute is a data: URL. It posts
 // it's agent ID to this frame, and we report the agent IDs of this frame and
 // the child iframe.
@@ -27,5 +21,3 @@ function onMessage(evt) {
 
 window.addEventListener('message', onMessage, {'once': true});
 </script>
-</body>
-</html>

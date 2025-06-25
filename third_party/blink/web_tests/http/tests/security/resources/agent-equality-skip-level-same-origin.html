@@ -1,12 +1,6 @@
 <!DOCTYPE html>
-<html>
-<head>
 <title>Skip-level same-origin test</title>
-</head>
-<body>
-<iframe src="http://localhost:8000/security/resources/agent-equality-skip-level-same-origin-b.html">
-</iframe>
-<script>
+<iframe src="http://localhost:8000/security/resources/agent-equality-skip-level-same-origin-b.html"></iframe><script>
 // This file should be loaded as an iframe hosted on 127.0.0.1:8000.
 
 // This test creates the following frame tree (note that 127.0.0.1 and localhost
@@ -35,5 +29,3 @@ function onMessage(evt) {
 
 window.addEventListener('message', onMessage, {'once': true});
 </script>
-</body>
-</html>

@@ -1,11 +1,6 @@
 <!DOCTYPE html>
-<html>
-<head>
 <title>srcdoc iframe test</title>
-</head>
-<body>
-<iframe srcdoc="&lt;script&gt;window.parent.postMessage(internals.getAgentId(window), '*');&lt;/script&gt;">
-</iframe>
+<iframe srcdoc="&lt;script&gt;window.parent.postMessage(internals.getAgentId(window), '*');&lt;/script&gt;"></iframe>
 <script>
 // This test loads an iframe whose content is specified as its srcdoc
 // attribute. It posts it's agent ID to this frame, and we report the agent
@@ -28,5 +23,3 @@ function onMessage(evt) {
 
 window.addEventListener('message', onMessage, {'once': true});
 </script>
-</body>
-</html>

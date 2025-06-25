@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <title>Same origin test</title>
-<iframe id="sub1" src="http://127.0.0.1:8000/security/resources/empty.html">
-</iframe>
-<iframe id="sub2" src="http://127.0.0.1:8000/security/resources/empty.html">
-</iframe>
-
-<script>
+<iframe id="sub1" src="http://127.0.0.1:8000/security/resources/empty.html"></iframe>
+<iframe id="sub2" src="http://127.0.0.1:8000/security/resources/empty.html"></iframe><script>
 // This file should be loaded as an iframe hosted on 127.0.0.1:8000.
 
 // This test creates two sibling subframes both located on 127.0.0.1:8000, and
