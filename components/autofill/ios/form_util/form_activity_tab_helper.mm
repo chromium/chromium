@@ -15,6 +15,10 @@
 #import "base/functional/bind.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/not_fatal_until.h"
+#import "base/notreached.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
@@ -22,6 +26,7 @@
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/common/constants.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
@@ -82,7 +87,40 @@ enum class FormSubmissionOutcome {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:FormSubmissionOutcomeIOS)
 
-void RecordMetrics(const base::Value::Dict& message_body) {
+// LINT.IfChange(autofill_count_form_submission_in_renderer)
+// Source that triggered the form submission report.
+enum class FormSubmissionReportSource {
+  // Report was sent immediately because quota was available.
+  kInstant = 0,
+  // Report was sent from the scheduled task.
+  kScheduledTask = 1,
+  // Report was sent from unloading the page content.
+  kUnloadPage = 2,
+  kMaxValue = kUnloadPage,
+};
+// LINT.ThenChange(//components/autofill/ios/form_util/resources/form.ts:autofill_count_form_submission_in_renderer)
+
+// Returns the suffix describing the `source`.
+std::string FormSubmissionReportSourceToSuffix(
+    FormSubmissionReportSource source) {
+  switch (source) {
+    case FormSubmissionReportSource::kInstant:
+      return "FromInstant";
+    case FormSubmissionReportSource::kUnloadPage:
+      return "FromUnloadPage";
+    case FormSubmissionReportSource::kScheduledTask:
+      return "FromScheduledTask";
+  }
+}
+
+// Returns the submission detection metric name combined with the `suffix`.
+std::string GetFormSubmissionDetectionMetricName(std::string_view suffix) {
+  return base::StrCat(
+      {"Autofill.iOS.FormActivity.SubmissionDetectedBeforeProcessing.PerType",
+       ".", suffix});
+}
+
+void RecordFormActivityMetrics(const base::Value::Dict& message_body) {
   const base::Value::Dict* metadata = message_body.FindDict("metadata");
 
   if (!metadata) {
@@ -114,6 +152,74 @@ void RecordMetrics(const base::Value::Dict& message_body) {
     base::UmaHistogramPercentage("Autofill.iOS.FormActivity.SendRatio",
                                  percentage);
   }
+}
+
+// Record the form submission count metrics provided in the `message_body`.
+void RecordFormSubmissionCountMetrics(const base::Value::Dict& message_body) {
+  if (!base::FeatureList::IsEnabled(kAutofillCountFormSubmissionInRenderer)) {
+    return;
+  }
+
+  std::optional<double> html_event_count = message_body.FindDouble("htmlEvent");
+  std::optional<double> programmatic_count =
+      message_body.FindDouble("programmatic");
+
+  auto SourceEnumFromNumber =
+      [](std::optional<double> s) -> std::optional<FormSubmissionReportSource> {
+    if (!s) {
+      return std::nullopt;
+    }
+    switch (static_cast<int>(*s)) {
+      case 0:
+        return FormSubmissionReportSource::kInstant;
+      case 1:
+        return FormSubmissionReportSource::kScheduledTask;
+      case 2:
+        return FormSubmissionReportSource::kUnloadPage;
+    }
+    return std::nullopt;
+  };
+  std::optional<FormSubmissionReportSource> source =
+      SourceEnumFromNumber(message_body.FindDouble("source"));
+
+  if (!html_event_count || !programmatic_count || !source) {
+    base::UmaHistogramEnumeration(
+        GetFormSubmissionDetectionMetricName("FromAll"),
+        /*sample=*/CountedSubmissionType::kCantParse);
+  }
+
+  if (!source) {
+    SCOPED_CRASH_KEY_NUMBER("FormSubmissionReport", "invalid-source",
+                            static_cast<int>(*source));
+    NOTREACHED(base::NotFatalUntil::M141);
+    return;
+  }
+
+  // Record one histogram for each count and type as we want to see
+  // the total number of occurrences for each type. This is a way of dealing
+  // with the fact that the detected form submissions are reported in batches
+  // (i.e. are aggregated) for performance reasons, so we need to disaggregate
+  // the events before reporting them.
+  auto RecordForEachType = [source = *source](int count,
+                                              CountedSubmissionType type) {
+    for (int i = 0; i < count; ++i) {
+      std::string suffix = FormSubmissionReportSourceToSuffix(source);
+      base::UmaHistogramEnumeration(
+          GetFormSubmissionDetectionMetricName(suffix),
+          /*sample=*/type);
+      base::UmaHistogramEnumeration(
+          GetFormSubmissionDetectionMetricName("FromAll"),
+          /*sample=*/type);
+    }
+  };
+  RecordForEachType(static_cast<int>(*html_event_count),
+                    CountedSubmissionType::kHtmlEvent);
+  RecordForEachType(static_cast<int>(*programmatic_count),
+                    CountedSubmissionType::kProgrammatic);
+
+  base::UmaHistogramCounts100(
+      "Autofill.iOS.FormActivity.SubmissionDetectedBeforeProcessing.BatchSize",
+      static_cast<int>(*html_event_count + *programmatic_count));
 }
 
 // Logs the outcome of form submissions to metrics.
@@ -254,7 +360,7 @@ void FormActivityTabHelper::OnFormMessageReceived(
 
   const auto& message_body = message.body()->GetDict();
 
-  RecordMetrics(message_body);
+  RecordFormActivityMetrics(message_body);
 
   const std::string* command = message_body.FindString("command");
   if (!command) {
@@ -265,6 +371,8 @@ void FormActivityTabHelper::OnFormMessageReceived(
     HandleFormActivity(web_state, message);
   } else if (*command == "form.removal") {
     HandleFormRemoval(web_state, message);
+  } else if (*command == "form.submit.count") {
+    RecordFormSubmissionCountMetrics(message_body);
   } else if (*command == "form.submit.error") {
     HandleSubmissionError(message_body);
   }

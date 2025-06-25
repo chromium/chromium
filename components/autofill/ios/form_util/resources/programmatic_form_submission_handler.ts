@@ -29,6 +29,8 @@ const formSubmitOriginalFunction = HTMLFormElement.prototype.submit;
 // Per specification, SubmitEvent is not triggered when calling form.submit().
 // Hook the method to call the handler in that case.
 HTMLFormElement.prototype.submit = function() {
+  gCrWebLegacy.form.reportDetectedFormSubmission(
+      /*isProgrammatic=*/ true, /*handler=*/ NATIVE_MESSAGE_HANDLER);
   // If an error happens in formSubmitted, this will cancel the form
   // submission which can lead to usability issue for the user.
   // Put the formSubmitted in a try catch to ensure the original function

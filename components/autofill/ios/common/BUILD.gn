@@ -4,6 +4,7 @@
 
 source_set("common") {
   sources = [
+    "constants.h",
     "features.h",
     "features.mm",
     "field_data_manager_factory_ios.h",

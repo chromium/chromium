@@ -62,6 +62,14 @@ let autofillDedupeFormSubmission: boolean = false;
 let autofillReportFormSubmissionErrors: boolean = false;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_report_form_submission_errors)
 
+// LINT.IfChange(autofill_count_form_submission_in_renderer)
+/**
+ * Record form submissions events that are detected in the renderer before they
+ * are processed.
+ */
+let autofillCountFormSubmissionInRenderer: boolean = true;
+// LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_count_form_submission_in_renderer)
+
 /**
  * @see autofillAcrossIframes
  */
@@ -161,6 +169,21 @@ function isAutofillReportFormSubmissionErrorsEnabled(): boolean {
   return autofillReportFormSubmissionErrors;
 }
 
+/**
+ * @see autofillCountFormSubmissionInRenderer
+ */
+function setAutofillCountFormSubmissionInRenderer(enabled: boolean): void {
+  autofillCountFormSubmissionInRenderer = enabled;
+}
+
+/**
+ * @see autofillCountFormSubmissionInRenderer
+ */
+function isAutofillCountFormSubmissionInRendererEnabled(): boolean {
+  return autofillCountFormSubmissionInRenderer;
+}
+
+
 // Expose globally via `gCrWeb` instead of `export` to ensure state (feature
 // on/off) is maintained across imports.
 gCrWebLegacy.autofill_form_features = {
@@ -178,4 +201,6 @@ gCrWebLegacy.autofill_form_features = {
   isAutofillDedupeFormSubmissionEnabled,
   setAutofillReportFormSubmissionErrors,
   isAutofillReportFormSubmissionErrorsEnabled,
+  setAutofillCountFormSubmissionInRenderer,
+  isAutofillCountFormSubmissionInRendererEnabled,
 };

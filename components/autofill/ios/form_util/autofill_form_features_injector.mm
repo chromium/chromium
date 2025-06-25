@@ -68,6 +68,11 @@ void SetAutofillFormFeatureFlags(WebFrame* web_frame) {
       ->SetAutofillReportFormSubmissionErrors(
           web_frame,
           base::FeatureList::IsEnabled(kAutofillReportFormSubmissionErrors));
+
+  AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillCountFormSubmissionInRenderer(
+          web_frame,
+          base::FeatureList::IsEnabled(kAutofillCountFormSubmissionInRenderer));
 }
 
 AutofillFormFeaturesInjector::~AutofillFormFeaturesInjector() = default;

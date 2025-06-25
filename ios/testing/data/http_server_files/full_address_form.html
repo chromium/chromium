@@ -15,6 +15,14 @@ parameters:
      the form submission is prevented via the available methods.
  * stopImmediatePropagation: When set, will stop the propagation of the form
      submit event in any direction.
+ * triggerMultipleSubmissions: When set, will trigger multiple submissions when
+     clicking on the form submission button. Triggers 3 extra submissions via
+     clicking on the submit button and 1 extra submission via `form.submit()`.
+     Only work if (1) `preventDefault` is set and (2)
+     redirectWhenSubmissionPrevented` isn't set.
+ * triggerMultipleSubmissionsNoProgrammatic: Similar to
+     triggerMultipleSubmissions but do not trigger a programmatic submission as
+     the last submission. 4 regular submissions are triggered in total.
 -->
 
 <!DOCTYPE html>
@@ -24,6 +32,7 @@ parameters:
 <head></head>
 
 <body>
+  <h1>Full Address Form Test Page</h1>
   <form method="get" action="destination.html">
     <label for="fullname">Name:</label><br>
     <input type="text" autocomplete="name" name="fullname" /><br>
@@ -52,7 +61,11 @@ parameters:
 
     const preventDefault = queryParams.hasOwnProperty('preventDefault');
     const stopImmediatePropagation = queryParams.hasOwnProperty('stopImmediatePropagation');
-    const redirectWhenSubmissionPrevented = queryParams.hasOwnProperty('redirectWhenSubmissionPrevented')
+    const redirectWhenSubmissionPrevented = queryParams.hasOwnProperty('redirectWhenSubmissionPrevented');
+    const triggerMultipleSubmissions = queryParams.hasOwnProperty('triggerMultipleSubmissions');
+    const triggerMultipleSubmissionsNoProgrammatic = queryParams.hasOwnProperty('triggerMultipleSubmissionsNoProgrammatic');
+
+    let submitCount = 0;
 
     // Use the variant that prevents default submission if specified in the
     // URL query.
@@ -61,6 +74,8 @@ parameters:
       // prevent the browser from handling submission through the regular flow.
       const form = document.forms[0];
       form.addEventListener('submit', (e) => {
+        ++submitCount;
+
         if (preventDefault) {
           // Prevent default for other listeners so the the Autofill listener
           // will read the event with the defaultPrevented bit set to true.
@@ -76,6 +91,33 @@ parameters:
           // Emulate a post-submit navigation that happens slightly after
           // propagating the "submit" event, when enabled.
           setTimeout(() => window.location = '/destination.html', 10);
+        }
+        if (triggerMultipleSubmissions || triggerMultipleSubmissionsNoProgrammatic) {
+          // Trigger multiple submissions following the schedule described in
+          // the parameters documentation.
+
+          if (redirectWhenSubmissionPrevented || !preventDefault) {
+            // Put the page in an error state if the parameters aren't set
+            // correctly.
+            document.body.innerHTML = `<h1>ERROR:
+redirectWhenSubmissionPrevented OR preventDefault parameters aren't set
+correctly for supporting the triggerMultipleSubmissions parameter</h1>`;
+            return;
+          }
+
+          let submitFn = null;
+          if (submitCount < 4) {
+            submitFn = () =>
+              document.body.querySelector('button[type="submit"]').click();
+          } else if (!triggerMultipleSubmissionsNoProgrammatic) {
+            // Do the last submit programmatically which will reload the page
+            // content and end the submission loop.
+            submitFn = () => document.forms[0].submit();
+          }
+          // Dispatch the resubmission to avoid re-entry.
+          if (submitFn) {
+            setTimeout(submitFn, 10);
+          }
         }
       });
     }

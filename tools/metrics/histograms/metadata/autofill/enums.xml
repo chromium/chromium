@@ -3313,6 +3313,12 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Checked"/>
 </enum>
 
+<enum name="CountedSubmissionType">
+  <int value="0" label="HtmlEvent"/>
+  <int value="1" label="Programmatic"/>
+  <int value="2" label="Can't Parse"/>
+</enum>
+
 <enum name="CreditCardSeamlessFill">
   <int value="0" label=":-D Full fill"/>
   <int value="1" label=":-) Optional name missing"/>

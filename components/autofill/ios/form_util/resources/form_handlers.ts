@@ -211,6 +211,8 @@ function submitHandler(evt: Event): void {
  * happen before calling gCrWebLegacy.form.formSubmitted().
  */
 function submitHandlerWithErrorWrapper(evt: Event): void {
+  gCrWebLegacy.form.reportDetectedFormSubmission(
+      /*isProgrammatic=*/ false, /*handler=*/ NATIVE_MESSAGE_HANDLER);
   try {
     submitHandler(evt);
   } catch (error) {
@@ -313,6 +315,8 @@ function attachListeners(): void {
   if (formSubmitOriginalFunction === null) {
     formSubmitOriginalFunction = HTMLFormElement.prototype.submit;
     HTMLFormElement.prototype.submit = function() {
+      gCrWebLegacy.form.reportDetectedFormSubmission(
+          /*isProgrammatic=*/ true, /*handler=*/ NATIVE_MESSAGE_HANDLER);
       if (!gCrWebLegacy.autofill_form_features
                .isAutofillIsolatedContentWorldEnabled()) {
         // If an error happens in formSubmitted, this will cancel the form

@@ -105,4 +105,12 @@ void AutofillFormFeaturesJavaScriptFeature::
       base::Value::List().Append(enabled));
 }
 
+void AutofillFormFeaturesJavaScriptFeature::
+    SetAutofillCountFormSubmissionInRenderer(web::WebFrame* frame,
+                                             bool enabled) {
+  frame->CallJavaScriptFunction(
+      "autofill_form_features.setAutofillCountFormSubmissionInRenderer",
+      base::Value::List().Append(enabled));
+}
+
 }  // namespace autofill

@@ -25,6 +25,10 @@ BASE_DECLARE_FEATURE(kAutofillAllowDefaultPreventedSubmission);
 // instead of using true by default.
 BASE_DECLARE_FEATURE(kAutofillCorrectUserEditedBitInParsedField);
 
+// Record form submissions events that are detected in the renderer before they
+// are processed. Act as a killswitch where the feature is enabled by default.
+BASE_DECLARE_FEATURE(kAutofillCountFormSubmissionInRenderer);
+
 // Dedupes form submission by only allowing one submission per form element.
 // This feature is meant to be used when preventDefault()ed submit events are
 // allowed (i.e. AutofillAllowDefaultPreventedSubmission enabled) which can

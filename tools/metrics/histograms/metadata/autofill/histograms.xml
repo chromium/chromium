@@ -3790,6 +3790,36 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.iOS.FormActivity.SubmissionDetectedBeforeProcessing.BatchSize"
+    enum="CountedSubmissionType" expires_after="2025-12-30">
+  <owner>vincb@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the size of the batch of form submission reports. Recorded when when
+    the browser receives a batch of reports. Only recorded on iOS.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.iOS.FormActivity.SubmissionDetectedBeforeProcessing.PerType.{Source}"
+    enum="CountedSubmissionType" expires_after="2025-12-30">
+  <owner>vincb@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the type of form submission detected in the renderer before
+    processing the submission (including throttling), split by {Source} of
+    reporting. Recorded when the browser receives the form submission count
+    report. Only recorded on iOS.
+  </summary>
+  <token key="Source">
+    <variant name="FromInstant" summary="instant reporting, no throttling"/>
+    <variant name="FromScheduledTask"
+        summary="reporting done via a scheduled task"/>
+    <variant name="FromUnloadPage" summary="reporting done on page unload"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.iOS.FormActivity.{Outcome}Count" units="count"
     expires_after="2025-11-09">
   <owner>vincb@google.com</owner>

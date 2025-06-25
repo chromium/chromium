@@ -28,6 +28,12 @@ BASE_FEATURE(kAutofillCorrectUserEditedBitInParsedField,
              base::FEATURE_ENABLED_BY_DEFAULT);
 // LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_correct_user_edited_bit_in_parsed_field)
 
+// LINT.IfChange(autofill_count_form_submission_in_renderer)
+BASE_FEATURE(kAutofillCountFormSubmissionInRenderer,
+             "AutofillCountFormSubmissionInRenderer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+// LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_count_form_submission_in_renderer)
+
 // LINT.IfChange(autofill_dedupe_form_submission)
 BASE_FEATURE(kAutofillDedupeFormSubmission,
              "AutofillDedupeFormSubmission",

@@ -53,6 +53,11 @@ class AutofillFormFeaturesJavaScriptFeature : public web::JavaScriptFeature {
   void SetAutofillReportFormSubmissionErrors(web::WebFrame* frame,
                                              bool enabled);
 
+  // Enables/disables reporting form submission events that occur in the
+  // renderer.
+  void SetAutofillCountFormSubmissionInRenderer(web::WebFrame* frame,
+                                                bool enabled);
+
  private:
   friend class base::NoDestructor<AutofillFormFeaturesJavaScriptFeature>;
 
