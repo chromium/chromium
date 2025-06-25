@@ -252,24 +252,3 @@ component("shared_impl") {
     frameworks = [ "QuartzCore.framework" ]
   }
 }
-
-static_library("test_support") {
-  testonly = true
-
-  sources = [
-    "test_globals.cc",
-    "test_globals.h",
-    "test_utils.cc",
-    "test_utils.h",
-  ]
-
-  public_deps = [ "//ppapi/shared_impl" ]
-  deps = [
-    "//base/test:test_support",
-    "//ipc",
-    "//ipc:test_support",
-    "//ppapi/proxy",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}

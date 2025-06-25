@@ -325,26 +325,3 @@ source_set("ipc_sources") {
     deps += [ "//skia" ]
   }
 }
-
-static_library("test_support") {
-  testonly = true
-
-  sources = [
-    "ppapi_proxy_test.cc",
-    "ppapi_proxy_test.h",
-    "resource_message_test_sink.cc",
-    "resource_message_test_sink.h",
-  ]
-
-  public_deps = [ ":proxy" ]
-  deps = [
-    "//base/test:test_support",
-    "//ipc",
-    "//ipc:test_support",
-    "//ppapi/proxy",
-    "//ppapi/shared_impl",
-    "//ppapi/shared_impl:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
