@@ -276,8 +276,10 @@ class ProcessPerfResults_HardenedUnittest(unittest.TestCase):
   def test_merge_perf_results_IOError(self):
     results_filename = None
     directories = ['directory_that_does_not_exist']
-    ppr_module._merge_perf_results('benchmark.example', results_filename,
-                                   directories)
+    success, _, _ = ppr_module._merge_perf_results('benchmark.example',
+                                                   results_filename,
+                                                   directories)
+    self.assertFalse(success, 'Expected failure for non-existent directory')
 
   @decorators.Disabled('chromeos')  # crbug.com/956178
   def test_handle_perf_logs_no_log(self):
