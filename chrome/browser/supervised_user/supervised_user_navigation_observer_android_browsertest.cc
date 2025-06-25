@@ -21,6 +21,7 @@
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/google/core/common/google_switches.h"
+#include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/common/features.h"
@@ -61,6 +62,12 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
   }
   FakeContentFiltersObserverBridge* search_content_filters_observer() {
     return search_content_filters_observer_.get();
+  }
+  FakeContentFiltersObserverBridge* browser_content_filters_observer() {
+    return browser_content_filters_observer_.get();
+  }
+  safe_search_api::FakeURLCheckerClient* url_checker_client() {
+    return url_checker_client_;
   }
 
  private:
@@ -112,6 +119,10 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
     std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
         std::make_unique<SupervisedUserServicePlatformDelegate>(*profile);
 
+    std::unique_ptr<safe_search_api::FakeURLCheckerClient> url_checker_client =
+        std::make_unique<safe_search_api::FakeURLCheckerClient>();
+    url_checker_client_ = url_checker_client.get();
+
     return std::make_unique<SupervisedUserService>(
         IdentityManagerFactory::GetForProfile(profile),
         profile->GetDefaultStoragePartition()
@@ -122,12 +133,7 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
         SyncServiceFactory::GetInstance()->GetForProfile(profile),
         std::make_unique<SupervisedUserURLFilter>(
             *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
-            std::make_unique<KidsChromeManagementURLCheckerClient>(
-                IdentityManagerFactory::GetForProfile(profile),
-                profile->GetDefaultStoragePartition()
-                    ->GetURLLoaderFactoryForBrowserProcess(),
-                *profile->GetPrefs(), platform_delegate->GetCountryCode(),
-                platform_delegate->GetChannel())),
+            std::move(url_checker_client)),
         std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
         base::BindRepeating(
             &SupervisedUserNavigationObserverAndroidBrowserTest::CreateBridge,
@@ -146,10 +152,15 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
     if (setting_name == kSearchContentFiltersSettingName) {
       search_content_filters_observer_ = bridge.get();
     }
+    if (setting_name == kBrowserContentFiltersSettingName) {
+      browser_content_filters_observer_ = bridge.get();
+    }
     return bridge;
   }
 
+  raw_ptr<safe_search_api::FakeURLCheckerClient> url_checker_client_;
   raw_ptr<FakeContentFiltersObserverBridge> search_content_filters_observer_;
+  raw_ptr<FakeContentFiltersObserverBridge> browser_content_filters_observer_;
   base::test::ScopedFeatureList scoped_feature_list_{
       kPropagateDeviceContentFiltersToSupervisedUser};
 };
@@ -221,6 +232,49 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
   // Key part: the search results are reloaded with extra query params.
   EXPECT_EQ(web_contents()->GetLastCommittedURL(),
             url.spec() + "&safe=active&ssui=on");
+}
+
+// Tests if no-approval interstitial is shown when the browser content filter
+// is enabled.
+class SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest
+    : public SupervisedUserNavigationObserverAndroidBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kSupervisedUserInterstitialWithoutApprovals};
+};
+
+// Shows the interstitial page when the search content filter is enabled.
+IN_PROC_BROWSER_TEST_F(
+    SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest,
+    ShowInterstitialPage) {
+  // Creating new tab will bootstrap it with the navigation observer with a
+  // supervised user service from the replaced factory. It becomes the current
+  // tab and web contents.
+  AddTab();
+
+  // Verify that the observer is attached.
+  ASSERT_NE(SupervisedUserNavigationObserver::FromWebContents(web_contents()),
+            nullptr);
+
+  // Navigate to a simple page and verify the title. The page is not filtered.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_test_server()->GetURL("/supervised_user/simple.html")));
+  ASSERT_EQ(web_contents()->GetTitle(), u"Supervised User test: simple page");
+
+  content::TestNavigationObserver navigation_observer(web_contents());
+  // Turn the filtering on. That will trigger a url check which is resolved to
+  // restricted.
+  browser_content_filters_observer()->SetEnabled(true);
+  url_checker_client()->RunCallback(
+      safe_search_api::ClientClassification::kRestricted);
+  navigation_observer.Wait();
+
+  EXPECT_EQ(web_contents()->GetTitle(), u"Site blocked");
+  // Learn more button is specific to this interstitial.
+  EXPECT_EQ(content::ExecJs(web_contents(),
+                            "document.getElementById('learn-more-button');"),
+            true);
 }
 
 }  // namespace
