@@ -399,7 +399,7 @@
   {
     "name": "app-background-refresh-ios",
     "owners": [ "fedegermi@google.com", "marq@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "app-launch-automation",
