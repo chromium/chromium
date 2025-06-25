@@ -25,6 +25,16 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+
+// Icon images that aren't vector icons use special padding.
+gfx::Insets InsetsForNonVectorIcon() {
+  return gfx::Insets::VH(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
+                         GetLayoutConstant(LOCATION_BAR_CHIP_PADDING));
+}
+
+}  // namespace
+
 namespace page_actions {
 
 PageActionView::PageActionView(actions::ActionItem* action_item,
@@ -143,13 +153,9 @@ void PageActionView::ViewHierarchyChanged(
 
 void PageActionView::UpdateBorder() {
   gfx::Insets border_insets = icon_insets_;
-  // If the icon is not a vector icon ,
-  // and the view is in its chip state, apply chip padding.
   if (observation_.IsObserving() &&
       !observation_.GetSource()->GetImage().IsVectorIcon()) {
-    border_insets =
-        gfx::Insets::VH(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
-                        GetLayoutConstant(LOCATION_BAR_CHIP_PADDING));
+    border_insets = InsetsForNonVectorIcon();
   }
   SetBorder(views::CreateEmptyBorder(border_insets));
 }
@@ -220,7 +226,13 @@ void PageActionView::SetModel(PageActionModelInterface* model) {
 
 gfx::Size PageActionView::GetMinimumSize() const {
   gfx::Size icon_preferred_size = image_container_view()->GetPreferredSize();
-  icon_preferred_size.Enlarge(icon_insets_.width(), icon_insets_.height());
+  if (observation_.IsObserving() &&
+      !observation_.GetSource()->GetImage().IsVectorIcon()) {
+    auto insets = InsetsForNonVectorIcon();
+    icon_preferred_size.Enlarge(insets.width(), insets.height());
+  } else {
+    icon_preferred_size.Enlarge(icon_insets_.width(), icon_insets_.height());
+  }
 
   return icon_preferred_size;
 }

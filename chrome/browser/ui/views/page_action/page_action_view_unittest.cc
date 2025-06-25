@@ -430,6 +430,9 @@ TEST_F(PageActionViewTest, UpdateBorderUsesChipPaddingForBitmapIcon) {
       gfx::Insets::VH(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
                       GetLayoutConstant(LOCATION_BAR_CHIP_PADDING));
   EXPECT_EQ(page_action_view()->GetInsets(), expected_insets);
+  EXPECT_EQ(page_action_view()->GetMinimumSize(),
+            page_action_view()->GetImageContainerView()->GetPreferredSize() +
+                expected_insets.size());
 }
 
 // Test that the corner radii are consistent for chips, regardless of whether
