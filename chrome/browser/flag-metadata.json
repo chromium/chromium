@@ -5905,11 +5905,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "ios-keyboard-accessory-upgrade-short-manual-fill-menu",
-    "owners": [ "noemies@google.com", "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com" ],
-    "expiry_milestone": 137
-  },
-  {
     "name": "ios-magic-stack-segmentation-ranking",
     "owners": [ "thegreenfrog@google.com", "ritikagup@google.com" ],
     "expiry_milestone": 126

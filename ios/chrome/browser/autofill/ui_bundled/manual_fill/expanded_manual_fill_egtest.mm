@@ -228,23 +228,13 @@ id<GREYMatcher> AutofillFormButton() {
 
 @implementation ExpandedManualFillTestCase
 
-- (BOOL)shouldEnableKeyboardAccessoryUpgradeShortManualFillMenuFeature {
-  return YES;
-}
-
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   // Enable the Keyboard Accessory Upgrade feature.
   config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
-  if ([self shouldEnableKeyboardAccessoryUpgradeShortManualFillMenuFeature]) {
-    config.features_enabled.push_back(
-        kIOSKeyboardAccessoryUpgradeShortManualFillMenu);
-  } else {
-    config.features_disabled.push_back(
-        kIOSKeyboardAccessoryUpgradeShortManualFillMenu);
-  }
+
   config.features_disabled.push_back(
       plus_addresses::features::kPlusAddressesEnabled);
 
@@ -590,27 +580,6 @@ id<GREYMatcher> AutofillFormButton() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
       assertWithMatcher:grey_notVisible()];
-}
-
-@end
-
-// Rerun all the tests in this file but with
-// `kIOSKeyboardAccessoryUpgradeShortManualFillMenu` disabled. This is done to
-// ensure that regressions aren't introduced.
-@interface ExpandedManualFillKeyboardAccessoryUpgradeShortManualFillMenuDisabledTestCase
-    : ExpandedManualFillTestCase
-
-@end
-
-@implementation ExpandedManualFillKeyboardAccessoryUpgradeShortManualFillMenuDisabledTestCase
-
-- (BOOL)shouldEnableKeyboardAccessoryUpgradeShortManualFillMenuFeature {
-  return NO;
-}
-
-// This causes the test case to actually be detected as a test case. The actual
-// tests are all inherited from the parent class.
-- (void)testEmpty {
 }
 
 @end

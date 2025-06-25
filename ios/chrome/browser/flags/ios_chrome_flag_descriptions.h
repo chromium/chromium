@@ -382,9 +382,6 @@ extern const char kIOSKeyboardAccessoryUpgradeDescription[];
 extern const char kIOSKeyboardAccessoryUpgradeForIPadName[];
 extern const char kIOSKeyboardAccessoryUpgradeForIPadDescription[];
 
-extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuName[];
-extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[];
-
 extern const char kIOSOneTapMiniMapRemoveSectionBreaksName[];
 extern const char kIOSOneTapMiniMapRemoveSectionBreaksDescription[];
 

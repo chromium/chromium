@@ -49,9 +49,6 @@
 
 extern NSString* const kFormInputAccessoryViewAccessibilityID;
 
-// Large height for the keyboard accessory.
-extern CGFloat const kFormInputAccessoryViewLargeHeight;
-
 extern NSString* const
     kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID;
 

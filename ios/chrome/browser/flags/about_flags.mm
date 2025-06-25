@@ -1724,12 +1724,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSKeyboardAccessoryUpgradeForIPadName,
      flag_descriptions::kIOSKeyboardAccessoryUpgradeForIPadDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSKeyboardAccessoryUpgradeForIPad)},
-    {"ios-keyboard-accessory-upgrade-short-manual-fill-menu",
-     flag_descriptions::kIOSKeyboardAccessoryUpgradeShortManualFillMenuName,
-     flag_descriptions::
-         kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSKeyboardAccessoryUpgradeShortManualFillMenu)},
     {"ios-magic-stack-segmentation-ranking",
      flag_descriptions::kSegmentationPlatformIosModuleRankerName,
      flag_descriptions::kSegmentationPlatformIosModuleRankerDescription,

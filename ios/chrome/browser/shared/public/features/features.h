@@ -47,10 +47,6 @@ SegmentedDefaultBrowserExperimentTypeEnabled();
 // Feature flag to enable the Keyboard Accessory Upgrade for iPads.
 BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryUpgradeForIPad);
 
-// Feature flag to enable the Keyboard Accessory Upgrade with a shorter manual
-// fill menu.
-BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryUpgradeShortManualFillMenu);
-
 // Test-only: Feature flag used to verify that EG2 can trigger flags. Must be
 // always disabled by default, because it is used to verify that enabling
 // features in tests works.
@@ -660,10 +656,6 @@ bool IsContentPushNotificationsSetUpListRegistrationOnly();
 
 // Whether or not the Keyboard Accessory Upgrade feature is enabled.
 bool IsKeyboardAccessoryUpgradeEnabled();
-
-// Whether or not the kIOSKeyboardAccessoryUpgradeShortManualFillMenu feature is
-// enabled.
-bool IsKeyboardAccessoryUpgradeWithShortManualFillMenuEnabled();
 
 // Feature for the Magic Stack.
 BASE_DECLARE_FEATURE(kMagicStack);

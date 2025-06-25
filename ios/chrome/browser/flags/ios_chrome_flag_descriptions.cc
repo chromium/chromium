@@ -668,13 +668,6 @@ const char kIOSKeyboardAccessoryUpgradeForIPadDescription[] =
     "When enabled, the upgraded keyboard accessory UI will be presented on "
     "iPads.";
 
-const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuName[] =
-    "Enable the keyboard accessory upgrade on iOS with a shorter manual fill "
-    "menu";
-const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[] =
-    "When enabled, the upgraded keyboard accessory UI will be presented with a "
-    "shorter manual fill menu.";
-
 const char kIOSOneTapMiniMapRemoveSectionBreaksName[] =
     "Remove section break for address detection.";
 const char kIOSOneTapMiniMapRemoveSectionBreaksDescription[] =
