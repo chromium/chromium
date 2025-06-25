@@ -168,16 +168,19 @@ void RegisterComponentsForUpdate() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     // NaCl and PNaCl are no longer supported, clean up remaining component.
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
     // PNaCl on Chrome OS is on rootfs and there is no need to clean it up. But
     // Chrome4ChromeOS on Linux doesn't contain PNaCl so clean up component
     // installer when running on Linux. See crbug.com/422121 for more details.
+    // Win and Mac were cleaned up previously.
+#if BUILDFLAG(IS_CHROMEOS)
     if (!base::SysInfo::IsRunningOnChromeOS()) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
       DeletePnaclComponent(path);
 #if BUILDFLAG(IS_CHROMEOS)
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   }
   RegisterSSLErrorAssistantComponent(cus);
 
