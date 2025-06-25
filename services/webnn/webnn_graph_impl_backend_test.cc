@@ -454,12 +454,48 @@ class WebNNGraphImplBackendTest : public testing::Test {
 void WebNNGraphImplBackendTest::SetUp() {
   const std::string_view current_test_name =
       ::testing::UnitTest::GetInstance()->current_test_info()->name();
+  // TODO: https://crbug.com/394119734 - Enable the commented-out tests after
+  // fixing the bugs in the GPU delegate causing them to fail.
   static auto kSupportedTests = base::MakeFixedFlatSet<std::string_view>({
+      "BuildAddWithReshapedConstantOperand",
+      // "BuildAndComputeAddAndMulWithOnlyConstantInputs",
+      // "BuildAndComputeAddWithOnlyConstantInputs",
       "BuildAndComputeConcatWithConstants",
-      "BuildAndComputeSingleOperatorGruCell",
-      "BuildAndComputeSingleOperatorGru",
-      "BuildAndComputeSingleOperatorLstmCell",
-      "BuildAndComputeSingleOperatorLstm",
+      "BuildAndComputeGraphWithReshapeAsIntermediateNode",
+      "BuildAndComputeGraphWithReshapeAsLastNode",
+      "BuildAndComputeGraphWithSplitAndReshape",
+      "BuildAndComputeGraphWithTransposeAndRelu",
+      "BuildAndComputeGraphWithTransposeAndTwoOutputs",
+      "BuildAndComputeGraphWithTransposeAndTwoReshape",
+      "BuildAndComputeGraphWithTwoOutputs", "BuildAndComputeGraphWithTwoRelu",
+      "BuildAndComputeGraphWithTwoReshape",
+      "BuildAndComputeGraphWithTwoTranspose",
+      "BuildAndComputeMultipleOperatorGemm",
+      // "BuildAndComputeReluWithOnlyConstantInput",
+      "BuildAndComputeReshapeConcatAndClamp",
+      "BuildAndComputeSingleOperatorClamp",
+      // "BuildAndComputeSingleOperatorGruCell",
+      // "BuildAndComputeSingleOperatorGru",
+      "BuildAndComputeSingleOperatorHardSigmoid",
+      "BuildAndComputeSingleOperatorHardSwish",
+      // "BuildAndComputeSingleOperatorLstmCell",
+      // "BuildAndComputeSingleOperatorLstm",
+      // "BuildAndComputeSingleOperatorResample2d",
+      "BuildAndComputeSingleOperatorTanh",
+      "BuildGemmWithReshapedConstantOperand", "BuildMaxPoolingAsFirstOperator",
+      "BuildMaxPoolingAsSecondOperator", "BuildMaxPoolingAsThirdOperator",
+      "BuildMultipleConstantsAppendingInputs",
+      "BuildMultipleInputsAppendingConstants",
+      "BuildSingleOperatorLayerNormalization",
+      "BuildOneInputAndOneConstantOperand",
+      // "FuseStandaloneActivationIntoBatchNormalization",
+      // "FuseStandaloneActivationIntoConv2d",
+      "FuseStandaloneActivationIntoElementWiseBinaryAdd",
+      "FuseStandaloneActivationIntoGemm",
+      // "FuseStandaloneActivationIntoInstanceNormalization",
+      "FuseStandaloneActivationIntoLayerNormalization",
+      // "FuseStandaloneOperationsIntoMatmul",
+      // "MultipleOutputsCanNotFuseStandaloneActivation",
   });
   if (!kSupportedTests.contains(current_test_name)) {
     GTEST_SKIP() << "Skipping test because the operator is not yet supported.";
