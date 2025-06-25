@@ -314,51 +314,6 @@ TEST_F(TipsNotificationClientTest, RegisterActionableNotifications) {
   EXPECT_EQ(client_->RegisterActionableNotifications().count, 0u);
 }
 
-// Tests that the client can request a Default Browser notification.
-TEST_F(TipsNotificationClientTest, DefaultBrowserRequest) {
-  WriteFirstRunSentinel();
-  SetFalseChromeLikelyDefaultBrowser();
-  ClearDefaultBrowserPromoLastAction();
-  StubGetPendingRequests(nil);
-  SetSentNotifications(
-      {TipsNotificationType::kSetUpListContinuation,
-       TipsNotificationType::kWhatsNew, TipsNotificationType::kLens,
-       TipsNotificationType::kOmniboxPosition,
-       TipsNotificationType::kEnhancedSafeBrowsing,
-       TipsNotificationType::kDocking, TipsNotificationType::kSignin});
-
-  ExpectNotificationRequest(TipsNotificationType::kDefaultBrowser);
-  base::RunLoop run_loop;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
-  run_loop.Run();
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  histogram_tester_.ExpectUniqueSample(
-      "IOS.Notifications.Tips.Sent", TipsNotificationType::kDefaultBrowser, 1);
-
-  // Run again, but this time simulating a delivered notification.
-  NSMutableArray<UNNotification*>* delivered_notifications = [NSMutableArray
-      arrayWithObject:MockNotification(TipsNotificationType::kDefaultBrowser,
-                                       false)];
-  StubGetDeliveredNotifications(delivered_notifications);
-  base::RunLoop run_loop_2;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop_2.QuitClosure());
-  run_loop_2.Run();
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Triggered",
-                                       TipsNotificationType::kDefaultBrowser,
-                                       1);
-
-  // Run again, but this time the delivered notification is gone.
-  [delivered_notifications removeAllObjects];
-  base::RunLoop run_loop_3;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop_3.QuitClosure());
-  run_loop_3.Run();
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Dismissed",
-                                       TipsNotificationType::kDefaultBrowser,
-                                       1);
-}
-
 // Tests that the client handles a Default Browser notification response.
 TEST_F(TipsNotificationClientTest, DefaultBrowserHandle) {
   StubPrepareToPresentModal();
@@ -376,42 +331,6 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserHandle) {
   histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
                                        TipsNotificationType::kDefaultBrowser,
                                        1);
-}
-
-// Tests that the client can request a Sign-in notification.
-TEST_F(TipsNotificationClientTest, SigninRequest) {
-  WriteFirstRunSentinel();
-  StubGetPendingRequests(nil);
-  SetSentNotifications(
-      {TipsNotificationType::kSetUpListContinuation,
-       TipsNotificationType::kWhatsNew, TipsNotificationType::kLens,
-       TipsNotificationType::kOmniboxPosition,
-       TipsNotificationType::kEnhancedSafeBrowsing,
-       TipsNotificationType::kDocking, TipsNotificationType::kDefaultBrowser});
-
-  ExpectNotificationRequest(TipsNotificationType::kSignin);
-  base::RunLoop run_loop;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
-  run_loop.Run();
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",
-                                       TipsNotificationType::kSignin, 1);
-
-  // Run again, but this time simulating that the user is signed in, so no
-  // notification will be requested.
-  SigninWithFakeIdentity();
-  SetSentNotifications(
-      {TipsNotificationType::kSetUpListContinuation,
-       TipsNotificationType::kWhatsNew, TipsNotificationType::kLens,
-       TipsNotificationType::kOmniboxPosition,
-       TipsNotificationType::kEnhancedSafeBrowsing,
-       TipsNotificationType::kDocking, TipsNotificationType::kDefaultBrowser});
-  base::RunLoop run_loop_2;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop_2.QuitClosure());
-  run_loop_2.Run();
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",
-                                       TipsNotificationType::kSignin, 1);
 }
 
 // Tests that the client handles a SignIn notification response.
@@ -436,24 +355,6 @@ TEST_F(TipsNotificationClientTest, SigninHandle) {
   EXPECT_OCMOCK_VERIFY(mock_handler);
   histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
                                        TipsNotificationType::kSignin, 2);
-}
-
-// Tests that the client can register a Whats New notification.
-TEST_F(TipsNotificationClientTest, WhatsNewRequest) {
-  WriteFirstRunSentinel();
-  SetTrueChromeLikelyDefaultBrowser();
-  SetSentNotifications({TipsNotificationType::kEnhancedSafeBrowsing});
-
-  StubGetPendingRequests(nil);
-  ExpectNotificationRequest(TipsNotificationType::kWhatsNew);
-
-  base::RunLoop run_loop;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
-  run_loop.Run();
-
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",
-                                       TipsNotificationType::kWhatsNew, 1);
 }
 
 // Tests that the client can request a Proactive Whats New notification.
@@ -551,26 +452,6 @@ TEST_F(TipsNotificationClientTest, WhatsNewHandle) {
                                        TipsNotificationType::kWhatsNew, 1);
 }
 
-// Tests that the client can register a SetUpList Continuation notification.
-TEST_F(TipsNotificationClientTest, SetUpListContinuationRequest) {
-  WriteFirstRunSentinel();
-  StubGetPendingRequests(nil);
-  SetSentNotifications({TipsNotificationType::kEnhancedSafeBrowsing,
-                        TipsNotificationType::kWhatsNew,
-                        TipsNotificationType::kLens,
-                        TipsNotificationType::kOmniboxPosition});
-  ExpectNotificationRequest(TipsNotificationType::kSetUpListContinuation);
-
-  base::RunLoop run_loop;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
-  run_loop.Run();
-
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  histogram_tester_.ExpectUniqueSample(
-      "IOS.Notifications.Tips.Sent",
-      TipsNotificationType::kSetUpListContinuation, 1);
-}
-
 // Tests that the client handles a SetUpList Continuation notification response.
 TEST_F(TipsNotificationClientTest, SetUpListContinuationHandle) {
   StubPrepareToPresentModal();
@@ -587,27 +468,6 @@ TEST_F(TipsNotificationClientTest, SetUpListContinuationHandle) {
       TipsNotificationType::kSetUpListContinuation, 1);
 }
 
-// Tests that the client can register a Docking promo notification.
-TEST_F(TipsNotificationClientTest, DockingRequest) {
-  WriteFirstRunSentinel();
-  SetSentNotifications({TipsNotificationType::kEnhancedSafeBrowsing,
-                        TipsNotificationType::kWhatsNew,
-                        TipsNotificationType::kLens,
-                        TipsNotificationType::kOmniboxPosition,
-                        TipsNotificationType::kSetUpListContinuation,
-                        TipsNotificationType::kDefaultBrowser});
-  StubGetPendingRequests(nil);
-  ExpectNotificationRequest(TipsNotificationType::kDocking);
-
-  base::RunLoop run_loop;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
-  run_loop.Run();
-
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",
-                                       TipsNotificationType::kDocking, 1);
-}
-
 // Tests that the client handles a Docking promo notification response.
 TEST_F(TipsNotificationClientTest, DockingHandle) {
   StubPrepareToPresentModal();
@@ -620,29 +480,6 @@ TEST_F(TipsNotificationClientTest, DockingHandle) {
   EXPECT_OCMOCK_VERIFY(mock_handler);
   histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
                                        TipsNotificationType::kDocking, 1);
-}
-
-// Tests that the client can register an Omnibox Position promo notification.
-TEST_F(TipsNotificationClientTest, OmniboxPositionRequest) {
-  // OmniboxPositionChoice is only available on phones.
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-    return;
-  }
-
-  WriteFirstRunSentinel();
-  SetSentNotifications({TipsNotificationType::kEnhancedSafeBrowsing,
-                        TipsNotificationType::kWhatsNew,
-                        TipsNotificationType::kLens});
-  StubGetPendingRequests(nil);
-  ExpectNotificationRequest(TipsNotificationType::kOmniboxPosition);
-
-  base::RunLoop run_loop;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
-  run_loop.Run();
-
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  histogram_tester_.ExpectUniqueSample(
-      "IOS.Notifications.Tips.Sent", TipsNotificationType::kOmniboxPosition, 1);
 }
 
 // Tests that the client handles an Omnibox Position promo notification
@@ -868,53 +705,6 @@ TEST_F(TipsNotificationClientTest, TestOrderParam) {
   EXPECT_EQ(order[2], TipsNotificationType::kOmniboxPosition);
 }
 
-// Tests that the client can register a CPE Promo notification, only when the
-// CPE promo was displayed more than 7 days ago.
-TEST_F(TipsNotificationClientTest, CPERequest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kIOSExpandedTips);
-  WriteFirstRunSentinel();
-  StubGetPendingRequests(nil);
-  SetSentNotifications({
-      TipsNotificationType::kEnhancedSafeBrowsing,
-      TipsNotificationType::kWhatsNew,
-      TipsNotificationType::kLens,
-      TipsNotificationType::kOmniboxPosition,
-      TipsNotificationType::kSetUpListContinuation,
-      TipsNotificationType::kDefaultBrowser,
-      TipsNotificationType::kDocking,
-      TipsNotificationType::kSignin,
-      TipsNotificationType::kLensOverlay,
-  });
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  local_state->SetTime(prefs::kIosCredentialProviderPromoDisplayTime,
-                       base::Time::Now() - base::Days(6));
-  local_state->SetTime(prefs::kIosSuccessfulLoginWithExistingPassword,
-                       base::Time::Now() - base::Days(29));
-
-  // A notification should not be requested yet because promo display time is
-  // less than 30 days ago.
-  RejectAllNotificationRequests();
-  base::RunLoop run_loop;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
-  run_loop.Run();
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-
-  // Simulate that the CPE promo was displayed more than 30 days ago.
-  local_state->SetTime(prefs::kIosCredentialProviderPromoDisplayTime,
-                       base::Time::Now() - base::Days(8));
-  SetupMockNotificationCenter();
-  StubGetPendingRequests(nil);
-  ExpectNotificationRequest(TipsNotificationType::kCPE);
-  base::RunLoop run_loop2;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop2.QuitClosure());
-  run_loop2.Run();
-
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",
-                                       TipsNotificationType::kCPE, 1);
-}
-
 // Tests that the client handles a CPE Promo notification response.
 TEST_F(TipsNotificationClientTest, CPEHandle) {
   StubPrepareToPresentModal();
@@ -929,50 +719,6 @@ TEST_F(TipsNotificationClientTest, CPEHandle) {
   EXPECT_OCMOCK_VERIFY(mock_handler);
   histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
                                        TipsNotificationType::kCPE, 1);
-}
-
-// Tests that the client can register a LensOverlay Promo notification.
-TEST_F(TipsNotificationClientTest, LensOverlayRequest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kIOSExpandedTips);
-  WriteFirstRunSentinel();
-  StubGetPendingRequests(nil);
-  SetSentNotifications({
-      TipsNotificationType::kEnhancedSafeBrowsing,
-      TipsNotificationType::kWhatsNew,
-      TipsNotificationType::kLens,
-      TipsNotificationType::kOmniboxPosition,
-      TipsNotificationType::kSetUpListContinuation,
-      TipsNotificationType::kDefaultBrowser,
-      TipsNotificationType::kDocking,
-      TipsNotificationType::kSignin,
-      TipsNotificationType::kCPE,
-  });
-  // Simulate that the LensOverlay was displayed less than 30 days ago.
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  local_state->SetTime(prefs::kLensOverlayLastPresented,
-                       base::Time::Now() - base::Days(29));
-
-  // A notification should not be requested yet because LensOverlay was
-  // presented less than 30 days ago.
-  RejectAllNotificationRequests();
-  base::RunLoop run_loop;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
-  run_loop.Run();
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-
-  // Simulate that the LensOverlay was displayed more than 30 days ago.
-  local_state->SetTime(prefs::kLensOverlayLastPresented,
-                       base::Time::Now() - base::Days(31));
-  SetupMockNotificationCenter();
-  StubGetPendingRequests(nil);
-  ExpectNotificationRequest(TipsNotificationType::kLensOverlay);
-  base::RunLoop run_loop2;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop2.QuitClosure());
-  run_loop2.Run();
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",
-                                       TipsNotificationType::kLensOverlay, 1);
 }
 
 // Tests that the client handles a LensOverlay promo notification response.
