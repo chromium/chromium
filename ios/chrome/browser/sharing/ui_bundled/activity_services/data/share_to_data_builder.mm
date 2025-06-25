@@ -55,7 +55,7 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
                 initWithWebState:web_state];
 
   const GURL& final_url_to_share =
-      !share_url.is_empty() ? share_url : web_state->GetVisibleURL();
+      share_url.is_valid() ? share_url : web_state->GetVisibleURL();
   web::NavigationItem* visible_item =
       web_state->GetNavigationManager()->GetVisibleItem();
   web::UserAgentType user_agent = web::UserAgentType::NONE;

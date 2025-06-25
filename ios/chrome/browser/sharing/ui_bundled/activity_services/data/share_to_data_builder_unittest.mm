@@ -104,6 +104,20 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNoShareUrl) {
   EXPECT_FALSE(actual_data.isPagePrintable);
 }
 
+// Verifies that ShareToData is constructed properly for a given Tab when the
+// URL designated for share extensions is invalid.
+TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingInvalidUrl) {
+  ShareToData* actual_data = activity_services::ShareToDataForWebState(
+      web_state(), GURL("https://[fdfs]"));
+
+  ASSERT_TRUE(actual_data);
+  EXPECT_EQ(kExpectedUrl, actual_data.shareURL);
+  EXPECT_EQ(kExpectedUrl, actual_data.visibleURL);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(kExpectedTitle), actual_data.title);
+  EXPECT_TRUE(actual_data.isOriginalTitle);
+  EXPECT_FALSE(actual_data.isPagePrintable);
+}
+
 // Tests that the ShareToDataForURL function creates a ShareToData instance with
 // valid properties.
 TEST_F(ShareToDataBuilderTest, ShareToDataForURL) {
