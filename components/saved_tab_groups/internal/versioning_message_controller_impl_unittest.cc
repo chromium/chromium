@@ -99,21 +99,24 @@ class VersioningMessageControllerImplTest : public testing::Test {
     return sync_result;
   }
 
-  void SetupFeatureList(bool version_enabled) {
-    SetupFeatureListWithUiFlag(/*sync_data_type_flag_enabled=*/version_enabled,
-                               /*version_ui_flag_enabled=*/!version_enabled);
+  void SetupFeatureList(bool version_up_to_date,
+                        bool data_sharing_enabled = true) {
+    SetupFeatureListWithUiFlag(/*shared_data_types_enabled=*/version_up_to_date,
+                               /*version_ui_flag_enabled=*/!version_up_to_date,
+                               /*data_sharing_enabled=*/data_sharing_enabled);
   }
 
-  void SetupFeatureListWithUiFlag(bool sync_data_type_flag_enabled,
-                                  bool version_ui_flag_enabled) {
+  void SetupFeatureListWithUiFlag(bool shared_data_types_enabled,
+                                  bool version_ui_flag_enabled,
+                                  bool data_sharing_enabled = true) {
     scoped_feature_list_.Reset();
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (sync_data_type_flag_enabled) {
-      enabled_features.emplace_back(
+    if (shared_data_types_enabled) {
+      disabled_features.emplace_back(
           data_sharing::features::kSharedDataTypesKillSwitch);
     } else {
-      disabled_features.emplace_back(
+      enabled_features.emplace_back(
           data_sharing::features::kSharedDataTypesKillSwitch);
     }
     if (version_ui_flag_enabled) {
@@ -122,6 +125,13 @@ class VersioningMessageControllerImplTest : public testing::Test {
     } else {
       disabled_features.emplace_back(
           data_sharing::features::kDataSharingEnableUpdateChromeUI);
+    }
+    if (data_sharing_enabled) {
+      enabled_features.emplace_back(
+          data_sharing::features::kDataSharingFeature);
+    } else {
+      disabled_features.emplace_back(
+          data_sharing::features::kDataSharingFeature);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -138,7 +148,7 @@ class VersioningMessageControllerImplTest : public testing::Test {
 
 TEST_F(VersioningMessageControllerImplTest,
        ShouldShowMessageUiAsync_VersionOutOfDate_HasSharedGroups) {
-  SetupFeatureList(/*version_enabled=*/false);
+  SetupFeatureList(/*version_up_to_date=*/false);
   SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/true,
                                     /*had_open_shared_tab_groups=*/true);
   InitializeController();
@@ -151,7 +161,7 @@ TEST_F(VersioningMessageControllerImplTest,
 
 TEST_F(VersioningMessageControllerImplTest,
        ShouldShowMessageUiAsync_VersionOutOfDate_HasSharedGroups_NoUiFlag) {
-  SetupFeatureListWithUiFlag(/*sync_data_type_flag_enabled=*/false,
+  SetupFeatureListWithUiFlag(/*shared_data_types_enabled=*/false,
                              /*version_ui_flag_enabled=*/false);
   SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/true,
                                     /*had_open_shared_tab_groups=*/true);
@@ -174,7 +184,7 @@ TEST_F(
     ShouldShowMessageUiAsync_VersionOutOfDate_HasSharedGroups_InvalidStateOfFlags) {
   // This is a test for invalid combinations of flags where data type is enabled
   // but update chrome UI flag is also incorrectly enabled.
-  SetupFeatureListWithUiFlag(/*sync_data_type_flag_enabled=*/true,
+  SetupFeatureListWithUiFlag(/*shared_data_types_enabled=*/true,
                              /*version_ui_flag_enabled=*/true);
   SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/true,
                                     /*had_open_shared_tab_groups=*/true);
@@ -194,7 +204,7 @@ TEST_F(
 
 TEST_F(VersioningMessageControllerImplTest,
        ShouldShowMessageUiAsync_VersionOutOfDate_NoSharedGroups) {
-  SetupFeatureList(/*version_enabled=*/false);
+  SetupFeatureList(/*version_up_to_date=*/false);
   SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/false,
                                     /*had_open_shared_tab_groups=*/false);
   InitializeController();
@@ -207,7 +217,7 @@ TEST_F(VersioningMessageControllerImplTest,
 
 TEST_F(VersioningMessageControllerImplTest,
        ShouldShowMessageUiAsync_VersionOutOfDate_NoOpenSharedGroups) {
-  SetupFeatureList(/*version_enabled=*/false);
+  SetupFeatureList(/*version_up_to_date=*/false);
   SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/true,
                                     /*had_open_shared_tab_groups=*/false);
   InitializeController();
@@ -221,7 +231,7 @@ TEST_F(VersioningMessageControllerImplTest,
 TEST_F(
     VersioningMessageControllerImplTest,
     ShouldShowMessageUiAsync_VersionOutOfDate_HasShownButNotDismissedBefore) {
-  SetupFeatureList(/*version_enabled=*/false);
+  SetupFeatureList(/*version_up_to_date=*/false);
   SetPref(prefs::kHasShownAnyVersionOutOfDateMessage, true);
   SetPref(prefs::kEligibleForVersionOutOfDateInstantMessage, false);
   SetPref(prefs::kEligibleForVersionOutOfDatePersistentMessage, true);
@@ -237,7 +247,7 @@ TEST_F(
 TEST_F(
     VersioningMessageControllerImplTest,
     ShouldShowMessageUiAsync_VersionUpdatedMessage_VersionUpdated_NotShownIfOutOfDateMessageNeverShown) {
-  SetupFeatureList(/*version_enabled=*/true);
+  SetupFeatureList(/*version_up_to_date=*/true);
   SetPref(prefs::kHasShownAnyVersionOutOfDateMessage, false);
   SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ true);
   InitializeController();
@@ -252,7 +262,7 @@ TEST_F(
 TEST_F(
     VersioningMessageControllerImplTest,
     ShouldShowMessageUiAsync_VersionUpdatedMessage_VersionUpdated_ShownIfOutOfDateMessageShownBefore) {
-  SetupFeatureList(/*version_enabled=*/true);
+  SetupFeatureList(/*version_up_to_date=*/true);
   SetPref(prefs::kHasShownAnyVersionOutOfDateMessage, true);
   SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ true);
   InitializeController();
@@ -265,7 +275,7 @@ TEST_F(
 }
 
 TEST_F(VersioningMessageControllerImplTest, OnMessageUiShown_InstantMessage) {
-  SetupFeatureList(/*version_enabled=*/false);
+  SetupFeatureList(/*version_up_to_date=*/false);
   SetPref(prefs::kEligibleForVersionOutOfDateInstantMessage, true);
   SetPref(prefs::kHasShownAnyVersionOutOfDateMessage, false);
   InitializeController();
@@ -277,7 +287,7 @@ TEST_F(VersioningMessageControllerImplTest, OnMessageUiShown_InstantMessage) {
 
 TEST_F(VersioningMessageControllerImplTest,
        OnMessageUiShown_PersistentMessage) {
-  SetupFeatureList(/*version_enabled=*/false);
+  SetupFeatureList(/*version_up_to_date=*/false);
   SetPref(prefs::kEligibleForVersionOutOfDatePersistentMessage, true);
   SetPref(prefs::kHasShownAnyVersionOutOfDateMessage, true);
   InitializeController();
@@ -289,7 +299,7 @@ TEST_F(VersioningMessageControllerImplTest,
 
 TEST_F(VersioningMessageControllerImplTest,
        OnMessageUiShown_VersionUpdatedMessage) {
-  SetupFeatureList(/*version_enabled=*/true);
+  SetupFeatureList(/*version_up_to_date=*/true);
   SetPref(prefs::kEligibleForVersionUpdatedMessage, true);
   InitializeController();
   controller_->OnMessageUiShown(MessageType::VERSION_UPDATED_MESSAGE);
@@ -298,7 +308,7 @@ TEST_F(VersioningMessageControllerImplTest,
 
 TEST_F(VersioningMessageControllerImplTest,
        OnMessageUiDismissed_PersistentMessage) {
-  SetupFeatureList(/*version_enabled=*/true);
+  SetupFeatureList(/*version_up_to_date=*/true);
   SetPref(prefs::kEligibleForVersionOutOfDatePersistentMessage, true);
   InitializeController();
   controller_->OnMessageUiDismissed(
@@ -308,7 +318,7 @@ TEST_F(VersioningMessageControllerImplTest,
 
 TEST_F(VersioningMessageControllerImplTest,
        Initialization_QueuedCallbacksFlushed) {
-  SetupFeatureList(/*version_enabled=*/true);
+  SetupFeatureList(/*version_up_to_date=*/true);
   controller_ = std::make_unique<VersioningMessageControllerImpl>(
       &pref_service_, &mock_tab_group_sync_service_);
   bool callback_called = false;
@@ -325,7 +335,7 @@ TEST_F(VersioningMessageControllerImplTest,
 TEST_F(VersioningMessageControllerImplTest, MultipleRestarts) {
   {
     // Start with version up-to-date.
-    SetupFeatureList(/*version_enabled=*/true);
+    SetupFeatureList(/*version_up_to_date=*/true);
     SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/true,
                                       /*had_open_shared_tab_groups=*/true);
     SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ true);
@@ -340,7 +350,7 @@ TEST_F(VersioningMessageControllerImplTest, MultipleRestarts) {
 
   {
     // Restart with version out-of-date.
-    SetupFeatureList(/*version_enabled=*/false);
+    SetupFeatureList(/*version_up_to_date=*/false);
     SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/true,
                                       /*had_open_shared_tab_groups=*/true);
     SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ false);
@@ -358,7 +368,7 @@ TEST_F(VersioningMessageControllerImplTest, MultipleRestarts) {
   {
     // Restart again with version out-of-date. Since no message was actually
     // shown last session, they should still be eligible to be shown.
-    SetupFeatureList(/*version_enabled=*/false);
+    SetupFeatureList(/*version_up_to_date=*/false);
     SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/false,
                                       /*had_open_shared_tab_groups=*/false);
     SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ false);
@@ -379,7 +389,7 @@ TEST_F(VersioningMessageControllerImplTest, MultipleRestarts) {
   {
     // Restart with version out-of-date. Only persistent message can be shown
     // here since it isn't dismissed yet.
-    SetupFeatureList(/*version_enabled=*/false);
+    SetupFeatureList(/*version_up_to_date=*/false);
     SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/false,
                                       /*had_open_shared_tab_groups=*/false);
     SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ false);
@@ -400,7 +410,7 @@ TEST_F(VersioningMessageControllerImplTest, MultipleRestarts) {
   {
     // Restart with version out-of-date. No message can be shown since all the
     // message have been already shown and dismissed.
-    SetupFeatureList(/*version_enabled=*/false);
+    SetupFeatureList(/*version_up_to_date=*/false);
     SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/false,
                                       /*had_open_shared_tab_groups=*/false);
     SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ false);
@@ -415,7 +425,7 @@ TEST_F(VersioningMessageControllerImplTest, MultipleRestarts) {
 
   {
     // Restart with version up-to-date. Expect IPH to be eligible to be shown.
-    SetupFeatureList(/*version_enabled=*/true);
+    SetupFeatureList(/*version_up_to_date=*/true);
     SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/false,
                                       /*had_open_shared_tab_groups=*/false);
     SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ true);
@@ -433,7 +443,7 @@ TEST_F(VersioningMessageControllerImplTest, MultipleRestarts) {
   {
     // Restart with version up-to-date. IPH wasn't shown in last session, so it
     // should still be eligible to be shown.
-    SetupFeatureList(/*version_enabled=*/true);
+    SetupFeatureList(/*version_up_to_date=*/true);
     SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/false,
                                       /*had_open_shared_tab_groups=*/false);
     SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ true);
@@ -451,7 +461,7 @@ TEST_F(VersioningMessageControllerImplTest, MultipleRestarts) {
   {
     // Restart with version up-to-date. IPH shouldn't be shown as it was shown
     // before.
-    SetupFeatureList(/*version_enabled=*/true);
+    SetupFeatureList(/*version_up_to_date=*/true);
     SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/false,
                                       /*had_open_shared_tab_groups=*/false);
     SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ true);
@@ -468,7 +478,7 @@ TEST_F(VersioningMessageControllerImplTest, MultipleRestarts) {
 TEST_F(VersioningMessageControllerImplTest, MultipleRestarts_ButWithoutUiFlag) {
   {
     // Start test with version out-of-date, but UI flag enabled.
-    SetupFeatureListWithUiFlag(/*sync_data_type_flag_enabled=*/false,
+    SetupFeatureListWithUiFlag(/*shared_data_types_enabled=*/false,
                                /*version_ui_flag_enabled=*/true);
     SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/true,
                                       /*had_open_shared_tab_groups=*/true);
@@ -489,7 +499,7 @@ TEST_F(VersioningMessageControllerImplTest, MultipleRestarts_ButWithoutUiFlag) {
 
   {
     // Restart with version out-of-date, UI flag disabled.
-    SetupFeatureListWithUiFlag(/*sync_data_type_flag_enabled=*/false,
+    SetupFeatureListWithUiFlag(/*shared_data_types_enabled=*/false,
                                /*version_ui_flag_enabled=*/false);
     SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/false,
                                       /*had_open_shared_tab_groups=*/false);
@@ -505,7 +515,7 @@ TEST_F(VersioningMessageControllerImplTest, MultipleRestarts_ButWithoutUiFlag) {
 
   {
     // Restart with version out-of-date, UI flag enabled again.
-    SetupFeatureListWithUiFlag(/*sync_data_type_flag_enabled=*/false,
+    SetupFeatureListWithUiFlag(/*shared_data_types_enabled=*/false,
                                /*version_ui_flag_enabled=*/true);
     SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/false,
                                       /*had_open_shared_tab_groups=*/false);
@@ -522,7 +532,7 @@ TEST_F(VersioningMessageControllerImplTest, MultipleRestarts_ButWithoutUiFlag) {
   {
     // Restart with version up-to-date. IPH wasn't shown in last session, so it
     // should still be eligible to be shown.
-    SetupFeatureList(/*version_enabled=*/true);
+    SetupFeatureList(/*version_up_to_date=*/true);
     SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/false,
                                       /*had_open_shared_tab_groups=*/false);
     SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ true);
@@ -534,6 +544,27 @@ TEST_F(VersioningMessageControllerImplTest, MultipleRestarts_ButWithoutUiFlag) {
         MessageType::VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE));
     EXPECT_TRUE(ShouldShowMessageUi(MessageType::VERSION_UPDATED_MESSAGE));
   }
+}
+
+TEST_F(VersioningMessageControllerImplTest,
+       TestShouldShowMessageUi_DataSharingDisabled) {
+  SetupFeatureList(/*version_up_to_date=*/false,
+                   /*data_sharing_enabled=*/false);
+  SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/true,
+                                    /*had_open_shared_tab_groups=*/true);
+  InitializeController();
+
+  EXPECT_FALSE(
+      ShouldShowMessageUi(MessageType::VERSION_OUT_OF_DATE_INSTANT_MESSAGE));
+  EXPECT_FALSE(
+      ShouldShowMessageUi(MessageType::VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE));
+  EXPECT_FALSE(ShouldShowMessageUi(MessageType::VERSION_UPDATED_MESSAGE));
+
+  // Verify prefs are not changed on startup in this state.
+  EXPECT_FALSE(GetPref(prefs::kEligibleForVersionOutOfDateInstantMessage));
+  EXPECT_FALSE(GetPref(prefs::kEligibleForVersionOutOfDatePersistentMessage));
+  EXPECT_FALSE(GetPref(prefs::kEligibleForVersionUpdatedMessage));
+  EXPECT_FALSE(GetPref(prefs::kHasShownAnyVersionOutOfDateMessage));
 }
 
 }  // namespace

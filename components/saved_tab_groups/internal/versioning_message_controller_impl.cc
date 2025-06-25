@@ -17,39 +17,42 @@ namespace {
 enum class VersionState {
   // Version is out of date. Versioning messages to update chrome can be shown.
   // Feature flags:
-  // data_sharing::features::kSharedDataTypesKillSwitch DISABLED,
+  // data_sharing::features::kSharedDataTypesKillSwitch ENABLED,
   // data_sharing::features::kDataSharingEnableUpdateChromeUI ENABLED.
   kOutOfDate,
 
   // Version is out of date. However, no specific versioning message should be
-  // shown based.
+  // shown.
   // Feature flags:
-  // data_sharing::features::kSharedDataTypesKillSwitch DISABLED,
+  // data_sharing::features::kSharedDataTypesKillSwitch ENABLED,
   // data_sharing::features::kDataSharingEnableUpdateChromeUI DISABLED.
   kNoMessage,
 
   // Version is up-to-date.
   // Feature flags:
-  // data_sharing::features::kSharedDataTypesKillSwitch ENABLED,
+  // data_sharing::features::kSharedDataTypesKillSwitch DISABLED,
   // data_sharing::features::kDataSharingEnableUpdateChromeUI DISABLED.
   kUpToDate,
 
   // Invalid combination of feature flags. No specific versioning message should
   // be shown.
   // Feature flags:
-  // data_sharing::features::kSharedDataTypesKillSwitch ENABLED,
+  // data_sharing::features::kSharedDataTypesKillSwitch DISABLED,
   // data_sharing::features::kDataSharingEnableUpdateChromeUI ENABLED.
   kInvalidCombination,
 };
 
 // Returns the current version state based on combination of feature flags.
 VersionState GetVersionState() {
-  const bool is_sync_data_type_enabled = base::FeatureList::IsEnabled(
+  if (!data_sharing::features::IsDataSharingFunctionalityEnabled()) {
+    return VersionState::kNoMessage;
+  }
+  const bool is_shared_data_types_enabled = !base::FeatureList::IsEnabled(
       data_sharing::features::kSharedDataTypesKillSwitch);
   const bool is_update_chrome_ui_enabled = base::FeatureList::IsEnabled(
       data_sharing::features::kDataSharingEnableUpdateChromeUI);
 
-  if (is_sync_data_type_enabled) {
+  if (is_shared_data_types_enabled) {
     return is_update_chrome_ui_enabled ? VersionState::kInvalidCombination
                                        : VersionState::kUpToDate;
   } else {
