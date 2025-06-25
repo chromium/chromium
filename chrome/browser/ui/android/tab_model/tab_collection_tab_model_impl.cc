@@ -36,14 +36,6 @@ namespace {
 
 constexpr int kInvalidTabIndex = -1;
 
-std::optional<TabGroupId> ToTabGroupId(
-    const std::optional<base::Token>& token) {
-  if (!token) {
-    return std::nullopt;
-  }
-  return TabGroupId::FromRawToken(*token);
-}
-
 // Converts the `tab_android` to a `unique_ptr<TabInterface>`. Under the hood we
 // use a wrapper class `TabInterfaceAndroid` which takes a weak ptr to
 // `TabAndroid` to avoid memory management issues.
@@ -113,7 +105,8 @@ int TabCollectionTabModelImpl::MoveTabRecursive(
     size_t new_index,
     const std::optional<base::Token>& token,
     bool new_is_pinned) {
-  std::optional<TabGroupId> new_tab_group_id = ToTabGroupId(token);
+  std::optional<TabGroupId> new_tab_group_id =
+      tab_groups::TabGroupId::FromOptionalToken(token);
   new_index = GetSafeIndex(/*is_move=*/true, new_index, new_tab_group_id,
                            new_is_pinned);
 
@@ -130,7 +123,8 @@ void TabCollectionTabModelImpl::AddTabRecursive(
     bool is_pinned) {
   CHECK(tab_android);
 
-  std::optional<TabGroupId> tab_group_id = ToTabGroupId(token);
+  std::optional<TabGroupId> tab_group_id =
+      tab_groups::TabGroupId::FromOptionalToken(token);
 
   index = GetSafeIndex(/*is_move=*/false, index, tab_group_id, is_pinned);
 

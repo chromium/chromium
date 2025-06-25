@@ -723,10 +723,7 @@ std::optional<tab_groups::TabGroupId> TabAndroid::GetGroup() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   std::optional<base::Token> token =
       Java_TabImpl_getTabGroupId(env, weak_java_tab_.get(env));
-  if (!token) {
-    return std::nullopt;
-  }
-  return tab_groups::TabGroupId::FromRawToken(*token);
+  return tab_groups::TabGroupId::FromOptionalToken(token);
 }
 
 // Split tabs is currently desktop only.
