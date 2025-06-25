@@ -112,14 +112,15 @@ public class NativeTest {
 
         mRunInSubThread = intent.hasExtra(NativeTestIntent.EXTRA_RUN_IN_SUB_THREAD);
 
-        mKeepUserDataDir = intent.getBooleanExtra(NativeTestIntent.EXTRA_KEEP_USER_DATA_DIR, false);
-        if (mKeepUserDataDir) {
-            Log.i(TAG, "user data dir is kept for the tests.");
-        }
-
         String gtestFilter = intent.getStringExtra(NativeTestIntent.EXTRA_GTEST_FILTER);
         if (gtestFilter != null) {
             appendCommandLineFlags("--gtest_filter=" + gtestFilter);
+            Log.i(TAG, "Tests from gtest_filter: %s", gtestFilter);
+        }
+
+        mKeepUserDataDir = intent.getBooleanExtra(NativeTestIntent.EXTRA_KEEP_USER_DATA_DIR, false);
+        if (mKeepUserDataDir) {
+            Log.i(TAG, "user data dir is kept for the tests.");
         }
 
         mStdoutFilePath = intent.getStringExtra(NativeTestIntent.EXTRA_STDOUT_FILE);
