@@ -16,7 +16,6 @@
 #include "ui/gfx/linux/scoped_gbm_device.h"
 
 namespace gfx {
-class GpuMemoryBuffer;
 struct NativePixmapHandle;
 class Size;
 }  // namespace gfx
@@ -39,16 +38,16 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager {
 
   ~LocalGpuMemoryBufferManager();
 
-  std::unique_ptr<TestGmbBuffer> CreateGpuMemoryBuffer(
+  std::unique_ptr<TestGmbBuffer> CreateGmbBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
       base::WaitableEvent* shutdown_event);
 
-  // Imports a DmaBuf as a GpuMemoryBuffer to be able to map it. The
+  // Imports a DmaBuf as a TestGmbBuffer to be able to map it. The
   // GBM_BO_USE_SW_READ_OFTEN usage is specified so that the user of the
-  // returned GpuMemoryBuffer is guaranteed to have a linear view when mapping
+  // returned TestGmbBuffer is guaranteed to have a linear view when mapping
   // it.
   std::unique_ptr<TestGmbBuffer> ImportDmaBuf(
       const gfx::NativePixmapHandle& handle,
@@ -56,7 +55,7 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager {
       gfx::BufferFormat format);
 
   // Returns true if the combination of |format| and |usage| is supported by
-  // CreateGpuMemoryBuffer().
+  // CreateTestGmbBuffer().
   bool IsFormatAndUsageSupported(gfx::BufferFormat format,
                                  gfx::BufferUsage usage);
 

@@ -197,8 +197,7 @@ LocalGpuMemoryBufferManager::LocalGpuMemoryBufferManager()
     : gbm_device_(CreateGbmDevice()) {}
 LocalGpuMemoryBufferManager::~LocalGpuMemoryBufferManager() = default;
 
-std::unique_ptr<TestGmbBuffer>
-LocalGpuMemoryBufferManager::CreateGpuMemoryBuffer(
+std::unique_ptr<TestGmbBuffer> LocalGpuMemoryBufferManager::CreateGmbBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,

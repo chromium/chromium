@@ -676,7 +676,7 @@ void JpegClient::StartEncodeDmaBuf(int32_t bitstream_buffer_id) {
       encoder_->GetMaxCodedBufferSize(test_image->visible_size);
   PrepareMemory(bitstream_buffer_id);
 
-  auto input_buffer = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
+  auto input_buffer = gpu_memory_buffer_manager_->CreateGmbBuffer(
       test_image->visible_size, gfx::BufferFormat::YUV_420_BIPLANAR,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
       gpu::kNullSurfaceHandle, nullptr);
@@ -697,7 +697,7 @@ void JpegClient::StartEncodeDmaBuf(int32_t bitstream_buffer_id) {
       input_buffer.get(), test_image->visible_size, media::PIXEL_FORMAT_NV12);
   LOG_ASSERT(input_frame.get());
 
-  auto output_buffer = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
+  auto output_buffer = gpu_memory_buffer_manager_->CreateGmbBuffer(
       gfx::Size(kJpegMaxSize, 1), gfx::BufferFormat::R_8,
       gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE, gpu::kNullSurfaceHandle,
       nullptr);
