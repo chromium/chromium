@@ -359,16 +359,9 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
     std::u16string value =
         Java_AutofillProfile_getInfo(env, jprofile, field_type);
 
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillFixEmptyFieldAndroidSettingsBug)) {
-      if (value != profile.GetInfo(field_type, app_locale) ||
-          status != profile.GetVerificationStatus(field_type)) {
-        modified_fields.emplace_back(field_type, value, status);
-      }
-    } else {
-      if (!value.empty()) {
-        modified_fields.emplace_back(field_type, value, status);
-      }
+    if (value != profile.GetInfo(field_type, app_locale) ||
+        status != profile.GetVerificationStatus(field_type)) {
+      modified_fields.emplace_back(field_type, value, status);
     }
   }
 

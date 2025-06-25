@@ -318,12 +318,6 @@ BASE_FEATURE(kAutofillFixSplitCreditCardImport,
              "AutofillFixSplitCreditCardImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, empty autofill settings fields will be correctly saved.
-// TODO: crbug.com/402020076 - Clean up when confirmed that this is safe.
-BASE_FEATURE(kAutofillFixEmptyFieldAndroidSettingsBug,
-             "AutofillFixEmptyFieldAndroidSettingsBug",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, autofill will use FormFieldData::DeepEqual instead of deprecated
 // SameFieldAs().
 // TODO(crbug.com/40183094): Clean up when confirmed that this is safe.
