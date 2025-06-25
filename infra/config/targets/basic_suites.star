@@ -1444,7 +1444,7 @@ targets.legacy_basic_suite(
                 "--ui-test-action-timeout=30000",
             ],
             linux_args = [
-                "-use-xvfb",
+                "--use-xvfb",
             ],
         ),
     },

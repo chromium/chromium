@@ -1181,7 +1181,7 @@
       {
         "args": [
           "--ui-test-action-timeout=30000",
-          "-use-xvfb"
+          "--use-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -2544,7 +2544,7 @@
       {
         "args": [
           "--ui-test-action-timeout=30000",
-          "-use-xvfb"
+          "--use-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
