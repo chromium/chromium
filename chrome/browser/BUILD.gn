@@ -8274,6 +8274,7 @@ static_library("browser") {
 
     deps += [
       "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/supervised_user",
 
       # TODO(crbug.com/420905611): Remove this circular dependency when:
       # - c/b/app_mode/app_mode_utils.h,

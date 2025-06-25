@@ -4772,6 +4772,7 @@ if (!is_android) {
         "//chrome/browser/ui/hid",
         "//chrome/browser/ui/javascript_dialogs",
         "//chrome/browser/ui/search:test_support_ui",
+        "//chrome/browser/ui/supervised_user",
         "//chrome/browser/web_applications/extensions",
         "//chrome/common/extensions/api",
         "//chrome/services/media_gallery_util/public/cpp:browser_tests",
@@ -5765,6 +5766,7 @@ if (!is_android) {
       deps += [
         "../browser/enterprise/connectors/test:test_support",
         "//chrome/browser:main_extra_parts",
+        "//chrome/browser/ui/supervised_user",
       ]
     }
 

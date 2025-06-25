@@ -1957,13 +1957,12 @@ static_library("ui") {
 
   if (enable_extensions) {
     sources += [
-      "supervised_user/parent_permission_dialog.h",
       "views/supervised_user/extension_install_blocked_by_parent_dialog.cc",
       "views/supervised_user/parent_permission_dialog_view.cc",
       "views/supervised_user/parent_permission_dialog_view.h",
     ]
 
-    public_deps += [ "//chrome/browser/supervised_user" ]
+    public_deps += [ "//chrome/browser/ui/supervised_user" ]
 
     deps += [ "//chromeos/ui/vector_icons" ]
   }
