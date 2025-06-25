@@ -48,7 +48,6 @@ source_set("exclusive_access") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/blocked_content",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
     "//chrome/common:constants",
@@ -75,6 +74,9 @@ source_set("exclusive_access") {
       "//extensions/browser",
       "//extensions/common",
     ]
+  }
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/blocked_content" ]
   }
 }
 

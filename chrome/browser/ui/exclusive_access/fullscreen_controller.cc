@@ -20,7 +20,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_within_tab_helper.h"
@@ -272,11 +274,13 @@ void FullscreenController::EnterFullscreenModeForTab(
     return;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (!popunder_preventer_) {
     popunder_preventer_ = std::make_unique<PopunderPreventer>(web_contents);
   } else {
     popunder_preventer_->WillActivateWebContents(web_contents);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Keep the current state. |SetTabWithExclusiveAccess| may change the return
   // value of |IsWindowFullscreenForTabOrPending|.
@@ -386,6 +390,7 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
   PostFullscreenChangeNotification();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void FullscreenController::FullscreenTabOpeningPopup(
     content::WebContents* opener,
     content::WebContents* popup) {
@@ -396,6 +401,7 @@ void FullscreenController::FullscreenTabOpeningPopup(
   DCHECK_EQ(exclusive_access_tab(), opener);
   popunder_preventer_->AddPotentialPopunder(popup);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void FullscreenController::OnTabDeactivated(
     content::WebContents* web_contents) {
@@ -484,10 +490,13 @@ void FullscreenController::FullscreenTransitionCompleted() {
 #endif  // DCHECK_IS_ON()
   tab_fullscreen_target_display_id_ = display::kInvalidDisplayId;
   started_fullscreen_transition_ = false;
+
+#if !BUILDFLAG(IS_ANDROID)
   if (!IsTabFullscreen()) {
     // Activate any popup windows created while content fullscreen, after exit.
     popunder_preventer_.reset();
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void FullscreenController::RunOrDeferUntilTransitionIsComplete(
