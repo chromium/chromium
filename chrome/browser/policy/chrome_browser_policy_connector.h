@@ -109,6 +109,8 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
     return command_line_provider_;
   }
 
+  base::TimeTicks browser_launch_time() { return browser_launch_time_; }
+
   // Set ProxyPolicyProvider for testing, caller needs to init and shutdown the
   // provider.
   void SetProxyPolicyProviderForTesting(
@@ -155,6 +157,8 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   void OnMachineLevelCloudPolicyManagerCreated(
       std::unique_ptr<MachineLevelUserCloudPolicyManager>
           machine_level_user_cloud_policy_manager);
+
+  base::TimeTicks browser_launch_time_ = base::TimeTicks::Now();
 
   // If CBCM enrollment is needed, then this proxy points to a
   // MachineLevelUserCloudPolicyManager object. Otherwise, this is innocuous.
