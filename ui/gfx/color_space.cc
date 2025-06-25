@@ -47,44 +47,6 @@ static bool FloatsEqualWithinTolerance(const float* a,
   return true;
 }
 
-skcms_TransferFunction GetPQSkTransferFunction(float sdr_white_level) {
-  // Note that SkColorSpace doesn't have the notion of an unspecified SDR white
-  // level.
-  if (sdr_white_level == 0.f)
-    sdr_white_level = ColorSpace::kDefaultSDRWhiteLevel;
-
-  // The generic PQ transfer function produces normalized luminance values i.e.
-  // the range 0-1 represents 0-10000 nits for the reference display, but we
-  // want to map 1.0 to |sdr_white_level| nits so we need to scale accordingly.
-  const double w = 10000. / sdr_white_level;
-  // Distribute scaling factor W by scaling A and B with X ^ (1/F):
-  // ((A + Bx^C) / (D + Ex^C))^F * W = ((A + Bx^C) / (D + Ex^C) * W^(1/F))^F
-  // See https://crbug.com/1058580#c32 for discussion.
-  skcms_TransferFunction fn = SkNamedTransferFn::kPQ;
-  const double ws = pow(w, 1. / fn.f);
-  fn.a = ws * fn.a;
-  fn.b = ws * fn.b;
-  return fn;
-}
-
-skcms_TransferFunction GetHLGSkTransferFunction(float sdr_white_level) {
-  // Note that SkColorSpace doesn't have the notion of an unspecified SDR white
-  // level.
-  if (sdr_white_level == 0.f)
-    sdr_white_level = ColorSpace::kDefaultSDRWhiteLevel;
-
-  // The kHLG constant will evaluate to values in the range [0, 12].
-  skcms_TransferFunction fn = SkNamedTransferFn::kHLG;
-
-  // The value of k is equal to kHLG evaluated at 0.75 (3.77) , divided by kHLG
-  // evaluated at 1 (12), multiplied by 203 nits. This value is selected such
-  // that a signal of 0.75 will map to the same value that a PQ signal for 203
-  // nits will map to.
-  constexpr float k = 63.84549817071231f;
-  fn.f = k / sdr_white_level - 1;
-  return fn;
-}
-
 bool PrimaryIdContainsSRGB(ColorSpace::PrimaryID id) {
   DCHECK(id != ColorSpace::PrimaryID::INVALID &&
          id != ColorSpace::PrimaryID::CUSTOM);
@@ -117,6 +79,8 @@ float GetSDRWhiteLevelFromPQSkTransferFunction(
 
 // static
 constexpr float ColorSpace::kDefaultSDRWhiteLevel;
+constexpr float kDefaultPeakWhite = 1000.f;
+constexpr float kDefaultSystemGamma = 1.2f;
 
 ColorSpace::ColorSpace(PrimaryID primaries,
                        TransferID transfer,
@@ -151,6 +115,14 @@ ColorSpace::ColorSpace(const SkColorSpace& sk_color_space, bool is_hdr)
   } else if (skcms_TransferFunction_isPQish(&fn)) {
     transfer_ = TransferID::PQ;
     transfer_params_[0] = GetSDRWhiteLevelFromPQSkTransferFunction(fn);
+  } else if (skcms_TransferFunction_isHLG(&fn)) {
+    transfer_ = TransferID::HLG;
+    transfer_params_[0] = fn.a;
+    transfer_params_[1] = fn.b;
+    transfer_params_[2] = fn.c;
+  } else if (skcms_TransferFunction_isPQ(&fn)) {
+    transfer_ = TransferID::PQ;
+    transfer_params_[0] = fn.a;
   } else {
     // Construct an invalid result: Unable to extract necessary parameters
     return;
@@ -288,6 +260,8 @@ size_t ColorSpace::TransferParamCount(TransferID transfer) {
       return 7;
     case TransferID::PQ:
       return 1;
+    case TransferID::HLG:
+      return 3;
     default:
       return 0;
   }
@@ -483,20 +457,22 @@ std::string ColorSpace::ToString() const {
     PRINT_ENUM_CASE(TransferID, SRGB_HDR)
     PRINT_ENUM_CASE(TransferID, LINEAR_HDR)
     case TransferID::HLG:
-      ss << "HLG (SDR white point ";
-      if (transfer_params_[0] == 0.f)
-        ss << "default " << kDefaultSDRWhiteLevel;
-      else
-        ss << transfer_params_[0];
-      ss << " nits)";
+      ss << "HLG (white:"
+         << (transfer_params_[0] <= 0.f ? kDefaultSDRWhiteLevel
+                                        : transfer_params_[0])
+         << " nits, peak:"
+         << (transfer_params_[1] <= 0.f ? kDefaultPeakWhite
+                                        : transfer_params_[1])
+         << " nits, gamma:"
+         << (transfer_params_[2] <= 0.f ? kDefaultSystemGamma
+                                        : transfer_params_[2])
+         << ")";
       break;
     case TransferID::PQ:
-      ss << "PQ (SDR white point ";
-      if (transfer_params_[0] == 0.f)
-        ss << "default " << kDefaultSDRWhiteLevel;
-      else
-        ss << transfer_params_[0];
-      ss << " nits)";
+      ss << "PQ (white:"
+         << (transfer_params_[0] <= 0.f ? kDefaultSDRWhiteLevel
+                                        : transfer_params_[0])
+         << " nits)";
       break;
     case TransferID::CUSTOM: {
       skcms_TransferFunction fn;
@@ -656,14 +632,25 @@ sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace(
     case TransferID::LINEAR_HDR:
       transfer_fn = SkNamedTransferFn::kLinear;
       break;
-    case TransferID::HLG:
-      transfer_fn = GetHLGSkTransferFunction(
-          sdr_white_level.value_or(kDefaultSDRWhiteLevel));
+    case TransferID::HLG: {
+      const float hdr_reference_white = sdr_white_level.value_or(
+          transfer_params_[0] > 0.f ? transfer_params_[0]
+                                    : kDefaultSDRWhiteLevel);
+      const float peak_white =
+          transfer_params_[1] > 0.f ? transfer_params_[1] : kDefaultPeakWhite;
+      const float system_gamma =
+          transfer_params_[2] > 0.f ? transfer_params_[2] : kDefaultSystemGamma;
+      skcms_TransferFunction_makeHLG(&transfer_fn, hdr_reference_white,
+                                     peak_white, system_gamma);
       break;
-    case TransferID::PQ:
-      transfer_fn = GetPQSkTransferFunction(
-          sdr_white_level.value_or(transfer_params_[0]));
+    }
+    case TransferID::PQ: {
+      const float hdr_reference_white = sdr_white_level.value_or(
+          transfer_params_[0] > 0.f ? transfer_params_[0]
+                                    : kDefaultSDRWhiteLevel);
+      skcms_TransferFunction_makePQ(&transfer_fn, hdr_reference_white);
       break;
+    }
     default:
       if (!GetTransferFunction(&transfer_fn, sdr_white_level)) {
         DLOG(ERROR) << "Failed to get transfer function for SkColorSpace";
@@ -723,9 +710,11 @@ bool ColorSpace::HasExtendedSkTransferFn() const {
 bool ColorSpace::IsTransferFunctionEqualTo(
     const skcms_TransferFunction& fn) const {
   if (transfer_ == TransferID::PQ)
-    return skcms_TransferFunction_isPQish(&fn);
+    return skcms_TransferFunction_isPQish(&fn) ||
+           skcms_TransferFunction_isPQ(&fn);
   if (transfer_ == TransferID::HLG)
-    return skcms_TransferFunction_isHLGish(&fn);
+    return skcms_TransferFunction_isHLGish(&fn) ||
+           skcms_TransferFunction_isHLG(&fn);
   if (!skcms_TransferFunction_isSRGBish(&fn))
     return false;
   skcms_TransferFunction transfer_fn;

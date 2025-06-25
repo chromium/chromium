@@ -1053,10 +1053,7 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
 #endif
 
   // Create `image` with 500 nits in PQ color space.
-  sk_sp<SkImage> image;
-  {
-    constexpr float kImagePixelValue = 0.6765848107833876f;
-
+  const auto make_image = [&](float pixel_value) {
     SkBitmap bitmap;
     bitmap.allocPixelsFlags(
         SkImageInfo::MakeN32Premul(kSize.width(), kSize.height(),
@@ -1064,27 +1061,39 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
         SkBitmap::kZeroPixels_AllocFlag);
 
     SkCanvas canvas(bitmap, SkSurfaceProps{});
-    SkColor4f color{kImagePixelValue, kImagePixelValue, kImagePixelValue, 1.f};
+    SkColor4f color{pixel_value, pixel_value, pixel_value, 1.f};
     canvas.drawColor(color);
 
-    image = SkImages::RasterFromBitmap(bitmap);
-    image = image->reinterpretColorSpace(
+    return SkImages::RasterFromBitmap(bitmap)->reinterpretColorSpace(
         gfx::ColorSpace::CreateHDR10().ToSkColorSpace());
-  }
+  };
+  sk_sp<SkImage> image_500_nits = make_image(0.6765848107833876f);
+  sk_sp<SkImage> image_250_nits = make_image(0.6025591549907524f);
 
-  const auto make_display_item_list = [&](int i, float peak_luminance,
+  const auto make_display_item_list = [&](sk_sp<SkImage> image,
+                                          std::optional<float> peak_luminance =
+                                              std::nullopt,
+                                          std::optional<float> white_luminance =
+                                              std::nullopt,
                                           PaintFlags* paint_flags = nullptr) {
     auto image_generator =
         sk_make_sp<FakePaintImageGenerator>(image->imageInfo());
     {
       ImageHeaderMetadata image_metadata;
-      image_metadata.hdr_metadata.emplace(
-          gfx::HdrMetadataCta861_3(peak_luminance, kContentAvgNits));
+      image_metadata.hdr_metadata.emplace();
+      if (peak_luminance.has_value()) {
+        image_metadata.hdr_metadata->cta_861_3.emplace(peak_luminance.value(),
+                                                       kContentAvgNits);
+      }
+      if (white_luminance.has_value()) {
+        image_metadata.hdr_metadata->ndwl.emplace(white_luminance.value());
+      }
       image_generator->SetImageHeaderMetadata(image_metadata);
       EXPECT_TRUE(image->peekPixels(&image_generator->GetPixmap()));
     }
 
-    const PaintImage::Id kSomeId = 32 + i;
+    static int id_counter = 0;
+    const PaintImage::Id kSomeId = 32 + id_counter++;
     auto paint_image = PaintImageBuilder::WithDefault()
                            .set_id(kSomeId)
                            .set_paint_image_generator(image_generator)
@@ -1104,10 +1113,6 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
 
   // Create a DisplayItemList drawing `image` with 10k nits and 500 nits HDR
   // metadata.
-  scoped_refptr<DisplayItemList> display_item_list_10k_nits =
-      make_display_item_list(0, 10000.f);
-  scoped_refptr<DisplayItemList> display_item_list_500_nits =
-      make_display_item_list(1, 500.f);
   RasterOptions options(kSize);
   options.target_color_params.color_space = gfx::ColorSpace::CreateSRGBLinear();
 
@@ -1115,7 +1120,8 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   // The result should map the image to solid white (up to rounding error).
   {
     constexpr float kExpected = 1.0;
-    auto actual = Raster(display_item_list_500_nits, options);
+    auto actual =
+        Raster(make_display_item_list(image_500_nits, 500.f), options);
     auto color = actual.getColor4f(0, 0);
     EXPECT_NEAR(color.fR, kExpected, kEpsilon);
     EXPECT_NEAR(color.fG, kExpected, kEpsilon);
@@ -1127,7 +1133,20 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   // white.
   constexpr float kExpected10kToSdr = 0.7114198123454021f;
   {
-    auto actual = Raster(display_item_list_10k_nits, options);
+    auto actual =
+        Raster(make_display_item_list(image_500_nits, 10000.f), options);
+    auto color = actual.getColor4f(0, 0);
+    EXPECT_NEAR(color.fR, kExpected10kToSdr, kEpsilon);
+    EXPECT_NEAR(color.fG, kExpected10kToSdr, kEpsilon);
+    EXPECT_NEAR(color.fB, kExpected10kToSdr, kEpsilon);
+  }
+
+  // Perform the same computation, but with the peak and white luminance cut
+  // in half (to make sure metadata white overrides content white).
+  {
+    auto actual = Raster(
+        make_display_item_list(image_250_nits, 10000.f / 2.f, 203.f / 2.f),
+        options);
     auto color = actual.getColor4f(0, 0);
     EXPECT_NEAR(color.fR, kExpected10kToSdr, kEpsilon);
     EXPECT_NEAR(color.fG, kExpected10kToSdr, kEpsilon);
@@ -1139,7 +1158,8 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
     constexpr float kExpected = 0.933675419515227f;
     constexpr float kDstHeadroom = 1.5f;
     options.target_color_params.hdr_max_luminance_relative = kDstHeadroom;
-    auto actual = Raster(display_item_list_10k_nits, options);
+    auto actual =
+        Raster(make_display_item_list(image_500_nits, 10000.f), options);
     auto color = actual.getColor4f(0, 0);
     EXPECT_NEAR(color.fR, kExpected, kEpsilon);
     EXPECT_NEAR(color.fG, kExpected, kEpsilon);
@@ -1154,7 +1174,8 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
     sdr_paint_flags.setDynamicRangeLimit(PaintFlags::DynamicRangeLimitMixture(
         PaintFlags::DynamicRangeLimit::kStandard));
     scoped_refptr<DisplayItemList> display_item_list_10k_nits_sdr =
-        make_display_item_list(2, 10000.f, &sdr_paint_flags);
+        make_display_item_list(image_500_nits, 10000.f, std::nullopt,
+                               &sdr_paint_flags);
     auto actual = Raster(display_item_list_10k_nits_sdr, options);
     auto color = actual.getColor4f(0, 0);
     EXPECT_NEAR(color.fR, kExpected10kToSdr, kEpsilon);

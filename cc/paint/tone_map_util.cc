@@ -245,7 +245,8 @@ bool ToneMapUtil::UseGlobalToneMapFilter(const SkColorSpace* cs) {
   skcms_TransferFunction fn;
   cs->transferFn(&fn);
   return skcms_TransferFunction_isHLGish(&fn) ||
-         skcms_TransferFunction_isPQish(&fn);
+         skcms_TransferFunction_isPQish(&fn) ||
+         skcms_TransferFunction_isHLG(&fn) || skcms_TransferFunction_isPQ(&fn);
 }
 
 void ToneMapUtil::AddGlobalToneMapFilterToPaint(
@@ -263,15 +264,31 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
   const bool agtm_parsed = metadata.has_value() && metadata->agtm.has_value() &&
                            agtm.Parse(metadata->agtm.value());
 
-  // The remaineder of the function will construct `filter` to perform all
+  // The remainder of the function will construct `filter` to perform all
   // transformations (scaling, OOTF, and tone mapping).
   sk_sp<SkColorFilter> filter;
 
-  // Several stages will use the reference white luminance, so extract it
-  // early.
-  const float reference_white_luminance =
-      agtm_parsed ? agtm.hdr_reference_white
-                  : gfx::HDRMetadata::GetReferenceWhiteLuminance(metadata);
+  // Several stages will use the reference white luminance. Compute it ahead
+  // of time.
+  auto compute_reference_white_luminance = [&]() {
+    // AGTM metadata gets priority.
+    if (agtm_parsed) {
+      return agtm.hdr_reference_white;
+    }
+    // Then NDWL.
+    if (metadata.has_value() && metadata->ndwl.has_value() &&
+        metadata->ndwl->nits > 0.f) {
+      return metadata->ndwl->nits;
+    }
+    // Then defer to the source color space.
+    if (skcms_TransferFunction_isPQ(&trfn) ||
+        skcms_TransferFunction_isHLG(&trfn)) {
+      return trfn.a;
+    }
+    // Then use the default.
+    return gfx::ColorSpace::kDefaultSDRWhiteLevel;
+  };
+  const float reference_white_luminance = compute_reference_white_luminance();
 
   // The HLG or PQ SkColorSpace may have a white level baked into it. Re-scale
   // to be relative to the white level from the metadata, and apply the
@@ -298,6 +315,10 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
     // Set `filter` to the three operations in sequence.
     filter = SkColorFilters::Compose(
         post_ootf_scale, SkColorFilters::Compose(ootf, pre_ootf_scale));
+  } else if (skcms_TransferFunction_isPQ(&trfn) ||
+             skcms_TransferFunction_isHLG(&trfn)) {
+    // Override the white value specified in the color space.
+    filter = GetLinearScaleFilter(trfn.a / reference_white_luminance);
   }
 
   // Apply tone mapping.

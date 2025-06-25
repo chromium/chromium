@@ -243,43 +243,30 @@ TEST(ColorSpace, ConversionToAndFromSkColorSpace) {
 }
 
 TEST(ColorSpace, PQAndHLGToSkColorSpace) {
-  const float kEpsilon = 1.0e-2f;
   const auto hlg = ColorSpace::CreateHLG();
   const auto pq = ColorSpace::CreateHDR10();
 
-  // For each test case, `pq_signal` maps to `pq_nits`.
   constexpr size_t kNumCases = 3;
-  std::array<float, kNumCases> pq_signal = {
-      0.508078421517399f,
-      0.5806888810416109f,
-      0.6765848107833876,
-  };
   std::array<float, kNumCases> pq_nits = {
       100,
       203,
       500,
   };
-  const float kPQSignalFor203Nits = pq_signal[1];
-  const float kHLGSignalFor203Nits = 0.75f;
 
   for (size_t i = 0; i < kNumCases; ++i) {
     const float sdr_white_level = pq_nits[i];
     sk_sp<SkColorSpace> sk_hlg = hlg.ToSkColorSpace(sdr_white_level);
     sk_sp<SkColorSpace> sk_pq = pq.ToSkColorSpace(sdr_white_level);
 
-    // The PQ signal that maps to `sdr_white_level` nits should map to 1.
+    // The SDR white level parameter should get put into a parameter for the PQ
+    // and HLG transfer function.
     skcms_TransferFunction pq_fn = {0};
     sk_pq->transferFn(&pq_fn);
-    EXPECT_NEAR(1.f, skcms_TransferFunction_eval(&pq_fn, pq_signal[i]),
-                kEpsilon);
+    EXPECT_EQ(pq_fn.a, sdr_white_level);
 
-    // The HLG signal value of 0.75 should always map to the same value that
-    // the PQ signal for 203 nits maps to.
     skcms_TransferFunction hlg_fn = {0};
     sk_hlg->transferFn(&hlg_fn);
-    EXPECT_NEAR(skcms_TransferFunction_eval(&pq_fn, kPQSignalFor203Nits),
-                skcms_TransferFunction_eval(&hlg_fn, kHLGSignalFor203Nits),
-                kEpsilon);
+    EXPECT_EQ(hlg_fn.a, sdr_white_level);
   }
 }
 

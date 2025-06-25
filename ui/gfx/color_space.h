@@ -412,7 +412,9 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // others must be zero.
   // - CUSTOM and CUSTOM_HDR: Entries A through G of the skcms_TransferFunction
   //   structure in alphabetical order.
-  // - SMPTEST2084: SDR white point.
+  // - PQ: SDR white point (entry A of the skcms_TransferFunction structure).
+  // - HLG: SDR white point, peak luminance, and system gamma (entries A, B, and
+  //        C of the skcms_TransferFunction).
   float transfer_params_[7] = {};
 
   friend struct IPC::ParamTraits<gfx::ColorSpace>;

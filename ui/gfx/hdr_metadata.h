@@ -166,12 +166,6 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   static float GetContentMaxLuminance(
       const std::optional<gfx::HDRMetadata>& metadata);
 
-  // Compute the reference white luminance. This will:
-  // - return the NDWL value, if present
-  // - otherwise return 203 nits
-  static float GetReferenceWhiteLuminance(
-      const std::optional<gfx::HDRMetadata>& metadata);
-
   // Return a copy of `hdr_metadata` with its `smpte_st_2086` fully
   // populated. Any unspecified values are set to default values (in particular,
   // the gamut is set to rec2020, minimum luminance to 0 nits, and maximum

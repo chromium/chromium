@@ -96,17 +96,6 @@ HDRMetadata& HDRMetadata::operator=(const HDRMetadata& rhs) = default;
 HDRMetadata::~HDRMetadata() = default;
 
 // static
-float HDRMetadata::GetReferenceWhiteLuminance(
-    const std::optional<gfx::HDRMetadata>& metadata) {
-  if (metadata.has_value()) {
-    if (metadata->ndwl.has_value() && metadata->ndwl->nits > 0.f) {
-      return metadata->ndwl->nits;
-    }
-  }
-  return 203.f;
-}
-
-// static
 float HDRMetadata::GetContentMaxLuminance(
     const std::optional<gfx::HDRMetadata>& metadata) {
   if (metadata.has_value()) {

@@ -347,10 +347,7 @@ gfx::Size PaintImage::GetSize(AuxImage aux_image) const {
   return gfx::SkISizeToSize(GetSkISize(aux_image));
 }
 
-gfx::ContentColorUsage PaintImage::GetContentColorUsage(bool* is_hlg) const {
-  if (is_hlg)
-    *is_hlg = false;
-
+gfx::ContentColorUsage PaintImage::GetContentColorUsage() const {
   // Right now, JS paint worklets can only be in sRGB
   if (IsPaintWorklet()) {
     return gfx::ContentColorUsage::kSRGB;
@@ -369,15 +366,11 @@ gfx::ContentColorUsage PaintImage::GetContentColorUsage(bool* is_hlg) const {
   }
 
   skcms_TransferFunction fn;
-  if (!color_space->isNumericalTransferFn(&fn)) {
-    if (skcms_TransferFunction_isPQish(&fn))
-      return gfx::ContentColorUsage::kHDR;
-
-    if (skcms_TransferFunction_isHLGish(&fn)) {
-      if (is_hlg)
-        *is_hlg = true;
-      return gfx::ContentColorUsage::kHDR;
-    }
+  color_space->transferFn(&fn);
+  if (skcms_TransferFunction_isPQish(&fn) ||
+      skcms_TransferFunction_isHLGish(&fn) ||
+      skcms_TransferFunction_isPQ(&fn) || skcms_TransferFunction_isHLG(&fn)) {
+    return gfx::ContentColorUsage::kHDR;
   }
 
   // If it's not HDR and not SRGB, report it as WCG.
