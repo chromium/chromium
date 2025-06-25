@@ -150,7 +150,8 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
   }
 
   void BindLayerContext(viz::mojom::blink::PendingLayerContextPtr context,
-                        bool draw_mode_is_gpu) override {}
+                        bool draw_mode_is_gpu,
+                        bool enable_edge_anti_aliasing) override {}
 
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(const WTF::Vector<viz::Thread>& threads) override {

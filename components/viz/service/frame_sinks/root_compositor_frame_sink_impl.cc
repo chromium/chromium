@@ -588,8 +588,10 @@ void RootCompositorFrameSinkImpl::DidNotProduceFrame(
 
 void RootCompositorFrameSinkImpl::BindLayerContext(
     mojom::PendingLayerContextPtr context,
-    bool draw_mode_is_gpu) {
-  support_->BindLayerContext(*context, draw_mode_is_gpu);
+    bool draw_mode_is_gpu,
+    bool enable_edge_anti_aliasing) {
+  support_->BindLayerContext(*context, draw_mode_is_gpu,
+                             enable_edge_anti_aliasing);
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -123,7 +123,8 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkImpl
       SubmitCompositorFrameSyncCallback callback) override {}
   void NotifyNewLocalSurfaceIdExpectedWhilePaused() override {}
   void BindLayerContext(viz::mojom::PendingLayerContextPtr context,
-                        bool draw_mode_is_gpu) override;
+                        bool draw_mode_is_gpu,
+                        bool enable_edge_anti_aliasing) override;
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(const std::vector<viz::Thread>& threads) override {}
 #endif
@@ -134,8 +135,10 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkImpl
 
 void TestLayerTreeFrameSink::TestCompositorFrameSinkImpl::BindLayerContext(
     viz::mojom::PendingLayerContextPtr context,
-    bool draw_mode_is_gpu) {
-  support_->BindLayerContext(*context, draw_mode_is_gpu);
+    bool draw_mode_is_gpu,
+    bool enable_edge_anti_aliasing) {
+  support_->BindLayerContext(*context, draw_mode_is_gpu,
+                             enable_edge_anti_aliasing);
 }
 
 static constexpr viz::FrameSinkId kLayerTreeFrameSinkId(1, 1);

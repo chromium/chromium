@@ -47,7 +47,8 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
     did_not_produce_frame_ = true;
   }
   void BindLayerContext(viz::mojom::PendingLayerContextPtr context,
-                        bool draw_mode_is_gpu) override {}
+                        bool draw_mode_is_gpu,
+                        bool enable_edge_anti_aliasing) override {}
   void NotifyNewLocalSurfaceIdExpectedWhilePaused() override {}
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(const std::vector<viz::Thread>& threads) override {}
