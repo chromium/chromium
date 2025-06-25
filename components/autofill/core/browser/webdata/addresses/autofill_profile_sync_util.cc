@@ -642,7 +642,9 @@ AutofillProfile CreateAutofillProfileFromValidSpecifics(
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
   // TODO(crbug.com/359768803): Handle alternative names here.
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 190,
+  // TODO(crbug.com/369503318): Make ADDRESS_HOME_ZIP_PREFIX and
+  // ADDRESS_HOME_ZIP_SUFFIX syncable
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 200,
                 "New field type needs to be reviewed for inclusion in sync");
 
   // The profile may be in a legacy state. By calling |FinalizeAfterImport()|

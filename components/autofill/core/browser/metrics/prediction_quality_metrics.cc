@@ -258,6 +258,8 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
           group = GROUP_ADDRESS_STATE;
           break;
         case ADDRESS_HOME_ZIP:
+        case ADDRESS_HOME_ZIP_PREFIX:
+        case ADDRESS_HOME_ZIP_SUFFIX:
           group = GROUP_ADDRESS_ZIP;
           break;
         case ADDRESS_HOME_COUNTRY:

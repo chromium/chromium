@@ -688,6 +688,8 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case DRIVERS_LICENSE_EXPIRATION_DATE:
     case DRIVERS_LICENSE_ISSUE_DATE:
     case EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
+    case ADDRESS_HOME_ZIP_PREFIX:
+    case ADDRESS_HOME_ZIP_SUFFIX:
     case MAX_VALID_FIELD_TYPE:
       return std::nullopt;
   }

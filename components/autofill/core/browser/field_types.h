@@ -522,6 +522,12 @@ enum FieldType {
   // Types 190 to 197 are not used on the client yet, but will likely be added
   // in the future.
 
+  // ADDRESS_HOME_ZIP = ADDRESS_HOME_ZIP_PREFIX + separator +
+  // ADDRESS_HOME_ZIP_SUFFIX.
+  // For the US zip code 94043-4100 the types correspond to 94043 and 4100.
+  ADDRESS_HOME_ZIP_PREFIX = 198,
+  ADDRESS_HOME_ZIP_SUFFIX = 199,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
@@ -532,7 +538,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 190,
+  MAX_VALID_FIELD_TYPE = 200,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -631,7 +637,9 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            t == 162 ||
            // Types for the country for driver's license and vehicle are not
            // used yet, but will likely be added in the future.
-           (187 <= t && t <= 188);
+           (187 <= t && t <= 188) ||
+           // Values from 190 to 197 are reserved for the future.
+           (190 <= t && t <= 197);
   };
   return is_invalid(raw_value) ? fallback_value
                                : static_cast<FieldType>(raw_value);
@@ -734,6 +742,8 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case ADDRESS_HOME_CITY:
     case ADDRESS_HOME_STATE:
     case ADDRESS_HOME_ZIP:
+    case ADDRESS_HOME_ZIP_PREFIX:
+    case ADDRESS_HOME_ZIP_SUFFIX:
     case ADDRESS_HOME_COUNTRY:
     case ADDRESS_HOME_STREET_ADDRESS:
     case ADDRESS_HOME_SORTING_CODE:

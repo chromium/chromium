@@ -137,6 +137,8 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
     case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
     case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+    case ADDRESS_HOME_ZIP_PREFIX:
+    case ADDRESS_HOME_ZIP_SUFFIX:
     case DELIVERY_INSTRUCTIONS:
       return std::make_unique<AddressComponent>(type, std::move(children),
                                                 MergeMode::kDefault);

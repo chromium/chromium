@@ -453,6 +453,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="ADDRESS_HOME_STREET_NAME"/>
   <variant name="ADDRESS_HOME_SUBPREMISE"/>
   <variant name="ADDRESS_HOME_ZIP"/>
+  <variant name="ADDRESS_HOME_ZIP_PREFIX"/>
+  <variant name="ADDRESS_HOME_ZIP_SUFFIX"/>
   <variant name="ALTERNATIVE_FAMILY_NAME"/>
   <variant name="ALTERNATIVE_FULL_NAME"/>
   <variant name="ALTERNATIVE_GIVEN_NAME"/>
@@ -482,7 +484,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="EMPTY_TYPE"/>
   <variant name="FIELD_WITH_DEFAULT_VALUE"/>
   <variant name="IBAN_VALUE"/>
-  <variant name="IMPROVED_PREDICTION"/>
   <variant name="LOYALTY_MEMBERSHIP_ID"/>
   <variant name="LOYALTY_MEMBERSHIP_PROGRAM"/>
   <variant name="LOYALTY_MEMBERSHIP_PROVIDER"/>
@@ -620,6 +621,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="ADDRESS_HOME_STREET_NAME"/>
   <variant name="ADDRESS_HOME_SUBPREMISE"/>
   <variant name="ADDRESS_HOME_ZIP"/>
+  <variant name="ADDRESS_HOME_ZIP_PREFIX"/>
+  <variant name="ADDRESS_HOME_ZIP_SUFFIX"/>
   <variant name="ALTERNATIVE_FAMILY_NAME"/>
   <variant name="ALTERNATIVE_FULL_NAME"/>
   <variant name="ALTERNATIVE_GIVEN_NAME"/>
