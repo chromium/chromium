@@ -6249,9 +6249,24 @@
     "expiry_milestone": 140
   },
   {
+    "name": "lens-camera-no-still-output-required",
+    "owners": ["cmyang@google.com", "aruslan@google.com"],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "lens-camera-unbinned-capture-formats-preferred",
+    "owners": ["cmyang@google.com", "aruslan@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "lens-clearcut-background-upload-enabled",
     "owners": ["cmyang@google.com"],
     "expiry_milestone": 140
+  },
+  {
+    "name": "lens-continuous-zoom-enabled",
+    "owners": ["cmyang@google.com", "aruslan@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "lens-exact-matches-enabled",
@@ -6272,6 +6287,11 @@
     "name": "lens-gesture-text-selection-disabled",
     "owners": ["cmyang@google.com"],
     "expiry_milestone": 140
+  },
+  {
+    "name": "lens-initial-lvf-zoom-level-90-percent",
+    "owners": ["cmyang@google.com", "aruslan@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "lens-ink-multi-sample-mode-disabled",
@@ -6377,6 +6397,11 @@
     "name": "lens-translate-toogle-mode-enabled",
     "owners": ["cmyang@google.com", "ericappelbaum@google.com"],
     "expiry_milestone": 135
+  },
+  {
+    "name": "lens-triple-camera-enabled",
+    "owners": ["cmyang@google.com", "aruslan@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "lens-unary-api-salient-text-enabled",

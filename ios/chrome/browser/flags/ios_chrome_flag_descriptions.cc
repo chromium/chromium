@@ -809,10 +809,25 @@ extern const char
     kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshakeDescription[] =
         "When enabled, RPCs are blocked on separate handshake.";
 
+extern const char kLensCameraNoStillOutputRequiredName[] =
+    "Lens camera avoids creating unused outputs";
+extern const char kLensCameraNoStillOutputRequiredDescription[] =
+    "When enabled, Lens camera doesn't create unused still output.";
+
+extern const char kLensCameraUnbinnedCaptureFormatsPreferredName[] =
+    "Lens camera prefers unbinned formats";
+extern const char kLensCameraUnbinnedCaptureFormatsPreferredDescription[] =
+    "When enabled, Lens camera prefers unbinned pixel formats.";
+
 const char kLensClearcutBackgroundUploadEnabledName[] =
     "Lens clearcut background upload";
 const char kLensClearcutBackgroundUploadEnabledDescription[] =
     "Enables uploading of clearcut logs in the background.";
+
+extern const char kLensContinuousZoomEnabledName[] =
+    "Enable Lens camera continuous zoom";
+extern const char kLensContinuousZoomEnabledDescription[] =
+    "When enabled, Lens camera supports continuous zoom.";
 
 const char kLensExactMatchesEnabledName[] = "Lens exact matches enabled";
 const char kLensExactMatchesEnabledDescription[] =
@@ -830,6 +845,11 @@ const char kLensGestureTextSelectionDisabledName[] =
     "Disable Lens gesture text selection";
 const char kLensGestureTextSelectionDisabledDescription[] =
     "When disabled, turns off gesture text selection.";
+
+const char kLensInitialLvfZoomLevel90PercentName[] =
+    "Initial Lens camera zoom 90 percent";
+const char kLensInitialLvfZoomLevel90PercentDescription[] =
+    "When enabled, sets the initial Lens camera zoom level to 90 percent.";
 
 const char kLensInkMultiSampleModeDisabledName[] =
     "Disable Lens Ink multi-sample mode";
@@ -930,6 +950,10 @@ const char kLensTranslateToggleModeEnabledName[] =
     "Lens translate toggle mode enabled";
 const char kLensTranslateToggleModeEnabledDescription[] =
     "Enables the translate toggle mode.";
+
+const char kLensTripleCameraEnabledName[] = "Enable Lens triple camera";
+const char kLensTripleCameraEnabledDescription[] =
+    "When enabled, Lens LVF uses virtual triple camera.";
 
 const char kLensUnaryApisWithHttpTransportEnabledName[] =
     "Lens unary APIs with HTTP transport enabled";

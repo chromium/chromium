@@ -73,4 +73,19 @@ BASE_DECLARE_FEATURE(kLensQRCodeParsingFix);
 // Whether to enable exact matches.
 BASE_DECLARE_FEATURE(kLensExactMatchesEnabled);
 
+// Whether to make unused still outputs optional in Lens camera.
+BASE_DECLARE_FEATURE(kLensCameraNoStillOutputRequired);
+
+// Whether to prefer unbinned pixel formats in Lens camera.
+BASE_DECLARE_FEATURE(kLensCameraUnbinnedCaptureFormatsPreferred);
+
+// Whether to enable Lens camera continuous zoom.
+BASE_DECLARE_FEATURE(kLensContinuousZoomEnabled);
+
+// Whether to set the initial Lens camera zoom level to 90%.
+BASE_DECLARE_FEATURE(kLensInitialLvfZoomLevel90Percent);
+
+// Whether to enable Lens triple camera.
+BASE_DECLARE_FEATURE(kLensTripleCameraEnabled);
+
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_
