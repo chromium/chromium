@@ -873,7 +873,8 @@ enum CSSSampleId {
     kMasonryFlow = 814,
     // kMasonryAutoTracks = 815,
     kResult = 816,
-    kAnimationTriggerType = 817,
+    // renamed to kAnimationTriggerBehavior
+    //kAnimationTriggerType = 817,
     kAnimationTriggerTimeline = 818,
     kAnimationTriggerRangeStart = 819,
     kAnimationTriggerRangeEnd = 820,
@@ -926,6 +927,7 @@ enum CSSSampleId {
     kCornerInlineEndShape = 867,
     kCorners = 868,
     kBorderShape = 869,
+    kAnimationTriggerBehavior = 870,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

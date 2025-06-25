@@ -117,12 +117,12 @@ interface AnimationTimeline
     method getCurrentTime
 interface AnimationTrigger
     attribute @@toStringTag
+    getter behavior
     getter exitRangeEnd
     getter exitRangeStart
     getter rangeEnd
     getter rangeStart
     getter timeline
-    getter type
     method addAnimation
     method constructor
     method removeAnimation

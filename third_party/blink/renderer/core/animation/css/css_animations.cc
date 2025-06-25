@@ -1563,9 +1563,10 @@ AnimationTrigger* CSSAnimations::ComputeTrigger(
   if (!new_timeline) {
     new_timeline = &element->GetDocument().Timeline();
   }
-  EAnimationTriggerType type =
-      CSSAnimationData::GetRepeated(data->TriggerTypeList(), animation_index);
-  V8AnimationTriggerType new_type = AnimationTrigger::ToV8TriggerType(type);
+  EAnimationTriggerBehavior behavior = CSSAnimationData::GetRepeated(
+      data->TriggerBehaviorList(), animation_index);
+  V8AnimationTriggerBehavior new_behavior =
+      AnimationTrigger::ToV8TriggerBehavior(behavior);
 
   const std::optional<TimelineOffset>& new_start_offset =
       CSSAnimationData::GetRepeated(data->TriggerRangeStartList(),
@@ -1591,14 +1592,14 @@ AnimationTrigger* CSSAnimations::ComputeTrigger(
 
   bool need_new_trigger = !existing_trigger ||
                           existing_timeline != new_timeline ||
-                          existing_trigger->type() != new_type ||
+                          existing_trigger->behavior() != new_behavior ||
                           !AnimationTriggerRangeBoundariesUnchanged(
                               existing_trigger, new_range_start, new_range_end,
                               new_exit_range_start, new_exit_range_end);
 
   return need_new_trigger
              ? MakeGarbageCollected<AnimationTrigger>(
-                   new_timeline, new_type, new_range_start, new_range_end,
+                   new_timeline, new_behavior, new_range_start, new_range_end,
                    new_exit_range_start, new_exit_range_end)
              : existing_trigger;
 }
@@ -3515,7 +3516,7 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kAnimationTriggerRangeEnd:
     case CSSPropertyID::kAnimationTriggerExitRangeStart:
     case CSSPropertyID::kAnimationTriggerExitRangeEnd:
-    case CSSPropertyID::kAnimationTriggerType:
+    case CSSPropertyID::kAnimationTriggerBehavior:
     case CSSPropertyID::kAnimationTriggerTimeline:
     case CSSPropertyID::kContain:
     case CSSPropertyID::kContainerName:

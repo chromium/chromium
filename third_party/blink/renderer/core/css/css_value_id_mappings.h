@@ -542,31 +542,31 @@ inline CSSValueID PlatformEnumToCSSValueID(TryTactic v) {
 }
 
 template <>
-inline EAnimationTriggerType CssValueIDToPlatformEnum(CSSValueID v) {
+inline EAnimationTriggerBehavior CssValueIDToPlatformEnum(CSSValueID v) {
   switch (v) {
     case CSSValueID::kOnce:
-      return EAnimationTriggerType::kOnce;
+      return EAnimationTriggerBehavior::kOnce;
     case CSSValueID::kRepeat:
-      return EAnimationTriggerType::kRepeat;
+      return EAnimationTriggerBehavior::kRepeat;
     case CSSValueID::kAlternate:
-      return EAnimationTriggerType::kAlternate;
+      return EAnimationTriggerBehavior::kAlternate;
     case CSSValueID::kState:
-      return EAnimationTriggerType::kState;
+      return EAnimationTriggerBehavior::kState;
     default:
       NOTREACHED();
   }
 }
 
 template <>
-inline CSSValueID PlatformEnumToCSSValueID(EAnimationTriggerType v) {
+inline CSSValueID PlatformEnumToCSSValueID(EAnimationTriggerBehavior v) {
   switch (v) {
-    case EAnimationTriggerType::kOnce:
+    case EAnimationTriggerBehavior::kOnce:
       return CSSValueID::kOnce;
-    case EAnimationTriggerType::kRepeat:
+    case EAnimationTriggerBehavior::kRepeat:
       return CSSValueID::kRepeat;
-    case EAnimationTriggerType::kAlternate:
+    case EAnimationTriggerBehavior::kAlternate:
       return CSSValueID::kAlternate;
-    case EAnimationTriggerType::kState:
+    case EAnimationTriggerBehavior::kState:
       return CSSValueID::kState;
     default:
       NOTREACHED();

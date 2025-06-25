@@ -12,7 +12,7 @@
       // 1, i.e. the ratio of physical pixels to CSS pixels isn't 1.
       promise_test(async (test) => {
         let trigger = new AnimationTrigger({
-          type: "alternate",
+          behavior: "alternate",
           timeline: new ViewTimeline({
             subject: document.getElementById('subject'), axis: "y"
           }),

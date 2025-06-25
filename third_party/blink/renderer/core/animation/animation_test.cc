@@ -2663,7 +2663,7 @@ TEST_P(AnimationAnimationTestCompositing,
         MakeGarbageCollected<AnimationTrigger::RangeBoundary>(dummy_offset);
     trigger = MakeGarbageCollected<AnimationTrigger>(
         &GetDocument().Timeline(),
-        AnimationTrigger::Type(AnimationTrigger::Type::Enum::kOnce),
+        AnimationTrigger::Behavior(AnimationTrigger::Behavior::Enum::kOnce),
         dummy_range_boundary, dummy_range_boundary, dummy_range_boundary,
         dummy_range_boundary);
 

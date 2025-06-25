@@ -55,12 +55,12 @@ animation-range-end: normal
 animation-range-start: normal
 animation-timeline: auto
 animation-timing-function: ease
+animation-trigger-behavior: once
 animation-trigger-exit-range-end: auto
 animation-trigger-exit-range-start: auto
 animation-trigger-range-end: normal
 animation-trigger-range-start: normal
 animation-trigger-timeline: auto
-animation-trigger-type: once
 app-region: none
 appearance: none
 backdrop-filter: none

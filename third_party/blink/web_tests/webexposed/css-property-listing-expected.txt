@@ -62,12 +62,12 @@ All changes to this list should go through Blink's feature review process: http:
     animation-range-start
     animation-timeline
     animation-timing-function
+    animation-trigger-behavior
     animation-trigger-exit-range-end
     animation-trigger-exit-range-start
     animation-trigger-range-end
     animation-trigger-range-start
     animation-trigger-timeline
-    animation-trigger-type
     app-region
     appearance
     aspect-ratio
@@ -509,12 +509,12 @@ All changes to this list should go through Blink's feature review process: http:
         animation-range-end
         animation-range-start
     animation-trigger
+        animation-trigger-behavior
         animation-trigger-exit-range-end
         animation-trigger-exit-range-start
         animation-trigger-range-end
         animation-trigger-range-start
         animation-trigger-timeline
-        animation-trigger-type
     animation-trigger-exit-range
         animation-trigger-exit-range-end
         animation-trigger-exit-range-start

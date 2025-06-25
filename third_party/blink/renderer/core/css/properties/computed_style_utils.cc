@@ -2769,19 +2769,19 @@ CSSValue* ComputedStyleUtils::SingleValueForTimelineShorthand(
   return list;
 }
 
-CSSValue* ComputedStyleUtils::ValueForAnimationTriggerType(
-    const EAnimationTriggerType trigger_type) {
-  return CSSIdentifierValue::Create(PlatformEnumToCSSValueID(trigger_type));
+CSSValue* ComputedStyleUtils::ValueForAnimationTriggerBehavior(
+    const EAnimationTriggerBehavior trigger_behavior) {
+  return CSSIdentifierValue::Create(PlatformEnumToCSSValueID(trigger_behavior));
 }
 
-CSSValue* ComputedStyleUtils::ValueForAnimationTriggerTypeList(
+CSSValue* ComputedStyleUtils::ValueForAnimationTriggerBehaviorList(
     const CSSAnimationData* animation_data) {
   return CreateAnimationValueList(
       animation_data
-          ? animation_data->TriggerTypeList()
-          : Vector<
-                EAnimationTriggerType>{CSSAnimationData::InitialTriggerType()},
-      &ValueForAnimationTriggerType);
+          ? animation_data->TriggerBehaviorList()
+          : Vector<EAnimationTriggerBehavior>{CSSAnimationData::
+                                                  InitialTriggerBehavior()},
+      &ValueForAnimationTriggerBehavior);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationTriggerTimelineList(

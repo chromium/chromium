@@ -4566,7 +4566,7 @@ CSSValue* ConsumeAnimationTriggerValue(CSSPropertyID property,
                                        CSSParserTokenStream& stream,
                                        const CSSParserContext& context) {
   switch (property) {
-    case CSSPropertyID::kAnimationTriggerType:
+    case CSSPropertyID::kAnimationTriggerBehavior:
       return css_parsing_utils::ConsumeIdent<
           CSSValueID::kOnce, CSSValueID::kRepeat, CSSValueID::kAlternate,
           CSSValueID::kState>(stream);

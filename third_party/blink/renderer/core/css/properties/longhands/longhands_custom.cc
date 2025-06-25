@@ -722,20 +722,20 @@ const CSSValue* AnimationTriggerExitRangeEnd::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kAuto);
 }
 
-const CSSValue* AnimationTriggerType::InitialValue() const {
+const CSSValue* AnimationTriggerBehavior::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kOnce);
 }
 
-const CSSValue* AnimationTriggerType::CSSValueFromComputedStyleInternal(
+const CSSValue* AnimationTriggerBehavior::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForAnimationTriggerTypeList(
+  return ComputedStyleUtils::ValueForAnimationTriggerBehaviorList(
       style.Animations());
 }
 
-const CSSValue* AnimationTriggerType::ParseSingleValue(
+const CSSValue* AnimationTriggerBehavior::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext&,
     const CSSParserLocalContext&) const {

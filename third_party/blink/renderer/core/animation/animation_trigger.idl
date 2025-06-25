@@ -4,7 +4,7 @@
 
 // https://drafts.csswg.org/web-animations-2/#the-animationtrigger-interface
 
-enum AnimationTriggerType { "once", "repeat", "alternate", "state" };
+enum AnimationTriggerBehavior { "once", "repeat", "alternate", "state" };
 
 [
     Exposed=Window,
@@ -12,7 +12,7 @@ enum AnimationTriggerType { "once", "repeat", "alternate", "state" };
 ] interface AnimationTrigger {
   [CallWith=ExecutionContext, Measure, RaisesException] constructor(optional AnimationTriggerOptions options = {});
   readonly attribute AnimationTimeline? timeline;
-  readonly attribute AnimationTriggerType type;
+  readonly attribute AnimationTriggerBehavior behavior;
   [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) rangeStart;
   [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) rangeEnd;
   [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) exitRangeStart;

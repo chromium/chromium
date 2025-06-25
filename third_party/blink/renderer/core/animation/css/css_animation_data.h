@@ -59,8 +59,8 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   const Vector<EffectModel::CompositeOperation>& CompositionList() const {
     return composition_list_;
   }
-  const Vector<EAnimationTriggerType>& TriggerTypeList() const {
-    return trigger_type_list_;
+  const Vector<EAnimationTriggerBehavior>& TriggerBehaviorList() const {
+    return trigger_behavior_list_;
   }
   const Vector<StyleTimeline>& TriggerTimelineList() const {
     return trigger_timeline_list_;
@@ -93,8 +93,8 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<Timing::PlaybackDirection>& DirectionList() { return direction_list_; }
   Vector<Timing::FillMode>& FillModeList() { return fill_mode_list_; }
   Vector<EAnimPlayState>& PlayStateList() { return play_state_list_; }
-  Vector<EAnimationTriggerType>& TriggerTypeList() {
-    return trigger_type_list_;
+  Vector<EAnimationTriggerBehavior>& TriggerBehaviorList() {
+    return trigger_behavior_list_;
   }
   Vector<StyleTimeline>& TriggerTimelineList() {
     return trigger_timeline_list_;
@@ -155,8 +155,8 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
     return EffectModel::CompositeOperation::kCompositeReplace;
   }
   static const StyleTimeline& InitialTriggerTimeline();
-  static EAnimationTriggerType InitialTriggerType() {
-    return EAnimationTriggerType::kOnce;
+  static EAnimationTriggerBehavior InitialTriggerBehavior() {
+    return EAnimationTriggerBehavior::kOnce;
   }
   static std::optional<TimelineOffset> InitialTriggerRangeStart() {
     return std::nullopt;
@@ -181,7 +181,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<Timing::FillMode> fill_mode_list_;
   Vector<EAnimPlayState> play_state_list_;
   Vector<EffectModel::CompositeOperation> composition_list_;
-  Vector<EAnimationTriggerType> trigger_type_list_;
+  Vector<EAnimationTriggerBehavior> trigger_behavior_list_;
   Vector<StyleTimeline> trigger_timeline_list_;
   Vector<std::optional<TimelineOffset>> trigger_range_start_list_;
   Vector<std::optional<TimelineOffset>> trigger_range_end_list_;

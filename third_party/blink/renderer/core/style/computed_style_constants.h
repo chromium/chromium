@@ -531,7 +531,7 @@ enum class TryTactic : uint8_t {
   kFlipStart,
 };
 
-enum class EAnimationTriggerType : uint8_t {
+enum class EAnimationTriggerBehavior : uint8_t {
   kOnce,
   kRepeat,
   kAlternate,

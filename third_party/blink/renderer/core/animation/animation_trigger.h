@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATION_TRIGGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATION_TRIGGER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_behavior.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_timelinerangeoffset.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_snapshot_timeline.h"
@@ -36,11 +36,11 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
 
  public:
   using RangeBoundary = V8UnionStringOrTimelineRangeOffset;
-  using Type = V8AnimationTriggerType;
+  using Behavior = V8AnimationTriggerBehavior;
   using State = AnimationTriggerState;
 
   AnimationTrigger(AnimationTimeline* timeline,
-                   Type type,
+                   Behavior behavior,
                    RangeBoundary* range_start,
                    RangeBoundary* range_end,
                    RangeBoundary* exit_range_start,
@@ -49,7 +49,7 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
                                   AnimationTriggerOptions* options,
                                   ExceptionState& exception_state);
 
-  Type type() { return type_; }
+  Behavior behavior() { return behavior_; }
 
   AnimationTimeline* timeline() {
     return timeline_.Get() ? timeline_.Get()->ExposedTimeline() : nullptr;
@@ -85,16 +85,16 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
 
   using TimelineState = ScrollSnapshotTimeline::TimelineState;
 
-  static Type ToV8TriggerType(EAnimationTriggerType type) {
-    switch (type) {
-      case EAnimationTriggerType::kOnce:
-        return Type(Type::Enum::kOnce);
-      case EAnimationTriggerType::kRepeat:
-        return Type(Type::Enum::kRepeat);
-      case EAnimationTriggerType::kAlternate:
-        return Type(Type::Enum::kAlternate);
-      case EAnimationTriggerType::kState:
-        return Type(Type::Enum::kState);
+  static Behavior ToV8TriggerBehavior(EAnimationTriggerBehavior behavior) {
+    switch (behavior) {
+      case EAnimationTriggerBehavior::kOnce:
+        return Behavior(Behavior::Enum::kOnce);
+      case EAnimationTriggerBehavior::kRepeat:
+        return Behavior(Behavior::Enum::kRepeat);
+      case EAnimationTriggerBehavior::kAlternate:
+        return Behavior(Behavior::Enum::kAlternate);
+      case EAnimationTriggerBehavior::kState:
+        return Behavior(Behavior::Enum::kState);
       default:
         NOTREACHED();
     };
@@ -136,7 +136,7 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   void HandlePostTripAdd(Animation* animation, ExceptionState& exception_state);
 
   Member<AnimationTimeline> timeline_;
-  Type type_;
+  Behavior behavior_;
   // The range boundaries at which the trigger takes action, in CSS pixels.
   Member<const RangeBoundary> range_start_;
   Member<const RangeBoundary> range_end_;

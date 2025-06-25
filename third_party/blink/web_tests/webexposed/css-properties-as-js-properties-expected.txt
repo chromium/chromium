@@ -25,6 +25,7 @@ animationRangeStart
 animationTimeline
 animationTimingFunction
 animationTrigger
+animationTriggerBehavior
 animationTriggerExitRange
 animationTriggerExitRangeEnd
 animationTriggerExitRangeStart
@@ -32,7 +33,6 @@ animationTriggerRange
 animationTriggerRangeEnd
 animationTriggerRangeStart
 animationTriggerTimeline
-animationTriggerType
 appRegion
 appearance
 ascentOverride

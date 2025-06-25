@@ -795,10 +795,10 @@ void CSSToStyleMap::MapNinePieceImageRepeat(StyleResolverState&,
   image.SetVerticalRule(vertical_rule);
 }
 
-EAnimationTriggerType CSSToStyleMap::MapAnimationTriggerType(
+EAnimationTriggerBehavior CSSToStyleMap::MapAnimationTriggerBehavior(
     StyleResolverState&,
     const CSSValue& value) {
-  return To<CSSIdentifierValue>(value).ConvertTo<EAnimationTriggerType>();
+  return To<CSSIdentifierValue>(value).ConvertTo<EAnimationTriggerBehavior>();
 }
 
 StyleTimeline CSSToStyleMap::MapAnimationTriggerTimeline(

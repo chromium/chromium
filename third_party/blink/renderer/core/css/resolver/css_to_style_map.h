@@ -117,8 +117,9 @@ class CSSToStyleMap {
   static void MapNinePieceImageRepeat(StyleResolverState&,
                                       const CSSValue&,
                                       NinePieceImage&);
-  static EAnimationTriggerType MapAnimationTriggerType(StyleResolverState&,
-                                                       const CSSValue&);
+  static EAnimationTriggerBehavior MapAnimationTriggerBehavior(
+      StyleResolverState&,
+      const CSSValue&);
   static StyleTimeline MapAnimationTriggerTimeline(StyleResolverState&,
                                                    const CSSValue&);
   static std::optional<TimelineOffset> MapAnimationTriggerRangeStart(

@@ -1099,11 +1099,11 @@
       runtime_flag: "AnimationTrigger",
     },
     {
-      name: "animation-trigger-type",
+      name: "animation-trigger-behavior",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "animation",
       style_builder_template_args: {
-        attribute: "TriggerType",
+        attribute: "TriggerBehavior",
       },
       keywords: ["once", "repeat", "alternate", "state"],
       typedom_types: ["Keyword"],
@@ -8115,7 +8115,7 @@
     {
       name: "animation-trigger",
       longhands: [
-        "animation-trigger-timeline", "animation-trigger-type",
+        "animation-trigger-timeline", "animation-trigger-behavior",
         "animation-trigger-range-start", "animation-trigger-range-end",
         "animation-trigger-exit-range-start",
         "animation-trigger-exit-range-end",

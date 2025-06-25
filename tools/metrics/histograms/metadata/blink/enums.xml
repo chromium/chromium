@@ -7777,7 +7777,7 @@ Called by update_use_counter_css.py.-->
   <int value="814" label="masonry-flow"/>
   <int value="815" label="masonry-auto-tracks (obsolete)"/>
   <int value="816" label="result"/>
-  <int value="817" label="animation-trigger-type"/>
+  <int value="817" label="animation-trigger-type (obsolete)"/>
   <int value="818" label="animation-trigger-timeline"/>
   <int value="819" label="animation-trigger-range-start"/>
   <int value="820" label="animation-trigger-range-end"/>
@@ -7830,6 +7830,7 @@ Called by update_use_counter_css.py.-->
   <int value="867" label="corner-inline-end-shape"/>
   <int value="868" label="corners"/>
   <int value="869" label="border-shape"/>
+  <int value="870" label="animation-trigger-behavior"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

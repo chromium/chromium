@@ -6,7 +6,7 @@
 
 #include "cc/animation/animation.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_behavior.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
@@ -1221,11 +1221,11 @@ void VerifyTriggerRangeBoundary(
 
 class CSSAnimationsTriggerTest : public CSSAnimationsTest {
  public:
-  using Type = AnimationTrigger::Type;
+  using Behavior = AnimationTrigger::Behavior;
 
   void TestAnimationTrigger(
       AnimationTrigger* trigger,
-      AnimationTrigger::Type expected_type,
+      AnimationTrigger::Behavior expected_behavior,
       std::optional<bool> expect_view_timeline,
       AnimationTrigger::RangeBoundary* expected_start,
       AnimationTrigger::RangeBoundary* expected_end,
@@ -1259,14 +1259,14 @@ INSTANTIATE_PAINT_TEST_SUITE_P(CSSAnimationsTriggerTest);
 
 void CSSAnimationsTriggerTest::TestAnimationTrigger(
     AnimationTrigger* trigger,
-    AnimationTrigger::Type expected_type,
+    AnimationTrigger::Behavior expected_behavior,
     std::optional<bool> expect_view_timeline,
     AnimationTrigger::RangeBoundary* expected_start,
     AnimationTrigger::RangeBoundary* expected_end,
     AnimationTrigger::RangeBoundary* expected_exit_start,
     AnimationTrigger::RangeBoundary* expected_exit_end) {
   EXPECT_NE(trigger, nullptr);
-  EXPECT_EQ(trigger->type(), expected_type);
+  EXPECT_EQ(trigger->behavior(), expected_behavior);
 
   AnimationTimeline* timeline = trigger->timeline();
   if (!expect_view_timeline.has_value()) {
@@ -1336,7 +1336,8 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerOnceOnly) {
       MakeGarbageCollected<AnimationTrigger::RangeBoundary>("normal");
   AnimationTrigger::RangeBoundary* auto_offset =
       MakeGarbageCollected<AnimationTrigger::RangeBoundary>("auto");
-  TestAnimationTrigger(trigger, V8AnimationTriggerType(Type::Enum::kOnce),
+  TestAnimationTrigger(trigger,
+                       V8AnimationTriggerBehavior(Behavior::Enum::kOnce),
                        /* expect_view_timeline */ std::nullopt, normal, normal,
                        auto_offset, auto_offset);
 }
@@ -1383,7 +1384,8 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewOnly) {
       MakeGarbageCollected<AnimationTrigger::RangeBoundary>("normal");
   AnimationTrigger::RangeBoundary* auto_offset =
       MakeGarbageCollected<AnimationTrigger::RangeBoundary>("auto");
-  TestAnimationTrigger(trigger, V8AnimationTriggerType(Type::Enum::kOnce),
+  TestAnimationTrigger(trigger,
+                       V8AnimationTriggerBehavior(Behavior::Enum::kOnce),
                        /* expect_view_timeline */ true, normal, normal,
                        auto_offset, auto_offset);
 }
@@ -1434,9 +1436,9 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerScrollOnce) {
   AnimationTrigger::RangeBoundary* auto_offset =
       MakeGarbageCollected<AnimationTrigger::RangeBoundary>("auto");
 
-  TestAnimationTrigger(trigger, V8AnimationTriggerType(Type::Enum::kOnce),
-                       /* expect_view_timeline */ false, pct25, pct75,
-                       auto_offset, auto_offset);
+  TestAnimationTrigger(
+      trigger, V8AnimationTriggerBehavior(Behavior::Enum::kOnce),
+      /* expect_view_timeline */ false, pct25, pct75, auto_offset, auto_offset);
 }
 
 TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewAlternate) {
@@ -1487,7 +1489,8 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewAlternate) {
   AnimationTrigger::RangeBoundary* auto_offset =
       MakeGarbageCollected<AnimationTrigger::RangeBoundary>("auto");
 
-  TestAnimationTrigger(trigger, V8AnimationTriggerType(Type::Enum::kAlternate),
+  TestAnimationTrigger(trigger,
+                       V8AnimationTriggerBehavior(Behavior::Enum::kAlternate),
                        /* expect_view_timeline */ true, contain10, contain90,
                        auto_offset, auto_offset);
 }
@@ -1542,7 +1545,8 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewRepeat) {
   AnimationTrigger::RangeBoundary* cover99 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kCover, 99);
 
-  TestAnimationTrigger(trigger, V8AnimationTriggerType(Type::Enum::kRepeat),
+  TestAnimationTrigger(trigger,
+                       V8AnimationTriggerBehavior(Behavior::Enum::kRepeat),
                        true, contain10, contain90, cover1, cover99);
 }
 
@@ -1596,7 +1600,7 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerNamedTimeline) {
   AnimationTrigger* trigger = animation->GetTrigger();
   EXPECT_NE(trigger, nullptr);
 
-  EXPECT_EQ(trigger->type(), V8AnimationTriggerType::Enum::kRepeat);
+  EXPECT_EQ(trigger->behavior(), V8AnimationTriggerBehavior::Enum::kRepeat);
 
   EXPECT_FALSE(trigger->GetTimelineInternal()->IsScrollTimeline());
   EXPECT_TRUE(trigger->timeline()->IsViewTimeline());
@@ -1679,7 +1683,7 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeTimeline) {
   EXPECT_TRUE(scroll_trigger->timeline()->IsScrollTimeline());
 }
 
-TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeType) {
+TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeBehavior) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes stretch {
@@ -1737,7 +1741,8 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeType) {
 
   AnimationTrigger* repeat_trigger = animation->GetTrigger();
   EXPECT_NE(trigger, repeat_trigger);
-  EXPECT_EQ(repeat_trigger->type(), AnimationTrigger::Type::Enum::kRepeat);
+  EXPECT_EQ(repeat_trigger->behavior(),
+            AnimationTrigger::Behavior::Enum::kRepeat);
 
   target->classList().Remove(AtomicString("repeat_trigger"));
   target->classList().Add(AtomicString("once_trigger"));
@@ -1745,7 +1750,7 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeType) {
 
   AnimationTrigger* once_trigger = animation->GetTrigger();
   EXPECT_NE(once_trigger, repeat_trigger);
-  EXPECT_EQ(once_trigger->type(), AnimationTrigger::Type::Enum::kOnce);
+  EXPECT_EQ(once_trigger->behavior(), AnimationTrigger::Behavior::Enum::kOnce);
 }
 
 void CSSAnimationsTriggerTest::TestRangeStartChange(

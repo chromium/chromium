@@ -238,8 +238,10 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationTriggerExitRangeEndList(
       const CSSAnimationData* animation_data,
       const ComputedStyle& style);
-  static CSSValue* ValueForAnimationTriggerType(const EAnimationTriggerType);
-  static CSSValue* ValueForAnimationTriggerTypeList(const CSSAnimationData*);
+  static CSSValue* ValueForAnimationTriggerBehavior(
+      const EAnimationTriggerBehavior);
+  static CSSValue* ValueForAnimationTriggerBehaviorList(
+      const CSSAnimationData*);
   static CSSValue* ValueForAnimationTriggerTimelineList(const CSSAnimationData*,
                                                         const ComputedStyle&);
   static CSSValueList* ValuesForBorderRadiusCorner(const LengthSize&,
