@@ -102,6 +102,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="USER_CONFIRMED"/>
   <int value="1" label="USER_CANCELED"/>
   <int value="2" label="DUPLICATE_DIALOG"/>
+  <int value="3" label="CONFIRMED_WITHOUT_USER_INPUT"/>
 </enum>
 
 <enum name="DownloadLocationDialogType">

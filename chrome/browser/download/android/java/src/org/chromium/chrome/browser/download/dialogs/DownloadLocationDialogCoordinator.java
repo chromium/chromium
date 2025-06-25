@@ -71,7 +71,8 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
     }
 
     /**
-     * Shows the download location dialog.
+     * Attempts to show the download location dialog. It may not actually be shown if there is only
+     * one directory available, or if dialog is already showing.
      *
      * @param context The {@link Context} for the dialog.
      * @param modalDialogManager {@link ModalDialogManager} to control the dialog.
@@ -170,7 +171,8 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
             if (dir.type == DirectoryOption.DownloadLocationDirectoryType.DEFAULT) {
                 assert !TextUtils.isEmpty(dir.location);
                 DownloadDialogBridge.setDownloadAndSaveFileDefaultDirectory(mProfile, dir.location);
-                mController.onDownloadLocationDialogComplete(mSuggestedPath);
+                mController.onDownloadLocationDialogComplete(
+                        mSuggestedPath, /* didUserConfirm= */ false);
             }
             return;
         }
@@ -355,7 +357,8 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
         File file = new File(directoryOption.location, fileName);
 
         assert mController != null;
-        mController.onDownloadLocationDialogComplete(file.getAbsolutePath());
+        mController.onDownloadLocationDialogComplete(
+                file.getAbsolutePath(), /* didUserConfirm= */ true);
 
         // Update preference to show prompt based on whether checkbox is checked only when the user
         // click the positive button.

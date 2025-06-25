@@ -345,6 +345,8 @@ void OnDownloadDialogClosed(
       std::move(callback).Run(DownloadConfirmationResult::CANCELED,
                               ui::SelectedFileInfo());
       break;
+    case DownloadLocationDialogResult::CONFIRMED_WITHOUT_USER_INPUT:
+      [[fallthrough]];
     case DownloadLocationDialogResult::DUPLICATE_DIALOG:
       // TODO(xingliu): Figure out the dialog behavior on multiple downloads.
       // Currently we just let other downloads continue, which doesn't make

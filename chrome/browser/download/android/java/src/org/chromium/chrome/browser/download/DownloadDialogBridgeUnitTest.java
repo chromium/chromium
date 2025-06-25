@@ -14,12 +14,14 @@ import android.app.Activity;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
@@ -35,6 +37,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DownloadDialogBridgeUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final int FAKE_NATIVE_HOLDER = 1;
     private static final long TOTAL_BYTES = 100;
     private static final @ConnectionType int CONNECTION_TYPE = ConnectionType.CONNECTION_3G;
@@ -60,7 +64,6 @@ public class DownloadDialogBridgeUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ShadowLog.stream = System.out;
         DownloadDialogBridgeJni.setInstanceForTesting(mNativeMock);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
@@ -88,7 +91,8 @@ public class DownloadDialogBridgeUnitTest {
     public void testShowDialog() {
         doAnswer(
                         invocation -> {
-                            mBridge.onDownloadLocationDialogComplete(NEW_SUGGESTED_PATH);
+                            mBridge.onDownloadLocationDialogComplete(
+                                    NEW_SUGGESTED_PATH, /* didUserConfirm= */ true);
                             return null;
                         })
                 .when(mLocationDialog)
@@ -109,7 +113,36 @@ public class DownloadDialogBridgeUnitTest {
                         eq(LOCATION_DIALOG_TYPE),
                         eq(SUGGESTED_PATH),
                         eq(mProfile));
-        verify(mNativeMock).onComplete(anyLong(), any(), eq(NEW_SUGGESTED_PATH));
+        verify(mNativeMock).onComplete(anyLong(), any(), eq(NEW_SUGGESTED_PATH), eq(true));
+    }
+
+    @Test
+    public void testUserDidNotConfirm() {
+        doAnswer(
+                        invocation -> {
+                            mBridge.onDownloadLocationDialogComplete(
+                                    NEW_SUGGESTED_PATH, /* didUserConfirm= */ false);
+                            return null;
+                        })
+                .when(mLocationDialog)
+                .showDialog(
+                        any(),
+                        any(),
+                        eq(TOTAL_BYTES),
+                        eq(LOCATION_DIALOG_TYPE),
+                        eq(SUGGESTED_PATH),
+                        eq(mProfile));
+
+        showDialog();
+        verify(mLocationDialog)
+                .showDialog(
+                        any(),
+                        any(),
+                        eq(TOTAL_BYTES),
+                        eq(LOCATION_DIALOG_TYPE),
+                        eq(SUGGESTED_PATH),
+                        eq(mProfile));
+        verify(mNativeMock).onComplete(anyLong(), any(), eq(NEW_SUGGESTED_PATH), eq(false));
     }
 
     @Test

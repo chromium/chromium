@@ -85,9 +85,13 @@ void DownloadDialogBridge::ShowDialog(
 void DownloadDialogBridge::OnComplete(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    std::string& returned_path) {
+    std::string& returned_path,
+    bool did_user_confirm) {
   DownloadDialogResult dialog_result;
-  dialog_result.location_result = DownloadLocationDialogResult::USER_CONFIRMED;
+  dialog_result.location_result =
+      did_user_confirm
+          ? DownloadLocationDialogResult::USER_CONFIRMED
+          : DownloadLocationDialogResult::CONFIRMED_WITHOUT_USER_INPUT;
   dialog_result.file_path = base::FilePath(returned_path);
 
   CompleteSelection(std::move(dialog_result));

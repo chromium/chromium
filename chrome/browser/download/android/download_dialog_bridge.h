@@ -54,7 +54,8 @@ class DownloadDialogBridge {
 
   void OnComplete(JNIEnv* env,
                   const base::android::JavaParamRef<jobject>& obj,
-                  std::string& returned_path);
+                  std::string& returned_path,
+                  bool did_user_confirm);
 
   void OnCanceled(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 

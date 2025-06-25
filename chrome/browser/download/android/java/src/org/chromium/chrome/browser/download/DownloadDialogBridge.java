@@ -45,6 +45,10 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
     private @DownloadLocationDialogType int mLocationDialogType;
     private @Nullable String mSuggestedPath;
     private @Nullable Profile mProfile;
+    // Whether the user actively confirmed the result of the dialog. This is false when the dialog
+    // is not shown and the result is selected without user input, e.g. because there is only one
+    // option to choose from.
+    private boolean mDidUserConfirm;
 
     @VisibleForTesting
     DownloadDialogBridge(
@@ -138,7 +142,11 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
         if (mNativeDownloadDialogBridge == 0) return;
 
         DownloadDialogBridgeJni.get()
-                .onComplete(mNativeDownloadDialogBridge, DownloadDialogBridge.this, mSuggestedPath);
+                .onComplete(
+                        mNativeDownloadDialogBridge,
+                        DownloadDialogBridge.this,
+                        mSuggestedPath,
+                        mDidUserConfirm);
     }
 
     private void onCancel() {
@@ -153,8 +161,9 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
 
     // DownloadLocationDialogController implementation.
     @Override
-    public void onDownloadLocationDialogComplete(String returnedPath) {
+    public void onDownloadLocationDialogComplete(String returnedPath, boolean didUserConfirm) {
         mSuggestedPath = returnedPath;
+        mDidUserConfirm = didUserConfirm;
 
         if (mLocationDialogType == DownloadLocationDialogType.LOCATION_SUGGESTION) {
             assumeNonNull(mProfile);
@@ -226,7 +235,8 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
         void onComplete(
                 long nativeDownloadDialogBridge,
                 DownloadDialogBridge caller,
-                @JniType("std::string") @Nullable String returnedPath);
+                @JniType("std::string") @Nullable String returnedPath,
+                boolean didUserConfirm);
 
         void onCanceled(long nativeDownloadDialogBridge, DownloadDialogBridge caller);
 

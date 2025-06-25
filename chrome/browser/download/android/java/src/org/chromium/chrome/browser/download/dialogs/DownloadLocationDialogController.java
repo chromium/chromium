@@ -10,10 +10,12 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public interface DownloadLocationDialogController {
     /**
-     * Called when the user finished download location selection flow.
-     * @param returnedPath The download file path picked by the user.
+     * Called when the download location selection flow finished.
+     *
+     * @param returnedPath The download file path selected.
+     * @param didUserConfirm Whether the result was actively confirmed by user action.
      */
-    void onDownloadLocationDialogComplete(String returnedPath);
+    void onDownloadLocationDialogComplete(String returnedPath, boolean didUserConfirm);
 
     /** Called when the user cancel or dismiss the download location dialog. */
     void onDownloadLocationDialogCanceled();
