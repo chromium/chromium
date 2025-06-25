@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -125,6 +126,15 @@ public class TabGroupFaviconQuarterUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "night")
+    public void testSetPlusCount_Night() {
+        mTabGroupFaviconQuarter.setPlusCount(PLUS_COUNT);
+        assertEquals(
+                filterColor(mBackground),
+                SemanticColorUtils.getColorSurfaceContainerHigh(mActivity));
+    }
+
+    @Test
     public void testClear() {
         mTabGroupFaviconQuarter.clear();
         assertEquals(View.INVISIBLE, mImageView.getVisibility());
@@ -134,6 +144,15 @@ public class TabGroupFaviconQuarterUnitTest {
         assertEquals(
                 filterColor(mBackground),
                 SemanticColorUtils.getColorSurfaceContainerLow(mActivity));
+    }
+
+    @Test
+    @Config(qualifiers = "night")
+    public void testClear_Night() {
+        mTabGroupFaviconQuarter.clear();
+        assertEquals(
+                filterColor(mBackground),
+                SemanticColorUtils.getColorSurfaceContainerHigh(mActivity));
     }
 
     private static @ColorInt int filterColor(Drawable drawable) {

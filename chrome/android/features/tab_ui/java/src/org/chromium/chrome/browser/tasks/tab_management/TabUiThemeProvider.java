@@ -516,7 +516,7 @@ public class TabUiThemeProvider {
             Context context, boolean showFavicon) {
         return showFavicon
                 ? SemanticColorUtils.getColorSurfaceBright(context)
-                : SemanticColorUtils.getColorSurfaceContainerLow(context);
+                : ContextCompat.getColor(context, R.color.tab_group_favicon_quater_empty_fill_color);
     }
 
     /**
