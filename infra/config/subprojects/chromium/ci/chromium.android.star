@@ -845,63 +845,6 @@ ci.builder(
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
-ci.thin_tester(
-    name = "Oreo Phone Tester",
-    # branch_selector = branches.selector.ANDROID_BRANCHES,
-    parent = "ci/Android arm64 Builder (dbg)",
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "main_builder",
-            apply_configs = [
-                "mb",
-                "download_xr_test_apks",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "base_config",
-        ),
-        build_gs_bucket = "chromium-android-archive",
-    ),
-    targets = targets.bundle(
-        targets = "android_oreo_gtests",
-        mixins = [
-            "has_native_resultdb_integration",
-            "oreo_mr1_fleet",
-            "walleye",
-        ],
-        per_test_modifications = {
-            "chrome_public_test_apk": targets.mixin(
-                # TODO(crbug.com/41414027): Re-enable this once the test
-                # are either passing or there is more capacity.
-                experiment_percentage = 0,
-            ),
-            "webview_instrumentation_test_apk": targets.mixin(
-                # TODO(crbug.com/40641956): Enable this once it's passing.
-                # TODO(crbug.com/41414027): Re-enable this once the tests
-                # are either passing or there is more capacity.
-                experiment_percentage = 0,
-            ),
-        },
-    ),
-    gardener_rotations = args.ignore_default(None),
-    console_view_entry = consoles.console_view_entry(
-        category = "tester|phone",
-        short_name = "O",
-    ),
-    cq_mirrors_console_view = "mirrors",
-)
-
 ci.builder(
     name = "android-10-arm64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,

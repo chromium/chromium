@@ -7,7 +7,6 @@ ci/Mac ASAN Release Media
 ci/Mac Builder Next
 ci/Mac deterministic
 ci/Mac deterministic (dbg)
-ci/Oreo Phone Tester
 ci/Site Isolation Android
 ci/Win 10 Fast Ring
 ci/android-11-x86-fyi-rel
