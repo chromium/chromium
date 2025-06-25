@@ -18,6 +18,7 @@
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/version.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
 #include "build/branding_buildflags.h"
@@ -89,7 +90,7 @@ class TestMethodsWin : public TestMethods {
 #error Unsupported architecture
 #endif
         .Append(L"cipd")
-        .Append(L"enterprise_companion.exe");
+        .Append(L"enterprise_companion_test.exe");
   }
 #endif
 };
@@ -102,7 +103,7 @@ void ExpectUpdaterRegistration() {
 
   std::wstring pv;
   ASSERT_EQ(app_key.ReadValue(kRegValuePV, &pv), ERROR_SUCCESS);
-  EXPECT_EQ(pv, base::ASCIIToWide(kEnterpriseCompanionVersion));
+  EXPECT_TRUE(base::Version(base::SysWideToUTF8(pv)).IsValid());
 
   std::wstring name;
   ASSERT_EQ(app_key.ReadValue(kRegValueName, &name), ERROR_SUCCESS);

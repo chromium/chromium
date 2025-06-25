@@ -46,7 +46,7 @@ class TestMethodsLinux : public TestMethods {
         .Append("old_enterprise_companion")
         .Append("chromium_linux64")
         .Append("cipd")
-        .Append("enterprise_companion");
+        .Append(kTestExe);
   }
 #endif
 };

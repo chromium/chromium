@@ -136,10 +136,10 @@ void TestMethods::InstallOlderVersion() {
 
 void TestMethods::RunApp(const base::FilePath& exe_path,
                          const std::string& switch_string) {
-  const base::FilePath test_exe_path = GetTestExePath();
-  ASSERT_TRUE(base::PathExists(test_exe_path));
+  VLOG(1) << __func__ << " : " << exe_path << " " << switch_string;
+  ASSERT_TRUE(base::PathExists(exe_path));
 
-  base::CommandLine command_line(test_exe_path);
+  base::CommandLine command_line(exe_path);
   command_line.AppendSwitch(switch_string);
   base::Process process = base::LaunchProcess(command_line, {});
   ASSERT_EQ(WaitForProcess(process), 0);

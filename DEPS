@@ -1472,7 +1472,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/enterprise_companion/chromium_linux64',
-          'version': 'iwCwxMXVY0_oAVNP7XtqnJKKL9jfI9WK_Jwv_DL7qjQC',
+          'version': 'eHbo-jq9CqO3-TXu8K45LbSWvCmN-oRoyOOqzkrlLHYC',
         },
       ],
   },
@@ -1483,7 +1483,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/enterprise_companion/chromium_mac_amd64',
-          'version': '2LSXZdphQPwKLxjSeMUhkHedkGFEAK55ymGWiOcnfLQC',
+          'version': 'AuIzD-zWFC_KywaQNiRvWtLBo7adi4LKepgr4guy-I0C',
         },
       ],
   },
@@ -1494,7 +1494,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/enterprise_companion/chromium_mac_arm64',
-          'version': 'vYq1wh1oMhbtZjMiMsX2BtyHqHAyT1EmfrW1kXGNj3YC',
+          'version': '1F9v_0UMgP1wTxJLJIpmYdTbKEDLHHK_xPOLCiQ3UtMC',
         },
       ],
   },
@@ -1505,7 +1505,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/enterprise_companion/chromium_win_x86',
-          'version': 'dnOfSfX6zBCjpn1hA43h0D1uBls4BnJoAkHMDQo85ScC',
+          'version': '_J_pT_gy9u_wLa3J2FtrRDsD9mvJbvj2My7KuQj7hEQC',
         },
       ],
   },
@@ -1516,7 +1516,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/enterprise_companion/chromium_win_x86_64',
-          'version': 'q7xjPQfd7rTuo4OjmjLq2F-wpDXnPsPZKlmzrlFQkYYC',
+          'version': 'dQy0jjt7K9_FL0LfP6mz2F9dfM3HKeCKiMKDY3pv_agC',
         },
       ],
   },
