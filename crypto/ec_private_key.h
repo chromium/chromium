@@ -42,16 +42,6 @@ class CRYPTO_EXPORT ECPrivateKey {
   static std::unique_ptr<ECPrivateKey> CreateFromPrivateKeyInfo(
       base::span<const uint8_t> input);
 
-  // Creates a new instance by importing an existing key pair.
-  // The key pair is given as an ASN.1-encoded PKCS #8 EncryptedPrivateKeyInfo
-  // block with empty password and an X.509 SubjectPublicKeyInfo block.
-  // Returns nullptr if initialization fails.
-  //
-  // This function is deprecated. Use CreateFromPrivateKeyInfo for new code.
-  // See https://crbug.com/603319.
-  static std::unique_ptr<ECPrivateKey> CreateFromEncryptedPrivateKeyInfo(
-      base::span<const uint8_t> encrypted_private_key_info);
-
   // Returns a copy of the object.
   std::unique_ptr<ECPrivateKey> Copy() const;
 
