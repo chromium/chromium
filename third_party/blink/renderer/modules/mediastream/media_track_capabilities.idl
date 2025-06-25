@@ -13,6 +13,7 @@ dictionary MediaTrackCapabilities {
     sequence<boolean> autoGainControl;
     sequence<boolean> noiseSuppression;
     sequence<boolean> voiceIsolation;
+    [RuntimeEnabled=RestrictOwnAudio] sequence<boolean> restrictOwnAudio;
     LongRange sampleSize;
     LongRange channelCount;
     LongRange sampleRate;

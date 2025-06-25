@@ -135,6 +135,7 @@ class PLATFORM_EXPORT MediaStreamSource final
     Vector<bool> auto_gain_control;
     Vector<bool> noise_suppression;
     Vector<bool> voice_isolation;
+    std::optional<Vector<bool>> restrict_own_audio;
     Vector<int32_t> sample_size;
     Vector<int32_t> channel_count;
     Vector<int32_t> sample_rate;

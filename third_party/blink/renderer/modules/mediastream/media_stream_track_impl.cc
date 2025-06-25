@@ -486,7 +486,7 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
 
   if (component_->GetSourceType() == MediaStreamSource::kTypeAudio) {
     Vector<bool> echo_cancellation, auto_gain_control, noise_suppression,
-        voice_isolation;
+        voice_isolation, restrict_own_audio;
     for (bool value : platform_capabilities.echo_cancellation) {
       echo_cancellation.push_back(value);
     }
@@ -503,6 +503,15 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
       voice_isolation.push_back(value);
     }
     capabilities->setVoiceIsolation(voice_isolation);
+    if (RuntimeEnabledFeatures::RestrictOwnAudioEnabled()) {
+      if (platform_capabilities.restrict_own_audio) {
+        for (bool value : *(platform_capabilities.restrict_own_audio)) {
+          restrict_own_audio.push_back(value);
+        }
+        capabilities->setRestrictOwnAudio(restrict_own_audio);
+      }
+    }
+
     // Sample size.
     if (platform_capabilities.sample_size.size() == 2) {
       LongRange* sample_size = LongRange::Create();
