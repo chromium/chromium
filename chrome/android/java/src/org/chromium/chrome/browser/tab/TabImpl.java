@@ -2371,7 +2371,7 @@ class TabImpl implements Tab {
 
     @Override
     @CalledByNative
-    public @Nullable Token getTabGroupId() {
+    public @JniType("std::optional<base::Token>") @Nullable Token getTabGroupId() {
         return mTabGroupId;
     }
 

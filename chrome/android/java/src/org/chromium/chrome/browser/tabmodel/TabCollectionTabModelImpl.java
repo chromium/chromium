@@ -8,6 +8,7 @@ import static org.chromium.base.ThreadUtils.assertOnUiThread;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.MathUtils;
@@ -673,28 +674,30 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @NativeMethods
     interface Natives {
-        long init(TabCollectionTabModelImpl javaObject, Profile profile);
+        long init(TabCollectionTabModelImpl javaObject, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeTabCollectionTabModelImpl);
 
         int getTabCountRecursive(long nativeTabCollectionTabModelImpl);
 
-        int getIndexOfTabRecursive(long nativeTabCollectionTabModelImpl, Tab tab);
+        int getIndexOfTabRecursive(
+                long nativeTabCollectionTabModelImpl, @JniType("TabAndroid*") Tab tab);
 
+        @JniType("TabAndroid*")
         Tab getTabAtIndexRecursive(long nativeTabCollectionTabModelImpl, int index);
 
         int moveTabRecursive(
                 long nativeTabCollectionTabModelImpl,
                 int currentIndex,
                 int newIndex,
-                @Nullable Token tabGroupId,
+                @JniType("std::optional<base::Token>") @Nullable Token tabGroupId,
                 boolean isPinned);
 
         void addTabRecursive(
                 long nativeTabCollectionTabModelImpl,
-                Tab tab,
+                @JniType("TabAndroid*") Tab tab,
                 int index,
-                @Nullable Token tabGroupId,
+                @JniType("std::optional<base::Token>") @Nullable Token tabGroupId,
                 boolean isPinned);
     }
 }

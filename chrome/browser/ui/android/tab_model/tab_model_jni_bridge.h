@@ -47,7 +47,7 @@ class TabModelJniBridge : public TabModel {
   // Called by JNI
   void TabAddedToModel(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& obj,
-                       const base::android::JavaParamRef<jobject>& jtab);
+                       TabAndroid* tab);
 
   // Called by JNI
   void DuplicateTabForTesting(JNIEnv* env,

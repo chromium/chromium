@@ -232,6 +232,11 @@ base::android::ScopedJavaLocalRef<jobject> TabAndroid::GetJavaObject() {
   return weak_java_tab_.get(env);
 }
 
+base::android::ScopedJavaLocalRef<jobject> TabAndroid::GetJavaObject() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return weak_java_tab_.get(env);
+}
+
 scoped_refptr<cc::slim::Layer> TabAndroid::GetContentLayer() const {
   return content_layer_;
 }
@@ -716,13 +721,12 @@ bool TabAndroid::IsSplit() const {
 
 std::optional<tab_groups::TabGroupId> TabAndroid::GetGroup() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_token =
+  std::optional<base::Token> token =
       Java_TabImpl_getTabGroupId(env, weak_java_tab_.get(env));
-  if (j_token.is_null()) {
+  if (!token) {
     return std::nullopt;
   }
-  return tab_groups::TabGroupId::FromRawToken(
-      base::android::TokenAndroid::FromJavaToken(env, j_token));
+  return tab_groups::TabGroupId::FromRawToken(*token);
 }
 
 // Split tabs is currently desktop only.

@@ -12,6 +12,11 @@
 #include "base/memory/raw_ptr.h"
 
 class Profile;
+class TabAndroid;
+
+namespace base {
+class Token;
+}  // namespace base
 
 namespace tab_groups {
 class TabGroupId;
@@ -42,28 +47,23 @@ class TabCollectionTabModelImpl {
   int GetTabCountRecursive(JNIEnv* env) const;
 
   // Returns the recursive index of the given tab, or -1 if not found.
-  int GetIndexOfTabRecursive(
-      JNIEnv* env,
-      const jni_zero::JavaParamRef<jobject>& j_tab_android) const;
+  int GetIndexOfTabRecursive(JNIEnv* env, TabAndroid* j_tab_android) const;
 
   // Recurses until reaching the given index. Returns null if not found.
-  base::android::ScopedJavaLocalRef<jobject> GetTabAtIndexRecursive(
-      JNIEnv* env,
-      size_t index) const;
+  TabAndroid* GetTabAtIndexRecursive(JNIEnv* env, size_t index) const;
 
   // Moves a tab updating its group or pinned state if applicable.
-  int MoveTabRecursive(
-      JNIEnv* env,
-      size_t current_index,
-      size_t new_index,
-      const jni_zero::JavaParamRef<jobject>& j_new_tab_group_id,
-      bool new_is_pinned);
+  int MoveTabRecursive(JNIEnv* env,
+                       size_t current_index,
+                       size_t new_index,
+                       const std::optional<base::Token>& j_new_tab_group_id,
+                       bool new_is_pinned);
 
   // Adds a tab to the tab model.
   void AddTabRecursive(JNIEnv* env,
-                       const jni_zero::JavaParamRef<jobject>& j_tab_android,
+                       TabAndroid* tab,
                        size_t index,
-                       const jni_zero::JavaParamRef<jobject>& j_tab_group_id,
+                       const std::optional<base::Token>& j_tab_group_id,
                        bool is_pinned);
 
  private:

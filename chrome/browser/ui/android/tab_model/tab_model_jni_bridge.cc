@@ -59,10 +59,9 @@ void TabModelJniBridge::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
 
 void TabModelJniBridge::TabAddedToModel(JNIEnv* env,
                                         const JavaParamRef<jobject>& obj,
-                                        const JavaParamRef<jobject>& jtab) {
+                                        TabAndroid* tab) {
   // Tab#initialize() should have been called by now otherwise we can't push
   // the window id.
-  TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
   if (tab) {
     tab->SetWindowSessionID(GetSessionId());
   }
@@ -141,10 +140,7 @@ WebContents* TabModelJniBridge::GetWebContentsAt(int index) const {
 
 TabAndroid* TabModelJniBridge::GetTabAt(int index) const {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jtab =
-      Java_TabModelJniBridge_getTabAt(env, java_object_.get(env), index);
-
-  return jtab.is_null() ? nullptr : TabAndroid::GetNativeTab(env, jtab);
+  return Java_TabModelJniBridge_getTabAt(env, java_object_.get(env), index);
 }
 
 ScopedJavaLocalRef<jobject> TabModelJniBridge::GetJavaObject() const {
@@ -172,15 +168,9 @@ WebContents* TabModelJniBridge::CreateNewTabForDevTools(const GURL& url,
   // TODO(dfalcantara): Change the Java side so that it creates and returns the
   //                    WebContents, which we can load the URL on and return.
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj =
-      Java_TabModelJniBridge_createNewTabForDevTools(
-          env, java_object_.get(env),
-          url::GURLAndroid::FromNativeGURL(env, url), new_window);
-  if (obj.is_null()) {
-    VLOG(0) << "Failed to create java tab";
-    return nullptr;
-  }
-  TabAndroid* tab = TabAndroid::GetNativeTab(env, obj);
+  TabAndroid* tab = Java_TabModelJniBridge_createNewTabForDevTools(
+      env, java_object_.get(env), url::GURLAndroid::FromNativeGURL(env, url),
+      new_window);
   if (!tab) {
     VLOG(0) << "Failed to create java tab";
     return nullptr;

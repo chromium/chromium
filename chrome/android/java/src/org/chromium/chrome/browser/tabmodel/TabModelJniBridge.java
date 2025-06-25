@@ -107,7 +107,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
     @Override
     @CalledByNative
-    public abstract @Nullable Tab getTabAt(int index);
+    public abstract @JniType("TabAndroid*") @Nullable Tab getTabAt(int index);
 
     @Override
     public Profile getProfile() {
@@ -287,7 +287,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      * @return The created tab or null if the tab could not be created.
      */
     @CalledByNative
-    private @Nullable Tab createNewTabForDevTools(GURL url, boolean newWindow) {
+    private @JniType("TabAndroid*") @Nullable Tab createNewTabForDevTools(
+            GURL url, boolean newWindow) {
         LoadUrlParams loadParams = new LoadUrlParams(url);
         @TabLaunchType int launchType = TabLaunchType.FROM_CHROME_UI;
         if (!newWindow
@@ -434,7 +435,10 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
         void destroy(long nativeTabModelJniBridge, TabModelJniBridge caller);
 
-        void tabAddedToModel(long nativeTabModelJniBridge, TabModelJniBridge caller, Tab tab);
+        void tabAddedToModel(
+                long nativeTabModelJniBridge,
+                TabModelJniBridge caller,
+                @JniType("TabAndroid*") Tab tab);
 
         void duplicateTabForTesting( // IN-TEST
                 long nativeTabModelJniBridge, TabModelJniBridge caller, int index);

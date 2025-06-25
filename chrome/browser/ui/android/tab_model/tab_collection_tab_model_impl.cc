@@ -37,13 +37,11 @@ namespace {
 constexpr int kInvalidTabIndex = -1;
 
 std::optional<TabGroupId> ToTabGroupId(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_tab_group_id) {
-  if (!j_tab_group_id) {
+    const std::optional<base::Token>& token) {
+  if (!token) {
     return std::nullopt;
   }
-  return TabGroupId::FromRawToken(
-      TokenAndroid::FromJavaToken(env, j_tab_group_id));
+  return TabGroupId::FromRawToken(*token);
 }
 
 // Converts the `tab_android` to a `unique_ptr<TabInterface>`. Under the hood we
@@ -84,15 +82,14 @@ int TabCollectionTabModelImpl::GetTabCountRecursive(JNIEnv* env) const {
 
 int TabCollectionTabModelImpl::GetIndexOfTabRecursive(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_tab_android) const {
-  TabAndroid* target_tab = TabAndroid::GetNativeTab(env, j_tab_android);
-  if (!target_tab) {
+    TabAndroid* tab_android) const {
+  if (!tab_android) {
     return kInvalidTabIndex;
   }
 
   int current_index = 0;
   for (TabInterface* tab_in_collection : *tab_strip_collection_) {
-    if (ToTabAndroid(tab_in_collection) == target_tab) {
+    if (ToTabAndroid(tab_in_collection) == tab_android) {
       return current_index;
     }
     current_index++;
@@ -100,25 +97,23 @@ int TabCollectionTabModelImpl::GetIndexOfTabRecursive(
   return kInvalidTabIndex;
 }
 
-ScopedJavaLocalRef<jobject> TabCollectionTabModelImpl::GetTabAtIndexRecursive(
+TabAndroid* TabCollectionTabModelImpl::GetTabAtIndexRecursive(
     JNIEnv* env,
     size_t index) const {
   if (index >= tab_strip_collection_->TabCountRecursive()) {
-    return ScopedJavaLocalRef<jobject>();
+    return nullptr;
   }
   TabInterface* tab = tab_strip_collection_->GetTabAtIndexRecursive(index);
-  TabAndroid* tab_android = ToTabAndroid(tab);
-  return tab_android->GetJavaObject();
+  return ToTabAndroid(tab);
 }
 
 int TabCollectionTabModelImpl::MoveTabRecursive(
     JNIEnv* env,
     size_t current_index,
     size_t new_index,
-    const JavaParamRef<jobject>& j_new_tab_group_id,
+    const std::optional<base::Token>& token,
     bool new_is_pinned) {
-  std::optional<TabGroupId> new_tab_group_id =
-      ToTabGroupId(env, j_new_tab_group_id);
+  std::optional<TabGroupId> new_tab_group_id = ToTabGroupId(token);
   new_index = GetSafeIndex(/*is_move=*/true, new_index, new_tab_group_id,
                            new_is_pinned);
 
@@ -129,14 +124,13 @@ int TabCollectionTabModelImpl::MoveTabRecursive(
 
 void TabCollectionTabModelImpl::AddTabRecursive(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_tab_android,
+    TabAndroid* tab_android,
     size_t index,
-    const JavaParamRef<jobject>& j_tab_group_id,
+    const std::optional<base::Token>& token,
     bool is_pinned) {
-  TabAndroid* tab_android = TabAndroid::GetNativeTab(env, j_tab_android);
   CHECK(tab_android);
 
-  std::optional<TabGroupId> tab_group_id = ToTabGroupId(env, j_tab_group_id);
+  std::optional<TabGroupId> tab_group_id = ToTabGroupId(token);
 
   index = GetSafeIndex(/*is_move=*/false, index, tab_group_id, is_pinned);
 
@@ -207,8 +201,7 @@ std::optional<TabGroupId> TabCollectionTabModelImpl::GetGroupIdAt(
 static jlong JNI_TabCollectionTabModelImpl_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_java_object,
-    const JavaParamRef<jobject>& j_profile) {
-  Profile* profile = Profile::FromJavaObject(j_profile);
+    Profile* profile) {
   TabCollectionTabModelImpl* tab_collection_tab_model_impl =
       new TabCollectionTabModelImpl(env, j_java_object, profile);
   return reinterpret_cast<intptr_t>(tab_collection_tab_model_impl);
