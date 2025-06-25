@@ -43,6 +43,9 @@
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+
+- (void)setAccounts:(NSArray<AccountInfo*>*)accounts;
+
 @end
 
 #endif  // IOS_CHROME_SHARE_EXTENSION_SHARE_EXTENSION_SHEET_H_

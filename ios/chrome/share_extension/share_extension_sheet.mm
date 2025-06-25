@@ -63,6 +63,7 @@ CGFloat const kAvatarImageDimension = 30.0;
   NSString* _secondaryString;
   NSString* _appName;
   SharedItemType _sharedItemType;
+  NSArray<AccountInfo*>* _accounts;
 }
 
 - (instancetype)init {
@@ -121,6 +122,10 @@ CGFloat const kAvatarImageDimension = 30.0;
       ![self isScrolledToBottom]) {
     [self scrollToBottom];
   }
+}
+
+- (void)setAccounts:(NSArray<AccountInfo*>*)accounts {
+  _accounts = [accounts copy];
 }
 
 #pragma mark - UITableViewDataSource

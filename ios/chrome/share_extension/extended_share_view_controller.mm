@@ -108,7 +108,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
     [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = kShareSheetCornerRadius;
-  [self loadSelectedAccountInfo];
+  [self loadAvailableAccounts];
   [self loadElementsFromContext];
 }
 
@@ -282,52 +282,48 @@ const NSUInteger kSearchCharacterLimit = 1000;
   }
 }
 
-- (AccountInfo*)accountInfoWithGaiaID:(NSString*)gaiaID {
-  CHECK(app_group::MultiProfileShareExtensionEnabled());
-  AccountInfo* accountInfo = [[AccountInfo alloc] init];
-  if (!gaiaID) {
-    accountInfo.gaiaID = @"Default";
-    return accountInfo;
-  }
-
-  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
-  NSDictionary* accounts =
-      [shared_defaults dictionaryForKey:app_group::kAccountsOnDevice];
-  if (!accounts || ![accounts isKindOfClass:[NSDictionary class]]) {
-    return nil;
-  }
-
-  // TODO(crbug.com/425571657): Rename the avatar folder path function.
-  NSURL* avatars_folder_path = app_group::WidgetsAvatarFolder();
-  NSURL* avatar_directory = [avatars_folder_path
-      URLByAppendingPathComponent:[NSString stringWithFormat:@"\%@%@", gaiaID,
-                                                             @".png"]];
-  UIImage* avatar = [UIImage imageWithContentsOfFile:[avatar_directory path]];
-
-  accountInfo.gaiaID = gaiaID;
-  accountInfo.avatar = avatar;
-  accountInfo.fullName = accounts[gaiaID][app_group::kFullName];
-  accountInfo.email = accounts[gaiaID][app_group::kEmail];
-
-  return accountInfo;
-}
-
-- (void)loadSelectedAccountInfo {
+- (void)loadAvailableAccounts {
   if (!app_group::MultiProfileShareExtensionEnabled()) {
     return;
   }
-  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
-  NSString* primary_account =
-      [shared_defaults objectForKey:app_group::kPrimaryAccount];
+  NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
+  NSString* primaryAccount =
+      [sharedDefaults stringForKey:app_group::kPrimaryAccount];
+  NSDictionary* accounts = base::apple::ObjCCast<NSDictionary>(
+      [sharedDefaults dictionaryForKey:app_group::kAccountsOnDevice]);
 
-  if (!primary_account || ![primary_account length]) {
-    self.shareSheet.selectedAccountInfo = [self accountInfoWithGaiaID:nil];
+  if (!accounts) {
     return;
   }
+  NSURL* avatarsFolderPath = app_group::WidgetsAvatarFolder();
 
-  self.shareSheet.selectedAccountInfo =
-      [self accountInfoWithGaiaID:primary_account];
-  return;
+  NSMutableArray* loadedAccounts = [[NSMutableArray alloc] init];
+
+  for (NSString* gaiaID in accounts) {
+    NSURL* avatarDirectory = [avatarsFolderPath
+        URLByAppendingPathComponent:[NSString stringWithFormat:@"\%@%@", gaiaID,
+                                                               @".png"]];
+    UIImage* avatar = [UIImage imageWithContentsOfFile:[avatarDirectory path]];
+
+    AccountInfo* account = [[AccountInfo alloc] init];
+    account.gaiaID = gaiaID;
+    account.avatar = avatar;
+    account.fullName = accounts[gaiaID][app_group::kFullName];
+    account.email = accounts[gaiaID][app_group::kEmail];
+    [loadedAccounts addObject:account];
+
+    if (gaiaID.length && [gaiaID isEqualToString:primaryAccount]) {
+      self.shareSheet.selectedAccountInfo = account;
+    }
+  }
+
+  [self.shareSheet setAccounts:loadedAccounts];
+
+  if (!primaryAccount || ![primaryAccount length]) {
+    AccountInfo* accountInfo = [[AccountInfo alloc] init];
+    accountInfo.gaiaID = @"Default";
+    self.shareSheet.selectedAccountInfo = accountInfo;
+  }
 }
 
 - (void)handleImageSharingForCommand:(AppGroupCommand*)command
