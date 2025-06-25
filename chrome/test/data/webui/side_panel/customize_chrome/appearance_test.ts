@@ -421,10 +421,15 @@ suite('AppearanceTest', () => {
       await callbackRouterRemote.$.flushForTesting();
       assertNotStyle(
           appearanceElement.$.thirdPartyThemeLinkButton, 'display', 'none');
-      assertNotStyle(
-          appearanceElement.$.setClassicChromeButton, 'display', 'none');
       assertStyle(appearanceElement.$.themeSnapshot, 'display', 'none');
       assertStyle(appearanceElement.$.chromeColors, 'display', 'none');
+      if (loadTimeData.getBoolean('footerEnabled')) {
+        assertStyle(
+            appearanceElement.$.setClassicChromeButton, 'display', 'none');
+      } else {
+        assertNotStyle(
+            appearanceElement.$.setClassicChromeButton, 'display', 'none');
+      }
     });
 
     test('clicking 3P theme link opens theme page', async () => {
