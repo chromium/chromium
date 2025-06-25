@@ -9726,11 +9726,6 @@ if __name__ == '__main__':
       type=int,
       default=None,
       help='Maximum amount of failed attempts until the test is deemed failed')
-  parser.add_argument(
-      '--debug-bidi-mapper',
-      action='store_true',
-      default=False,
-      help='Run bidi mapper in a visible tab')
 
   ##############################################################################
   # Note for other Chromium based browsers!!!
@@ -9780,8 +9775,6 @@ if __name__ == '__main__':
   additional_args = []
   if options.disable_build_check:
     additional_args.append('--disable-build-check')
-  if options.debug_bidi_mapper:
-    additional_args.append('--debug-bidi-mapper')
 
   global chromedriver_server
   chromedriver_server = server.Server(
