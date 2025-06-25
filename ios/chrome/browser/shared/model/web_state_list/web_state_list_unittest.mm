@@ -419,16 +419,20 @@ class TestWebStateListDelegate final : public WebStateListDelegate {
   void ResetStatistics() {
     inserted_web_state_count_ = 0;
     activated_web_state_count_ = 0;
+    removed_web_state_count_ = 0;
 
     last_inserted_web_state_ = nullptr;
     last_activated_web_state_ = nullptr;
+    last_removed_web_state_ = nullptr;
   }
 
   int InsertedWebStateCount() const { return inserted_web_state_count_; }
   int ActivatedWebStateCount() const { return activated_web_state_count_; }
+  int RemovedWebStateCount() const { return removed_web_state_count_; }
 
   web::WebState* LastInsertedWebState() { return last_inserted_web_state_; }
   web::WebState* LastActivatedWebState() { return last_activated_web_state_; }
+  web::WebState* LastRemovedWebState() { return last_removed_web_state_; }
 
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) final {
@@ -439,12 +443,18 @@ class TestWebStateListDelegate final : public WebStateListDelegate {
     ++activated_web_state_count_;
     last_activated_web_state_ = web_state;
   }
+  void WillRemoveWebState(web::WebState* web_state) final {
+    ++removed_web_state_count_;
+    last_removed_web_state_ = web_state;
+  }
 
  private:
   int inserted_web_state_count_ = 0;
   int activated_web_state_count_ = 0;
+  int removed_web_state_count_ = 0;
   raw_ptr<web::WebState> last_inserted_web_state_;
   raw_ptr<web::WebState> last_activated_web_state_;
+  raw_ptr<web::WebState> last_removed_web_state_;
 };
 
 class TestWebStateListGroupsDelegate final : public WebStateListGroupsDelegate {
@@ -556,6 +566,7 @@ TEST_F(WebStateListTest, IsEmpty) {
   AppendNewWebState(kURL0);
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 1);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
@@ -569,6 +580,7 @@ TEST_F(WebStateListTest, InsertUrlSingle) {
   AppendNewWebState(kURL0);
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 1);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
@@ -583,6 +595,7 @@ TEST_F(WebStateListTest, InsertUrlMultiple) {
                                  WebStateList::InsertionParams::AtIndex(0));
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 1);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
@@ -590,6 +603,7 @@ TEST_F(WebStateListTest, InsertUrlMultiple) {
                                  WebStateList::InsertionParams::AtIndex(0));
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 2);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
@@ -597,6 +611,7 @@ TEST_F(WebStateListTest, InsertUrlMultiple) {
                                  WebStateList::InsertionParams::AtIndex(1));
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 3);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(1));
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
@@ -613,12 +628,14 @@ TEST_F(WebStateListTest, ActivateWebState) {
   EXPECT_EQ(nullptr, web_state_list_.GetActiveWebState());
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 1);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
   web_state_list_.ActivateWebStateAt(0);
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 1);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(),
             web_state_list_.GetWebStateAt(0));
@@ -636,6 +653,7 @@ TEST_F(WebStateListTest, InsertActivate) {
       WebStateList::InsertionParams::AtIndex(0).Activate());
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 1);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(),
             web_state_list_.GetWebStateAt(0));
@@ -747,7 +765,10 @@ TEST_F(WebStateListTest, GetIndexOfInactiveWebStateWithURL) {
 
   // Remove the webstate at index 1, so the only webstate with the target URL
   // is after the active webstate.
-  web_state_list_.DetachWebStateAt(1);
+  auto detached_web_state = web_state_list_.DetachWebStateAt(1);
+  EXPECT_EQ(delegate_.RemovedWebStateCount(), 1);
+  EXPECT_EQ(delegate_.LastRemovedWebState(), detached_web_state.get());
+  detached_web_state.reset();
 
   // Active webstate is now index 1, target URL is at index 2.
   EXPECT_EQ(2, web_state_list_.GetIndexOfInactiveWebStateWithURL(GURL(kURL0)));
@@ -992,9 +1013,12 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexBeginning) {
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
 
   observer_.ResetStatistics();
-  web_state_list_.DetachWebStateAt(0);
+  auto detached_web_state = web_state_list_.DetachWebStateAt(0);
 
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.RemovedWebStateCount(), 1);
+  EXPECT_EQ(delegate_.LastRemovedWebState(), detached_web_state.get());
+  detached_web_state.reset();
 
   EXPECT_TRUE(observer_.web_state_detached());
   EXPECT_FALSE(observer_.web_state_activated());
@@ -1018,9 +1042,12 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexMiddle) {
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
 
   observer_.ResetStatistics();
-  web_state_list_.DetachWebStateAt(1);
+  auto detached_web_state = web_state_list_.DetachWebStateAt(1);
 
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.RemovedWebStateCount(), 1);
+  EXPECT_EQ(delegate_.LastRemovedWebState(), detached_web_state.get());
+  detached_web_state.reset();
 
   EXPECT_TRUE(observer_.web_state_detached());
   EXPECT_FALSE(observer_.web_state_activated());
@@ -1044,9 +1071,12 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexLast) {
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
 
   observer_.ResetStatistics();
-  web_state_list_.DetachWebStateAt(2);
+  auto detached_web_state = web_state_list_.DetachWebStateAt(2);
 
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.RemovedWebStateCount(), 1);
+  EXPECT_EQ(delegate_.LastRemovedWebState(), detached_web_state.get());
+  detached_web_state.reset();
 
   EXPECT_TRUE(observer_.web_state_detached());
   EXPECT_FALSE(observer_.web_state_activated());
@@ -1074,7 +1104,11 @@ TEST_F(WebStateListTest, DetachActiveWebState) {
   EXPECT_EQ(0, web_state_list_.active_index());
 
   observer_.ResetStatistics();
-  web_state_list_.DetachWebStateAt(0);
+  auto detached_web_state = web_state_list_.DetachWebStateAt(0);
+
+  EXPECT_EQ(delegate_.RemovedWebStateCount(), 1);
+  EXPECT_EQ(delegate_.LastRemovedWebState(), detached_web_state.get());
+  detached_web_state.reset();
 
   // Note: this is a different WebState.
   EXPECT_EQ(delegate_.LastActivatedWebState(),
@@ -2345,7 +2379,10 @@ TEST_F(WebStateListTest, DetachWebStateAt_DeleteEmptyGroup) {
   const TabGroup* group = builder.GetTabGroupForIdentifier('0');
 
   observer_.ResetStatistics();
-  web_state_list_.DetachWebStateAt(1);
+  auto detached_web_state = web_state_list_.DetachWebStateAt(1);
+  EXPECT_EQ(delegate_.RemovedWebStateCount(), 1);
+  EXPECT_EQ(delegate_.LastRemovedWebState(), detached_web_state.get());
+  detached_web_state.reset();
 
   EXPECT_EQ("| a*", builder.GetWebStateListDescription());
   EXPECT_EQ(1, observer_.group_deleted_count());

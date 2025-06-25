@@ -23,3 +23,5 @@ void FakeWebStateListDelegate::WillActivateWebState(web::WebState* web_state) {
     web_state->ForceRealized();
   }
 }
+
+void FakeWebStateListDelegate::WillRemoveWebState(web::WebState* web_state) {}

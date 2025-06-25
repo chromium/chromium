@@ -37,6 +37,7 @@ class BrowserWebStateListDelegate : public WebStateListDelegate {
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) override;
   void WillActivateWebState(web::WebState* web_state) override;
+  void WillRemoveWebState(web::WebState* web_state) override;
 
   // Returns the profile used for this instance.
   ProfileIOS* profile() { return profile_.get(); }

@@ -23,23 +23,32 @@ BrowserWebStateListDelegate::BrowserWebStateListDelegate(
 BrowserWebStateListDelegate::~BrowserWebStateListDelegate() = default;
 
 void BrowserWebStateListDelegate::WillAddWebState(web::WebState* web_state) {
-  CHECK_EQ(profile_,
-           ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
-  if (insertion_policy_ == InsertionPolicy::kAttachTabHelpers) {
-    // WebState in a Browser are not pre-render tabs, so always attach
-    // all the tab helpers (the method is idempotent, so it is okay to
-    // call it multiple times for the same WebState).
-    AttachTabHelpers(web_state);
+  CHECK_EQ(profile_, web_state->GetBrowserState());
+  if (insertion_policy_ != InsertionPolicy::kAttachTabHelpers) {
+    return;
   }
+
+  // Attach all TabHelpers. It is okay to call this function multiple
+  // times (e.g. when a WebState is moved between Browsers) as it is
+  // idempotent.
+  AttachTabHelpers(web_state);
 }
 
 void BrowserWebStateListDelegate::WillActivateWebState(
     web::WebState* web_state) {
-  if (activation_policy_ == ActivationPolicy::kForceRealization) {
-    // Do not trigger a CheckForOverRealization here as some user actions
-    // (such as side swipe over multiple tab in the tab strip) can cause
-    // rapid change of the active WebState.
-    web::IgnoreOverRealizationCheck();
-    web_state->ForceRealized();
+  CHECK_EQ(profile_, web_state->GetBrowserState());
+  if (activation_policy_ != ActivationPolicy::kForceRealization) {
+    return;
   }
+
+  // Do not trigger a CheckForOverRealization here as some user actions
+  // (such as side swipe over multiple tab in the tab strip) can cause
+  // rapid change of the active WebState.
+  web::IgnoreOverRealizationCheck();
+  web_state->ForceRealized();
+}
+
+void BrowserWebStateListDelegate::WillRemoveWebState(web::WebState* web_state) {
+  CHECK_EQ(profile_, web_state->GetBrowserState());
+  // Nothing to do.
 }

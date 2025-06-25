@@ -628,6 +628,8 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
   web::WebState* web_state_ptr = web_state.get();
   std::unique_ptr<web::WebState> replaced_web_state =
       web_state_wrappers_[index]->ReplaceWebState(std::move(web_state));
+  delegate_->WillRemoveWebState(replaced_web_state.get());
+
   if (index == active_index_) {
     // The active WebState was replaced.
     OnActiveWebStateChanged();
@@ -657,6 +659,8 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
 
   const bool is_active_web_state_detached = (index == active_index_);
   web::WebState* web_state = web_state_wrappers_[index]->web_state();
+  delegate_->WillRemoveWebState(web_state);
+
   const TabGroup* group = web_state_wrappers_[index]->group();
   const WebStateListChangeDetach detach_change(
       web_state, index, params.is_closing, params.is_user_action,

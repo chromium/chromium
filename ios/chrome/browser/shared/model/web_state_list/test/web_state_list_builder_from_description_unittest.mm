@@ -21,6 +21,7 @@ class WebStateListBuilderFromDescriptionTest : public PlatformTest,
   // WebStateListDelegate implementation
   void WillAddWebState(web::WebState* web_state) final {}
   void WillActivateWebState(web::WebState* web_state) final {}
+  void WillRemoveWebState(web::WebState* web_state) final {}
 
  protected:
   // Shorthand for `builder_.BuildWebStateListFromDescription(...)`.

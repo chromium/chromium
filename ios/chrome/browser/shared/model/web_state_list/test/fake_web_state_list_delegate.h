@@ -21,6 +21,7 @@ class FakeWebStateListDelegate : public WebStateListDelegate {
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) override;
   void WillActivateWebState(web::WebState* web_state) override;
+  void WillRemoveWebState(web::WebState* web_state) override;
 
  private:
   // Controls whether WebState are forced to the realized state when
