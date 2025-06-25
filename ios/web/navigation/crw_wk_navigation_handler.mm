@@ -303,12 +303,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   // If this is a error navigation, pass through.
   if ([CRWErrorPageHelper isErrorPageFileURL:requestURL]) {
-    if (action.sourceFrame.mainFrame) {
-      // Disallow renderer initiated navigations to error URLs.
-      decisionHandler(WKNavigationActionPolicyCancel);
-    } else {
-      decisionHandler(WKNavigationActionPolicyAllow);
-    }
+    decisionHandler(WKNavigationActionPolicyAllow);
     return;
   }
 
