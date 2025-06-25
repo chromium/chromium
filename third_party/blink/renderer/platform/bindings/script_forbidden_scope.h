@@ -122,6 +122,7 @@ class PLATFORM_EXPORT ScriptForbiddenScope final {
   // V8GCController is exceptionally allowed to call Enter/Exit.
   friend class V8GCController;
   friend class BlinkLifecycleScopeWillBeScriptForbidden;
+  friend class ThreadState;
 };
 
 // Temporarily separate class for identifying cases in which adding a script

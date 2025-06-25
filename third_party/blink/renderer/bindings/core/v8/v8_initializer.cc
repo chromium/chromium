@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_context_snapshot.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_embedder_graph_builder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_error_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_idle_task_runner.h"
@@ -71,6 +70,7 @@
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
@@ -771,18 +771,21 @@ std::ostream& operator<<(std::ostream& os, const PrintV8OOM& oom_details) {
   return os;
 }
 
+void EmitDevToolsEvent(v8::Isolate* isolate) {
+  TRACE_EVENT_INSTANT1(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters",
+      TRACE_EVENT_SCOPE_THREAD, "data", [&](perfetto::TracedValue context) {
+        inspector_update_counters_event::Data(std::move(context), isolate);
+      });
+}
+
 }  // namespace
 
 // static
 void V8Initializer::InitializeV8Common(v8::Isolate* isolate) {
   // Set up garbage collection before setting up anything else as V8 may trigger
   // GCs during Blink setup.
-  V8PerIsolateData::From(isolate)->SetGCCallbacks(
-      isolate, V8GCController::GcPrologue, V8GCController::GcEpilogue);
-  ThreadState::Current()->AttachToIsolate(
-      isolate, EmbedderGraphBuilder::BuildEmbedderGraphCallback);
-  V8PerIsolateData::From(isolate)->SetActiveScriptWrappableManager(
-      MakeGarbageCollected<ActiveScriptWrappableManager>());
+  ThreadState::Current()->AttachToIsolate(isolate, &EmitDevToolsEvent);
 
   isolate->SetMicrotasksPolicy(v8::MicrotasksPolicy::kScoped);
   isolate->SetUseCounterCallback(&UseCounterCallback);

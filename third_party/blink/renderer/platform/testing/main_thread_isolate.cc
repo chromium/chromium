@@ -15,7 +15,7 @@ namespace blink::test {
 
 MainThreadIsolate::MainThreadIsolate() {
   isolate_ = CreateMainThreadIsolate();
-  ThreadState::Current()->RecoverCppHeapAfterIsolateTearDown();
+  ThreadState::Current()->RecoverCppHeapAfterIsolateTearDownForTesting();
 }
 
 MainThreadIsolate::~MainThreadIsolate() {

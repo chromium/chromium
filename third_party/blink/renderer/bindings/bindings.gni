@@ -146,8 +146,6 @@ blink_core_sources_bindings =
                     "core/v8/v8_context_snapshot.h",
                     "core/v8/v8_ctype_traits.h",
                     "core/v8/v8_custom_element_constructor_hash.h",
-                    "core/v8/v8_embedder_graph_builder.cc",
-                    "core/v8/v8_embedder_graph_builder.h",
                     "core/v8/v8_event_listener_info.h",
                     "core/v8/v8_gc_controller.cc",
                     "core/v8/v8_gc_controller.h",

@@ -51,7 +51,7 @@ class ActiveScriptWrappable : public ActiveScriptWrappableBase {
   // See trait below.
   void ActiveScriptWrappableBaseConstructed() {
     if (auto* context = static_cast<const T*>(this)->GetExecutionContext()) {
-      RegisterActiveScriptWrappable(context->GetIsolate());
+      RegisterActiveScriptWrappable();
     }
   }
 
@@ -78,8 +78,8 @@ class LazyActiveScriptWrappable : public ActiveScriptWrappableBase {
   ~LazyActiveScriptWrappable() override = default;
 
   // Registers the ASW, activating it.
-  void RegisterActiveScriptWrappable(v8::Isolate* isolate) {
-    ActiveScriptWrappableBase::RegisterActiveScriptWrappable(isolate);
+  void RegisterActiveScriptWrappable() {
+    ActiveScriptWrappableBase::RegisterActiveScriptWrappable();
   }
 
   bool IsContextDestroyed() const final {

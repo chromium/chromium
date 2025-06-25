@@ -10,8 +10,11 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "gin/public/v8_platform.h"
+#include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
@@ -103,14 +106,25 @@ ThreadState* ThreadState::AttachCurrentThreadForTesting(
   return thread_state;
 }
 
-namespace {
-void RecoverCppHeap(std::unique_ptr<v8::CppHeap> cpp_heap) {
-  ThreadState::Current()->SetCppHeap(std::move(cpp_heap));
+void ThreadState::RecoverCppHeap(std::unique_ptr<v8::CppHeap> cpp_heap) {
+  CHECK(!owning_cpp_heap_);
+  CHECK(!cpp_heap_);
+  // We want to keep the invariant that the ThreadState does not own a CppHeap
+  // while it is attached to an isolate. When it's attached to an isolate, the
+  // isolate owns the CppHeap.
+  CHECK(!isolate_);
+  owning_cpp_heap_ = std::move(cpp_heap);
+  cpp_heap_ = owning_cpp_heap_.get();
 }
-}  // namespace
 
-void ThreadState::RecoverCppHeapAfterIsolateTearDown() {
-  isolate_->SetReleaseCppHeapCallbackForTesting(RecoverCppHeap);
+// static
+void ThreadState::RecoverCppHeapTrampoline(
+    std::unique_ptr<v8::CppHeap> cpp_heap) {
+  ThreadState::Current()->RecoverCppHeap(std::move(cpp_heap));
+}
+
+void ThreadState::RecoverCppHeapAfterIsolateTearDownForTesting() {
+  isolate_->SetReleaseCppHeapCallbackForTesting(RecoverCppHeapTrampoline);
 }
 
 // static
@@ -120,19 +134,32 @@ void ThreadState::DetachCurrentThread() {
   delete state;
 }
 
-void ThreadState::AttachToIsolate(v8::Isolate* isolate,
-                                  V8BuildEmbedderGraphCallback) {
+void ThreadState::AttachToIsolate(
+    v8::Isolate* isolate,
+    DevToolsCountersCallback dev_tools_counters_callback) {
   CHECK(!owning_cpp_heap_);
   CHECK_EQ(cpp_heap_, isolate->GetCppHeap());
   isolate_ = isolate;
   embedder_roots_handler_ = std::make_unique<BlinkRootsHandler>(isolate);
   isolate_->SetEmbedderRootsHandler(embedder_roots_handler_.get());
+  isolate_->AddGCPrologueCallback(GcPrologue);
+  isolate_->AddGCEpilogueCallback(GcEpilogue);
+
+  dev_tools_counters_callback_ = dev_tools_counters_callback;
+  active_script_wrappable_manager_ =
+      MakeGarbageCollected<ActiveScriptWrappableManager>();
 }
 
 void ThreadState::DetachFromIsolate() {
   CHECK(!owning_cpp_heap_);
   CHECK_EQ(cpp_heap_, isolate_->GetCppHeap());
+  CHECK_EQ(gc_callback_depth_, 0u);
+
+  active_script_wrappable_manager_.Clear();
+
   isolate_->SetEmbedderRootsHandler(nullptr);
+  isolate_->RemoveGCPrologueCallback(GcPrologue);
+  isolate_->RemoveGCEpilogueCallback(GcEpilogue);
   isolate_ = nullptr;
   cpp_heap_ = nullptr;
 }
@@ -225,22 +252,13 @@ void ThreadState::EnableDetachedGarbageCollectionsForTesting() {
   cpp_heap().EnableDetachedGarbageCollectionsForTesting();
 }
 
-void ThreadState::SetCppHeap(std::unique_ptr<v8::CppHeap> cpp_heap) {
-  CHECK(!owning_cpp_heap_);
-  CHECK(!cpp_heap_);
-  // We want to keep the invariant that the ThreadState does not own a CppHeap
-  // while it is attached to an isolate. When it's attached to an isolate, the
-  // isolate owns the CppHeap.
-  CHECK(!isolate_);
-  owning_cpp_heap_ = std::move(cpp_heap);
-  cpp_heap_ = owning_cpp_heap_.get();
+bool ThreadState::IsIncrementalMarking() const {
+  return cppgc::subtle::HeapState::IsMarking(heap_handle()) &&
+         !cppgc::subtle::HeapState::IsInAtomicPause(heap_handle());
 }
 
-bool ThreadState::IsIncrementalMarking() {
-  return cppgc::subtle::HeapState::IsMarking(
-             ThreadState::Current()->heap_handle()) &&
-         !cppgc::subtle::HeapState::IsInAtomicPause(
-             ThreadState::Current()->heap_handle());
+bool ThreadState::IsSweepingOnOwningThread() const {
+  return cppgc::subtle::HeapState::IsSweepingOnOwningThread(heap_handle());
 }
 
 namespace {
@@ -297,6 +315,58 @@ const char* ThreadState::CopyNameForHeapSnapshot(const char* name) const {
   v8::HeapProfiler* profiler = isolate_->GetHeapProfiler();
   CHECK(profiler);
   return profiler->CopyNameForHeapSnapshot(name);
+}
+
+// static
+void ThreadState::GcPrologue(v8::Isolate* isolate,
+                             v8::GCType type,
+                             v8::GCCallbackFlags) {
+  RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcPrologue);
+
+  auto* thread_state = ThreadState::Current();
+  CHECK_EQ(thread_state->isolate_, isolate);
+  thread_state->gc_callback_depth_++;
+
+  ScriptForbiddenScope::Enter();
+
+  ActiveScriptWrappableManager* const active_script_wrappable_manager =
+      thread_state->active_script_wrappable_manager_.Get();
+  v8::HandleScope scope(isolate);
+  switch (type) {
+    case v8::kGCTypeIncrementalMarking:
+      // Recomputing ASWs is opportunistic during incremental marking as they
+      // only need to be recomputing during the atomic pause for correctness.
+      if (active_script_wrappable_manager) {
+        active_script_wrappable_manager->RecomputeActiveScriptWrappables(
+            ActiveScriptWrappableManager::RecomputeMode::kOpportunistic);
+      }
+      break;
+    case v8::kGCTypeMarkSweepCompact:
+      if (active_script_wrappable_manager) {
+        active_script_wrappable_manager->RecomputeActiveScriptWrappables(
+            ActiveScriptWrappableManager::RecomputeMode::kRequired);
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+// static
+void ThreadState::GcEpilogue(v8::Isolate* isolate,
+                             v8::GCType,
+                             v8::GCCallbackFlags) {
+  RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcEpilogue);
+
+  auto* thread_state = ThreadState::Current();
+  CHECK_EQ(thread_state->isolate_, isolate);
+  thread_state->gc_callback_depth_--;
+
+  if (thread_state->dev_tools_counters_callback_) {
+    thread_state->dev_tools_counters_callback_(isolate);
+  }
+
+  ScriptForbiddenScope::Exit();
 }
 
 }  // namespace blink

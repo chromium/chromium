@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
+#include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -20,18 +21,18 @@
 
 namespace v8 {
 class CppHeap;
-class EmbedderGraph;
 class EmbedderRootsHandler;
 }  // namespace v8
 
 namespace blink {
 
+class ActiveScriptWrappableManager;
 class BlinkGCMemoryDumpProvider;
 
-using V8BuildEmbedderGraphCallback = void (*)(v8::Isolate*,
-                                              v8::EmbedderGraph*,
-                                              void*);
-
+// ThreadState manages garbage collections together with V8. This includes the
+// setup and teardown of the GC wiring as well as custom weakness and clearing
+// logic. The state is aware of which Isolate it is attached to and the
+// ownership of the underlying CppHeap.
 class PLATFORM_EXPORT ThreadState final {
  public:
   class GCForbiddenScope;
@@ -39,14 +40,11 @@ class PLATFORM_EXPORT ThreadState final {
 
   using StackState = cppgc::EmbedderStackState;
 
+  using DevToolsCountersCallback = void (*)(v8::Isolate*);
+
   ALWAYS_INLINE static ThreadState* Current() {
     return &ThreadStateStorage::Current()->thread_state();
   }
-
-  // Returns true if the current thread is currently sweeping, i.e., whether the
-  // caller is invoked from a destructor.
-  ALWAYS_INLINE static bool IsSweepingOnOwningThread(
-      ThreadStateStorage& storage);
 
   // Attaches a ThreadState to the main-thread.
   static ThreadState* AttachMainThread();
@@ -55,7 +53,11 @@ class PLATFORM_EXPORT ThreadState final {
   static ThreadState* AttachCurrentThread();
   static void DetachCurrentThread();
 
-  void AttachToIsolate(v8::Isolate* isolate, V8BuildEmbedderGraphCallback);
+  // Attaches custom GC handling to an Isolate. CppHeap is already owned by the
+  // Isolate at this point.
+  void AttachToIsolate(v8::Isolate* isolate, DevToolsCountersCallback);
+  // Detaches custom GC handling from an Isolate. CppHeap is still owned by the
+  // Isolate afterwards.
   void DetachFromIsolate();
   // Releases ownership of the CppHeap which is transferred to the v8::Isolate.
   std::unique_ptr<v8::CppHeap> ReleaseCppHeap();
@@ -80,9 +82,29 @@ class PLATFORM_EXPORT ThreadState final {
       base::OnceCallback<void(size_t allocated_node_bytes,
                               size_t allocated_css_bytes)>);
 
-  bool IsIncrementalMarking();
+  // Returns true if incremental marking is currently running, and false
+  // otherwise.
+  bool IsIncrementalMarking() const;
 
-  // Forced garbage collection for testing:
+  // Returns true if the current thread is currently sweeping, i.e., whether the
+  // caller is invoked from a destructor, and false otherwise.
+  bool IsSweepingOnOwningThread() const;
+
+  // Returns true during heap snapshot generation, and false otherwise.
+  bool IsTakingHeapSnapshot() const;
+
+  // Copies a string into the V8 heap profiler, and returns a pointer to the
+  // copy. Only valid while taking a heap snapshot.
+  const char* CopyNameForHeapSnapshot(const char* name) const;
+
+  ActiveScriptWrappableManager* GetActiveScriptWrappableManager() {
+    return active_script_wrappable_manager_.Get();
+  }
+
+  static ThreadState* AttachMainThreadForTesting(v8::Platform*);
+  static ThreadState* AttachCurrentThreadForTesting(v8::Platform*);
+
+  // Forced garbage collection for testing.
   //
   // Collects garbage as long as live memory decreases (capped at 5).
   void CollectAllGarbageForTesting(
@@ -94,12 +116,9 @@ class PLATFORM_EXPORT ThreadState final {
 
   void EnableDetachedGarbageCollectionsForTesting();
 
-  static ThreadState* AttachMainThreadForTesting(v8::Platform*);
-  static ThreadState* AttachCurrentThreadForTesting(v8::Platform*);
-
-  void RecoverCppHeapAfterIsolateTearDown();
-
-  void SetCppHeap(std::unique_ptr<v8::CppHeap> cpp_heap);
+  // Transfers ownership of a CppHeap back to ThreadState on Isolate teardown.
+  // Only used in test drivers.
+  void RecoverCppHeapAfterIsolateTearDownForTesting();
 
   // Takes a heap snapshot that can be loaded into DevTools. Requires that
   // `ThreadState` is attached to a `v8::Isolate`.
@@ -110,15 +129,19 @@ class PLATFORM_EXPORT ThreadState final {
   // Writing to a file requires a disabled sandbox.
   void TakeHeapSnapshotForTesting(const char* filename) const;
 
-  bool IsTakingHeapSnapshot() const;
-
-  // Copies a string into the V8 heap profiler, and returns a pointer to the
-  // copy. Only valid while taking a heap snapshot.
-  const char* CopyNameForHeapSnapshot(const char* name) const;
-
  private:
+  static void RecoverCppHeapTrampoline(std::unique_ptr<v8::CppHeap>);
+
+  // Prologue and epilogue callbacks for unified heap garbage collections. Set
+  // and released during `AttachToIsolate()` and `DetachFromIsolate()`,
+  // respectively.
+  static void GcPrologue(v8::Isolate*, v8::GCType, v8::GCCallbackFlags);
+  static void GcEpilogue(v8::Isolate*, v8::GCType, v8::GCCallbackFlags);
+
   explicit ThreadState(v8::Platform*);
   ~ThreadState();
+
+  void RecoverCppHeap(std::unique_ptr<v8::CppHeap>);
 
   // During setup of a page ThreadState owns CppHeap. The ownership is
   // transferred to the v8::Isolate on its creation.
@@ -130,15 +153,15 @@ class PLATFORM_EXPORT ThreadState final {
   cppgc::HeapHandle& heap_handle_;
   v8::Isolate* isolate_ = nullptr;
   base::PlatformThreadId thread_id_;
+  size_t gc_callback_depth_ = 0;
+  Persistent<ActiveScriptWrappableManager> active_script_wrappable_manager_;
+
+  // TODO(mlippautz): Refactor to proper base::CheckedObserver once there's more
+  // users that want to listen to GC events.
+  DevToolsCountersCallback dev_tools_counters_callback_;
 
   friend class BlinkGCMemoryDumpProvider;
 };
-
-// static
-bool ThreadState::IsSweepingOnOwningThread(ThreadStateStorage& storage) {
-  return cppgc::subtle::HeapState::IsSweepingOnOwningThread(
-      storage.heap_handle());
-}
 
 }  // namespace blink
 
