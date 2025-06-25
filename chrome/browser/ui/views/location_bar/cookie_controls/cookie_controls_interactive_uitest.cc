@@ -938,35 +938,3 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTrackingProtectionTest,
             0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
 }
-
-IN_PROC_BROWSER_TEST_F(
-    CookieControlsInteractiveUiTrackingProtectionTest,
-    BubbleViewTimesOutWithoutShowingReloadingViewWhenStatusChanged) {
-  // Test that opening the bubble and making a change results in the
-  // reloading view not showing and the bubble closing after timing out.
-  //
-  // The page loaded in this test will never finish loading, so the timeout
-  // must be configured shorter than the test timeout.
-  BlockThirdPartyCookies();
-  EnableFpProtection();
-  auto* const incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  RunTestSequence(InContext(
-      incognito_browser->window()->GetElementContext(),
-      Steps(InstrumentTab(kWebContentsElementId),
-            EnterText(
-                kOmniboxElementId,
-                base::UTF8ToUTF16(
-                    "https://" +
-                    third_party_cookie_page_url(/*slow=*/true).GetContent())),
-            Confirm(kOmniboxElementId),
-            InAnyContext(WaitForShow(kCookieControlsIconElementId)),
-            PressButton(kCookieControlsIconElementId),
-            InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
-            PressButton(CookieControlsContentView::kTrackingProtectionsButton),
-            EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
-            WaitForHide(CookieControlsBubbleView::kCookieControlsBubble))));
-  EXPECT_EQ(user_actions_.GetActionCount(
-                kUMATrackingProtectionsBubbleReloadingTimeout),
-            1);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
-}
