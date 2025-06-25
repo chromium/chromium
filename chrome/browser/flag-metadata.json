@@ -1745,13 +1745,13 @@
   },
   {
     "name": "conch",
-    "owners": ["pihsun@chromium.org"],
-    "expiry_milestone": 140
+    "owners": ["hsuanling@google.com", "chromeos-recorder-app@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "conch-system-audio-from-mic",
-    "owners": ["hsuanling@google.com"],
-    "expiry_milestone": 140
+    "owners": ["hsuanling@google.com", "chromeos-recorder-app@google.com"],
+    "expiry_milestone": 145
   },
   {
       "name": "contained-tab-group",
