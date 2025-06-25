@@ -610,8 +610,7 @@ bool OmniboxFieldTrial::ShouldApplyOnDeviceHeadModelSelectionFix() {
 
 bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForLocale(
     const std::string& locale) {
-  if (IsKoreanLocale(locale) &&
-      !base::FeatureList::IsEnabled(omnibox::kOnDeviceHeadProviderKorean)) {
+  if (IsKoreanLocale(locale)) {
     return false;
   }
   return IsOnDeviceHeadSuggestEnabledForAnyMode();

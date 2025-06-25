@@ -50,7 +50,6 @@ BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnWeb);
 // On Device Suggest.
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderIncognito);
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderNonIncognito);
-BASE_DECLARE_FEATURE(kOnDeviceHeadProviderKorean);
 BASE_DECLARE_FEATURE(kOnDeviceTailModel);
 BASE_DECLARE_FEATURE(kOnDeviceTailEnableEnglishModel);
 
