@@ -208,7 +208,7 @@ src:*third_party/vulkan-validation-layers/src/layers/*
 src:*third_party/angle/src/common/vulkan/vulkan_icd.cpp
 
 # Calls to TFLiteDelegate functions in a shared library.
-src:*services/webnn/tflite/op_resolver.cc
+src:*services/webnn/tflite/graph_impl_tflite.cc
 src:*third_party/tflite/src/tensorflow/lite/c/common_internal.cc
 src:*third_party/tflite/src/tensorflow/lite/core/subgraph.cc
 src:*third_party/tflite/src/tensorflow/lite/delegates/utils.cc
