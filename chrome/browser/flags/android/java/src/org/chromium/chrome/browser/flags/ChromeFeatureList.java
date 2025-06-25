@@ -453,6 +453,8 @@ public abstract class ChromeFeatureList {
     public static final String MAYLAUNCHURL_USES_SEPARATE_STORAGE_PARTITION =
             "MayLaunchUrlUsesSeparateStoragePartition";
     public static final String MINI_ORIGIN_BAR = "MiniOriginBar";
+    public static final String MITIGATE_LEGACY_SEARCH_ENGINE_PROMO_OVERLAP =
+            "MitigateLegacySearchEnginePromoOverlap";
     public static final String MOST_VISITED_TILES_CUSTOMIZATION = "MostVisitedTilesCustomization";
     public static final String MOST_VISITED_TILES_RESELECT = "MostVisitedTilesReselect";
     public static final String MULTI_INSTANCE_APPLICATION_STATUS_CLEANUP =
@@ -887,6 +889,8 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sMiniOriginBar = newCachedFlag(MINI_ORIGIN_BAR, false, true);
+    public static final CachedFlag sMitigateLegacySearchEnginePromoOverlap =
+            newCachedFlag(MITIGATE_LEGACY_SEARCH_ENGINE_PROMO_OVERLAP, false);
     public static final CachedFlag sMostVisitedTilesCustomization =
             newCachedFlag(
                     MOST_VISITED_TILES_CUSTOMIZATION,
@@ -1108,6 +1112,7 @@ public abstract class ChromeFeatureList {
                     sMagicStackAndroid,
                     sMaliciousApkDownloadCheck,
                     sMiniOriginBar,
+                    sMitigateLegacySearchEnginePromoOverlap,
                     sMostVisitedTilesCustomization,
                     sMostVisitedTilesReselect,
                     sMultiInstanceApplicationStatusCleanup,

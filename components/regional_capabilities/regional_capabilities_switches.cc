@@ -10,6 +10,14 @@
 
 namespace switches {
 
+#if BUILDFLAG(IS_ANDROID)
+// Mitigate overlap cases between the legacy search engine promo and the
+// device-based program eligibility determinations.
+BASE_FEATURE(kMitigateLegacySearchEnginePromoOverlap,
+             "MitigateLegacySearchEnginePromoOverlap",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kClearPrefForUnknownCountry,
              "ClearCountryPrefForStoredUnknownCountry",
