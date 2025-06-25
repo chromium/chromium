@@ -5727,7 +5727,7 @@
   {
     "name": "import-passwords-from-safari",
     "owners": [ "sinhasourav@google.com", "sugoi@chromium.org", "tmartino@chromium.org", "bling-transactions@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "improved-keyboard-shortcuts",
