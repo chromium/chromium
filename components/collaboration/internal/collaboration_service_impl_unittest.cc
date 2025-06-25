@@ -314,6 +314,40 @@ TEST_F(CollaborationServiceImplTest, SyncStatusChanges) {
   }
 }
 
+TEST_F(CollaborationServiceImplTest, SyncTypeDisabledByEnterprise) {
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  // Set up a policy to disable Tabs.
+  test_sync_service_->GetUserSettings()->SetTypeIsManagedByPolicy(
+      syncer::UserSelectableType::kTabs, true);
+  test_sync_service_->FireStateChanged();
+  EXPECT_EQ(service_->GetServiceStatus().sync_status,
+            SyncStatus::kSyncDisabledByEnterprise);
+
+  // Reset the policy.
+  test_sync_service_->GetUserSettings()->SetTypeIsManagedByPolicy(
+      syncer::UserSelectableType::kTabs, false);
+  test_sync_service_->FireStateChanged();
+  EXPECT_EQ(service_->GetServiceStatus().sync_status, SyncStatus::kSyncEnabled);
+
+  // Set up a policy to disable History.
+  test_sync_service_->GetUserSettings()->SetTypeIsManagedByPolicy(
+      syncer::UserSelectableType::kHistory, true);
+  test_sync_service_->FireStateChanged();
+  EXPECT_EQ(service_->GetServiceStatus().sync_status,
+            SyncStatus::kSyncDisabledByEnterprise);
+#endif
+}
+
+TEST_F(CollaborationServiceImplTest, SyncDisabledByEnterprise) {
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  // Disable sync by enterprise policy.
+  test_sync_service_->SetAllowedByEnterprisePolicy(false);
+  test_sync_service_->FireStateChanged();
+  EXPECT_EQ(service_->GetServiceStatus().sync_status,
+            SyncStatus::kSyncDisabledByEnterprise);
+#endif
+}
+
 TEST_F(CollaborationServiceImplTest, SyncStatusChanges_SettingInProgress) {
   // By default the test sync service is signed in with sync and every DataType
   // enabled.

@@ -173,7 +173,11 @@ void CollaborationServiceImpl::OnSyncServiceInitialized(
   // Update the internal status.
   sync_service_ = sync_service;
   sync_observer_.Observe(sync_service_);
-  current_status_.sync_status = GetSyncStatus();
+  SyncStatus new_sync_status = GetSyncStatus();
+  if (new_sync_status != current_status_.sync_status) {
+    current_status_.sync_status = new_sync_status;
+    RefreshServiceStatus();
+  }
 }
 
 ServiceStatus CollaborationServiceImpl::GetServiceStatus() {
@@ -362,8 +366,20 @@ SyncStatus CollaborationServiceImpl::GetSyncStatus() {
   // The mapping between the selected type and what is actually sync'ed is done
   // in `GetUserSelectableTypeInfo()`.
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  if (user_settings->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kTabs)) {
+  bool sync_types_disabled_policy =
+      user_settings->IsTypeManagedByPolicy(syncer::UserSelectableType::kTabs) ||
+      user_settings->IsTypeManagedByPolicy(
+          syncer::UserSelectableType::kHistory);
+  if (sync_types_disabled_policy ||
+      sync_service_->GetDisableReasons().Has(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+    return SyncStatus::kSyncDisabledByEnterprise;
+  }
+
+  syncer::UserSelectableTypeSet selected_types =
+      user_settings->GetSelectedTypes();
+  if (selected_types.Has(syncer::UserSelectableType::kTabs) &&
+      selected_types.Has(syncer::UserSelectableType::kHistory)) {
     return SyncStatus::kSyncEnabled;
   }
 #else
@@ -441,6 +457,11 @@ CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
     return CollaborationStatus::kDisabledForPolicy;
   }
 #endif
+
+  // Check if device policy allow sync.
+  if (current_status_.sync_status == SyncStatus::kSyncDisabledByEnterprise) {
+    return CollaborationStatus::kDisabledForPolicy;
+  }
 
   // Versioning turn off shared tab groups data types when version out of date.
   if (!base::FeatureList::IsEnabled(
