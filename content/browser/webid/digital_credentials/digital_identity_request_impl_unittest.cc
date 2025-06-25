@@ -31,6 +31,7 @@ namespace content {
 namespace {
 
 constexpr char kOpenid4vpProtocol[] = "openid4vp";
+constexpr char kOpenid4vpUnsignedProtocol[] = "openid4vp-v1-unsigned";
 constexpr char kPreviewProtocol[] = "preview";
 
 using base::Value;
@@ -645,6 +646,13 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
   ASSERT_TRUE(SetDCQLPathItem(request, "given_name"));
   EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
             InterstitialType::kLowRisk);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpUnsignedProtocolDCQL_ComputeInterstitialType_OnlyAgeOver) {
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpUnsignedProtocol,
+                                    GenerateOnlyAgeOpenid4VpRequestWithDCQL()),
+            std::nullopt);
 }
 
 TEST_F(DigitalIdentityRequestImplInterstitialTest,
