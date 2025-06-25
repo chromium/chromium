@@ -139,9 +139,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // mojom::blink::RenderInputRouterClient overrides;
   void GetWidgetInputHandler(
       mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request,
-      mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host) override;
-  void GetWidgetInputHandlerForInputOnViz(
-      mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request) override;
+      mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host,
+      bool from_viz) override;
   void ShowContextMenu(ui::mojom::blink::MenuSourceType source_type,
                        const gfx::Point& location) override;
   void BindInputTargetClient(
@@ -611,7 +610,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // until a WidgetInputHandlerHost is bound which only happens after Browser
   // side `WidgetInputHandler` call is received.
   std::optional<mojo::PendingReceiver<mojom::blink::WidgetInputHandler>>
-      pending_widget_input_handler_ = std::nullopt;
+      pending_viz_widget_input_handler_ = std::nullopt;
 
   base::WeakPtrFactory<WidgetBase> weak_ptr_factory_{this};
 };

@@ -113,6 +113,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       delete;
 
   void SetHost(mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host);
+  void SetVizHost(
+      mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> viz_host);
 
   void AddInterface(
       mojo::PendingReceiver<mojom::blink::WidgetInputHandler> receiver);
@@ -148,6 +150,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void ProcessTouchAction(cc::TouchAction touch_action);
 
   mojom::blink::WidgetInputHandlerHost* GetWidgetInputHandlerHost();
+  mojom::blink::WidgetInputHandlerHost* GetVizWidgetInputHandlerHost();
 
 #if BUILDFLAG(IS_ANDROID)
   void AttachSynchronousCompositor(
@@ -330,6 +333,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void FlushCompositorQueueForTesting();
   void FlushMainThreadQueueForTesting(base::OnceClosure done);
 
+  void OnVizHostDisconnected() { viz_host_.reset(); }
+
   // Only valid to be called on the main thread.
   base::WeakPtr<WidgetBase> widget_;
   base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
@@ -347,6 +352,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // The WidgetInputHandlerHost is bound on the compositor task runner
   // but class can be called on the compositor and main thread.
   mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost> host_;
+  mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost> viz_host_;
 
   // Any thread can access these variables.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;

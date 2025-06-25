@@ -40,7 +40,8 @@ void MockWidget::ClearScreenRects() {
 
 void MockWidget::GetWidgetInputHandler(
     mojo::PendingReceiver<blink::mojom::WidgetInputHandler> request,
-    mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost> host) {
+    mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost> host,
+    bool from_viz) {
   // Some tests try to reinitialize a host against same MockWidget multiple
   // times. We assume this happens against the same host and avoid changing the
   // binding.

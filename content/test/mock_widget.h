@@ -46,10 +46,8 @@ class MockWidget : public blink::mojom::Widget,
   // blink::mojom::RenderInputRouterClient overrides;
   void GetWidgetInputHandler(
       mojo::PendingReceiver<blink::mojom::WidgetInputHandler> request,
-      mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost> host) override;
-  void GetWidgetInputHandlerForInputOnViz(
-      mojo::PendingReceiver<blink::mojom::WidgetInputHandler> request)
-      override {}
+      mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost> host,
+      bool from_viz) override;
   void ShowContextMenu(ui::mojom::MenuSourceType source_type,
                        const gfx::Point& location) override {}
   void BindInputTargetClient(

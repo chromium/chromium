@@ -411,29 +411,34 @@ void WidgetBase::ForceRedraw(
 
 void WidgetBase::GetWidgetInputHandler(
     mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request,
-    mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host) {
-  widget_input_handler_manager_->SetHost(std::move(host));
-  widget_input_handler_manager_->AddInterface(std::move(request));
+    mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host,
+    bool from_viz) {
+  // Viz-initiated request.
+  if (from_viz) {
+    widget_input_handler_manager_->SetVizHost(std::move(host));
 
-  // Bind the Viz side receiver that might have come before Browser side
-  // GetWidgetInputHandler request.
-  if (pending_widget_input_handler_.has_value()) {
-    widget_input_handler_manager_->AddInterface(
-        std::move(*pending_widget_input_handler_));
-    pending_widget_input_handler_.reset();
+    // Hold back binding Viz side receiver until we have processed Browser side
+    // `GetWidgetInputHandler` request.
+    if (!widget_input_handler_manager_->GetWidgetInputHandlerHost()) {
+      pending_viz_widget_input_handler_.emplace(std::move(request));
+      return;
+    }
+    // Proceed with immediate binding since the browser-side
+    // WidgetInputHandlerHost has been bounded.
+    widget_input_handler_manager_->AddInterface(std::move(request));
+  } else {
+    // Browser initiated request.
+    widget_input_handler_manager_->SetHost(std::move(host));
+    widget_input_handler_manager_->AddInterface(std::move(request));
+
+    // If there's a pending Viz-side receiver, bind it now that the browser-side
+    // host is available.
+    if (pending_viz_widget_input_handler_.has_value()) {
+      widget_input_handler_manager_->AddInterface(
+          std::move(*pending_viz_widget_input_handler_));
+      pending_viz_widget_input_handler_.reset();
+    }
   }
-}
-
-void WidgetBase::GetWidgetInputHandlerForInputOnViz(
-    mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request) {
-  // Hold back binding Viz side receiver until we have processed Browser side
-  // `GetWidgetInputHandler` request.
-  if (!widget_input_handler_manager_->GetWidgetInputHandlerHost()) {
-    pending_widget_input_handler_.emplace(std::move(request));
-    return;
-  }
-
-  widget_input_handler_manager_->AddInterface(std::move(request));
 }
 
 void WidgetBase::ShowContextMenu(ui::mojom::blink::MenuSourceType source_type,
