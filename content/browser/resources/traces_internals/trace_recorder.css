@@ -59,3 +59,31 @@
 .status-stopping .status-circle {
   background-color: var(--google-orange-700);
 }
+
+.category-grid {
+  display: grid;
+  /* Define column templates.
+     - 80px for the checkbox
+     - 1fr for the name (takes up 1 fraction of the remaining space)
+     - 1fr for the tags
+     - 4fr for the description (takes up 2x the space of name/tags)
+  */
+  grid-template-columns: 80px 1fr 1fr 4fr;
+  gap: 8px 16px;
+  align-items: start;
+}
+
+.header-row-group {
+  font-weight: bold;
+  border-bottom: 1px solid var(--cr-separator-color);
+  padding-bottom: 8px;
+}
+
+.header-row-group,
+.category-row {
+  /*
+    This allows the cells to refer back to the parent .category-grid
+    for their layout instructions.
+  */
+  display: contents;
+}

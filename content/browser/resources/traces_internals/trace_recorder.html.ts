@@ -33,6 +33,31 @@ export function getHtml(this: TraceRecorderElement) {
         Snapshot Trace
       </cr-button>
     </div>
+
+    <div>
+      <h2>Available Trace Categories</h2>
+      <p>Select the categories to include in the trace config.</p>
+      <div class="category-grid">
+        <div class="header-row-group">
+          <div>Enabled</div>
+          <div>Name</div>
+          <div>Tags</div>
+          <div>Description</div>
+        </div>
+        ${this.traceCategories.map(category => html`
+          <div class="category-row">
+              <input
+                disabled
+                type="checkbox"
+                .checked="${this.isEnabled(category.name)}">
+            <div>${category.name}</div>
+            <div>${category.tags.join(', ')}</div>
+            <div>${category.description}</div>
+          </div>
+        `)}
+      </div>
+    </div>
+
     <cr-toast id="toast" duration="5000">
       <div>${this.toastMessage}</div>
     </cr-toast>
