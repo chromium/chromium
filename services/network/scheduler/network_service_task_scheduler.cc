@@ -94,8 +94,7 @@ NetworkServiceTaskScheduler::NetworkServiceTaskScheduler(
     : task_queues_(sequence_manager) {
   // Enable crash keys for the sequence manager to help debug scheduler related
   // crashes.
-  sequence_manager->EnableCrashKeys(
-      "network_service_task_scheduler_async_stack");
+  sequence_manager->EnableCrashKeys("network_service_scheduler_async_stack");
   // Set the default task runner for the current thread.
   sequence_manager->SetDefaultTaskRunner(task_queues_.GetDefaultTaskRunner());
 }

@@ -2067,7 +2067,7 @@
     "expires": "Dec 1, 2024"
   },
   {
-    "prefix": "network-service-scheduler",
+    "prefix": "network-service-task-scheduler",
     "owners": ["hayato@chromium.org"],
     "platforms": ["Android", "Mac", "Win", "Linux"],
     "bases": [
@@ -2075,7 +2075,7 @@
       "external/wpt/loading/"
     ],
     "args": [
-      "--enable-features=NetworkServiceScheduler"
+      "--enable-features=NetworkServiceTaskScheduler"
     ],
     "expires": "Jun 20, 2026"
   },
