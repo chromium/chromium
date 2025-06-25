@@ -205,8 +205,8 @@ PaymentMethodAccessoryControllerImpl::GetSheetData() const {
   std::vector<UserInfo> info_to_add;
   bool allow_filling =
       autofill_manager &&
-      ShouldAllowCreditCardFallbacks(autofill_manager->client(),
-                                     autofill_manager->last_query_form());
+      !IsFormOrClientNonSecure(autofill_manager->client(),
+                               autofill_manager->last_query_form());
 
   std::vector<const CachedServerCardInfo*> unmasked_cards =
       GetUnmaskedCreditCards();

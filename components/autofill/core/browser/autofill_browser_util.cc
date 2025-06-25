@@ -23,18 +23,8 @@ bool IsFormOrClientNonSecure(const AutofillClient& client,
 }
 
 bool IsFormMixedContent(const AutofillClient& client, const FormData& form) {
-  return client.IsContextSecure() &&
-         (form.action().is_valid() &&
-          security_interstitials::IsInsecureFormAction(form.action()));
-}
-
-bool ShouldAllowCreditCardFallbacks(const AutofillClient& client,
-                                    const FormData& form) {
-  // Skip the form check if there wasn't a form yet:
-  if (form.renderer_id().is_null()) {
-    return client.IsContextSecure();
-  }
-  return !IsFormOrClientNonSecure(client, form);
+  return client.IsContextSecure() && form.action().is_valid() &&
+         security_interstitials::IsInsecureFormAction(form.action());
 }
 
 }  // namespace autofill
