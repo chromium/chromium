@@ -49,12 +49,6 @@ class OmniboxEditModelIOS {
 
   metrics::OmniboxEventProto::PageClassification GetPageClassification() const;
 
-  // Returns the match for the current text. If the user has not edited the text
-  // this is the match corresponding to the permanent text. Returns the
-  // alternate nav URL, if `alternate_nav_url` is non-NULL and there is such a
-  // URL. Virtual for testing.
-  virtual AutocompleteMatch CurrentMatch(GURL* alternate_nav_url) const;
-
   // Returns true if the current edit contents will be treated as a
   // URL/navigation, as opposed to a search.
   bool CurrentTextIsURL() const;
@@ -97,10 +91,6 @@ class OmniboxEditModelIOS {
 
   // Returns the permanent display text for the current page and Omnibox state.
   std::u16string GetPermanentDisplayText() const;
-
-  // Invoked any time the text may have changed in the edit. Notifies the
-  // controller.
-  void OnChanged();
 
   // Reverts the edit model back to its unedited state (permanent text showing,
   // no user input in progress).

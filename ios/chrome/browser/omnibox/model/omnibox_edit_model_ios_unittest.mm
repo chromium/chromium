@@ -227,7 +227,7 @@ TEST_F(OmniboxEditModelIOSTest, CurrentMatch) {
     EXPECT_EQ(u"http://www.example.com/",
               [omnibox_text_controller_ displayedText]);
 
-    AutocompleteMatch match = model()->CurrentMatch(nullptr);
+    AutocompleteMatch match = [omnibox_text_controller_ currentMatch:nullptr];
     EXPECT_EQ(AutocompleteMatchType::URL_WHAT_YOU_TYPED, match.type);
     EXPECT_TRUE(model()->CurrentTextIsURL());
     EXPECT_EQ("http://www.example.com/", match.destination_url.spec());
@@ -244,7 +244,7 @@ TEST_F(OmniboxEditModelIOSTest, CurrentMatch) {
     EXPECT_EQ(u"https://www.google.com/",
               [omnibox_text_controller_ displayedText]);
 
-    AutocompleteMatch match = model()->CurrentMatch(nullptr);
+    AutocompleteMatch match = [omnibox_text_controller_ currentMatch:nullptr];
     EXPECT_EQ(AutocompleteMatchType::URL_WHAT_YOU_TYPED, match.type);
     EXPECT_TRUE(model()->CurrentTextIsURL());
 

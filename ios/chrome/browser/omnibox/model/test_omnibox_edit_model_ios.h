@@ -23,11 +23,8 @@ class TestOmniboxEditModelIOS : public OmniboxEditModelIOS {
 
   // OmniboxEditModel:
   bool PopupIsOpen() const override;
-  AutocompleteMatch CurrentMatch(GURL* alternate_nav_url) const override;
 
   void SetPopupIsOpen(bool open);
-
-  void SetCurrentMatchForTest(const AutocompleteMatch& match);
 
   void OnPopupDataChanged(const std::u16string& inline_autocompletion,
                           const std::u16string& additional_text,
@@ -41,7 +38,6 @@ class TestOmniboxEditModelIOS : public OmniboxEditModelIOS {
 
  private:
   bool popup_is_open_;
-  std::unique_ptr<AutocompleteMatch> override_current_match_;
 
   // Contains the most recent text passed by the popup model to the edit model.
   std::u16string text_;

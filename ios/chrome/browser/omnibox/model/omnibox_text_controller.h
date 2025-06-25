@@ -97,6 +97,15 @@ class OmniboxEditModelIOS;
 /// Virtual for testing.
 - (void)setUserText:(const std::u16string&)text;
 
+// Returns the match for the current text. If the user has not edited the text
+// this is the match corresponding to the permanent text. Returns the
+// alternate nav URL, if `alternateNavURL` is non-NULL and there is such a
+// URL.
+- (AutocompleteMatch)currentMatch:(GURL*)alternateNavURL;
+
+// Invoked any time the text may have changed in the edit.
+- (void)onTextChanged;
+
 #pragma mark - Autocomplete event
 
 /// Sets the additional text.

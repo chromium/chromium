@@ -212,9 +212,7 @@ const char kOmniboxFocusResultedInNavigation[] =
   // away during the model revert anyways.
   [self.omniboxAutocompleteController stopAutocompleteWithClearSuggestions:YES];
 
-  if (_omniboxEditModel) {
-    _omniboxEditModel->OnChanged();
-  }
+  [self onTextChanged];
 }
 
 - (std::u16string)displayedText {
@@ -307,6 +305,36 @@ const char kOmniboxFocusResultedInNavigation[] =
   [self getInfoForCurrentText:&_omniboxTextModel->current_match
        alternateNavigationURL:nullptr];
   _omniboxTextModel->paste_state = OmniboxPasteState::kNone;
+}
+
+- (AutocompleteMatch)currentMatch:(GURL*)alternateNavURL {
+  // If we have a valid match use it. Otherwise get one for the current text.
+  AutocompleteMatch match = _omniboxTextModel->current_match;
+  if (!match.destination_url.is_valid()) {
+    [self getInfoForCurrentText:&match alternateNavigationURL:alternateNavURL];
+  } else if (alternateNavURL) {
+    AutocompleteProviderClient* provider_client =
+        _omniboxController->autocomplete_controller()
+            ->autocomplete_provider_client();
+    *alternateNavURL = AutocompleteResult::ComputeAlternateNavUrl(
+        _omniboxTextModel->input, match, provider_client);
+  }
+  return match;
+}
+
+- (void)onTextChanged {
+  // Don't call CurrentMatch() when there's no editing, as in this case we'll
+  // never actually use it.  This avoids running the autocomplete providers (and
+  // any systems they then spin up) during startup.
+  const AutocompleteMatch& current_match =
+      _omniboxTextModel->user_input_in_progress ? [self currentMatch:nullptr]
+                                                : AutocompleteMatch();
+
+  _omniboxClient->OnTextChanged(
+      current_match, _omniboxTextModel->user_input_in_progress,
+      _omniboxTextModel->user_text,
+      _omniboxController->autocomplete_controller()->result(),
+      _omniboxTextModel->HasFocus());
 }
 
 #pragma mark - Autocomplete events
@@ -811,8 +839,8 @@ const char kOmniboxFocusResultedInNavigation[] =
     [self startAutocompleteAfterEdit];
   }
 
-  if (notifyTextChanged && _omniboxEditModel) {
-    _omniboxEditModel->OnChanged();
+  if (notifyTextChanged) {
+    [self onTextChanged];
   }
 
   [self setCaretPos:caretPos];
@@ -895,9 +923,7 @@ const char kOmniboxFocusResultedInNavigation[] =
       _omniboxEditModel &&
       _omniboxEditModel->OnAfterPossibleChange(state_changes);
 
-  if (_omniboxEditModel) {
-    _omniboxEditModel->OnChanged();
-  }
+  [self onTextChanged];
 
   // TODO(crbug.com/379695536): Find a different place to call this. Give the
   // omnibox a chance to update the alignment for a text direction change.

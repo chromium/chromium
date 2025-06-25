@@ -24,22 +24,8 @@ bool TestOmniboxEditModelIOS::PopupIsOpen() const {
   return popup_is_open_;
 }
 
-AutocompleteMatch TestOmniboxEditModelIOS::CurrentMatch(
-    GURL* alternate_nav_url) const {
-  if (override_current_match_) {
-    return *override_current_match_;
-  }
-
-  return OmniboxEditModelIOS::CurrentMatch(alternate_nav_url);
-}
-
 void TestOmniboxEditModelIOS::SetPopupIsOpen(bool open) {
   popup_is_open_ = open;
-}
-
-void TestOmniboxEditModelIOS::SetCurrentMatchForTest(
-    const AutocompleteMatch& match) {
-  override_current_match_ = std::make_unique<AutocompleteMatch>(match);
 }
 
 void TestOmniboxEditModelIOS::OnPopupDataChanged(
