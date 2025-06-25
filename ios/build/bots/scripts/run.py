@@ -106,7 +106,6 @@ class Runner():
     """
     summary = {}
     tr = None
-    is_legacy_xcode = True
     self.parse_args(args)
 
     # If xcode already exists in /Applications, then use that instead of
@@ -119,7 +118,7 @@ class Runner():
     try:
       with measures.time_consumption('mac_toolchain', 'Download and Install',
                                      'Xcode and Runtime'):
-        install_success, is_legacy_xcode = xcode.install_xcode(
+        install_success = xcode.install_xcode(
             self.args.mac_toolchain_cmd, self.args.xcode_build_version,
             self.args.xcode_path, self.args.runtime_cache_prefix,
             self.args.version)

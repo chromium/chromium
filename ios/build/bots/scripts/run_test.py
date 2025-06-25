@@ -705,7 +705,7 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
   @mock.patch('xcodebuild_runner.SimulatorParallelTestRunner')
   @mock.patch('xcode_util.construct_runtime_cache_folder', autospec=True)
   @mock.patch(
-      'xcode_util.install_xcode', autospec=True, return_value=(False, True))
+      'xcode_util.install_xcode', autospec=True, return_value=False)
   @mock.patch('xcode_util.move_runtime', autospec=True)
   @mock.patch('xcode_util.check_xcode_exists_in_apps', return_value=False)
   @mock.patch('shutil.rmtree')

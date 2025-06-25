@@ -548,9 +548,7 @@ def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
   """Installs the requested Xcode build version.
 
     Returns:
-      (bool, bool)
-        First bool: True if installation was successful. False otherwise.
-        Second bool: True if Xcode is legacy package. False if it's new.
+      True if installation was successful. False otherwise.
     """
   if is_local_run():
     validate_local_xcode_install(xcode_build_version)
@@ -567,7 +565,7 @@ def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
             ' %s. CIPD is possibly not installed locally or the '
             'CIPD infra_internal repository cannot be accessed.',
             xcode_build_version, ios_version)
-    return (True, False)
+    return True
 
   # crbug.com/406819704: this is necessary when multiple versions of
   # xcodes exist in /Applications.
@@ -598,7 +596,7 @@ def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
     # includes iOS runtimes).
     # Update as of 2023: for MacOS13+, iOS runtime will not be installed in
     # install(). See install_runtime_dmg below().
-    is_legacy_xcode = install(
+    install(
         mac_toolchain_cmd,
         xcode_build_version,
         xcode_path,
@@ -618,9 +616,9 @@ def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
     sys.stderr.write('Xcode build version %s failed to install: %s\n' %
                      (xcode_build_version, e))
     sys.stderr.flush()
-    return False, False
+    return False
   else:
-    return True, is_legacy_xcode
+    return True
 
 
 def check_xcode_exists_in_apps(xcode_version):
