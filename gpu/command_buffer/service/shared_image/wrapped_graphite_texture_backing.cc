@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
@@ -156,7 +157,9 @@ WrappedGraphiteTextureBacking::WrappedGraphiteTextureBacking(
   CHECK(context_state_);
   CHECK(context_state_->graphite_shared_context());
 
-  if (is_thread_safe()) {
+  // TODO:crbug.com/427657657 - Implement a generic solution to handle all
+  // SkImage release callbacks through GraphiteSharedContext.
+  if (is_thread_safe() || features::IsGraphiteContextThreadSafe()) {
     // If the backing is thread safe then it may be destroyed on a different
     // thread. Store the task runner so textures can be destroyed on the same
     // thread they were created on.
