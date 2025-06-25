@@ -114,10 +114,12 @@ id<GREYMatcher> LocalBannerLabelsMatcher() {
       grey_accessibilityLabel(bannerLabel), nil);
 }
 
-id<GREYMatcher> UploadBannerLabelsMatcher() {
+id<GREYMatcher> UploadBannerLabelsMatcher(bool is_bottomsheet_enabled = true) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  NSString* title =
-      l10n_util::GetNSString(IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3);
+  NSString* title = l10n_util::GetNSString(
+      is_bottomsheet_enabled
+          ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
+          : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3);
 #else
   NSString* title =
       l10n_util::GetNSString(IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD);
@@ -503,7 +505,8 @@ void FillAndSubmitXframeCreditCardForm() {
 
   // Wait until the save card infobar becomes visible.
   GREYAssert(
-      [self waitForUIElementToAppearWithMatcher:UploadBannerLabelsMatcher()],
+      [self waitForUIElementToAppearWithMatcher:
+                UploadBannerLabelsMatcher(/*is_bottomsheet_enabled=*/false)],
       @"Save card infobar failed to show.");
 
   [self removeInfoBar];
@@ -559,7 +562,8 @@ void FillAndSubmitXframeCreditCardForm() {
 
   // Wait until the save card infobar becomes visible.
   GREYAssert(
-      [self waitForUIElementToAppearWithMatcher:UploadBannerLabelsMatcher()],
+      [self waitForUIElementToAppearWithMatcher:
+                UploadBannerLabelsMatcher(/*is_bottomsheet_enabled=*/false)],
       @"Save card infobar failed to show.");
 
   [self removeInfoBar];
@@ -607,8 +611,7 @@ void FillAndSubmitXframeCreditCardForm() {
 // with partial data (only card number and expiration date) and that Google
 // Payments server is queried to request card upload. Due to partial data,
 // instead of bottomsheet, infobar will be shown.
-// TODO(crbug.com/419219302): Test is flaky.
-- (void)DISABLED_testOfferUpstream_PartialData_PaymentsAccepts {
+- (void)testOfferUpstream_PartialData_PaymentsAccepts {
   [self fillAndSubmitFormWithID:kFillPartialFormId
                paymentsResponse:kResponseGetUploadDetailsSuccess
                       errorCode:net::HTTP_OK
@@ -624,8 +627,7 @@ void FillAndSubmitXframeCreditCardForm() {
 
 // Ensures that UMA metrics are correctly logged when the user declines upload
 // on a bottomsheet and an infobar.
-// TODO(crbug.com/419219302): Test is flaky.
-- (void)DISABLED_testUMA_Upstream_UserDeclinesBottomSheetAndInfobar {
+- (void)testUMA_Upstream_UserDeclinesBottomSheetAndInfobar {
   // Form submitted with full credit card data and no previous strikes offers
   // upstream save in a bottomsheet.
   [self fillAndSubmitFormWithID:kFillFullFormId
@@ -652,6 +654,9 @@ void FillAndSubmitXframeCreditCardForm() {
   if (error) {
     GREYFail([error description]);
   }
+
+  // Wait a bit before re-submitting the form.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2));
 
   // Submit the credit card form again to be offered card upload in a save card
   // infobar.
@@ -698,8 +703,7 @@ void FillAndSubmitXframeCreditCardForm() {
 // Ensures that UMA metrics are correctly logged when the user declines upload
 // on a bottomsheet and accepts when offered infobar. On accept, ensures that an
 // UploadCardRequest RPC is sent to Google Payments Server.
-// TODO(crbug.com/419219302): Test is flaky.
-- (void)DISABLED_testUMA_Upstream_UserDeclinesBottomSheetAcceptsInfobar {
+- (void)testUMA_Upstream_UserDeclinesBottomSheetAcceptsInfobar {
   // Form submitted with full credit card data and no previous strikes offers
   // card upload in a bottomsheet.
   [self fillAndSubmitFormWithID:kFillFullFormId
@@ -733,6 +737,9 @@ void FillAndSubmitXframeCreditCardForm() {
   if (error) {
     GREYFail([error description]);
   }
+
+  // Wait a bit before re-submitting the form.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2));
 
   // Submit the credit card form again to be offered card upload in a save card
   // infobar.
