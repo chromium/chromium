@@ -5898,10 +5898,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWaylandPerWindowScalingDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kWaylandPerSurfaceScale)},
 
-    {"wayland-text-input-v3", flag_descriptions::kWaylandTextInputV3Name,
-     flag_descriptions::kWaylandTextInputV3Description, kOsLinux,
-     FEATURE_VALUE_TYPE(features::kWaylandTextInputV3)},
-
     {"wayland-ui-scaling", flag_descriptions::kWaylandUiScalingName,
      flag_descriptions::kWaylandUiScalingDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kWaylandUiScale)},

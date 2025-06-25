@@ -10279,17 +10279,6 @@
     "expiry_milestone": 146
   },
   {
-    "name": "wayland-text-input-v3",
-    "owners": [
-      "orko@igalia.com",
-      "nickdiego@igalia.com",
-      "hidehiko@chromium.org",
-      "fangzhoug@chromium.org",
-      "thomasanderson@chromium.org"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "wayland-ui-scaling",
     "owners": [ "nickdiego@igalia.com", "fangzhoug@chromium.org", "thomasanderson@chromium.org"],
     "expiry_milestone": 141

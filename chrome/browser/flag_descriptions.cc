@@ -8361,10 +8361,6 @@ const char kWaylandSessionManagementName[] = "Wayland session management";
 const char kWaylandSessionManagementDescription[] =
     "Enable Wayland's xx/xdg-session-management-v1 experimental support.";
 
-const char kWaylandTextInputV3Name[] = "Wayland text-input-v3";
-const char kWaylandTextInputV3Description[] =
-    "Enable Wayland's text-input-v3 experimental support.";
-
 const char kWaylandUiScalingName[] = "Wayland UI scaling";
 const char kWaylandUiScalingDescription[] =
     "Enable experimental support for text scaling in the Wayland backend "
