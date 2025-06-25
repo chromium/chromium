@@ -1481,6 +1481,18 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePermissionService, host));
   map->Add<blink::mojom::FileBackedBlobFactory>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindFileBackedBlobFactory, host));
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kServiceWorkerInDedicatedWorker) &&
+      base::FeatureList::IsEnabled(
+          blink::features::kServiceWorkerBackgroundSyncInDedicatedWorker)) {
+    map->Add<blink::mojom::OneShotBackgroundSyncService>(
+        BindWorkerReceiverForOrigin(
+            &RenderProcessHostImpl::CreateOneShotSyncService, host));
+    map->Add<blink::mojom::PeriodicBackgroundSyncService>(
+        BindWorkerReceiverForOrigin(
+            &RenderProcessHostImpl::CreatePeriodicSyncService, host));
+  }
 }
 
 void PopulateBinderMap(DedicatedWorkerHost* host, mojo::BinderMap* map) {

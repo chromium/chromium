@@ -4544,6 +4544,13 @@
       base_feature: "none",
     },
     {
+      // Support for Service Worker background sync APIs in Dedicated Workers.
+      // See https://chromestatus.com/feature/6497653025931264
+      // See https://issues.chromium.org/issues/40364838
+      name: "ServiceWorkerBackgroundSyncInDedicatedWorker",
+      depends_on: ["ServiceWorkerInDedicatedWorker"],
+    },
+    {
       name: "ServiceWorkerClientLifecycleState",
       status: "experimental",
     },
