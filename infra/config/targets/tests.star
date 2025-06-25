@@ -1926,6 +1926,15 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "optimization_guide_services_unittests",
+    args = [
+        "--gtest_filter=*WebNN*",
+        "--use-gpu-in-tests",
+    ],
+    binary = "services_unittests",
+)
+
+targets.tests.gtest_test(
     name = "optimization_guide_unittests",
 )
 

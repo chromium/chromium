@@ -1447,6 +1447,14 @@ targets.legacy_basic_suite(
                 "--use-xvfb",
             ],
         ),
+        "optimization_guide_services_unittests": targets.legacy_test_config(
+            args = [
+                "--ui-test-action-timeout=30000",
+            ],
+            linux_args = [
+                "--no-xvfb",
+            ],
+        ),
     },
 )
 
