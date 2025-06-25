@@ -1499,7 +1499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ContentEncodingType2" enum="ContentEncodingType"
-    expires_after="2025-07-06">
+    expires_after="2026-07-06">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -7980,7 +7980,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ZstdFilter.CompressionRatio" units="%"
-    expires_after="2025-09-07">
+    expires_after="2026-06-25">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -7989,7 +7989,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ZstdFilter.ErrorCode" enum="ZstdFilterErrorCode"
-    expires_after="2024-12-30">
+    expires_after="2026-06-25">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -7997,11 +7997,14 @@ chromium-metrics-reviews@google.com.
     stream from the network. Recorded once per layer of Zstd compression that
     encountered a decoding error. See Net.ZstdFilter.Status to get the overall
     error rate.
+
+    Warning: this histogram was expired from 2024-12-31 to 2025-06-25; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.ZstdFilter.MaxMemoryUsage" units="KB"
-    expires_after="2025-10-26">
+    expires_after="2026-06-25">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -8013,13 +8016,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ZstdFilter.Status" enum="ZstdFilterDecodingStatus"
-    expires_after="2025-05-04">
+    expires_after="2026-06-25">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The final state of the ZstdFilter. Recorded once per layer of Zstd
     compression (usually once per zstd-compressed response), at the end of
     decoding.
+
+    Warning: this histogram was expired from 2025-05-05 to 2025-06-25; data may
+    be missing.
   </summary>
 </histogram>
 

@@ -2564,7 +2564,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Zstd.PaintTiming.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2026-06-25">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2578,7 +2578,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Zstd.PaintTiming.NavigationToLargestContentfulPaint"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2026-06-25">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2594,7 +2594,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Zstd.ParseTiming.NavigationToParseStart"
-    units="ms" expires_after="2025-04-06">
+    units="ms" expires_after="2026-06-25">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2602,6 +2602,9 @@ chromium-metrics-reviews@google.com.
     parser started, for page loads that can use zstd. Only recorded for
     navigations that start in the foreground and stay in the foreground until
     parse start. This metric is emitted when the parser starts for a navigation.
+
+    Warning: this histogram was expired from 2025-04-07 to 2025-06-25; data may
+    be missing.
   </summary>
 </histogram>
 
