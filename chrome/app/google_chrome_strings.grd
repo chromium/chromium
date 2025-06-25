@@ -677,6 +677,12 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_UNINSTALL_BUTTON_TEXT" desc="Label for uninstall button on Uninstall confirmation dialog.">
           Uninstall
         </message>
+        <message name="IDS_PIN_INFOBAR_TEXT" desc="Text to show in an infobar when Chrome is not pinned to the taskbar.">
+          Pin Chrome to your taskbar to get to it quickly anytime
+        </message>
+        <message name="IDS_PIN_INFOBAR_BUTTON" desc="Label for the button on an infobar offering to pin Chrome to the taskbar. Pins Chrome when clicked.">
+          Pin Chrome
+        </message>
       </if>
       <message name="IDS_DEFAULT_BROWSER_INFOBAR_TEXT" desc="Text to show in an infobar when Google Chrome is not the current default browser.">
         Google Chrome isn't your default browser
