@@ -25,7 +25,7 @@ namespace content {
 
 // Common task queues for browser threads. This class holds all the queues
 // needed by browser threads. This makes it easy for all browser threads to have
-// the same queues. Thic class also provides a Handler to act on the queues from
+// the same queues. This class also provides a Handler to act on the queues from
 // any thread.
 //
 // Instances must be created and destroyed on the same thread as the
@@ -76,7 +76,11 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // For before unload navigation continuation tasks.
     kBeforeUnloadBrowserResponse,
 
-    kMaxValue = kBeforeUnloadBrowserResponse
+    // Tasks that are critical for startup performance. Note that tasks in other
+    // queues may run during startup too.
+    kStartup,
+
+    kMaxValue = kStartup
   };
 
   static constexpr size_t kNumQueueTypes =

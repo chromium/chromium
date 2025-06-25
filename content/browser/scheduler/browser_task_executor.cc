@@ -52,6 +52,9 @@ scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForAndroidMainThread(
     case ::TaskTraits::UI_USER_BLOCKING:
       traits = {base::TaskPriority::USER_BLOCKING};
       break;
+    case ::TaskTraits::UI_STARTUP:
+      traits = {BrowserTaskType::kStartup};
+      break;
     default:
       NOTREACHED();
   }
@@ -100,6 +103,9 @@ QueueType BrowserTaskExecutor::GetQueueType(const BrowserTaskTraits& traits) {
         return QueueType::kBeforeUnloadBrowserResponse;
       }
       break;
+
+    case BrowserTaskType::kStartup:
+      return QueueType::kStartup;
 
     case BrowserTaskType::kDefault:
       // Defer to traits.priority() below.
@@ -158,6 +164,8 @@ void BrowserTaskExecutor::CreateInternal(
   // required for WebView's async startup to work properly.
   g_browser_task_executor->browser_io_thread_handle_->EnableTaskQueue(
       QueueType::kDefault);
+  g_browser_task_executor->browser_ui_thread_handle_->EnableTaskQueue(
+      QueueType::kStartup);
 
   base::OnceClosure enable_native_ui_task_execution_callback =
       base::BindOnce([] {

@@ -134,6 +134,8 @@ TEST_F(BrowserTaskExecutorTest, BrowserTaskTraitsMapToProperPriorities) {
             QueueType::kServiceWorkerStorageControlResponse);
 
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({}), QueueType::kUserBlocking);
+  EXPECT_EQ(BrowserTaskExecutor::GetQueueType({BrowserTaskType::kStartup}),
+            QueueType::kStartup);
 }
 
 TEST_F(BrowserTaskExecutorTest, UIThreadTaskRunnerHasSamePriorityAsUIBlocking) {
@@ -188,26 +190,24 @@ class BrowserTaskExecutorWithCustomSchedulerTest : public testing::Test {
 };
 
 TEST_F(BrowserTaskExecutorWithCustomSchedulerTest,
-       UserVisibleOrBlockingTasksRunDuringStartup) {
+       AllTasksExceptBestEffortRunDuringStartup) {
   StrictMockTask best_effort;
   StrictMockTask user_visible;
   StrictMockTask user_blocking;
+  StrictMockTask startup;
 
   GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(FROM_HERE,
-
-                 best_effort.Get());
+      ->PostTask(FROM_HERE, best_effort.Get());
   GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
-      ->PostTask(FROM_HERE,
-
-                 user_visible.Get());
+      ->PostTask(FROM_HERE, user_visible.Get());
   GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
-      ->PostTask(FROM_HERE,
-
-                 user_blocking.Get());
+      ->PostTask(FROM_HERE, user_blocking.Get());
+  GetUIThreadTaskRunner({BrowserTaskType::kStartup})
+      ->PostTask(FROM_HERE, startup.Get());
 
   EXPECT_CALL(user_visible, Run);
   EXPECT_CALL(user_blocking, Run);
+  EXPECT_CALL(startup, Run);
 
   task_environment_.RunUntilIdle();
 }

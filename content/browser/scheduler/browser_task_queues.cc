@@ -69,6 +69,8 @@ QueueName GetUITaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return QueueName::UI_SERVICE_WORKER_STORAGE_CONTROL_RESPONSE_TQ;
     case BrowserTaskQueues::QueueType::kBeforeUnloadBrowserResponse:
       return QueueName::UI_BEFORE_UNLOAD_BROWSER_RESPONSE_TQ;
+    case BrowserTaskQueues::QueueType::kStartup:
+      return QueueName::UI_STARTUP_TQ;
   }
 }
 
@@ -90,6 +92,8 @@ QueueName GetIOTaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return QueueName::IO_SERVICE_WORKER_STORAGE_CONTROL_RESPONSE_TQ;
     case BrowserTaskQueues::QueueType::kBeforeUnloadBrowserResponse:
       return QueueName::IO_BEFORE_UNLOAD_BROWSER_RESPONSE_TQ;
+    case BrowserTaskQueues::QueueType::kStartup:
+      return QueueName::IO_STARTUP_TQ;
   }
 }
 

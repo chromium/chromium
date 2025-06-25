@@ -100,6 +100,8 @@ std::unique_ptr<TaskRunnerAndroid> TaskRunnerAndroid::Create(
     case ::TaskTraits::UI_USER_VISIBLE:
       [[fallthrough]];
     case ::TaskTraits::UI_USER_BLOCKING:
+      [[fallthrough]];
+    case ::TaskTraits::UI_STARTUP:
       use_thread_pool = false;
       break;
   }

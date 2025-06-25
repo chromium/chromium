@@ -40,7 +40,12 @@ enum TaskTraits {
   UI_USER_VISIBLE = UI_TRAITS_START + 1,
   UI_USER_BLOCKING = UI_TRAITS_START + 2,
   UI_DEFAULT = UI_USER_VISIBLE,
-  UI_TRAITS_END = UI_USER_BLOCKING
+  // Tasks that are critical for an embedder's startup performance. While other
+  // tasks may also run during the startup phase, this queue allows an embedder
+  // to apply certain constraints on other task queues until these critical
+  // startup tasks are finished.
+  UI_STARTUP = UI_TRAITS_START + 3,
+  UI_TRAITS_END = UI_STARTUP
 };
 
 #endif  // BASE_ANDROID_TASK_SCHEDULER_TASK_TRAITS_ANDROID_H_

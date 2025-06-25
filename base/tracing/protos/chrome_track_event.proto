@@ -1031,6 +1031,9 @@ message SequenceManagerTask {
 
     NETWORK_SERVICE_THREAD_HIGH_TQ = 58;
     NETWORK_SERVICE_THREAD_DEFAULT_TQ = 59;
+
+    UI_STARTUP_TQ = 60;
+    IO_STARTUP_TQ = 61;
   }
 
   optional Priority priority = 1;
