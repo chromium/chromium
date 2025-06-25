@@ -12,7 +12,9 @@
 #include "content/browser/renderer_host/render_widget_host_view_ios.h"
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink_provider.h"
 
-@interface RenderWidgetUIView : CALayerFrameSinkProvider <UITextFieldDelegate> {
+@interface RenderWidgetUIView
+    : CALayerFrameSinkProvider <UITextFieldDelegate,
+                                UIGestureRecognizerDelegate> {
   base::WeakPtr<content::RenderWidgetHostViewIOS> _view;
 
   // Contrary to what Apple's documentation says, on tvOS calling

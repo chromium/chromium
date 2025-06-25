@@ -18,6 +18,18 @@ static void* kObservingContext = &kObservingContext;
 
 namespace {
 
+typedef NS_ENUM(NSInteger, NavigationDirection) {
+  kUp,
+  kDown,
+  kLeft,
+  kRight,
+  kNone
+};
+
+// The minimum velocity to generate left/right direction events from
+// UIPanGestureRecognizer.
+const CGFloat kMinVelocity = 100;
+
 UIKeyboardType keyboardTypeForInputType(ui::TextInputType inputType) {
   // TODO(crbug.com/411452047): Implement textFieldShouldEndEditing to detect
   // invalid contents in the text field. When texts are inserted via a H/W
@@ -52,37 +64,41 @@ UIKeyboardType keyboardTypeForInputType(ui::TextInputType inputType) {
     self.autoresizingMask =
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
+    // tvOS supports multiple types of input events from the Remote, including
+    // the clickpad (touch surface), the clickpad ring (directional control),
+    // and various physical buttons.
+    // Add a tap gesture recognizer to handle center-clickpad press events.
     UITapGestureRecognizer* tapGesture =
         [[UITapGestureRecognizer alloc] initWithTarget:self
                                                 action:@selector(tapGesture:)];
     [self addGestureRecognizer:tapGesture];
 
-    UISwipeGestureRecognizer* swipeLeftGesture =
-        [[UISwipeGestureRecognizer alloc]
-            initWithTarget:self
-                    action:@selector(swipeGesture:)];
-    swipeLeftGesture.direction = UISwipeGestureRecognizerDirectionLeft;
-    [self addGestureRecognizer:swipeLeftGesture];
+    // Create and add swipe gesture recognizers for all directions originating
+    // from the clickpad buttons.
+    [self addSwipeGestureRecognizerWithDirection:
+              UISwipeGestureRecognizerDirectionUp];
+    [self addSwipeGestureRecognizerWithDirection:
+              UISwipeGestureRecognizerDirectionLeft];
+    [self addSwipeGestureRecognizerWithDirection:
+              UISwipeGestureRecognizerDirectionRight];
+    [self addSwipeGestureRecognizerWithDirection:
+              UISwipeGestureRecognizerDirectionDown];
 
-    UISwipeGestureRecognizer* swipeRightGesture =
-        [[UISwipeGestureRecognizer alloc]
-            initWithTarget:self
-                    action:@selector(swipeGesture:)];
-    swipeRightGesture.direction = UISwipeGestureRecognizerDirectionRight;
-    [self addGestureRecognizer:swipeRightGesture];
+    // Add a pan gesture recognizer to capture input from the clickpad ring,
+    // which allows for continuous movement to the left or right.
+    UIPanGestureRecognizer* panGesture =
+        [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(handlePan:)];
+    panGesture.delegate = self;
+    [self addGestureRecognizer:panGesture];
 
-    UISwipeGestureRecognizer* swipeUpGesture = [[UISwipeGestureRecognizer alloc]
-        initWithTarget:self
-                action:@selector(swipeGesture:)];
-    swipeUpGesture.direction = UISwipeGestureRecognizerDirectionUp;
-    [self addGestureRecognizer:swipeUpGesture];
-
-    UISwipeGestureRecognizer* swipeDownGesture =
-        [[UISwipeGestureRecognizer alloc]
-            initWithTarget:self
-                    action:@selector(swipeGesture:)];
-    swipeDownGesture.direction = UISwipeGestureRecognizerDirectionDown;
-    [self addGestureRecognizer:swipeDownGesture];
+    // Only allow the pan gesture to activate if the swipe gesture fails to
+    // recognize.
+    for (UIGestureRecognizer* swipeGesture in self.gestureRecognizers) {
+      if ([swipeGesture isKindOfClass:[UISwipeGestureRecognizer class]]) {
+        [panGesture requireGestureRecognizerToFail:swipeGesture];
+      }
+    }
   }
   return self;
 }
@@ -136,6 +152,17 @@ UIKeyboardType keyboardTypeForInputType(ui::TextInputType inputType) {
 
 #pragma mark - Private
 
+// Helper method to add swipe gestures for `direction`.
+- (void)addSwipeGestureRecognizerWithDirection:
+    (UISwipeGestureRecognizerDirection)direction {
+  UISwipeGestureRecognizer* swipeGesture = [[UISwipeGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(swipeGesture:)];
+  swipeGesture.direction = direction;
+  swipeGesture.delegate = self;
+  [self addGestureRecognizer:swipeGesture];
+}
+
 - (void)tapGesture:(UIGestureRecognizer*)gestureRecognizer {
   if ([gestureRecognizer state] != UIGestureRecognizerStateEnded) {
     return;
@@ -179,38 +206,99 @@ UIKeyboardType keyboardTypeForInputType(ui::TextInputType inputType) {
     return;
   }
 
-  const UISwipeGestureRecognizerDirection direction =
-      gestureRecognizer.direction;
+  NavigationDirection direction = kNone;
+  switch (gestureRecognizer.direction) {
+    case UISwipeGestureRecognizerDirectionLeft:
+      direction = kLeft;
+      break;
+    case UISwipeGestureRecognizerDirectionRight:
+      direction = kRight;
+      break;
+    case UISwipeGestureRecognizerDirectionUp:
+      direction = kUp;
+      break;
+    case UISwipeGestureRecognizerDirectionDown:
+      direction = kDown;
+      break;
+  }
+  [self sendKeyEventWithDirection:direction];
+}
 
+- (void)handlePan:(UIPanGestureRecognizer*)gesture {
+  CGPoint velocity = [gesture velocityInView:self];
+
+  // Detect left and right swipes with the velocity.
+  if (gesture.state == UIGestureRecognizerStateEnded ||
+      gesture.state == UIGestureRecognizerStateChanged) {
+    // Use `kMinVelocity` to avoid excessive events.
+    if (velocity.x > kMinVelocity) {
+      [self sendKeyEventWithDirection:kRight];
+    } else if (velocity.x < -kMinVelocity) {
+      [self sendKeyEventWithDirection:kLeft];
+    }
+  }
+}
+
+// Generates four-directional events when buttons on the clickpad ring are
+// pressed.
+- (void)pressesEnded:(NSSet<UIPress*>*)presses
+           withEvent:(UIPressesEvent*)event {
+  for (UIPress* press in presses) {
+    NavigationDirection direction = kNone;
+    switch (press.type) {
+      case UIPressTypeUpArrow:
+        direction = kUp;
+        break;
+      case UIPressTypeDownArrow:
+        direction = kDown;
+        break;
+      case UIPressTypeLeftArrow:
+        direction = kLeft;
+        break;
+      case UIPressTypeRightArrow:
+        direction = kRight;
+        break;
+      default:
+        [super pressesEnded:presses withEvent:event];
+        break;
+    }
+    [self sendKeyEventWithDirection:direction];
+  }
+}
+
+// Helper method to generate WebKeyboardEvent with `direction`.
+- (void)sendKeyEventWithDirection:(NavigationDirection)direction {
   blink::WebKeyboardEvent event(blink::WebInputEvent::Type::kKeyDown,
                                 blink::WebInputEvent::kNoModifiers,
                                 ui::EventTimeForNow());
 
   switch (direction) {
-    case UISwipeGestureRecognizerDirectionLeft:
+    case kLeft:
       event.native_key_code = UIKeyboardHIDUsageKeyboardLeftArrow;
       event.dom_code = static_cast<int>(ui::DomCode::ARROW_LEFT);
       event.dom_key = ui::DomKey::ARROW_LEFT;
       event.windows_key_code = ui::VKEY_LEFT;
       break;
-    case UISwipeGestureRecognizerDirectionRight:
+    case kRight:
       event.native_key_code = UIKeyboardHIDUsageKeyboardRightArrow;
       event.dom_code = static_cast<int>(ui::DomCode::ARROW_RIGHT);
       event.dom_key = ui::DomKey::ARROW_RIGHT;
       event.windows_key_code = ui::VKEY_RIGHT;
       break;
-    case UISwipeGestureRecognizerDirectionUp:
+    case kUp:
       event.native_key_code = UIKeyboardHIDUsageKeyboardUpArrow;
       event.dom_code = static_cast<int>(ui::DomCode::ARROW_UP);
       event.dom_key = ui::DomKey::ARROW_UP;
       event.windows_key_code = ui::VKEY_UP;
       break;
-    case UISwipeGestureRecognizerDirectionDown:
+    case kDown:
       event.native_key_code = UIKeyboardHIDUsageKeyboardDownArrow;
       event.dom_code = static_cast<int>(ui::DomCode::ARROW_DOWN);
       event.dom_key = ui::DomKey::ARROW_DOWN;
       event.windows_key_code = ui::VKEY_DOWN;
       break;
+    case kNone:
+      return;
   }
 
   _view->SendKeyEvent(
@@ -324,6 +412,14 @@ UIKeyboardType keyboardTypeForInputType(ui::TextInputType inputType) {
   }
 
   [self hideAndDeleteKeyboard];
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  return YES;
 }
 
 #pragma mark - UIView
