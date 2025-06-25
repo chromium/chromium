@@ -25,11 +25,7 @@ FooterContextMenu::FooterContextMenu(Profile* profile)
     : ui::SimpleMenuModel(this), profile_(profile) {
   const int icon_size = 16;
   AddItemWithIcon(
-      COMMAND_CLOSE_FOOTER,
-      // TODO(crbug.com/424872616): Change string.
-      l10n_util::GetStringFUTF16(
-          IDS_NTP_MODULES_DISMISS_BUTTON_TEXT,
-          l10n_util::GetStringUTF16(IDS_NEW_TAB_FOOTER_NAME)),
+      COMMAND_CLOSE_FOOTER, l10n_util::GetStringUTF16(IDS_HIDE_NEW_TAB_FOOTER),
       ui::ImageModel::FromVectorIcon(vector_icons::kVisibilityOffIcon,
                                      ui::kColorIcon, icon_size));
   SetElementIdentifierAt(GetIndexOfCommandId(COMMAND_CLOSE_FOOTER).value(),
