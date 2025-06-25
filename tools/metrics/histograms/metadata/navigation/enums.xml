@@ -1955,7 +1955,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(WebSchedulerTrackedFeature)-->
 
 <enum name="WebSchedulerTrackedFeature">
-<!-- Generated from third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h.
+<!-- Generated from third_party/blink/public/mojom/scheduler/web_scheduler_tracked_feature.mojom.
 Called by update_scheduler_enums.py.-->
 
   <int value="0" label="WebSocket"/>
@@ -2032,7 +2032,7 @@ Called by update_scheduler_enums.py.-->
   <int value="71" label="SharedWorkerMessage"/>
 </enum>
 
-<!-- LINT.ThenChange(//third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h:WebSchedulerTrackedFeature)-->
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/scheduler/web_scheduler_tracked_feature.mojom:WebSchedulerTrackedFeature)-->
 
 </enums>
 

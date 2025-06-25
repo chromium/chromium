@@ -369,7 +369,7 @@ BackForwardCacheBlockingDetails CreateBlockingDetails(
   BackForwardCacheBlockingDetails feature_vector;
   for (auto feature : features) {
     auto feature_info = BlockingDetails::New();
-    feature_info->feature = static_cast<uint32_t>(feature);
+    feature_info->feature = feature;
     feature_vector.push_back(std::move(feature_info));
   }
   return feature_vector;

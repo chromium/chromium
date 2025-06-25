@@ -6,14 +6,13 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/script_source_location.mojom";
 import "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom";
+import "third_party/blink/public/mojom/scheduler/web_scheduler_tracked_feature.mojom";
 
 // This struct contains detailed information about a WebSchedulerTrackedFeature.
 struct BlockingDetails {
   // The index of WebSchedulerTrackedFeature; the value set must correspond to the
   // WebSchedulerTrackedFeature enum.
-  // TODO(crbug.com/1522767): Use enum instead of uint32 or have validation to
-  // really avoid unintended messages.
-  uint32 feature;
+  WebSchedulerTrackedFeature feature;
   // The JavaScript source location of `feature`. This should be null when the
   // feature doesn't involve source location.
   ScriptSourceLocation? source;

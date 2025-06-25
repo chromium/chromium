@@ -17,10 +17,10 @@ from update_histogram_enum import UpdateHistogramEnum
 
 XML_FILE = 'tools/metrics/histograms/metadata/navigation/enums.xml'
 ENUM_NAME = 'WebSchedulerTrackedFeature'
-SOUCRE_FILE = 'third_party/blink/public/common/scheduler/' \
-  'web_scheduler_tracked_feature.h'
-START_MARKER = r'^enum class WebSchedulerTrackedFeature .*\{'
-END_MARKER = r'^kMaxValue'
+SOUCRE_FILE = 'third_party/blink/public/mojom/scheduler/' \
+  'web_scheduler_tracked_feature.mojom'
+START_MARKER = r'^enum WebSchedulerTrackedFeature \{'
+END_MARKER = r'^\};'
 SCRIPT = os.path.basename(__file__)
 
 if __name__ == '__main__':
