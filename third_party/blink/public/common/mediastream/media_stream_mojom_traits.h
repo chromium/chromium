@@ -119,11 +119,6 @@ struct BLINK_COMMON_EXPORT
     return controls.exclude_system_audio;
   }
 
-  static blink::mojom::WindowAudioPreference window_audio_preference(
-      const blink::StreamControls& controls) {
-    return controls.window_audio_preference;
-  }
-
   static bool exclude_self_browser_surface(
       const blink::StreamControls& controls) {
     return controls.exclude_self_browser_surface;
