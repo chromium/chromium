@@ -97,7 +97,6 @@ cast_source_set("browser") {
     "//base",
     "//chromecast/cast_core:cast_core_switches",
     "//chromecast/common:cors_exempt_headers",
-    "//chromecast/media/base:video_plane_controller",
     "//chromecast/metrics:cast_event_builder_simple",
     "//components/url_rewrite/browser",
     "//components/url_rewrite/common",

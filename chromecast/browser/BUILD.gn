@@ -233,7 +233,6 @@ cast_source_set("browser") {
     "//chromecast/media/audio:audio_io_thread",
     "//chromecast/media/audio/audio_output_service:constants",
     "//chromecast/media/base:media_codec_support",
-    "//chromecast/media/base:video_plane_controller",
     "//chromecast/media/cdm:cdm_origin_provider",
     "//chromecast/media/common:media_pipeline_backend_manager",
     "//chromecast/media/service",

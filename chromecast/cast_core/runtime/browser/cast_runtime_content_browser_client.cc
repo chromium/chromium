@@ -12,7 +12,6 @@
 #include "chromecast/cast_core/cast_core_switches.h"
 #include "chromecast/cast_core/runtime/browser/runtime_service_impl.h"
 #include "chromecast/common/cors_exempt_headers.h"
-#include "chromecast/media/base/video_plane_controller.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
@@ -72,12 +71,9 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
     content::BrowserContext* browser_context,
     CastSystemMemoryPressureEvaluatorAdjuster* memory_pressure_adjuster,
     PrefService* pref_service,
-    media::VideoPlaneController* video_plane_controller,
     CastWindowManager* window_manager,
     CastWebService* web_service,
     DisplaySettingsManager* display_settings_manager) {
-  observer_.SetVideoPlaneController(video_plane_controller);
-
   // Unretained() is safe here because this instance will outlive CastService.
   return std::make_unique<CoreCastService>(web_service,
                                            *cast_browser_client_mixins_);
@@ -133,11 +129,6 @@ CastRuntimeContentBrowserClient::CreateURLLoaderThrottles(
 
 CastRuntimeContentBrowserClient::Observer::~Observer() = default;
 
-void CastRuntimeContentBrowserClient::Observer::SetVideoPlaneController(
-    media::VideoPlaneController* video_plane_controller) {
-  video_plane_controller_ = video_plane_controller;
-}
-
 bool CastRuntimeContentBrowserClient::Observer::IsBufferingEnabled() const {
   return is_buffering_enabled_.load();
 }
@@ -156,10 +147,6 @@ void CastRuntimeContentBrowserClient::Observer::OnForegroundApplicationChanged(
 
 void CastRuntimeContentBrowserClient::Observer::OnStreamingResolutionChanged(
     const gfx::Rect& size,
-    const ::media::VideoTransformation& transformation) {
-  if (video_plane_controller_) {
-    video_plane_controller_->SetGeometryFromMediaType(size, transformation);
-  }
-}
+    const ::media::VideoTransformation& transformation) {}
 
 }  // namespace chromecast

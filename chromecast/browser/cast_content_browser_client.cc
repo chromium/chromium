@@ -202,7 +202,6 @@ std::unique_ptr<CastService> CastContentBrowserClient::CreateCastService(
     CastSystemMemoryPressureEvaluatorAdjuster*
         cast_system_memory_pressure_evaluator_adjuster,
     PrefService* pref_service,
-    media::VideoPlaneController* video_plane_controller,
     CastWindowManager* window_manager,
     CastWebService* web_service,
     DisplaySettingsManager* display_settings_manager) {

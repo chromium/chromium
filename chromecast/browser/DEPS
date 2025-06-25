@@ -98,10 +98,6 @@ include_rules = [
   # TODO(slan): Remove this when the network service is shipped on Cast.
   "+services/network",
 
-  # TODO(guohuideng): Separate SetGeometry from VideoPlaneController, and get
-  # rid of the dependency on cast_renderer.h.
-  "+chromecast/media/service/cast_renderer.h",
-
   # For favicon url
   "+third_party/blink/public/mojom/favicon",
 

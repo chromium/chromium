@@ -36,7 +36,6 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
       content::BrowserContext* browser_context,
       CastSystemMemoryPressureEvaluatorAdjuster* memory_pressure_adjuster,
       PrefService* pref_service,
-      media::VideoPlaneController* video_plane_controller,
       CastWindowManager* window_manager,
       CastWebService* web_service,
       DisplaySettingsManager* display_settings_manager) override;
@@ -62,9 +61,6 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
    public:
     ~Observer() override;
 
-    void SetVideoPlaneController(
-        media::VideoPlaneController* video_plane_controller);
-
     bool IsBufferingEnabled() const;
 
    private:
@@ -78,10 +74,6 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
     void OnStreamingResolutionChanged(
         const gfx::Rect& size,
         const ::media::VideoTransformation& transformation) override;
-
-    // Responsible for modifying the resolution of the screen for the embedded
-    // device. Set during the first (and only) call to CreateCastService().
-    raw_ptr<media::VideoPlaneController> video_plane_controller_ = nullptr;
 
     std::atomic_bool is_buffering_enabled_{false};
   };

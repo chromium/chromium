@@ -65,7 +65,6 @@
 #include "chromecast/external_mojo/public/cpp/common.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "chromecast/media/base/key_systems_common.h"
-#include "chromecast/media/base/video_plane_controller.h"
 #include "chromecast/media/common/media_pipeline_backend_manager.h"
 #include "chromecast/media/common/media_resource_tracker.h"
 #include "chromecast/metrics/cast_metrics_service_client.h"
@@ -129,7 +128,6 @@
 #include "chromecast/browser/devtools/cast_ui_devtools.h"
 #include "chromecast/graphics/cast_screen.h"
 #include "chromecast/graphics/cast_window_manager_aura.h"
-#include "chromecast/media/service/cast_renderer.h"  // nogncheck
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "components/ui_devtools/devtools_server.h"  // nogncheck
 #include "components/ui_devtools/switches.h"         // nogncheck
@@ -610,20 +608,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
           cast_browser_process_->browser_client()
               ->EnableRemoteDebuggingImmediately()));
 
-#if defined(USE_AURA) && !BUILDFLAG(IS_CAST_AUDIO_ONLY)
-  // TODO(halliwell) move audio builds to use ozone_platform_cast, then can
-  // simplify this by removing IS_CAST_AUDIO_ONLY condition.  Should then also
-  // assert(ozone_platform_cast) in BUILD.gn where it depends on //ui/ozone.
-  gfx::Size display_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
-  video_plane_controller_.reset(new media::VideoPlaneController(
-      Size(display_size.width(), display_size.height()),
-      cast_content_browser_client_->GetMediaTaskRunner()));
-  media::CastRenderer::SetOverlayCompositedCallback(BindToCurrentThread(
-      base::BindRepeating(&media::VideoPlaneController::SetGeometry,
-                          base::Unretained(video_plane_controller_.get()))));
-#endif
-
 #if defined(USE_AURA)
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -684,9 +668,8 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
   cast_browser_process_->SetCastService(
       cast_browser_process_->browser_client()->CreateCastService(
           cast_browser_process_->browser_context(), nullptr,
-          cast_browser_process_->pref_service(), video_plane_controller_.get(),
-          window_manager_.get(), web_service_.get(),
-          display_settings_manager_.get()));
+          cast_browser_process_->pref_service(), window_manager_.get(),
+          web_service_.get(), display_settings_manager_.get()));
   cast_browser_process_->cast_service()->Initialize();
 
   // Initializing metrics service and network delegates must happen after cast

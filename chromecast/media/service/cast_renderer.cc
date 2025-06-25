@@ -26,8 +26,11 @@
 #include "chromecast/media/cma/pipeline/media_pipeline_impl.h"
 #include "chromecast/media/cma/pipeline/video_pipeline_client.h"
 #include "chromecast/media/service/video_geometry_setter_service.h"
+#include "chromecast/public/cast_media_shlib.h"
+#include "chromecast/public/graphics_types.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
+#include "chromecast/public/video_plane.h"
 #include "chromecast/public/volume_control.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_decoder_config.h"
@@ -370,7 +373,56 @@ void CastRenderer::OnVideoResolutionPolicyChanged() {
 
 void CastRenderer::OnVideoGeometryChange(const gfx::RectF& rect_f,
                                          gfx::OverlayTransform transform) {
-  GetOverlayCompositedCallback().Run(rect_f, transform);
+  if (!task_runner_->BelongsToCurrentThread()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CastRenderer::OnVideoGeometryChange,
+                       weak_factory_.GetWeakPtr(), rect_f, transform));
+    return;
+  }
+
+  VideoPlane* video_plane = CastMediaShlib::GetVideoPlane();
+  if (video_plane == nullptr) {
+    return;
+  }
+
+  VideoPlane::Transform cast_transform = VideoPlane::TRANSFORM_NONE;
+  switch (transform) {
+    case gfx::OVERLAY_TRANSFORM_NONE:
+      cast_transform = VideoPlane::TRANSFORM_NONE;
+      break;
+    case gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL:
+      cast_transform = VideoPlane::FLIP_HORIZONTAL;
+      break;
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL:
+      cast_transform = VideoPlane::FLIP_VERTICAL;
+      break;
+    // For rotations, per the documentation in
+    // //chromecast/public/video_plane.h, cast specifies them in the
+    // anticlockwise direction.
+    //
+    // However, note that the previous cast impl actually ignores this (e.g.
+    // it converts OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90 to ROTATE_90):
+    // https://source.chromium.org/chromium/chromium/src/+/main:chromecast/media/base/video_plane_controller.cc;l=46;drc=5e56f4c4b358b8b16e07a2ba62d07f640300fb9e
+    //
+    // So it's not clear what the "correct" behavior is here. Either the cast
+    // documentation or the original cast impl was wrong.
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
+      cast_transform = VideoPlane::ROTATE_270;
+      break;
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
+      cast_transform = VideoPlane::ROTATE_180;
+      break;
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
+      cast_transform = VideoPlane::ROTATE_90;
+      break;
+    default:
+      LOG(ERROR) << "Unsupported transform: " << transform;
+      return;
+  }
+  video_plane->SetGeometry(
+      RectF(rect_f.x(), rect_f.y(), rect_f.width(), rect_f.height()),
+      cast_transform);
 }
 
 void CastRenderer::OnError(::media::PipelineStatus status) {
@@ -420,12 +472,6 @@ void CastRenderer::OnVideoOpacityChange(bool opaque) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(opaque);
   client_->OnVideoOpacityChange(opaque);
-}
-
-// static
-void CastRenderer::SetOverlayCompositedCallback(
-    const OverlayCompositedCallback& cb) {
-  GetOverlayCompositedCallback() = cb;
 }
 
 }  // namespace media

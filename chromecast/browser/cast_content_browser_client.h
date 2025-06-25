@@ -77,7 +77,6 @@ class CmaBackendFactory;
 class MediaPipelineBackendManager;
 class MediaResourceTracker;
 class VideoGeometrySetterService;
-class VideoPlaneController;
 class VideoModeSwitcher;
 class VideoResolutionPolicy;
 }  // namespace media
@@ -116,7 +115,6 @@ class CastContentBrowserClient
       CastSystemMemoryPressureEvaluatorAdjuster*
           cast_system_memory_pressure_evaluator_adjuster,
       PrefService* pref_service,
-      media::VideoPlaneController* video_plane_controller,
       CastWindowManager* window_manager,
       CastWebService* web_service,
       DisplaySettingsManager* display_settings_manager);
