@@ -58,7 +58,7 @@ void BwgService::PresentOverlayOnViewController(
         expected_page_context.error());
   }
 
-  config.pageContext = std::move(pageContext);
+  config.uniquePageContext = std::move(pageContext);
   ios::provider::StartBwgOverlay(config);
 }
 

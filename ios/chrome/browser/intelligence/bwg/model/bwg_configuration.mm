@@ -9,17 +9,16 @@
 
 @implementation BWGConfiguration {
   // The current configuration's PageContext.
-  std::unique_ptr<optimization_guide::proto::PageContext> _pageContext;
+  std::unique_ptr<optimization_guide::proto::PageContext> _uniquePageContext;
 }
 
-- (std::unique_ptr<optimization_guide::proto::PageContext>)pageContext {
-  CHECK(_pageContext.get());
-  return std::move(_pageContext);
+- (std::unique_ptr<optimization_guide::proto::PageContext>)uniquePageContext {
+  return std::move(_uniquePageContext);
 }
 
-- (void)setPageContext:
-    (std::unique_ptr<optimization_guide::proto::PageContext>)pageContext {
-  _pageContext = std::move(pageContext);
+- (void)setUniquePageContext:
+    (std::unique_ptr<optimization_guide::proto::PageContext>)uniquePageContext {
+  _uniquePageContext = std::move(uniquePageContext);
 }
 
 @end

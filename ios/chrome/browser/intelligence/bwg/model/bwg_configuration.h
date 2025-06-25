@@ -33,7 +33,7 @@ class PageContext;
 // calls to the getter will return a nullptr.
 @property(nonatomic, assign)
     std::unique_ptr<optimization_guide::proto::PageContext>
-        pageContext;
+        uniquePageContext;
 
 // The authentication service to be used.
 @property(nonatomic, assign) AuthenticationService* authService;
