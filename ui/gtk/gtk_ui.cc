@@ -61,6 +61,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
+#include "ui/gfx/linux/fontconfig_util.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/gtk/gtk_color_mixers.h"
 #include "ui/gtk/gtk_compat.h"
@@ -219,6 +220,10 @@ bool GtkUi::Initialize() {
   if (!LoadGtk() || !GtkCheckVersion(3, 20)) {
     return false;
   }
+
+  // Gtk initialization through pango may call FcInit() before we get to that.
+  // Retrieve global FontConfig config here to call FcInit() with configuration we control.
+  gfx::GetGlobalFontConfig();
 
   auto* delegate = ui::LinuxUiDelegate::GetInstance();
   DCHECK(delegate);
