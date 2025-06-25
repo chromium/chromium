@@ -38,9 +38,7 @@ using "--enable-features".  Which features are in use is tracked by UMA metrics,
 and is visible in chrome://version as the "Variations" field. Do note that in
 release builds, only a series of hashes show up in chrome://version rather than
 the string names of the variations, but these hashes can be turned back into
-string names if needed. This is done by consulting [the testing
-config][fieldtrial-config] for Chromium builds, or a Google-internal tool for
-Chrome builds.
+string names if needed. This is done by consulting a Google-internal tool.
 
 *Features are the best way to add runtime conditional behavior.*
 
