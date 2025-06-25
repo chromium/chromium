@@ -25,10 +25,13 @@
 #include "base/memory/scoped_refptr.h"
 #endif
 
+namespace blink {
+class CodePointIterator;
+}
+
 namespace WTF {
 
 class AtomicString;
-class CodePointIterator;
 class String;
 
 enum class Utf8ConversionMode : uint8_t {
@@ -294,8 +297,8 @@ class WTF_EXPORT StringView {
   // * Iterate code points
   //    for (UChar32 code_point : view) {
   //      ...
-  CodePointIterator begin() const;
-  CodePointIterator end() const;
+  blink::CodePointIterator begin() const;
+  blink::CodePointIterator end() const;
 
  private:
   void Set(const StringImpl&, unsigned offset, unsigned length);

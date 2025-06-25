@@ -19,7 +19,7 @@
 #include "base/types/to_address.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
-namespace WTF {
+namespace blink {
 
 //
 // A code point iterator for 8-bits or 16-bits strings.
@@ -155,6 +155,6 @@ inline void CodePointIterator::Utf16::operator++() {
   code_point_length_ = 0;
 }
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_CODE_POINT_ITERATOR_H_

@@ -92,12 +92,12 @@ UChar32 String::CharacterStartingAt(unsigned i) const {
   return impl_->CharacterStartingAt(i);
 }
 
-CodePointIterator String::begin() const {
-  return CodePointIterator(*this);
+blink::CodePointIterator String::begin() const {
+  return blink::CodePointIterator(*this);
 }
 
-CodePointIterator String::end() const {
-  return CodePointIterator::End(*this);
+blink::CodePointIterator String::end() const {
+  return blink::CodePointIterator::End(*this);
 }
 
 void String::Ensure16Bit() {

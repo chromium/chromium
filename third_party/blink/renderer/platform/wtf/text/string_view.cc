@@ -328,12 +328,12 @@ UChar32 StringView::CodePointAtAndNext(unsigned& i) const {
   return WTF::CodePointAtAndNext(Span16(), i);
 }
 
-CodePointIterator StringView::begin() const {
-  return CodePointIterator(*this);
+blink::CodePointIterator StringView::begin() const {
+  return blink::CodePointIterator(*this);
 }
 
-CodePointIterator StringView::end() const {
-  return CodePointIterator::End(*this);
+blink::CodePointIterator StringView::end() const {
+  return blink::CodePointIterator::End(*this);
 }
 
 std::ostream& operator<<(std::ostream& out, const StringView& string) {

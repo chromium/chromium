@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -107,4 +107,4 @@ TEST(CodePointIteratorTest, Equality) {
 
 }  // namespace
 
-}  // namespace WTF
+}  // namespace blink

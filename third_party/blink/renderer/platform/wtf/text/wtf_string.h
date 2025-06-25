@@ -42,9 +42,11 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
-namespace WTF {
-
+namespace blink {
 class CodePointIterator;
+}
+
+namespace WTF {
 
 #define DISPATCH_CASE_OP(case_sensitivity, op, args)  \
   ((case_sensitivity == kTextCaseSensitive) ? op args \
@@ -206,8 +208,8 @@ class WTF_EXPORT String {
 
   // `begin()` and `end()` return iterators for `UChar32`, neither `UChar` nor
   // `LChar`. If you'd like to iterate code units, use `[]` and `length()`.
-  CodePointIterator begin() const;
-  CodePointIterator end() const;
+  blink::CodePointIterator begin() const;
+  blink::CodePointIterator end() const;
 
   template <typename IntegerType>
   static String Number(IntegerType number) {

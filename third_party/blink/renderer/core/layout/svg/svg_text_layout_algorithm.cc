@@ -175,8 +175,8 @@ void SvgTextLayoutAlgorithm::SetFlags(
                            item.TextLength());
     // 2.2. Set middle to true if the character at index i is the second or
     // later character that corresponds to a typographic character.
-    WTF::CodePointIterator iterator = item_string.begin();
-    const WTF::CodePointIterator end = item_string.end();
+    CodePointIterator iterator = item_string.begin();
+    const CodePointIterator end = item_string.end();
     for (++iterator; iterator != end; ++iterator) {
       SvgPerCharacterInfo middle_info;
       middle_info.middle = true;
