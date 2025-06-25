@@ -641,10 +641,6 @@ void WebSettingsImpl::SetTargetBlankImpliesNoOpenerEnabledWillBeRemoved(
   settings_->SetTargetBlankImpliesNoOpenerEnabledWillBeRemoved(enabled);
 }
 
-void WebSettingsImpl::SetAllowNonEmptyNavigatorPlugins(bool enabled) {
-  settings_->SetAllowNonEmptyNavigatorPlugins(enabled);
-}
-
 void WebSettingsImpl::SetIgnorePermissionForDeviceChangedEvent(bool enabled) {
   settings_->SetIgnorePermissionForDeviceChangedEvent(enabled);
 }

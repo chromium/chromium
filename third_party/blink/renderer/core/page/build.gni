@@ -55,8 +55,6 @@ blink_core_sources_page = [
   "plugin_data.h",
   "plugin_script_forbidden_scope.cc",
   "plugin_script_forbidden_scope.h",
-  "plugins_changed_observer.cc",
-  "plugins_changed_observer.h",
   "pointer_lock_controller.cc",
   "pointer_lock_controller.h",
   "popup_opening_observer.h",

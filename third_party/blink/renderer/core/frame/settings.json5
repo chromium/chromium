@@ -313,10 +313,6 @@
       initial: true,
     },
     {
-      name: "allowNonEmptyNavigatorPlugins",
-      initial: false,
-    },
-    {
       name: "ignorePermissionForDeviceChangedEvent",
       initial: false,
     },

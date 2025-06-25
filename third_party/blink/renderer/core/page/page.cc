@@ -78,7 +78,6 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
 #include "third_party/blink/renderer/core/page/plugin_data.h"
-#include "third_party/blink/renderer/core/page/plugins_changed_observer.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/page/scoped_browsing_context_group_pauser.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
@@ -723,7 +722,6 @@ void Page::ResetPluginData() {
   for (Page* page : AllPages()) {
     if (page->plugin_data_) {
       page->plugin_data_->ResetPluginData();
-      page->NotifyPluginsChanged();
     }
   }
 }
@@ -1187,10 +1185,8 @@ void Page::SettingsChanged(ChangeType change_type) {
           HTMLMediaElement::OnMediaControlsEnabledChange(doc);
       }
       break;
-    case ChangeType::kPlugins: {
-      NotifyPluginsChanged();
+    case ChangeType::kPlugins:
       break;
-    }
     case ChangeType::kHighlightAds: {
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
@@ -1278,13 +1274,6 @@ void Page::InvalidatePaint() {
     if (LayoutView* view = local_frame->ContentLayoutObject())
       view->InvalidatePaintForViewAndDescendants();
   }
-}
-
-void Page::NotifyPluginsChanged() const {
-  HeapVector<Member<PluginsChangedObserver>, 32> observers(
-      plugins_changed_observers_);
-  for (PluginsChangedObserver* observer : observers)
-    observer->PluginsChanged();
 }
 
 void Page::UpdateAcceleratedCompositingSettings() {
@@ -1380,7 +1369,6 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(previous_main_frame_for_local_swap_);
   visitor->Trace(plugin_data_);
   visitor->Trace(validation_message_client_);
-  visitor->Trace(plugins_changed_observers_);
   visitor->Trace(next_related_page_);
   visitor->Trace(prev_related_page_);
   visitor->Trace(agent_group_scheduler_);
@@ -1457,10 +1445,6 @@ void Page::WillBeDestroyed() {
     close_task_handler_->SetPage(nullptr);
     close_task_handler_ = nullptr;
   }
-}
-
-void Page::RegisterPluginsChangedObserver(PluginsChangedObserver* observer) {
-  plugins_changed_observers_.insert(observer);
 }
 
 ScrollbarTheme& Page::GetScrollbarTheme() const {

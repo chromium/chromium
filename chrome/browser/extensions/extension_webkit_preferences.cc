@@ -30,9 +30,6 @@ void SetPreferences(const extensions::Extension* extension,
   if (!extension)
     return;
 
-  // Enable navigator.plugins for all app types.
-  webkit_prefs->allow_non_empty_navigator_plugins = true;
-
   if (!extension->is_hosted_app()) {
     // Extensions are trusted so we override any user preferences for disabling
     // javascript or images.

@@ -93,7 +93,6 @@ class PageAnimator;
 struct PageScaleConstraints;
 class PageScaleConstraintsSet;
 class PluginData;
-class PluginsChangedObserver;
 class PointerLockController;
 class PreferenceOverrides;
 class ScopedPagePauser;
@@ -398,8 +397,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   void WillBeDestroyed();
 
-  void RegisterPluginsChangedObserver(PluginsChangedObserver*);
-
   ScrollbarTheme& GetScrollbarTheme() const;
 
   AgentGroupScheduler& GetAgentGroupScheduler() const;
@@ -561,9 +558,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // SettingsDelegate overrides.
   void SettingsChanged(SettingsDelegate::ChangeType) override;
 
-  // Notify |plugins_changed_observers_| that plugins have changed.
-  void NotifyPluginsChanged() const;
-
   void InvalidateColorScheme();
 
   // Connect the Page to the `opener_`'s related pages, if those exist.
@@ -682,8 +676,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // This provider is used when forced color emulation is enabled via DevTools,
   // overriding the light, dark or forced colors color providers.
   std::unique_ptr<ui::ColorProvider> emulated_forced_colors_provider_;
-
-  HeapHashSet<WeakMember<PluginsChangedObserver>> plugins_changed_observers_;
 
   // A circular, double-linked list of pages that are related to the current
   // browsing context.  See also RelatedPages method.

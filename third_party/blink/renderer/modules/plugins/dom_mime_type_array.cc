@@ -33,18 +33,16 @@
 
 namespace blink {
 
-DOMMimeTypeArray::DOMMimeTypeArray(LocalDOMWindow* window,
-                                   bool should_return_fixed_plugin_data)
-    : ExecutionContextLifecycleObserver(window),
-      PluginsChangedObserver(window ? window->GetFrame()->GetPage() : nullptr),
-      should_return_fixed_plugin_data_(should_return_fixed_plugin_data) {
-  UpdatePluginData();
+DOMMimeTypeArray::DOMMimeTypeArray(LocalDOMWindow* window) {
+  if (window) {
+    dom_mime_types_ = NavigatorPlugins::plugins(*window->navigator())
+                          ->GetFixedMimeTypeArray();
+  }
 }
 
 void DOMMimeTypeArray::Trace(Visitor* visitor) const {
   visitor->Trace(dom_mime_types_);
   ScriptWrappable::Trace(visitor);
-  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 unsigned DOMMimeTypeArray::length() const {
@@ -52,32 +50,16 @@ unsigned DOMMimeTypeArray::length() const {
 }
 
 DOMMimeType* DOMMimeTypeArray::item(unsigned index) {
-  if (index >= dom_mime_types_.size())
+  if (index >= dom_mime_types_.size()) {
     return nullptr;
-  if (!dom_mime_types_[index]) {
-    dom_mime_types_[index] = MakeGarbageCollected<DOMMimeType>(
-        DomWindow(), *GetPluginData()->Mimes()[index]);
   }
-
   return dom_mime_types_[index].Get();
 }
 
 DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
-  if (should_return_fixed_plugin_data_) {
-    for (const auto& mimetype : dom_mime_types_) {
-      if (mimetype->type() == property_name)
-        return mimetype.Get();
-    }
-    return nullptr;
-  }
-  PluginData* data = GetPluginData();
-  if (!data)
-    return nullptr;
-
-  for (const Member<MimeClassInfo>& mime : data->Mimes()) {
-    if (mime->Type() == property_name) {
-      unsigned index = static_cast<unsigned>(&mime - &data->Mimes()[0]);
-      return item(index);
+  for (const auto& mimetype : dom_mime_types_) {
+    if (mimetype->type() == property_name) {
+      return mimetype.Get();
     }
   }
   return nullptr;
@@ -85,74 +67,15 @@ DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
 
 void DOMMimeTypeArray::NamedPropertyEnumerator(Vector<String>& property_names,
                                                ExceptionState&) const {
-  if (should_return_fixed_plugin_data_) {
-    property_names.ReserveInitialCapacity(dom_mime_types_.size());
-    for (const auto& mimetype : dom_mime_types_)
-      property_names.UncheckedAppend(mimetype->type());
-    return;
-  }
-  PluginData* data = GetPluginData();
-  if (!data)
-    return;
-  property_names.ReserveInitialCapacity(data->Mimes().size());
-  for (const MimeClassInfo* mime_info : data->Mimes()) {
-    property_names.UncheckedAppend(mime_info->Type());
+  property_names.ReserveInitialCapacity(dom_mime_types_.size());
+  for (const auto& mimetype : dom_mime_types_) {
+    property_names.UncheckedAppend(mimetype->type());
   }
 }
 
 bool DOMMimeTypeArray::NamedPropertyQuery(const AtomicString& property_name,
                                           ExceptionState&) const {
-  if (should_return_fixed_plugin_data_) {
-    return base::Contains(dom_mime_types_, property_name, &DOMMimeType::type);
-  }
-  PluginData* data = GetPluginData();
-  if (!data)
-    return false;
-  return data->SupportsMimeType(property_name);
-}
-
-PluginData* DOMMimeTypeArray::GetPluginData() const {
-  if (!DomWindow())
-    return nullptr;
-  return DomWindow()->GetFrame()->GetPluginData();
-}
-
-void DOMMimeTypeArray::UpdatePluginData() {
-  dom_mime_types_.clear();
-  if (should_return_fixed_plugin_data_) {
-    if (DomWindow()) {
-      dom_mime_types_ = NavigatorPlugins::plugins(*DomWindow()->navigator())
-                            ->GetFixedMimeTypeArray();
-    }
-    return;
-  }
-  PluginData* data = GetPluginData();
-  if (!data)
-    return;
-
-  HeapVector<Member<DOMMimeType>> old_dom_mime_types(
-      std::move(dom_mime_types_));
-  dom_mime_types_.resize(data->Mimes().size());
-
-  for (Member<DOMMimeType>& mime : old_dom_mime_types) {
-    if (mime) {
-      for (const Member<MimeClassInfo>& mime_info : data->Mimes()) {
-        if (mime->type() == mime_info->Type()) {
-          unsigned index =
-              static_cast<unsigned>(&mime_info - &data->Mimes()[0]);
-          dom_mime_types_[index] = mime;
-        }
-      }
-    }
-  }
-}
-
-void DOMMimeTypeArray::ContextDestroyed() {
-  dom_mime_types_.clear();
-}
-
-void DOMMimeTypeArray::PluginsChanged() {
-  UpdatePluginData();
+  return base::Contains(dom_mime_types_, property_name, &DOMMimeType::type);
 }
 
 }  // namespace blink

@@ -128,8 +128,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->sync_xhr_in_documents_enabled = data.sync_xhr_in_documents_enabled();
   out->target_blank_implies_no_opener_enabled_will_be_removed =
       data.target_blank_implies_no_opener_enabled_will_be_removed();
-  out->allow_non_empty_navigator_plugins =
-      data.allow_non_empty_navigator_plugins();
   out->ignore_permission_for_device_changed_event =
       data.ignore_permission_for_device_changed_event();
   out->number_of_cpu_cores = data.number_of_cpu_cores();

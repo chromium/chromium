@@ -34,111 +34,6 @@
 
 namespace blink {
 
-DOMPluginArray::DOMPluginArray(LocalDOMWindow* window,
-                               bool should_return_fixed_plugin_data)
-    : ExecutionContextLifecycleObserver(window),
-      PluginsChangedObserver(window ? window->GetFrame()->GetPage() : nullptr),
-      should_return_fixed_plugin_data_(should_return_fixed_plugin_data) {
-  UpdatePluginData();
-}
-
-void DOMPluginArray::Trace(Visitor* visitor) const {
-  visitor->Trace(dom_plugins_);
-  ScriptWrappable::Trace(visitor);
-  ExecutionContextLifecycleObserver::Trace(visitor);
-  PluginsChangedObserver::Trace(visitor);
-}
-
-unsigned DOMPluginArray::length() const {
-  return dom_plugins_.size();
-}
-
-DOMPlugin* DOMPluginArray::item(unsigned index) {
-  if (index >= dom_plugins_.size())
-    return nullptr;
-
-  if (!dom_plugins_[index]) {
-    if (should_return_fixed_plugin_data_)
-      return nullptr;
-    dom_plugins_[index] = MakeGarbageCollected<DOMPlugin>(
-        DomWindow(), *GetPluginData()->Plugins()[index]);
-  }
-
-  return dom_plugins_[index].Get();
-}
-
-DOMPlugin* DOMPluginArray::namedItem(const AtomicString& property_name) {
-  if (should_return_fixed_plugin_data_) {
-    for (const auto& plugin : dom_plugins_) {
-      if (plugin->name() == property_name)
-        return plugin.Get();
-    }
-    return nullptr;
-  }
-  PluginData* data = GetPluginData();
-  if (!data)
-    return nullptr;
-
-  for (const Member<PluginInfo>& plugin_info : data->Plugins()) {
-    if (plugin_info->Name() == property_name) {
-      unsigned index =
-          static_cast<unsigned>(&plugin_info - &data->Plugins()[0]);
-      return item(index);
-    }
-  }
-  return nullptr;
-}
-
-void DOMPluginArray::NamedPropertyEnumerator(Vector<String>& property_names,
-                                             ExceptionState&) const {
-  if (should_return_fixed_plugin_data_) {
-    property_names.ReserveInitialCapacity(dom_plugins_.size());
-    for (const auto& plugin : dom_plugins_)
-      property_names.UncheckedAppend(plugin->name());
-    return;
-  }
-  PluginData* data = GetPluginData();
-  if (!data)
-    return;
-  property_names.ReserveInitialCapacity(data->Plugins().size());
-  for (const PluginInfo* plugin_info : data->Plugins()) {
-    property_names.UncheckedAppend(plugin_info->Name());
-  }
-}
-
-bool DOMPluginArray::NamedPropertyQuery(const AtomicString& property_name,
-                                        ExceptionState& exception_state) const {
-  Vector<String> properties;
-  NamedPropertyEnumerator(properties, exception_state);
-  return properties.Contains(property_name);
-}
-
-void DOMPluginArray::refresh(bool reload) {
-  if (!DomWindow())
-    return;
-
-  PluginData::RefreshBrowserSidePluginCache();
-  if (PluginData* data = GetPluginData())
-    data->ResetPluginData();
-
-  for (Frame* frame = DomWindow()->GetFrame()->GetPage()->MainFrame(); frame;
-       frame = frame->Tree().TraverseNext()) {
-    auto* local_frame = DynamicTo<LocalFrame>(frame);
-    if (!local_frame)
-      continue;
-    Navigator& navigator = *local_frame->DomWindow()->navigator();
-    NavigatorPlugins::plugins(navigator)->UpdatePluginData();
-    NavigatorPlugins::mimeTypes(navigator)->UpdatePluginData();
-  }
-
-  if (reload)
-    DomWindow()->GetFrame()->Reload(WebFrameLoadType::kReload);
-}
-
-PluginData* DOMPluginArray::GetPluginData() const {
-  return DomWindow() ? DomWindow()->GetFrame()->GetPluginData() : nullptr;
-}
-
 namespace {
 DOMPlugin* MakeFakePlugin(String plugin_name, LocalDOMWindow* window) {
   String description = "Portable Document Format";
@@ -157,8 +52,80 @@ DOMPlugin* MakeFakePlugin(String plugin_name, LocalDOMWindow* window) {
 }
 }  // namespace
 
+DOMPluginArray::DOMPluginArray(LocalDOMWindow* window) : window_(window) {
+  if (IsPdfViewerAvailable()) {
+    // See crbug.com/1164635 and https://github.com/whatwg/html/pull/6738.
+    // To reduce fingerprinting and make plugins/mimetypes more
+    // interoperable, this is the spec'd, hard-coded list of plugins:
+    Vector<String> plugins{"PDF Viewer", "Chrome PDF Viewer",
+                           "Chromium PDF Viewer", "Microsoft Edge PDF Viewer",
+                           "WebKit built-in PDF"};
+    for (auto name : plugins) {
+      dom_plugins_.push_back(MakeFakePlugin(name, window));
+    }
+  }
+}
+
+void DOMPluginArray::Trace(Visitor* visitor) const {
+  visitor->Trace(window_);
+  visitor->Trace(dom_plugins_);
+  ScriptWrappable::Trace(visitor);
+}
+
+unsigned DOMPluginArray::length() const {
+  return dom_plugins_.size();
+}
+
+DOMPlugin* DOMPluginArray::item(unsigned index) {
+  if (index >= dom_plugins_.size()) {
+    return nullptr;
+  }
+  return dom_plugins_[index].Get();
+}
+
+DOMPlugin* DOMPluginArray::namedItem(const AtomicString& property_name) {
+  for (const auto& plugin : dom_plugins_) {
+    if (plugin->name() == property_name) {
+      return plugin.Get();
+    }
+  }
+  return nullptr;
+}
+
+void DOMPluginArray::NamedPropertyEnumerator(Vector<String>& property_names,
+                                             ExceptionState&) const {
+  property_names.ReserveInitialCapacity(dom_plugins_.size());
+  for (const auto& plugin : dom_plugins_) {
+    property_names.UncheckedAppend(plugin->name());
+  }
+}
+
+bool DOMPluginArray::NamedPropertyQuery(const AtomicString& property_name,
+                                        ExceptionState& exception_state) const {
+  Vector<String> properties;
+  NamedPropertyEnumerator(properties, exception_state);
+  return properties.Contains(property_name);
+}
+
+void DOMPluginArray::refresh(bool reload) {
+  if (!window_) {
+    return;
+  }
+  PluginData::RefreshBrowserSidePluginCache();
+  if (PluginData* data = GetPluginData()) {
+    data->ResetPluginData();
+  }
+  if (reload && window_->GetFrame()) {
+    window_->GetFrame()->Reload(WebFrameLoadType::kReload);
+  }
+}
+
+PluginData* DOMPluginArray::GetPluginData() const {
+  return (window_ && window_->GetFrame()) ? window_->GetFrame()->GetPluginData()
+                                          : nullptr;
+}
+
 HeapVector<Member<DOMMimeType>> DOMPluginArray::GetFixedMimeTypeArray() {
-  DCHECK(should_return_fixed_plugin_data_);
   HeapVector<Member<DOMMimeType>> mimetypes;
   if (dom_plugins_.empty())
     return mimetypes;
@@ -177,52 +144,6 @@ bool DOMPluginArray::IsPdfViewerAvailable() {
       return true;
   }
   return false;
-}
-
-void DOMPluginArray::UpdatePluginData() {
-  if (should_return_fixed_plugin_data_) {
-    dom_plugins_.clear();
-    if (IsPdfViewerAvailable()) {
-      // See crbug.com/1164635 and https://github.com/whatwg/html/pull/6738.
-      // To reduce fingerprinting and make plugins/mimetypes more
-      // interoperable, this is the spec'd, hard-coded list of plugins:
-      Vector<String> plugins{"PDF Viewer", "Chrome PDF Viewer",
-                             "Chromium PDF Viewer", "Microsoft Edge PDF Viewer",
-                             "WebKit built-in PDF"};
-      for (auto name : plugins)
-        dom_plugins_.push_back(MakeFakePlugin(name, DomWindow()));
-    }
-    return;
-  }
-  PluginData* data = GetPluginData();
-  if (!data) {
-    dom_plugins_.clear();
-    return;
-  }
-
-  HeapVector<Member<DOMPlugin>> old_dom_plugins(std::move(dom_plugins_));
-  dom_plugins_.clear();
-  dom_plugins_.resize(data->Plugins().size());
-
-  for (Member<DOMPlugin>& plugin : old_dom_plugins) {
-    if (plugin) {
-      for (const Member<PluginInfo>& plugin_info : data->Plugins()) {
-        if (plugin->name() == plugin_info->Name()) {
-          unsigned index =
-              static_cast<unsigned>(&plugin_info - &data->Plugins()[0]);
-          dom_plugins_[index] = plugin;
-        }
-      }
-    }
-  }
-}
-
-void DOMPluginArray::ContextDestroyed() {
-  dom_plugins_.clear();
-}
-
-void DOMPluginArray::PluginsChanged() {
-  UpdatePluginData();
 }
 
 }  // namespace blink

@@ -4572,12 +4572,6 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
     web_prefs->strict_powerful_feature_restrictions = true;
   }
 
-  // See crbug.com/1238157: the Native Client flag (chrome://flags/#enable-nacl)
-  // can be manually re-enabled. In that case, we also need to return the full
-  // plugins list, for compat.
-  web_prefs->allow_non_empty_navigator_plugins |=
-      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kEnableNaCl);
-
   web_prefs->data_saver_enabled = IsDataSaverEnabled(profile);
 
   if (web_contents) {
