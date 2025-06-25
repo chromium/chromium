@@ -30,9 +30,11 @@
 }
 </style>
 <body>
-  <p>Test that masonry items with explicit placement are correctly positioned within the grid axis.</p>
+  <p>Test that masonry items with explicit placement are correctly positioned within the grid axis, with an orthogonal item.</p>
   <div id="grid">
-    <div id="first-item" class="first-track" style="width: fit-content">This is some text</div>
+    <div id="first-item" class="first-track" style="writing-mode: vertical-rl; width: fit-content;">
+      This is some text
+    </div>
     <div class="second-track">Some larger words in this sentence</div>
     <div class="third-track">The cat cannot be separated from milk</div>
     <div id="fourth-item" class="first-track" style="position: relative;">Some larger words in this sentence</div>
@@ -44,12 +46,13 @@
      // Width of the grid, minus padding.
     const gridwidth = gridrect.width - 40;
 
-    const first_item = document.getElementById('first-item');
-    const width = first_item.getBoundingClientRect().width;
+    const element1 = document.getElementById('first-item');
+    const rect = element1.getBoundingClientRect();
+    const width = rect.width;
 
-    const fourth_item = document.getElementById('fourth-item');
+    const element4 = document.getElementById('fourth-item');
     const translation = gridwidth - width;
-    fourth_item.style.left = '-' + translation + 'px';
+    element4.style.left = '-' + translation + 'px';
   </script>
 </body>
 </html>
