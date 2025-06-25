@@ -182,6 +182,14 @@ NTPMIAEntrypointVariation GetNTPMIAEntrypointVariation() {
     return NTPMIAEntrypointVariation::kDisabled;
   }
 
+  BOOL isUSCountry = [NSLocale.currentLocale.countryCode isEqual:@"US"];
+  BOOL isEnglishLocale = [NSLocale.currentLocale.languageCode hasPrefix:@"en"];
+  BOOL allowedByLocale = isUSCountry && isEnglishLocale;
+
+  if (!allowedByLocale) {
+    return NTPMIAEntrypointVariation::kDisabled;
+  }
+
   std::string feature_param = base::GetFieldTrialParamValueByFeature(
       kNTPMIAEntrypoint, kNTPMIAEntrypointParam);
   if (feature_param == kNTPMIAEntrypointParamOmniboxContainedSingleButton) {
