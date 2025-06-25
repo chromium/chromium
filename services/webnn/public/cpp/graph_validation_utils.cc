@@ -5,6 +5,7 @@
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 
 #include <algorithm>
+#include <array>
 #include <numeric>
 #include <set>
 #include <variant>
