@@ -192,3 +192,19 @@ export class NoSuchWebExtensionException extends Exception {
     super(ErrorCode.NoSuchWebExtension, message, stacktrace);
   }
 }
+
+export class NoSuchNetworkCollectorException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.NoSuchNetworkCollector, message, stacktrace);
+  }
+}
+export class NoSuchNetworkDataException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.NoSuchNetworkData, message, stacktrace);
+  }
+}
+export class UnavailableNetworkDataException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.UnavailableNetworkData, message, stacktrace);
+  }
+}

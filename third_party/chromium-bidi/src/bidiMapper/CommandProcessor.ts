@@ -336,6 +336,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
 
       // Network module
       // keep-sorted start block=yes
+      case 'network.addDataCollector':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
+        );
       case 'network.addIntercept':
         return await this.#networkProcessor.addIntercept(
           this.#parser.parseAddInterceptParams(command.params),
@@ -356,9 +360,17 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#networkProcessor.failRequest(
           this.#parser.parseFailRequestParams(command.params),
         );
+      case 'network.getData':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
+        );
       case 'network.provideResponse':
         return await this.#networkProcessor.provideResponse(
           this.#parser.parseProvideResponseParams(command.params),
+        );
+      case 'network.removeDataCollector':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
         );
       case 'network.removeIntercept':
         return await this.#networkProcessor.removeIntercept(

@@ -120,11 +120,13 @@ export const ErrorCodeSchema = z.lazy(() =>
     'invalid web extension',
     'move target out of bounds',
     'no such alert',
+    'no such network collector',
     'no such element',
     'no such frame',
     'no such handle',
     'no such history entry',
     'no such intercept',
+    'no such network data',
     'no such node',
     'no such request',
     'no such script',
@@ -136,6 +138,7 @@ export const ErrorCodeSchema = z.lazy(() =>
     'unable to close browser',
     'unable to set cookie',
     'unable to set file input',
+    'unavailable network data',
     'underspecified storage partition',
     'unknown command',
     'unknown error',
@@ -1269,12 +1272,15 @@ export namespace Emulation {
 }
 export const NetworkCommandSchema = z.lazy(() =>
   z.union([
+    Network.AddDataCollectorSchema,
     Network.AddInterceptSchema,
     Network.ContinueRequestSchema,
     Network.ContinueResponseSchema,
     Network.ContinueWithAuthSchema,
     Network.FailRequestSchema,
+    Network.GetDataSchema,
     Network.ProvideResponseSchema,
+    Network.RemoveDataCollectorSchema,
     Network.RemoveInterceptSchema,
     Network.SetCacheBehaviorSchema,
   ]),
@@ -1322,6 +1328,9 @@ export namespace Network {
   );
 }
 export namespace Network {
+  export const DataTypeSchema = z.literal('response');
+}
+export namespace Network {
   export const BytesValueSchema = z.lazy(() =>
     z.union([Network.StringValueSchema, Network.Base64ValueSchema]),
   );
@@ -1341,6 +1350,12 @@ export namespace Network {
       value: z.string(),
     }),
   );
+}
+export namespace Network {
+  export const CollectorSchema = z.lazy(() => z.string());
+}
+export namespace Network {
+  export const CollectorTypeSchema = z.literal('blob');
 }
 export namespace Network {
   export const SameSiteSchema = z.lazy(() => z.enum(['strict', 'lax', 'none']));
@@ -1496,6 +1511,35 @@ export namespace Network {
   );
 }
 export namespace Network {
+  export const AddDataCollectorSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('network.addDataCollector'),
+      params: Network.AddDataCollectorParametersSchema,
+    }),
+  );
+}
+export namespace Network {
+  export const AddDataCollectorParametersSchema = z.lazy(() =>
+    z.object({
+      dataTypes: z.array(Network.DataTypeSchema).min(1),
+      maxEncodedDataSize: JsUintSchema,
+      collectorType: Network.CollectorTypeSchema.default('blob').optional(),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace Network {
+  export const AddDataCollectorResultSchema = z.lazy(() =>
+    z.object({
+      collector: Network.CollectorSchema,
+    }),
+  );
+}
+export namespace Network {
   export const AddInterceptParametersSchema = z.lazy(() =>
     z.object({
       phases: z.array(Network.InterceptPhaseSchema).min(1),
@@ -1605,6 +1649,23 @@ export namespace Network {
   );
 }
 export namespace Network {
+  export const DisownDataSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('network.disownData'),
+      params: Network.DisownDataParametersSchema,
+    }),
+  );
+}
+export namespace Network {
+  export const DisownDataParametersSchema = z.lazy(() =>
+    z.object({
+      dataType: Network.DataTypeSchema,
+      collector: Network.CollectorSchema,
+      request: Network.RequestSchema,
+    }),
+  );
+}
+export namespace Network {
   export const FailRequestSchema = z.lazy(() =>
     z.object({
       method: z.literal('network.failRequest'),
@@ -1616,6 +1677,31 @@ export namespace Network {
   export const FailRequestParametersSchema = z.lazy(() =>
     z.object({
       request: Network.RequestSchema,
+    }),
+  );
+}
+export namespace Network {
+  export const GetDataSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('network.getData'),
+      params: Network.GetDataParametersSchema,
+    }),
+  );
+}
+export namespace Network {
+  export const GetDataParametersSchema = z.lazy(() =>
+    z.object({
+      dataType: Network.DataTypeSchema,
+      collector: Network.CollectorSchema.optional(),
+      disown: z.boolean().default(false).optional(),
+      request: Network.RequestSchema,
+    }),
+  );
+}
+export namespace Script {
+  export const GetDataResultSchema = z.lazy(() =>
+    z.object({
+      bytes: Network.BytesValueSchema,
     }),
   );
 }
@@ -1636,6 +1722,21 @@ export namespace Network {
       headers: z.array(Network.HeaderSchema).optional(),
       reasonPhrase: z.string().optional(),
       statusCode: JsUintSchema.optional(),
+    }),
+  );
+}
+export namespace Network {
+  export const RemoveDataCollectorSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('network.removeDataCollector'),
+      params: Network.RemoveDataCollectorParametersSchema,
+    }),
+  );
+}
+export namespace Network {
+  export const RemoveDataCollectorParametersSchema = z.lazy(() =>
+    z.object({
+      collector: Network.CollectorSchema,
     }),
   );
 }
