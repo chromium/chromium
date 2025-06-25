@@ -388,6 +388,7 @@
 <translation id="251837347827266434">系統會將你登出、關閉分頁，並刪除瀏覽資料</translation>
 <translation id="2520787026086861736">如要關閉設定，請前往「<ph name="BEGIN_LINK" />自動填入與密碼<ph name="END_LINK" />」</translation>
 <translation id="2523295204312809179">當你關閉分頁群組，分頁群組會自動儲存在這裡</translation>
+<translation id="2524699375503213836">從 Safari 匯入資料</translation>
 <translation id="2529021024822217800">全部開啟</translation>
 <translation id="2536991091671391962">您可在任何裝置上使用已儲存的密碼。密碼已儲存至 <ph name="EMAIL" /> 的「Google 密碼管理工具」。</translation>
 <translation id="2538103551183528357">隱藏密碼</translation>
@@ -1107,6 +1108,7 @@
 <translation id="5576885723883013398">新視窗</translation>
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="5579012242779565775">隱藏「閱讀清單」</translation>
+<translation id="5581786858144165447">詢問 AI 模式</translation>
 <translation id="5585019845078534178">付款卡</translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="559567008082979829">設定下載項目在一個月後刪除。</translation>

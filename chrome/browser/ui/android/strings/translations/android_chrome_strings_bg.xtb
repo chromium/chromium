@@ -312,7 +312,6 @@
 <translation id="2453860139492968684">Край</translation>
 <translation id="2461378706168271257">Търсете в разделите</translation>
 <translation id="2461822463642141190">Ток</translation>
-<translation id="2463770278804271243">СТРАНИЦА</translation>
 <translation id="2468444275314013497">Всичко е наред с браузъра ви</translation>
 <translation id="2472163211318554013">Влезте в профила си, за да се възползвате максимално от Chrome</translation>
 <translation id="247737702124049222">Функцията за описания на изображенията е включена</translation>
@@ -340,7 +339,6 @@
 <translation id="2547843573592965873">Опцията ви за заключване на потребителския профил защитава информацията ви в автомобила, включително паролите, плащанията и др., запазени в профила ви в Google.</translation>
 <translation id="254973855621628293">Пароли, запазени на това устройство</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Блокирано е опасно изтегляне}other{Блокирани са # опасни изтегляния}}</translation>
-<translation id="2567385386134582609">ИЗОБРАЖЕНИЕ</translation>
 <translation id="2569733278091928697">Ще можете лесно да управлявате контроли за мултимедия, сесии в режим „инкогнито“, изтегляния и др.</translation>
 <translation id="2571711316400087311">Извеждане на предложения за изпращане на страниците, написани на други езици, до Google Преводач</translation>
 <translation id="2571834852878229351">Създаване на собствена парола</translation>
@@ -483,7 +481,6 @@
 <translation id="3208584281581115441">Проверка сега</translation>
 <translation id="3211426585530211793">Изтрихте „<ph name="ITEM_TITLE" />“</translation>
 <translation id="3220943972464248773">За да се синхронизират паролите ви, потвърдете, че сте вие</translation>
-<translation id="323213525320714789">ПРОГРАМИСТИ</translation>
 <translation id="3232293466644486101">Изтриване на данните за сърфирането…</translation>
 <translation id="3232754137068452469">Уеб приложение</translation>
 <translation id="3236059992281584593">Остава 1 мин</translation>
@@ -1131,7 +1128,6 @@
 <translation id="6138832295072039549">Тук можете да промените настройките си за сайта</translation>
 <translation id="6140912465461743537">Държава/регион</translation>
 <translation id="6142183503755612900">Можете да промените основната си по всяко време от настройките</translation>
-<translation id="6143892791267458416">\u0020и се затварят след <ph name="DAYS_ARCHIVED" /> дни</translation>
 <translation id="6146563240635539929">Видеоклипове</translation>
 <translation id="614890671148262506">Известията от този сайт да са разрешени винаги</translation>
 <translation id="6150320133806434356">Отметката е запазена</translation>
@@ -1193,7 +1189,6 @@
 <translation id="6382848304055775421">Експортира се</translation>
 <translation id="6388152137132427505">Винаги споделяйте разумно. Връзките изтичат след 48 часа.</translation>
 <translation id="6394791151443660613">Търсене: „<ph name="SEARCH_QUERY" />“</translation>
-<translation id="6395288395575013217">ВРЪЗКА</translation>
 <translation id="6397616442223433927">Отново онлайн</translation>
 <translation id="6399363707848566877">Вече можете лесно да добавяте раздели към групи оттук</translation>
 <translation id="6401458660421980302">За да изпратите този раздел до друго устройство, влезте в профила си в Chrome там</translation>
@@ -1408,6 +1403,7 @@
 <translation id="7224097611345298931">Всички пароли, запазени за Chrome и <ph name="CHROME_CHANNEL" /> само на това устройство, бяха обединени. Всичките ви запазени пароли могат да се попълват автоматично и в двете приложения.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Предстои 1 изтегляне}other{Предстоят # изтегляния}}</translation>
 <translation id="7230064152164845085">Превключване към режим „инкогнито“</translation>
+<translation id="7230836263524391273">Скриване на „Режим на четене“</translation>
 <translation id="7237724030342645845">Google Мениджър на пароли спря да работи</translation>
 <translation id="72415438529550637">Долният лист с предложение за парола е затворен.</translation>
 <translation id="7248671827512403053">Приложение</translation>
@@ -1433,7 +1429,6 @@
 <translation id="7340958967809483333">Опции за Discover</translation>
 <translation id="7352339641508007922">Плъзнете, за да направите дълга екранна снимка</translation>
 <translation id="7352651011704765696">Нещо се обърка</translation>
-<translation id="7352939065658542140">ВИДЕОКЛИП</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Споделяне на 1 избран елемент}other{Споделяне на # избрани елемента}}</translation>
 <translation id="7359002509206457351">Достъп до начините на плащане</translation>
 <translation id="7363349185727752629">Ръководство за настройките ви за поверителност</translation>
@@ -1732,7 +1727,6 @@
 <translation id="8533670235862049797">Безопасно сърфиране е включено</translation>
 <translation id="8540136935098276800">Въведете правилно форматиран URL адрес</translation>
 <translation id="854522910157234410">Отваряне на тази страница</translation>
-<translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Неактивен раздел (1)}other{Неактивни раздели (#)}}</translation>
 <translation id="8547466829003330976">Преглед на PDF файла с AI</translation>
 <translation id="855081842937141170">Фиксиране на раздела</translation>
 <translation id="8551513938758868521">Заключване на разделите в режим „инкогнито“ при излизане от Chrome</translation>

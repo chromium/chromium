@@ -278,6 +278,7 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 <translation id="1207301487141109411">Yerel dosya sisteminden, kameradan ve Google profilinden kullanıcı avatarı seçimini engelle</translation>
 <translation id="1209096923317019235">Uygulamaları, belirtilen dosya uzantıları için varsayılan işleyiciler olarak atar</translation>
 <translation id="120937472976628837">Pervane bilgilerini raporla</translation>
+<translation id="1211037010406094410">SwiftShader kullanarak yazılım WebGL yedeğine izin ver</translation>
 <translation id="1214639335214075459">GPU donanımı video kodu çözmeyi etkinleştir</translation>
 <translation id="1214942205301731697">Uzantılar sayfasında geliştirici modunun kullanılmasına izin verme</translation>
 <translation id="1216919699175573511">İmzalı HTTP Değişimi (SXG) desteğini etkinleştir</translation>
@@ -3656,6 +3657,15 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 
 Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="3606571057705314194">Başlangıçta profil seçiciyi devre dışı bırak</translation>
+<translation id="3607797531311171116">Donanım GPU hızlandırması kullanılamadığında SwiftShader'ın WebGL yedeği olarak kullanılıp kullanılmayacağını kontrol eden bir politika.
+
+SwiftShader, GPU hızlandırması olmayan sistemlerde (ör. gözetimsiz sistemler veya sanal makineler) WebGL'yi desteklemek için kullanılıyordu ancak güvenlik sorunları nedeniyle desteği sonlandırıldı. M139'dan itibaren, SwiftShader'in kullanılacağı durumlarda WebGL bağlamı oluşturulması başarısız olacaktır. Bu politika, tarayıcının veya yöneticinin desteği sonlandırma işlemini geçici olarak ertelemesine olanak tanır.
+
+Politika, Etkin değerine ayarlanırsa SwiftShader, yazılım WebGL yedeği olarak kullanılır.
+
+Politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa ve donanım GPU hızlandırması kullanılamıyorsa WebGL bağlamı oluşturulamaz. WebGL bağlamı oluşturma hatasını düzgün şekilde ele almayan web sayfaları hatalı davranabilir.
+
+Bu politika geçicidir ve gelecekte kaldırılacaktır.</translation>
 <translation id="3608206578291537084">Şifrelenmiş Raporlama Ardışık Düzeni'ni etkinleştir</translation>
 <translation id="3608281460204780443"><ph name="PRODUCT_OS_NAME" /> başlatıcıda ve yeni sekme sayfasında Chrome Web Mağazası simgesini göster</translation>
 <translation id="3612482251405108708">Kilit ekranında yeniden online kimlik doğrulamayı otomatik olarak başlat</translation>
@@ -5458,6 +5468,7 @@ Donanım hızlandırmalı video kodu çözme işleminin devre dışı bırakılm
           Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
 
           Bu politika ayarlanmadan bırakılırsa giriş ekranında mono ses başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman bunu etkinleştirebilir.</translation>
+<translation id="493253860646951791">Güvenli olmayan SwiftShader WebGL yedeğini etkinleştir</translation>
 <translation id="4933301190614090397">Tarayıcı kapanırken keepalive isteklerine tanınacak süreyi (saniye cinsinden) kontrol eder.
 
       Bir değer belirtildiğinde keepalive isteklerini işlemek üzere (https://fetch.spec.whatwg.org/#request-keepalive-flag)
@@ -7982,6 +7993,7 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
 <translation id="6513453889192806240">HTTPS Gecikmesi</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> resmi</translation>
 <translation id="6518102411616460786">Hedef kanalın kanal sürümü değişikliğini yakalamasını bekle</translation>
+<translation id="6518286606938091609">Güvenli olmayan SwiftShader WebGL yedeğini devre dışı bırak</translation>
 <translation id="6518894783486860562"><ph name="SHOW_SUBAPPS_APP_API_NAME" />,
 <ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> ve
 <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> web API'leri,

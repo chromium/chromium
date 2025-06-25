@@ -724,6 +724,7 @@
 <translation id="2212735316055980242">Η πολιτική δε βρέθηκε</translation>
 <translation id="2213606439339815911">Ανάκτηση καταχωρίσεων…</translation>
 <translation id="2213612003795704869">Η σελίδα εκτυπώθηκε</translation>
+<translation id="2214086901479959524">Ενημερώστε το Chrome για να συνεχίσετε να χρησιμοποιείτε τις κοινόχρηστες ομάδες καρτελών</translation>
 <translation id="2215368073167343359">Αυτόματη συμπλήρωση με την Google</translation>
 <translation id="2215539479425228550">Αναρρίχηση και ορειβασία</translation>
 <translation id="2215727959747642672">Επεξεργασία αρχείου</translation>
@@ -802,6 +803,7 @@
 <translation id="2328651992442742497">Επιτρέπεται (προεπιλογή)</translation>
 <translation id="2328955282645810595">Οικοδομές και ηλεκτρικά εργαλεία</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, λήγει στις <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="2334327033751265975">Οι κοινόχρηστες ομάδες καρτελών είναι ξανά διαθέσιμες</translation>
 <translation id="2337852623177822836">Η ρύθμιση ελέγχεται από τον διαχειριστή σας</translation>
 <translation id="2340263603246777781">Ο ιστότοπος <ph name="ORIGIN" /> επιθυμεί σύζευξη</translation>
 <translation id="2344529975040861103">Μπορείτε να συμπληρώσετε αυτόματα αυτή την κάρτα, επειδή ο λογαριασμός σας είναι συνδεδεμένος με το Google Pay</translation>
@@ -4672,6 +4674,7 @@
 <translation id="8926389886865778422">Να μην ερωτηθώ ξανά</translation>
 <translation id="8932102934695377596">Το ρολόι σας πάει πίσω</translation>
 <translation id="893332455753468063">Προσθήκη ονόματος</translation>
+<translation id="8938242527120341116">Τα φίλτρα περιεχομένου της συσκευής σας απέκλεισαν τη διεύθυνση <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">Ο διαχειριστής επέτρεψε στην εφαρμογή <ph name="APP_NAME" /> να συλλέγει διαγνωστικά στοιχεία για τη βελτίωση της εμπειρίας του προϊόντος. Ανατρέξτε στη διεύθυνση <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> για περισσότερες πληροφορίες.</translation>
 <translation id="8943282376843390568">Λάιμ</translation>
 <translation id="8949410982325929394">Τόνος</translation>
@@ -4877,6 +4880,7 @@
 <translation id="963837307749850257">Όλοι οι χρήστες</translation>
 <translation id="964050462028070434">Διαχείριση κωδικών πρόσβασης και κλειδιών πρόσβασης…</translation>
 <translation id="969892804517981540">Επίσημη έκδοση</translation>
+<translation id="97054401902912338">Μάθετε περισσότερα σχετικά με τα φίλτρα περιεχομένου</translation>
 <translation id="973788791897303708">Αυτή η ομάδα καρτελών είναι πλήρης</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Κανένα}=1{1 στοιχείο}other{# στοιχεία}}</translation>
 <translation id="976522784004777030">5 x 8 ίντσες</translation>

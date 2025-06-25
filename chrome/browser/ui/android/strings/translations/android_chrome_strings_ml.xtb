@@ -312,7 +312,6 @@
 <translation id="2453860139492968684">പൂര്‍ത്തിയാക്കുക</translation>
 <translation id="2461378706168271257">നിങ്ങളുടെ ടാബുകൾ തിരയുക</translation>
 <translation id="2461822463642141190">നിലവിൽ</translation>
-<translation id="2463770278804271243">പേജ്</translation>
 <translation id="2468444275314013497">നിങ്ങളുടെ ബ്രൗസർ നല്ല നിലയിലാണെന്ന് തോന്നുന്നു</translation>
 <translation id="2472163211318554013">Chrome പരമാവധി പ്രയോജനപ്പെടുത്താൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="247737702124049222">ചിത്രത്തിന്റെ വിവരണങ്ങൾ ഓണാണ്</translation>
@@ -340,7 +339,6 @@
 <translation id="2547843573592965873">നിങ്ങളുടെ പ്രൊഫൈൽ ലോക്ക്, നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിച്ചിരിക്കുന്ന പാസ്‌വേഡുകളും പേയ്‌മെന്റുകളും മറ്റും ഉൾപ്പെടെയുള്ള വിവരങ്ങൾ കാറിൽ സുരക്ഷിതമായി സൂക്ഷിക്കുന്നു.</translation>
 <translation id="254973855621628293">പാസ്‌വേഡുകൾ ഈ ഉപകരണത്തിലേക്ക് സംരക്ഷിച്ചു</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{ദോഷകരമായ ഡൗൺലോഡ് ബ്ലോക്ക് ചെയ്‌തു}other{ദോഷകരമായ # ഡൗൺലോഡുകൾ ബ്ലോക്ക് ചെയ്‌തു}}</translation>
-<translation id="2567385386134582609">ചിത്രം</translation>
 <translation id="2569733278091928697">നിങ്ങൾക്ക് മീഡിയ നിയന്ത്രണങ്ങളും അദൃശ്യ മോഡ് സെഷനുകളും ഡൗൺലോഡുകളും മറ്റും എളുപ്പത്തിൽ മാനേജ് ചെയ്യാം</translation>
 <translation id="2571711316400087311">മറ്റ് ഭാഷകളിലുള്ള പേജുകൾ Google Translate-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="2571834852878229351">നിങ്ങളുടേതായ പാസ്‌വേഡ് സൃഷ്ടിക്കൂ</translation>
@@ -483,7 +481,6 @@
 <translation id="3208584281581115441">ഇപ്പോൾ പരിശോധിക്കുക</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ഇല്ലാതാക്കി</translation>
 <translation id="3220943972464248773">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സമന്വയിപ്പിക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
-<translation id="323213525320714789">ഡെവലപ്പർ</translation>
 <translation id="3232293466644486101">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക…</translation>
 <translation id="3232754137068452469">വെബ് ആപ്പ്</translation>
 <translation id="3236059992281584593">ഒരു മിനിറ്റ് ശേഷിക്കുന്നു</translation>
@@ -1131,7 +1128,6 @@
 <translation id="6138832295072039549">നിങ്ങളുടെ സൈറ്റ് ക്രമീകരണം ഇവിടെ മാറ്റുക</translation>
 <translation id="6140912465461743537">രാജ്യം/പ്രദേശം</translation>
 <translation id="6142183503755612900">നിങ്ങൾക്ക് ഏതുസമയത്തും ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഡിഫോൾട്ട് മാറ്റാം</translation>
-<translation id="6143892791267458416">\u0020<ph name="DAYS_ARCHIVED" /> ദിവസത്തിന് ശേഷം അടയ്ക്കുകയും ചെയ്യും</translation>
 <translation id="6146563240635539929">വീഡിയോകൾ</translation>
 <translation id="614890671148262506">ഈ സൈറ്റിൽ നിന്നുള്ള അറിയിപ്പുകൾ എപ്പോഴും അനുവദിക്കുക</translation>
 <translation id="6150320133806434356">ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു</translation>
@@ -1193,7 +1189,6 @@
 <translation id="6382848304055775421">എക്‌സ്‌പോർട്ട് ചെയ്യുന്നു</translation>
 <translation id="6388152137132427505">എല്ലായ്‌പ്പോഴും വിവേകത്തോടെ പങ്കിടുക. ലിങ്കുകൾ 48 മണിക്കൂറിനുള്ളിൽ കാലഹരണപ്പെടും.</translation>
 <translation id="6394791151443660613">തിരയുക: <ph name="SEARCH_QUERY" /></translation>
-<translation id="6395288395575013217">ലിങ്ക്</translation>
 <translation id="6397616442223433927">ഓൺലൈനിൽ തിരിച്ചെത്തി</translation>
 <translation id="6399363707848566877">നിങ്ങൾക്ക് ഇപ്പോൾ ഇവിടെ ഗ്രൂപ്പുകളിലേക്ക് എളുപ്പത്തിൽ ടാബുകൾ ചേർക്കാം</translation>
 <translation id="6401458660421980302">ഈ ടാബ് മറ്റൊരു ഉപകരണത്തിലേക്ക് അയയ്‌ക്കാൻ, അതിലെ Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -1408,6 +1403,7 @@
 <translation id="7224097611345298931">Chrome, <ph name="CHROME_CHANNEL" /> എന്നിവയ്‌ക്കായി ഈ ഉപകരണത്തിൽ മാത്രം സംരക്ഷിച്ച എല്ലാ പാസ്‌വേഡുകളും ലയിപ്പിച്ചു. നിങ്ങൾക്ക് രണ്ട് ആപ്പുകളിലും നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകളെല്ലാം സ്വയമേവ പൂരിപ്പിക്കാനാകും.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് തീർച്ചപ്പെടുത്തിയിട്ടില്ല}other{# ഡൗൺലോഡുകൾ തീർച്ചപ്പെടുത്തിയിട്ടില്ല}}</translation>
 <translation id="7230064152164845085">അദൃശ്യ മോഡിലേക്ക് മാറുക</translation>
+<translation id="7230836263524391273">റീഡിംഗ് മോഡ് മറയ്ക്കുക</translation>
 <translation id="7237724030342645845">Google Password Manager പ്രവർത്തനം നിർത്തി</translation>
 <translation id="72415438529550637">പാസവേഡ് നിർദ്ദേശം അടച്ചു.</translation>
 <translation id="7248671827512403053">ആപ്പ്</translation>
@@ -1433,7 +1429,6 @@
 <translation id="7340958967809483333">Discover-നുള്ള ഓപ്ഷനുകൾ</translation>
 <translation id="7352339641508007922">നീളത്തിലുള്ള സ്ക്രീന്‍ഷോട്ട് എടുക്കാൻ വലിച്ചിടുക</translation>
 <translation id="7352651011704765696">എന്തോ കുഴപ്പം സംഭവിച്ചു</translation>
-<translation id="7352939065658542140">വീഡിയോ</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{തിരഞ്ഞെടുത്ത ഒരു ഇനം പങ്കിടുക}other{തിരഞ്ഞെടുത്ത # ഇനങ്ങൾ പങ്കിടുക}}</translation>
 <translation id="7359002509206457351">പേയ്മെന്റ് രീതികൾ ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="7363349185727752629">നിങ്ങളുടെ സ്വകാര്യതാ ചോയ്‌സുകളെ കുറിച്ചുള്ള ഗൈഡ്</translation>
@@ -1732,7 +1727,6 @@
 <translation id="8533670235862049797">സുരക്ഷിത ബ്രൗസിംഗ് ഓണാണ്</translation>
 <translation id="8540136935098276800">ശരിയായി ഫോർമാറ്റ് ചെയ്‌ത URL നൽകുക</translation>
 <translation id="854522910157234410">ഈ പേജ് തുറക്കുക</translation>
-<translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{നിഷ്ക്രിയമായ ടാബ് (1)}other{നിഷ്‌ക്രിയമായ ടാബുകൾ (#)}}</translation>
 <translation id="8547466829003330976">AI ഉപയോഗിച്ച് PDF അവലോകനം ചെയ്യുക</translation>
 <translation id="855081842937141170">ടാബ് പിൻ ചെയ്യുക</translation>
 <translation id="8551513938758868521">Chrome-ൽ നിന്ന് പുറത്ത് കടക്കുമ്പോൾ അദൃശ്യ ടാബുകൾ ലോക്ക് ചെയ്യുക</translation>

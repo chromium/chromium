@@ -724,6 +724,7 @@
 <translation id="2212735316055980242">წესი ვერ მოიძებნა</translation>
 <translation id="2213606439339815911">ჩანაწერების შერჩევა…</translation>
 <translation id="2213612003795704869">გვერდი ამოიბეჭდა</translation>
+<translation id="2214086901479959524">განაახლეთ Chrome, რომ განაგრძოთ თქვენი გაზიარებული ჩანართების ჯგუფების გამოყენება</translation>
 <translation id="2215368073167343359">ავტომატური შევსება Google-ით</translation>
 <translation id="2215539479425228550">ცოცვა და ალპინიზმი</translation>
 <translation id="2215727959747642672">ფაილების რედაქტირება</translation>
@@ -802,6 +803,7 @@
 <translation id="2328651992442742497">დაშვებულია (ნაგულისხმევად)</translation>
 <translation id="2328955282645810595">მშენებლობა და ელექტროხელსაწყოები</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, ძალაშია <ph name="EXPIRATION_DATE_ABBR" />-მდე</translation>
+<translation id="2334327033751265975">თქვენი გაზიარებული ჩანართების ჯგუფები კვლავ ხელმისაწვდომია</translation>
 <translation id="2337852623177822836">პარამეტრს აკონტროლებს თქვენი ადმინისტრატორი</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> დაწყვილებას ითხოვს</translation>
 <translation id="2344529975040861103">თქვენ ამ ბარათის მონაცემების ავტომატური შევსება შეგიძლიათ, რადგან თქვენი ანგარიში მიბმულია Google Pay-სთან</translation>
@@ -2031,6 +2033,7 @@
 <translation id="4372948949327679948">მოსალოდნელი <ph name="VALUE_TYPE" /> ღირებულება.</translation>
 <translation id="437620492464254965">კარ-ფანჯარა</translation>
 <translation id="4377125064752653719">თქვენ სცადეთ <ph name="DOMAIN" />-თან დაკავშირება, მაგრამ გამცემმა გააუქმა სერვერის მიერ წარმოდგენილი სერტიფიკატი. ეს ნიშნავს, რომ არ უნდა ენდოთ სერვერის მიერ წარმოდგენილ მტკიცებულებებს. შესაძლოა, თქვენ ახორციელებთ კომუნიკაციას თავდამსხმელთან.</translation>
+<translation id="4377869186417956230">შეცვალეთ ერთგული კლიენტის ყველა ბარათი ამ მენიუს მეშვეობით.</translation>
 <translation id="4378154925671717803">ტელეფონი</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ამიერიდან თქვენი ფაილები შეინახეთ ღრუბლოვან საცავში</translation>
@@ -3148,6 +3151,7 @@
 <translation id="6326947323444967009">Chrome-ის დაყენება სისტემის ნაგულისხმევ ბრაუზერად iOS პარამეტრებიდან</translation>
 <translation id="6327065120806001832">ლოკალურ ქსელზე წვდომა</translation>
 <translation id="6328639280570009161">სცადეთ ქსელის პროგნოზის გამორთვა</translation>
+<translation id="6334834493885103305">ამიერიდან შეძლებთ გადახდას დროში განაწილებით Affirm-ის, Zip-ის და Klarna-ს მეშვეობით.</translation>
 <translation id="6335029926534404762">სპორტული ფეხსაცმელი</translation>
 <translation id="6336948221660696475">VR არ არის ნებადართული</translation>
 <translation id="6337133576188860026">გამოთავისუფლდება <ph name="SIZE" /> ან ნაკლები. ზოგიერთი საიტი შემდეგი მონახულებისას შეიძლება უფრო ნელა ჩაიტვირთოს.</translation>
@@ -3313,6 +3317,7 @@
 <translation id="6587893660316489419">კონვერტი B5</translation>
 <translation id="6587923378399804057">თქვენ მიერ კოპირებული ბმული</translation>
 <translation id="6591833882275308647">თქვენი <ph name="DEVICE_TYPE" /> არ არის მართული</translation>
+<translation id="6595495738567740002">ამ მოწყობილობიდან Google-ის ქუქი-ჩანაწერების წასაშლელად <ph name="BEGIN_LINK" />გამოდით Chrome-იდან<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">დაშიფვრის პარამეტრები</translation>
 <translation id="6596573334527383067">გუშინდელი შედეგების ჩვენება</translation>
 <translation id="6597665340361269064">90 გრადუსი</translation>
@@ -4071,6 +4076,7 @@
 <translation id="7878562273885520351">შესაძლოა თქვენს პაროლს საფრთხე ემუქრებოდეს</translation>
 <translation id="7881044256965445977">მოძებნეთ ნებისმიერი მოწყობილობა და შეუერთდით მას თქვენს ქსელში</translation>
 <translation id="7882421473871500483">ყავისფერი</translation>
+<translation id="7885670691503039914">როცა რომელიმე საიტზე ფასი დაიკლებს, ელფოსტით გაფრთხილებებს მიიღებთ. ეს გვერდი შეინახება ამ სანიშნეების საქაღალდეში: <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">აირჩიეთ, თემების რომელი ვრცელი კატეგორია იყოს გამოყენებული რეკლამის პერსონალიზების ხელშეწყობის მიზნით</translation>
 <translation id="7887683347370398519">შეამოწმეთ თქვენი CVC და ხელახლა სცადეთ</translation>
 <translation id="7887885240995164102">რეჟიმში „გამოსახულება გამოსახულებაში“ შესვლა</translation>
@@ -4666,6 +4672,7 @@
 <translation id="8926389886865778422">აღარ მკითხო</translation>
 <translation id="8932102934695377596">თქვენი საათი უკანაა</translation>
 <translation id="893332455753468063">დაამატეთ სახელი</translation>
+<translation id="8938242527120341116">თქვენი მოწყობილობის კონტენტის ფილტრებმა დაბლოკა <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">თქვენმა ადმინისტრატორმა <ph name="APP_NAME" />-ს ნება დართო, შეაგროვოს დიაგნოსტიკური მონაცემები, პროდუქტით სარგებლობის გასაუმჯობესებლად. დამატებითი ინფორმაციისთვის იხილეთ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">ლაიმისფერი</translation>
 <translation id="8949410982325929394">ტონი</translation>
@@ -4701,6 +4708,7 @@
 <translation id="9004367719664099443">VR სესია აქტიურია</translation>
 <translation id="9005998258318286617">PDF დოკუმენტი ვერ ჩაიტვირთა.</translation>
 <translation id="9008201768610948239">იგნორირება</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{არცერთი}=1{1 საიტიდან}other{# საიტიდან}}</translation>
 <translation id="9012194306129927220">უკვე შეგიძლიათ Affirm-ით და Zip-ით განვადებით გადახდა</translation>
 <translation id="9014705027639070815">თქვენ მიერ მონახულებულ საიტებს შეუძლია სთხოვონ Chrome-ს გარკვეული ინფორმაცია, თავიანთი რეკლამის ეფექტურობის გაზომვის მიზნით. Chrome- საშუალებას აძლევს საიტებს, შეაგროვონ შეზღუდული ტიპის მონაცემები, როგორიცაა, მაგალითად, ის, შეიძინეთ თუ არა რამე საიტის მონახულების შემდეგ.</translation>
 <translation id="9018120810758822233">შეიყვანეთ <ph name="CREDIT_CARD" />-ის უსაფრთხოების კოდი</translation>
@@ -4871,6 +4879,7 @@
 <translation id="963837307749850257">ყველა მომხმარებელი</translation>
 <translation id="964050462028070434">პაროლებისა და წვდომის გასაღებების მართვა…</translation>
 <translation id="969892804517981540">ოფიციალური კონსტრუქცია</translation>
+<translation id="97054401902912338">შეიტყვეთ მეტი კონტენტის ფილტრების შესახებ</translation>
 <translation id="973788791897303708">ჩანართების ეს ჯგუფი შევსებულია</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{არცერთი}=1{1 ერთეული}other{# ერთეული}}</translation>
 <translation id="976522784004777030">5 x 8 დუიმი</translation>

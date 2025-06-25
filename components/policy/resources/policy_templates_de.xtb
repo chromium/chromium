@@ -278,6 +278,7 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="1207301487141109411">Auswahl des Nutzeravatars aus lokalem Dateisystem, Kamera und Google-Profil verhindern</translation>
 <translation id="1209096923317019235">Weist Apps angegebenen Dateierweiterungen als Standard-Handler zu</translation>
 <translation id="120937472976628837">Informationen zum Lüfter melden</translation>
+<translation id="1211037010406094410">WebGL-Fallback für Software mit SwiftShader zulassen</translation>
 <translation id="1214639335214075459">Videodecodierung durch GPU-Hardware aktivieren</translation>
 <translation id="1214942205301731697">Verwendung des Entwicklermodus auf der Seite „Erweiterungen“ nicht zulassen</translation>
 <translation id="1216919699175573511">Unterstützung für Signed HTTP Exchange (SXG) aktivieren</translation>
@@ -3591,6 +3592,15 @@ Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durc
 
 Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3606571057705314194">Profil-Picker beim Start deaktiviert</translation>
+<translation id="3607797531311171116">Diese Richtlinie legt fest, ob SwiftShader als WebGL-Fallback verwendet wird, wenn die GPU-Beschleunigung für Hardware nicht verfügbar ist.
+
+SwiftShader wurde verwendet, um WebGL auf Systemen ohne GPU-Beschleunigung wie monitorlosen Systemen oder virtuellen Maschinen zu unterstützen, wurde aber aufgrund von Sicherheitsproblemen verworfen. Ab M139 schlägt die Erstellung von WebGL-Kontexten fehl, wenn ansonsten SwiftShader verwendet worden wäre. Mit dieser Richtlinie kann der Browser oder Administrator die Einstellung der Unterstützung vorübergehend verschieben.
+
+Wenn die Richtlinie aktiviert ist, wird SwiftShader als WebGL-Fallback für Software verwendet.
+
+Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, kann die Erstellung des WebGL-Kontexts fehlschlagen, wenn die GPU-Beschleunigung für Hardware nicht verfügbar ist. Webseiten funktionieren möglicherweise nicht richtig, wenn sie mit Problemen beim Erstellen des WebGL-Kontexts nicht umgehen können.
+
+Diese Richtlinie ist vorübergehend und wird in Zukunft entfernt.</translation>
 <translation id="3608206578291537084">Verschlüsselte Pipeline für die Berichterstellung aktivieren</translation>
 <translation id="3608281460204780443">Chrome Web Store-Symbol im <ph name="PRODUCT_OS_NAME" />-Launcher und auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="3612482251405108708">Automatischer Start der erneuten Onlineauthentifizierung auf dem Sperrbildschirm</translation>
@@ -5349,6 +5359,7 @@ Wir raten davon ab, die hardwarebeschleunigte Videodecodierung zu deaktivieren, 
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Mono-Audio" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
+<translation id="493253860646951791">Unterstützung für unsicheren SwiftShader-WebGL-Fallback aktivieren</translation>
 <translation id="4933301190614090397">Steuert die Dauer in Sekunden, die für Keepalive-Anfragen beim Schließen des Browsers zugelassen ist.
 
       Wenn die Richtlinie festgelegt ist, kann das Schließen des Browsers während der angegebenen Dauer in Sekunden blockiert werden, um Keepalive-Anfragen zu verarbeiten (https://fetch.spec.whatwg.org/#request-keepalive-flag).
@@ -7847,6 +7858,7 @@ Das Zeitlimit bei Inaktivität bis zum Start Bildschirmschoners und das Interval
 <translation id="6513453889192806240">HTTPS-Latenz</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" />-Bild</translation>
 <translation id="6518102411616460786">Abwarten, bis die Zielversion auf dem Stand des Versionsdowngrades ist</translation>
+<translation id="6518286606938091609">Unterstützung für unsicheren SwiftShader-WebGL-Fallback deaktivieren</translation>
 <translation id="6518894783486860562">Aus Sicherheitsgründen erfordert das Aufrufen der Web-APIs <ph name="SHOW_SUBAPPS_APP_API_NAME" />, <ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> und <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> eine vorherige Nutzergeste („vorübergehende Aktivierung“) – ansonsten schlägt das Aufrufen fehl. Außerdem wird der Nutzer aufgefordert, den Vorgang über ein Bestätigungsdialogfeld zu bestätigen.
 
 Wenn diese Richtlinie konfiguriert ist, können Administratoren Ursprünge festlegen, von denen diese APIs ohne vorherige Nutzergeste aufgerufen werden können, und ohne, dass der Nutzer um Bestätigung gebeten wird.

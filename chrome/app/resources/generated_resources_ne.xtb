@@ -2607,6 +2607,7 @@
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{अत्यन्तै धेरै सूचना पठाउने एउटा साइट भेट्टिएको छ}other{अत्यन्तै धेरै सूचना पठाउने {NUM_SITES} वटा साइट भेट्टिएका छन्}}</translation>
 <translation id="2778471504622896352">ChromeOS लन्चरमा रिमोट एपहरू हाल्नुहोस्</translation>
 <translation id="2779728796406650689">तपाईंले प्रश्नहरू सोध्दा यसले Google एसिस्टेन्टलाई आवश्यकताअनुसारका जवाफ दिने अनुमति दिन्छ।</translation>
+<translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> मार्फत आफ्नो सुरक्षा साँचो प्रयोग गर्नुहोस्</translation>
@@ -4832,6 +4833,7 @@
 <translation id="435527878592612277">आफ्नो तस्बिर चयन गर्नुहोस्</translation>
 <translation id="4356100841225547054">भोल्युम अफ गर्नुहोस्</translation>
 <translation id="4357583358198801992">ट्याब समूहहरू देखाउनुहोस्</translation>
+<translation id="4357812592970409234">"नयाँ ट्याब" पेजको ब्याकग्राउन्डका बारेमा थप जान्नुहोस्</translation>
 <translation id="4358361163731478742">कुनै पनि एपमा एपको भाषा चयन गर्ने सुविधा उपलब्ध छैन</translation>
 <translation id="4358643842961018282">तपाईंको डिभाइस अप टु डेट छ</translation>
 <translation id="4358995225307748864">आफूले खोल्न चाहेको एप चयन गर्नुहोस्</translation>
@@ -6984,6 +6986,7 @@
 <translation id="5916664084637901428">अन</translation>
 <translation id="59174027418879706">सक्षम गरिएको</translation>
 <translation id="5919305207330938913">सङ्कलन गरिएका सबै डेटा Google को <ph name="BEGIN_LINK" />गोपनीयता नीति<ph name="END_LINK" />बमोजिम प्रयोग गरिने छ।</translation>
+<translation id="5919486630433391408">तपाईंका एड्मिनले फर्मवेयर अपडेटसम्बन्धी सुविधा अफ गर्नुभएको छ।</translation>
 <translation id="5920543303088087579">तपाईंका प्रशासकले यस नेवर्टकमा जडान गर्ने सुविधालाई असक्षम पार्नुभएको छ</translation>
 <translation id="5922963926582976524">इन्स्ट्यान्ट हटस्पटको नेटवर्क डिस्कनेक्ट गर्नुहोस्</translation>
 <translation id="5924047253200400718">मद्दत प्राप्त गर्नुहोस्<ph name="SCANNING_STATUS" /></translation>
@@ -11362,7 +11365,6 @@
 <translation id="8993945059918628059">औँलाले फिंगरप्रिन्ट सेन्सरमा छुनुहोस्। तपाईंको फिंगरप्रिन्ट डेटा सुरक्षित रूपमा भण्डारण गरिन्छ र यो डेटा कहिल्यै पनि तपाईंको <ph name="DEVICE_TYPE" /> बाट अन्यत्र पठाइँदैन।</translation>
 <translation id="899403249577094719">नेटस्केप प्रमाणपत्र आधार URL</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{यो एक्स्टेन्सन तपाईंको Google खातामा सेभ गरिन्छ तर यो एक्स्टेन्सनले यो डिभाइसमा मात्र सेभ गरेका सबै डेटा मेटाइन सक्छ}other{यी एक्स्टेन्सनहरू तपाईंको Google खातामा सेभ गरिन्छन् तर यी एक्स्टेन्सनले यो डिभाइसमा मात्र सेभ गरेका सबै डेटा मेटाइन सक्छ}}</translation>
-<translation id="8998078711690114234">यस्तो खालको फाइल खतरनाक हुन सक्छ। तपाईंलाई <ph name="ORIGIN" /> माथि विश्वास छ भने मात्र यो फाइल सेभ गर्नुहोस्</translation>
 <translation id="8999027165951679951">निष्क्रिय ट्याब: <ph name="MEMORY_SAVINGS" /> खाली गरियो</translation>
 <translation id="8999560016882908256">खण्डको विन्याससम्बन्धी त्रुटि: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">स्क्रिनमा कम एनिमेसन देखाउने सेटिङ</translation>

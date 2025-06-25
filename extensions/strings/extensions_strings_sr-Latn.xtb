@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">Zadnja</translation>
 <translation id="1196338895211115272">Izvoz privatnog ključa nije uspeo.</translation>
 <translation id="132960226125594336">Učitavanja fajla <ph name="RELATIVE_PATH" /> za skriptu sadržaja nije uspelo jer bi se time premašila maksimalna veličina skripte ili maksimalna ukupna veličina skripte za sadržaj.</translation>
-<translation id="1420684932347524586">Generisanje nasumičnog RSA privatnog ključa nije uspelo.</translation>
 <translation id="1445572445564823378">Ovaj dodatak usporava <ph name="PRODUCT_NAME" />. Trebalo bi da ga onemogućite da bi se učinak proizvoda <ph name="PRODUCT_NAME" /> vratio.</translation>
 <translation id="1468038450257740950">WebGL nije podržan.</translation>
 <translation id="1610570795592207282">Učitavanje css-a <ph name="RELATIVE_PATH" /> za skriptu nije uspelo.</translation>

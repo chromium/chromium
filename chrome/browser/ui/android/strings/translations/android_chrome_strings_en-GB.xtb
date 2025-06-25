@@ -312,7 +312,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2453860139492968684">Finish</translation>
 <translation id="2461378706168271257">Search your tabs</translation>
 <translation id="2461822463642141190">Current</translation>
-<translation id="2463770278804271243">PAGE</translation>
 <translation id="2468444275314013497">Your browser looks good</translation>
 <translation id="2472163211318554013">Sign in to get the most out of Chrome</translation>
 <translation id="247737702124049222">Image descriptions are on</translation>
@@ -340,7 +339,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2547843573592965873">Your profile lock keeps your info secure in the car, including passwords, payments and more saved in your Google Account.</translation>
 <translation id="254973855621628293">Passwords saved to this device</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Dangerous download blocked}other{# dangerous downloads blocked}}</translation>
-<translation id="2567385386134582609">IMAGE</translation>
 <translation id="2569733278091928697">You’ll be able to easily manage media controls, Incognito sessions, downloads and more</translation>
 <translation id="2571711316400087311">Offer to send pages in other languages to Google Translate</translation>
 <translation id="2571834852878229351">Create my own</translation>
@@ -483,7 +481,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3211426585530211793">Deleted <ph name="ITEM_TITLE" /></translation>
 <translation id="3220943972464248773">To sync your passwords, verify that it's you</translation>
-<translation id="323213525320714789">DEVELOPER</translation>
 <translation id="3232293466644486101">Delete browsing data…</translation>
 <translation id="3232754137068452469">Web App</translation>
 <translation id="3236059992281584593">1 min left</translation>
@@ -1131,7 +1128,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6138832295072039549">Change your site settings here</translation>
 <translation id="6140912465461743537">Country/Region</translation>
 <translation id="6142183503755612900">You can change your default at any time in settings.</translation>
-<translation id="6143892791267458416">\u0020and closed after <ph name="DAYS_ARCHIVED" /> days</translation>
 <translation id="6146563240635539929">Videos</translation>
 <translation id="614890671148262506">Always allow notifications from this site</translation>
 <translation id="6150320133806434356">Bookmark saved</translation>
@@ -1193,7 +1189,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6382848304055775421">Exporting</translation>
 <translation id="6388152137132427505">Always share wisely. Links expire in 48 hours.</translation>
 <translation id="6394791151443660613">Search: <ph name="SEARCH_QUERY" /></translation>
-<translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Back online</translation>
 <translation id="6399363707848566877">You can now easily add tabs to groups here</translation>
 <translation id="6401458660421980302">To send this tab to another device, sign in to Chrome there</translation>
@@ -1408,6 +1403,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7224097611345298931">All passwords saved only to this device for Chrome and <ph name="CHROME_CHANNEL" /> were merged. You can autofill all your saved passwords on both apps.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pending}other{# downloads pending}}</translation>
 <translation id="7230064152164845085">Switch to Incognito</translation>
+<translation id="7230836263524391273">Hide reading mode</translation>
 <translation id="7237724030342645845">Google Password Manager stopped working</translation>
 <translation id="72415438529550637">Password suggestion is closed.</translation>
 <translation id="7248671827512403053">Application</translation>
@@ -1433,7 +1429,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7340958967809483333">Options for Discover</translation>
 <translation id="7352339641508007922">Drag to take a long screenshot</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
-<translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Share 1 selected item}other{Share # selected items}}</translation>
 <translation id="7359002509206457351">Access payment methods</translation>
 <translation id="7363349185727752629">A guide to your privacy choices</translation>
@@ -1732,7 +1727,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8533670235862049797">Safe Browsing is on</translation>
 <translation id="8540136935098276800">Enter a correctly formatted URL</translation>
 <translation id="854522910157234410">Open this page:</translation>
-<translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Inactive tab (1)}other{Inactive tabs (#)}}</translation>
 <translation id="8547466829003330976">Review PDF with AI</translation>
 <translation id="855081842937141170">Pin tab</translation>
 <translation id="8551513938758868521">Lock Incognito tabs when you leave Chrome</translation>

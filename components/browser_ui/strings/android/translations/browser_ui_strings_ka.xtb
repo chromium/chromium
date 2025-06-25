@@ -424,6 +424,7 @@
 <translation id="5968921426641056619">შეიყვანეთ ვებ-მისამართი</translation>
 <translation id="5975083100439434680">დაშორება</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> — <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Discover არხის ჩართვა</translation>
 <translation id="6015775454662021376">გაანკონტროლეთ ამ საიტის თქვენს მოწყობილობაზე წვდომა</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6042308850641462728">სხვა</translation>
@@ -513,6 +514,7 @@
 <translation id="7203150201908454328">გაშლილი</translation>
 <translation id="7219254577985949841">გსურთ, წაშალოთ საიტის მონაცემები?</translation>
 <translation id="723171743924126238">აირჩიეთ სურათები</translation>
+<translation id="7243246278722455312">მოირგეთ ახალი ჩანართის გვერდის ქვედა ფურცელი</translation>
 <translation id="7243308994586599757">ვარიანტები ხელმისაწვდომია ეკრანის ქვედა ნაწილთან</translation>
 <translation id="7250468141469952378">არჩეულია <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> და <ph name="PERMISSION_2" /> დაშვებულია</translation>

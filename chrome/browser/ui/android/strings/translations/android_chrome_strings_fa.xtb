@@ -312,7 +312,6 @@
 <translation id="2453860139492968684">پایان</translation>
 <translation id="2461378706168271257">برگه‌هایتان را جستجو کنید</translation>
 <translation id="2461822463642141190">فعلی</translation>
-<translation id="2463770278804271243">صفحه</translation>
 <translation id="2468444275314013497">مرورگرتان مشکلی ندارد</translation>
 <translation id="2472163211318554013">‏برای بردن بیشترین بهره از Chrome، به سیستم وارد شوید</translation>
 <translation id="247737702124049222">توضیحات تصویر روشن است</translation>
@@ -340,7 +339,6 @@
 <translation id="2547843573592965873">‏قفل نمایه اطلاعات شما را در خودرو ایمن نگه می‌دارد، ازجمله گذرواژه‌ها، پرداخت‌ها، و اطلاعات دیگری که در «حساب Google» شما ذخیره می‌شود.</translation>
 <translation id="254973855621628293">گذرواژه‌های ذخیره‌شده در این دستگاه</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{بارگیری خطرناک مسدود شد}one{‫# بارگیری خطرناک مسدود شد}other{‫# بارگیری خطرناک مسدود شد}}</translation>
-<translation id="2567385386134582609">تصویر</translation>
 <translation id="2569733278091928697">به‌راحتی می‌توانید کنترل‌های رسانه، جلسه‌های «ناشناس»، بارگیری‌ها، و موارد دیگر را مدیریت کنید</translation>
 <translation id="2571711316400087311">‏پیشنهاد ارسال صفحه‌های نوشته‌شده به زبان‌های دیگر به «ترجمه Google»</translation>
 <translation id="2571834852878229351">ایجاد گذرواژه خودم</translation>
@@ -483,7 +481,6 @@
 <translation id="3208584281581115441">اکنون بررسی شود</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> حذف شد</translation>
 <translation id="3220943972464248773">برای همگام‌سازی گذرواژه‌ها، هویتتان را به‌تأیید برسانید</translation>
-<translation id="323213525320714789">توسعه‌دهنده</translation>
 <translation id="3232293466644486101">حذف کردن داده‌های مرور…</translation>
 <translation id="3232754137068452469">برنامه وب</translation>
 <translation id="3236059992281584593">۱ دقیقه باقی‌مانده است</translation>
@@ -1131,7 +1128,6 @@
 <translation id="6138832295072039549">تنظیمات سایتتان را اینجا تغییر دهید</translation>
 <translation id="6140912465461743537">کشور/منطقه</translation>
 <translation id="6142183503755612900">هرزمان بخواهید می‌توانید موتور جستجوی پیش‌فرض را در تنظیمات تغییر دهید</translation>
-<translation id="6143892791267458416">‏\u0020و پس‌از <ph name="DAYS_ARCHIVED" /> روز بسته شد</translation>
 <translation id="6146563240635539929">ویدیو</translation>
 <translation id="614890671148262506">اعلان‌های این سایت همواره مجاز باشد</translation>
 <translation id="6150320133806434356">نشانک ذخیره شد</translation>
@@ -1193,7 +1189,6 @@
 <translation id="6382848304055775421">درحال صادر کردن</translation>
 <translation id="6388152137132427505">همیشه بادقت هم‌رسانی کنید. پیوندها ظرف ۴۸ ساعت منقضی می‌شود.</translation>
 <translation id="6394791151443660613">جستجو: <ph name="SEARCH_QUERY" /></translation>
-<translation id="6395288395575013217">پیوند</translation>
 <translation id="6397616442223433927">دوباره آنلاین شدید</translation>
 <translation id="6399363707848566877">اکنون می‌توانید به‌راحتی به گروه‌های اینجا برگه اضافه کنید</translation>
 <translation id="6401458660421980302">‏برای ارسال این برگه به دستگاهی دیگر، در آنجا به سیستم Chrome وارد شوید</translation>
@@ -1434,7 +1429,6 @@
 <translation id="7340958967809483333">گزینه‌های «یافته‌ها»</translation>
 <translation id="7352339641508007922">برای ثبت نماگرفت طولانی، بکشید</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
-<translation id="7352939065658542140">ویدیو</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{اشتراک‌گذاری ۱ مورد انتخاب‌شده}one{اشتراک‌گذاری # مورد انتخاب‌شده}other{اشتراک‌گذاری # مورد انتخاب‌شده}}</translation>
 <translation id="7359002509206457351">دسترسی به روش‌های پرداخت</translation>
 <translation id="7363349185727752629">راهنمای گزینه‌های حریم خصوصی</translation>
@@ -1733,7 +1727,6 @@
 <translation id="8533670235862049797">«مرور ایمن» روشن است</translation>
 <translation id="8540136935098276800">نشانی وبی وارد کنید که به‌درستی قالب‌بندی شده باشد</translation>
 <translation id="854522910157234410">باز کردن این صفحه</translation>
-<translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{برگه غیرفعال (۱)}one{برگه غیرفعال (#)}other{برگه‌های غیرفعال (#)}}</translation>
 <translation id="8547466829003330976">بازبینی کردن پی‌دی‌اف با هوش مصنوعی</translation>
 <translation id="855081842937141170">سنجاق کردن برگه</translation>
 <translation id="8551513938758868521">‏قفل شدن برگه‌های ناشناس هنگام خروج از Chrome</translation>

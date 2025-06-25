@@ -56,7 +56,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> guia fechada}one{<ph name="MANY_CLOSED" /> guia fechada}other{<ph name="MANY_CLOSED" /> guias fechadas}}</translation>
 <translation id="2894757982205307093">Nova guia no grupo</translation>
 <translation id="2928243913527329289">Google | Sobre a loja</translation>
-<translation id="29919168204617356">As guias inativas serão fechadas automaticamente. Elas podem ser encontradas no Histórico.</translation>
 <translation id="3008554597174452548">Parar de monitorar o produto</translation>
 <translation id="3026391124054406831">Crie grupos para organizar as guias.</translation>
 <translation id="3051031624272448591">Elas podem ser recuperadas a qualquer momento no histórico.</translation>
@@ -79,13 +78,13 @@
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Criado há <ph name="NUM_DAYS_ONE" /> dia}one{Criado há <ph name="NUM_DAYS_MANY" /> dia}other{Criado há <ph name="NUM_DAYS_MANY" /> dias}}</translation>
 <translation id="4076226664360336092">Lista de grupos de guias aberta no tamanho máximo</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
+<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Fechar o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Fechar o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Fechar o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="427987768447457592">Novo grupo de guias</translation>
 <translation id="4371591986692297148">Inativos</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{Restaurar item}one{Restaurar item}other{Restaurar itens}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Atualizado há <ph name="NUM_DAYS_ONE" /> dia}one{Atualizado há <ph name="NUM_DAYS_MANY" /> dia}other{Atualizado há <ph name="NUM_DAYS_MANY" /> dias}}</translation>
 <translation id="4686942373615810936">Criado agora</translation>
-<translation id="47070857600201406">{DAY_COUNT,plural, =1{Fechar após 1 dia}one{Fechar após <ph name="DAY_COUNT_MANY" /> dia}other{Fechar após <ph name="DAY_COUNT_MANY" /> dias}}</translation>
 <translation id="4783638485675352219">Compartilhar títulos e URLs de guias abertas neste dispositivo com o sistema operacional</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avaliação)}one{(<ph name="REVIEWS_COUNT_MANY" /> avaliação)}other{(<ph name="REVIEWS_COUNT_MANY" /> avaliações)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
@@ -109,9 +108,11 @@
 <translation id="5446043142172831860">Remover guia e sair do grupo</translation>
 <translation id="5490235265819901748">Grupo de guias expandido</translation>
 <translation id="5494920125229734069">Selecionar todas</translation>
+<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Fechar o grupo de guias com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Fechar o grupo de guias com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Fechar o grupo de guias com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Ver informações da loja, opção disponível perto da parte superior da tela</translation>
 <translation id="5627941783489838464">Nenhuma atualização de guias</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link do Chrome}one{<ph name="TABS_COUNT_MANY" /> link do Chrome}other{<ph name="TABS_COUNT_MANY" /> links do Chrome}}</translation>
+<translation id="5746204836956568669">Agrupar <ph name="NUMBER_OF_TABS" /> guias para trabalhar mais rápido?</translation>
 <translation id="58326064309361797">Arraste as guias para agrupá-las</translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5972844218283131174">Desmarcar tudo</translation>
@@ -131,7 +132,6 @@
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> guia}one{<ph name="TABS_COUNT_MANY" /> guia}other{<ph name="TABS_COUNT_MANY" /> guias}}</translation>
 <translation id="6499296376514955580">O aviso sobre mudanças no grupo de guias compartilhado foi fechado</translation>
 <translation id="6527303717912515753">Compartilhar</translation>
-<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Após 1 dia}one{Após <ph name="DAY_COUNT_MANY" /> dia}other{Após <ph name="DAY_COUNT_MANY" /> dias}}</translation>
 <translation id="6549021453810473782">Ver informações da loja</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Mover guia para a esquerda</translation>
@@ -181,7 +181,6 @@
 <translation id="8029301326595421733">As informações sobre a loja estão abertas no tamanho máximo</translation>
 <translation id="8053770993984522566">Lista de grupos de guias aberta na metade da altura</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Adicionar guia ao grupo}one{Adicionar guia ao grupo}other{Adicionar guias ao grupo}}</translation>
-<translation id="8076492880354921740">Guias</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Abrir o grupo de guias <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Abrir o grupo de guias <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Abrir o grupo de guias <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Mover guia para cima</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Atualizado há <ph name="NUM_MINS_ONE" /> minuto}one{Atualizado há <ph name="NUM_MINS_MANY" /> minuto}other{Atualizado há <ph name="NUM_MINS_MANY" /> minutos}}</translation>
