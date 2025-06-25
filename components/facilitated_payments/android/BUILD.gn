@@ -28,6 +28,7 @@ static_library("android") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "device_delegate_android_unittest.cc",
     "facilitated_payments_api_client_android_unittest.cc",
     "secure_payload_android_unittest.cc",
   ]

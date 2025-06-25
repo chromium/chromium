@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_DEVICE_DELEGATE_H_
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_DEVICE_DELEGATE_H_
 
+#include "base/functional/callback.h"
+
 namespace payments::facilitated {
 
 // Abstract base class for device-specific facilitated payments operations.
@@ -22,6 +24,10 @@ class DeviceDelegate {
 
   // Takes user to the Pix account linking page.
   virtual void LaunchPixAccountLinkingPage() = 0;
+
+  // Saves the `callback` to be run after the user leaves and then returns to
+  // Chrome.
+  virtual void SetOnReturnToChromeCallback(base::OnceClosure callback) = 0;
 };
 
 }  // namespace payments::facilitated

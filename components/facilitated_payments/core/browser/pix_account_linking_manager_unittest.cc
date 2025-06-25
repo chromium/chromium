@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -45,16 +46,21 @@ class PixAccountLinkingManagerTest : public testing::Test {
         std::make_unique<autofill::PaymentsCustomerData>("123456"));
     ON_CALL(client_, GetPaymentsDataManager)
         .WillByDefault(testing::Return(payments_data_manager_.get()));
-    mock_device_delegate_ = std::make_unique<MockDeviceDelegate>();
+    device_delegate_ = std::make_unique<MockDeviceDelegate>();
     ON_CALL(client_, GetDeviceDelegate)
-        .WillByDefault(testing::Return(mock_device_delegate_.get()));
-
-    // Success path setup. The Pix account linking user pref is default enabled.
-    ON_CALL(*mock_device_delegate(), IsPixAccountLinkingSupported)
-        .WillByDefault(testing::Return(true));
+        .WillByDefault(testing::Return(device_delegate_.get()));
     ON_CALL(client_, GetMultipleRequestFacilitatedPaymentsNetworkInterface)
         .WillByDefault(testing::Return(
             multiple_request_payments_network_interface_.get()));
+
+    // Success path setup. The Pix account linking user pref is default enabled.
+    ON_CALL(*device_delegate(), IsPixAccountLinkingSupported)
+        .WillByDefault(testing::Return(true));
+    // Simulate user leaving and returning to Chrome, after which the callback
+    // that triggers showing the prompt is called.
+    ON_CALL(*device_delegate(), SetOnReturnToChromeCallback)
+        .WillByDefault(
+            [](base::OnceClosure callback) { std::move(callback).Run(); });
   }
 
   void TearDown() override {
@@ -65,9 +71,7 @@ class PixAccountLinkingManagerTest : public testing::Test {
  protected:
   MockFacilitatedPaymentsClient& client() { return client_; }
   PixAccountLinkingManager* manager() { return manager_.get(); }
-  MockDeviceDelegate* mock_device_delegate() {
-    return mock_device_delegate_.get();
-  }
+  MockDeviceDelegate* device_delegate() { return device_delegate_.get(); }
   inline PixAccountLinkingManagerTestApi test_api() {
     return PixAccountLinkingManagerTestApi(manager_.get());
   }
@@ -87,10 +91,11 @@ class PixAccountLinkingManagerTest : public testing::Test {
   std::unique_ptr<MockMultipleRequestFacilitatedPaymentsNetworkInterface>
       multiple_request_payments_network_interface_;
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<MockDeviceDelegate> mock_device_delegate_;
+  std::unique_ptr<MockDeviceDelegate> device_delegate_;
 };
 
 TEST_F(PixAccountLinkingManagerTest, SuccessPathShowsPrompt) {
+  EXPECT_CALL(*device_delegate(), SetOnReturnToChromeCallback);
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt);
 
   manager()->MaybeShowPixAccountLinkingPrompt();
@@ -98,7 +103,7 @@ TEST_F(PixAccountLinkingManagerTest, SuccessPathShowsPrompt) {
 
 TEST_F(PixAccountLinkingManagerTest,
        PixAccountLinkingNotSupported_PromptNotShown) {
-  ON_CALL(*mock_device_delegate(), IsPixAccountLinkingSupported)
+  ON_CALL(*device_delegate(), IsPixAccountLinkingSupported)
       .WillByDefault(testing::Return(false));
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
@@ -116,9 +121,20 @@ TEST_F(PixAccountLinkingManagerTest,
   manager()->MaybeShowPixAccountLinkingPrompt();
 }
 
+TEST_F(PixAccountLinkingManagerTest, UserNotReturnedToChrome_PromptNotShown) {
+  // Simulate user not returning to Chrome, so the callback is never run.
+  ON_CALL(*device_delegate(), SetOnReturnToChromeCallback)
+      .WillByDefault([](base::OnceClosure callback) {});
+
+  EXPECT_CALL(*device_delegate(), SetOnReturnToChromeCallback);
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
+
+  manager()->MaybeShowPixAccountLinkingPrompt();
+}
+
 TEST_F(PixAccountLinkingManagerTest, OnAccepted) {
   EXPECT_CALL(client(), DismissPrompt);
-  EXPECT_CALL(*mock_device_delegate(), LaunchPixAccountLinkingPage);
+  EXPECT_CALL(*device_delegate(), LaunchPixAccountLinkingPage);
 
   test_api().OnAccepted();
 }
