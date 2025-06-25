@@ -346,7 +346,7 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
 
 // Did tap the secondary button.
 - (void)didTapSecondaryButton:(UIButton*)sender {
-  [self.mutator didConsentBWG];
+  [self.mutator didRefuseBWGConsent];
 }
 
 #pragma mark - UITextViewDelegate
