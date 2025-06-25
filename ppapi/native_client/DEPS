@@ -1,4 +1,0 @@
-include_rules = [
-  "+native_client/src/include",
-  "+native_client/src/untrusted",
-]

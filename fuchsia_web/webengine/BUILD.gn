@@ -84,20 +84,6 @@ _disallowed_pdf_deps = [
   "//pdf/*",
 ]
 
-# Ppapi code should not be included as enable_ppapi is false.
-# Exclude everything except "//ppapi/buildflags/*", which is allowed.
-_disallowed_ppapi_deps = [
-  "//ppapi:*",
-  "//ppapi/c/*",
-  "//ppapi/cpp/*",
-  "//ppapi/host/*",
-  "//ppapi/lib/*",
-  "//ppapi/native_client/*",
-  "//ppapi/proxy/*",
-  "//ppapi/shared_impl/*",
-  "//ppapi/thunk/*",
-]
-
 # Although `enable_printing` is true on Fuchsia, no code should be linked.
 # "//printing:metafile" is used by //third_party/blink/renderer/core and
 # uses "//printing/common/*".
@@ -112,7 +98,7 @@ _disallowed_printing_deps = [
 # that depends on those targets once this is correctly supported.
 _disallowed_deps =
     _disallowed_cast_deps + _disallowed_extensions_deps + _disallowed_pdf_deps +
-    _disallowed_ppapi_deps + _disallowed_printing_deps +
+    _disallowed_printing_deps +
     [
       # Ensure WebEngine is not communicating with the Finch service until it
       # is explicitly supported. See crbug.com/1155712.

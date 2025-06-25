@@ -242,8 +242,6 @@ vs-chromium-project.txt
 /net/testserver.log
 /orderfiles
 /out*/
-/ppapi/native_client/nacl_irt.xml
-/ppapi/native_client/ppapi_lib.xml
 /remoting/android/internal/
 /remoting/appengine/
 /remoting/host/installer/chrome-remote-desktop_*.buildinfo

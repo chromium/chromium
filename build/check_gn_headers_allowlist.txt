@@ -137,12 +137,6 @@ ppapi/lib/gl/include/GLES2/gl2.h
 ppapi/lib/gl/include/GLES2/gl2ext.h
 ppapi/lib/gl/include/GLES2/gl2platform.h
 ppapi/lib/gl/include/KHR/khrplatform.h
-ppapi/nacl_irt/irt_manifest.h
-ppapi/nacl_irt/public/irt_ppapi.h
-ppapi/native_client/src/shared/ppapi_proxy/ppruntime.h
-ppapi/native_client/src/untrusted/pnacl_irt_shim/irt_shim_ppapi.h
-ppapi/native_client/src/untrusted/pnacl_irt_shim/pnacl_shim.h
-ppapi/native_client/src/untrusted/pnacl_irt_shim/shim_ppapi.h
 ppapi/proxy/dispatch_reply_message.h
 ppapi/proxy/plugin_proxy_delegate.h
 ppapi/proxy/plugin_resource_callback.h

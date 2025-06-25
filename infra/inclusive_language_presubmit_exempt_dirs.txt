@@ -263,7 +263,6 @@ ppapi
 ppapi/c/documentation
 ppapi/cpp/documentation
 ppapi/generators
-ppapi/native_client
 sandbox/linux/suid/client
 sandbox/policy/linux
 services/device/serial
