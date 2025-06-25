@@ -6230,27 +6230,27 @@
   {
     "name": "launcher-local-image-search",
     "owners": ["chenjih@google.com", "nbowe@chromium.org"],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "launcher-local-image-search-confidence",
     "owners": ["chenjih@google.com", "nbowe@chromium.org"],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "launcher-local-image-search-ica",
     "owners": ["chenjih@google.com", "nbowe@chromium.org"],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "launcher-local-image-search-ocr",
     "owners": ["chenjih@google.com", "nbowe@chromium.org"],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "launcher-local-image-search-relevance",
     "owners": ["chenjih@google.com", "nbowe@chromium.org"],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "launcher-manatee-for-keyboard-shortcuts",
