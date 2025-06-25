@@ -297,7 +297,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Button) {
 // Android FYI SkiaRenderer Vulkan. Disable it until a resolution for is
 // found.
 // TODO(crbug.com/401594933): The test fails on Windows ARM64.
-#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
+// TODO(crbug.com/427628395): The test fails on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
 #define MAYBE_ColorInput DISABLED_ColorInput
 #else
 #define MAYBE_ColorInput ColorInput
