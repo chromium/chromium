@@ -567,22 +567,11 @@ void GraphicsContext::DrawBidiText(const Font& font,
                                    const gfx::PointF& point,
                                    const AutoDarkMode& auto_dark_mode) {
   DrawTextPasses([&](const cc::PaintFlags& flags) {
-    if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
-      if (PlainTextPainter::Shared().DrawWithBidiReorder(
-              run, 0, run.length(), font, Font::kDoNotPaintIfFontNotReady,
-              *canvas_, point, DarkModeFlags(this, auto_dark_mode, flags),
-              printing_ ? Font::DrawType::kGlyphsAndClusters
-                        : Font::DrawType::kGlyphsOnly)) {
-        paint_controller_.SetTextPainted();
-      }
-      return;
-    }
-    if (font.DeprecatedDrawBidiText(canvas_, TextRunPaintInfo(run), point,
-                                    Font::kDoNotPaintIfFontNotReady,
-                                    DarkModeFlags(this, auto_dark_mode, flags),
-                                    printing_
-                                        ? Font::DrawType::kGlyphsAndClusters
-                                        : Font::DrawType::kGlyphsOnly)) {
+    if (PlainTextPainter::Shared().DrawWithBidiReorder(
+            run, 0, run.length(), font, Font::kDoNotPaintIfFontNotReady,
+            *canvas_, point, DarkModeFlags(this, auto_dark_mode, flags),
+            printing_ ? Font::DrawType::kGlyphsAndClusters
+                      : Font::DrawType::kGlyphsOnly)) {
       paint_controller_.SetTextPainted();
     }
   });

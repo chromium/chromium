@@ -23,7 +23,6 @@ void PlainTextPainter::Trace(Visitor* visitor) const {
 }
 
 PlainTextPainter& PlainTextPainter::Shared() {
-  DCHECK(RuntimeEnabledFeatures::PlainTextPainterEnabled());
   DCHECK(IsMainThread());
   DEFINE_STATIC_LOCAL(Persistent<PlainTextPainter>, shared_instance,
                       (MakeGarbageCollected<PlainTextPainter>(kShared)));

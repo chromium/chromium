@@ -49,9 +49,11 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
     TextRun text_run(text, TextDirection::kLtr,
                      /* directional_override */ false,
                      /* normalize_space */ true);
-    gfx::RectF text_bounds = font->DeprecatedSelectionRectForText(
-        text_run, gfx::PointF(), font->GetFontDescription().ComputedSize(), 0,
-        -1);
+    gfx::RectF text_bounds =
+        MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas)
+            ->SelectionRectForTextWithoutBidi(
+                text_run, 0, text_run.length(), *font, gfx::PointF(),
+                font->GetFontDescription().ComputedSize());
 
     // X direction.
     if (RuntimeEnabledFeatures::CanvasTextNgEnabled(nullptr)) {

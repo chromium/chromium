@@ -76,9 +76,7 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
 
   TextRun text_run(layout_embedded_object_.UnavailablePluginReplacementText());
   gfx::SizeF text_geometry(
-      RuntimeEnabledFeatures::PlainTextPainterEnabled()
-          ? PlainTextPainter::Shared().ComputeInlineSize(text_run, *font)
-          : font->DeprecatedWidth(text_run),
+      PlainTextPainter::Shared().ComputeInlineSize(text_run, *font),
       font_data->GetFontMetrics().Height());
 
   PhysicalRect background_rect(

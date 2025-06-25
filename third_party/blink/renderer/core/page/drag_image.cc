@@ -169,16 +169,11 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
     draw_url_string = false;
     label = url_string;
   }
-  PlainTextPainter* text_painter =
-      RuntimeEnabledFeatures::PlainTextPainterEnabled()
-          ? &PlainTextPainter::Shared()
-          : nullptr;
+  PlainTextPainter& text_painter = PlainTextPainter::Shared();
 
   // First step is drawing the link drag image width.
   gfx::Size label_size(
-      text_painter
-          ? text_painter->ComputeInlineSize(TextRun(label), *label_font)
-          : label_font->DeprecatedWidth(TextRun(label)),
+      text_painter.ComputeInlineSize(TextRun(label), *label_font),
       label_font_data->GetFontMetrics().Ascent() +
           label_font_data->GetFontMetrics().Descent());
 
@@ -192,10 +187,8 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
                        label_size.height() + kDragLabelBorderY * 2);
 
   if (draw_url_string) {
-    url_string_size.set_width(
-        text_painter ? text_painter->ComputeInlineSizeWithoutBidi(
-                           TextRun(url_string), *url_font)
-                     : url_font->DeprecatedWidth(TextRun(url_string)));
+    url_string_size.set_width(text_painter.ComputeInlineSizeWithoutBidi(
+        TextRun(url_string), *url_font));
     url_string_size.set_height(url_font_data->GetFontMetrics().Ascent() +
                                url_font_data->GetFontMetrics().Descent());
     image_size.set_height(image_size.height() + url_string_size.height());
@@ -248,14 +241,8 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
         image_size.height() -
             (kLabelBorderYOffset + url_font_data->GetFontMetrics().Descent()));
     TextRun text_run(url_string);
-    if (text_painter) {
-      text_painter->DrawWithoutBidi(text_run, *url_font,
-                                    resource_provider->Canvas(), text_pos,
-                                    text_paint);
-    } else {
-      url_font->DeprecatedDrawText(&resource_provider->Canvas(), text_run,
-                                   text_pos, text_paint);
-    }
+    text_painter.DrawWithoutBidi(
+        text_run, *url_font, resource_provider->Canvas(), text_pos, text_paint);
   }
 
   if (clip_label_string) {
@@ -268,22 +255,14 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
       kDragLabelBorderX,
       kDragLabelBorderY + label_font->GetFontDescription().ComputedPixelSize());
   if (text_run.Direction() == TextDirection::kRtl) {
-    float text_width =
-        text_painter ? text_painter->ComputeInlineSize(text_run, *label_font)
-                     : label_font->DeprecatedWidth(text_run);
+    float text_width = text_painter.ComputeInlineSize(text_run, *label_font);
     int available_width = image_size.width() - kDragLabelBorderX * 2;
     text_pos.set_x(available_width - ceilf(text_width));
   }
-  if (text_painter) {
-    text_painter->DrawWithBidiReorder(
-        text_run, 0, text_run.length(), *label_font,
-        Font::kDoNotPaintIfFontNotReady, resource_provider->Canvas(),
-        gfx::PointF(text_pos), text_paint);
-  } else {
-    label_font->DeprecatedDrawBidiText(
-        &resource_provider->Canvas(), TextRunPaintInfo(text_run),
-        gfx::PointF(text_pos), Font::kDoNotPaintIfFontNotReady, text_paint);
-  }
+  text_painter.DrawWithBidiReorder(text_run, 0, text_run.length(), *label_font,
+                                   Font::kDoNotPaintIfFontNotReady,
+                                   resource_provider->Canvas(),
+                                   gfx::PointF(text_pos), text_paint);
 
   scoped_refptr<StaticBitmapImage> image =
       resource_provider->Snapshot(FlushReason::kNon2DCanvas);

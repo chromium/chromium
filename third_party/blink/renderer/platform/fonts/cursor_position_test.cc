@@ -8,6 +8,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -45,8 +46,9 @@ class CursorPositionTest : public FontTestBase {
     DCHECK_LE(start, static_cast<int>(text_run.length()));
     DCHECK_GE(end, -1);
     DCHECK_LE(end, static_cast<int>(text_run.length()));
-    gfx::RectF rect = font->DeprecatedSelectionRectForText(
-        text_run, gfx::PointF(), 12, start, end);
+    gfx::RectF rect =
+        PlainTextPainter::Shared().SelectionRectForTextWithoutBidi(
+            text_run, start, end, *font, gfx::PointF(), 12);
     return rect.width();
   }
 
@@ -64,8 +66,9 @@ class CursorPositionTest : public FontTestBase {
     TextRun text_run(text, ltr ? TextDirection::kLtr : TextDirection::kRtl,
                      false);
 
-    return font->DeprecatedOffsetForPosition(
-        text_run, position, partial ? kIncludePartialGlyphs : kOnlyFullGlyphs,
+    return PlainTextPainter::Shared().OffsetForPositionWithoutBidi(
+        text_run, *font, position,
+        partial ? kIncludePartialGlyphs : kOnlyFullGlyphs,
         BreakGlyphsOption(true));
   }
 

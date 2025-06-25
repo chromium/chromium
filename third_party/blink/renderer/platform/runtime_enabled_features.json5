@@ -3701,11 +3701,6 @@
       name: "PlaceholderVisibility",
       status: "stable",
     },
-    {
-      // crbug.com/389726691.
-      name: "PlainTextPainter",
-      status: "stable",
-    },
     // This is a reverse OT used for a phased deprecation.
     // https://crbug.com/918374
     {

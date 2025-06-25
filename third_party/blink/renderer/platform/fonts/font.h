@@ -88,19 +88,6 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
     kUseFallbackIfFontNotReady
   };
 
-  // Deprecated: Use PlainTextPainter.
-  void DeprecatedDrawText(cc::PaintCanvas*,
-                          const TextRun&,
-                          const gfx::PointF&,
-                          const cc::PaintFlags&,
-                          DrawType = DrawType::kGlyphsOnly) const;
-  // Deprecated: Use PlainTextPainter.
-  void DeprecatedDrawText(cc::PaintCanvas*,
-                          const TextRun&,
-                          const gfx::PointF&,
-                          cc::NodeId node_id,
-                          const cc::PaintFlags&,
-                          DrawType = DrawType::kGlyphsOnly) const;
   void DrawText(cc::PaintCanvas*,
                 const TextFragmentPaintInfo&,
                 const gfx::PointF&,
@@ -148,18 +135,6 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
                               unsigned from,
                               unsigned to,
                               gfx::RectF* glyph_bounds = nullptr) const;
-
-  // Deprecated: Use PlainTextPainter.
-  int DeprecatedOffsetForPosition(const TextRun&,
-                                  float position,
-                                  IncludePartialGlyphsOption,
-                                  BreakGlyphsOption) const;
-  // Deprecated: Use PlainTextPainter.
-  gfx::RectF DeprecatedSelectionRectForText(const TextRun&,
-                                            const gfx::PointF&,
-                                            float height,
-                                            int from = 0,
-                                            int to = -1) const;
 
   // Metrics that we query the FontFallbackList for.
   float SpaceWidth() const {

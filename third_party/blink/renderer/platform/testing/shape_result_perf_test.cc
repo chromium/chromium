@@ -10,6 +10,7 @@
 #include "testing/perf/perf_result_reporter.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -90,8 +91,10 @@ class OffsetForPositionPerfTest : public ShapeResultPerfTest,
     timer.Reset();
     float position = GetParam();
     param_string = base::NumberToString(position);
+    PlainTextPainter& painter = PlainTextPainter::Shared();
     do {
-      font.DeprecatedOffsetForPosition(run, position, partial, breakopt);
+      painter.OffsetForPositionWithoutBidi(run, font, position, partial,
+                                           breakopt);
       timer.NextLap();
     } while (!timer.HasTimeLimitExpired());
   }
@@ -110,8 +113,11 @@ class CharacterRangePerfTest : public ShapeResultPerfTest,
     timer.Reset();
     int endpos = GetParam();
     param_string = base::NumberToString(endpos);
+    PlainTextPainter& painter = PlainTextPainter::Shared();
     do {
-      font.DeprecatedSelectionRectForText(run, gfx::PointF(), 100, 0, endpos);
+      painter.SelectionRectForTextWithoutBidi(
+          run, 0, endpos == -1 ? run.length() : endpos, font, gfx::PointF(),
+          100);
       timer.NextLap();
     } while (!timer.HasTimeLimitExpired());
   }

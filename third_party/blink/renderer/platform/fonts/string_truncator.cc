@@ -100,11 +100,8 @@ static base::span<const UChar> RightTruncateToBuffer(const String& string,
 
 static float StringWidth(const Font& renderer,
                          base::span<const UChar> characters) {
-  if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
-    return PlainTextPainter::Shared().ComputeInlineSize(TextRun(characters),
-                                                        renderer);
-  }
-  return renderer.DeprecatedWidth(TextRun(characters));
+  return PlainTextPainter::Shared().ComputeInlineSize(TextRun(characters),
+                                                      renderer);
 }
 
 static String TruncateString(const String& string,

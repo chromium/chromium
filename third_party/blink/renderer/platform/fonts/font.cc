@@ -92,37 +92,6 @@ bool Font::operator==(const Font& other) const {
          font_description_ == other.font_description_;
 }
 
-void Font::DeprecatedDrawText(cc::PaintCanvas* canvas,
-                              const TextRun& run,
-                              const gfx::PointF& point,
-                              const cc::PaintFlags& flags,
-                              DrawType draw_type) const {
-  DeprecatedDrawText(canvas, run, point, cc::kInvalidNodeId, flags, draw_type);
-}
-
-void Font::DeprecatedDrawText(cc::PaintCanvas* canvas,
-                              const TextRun& run,
-                              const gfx::PointF& point,
-                              cc::NodeId node_id,
-                              const cc::PaintFlags& flags,
-                              DrawType draw_type) const {
-  // Don't draw anything while we are using custom fonts that are in the process
-  // of loading.
-  if (ShouldSkipDrawing())
-    return;
-
-  CachingWordShaper word_shaper(*this);
-  ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run, &buffer);
-  TextRunPaintInfo run_info(run);
-  ShapeResultBloberizer::FillGlyphs bloberizer(
-      GetFontDescription(), run_info, buffer,
-      draw_type == Font::DrawType::kGlyphsOnly
-          ? ShapeResultBloberizer::Type::kNormal
-          : ShapeResultBloberizer::Type::kEmitText);
-  DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags, node_id);
-}
-
 void Font::DrawText(cc::PaintCanvas* canvas,
                     const TextFragmentPaintInfo& text_info,
                     const gfx::PointF& point,
@@ -393,39 +362,6 @@ void Font::GetTextIntercepts(const TextFragmentPaintInfo& text_info,
       text_info.shape_result, ShapeResultBloberizer::Type::kTextIntercepts);
 
   GetTextInterceptsInternal(bloberizer.Blobs(), flags, bounds, intercepts);
-}
-
-static inline gfx::RectF PixelSnappedSelectionRect(const gfx::RectF& rect) {
-  // Using roundf() rather than ceilf() for the right edge as a compromise to
-  // ensure correct caret positioning.
-  float rounded_x = roundf(rect.x());
-  return gfx::RectF(rounded_x, rect.y(), roundf(rect.right() - rounded_x),
-                    rect.height());
-}
-
-gfx::RectF Font::DeprecatedSelectionRectForText(const TextRun& run,
-                                                const gfx::PointF& point,
-                                                float height,
-                                                int from,
-                                                int to) const {
-  to = (to == -1 ? run.length() : to);
-
-  FontCachePurgePreventer purge_preventer;
-
-  CachingWordShaper shaper(*this);
-  CharacterRange range = shaper.GetCharacterRange(run, from, to);
-
-  return PixelSnappedSelectionRect(
-      gfx::RectF(point.x() + range.start, point.y(), range.Width(), height));
-}
-
-int Font::DeprecatedOffsetForPosition(const TextRun& run,
-                                      float x_float,
-                                      IncludePartialGlyphsOption partial_glyphs,
-                                      BreakGlyphsOption break_glyphs) const {
-  FontCachePurgePreventer purge_preventer;
-  CachingWordShaper shaper(*this);
-  return shaper.OffsetForPosition(run, x_float, partial_glyphs, break_glyphs);
 }
 
 base::span<const FontFeatureRange> Font::GetFontFeatures() const {

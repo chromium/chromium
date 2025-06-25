@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -151,25 +150,14 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
       gfx::PointF(text_origin()) +
       gfx::Vector2dF(0, font_ascent + emphasis_mark_offset());
 
-  const ShapeResultView* shape_view = nullptr;
-  if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
-    const PlainTextNode& node = PlainTextPainter::Shared().SegmentAndShape(
-        placeholder_text_run, emphasis_mark_font);
-    if (node.ItemList().empty()) {
-      return;
-    }
-    shape_view = node.ItemList()[0].EnsureView();
-    if (!shape_view) {
-      return;
-    }
-  } else {
-    CachingWordShaper word_shaper(emphasis_mark_font);
-    ShapeResultBuffer buffer;
-    word_shaper.FillResultBuffer(placeholder_text_run, &buffer);
-    if (buffer.ShapeResultSize() == 0) {
-      return;
-    }
-    shape_view = buffer.ViewAt(0);
+  const PlainTextNode& node = PlainTextPainter::Shared().SegmentAndShape(
+      placeholder_text_run, emphasis_mark_font);
+  if (node.ItemList().empty()) {
+    return;
+  }
+  const ShapeResultView* shape_view = node.ItemList()[0].EnsureView();
+  if (!shape_view) {
+    return;
   }
   graphics_context().DrawEmphasisMarks(
       emphasis_mark_font,
