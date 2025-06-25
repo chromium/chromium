@@ -493,11 +493,13 @@ PrerenderTestHelper::~PrerenderTestHelper() = default;
 
 void PrerenderTestHelper::RegisterServerRequestMonitor(
     net::test_server::EmbeddedTestServer* http_server) {
+  EXPECT_FALSE(http_server->Started());
   http_server->RegisterRequestMonitor(base::BindRepeating(
       &PrerenderTestHelper::MonitorResourceRequest, base::Unretained(this)));
 }
 void PrerenderTestHelper::RegisterServerRequestMonitor(
     net::test_server::EmbeddedTestServer& test_server) {
+  EXPECT_FALSE(test_server.Started());
   test_server.RegisterRequestMonitor(base::BindRepeating(
       &PrerenderTestHelper::MonitorResourceRequest, base::Unretained(this)));
 }

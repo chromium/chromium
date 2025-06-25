@@ -699,7 +699,6 @@ static_library("test_support") {
       "//components/pdf/browser",
       "//extensions/browser/api:extensions_api_client",
       "//pdf:features",
-      "//services/network/public/cpp:ip_address_space_overrides_test_utils",
     ]
   }
 
