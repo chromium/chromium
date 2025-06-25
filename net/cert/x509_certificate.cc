@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
+#include "crypto/evp.h"
 #include "crypto/hash.h"
 #include "crypto/openssl_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -613,11 +614,9 @@ void X509Certificate::GetPublicKeyInfo(const CRYPTO_BUFFER* cert_buffer,
     return;
   }
 
-  bssl::UniquePtr<EVP_PKEY> pkey;
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(spki.data()), spki.size());
-  pkey.reset(EVP_parse_public_key(&cbs));
+  bssl::UniquePtr<EVP_PKEY> pkey =
+      crypto::evp::PublicKeyFromBytes(base::as_byte_span(spki));
   if (!pkey)
     return;
 

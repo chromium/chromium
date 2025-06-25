@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/tools/transport_security_state_generator/spki_hash.h"
 
 #include <string>
@@ -40,12 +35,12 @@ bool SPKIHash::FromString(std::string_view hash_string) {
     return false;
   }
 
-  memcpy(data_, decoded.data(), decoded.size());
+  base::span(data_).copy_from(base::as_byte_span(decoded));
   return true;
 }
 
-void SPKIHash::CalculateFromBytes(const uint8_t* input, size_t input_length) {
-  SHA256(input, input_length, data_);
+void SPKIHash::CalculateFromBytes(base::span<const uint8_t> bytes) {
+  data_ = crypto::hash::Sha256(bytes);
 }
 
 }  // namespace net::transport_security_state

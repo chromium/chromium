@@ -12,12 +12,12 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "crypto/evp.h"
 #include "crypto/openssl_util.h"
 #include "net/base/net_errors.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
@@ -75,15 +75,18 @@ Error DoKeySigningWithWrapper(SSLPrivateKey* key,
 
 }  // namespace
 
-void TestSSLPrivateKeyMatches(SSLPrivateKey* key, const std::string& pkcs8) {
+void TestSSLPrivateKeyMatches(SSLPrivateKey* key, std::string_view pkcs8) {
+  TestSSLPrivateKeyMatches(key, base::as_byte_span(pkcs8));
+}
+
+void TestSSLPrivateKeyMatches(SSLPrivateKey* key,
+                              base::span<const uint8_t> pkcs8) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   // Create the equivalent OpenSSL key.
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(pkcs8.data()), pkcs8.size());
-  bssl::UniquePtr<EVP_PKEY> openssl_key(EVP_parse_private_key(&cbs));
+  bssl::UniquePtr<EVP_PKEY> openssl_key =
+      crypto::evp::PrivateKeyFromBytes(pkcs8);
   ASSERT_TRUE(openssl_key);
-  EXPECT_EQ(0u, CBS_len(&cbs));
 
   // Test all supported algorithms.
   std::vector<uint16_t> preferences = key->GetAlgorithmPreferences();

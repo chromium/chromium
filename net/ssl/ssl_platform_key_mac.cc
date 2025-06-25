@@ -28,6 +28,7 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/scoped_policy.h"
 #include "base/numerics/safe_conversions.h"
+#include "crypto/evp.h"
 #include "crypto/openssl_util.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
@@ -203,8 +204,8 @@ scoped_refptr<SSLPrivateKey> CreateSSLPrivateKeyForSecKey(
 
 scoped_refptr<SSLPrivateKey> WrapUnexportableKey(
     const crypto::UnexportableSigningKey& unexportable_key) {
-  bssl::UniquePtr<EVP_PKEY> pubkey =
-      ParseSpki(unexportable_key.GetSubjectPublicKeyInfo());
+  bssl::UniquePtr<EVP_PKEY> pubkey = crypto::evp::PublicKeyFromBytes(
+      unexportable_key.GetSubjectPublicKeyInfo());
   if (!pubkey) {
     return nullptr;
   }

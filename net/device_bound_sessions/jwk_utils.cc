@@ -5,8 +5,8 @@
 #include "net/device_bound_sessions/jwk_utils.h"
 
 #include "base/base64url.h"
+#include "crypto/evp.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
@@ -36,19 +36,9 @@ std::string Base64UrlEncode(base::span<const uint8_t> input) {
   return output;
 }
 
-bssl::UniquePtr<EVP_PKEY> ParsePublicKey(base::span<const uint8_t> pkey_spki) {
-  CBS cbs;
-  CBS_init(&cbs, pkey_spki.data(), pkey_spki.size());
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_public_key(&cbs));
-  if (CBS_len(&cbs) != 0) {
-    return nullptr;
-  }
-  return pkey;
-}
-
 base::Value::Dict ConvertES256PkeySpkiToJwk(
     base::span<const uint8_t> pkey_spki) {
-  bssl::UniquePtr<EVP_PKEY> pkey = ParsePublicKey(pkey_spki);
+  bssl::UniquePtr<EVP_PKEY> pkey = crypto::evp::PublicKeyFromBytes(pkey_spki);
   if (!pkey || EVP_PKEY_id(pkey.get()) != EVP_PKEY_EC) {
     return base::Value::Dict();
   }
@@ -91,7 +81,7 @@ base::Value::Dict ConvertES256PkeySpkiToJwk(
 
 base::Value::Dict ConvertRS256PkeySpkiToJwk(
     base::span<const uint8_t> pkey_spki) {
-  bssl::UniquePtr<EVP_PKEY> pkey = ParsePublicKey(pkey_spki);
+  bssl::UniquePtr<EVP_PKEY> pkey = crypto::evp::PublicKeyFromBytes(pkey_spki);
   if (!pkey || EVP_PKEY_id(pkey.get()) != EVP_PKEY_RSA) {
     return base::Value::Dict();
   }

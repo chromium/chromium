@@ -9,10 +9,10 @@
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_split.h"
+#include "crypto/evp.h"
 #include "crypto/signature_verifier.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 
@@ -414,9 +414,7 @@ namespace {
 // Given a SPKI, returns whether the public key is an ECDSA key on the curve
 // P-256.
 bool IsKeyP256(base::span<const uint8_t> spki) {
-  CBS cbs;
-  CBS_init(&cbs, spki.data(), spki.size());
-  bssl::UniquePtr<EVP_PKEY> public_key(EVP_parse_public_key(&cbs));
+  bssl::UniquePtr<EVP_PKEY> public_key = crypto::evp::PublicKeyFromBytes(spki);
   if (!public_key) {
     return false;
   }

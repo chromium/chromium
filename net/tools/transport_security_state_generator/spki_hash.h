@@ -10,12 +10,12 @@
 
 #include <string_view>
 
+#include "crypto/hash.h"
+
 namespace net::transport_security_state {
 
 class SPKIHash {
  public:
-  enum : size_t { kLength = 32 };
-
   SPKIHash();
   ~SPKIHash();
 
@@ -27,18 +27,16 @@ class SPKIHash {
 
   // Calculates the SHA256 digest over |*input| and copies the result to
   // |data_|.
-  void CalculateFromBytes(const uint8_t* input, size_t input_length);
+  void CalculateFromBytes(base::span<const uint8_t> bytes);
 
-  // Returns the size of the hash in bytes. Harcoded to 32 which is the length
-  // of a SHA256 hash.
-  size_t size() const { return kLength; }
+  // Returns the size of the hash in bytes.
+  size_t size() const { return data_.size(); }
 
-  uint8_t* data() { return data_; }
-  const uint8_t* data() const { return data_; }
+  uint8_t* data() { return data_.data(); }
+  const uint8_t* data() const { return data_.data(); }
 
  private:
-  // The bytes of the hash. Current hashes are SHA256 and thus 32 bytes long.
-  uint8_t data_[kLength];
+  std::array<uint8_t, crypto::hash::kSha256Size> data_;
 };
 
 }  // namespace net::transport_security_state

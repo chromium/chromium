@@ -17,13 +17,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "crypto/evp.h"
 #include "crypto/signature_verifier.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
@@ -177,22 +177,7 @@ std::optional<std::vector<uint8_t>> Es256JwkToSpki(
     return std::nullopt;
   }
 
-  bssl::ScopedCBB cbb;
-  if (!CBB_init(cbb.get(), 0) ||
-      !EVP_marshal_public_key(cbb.get(), pkey.get())) {
-    return std::nullopt;
-  }
-
-  uint8_t* data;
-  size_t len;
-  if (!CBB_finish(cbb.get(), &data, &len)) {
-    return std::nullopt;
-  }
-
-  bssl::UniquePtr<uint8_t> delete_der(data);
-  // SAFETY: `CBB_finish` uses a C-style API.
-  auto spki_span = UNSAFE_BUFFERS(base::span<const uint8_t>(data, len));
-  return base::ToVector(spki_span);
+  return crypto::evp::PublicKeyToBytes(pkey.get());
 }
 
 std::optional<std::vector<uint8_t>> RawSigToDerSig(

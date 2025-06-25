@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "crypto/evp.h"
 #include "crypto/features.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/scoped_cng_types.h"
@@ -86,12 +87,12 @@ bool AddBIGNUMLittleEndian(CBB* cbb, const BIGNUM* bn, size_t len) {
 // Converts the PKCS#8 PrivateKeyInfo structure serialized in |pkcs8| to a
 // private key BLOB, suitable for import with CAPI using Microsoft Base
 // Cryptographic Provider.
-bool PKCS8ToBLOBForCAPI(const std::string& pkcs8, std::vector<uint8_t>* blob) {
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(pkcs8.data()), pkcs8.size());
-  bssl::UniquePtr<EVP_PKEY> key(EVP_parse_private_key(&cbs));
-  if (!key || CBS_len(&cbs) != 0 || EVP_PKEY_id(key.get()) != EVP_PKEY_RSA)
+bool PKCS8ToBLOBForCAPI(base::span<const uint8_t> pkcs8,
+                        std::vector<uint8_t>* blob) {
+  bssl::UniquePtr<EVP_PKEY> key = crypto::evp::PrivateKeyFromBytes(pkcs8);
+  if (!key || EVP_PKEY_id(key.get()) != EVP_PKEY_RSA) {
     return false;
+  }
   const RSA* rsa = EVP_PKEY_get0_RSA(key.get());
 
   // See
@@ -148,14 +149,13 @@ bool AddBIGNUMBigEndian(CBB* cbb, const BIGNUM* bn, size_t len) {
 // Converts the PKCS#8 PrivateKeyInfo structure serialized in |pkcs8| to a
 // private key BLOB, suitable for import with CNG using the Microsoft Software
 // KSP, and sets |*blob_type| to the type of the BLOB.
-bool PKCS8ToBLOBForCNG(const std::string& pkcs8,
+bool PKCS8ToBLOBForCNG(base::span<const uint8_t> pkcs8,
                        LPCWSTR* blob_type,
                        std::vector<uint8_t>* blob) {
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(pkcs8.data()), pkcs8.size());
-  bssl::UniquePtr<EVP_PKEY> key(EVP_parse_private_key(&cbs));
-  if (!key || CBS_len(&cbs) != 0)
+  bssl::UniquePtr<EVP_PKEY> key = crypto::evp::PrivateKeyFromBytes(pkcs8);
+  if (!key) {
     return false;
+  }
 
   if (EVP_PKEY_id(key.get()) == EVP_PKEY_RSA) {
     // See
@@ -261,10 +261,10 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCNG) {
       ImportCertFromFile(GetTestCertsDirectory(), test_key.cert_file);
   ASSERT_TRUE(cert);
 
-  std::string pkcs8;
   base::FilePath pkcs8_path =
       GetTestCertsDirectory().AppendASCII(test_key.key_file);
-  ASSERT_TRUE(base::ReadFileToString(pkcs8_path, &pkcs8));
+  std::optional<std::vector<uint8_t>> pkcs8 = base::ReadFileToBytes(pkcs8_path);
+  ASSERT_TRUE(pkcs8);
 
   // Import the key into CNG. Per MSDN's documentation on NCryptImportKey, if a
   // key name is not supplied (via the pParameterList parameter for the BLOB
@@ -279,7 +279,7 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCNG) {
 
   LPCWSTR blob_type;
   std::vector<uint8_t> blob;
-  ASSERT_TRUE(PKCS8ToBLOBForCNG(pkcs8, &blob_type, &blob));
+  ASSERT_TRUE(PKCS8ToBLOBForCNG(*pkcs8, &blob_type, &blob));
   crypto::ScopedNCryptKey ncrypt_key;
   status = NCryptImportKey(prov.get(), /*hImportKey=*/0, blob_type,
                            /*pParameterList=*/nullptr,
@@ -294,7 +294,7 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCNG) {
   EXPECT_EQ(SSLPrivateKey::DefaultAlgorithmPreferences(test_key.type,
                                                        /*supports_pss=*/true),
             key->GetAlgorithmPreferences());
-  TestSSLPrivateKeyMatches(key.get(), pkcs8);
+  TestSSLPrivateKeyMatches(key.get(), *pkcs8);
 }
 
 TEST_P(SSLPlatformKeyWinTest, KeyMatchesCAPI) {
@@ -308,10 +308,10 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCAPI) {
       ImportCertFromFile(GetTestCertsDirectory(), test_key.cert_file);
   ASSERT_TRUE(cert);
 
-  std::string pkcs8;
   base::FilePath pkcs8_path =
       GetTestCertsDirectory().AppendASCII(test_key.key_file);
-  ASSERT_TRUE(base::ReadFileToString(pkcs8_path, &pkcs8));
+  std::optional<std::vector<uint8_t>> pkcs8 = base::ReadFileToBytes(pkcs8_path);
+  ASSERT_TRUE(pkcs8);
 
   // Import the key into CAPI. Use CRYPT_VERIFYCONTEXT for an ephemeral key.
   crypto::ScopedHCRYPTPROV prov;
@@ -322,7 +322,7 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCAPI) {
       << GetLastError();
 
   std::vector<uint8_t> blob;
-  ASSERT_TRUE(PKCS8ToBLOBForCAPI(pkcs8, &blob));
+  ASSERT_TRUE(PKCS8ToBLOBForCAPI(*pkcs8, &blob));
 
   crypto::ScopedHCRYPTKEY hcryptkey;
   ASSERT_NE(FALSE,
@@ -344,7 +344,7 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCAPI) {
       SSL_SIGN_RSA_PKCS1_SHA1,
   };
   EXPECT_EQ(expected, key->GetAlgorithmPreferences());
-  TestSSLPrivateKeyMatches(key.get(), pkcs8);
+  TestSSLPrivateKeyMatches(key.get(), *pkcs8);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

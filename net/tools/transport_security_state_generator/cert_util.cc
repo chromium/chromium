@@ -12,6 +12,7 @@
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "crypto/evp.h"
 #include "net/tools/transport_security_state_generator/spki_hash.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 
@@ -129,17 +130,8 @@ bool CalculateSPKIHashFromCertificate(X509* certificate, SPKIHash* out_hash) {
     return false;
   }
 
-  uint8_t* spki_der;
-  size_t spki_der_len;
-  bssl::ScopedCBB cbb;
-  if (!CBB_init(cbb.get(), 0) ||
-      !EVP_marshal_public_key(cbb.get(), key.get()) ||
-      !CBB_finish(cbb.get(), &spki_der, &spki_der_len)) {
-    return false;
-  }
-
-  out_hash->CalculateFromBytes(spki_der, spki_der_len);
-  OPENSSL_free(spki_der);
+  std::vector<uint8_t> spki_der = crypto::evp::PublicKeyToBytes(key.get());
+  out_hash->CalculateFromBytes(spki_der);
   return true;
 }
 
@@ -150,7 +142,6 @@ bool CalculateSPKIHashFromKey(std::string_view pem_key, SPKIHash* out_hash) {
     return false;
   }
 
-  out_hash->CalculateFromBytes(reinterpret_cast<const uint8_t*>(der.data()),
-                               der.size());
+  out_hash->CalculateFromBytes(base::as_byte_span(der));
   return true;
 }

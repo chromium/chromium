@@ -23,6 +23,7 @@ source_set("transport_security_state_generator_sources") {
   ]
   deps = [
     "//base",
+    "//crypto",
     "//net/tools/huffman_trie:huffman_trie_generator_sources",
     "//third_party/boringssl",
   ]
