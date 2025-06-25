@@ -177,7 +177,7 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
     return;
   }
 
-  CanvasResourceHost::SetSize(size);
+  CanvasRenderingContextHost::SetSize(size);
   UpdateMemoryUsage();
   current_frame_damage_rect_ = SkIRect::MakeWH(Size().width(), Size().height());
 

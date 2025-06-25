@@ -144,6 +144,9 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
     return resource_provider_for_canvas2d_.get();
   }
 
+  gfx::Size Size() const { return size_; }
+  virtual void SetSize(gfx::Size size) { size_ = size; }
+
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider>);
   void ResetResourceProviderForCanvas2D() override {
@@ -187,6 +190,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   std::unique_ptr<CanvasResourceProvider> resource_provider_for_canvas2d_;
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = HostType::kNone;
+  gfx::Size size_;
 };
 
 }  // namespace blink

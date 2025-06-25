@@ -21,8 +21,7 @@ bool CanUseGPU() {
 
 }  // namespace
 
-CanvasResourceHost::CanvasResourceHost(gfx::Size size) : size_(size) {}
-
+CanvasResourceHost::CanvasResourceHost() = default;
 CanvasResourceHost::~CanvasResourceHost() = default;
 
 void CanvasResourceHost::SetPreferred2DRasterMode(RasterModeHint hint) {

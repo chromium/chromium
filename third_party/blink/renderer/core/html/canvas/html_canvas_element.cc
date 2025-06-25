@@ -1312,7 +1312,7 @@ UkmParameters HTMLCanvasElement::GetUkmParameters() {
 }
 
 void HTMLCanvasElement::SetSurfaceSize(gfx::Size size) {
-  CanvasResourceHost::SetSize(size);
+  CanvasRenderingContextHost::SetSize(size);
   did_fail_to_create_resource_provider_ = false;
   if (RenderingContext()) {
     RenderingContext()->SizeChanged();
@@ -1799,7 +1799,7 @@ void HTMLCanvasElement::SetCanvas2DResourceProviderForTesting(
   DiscardResources();
   SetIntegralAttribute(html_names::kWidthAttr, size.width());
   SetIntegralAttribute(html_names::kHeightAttr, size.height());
-  CanvasResourceHost::SetSize(size);
+  CanvasRenderingContextHost::SetSize(size);
   hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   ReplaceResourceProviderForCanvas2D(std::move(provider));
 }

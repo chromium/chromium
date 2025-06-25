@@ -32,7 +32,7 @@ enum class RasterModeHint {
 
 class PLATFORM_EXPORT CanvasResourceHost {
  public:
-  explicit CanvasResourceHost(gfx::Size size);
+  CanvasResourceHost();
   virtual ~CanvasResourceHost();
 
   virtual void NotifyGpuContextLost() = 0;
@@ -48,9 +48,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   // Initialize the indicated cc::Layer with the HTMLCanvasElement's CSS
   // properties. This is a no-op if `this` is not an HTMLCanvasElement.
   virtual void InitializeLayerWithCSSProperties(cc::Layer* layer) {}
-
-  gfx::Size Size() const { return size_; }
-  virtual void SetSize(gfx::Size size) { size_ = size; }
 
   virtual bool LowLatencyEnabled() const { return false; }
 
@@ -78,7 +75,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
  private:
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
-  gfx::Size size_;
 };
 
 }  // namespace blink

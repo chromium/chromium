@@ -33,7 +33,7 @@ namespace {
 
 class FakeCanvasResourceHost : public CanvasResourceHost {
  public:
-  explicit FakeCanvasResourceHost(gfx::Size size) : CanvasResourceHost(size) {}
+  explicit FakeCanvasResourceHost(gfx::Size size) : size_(size) {}
   ~FakeCanvasResourceHost() override = default;
   void NotifyGpuContextLost() override {}
   bool IsContextLost() const override { return false; }
@@ -62,7 +62,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     constexpr gpu::SharedImageUsageSet kSharedImageUsageFlags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     resource_provider_ = CanvasResourceProvider::CreateSharedImageProvider(
-        Size(), GetN32FormatForCanvas(), kPremul_SkAlphaType,
+        size_, GetN32FormatForCanvas(), kPremul_SkAlphaType,
         gfx::ColorSpace::CreateSRGB(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         kSharedImageUsageFlags, this);
@@ -80,6 +80,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
   bool page_visible_ = true;
   bool is_hibernating_ = false;
+  gfx::Size size_;
 };
 
 }  // namespace

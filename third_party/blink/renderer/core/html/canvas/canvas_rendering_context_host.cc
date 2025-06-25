@@ -37,7 +37,7 @@ namespace blink {
 
 CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type,
                                                        const gfx::Size& size)
-    : CanvasResourceHost(size), host_type_(host_type) {}
+    : host_type_(host_type), size_(size) {}
 
 void CanvasRenderingContextHost::Trace(Visitor* visitor) const {
   visitor->Trace(plain_text_painter_);
