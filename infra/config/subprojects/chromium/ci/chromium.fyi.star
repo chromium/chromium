@@ -2005,7 +2005,7 @@ fyi_ios_builder(
             "mac_15_arm64",
             "mac_toolchain",
             "out_dir_arg",
-            "xcode_16_beta",
+            "xcode_26_beta",
             "xctest",
         ],
     ),
@@ -2015,7 +2015,7 @@ fyi_ios_builder(
         category = "iOS|iOS18",
         short_name = "sdk18",
     ),
-    xcode = xcode.x16betabots,
+    xcode = xcode.x26betabots,
 )
 
 fyi_mac_builder(

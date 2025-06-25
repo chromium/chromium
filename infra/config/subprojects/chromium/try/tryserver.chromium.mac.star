@@ -801,7 +801,7 @@ ios_builder(
     ],
     gn_args = "ci/ios18-sdk-simulator",
     cpu = cpu.ARM64,
-    xcode = xcode.x16betabots,
+    xcode = xcode.x26betabots,
 )
 
 ios_builder(
