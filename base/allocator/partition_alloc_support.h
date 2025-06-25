@@ -175,6 +175,11 @@ class BASE_EXPORT MemoryReclaimerSupport {
 // to know which point at execution it goes wrong.
 BASE_EXPORT void CheckHeapIntegrity(const void* ptr);
 
+// The function here is called right before crashing with
+// `DoubleFreeOrCorruptionDetected()`. We provide an address for the slot start
+// to the function, and it may use that for debugging purpose.
+BASE_EXPORT void SetDoubleFreeOrCorruptionDetectedFn(void (*fn)(uintptr_t));
+
 using partition_alloc::ScopedSchedulerLoopQuarantineExclusion;
 
 }  // namespace base::allocator

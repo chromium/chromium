@@ -318,6 +318,11 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
 // to know which point at execution it goes wrong.
 BASE_EXPORT void CheckHeapIntegrity(const void* ptr);
 
+// The function here is called right before crashing with
+// `DoubleFreeOrCorruptionDetected()`. We provide an address for the slot start
+// to the function, and it may use that for debugging purpose.
+void SetDoubleFreeOrCorruptionDetectedFn(void (*fn)(uintptr_t));
+
 // Utility class to exclude deallocation from optional safety checks when an
 // instance is on the stack. Can be applied to performance critical functions.
 class BASE_EXPORT ScopedSafetyChecksExclusion {

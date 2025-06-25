@@ -355,6 +355,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   PA_ALWAYS_INLINE uint32_t requested_size() const { return requested_size_; }
 #endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
 
+  // The function here is called right before crashing with
+  // `DoubleFreeOrCorruptionDetected()`. We provide an address for the slot
+  // start to the function, and it may use that for debugging purpose.
+  static void SetCorruptionDetectedFn(void (*fn)(uintptr_t));
+
  private:
   // If there are some dangling raw_ptr<>. Turn on the error flag, and
   // emit the `DanglingPtrDetected` once to embedders.

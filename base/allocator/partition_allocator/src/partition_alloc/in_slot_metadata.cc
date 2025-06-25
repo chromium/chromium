@@ -50,7 +50,13 @@ bool IsInFreelist(uintptr_t slot_start,
 std::atomic_bool suppress_double_free_detected_crash = false;
 std::atomic_bool suppress_corruption_detected_crash = false;
 #endif  // PA_BUILDFLAG(IS_IOS)
+std::atomic<void (*)(uintptr_t)> corruption_detected_fn = nullptr;
 }  // namespace
+
+// static
+void InSlotMetadata::SetCorruptionDetectedFn(void (*fn)(uintptr_t)) {
+  corruption_detected_fn.store(fn, std::memory_order_relaxed);
+}
 
 #if !PA_BUILDFLAG(IS_IOS)
 [[noreturn]]
@@ -107,6 +113,12 @@ InSlotMetadata::DoubleFreeOrCorruptionDetected(
   // Record `slot_size` here. If crashes inside IsInFreelist(), minidump
   // will have `slot_size` in its stack data.
   PA_DEBUG_DATA_ON_STACK("slotsize", slot_size);
+
+  void (*hook)(uintptr_t) =
+      corruption_detected_fn.load(std::memory_order_relaxed);
+  if (hook) {
+    (*hook)(slot_start);
+  }
 
   auto* thread_cache = root->GetThreadCache();
   if (ThreadCache::IsValid(thread_cache)) {
