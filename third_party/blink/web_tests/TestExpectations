@@ -2790,8 +2790,6 @@ crbug.com/427271307 [ Android ] external/wpt/webdriver/tests/bidi/external/bluet
 crbug.com/427271307 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_descriptor_response/simulate_descriptor_response.py [ Failure ]
 crbug.com/427271307 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_service/invalid.py [ Failure ]
 crbug.com/427271307 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_service/simulate_service.py [ Failure ]
-crbug.com/426429664 [ Win11-arm64 ] external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html [ Crash ]
-crbug.com/426429664 [ Win11-arm64 ] external/wpt/FileAPI/BlobURL/cross-partition.https.html [ Skip Timeout ]
 crbug.com/425827681 [ Win11-arm64 ] external/wpt/cookies/attributes/max-age.html [ Crash ]
 crbug.com/426164366 [ Win11-arm64 ] external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html [ Crash ]
 crbug.com/426509690 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-cache-storage-from-none.https.tentative.window.html?document [ Crash ]
