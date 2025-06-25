@@ -161,13 +161,6 @@ class MODULES_EXPORT UserMediaRequest final
   void set_exclude_system_audio(bool value) { exclude_system_audio_ = value; }
   bool exclude_system_audio() const { return exclude_system_audio_; }
 
-  void set_window_audio_preference(mojom::blink::WindowAudioPreference value) {
-    window_audio_preference_ = value;
-  }
-  mojom::blink::WindowAudioPreference window_audio_preference() const {
-    return window_audio_preference_;
-  }
-
   void set_exclude_self_browser_surface(bool value) {
     exclude_self_browser_surface_ = value;
   }
@@ -240,8 +233,6 @@ class MODULES_EXPORT UserMediaRequest final
   const Member<CaptureController> capture_controller_;
   const bool should_prefer_current_tab_ = false;
   bool exclude_system_audio_ = false;
-  mojom::blink::WindowAudioPreference window_audio_preference_ =
-      mojom::blink::WindowAudioPreference::kExclude;
   bool exclude_self_browser_surface_ = false;
   mojom::blink::PreferredDisplaySurface preferred_display_surface_ =
       mojom::blink::PreferredDisplaySurface::NO_PREFERENCE;

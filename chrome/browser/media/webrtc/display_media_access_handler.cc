@@ -529,8 +529,6 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
       blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE;
   picker_params.exclude_system_audio =
       pending_request.request.exclude_system_audio;
-  picker_params.window_audio_preference =
-      pending_request.request.window_audio_preference;
   picker_params.suppress_local_audio_playback =
       pending_request.request.suppress_local_audio_playback;
   picker_params.restrict_own_audio = pending_request.request.restrict_own_audio;

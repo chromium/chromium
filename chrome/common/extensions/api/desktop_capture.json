@@ -20,12 +20,6 @@
         "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-systemaudiopreferenceenum\">SystemAudioPreferenceEnum</a>."
       },
       {
-        "id": "WindowAudioPreferenceEnum",
-        "type": "string",
-        "enum": ["system", "window", "exclude"],
-        "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-windowaudiopreferenceenum\">WindowAudioPreferenceEnum</a>."
-      },
-      {
         "id": "SelfCapturePreferenceEnum",
         "type": "string",
         "enum": ["include", "exclude"],
@@ -60,11 +54,6 @@
                 "$ref": "SystemAudioPreferenceEnum",
                 "optional": true,
                 "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamconstraints-systemaudio\">systemAudio</a>."
-              },
-              "windowAudio": {
-                "$ref": "WindowAudioPreferenceEnum",
-                "optional": true,
-                "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamoptions-windowaudio\">windowAudio</a>."
               },
               "selfBrowserSurface": {
                 "$ref": "SelfCapturePreferenceEnum",
