@@ -110,8 +110,8 @@ android_resources("java_resources") {
   sources = [
     "java/res/color-night/message_bg_color.xml",
     "java/res/color/message_bg_color.xml",
-    "java/res/drawable-v23/message_bg_tinted.xml",
     "java/res/drawable-v31/message_bg_tinted.xml",
+    "java/res/drawable/message_bg_tinted.xml",
     "java/res/drawable/message_close_button_bg.xml",
     "java/res/layout/message_banner_view.xml",
     "java/res/values/dimens.xml",
