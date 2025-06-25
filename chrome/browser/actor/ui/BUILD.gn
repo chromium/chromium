@@ -7,7 +7,10 @@ source_set("event_dispatcher") {
     "//base",
     "//chrome/browser/actor:types",
   ]
-  deps = [ "//chrome/browser/actor:actor" ]
+  deps = [
+    ":tool_request_variant",
+    "//chrome/browser/actor:actor",
+  ]
 }
 
 source_set("mock_event_dispatcher") {
@@ -21,4 +24,12 @@ source_set("mock_event_dispatcher") {
     ":event_dispatcher",
     "//testing/gmock",
   ]
+}
+
+source_set("tool_request_variant") {
+  sources = [
+    "tool_request_variant.cc",
+    "tool_request_variant.h",
+  ]
+  deps = [ "//base" ]
 }

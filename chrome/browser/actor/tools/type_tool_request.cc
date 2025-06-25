@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/tools/type_tool_request.h"
 
+#include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 
 namespace actor {
@@ -21,6 +22,10 @@ TypeToolRequest::TypeToolRequest(TabHandle tab_handle,
       mode(mode) {}
 
 TypeToolRequest::~TypeToolRequest() = default;
+
+void TypeToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
+  f.Apply(*this);
+}
 
 std::string TypeToolRequest::JournalEvent() const {
   return "Type";

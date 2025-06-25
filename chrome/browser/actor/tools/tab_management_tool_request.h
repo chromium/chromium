@@ -11,6 +11,7 @@
 #include "ui/base/window_open_disposition.h"
 
 namespace actor {
+class ToolRequestVisitorFunctor;
 
 // Creates a new blank tab in the specified window.
 class CreateTabToolRequest : public ToolRequest {
@@ -22,6 +23,9 @@ class CreateTabToolRequest : public ToolRequest {
 
   CreateToolResult CreateTool(TaskId task_id,
                               AggregatedJournal& journal) const override;
+
+  void Apply(ToolRequestVisitorFunctor& f) const override;
+
   std::string JournalEvent() const override;
 
  private:
@@ -36,6 +40,7 @@ class ActivateTabToolRequest : public TabToolRequest {
   ~ActivateTabToolRequest() override;
   CreateToolResult CreateTool(TaskId task_id,
                               AggregatedJournal& journal) const override;
+  void Apply(ToolRequestVisitorFunctor& f) const override;
   std::string JournalEvent() const override;
 };
 
@@ -46,6 +51,7 @@ class CloseTabToolRequest : public TabToolRequest {
   ~CloseTabToolRequest() override;
   CreateToolResult CreateTool(TaskId task_id,
                               AggregatedJournal& journal) const override;
+  void Apply(ToolRequestVisitorFunctor& f) const override;
   std::string JournalEvent() const override;
 };
 

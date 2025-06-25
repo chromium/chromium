@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/history_tool_request.h"
 
 #include "chrome/browser/actor/tools/history_tool.h"
+#include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 
@@ -31,6 +32,10 @@ ToolRequest::CreateToolResult HistoryToolRequest::CreateTool(
   return {std::make_unique<HistoryTool>(task_id, journal, *tab->GetContents(),
                                         direction_),
           MakeOkResult()};
+}
+
+void HistoryToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
+  f.Apply(*this);
 }
 
 std::string HistoryToolRequest::JournalEvent() const {

@@ -20,6 +20,7 @@ namespace actor {
 
 class AggregatedJournal;
 class Tool;
+class ToolRequestVisitorFunctor;
 
 // Base class for all tool requests. For tools scoped to a tab (e.g. History
 // traversal, Navigate) derive from TabToolRequest. For tools operating in a web
@@ -38,6 +39,8 @@ class ToolRequest {
   // Returns the name to use for the journal when recording entries for this
   // request.
   virtual std::string JournalEvent() const = 0;
+
+  virtual void Apply(ToolRequestVisitorFunctor&) const = 0;
 
   struct CreateToolResult {
     CreateToolResult(std::unique_ptr<Tool> tool, mojom::ActionResultPtr result);

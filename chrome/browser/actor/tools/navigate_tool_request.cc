@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 
 #include "chrome/browser/actor/tools/navigate_tool.h"
+#include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 
@@ -30,6 +31,10 @@ ToolRequest::CreateToolResult NavigateToolRequest::CreateTool(
   return {std::make_unique<NavigateTool>(task_id, journal, *tab->GetContents(),
                                          url_),
           MakeOkResult()};
+}
+
+void NavigateToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
+  f.Apply(*this);
 }
 
 std::string NavigateToolRequest::JournalEvent() const {
