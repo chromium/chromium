@@ -247,20 +247,11 @@ const base::FeatureParam<int> kCALayerNewLimitManyVideos{&kCALayerNewLimit,
 #endif
 
 #if BUILDFLAG(IS_MAC)
-// Whether the presentation should be delayed until the next CVDisplayLink
-// callback.
+// Whether the presentation should be delayed until the next DisplayLink
+// callback. Currently only for frames that handle interaction.
 BASE_FEATURE(kVSyncAlignedPresent,
              "VSyncAlignedPresent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Present the frame at next VSync only if this frame handles interaction or
-// animation as described in kTargetForVSync. Three finch experiment groups for
-// kVSyncAlignedPresent.
-constexpr const char kTargetForVSyncAllFrames[] = "AllFrames";
-constexpr const char kTargetForVSyncAnimation[] = "Animation";
-constexpr const char kTargetForVSyncInteraction[] = "Interaction";
-const base::FeatureParam<std::string> kTargetForVSync{
-    &kVSyncAlignedPresent, "Target", kTargetForVSyncAllFrames};
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,

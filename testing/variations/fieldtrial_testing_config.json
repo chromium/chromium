@@ -25874,24 +25874,6 @@
             ]
         }
     ],
-    "VSyncAlignedPresent": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_for_all_frames",
-                    "params": {
-                        "Target": "Interaction"
-                    },
-                    "enable_features": [
-                        "VSyncAlignedPresent"
-                    ]
-                }
-            ]
-        }
-    ],
     "VSyncDecoding": [
         {
             "platforms": [
