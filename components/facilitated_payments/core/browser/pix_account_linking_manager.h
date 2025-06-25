@@ -36,7 +36,7 @@ class PixAccountLinkingManager {
 
   // Sets the UI event listener and triggers showing the Pix account linking
   // prompt.
-  void ShowPixAccountLinkingPrompt();
+  void ShowPixAccountLinkingPromptIfEligible();
 
   void OnAccepted();
 

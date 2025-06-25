@@ -56,6 +56,19 @@ class PixAccountLinkingManagerTest : public testing::Test {
     // Success path setup. The Pix account linking user pref is default enabled.
     ON_CALL(*device_delegate(), IsPixAccountLinkingSupported)
         .WillByDefault(testing::Return(true));
+    // Simulate the payments server returns that the user is eligible for Pix
+    // account linking.
+    ON_CALL(*multiple_request_payments_network_interface(),
+            GetDetailsForCreatePaymentInstrument(testing::_, testing::_,
+                                                 testing::_))
+        .WillByDefault(testing::Invoke([](long, auto callback,
+                                          const std::string&) {
+          std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
+                                      PaymentsRpcResult::kSuccess,
+                                  true);
+          return base::StrongAlias<autofill::payments::RequestIdTag,
+                                   std::string>();
+        }));
     // Simulate user leaving and returning to Chrome, after which the callback
     // that triggers showing the prompt is called.
     ON_CALL(*device_delegate(), SetOnReturnToChromeCallback)
@@ -127,6 +140,39 @@ TEST_F(PixAccountLinkingManagerTest, UserNotReturnedToChrome_PromptNotShown) {
       .WillByDefault([](base::OnceClosure callback) {});
 
   EXPECT_CALL(*device_delegate(), SetOnReturnToChromeCallback);
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
+
+  manager()->MaybeShowPixAccountLinkingPrompt();
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       ServerEligibilityCheckNotCompleted_PromptNotShown) {
+  // Simulate that the payments server hasn't yet returned eligibility.
+  EXPECT_CALL(
+      *multiple_request_payments_network_interface(),
+      GetDetailsForCreatePaymentInstrument(testing::_, testing::_, testing::_))
+      .WillOnce(testing::Return(
+          base::StrongAlias<autofill::payments::RequestIdTag, std::string>()));
+
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
+
+  manager()->MaybeShowPixAccountLinkingPrompt();
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       ServerEligibilityCheckReturnsIneligible_PromptNotShown) {
+  // Simulate that the payments server hasn't yet returned eligibility.
+  EXPECT_CALL(
+      *multiple_request_payments_network_interface(),
+      GetDetailsForCreatePaymentInstrument(testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke([](long, auto callback, const std::string&) {
+        std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
+                                    PaymentsRpcResult::kSuccess,
+                                false);
+        return base::StrongAlias<autofill::payments::RequestIdTag,
+                                 std::string>();
+      }));
+
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
   manager()->MaybeShowPixAccountLinkingPrompt();

@@ -50,12 +50,19 @@ void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
   }
   // TODO(crbug.com/417330610): Move this to after the user comes back to Chrome
   // and GetDetailsForCreatePaymentInstrument is completed.
-  client_->GetDeviceDelegate()->SetOnReturnToChromeCallback(
-      base::BindOnce(&PixAccountLinkingManager::ShowPixAccountLinkingPrompt,
-                     weak_ptr_factory_.GetWeakPtr()));
+  client_->GetDeviceDelegate()->SetOnReturnToChromeCallback(base::BindOnce(
+      &PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PixAccountLinkingManager::ShowPixAccountLinkingPrompt() {
+void PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible() {
+  // If the server-side eligibility check is incomplete, or if ineligible for
+  // account linking, exit.
+  if (!is_eligible_for_pix_account_linking_.has_value() ||
+      !is_eligible_for_pix_account_linking_.value()) {
+    return;
+  }
+
   client_->SetUiEventListener(
       base::BindRepeating(&PixAccountLinkingManager::OnUiScreenEvent,
                           weak_ptr_factory_.GetWeakPtr()));
