@@ -488,8 +488,8 @@ class BrowserAutofillManager : public AutofillManager {
   // It schedules the generation of the individual suggestions for each
   // `FillingProduct` and calls `OnIndividualSuggestionsGenerated` when done.
   void OnSuggestionDataFetched(
-      const FormData& form,
-      const FormFieldData& field,
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
       std::vector<std::pair<FillingProduct,
@@ -500,8 +500,8 @@ class BrowserAutofillManager : public AutofillManager {
   // suggestions. It combines the returned suggestions respecting their
   // priorities and calls `OnGenerateSuggestionsComplete` to show them.
   void OnIndividualSuggestionsGenerated(
-      const FormData& form,
-      const FormFieldData& field,
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
       std::vector<SuggestionGenerator::ReturnedSuggestions>
@@ -539,7 +539,7 @@ class BrowserAutofillManager : public AutofillManager {
   void OnGeneratedPlusAddressAndSingleFieldFillSuggestions(
       AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
       PasswordFormClassification::Type password_form_type,
-      const FormData& form,
+      const FormGlobalId& form_id,
       const FormFieldData& field,
       bool should_offer_single_field_form_fill,
       OnGenerateSuggestionsCallback callback,
@@ -559,8 +559,8 @@ class BrowserAutofillManager : public AutofillManager {
   // shown. `ranking_context` contains information regarding the ranking of
   // suggestions and is used for metrics logging.
   void OnGenerateSuggestionsComplete(
-      const FormData& form,
-      const FormFieldData& field,
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source,
       const SuggestionsContext& context,
       bool show_suggestions,
@@ -576,8 +576,8 @@ class BrowserAutofillManager : public AutofillManager {
       std::vector<Suggestion> address_suggestions,
       AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
       PasswordFormClassification::Type password_form_type,
-      const FormData& form,
-      const FormFieldData& field,
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
       OnGenerateSuggestionsCallback callback);
 
   // Returns an appropriate EventFormLogger, depending on the given `field`'s
@@ -631,7 +631,7 @@ class BrowserAutofillManager : public AutofillManager {
   void MaybeShowPlusAddressEmailOverrideNotification(
       base::span<const AutofillField*> safe_filled_autofill_fields,
       const AutofillProfile& filled_profile,
-      const FormStructure& form_structure);
+      const FormGlobalId& form_id);
 
   // Delegates to perform external processing (display, selection) on
   // our behalf.
