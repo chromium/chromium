@@ -328,6 +328,7 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
 
   resizing_state_ = ResizingState::kResizeForChildInProgress;
   pip_widget_->SetBoundsConstrained(pending_bounds_);
+  pip_frame_->EnforceTucking();
   resizing_state_ = ResizingState::kSizedToChildren;
 }
 
@@ -408,6 +409,7 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
   resizing_state_ = ResizingState::kNotSizedToChildren;
   resize_timer_.Stop();
   pip_widget_->SetBoundsConstrained(latest_user_desired_bounds_);
+  pip_frame_->EnforceTucking();
 }
 
 PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
