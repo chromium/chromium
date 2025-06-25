@@ -8,10 +8,8 @@
  * #css_wrapper_metadata_end */
 
 #closeFeedbackToastButton {
-  margin-block-end: 8px;
-  margin-block-start: 8px;
-  margin-inline-end: 2px;
-  margin-inline-start: 2px;
+  margin-block: 8px;
+  margin-inline: 6px;
 }
 
 #feedbackButtonContainer {
