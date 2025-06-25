@@ -1139,9 +1139,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 }
 
 - (BOOL)useMIAEnlargedFakebox {
-  return self.isGoogleDefaultSearchEngine &&
-         (GetNTPMIAEntrypointVariation() ==
-          NTPMIAEntrypointVariation::kOmniboxContainedEnlargedFakebox);
+  return self.isGoogleDefaultSearchEngine && ShouldEnlargeNTPFakeboxForMIA();
 }
 
 #pragma mark - helpers

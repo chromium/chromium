@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -40,11 +41,16 @@ const CGFloat kSymbolPointSize = 18.0;
       activateConstraints:@[ [_buttonStackView.heightAnchor
                               constraintEqualToConstant:kQuickActionsHeight] ]];
 
-  _incognitoButton = [self createButtonWithSymbolName:kIncognitoSymbol];
+  BOOL showIncognito = GetNTPMIAEntrypointVariation() !=
+                       NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito;
+  if (showIncognito) {
+    _incognitoButton = [self createButtonWithSymbolName:kIncognitoSymbol];
+    [_buttonStackView addArrangedSubview:_incognitoButton];
+  }
+
   _voiceSearchButton = [self createButtonWithSymbolName:kVoiceSymbol];
   _lensButton = [self createButtonWithSymbolName:kCameraLensSymbol];
 
-  [_buttonStackView addArrangedSubview:_incognitoButton];
   [_buttonStackView addArrangedSubview:_voiceSearchButton];
   [_buttonStackView addArrangedSubview:_lensButton];
 
