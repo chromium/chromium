@@ -8441,7 +8441,7 @@
   {
     "name": "reading-list-enable-sync-transport-mode-upon-sign-in",
     "owners": [ "mmrashad@google.com", "rsult@google.com", "uno-desktop@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 141
   },
   {
     "name": "realbox-secondary-zero-suggest",
@@ -9403,7 +9403,7 @@
   {
     "name": "sync-enable-bookmarks-in-transport-mode",
     "owners": [ "msalama@chromium.org", "uno-desktop@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 141
   },
   {
     "name": "sync-point-graph-validation",
