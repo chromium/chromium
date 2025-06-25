@@ -3950,12 +3950,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Network.DataUrlLength{Type}" units="characters"
-    expires_after="2025-03-27">
+    expires_after="2026-06-25">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The total length of {Type} data URLs. This is recorded per resource request
     when the parsing is completed.
+
+    Warning: this histogram was expired from 2025-03-28 to 2025-06-25; data may
+    be missing.
   </summary>
   <token key="Type">
     <variant name="" summary=""/>
