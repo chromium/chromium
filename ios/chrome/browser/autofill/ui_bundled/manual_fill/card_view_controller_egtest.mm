@@ -7,6 +7,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
@@ -937,8 +938,9 @@ void DismissPaymentBottomSheet() {
                         doesInjectValue:@""];
 
   // Dismiss the warning alert.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_OK)] performAction:grey_tap()];
 
   [ChromeEarlGreyUI cleanupAfterShowingAlert];
 }
@@ -953,8 +955,9 @@ void DismissPaymentBottomSheet() {
       assertWithMatcher:grey_not(grey_nil())];
 
   // Dismiss the alert.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_OK)] performAction:grey_tap()];
 
   [ChromeEarlGreyUI cleanupAfterShowingAlert];
 }
