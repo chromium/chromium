@@ -1118,7 +1118,9 @@ public class CustomTabsConnection {
                     bundleToJson(intent.getExtras()));
         }
 
-        if (ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()) {
+        if (ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_FIX_WARMUP)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV)) {
             CustomTabsConnectionJni.get().emitIntentHandledTrigger();
         }
 
