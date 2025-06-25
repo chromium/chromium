@@ -73,19 +73,19 @@ int DebugColors::HighResTileBorderWidth(float device_scale_factor) {
   return Scale(1, device_scale_factor);
 }
 
-// Other high-resolution tile borders are yellow.
-SkColor4f DebugColors::ExtraHighResTileBorderColor() {
+// Above high-res tile borders are yellow.
+SkColor4f DebugColors::AboveHighResTileBorderColor() {
   return {239.0f / 255.0f, 231.0f / 255.0f, 20.0f / 255.0f, 100.0f / 255.0f};
 }
-int DebugColors::ExtraHighResTileBorderWidth(float device_scale_factor) {
+int DebugColors::AboveHighResTileBorderWidth(float device_scale_factor) {
   return Scale(2, device_scale_factor);
 }
 
-// Other low-resolution tile borders are green.
-SkColor4f DebugColors::ExtraLowResTileBorderColor() {
+// Below high-res tile borders are green.
+SkColor4f DebugColors::BelowHighResTileBorderColor() {
   return {93.0f / 255.0f, 186.0f / 255.0f, 18.0f / 255.0f, 100.0f / 255.0f};
 }
-int DebugColors::ExtraLowResTileBorderWidth(float device_scale_factor) {
+int DebugColors::BelowHighResTileBorderWidth(float device_scale_factor) {
   return Scale(2, device_scale_factor);
 }
 

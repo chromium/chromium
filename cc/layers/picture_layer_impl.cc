@@ -343,11 +343,11 @@ void PictureLayerImpl::AppendQuads(const AppendQuadsContext& context,
           color = DebugColors::HighResTileBorderColor();
           width = DebugColors::HighResTileBorderWidth(device_scale_factor);
         } else if (iter->contents_scale_key() > max_contents_scale) {
-          color = DebugColors::ExtraHighResTileBorderColor();
-          width = DebugColors::ExtraHighResTileBorderWidth(device_scale_factor);
+          color = DebugColors::AboveHighResTileBorderColor();
+          width = DebugColors::AboveHighResTileBorderWidth(device_scale_factor);
         } else {
-          color = DebugColors::ExtraLowResTileBorderColor();
-          width = DebugColors::ExtraLowResTileBorderWidth(device_scale_factor);
+          color = DebugColors::BelowHighResTileBorderColor();
+          width = DebugColors::BelowHighResTileBorderWidth(device_scale_factor);
         }
       } else {
         color = DebugColors::MissingTileBorderColor();
