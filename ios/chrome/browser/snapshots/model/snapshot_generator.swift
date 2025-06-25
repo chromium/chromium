@@ -5,6 +5,7 @@
 import UIKit
 
 // A class that generates snapshot images for the WebState associated with this class.
+@MainActor
 @objcMembers public class SnapshotGenerator: NSObject {
   // A wrapper class for the associated WebState.
   private let webStateInfo: WebStateSnapshotInfo

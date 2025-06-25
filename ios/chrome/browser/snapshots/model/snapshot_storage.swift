@@ -9,6 +9,7 @@ import UIKit
 // A snapshot is a full-screen image of the contents of the page at the current scroll offset and
 // zoom level, used to stand in for the WKWebView if it has been purged from memory or when quickly
 // switching tabs.
+@MainActor
 @objc public protocol SnapshotStorage {
   // Retrieves a cached snapshot for the `snapshotID` and return it via the callback if it exists.
   // The callback is guaranteed to be called synchronously if the image is in memory. It will be

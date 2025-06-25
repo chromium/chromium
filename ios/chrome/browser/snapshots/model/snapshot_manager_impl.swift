@@ -101,7 +101,9 @@ import UIKit
   fileprivate func retrieveGreySnapshot(completion: @escaping (UIImage?) -> Void) {
     weak var weakSelf = self
     let wrappedCompletion: (UIImage?) -> Void = { image in
-      weakSelf?.greySnapshotRetrieved(image: image, completion: completion)
+      Task { @MainActor in
+        weakSelf?.greySnapshotRetrieved(image: image, completion: completion)
+      }
     }
 
     if let storage = snapshotStorage {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // A protocol that takes care of creating, storing and retrieving snapshots.
+@MainActor
 @objc public protocol SnapshotManager {
   // Asynchronously retrieves a snapshot for the current page, calling
   // `completion` once it has been retrieved. The image will be nil if
