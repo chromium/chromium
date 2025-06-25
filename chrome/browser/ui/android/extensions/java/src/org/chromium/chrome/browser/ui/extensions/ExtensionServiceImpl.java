@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.extensions;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.ViewStub;
 import android.widget.LinearLayout;
 
@@ -83,6 +84,18 @@ public class ExtensionServiceImpl implements ExtensionService {
         }
 
         return mExtensionActionsBridge.extensionsEnabled();
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        // Filter out events we are not interested in before calling into JNI.
+        if (event.getAction() != KeyEvent.ACTION_DOWN || event.getRepeatCount() > 0) return false;
+
+        if (mExtensionActionsBridge == null) {
+            return false;
+        }
+
+        return mExtensionActionsBridge.handleKeyDownEvent(event);
     }
 
     @Override

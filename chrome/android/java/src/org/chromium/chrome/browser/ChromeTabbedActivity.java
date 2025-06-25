@@ -267,7 +267,7 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
-import org.chromium.chrome.browser.ui.extensions.ExtensionKeybindingRegistry;
+import org.chromium.chrome.browser.ui.extensions.ExtensionService;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -557,8 +557,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private SuggestionEventObserver mSuggestionEventObserver;
     private GroupSuggestionsPromotionCoordinator mGroupSuggestionsPromotionCoordinator;
     private @Nullable ArchivedTabsAutoDeletePromoManager mArchivedTabsAutoDeletePromoManager;
-
-    @Nullable private ExtensionKeybindingRegistry mExtensionKeybindingRegistry;
 
     private final LazyOneshotSupplier<@Nullable XrSceneCoreSessionManager>
             mXrSceneCoreSessionManagerSupplier =
@@ -1365,10 +1363,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                             .getTabGroupModelFilter(false));
                 }
             }
-
-            mExtensionKeybindingRegistry =
-                    ExtensionKeybindingRegistry.maybeCreate(
-                            getProfileProviderSupplier().get().getOriginalProfile());
 
             initiateArchivedTabsAutoDeletePromoManager();
         }
@@ -3984,11 +3978,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
             mGroupSuggestionsPromotionCoordinator = null;
         }
 
-        if (mExtensionKeybindingRegistry != null) {
-            mExtensionKeybindingRegistry.destroy();
-            mExtensionKeybindingRegistry = null;
-        }
-
         if (mXrSceneCoreSessionManagerSupplier.hasValue()
                 && mXrSceneCoreSessionManagerSupplier.get() != null) {
             var xrSceneCoreSessionManager = mXrSceneCoreSessionManagerSupplier.get();
@@ -4028,8 +4017,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
         if (Boolean.TRUE.equals(result)) return result;
 
-        if (mExtensionKeybindingRegistry != null) {
-            if (mExtensionKeybindingRegistry.handleKeyEvent(event)) {
+        @Nullable ExtensionService extensionService = mRootUiCoordinator.getExtensionService();
+        if (extensionService != null) {
+            // Handle extension shortcuts.
+            if (extensionService.dispatchKeyEvent(event)) {
                 result = true;
             }
         }

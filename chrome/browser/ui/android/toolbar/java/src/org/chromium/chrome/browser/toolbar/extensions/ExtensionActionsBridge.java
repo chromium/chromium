@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.graphics.Bitmap;
+import android.view.KeyEvent;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -101,6 +102,16 @@ public class ExtensionActionsBridge {
      */
     public boolean extensionsEnabled() {
         return ExtensionActionsBridgeJni.get().extensionsEnabled(mNativeExtensionActionsBridge);
+    }
+
+    /**
+     * Handles the key down event.
+     *
+     * @return Whether the event has been consumed.
+     */
+    public boolean handleKeyDownEvent(KeyEvent event) {
+        return ExtensionActionsBridgeJni.get()
+                .handleKeyDownEvent(mNativeExtensionActionsBridge, event);
     }
 
     @CalledByNative
@@ -208,5 +219,9 @@ public class ExtensionActionsBridge {
                 @JniType("content::WebContents*") WebContents webContents);
 
         boolean extensionsEnabled(long nativeExtensionActionsBridge);
+
+        boolean handleKeyDownEvent(
+                long nativeExtensionActionsBridge,
+                @JniType("ui::KeyEventAndroid") KeyEvent keyEvent);
     }
 }

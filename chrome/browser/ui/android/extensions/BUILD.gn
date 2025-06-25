@@ -9,7 +9,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionKeybindingRegistry.java",
     "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionService.java",
   ]
   srcjar_deps = [ ":generate_buildflags" ]
@@ -31,17 +30,9 @@ android_library("java") {
       "//chrome/browser/flags:java",
       "//third_party/jni_zero:jni_zero_java",
     ]
-    sources += [
-      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionKeybindingRegistryAndroid.java",
-      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionServiceImpl.java",
-    ]
-    srcjar_deps += [ ":jni_headers" ]
+    sources += [ "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionServiceImpl.java" ]
     resources_package = "org.chromium.chrome.browser.ui.extensions"
   }
-}
-
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionKeybindingRegistryAndroid.java" ]
 }
 
 # Generate feature-specific flags to avoid dependency cycles with the main

@@ -19,9 +19,7 @@ namespace extensions {
 class ExtensionKeybindingRegistryAndroid
     : public extensions::ExtensionKeybindingRegistry {
  public:
-  ExtensionKeybindingRegistryAndroid(content::BrowserContext* context,
-                                     ExtensionFilter extension_filter,
-                                     Delegate* delegate);
+  explicit ExtensionKeybindingRegistryAndroid(content::BrowserContext* context);
 
   ExtensionKeybindingRegistryAndroid(
       const ExtensionKeybindingRegistryAndroid&) = delete;
@@ -30,12 +28,9 @@ class ExtensionKeybindingRegistryAndroid
 
   ~ExtensionKeybindingRegistryAndroid() override;
 
-  // Destroys this instance.
-  void Destroy(JNIEnv* env);
-
-  // Handles the key event. It returns whether the key event was handled. It
-  // immediately returns false if the given key event should not intercept.
-  bool HandleKeyEvent(JNIEnv* env, const ui::KeyEventAndroid& key_event);
+  // Handles the key down event. It returns whether the key event was handled.
+  // It immediately returns false if the given key event should not intercept.
+  bool HandleKeyDownEvent(const ui::KeyEventAndroid& key_event);
 
  private:
   // Overridden from ExtensionKeybindingRegistry:

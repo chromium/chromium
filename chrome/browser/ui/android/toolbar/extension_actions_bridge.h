@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/android/extensions/extension_keybinding_registry_android.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_action_icon_factory.h"
@@ -47,6 +48,7 @@ class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
       const ToolbarActionsModel::ActionId& action_id,
       content::WebContents* web_contents);
   bool ExtensionsEnabled(JNIEnv* env);
+  bool HandleKeyDownEvent(JNIEnv* env, const ui::KeyEventAndroid& key_event);
 
   // ToolbarActionsModel::Observer:
   void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& id) override;
@@ -93,6 +95,7 @@ class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
 
   raw_ptr<Profile> profile_;
   raw_ptr<ToolbarActionsModel> model_;
+  std::unique_ptr<ExtensionKeybindingRegistryAndroid> keybinding_registry_;
   std::map<ToolbarActionsModel::ActionId, std::unique_ptr<IconObserver>>
       icon_observers_;
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

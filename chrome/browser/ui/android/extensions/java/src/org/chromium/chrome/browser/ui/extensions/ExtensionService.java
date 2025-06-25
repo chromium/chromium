@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.extensions;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.ViewStub;
 
 import org.chromium.base.ServiceLoaderUtil;
@@ -47,4 +48,11 @@ public interface ExtensionService extends Destroyable {
 
     /** Whether extensions are enabled. */
     public boolean areExtensionsEnabled();
+
+    /**
+     * Dispatches the key event to trigger the corresponding extension action if any.
+     *
+     * @return Whether the event has been consumed.
+     */
+    public boolean dispatchKeyEvent(KeyEvent event);
 }

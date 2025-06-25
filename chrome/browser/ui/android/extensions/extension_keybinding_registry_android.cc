@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/android/extensions/extension_keybinding_registry_android.h"
 
-#include <jni.h>
-
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/commands/command_service.h"
@@ -20,16 +18,13 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform_event.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/ui/android/extensions/jni_headers/ExtensionKeybindingRegistryAndroid_jni.h"
-
 namespace extensions {
 
 ExtensionKeybindingRegistryAndroid::ExtensionKeybindingRegistryAndroid(
-    content::BrowserContext* context,
-    ExtensionFilter extension_filter,
-    Delegate* delegate)
-    : ExtensionKeybindingRegistry(context, extension_filter, delegate) {}
+    content::BrowserContext* context)
+    : ExtensionKeybindingRegistry(context,
+                                  ExtensionFilter::ALL_EXTENSIONS,
+                                  nullptr) {}
 
 ExtensionKeybindingRegistryAndroid::~ExtensionKeybindingRegistryAndroid() =
     default;
@@ -63,23 +58,7 @@ void ExtensionKeybindingRegistryAndroid::OnShortcutHandlingSuspended(
   is_shortcut_handling_suspended_ = suspended;
 }
 
-// JNI functions
-
-static jlong JNI_ExtensionKeybindingRegistryAndroid_Init(JNIEnv* env,
-                                                         Profile* profile) {
-  ExtensionKeybindingRegistryAndroid* instance =
-      new ExtensionKeybindingRegistryAndroid(
-          profile, extensions::ExtensionKeybindingRegistry::ALL_EXTENSIONS,
-          nullptr);
-  return reinterpret_cast<jlong>(instance);
-}
-
-void ExtensionKeybindingRegistryAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
-
-bool ExtensionKeybindingRegistryAndroid::HandleKeyEvent(
-    JNIEnv* env,
+bool ExtensionKeybindingRegistryAndroid::HandleKeyDownEvent(
     const ui::KeyEventAndroid& key_event) {
   if (is_shortcut_handling_suspended_) {
     return false;
