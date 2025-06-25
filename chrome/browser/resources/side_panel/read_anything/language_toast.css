@@ -8,11 +8,15 @@
  * #css_wrapper_metadata_end */
 
 #toast {
-  bottom: 0;
-  left: 0;
-  min-width: 245px;
-  width: 80%;
   background: #303030;
+  bottom: 0;
+  box-sizing: border-box;
+  left: 50%;
+  margin-left: 0;
+  margin-right: 0;
+  min-width: 245px;
+  transform: translateX(-50%);
+  width: clamp(245px, 80%, 100vw - 48px);
 }
 
 #toastDiv {
@@ -27,6 +31,6 @@
 }
 
 #toastMessage {
-  display: inline-block;
+  display: block;
   font-size: 1em;
 }

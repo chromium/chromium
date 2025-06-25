@@ -140,24 +140,6 @@
   max-width: 100%;
 }
 
-#toast {
-  bottom: -2%;
-  margin-left: 10%;
-  margin-right: 10%;
-  min-width: 245px;
-  width: 80%;
-}
-
-#toastTitle {
-  display: inline-block;
-  font-size: 1em;
-}
-
-#toastMessage {
-  display: inline-block;
-  font-size: 1em;
-}
-
 #docs-load-more-button {
   background: var(--color-sys-tonal-container);
   margin: 0 auto;
