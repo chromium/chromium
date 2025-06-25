@@ -353,10 +353,10 @@ void BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult() {
   base::TimeDelta duration = base::TimeTicks::Now() - *cookie_refresh_duration_;
   cookie_refresh_duration_.reset();
   base::UmaHistogramMediumTimes(kRotationTotalDurationHistogramName, duration);
-  base::UmaHistogramEnumeration(
+  base::UmaHistogramMediumTimes(
       base::StrCat(
           {kRotationTotalDurationHistogramName, histogram_trigger_suffix}),
-      result_);
+      duration);
 
   std::move(callback_).Run(result_);
 }
