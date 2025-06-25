@@ -8,10 +8,8 @@
 #include <stdarg.h>  // va_list
 
 #include <string>
-#include <string_view>
 
 #include "base/base_export.h"
-#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
