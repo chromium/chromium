@@ -32,6 +32,7 @@
 
         <!-- Autofill Lottie resources-->
         <structure type="lottie" name="IDR_SAVE_PASSWORD_LOTTIE" file="resources/autofill/autofill_save_password.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_SAVE_ADDRESS_LOTTIE" file="resources/autofill/autofill_save_address.json" compress="brotli"/>
 
       </if>
     </structures>

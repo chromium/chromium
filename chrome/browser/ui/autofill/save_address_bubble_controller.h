@@ -25,6 +25,7 @@ class SaveAddressBubbleController : public content::WebContentsObserver {
   struct HeaderImages {
     ui::ImageModel light;
     ui::ImageModel dark;
+    ui::ImageModel lottie;
   };
 
   SaveAddressBubbleController(

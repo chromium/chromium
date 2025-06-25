@@ -15,6 +15,7 @@
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -145,9 +146,9 @@ SaveAddressBubbleController::GetHeaderImages() const {
     }
   }
 
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   return HeaderImages{
-      .light = ui::ImageModel::FromResourceId(IDR_SAVE_ADDRESS),
-      .dark = ui::ImageModel::FromResourceId(IDR_SAVE_ADDRESS_DARK)};
+      .lottie = bundle.GetThemedLottieImageNamed(IDR_SAVE_ADDRESS_LOTTIE)};
 }
 
 std::u16string SaveAddressBubbleController::GetBodyText() const {
