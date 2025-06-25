@@ -63,11 +63,13 @@ int GenerateNextDisplayTreeId() {
   return next_id++;
 }
 
-cc::LayerTreeSettings GetDisplayTreeSettings(bool draw_mode_is_gpu) {
+cc::LayerTreeSettings GetDisplayTreeSettings(bool draw_mode_is_gpu,
+                                             bool enable_edge_anti_aliasing) {
   cc::LayerTreeSettings settings;
   settings.use_layer_lists = true;
   settings.trees_in_viz_in_viz_process = true;
   settings.display_tree_draw_mode_is_gpu = draw_mode_is_gpu;
+  settings.enable_edge_anti_aliasing = enable_edge_anti_aliasing;
   return settings;
 }
 
@@ -1353,9 +1355,11 @@ base::expected<void, std::string> DeserializeAnimationUpdates(
 
 LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
                                    mojom::PendingLayerContext& context,
-                                   bool draw_mode_is_gpu)
+                                   bool draw_mode_is_gpu,
+                                   bool enable_edge_anti_aliasing)
     : LayerContextImpl(compositor_sink,
                        draw_mode_is_gpu,
+                       enable_edge_anti_aliasing,
                        std::move(context.receiver),
                        std::move(context.client)) {
   // Always expect valid context receiver & client to be passed to the
@@ -1367,9 +1371,10 @@ LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
 // static
 std::unique_ptr<LayerContextImpl> LayerContextImpl::CreateForTesting(
     CompositorFrameSinkSupport* compositor_sink,
-    bool draw_mode_is_gpu) {
+    bool draw_mode_is_gpu,
+    bool enable_edge_anti_aliasing) {
   return base::WrapUnique<LayerContextImpl>(new LayerContextImpl(
-      compositor_sink, draw_mode_is_gpu,
+      compositor_sink, draw_mode_is_gpu, enable_edge_anti_aliasing,
       mojo::PendingAssociatedReceiver<mojom::LayerContext>(),
       mojo::PendingAssociatedRemote<mojom::LayerContextClient>()));
 }
@@ -1377,6 +1382,7 @@ std::unique_ptr<LayerContextImpl> LayerContextImpl::CreateForTesting(
 LayerContextImpl::LayerContextImpl(
     CompositorFrameSinkSupport* compositor_sink,
     bool draw_mode_is_gpu,
+    bool enable_edge_anti_aliasing,
     mojo::PendingAssociatedReceiver<mojom::LayerContext> receiver_pipe,
     mojo::PendingAssociatedRemote<mojom::LayerContextClient> client_pipe)
     : compositor_sink_(compositor_sink),
@@ -1384,7 +1390,7 @@ LayerContextImpl::LayerContextImpl(
           base::SingleThreadTaskRunner::GetCurrentDefault())),
       rendering_stats_(cc::RenderingStatsInstrumentation::Create()),
       host_impl_(cc::LayerTreeHostImpl::Create(
-          GetDisplayTreeSettings(draw_mode_is_gpu),
+          GetDisplayTreeSettings(draw_mode_is_gpu, enable_edge_anti_aliasing),
           this,
           task_runner_provider_.get(),
           rendering_stats_.get(),

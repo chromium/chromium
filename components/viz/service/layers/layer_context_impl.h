@@ -43,13 +43,15 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   // `compositor_sink` with client connection details given by `context`.
   LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
                    mojom::PendingLayerContext& context,
-                   bool draw_mode_is_gpu);
+                   bool draw_mode_is_gpu,
+                   bool enable_edge_anti_aliasing);
 
   // Static factory method for testing purposes. The created object's lifetime
   // is not managed by this function.
   static std::unique_ptr<LayerContextImpl> CreateForTesting(
       CompositorFrameSinkSupport* compositor_sink,
-      bool draw_mode_is_gpu);
+      bool draw_mode_is_gpu,
+      bool enable_edge_anti_aliasing);
 
   ~LayerContextImpl() override;
 
@@ -73,6 +75,7 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   LayerContextImpl(
       CompositorFrameSinkSupport* compositor_sink,
       bool draw_mode_is_gpu,
+      bool enable_edge_anti_aliasing,
       mojo::PendingAssociatedReceiver<mojom::LayerContext> receiver_pipe,
       mojo::PendingAssociatedRemote<mojom::LayerContextClient> client_pipe);
 

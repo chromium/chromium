@@ -181,13 +181,27 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_F(LayerContextImplTest, DrawModeIsGpuForwardedViaSettings) {
-  RecreateLayerContextImplWithParams(/*draw_mode_is_gpu=*/true);
+  RecreateLayerContextImplWithParams(/*draw_mode_is_gpu=*/true,
+                                     /*enable_edge_anti_aliasing=*/true);
   cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
   EXPECT_TRUE(host_impl->settings().display_tree_draw_mode_is_gpu);
 
-  RecreateLayerContextImplWithParams(/*draw_mode_is_gpu=*/false);
+  RecreateLayerContextImplWithParams(/*draw_mode_is_gpu=*/false,
+                                     /*enable_edge_anti_aliasing=*/true);
   host_impl = layer_context_impl_->host_impl();
   EXPECT_FALSE(host_impl->settings().display_tree_draw_mode_is_gpu);
+}
+
+TEST_F(LayerContextImplTest, EnableEdgeAntiAliasingForwardedViaSettings) {
+  RecreateLayerContextImplWithParams(/*draw_mode_is_gpu=*/true,
+                                     /*enable_edge_anti_aliasing=*/true);
+  cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
+  EXPECT_TRUE(host_impl->settings().enable_edge_anti_aliasing);
+
+  RecreateLayerContextImplWithParams(/*draw_mode_is_gpu=*/true,
+                                     /*enable_edge_anti_aliasing=*/false);
+  host_impl = layer_context_impl_->host_impl();
+  EXPECT_FALSE(host_impl->settings().enable_edge_anti_aliasing);
 }
 
 TEST_F(LayerContextImplTest, TransferableUIResourceLifecycleAndEdgeCases) {

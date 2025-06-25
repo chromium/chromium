@@ -96,13 +96,16 @@ void LayerContextImplTest::SetUp() {
       &dummy_client_, &frame_sink_manager_, kDefaultFrameSinkId,
       /*is_root=*/true);
   layer_context_impl_ = LayerContextImpl::CreateForTesting(
-      compositor_frame_sink_support_.get(), /*draw_mode_is_gpu=*/true);
+      compositor_frame_sink_support_.get(), /*draw_mode_is_gpu=*/true,
+      /*enable_edge_anti_aliasing=*/true);
 }
 
 void LayerContextImplTest::RecreateLayerContextImplWithParams(
-    bool draw_mode_is_gpu) {
+    bool draw_mode_is_gpu,
+    bool enable_edge_anti_aliasing) {
   layer_context_impl_ = LayerContextImpl::CreateForTesting(
-      compositor_frame_sink_support_.get(), draw_mode_is_gpu);
+      compositor_frame_sink_support_.get(), draw_mode_is_gpu,
+      enable_edge_anti_aliasing);
 }
 
 void LayerContextImplTest::ResetTestState() {
