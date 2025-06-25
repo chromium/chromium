@@ -6,12 +6,10 @@ found in the LICENSE file.
 -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:shape="rectangle"
-    tools:ignore="UnusedResources">
+    android:shape="rectangle" >
   <size android:height="4dp"
       android:width="40dp"/>
   <corners
       android:radius="2dp" />
-  <solid android:color="@color/drag_handlebar_color_baseline" />
+  <solid android:color="@color/drag_handlebar_color_list" />
 </shape>
