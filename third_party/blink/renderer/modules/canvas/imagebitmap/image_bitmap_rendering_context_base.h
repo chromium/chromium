@@ -82,6 +82,8 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
  private:
   CanvasResourceProvider* GetOrCreateResourceProviderForOffscreenCanvas();
   void ResetInternalBitmapToBlackTransparent(int width, int height);
+
+  std::unique_ptr<CanvasResourceProvider> resource_provider_;
 };
 
 }  // namespace blink

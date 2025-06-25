@@ -143,10 +143,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
     CHECK(IsRenderingContext2D());
     return resource_provider_for_canvas2d_.get();
   }
-  CanvasResourceProvider* GetResourceProviderForImageBitmap() const {
-    CHECK(IsImageBitmapRenderingContext());
-    return resource_provider_for_image_bitmap_.get();
-  }
 
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider>);
@@ -157,15 +153,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   virtual void DiscardResources();
 
   void FlushRecordingForCanvas2D(FlushReason reason);
-
-  // `resource_provider_` must be null.
-  void SetResourceProviderForImageBitmap(
-      std::unique_ptr<CanvasResourceProvider> resource_provider) {
-    CHECK(IsImageBitmapRenderingContext());
-    CHECK(!resource_provider_for_image_bitmap_);
-    resource_provider_for_image_bitmap_ = std::move(resource_provider);
-    UpdateMemoryUsage();
-  }
 
  protected:
   ~CanvasRenderingContextHost() override = default;
@@ -198,7 +185,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
  private:
 
   std::unique_ptr<CanvasResourceProvider> resource_provider_for_canvas2d_;
-  std::unique_ptr<CanvasResourceProvider> resource_provider_for_image_bitmap_;
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = HostType::kNone;
 };
