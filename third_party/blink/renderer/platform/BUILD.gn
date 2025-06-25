@@ -1976,7 +1976,6 @@ static_library("test_support") {
     "graphics/gpu/drawing_buffer_test_helpers.cc",
     "graphics/gpu/drawing_buffer_test_helpers.h",
     "graphics/paint/paint_controller_test.h",
-    "graphics/test/fake_canvas_resource_host.h",
     "graphics/test/fake_gles2_interface.h",
     "graphics/test/fake_web_graphics_context_3d_provider.h",
     "graphics/test/gpu_memory_buffer_test_platform.h",
