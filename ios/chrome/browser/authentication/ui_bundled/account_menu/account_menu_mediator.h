@@ -40,6 +40,9 @@ class SyncService;
 @property(nonatomic, weak) id<SyncErrorSettingsCommandHandler>
     syncErrorSettingsCommandHandler;
 
+// Whether the account menu’s interaction is blocked.
+@property(nonatomic, assign, readonly) BOOL userInteractionsBlocked;
+
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
               accountManagerService:
                   (ChromeAccountManagerService*)accountManagerService

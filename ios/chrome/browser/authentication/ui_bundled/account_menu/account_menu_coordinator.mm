@@ -113,8 +113,6 @@ void maybeShowSettingsIPH(Browser* browser) {
   SyncEncryptionPassphraseTableViewController*
       _syncEncryptionPassphraseTableViewController;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  // Callback to hide the activity overlay.
-  base::ScopedClosureRunner _activityOverlayCallback;
   // The child signin coordinator if it’s open.
   SigninCoordinator* _addAccountSigninCoordinator;
   // Clicked view, used to anchor the menu to it when using
@@ -236,6 +234,11 @@ void maybeShowSettingsIPH(Browser* browser) {
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return !_mediator.userInteractionsBlocked;
+}
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
@@ -552,7 +555,6 @@ void maybeShowSettingsIPH(Browser* browser) {
     // The view controller was already dismissed.
     return;
   }
-  _activityOverlayCallback.RunAndReset();
   _mediator.consumer = nil;
   _viewController.dataSource = nil;
   _viewController.mutator = nil;

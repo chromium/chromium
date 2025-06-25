@@ -44,8 +44,8 @@
                                    IdentityManagerObserverBridgeDelegate,
                                    SyncObserverModelBridge>
 
-// Whether the account menu’s interaction is blocked.
-@property(nonatomic, assign) BOOL userInteractionsBlocked;
+// Redefine as readwrite.
+@property(nonatomic, assign, readwrite) BOOL userInteractionsBlocked;
 
 @end
 
