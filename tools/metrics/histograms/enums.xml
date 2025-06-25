@@ -6584,12 +6584,14 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="2" label="User leaves the interstitial by closing the page"/>
 </enum>
 
+<!-- LINT.IfChange(IOSContentSizeCategory) -->
+
 <enum name="IOSContentSizeCategory">
   <int value="0" label="Unspecified"/>
   <int value="1" label="ExtraSmall"/>
   <int value="2" label="Small"/>
   <int value="3" label="Medium"/>
-  <int value="4" label="Large"/>
+  <int value="4" label="Large (default)"/>
   <int value="5" label="ExtraLarge"/>
   <int value="6" label="ExtraExtraLarge"/>
   <int value="7" label="ExtraExtraExtraLarge"/>
@@ -6599,6 +6601,8 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="11" label="AccessibilityExtraExtraLarge"/>
   <int value="12" label="AccessibilityExtraExtraExtraLarge"/>
 </enum>
+
+<!-- LINT.ThenChange(//ios/components/ui_util/dynamic_type_util.h:IOSContentSizeCategory) -->
 
 <!-- LINT.IfChange(IOSContextualPanelDismissedReason) -->
 
