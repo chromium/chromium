@@ -16,28 +16,27 @@
 
 #include "base/bit_cast.h"
 #include "base/check.h"
-#include "base/hash/md5.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "components/visitedlink/core/visited_link.h"
+#include "crypto/obsolete/md5.h"
 #include "net/base/schemeful_site.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace {
 visitedlink::VisitedLinkCommon::Fingerprint ConvertDigestToFingerprint(
-    base::MD5Digest digest) {
-  // This is the same as "return *(Fingerprint*)&digest.a;" but if we do that
-  // direct cast the alignment could be wrong, and we can't access a 64-bit int
-  // on arbitrary alignment on some processors. This reinterpret_casts it
-  // down to a char array of the same size as fingerprint, and then does the
-  // bit cast, which amounts to a memcpy. This does not handle endian issues.
-  return base::bit_cast<visitedlink::VisitedLinkCommon::Fingerprint,
-                        uint8_t[8]>(
-      *reinterpret_cast<uint8_t(*)[8]>(&digest.a));
+    std::array<uint8_t, crypto::obsolete::Md5::kSize> digest) {
+  auto first = base::span(digest).first<sizeof(uint64_t)>();
+  return base::U64FromNativeEndian(first);
 }
 }  // namespace
 
 namespace visitedlink {
+
+crypto::obsolete::Md5 MakeMd5HasherForVisitedLink() {
+  return {};
+}
 
 const VisitedLinkCommon::Fingerprint VisitedLinkCommon::null_fingerprint_ = 0;
 const VisitedLinkCommon::Hash VisitedLinkCommon::null_hash_ = -1;
@@ -110,11 +109,6 @@ bool VisitedLinkCommon::IsVisited(Fingerprint fingerprint) const {
 
 // Uses the top 64 bits of the MD5 sum of the canonical URL as the fingerprint,
 // this is as random as any other subset of the MD5SUM.
-//
-// FIXME: this uses the MD5SUM of the 16-bit character version. For systems
-// where wchar_t is not 16 bits (Linux uses 32 bits, I think), this will not be
-// compatable. We should define explicitly what should happen here across
-// platforms, and convert if necessary (probably to UTF-16).
 
 // static
 VisitedLinkCommon::Fingerprint VisitedLinkCommon::ComputeURLFingerprint(
@@ -122,16 +116,14 @@ VisitedLinkCommon::Fingerprint VisitedLinkCommon::ComputeURLFingerprint(
     const uint8_t salt[LINK_SALT_LENGTH]) {
   DCHECK(canonical_url.size() > 0) << "Canonical URLs should not be empty";
 
-  base::MD5Context ctx;
-  base::MD5Init(&ctx);
-  base::MD5Update(&ctx, std::string_view(reinterpret_cast<const char*>(salt),
-                                         LINK_SALT_LENGTH));
-  base::MD5Update(&ctx, canonical_url);
-
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &ctx);
-
-  return ConvertDigestToFingerprint(digest);
+  auto md5 = MakeMd5HasherForVisitedLink();
+  UNSAFE_BUFFERS(
+      // SAFETY: salt is a reference to a local array which we know is the right
+      // size.
+      md5.Update(base::span<const uint8_t>(
+          salt, base::checked_cast<size_t>(LINK_SALT_LENGTH)));)
+  md5.Update(canonical_url);
+  return ConvertDigestToFingerprint(md5.Finish());
 }
 
 // static
@@ -156,29 +148,20 @@ VisitedLinkCommon::Fingerprint VisitedLinkCommon::ComputePartitionedFingerprint(
   DCHECK(!frame_origin.opaque()) << "Do not call ComputePartitionedFingerprint "
                                     "with an opaque frame origin.";
 
-  base::MD5Context ctx;
-  base::MD5Init(&ctx);
+  auto md5 = MakeMd5HasherForVisitedLink();
 
   // Salt the hash.
-  base::MD5Update(&ctx, std::string_view(reinterpret_cast<const char*>(&salt),
-                                         sizeof(salt)));
+  md5.Update(base::byte_span_from_ref(salt));
 
   // Add the link url.
-  base::MD5Update(&ctx, canonical_link_url);
+  md5.Update(canonical_link_url);
 
   // Add the serialized schemeful top-level site.
-  const std::string serialized_site = top_level_site.Serialize();
-  base::MD5Update(
-      &ctx, std::string_view(serialized_site.data(), serialized_site.size()));
+  md5.Update(top_level_site.Serialize());
 
   // Add the serialized frame origin.
-  const std::string serialized_origin = frame_origin.Serialize();
-  base::MD5Update(&ctx, std::string_view(serialized_origin.data(),
-                                         serialized_origin.size()));
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &ctx);
-
-  return ConvertDigestToFingerprint(digest);
+  md5.Update(frame_origin.Serialize());
+  return ConvertDigestToFingerprint(md5.Finish());
 }
 
 }  // namespace visitedlink

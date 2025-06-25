@@ -23,6 +23,14 @@ crypto::obsolete::Md5 MakeMd5HasherForZeroconf();
 std::string ServerPrinterId(const std::string& url);
 }  // namespace ash::printing
 
+namespace bookmarks {
+class BookmarkCodec;
+}  // namespace bookmarks
+
+namespace cachetool {
+crypto::obsolete::Md5 MakeMd5HasherForCachetools();
+}
+
 namespace drive::util {
 crypto::obsolete::Md5 MakeMd5HasherForDriveApi();
 }
@@ -39,21 +47,17 @@ namespace policy {
 crypto::obsolete::Md5 MakeMd5HasherForPolicyEventId();
 }
 
-namespace web_app::internals {
-crypto::obsolete::Md5 MakeMd5HasherForWebAppShortcutIcon();
-}
-
-namespace cachetool {
-crypto::obsolete::Md5 MakeMd5HasherForCachetools();
-}
-
 namespace trusted_vault {
 std::string MD5StringForTrustedVault(const std::string& local_trusted_value);
 }
 
-namespace bookmarks {
-class BookmarkCodec;
-}  // namespace bookmarks
+namespace visitedlink {
+crypto::obsolete::Md5 MakeMd5HasherForVisitedLink();
+}
+
+namespace web_app::internals {
+crypto::obsolete::Md5 MakeMd5HasherForWebAppShortcutIcon();
+}
 
 namespace crypto::obsolete {
 
@@ -98,18 +102,21 @@ class CRYPTO_EXPORT Md5 {
   friend Md5 ash::printing::MakeMd5HasherForZeroconf();
   friend std::string ash::printing::ServerPrinterId(const std::string& url);
 
+  // TODO(https://crbug.com/426243026): get rid of this.
+  friend class bookmarks::BookmarkCodec;
+
   // TODO(https://crbug.com/419853200): get rid of this.
   friend Md5 net::MakeMd5HasherForHttpVaryData();
-
-  // TODO(https://crbug.com/416304903): get rid of this.
-  friend Md5 web_app::internals::MakeMd5HasherForWebAppShortcutIcon();
 
   // TODO(https://crbug.com/425990763): get rid of this
   friend std::string trusted_vault::MD5StringForTrustedVault(
       const std::string& local_trusted_value);
 
-  // TODO(https://crbug.com/426243026): get rid of this.
-  friend class bookmarks::BookmarkCodec;
+  // TODO(https://crbug.com/427437222): get rid of this.
+  friend Md5 visitedlink::MakeMd5HasherForVisitedLink();
+
+  // TODO(https://crbug.com/416304903): get rid of this.
+  friend Md5 web_app::internals::MakeMd5HasherForWebAppShortcutIcon();
 
   Md5();
   static std::array<uint8_t, kSize> Hash(std::string_view data);

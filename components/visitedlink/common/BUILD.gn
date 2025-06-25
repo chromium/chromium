@@ -16,6 +16,7 @@ static_library("common") {
     "//base",
     "//components/visitedlink/core",
     "//content/public/common",
+    "//crypto",
     "//ipc",
     "//url",
   ]
