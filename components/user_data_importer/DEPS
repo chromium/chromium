@@ -1,6 +1,8 @@
 include_rules = [
   "+components/affiliations/core/browser",
   "+components/autofill/core/browser/data_model/payments",
+  "+components/history/core/browser",
+  "+components/history/core/test",
   "+components/password_manager/core/browser",
   "+components/password_manager/core/common",
   "+components/password_manager/services/csv_password",

@@ -42,6 +42,17 @@ mod ffi {
         card_expiration_year: u64,
     }
 
+    unsafe extern "C++" {
+        include!("components/user_data_importer/utility/history_callback_from_rust.h");
+
+        type HistoryCallbackFromRust;
+        fn ImportHistoryEntries(
+            self: Pin<&mut HistoryCallbackFromRust>,
+            history_entries: Pin<&mut CxxVector<HistoryEntry>>,
+            completed: bool,
+        );
+    }
+
     extern "Rust" {
         type ResultOfZipFileArchive;
         fn err(self: &ResultOfZipFileArchive) -> bool;
@@ -56,8 +67,9 @@ mod ffi {
         ) -> bool;
         fn parse_history(
             self: &mut ZipFileArchive,
-            history: Pin<&mut CxxVector<HistoryEntry>>,
-        ) -> bool;
+            history_callback: UniquePtr<HistoryCallbackFromRust>,
+            history_size_threshold: usize,
+        );
         fn parse_payment_cards(
             self: &mut ZipFileArchive,
             history: Pin<&mut CxxVector<PaymentCardEntry>>,
@@ -537,8 +549,10 @@ impl ZipFileArchive {
 
     fn parse_history(
         self: &mut ZipFileArchive,
-        mut history: Pin<&mut CxxVector<ffi::HistoryEntry>>,
-    ) -> bool {
+        mut history_callback: cxx::UniquePtr<ffi::HistoryCallbackFromRust>,
+        history_size_threshold: usize,
+    ) {
+        let mut history = CxxVector::<ffi::HistoryEntry>::new();
         for i in 0..self.archive.len() {
             let Ok(file) = self.archive.by_index(i) else {
                 continue;
@@ -550,14 +564,23 @@ impl ZipFileArchive {
             if has_extension(&outpath.as_path(), ffi::FileType::History) {
                 let stream_reader = ZipEntryBufReader::new(file);
                 if parse_history_file(stream_reader, |history_item| {
-                    history.as_mut().push(history_item.into());
+                    history.as_mut().unwrap().push(history_item.into());
+                    if history.len() >= history_size_threshold {
+                        history_callback.as_mut().unwrap().ImportHistoryEntries(
+                            history.as_mut().unwrap(),
+                            /* completed= */ false,
+                        );
+                    }
                 }) {
-                    return true;
+                    break;
                 }
             }
         }
 
-        false
+        history_callback
+            .as_mut()
+            .unwrap()
+            .ImportHistoryEntries(history.as_mut().unwrap(), /* completed= */ true);
     }
 
     fn parse_payment_cards(

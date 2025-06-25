@@ -10,6 +10,10 @@
 #include "components/password_manager/core/browser/import/password_importer.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
 
+namespace history {
+class HistoryService;
+}  // namespace history
+
 namespace user_data_importer {
 
 class SafariDataImportManager;
@@ -32,6 +36,7 @@ class SafariDataImporter {
   using PasswordImportResults = password_manager::ImportResults;
 
   SafariDataImporter(password_manager::SavedPasswordsPresenter* presenter,
+                     history::HistoryService* history_service,
                      std::unique_ptr<SafariDataImportManager> manager,
                      std::string app_locale);
   ~SafariDataImporter();
@@ -61,6 +66,12 @@ class SafariDataImporter {
 
   // Called after calling "Import" in order to cancel the import process.
   void CancelImport();
+
+  // Callback called one or multiple times from the rust parser when importing
+  // history.
+  void ParseHistoryCallback(
+      std::vector<HistoryEntry> history_entries,
+      ImportCallback history_callback = base::DoNothing());
 
  private:
   friend class SafariDataImporterTest;
@@ -94,8 +105,13 @@ class SafariDataImporter {
   void StartImportHistory(ImportCallback history_callback);
 
   // Attempts to import history from the zip file archive.
-  // Calls "history_callback" when done.
+  // "ParseHistoryCallback" may be called multiple times during this process.
   void ImportHistory(ImportCallback history_callback);
+
+  // Transforms the HistoryEntry objects into URLRow objects and uses the
+  // history service to import them.
+  void ImportHistoryEntries(std::vector<HistoryEntry> history_entries,
+                            ImportCallback history_callback);
 
   // Attempts to import passwords by parsing the provided CSV data.
   // Calls "results_callback" when done.
@@ -119,14 +135,20 @@ class SafariDataImporter {
   // Posts a task on "task_runner_" to call the provided callback.
   void PostCallback(auto callback, auto results);
 
-  // Closes the zip file archive once it is no longer needed.
+  // Launches task to close the zip file archive once it is no longer needed.
   void CloseZipFileArchive();
+
+  // Closes the zip file archive from a worker thread.
+  void CloseZipFileArchiveInWorkerThread();
 
   // The Rust zip file archive.
   std::optional<rust::Box<ZipFileArchive>> zip_file_archive_;
 
   // The password importer used to import passwords and resolve conflicts.
   std::unique_ptr<password_manager::PasswordImporter> password_importer_;
+
+  // Service used to import history URLs.
+  const raw_ref<history::HistoryService> history_service_;
 
   // The task runner from which the import task was launched. The purpose of
   // this task runner is to post tasks on the thread where the importer lives,
@@ -143,6 +165,13 @@ class SafariDataImporter {
 
   // The application locale, used to set credit card information.
   const std::string app_locale_;
+
+  // Number of URLs imported during the history import process.
+  size_t history_urls_imported_;
+
+  // Maximum size the history entries vector can reach before calling
+  // "ParseHistoryCallback". Can be modified for testing purposes.
+  size_t history_size_threshold_ = 1000;
 };
 
 }  // namespace user_data_importer

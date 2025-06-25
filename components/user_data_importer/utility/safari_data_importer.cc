@@ -4,12 +4,17 @@
 
 #include "components/user_data_importer/utility/safari_data_importer.h"
 
+#include "base/check_deref.h"
 #include "base/containers/span_rust.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/user_data_importer/utility/history_callback_from_rust.h"
 #include "components/user_data_importer/utility/safari_data_import_manager.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
 
@@ -43,17 +48,71 @@ autofill::CreditCard ConvertToAutofillCreditCard(
   return credit_card;
 }
 
+std::optional<history::URLRow> ConvertToURLRow(
+    const user_data_importer::HistoryEntry& history_entry) {
+  GURL gurl(RustStringToUTF16(history_entry.url));
+  if (!gurl.is_valid()) {
+    return std::nullopt;
+  }
+
+  history::URLRow url_row(gurl);
+  url_row.set_title(RustStringToUTF16(history_entry.title));
+  url_row.set_visit_count(history_entry.visit_count);
+
+  // "time_usec" is a UNIX timestamp in microseconds.
+  url_row.set_last_visit(base::Time::UnixEpoch() +
+                         base::Microseconds(history_entry.time_usec));
+
+  return url_row;
+}
+
+class SafariDataImporterHistoryCallback final
+    : public user_data_importer::HistoryCallbackFromRust {
+ public:
+  using ParseHistoryCallback = base::RepeatingCallback<void(
+      std::vector<user_data_importer::HistoryEntry>,
+      user_data_importer::SafariDataImporter::ImportCallback)>;
+
+  explicit SafariDataImporterHistoryCallback(
+      ParseHistoryCallback parse_history_callback,
+      user_data_importer::SafariDataImporter::ImportCallback done_callback)
+      : parse_history_callback_(parse_history_callback),
+        done_callback_(std::move(done_callback)) {}
+
+  ~SafariDataImporterHistoryCallback() override = default;
+
+  // Callback called while parsing the history file.
+  void ImportHistoryEntries(
+      std::vector<user_data_importer::HistoryEntry>& history_entries,
+      bool completed) override {
+    parse_history_callback_.Run(
+        std::move(history_entries),
+        completed ? std::move(done_callback_) : base::DoNothing());
+
+    // "history_entries" should be empty after std::move, but make sure it is in
+    // a valid state by explicitly calling "clear" on it.
+    history_entries.clear();
+  }
+
+ private:
+  ParseHistoryCallback parse_history_callback_;
+
+  user_data_importer::SafariDataImporter::ImportCallback done_callback_;
+};
+
 }  // namespace
 
 namespace user_data_importer {
 
 SafariDataImporter::SafariDataImporter(
     password_manager::SavedPasswordsPresenter* presenter,
+    history::HistoryService* history_service,
     std::unique_ptr<SafariDataImportManager> manager,
     std::string app_locale)
     : password_importer_(std::make_unique<password_manager::PasswordImporter>(
           presenter,
           /*user_confirmation_required=*/true)),
+      history_service_(CHECK_DEREF(history_service)),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       manager_(std::move(manager)),
       app_locale_(std::move(app_locale)) {}
@@ -91,6 +150,15 @@ void SafariDataImporter::ContinueImport(
     ImportCallback bookmarks_callback,
     ImportCallback history_callback,
     ImportCallback payment_cards_callback) {
+  // The history import process is the only one requiring reading the zip file,
+  // so launch it first.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&SafariDataImporter::ImportHistory, base::Unretained(this),
+                     std::move(history_callback))
+          .Then(base::BindOnce(&SafariDataImporter::CloseZipFileArchive,
+                               base::Unretained(this))));
+
   // TODO(crbug.com/407587751): Launch task on task_runner_.
   password_importer_->ContinueImport(selected_password_ids,
                                      std::move(passwords_callback));
@@ -98,13 +166,6 @@ void SafariDataImporter::ContinueImport(
   // TODO(crbug.com/407587751): Import other types here.
   PostCallback(std::move(bookmarks_callback), /*number_of_imports=*/0);
   PostCallback(std::move(payment_cards_callback), /*number_of_imports=*/0);
-
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&SafariDataImporter::ImportHistory, base::Unretained(this),
-                     std::move(history_callback))
-          .Then(base::BindOnce(&SafariDataImporter::CloseZipFileArchive,
-                               base::Unretained(this))));
 }
 
 // Called after calling "Import" in order to cancel the import process.
@@ -115,6 +176,13 @@ void SafariDataImporter::CancelImport() {
 }
 
 void SafariDataImporter::CloseZipFileArchive() {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&SafariDataImporter::CloseZipFileArchiveInWorkerThread,
+                     base::Unretained(this)));
+}
+
+void SafariDataImporter::CloseZipFileArchiveInWorkerThread() {
   zip_file_archive_.reset();
 }
 
@@ -282,20 +350,51 @@ void SafariDataImporter::StartImportHistory(ImportCallback history_callback) {
                /*number_of_imports=*/approximate_number_of_urls);
 }
 
+void SafariDataImporter::ParseHistoryCallback(
+    std::vector<HistoryEntry> history_entries,
+    ImportCallback history_callback) {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SafariDataImporter::ImportHistoryEntries,
+                     base::Unretained(this), std::move(history_entries),
+                     std::move(history_callback)));
+}
+
+void SafariDataImporter::ImportHistoryEntries(
+    std::vector<HistoryEntry> history_entries,
+    ImportCallback history_callback) {
+  history::URLRows url_rows;
+  url_rows.reserve(history_entries.size());
+  for (auto history_entry : history_entries) {
+    auto opt_row = ConvertToURLRow(history_entry);
+    if (opt_row) {
+      url_rows.push_back(opt_row.value());
+    }
+  }
+
+  if (!url_rows.empty()) {
+    history_service_->AddPagesWithDetails(url_rows,
+                                          history::SOURCE_SAFARI_IMPORTED);
+
+    history_urls_imported_ += url_rows.size();
+  }
+  PostCallback(std::move(history_callback), history_urls_imported_);
+}
+
 void SafariDataImporter::ImportHistory(ImportCallback history_callback) {
-  // Note: Because the history file can be very large, the parsing will happen
-  // entirely in Rust, so that we can stream the unzipper's output to the JSON
-  // parser's input.
-  std::vector<HistoryEntry> history_entries;
-  if (!zip_file_archive_ ||
-      !(*zip_file_archive_)->parse_history(history_entries)) {
+  history_urls_imported_ = 0;
+  if (!zip_file_archive_) {
     PostCallback(std::move(history_callback), /*number_of_imports=*/0);
     return;
   }
 
-  // TODO(crbug.com/407587751): Save imported history.
-
-  PostCallback(std::move(history_callback), history_entries.size());
+  (*zip_file_archive_)
+      ->parse_history(
+          std::make_unique<SafariDataImporterHistoryCallback>(
+              base::BindRepeating(&SafariDataImporter::ParseHistoryCallback,
+                                  base::Unretained(this)),
+              std::move(history_callback)),
+          history_size_threshold_);
 }
 
 }  // namespace user_data_importer

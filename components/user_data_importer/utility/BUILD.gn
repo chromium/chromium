@@ -7,6 +7,7 @@ import("//build/rust/rust_static_library.gni")
 
 source_set("safari_data_importer") {
   sources = [
+    "history_callback_from_rust.h",
     "safari_data_import_manager.cc",
     "safari_data_import_manager.h",
     "safari_data_importer.cc",
@@ -16,6 +17,7 @@ source_set("safari_data_importer") {
   deps = [
     ":zip_ffi_glue",
     "//base",
+    "//components/history/core/browser",
     "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/ui",
     "//components/user_data_importer/common",
@@ -75,6 +77,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
+    "//components/history/core/browser",
+    "//components/history/core/test",
     "//components/password_manager/core/browser/import:csv",
     "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/password_store:test_support",
