@@ -33,16 +33,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MemoryReclaimer {
 
   // Internal. Do not use.
   // Registers a partition to be tracked by the reclaimer.
-  void RegisterPartition(PartitionRoot* partition);
+  void RegisterPartition(PartitionRoot* partition) PA_LOCKS_EXCLUDED(lock_);
   // Internal. Do not use.
   // Unregisters a partition to be tracked by the reclaimer.
-  void UnregisterPartition(PartitionRoot* partition);
+  void UnregisterPartition(PartitionRoot* partition) PA_LOCKS_EXCLUDED(lock_);
 
   // Triggers an explicit reclaim now to reclaim as much free memory as
   // possible. The API callers need to invoke this method periodically
   // if they want to use memory reclaimer.
   // See also GetRecommendedReclaimIntervalInMicroseconds()'s comment.
-  void ReclaimNormal();
+  void ReclaimNormal() PA_LOCKS_EXCLUDED(lock_);
 
   // Returns a recommended interval to invoke ReclaimNormal.
   int64_t GetRecommendedReclaimIntervalInMicroseconds() {
@@ -50,16 +50,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MemoryReclaimer {
   }
 
   // Triggers an explicit reclaim now reclaiming all free memory
-  void ReclaimAll();
+  void ReclaimAll() PA_LOCKS_EXCLUDED(lock_);
   // Same as ReclaimNormal(), but return early if reclaim takes too long.
-  void ReclaimFast();
+  void ReclaimFast() PA_LOCKS_EXCLUDED(lock_);
 
  private:
   MemoryReclaimer();
   ~MemoryReclaimer();
   // |flags| is an OR of base::PartitionPurgeFlags
-  void Reclaim(int flags);
-  void ResetForTesting();
+  void Reclaim(int flags) PA_LOCKS_EXCLUDED(lock_);
+  void ResetForTesting() PA_LOCKS_EXCLUDED(lock_);
 
   internal::Lock lock_;
   std::set<PartitionRoot*> partitions_ PA_GUARDED_BY(lock_);

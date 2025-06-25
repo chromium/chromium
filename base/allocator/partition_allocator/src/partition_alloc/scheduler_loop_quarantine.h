@@ -123,7 +123,8 @@ class SchedulerLoopQuarantineBranch {
   ~SchedulerLoopQuarantineBranch();
 
   void Configure(SchedulerLoopQuarantineRoot& root,
-                 const SchedulerLoopQuarantineConfig& config);
+                 const SchedulerLoopQuarantineConfig& config)
+      PA_LOCKS_EXCLUDED(lock_);
   Root& GetRoot() {
     PA_CHECK(enable_quarantine_ && root_);
     return *root_;
@@ -131,13 +132,13 @@ class SchedulerLoopQuarantineBranch {
 
   // Dequarantine all entries **held by this branch**.
   // It is possible that another branch with entries and it remains untouched.
-  void Purge();
+  void Purge() PA_LOCKS_EXCLUDED(lock_);
   // Similar to `Purge()`, but marks this branch as unusable. Can be called
   // multiple times.
-  void Destroy();
+  void Destroy() PA_LOCKS_EXCLUDED(lock_);
 
   // Determines this list contains an object.
-  bool IsQuarantinedForTesting(void* object);
+  bool IsQuarantinedForTesting(void* object) PA_LOCKS_EXCLUDED(lock_);
 
   size_t GetCapacityInBytes() {
     return branch_capacity_in_bytes_.load(std::memory_order_relaxed);
@@ -148,7 +149,7 @@ class SchedulerLoopQuarantineBranch {
 
   void Quarantine(void* object,
                   SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
-                  uintptr_t slot_start);
+                  uintptr_t slot_start) PA_LOCKS_EXCLUDED(lock_);
 
   const SchedulerLoopQuarantineConfig& GetConfigurationForTesting();
 
