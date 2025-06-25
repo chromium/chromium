@@ -68,7 +68,12 @@ TestComposeboxQueryController::CreateEndpointFetcher(
           fake_cluster_info_response_.SerializeAsString();
     }
   } else {
-    NOTREACHED();
+    num_file_upload_requests_sent_++;
+    last_sent_fetch_url_ = fetch_url;
+    if (next_file_upload_request_should_return_error_) {
+      fake_server_response_code =
+          google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR;
+    }
   }
 
   // Create the fake endpoint fetcher to return the fake response.
