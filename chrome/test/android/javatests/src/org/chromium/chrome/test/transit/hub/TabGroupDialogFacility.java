@@ -159,4 +159,23 @@ public class TabGroupDialogFacility<
     public void pressBackArrowToExit() {
         mHostStation.exitFacilitySync(this, backButtonElement.getClickTrigger());
     }
+
+    /**
+     * Clicks the color icon to open the color picker palette.
+     *
+     * @return The newly opened {@link TabGroupColorPickerFacility}.
+     */
+    public TabGroupColorPickerFacility<HostStationT> openColorPicker() {
+        return colorIconElement.clickTo().enterFacility(new TabGroupColorPickerFacility<>(this));
+    }
+
+    /** Returns {@link List<Integer>} containing the tab ids in the group. */
+    public List<Integer> getTabIdsInGroup() {
+        return mTabIdsInGroup;
+    }
+
+    /** Returns {@link String} containing the title of the group. */
+    public String getTitle() {
+        return mTitle;
+    }
 }
