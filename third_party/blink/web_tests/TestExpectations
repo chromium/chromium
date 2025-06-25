@@ -7209,6 +7209,8 @@ crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/detached.https
 crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/window-open.mix.https.window.html [ Skip Timeout ]
 crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/main-frame-and-worker.https.window.html [ Failure Pass ]
 
+crbug.com/427778327 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/iframe-transition.sub.html [ Failure Skip ]
+
 crbug.com/1385413 media/controls/text-track-menu-pointer-selection.html [ Failure Pass Skip Timeout ]
 
 # Sheriff 2022-11-17
