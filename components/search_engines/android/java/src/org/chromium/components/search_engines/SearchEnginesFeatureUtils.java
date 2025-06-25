@@ -19,12 +19,6 @@ public class SearchEnginesFeatureUtils {
     static final String ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH = "enable-choice-apis-fake-backend";
 
     /**
-     * Delay in milliseconds after which the blocking dialog will time out and stop blocking. The
-     * timer starts when the dialog is actually shown.
-     */
-    public static final int CHOICE_DIALOG_TIMEOUT_MILLIS = 60_000;
-
-    /**
      * Millis after the OS default browser choice has been made during which Chrome should not offer
      * the user to set Chrome as their default browser. `Integer.MAX_VALUE` should give us a bit
      * more than 24 days, enough for our purposes,

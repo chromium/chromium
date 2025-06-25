@@ -176,7 +176,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
         mViewHolder.updateViewForType(dialogType);
 
         switch (dialogType) {
-            case DialogType.LOADING, DialogType.CHOICE_LAUNCH -> {
+            case DialogType.CHOICE_LAUNCH -> {
                 mModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false);
                 mModel.set(
                         ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
@@ -186,16 +186,12 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                 mModel.set(
                         ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                         mContext.getString(R.string.next));
-                mModel.set(
-                        ModalDialogProperties.POSITIVE_BUTTON_DISABLED,
-                        dialogType == DialogType.LOADING);
             }
             case DialogType.CHOICE_CONFIRM -> {
                 mModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true);
                 mModel.set(
                         ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                         mContext.getString(R.string.done));
-                mModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, false);
                 mEmptyBackPressedCallback.remove();
                 RecordUserAction.record("OsDefaultsChoiceDialogUnblocked");
             }
@@ -316,7 +312,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
             TextView message = mView.findViewById(R.id.choice_dialog_message);
 
             switch (dialogType) {
-                case DialogType.LOADING, DialogType.CHOICE_LAUNCH -> {
+                case DialogType.CHOICE_LAUNCH -> {
                     illustration.setImageResource(R.drawable.blocking_choice_dialog_illustration);
                     title.setText(R.string.blocking_choice_dialog_first_title);
                     message.setText(R.string.blocking_choice_dialog_first_message);

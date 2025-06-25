@@ -272,12 +272,12 @@ chromium-metrics-reviews@google.com.
 
 <enum name="OsDefaultsChoiceDialogStatus">
   <int value="0" label="Unknown: Dialog dismissed or abandoned before showing"/>
-  <int value="1" label="Pending"/>
+  <int value="1" label="Pending (Deprecated 06/2025)"/>
   <int value="2" label="ChoiceLaunch"/>
   <int value="3" label="ChoiceConfirmation"/>
 </enum>
 
-<!-- LINT.ThenChange() -->
+<!-- LINT.ThenChange(/chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogMediator.java:DialogType) -->
 
 <!-- LINT.IfChange(OsDefaultsChoiceDialogSuppressionStatus) -->
 

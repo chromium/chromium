@@ -16,7 +16,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS;
@@ -38,7 +37,6 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -57,8 +55,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogPriority;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-
-import java.time.Duration;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures(SearchEnginesFeatures.CLAY_BLOCKING)
@@ -260,7 +256,7 @@ public class ChoiceDialogCoordinatorUnitTest {
         shadowOf(Looper.getMainLooper()).runToEndOfTasks();
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder, never()).updateViewForType(eq(DialogType.LOADING));
+        verify(mViewHolder, never()).updateViewForType(anyInt());
 
         pendingSupplier.set(false);
         shadowOf(Looper.getMainLooper()).runToEndOfTasks();
@@ -311,36 +307,6 @@ public class ChoiceDialogCoordinatorUnitTest {
         shouldShowSupplier.set(null);
 
         shadowOf(Looper.getMainLooper()).idle();
-        verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
-        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
-        assertFalse(shouldShowSupplier.hasObservers()); // The dialog stopped observing.
-    }
-
-    @Test
-    @DisabledTest(message = "crbug.com/418715352")
-    public void testMaybeShow_dismissesDialogAfterTimeout() {
-        int timeoutDuration = SearchEnginesFeatureUtils.CHOICE_DIALOG_TIMEOUT_MILLIS;
-        var shouldShowSupplier = new ObservableSupplierImpl<>(true);
-        doReturn(shouldShowSupplier)
-                .when(mSearchEngineChoiceService)
-                .getIsDeviceChoiceRequiredSupplier();
-        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
-
-        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
-        assertTrue(shouldShowSupplier.hasObservers()); // The dialog started observing.
-
-        shadowOf(Looper.getMainLooper()).runToEndOfTasks();
-        verify(mModalDialogManager)
-                .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
-        verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH));
-
-        // Verify that we don't get misc updates before the timeout duration is reached
-        reset(mModalDialogManager, mViewHolder);
-        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(timeoutDuration / 2));
-        verifyNoMoreInteractions(mModalDialogManager, mViewHolder);
-
-        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(timeoutDuration));
         verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
         assertFalse(shouldShowSupplier.hasObservers()); // The dialog stopped observing.

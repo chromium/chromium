@@ -63,17 +63,12 @@ import java.lang.annotation.RetentionPolicy;
 class ChoiceDialogMediator {
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
-    // LINT.IfChange
-    @IntDef({
-        DialogType.UNKNOWN,
-        DialogType.LOADING,
-        DialogType.CHOICE_LAUNCH,
-        DialogType.CHOICE_CONFIRM
-    })
+    // LINT.IfChange(DialogType)
+    @IntDef({DialogType.UNKNOWN, DialogType.CHOICE_LAUNCH, DialogType.CHOICE_CONFIRM})
     @Retention(RetentionPolicy.SOURCE)
     @interface DialogType {
         int UNKNOWN = 0;
-        int LOADING = 1;
+        // int LOADING_DEPRECATED = 1;
         int CHOICE_LAUNCH = 2;
         int CHOICE_CONFIRM = 3;
         int COUNT = 4;
@@ -215,7 +210,6 @@ class ChoiceDialogMediator {
         mDelegate = delegate;
 
         mObservationStartedTimeMillis = TimeUtils.currentTimeMillis();
-        changeDialogType(DialogType.LOADING);
 
         if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
             Log.i(TAG, "Mediator initializing");
@@ -250,7 +244,7 @@ class ChoiceDialogMediator {
             case DialogType.CHOICE_LAUNCH -> recordLaunchChoiceScreenTapHandlingStatus(
                     maybeLaunchChoiceScreen());
             case DialogType.CHOICE_CONFIRM -> mDelegate.dismissDialog();
-            case DialogType.LOADING, DialogType.UNKNOWN -> throw new IllegalStateException();
+            case DialogType.UNKNOWN -> throw new IllegalStateException();
         }
     }
 
@@ -269,7 +263,6 @@ class ChoiceDialogMediator {
                     "onDialogAdded(), time since observation start: %s millis",
                     mDialogAddedTimeMillis - mObservationStartedTimeMillis);
         }
-        scheduleDismissOnDeviceChoiceRequiredUpdateTimeout();
     }
 
     void onDialogDismissed() {
@@ -332,8 +325,7 @@ class ChoiceDialogMediator {
 
         if (wasDialogShown && !wasDialogDismissed) {
             if (Boolean.FALSE.equals(isDeviceChoiceRequired)
-                    && (mDialogType == DialogType.LOADING
-                            || mDialogType == DialogType.CHOICE_LAUNCH)) {
+                    && mDialogType == DialogType.CHOICE_LAUNCH) {
                 // This is the normal flow, showing confirmation after the choice has been made.
                 changeDialogType(DialogType.CHOICE_CONFIRM);
                 mDelegate.updateDialogType(DialogType.CHOICE_CONFIRM);
@@ -365,37 +357,6 @@ class ChoiceDialogMediator {
         }
         mDelegate.dismissDialog();
         destroy();
-    }
-
-    private void scheduleDismissOnDeviceChoiceRequiredUpdateTimeout() {
-        if (mDialogType != DialogType.LOADING) {
-            return;
-        }
-
-        int dialogTimeoutMillis = SearchEnginesFeatureUtils.CHOICE_DIALOG_TIMEOUT_MILLIS;
-        ThreadUtils.postOnUiThreadDelayed(
-                () -> {
-                    if (mDialogType != DialogType.LOADING) {
-                        return; // No-op, we got an update.
-                    }
-
-                    assert mDelegate != null; // Unexpected if the type is still "loading".
-
-                    Log.w(
-                            TAG,
-                            "Timeout waiting for backend block confirmation. Deadline: %s ms",
-                            dialogTimeoutMillis);
-
-                    mDelegate.dismissDialog();
-                    destroy();
-                    RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                            "Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus",
-                            dialogTimeoutMillis);
-                    RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                            "Search.OsDefaultsChoice.DelayFromObservationToFirstStatus",
-                            dialogTimeoutMillis);
-                },
-                dialogTimeoutMillis);
     }
 
     private void changeDialogType(@DialogType int type) {

@@ -33,9 +33,6 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
      * <p>Makes {@link #getIsDeviceChoiceRequiredSupplier()}'s supplier return {@code null} on
      * start, emits {@code true} after 3 seconds, indicating that the blocking dialog should be
      * shown, and updates it to {@code false} when {@link #launchDeviceChoiceScreens()} is called.
-     * If a timeout is configured (see {@link
-     * SearchEnginesFeatureUtils#CHOICE_DIALOG_TIMEOUT_MILLIS}), the initial value will be emitted
-     * at half of the timeout duration instead, to exercise the delayed response path.
      */
     @MainThread
     public FakeSearchEngineCountryDelegate(boolean enableLogging) {
@@ -127,9 +124,7 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
         // implementation, which does not trigger connections and queries unless the supplier is
         // needed.
         if (mIsChoiceRequired == null) {
-            int dialogTimeoutMillis = SearchEnginesFeatureUtils.CHOICE_DIALOG_TIMEOUT_MILLIS;
-            // A dialog timeout is configured, so make the fake delegate exercise it: Start with
-            // no provided response, but emit the `true` value halfway to the deadline.
+            // Fake the backend taking some time to respond.
             mIsChoiceRequired = new ObservableSupplierImpl<>();
             ThreadUtils.postOnUiThreadDelayed(
                     () -> {
@@ -138,9 +133,7 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
                         }
                         assumeNonNull(mIsChoiceRequired).set(true);
                     },
-                    // Don't go beyond 3 seconds timeout, it doesn't help with testing and looks
-                    // broken.
-                    Math.min(dialogTimeoutMillis / 2, 3000));
+                    3000);
 
             if (mEnableLogging) {
                 mIsChoiceRequired.addObserver(
