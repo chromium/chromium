@@ -62,7 +62,7 @@ TEST(LaunchWinTest, GetAppOutputWithExitCodeAndTimeout_SuccessOutput) {
 TEST(LaunchWinTest, GetAppOutputWithExitCodeAndTimeout_TimeoutOutput) {
   CommandLine cl(FilePath(FILE_PATH_LITERAL("cmd")));
   cl.AppendArg("/c");
-  cl.AppendArg("echo hello && start /wait /min timeout 5");
+  cl.AppendArg("echo hello && start /wait /min %windir%\\System32\\timeout 5");
   std::string partial_outputs;
   std::string output;
   int exit_code = 0;
