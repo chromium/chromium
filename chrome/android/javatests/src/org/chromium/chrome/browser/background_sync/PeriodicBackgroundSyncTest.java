@@ -24,7 +24,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -53,8 +55,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 })
 public final class PeriodicBackgroundSyncTest {
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     // loadNativeLibraryNoBrowserProcess will access AccountManagerFacade, so we need
     // to mock AccountManagerFacade
@@ -73,6 +75,7 @@ public final class PeriodicBackgroundSyncTest {
     private AtomicInteger mScheduleCount;
 
     private BackgroundSyncBackgroundTaskScheduler.Observer mSchedulerObserver;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws InterruptedException, TimeoutException {
@@ -86,7 +89,7 @@ public final class PeriodicBackgroundSyncTest {
             disableGooglePlayServicesVersionCheck();
         }
 
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
 
         // Periodic Background Sync only works with HTTPS.
         mTestServer =
@@ -94,7 +97,7 @@ public final class PeriodicBackgroundSyncTest {
                         InstrumentationRegistry.getInstrumentation().getContext(),
                         ServerCertificate.CERT_OK);
 
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
+        mPage = mPage.loadWebPageProgrammatically(mTestServer.getURL(TEST_PAGE));
         runJavaScript("SetupReplyForwardingForTests();");
     }
 

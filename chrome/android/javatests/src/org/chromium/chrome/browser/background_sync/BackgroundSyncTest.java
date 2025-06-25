@@ -23,7 +23,9 @@ import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskS
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -42,8 +44,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class BackgroundSyncTest {
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     // loadNativeLibraryNoBrowserProcess will access AccountManagerFacade, so we need
     // to mock AccountManagerFacade
@@ -60,6 +62,7 @@ public final class BackgroundSyncTest {
     private CountDownLatch mCancelLatch;
 
     private BackgroundSyncBackgroundTaskScheduler.Observer mSchedulerObserver;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
@@ -75,7 +78,7 @@ public final class BackgroundSyncTest {
             disableGooglePlayServicesVersionCheck();
         }
 
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
 
         // BackgroundSync only works with HTTPS.
         mTestServer =
