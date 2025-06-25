@@ -63,6 +63,29 @@ void SharedImageInterface::CreateSharedMemoryRegionFromSIInfo(
       gfx::RowSizeForBufferFormat(si_info.meta.size.width(), buffer_format, 0));
 }
 
+gpu::SharedImageUsageSet SharedImageInterface::GetCpuSIUsage(
+    gfx::BufferUsage buffer_usage) {
+  gpu::SharedImageUsageSet usage = gpu::SharedImageUsageSet();
+  switch (buffer_usage) {
+    case gfx::BufferUsage::GPU_READ:
+    case gfx::BufferUsage::SCANOUT:
+    case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
+    case gfx::BufferUsage::SCANOUT_VDA_WRITE:
+    case gfx::BufferUsage::PROTECTED_SCANOUT:
+    case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
+      break;
+    case gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE:
+    case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
+    case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
+    case gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE:
+    case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
+    case gfx::BufferUsage::SCANOUT_VEA_CPU_READ:
+      usage = gpu::SHARED_IMAGE_USAGE_CPU_READ;
+      break;
+  }
+  return usage;
+}
+
 SharedImageInterface::SwapChainSharedImages::SwapChainSharedImages(
     scoped_refptr<gpu::ClientSharedImage> front_buffer,
     scoped_refptr<gpu::ClientSharedImage> back_buffer)

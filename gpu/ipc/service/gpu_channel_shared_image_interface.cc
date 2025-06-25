@@ -246,17 +246,22 @@ GpuChannelSharedImageInterface::CreateSharedImage(
     std::optional<SharedImagePoolId> pool_id) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
   auto mailbox = Mailbox::Generate();
+  // Copy which can be modified.
+  SharedImageInfo si_info_copy = si_info;
+  // Set CPU read/write usage based on buffer usage.
+  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
   {
     base::AutoLock lock(lock_);
     ScheduleGpuTask(
         base::BindOnce(&GpuChannelSharedImageInterface::
                            CreateSharedImageWithBufferUsageOnGpuThread,
-                       this, mailbox, si_info, surface_handle, buffer_usage),
+                       this, mailbox, si_info_copy, surface_handle,
+                       buffer_usage),
         /*sync_token_fences=*/{}, MakeSyncToken(next_fence_sync_release_++));
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info, GenVerifiedSyncToken(),
+      mailbox, si_info_copy, GenVerifiedSyncToken(),
       GetGpuMemoryBufferHandleInfo(mailbox), holder_);
 }
 
@@ -338,20 +343,24 @@ GpuChannelSharedImageInterface::CreateSharedImage(
 
   auto client_buffer_handle = buffer_handle.Clone();
   auto mailbox = Mailbox::Generate();
+  // Copy which can be modified.
+  SharedImageInfo si_info_copy = si_info;
+  // Set CPU read/write usage based on buffer usage.
+  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
   {
     base::AutoLock lock(lock_);
     ScheduleGpuTask(
         base::BindOnce(&GpuChannelSharedImageInterface::
                            CreateSharedImageWithBufferOnGpuThread,
-                       this, mailbox, si_info, std::move(buffer_handle)),
+                       this, mailbox, si_info_copy, std::move(buffer_handle)),
         /*sync_token_fences=*/{}, MakeSyncToken(next_fence_sync_release_++));
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info, GenVerifiedSyncToken(),
+      mailbox, si_info_copy, GenVerifiedSyncToken(),
       GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
-                                si_info.meta.format, si_info.meta.size,
-                                buffer_usage),
+                                si_info_copy.meta.format,
+                                si_info_copy.meta.size, buffer_usage),
       holder_);
 }
 

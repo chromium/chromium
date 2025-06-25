@@ -140,6 +140,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
 
   // Copy which can be modified.
   SharedImageInfo si_info_copy = si_info;
+  // Set CPU read/write usage based on buffer usage.
+  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
   auto mailbox = proxy_->CreateSharedImage(si_info_copy, buffer_usage,
                                            std::move(pool_id), &buffer_handle);
   if (mailbox.IsZero()) {
@@ -168,13 +170,18 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
   CHECK(!si_info.meta.format.PrefersExternalSampler())
       << si_info.meta.format.ToString();
 #endif
+  // Copy which can be modified.
+  SharedImageInfo si_info_copy = si_info;
+  // Set CPU read/write usage based on buffer usage.
+  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
   auto client_buffer_handle = buffer_handle.Clone();
-  auto mailbox = proxy_->CreateSharedImage(si_info, std::move(buffer_handle));
+  auto mailbox =
+      proxy_->CreateSharedImage(si_info_copy, std::move(buffer_handle));
   return base::MakeRefCounted<ClientSharedImage>(
-      AddMailbox(mailbox), si_info, GenUnverifiedSyncToken(),
+      AddMailbox(mailbox), si_info_copy, GenUnverifiedSyncToken(),
       GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
-                                si_info.meta.format, si_info.meta.size,
-                                buffer_usage),
+                                si_info_copy.meta.format,
+                                si_info_copy.meta.size, buffer_usage),
       holder_, shared_memory_pool_);
 }
 

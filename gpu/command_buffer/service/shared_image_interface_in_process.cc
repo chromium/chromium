@@ -317,6 +317,10 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     std::optional<SharedImagePoolId> pool_id) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
   auto mailbox = Mailbox::Generate();
+  // Copy which can be modified.
+  SharedImageInfo si_info_copy = si_info;
+  // Set CPU read/write usage based on buffer usage.
+  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
   {
     base::AutoLock lock(lock_);
     // Note: we enqueue the task under the lock to guarantee monotonicity of
@@ -326,14 +330,12 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     ScheduleGpuTask(
         base::BindOnce(&SharedImageInterfaceInProcess::
                            CreateSharedImageWithBufferUsageOnGpuThread,
-                       base::Unretained(this), mailbox, si_info, surface_handle,
-                       buffer_usage),
+                       base::Unretained(this), mailbox, si_info_copy,
+                       surface_handle, buffer_usage),
         /*sync_token_fences=*/{}, MakeSyncToken(next_fence_sync_release_++));
   }
 
   auto handle_info = GetGpuMemoryBufferHandleInfo(mailbox);
-  SharedImageInfo si_info_copy = si_info;
-
   // Clear the external sampler prefs for shared memory case if it is set.
   // https://issues.chromium.org/339546249.
   if (si_info_copy.meta.format.PrefersExternalSampler() &&
@@ -434,6 +436,10 @@ SharedImageInterfaceInProcess::CreateSharedImage(
 
   auto client_buffer_handle = buffer_handle.Clone();
   auto mailbox = Mailbox::Generate();
+  // Copy which can be modified.
+  SharedImageInfo si_info_copy = si_info;
+  // Set CPU read/write usage based on buffer usage.
+  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
   {
     base::AutoLock lock(lock_);
     SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
@@ -443,16 +449,16 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     // time, cancelling tasks, before |this| is destroyed.
     ScheduleGpuTask(base::BindOnce(&SharedImageInterfaceInProcess::
                                        CreateSharedImageWithBufferOnGpuThread,
-                                   base::Unretained(this), mailbox, si_info,
-                                   std::move(buffer_handle)),
+                                   base::Unretained(this), mailbox,
+                                   si_info_copy, std::move(buffer_handle)),
                     /*sync_token_fences=*/{}, sync_token);
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info, GenUnverifiedSyncToken(),
+      mailbox, si_info_copy, GenUnverifiedSyncToken(),
       GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
-                                si_info.meta.format, si_info.meta.size,
-                                buffer_usage),
+                                si_info_copy.meta.format,
+                                si_info_copy.meta.size, buffer_usage),
       holder_);
 }
 

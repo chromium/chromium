@@ -383,6 +383,10 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
       base::WritableSharedMemoryMapping& mapping,
       gfx::GpuMemoryBufferHandle& handle);
 
+  // Returns CPU read | write shared image usages based on BufferUsage passed
+  // in.
+  gpu::SharedImageUsageSet GetCpuSIUsage(gfx::BufferUsage buffer_usage);
+
   scoped_refptr<SharedImageInterfaceHolder> holder_;
 
  private:

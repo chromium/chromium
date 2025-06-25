@@ -156,6 +156,8 @@ bool UseUpdateSubresource1(const GpuDriverBugWorkarounds& workarounds) {
          !workarounds.disable_d3d11_update_subresource1;
 }
 
+// CPU_READ is needed for RenderableGMBVideoFramePool case where the DXGI handle
+// is mapped on GPU process.
 constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
     SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
@@ -168,7 +170,7 @@ constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
     SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
-    SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER;
+    SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER | SHARED_IMAGE_USAGE_CPU_READ;
 
 const char* kD3DImageBackingLabel = "D3DImageBacking";
 

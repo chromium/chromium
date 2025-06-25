@@ -65,13 +65,14 @@ constexpr bool kAllowShmOverlays = false;
 #endif
 
 gpu::SharedImageUsageSet GetShmSharedImageUsage(SharedImageUsageSet usage) {
-  if (kAllowShmOverlays) {
-    return usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)
-               ? SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_SCANOUT
-               : SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
+  gpu::SharedImageUsageSet new_usage = SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
+  if (usage.Has(SHARED_IMAGE_USAGE_CPU_READ)) {
+    new_usage |= SHARED_IMAGE_USAGE_CPU_READ;
   }
-
-  return SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
+  if (kAllowShmOverlays && usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
+    new_usage |= SHARED_IMAGE_USAGE_SCANOUT;
+  }
+  return new_usage;
 }
 
 }  // namespace
@@ -392,7 +393,11 @@ SharedImageUsageSet CompoundImageBacking::GetGpuSharedImageUsage(
     // Remove SCANOUT usage since it was previously moved to the shmem backing.
     // See: |GetShmSharedImageUsage|
     usage.RemoveAll(SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_SCANOUT));
-    return usage;
+  }
+  if (usage.Has(SHARED_IMAGE_USAGE_CPU_READ)) {
+    // Remove CPU_READ usage since it was previously moved to the shmem backing.
+    // See: |GetShmSharedImageUsage|
+    usage.RemoveAll(SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_READ));
   }
 
   return usage;
