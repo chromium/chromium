@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ppapi/buildflags/buildflags.gni")
-
 static_library("ipc_message_lib") {
   testonly = true
   configs += [ "//tools/ipc_fuzzer:ipc_fuzzer_tool_config" ]
@@ -26,9 +24,6 @@ static_library("ipc_message_lib") {
   ]
   if (is_win) {
     public_deps += [ "//chrome/chrome_elf:test_stubs" ]
-  }
-  if (enable_ppapi) {
-    public_deps += [ "//ppapi/proxy:ipc" ]
   }
   sources = [
     "all_messages.h",
