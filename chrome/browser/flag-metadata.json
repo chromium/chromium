@@ -8821,12 +8821,12 @@
   {
     "name": "search-in-cct",
     "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "search-in-cct-alternate-tap-handling",
     "owners": [ "edmundw@google.com", "ender@google.com", "aga-cct@google.com", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name" : "search-web-in-side-panel",
