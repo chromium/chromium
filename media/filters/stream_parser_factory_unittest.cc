@@ -22,14 +22,6 @@ TEST(StreamParserFactoryTest, HlsProbeParserTest) {
   EXPECT_NE(StreamParserFactory::CreateRelaxedParser(
                 RelaxedParserSupportedType::kMP4),
             nullptr);
-
-  {
-    base::test::ScopedFeatureList disable_mp4;
-    disable_mp4.InitAndDisableFeature(kBuiltInHlsMP4);
-    EXPECT_EQ(StreamParserFactory::CreateRelaxedParser(
-                  RelaxedParserSupportedType::kMP4),
-              nullptr);
-  }
 }
 
 }  // namespace media

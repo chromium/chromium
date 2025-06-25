@@ -577,7 +577,6 @@ static const SupportedTypeInfo kSupportedTypeInfo[] = {
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 std::unique_ptr<StreamParser> StreamParserFactory::CreateRelaxedParser(
     RelaxedParserSupportedType mime) {
-  const bool enable_mp4 = base::FeatureList::IsEnabled(kBuiltInHlsMP4);
   switch (mime) {
     case RelaxedParserSupportedType::kMP2T: {
       // TODO(issue/40253609): Figure out how to determine SBR presence.
@@ -589,9 +588,8 @@ std::unique_ptr<StreamParser> StreamParserFactory::CreateRelaxedParser(
     case RelaxedParserSupportedType::kMP4: {
       // TODO(issue/40253609): Figure out how to determine presence of SBR,
       // FLAC, IAMF, DolbyVision.
-      return enable_mp4 ? std::make_unique<mp4::MP4StreamParser>(
-                              std::nullopt, false, true, false, false)
-                        : nullptr;
+      return std::make_unique<mp4::MP4StreamParser>(std::nullopt, false, true,
+                                                    false, false);
     }
   }
 }

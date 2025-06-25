@@ -1183,8 +1183,6 @@ BASE_FEATURE(kBuiltInHlsPlayer,
 #endif
 );
 
-BASE_FEATURE(kBuiltInHlsMP4, "BuiltInHlsMP4", base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 // TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
