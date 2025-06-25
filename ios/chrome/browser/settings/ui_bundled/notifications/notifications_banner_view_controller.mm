@@ -152,13 +152,17 @@ bool TooNarrowForBanner(UIView* view) {
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
   if (_viewControllerIsBeingDismissed) {
-    // The ivar is reset to handle the case where the user navigates back to
-    // this view controller via the 'back' navigation item.
-    _viewControllerIsBeingDismissed = NO;
     return;
   }
   [self configureBanner];
   [self updateTableViewHeightConstraint];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  // The ivar is reset to handle the case where the user navigates back to
+  // this view controller via the 'back' navigation item.
+  _viewControllerIsBeingDismissed = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
