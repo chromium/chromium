@@ -184,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.PartialSwap.ExtraDamage" units="%"
-    expires_after="2024-03-16">
+    expires_after="2025-12-14">
   <owner>vasilyt@chromium.org</owner>
   <owner>petermcneeley@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -197,7 +197,8 @@ chromium-metrics-reviews@google.com.
     support partial swap and does not include &quot;empty swap&quot; (no frame
     damage) case
 
-    Note: this metric was expired from 2022-10-16 to 2023-06-09.
+    Note: this metric was expired from 2022-10-16 to 2023-06-09 and 2024-03-16
+    to 2025-06-24.
   </summary>
 </histogram>
 
