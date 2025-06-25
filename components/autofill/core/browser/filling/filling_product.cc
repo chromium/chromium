@@ -9,6 +9,11 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#include "components/autofill/android/main_autofill_jni_headers/FillingProductBridge_jni.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace autofill {
 
 // LINT.IfChange(FillingProductToString)
@@ -117,6 +122,16 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
   }
   NOTREACHED();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+static jint JNI_FillingProductBridge_GetFillingProductFromSuggestionType(
+    JNIEnv* env,
+    jint type) {
+  SuggestionType suggestion_type = static_cast<SuggestionType>(type);
+  return static_cast<jint>(
+      GetFillingProductFromSuggestionType(suggestion_type));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 FillingProduct GetFillingProductFromFieldTypeGroup(
     FieldTypeGroup field_type_group) {
