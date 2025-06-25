@@ -66,6 +66,15 @@ std::optional<optimization_guide::TargetNodeInfo> FindNodeAtPoint(
         annotated_page_content,
     const gfx::Point& coordinate);
 
+// Returns the target node and containing document info if there's a matching
+// node from the annotated page content with the same dom node id and under a
+// frame node with matching document identifier. Returns std::nullopt otherwise.
+std::optional<optimization_guide::TargetNodeInfo> FindNodeWithID(
+    const optimization_guide::proto::AnnotatedPageContent&
+        annotated_page_content,
+    const std::string_view document_identifier,
+    const int dom_node_id);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_PROTO_UTIL_H_

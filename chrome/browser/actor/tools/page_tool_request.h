@@ -11,6 +11,7 @@
 #include <variant>
 
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "url/gurl.h"

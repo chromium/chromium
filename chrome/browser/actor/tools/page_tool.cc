@@ -35,7 +35,8 @@ using ::content::RenderWidgetHost;
 using ::content::WebContents;
 using ::content::WebContentsObserver;
 using ::optimization_guide::DocumentIdentifierUserData;
-using ::optimization_guide::proto::AnnotatedPageContent;
+using optimization_guide::TargetNodeInfo;
+using optimization_guide::proto::AnnotatedPageContent;
 using ::tabs::TabHandle;
 using ::tabs::TabInterface;
 
@@ -124,29 +125,42 @@ RenderFrameHost* FindTargetLocalRootFrame(TabHandle tab_handle,
   return GetLocalRoot(target_frame);
 }
 
-// Perform validation based on APC and document identifier for coordinate based
-// target to compare the candidate frame with the target frame identified in
-// last observation.
+// Return TargetNodeInfo from hit test against last observed APC. Returns
+// std::nullopt if Target does not hit any node.
+std::optional<TargetNodeInfo> FindLastObservedNodeForActionTarget(
+    const AnnotatedPageContent* apc,
+    const PageToolRequest::Target& target) {
+  if (!apc) {
+    return std::nullopt;
+  }
+  // TODO(rodneyding): Refactor FindNode* API to include optional target frame
+  // document identifier to reduce search space.
+  if (target.is_coordinate()) {
+    return optimization_guide::FindNodeAtPoint(*apc, target.coordinate());
+  }
+  CHECK(target.is_node());
+  std::optional<TargetNodeInfo> result = optimization_guide::FindNodeWithID(
+      *apc, target.node().document_identifier, target.node().dom_node_id);
+  // If such a node isn't found or the node is found under a different
+  // document it's an error.
+  if (!result || result->document_identifier.serialized_token() !=
+                     target.node().document_identifier) {
+    return std::nullopt;
+  }
+  return result;
+}
+
+// Perform validation based on APC hit test for coordinate based target to
+// compare the candidate frame with the target frame identified in last
+// observation.
 bool ValidateTargetFrameCandidate(
     const PageToolRequest::Target& target,
     RenderFrameHost* candidate_frame,
     WebContents& web_contents,
-    const AnnotatedPageContent* last_observed_page_content) {
+    const std::optional<TargetNodeInfo> target_node_info) {
   // Frame validation is performed only when targeting using coordinates.
   CHECK(target.is_coordinate());
 
-  if (!last_observed_page_content) {
-    // TODO(bokan): We can't perform a TOCTOU check If there's no last
-    // observation. Consider what to do in this case.
-    return true;
-  }
-
-  // TODO(crbug.com/426021822): FindNodeAtPoint does not handle corner cases
-  // like clip paths. Need more checks to ensure we don't drop actions
-  // unnecessarily.
-  std::optional<optimization_guide::TargetNodeInfo> target_node_info =
-      optimization_guide::FindNodeAtPoint(*last_observed_page_content,
-                                          target.coordinate());
   if (!target_node_info) {
     return false;
   }
@@ -162,6 +176,69 @@ bool ValidateTargetFrameCandidate(
     return true;
   }
   return false;
+}
+
+// Helper function to create ObservedToolTarget mojom struct from
+// TargetNodeInfo struct.
+mojom::ObservedToolTargetPtr ToMojoObservedToolTarget(
+    const std::optional<optimization_guide::TargetNodeInfo>&
+        observed_target_node_info) {
+  if (!observed_target_node_info) {
+    return nullptr;
+  }
+  mojom::ObservedToolTargetPtr observed_target =
+      mojom::ObservedToolTarget::New();
+  observed_target->node_attribute =
+      blink::mojom::AIPageContentAttributes::New();
+  const auto& content_attributes =
+      observed_target_node_info->node->content_attributes();
+  if (content_attributes.has_common_ancestor_dom_node_id()) {
+    observed_target->node_attribute->dom_node_id =
+        content_attributes.common_ancestor_dom_node_id();
+  }
+  if (content_attributes.has_geometry()) {
+    observed_target->node_attribute->geometry =
+        blink::mojom::AIPageContentGeometry::New();
+    observed_target->node_attribute->geometry->outer_bounding_box =
+        gfx::Rect(content_attributes.geometry().outer_bounding_box().x(),
+                  content_attributes.geometry().outer_bounding_box().y(),
+                  content_attributes.geometry().outer_bounding_box().width(),
+                  content_attributes.geometry().outer_bounding_box().height());
+    observed_target->node_attribute->geometry->visible_bounding_box = gfx::Rect(
+        content_attributes.geometry().visible_bounding_box().x(),
+        content_attributes.geometry().visible_bounding_box().y(),
+        content_attributes.geometry().visible_bounding_box().width(),
+        content_attributes.geometry().visible_bounding_box().height());
+    observed_target->node_attribute->geometry->is_fixed_or_sticky_position =
+        content_attributes.geometry().is_fixed_or_sticky_position();
+  }
+  return observed_target;
+}
+
+// Set ObservedToolTarget mojom field on ToolAction.
+void SetObservedToolTarget(const mojom::ToolActionPtr& action,
+                           mojom::ObservedToolTargetPtr observed_target) {
+  switch (action->which()) {
+    case mojom::ToolAction::Tag::kClick:
+      action->get_click()->observed_target = std::move(observed_target);
+      break;
+    case mojom::ToolAction::Tag::kDragAndRelease:
+      action->get_drag_and_release()->observed_from_target =
+          std::move(observed_target);
+      break;
+    case mojom::ToolAction::Tag::kMouseMove:
+      action->get_mouse_move()->observed_target = std::move(observed_target);
+      break;
+    case mojom::ToolAction::Tag::kScroll:
+      action->get_scroll()->observed_target = std::move(observed_target);
+      break;
+    case mojom::ToolAction::Tag::kSelect:
+      action->get_select()->observed_target = std::move(observed_target);
+      break;
+    case mojom::ToolAction::Tag::kType:
+      action->get_type()->observed_target = std::move(observed_target);
+      break;
+  }
 }
 
 }  // namespace
@@ -216,11 +293,19 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
   if (!frame) {
     return MakeResult(mojom::ActionResultCode::kFrameWentAway);
   }
+  // TODO(crbug.com/426021822): FindNodeAtPoint does not handle corner cases
+  // like clip paths. Need more checks to ensure we don't drop actions
+  // unnecessarily.
+  observed_target_node_info_ = FindLastObservedNodeForActionTarget(
+      last_observation, request_->GetTarget());
 
   // Perform validation for coordinate based target only.
-  if (request_->GetTarget().is_coordinate()) {
+  // TODO(bokan): We can't perform a TOCTOU check If there's no last
+  // observation. Consider what to do in this case.
+  if (request_->GetTarget().is_coordinate() && last_observation) {
     if (!ValidateTargetFrameCandidate(request_->GetTarget(), frame,
-                                      *tab->GetContents(), last_observation)) {
+                                      *tab->GetContents(),
+                                      observed_target_node_info_)) {
       return MakeResult(
           mojom::ActionResultCode::kFrameLocationChangedSinceObservation);
     }
@@ -243,6 +328,8 @@ void PageTool::Invoke(InvokeCallback callback) {
 
   auto request = actor::mojom::ToolInvocation::New();
   request->action = request_->ToMojoToolAction();
+  SetObservedToolTarget(request->action,
+                        ToMojoObservedToolTarget(observed_target_node_info_));
 
   // ToolRequest params are checked for validity at creation.
   CHECK(request->action);

@@ -886,6 +886,69 @@ std::optional<optimization_guide::TargetNodeInfo> FindNodeAtPoint(
       &annotated_page_content.root_node(), coordinate, std::nullopt);
 }
 
+// Recursively searches the tree for a node with target_node_id in a frame with
+// matching document identifier. Since the node id is unique per document, the
+// search stops and returns as soon as the node is found in that document.
+std::optional<TargetNodeInfo> FindNodeWithIDRecursive(
+    const proto::ContentNode& current_node,
+    const proto::DocumentIdentifier& current_doc_id,
+    const std::string_view target_document_identifier,
+    const int target_node_id) {
+  if (current_node.has_content_attributes() &&
+      current_node.content_attributes().has_common_ancestor_dom_node_id() &&
+      current_node.content_attributes().common_ancestor_dom_node_id() ==
+          target_node_id &&
+      current_doc_id.serialized_token() == target_document_identifier) {
+    return TargetNodeInfo{current_doc_id, &current_node};
+  }
+
+  // If this node is an iframe, its children has the iframe's document
+  // identifier.
+  const proto::DocumentIdentifier* child_context_doc_id = &current_doc_id;
+  if (current_node.has_content_attributes() &&
+      current_node.content_attributes().has_iframe_data() &&
+      current_node.content_attributes().iframe_data().has_frame_data() &&
+      current_node.content_attributes()
+          .iframe_data()
+          .frame_data()
+          .has_document_identifier()) {
+    child_context_doc_id = &current_node.content_attributes()
+                                .iframe_data()
+                                .frame_data()
+                                .document_identifier();
+  }
+
+  for (const auto& child_node : current_node.children_nodes()) {
+    std::optional<TargetNodeInfo> result =
+        FindNodeWithIDRecursive(child_node, *child_context_doc_id,
+                                target_document_identifier, target_node_id);
+    if (result) {
+      return result;
+    }
+  }
+
+  return std::nullopt;
+}
+
+std::optional<TargetNodeInfo> FindNodeWithID(
+    const proto::AnnotatedPageContent& annotated_page_content,
+    const std::string_view document_identifier,
+    const int content_node_id) {
+  // Validate the apc first.
+  if (!annotated_page_content.has_root_node() ||
+      !annotated_page_content.has_main_frame_data() ||
+      !annotated_page_content.main_frame_data().has_document_identifier()) {
+    return std::nullopt;
+  }
+
+  const proto::DocumentIdentifier& main_frame_doc_id =
+      annotated_page_content.main_frame_data().document_identifier();
+
+  return FindNodeWithIDRecursive(annotated_page_content.root_node(),
+                                 main_frame_doc_id, document_identifier,
+                                 content_node_id);
+}
+
 RenderFrameInfo::RenderFrameInfo() = default;
 RenderFrameInfo::RenderFrameInfo(const RenderFrameInfo& other) = default;
 

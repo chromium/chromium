@@ -5,6 +5,7 @@
 module actor.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // This interface is meant to largely mirror the
@@ -19,6 +20,11 @@ union ToolTarget {
   // corner of the local root frame (i.e. the blink::WebWidget/RenderWidget). In
   // physical pixels.
   gfx.mojom.Point coordinate;
+};
+
+// Attributes of the Node target returned from hit test on last observed APC.
+struct ObservedToolTarget {
+  blink.mojom.AIPageContentAttributes node_attribute;
 };
 
 // Information specific to a click action.
@@ -37,11 +43,13 @@ struct ClickAction {
   Type type;
   Count count;
   ToolTarget target;
+  ObservedToolTarget? observed_target;
 };
 
 // Information specific to a mouse move action.
 struct MouseMoveAction {
   ToolTarget target;
+  ObservedToolTarget? observed_target;
 };
 
 // Information specific to the type (keyboard input) action.  Note: TypeAction
@@ -63,6 +71,7 @@ struct TypeAction {
   // text should be ASCII only for now.
   string text;
   bool follow_by_enter;
+  ObservedToolTarget? observed_target;
 };
 
 // Scroll action performs a scroll on the page's viewport or on a specified
@@ -92,6 +101,7 @@ struct ScrollAction {
   ScrollDirection direction;
   // Scroll distance in physical pixels, and it should always be positive.
   float distance;
+  ObservedToolTarget? observed_target;
 };
 
 // Action for selecting an option from a <select> element.
@@ -102,6 +112,7 @@ struct SelectAction {
   // fails if the given value doesn't match the value of one of the element's
   // <option> children. Case-sensitive.
   string value;
+  ObservedToolTarget? observed_target;
 };
 
 // Performs a left mouse button down on the from_target, then moves to and
@@ -109,6 +120,7 @@ struct SelectAction {
 struct DragAndReleaseAction {
   ToolTarget from_target;
   ToolTarget to_target;
+  ObservedToolTarget? observed_from_target;
 };
 
 // Union of tool-specific actions.
