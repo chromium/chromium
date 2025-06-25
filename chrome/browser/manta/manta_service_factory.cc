@@ -71,7 +71,7 @@ MantaServiceFactory::BuildServiceInstanceForBrowserContext(
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
 
   bool is_signed_in = identity_manager && identity_manager->HasPrimaryAccount(
-                                              signin::ConsentLevel::kSync);
+                                              signin::ConsentLevel::kSignin);
   bool is_otr_profile = !profile->IsRegularProfile() || !is_signed_in;
 
   std::string chrome_version = version_info::GetVersion().GetString();
