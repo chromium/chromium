@@ -201,6 +201,8 @@ void ChipController::OnWidgetDestroying(views::Widget* widget) {
     // be empty.
     OnPromptBubbleDismissed();
   }
+
+  permission_prompt_observers_.Notify(&Observer::OnPermissionPromptHidden);
 }
 
 void ChipController::OnWidgetDestroyed(views::Widget* widget) {
@@ -255,6 +257,14 @@ bool ChipController::ShouldWaitForConfirmationToComplete() const {
 
 bool ChipController::ShouldWaitForLHSIndicatorToCollapse() const {
   return permission_dashboard_controller_->is_verbose();
+}
+
+void ChipController::AddObserver(Observer* observer) {
+  permission_prompt_observers_.AddObserver(observer);
+}
+
+void ChipController::RemoveObserver(Observer* observer) {
+  permission_prompt_observers_.RemoveObserver(observer);
 }
 
 void ChipController::InitializePermissionPrompt(
@@ -400,6 +410,7 @@ void ChipController::RemoveBubbleObserverAndResetTimersAndChipCallbacks() {
     disallowed_custom_cursors_scope_.RunAndReset();
     bubble_widget->RemoveObserver(this);
     bubble_widget->Close();
+    permission_prompt_observers_.Notify(&Observer::OnPermissionPromptHidden);
   }
 
   // Reset button click callback
@@ -666,6 +677,7 @@ void ChipController::OpenPermissionPromptBubble() {
   if (permission_prompt_model_ && IsBubbleShowing()) {
     ObservePromptBubble();
     permission_prompt_model_->GetDelegate()->SetPromptShown();
+    permission_prompt_observers_.Notify(&Observer::OnPermissionPromptShown);
   }
 }
 

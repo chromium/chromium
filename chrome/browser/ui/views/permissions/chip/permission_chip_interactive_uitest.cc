@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -104,6 +106,33 @@ class ChipExpansionObserver : PermissionChipView::Observer {
   base::RunLoop loop_;
 };
 
+class ChipPromptWaiter : public ChipController::Observer {
+ public:
+  explicit ChipPromptWaiter(ChipController* chip_controller)
+      : chip_controller_(chip_controller) {
+    show_run_loop_ = std::make_unique<base::RunLoop>(
+        base::RunLoop::Type::kNestableTasksAllowed);
+    hide_run_loop_ = std::make_unique<base::RunLoop>(
+        base::RunLoop::Type::kNestableTasksAllowed);
+    chip_controller_->AddObserver(this);
+  }
+
+  ~ChipPromptWaiter() override { chip_controller_->RemoveObserver(this); }
+
+  void OnPermissionPromptShown() override { show_run_loop_->Quit(); }
+
+  void WaitForShow() { show_run_loop_->Run(); }
+
+  // Triggered when the permission prompt hides.
+  void OnPermissionPromptHidden() override { hide_run_loop_->Quit(); }
+
+  void WaitForHide() { hide_run_loop_->Run(); }
+
+ private:
+  raw_ptr<ChipController> chip_controller_ = nullptr;
+  std::unique_ptr<base::RunLoop> show_run_loop_;
+  std::unique_ptr<base::RunLoop> hide_run_loop_;
+};
 }  // namespace
 
 class PermissionChipInteractiveUITest : public InProcessBrowserTest {
@@ -1578,6 +1607,17 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
   manager->Accept();
 
   EXPECT_TRUE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
+                       ObserverListensToPromptBubbleEvents) {
+  auto permission_prompt_waiter =
+      std::make_unique<ChipPromptWaiter>(GetChipController());
+  RequestPermission(permissions::RequestType::kGeolocation);
+  permission_prompt_waiter->WaitForShow();
+
+  GetChipController()->GetBubbleWidget()->Close();
+  permission_prompt_waiter->WaitForHide();
 }
 
 class TestWebContentsObserver : content::WebContentsObserver {
