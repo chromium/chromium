@@ -25581,25 +25581,6 @@
             ]
         }
     ],
-    "V8IncrementalMarkingUnifiedSchedule": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8Flag_incremental_marking_unified_schedule"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8IntelJCCErratumMitigation": [
         {
             "platforms": [
