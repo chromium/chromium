@@ -9912,11 +9912,6 @@
     "expiry_milestone": 127
   },
   {
-    "name": "use-account-list-from-identity-manager",
-    "owners": [ "treib@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "use-adhoc-signing-for-web-app-shims",
     "owners": [
       "markrowe@chromium.org",
