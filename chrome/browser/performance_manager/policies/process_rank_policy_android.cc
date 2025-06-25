@@ -13,6 +13,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "content/public/browser/android/child_process_importance.h"
+#include "content/public/browser/web_contents.h"
 
 namespace performance_manager::policies {
 

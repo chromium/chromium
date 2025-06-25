@@ -24,6 +24,7 @@
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/page_type.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test_utils.h"

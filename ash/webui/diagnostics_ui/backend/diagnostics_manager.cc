@@ -12,6 +12,7 @@
 #include "ash/webui/diagnostics_ui/backend/session_log_handler.h"
 #include "ash/webui/diagnostics_ui/backend/system/system_data_provider.h"
 #include "ash/webui/diagnostics_ui/backend/system/system_routine_controller.h"
+#include "content/public/browser/web_contents.h"
 
 namespace ash {
 namespace diagnostics {

@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

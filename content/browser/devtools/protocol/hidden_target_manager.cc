@@ -5,6 +5,7 @@
 #include "content/browser/devtools/protocol/hidden_target_manager.h"
 
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
+#include "content/public/browser/web_contents.h"
 
 namespace content::protocol {
 

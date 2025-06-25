@@ -7,6 +7,7 @@
 #include "chrome/browser/enterprise/data_controls/android_data_controls_dialog_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/android/modal_dialog_wrapper.h"

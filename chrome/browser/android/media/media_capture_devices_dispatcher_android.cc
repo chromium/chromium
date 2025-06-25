@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "content/public/browser/web_contents.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

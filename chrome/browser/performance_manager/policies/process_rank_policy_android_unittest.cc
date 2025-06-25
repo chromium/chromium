@@ -20,6 +20,7 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "content/public/browser/android/child_process_importance.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

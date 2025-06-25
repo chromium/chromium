@@ -16,6 +16,7 @@
 #include "chrome/grit/floating_workspace_resources.h"
 #include "chrome/grit/floating_workspace_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"

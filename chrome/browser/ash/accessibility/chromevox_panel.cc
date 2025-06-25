@@ -10,6 +10,7 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/constants.h"
 #include "ui/accessibility/accessibility_features.h"

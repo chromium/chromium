@@ -8,6 +8,7 @@
 #include "components/media_router/common/media_source.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/web_contents.h"
 
 namespace mirroring {
 

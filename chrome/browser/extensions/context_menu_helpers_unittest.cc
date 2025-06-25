@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/context_menu_helpers.h"
 
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_renderer_host.h"
 #include "extensions/common/url_pattern.h"

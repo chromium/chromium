@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/ash/set_time/set_time_dialog.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/mojom/date_time_handler.mojom.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/web_contents.h"
 
 namespace ash::settings {
 

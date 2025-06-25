@@ -7,6 +7,7 @@
 #include "base/test/test_trace_processor.h"
 #include "components/input/features.h"
 #include "components/input/utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"

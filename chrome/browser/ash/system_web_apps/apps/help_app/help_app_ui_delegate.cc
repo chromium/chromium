@@ -35,6 +35,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"

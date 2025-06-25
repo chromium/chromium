@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_api_frame_id_map.h"

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/widget/widget_observer.h"
@@ -19,7 +20,6 @@ class WebInputEvent;
 }  // namespace blink
 
 namespace content {
-class WebContents;
 class PreviewCancelReason;
 }  // namespace content
 

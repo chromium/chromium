@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_host_delegate.h"
 
 #include "base/notimplemented.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 
 namespace extensions {

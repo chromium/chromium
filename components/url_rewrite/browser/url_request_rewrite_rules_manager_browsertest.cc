@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"

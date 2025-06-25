@@ -22,6 +22,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/host_zoom_map.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

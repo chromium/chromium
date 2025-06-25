@@ -5,6 +5,7 @@
 #include "base/notreached.h"
 #include "build/android_buildflags.h"
 #include "chrome/browser/devtools/android/jni/DevToolsWindowAndroid_jni.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/buildflags.h"
 #include "third_party/jni_zero/jni_zero.h"
 
