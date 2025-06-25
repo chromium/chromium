@@ -85,7 +85,8 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",
-    "//chrome/browser/ui/search:search",
+    "//chrome/browser/ui/search",
+    "//chrome/browser/ui/search:test_support_ui",
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
@@ -133,7 +134,22 @@ if (!is_chromeos_device) {
   }
 }
 
-# TODO(crbug.com/418180294): Build ntp_test_utils.cc|h from this BUILD.gn
+source_set("test_support_ui") {
+  testonly = true
+  sources = [
+    "ntp_test_utils.cc",
+    "ntp_test_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/search",
+    "//chrome/browser/search_engines",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/search_engines",
+  ]
+}
 
 source_set("unit_tests") {
   testonly = true

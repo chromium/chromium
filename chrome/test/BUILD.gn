@@ -1628,6 +1628,9 @@ source_set("platform_browser_tests") {
       "//extensions/browser/updater",
       "//ui/webui:test_support",
     ]
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/search:test_support_ui" ]
+    }
     data += [
       "//chrome/test/data/extensions/",
       "//extensions/test/data/",
@@ -4763,6 +4766,7 @@ if (!is_android) {
         "//chrome/browser/ui/global_error:test_support",
         "//chrome/browser/ui/hid",
         "//chrome/browser/ui/javascript_dialogs",
+        "//chrome/browser/ui/search:test_support_ui",
         "//chrome/browser/web_applications/extensions",
         "//chrome/common/extensions/api",
         "//chrome/services/media_gallery_util/public/cpp:browser_tests",
@@ -8183,6 +8187,7 @@ test("unit_tests") {
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:unit_tests",
       "//chrome/browser/ui/safety_hub",
+      "//chrome/browser/ui/search:test_support_ui",
       "//chrome/browser/ui/search:unit_tests",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/tabs:tab_group",
@@ -10586,8 +10591,6 @@ if (!is_android) {
       "../browser/ssl/cert_verifier_browser_test.h",
       "../browser/ssl/cert_verifier_platform_browser_test.cc",
       "../browser/ssl/cert_verifier_platform_browser_test.h",
-      "../browser/ui/search/ntp_test_utils.cc",
-      "../browser/ui/search/ntp_test_utils.h",
       "../browser/ui/test/test_browser_closed_waiter.cc",
       "../browser/ui/test/test_browser_closed_waiter.h",
       "../browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.cc",
