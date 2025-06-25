@@ -63,6 +63,22 @@ bool ResultTestError::Validate(
     mojo::internal::ValidationContext* validation_context) {
   return Data_::Validate(data, validation_context);
 }
+ResultInterface_Method_ResponseParam_ResultPtr
+ResultInterface_Method_ResponseParam_Result::NewSuccess(
+    bool value) {
+  auto result = ResultInterface_Method_ResponseParam_ResultPtr(std::in_place);
+  result->set_success(std::move(value));
+  return result;
+}
+
+ResultInterface_Method_ResponseParam_ResultPtr
+ResultInterface_Method_ResponseParam_Result::NewFailure(
+    ResultTestErrorPtr value) {
+  auto result = ResultInterface_Method_ResponseParam_ResultPtr(std::in_place);
+  result->set_failure(std::move(value));
+  return result;
+}
+
 ResultInterface_Method_ResponseParam_Result::ResultInterface_Method_ResponseParam_Result() : tag_(Tag::kSuccess) {
   data_.success = bool();
 }
@@ -120,6 +136,22 @@ bool ResultInterface_Method_ResponseParam_Result::Validate(
     mojo::internal::ValidationContext* validation_context) {
   return Data_::Validate(data, validation_context, false);
 }
+ResultInterface_SyncMethod_ResponseParam_ResultPtr
+ResultInterface_SyncMethod_ResponseParam_Result::NewSuccess(
+    bool value) {
+  auto result = ResultInterface_SyncMethod_ResponseParam_ResultPtr(std::in_place);
+  result->set_success(std::move(value));
+  return result;
+}
+
+ResultInterface_SyncMethod_ResponseParam_ResultPtr
+ResultInterface_SyncMethod_ResponseParam_Result::NewFailure(
+    ResultTestErrorPtr value) {
+  auto result = ResultInterface_SyncMethod_ResponseParam_ResultPtr(std::in_place);
+  result->set_failure(std::move(value));
+  return result;
+}
+
 ResultInterface_SyncMethod_ResponseParam_Result::ResultInterface_SyncMethod_ResponseParam_Result() : tag_(Tag::kSuccess) {
   data_.success = bool();
 }

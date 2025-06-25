@@ -359,21 +359,11 @@ class  ResultInterface_Method_ResponseParam_Result {
     return nullptr;
   }
   // Construct an instance holding |success|.
-  static ResultInterface_Method_ResponseParam_ResultPtr
-  NewSuccess(
-      bool value) {
-    auto result = ResultInterface_Method_ResponseParam_ResultPtr(std::in_place);
-    result->set_success(std::move(value));
-    return result;
-  }
+  static ResultInterface_Method_ResponseParam_ResultPtr NewSuccess(
+      bool value);
   // Construct an instance holding |failure|.
-  static ResultInterface_Method_ResponseParam_ResultPtr
-  NewFailure(
-      ResultTestErrorPtr value) {
-    auto result = ResultInterface_Method_ResponseParam_ResultPtr(std::in_place);
-    result->set_failure(std::move(value));
-    return result;
-  }
+  static ResultInterface_Method_ResponseParam_ResultPtr NewFailure(
+      ResultTestErrorPtr value);
 
   template <typename U>
   static ResultInterface_Method_ResponseParam_ResultPtr From(const U& u) {
@@ -490,21 +480,11 @@ class  ResultInterface_SyncMethod_ResponseParam_Result {
     return nullptr;
   }
   // Construct an instance holding |success|.
-  static ResultInterface_SyncMethod_ResponseParam_ResultPtr
-  NewSuccess(
-      bool value) {
-    auto result = ResultInterface_SyncMethod_ResponseParam_ResultPtr(std::in_place);
-    result->set_success(std::move(value));
-    return result;
-  }
+  static ResultInterface_SyncMethod_ResponseParam_ResultPtr NewSuccess(
+      bool value);
   // Construct an instance holding |failure|.
-  static ResultInterface_SyncMethod_ResponseParam_ResultPtr
-  NewFailure(
-      ResultTestErrorPtr value) {
-    auto result = ResultInterface_SyncMethod_ResponseParam_ResultPtr(std::in_place);
-    result->set_failure(std::move(value));
-    return result;
-  }
+  static ResultInterface_SyncMethod_ResponseParam_ResultPtr NewFailure(
+      ResultTestErrorPtr value);
 
   template <typename U>
   static ResultInterface_SyncMethod_ResponseParam_ResultPtr From(const U& u) {
