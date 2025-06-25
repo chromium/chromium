@@ -18272,6 +18272,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "PrefixCookieHostHttp",
                         "PrefixCookieHttp"
                     ]
                 }

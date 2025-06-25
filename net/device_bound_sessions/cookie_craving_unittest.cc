@@ -288,7 +288,8 @@ TEST(CookieCravingTest, CreateFailBadPartitioned) {
 
 TEST(CookieCravingTest, CreateFailInvalidPrefix) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kPrefixCookieHttp);
+  feature_list.InitWithFeatures(
+      {features::kPrefixCookieHttp, features::kPrefixCookieHostHttp}, {});
 
   // __Host- with insecure URL.
   std::optional<CookieCraving> cc =
@@ -343,6 +344,24 @@ TEST(CookieCravingTest, CreateFailInvalidPrefix) {
                              "secure;Path=/;httpOnly", kCreationTime,
                              std::nullopt);
   EXPECT_TRUE(cc);
+  cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah", "Path=/",
+                             kCreationTime, std::nullopt);
+  EXPECT_FALSE(cc);
+  cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah",
+                             "secure;Path=/", kCreationTime, std::nullopt);
+  EXPECT_FALSE(cc);
+  cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah",
+                             "secure;Path=/;httpOnly", kCreationTime,
+                             std::nullopt);
+  EXPECT_TRUE(cc);
+  cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah",
+                             "secure;Path=/cookies/;httpOnly", kCreationTime,
+                             std::nullopt);
+  EXPECT_FALSE(cc);
+  cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah",
+                             "secure;Path=/;httpOnly;Domain=example.test",
+                             kCreationTime, std::nullopt);
+  EXPECT_FALSE(cc);
 }
 
 // Valid cases were tested as part of the successful Create() tests above, so

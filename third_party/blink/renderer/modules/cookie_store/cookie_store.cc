@@ -93,10 +93,15 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
   // Trying to set `__http-` prefixed cookie will be rejected further down by
   // CreateSanitizedCookie regardless of the condition below. Its role is to
   // provide a more meaningful exception message than "Cookie was malformed..".
-  if (name.StartsWithIgnoringASCIICase("__http-")) {
-    exception_state.ThrowTypeError(
-        "Cookies with \"__Http-\" prefix cannot be set using the "
-        "CookieStore API.");
+  const bool is_http_prefix = name.StartsWithIgnoringASCIICase("__http-");
+  const bool is_host_http_prefix =
+      name.StartsWithIgnoringASCIICase("__hosthttp-");
+  if (is_http_prefix || is_host_http_prefix) {
+    StringBuilder builder;
+    builder.AppendFormat(
+        "Cookies with \"%s\" prefix cannot be set using the CookieStore API.",
+        is_http_prefix ? "__Http-" : "__HostHttp-");
+    exception_state.ThrowTypeError(builder.ToString());
     return nullptr;
   }
   const bool is_host_prefixed_cookie = name.StartsWith("__Host-");

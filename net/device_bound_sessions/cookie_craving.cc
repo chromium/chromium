@@ -211,6 +211,12 @@ bool CookieCraving::IsValid() const {
         return false;
       }
       break;
+    case COOKIE_PREFIX_HOSTHTTP:
+      if (!SecureAttribute() || Path() != "/" || !IsHostCookie() ||
+          !IsHttpOnly()) {
+        return false;
+      }
+      break;
     case COOKIE_PREFIX_NONE:
     case COOKIE_PREFIX_LAST:
       break;
