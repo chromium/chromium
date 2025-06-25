@@ -4201,27 +4201,9 @@
                     "enable_features": [
                         "Canvas2DHibernation",
                         "Canvas2DHibernationReleaseTransferMemory",
+                        "CanvasHibernationSnapshotZstd",
                         "ClearCanvasResourcesInBackground",
                         "EvictionUnlocksResources"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CanvasHibernationSnapshotZstd": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CanvasHibernationSnapshotZstd"
                     ]
                 }
             ]
