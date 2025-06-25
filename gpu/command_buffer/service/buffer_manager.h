@@ -112,6 +112,10 @@ class GPU_GLES2_EXPORT Buffer : public base::RefCounted<Buffer> {
   void OnBind(GLenum target, bool indexed);
   void OnUnbind(GLenum target, bool indexed);
 
+  bool IsBoundForTransformFeedback() const {
+    return transform_feedback_indexed_binding_count_ > 0;
+  }
+
   bool IsBoundForTransformFeedbackAndOther() const {
     return transform_feedback_indexed_binding_count_ > 0 &&
            non_transform_feedback_binding_count_ > 0;
