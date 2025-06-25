@@ -1229,9 +1229,11 @@ VizLayerContext::VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink,
   auto context = viz::mojom::PendingLayerContext::New();
   context->receiver = service_.BindNewEndpointAndPassReceiver();
   context->client = client_receiver_.BindNewEndpointAndPassRemote();
-  bool draw_mode_is_gpu = host_impl.GetDrawMode() == DRAW_MODE_HARDWARE;
-  frame_sink.BindLayerContext(std::move(context), draw_mode_is_gpu,
-                              host_impl.settings().enable_edge_anti_aliasing);
+  auto settings = viz::mojom::LayerContextSettings::New();
+  settings->draw_mode_is_gpu = host_impl.GetDrawMode() == DRAW_MODE_HARDWARE;
+  settings->enable_edge_anti_aliasing =
+      host_impl.settings().enable_edge_anti_aliasing;
+  frame_sink.BindLayerContext(std::move(context), std::move(settings));
 }
 
 VizLayerContext::~VizLayerContext() = default;

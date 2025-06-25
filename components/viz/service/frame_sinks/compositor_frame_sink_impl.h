@@ -61,8 +61,7 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
   void DidNotProduceFrame(const BeginFrameAck& begin_frame_ack) override;
   void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
   void BindLayerContext(mojom::PendingLayerContextPtr context,
-                        bool draw_mode_is_gpu,
-                        bool enable_edge_anti_aliasing) override;
+                        mojom::LayerContextSettingsPtr settings) override;
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(const std::vector<Thread>& threads) override;
 #endif

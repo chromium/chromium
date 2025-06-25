@@ -204,10 +204,8 @@ void CompositorFrameSinkImpl::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
 
 void CompositorFrameSinkImpl::BindLayerContext(
     mojom::PendingLayerContextPtr context,
-    bool draw_mode_is_gpu,
-    bool enable_edge_anti_aliasing) {
-  support_->BindLayerContext(*context, draw_mode_is_gpu,
-                             enable_edge_anti_aliasing);
+    mojom::LayerContextSettingsPtr settings) {
+  support_->BindLayerContext(*context, std::move(settings));
 }
 
 #if BUILDFLAG(IS_ANDROID)

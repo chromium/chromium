@@ -258,8 +258,8 @@ class StubCompositorFrameSink
       SubmitCompositorFrameSyncCallback callback) override {}
   void NotifyNewLocalSurfaceIdExpectedWhilePaused() override {}
   void BindLayerContext(viz::mojom::PendingLayerContextPtr context,
-                        bool draw_mode_is_gpu,
-                        bool enable_edge_anti_aliasing) override {}
+                        viz::mojom::LayerContextSettingsPtr settings) override {
+  }
   void SetThreads(const std::vector<viz::Thread>& threads) override {}
 
   // mojom::ExternalBeginFrameController implementation.

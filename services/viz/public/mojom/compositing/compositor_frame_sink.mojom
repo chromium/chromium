@@ -15,6 +15,11 @@ import "services/viz/public/mojom/compositing/returned_resource.mojom";
 import "services/viz/public/mojom/compositing/thread.mojom";
 import "services/viz/public/mojom/hit_test/hit_test_region_list.mojom";
 
+struct LayerContextSettings {
+  bool draw_mode_is_gpu;
+  bool enable_edge_anti_aliasing;
+};
+
 // A CompositorFrameSink is an interface for receiving CompositorFrame
 // structs. A CompositorFrame contains the complete output meant for display.
 // Each time a client has a graphical update, and receives an OnBeginFrame, it
@@ -84,8 +89,7 @@ interface CompositorFrameSink {
   // longer submit frames through the CompositorFrameSink interface. Instead
   // frames will automtaically be submitted by Viz based on the state of a
   // GPU-side layer tree which can be manipulated through this LayerContext.
-  BindLayerContext(PendingLayerContext context, bool draw_mode_is_gpu,
-                   bool enable_edge_anti_aliasing);
+  BindLayerContext(PendingLayerContext context, LayerContextSettings settings);
 
   // Informs the display compositor the IDs of the thread involved in frame
   // production. This is used on Android PerformanceHint API to dynamically

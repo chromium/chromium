@@ -584,10 +584,10 @@ bool CompositorFrameSinkSupport::WantsAnimateOnlyBeginFrames() const {
 
 void CompositorFrameSinkSupport::BindLayerContext(
     mojom::PendingLayerContext& context,
-    bool draw_mode_is_gpu,
-    bool enable_edge_anti_aliasing) {
+    mojom::LayerContextSettingsPtr settings) {
   layer_context_ = std::make_unique<LayerContextImpl>(
-      this, context, draw_mode_is_gpu, enable_edge_anti_aliasing);
+      this, context, settings->draw_mode_is_gpu,
+      settings->enable_edge_anti_aliasing);
 }
 
 void CompositorFrameSinkSupport::SetThreads(
