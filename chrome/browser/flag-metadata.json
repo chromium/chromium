@@ -9342,7 +9342,7 @@
       "ddac@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 146
   },
   {
     "name": "supervised-user-interstitial-without-approvals",
@@ -9355,7 +9355,7 @@
       "fernandex@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 143
   },
   {
     "name": "support-f11-and-f12-shortcuts",
