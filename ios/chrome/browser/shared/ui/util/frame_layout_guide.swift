@@ -91,7 +91,15 @@ public class FrameLayoutGuide: UILayoutGuide {
       // Filter out changes where owning view changed but not the window. This can happen if a
       // layout guide is moved to a different owning view whose window is the same.
       if change.oldValue != change.newValue {
-        layoutGuide.onDidMoveToWindow?(layoutGuide)
+        if Thread.isMainThread {
+          MainActor.assumeIsolated {
+            layoutGuide.onDidMoveToWindow?(layoutGuide)
+          }
+        } else {
+          DispatchQueue.main.sync {
+            layoutGuide.onDidMoveToWindow?(layoutGuide)
+          }
+        }
       }
     }
   }

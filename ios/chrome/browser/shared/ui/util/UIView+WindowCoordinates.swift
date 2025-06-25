@@ -45,12 +45,14 @@ extension UIView {
         Self.cr_supportsWindowObserving = true
         observation = observe(\.window, options: [.initial]) { [weak self] _, _ in
           guard let self = self else { return }
-          if self.window != nil {
-            self.addMirrorViewInWindow()
-            // Additionally, call the closure here as the view moved to a window.
-            self.cr_onWindowCoordinatesChanged?(self)
+          if Thread.isMainThread {
+            MainActor.assumeIsolated {
+              self.windowCoordinatesChangeHandler()
+            }
           } else {
-            self.removeMirrorViewInWindow()
+            DispatchQueue.main.sync {
+              self.windowCoordinatesChangeHandler()
+            }
           }
         }
       } else {
@@ -71,11 +73,13 @@ extension UIView {
   /// rotation animation correctly.
   @objc public var cr_forcesSynchronousLayoutUpdates: Bool {
     get {
-      (objc_getAssociatedObject(self, UIView.ForcesSynchronousLayoutUpdatesKey) as? NSNumber)?.boolValue ?? false
+      (objc_getAssociatedObject(self, UIView.ForcesSynchronousLayoutUpdatesKey) as? NSNumber)?
+        .boolValue ?? false
     }
     set {
       objc_setAssociatedObject(
-        self, UIView.ForcesSynchronousLayoutUpdatesKey, NSNumber.init(value: newValue), .OBJC_ASSOCIATION_COPY)
+        self, UIView.ForcesSynchronousLayoutUpdatesKey, NSNumber.init(value: newValue),
+        .OBJC_ASSOCIATION_COPY)
     }
   }
 
@@ -89,6 +93,17 @@ extension UIView {
     set {
       objc_setAssociatedObject(
         self, UIView.ObservationKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    }
+  }
+
+  /// Called when the window coordinates of the view changed as a change handler of `observe()`.
+  private func windowCoordinatesChangeHandler() {
+    if self.window != nil {
+      self.addMirrorViewInWindow()
+      // Additionally, call the closure here as the view moved to a window.
+      self.cr_onWindowCoordinatesChanged?(self)
+    } else {
+      self.removeMirrorViewInWindow()
     }
   }
 

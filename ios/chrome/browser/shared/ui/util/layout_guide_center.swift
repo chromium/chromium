@@ -16,6 +16,7 @@ import UIKit
 ///     center.
 /// -   Referenced views don't have to be laid out by AutoLayout.
 /// -   Referenced views and layout guides don't have to be in the same window.
+@MainActor
 @objc
 public class LayoutGuideCenter: NSObject {
   /// MARK: Public
@@ -24,7 +25,9 @@ public class LayoutGuideCenter: NSObject {
   /// If forcesSynchronousLayoutUpdates is true, when the window coordinates change, the layout guides will be
   /// updated synchronously. Otherwise, the layout guides will be updated in the next runloop.
   @objc(referenceView:underName:forcesSynchronousLayoutUpdates:)
-  public func reference(view referenceView: UIView?, under name: String, forcesSynchronousLayoutUpdates: Bool) {
+  public func reference(
+    view referenceView: UIView?, under name: String, forcesSynchronousLayoutUpdates: Bool
+  ) {
     let oldReferenceView = referencedView(under: name)
     // Early return if `referenceView` is already set.
     if referenceView == oldReferenceView {
