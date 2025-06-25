@@ -2245,7 +2245,7 @@ TEST_F(BrowserAutofillManagerTestValuables,
 }
 
 // Tests that acceptance metric for EMAIL_OR_LOYALTY_MEMBERSHIP_ID field is
-// reported when email suggestion is selected.
+// reported when an email suggestion is selected.
 TEST_F(BrowserAutofillManagerTestValuables,
        GetSuggestions_EmailAndLoyaltyCardsMetric_EmailSuggestionSelected) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -2279,7 +2279,7 @@ TEST_F(BrowserAutofillManagerTestValuables,
 }
 
 // Tests that acceptance metric for EMAIL_OR_LOYALTY_MEMBERSHIP_ID field is
-// reported when email suggestion is selected.
+// reported when a loyalty card suggestion is selected.
 TEST_F(
     BrowserAutofillManagerTestValuables,
     GetSuggestions_EmailAndLoyaltyCardsMetric_LoyaltyCardSuggestionSelected) {
