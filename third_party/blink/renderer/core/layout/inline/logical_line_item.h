@@ -124,27 +124,14 @@ struct LogicalLineItem {
         rect(source_item.rect),
         inline_size(shape_result->SnappedWidth()),
         bidi_level(source_item.bidi_level) {}
-  // Create an out-of-flow positioned object.
-  LogicalLineItem(LayoutObject* out_of_flow_positioned_box,
-                  UBiDiLevel bidi_level,
-                  WritingDirectionMode container_writing_direction)
-      : out_of_flow_positioned_box(out_of_flow_positioned_box),
-        bidi_level(bidi_level),
-        container_writing_direction(container_writing_direction) {}
-  // Create an unpositioned float.
-  LogicalLineItem(LayoutObject* unpositioned_float,
-                  UBiDiLevel bidi_level,
-                  InlineItemTextIndex item_index)
-      : unpositioned_float(unpositioned_float),
-        item_index(item_index),
-        bidi_level(bidi_level) {}
-  // Create a positioned float.
-  LogicalLineItem(const LayoutResult* layout_result,
-                  BfcOffset bfc_offset,
-                  UBiDiLevel bidi_level)
-      : layout_result(layout_result),
-        bfc_offset(bfc_offset),
-        bidi_level(bidi_level) {}
+  static LogicalLineItem OutOfFlowPositioned(
+      const InlineItem& inline_item,
+      WritingDirectionMode container_writing_direction);
+  static LogicalLineItem PositionedFloat(
+      const InlineItem& inline_item,
+      const InlineItemResult::OptionalPositionedFloat& positioned_float);
+  static LogicalLineItem UnpositionedFloat(const InlineItem& inline_item,
+                                           InlineItemTextIndex item_index);
 
   bool IsItemType(InlineItem::InlineItemType type) const {
     return inline_item && inline_item->Type() == type;
@@ -365,6 +352,37 @@ class CORE_EXPORT LogicalLineItems : public GarbageCollected<LogicalLineItems> {
   HeapVector<LogicalLineItem, 16> children_;
   bool was_propagated_ = false;
 };
+
+inline LogicalLineItem LogicalLineItem::OutOfFlowPositioned(
+    const InlineItem& inline_item,
+    WritingDirectionMode container_writing_direction) {
+  LogicalLineItem line_item;
+  line_item.out_of_flow_positioned_box = inline_item.GetLayoutObject();
+  line_item.bidi_level = inline_item.BidiLevel();
+  line_item.container_writing_direction = container_writing_direction;
+  return line_item;
+}
+
+inline LogicalLineItem LogicalLineItem::PositionedFloat(
+    const InlineItem& inline_item,
+    const InlineItemResult::OptionalPositionedFloat& positioned_float) {
+  DCHECK(positioned_float->layout_result);
+  LogicalLineItem line_item;
+  line_item.layout_result = positioned_float->layout_result;
+  line_item.bfc_offset = positioned_float->bfc_offset;
+  line_item.bidi_level = inline_item.BidiLevel();
+  return line_item;
+}
+
+inline LogicalLineItem LogicalLineItem::UnpositionedFloat(
+    const InlineItem& inline_item,
+    InlineItemTextIndex item_index) {
+  LogicalLineItem line_item;
+  line_item.unpositioned_float = inline_item.GetLayoutObject();
+  line_item.bidi_level = inline_item.BidiLevel();
+  line_item.item_index = item_index;
+  return line_item;
+}
 
 }  // namespace blink
 

@@ -224,21 +224,18 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
               ? WritingDirectionMode(constraint_space_.GetWritingMode(),
                                      item.Direction())
               : constraint_space_.GetWritingDirection();
-
-      line_box->AddChild(item.GetLayoutObject(), item.BidiLevel(),
-                         writing_direction);
+      line_box->AddChild(
+          LogicalLineItem::OutOfFlowPositioned(item, writing_direction));
       has_out_of_flow_positioned_items_ = true;
     } else if (item.Type() == InlineItem::kFloating) {
       if (item_result.positioned_float) {
         if (!item_result.positioned_float->break_before_token) {
-          DCHECK(item_result.positioned_float->layout_result);
-          line_box->AddChild(item_result.positioned_float->layout_result,
-                             item_result.positioned_float->bfc_offset,
-                             item.BidiLevel());
+          line_box->AddChild(LogicalLineItem::PositionedFloat(
+              item, item_result.positioned_float));
         }
       } else {
-        line_box->AddChild(item.GetLayoutObject(), item.BidiLevel(),
-                           item_result.Start());
+        line_box->AddChild(
+            LogicalLineItem::UnpositionedFloat(item, item_result.Start()));
       }
       has_floating_items_ = true;
       has_relative_positioned_items_ |=
