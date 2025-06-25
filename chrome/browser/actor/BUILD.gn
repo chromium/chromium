@@ -15,6 +15,8 @@ source_set("actor") {
     "actor_keyed_service.h",
     "actor_keyed_service_factory.h",
     "actor_task.h",
+    "actor_ui_state_manager.h",
+    "actor_ui_state_manager_interface.h",
     "aggregated_journal.h",
     "aggregated_journal_file_serializer.h",
     "aggregated_journal_in_memory_serializer.h",
@@ -46,6 +48,7 @@ source_set("impl") {
     "actor_keyed_service.cc",
     "actor_keyed_service_factory.cc",
     "actor_task.cc",
+    "actor_ui_state_manager.cc",
     "aggregated_journal.cc",
     "aggregated_journal_file_serializer.cc",
     "aggregated_journal_in_memory_serializer.cc",
@@ -138,6 +141,8 @@ source_set("test_support") {
   sources = [
     "actor_test_util.cc",
     "actor_test_util.h",
+    "mock_actor_ui_state_manager.cc",
+    "mock_actor_ui_state_manager.h",
   ]
 
   deps = [ ":actor" ]

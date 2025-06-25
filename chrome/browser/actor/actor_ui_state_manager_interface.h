@@ -1,0 +1,24 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ACTOR_ACTOR_UI_STATE_MANAGER_INTERFACE_H_
+#define CHROME_BROWSER_ACTOR_ACTOR_UI_STATE_MANAGER_INTERFACE_H_
+
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/task_id.h"
+
+namespace actor {
+
+class ActorUIStateManagerInterface {
+ public:
+  virtual ~ActorUIStateManagerInterface() = default;
+
+  // Called whenever an actor task state changes.
+  virtual void OnActorTaskStateChange(TaskId task_id,
+                                      ActorTask::State task_state) = 0;
+};
+
+}  // namespace actor
+
+#endif  // CHROME_BROWSER_ACTOR_ACTOR_UI_STATE_MANAGER_INTERFACE_H_

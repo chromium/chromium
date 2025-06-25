@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 
+#include "chrome/browser/actor/actor_ui_state_manager.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace actor {
@@ -38,7 +39,8 @@ std::unique_ptr<KeyedService>
 ActorKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<ActorKeyedService>(profile);
+  return std::make_unique<ActorKeyedService>(
+      profile, std::make_unique<ActorUIStateManager>());
 }
 
 }  // namespace actor

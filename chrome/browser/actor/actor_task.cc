@@ -51,6 +51,7 @@ void ActorTask::SetState(State state) {
 #endif  // DCHECK_IS_ON()
 
   state_ = state;
+  task_state_change_callback_list_.Notify(id_, state_);
 }
 
 void ActorTask::Stop() {
@@ -96,6 +97,11 @@ std::ostream& operator<<(std::ostream& os, const ActorTask::State& state) {
     case kFinished:
       return os << "Finished";
   }
+}
+
+base::CallbackListSubscription ActorTask::RegisterTaskStateChange(
+    TaskStateChangeCallback callback) {
+  return task_state_change_callback_list_.Add(std::move(callback));
 }
 
 }  // namespace actor

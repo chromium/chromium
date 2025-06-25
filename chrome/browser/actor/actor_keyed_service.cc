@@ -50,7 +50,10 @@ void RunLater(base::OnceClosure task) {
 
 namespace actor {
 
-ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {}
+ActorKeyedService::ActorKeyedService(
+    Profile* profile,
+    std::unique_ptr<ActorUIStateManagerInterface> ui_state_manager)
+    : actor_ui_state_manager_(std::move(ui_state_manager)), profile_(profile) {}
 
 ActorKeyedService::~ActorKeyedService() = default;
 
@@ -144,6 +147,9 @@ void ActorKeyedService::FinishStartTask(
 
   auto actor_task =
       std::make_unique<actor::ActorTask>(std::move(execution_engine));
+  actor_task_subscriptions_.push_back(actor_task->RegisterTaskStateChange(
+      base::BindRepeating(&ActorKeyedService::OnActorTaskStateChanged,
+                          weak_ptr_factory_.GetWeakPtr())));
   actor::TaskId task_id = AddTask(std::move(actor_task));
 
   optimization_guide::proto::BrowserStartTaskResult result;
@@ -261,6 +267,15 @@ ActorTask* ActorKeyedService::GetTask(TaskId task_id) {
     return task->second.get();
   }
   return nullptr;
+}
+
+ActorUIStateManagerInterface* ActorKeyedService::GetActorUIStateManager() {
+  return actor_ui_state_manager_.get();
+}
+
+void ActorKeyedService::OnActorTaskStateChanged(TaskId task_id,
+                                                ActorTask::State task_state) {
+  GetActorUIStateManager()->OnActorTaskStateChange(task_id, task_state);
 }
 
 }  // namespace actor
