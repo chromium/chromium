@@ -113,11 +113,15 @@ void ShellFileSelectHelper::RunFileChooser(
   DCHECK(!listener_);
   DCHECK(!select_file_dialog_);
 
+  select_file_dialog_ = ui::SelectFileDialog::Create(this, nullptr);
+  if (!select_file_dialog_) {
+    listener->FileSelectionCanceled();
+    return;
+  }
+
   listener_ = std::move(listener);
   web_contents_ = content::WebContents::FromRenderFrameHost(render_frame_host)
                       ->GetWeakPtr();
-
-  select_file_dialog_ = ui::SelectFileDialog::Create(this, nullptr);
 
   select_file_types_ = GetFileTypesFromAcceptType(params->accept_types);
   select_file_types_->allowed_paths =
