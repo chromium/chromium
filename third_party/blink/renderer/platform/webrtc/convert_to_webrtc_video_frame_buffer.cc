@@ -406,73 +406,142 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
     }
     case webrtc::VideoFrameBuffer::Type::kI444: {
       const webrtc::I444BufferInterface* yuv_buffer = buffer->GetI444();
+      const media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I444;
+      const size_t luma_rows = size.height();
+      const size_t chroma_rows =
+          media::VideoFrame::PlaneSizeInSamples(
+              pixel_format, media::VideoFrame::Plane::kU, size)
+              .height();
+      // TODO(crbug.com/338570700): webrtc::I444BufferInterface should expose
+      // ArrayView instead of raw pointers.
+      auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          yuv_buffer->DataY(),
+          base::saturated_cast<size_t>(yuv_buffer->StrideY()) * luma_rows));
+      auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          yuv_buffer->DataU(),
+          base::saturated_cast<size_t>(yuv_buffer->StrideU()) * chroma_rows));
+      auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          yuv_buffer->DataV(),
+          base::saturated_cast<size_t>(yuv_buffer->StrideV()) * chroma_rows));
       video_frame = media::VideoFrame::WrapExternalYuvData(
-          media::PIXEL_FORMAT_I444, size, gfx::Rect(size), size,
-          yuv_buffer->StrideY(), yuv_buffer->StrideU(), yuv_buffer->StrideV(),
-          const_cast<uint8_t*>(yuv_buffer->DataY()),
-          const_cast<uint8_t*>(yuv_buffer->DataU()),
-          const_cast<uint8_t*>(yuv_buffer->DataV()), timestamp);
+          pixel_format, size, gfx::Rect(size), size, yuv_buffer->StrideY(),
+          yuv_buffer->StrideU(), yuv_buffer->StrideV(), y_plane, u_plane,
+          v_plane, timestamp);
       break;
     }
     case webrtc::VideoFrameBuffer::Type::kI422: {
       const webrtc::I422BufferInterface* yuv_buffer = buffer->GetI422();
+      const media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I422;
+      const size_t luma_rows = size.height();
+      const size_t chroma_rows =
+          media::VideoFrame::PlaneSizeInSamples(
+              pixel_format, media::VideoFrame::Plane::kU, size)
+              .height();
+      // TODO(crbug.com/338570700): webrtc::I422BufferInterface should expose
+      // ArrayView instead of raw pointers.
+      auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          yuv_buffer->DataY(),
+          base::saturated_cast<size_t>(yuv_buffer->StrideY()) * luma_rows));
+      auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          yuv_buffer->DataU(),
+          base::saturated_cast<size_t>(yuv_buffer->StrideU()) * chroma_rows));
+      auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          yuv_buffer->DataV(),
+          base::saturated_cast<size_t>(yuv_buffer->StrideV()) * chroma_rows));
       video_frame = media::VideoFrame::WrapExternalYuvData(
-          media::PIXEL_FORMAT_I422, size, gfx::Rect(size), size,
-          yuv_buffer->StrideY(), yuv_buffer->StrideU(), yuv_buffer->StrideV(),
-          const_cast<uint8_t*>(yuv_buffer->DataY()),
-          const_cast<uint8_t*>(yuv_buffer->DataU()),
-          const_cast<uint8_t*>(yuv_buffer->DataV()), timestamp);
+          pixel_format, size, gfx::Rect(size), size, yuv_buffer->StrideY(),
+          yuv_buffer->StrideU(), yuv_buffer->StrideV(), y_plane, u_plane,
+          v_plane, timestamp);
       break;
     }
     case webrtc::VideoFrameBuffer::Type::kI010: {
       const webrtc::I010BufferInterface* yuv_buffer = buffer->GetI010();
+      const media::VideoPixelFormat pixel_format =
+          media::PIXEL_FORMAT_YUV420P10;
+      const size_t luma_rows = size.height();
+      const size_t chroma_rows =
+          media::VideoFrame::PlaneSizeInSamples(
+              pixel_format, media::VideoFrame::Plane::kU, size)
+              .height();
       // WebRTC defines I010 data as uint16 whereas Chromium uses uint8 for all
       // video formats, so conversion and cast is needed.
+      // TODO(crbug.com/338570700): webrtc::I010BufferInterface should expose
+      // ArrayView instead of raw pointers.
+      auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(yuv_buffer->DataY()),
+          base::saturated_cast<size_t>(yuv_buffer->StrideY()) * 2 * luma_rows));
+      auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(yuv_buffer->DataU()),
+          base::saturated_cast<size_t>(yuv_buffer->StrideU()) * 2 *
+              chroma_rows));
+      auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(yuv_buffer->DataV()),
+          base::saturated_cast<size_t>(yuv_buffer->StrideV()) * 2 *
+              chroma_rows));
       video_frame = media::VideoFrame::WrapExternalYuvData(
-          media::PIXEL_FORMAT_YUV420P10, size, gfx::Rect(size), size,
-          yuv_buffer->StrideY() * 2, yuv_buffer->StrideU() * 2,
-          yuv_buffer->StrideV() * 2,
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(yuv_buffer->DataY())),
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(yuv_buffer->DataU())),
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(yuv_buffer->DataV())),
-          timestamp);
+          pixel_format, size, gfx::Rect(size), size, yuv_buffer->StrideY() * 2,
+          yuv_buffer->StrideU() * 2, yuv_buffer->StrideV() * 2, y_plane,
+          u_plane, v_plane, timestamp);
       break;
     }
     case webrtc::VideoFrameBuffer::Type::kI210: {
       const webrtc::I210BufferInterface* yuv_buffer = buffer->GetI210();
+      const media::VideoPixelFormat pixel_format =
+          media::PIXEL_FORMAT_YUV422P10;
+      const size_t luma_rows = size.height();
+      const size_t chroma_rows =
+          media::VideoFrame::PlaneSizeInSamples(
+              pixel_format, media::VideoFrame::Plane::kU, size)
+              .height();
       // WebRTC defines I210 data as uint16 whereas Chromium uses uint8 for all
       // video formats, so conversion and cast is needed.
+      // TODO(crbug.com/338570700): webrtc::I210BufferInterface should expose
+      // ArrayView instead of raw pointers.
+      auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(yuv_buffer->DataY()),
+          base::saturated_cast<size_t>(yuv_buffer->StrideY()) * 2 * luma_rows));
+      auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(yuv_buffer->DataU()),
+          base::saturated_cast<size_t>(yuv_buffer->StrideU()) * 2 *
+              chroma_rows));
+      auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(yuv_buffer->DataV()),
+          base::saturated_cast<size_t>(yuv_buffer->StrideV()) * 2 *
+              chroma_rows));
       video_frame = media::VideoFrame::WrapExternalYuvData(
-          media::PIXEL_FORMAT_YUV422P10, size, gfx::Rect(size), size,
-          yuv_buffer->StrideY() * 2, yuv_buffer->StrideU() * 2,
-          yuv_buffer->StrideV() * 2,
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(yuv_buffer->DataY())),
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(yuv_buffer->DataU())),
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(yuv_buffer->DataV())),
-          timestamp);
+          pixel_format, size, gfx::Rect(size), size, yuv_buffer->StrideY() * 2,
+          yuv_buffer->StrideU() * 2, yuv_buffer->StrideV() * 2, y_plane,
+          u_plane, v_plane, timestamp);
       break;
     }
     case webrtc::VideoFrameBuffer::Type::kI410: {
       const webrtc::I410BufferInterface* yuv_buffer = buffer->GetI410();
+      const media::VideoPixelFormat pixel_format =
+          media::PIXEL_FORMAT_YUV444P10;
+      const size_t luma_rows = size.height();
+      const size_t chroma_rows =
+          media::VideoFrame::PlaneSizeInSamples(
+              pixel_format, media::VideoFrame::Plane::kU, size)
+              .height();
       // WebRTC defines I410 data as uint16 whereas Chromium uses uint8 for all
       // video formats, so conversion and cast is needed.
+      // TODO(crbug.com/338570700): webrtc::I410BufferInterface should expose
+      // ArrayView instead of raw pointers.
+      auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(yuv_buffer->DataY()),
+          base::saturated_cast<size_t>(yuv_buffer->StrideY()) * 2 * luma_rows));
+      auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(yuv_buffer->DataU()),
+          base::saturated_cast<size_t>(yuv_buffer->StrideU()) * 2 *
+              chroma_rows));
+      auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(yuv_buffer->DataV()),
+          base::saturated_cast<size_t>(yuv_buffer->StrideV()) * 2 *
+              chroma_rows));
       video_frame = media::VideoFrame::WrapExternalYuvData(
-          media::PIXEL_FORMAT_YUV444P10, size, gfx::Rect(size), size,
-          yuv_buffer->StrideY() * 2, yuv_buffer->StrideU() * 2,
-          yuv_buffer->StrideV() * 2,
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(yuv_buffer->DataY())),
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(yuv_buffer->DataU())),
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(yuv_buffer->DataV())),
-          timestamp);
+          pixel_format, size, gfx::Rect(size), size, yuv_buffer->StrideY() * 2,
+          yuv_buffer->StrideU() * 2, yuv_buffer->StrideV() * 2, y_plane,
+          u_plane, v_plane, timestamp);
       break;
     }
     case webrtc::VideoFrameBuffer::Type::kNV12: {
