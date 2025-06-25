@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_SCHEDULER_NETWORK_SERVICE_SCHEDULER_H_
-#define SERVICES_NETWORK_SCHEDULER_NETWORK_SERVICE_SCHEDULER_H_
+#ifndef SERVICES_NETWORK_SCHEDULER_NETWORK_SERVICE_TASK_SCHEDULER_H_
+#define SERVICES_NETWORK_SCHEDULER_NETWORK_SERVICE_TASK_SCHEDULER_H_
 
 #include <memory>
 #include <optional>
@@ -38,22 +38,24 @@ namespace network {
 //
 // The scheduler does not own the sequence manager. This scheduler's lifetime
 // should outlive the network service.
-class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceScheduler {
+class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskScheduler {
  public:
-  NetworkServiceScheduler(const NetworkServiceScheduler&) = delete;
-  NetworkServiceScheduler& operator=(const NetworkServiceScheduler&) = delete;
+  NetworkServiceTaskScheduler(const NetworkServiceTaskScheduler&) = delete;
+  NetworkServiceTaskScheduler& operator=(const NetworkServiceTaskScheduler&) =
+      delete;
 
-  // Creates and registers a `NetworkServiceScheduler` for the current thread.
-  // This function is typically called during NetworkService initialization and
-  // will only create a scheduler if `SetSequenceManagerSettings()` was called
-  // beforehand (e.g. during child process startup) to configure the thread's
-  // sequence manager with the required priority settings.
+  // Creates and registers a `NetworkServiceTaskScheduler` for the current
+  // thread. This function is typically called during NetworkService
+  // initialization and will only create a scheduler if
+  // `SetSequenceManagerSettings()` was called beforehand (e.g. during child
+  // process startup) to configure the thread's sequence manager with the
+  // required priority settings.
   static void MaybeCreate();
 
-  // Creates a NetworkServiceScheduler for testing.
-  static std::unique_ptr<NetworkServiceScheduler> CreateForTesting();
+  // Creates a NetworkServiceTaskScheduler for testing.
+  static std::unique_ptr<NetworkServiceTaskScheduler> CreateForTesting();
 
-  ~NetworkServiceScheduler();
+  ~NetworkServiceTaskScheduler();
 
   // Configures the sequence manager settings in Thread `options` for use with
   // the network service scheduler. This must be called before the thread is
@@ -74,11 +76,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceScheduler {
 
  private:
   // Constructor for production, borrows the existing sequence manager.
-  explicit NetworkServiceScheduler(
+  explicit NetworkServiceTaskScheduler(
       base::sequence_manager::SequenceManager* sequence_manager);
 
   // Constructor for testing, takes ownership of `sequence manager_for_testing`.
-  explicit NetworkServiceScheduler(
+  explicit NetworkServiceTaskScheduler(
       std::unique_ptr<base::sequence_manager::SequenceManager>
           sequence_manager_for_testing);
 
@@ -114,4 +116,4 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceScheduler {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_SCHEDULER_NETWORK_SERVICE_SCHEDULER_H_
+#endif  // SERVICES_NETWORK_SCHEDULER_NETWORK_SERVICE_TASK_SCHEDULER_H_

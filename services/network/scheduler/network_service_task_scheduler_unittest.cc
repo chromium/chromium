@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/scheduler/network_service_scheduler.h"
+#include "services/network/scheduler/network_service_task_scheduler.h"
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -20,7 +20,7 @@ using QueueType = NetworkServiceTaskQueues::QueueType;
 using StrictMockTask =
     testing::StrictMock<base::MockCallback<base::RepeatingCallback<void()>>>;
 
-class NetworkServiceSchedulerTest : public testing::Test {
+class NetworkServiceTaskSchedulerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment;
 };
@@ -28,8 +28,8 @@ class NetworkServiceSchedulerTest : public testing::Test {
 // Tests that tasks posted to the default task runner provided by the scheduler
 // are executed in order. Also verifies that the scheduler sets the current
 // thread's default task runner.
-TEST_F(NetworkServiceSchedulerTest, DefaultQueuePostsTasksInOrder) {
-  auto scheduler = NetworkServiceScheduler::CreateForTesting();
+TEST_F(NetworkServiceTaskSchedulerTest, DefaultQueuePostsTasksInOrder) {
+  auto scheduler = NetworkServiceTaskScheduler::CreateForTesting();
 
   scoped_refptr<base::SingleThreadTaskRunner> tq =
       scheduler->GetTaskRunner(QueueType::kDefault);
@@ -52,8 +52,9 @@ TEST_F(NetworkServiceSchedulerTest, DefaultQueuePostsTasksInOrder) {
 // Tests that tasks posted to different priority queues (default and high
 // priority) are executed according to their priority, with high priority tasks
 // running before default priority tasks.
-TEST_F(NetworkServiceSchedulerTest, MultipleQueuesHighPriorityTaskRunsFirst) {
-  auto scheduler = NetworkServiceScheduler::CreateForTesting();
+TEST_F(NetworkServiceTaskSchedulerTest,
+       MultipleQueuesHighPriorityTaskRunsFirst) {
+  auto scheduler = NetworkServiceTaskScheduler::CreateForTesting();
 
   scoped_refptr<base::SingleThreadTaskRunner> tq1 =
       scheduler->GetTaskRunner(QueueType::kDefault);
@@ -77,9 +78,9 @@ TEST_F(NetworkServiceSchedulerTest, MultipleQueuesHighPriorityTaskRunsFirst) {
 }
 
 // Tests that tasks posted to the current thread's default task runner *before*
-// the NetworkServiceScheduler is instantiated are still executed
+// the NetworkServiceTaskScheduler is instantiated are still executed
 // correctly once the scheduler is up and running.
-TEST_F(NetworkServiceSchedulerTest,
+TEST_F(NetworkServiceTaskSchedulerTest,
        PendingTasksRunAfterSchedulerInitialization) {
   StrictMockTask task_1;
   StrictMockTask task_2;
@@ -90,10 +91,10 @@ TEST_F(NetworkServiceSchedulerTest,
 
   base::RunLoop run_loop;
 
-  // Post a task before NetworkServiceScheduler is instantiated.
+  // Post a task before NetworkServiceTaskScheduler is instantiated.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                               task_1.Get());
-  auto scheduler = NetworkServiceScheduler::CreateForTesting();
+  auto scheduler = NetworkServiceTaskScheduler::CreateForTesting();
   scoped_refptr<base::SingleThreadTaskRunner> tq =
       scheduler->GetTaskRunner(QueueType::kDefault);
   tq->PostTask(FROM_HERE, task_2.Get());
@@ -105,7 +106,8 @@ TEST_F(NetworkServiceSchedulerTest,
 // and tasks posted to different priority queues after the scheduler is
 // instantiated. Verifies that all tasks run in the correct order based on
 // posting time and priority.
-TEST_F(NetworkServiceSchedulerTest, PendingAndPostedTasksRunInCorrectOrder) {
+TEST_F(NetworkServiceTaskSchedulerTest,
+       PendingAndPostedTasksRunInCorrectOrder) {
   StrictMockTask task_1;
   StrictMockTask task_2;
   StrictMockTask task_3;
@@ -122,13 +124,13 @@ TEST_F(NetworkServiceSchedulerTest, PendingAndPostedTasksRunInCorrectOrder) {
 
   base::RunLoop run_loop;
 
-  // Post tasks before NetworkServiceScheduler is instantiated.
+  // Post tasks before NetworkServiceTaskScheduler is instantiated.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                               task_1.Get());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                               task_2.Get());
 
-  auto scheduler = NetworkServiceScheduler::CreateForTesting();
+  auto scheduler = NetworkServiceTaskScheduler::CreateForTesting();
   scoped_refptr<base::SingleThreadTaskRunner> tq_default =
       scheduler->GetTaskRunner(QueueType::kDefault);
   scoped_refptr<base::SingleThreadTaskRunner> tq_high =
@@ -142,9 +144,9 @@ TEST_F(NetworkServiceSchedulerTest, PendingAndPostedTasksRunInCorrectOrder) {
 // Tests the `SetUpNetTaskRunners`.
 // Verifies that after calling `SetupNetTaskRunners`, `net::GetTaskRunner`
 // returns the appropriate task runners managed by the scheduler.
-TEST_F(NetworkServiceSchedulerTest,
+TEST_F(NetworkServiceTaskSchedulerTest,
        SetUpNetTaskRunnersIntegratesWithNetGetTaskRunner) {
-  auto scheduler = NetworkServiceScheduler::CreateForTesting();
+  auto scheduler = NetworkServiceTaskScheduler::CreateForTesting();
   scheduler->SetUpNetTaskRunnersForTesting();
 
   auto scheduler_high_priority_runner =

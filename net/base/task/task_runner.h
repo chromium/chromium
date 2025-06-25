@@ -18,7 +18,7 @@ namespace net {
 // runners that are integrated with the network service's scheduling mechanism
 // (or other embedder's scheduling). For `RequestPriority::HIGHEST`, this may
 // return a special high-priority task runner if one has been configured (e.g.,
-// by the NetworkServiceScheduler). For other priorities, or if no special
+// by the NetworkServiceTaskScheduler). For other priorities, or if no special
 // runner is configured, it typically returns the current thread's default task
 // runner.
 NET_EXPORT const scoped_refptr<base::SingleThreadTaskRunner>& GetTaskRunner(
@@ -34,7 +34,7 @@ struct NET_EXPORT TaskRunnerGlobals {
   ~TaskRunnerGlobals();
 
   // Task runner specifically for `net::RequestPriority::HIGHEST` tasks.
-  // This is set by the embedder (e.g., NetworkServiceScheduler).
+  // This is set by the embedder (e.g., NetworkServiceTaskScheduler).
   scoped_refptr<base::SingleThreadTaskRunner> high_priority_task_runner;
 };
 

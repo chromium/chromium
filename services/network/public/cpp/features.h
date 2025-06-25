@@ -350,10 +350,10 @@ BASE_DECLARE_FEATURE_PARAM(size_t, kSharedDictionaryCacheSize);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(size_t, kSharedDictionaryCacheMaxSizeBytes);
 
-// When enabled, Network Service Scheduler is enabled on the Network
+// When enabled, Network Service Task Scheduler is enabled on the Network
 // Service's IO Thread.
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE(kNetworkServiceScheduler);
+BASE_DECLARE_FEATURE(kNetworkServiceTaskScheduler);
 
 }  // namespace network::features
 

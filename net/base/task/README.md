@@ -23,12 +23,12 @@ interacting closely with network operations) to post tasks with a specific
 
 ## Integration with Network Service Scheduler
 
-The `NetworkServiceScheduler` (located in `//services/network/scheduler/`) is
+The `NetworkServiceTaskScheduler` (located in `//services/network/scheduler/`) is
 responsible for setting up and managing the actual task queues on the network
 service thread, including a high-priority queue.
 
 During its initialization (specifically in `SetupNetTaskRunners()`), the
-`NetworkServiceScheduler` populates
+`NetworkServiceTaskScheduler` populates
 `net::internal::GetTaskRunnerGlobals().high_priority_task_runner` with the task
 runner associated with its own high-priority queue.
 

@@ -633,8 +633,8 @@ BASE_FEATURE_PARAM(size_t,
                    /*name=*/"max_size",
                    1'000'000);
 
-BASE_FEATURE(kNetworkServiceScheduler,
-             "NetworkServiceScheduler",
+BASE_FEATURE(kNetworkServiceTaskScheduler,
+             "NetworkServiceTaskScheduler",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace network::features

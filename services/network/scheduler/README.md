@@ -1,4 +1,4 @@
-# Network Service Scheduler
+# Network Service Task Scheduler
 
 This directory contains the implementation for an experimental task scheduler on
 Chromium's Network Service.

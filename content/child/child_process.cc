@@ -22,7 +22,7 @@
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/scheduler/network_service_scheduler.h"
+#include "services/network/scheduler/network_service_task_scheduler.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -126,17 +126,18 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
   thread_options.thread_type = base::ThreadType::kDisplayCritical;
 #endif
 
-  // If the NetworkServiceScheduler feature is enabled and this is the main
+  // If the NetworkServiceTaskScheduler feature is enabled and this is the main
   // thread for the Network Service Utility process, configure the
-  // SequenceManager with specific settings for network service scheduler. This
-  // ensures the network thread's task scheduling is handled by the experimental
-  // scheduler infrastructure.
+  // SequenceManager with specific settings for network service task scheduler.
+  // This ensures the network thread's task scheduling is handled by the
+  // experimental scheduler infrastructure.
   if (base::FeatureList::IsEnabled(
-          network::features::kNetworkServiceScheduler) &&
+          network::features::kNetworkServiceTaskScheduler) &&
       base::ThreadIdNameManager::GetInstance()->GetName(
           base::PlatformThread::CurrentId()) ==
           std::string_view("network.CrUtilityMain")) {
-    network::NetworkServiceScheduler::ConfigureSequenceManager(thread_options);
+    network::NetworkServiceTaskScheduler::ConfigureSequenceManager(
+        thread_options);
   }
 
   CHECK(io_thread_->StartWithOptions(std::move(thread_options)));
