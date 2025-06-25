@@ -17,7 +17,6 @@
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
@@ -26,7 +25,6 @@
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_prepopulate_data_resolver.h"
@@ -359,20 +357,6 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
   }
 
   return actions;
-}
-
-const std::string& GetDefaultSearchProviderGuidFromPrefs(PrefService& prefs) {
-  return base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)
-             ? prefs.GetString(prefs::kDefaultSearchProviderGUID)
-             : prefs.GetString(prefs::kSyncedDefaultSearchProviderGUID);
-}
-
-void SetDefaultSearchProviderGuidToPrefs(PrefService& prefs,
-                                         const std::string& value) {
-  prefs.SetString(prefs::kSyncedDefaultSearchProviderGUID, value);
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)) {
-    prefs.SetString(prefs::kDefaultSearchProviderGUID, value);
-  }
 }
 
 void MergeEnginesFromStarterPackData(
