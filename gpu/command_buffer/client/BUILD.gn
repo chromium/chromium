@@ -25,10 +25,6 @@ group("client") {
   }
 }
 
-group("client_gmb_manager") {
-  public_deps = [ ":client_gmb_manager_sources" ]
-}
-
 group("gles2_cmd_helper") {
   if (is_component_build) {
     public_deps = [ "//gpu:gles2" ]
@@ -90,7 +86,6 @@ source_set("client_sources") {
   all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
 
   public_deps = [
-    ":client_gmb_manager",
     ":export",
     "//base",
   ]
@@ -125,27 +120,6 @@ source_set("client_sources") {
       "//gpu/ipc/common:ipc_common_sources",
       "//skia:buildflags",
     ]
-  }
-}
-
-source_set("client_gmb_manager_sources") {
-  # External code should depend on this via //gpu/client_gmb_manager above
-  # rather than depending on this directly or the component build will break.
-  visibility = [ "//gpu/*" ]
-  sources = [
-    "gpu_memory_buffer_manager.cc",
-    "gpu_memory_buffer_manager.h",
-  ]
-  configs += [ "//gpu:gpu_implementation" ]
-  all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
-  public_deps = [ ":export" ]
-  deps = [
-    "//base",
-    "//ui/gfx:memory_buffer",
-    "//ui/gfx/geometry",
-  ]
-  if (!is_nacl) {
-    deps += [ "//gpu/ipc/common:surface_handle_type" ]
   }
 }
 

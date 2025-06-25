@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace base {
@@ -19,7 +19,7 @@ class WaitableEvent;
 
 namespace gpu {
 
-class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
+class TestGpuMemoryBufferManager {
  public:
   TestGpuMemoryBufferManager();
 
@@ -27,7 +27,7 @@ class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
   TestGpuMemoryBufferManager& operator=(const TestGpuMemoryBufferManager&) =
       delete;
 
-  ~TestGpuMemoryBufferManager() override;
+  ~TestGpuMemoryBufferManager();
 
   std::unique_ptr<TestGpuMemoryBufferManager>
   CreateClientGpuMemoryBufferManager();
