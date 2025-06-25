@@ -84,7 +84,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 createAndShowMenu(
                         new ViewRectProvider(view),
                         tabGroupId,
-                        /* animStyle= */ R.style.EndIconMenuAnim,
+                        /* animStyle= */ ResourcesCompat.ID_NULL,
                         /* verticalOverlapAnchor= */ true,
                         (Activity) view.getContext(),
                         true);
