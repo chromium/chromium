@@ -19,6 +19,7 @@ import android.media.projection.MediaProjectionManager;
 import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.view.Surface;
 import android.view.WindowManager;
 
 import androidx.activity.result.ActivityResult;
@@ -66,6 +67,124 @@ public class ScreenCapture {
         }
     }
 
+    private class ImageHandler implements ImageReader.OnImageAvailableListener {
+        @GuardedBy("mBackgroundLock")
+        final ImageReader mImageReader;
+
+        @GuardedBy("mBackgroundLock")
+        int mAcquiredImageCount;
+
+        ImageHandler(CaptureState captureState) {
+            mImageReader =
+                    ImageReader.newInstance(
+                            captureState.width,
+                            captureState.height,
+                            captureState.format,
+                            /* maxImages= */ 2);
+            mImageReader.setOnImageAvailableListener(this, mBackgroundHandler);
+        }
+
+        Surface getSurface() {
+            synchronized (mBackgroundLock) {
+                return mImageReader.getSurface();
+            }
+        }
+
+        void close() {
+            synchronized (mBackgroundLock) {
+                mImageReader.close();
+                mAcquiredImageCount = 0;
+            }
+        }
+
+        @GuardedBy("mBackgroundLock")
+        private @Nullable Image maybeAcquireImage(ImageReader reader) {
+            assert mBackgroundThread.getLooper().isCurrentThread();
+            assert reader == mImageReader;
+            // If we have acquired the maximum number of images `acquireLatestImage`
+            // will print warning level logspam, so avoid
+            if (mAcquiredImageCount >= reader.getMaxImages()) return null;
+
+            try {
+                Image image = reader.acquireLatestImage();
+                if (image != null) mAcquiredImageCount++;
+                return image;
+            } catch (IllegalStateException ex) {
+                // This happens if we have acquired the maximum number of images without closing
+                // them. We will eventually close the images so this is not an error condition.
+            } catch (UnsupportedOperationException ex) {
+                // TODO(crbug.com/352187279): This can happen if the `PixelFormat` does not match.
+                // We should recreate the `ImageReader` with the correct `PixqelFormat` in this
+                // case.
+                throw ex;
+            }
+            return null;
+        }
+
+        private void releaseImage(ImageReader reader, Image image) {
+            assert mBackgroundThread.getLooper().isCurrentThread();
+
+            synchronized (mBackgroundLock) {
+                assert reader == mImageReader;
+
+                // If we recreate the ImageReader, we may get an old release here. The image will
+                // already have been closed since the ImageReader is closed, but it's safe to call
+                // close
+                // again here.
+                image.close();
+                mAcquiredImageCount--;
+
+                // Now that we closed an image, we may be able to acquire a new image.
+                onImageAvailable(reader);
+            }
+        }
+
+        @Override
+        public void onImageAvailable(ImageReader reader) {
+            assert mBackgroundThread.getLooper().isCurrentThread();
+
+            synchronized (mBackgroundLock) {
+                // If the native side was destroyed, then exit without calling JNI methods.
+                if (mNativeDesktopCapturerAndroid == 0) return;
+
+                // Note that we can't use `acquireLatestImage` here because we can't close older
+                // images until the C++ side is finished using them.
+                final Image image = maybeAcquireImage(reader);
+
+                // If we have not yet closed images, this may return null. We need to retry
+                // after closing an image.
+                if (image == null) return;
+
+                switch (image.getFormat()) {
+                    case PixelFormat.RGBA_8888:
+                        assert image.getPlanes().length == 1;
+                        final Plane plane = image.getPlanes()[0];
+                        final Rect cropRect = image.getCropRect();
+                        ScreenCaptureJni.get()
+                                .onRgbaFrameAvailable(
+                                        mNativeDesktopCapturerAndroid,
+                                        () -> {
+                                            assert mBackgroundHandler != null;
+                                            mBackgroundHandler.post(
+                                                    () -> releaseImage(reader, image));
+                                        },
+                                        image.getTimestamp(),
+                                        plane.getBuffer(),
+                                        plane.getPixelStride(),
+                                        plane.getRowStride(),
+                                        cropRect.left,
+                                        cropRect.top,
+                                        cropRect.right,
+                                        cropRect.bottom);
+                        break;
+                    default:
+                        throw new IllegalStateException(
+                                "Unexpected image format: " + image.getFormat());
+                }
+            }
+        }
+    }
+
     // Starting a MediaProjection session involves plumbing the results from the content picker,
     // which is done via ActivityResult. This class does not handle how that is achieved, but
     // requires this state to begin the session.
@@ -92,13 +211,10 @@ public class ScreenCapture {
     private @Nullable VirtualDisplay mVirtualDisplay;
 
     @GuardedBy("mBackgroundLock")
-    private @Nullable ImageReader mImageReader;
+    private @Nullable ImageHandler mImageHandler;
 
     @GuardedBy("mBackgroundLock")
     private @Nullable WebContents mWebContents;
-
-    @GuardedBy("mBackgroundLock")
-    private int mAcquiredImageCount;
 
     private ScreenCapture(long nativeDesktopCapturerAndroid) {
         mNativeDesktopCapturerAndroid = nativeDesktopCapturerAndroid;
@@ -206,99 +322,6 @@ public class ScreenCapture {
         }
     }
 
-    private class ImageListener implements ImageReader.OnImageAvailableListener {
-        @GuardedBy("mBackgroundLock")
-        private @Nullable Image maybeAcquireImage(ImageReader reader) {
-            assert mBackgroundThread.getLooper().isCurrentThread();
-            // If we have acquired the maximum number of images `acquireLatestImage`
-            // will print warning level logspam, so avoid this.
-            if (mAcquiredImageCount >= reader.getMaxImages()) return null;
-
-            try {
-                Image image = reader.acquireLatestImage();
-                if (image != null) mAcquiredImageCount++;
-                return image;
-            } catch (IllegalStateException ex) {
-                // This happens if we have acquired the maximum number of images without closing
-                // them. We will eventually close the images so this is not an error condition.
-            } catch (UnsupportedOperationException ex) {
-                // TODO(crbug.com/352187279): This can happen if the `PixelFormat` does not match.
-                // We should recreate the `ImageReader` with the correct `PixqelFormat` in this
-                // case.
-                throw ex;
-            }
-            return null;
-        }
-
-        private void releaseImage(ImageReader reader, Image image) {
-            assert mBackgroundThread.getLooper().isCurrentThread();
-
-            synchronized (mBackgroundLock) {
-                // If we recreate the ImageReader, we may get an old release here. The image will
-                // already have been closed since the ImageReader is closed, but it's safe to call
-                // close
-                // again here.
-                image.close();
-
-                // `mAcquiredImageCount` is only for the current ImageReader, so don't incorrectly
-                // decrement it for an old ImageReader.
-                if (reader == mImageReader) mAcquiredImageCount--;
-
-                // Now that we closed an image, we may be able to acquire a new image.
-                onImageAvailable(reader);
-            }
-        }
-
-        @Override
-        public void onImageAvailable(ImageReader reader) {
-            assert mBackgroundThread.getLooper().isCurrentThread();
-
-            synchronized (mBackgroundLock) {
-                // If the native side was destroyed, then exit without calling JNI methods.
-                if (mNativeDesktopCapturerAndroid == 0) return;
-
-                // If we recreate the ImageReader we may get a call with the old reader here. Skip
-                // this case.
-                if (reader != mImageReader) return;
-
-                // Note that we can't use `acquireLatestImage` here because we can't close older
-                // images until the C++ side is finished using them.
-                final Image image = maybeAcquireImage(reader);
-
-                // If we have not yet closed images, this may return null. We need to retry
-                // after closing an image.
-                if (image == null) return;
-
-                switch (image.getFormat()) {
-                    case PixelFormat.RGBA_8888:
-                        assert image.getPlanes().length == 1;
-                        final Plane plane = image.getPlanes()[0];
-                        final Rect cropRect = image.getCropRect();
-                        ScreenCaptureJni.get()
-                                .onRgbaFrameAvailable(
-                                        mNativeDesktopCapturerAndroid,
-                                        () -> {
-                                            assert mBackgroundHandler != null;
-                                            mBackgroundHandler.post(
-                                                    () -> releaseImage(reader, image));
-                                        },
-                                        image.getTimestamp(),
-                                        plane.getBuffer(),
-                                        plane.getPixelStride(),
-                                        plane.getRowStride(),
-                                        cropRect.left,
-                                        cropRect.top,
-                                        cropRect.right,
-                                        cropRect.bottom);
-                        break;
-                    default:
-                        throw new IllegalStateException(
-                                "Unexpected image format: " + image.getFormat());
-                }
-            }
-        }
-    }
-
     private class MediaProjectionCallback extends MediaProjection.Callback {
         @Override
         public void onCapturedContentResize(int width, int height) {
@@ -323,14 +346,13 @@ public class ScreenCapture {
         }
     }
 
-    @GuardedBy("mBackgroundLock")
+    @GuardedBy("this.mBackgroundLock")
     private void destroyListener() {
-        // Note that we can only close the ImageReader if we are guaranteed the native side will not
-        // try to access Images from it again.
-        if (mImageReader != null) {
-            mImageReader.close();
-            mImageReader = null;
-            mAcquiredImageCount = 0;
+        // Note that we can only close the ImageHandler if we are guaranteed the native side will
+        // not try to access Images from it again.
+        if (mImageHandler != null) {
+            mImageHandler.close();
+            mImageHandler = null;
         }
         if (mVirtualDisplay != null) {
             mVirtualDisplay.release();
@@ -341,13 +363,7 @@ public class ScreenCapture {
     @GuardedBy("mBackgroundLock")
     private void recreateListener(CaptureState captureState) {
         destroyListener();
-        mImageReader =
-                ImageReader.newInstance(
-                        captureState.width,
-                        captureState.height,
-                        captureState.format,
-                        /* maxImages= */ 2);
-        mImageReader.setOnImageAvailableListener(new ImageListener(), mBackgroundHandler);
+        mImageHandler = new ImageHandler(captureState);
 
         assert mMediaProjection != null;
         mVirtualDisplay =
@@ -357,7 +373,7 @@ public class ScreenCapture {
                         captureState.height,
                         captureState.dpi,
                         DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                        mImageReader.getSurface(),
+                        mImageHandler.getSurface(),
                         null,
                         null);
     }
