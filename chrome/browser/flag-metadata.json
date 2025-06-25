@@ -1163,16 +1163,6 @@
     "expiry_milestone": 126
   },
   {
-    "name": "bookmarks-improved-save-flow",
-    "owners": ["wylieb@google.com", "fgorski@chromium.org", "mdjones@chromium.org"],
-    "expiry_milestone": 115
-  },
-  {
-    "name": "bookmarks-refresh",
-    "owners": ["wylieb@google.com", "fgorski@chromium.org", "mdjones@chromium.org"],
-    "expiry_milestone": 115
-  },
-  {
     "name": "bookmarks-tree-view",
     "owners": [
       "omarflores@google.com",
