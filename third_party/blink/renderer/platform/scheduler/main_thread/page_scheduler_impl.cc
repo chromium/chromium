@@ -300,8 +300,8 @@ void PageSchedulerImpl::SetPageBackForwardCached(
     // When storing a page in BFCache, call this function before calling
     // SetPageFrozen(). The policy update triggered by SetPageFrozen() depends
     // on the state set here to keep BFCache-runnable tasks from being frozen.
-    // TODO(crbug.com/1378279): Remove this CHECK once the lifecycle state logic
-    // is refactored to make this dependency unnecessary.
+    // TODO(crbug.com/427130212): Remove this CHECK once the lifecycle state
+    // logic is refactored to make this dependency unnecessary.
     CHECK(!is_frozen_);
     TRACE_EVENT_INSTANT("navigation",
                         "PageSchedulerImpl::SetPageBackForwardCached_Store");
