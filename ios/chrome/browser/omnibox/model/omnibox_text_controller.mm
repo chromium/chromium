@@ -939,9 +939,12 @@ const char kOmniboxFocusResultedInNavigation[] =
   OmniboxStateChanges state_changes =
       _omniboxTextModel->GetStateChanges(_stateBeforeChange, newState);
 
-  const BOOL something_changed =
-      _omniboxEditModel &&
-      _omniboxEditModel->OnAfterPossibleChange(state_changes);
+  const BOOL somethingChanged =
+      _omniboxTextModel->UpdateStateAfterPossibleChange(state_changes);
+
+  if (somethingChanged) {
+    [self startAutocompleteAfterEdit];
+  }
 
   [self onTextChanged];
 
@@ -949,7 +952,7 @@ const char kOmniboxFocusResultedInNavigation[] =
   // omnibox a chance to update the alignment for a text direction change.
   [self.textField updateTextDirection];
 
-  return something_changed;
+  return somethingChanged;
 }
 
 @end

@@ -198,20 +198,6 @@ void OmniboxEditModelIOS::OpenMatchForTesting(
             pasted_text, match_selection_timestamp);
 }
 
-bool OmniboxEditModelIOS::OnAfterPossibleChange(
-    const OmniboxStateChanges& state_changes) {
-  bool state_changed =
-      text_model_->UpdateStateAfterPossibleChange(state_changes);
-
-  if (!state_changed) {
-    return false;
-  }
-
-  [text_controller_ startAutocompleteAfterEdit];
-
-  return true;
-}
-
 bool OmniboxEditModelIOS::PopupIsOpen() const {
   return omnibox_autocomplete_controller_.hasSuggestions;
 }

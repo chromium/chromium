@@ -133,13 +133,6 @@ class OmniboxEditModelIOS {
     return text_model_->paste_state == OmniboxPasteState::kPasting;
   }
 
-  // Called by the OmniboxViewIOS after something changes, with details about
-  // what state changes occurred.  Updates internal state, updates the popup if
-  // necessary, and returns true if any significant changes occurred.  Note that
-  // `text_change.text_differs` may be set even if `text_change.old_text` ==
-  // `text_change.new_text`, e.g. if we've just committed an IME composition.
-  bool OnAfterPossibleChange(const OmniboxStateChanges& state_changes);
-
   std::u16string GetUserTextForTesting() const {
     return text_model_->user_text;
   }

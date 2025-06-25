@@ -151,7 +151,7 @@ class OmniboxEditModelIOSTest : public PlatformTest {
   std::unique_ptr<TestOmniboxEditModelIOS> omnibox_edit_model_;
 };
 
-TEST_F(OmniboxEditModelIOSTest, DISABLED_InlineAutocompleteText) {
+TEST_F(OmniboxEditModelIOSTest, InlineAutocompleteText) {
   // Test if the model updates the inline autocomplete text in the view.
   EXPECT_EQ(std::u16string(), omnibox_text_model_->inline_autocompletion);
   [omnibox_text_controller_ setUserText:u"he"];
@@ -161,11 +161,7 @@ TEST_F(OmniboxEditModelIOSTest, DISABLED_InlineAutocompleteText) {
   EXPECT_EQ(u"hello", [omnibox_text_controller_ displayedText]);
   EXPECT_EQ(u"llo", omnibox_text_model_->inline_autocompletion);
 
-  std::u16string text_before = u"he";
-  std::u16string text_after = u"hel";
-  OmniboxStateChanges state_changes{&text_before, &text_after, 3,    3,
-                                    false,        true,        false};
-  model()->OnAfterPossibleChange(state_changes);
+  [omnibox_text_controller_ setUserText:u"hel"];
   EXPECT_EQ(std::u16string(), omnibox_text_model_->inline_autocompletion);
   [omnibox_text_controller_ onPopupDataChanged:u"lo"
                                 additionalText:std::u16string()
