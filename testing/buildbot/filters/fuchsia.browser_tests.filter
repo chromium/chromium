@@ -118,13 +118,6 @@
 -ProfileMenuViewExtensionsTest.CloseIPH
 -ProfileWindowBrowserTest.OpenBrowserWindowForProfileWithSigninRequired
 
-# TODO(crbug.com/40840880):
-# [remote_test_server.cc(43)] getting an unexpected server type TYPE_BASIC_AUTH_PROXY
-# Linux is set to the same type, but it never gets to this line, not sure why yet.
--ProxyBrowserTest.BasicAuthWSConnect
--ProxyBrowserTest.ProxyAuthHTTP
--ProxyBrowserTest.ProxyAuthHTTPS
-
 # TODO(crbug.com/40225481): Sharing handler is null. Probably because remote copy isn't supported on
 # fuchsia yet.
 -RemoteCopyBrowserTest.ImageUrl

@@ -13,7 +13,6 @@
 #include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/net/proxy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
@@ -29,14 +28,14 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/url_loader_interceptor.h"
-#include "google_apis/gaia/gaia_urls.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
+#include "net/test/embedded_test_server/register_basic_auth_handler.h"
 #include "net/test/embedded_test_server/simple_connection_listener.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
-#include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
@@ -60,14 +59,40 @@ void VerifyProxyScript(Browser* browser) {
                       "hasError;"));
 }
 
+class ProxyBrowserTest : public InProcessBrowserTest {
+ public:
+  ProxyBrowserTest() {
+    net::test_server::RegisterProxyBasicAuthHandler(*embedded_test_server(),
+                                                    "user", "pass");
+    EXPECT_TRUE(embedded_test_server()->InitializeAndListen());
+  }
+
+  ProxyBrowserTest(const ProxyBrowserTest&) = delete;
+  ProxyBrowserTest& operator=(const ProxyBrowserTest&) = delete;
+
+  ~ProxyBrowserTest() override = default;
+
+  // InProcessBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(
+        switches::kProxyServer,
+        embedded_test_server()->host_port_pair().ToString());
+  }
+};
+
 // Test that the browser can establish a WebSocket connection via a proxy
 // that requires basic authentication. This test also checks the headers
 // arrive at WebSocket server.
 IN_PROC_BROWSER_TEST_F(ProxyBrowserTest, BasicAuthWSConnect) {
-  // Launch WebSocket server.
-  net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
-                                   net::GetWebSocketTestDataDirectory());
-  ASSERT_TRUE(ws_server.Start());
+  net::test_server::EmbeddedTestServer ws_server{
+      net::test_server::EmbeddedTestServer::Type::TYPE_HTTP};
+  net::test_server::InstallDefaultWebSocketHandlers(
+      &ws_server, /*serve_websocket_test_data=*/false);
+  EXPECT_TRUE(ws_server.Start());
+
+  embedded_test_server()->EnableConnectProxy(
+      {net::HostPortPair::FromURL(ws_server.GetURL("host.test", "/"))});
+  embedded_test_server()->StartAcceptingConnections();
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -77,15 +102,26 @@ IN_PROC_BROWSER_TEST_F(ProxyBrowserTest, BasicAuthWSConnect) {
 
   // Visit a page that tries to establish WebSocket connection. The title
   // of the page will be 'PASS' on success.
-  GURL::Replacements replacements;
-  replacements.SetSchemeStr("http");
+  //
+  // Note that "http://host.test:?/websocket/proxied_request_check.html" is
+  // requested from the "proxy" server using a GET, rather than a CONNECT
+  // request, because of how proxying HTTP over HTTP/HTTPS proxies works. The
+  // "proxy" EmbeddedTestServer uses the default file handler to serves
+  // "proxied" GET responses directly rather than actually proxying them. The
+  // WebSocket request, however, uses a CONNECT request when proxied, which the
+  // EmbeddedTestServer does actually proxy to the destination. As a result, the
+  // two files act like they're served from the same origin, even though one is
+  // tunnelled to `ws_server`, and the other only looks to Chrome like it is.
+  //
+  // Use a hostname other than localhost to avoid behavior on some platforms
+  // that prevents proxying requests to localhost by default.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), ws_server.GetURL("proxied_request_check.html")
-                     .ReplaceComponents(replacements)));
+      browser(),
+      ws_server.GetURL("host.test", "/websocket/proxied_request_check.html")));
 
   ASSERT_TRUE(base::test::RunUntil(
       []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
-  LoginHandler::GetAllLoginHandlersForTest().front()->SetAuth(u"foo", u"bar");
+  LoginHandler::GetAllLoginHandlersForTest().front()->SetAuth(u"user", u"pass");
 
   const std::u16string result = watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::EqualsASCII(result, "PASS"));
