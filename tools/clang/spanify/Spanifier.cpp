@@ -518,7 +518,7 @@ clang::SourceRange getExprRange(const clang::Expr* expr,
 
   return {
       expr->getBeginLoc(),
-      clang::Lexer::getLocForEndOfToken(expr->getExprLoc(), 0u, source_manager,
+      clang::Lexer::getLocForEndOfToken(expr->getEndLoc(), 0u, source_manager,
                                         lang_options),
   };
 }
