@@ -33,8 +33,8 @@ namespace extensions {
 
 namespace {
 
-const char kTestMsg[] = "abcdefghij";
-const int kTestMsgLength = strlen(kTestMsg);
+constexpr std::string_view kTestMsg = "abcdefghij";
+constexpr int kTestMsgLength = kTestMsg.size();
 
 const char FAKE_ID[] = "abcdefghijklmnopqrst";
 
@@ -139,9 +139,10 @@ class TLSSocketTest : public TLSSocketTestBase,
 };
 
 TEST_F(TLSSocketTest, DestroyWhileReadPending) {
-  const net::MockRead kReads[] = {net::MockRead(net::SYNCHRONOUS, net::OK, 1)};
+  const net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, net::OK, /*seq=*/1)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::ASYNC, kTestMsg, kTestMsgLength, 0)};
+      net::MockWrite(net::ASYNC, /*seq=*/0, kTestMsg)};
   net::StaticSocketDataProvider data_provider(kReads, kWrites);
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
   net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
@@ -188,10 +189,10 @@ TEST_F(TLSSocketTest, UpgradeToTLSWithCustomOptionsTLS12) {
   // is always pending and blocked on the write. Otherwise, mock socket data
   // will complains that there aren't any data to read.
   const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, kTestMsg, kTestMsgLength, 1),
-      net::MockRead(net::ASYNC, net::OK, 2)};
+      net::MockRead(net::ASYNC, /*seq=*/1, kTestMsg),
+      net::MockRead(net::ASYNC, net::OK, /*seq=*/2)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::ASYNC, kTestMsg, kTestMsgLength, 0)};
+      net::MockWrite(net::ASYNC, /*seq=*/0, kTestMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
   ssl_socket.expected_ssl_version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
@@ -219,10 +220,10 @@ TEST_F(TLSSocketTest, UpgradeToTLSWithCustomOptionsTLS13) {
   // is always pending and blocked on the write. Otherwise, mock socket data
   // will complains that there aren't any data to read.
   const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, kTestMsg, kTestMsgLength, 1),
-      net::MockRead(net::ASYNC, net::OK, 2)};
+      net::MockRead(net::ASYNC, /*seq=*/1, kTestMsg),
+      net::MockRead(net::ASYNC, net::OK, /*seq=*/2)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::ASYNC, kTestMsg, kTestMsgLength, 0)};
+      net::MockWrite(net::ASYNC, /*seq=*/0, kTestMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
   ssl_socket.expected_ssl_version_min = net::SSL_PROTOCOL_VERSION_TLS1_3;
@@ -251,10 +252,10 @@ TEST_F(TLSSocketTest, UpgradeToTLSWithCustomOptionsTLS10) {
   // is always pending and blocked on the write. Otherwise, mock socket data
   // will complains that there aren't any data to read.
   const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, kTestMsg, kTestMsgLength, 1),
-      net::MockRead(net::ASYNC, net::OK, 2)};
+      net::MockRead(net::ASYNC, /*seq=*/1, kTestMsg),
+      net::MockRead(net::ASYNC, net::OK, /*seq=*/2)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::ASYNC, kTestMsg, kTestMsgLength, 0)};
+      net::MockWrite(net::ASYNC, /*seq=*/0, kTestMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
   ssl_socket.expected_ssl_version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
@@ -280,10 +281,10 @@ TEST_F(TLSSocketTest, UpgradeToTLSWithCustomOptionsTLS11) {
   // is always pending and blocked on the write. Otherwise, mock socket data
   // will complains that there aren't any data to read.
   const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, kTestMsg, kTestMsgLength, 1),
-      net::MockRead(net::ASYNC, net::OK, 2)};
+      net::MockRead(net::ASYNC, /*seq=*/1, kTestMsg),
+      net::MockRead(net::ASYNC, net::OK, /*seq=*/2)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::ASYNC, kTestMsg, kTestMsgLength, 0)};
+      net::MockWrite(net::ASYNC, /*seq=*/0, kTestMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
   ssl_socket.expected_ssl_version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
@@ -309,10 +310,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(TLSSocketTest, ReadWrite) {
   net::IoMode io_mode = GetParam();
   const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, kTestMsg, kTestMsgLength, 1),
-      net::MockRead(io_mode, net::OK, 2)};
+      net::MockRead(net::ASYNC, /*seq=*/1, kTestMsg),
+      net::MockRead(io_mode, net::OK, /*seq=*/2)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, kTestMsg, kTestMsgLength, 0)};
+      net::MockWrite(net::SYNCHRONOUS, /*seq=*/0, kTestMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   net::SSLSocketDataProvider ssl_socket(io_mode, net::OK);
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
@@ -320,7 +321,8 @@ TEST_P(TLSSocketTest, ReadWrite) {
   std::unique_ptr<TLSSocket> socket = CreateSocket();
 
   {
-    auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
+    auto io_buffer =
+        base::MakeRefCounted<net::StringIOBuffer>(std::string(kTestMsg));
     WriteFuture write_future;
     socket->Write(io_buffer.get(), kTestMsgLength, write_future.GetCallback());
     EXPECT_EQ(kTestMsgLength, write_future.Get());
@@ -348,10 +350,10 @@ TEST_P(TLSSocketTest, ReadWrite) {
 TEST_P(TLSSocketTest, PartialRead) {
   net::IoMode io_mode = GetParam();
   const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, kTestMsg, kTestMsgLength, 1),
-      net::MockRead(io_mode, net::OK, 2)};
+      net::MockRead(net::ASYNC, /*seq=*/1, kTestMsg),
+      net::MockRead(io_mode, net::OK, /*seq=*/2)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, kTestMsg, kTestMsgLength, 0)};
+      net::MockWrite(net::SYNCHRONOUS, /*seq=*/0, kTestMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   net::SSLSocketDataProvider ssl_socket(io_mode, net::OK);
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
@@ -359,7 +361,8 @@ TEST_P(TLSSocketTest, PartialRead) {
   std::unique_ptr<TLSSocket> socket = CreateSocket();
 
   {
-    auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
+    auto io_buffer =
+        base::MakeRefCounted<net::StringIOBuffer>(std::string(kTestMsg));
     WriteFuture write_future;
     socket->Write(io_buffer.get(), kTestMsgLength, write_future.GetCallback());
     EXPECT_EQ(kTestMsgLength, write_future.Get());
@@ -389,9 +392,9 @@ TEST_P(TLSSocketTest, PartialRead) {
 TEST_P(TLSSocketTest, ReadError) {
   net::IoMode io_mode = GetParam();
   const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, net::ERR_INSUFFICIENT_RESOURCES, 1)};
+      net::MockRead(net::ASYNC, net::ERR_INSUFFICIENT_RESOURCES, /*seq=*/1)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, kTestMsg, kTestMsgLength, 0)};
+      net::MockWrite(net::SYNCHRONOUS, /*seq=*/0, kTestMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   net::SSLSocketDataProvider ssl_socket(io_mode, net::OK);
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
@@ -400,7 +403,8 @@ TEST_P(TLSSocketTest, ReadError) {
   std::unique_ptr<TLSSocket> socket = CreateSocket();
 
   {
-    auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
+    auto io_buffer =
+        base::MakeRefCounted<net::StringIOBuffer>(std::string(kTestMsg));
     WriteFuture write_future;
     socket->Write(io_buffer.get(), kTestMsgLength, write_future.GetCallback());
     EXPECT_EQ(kTestMsgLength, write_future.Get());
@@ -435,15 +439,15 @@ TEST_P(TLSSocketTest, ReadError) {
 
 // Tests the case where a message is split over two separate socket writes.
 TEST_P(TLSSocketTest, MultipleWrite) {
-  const char kFirstHalfTestMsg[] = "abcde";
-  const char kSecondHalfTestMsg[] = "fghij";
-  EXPECT_EQ(kTestMsg, std::string(kFirstHalfTestMsg) + kSecondHalfTestMsg);
+  std::string_view kFirstHalfTestMsg = "abcde";
+  std::string_view kSecondHalfTestMsg = "fghij";
+  EXPECT_EQ(kTestMsg,
+            std::string(kFirstHalfTestMsg) + std::string(kSecondHalfTestMsg));
   net::IoMode io_mode = GetParam();
   const net::MockRead kReads[] = {net::MockRead(net::ASYNC, net::OK, 2)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(io_mode, kFirstHalfTestMsg, strlen(kFirstHalfTestMsg), 0),
-      net::MockWrite(io_mode, kSecondHalfTestMsg, strlen(kSecondHalfTestMsg),
-                     1)};
+      net::MockWrite(io_mode, /*seq=*/0, kFirstHalfTestMsg),
+      net::MockWrite(io_mode, /*seq=*/1, kSecondHalfTestMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   net::SSLSocketDataProvider ssl_socket(io_mode, net::OK);
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
@@ -451,7 +455,8 @@ TEST_P(TLSSocketTest, MultipleWrite) {
   std::unique_ptr<TLSSocket> socket = CreateSocket();
 
   int num_bytes_written = 0;
-  auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
+  auto io_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(kTestMsg));
   auto drainable_io_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
       io_buffer.get(), kTestMsgLength);
   while (num_bytes_written < kTestMsgLength) {
@@ -472,11 +477,12 @@ TEST_P(TLSSocketTest, MultipleWrite) {
 
 TEST_P(TLSSocketTest, PartialWrite) {
   net::IoMode io_mode = GetParam();
-  const net::MockRead kReads[] = {net::MockRead(net::ASYNC, net::OK, 4)};
-  const net::MockWrite kWrites[] = {net::MockWrite(io_mode, "a", 1, 0),
-                                    net::MockWrite(io_mode, "bc", 2, 1),
-                                    net::MockWrite(io_mode, "defg", 4, 2),
-                                    net::MockWrite(io_mode, "hij", 3, 3)};
+  const net::MockRead kReads[] = {
+      net::MockRead(net::ASYNC, net::OK, /*seq=*/4)};
+  const net::MockWrite kWrites[] = {net::MockWrite(io_mode, /*seq=*/0, "a"),
+                                    net::MockWrite(io_mode, /*seq=*/1, "bc"),
+                                    net::MockWrite(io_mode, /*seq=*/2, "defg"),
+                                    net::MockWrite(io_mode, /*seq=*/3, "hij")};
 
   net::SequencedSocketData data_provider(kReads, kWrites);
   net::SSLSocketDataProvider ssl_socket(io_mode, net::OK);
@@ -489,7 +495,8 @@ TEST_P(TLSSocketTest, PartialWrite) {
   // Start with writing one byte, and double that in the next iteration.
   int num_bytes_to_write = 1;
   int num_bytes_written = 0;
-  auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
+  auto io_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(kTestMsg));
   auto drainable_io_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
       io_buffer.get(), kTestMsgLength);
   while (num_bytes_written < kTestMsgLength) {
@@ -525,7 +532,8 @@ TEST_P(TLSSocketTest, WriteError) {
 
   // Mojo data pipe might buffer some write data, so continue writing until the
   // write error is received.
-  auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
+  auto io_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(kTestMsg));
   int32_t net_error = net::OK;
   while (true) {
     WriteFuture write_future;

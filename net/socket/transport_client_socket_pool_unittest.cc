@@ -78,13 +78,11 @@ const RequestPriority kDefaultPriority = LOW;
 class SOCKS5MockData {
  public:
   explicit SOCKS5MockData(IoMode mode) {
-    writes_[0] =
-        MockWrite(mode, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength);
-    writes_[1] = MockWrite(mode, kSOCKS5OkRequest, kSOCKS5OkRequestLength);
+    writes_[0] = MockWrite(mode, kSOCKS5GreetRequest);
+    writes_[1] = MockWrite(mode, kSOCKS5OkRequest);
 
-    reads_[0] =
-        MockRead(mode, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength);
-    reads_[1] = MockRead(mode, kSOCKS5OkResponse, kSOCKS5OkResponseLength);
+    reads_[0] = MockRead(mode, kSOCKS5GreetResponse);
+    reads_[1] = MockRead(mode, kSOCKS5OkResponse);
 
     data_ = std::make_unique<StaticSocketDataProvider>(reads_, writes_);
   }
@@ -1814,7 +1812,7 @@ TEST_F(TransportClientSocketPoolTest, HttpTunnelSetupRedirect) {
                     "User-Agent: test-ua\r\n\r\n"),
       };
       MockRead reads[] = {
-          MockRead(ASYNC, 1, kResponseText.c_str()),
+          MockRead(ASYNC, 1, kResponseText),
       };
 
       SequencedSocketData data(reads, writes);
@@ -2818,7 +2816,7 @@ TEST_F(TransportClientSocketPoolTest, TagHttpProxyTunnel) {
       "Proxy-Connection: keep-alive\r\n"
       "User-Agent: test-ua\r\n\r\n";
   MockWrite writes[] = {
-      MockWrite(SYNCHRONOUS, 0, request.c_str()),
+      MockWrite(SYNCHRONOUS, 0, request),
   };
   MockRead reads[] = {
       MockRead(SYNCHRONOUS, 1, "HTTP/1.1 200 Connection Established\r\n\r\n"),

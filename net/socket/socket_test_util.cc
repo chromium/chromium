@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -2268,30 +2269,38 @@ MockTaggingClientSocketFactory::CreateDatagramClientSocket(
 const char kSOCKS4TestHost[] = "127.0.0.1";
 const int kSOCKS4TestPort = 80;
 
-const char kSOCKS4OkRequestLocalHostPort80[] = {0x04, 0x01, 0x00, 0x50, 127,
-                                                0,    0,    1,    0};
-const int kSOCKS4OkRequestLocalHostPort80Length =
-    std::size(kSOCKS4OkRequestLocalHostPort80);
+constexpr auto kSOCKS4OkRequestLocalHostPort80Data =
+    std::to_array<char>({0x04, 0x01, 0x00, 0x50, 127, 0, 0, 1, 0});
+const std::string_view kSOCKS4OkRequestLocalHostPort80(
+    kSOCKS4OkRequestLocalHostPort80Data.begin(),
+    kSOCKS4OkRequestLocalHostPort80Data.end());
 
-const char kSOCKS4OkReply[] = {0x00, 0x5A, 0x00, 0x00, 0, 0, 0, 0};
-const int kSOCKS4OkReplyLength = std::size(kSOCKS4OkReply);
+constexpr auto kSOCKS4OkReplyData =
+    std::to_array<char>({0x00, 0x5A, 0x00, 0x00, 0, 0, 0, 0});
+const std::string_view kSOCKS4OkReply(kSOCKS4OkReplyData.begin(),
+                                      kSOCKS4OkReplyData.end());
 
 const char kSOCKS5TestHost[] = "host";
 const int kSOCKS5TestPort = 80;
 
-const char kSOCKS5GreetRequest[] = {0x05, 0x01, 0x00};
-const int kSOCKS5GreetRequestLength = std::size(kSOCKS5GreetRequest);
+constexpr auto kSOCKS5GreetRequestData =
+    std::to_array<char>({0x05, 0x01, 0x00});
+const std::string_view kSOCKS5GreetRequest(kSOCKS5GreetRequestData.begin(),
+                                           kSOCKS5GreetRequestData.end());
 
-const char kSOCKS5GreetResponse[] = {0x05, 0x00};
-const int kSOCKS5GreetResponseLength = std::size(kSOCKS5GreetResponse);
+constexpr auto kSOCKS5GreetResponseData = std::to_array<char>({0x05, 0x00});
+const std::string_view kSOCKS5GreetResponse(kSOCKS5GreetResponseData.begin(),
+                                            kSOCKS5GreetResponseData.end());
 
-const char kSOCKS5OkRequest[] = {0x05, 0x01, 0x00, 0x03, 0x04, 'h',
-                                 'o',  's',  't',  0x00, 0x50};
-const int kSOCKS5OkRequestLength = std::size(kSOCKS5OkRequest);
+constexpr auto kSOCKS5OkRequestData = std::to_array<char>(
+    {0x05, 0x01, 0x00, 0x03, 0x04, 'h', 'o', 's', 't', 0x00, 0x50});
+const std::string_view kSOCKS5OkRequest(kSOCKS5OkRequestData.begin(),
+                                        kSOCKS5OkRequestData.end());
 
-const char kSOCKS5OkResponse[] = {0x05, 0x00, 0x00, 0x01, 127,
-                                  0,    0,    1,    0x00, 0x50};
-const int kSOCKS5OkResponseLength = std::size(kSOCKS5OkResponse);
+constexpr auto kSOCKS5OkResponseData =
+    std::to_array<char>({0x05, 0x00, 0x00, 0x01, 127, 0, 0, 1, 0x00, 0x50});
+const std::string_view kSOCKS5OkResponse(kSOCKS5OkResponseData.begin(),
+                                         kSOCKS5OkResponseData.end());
 
 int64_t CountReadBytes(base::span<const MockRead> reads) {
   int64_t total = 0;

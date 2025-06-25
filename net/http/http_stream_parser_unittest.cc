@@ -1212,13 +1212,11 @@ class SimpleGetRunner {
   // The data used to back |string_piece| must stay alive until all mock data
   // has been read.
   void AddRead(std::string_view string_piece) {
-    reads_.emplace_back(SYNCHRONOUS, string_piece.data(), string_piece.length(),
-                        sequence_number_++);
+    reads_.emplace_back(SYNCHRONOUS, sequence_number_++, string_piece);
   }
 
   void AddAsyncRead(std::string_view string_piece) {
-    reads_.emplace_back(ASYNC, string_piece.data(), string_piece.length(),
-                        sequence_number_++);
+    reads_.emplace_back(ASYNC, sequence_number_++, string_piece);
   }
 
   void SetupParserAndSendRequest() {
@@ -1771,10 +1769,10 @@ TEST(HttpStreamParser, NonInformationalResponseStart) {
   MockRead reads[] = {
       // Add pauses between header fragments so that the test runner can advance
       // the mock clock to test timing information.
-      MockRead(ASYNC, 1, response_headers1.c_str()),
+      MockRead(ASYNC, 1, response_headers1),
       MockRead(ASYNC, ERR_IO_PENDING, 2),
-      MockRead(ASYNC, 3, response_headers2.c_str()),
-      MockRead(ASYNC, 4, response_body.c_str()),
+      MockRead(ASYNC, 3, response_headers2),
+      MockRead(ASYNC, 4, response_body),
   };
 
   // Set up the sequenced socket data.
@@ -1847,9 +1845,9 @@ TEST(HttpStreamParser, NonInformationalResponseStartWithoutBody) {
   MockRead reads[] = {
       // Add pauses between header fragments so that the test runner can advance
       // the mock clock to test timing information.
-      MockRead(ASYNC, 1, response_headers1.c_str()),
+      MockRead(ASYNC, 1, response_headers1),
       MockRead(ASYNC, ERR_IO_PENDING, 2),
-      MockRead(ASYNC, 3, response_headers2.c_str()),
+      MockRead(ASYNC, 3, response_headers2),
   };
 
   // Set up the sequenced socket data.
@@ -1929,16 +1927,16 @@ TEST(HttpStreamParser, ReceivedBytesIncludesContinueHeader) {
       // the mock clock to test timing information.
 
       // 100 response headers.
-      MockRead(ASYNC, 1, status100_response_headers1.c_str()),
+      MockRead(ASYNC, 1, status100_response_headers1),
       MockRead(ASYNC, ERR_IO_PENDING, 2),
-      MockRead(ASYNC, 3, status100_response_headers2.c_str()),
+      MockRead(ASYNC, 3, status100_response_headers2),
       MockRead(ASYNC, ERR_IO_PENDING, 4),
 
       // 200 response headers and body.
-      MockRead(ASYNC, 5, response_headers1.c_str()),
+      MockRead(ASYNC, 5, response_headers1),
       MockRead(ASYNC, ERR_IO_PENDING, 6),
-      MockRead(ASYNC, 7, response_headers2.c_str()),
-      MockRead(ASYNC, 8, response_body.c_str()),
+      MockRead(ASYNC, 7, response_headers2),
+      MockRead(ASYNC, 8, response_body),
   };
 
   // Set up the sequenced socket data.
@@ -2061,18 +2059,18 @@ TEST(HttpStreamParser, EarlyHints) {
       // the mock clock to test timing information.
 
       // 103 Early Hints response headers.
-      MockRead(ASYNC, 1, status103_response_headers1.c_str()),
+      MockRead(ASYNC, 1, status103_response_headers1),
       MockRead(ASYNC, ERR_IO_PENDING, 2),
-      MockRead(ASYNC, 3, status103_response_headers2.c_str()),
+      MockRead(ASYNC, 3, status103_response_headers2),
       MockRead(ASYNC, ERR_IO_PENDING, 4),
-      MockRead(ASYNC, 5, status103_response_headers3.c_str()),
+      MockRead(ASYNC, 5, status103_response_headers3),
       MockRead(ASYNC, ERR_IO_PENDING, 6),
 
       // 200 response headers and body.
-      MockRead(ASYNC, 7, response_headers1.c_str()),
+      MockRead(ASYNC, 7, response_headers1),
       MockRead(ASYNC, ERR_IO_PENDING, 8),
-      MockRead(ASYNC, 9, response_headers2.c_str()),
-      MockRead(ASYNC, 10, response_body.c_str()),
+      MockRead(ASYNC, 9, response_headers2),
+      MockRead(ASYNC, 10, response_body),
   };
 
   // Set up the sequenced socket data.
@@ -2195,16 +2193,16 @@ TEST(HttpStreamParser, MixedResponseHeaders) {
       // the mock clock to test timing information.
 
       // 100 response headers.
-      MockRead(ASYNC, 1, status100_response_headers.c_str()),
+      MockRead(ASYNC, 1, status100_response_headers),
       MockRead(ASYNC, ERR_IO_PENDING, 2),
 
       // Mixed response headers.
-      MockRead(ASYNC, 3, mixed_response_headers.c_str()),
+      MockRead(ASYNC, 3, mixed_response_headers),
       MockRead(ASYNC, ERR_IO_PENDING, 4),
 
       // 200 response headers and body.
-      MockRead(ASYNC, 5, response_headers.c_str()),
-      MockRead(ASYNC, 6, response_body.c_str()),
+      MockRead(ASYNC, 5, response_headers),
+      MockRead(ASYNC, 6, response_body),
   };
 
   // Set up the sequenced socket data.

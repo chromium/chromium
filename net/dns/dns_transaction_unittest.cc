@@ -140,12 +140,13 @@ class DnsSocketData {
     if (Transport::TCP == transport_) {
       auto length = std::make_unique<uint16_t>();
       *length = base::HostToNet16(query_->io_buffer()->size());
-      writes_.emplace_back(mode, reinterpret_cast<const char*>(length.get()),
-                           sizeof(uint16_t), num_reads_and_writes());
+      writes_.emplace_back(mode, base::byte_span_from_ref(*length),
+                           /*result=*/0,
+                           /*seq=*/num_reads_and_writes());
       lengths_.push_back(std::move(length));
     }
-    writes_.emplace_back(mode, query_->io_buffer()->data(),
-                         query_->io_buffer()->size(), num_reads_and_writes());
+    writes_.emplace_back(mode, query_->io_buffer()->span(),
+                         /*result=*/0, /*seq=*/num_reads_and_writes());
   }
 
   DnsSocketData(const DnsSocketData&) = delete;
@@ -164,12 +165,12 @@ class DnsSocketData {
     if (Transport::TCP == transport_) {
       auto length = std::make_unique<uint16_t>();
       *length = base::HostToNet16(tcp_length);
-      reads_.emplace_back(mode, reinterpret_cast<const char*>(length.get()),
-                          sizeof(uint16_t), num_reads_and_writes());
+      reads_.emplace_back(mode, base::byte_span_from_ref(*length),
+                          /*result=*/0, /*seq=*/num_reads_and_writes());
       lengths_.push_back(std::move(length));
     }
-    reads_.emplace_back(mode, response->io_buffer()->data(),
-                        response->io_buffer_size(), num_reads_and_writes());
+    reads_.emplace_back(mode, response->io_buffer()->span(),
+                        /*result=*/0, /*seq=*/num_reads_and_writes());
     responses_.push_back(std::move(response));
   }
 

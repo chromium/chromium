@@ -36,8 +36,8 @@ namespace extensions {
 
 namespace {
 
-const char kTestMsg[] = "abcdefghij";
-const int kTestMsgLength = strlen(kTestMsg);
+constexpr std::string_view kTestMsg = "abcdefghij";
+constexpr int kTestMsgLength = kTestMsg.size();
 
 const char FAKE_ID[] = "abcdefghijklmnopqrst";
 
@@ -88,7 +88,7 @@ class TCPSocketUnitTestBase : public extensions::ExtensionServiceTestBase {
   }
 
   // Reads data from |socket| and compares it with |expected_data|.
-  void ReadData(Socket* socket, const std::string& expected_data) {
+  void ReadData(Socket* socket, std::string_view expected_data) {
     std::string received_data;
     const int count = 512;
     while (true) {
@@ -236,9 +236,8 @@ TEST_F(TCPSocketUnitTest, DestroyWhileReadPending) {
 
 TEST_P(TCPSocketUnitTest, Read) {
   net::IoMode io_mode = GetParam();
-  const net::MockRead kReads[] = {
-      net::MockRead(io_mode, kTestMsg, kTestMsgLength),
-      net::MockRead(io_mode, net::OK)};
+  const net::MockRead kReads[] = {net::MockRead(io_mode, kTestMsg),
+                                  net::MockRead(io_mode, net::OK)};
   net::StaticSocketDataProvider data_provider(kReads,
                                               base::span<net::MockWrite>());
 
@@ -256,10 +255,9 @@ TEST_P(TCPSocketUnitTest, SocketMultipleRead) {
   const char kSecondHalfTestMsg[] = "fghij";
   EXPECT_EQ(kTestMsg, std::string(kFirstHalfTestMsg) + kSecondHalfTestMsg);
   net::IoMode io_mode = GetParam();
-  const net::MockRead kReads[] = {
-      net::MockRead(io_mode, kFirstHalfTestMsg, strlen(kFirstHalfTestMsg)),
-      net::MockRead(io_mode, kSecondHalfTestMsg, strlen(kSecondHalfTestMsg)),
-      net::MockRead(io_mode, net::OK)};
+  const net::MockRead kReads[] = {net::MockRead(io_mode, kFirstHalfTestMsg),
+                                  net::MockRead(io_mode, kSecondHalfTestMsg),
+                                  net::MockRead(io_mode, net::OK)};
   net::StaticSocketDataProvider data_provider(kReads,
                                               base::span<net::MockWrite>());
 
@@ -274,9 +272,8 @@ TEST_P(TCPSocketUnitTest, SocketMultipleRead) {
 // Tests the case where read size is smaller than the actual message.
 TEST_P(TCPSocketUnitTest, SocketPartialRead) {
   net::IoMode io_mode = GetParam();
-  const net::MockRead kReads[] = {
-      net::MockRead(io_mode, kTestMsg, kTestMsgLength),
-      net::MockRead(io_mode, net::OK)};
+  const net::MockRead kReads[] = {net::MockRead(io_mode, kTestMsg),
+                                  net::MockRead(io_mode, net::OK)};
   net::StaticSocketDataProvider data_provider(kReads,
                                               base::span<net::MockWrite>());
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
@@ -305,7 +302,7 @@ TEST_P(TCPSocketUnitTest, SocketPartialRead) {
 TEST_P(TCPSocketUnitTest, ReadError) {
   net::IoMode io_mode = GetParam();
   const net::MockRead kReads[] = {
-      net::MockRead(io_mode, kTestMsg, kTestMsgLength),
+      net::MockRead(io_mode, kTestMsg),
       net::MockRead(io_mode, net::ERR_INSUFFICIENT_RESOURCES)};
   net::StaticSocketDataProvider data_provider(kReads,
                                               base::span<net::MockWrite>());
@@ -341,15 +338,15 @@ TEST_P(TCPSocketUnitTest, Write) {
   net::IoMode io_mode = GetParam();
   const net::MockRead kReads[] = {
       net::MockRead(net::SYNCHRONOUS, net::ERR_IO_PENDING)};
-  const net::MockWrite kWrites[] = {
-      net::MockWrite(io_mode, kTestMsg, kTestMsgLength)};
+  const net::MockWrite kWrites[] = {net::MockWrite(io_mode, kTestMsg)};
 
   net::StaticSocketDataProvider data_provider(kReads, kWrites);
 
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
   std::unique_ptr<TCPSocket> socket = CreateAndConnectSocket();
 
-  auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
+  auto io_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(kTestMsg));
   WriteFuture write_future;
   socket->Write(io_buffer.get(), kTestMsgLength, write_future.GetCallback());
   EXPECT_EQ(kTestMsgLength, write_future.Get());
@@ -357,22 +354,24 @@ TEST_P(TCPSocketUnitTest, Write) {
 
 // Tests the case where a message is split over two separate socket writes.
 TEST_P(TCPSocketUnitTest, MultipleWrite) {
-  const char kFirstHalfTestMsg[] = "abcde";
-  const char kSecondHalfTestMsg[] = "fghij";
-  EXPECT_EQ(kTestMsg, std::string(kFirstHalfTestMsg) + kSecondHalfTestMsg);
+  std::string_view kFirstHalfTestMsg = "abcde";
+  std::string_view kSecondHalfTestMsg = "fghij";
+  EXPECT_EQ(kTestMsg,
+            std::string(kFirstHalfTestMsg) + std::string(kSecondHalfTestMsg));
   net::IoMode io_mode = GetParam();
   const net::MockRead kReads[] = {
       net::MockRead(net::SYNCHRONOUS, net::ERR_IO_PENDING)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(io_mode, kFirstHalfTestMsg, strlen(kFirstHalfTestMsg)),
-      net::MockWrite(io_mode, kSecondHalfTestMsg, strlen(kSecondHalfTestMsg))};
+      net::MockWrite(io_mode, kFirstHalfTestMsg),
+      net::MockWrite(io_mode, kSecondHalfTestMsg)};
 
   net::StaticSocketDataProvider data_provider(kReads, kWrites);
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
   std::unique_ptr<TCPSocket> socket = CreateAndConnectSocket();
 
   int num_bytes_written = 0;
-  auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
+  auto io_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(kTestMsg));
   auto drainable_io_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
       io_buffer.get(), kTestMsgLength);
   while (num_bytes_written < kTestMsgLength) {
@@ -395,8 +394,8 @@ TEST_P(TCPSocketUnitTest, PartialWrite) {
   const net::MockRead kReads[] = {
       net::MockRead(net::SYNCHRONOUS, net::ERR_IO_PENDING)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(io_mode, "a", 1), net::MockWrite(io_mode, "bc", 2),
-      net::MockWrite(io_mode, "defg", 4), net::MockWrite(io_mode, "hij", 3)};
+      net::MockWrite(io_mode, "a"), net::MockWrite(io_mode, "bc"),
+      net::MockWrite(io_mode, "defg"), net::MockWrite(io_mode, "hij")};
 
   net::StaticSocketDataProvider data_provider(kReads, kWrites);
 
@@ -406,7 +405,8 @@ TEST_P(TCPSocketUnitTest, PartialWrite) {
   // Start with writing one byte, and double that in the next iteration.
   int num_bytes_to_write = 1;
   int num_bytes_written = 0;
-  auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
+  auto io_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(kTestMsg));
   auto drainable_io_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
       io_buffer.get(), kTestMsgLength);
   while (num_bytes_written < kTestMsgLength) {
@@ -441,7 +441,8 @@ TEST_P(TCPSocketUnitTest, WriteError) {
 
   // Mojo data pipe might buffer some write data, so continue writing until the
   // write error is received.
-  auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
+  auto io_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(kTestMsg));
   int net_error = net::OK;
   while (true) {
     WriteFuture write_future;
@@ -668,7 +669,8 @@ TEST_F(TCPSocketServerTest, ReadAndWrite) {
       std::move(send_handle), remote_addr, FAKE_ID);
 
   // Send data from the client to the server.
-  auto io_buffer_write = base::MakeRefCounted<net::StringIOBuffer>(kTestMsg);
+  auto io_buffer_write =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(kTestMsg));
   {
     WriteFuture write_future;
     client_socket->Write(io_buffer_write.get(), kTestMsgLength,

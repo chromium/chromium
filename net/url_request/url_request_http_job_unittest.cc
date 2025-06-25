@@ -95,7 +95,7 @@ using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 using ::testing::Unused;
 
-const char kSimpleGetMockWrite[] =
+const std::string_view kSimpleGetMockWrite =
     "GET / HTTP/1.1\r\n"
     "Host: www.example.com\r\n"
     "Connection: keep-alive\r\n"
@@ -103,7 +103,7 @@ const char kSimpleGetMockWrite[] =
     "Accept-Encoding: gzip, deflate\r\n"
     "Accept-Language: en-us,fr\r\n\r\n";
 
-const char kSimpleHeadMockWrite[] =
+const std::string_view kSimpleHeadMockWrite =
     "HEAD / HTTP/1.1\r\n"
     "Host: www.example.com\r\n"
     "Connection: keep-alive\r\n"
@@ -266,7 +266,7 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestFailureWithoutProxy) {
 // server in the proxy chain fails, the proxy chain is still set correctly on
 // the URLRequest.
 TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
-  const char kSimpleProxyGetMockWrite[] =
+  const std::string_view kSimpleProxyGetMockWrite =
       "GET http://www.example.com/ HTTP/1.1\r\n"
       "Host: www.example.com\r\n"
       "Proxy-Connection: keep-alive\r\n"
@@ -2169,7 +2169,7 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, BrotliAdvertisement) {
 TEST_F(URLRequestHttpJobWithBrotliSupportTest, DefaultAcceptEncodingOverriden) {
   struct {
     base::flat_set<net::SourceStreamType> accepted_types;
-    const char* expected_request_headers;
+    const std::string_view expected_request_headers;
   } kTestCases[] = {
       {{net::SourceStreamType::kDeflate},
        "GET / HTTP/1.1\r\n"

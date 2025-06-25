@@ -44,12 +44,9 @@ namespace {
 typedef std::vector<net::MockRead> ReadList;
 typedef std::vector<net::MockWrite> WriteList;
 
-const char kReadData[] = "read_data";
-const int kReadDataSize = std::size(kReadData) - 1;
-const char kReadData2[] = "read_alternate_data";
-const int kReadData2Size = std::size(kReadData2) - 1;
-const char kWriteData[] = "write_data";
-const int kWriteDataSize = std::size(kWriteData) - 1;
+constexpr std::string_view kReadData = "read_data";
+constexpr std::string_view kReadData2 = "read_alternate_data";
+constexpr std::string_view kWriteData = "write_data";
 
 class GCMSocketStreamTest : public testing::Test {
  public:
@@ -66,11 +63,11 @@ class GCMSocketStreamTest : public testing::Test {
   std::string_view DoInputStreamRead(int bytes);
 
   // Simulates a google::protobuf::io::CodedOutputStream write.
-  int DoOutputStreamWrite(std::string_view write_src);
+  size_t DoOutputStreamWrite(std::string_view write_src);
 
   // Simulates a google::protobuf::io::CodedOutputStream write, but do not call
   // flush.
-  int DoOutputStreamWriteWithoutFlush(std::string_view write_src);
+  size_t DoOutputStreamWriteWithoutFlush(std::string_view write_src);
 
   // Synchronous Refresh wrapper.
   void WaitForData(int msg_size);
@@ -183,8 +180,8 @@ std::string_view GCMSocketStreamTest::DoInputStreamRead(int bytes) {
                           total_bytes_read);
 }
 
-int GCMSocketStreamTest::DoOutputStreamWrite(std::string_view write_src) {
-  int total_bytes_written = DoOutputStreamWriteWithoutFlush(write_src);
+size_t GCMSocketStreamTest::DoOutputStreamWrite(std::string_view write_src) {
+  size_t total_bytes_written = DoOutputStreamWriteWithoutFlush(write_src);
   base::RunLoop run_loop;
   if (socket_output_stream_->Flush(run_loop.QuitClosure()) ==
       net::ERR_IO_PENDING) {
@@ -194,7 +191,7 @@ int GCMSocketStreamTest::DoOutputStreamWrite(std::string_view write_src) {
   return total_bytes_written;
 }
 
-int GCMSocketStreamTest::DoOutputStreamWriteWithoutFlush(
+size_t GCMSocketStreamTest::DoOutputStreamWriteWithoutFlush(
     std::string_view write_src) {
   DCHECK_EQ(socket_output_stream_->GetState(), SocketOutputStream::EMPTY);
   int total_bytes_written = 0;
@@ -214,7 +211,7 @@ int GCMSocketStreamTest::DoOutputStreamWriteWithoutFlush(
     total_bytes_written += bytes_to_write;
   } while (total_bytes_written < bytes);
 
-  return total_bytes_written;
+  return base::checked_cast<size_t>(total_bytes_written);
 }
 
 void GCMSocketStreamTest::WaitForData(int msg_size) {
@@ -277,98 +274,80 @@ void GCMSocketStreamTest::ResetOutputStream() {
 // A read where all data is already available.
 TEST_F(GCMSocketStreamTest, ReadDataSync) {
   ReadList read_list;
-  read_list.push_back(
-      net::MockRead(net::SYNCHRONOUS, kReadData, kReadDataSize));
+  read_list.push_back(net::MockRead(net::SYNCHRONOUS, kReadData));
   read_list.push_back(net::MockRead(net::ASYNC, net::OK) /* EOF */);
   BuildSocket(read_list, WriteList());
 
-  WaitForData(kReadDataSize);
-  ASSERT_EQ(std::string(kReadData, kReadDataSize),
-            DoInputStreamRead(kReadDataSize));
+  WaitForData(kReadData.size());
+  ASSERT_EQ(kReadData, DoInputStreamRead(kReadData.size()));
 }
 
 // A read that comes in two parts.
 TEST_F(GCMSocketStreamTest, ReadPartialDataSync) {
-  int first_read_len = kReadDataSize / 2;
-  int second_read_len = kReadDataSize - first_read_len;
+  int first_read_len = kReadData.size() / 2;
   ReadList read_list;
   read_list.push_back(
-      net::MockRead(net::SYNCHRONOUS,
-                    kReadData,
-                    first_read_len));
+      net::MockRead(net::SYNCHRONOUS, kReadData.substr(0, first_read_len)));
   read_list.push_back(
-      net::MockRead(net::SYNCHRONOUS,
-                    &kReadData[first_read_len],
-                    second_read_len));
+      net::MockRead(net::SYNCHRONOUS, kReadData.substr(first_read_len)));
   // Add an EOF.
   read_list.push_back(net::MockRead(net::SYNCHRONOUS, net::OK));
 
   BuildSocket(read_list, WriteList());
 
-  WaitForData(kReadDataSize);
-  ASSERT_EQ(std::string(kReadData, kReadDataSize),
-            DoInputStreamRead(kReadDataSize));
+  WaitForData(kReadData.size());
+  ASSERT_EQ(kReadData, DoInputStreamRead(kReadData.size()));
 }
 
 // A read where no data is available at first (IO_PENDING will be returned).
 TEST_F(GCMSocketStreamTest, ReadAsync) {
-  int first_read_len = kReadDataSize / 2;
-  int second_read_len = kReadDataSize - first_read_len;
+  int first_read_len = kReadData.size() / 2;
   ReadList read_list;
   read_list.push_back(
-      net::MockRead(net::ASYNC, kReadData, first_read_len));
+      net::MockRead(net::ASYNC, kReadData.substr(0, first_read_len)));
   read_list.push_back(
-      net::MockRead(net::ASYNC, &kReadData[first_read_len], second_read_len));
+      net::MockRead(net::ASYNC, kReadData.substr(first_read_len)));
   read_list.push_back(net::MockRead(net::ASYNC, net::OK) /* EOF */);
   BuildSocket(read_list, WriteList());
-  WaitForData(kReadDataSize);
-  ASSERT_EQ(std::string(kReadData, kReadDataSize),
-            DoInputStreamRead(kReadDataSize));
+  WaitForData(kReadData.size());
+  ASSERT_EQ(kReadData, DoInputStreamRead(kReadData.size()));
 }
 
 // Simulate two packets arriving at once. Read them in two separate calls.
 TEST_F(GCMSocketStreamTest, TwoReadsAtOnce) {
-  std::string long_data = std::string(kReadData, kReadDataSize) +
-                          std::string(kReadData2, kReadData2Size);
+  std::string long_data = std::string(kReadData) + std::string(kReadData2);
   ReadList read_list;
-  read_list.push_back(
-      net::MockRead(net::SYNCHRONOUS, long_data.c_str(), long_data.size()));
+  read_list.push_back(net::MockRead(net::SYNCHRONOUS, long_data));
   // Add an EOF.
   read_list.push_back(net::MockRead(net::SYNCHRONOUS, net::OK));
 
   BuildSocket(read_list, WriteList());
 
-  WaitForData(kReadDataSize);
-  ASSERT_EQ(std::string(kReadData, kReadDataSize),
-            DoInputStreamRead(kReadDataSize));
+  WaitForData(kReadData.size());
+  ASSERT_EQ(kReadData, DoInputStreamRead(kReadData.size()));
 
-  WaitForData(kReadData2Size);
-  ASSERT_EQ(std::string(kReadData2, kReadData2Size),
-            DoInputStreamRead(kReadData2Size));
+  WaitForData(kReadData2.size());
+  ASSERT_EQ(kReadData2, DoInputStreamRead(kReadData2.size()));
 }
 
 // Simulate two packets arriving at once. Read them in two calls separated
 // by a Rebuild.
 TEST_F(GCMSocketStreamTest, TwoReadsAtOnceWithRebuild) {
-  std::string long_data = std::string(kReadData, kReadDataSize) +
-                          std::string(kReadData2, kReadData2Size);
+  std::string long_data = std::string(kReadData) + std::string(kReadData2);
   ReadList read_list;
 
-  read_list.push_back(
-      net::MockRead(net::SYNCHRONOUS, long_data.c_str(), long_data.size()));
+  read_list.push_back(net::MockRead(net::SYNCHRONOUS, long_data));
   // Add an EOF.
   read_list.push_back(net::MockRead(net::SYNCHRONOUS, net::OK));
 
   BuildSocket(read_list, WriteList());
 
-  WaitForData(kReadDataSize);
-  ASSERT_EQ(std::string(kReadData, kReadDataSize),
-              DoInputStreamRead(kReadDataSize));
+  WaitForData(kReadData.size());
+  ASSERT_EQ(kReadData, DoInputStreamRead(kReadData.size()));
 
   input_stream()->RebuildBuffer();
-  WaitForData(kReadData2Size);
-  ASSERT_EQ(std::string(kReadData2, kReadData2Size),
-            DoInputStreamRead(kReadData2Size));
+  WaitForData(kReadData2.size());
+  ASSERT_EQ(kReadData2, DoInputStreamRead(kReadData2.size()));
 }
 
 // Simulate a read that is aborted.
@@ -377,7 +356,7 @@ TEST_F(GCMSocketStreamTest, ReadError) {
   BuildSocket(ReadList(1, net::MockRead(net::SYNCHRONOUS, result)),
               WriteList());
 
-  WaitForData(kReadDataSize);
+  WaitForData(kReadData.size());
   ASSERT_EQ(SocketInputStream::CLOSED, input_stream()->GetState());
   ASSERT_EQ(net::ERR_FAILED, input_stream()->last_error());
 }
@@ -387,7 +366,7 @@ TEST_F(GCMSocketStreamTest, ReadDisconnected) {
   BuildSocket(ReadList(1, net::MockRead(net::SYNCHRONOUS, net::ERR_IO_PENDING)),
               WriteList());
   mojo_socket_remote_.reset();
-  WaitForData(kReadDataSize);
+  WaitForData(kReadData.size());
   ASSERT_EQ(SocketInputStream::CLOSED, input_stream()->GetState());
   ASSERT_EQ(net::ERR_FAILED, input_stream()->last_error());
 }
@@ -395,25 +374,20 @@ TEST_F(GCMSocketStreamTest, ReadDisconnected) {
 // Write a full message in one go.
 TEST_F(GCMSocketStreamTest, WriteFull) {
   BuildSocket(ReadList(1, net::MockRead(net::SYNCHRONOUS, net::ERR_IO_PENDING)),
-              WriteList(1, net::MockWrite(net::SYNCHRONOUS, kWriteData,
-                                          kWriteDataSize)));
-  ASSERT_EQ(kWriteDataSize,
-            DoOutputStreamWrite(std::string_view(kWriteData, kWriteDataSize)));
+              WriteList(1, net::MockWrite(net::SYNCHRONOUS, kWriteData)));
+  ASSERT_EQ(kWriteData.size(), DoOutputStreamWrite(kWriteData));
 }
 
 // Write a message in two go's.
 TEST_F(GCMSocketStreamTest, WritePartial) {
   WriteList write_list;
-  write_list.push_back(net::MockWrite(net::SYNCHRONOUS,
-                                      kWriteData,
-                                      kWriteDataSize / 2));
-  write_list.push_back(net::MockWrite(net::SYNCHRONOUS,
-                                      kWriteData + kWriteDataSize / 2,
-                                      kWriteDataSize / 2));
+  write_list.push_back(net::MockWrite(
+      net::SYNCHRONOUS, kWriteData.substr(0, kWriteData.size() / 2)));
+  write_list.push_back(net::MockWrite(
+      net::SYNCHRONOUS, kWriteData.substr(kWriteData.size() / 2)));
   BuildSocket(ReadList(1, net::MockRead(net::SYNCHRONOUS, net::ERR_IO_PENDING)),
               write_list);
-  ASSERT_EQ(kWriteDataSize,
-            DoOutputStreamWrite(std::string_view(kWriteData, kWriteDataSize)));
+  ASSERT_EQ(kWriteData.size(), DoOutputStreamWrite(kWriteData));
 }
 
 // Regression test for crbug.com/866635.
@@ -427,10 +401,10 @@ TEST_F(GCMSocketStreamTest, WritePartialWithLengthChecking) {
   // The 1 byte shortage is to simulate the partial write.
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  ASSERT_EQ(
-      mojo::CreateDataPipe(kWriteDataSize + prefix_data.size() - 1 /* size */,
-                           producer_handle, consumer_handle),
-      MOJO_RESULT_OK);
+  ASSERT_EQ(mojo::CreateDataPipe(
+                kWriteData.size() + prefix_data.size() - 1 /* size */,
+                producer_handle, consumer_handle),
+            MOJO_RESULT_OK);
 
   // Prepopulate |producer_handle| of |prefix_data|, now the pipe's capacity is
   // less than |kWriteDataSize|.
@@ -447,7 +421,7 @@ TEST_F(GCMSocketStreamTest, WritePartialWithLengthChecking) {
   set_socket_output_stream(std::move(socket_output_stream));
 
   // Write but do not flush.
-  EXPECT_EQ(kWriteDataSize, DoOutputStreamWriteWithoutFlush(kWriteData));
+  EXPECT_EQ(kWriteData.size(), DoOutputStreamWriteWithoutFlush(kWriteData));
 
   base::RunLoop run_loop;
   output_stream()->Flush(run_loop.QuitClosure());
@@ -496,56 +470,45 @@ TEST_F(GCMSocketStreamTest, WritePartialWithLengthChecking) {
 // finishing the write in two go's).
 TEST_F(GCMSocketStreamTest, WriteNone) {
   WriteList write_list;
-  write_list.push_back(net::MockWrite(net::SYNCHRONOUS,
-                                      kWriteData,
-                                      kWriteDataSize / 2));
-  write_list.push_back(net::MockWrite(net::SYNCHRONOUS,
-                                      kWriteData + kWriteDataSize / 2,
-                                      kWriteDataSize / 2));
+  write_list.push_back(net::MockWrite(
+      net::SYNCHRONOUS, kWriteData.substr(0, kWriteData.size() / 2)));
+  write_list.push_back(net::MockWrite(
+      net::SYNCHRONOUS, kWriteData.substr(kWriteData.size() / 2)));
   BuildSocket(ReadList(1, net::MockRead(net::SYNCHRONOUS, net::ERR_IO_PENDING)),
               write_list);
-  ASSERT_EQ(kWriteDataSize,
-            DoOutputStreamWrite(std::string_view(kWriteData, kWriteDataSize)));
+  ASSERT_EQ(kWriteData.size(), DoOutputStreamWrite(kWriteData));
 }
 
 // Write a message then read a message.
 TEST_F(GCMSocketStreamTest, WriteThenRead) {
   ReadList read_list;
-  read_list.push_back(
-      net::MockRead(net::SYNCHRONOUS, kReadData, kReadDataSize));
+  read_list.push_back(net::MockRead(net::SYNCHRONOUS, kReadData));
   // Add an EOF.
   read_list.push_back(net::MockRead(net::SYNCHRONOUS, net::OK));
 
   BuildSocket(read_list,
-              WriteList(1, net::MockWrite(net::SYNCHRONOUS, kWriteData,
-                                          kWriteDataSize)));
+              WriteList(1, net::MockWrite(net::SYNCHRONOUS, kWriteData)));
 
-  ASSERT_EQ(kWriteDataSize,
-            DoOutputStreamWrite(std::string_view(kWriteData, kWriteDataSize)));
+  ASSERT_EQ(kWriteData.size(), DoOutputStreamWrite(kWriteData));
 
-  WaitForData(kReadDataSize);
-  ASSERT_EQ(std::string(kReadData, kReadDataSize),
-              DoInputStreamRead(kReadDataSize));
+  WaitForData(kReadData.size());
+  ASSERT_EQ(kReadData, DoInputStreamRead(kReadData.size()));
 }
 
 // Read a message then write a message.
 TEST_F(GCMSocketStreamTest, ReadThenWrite) {
   ReadList read_list;
-  read_list.push_back(
-      net::MockRead(net::SYNCHRONOUS, kReadData, kReadDataSize));
+  read_list.push_back(net::MockRead(net::SYNCHRONOUS, kReadData));
   // Add an EOF.
   read_list.push_back(net::MockRead(net::SYNCHRONOUS, net::OK));
 
   BuildSocket(read_list,
-              WriteList(1, net::MockWrite(net::SYNCHRONOUS, kWriteData,
-                                          kWriteDataSize)));
+              WriteList(1, net::MockWrite(net::SYNCHRONOUS, kWriteData)));
 
-  WaitForData(kReadDataSize);
-  ASSERT_EQ(std::string(kReadData, kReadDataSize),
-              DoInputStreamRead(kReadDataSize));
+  WaitForData(kReadData.size());
+  ASSERT_EQ(kReadData, DoInputStreamRead(kReadData.size()));
 
-  ASSERT_EQ(kWriteDataSize,
-            DoOutputStreamWrite(std::string_view(kWriteData, kWriteDataSize)));
+  ASSERT_EQ(kWriteData.size(), DoOutputStreamWrite(kWriteData));
 }
 
 // Simulate a write that gets aborted.
@@ -556,7 +519,7 @@ TEST_F(GCMSocketStreamTest, WriteError) {
   // Mojo data pipe buffers data, so there is a delay before write error is
   // observed.Continue writing if error is not observed.
   while (output_stream()->GetState() != SocketOutputStream::CLOSED) {
-    DoOutputStreamWrite(std::string_view(kWriteData, kWriteDataSize));
+    DoOutputStreamWrite(kWriteData);
   }
   ASSERT_EQ(SocketOutputStream::CLOSED, output_stream()->GetState());
   ASSERT_EQ(net::ERR_FAILED, output_stream()->last_error());
@@ -567,7 +530,7 @@ TEST_F(GCMSocketStreamTest, WriteDisconnected) {
   BuildSocket(ReadList(1, net::MockRead(net::SYNCHRONOUS, net::ERR_IO_PENDING)),
               WriteList());
   mojo_socket_remote_.reset();
-  DoOutputStreamWrite(std::string_view(kWriteData, kWriteDataSize));
+  DoOutputStreamWrite(kWriteData);
   ASSERT_EQ(SocketOutputStream::CLOSED, output_stream()->GetState());
   ASSERT_EQ(net::ERR_FAILED, output_stream()->last_error());
 }

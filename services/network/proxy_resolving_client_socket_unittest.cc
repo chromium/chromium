@@ -1072,7 +1072,7 @@ TEST_P(ReconsiderProxyAfterErrorTest, ReconsiderProxyAfterError) {
   // TODO(crbug.com/40810987): Test this more accurately. Errors like
   // `ERR_PROXY_CONNECTION_FAILED` or `ERR_PROXY_CERTIFICATE_INVALID` are
   // surfaced in response to other errors in TCP or TLS connection setup.
-  static const char kHttpConnect[] =
+  static constexpr std::string_view kHttpConnect =
       "CONNECT example.com:443 HTTP/1.1\r\n"
       "Host: example.com:443\r\n"
       "Proxy-Connection: keep-alive\r\n\r\n";

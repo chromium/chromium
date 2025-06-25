@@ -130,9 +130,8 @@ constexpr std::string_view kQuic200RespStatusLine = "HTTP/1.1 200";
 // Response data used for QUIC requests in multiple tests.
 constexpr std::string_view kQuicRespData = "hello!";
 // Response data used for HTTP requests in multiple tests.
-// TODO(crbug.com/41496581): Once MockReadWrite accepts a
-// std::string_view parameter, we can use "constexpr std::string_view" for this.
-const char kHttpRespData[] = "hello world";
+
+constexpr std::string_view kHttpRespData = "hello world";
 
 struct TestParams {
   quic::ParsedQuicVersion version;
@@ -868,7 +867,7 @@ class QuicNetworkTransactionTest
         MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
     MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-                             MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                             MockRead(SYNCHRONOUS, 4, alt_svc_header_),
                              MockRead(SYNCHRONOUS, 5, "http used"),
                              // Connection closed.
                              MockRead(SYNCHRONOUS, OK, 6)};
@@ -1855,7 +1854,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxy) {
   const char kGetResponse[] =
       "HTTP/1.1 200 OK\r\n"
       "Content-Length: 11\r\n\r\n";
-  ASSERT_EQ(strlen(kHttpRespData), 11u);
+  ASSERT_EQ(kHttpRespData.size(), 11u);
 
   mock_quic_data.AddRead(
       ASYNC, ConstructServerDataPacket(
@@ -1957,7 +1956,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyWithCert) {
   const char kGetResponse[] =
       "HTTP/1.1 200 OK\r\n"
       "Content-Length: 11\r\n\r\n";
-  ASSERT_EQ(strlen(kHttpRespData), 11u);
+  ASSERT_EQ(kHttpRespData.size(), 11u);
 
   mock_quic_data.AddRead(
       ASYNC, ConstructServerDataPacket(
@@ -2103,7 +2102,7 @@ TEST_P(QuicNetworkTransactionTest, DoNotUseQuicForUnsupportedVersion) {
   std::string altsvc_header = GenerateQuicAltSvcHeader(supported_versions_);
   MockRead http_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n"),
-      MockRead(altsvc_header.c_str()),
+      MockRead(altsvc_header),
       MockRead("\r\n"),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
@@ -2297,7 +2296,7 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceForQuic) {
     return;
   }
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -2346,7 +2345,7 @@ TEST_P(QuicNetworkTransactionTest, UseIetfAlternativeServiceForQuic) {
   std::string alt_svc_header =
       "Alt-Svc: " + quic::AlpnForVersion(version_) + "=\":443\"\r\n\r\n";
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -2412,7 +2411,7 @@ TEST_P(QuicNetworkTransactionTest,
       NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -2526,8 +2525,8 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceWithVersionForQuic1) {
                          quic::AlpnForVersion(version_).c_str());
 
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"),
-      MockRead(QuicAltSvcWithVersionHeader.c_str()), MockRead(kHttpRespData),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(QuicAltSvcWithVersionHeader),
+      MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
 
@@ -2606,8 +2605,8 @@ TEST_P(QuicNetworkTransactionTest,
   picked_version = version_;  // Use server's preference.
 
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"),
-      MockRead(QuicAltSvcWithVersionHeader.c_str()), MockRead(kHttpRespData),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(QuicAltSvcWithVersionHeader),
+      MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
 
@@ -2679,7 +2678,7 @@ TEST_P(QuicNetworkTransactionTest, SetAlternativeServiceWithScheme) {
        GenerateQuicAltSvcHeaderValue({version_}, "foo.example.com", 443), ",",
        GenerateQuicAltSvcHeaderValue({version_}, 444), "\r\n\r\n"});
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -2719,7 +2718,7 @@ TEST_P(QuicNetworkTransactionTest, DoNotGetAltSvcForDifferentOrigin) {
        GenerateQuicAltSvcHeaderValue({version_}, "foo.example.com", 443), ",",
        GenerateQuicAltSvcHeaderValue({version_}, 444), "\r\n\r\n"});
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -2766,7 +2765,7 @@ TEST_P(QuicNetworkTransactionTest,
   std::string altsvc_header = GenerateQuicAltSvcHeader(supported_versions_);
   MockRead http_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n"),
-      MockRead(altsvc_header.c_str()),
+      MockRead(altsvc_header),
       MockRead("\r\n"),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
@@ -2826,7 +2825,7 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceAllSupportedVersion) {
   std::string altsvc_header = base::StringPrintf(
       "Alt-Svc: %s=\":443\"\r\n\r\n", quic::AlpnForVersion(version_).c_str());
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(altsvc_header.c_str()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(altsvc_header),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -3098,7 +3097,7 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
   MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_),
                            MockRead(SYNCHRONOUS, 5, kHttpRespData),
                            MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
@@ -3199,7 +3198,7 @@ TEST_P(QuicNetworkTransactionTest,
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
   MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_),
                            MockRead(SYNCHRONOUS, 5, kHttpRespData),
                            MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
@@ -3312,7 +3311,7 @@ TEST_P(QuicNetworkTransactionTest,
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
   MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_),
                            MockRead(SYNCHRONOUS, 5, kHttpRespData),
                            MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
@@ -3422,7 +3421,7 @@ TEST_P(QuicNetworkTransactionTest,
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
   MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_),
                            MockRead(SYNCHRONOUS, 5, kHttpRespData),
                            MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
@@ -3528,7 +3527,7 @@ TEST_P(QuicNetworkTransactionTest, ResetAfterHandshakeConfirmedThenBroken) {
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
   MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_),
                            MockRead(SYNCHRONOUS, 5, kHttpRespData),
                            MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
@@ -3663,7 +3662,7 @@ TEST_P(QuicNetworkTransactionTest, BrokenAlternativeOnlyRecordedOnce) {
   base::HistogramTester histogram_tester;
 
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -3802,7 +3801,7 @@ TEST_P(QuicNetworkTransactionTest,
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
   MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_),
                            MockRead(SYNCHRONOUS, 5, kHttpRespData),
                            MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
@@ -3863,7 +3862,7 @@ TEST_P(QuicNetworkTransactionTest,
       base::StringPrintf("Alt-Svc: quic=\":443\"; v=\"%u\"\r\n\r\n",
                          version_.transport_version - 1);
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(altsvc_header.c_str()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(altsvc_header),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -3895,7 +3894,7 @@ TEST_P(QuicNetworkTransactionTest, UseExistingAlternativeServiceForQuic) {
        GenerateQuicAltSvcHeaderValue({version_}, "foo.example.org", 443), ",",
        GenerateQuicAltSvcHeaderValue({version_}, 444), "\r\n\r\n"});
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4174,9 +4173,10 @@ TEST_P(QuicNetworkTransactionTest,
   // Default cert is valid for *.example.org
 
   // HTTP data for request to www.example.org.
-  const char kWwwHttpRespData[] = "hello world from www.example.org";
+  constexpr std::string_view kWwwHttpRespData =
+      "hello world from www.example.org";
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_),
       MockRead(kWwwHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4191,9 +4191,10 @@ TEST_P(QuicNetworkTransactionTest,
       {"Alt-Svc: ", GenerateQuicAltSvcHeaderValue({version_}, 444), ",",
        GenerateQuicAltSvcHeaderValue({version_}, "www.example.org", 443),
        "\r\n\r\n"});
-  const char kMailHttpRespData[] = "hello world from mail.example.org";
+  const std::string_view kMailHttpRespData =
+      "hello world from mail.example.org";
   MockRead http_reads2[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header2.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header2),
       MockRead(kMailHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4283,7 +4284,7 @@ TEST_P(QuicNetworkTransactionTest, AlternativeServiceDifferentPort) {
       base::StrCat({"Alt-Svc: ", GenerateQuicAltSvcHeaderValue({version_}, 137),
                     "\r\n\r\n"});
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4316,7 +4317,7 @@ TEST_P(QuicNetworkTransactionTest, ConfirmAlternativeService) {
     return;
   }
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4406,7 +4407,7 @@ TEST_P(QuicNetworkTransactionTest,
   http_server_properties_ = std::make_unique<HttpServerProperties>();
 
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4478,7 +4479,7 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceForQuicForHttps) {
     return;
   }
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4531,7 +4532,7 @@ TEST_P(QuicNetworkTransactionTest, HungAlternativeService) {
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
   MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_),
                            MockRead(SYNCHRONOUS, 5, kHttpRespData),
                            MockRead(SYNCHRONOUS, OK, 6)};
 
@@ -4709,7 +4710,7 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithProxy) {
       MockWrite(SYNCHRONOUS, 2, "Proxy-Connection: keep-alive\r\n\r\n")};
 
   MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_),
                            MockRead(SYNCHRONOUS, 5, kHttpRespData),
                            MockRead(SYNCHRONOUS, OK, 6)};
 
@@ -5206,7 +5207,7 @@ TEST_P(QuicNetworkTransactionTest, BrokenAlternateProtocol) {
   std::unique_ptr<quic::QuicEncryptedPacket> close(
       ConstructServerConnectionClosePacket(1));
   MockRead quic_reads[] = {
-      MockRead(ASYNC, close->data(), close->length()),
+      MockRead(ASYNC, close->AsStringPiece()),
       MockRead(ASYNC, ERR_IO_PENDING),  // No more data to read
       MockRead(ASYNC, OK),              // EOF
   };
@@ -5252,7 +5253,7 @@ TEST_P(QuicNetworkTransactionTest,
   std::unique_ptr<quic::QuicEncryptedPacket> close(
       ConstructServerConnectionClosePacket(1));
   MockRead quic_reads[] = {
-      MockRead(ASYNC, close->data(), close->length()),
+      MockRead(ASYNC, close->AsStringPiece()),
       MockRead(ASYNC, ERR_IO_PENDING),  // No more data to read
       MockRead(ASYNC, OK),              // EOF
   };
@@ -5659,7 +5660,7 @@ TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnect) {
 
   // When the QUIC connection fails, we will try the request again over HTTP.
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -5699,7 +5700,7 @@ TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnectProxy) {
 
   // When the QUIC connection fails, we will try the request again over HTTP.
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -6102,7 +6103,7 @@ TEST_P(QuicNetworkTransactionTest, HostInAllowlist) {
   session_params_.quic_host_allowlist.insert("mail.example.org");
 
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -6151,7 +6152,7 @@ TEST_P(QuicNetworkTransactionTest, HostNotInAllowlist) {
   session_params_.quic_host_allowlist.insert("mail.example.com");
 
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -8666,7 +8667,7 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadFailH1AndResumeQuic) {
   }
   // This test confirms failed main job should not bother quic job.
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_),
       MockRead("1.1 Body"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -9080,7 +9081,7 @@ TEST_P(QuicNetworkTransactionTest,
     return;
   }
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_),
       MockRead(kHttpRespData),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};

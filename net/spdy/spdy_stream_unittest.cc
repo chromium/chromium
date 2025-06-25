@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/spdy/spdy_stream.h"
 
 #include <stdint.h>
@@ -61,13 +56,15 @@ const std::string_view kPostBodyStringPiece(kPostBody, kPostBodyLength);
 // Creates a MockRead from the given serialized frame except for the last byte.
 MockRead ReadFrameExceptForLastByte(const spdy::SpdySerializedFrame& frame) {
   CHECK_GE(frame.size(), 2u);
-  return MockRead(ASYNC, frame.data(), frame.size() - 1);
+  std::string_view frame_view(frame);
+  return MockRead(ASYNC, frame_view.substr(0, frame.size() - 1u));
 }
 
 // Creates a MockRead from the last byte of the given serialized frame.
 MockRead LastByteOfReadFrame(const spdy::SpdySerializedFrame& frame) {
   CHECK_GE(frame.size(), 2u);
-  return MockRead(ASYNC, frame.data() + frame.size() - 1, 1);
+  std::string_view frame_view(frame);
+  return MockRead(ASYNC, frame_view.substr(frame.size() - 1u, 1));
 }
 
 }  // namespace

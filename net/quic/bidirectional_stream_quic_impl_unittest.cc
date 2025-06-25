@@ -501,8 +501,9 @@ class BidirectionalStreamQuicImplTest
       if (writes_[i].packet == nullptr) {
         mock_writes_[i] = MockWrite(writes_[i].mode, writes_[i].rv, i);
       } else {
-        mock_writes_[i] = MockWrite(writes_[i].mode, writes_[i].packet->data(),
-                                    writes_[i].packet->length());
+        mock_writes_[i] = MockWrite(
+            writes_[i].mode,
+            base::span(writes_[i].packet->data(), writes_[i].packet->length()));
       }
     }
 

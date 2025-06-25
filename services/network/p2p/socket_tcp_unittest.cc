@@ -506,11 +506,10 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Basic) {
   std::string_view ssl_server_hello =
       webrtc::FakeSSLClientSocket::GetSslServerHello();
   net::MockRead reads[] = {
-      net::MockRead(net::ASYNC, ssl_server_hello.data(),
-                    ssl_server_hello.size()),
+      net::MockRead(net::ASYNC, ssl_server_hello),
       net::MockRead(net::SYNCHRONOUS, net::ERR_IO_PENDING)};
-  net::MockWrite writes[] = {net::MockWrite(
-      net::SYNCHRONOUS, ssl_client_hello.data(), ssl_client_hello.size())};
+  net::MockWrite writes[] = {
+      net::MockWrite(net::SYNCHRONOUS, ssl_client_hello)};
   net::StaticSocketDataProvider data_provider(reads, writes);
   net::IPEndPoint server_addr(net::IPAddress::IPv4Localhost(), 1234);
   data_provider.set_connect_data(
@@ -564,11 +563,10 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Hostname) {
   std::string_view ssl_server_hello =
       webrtc::FakeSSLClientSocket::GetSslServerHello();
   net::MockRead reads[] = {
-      net::MockRead(net::ASYNC, ssl_server_hello.data(),
-                    ssl_server_hello.size()),
+      net::MockRead(net::ASYNC, ssl_server_hello),
       net::MockRead(net::SYNCHRONOUS, net::ERR_IO_PENDING)};
-  net::MockWrite writes[] = {net::MockWrite(
-      net::SYNCHRONOUS, ssl_client_hello.data(), ssl_client_hello.size())};
+  net::MockWrite writes[] = {
+      net::MockWrite(net::SYNCHRONOUS, ssl_client_hello)};
   net::StaticSocketDataProvider data_provider(reads, writes);
   net::IPEndPoint server_addr(net::IPAddress::IPv4Localhost(), 1234);
   data_provider.set_connect_data(

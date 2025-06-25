@@ -411,13 +411,13 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
 
  private:
   void AddWrite(const spdy::SpdySerializedFrame* frame) {
-    writes_.emplace_back(ASYNC, frame->data(), frame->size(),
-                         sequence_number_++);
+    std::string_view frame_view(*frame);
+    writes_.emplace_back(ASYNC, sequence_number_++, frame_view);
   }
 
   void AddRead(const spdy::SpdySerializedFrame* frame) {
-    reads_.emplace_back(ASYNC, frame->data(), frame->size(),
-                        sequence_number_++);
+    std::string_view frame_view(*frame);
+    reads_.emplace_back(ASYNC, sequence_number_++, frame_view);
   }
 
  protected:
@@ -497,10 +497,10 @@ class CommonAuthTestHelper {
     response1_ = std::move(response1);
     request2_ = std::move(request2);
     response2_ = std::move(response2);
-    writes_[0] = MockWrite(SYNCHRONOUS, 0, request1_.c_str());
-    reads_[0] = MockRead(SYNCHRONOUS, 1, response1_.c_str());
-    writes_[1] = MockWrite(SYNCHRONOUS, 2, request2_.c_str());
-    reads_[1] = MockRead(SYNCHRONOUS, 3, response2_.c_str());
+    writes_[0] = MockWrite(SYNCHRONOUS, 0, request1_);
+    reads_[0] = MockRead(SYNCHRONOUS, 1, response1_);
+    writes_[1] = MockWrite(SYNCHRONOUS, 2, request2_);
+    reads_[1] = MockRead(SYNCHRONOUS, 3, response2_);
     reads_[2] = MockRead(SYNCHRONOUS, OK, 4);  // Close connection
 
     return BuildSocketData(reads_, writes_);
@@ -1409,7 +1409,7 @@ TEST_P(WebSocketStreamCreateTest, CancellationDuringRead) {
   std::string request = WebSocketStandardRequest(
       "/", "www.example.org", Origin(), /*send_additional_request_headers=*/{},
       /*extra_headers=*/{});
-  MockWrite writes[] = {MockWrite(ASYNC, 0, request.c_str())};
+  MockWrite writes[] = {MockWrite(ASYNC, 0, request)};
   MockRead reads[] = {
       MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1),
   };
@@ -1465,7 +1465,7 @@ TEST_P(WebSocketStreamCreateTest, NoResponse) {
   std::string request = WebSocketStandardRequest(
       "/", "www.example.org", Origin(), /*send_additional_request_headers=*/{},
       /*extra_headers=*/{});
-  MockWrite writes[] = {MockWrite(ASYNC, request.data(), request.size(), 0)};
+  MockWrite writes[] = {MockWrite(ASYNC, request, 0)};
   MockRead reads[] = {MockRead(ASYNC, 0, 1)};
   std::unique_ptr<SequencedSocketData> socket_data(
       BuildSocketData(reads, writes));
@@ -1574,12 +1574,12 @@ TEST_P(WebSocketStreamCreateBasicAuthTest, SuccessfulConnectionReuse) {
       {{"Authorization", "Basic Zm9vOmJhcg=="}}, /*extra_headers=*/{});
   std::string response2 = WebSocketStandardResponse(std::string());
   MockWrite writes[] = {
-      MockWrite(SYNCHRONOUS, 0, request1.c_str()),
-      MockWrite(SYNCHRONOUS, 2, request2.c_str()),
+      MockWrite(SYNCHRONOUS, 0, request1),
+      MockWrite(SYNCHRONOUS, 2, request2),
   };
   MockRead reads[3] = {
-      MockRead(SYNCHRONOUS, 1, response1.c_str()),
-      MockRead(SYNCHRONOUS, 3, response2.c_str()),
+      MockRead(SYNCHRONOUS, 1, response1),
+      MockRead(SYNCHRONOUS, 3, response2),
       MockRead(SYNCHRONOUS, ERR_IO_PENDING, 4),
   };
   CreateAndConnectRawExpectations("ws://foo:bar@www.example.org/",
@@ -1658,7 +1658,7 @@ TEST_P(WebSocketMultiProtocolStreamCreateTest, Incomplete) {
         "/", "www.example.org", Origin(),
         /*send_additional_request_headers=*/{}, /*extra_headers=*/{});
     MockRead reads[] = {MockRead(ASYNC, ERR_IO_PENDING, 0)};
-    MockWrite writes[] = {MockWrite(ASYNC, 1, request.c_str())};
+    MockWrite writes[] = {MockWrite(ASYNC, 1, request)};
     CreateAndConnectRawExpectations("wss://www.example.org/", NoSubProtocols(),
                                     HttpRequestHeaders(),
                                     BuildSocketData(reads, writes));
@@ -1734,7 +1734,7 @@ TEST_P(WebSocketStreamCreateTest, HandleErrConnectionClosed) {
       MockRead(SYNCHRONOUS, 1, kTruncatedResponse),
       MockRead(SYNCHRONOUS, ERR_CONNECTION_CLOSED, 2),
   };
-  MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, request.c_str())};
+  MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, request)};
   std::unique_ptr<SequencedSocketData> socket_data(
       BuildSocketData(reads, writes));
   socket_data->set_connect_data(MockConnect(SYNCHRONOUS, OK));
@@ -1839,10 +1839,10 @@ TEST_P(WebSocketStreamCreateTest, HandleConnectionCloseInFirstSegment) {
   std::string response = WebSocketStandardResponse(std::string()) + "\x88" +
                          static_cast<char>(close_body.size()) + close_body;
   MockRead reads[] = {
-      MockRead(SYNCHRONOUS, response.data(), response.size(), 1),
+      MockRead(SYNCHRONOUS, 1, response),
       MockRead(SYNCHRONOUS, ERR_CONNECTION_CLOSED, 2),
   };
-  MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, request.c_str())};
+  MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, request)};
   std::unique_ptr<SequencedSocketData> socket_data(
       BuildSocketData(reads, writes));
   socket_data->set_connect_data(MockConnect(SYNCHRONOUS, OK));

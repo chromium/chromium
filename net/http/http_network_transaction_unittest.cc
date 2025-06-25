@@ -1407,7 +1407,7 @@ TEST_P(HttpNetworkTransactionTest, ChunkedEncoding) {
       MockRead("1\r\n"),
       MockRead(" \r\n"),
       MockRead("5\r\nworld\r\n"),
-      MockRead(last_read.data()),
+      MockRead(last_read),
       MockRead(SYNCHRONOUS, OK),
   };
   SimpleGetHelperResult out = SimpleGetHelper(data_reads);
@@ -2245,9 +2245,10 @@ void HttpNetworkTransactionTestBase::PreconnectErrorResendRequestTest(
       "Host: www.foo.com\r\n"
       "Connection: keep-alive\r\n" +
       (chunked_upload ? "Transfer-Encoding: chunked\r\n\r\n" : "\r\n");
-  const char* kHttpRequest = http_request.c_str();
-  const char kHttpResponse[] = "HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\n";
-  const char kHttpData[] = "hello";
+  const std::string_view kHttpRequest(http_request);
+  const std::string_view kHttpResponse =
+      "HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\n";
+  const std::string_view kHttpData = "hello";
 
   std::vector<MockRead> data1_reads;
   std::vector<MockWrite> data1_writes;
@@ -2289,14 +2290,13 @@ void HttpNetworkTransactionTestBase::PreconnectErrorResendRequestTest(
     data2_reads.emplace_back(ASYNC, OK, seq++);
   } else {
     int seq = 0;
-    data2_writes.emplace_back(ASYNC, kHttpRequest, strlen(kHttpRequest), seq++);
+    data2_writes.emplace_back(ASYNC, kHttpRequest, seq++);
     if (chunked_upload) {
-      data2_writes.emplace_back(ASYNC, "6\r\nfoobar\r\n", 11, seq++);
-      data2_writes.emplace_back(ASYNC, "0\r\n\r\n", 5, seq++);
+      data2_writes.emplace_back(ASYNC, seq++, "6\r\nfoobar\r\n");
+      data2_writes.emplace_back(ASYNC, seq++, "0\r\n\r\n");
     }
-    data2_reads.emplace_back(ASYNC, kHttpResponse, strlen(kHttpResponse),
-                             seq++);
-    data2_reads.emplace_back(ASYNC, kHttpData, strlen(kHttpData), seq++);
+    data2_reads.emplace_back(ASYNC, seq++, kHttpResponse);
+    data2_reads.emplace_back(ASYNC, seq++, kHttpData);
     data2_reads.emplace_back(ASYNC, OK, seq++);
   }
   SequencedSocketData data2(data2_reads, data2_writes);
@@ -2701,7 +2701,7 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveAfterUnreadBody) {
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
-  const char kRequestData[] =
+  const std::string_view kRequestData =
       "GET / HTTP/1.1\r\n"
       "Host: www.foo.com\r\n"
       "Connection: keep-alive\r\n\r\n";
@@ -3646,7 +3646,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAliveLargeBody) {
       MockRead("Content-Type: text/html; charset=iso-8859-1\r\n"),
       // 5134 = 12 + 5 * 1024 + 2
       MockRead("Content-Length: 5134\r\n\r\n"),
-      MockRead(ASYNC, large_body_string.data(), large_body_string.size()),
+      MockRead(ASYNC, large_body_string),
 
       // Lastly, the server responds with the actual content.
       MockRead("HTTP/1.1 200 OK\r\n"),
@@ -6263,15 +6263,14 @@ TEST_P(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
   std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
 
   MockWrite socks_writes[] = {
-      MockWrite(SYNCHRONOUS, kSOCKS4OkRequestLocalHostPort80,
-                kSOCKS4OkRequestLocalHostPort80Length),
+      MockWrite(SYNCHRONOUS, kSOCKS4OkRequestLocalHostPort80),
       MockWrite(SYNCHRONOUS,
                 "GET /socks4 HTTP/1.1\r\n"
                 "Host: test\r\n"
                 "Connection: keep-alive\r\n\r\n"),
   };
   MockRead socks_reads[] = {
-      MockRead(SYNCHRONOUS, kSOCKS4OkReply, kSOCKS4OkReplyLength),
+      MockRead(SYNCHRONOUS, kSOCKS4OkReply),
       MockRead("HTTP/1.0 200 OK\r\n"
                "Connection: keep-alive\r\n"
                "Content-Length: 15\r\n\r\n"
@@ -6290,16 +6289,16 @@ TEST_P(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
       0x00, 0x50,            // 16-bit port (80)
   };
   MockWrite socks5_writes[] = {
-      MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-      MockWrite(ASYNC, kSOCKS5Request, std::size(kSOCKS5Request)),
+      MockWrite(ASYNC, kSOCKS5GreetRequest),
+      MockWrite(ASYNC, base::as_byte_span(kSOCKS5Request)),
       MockWrite(SYNCHRONOUS,
                 "GET /socks5 HTTP/1.1\r\n"
                 "Host: test\r\n"
                 "Connection: keep-alive\r\n\r\n"),
   };
   MockRead socks5_reads[] = {
-      MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
-      MockRead(ASYNC, kSOCKS5OkResponse, kSOCKS5OkResponseLength),
+      MockRead(ASYNC, kSOCKS5GreetResponse),
+      MockRead(ASYNC, kSOCKS5OkResponse),
       MockRead("HTTP/1.0 200 OK\r\n"
                "Connection: keep-alive\r\n"
                "Content-Length: 15\r\n\r\n"
@@ -8399,13 +8398,13 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyMixedConnectSpdy) {
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
   // CONNECT to proxy2.test:71 via HTTP.
-  const char kProxy2Connect[] =
+  std::string_view kProxy2Connect =
       "CONNECT proxy2.test:71 HTTP/1.1\r\n"
       "Host: proxy2.test:71\r\n"
       "Proxy-Connection: keep-alive\r\n"
       "User-Agent: test-ua\r\n\r\n";
 
-  const char kProxy2ConnectResp[] =
+  std::string_view kProxy2ConnectResp =
       "HTTP/1.1 200 Connection Established\r\n\r\n";
 
   // CONNECT to www.example.org:443 via SPDY.
@@ -8881,7 +8880,7 @@ void HttpNetworkTransactionTestBase::HttpsNestedProxyNoSocketReuseHelper(
                            "User-Agent: test-ua\r\n\r\n",
                            proxy_host_port_pair_string.c_str(),
                            proxy_host_port_pair_string.c_str()));
-    data_writes1.emplace_back(connects.back().c_str());
+    data_writes1.emplace_back(connects.back());
     data_reads1.emplace_back("HTTP/1.1 200 Connection Established\r\n\r\n");
   }
 
@@ -8955,7 +8954,7 @@ void HttpNetworkTransactionTestBase::HttpsNestedProxyNoSocketReuseHelper(
                            "User-Agent: test-ua\r\n\r\n",
                            proxy_host_port_pair_string.c_str(),
                            proxy_host_port_pair_string.c_str()));
-    data_writes2.emplace_back(connects.back().c_str());
+    data_writes2.emplace_back(connects.back());
     data_reads2.emplace_back("HTTP/1.1 200 Connection Established\r\n\r\n");
   }
 
@@ -11409,7 +11408,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2) {
                 "Host: server\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: NTLM "),
-      MockWrite(negotiate_msg.c_str()),
+      MockWrite(negotiate_msg),
       MockWrite("\r\n\r\n"),
 
       // After calling trans.RestartWithAuth(), we should send a Type 3 message
@@ -11419,7 +11418,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2) {
                 "Host: server\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: NTLM "),
-      MockWrite(authenticate_msg.c_str()),
+      MockWrite(authenticate_msg),
       MockWrite("\r\n\r\n"),
   };
 
@@ -11427,7 +11426,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2) {
       // The origin server responds with a Type 2 message.
       MockRead("HTTP/1.1 401 Access Denied\r\n"),
       MockRead("WWW-Authenticate: NTLM "),
-      MockRead(challenge_msg.c_str()),
+      MockRead(challenge_msg),
       MockRead("\r\n"),
       MockRead("Content-Length: 42\r\n"),
       MockRead("Content-Type: text/html\r\n\r\n"),
@@ -11570,7 +11569,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2WrongThenRightPassword) {
                 "Host: server\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: NTLM "),
-      MockWrite(negotiate_msg.c_str()),
+      MockWrite(negotiate_msg),
       MockWrite("\r\n\r\n"),
 
       // After calling trans.RestartWithAuth(), we should send a Type 3 message
@@ -11580,14 +11579,14 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2WrongThenRightPassword) {
                 "Host: server\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: NTLM "),
-      MockWrite(wrong_password_authenticate_msg.c_str()),
+      MockWrite(wrong_password_authenticate_msg),
       MockWrite("\r\n\r\n"),
   };
 
   MockRead data_reads2[] = {
       // The origin server responds with a Type 2 message.
       MockRead("HTTP/1.1 401 Access Denied\r\n"),
-      MockRead("WWW-Authenticate: NTLM "), MockRead(challenge_msg.c_str()),
+      MockRead("WWW-Authenticate: NTLM "), MockRead(challenge_msg),
       MockRead("\r\n"), MockRead("Content-Length: 42\r\n"),
       MockRead("Content-Type: text/html\r\n\r\n"),
       MockRead("You are not authorized to view this page\r\n"),
@@ -11608,7 +11607,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2WrongThenRightPassword) {
                 "Host: server\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: NTLM "),
-      MockWrite(negotiate_msg.c_str()),
+      MockWrite(negotiate_msg),
       MockWrite("\r\n\r\n"),
 
       // After calling trans.RestartWithAuth(), we should send a Type 3 message
@@ -11618,7 +11617,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2WrongThenRightPassword) {
                 "Host: server\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: NTLM "),
-      MockWrite(authenticate_msg.c_str()),
+      MockWrite(authenticate_msg),
       MockWrite("\r\n\r\n"),
   };
 
@@ -11626,7 +11625,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2WrongThenRightPassword) {
       // The origin server responds with a Type 2 message.
       MockRead("HTTP/1.1 401 Access Denied\r\n"),
       MockRead("WWW-Authenticate: NTLM "),
-      MockRead(challenge_msg.c_str()),
+      MockRead(challenge_msg),
       MockRead("\r\n"),
       MockRead("Content-Length: 42\r\n"),
       MockRead("Content-Type: text/html\r\n\r\n"),
@@ -11798,7 +11797,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
                 "Host: server\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: NTLM "),
-      MockWrite(negotiate_msg.c_str()),
+      MockWrite(negotiate_msg),
       MockWrite("\r\n\r\n"),
 
       // After calling trans.RestartWithAuth(), we should send a Type 3 message
@@ -11808,7 +11807,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
                 "Host: server\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: NTLM "),
-      MockWrite(authenticate_msg.c_str()),
+      MockWrite(authenticate_msg),
       MockWrite("\r\n\r\n"),
   };
 
@@ -11816,7 +11815,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
       // The origin server responds with a Type 2 message.
       MockRead("HTTP/1.1 401 Access Denied\r\n"),
       MockRead("WWW-Authenticate: NTLM "),
-      MockRead(challenge_msg.c_str()),
+      MockRead(challenge_msg),
       MockRead("\r\n"),
       MockRead("Content-Length: 42\r\n"),
       MockRead("Content-Type: text/html\r\n\r\n"),
@@ -11979,7 +11978,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
                 "Host: server\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: NTLM "),
-      MockWrite(negotiate_msg.c_str()),
+      MockWrite(negotiate_msg),
       MockWrite("\r\n\r\n"),
 
       // After calling trans.RestartWithAuth(), we should send a Type 3 message
@@ -11989,7 +11988,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
                 "Host: server\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: NTLM "),
-      MockWrite(authenticate_msg.c_str()),
+      MockWrite(authenticate_msg),
       MockWrite("\r\n\r\n"),
   };
 
@@ -11997,7 +11996,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
       // The origin server responds with a Type 2 message.
       MockRead("HTTP/1.1 401 Access Denied\r\n"),
       MockRead("WWW-Authenticate: NTLM "),
-      MockRead(challenge_msg.c_str()),
+      MockRead(challenge_msg),
       MockRead("\r\n"),
       MockRead("Content-Length: 42\r\n"),
       MockRead("Content-Type: text/html\r\n\r\n"),
@@ -12171,14 +12170,14 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHttpProxy) {
                 "Host: server\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: NTLM "),
-      MockWrite(negotiate_msg.c_str()),
+      MockWrite(negotiate_msg),
       MockWrite("\r\n\r\n"),
 
       MockWrite("GET /kids/login.aspx HTTP/1.1\r\n"
                 "Host: server\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: NTLM "),
-      MockWrite(authenticate_msg.c_str()),
+      MockWrite(authenticate_msg),
       MockWrite("\r\n\r\n"),
   };
 
@@ -12186,7 +12185,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHttpProxy) {
       MockRead("HTTP/1.0 200 Connected\r\n\r\n"),
       MockRead("HTTP/1.1 401 Access Denied\r\n"),
       MockRead("WWW-Authenticate: NTLM "),
-      MockRead(challenge_msg.c_str()),
+      MockRead(challenge_msg),
       MockRead("\r\n"),
       MockRead("Content-Length: 42\r\n"),
       MockRead("Content-Type: text/html\r\n\r\n"),
@@ -12363,7 +12362,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
                 "Host: server\r\n"
                 "Connection: Upgrade\r\n"
                 "Authorization: NTLM "),
-      MockWrite(negotiate_msg.c_str()),
+      MockWrite(negotiate_msg),
       MockWrite("\r\n"),
       MockWrite("Origin: http://server\r\n"
                 "Sec-WebSocket-Version: 13\r\n"
@@ -12379,7 +12378,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
                 "Host: server\r\n"
                 "Connection: Upgrade\r\n"
                 "Authorization: NTLM "),
-      MockWrite(authenticate_msg.c_str()),
+      MockWrite(authenticate_msg),
       MockWrite("\r\n"),
       MockWrite("Origin: http://server\r\n"
                 "Sec-WebSocket-Version: 13\r\n"
@@ -12393,7 +12392,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
       // The origin server responds with a Type 2 message.
       MockRead("HTTP/1.1 401 Access Denied\r\n"),
       MockRead("WWW-Authenticate: NTLM "),
-      MockRead(challenge_msg.c_str()),
+      MockRead(challenge_msg),
       MockRead("\r\n"),
       MockRead("Content-Length: 42\r\n"),
       MockRead("Content-Type: text/html\r\n\r\n"),
@@ -12553,7 +12552,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMProxyTLSHandshakeReset) {
                 "Proxy-Connection: keep-alive\r\n"
                 "User-Agent: test-ua\r\n"
                 "Proxy-Authorization: NTLM "),
-      MockWrite(negotiate_msg.c_str()),
+      MockWrite(negotiate_msg),
       // End headers.
       MockWrite("\r\n\r\n"),
 
@@ -12563,7 +12562,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMProxyTLSHandshakeReset) {
                 "Proxy-Connection: keep-alive\r\n"
                 "User-Agent: test-ua\r\n"
                 "Proxy-Authorization: NTLM "),
-      MockWrite(authenticate_msg.c_str()),
+      MockWrite(authenticate_msg),
       // End headers.
       MockWrite("\r\n\r\n"),
   };
@@ -12578,7 +12577,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMProxyTLSHandshakeReset) {
       MockRead("HTTP/1.1 407 Access Denied\r\n"
                "Content-Length: 0\r\n"
                "Proxy-Authenticate: NTLM "),
-      MockRead(challenge_msg.c_str()),
+      MockRead(challenge_msg),
       // End headers.
       MockRead("\r\n\r\n"),
 
@@ -12669,7 +12668,7 @@ TEST_P(HttpNetworkTransactionTest, LargeHeadersNoBody) {
 
   MockRead data_reads[] = {
       MockRead("HTTP/1.0 200 OK\r\n"),
-      MockRead(ASYNC, large_headers_string.data(), large_headers_string.size()),
+      MockRead(ASYNC, large_headers_string),
       MockRead("\r\nBODY"),
       MockRead(SYNCHRONOUS, OK),
   };
@@ -15069,7 +15068,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_UserAgentOverTunnel) {
             setting_user_agent);
       }
       MockWrite data_writes[] = {
-          MockWrite(expected_request.c_str()),
+          MockWrite(expected_request),
       };
       MockRead data_reads[] = {
           // Return an error, so the transaction stops here (this test isn't
@@ -15417,14 +15416,13 @@ TEST_P(HttpNetworkTransactionTest, SOCKS4_HTTP_GET) {
   char write_buffer[] = {0x04, 0x01, 0x00, 0x50, 127, 0, 0, 1, 0};
   char read_buffer[] = {0x00, 0x5A, 0x00, 0x00, 0, 0, 0, 0};
 
-  MockWrite data_writes[] = {
-      MockWrite(ASYNC, write_buffer, std::size(write_buffer)),
-      MockWrite("GET / HTTP/1.1\r\n"
-                "Host: www.example.org\r\n"
-                "Connection: keep-alive\r\n\r\n")};
+  MockWrite data_writes[] = {MockWrite(ASYNC, base::as_byte_span(write_buffer)),
+                             MockWrite("GET / HTTP/1.1\r\n"
+                                       "Host: www.example.org\r\n"
+                                       "Connection: keep-alive\r\n\r\n")};
 
   MockRead data_reads[] = {
-      MockRead(ASYNC, read_buffer, std::size(read_buffer)),
+      MockRead(ASYNC, base::as_byte_span(read_buffer)),
       MockRead("HTTP/1.0 200 OK\r\n"),
       MockRead("Content-Type: text/html; charset=iso-8859-1\r\n\r\n"),
       MockRead("Payload"), MockRead(SYNCHRONOUS, OK)};
@@ -15472,20 +15470,17 @@ TEST_P(HttpNetworkTransactionTest, SOCKS4_SSL_GET) {
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
-  unsigned char write_buffer[] = {0x04, 0x01, 0x01, 0xBB, 127, 0, 0, 1, 0};
-  unsigned char read_buffer[] = {0x00, 0x5A, 0x00, 0x00, 0, 0, 0, 0};
+  const unsigned char write_buffer[] = {0x04, 0x01, 0x01, 0xBB, 127,
+                                        0,    0,    1,    0};
+  const unsigned char read_buffer[] = {0x00, 0x5A, 0x00, 0x00, 0, 0, 0, 0};
 
-  MockWrite data_writes[] = {
-      MockWrite(ASYNC, reinterpret_cast<char*>(write_buffer),
-                std::size(write_buffer)),
-      MockWrite("GET / HTTP/1.1\r\n"
-                "Host: www.example.org\r\n"
-                "Connection: keep-alive\r\n\r\n")};
+  MockWrite data_writes[] = {MockWrite(ASYNC, base::span(write_buffer)),
+                             MockWrite("GET / HTTP/1.1\r\n"
+                                       "Host: www.example.org\r\n"
+                                       "Connection: keep-alive\r\n\r\n")};
 
   MockRead data_reads[] = {
-      MockRead(ASYNC, reinterpret_cast<char*>(read_buffer),
-               std::size(read_buffer)),
-      MockRead("HTTP/1.0 200 OK\r\n"),
+      MockRead(ASYNC, base::span(read_buffer)), MockRead("HTTP/1.0 200 OK\r\n"),
       MockRead("Content-Type: text/html; charset=iso-8859-1\r\n\r\n"),
       MockRead("Payload"), MockRead(SYNCHRONOUS, OK)};
 
@@ -15535,18 +15530,16 @@ TEST_P(HttpNetworkTransactionTest, SOCKS4_HTTP_GET_no_PAC) {
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
-  char write_buffer[] = {0x04, 0x01, 0x00, 0x50, 127, 0, 0, 1, 0};
-  char read_buffer[] = {0x00, 0x5A, 0x00, 0x00, 0, 0, 0, 0};
+  const char write_buffer[] = {0x04, 0x01, 0x00, 0x50, 127, 0, 0, 1, 0};
+  const char read_buffer[] = {0x00, 0x5A, 0x00, 0x00, 0, 0, 0, 0};
 
-  MockWrite data_writes[] = {
-      MockWrite(ASYNC, write_buffer, std::size(write_buffer)),
-      MockWrite("GET / HTTP/1.1\r\n"
-                "Host: www.example.org\r\n"
-                "Connection: keep-alive\r\n\r\n")};
+  MockWrite data_writes[] = {MockWrite(ASYNC, base::span(write_buffer)),
+                             MockWrite("GET / HTTP/1.1\r\n"
+                                       "Host: www.example.org\r\n"
+                                       "Connection: keep-alive\r\n\r\n")};
 
   MockRead data_reads[] = {
-      MockRead(ASYNC, read_buffer, std::size(read_buffer)),
-      MockRead("HTTP/1.0 200 OK\r\n"),
+      MockRead(ASYNC, base::span(read_buffer)), MockRead("HTTP/1.0 200 OK\r\n"),
       MockRead("Content-Type: text/html; charset=iso-8859-1\r\n\r\n"),
       MockRead("Payload"), MockRead(SYNCHRONOUS, OK)};
 
@@ -15602,16 +15595,15 @@ TEST_P(HttpNetworkTransactionTest, SOCKS5_HTTP_GET) {
   };
 
   MockWrite data_writes[] = {
-      MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-      MockWrite(ASYNC, kSOCKS5ExampleOkRequest,
-                std::size(kSOCKS5ExampleOkRequest)),
+      MockWrite(ASYNC, kSOCKS5GreetRequest),
+      MockWrite(ASYNC, base::as_byte_span(kSOCKS5ExampleOkRequest)),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n\r\n")};
 
   MockRead data_reads[] = {
-      MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
-      MockRead(ASYNC, kSOCKS5OkResponse, kSOCKS5OkResponseLength),
+      MockRead(ASYNC, kSOCKS5GreetResponse),
+      MockRead(ASYNC, kSOCKS5OkResponse),
       MockRead("HTTP/1.0 200 OK\r\n"),
       MockRead("Content-Type: text/html; charset=iso-8859-1\r\n\r\n"),
       MockRead("Payload"),
@@ -15675,16 +15667,15 @@ TEST_P(HttpNetworkTransactionTest, SOCKS5_SSL_GET) {
                                        0,    0,    0,    0x00, 0x00};
 
   MockWrite data_writes[] = {
-      MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-      MockWrite(ASYNC, reinterpret_cast<const char*>(kSOCKS5ExampleOkRequest),
-                std::size(kSOCKS5ExampleOkRequest)),
+      MockWrite(ASYNC, kSOCKS5GreetRequest),
+      MockWrite(ASYNC, base::as_byte_span(kSOCKS5ExampleOkRequest)),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n\r\n")};
 
   MockRead data_reads[] = {
-      MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
-      MockRead(ASYNC, kSOCKS5SslOkResponse, std::size(kSOCKS5SslOkResponse)),
+      MockRead(ASYNC, kSOCKS5GreetResponse),
+      MockRead(ASYNC, base::as_byte_span(kSOCKS5SslOkResponse)),
       MockRead("HTTP/1.0 200 OK\r\n"),
       MockRead("Content-Type: text/html; charset=iso-8859-1\r\n\r\n"),
       MockRead("Payload"),
@@ -18016,7 +18007,7 @@ TEST_P(HttpNetworkTransactionTest, UseAlternativeServiceForTunneledNpnSpdy) {
       CreateMockWrite(req, 2),
   };
 
-  const char kCONNECTResponse[] = "HTTP/1.1 200 Connected\r\n\r\n";
+  std::string_view kCONNECTResponse = "HTTP/1.1 200 Connected\r\n\r\n";
 
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyGetReply(
       base::span<const std::string_view>(), 1));
@@ -23797,7 +23788,7 @@ void CheckContentEncodingMatching(SpdySessionDependencies* session_deps,
                 "Host: www.foo.com\r\n"
                 "Connection: keep-alive\r\n"
                 "Accept-Encoding: "),
-      MockWrite(accept_encoding.data()),
+      MockWrite(accept_encoding),
       MockWrite("\r\n\r\n"),
   };
 
@@ -23810,9 +23801,9 @@ void CheckContentEncodingMatching(SpdySessionDependencies* session_deps,
 
   MockRead data_reads[] = {
       MockRead("HTTP/1.0 "),
-      MockRead(response_code.data()),
+      MockRead(response_code),
       MockRead("\r\nContent-Encoding: "),
-      MockRead(content_encoding.data()),
+      MockRead(content_encoding),
       MockRead("\r\n\r\n"),
       MockRead(SYNCHRONOUS, OK),
   };
@@ -24126,8 +24117,7 @@ class HttpNetworkTransactionNetworkErrorLoggingTest
         MockWrite("GET / HTTP/1.1\r\n"
                   "Host: www.example.org\r\n"
                   "Connection: keep-alive\r\n"),
-        MockWrite(ASYNC, extra_header_string.data(),
-                  extra_header_string.size()),
+        MockWrite(ASYNC, extra_header_string),
     };
     MockRead data_reads[] = {
         MockRead("HTTP/1.0 200 OK\r\n"),
@@ -24396,7 +24386,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"),
-      MockWrite(ASYNC, extra_header_string.data(), extra_header_string.size()),
+      MockWrite(ASYNC, extra_header_string),
   };
   MockRead data_reads[] = {
       MockRead("HTTP/1.0 200 OK\r\n"),
@@ -24450,7 +24440,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"),
-      MockWrite(ASYNC, extra_header_string.data(), extra_header_string.size()),
+      MockWrite(ASYNC, extra_header_string),
   };
   MockRead data_reads[] = {
       MockRead("HTTP/1.0 200 OK\r\n"),
@@ -24505,7 +24495,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"),
-      MockWrite(ASYNC, extra_header_string.data(), extra_header_string.size()),
+      MockWrite(ASYNC, extra_header_string),
   };
 
   MockRead data_reads1[] = {
@@ -24528,7 +24518,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: Basic Zm9vOmJhcg==\r\n"),
-      MockWrite(ASYNC, extra_header_string.data(), extra_header_string.size()),
+      MockWrite(ASYNC, extra_header_string),
   };
 
   // Lastly, the server responds with the actual content.
@@ -24608,7 +24598,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"),
-      MockWrite(ASYNC, extra_header_string.data(), extra_header_string.size()),
+      MockWrite(ASYNC, extra_header_string),
   };
 
   MockRead data_reads1[] = {
@@ -24631,7 +24621,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: Basic Zm9vOmJhcg==\r\n"),
-      MockWrite(ASYNC, extra_header_string.data(), extra_header_string.size()),
+      MockWrite(ASYNC, extra_header_string),
   };
 
   // Lastly, the server responds with the actual content.
@@ -24707,11 +24697,11 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"),
-      MockWrite(ASYNC, extra_header_string.data(), extra_header_string.size()),
+      MockWrite(ASYNC, extra_header_string),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"),
-      MockWrite(ASYNC, extra_header_string.data(), extra_header_string.size()),
+      MockWrite(ASYNC, extra_header_string),
   };
 
   MockRead data_reads1[] = {
@@ -24784,11 +24774,11 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"),
-      MockWrite(ASYNC, extra_header_string.data(), extra_header_string.size()),
+      MockWrite(ASYNC, extra_header_string),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"),
-      MockWrite(ASYNC, extra_header_string.data(), extra_header_string.size()),
+      MockWrite(ASYNC, extra_header_string),
   };
 
   MockRead data_reads1[] = {
@@ -25050,7 +25040,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"),
-      MockWrite(ASYNC, extra_header_string.data(), extra_header_string.size()),
+      MockWrite(ASYNC, extra_header_string),
   };
   MockRead data_reads[] = {
       MockRead("HTTP/1.0 200 OK\r\n"),
@@ -25099,7 +25089,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest, DontCreateReportHttp) {
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"),
-      MockWrite(ASYNC, extra_header_string.data(), extra_header_string.size()),
+      MockWrite(ASYNC, extra_header_string),
   };
 
   StaticSocketDataProvider data(data_reads, data_writes);
@@ -25273,7 +25263,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest, ReportElapsedTime) {
                 "GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"),
-      MockWrite(ASYNC, 1, extra_header_string.data()),
+      MockWrite(ASYNC, 1, extra_header_string),
   };
 
   std::vector<MockRead> data_reads = {
@@ -28055,8 +28045,8 @@ TEST_P(HttpNetworkTransactionTest,
       kProxyServer2AuthHeaderValue.c_str());
 
   MockWrite data_writes[] = {
-      MockWrite(kProxyServer2Connect.c_str()),
-      MockWrite(kEndpointConnect.c_str()),
+      MockWrite(kProxyServer2Connect),
+      MockWrite(kEndpointConnect),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"
@@ -28211,8 +28201,8 @@ TEST_P(HttpNetworkTransactionTest,
       kProxyServer2AuthHeaderValue.c_str());
 
   MockWrite data_writes[] = {
-      MockWrite(kProxyServer2Connect.c_str()),
-      MockWrite(kEndpointConnect.c_str()),
+      MockWrite(kProxyServer2Connect),
+      MockWrite(kEndpointConnect),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n\r\n"),
@@ -28292,7 +28282,7 @@ TEST_P(HttpNetworkTransactionTest,
       kProxyServer1AuthHeaderValue.c_str());
 
   MockWrite data_writes1[] = {
-      MockWrite(kProxyServer2Connect.c_str()),
+      MockWrite(kProxyServer2Connect),
   };
 
   MockRead data_reads1[] = {
@@ -28397,8 +28387,8 @@ TEST_P(HttpNetworkTransactionTest,
       kProxyServer2AuthHeaderValue.c_str());
 
   MockWrite data_writes[] = {
-      MockWrite(kProxyServer2Connect.c_str()),
-      MockWrite(kEndpointConnect.c_str()),
+      MockWrite(kProxyServer2Connect),
+      MockWrite(kEndpointConnect),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n"

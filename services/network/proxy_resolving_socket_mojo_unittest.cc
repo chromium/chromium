@@ -277,13 +277,13 @@ TEST_P(ProxyResolvingSocketTest, BasicReadWrite) {
   int sequence_number = 0;
   for (int j = 0; j < kNumIterations; ++j) {
     for (size_t i = 0; i < kMsgSize; ++i) {
-      reads.emplace_back(net::ASYNC, &kTestMsg[i], 1, sequence_number++);
+      reads.emplace_back(net::ASYNC, sequence_number++, kTestMsg.substr(i, 1));
     }
     if (j == kNumIterations - 1) {
       reads.emplace_back(net::ASYNC, net::OK, sequence_number++);
     }
     for (size_t i = 0; i < kMsgSize; ++i) {
-      writes.emplace_back(net::ASYNC, &kTestMsg[i], 1, sequence_number++);
+      writes.emplace_back(net::ASYNC, sequence_number++, kTestMsg.substr(i, 1));
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);
@@ -335,8 +335,7 @@ class ProxyResolvingSocketMojoTest : public ProxyResolvingSocketTestBase,
 
 TEST_F(ProxyResolvingSocketMojoTest, ConnectWithFakeTLSHandshake) {
   const GURL kDestination("https://example.com:443");
-  const char kTestMsg[] = "abcdefghij";
-  const size_t kMsgSize = strlen(kTestMsg);
+  std::string_view kTestMsg = "abcdefghij";
 
   Init("DIRECT");
   set_fake_tls_handshake(true);
@@ -346,12 +345,12 @@ TEST_F(ProxyResolvingSocketMojoTest, ConnectWithFakeTLSHandshake) {
   std::string_view server_hello =
       webrtc::FakeSSLClientSocket::GetSslServerHello();
   std::vector<net::MockRead> reads = {
-      net::MockRead(net::ASYNC, server_hello.data(), server_hello.length(), 1),
+      net::MockRead(net::ASYNC, 1, server_hello),
       net::MockRead(net::ASYNC, 2, kTestMsg),
       net::MockRead(net::ASYNC, net::OK, 3)};
 
-  std::vector<net::MockWrite> writes = {net::MockWrite(
-      net::ASYNC, client_hello.data(), client_hello.length(), 0)};
+  std::vector<net::MockWrite> writes = {
+      net::MockWrite(net::ASYNC, 0, client_hello)};
 
   net::StaticSocketDataProvider data_provider(reads, writes);
   data_provider.set_connect_data(net::MockConnect(net::ASYNC, net::OK));
@@ -367,7 +366,7 @@ TEST_F(ProxyResolvingSocketMojoTest, ConnectWithFakeTLSHandshake) {
                                       &client_socket_receive_handle,
                                       &client_socket_send_handle));
 
-  EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, kMsgSize));
+  EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, kTestMsg.size()));
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
   EXPECT_TRUE(data_provider.AllWriteDataConsumed());
 }

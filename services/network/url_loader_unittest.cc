@@ -7442,7 +7442,7 @@ TEST_P(URLLoaderMockSocketAuctionOnlyTest,
       "Content-Length: 23\r\n\r\n",
       GetParam().c_str());
   const net::MockRead kReads[] = {
-      net::MockRead(net::SYNCHRONOUS, 1, first_read.c_str()),
+      net::MockRead(net::SYNCHRONOUS, 1, first_read),
       net::MockRead(net::SYNCHRONOUS, 2, "This should not be read"),
   };
 
@@ -7480,7 +7480,7 @@ TEST_P(URLLoaderMockSocketAuctionOnlyTest,
       "Content-Length: 23\r\n\r\n",
       GetParam().c_str());
   const net::MockRead kReads[] = {
-      net::MockRead(net::SYNCHRONOUS, 1, first_read.c_str()),
+      net::MockRead(net::SYNCHRONOUS, 1, first_read),
       net::MockRead(net::SYNCHRONOUS, 2, "This should not be read"),
   };
 
@@ -7870,7 +7870,7 @@ TEST_F(URLLoaderMockSocketTest,
       "Content-Length: %zu\r\n\r\n",
       compressed.size());
   const net::MockRead kReads[] = {
-      net::MockRead(net::SYNCHRONOUS, 1, first_read.c_str()),
+      net::MockRead(net::SYNCHRONOUS, 1, first_read),
       net::MockRead(net::SYNCHRONOUS, base::as_string_view(compressed),
                     /*result=*/0,
                     /*seq=*/2)};
@@ -7925,7 +7925,7 @@ TEST_F(URLLoaderMockSocketTest,
       "Content-Length: %zu\r\n\r\n",
       compressed.size());
   const net::MockRead kReads[] = {
-      net::MockRead(net::SYNCHRONOUS, 1, first_read.c_str()),
+      net::MockRead(net::SYNCHRONOUS, 1, first_read),
       net::MockRead(net::SYNCHRONOUS, base::as_string_view(compressed),
                     /*result=*/0,
                     /*seq=*/2)};
@@ -7965,7 +7965,7 @@ TEST_F(URLLoaderMockSocketTest,
       "Content-Length: %zu\r\n\r\n",
       compressed.size());
   const net::MockRead kReads[] = {
-      net::MockRead(net::SYNCHRONOUS, 1, first_read.c_str()),
+      net::MockRead(net::SYNCHRONOUS, 1, first_read),
       net::MockRead(net::SYNCHRONOUS, base::as_string_view(compressed),
                     /*result=*/0,
                     /*seq=*/2)};

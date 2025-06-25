@@ -2082,14 +2082,15 @@ TEST_P(SpdyNetworkTransactionTest, SocketWriteReturnsZero) {
       spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
   MockWrite writes[] = {
       CreateMockWrite(req, 0, SYNCHRONOUS),
-      MockWrite(SYNCHRONOUS, nullptr, 0, 2),
+      MockWrite(SYNCHRONOUS, 2, std::string_view()),
       CreateMockWrite(rst, 3, SYNCHRONOUS),
   };
 
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyGetReply(
       base::span<const std::string_view>(), 1));
   MockRead reads[] = {
-      CreateMockRead(resp, 1, ASYNC), MockRead(ASYNC, nullptr, 0, 4)  // EOF
+      CreateMockRead(resp, 1, ASYNC),
+      MockRead(ASYNC, 4, std::string_view())  // EOF
   };
 
   SequencedSocketData data(reads, writes);
@@ -2257,7 +2258,8 @@ TEST_P(SpdyNetworkTransactionTest, CancelledTransactionSendRst) {
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyGetReply(
       base::span<const std::string_view>(), 1));
   MockRead reads[] = {
-      CreateMockRead(resp, 1, ASYNC), MockRead(ASYNC, nullptr, 0, 3)  // EOF
+      CreateMockRead(resp, 1, ASYNC),
+      MockRead(ASYNC, 3, std::string_view())  // EOF
   };
 
   SequencedSocketData data(reads, writes);
@@ -2301,13 +2303,12 @@ TEST_P(SpdyNetworkTransactionTest, StartTransactionOnReadCallback) {
   MockRead reads[] = {
       CreateMockRead(resp, 1),
       MockRead(ASYNC, ERR_IO_PENDING, 2),  // Force a pause
-      MockRead(ASYNC, reinterpret_cast<const char*>(kGetBodyFrame2),
-               std::size(kGetBodyFrame2), 3),
-      MockRead(ASYNC, ERR_IO_PENDING, 4),  // Force a pause
-      MockRead(ASYNC, nullptr, 0, 5),      // EOF
+      MockRead(ASYNC, 3, base::span(kGetBodyFrame2)),
+      MockRead(ASYNC, ERR_IO_PENDING, 4),      // Force a pause
+      MockRead(ASYNC, 5, std::string_view()),  // EOF
   };
   MockRead reads2[] = {
-      CreateMockRead(resp, 1), MockRead(ASYNC, nullptr, 0, 2),  // EOF
+      CreateMockRead(resp, 1), MockRead(ASYNC, 2, std::string_view()),  // EOF
   };
 
   SequencedSocketData data(reads, writes);
@@ -2355,8 +2356,8 @@ TEST_P(SpdyNetworkTransactionTest, DeleteSessionOnReadCallback) {
   spdy::SpdySerializedFrame body(spdy_util_.ConstructSpdyDataFrame(1, true));
   MockRead reads[] = {
       CreateMockRead(resp, 1),
-      MockRead(ASYNC, ERR_IO_PENDING, 2),                       // Force a pause
-      CreateMockRead(body, 3), MockRead(ASYNC, nullptr, 0, 4),  // EOF
+      MockRead(ASYNC, ERR_IO_PENDING, 2),  // Force a pause
+      CreateMockRead(body, 3), MockRead(ASYNC, 4, std::string_view()),  // EOF
   };
 
   SequencedSocketData data(reads, writes);
@@ -3512,9 +3513,11 @@ TEST_P(SpdyNetworkTransactionTest, CorruptFrameSessionError) {
   size_t wrong_size = right_size - 4;
   spdy::test::SetFrameLength(&reply_wrong_length, wrong_size);
 
+  std::string_view reply_wrong_length_view(reply_wrong_length);
   MockRead reads[] = {
-      MockRead(ASYNC, reply_wrong_length.data(), reply_wrong_length.size() - 4,
-               1),
+      MockRead(
+          ASYNC, 1,
+          reply_wrong_length_view.substr(0, reply_wrong_length.size() - 4)),
   };
 
   SequencedSocketData data(reads, writes);
@@ -3570,9 +3573,10 @@ TEST_P(SpdyNetworkTransactionTest, GoAwayOnFrameSizeError) {
 TEST_P(SpdyNetworkTransactionTest, WriteError) {
   spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyGet(
       base::span<const std::string_view>(), 1, LOWEST));
+  std::string_view req_view(req);
   MockWrite writes[] = {
       // We'll write 10 bytes successfully
-      MockWrite(ASYNC, req.data(), 10, 1),
+      MockWrite(ASYNC, 1, req_view.substr(0, 10)),
       // Followed by ERROR!
       MockWrite(ASYNC, ERR_FAILED, 2),
       // Session drains and attempts to write a GOAWAY: Another ERROR!
@@ -5135,14 +5139,14 @@ TEST_P(SpdyNetworkTransactionTest, ProxyConnect) {
   spdy::SpdySerializedFrame body(spdy_util_.ConstructSpdyDataFrame(1, true));
 
   MockWrite writes[] = {
-      MockWrite(SYNCHRONOUS, kConnect443, std::size(kConnect443) - 1, 0),
+      MockWrite(SYNCHRONOUS, 0, base::byte_span_from_cstring(kConnect443)),
       CreateMockWrite(req, 2),
   };
   MockRead reads[] = {
-      MockRead(SYNCHRONOUS, kHTTP200, std::size(kHTTP200) - 1, 1),
+      MockRead(SYNCHRONOUS, 1, base::byte_span_from_cstring(kHTTP200)),
       CreateMockRead(resp, 3),
       CreateMockRead(body, 4),
-      MockRead(ASYNC, nullptr, 0, 5),
+      MockRead(ASYNC, 5, std::string_view()),
   };
   SequencedSocketData data(reads, writes);
 
@@ -5253,11 +5257,11 @@ TEST_P(SpdyNetworkTransactionTest, DirectConnectProxyReconnect) {
   spdy::SpdySerializedFrame body2(spdy_util_2.ConstructSpdyDataFrame(1, true));
 
   MockWrite writes2[] = {
-      MockWrite(SYNCHRONOUS, kConnect443, std::size(kConnect443) - 1, 0),
+      MockWrite(SYNCHRONOUS, 0, base::byte_span_from_cstring(kConnect443)),
       CreateMockWrite(req2, 2),
   };
   MockRead reads2[] = {
-      MockRead(SYNCHRONOUS, kHTTP200, std::size(kHTTP200) - 1, 1),
+      MockRead(SYNCHRONOUS, 1, base::byte_span_from_cstring(kHTTP200)),
       CreateMockRead(resp2, 3), CreateMockRead(body2, 4),
       MockRead(ASYNC, 0, 5)  // EOF
   };
@@ -6850,12 +6854,11 @@ TEST_P(SpdyNetworkTransactionTest, IgnoreUnsupportedOriginFrame) {
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyGetReply(
       base::span<const std::string_view>(), 1));
   spdy::SpdySerializedFrame body(spdy_util_.ConstructSpdyDataFrame(1, true));
-  MockRead reads[] = {MockRead(ASYNC, origin_frame_on_stream_zero,
-                               std::size(origin_frame_on_stream_zero), 1),
-                      CreateMockRead(resp, 2),
-                      MockRead(ASYNC, origin_frame_on_stream_one,
-                               std::size(origin_frame_on_stream_one), 3),
-                      CreateMockRead(body, 4), MockRead(ASYNC, 0, 5)};
+  MockRead reads[] = {
+      MockRead(ASYNC, 1, base::span(origin_frame_on_stream_zero)),
+      CreateMockRead(resp, 2),
+      MockRead(ASYNC, 3, base::span(origin_frame_on_stream_one)),
+      CreateMockRead(body, 4), MockRead(ASYNC, 0, 5)};
 
   SequencedSocketData data(reads, writes);
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/websockets/websocket_test_util.h"
 
 #include <stddef.h>
@@ -212,22 +207,19 @@ void WebSocketMockClientSocketFactoryMaker::SetExpectations(
   detail_->expect_written = expect_written;
   detail_->return_to_read = return_to_read;
   int sequence = 0;
-  detail_->write = MockWrite(SYNCHRONOUS,
-                             detail_->expect_written.data(),
-                             detail_->expect_written.size(),
-                             sequence++);
+  detail_->write = MockWrite(SYNCHRONOUS, sequence++, detail_->expect_written);
   // HttpStreamParser reads 4KB at a time. We need to take this implementation
   // detail into account if |return_to_read| is big enough.
-  for (size_t place = 0; place < detail_->return_to_read.size();
+  std::string_view to_read(detail_->return_to_read);
+  for (size_t place = 0; place < to_read.size();
        place += kHttpStreamParserBufferSize) {
-    detail_->reads.emplace_back(SYNCHRONOUS,
-                                detail_->return_to_read.data() + place,
-                                std::min(detail_->return_to_read.size() - place,
-                                         kHttpStreamParserBufferSize),
-                                sequence++);
+    detail_->reads.emplace_back(
+        SYNCHRONOUS, sequence++,
+        to_read.substr(place, std::min(to_read.size() - place,
+                                       kHttpStreamParserBufferSize)));
   }
   auto socket_data = std::make_unique<SequencedSocketData>(
-      detail_->reads, base::span(&detail_->write, 1u));
+      detail_->reads, base::span_from_ref(detail_->write));
   socket_data->set_connect_data(MockConnect(SYNCHRONOUS, OK));
   AddRawExpectations(std::move(socket_data));
 }

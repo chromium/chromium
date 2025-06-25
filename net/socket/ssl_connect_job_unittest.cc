@@ -631,14 +631,13 @@ TEST_F(SSLConnectJobTest, SOCKSBasic) {
                                       's',  't',  0x01, 0xBB};
 
     MockWrite writes[] = {
-        MockWrite(io_mode, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-        MockWrite(io_mode, reinterpret_cast<const char*>(kSOCKS5Request),
-                  std::size(kSOCKS5Request)),
+        MockWrite(io_mode, kSOCKS5GreetRequest),
+        MockWrite(io_mode, base::as_byte_span(kSOCKS5Request)),
     };
 
     MockRead reads[] = {
-        MockRead(io_mode, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
-        MockRead(io_mode, kSOCKS5OkResponse, kSOCKS5OkResponseLength),
+        MockRead(io_mode, kSOCKS5GreetResponse),
+        MockRead(io_mode, kSOCKS5OkResponse),
     };
 
     host_resolver_.set_synchronous_mode(io_mode == SYNCHRONOUS);
@@ -666,16 +665,15 @@ TEST_F(SSLConnectJobTest, SOCKSHasEstablishedConnection) {
                                     's',  't',  0x01, 0xBB};
 
   MockWrite writes[] = {
-      MockWrite(SYNCHRONOUS, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength, 0),
-      MockWrite(SYNCHRONOUS, reinterpret_cast<const char*>(kSOCKS5Request),
-                std::size(kSOCKS5Request), 3),
+      MockWrite(SYNCHRONOUS, /*seq=*/0, kSOCKS5GreetRequest),
+      MockWrite(SYNCHRONOUS, /*seq=*/3, base::as_byte_span(kSOCKS5Request)),
   };
 
   MockRead reads[] = {
       // Pause so can probe current state.
-      MockRead(ASYNC, ERR_IO_PENDING, 1),
-      MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength, 2),
-      MockRead(SYNCHRONOUS, kSOCKS5OkResponse, kSOCKS5OkResponseLength, 4),
+      MockRead(ASYNC, ERR_IO_PENDING, /*seq=*/1),
+      MockRead(ASYNC, /*seq=*/2, kSOCKS5GreetResponse),
+      MockRead(SYNCHRONOUS, /*seq=*/4, kSOCKS5OkResponse),
   };
 
   host_resolver_.set_ondemand_mode(true);
@@ -2025,14 +2023,13 @@ TEST_F(SSLConnectJobTest, OnDestinationDnsAliasesResolved_NotInvokedForProxy) {
                                     's',  't',  0x01, 0xBB};
 
   MockWrite writes[] = {
-      MockWrite(SYNCHRONOUS, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-      MockWrite(SYNCHRONOUS, reinterpret_cast<const char*>(kSOCKS5Request),
-                std::size(kSOCKS5Request)),
+      MockWrite(SYNCHRONOUS, kSOCKS5GreetRequest),
+      MockWrite(SYNCHRONOUS, base::as_byte_span(kSOCKS5Request)),
   };
 
   MockRead reads[] = {
-      MockRead(SYNCHRONOUS, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
-      MockRead(SYNCHRONOUS, kSOCKS5OkResponse, kSOCKS5OkResponseLength),
+      MockRead(SYNCHRONOUS, kSOCKS5GreetResponse),
+      MockRead(SYNCHRONOUS, kSOCKS5OkResponse),
   };
 
   host_resolver_.set_synchronous_mode(true);

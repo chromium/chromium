@@ -127,14 +127,12 @@ TEST_F(SOCKS5ClientSocketTest, CompleteHandshake) {
     0x00, 0x50,  // 16-bit port (80)
   };
 
-  MockWrite data_writes[] = {
-      MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-      MockWrite(ASYNC, kOkRequest, std::size(kOkRequest)),
-      MockWrite(ASYNC, payload_write.data(), payload_write.size())};
-  MockRead data_reads[] = {
-      MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
-      MockRead(ASYNC, kSOCKS5OkResponse, kSOCKS5OkResponseLength),
-      MockRead(ASYNC, payload_read.data(), payload_read.size()) };
+  MockWrite data_writes[] = {MockWrite(ASYNC, kSOCKS5GreetRequest),
+                             MockWrite(ASYNC, base::as_byte_span(kOkRequest)),
+                             MockWrite(ASYNC, payload_write)};
+  MockRead data_reads[] = {MockRead(ASYNC, kSOCKS5GreetResponse),
+                           MockRead(ASYNC, kSOCKS5OkResponse),
+                           MockRead(ASYNC, payload_read)};
 
   user_sock_ =
       BuildMockSocket(data_reads, data_writes, "localhost", 80, NetLog::Get());
@@ -194,17 +192,13 @@ TEST_F(SOCKS5ClientSocketTest, ConnectAndDisconnectTwice) {
   std::string request(kSOCKS5DomainRequest, std::size(kSOCKS5DomainRequest));
   request.push_back(static_cast<char>(kHostname.size()));
   request.append(kHostname);
-  request.append(reinterpret_cast<const char*>(&kNwPort), sizeof(kNwPort));
+  request.append(base::as_string_view(base::byte_span_from_ref(kNwPort)));
 
   for (int i = 0; i < 2; ++i) {
-    MockWrite data_writes[] = {
-        MockWrite(SYNCHRONOUS, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-        MockWrite(SYNCHRONOUS, request.data(), request.size())
-    };
-    MockRead data_reads[] = {
-        MockRead(SYNCHRONOUS, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
-        MockRead(SYNCHRONOUS, kSOCKS5OkResponse, kSOCKS5OkResponseLength)
-    };
+    MockWrite data_writes[] = {MockWrite(SYNCHRONOUS, kSOCKS5GreetRequest),
+                               MockWrite(SYNCHRONOUS, request)};
+    MockRead data_reads[] = {MockRead(SYNCHRONOUS, kSOCKS5GreetResponse),
+                             MockRead(SYNCHRONOUS, kSOCKS5OkResponse)};
 
     user_sock_ =
         BuildMockSocket(data_reads, data_writes, kHostname, 80, nullptr);
@@ -259,9 +253,8 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
     MockWrite data_writes[] = {MockWrite(ASYNC, base::span(kPartial1)),
                                MockWrite(ASYNC, base::span(kPartial2)),
                                MockWrite(ASYNC, kOkRequest)};
-    MockRead data_reads[] = {
-        MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
-        MockRead(ASYNC, kSOCKS5OkResponse, kSOCKS5OkResponseLength) };
+    MockRead data_reads[] = {MockRead(ASYNC, kSOCKS5GreetResponse),
+                             MockRead(ASYNC, kSOCKS5OkResponse)};
     user_sock_ =
         BuildMockSocket(data_reads, data_writes, kHostname, 80, NetLog::Get());
     int rv = user_sock_->Connect(callback_.callback());
@@ -284,13 +277,11 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
   {
     const uint8_t kPartial1[] = {0x05};
     const uint8_t kPartial2[] = {0x00};
-    MockWrite data_writes[] = {
-        MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-        MockWrite(ASYNC, kOkRequest)};
-    MockRead data_reads[] = {
-        MockRead(ASYNC, base::span(kPartial1)),
-        MockRead(ASYNC, base::span(kPartial2)),
-        MockRead(ASYNC, kSOCKS5OkResponse, kSOCKS5OkResponseLength)};
+    MockWrite data_writes[] = {MockWrite(ASYNC, kSOCKS5GreetRequest),
+                               MockWrite(ASYNC, kOkRequest)};
+    MockRead data_reads[] = {MockRead(ASYNC, base::span(kPartial1)),
+                             MockRead(ASYNC, base::span(kPartial2)),
+                             MockRead(ASYNC, kSOCKS5OkResponse)};
     user_sock_ =
         BuildMockSocket(data_reads, data_writes, kHostname, 80, NetLog::Get());
     int rv = user_sock_->Connect(callback_.callback());
@@ -311,12 +302,11 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
   {
     // Break handshake write into two parts.
     const auto [kPart1, kPart2] = kOkRequest.split_at<3>();
-    MockWrite data_writes[] = {
-        MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-        MockWrite(ASYNC, kPart1), MockWrite(ASYNC, kPart2)};
-    MockRead data_reads[] = {
-        MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
-        MockRead(ASYNC, kSOCKS5OkResponse, kSOCKS5OkResponseLength) };
+    MockWrite data_writes[] = {MockWrite(ASYNC, kSOCKS5GreetRequest),
+                               MockWrite(ASYNC, kPart1),
+                               MockWrite(ASYNC, kPart2)};
+    MockRead data_reads[] = {MockRead(ASYNC, kSOCKS5GreetResponse),
+                             MockRead(ASYNC, kSOCKS5OkResponse)};
     user_sock_ =
         BuildMockSocket(data_reads, data_writes, kHostname, 80, NetLog::Get());
     int rv = user_sock_->Connect(callback_.callback());
@@ -335,15 +325,12 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
   // Test for partial handshake response read
   {
     const size_t kSplitPoint = 6;  // Break the handshake read into two parts.
-    MockWrite data_writes[] = {
-        MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-        MockWrite(ASYNC, kOkRequest)};
+    MockWrite data_writes[] = {MockWrite(ASYNC, kSOCKS5GreetRequest),
+                               MockWrite(ASYNC, kOkRequest)};
     MockRead data_reads[] = {
-        MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
-        MockRead(ASYNC, kSOCKS5OkResponse, kSplitPoint),
-        MockRead(ASYNC,
-                 std::string_view(kSOCKS5OkResponse, kSOCKS5OkResponseLength)
-                     .substr(kSplitPoint))};
+        MockRead(ASYNC, kSOCKS5GreetResponse),
+        MockRead(ASYNC, kSOCKS5OkResponse.substr(0, kSplitPoint)),
+        MockRead(ASYNC, kSOCKS5OkResponse.substr(kSplitPoint))};
 
     user_sock_ =
         BuildMockSocket(data_reads, data_writes, kHostname, 80, NetLog::Get());

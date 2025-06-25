@@ -185,12 +185,11 @@ TEST_F(SOCKSConnectJobTest, SOCKS4) {
       host_resolver_.set_synchronous_mode(host_resolution_synchronous);
 
       MockWrite writes[] = {
-          MockWrite(SYNCHRONOUS, kSOCKS4OkRequestLocalHostPort80,
-                    kSOCKS4OkRequestLocalHostPort80Length, 0),
+          MockWrite(SYNCHRONOUS, /*seq=*/0, kSOCKS4OkRequestLocalHostPort80),
       };
 
       MockRead reads[] = {
-          MockRead(SYNCHRONOUS, kSOCKS4OkReply, kSOCKS4OkReplyLength, 1),
+          MockRead(SYNCHRONOUS, /*seq=*/1, kSOCKS4OkReply),
       };
 
       SequencedSocketData sequenced_socket_data(reads, writes);
@@ -222,15 +221,13 @@ TEST_F(SOCKSConnectJobTest, SOCKS5) {
       host_resolver_.set_synchronous_mode(host_resolution_synchronous);
 
       MockWrite writes[] = {
-          MockWrite(SYNCHRONOUS, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength,
-                    0),
-          MockWrite(SYNCHRONOUS, kSOCKS5OkRequest, kSOCKS5OkRequestLength, 2),
+          MockWrite(SYNCHRONOUS, /*seq=*/0, kSOCKS5GreetRequest),
+          MockWrite(SYNCHRONOUS, /*seq=*/2, kSOCKS5OkRequest),
       };
 
       MockRead reads[] = {
-          MockRead(SYNCHRONOUS, kSOCKS5GreetResponse,
-                   kSOCKS5GreetResponseLength, 1),
-          MockRead(SYNCHRONOUS, kSOCKS5OkResponse, kSOCKS5OkResponseLength, 3),
+          MockRead(SYNCHRONOUS, /*seq=*/1, kSOCKS5GreetResponse),
+          MockRead(SYNCHRONOUS, /*seq=*/3, kSOCKS5OkResponse),
       };
 
       SequencedSocketData sequenced_socket_data(reads, writes);
@@ -259,13 +256,12 @@ TEST_F(SOCKSConnectJobTest, SOCKS5) {
 TEST_F(SOCKSConnectJobTest, HasEstablishedConnection) {
   host_resolver_.set_ondemand_mode(true);
   MockWrite writes[] = {
-      MockWrite(ASYNC, kSOCKS4OkRequestLocalHostPort80,
-                kSOCKS4OkRequestLocalHostPort80Length, 0),
+      MockWrite(ASYNC, /*seq=*/0, kSOCKS4OkRequestLocalHostPort80),
   };
 
   MockRead reads[] = {
-      MockRead(ASYNC, ERR_IO_PENDING, 1),
-      MockRead(ASYNC, kSOCKS4OkReply, kSOCKS4OkReplyLength, 2),
+      MockRead(ASYNC, ERR_IO_PENDING, /*seq=*/1),
+      MockRead(ASYNC, /*seq=*/2, kSOCKS4OkReply),
   };
 
   SequencedSocketData sequenced_socket_data(reads, writes);
@@ -419,15 +415,14 @@ TEST_F(SOCKSConnectJobTest, ConnectTiming) {
   host_resolver_.set_ondemand_mode(true);
 
   MockWrite writes[] = {
-      MockWrite(ASYNC, ERR_IO_PENDING, 0),
-      MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength, 1),
-      MockWrite(SYNCHRONOUS, kSOCKS5OkRequest, kSOCKS5OkRequestLength, 3),
+      MockWrite(ASYNC, ERR_IO_PENDING, /*seq=*/0),
+      MockWrite(ASYNC, /*seq=*/1, kSOCKS5GreetRequest),
+      MockWrite(SYNCHRONOUS, /*seq=*/3, kSOCKS5OkRequest),
   };
 
   MockRead reads[] = {
-      MockRead(SYNCHRONOUS, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength,
-               2),
-      MockRead(SYNCHRONOUS, kSOCKS5OkResponse, kSOCKS5OkResponseLength, 4),
+      MockRead(SYNCHRONOUS, /*seq=*/2, kSOCKS5GreetResponse),
+      MockRead(SYNCHRONOUS, /*seq=*/4, kSOCKS5OkResponse),
   };
 
   SequencedSocketData sequenced_socket_data(reads, writes);
@@ -556,14 +551,13 @@ TEST_F(SOCKSConnectJobTest,
   host_resolver_.set_synchronous_mode(true);
 
   MockWrite writes[] = {
-      MockWrite(SYNCHRONOUS, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength, 0),
-      MockWrite(SYNCHRONOUS, kSOCKS5OkRequest, kSOCKS5OkRequestLength, 2),
+      MockWrite(SYNCHRONOUS, /*seq=*/0, kSOCKS5GreetRequest),
+      MockWrite(SYNCHRONOUS, /*seq=*/2, kSOCKS5OkRequest),
   };
 
   MockRead reads[] = {
-      MockRead(SYNCHRONOUS, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength,
-               1),
-      MockRead(SYNCHRONOUS, kSOCKS5OkResponse, kSOCKS5OkResponseLength, 3),
+      MockRead(SYNCHRONOUS, /*seq=*/1, kSOCKS5GreetResponse),
+      MockRead(SYNCHRONOUS, /*seq=*/3, kSOCKS5OkResponse),
   };
 
   SequencedSocketData sequenced_socket_data(reads, writes);
@@ -600,12 +594,11 @@ TEST_F(SOCKSConnectJobTest,
   host_resolver_.set_synchronous_mode(true);
 
   MockWrite writes[] = {
-      MockWrite(SYNCHRONOUS, kSOCKS4OkRequestLocalHostPort80,
-                kSOCKS4OkRequestLocalHostPort80Length, 0),
+      MockWrite(SYNCHRONOUS, /*seq=*/0, kSOCKS4OkRequestLocalHostPort80),
   };
 
   MockRead reads[] = {
-      MockRead(SYNCHRONOUS, kSOCKS4OkReply, kSOCKS4OkReplyLength, 1),
+      MockRead(SYNCHRONOUS, /*seq=*/1, kSOCKS4OkReply),
   };
 
   SequencedSocketData sequenced_socket_data(reads, writes);

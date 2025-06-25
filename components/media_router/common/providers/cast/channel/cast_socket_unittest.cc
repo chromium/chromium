@@ -280,7 +280,7 @@ class TestSocketFactory : public net::ClientSocketFactory {
     AddReadResult(net::MockRead(mode, result));
   }
   void AddReadResultForData(net::IoMode mode, const std::string& data) {
-    AddReadResult(net::MockRead(mode, data.c_str(), data.size()));
+    AddReadResult(net::MockRead(mode, data));
   }
 
   // Helpers for modifying other connection-related behaviors.

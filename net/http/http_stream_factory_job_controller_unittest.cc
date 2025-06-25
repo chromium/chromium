@@ -818,13 +818,13 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       // bad.
       ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
 
-      constexpr char kBadProxyTunnelRequest[] =
+      static constexpr char kBadProxyTunnelRequest[] =
           "CONNECT www.example.com:443 HTTP/1.1\r\n"
           "Host: www.example.com:443\r\n"
           "Proxy-Connection: keep-alive\r\n"
           "User-Agent: test-ua\r\n"
           "Foo: badproxy:99\r\n\r\n";
-      constexpr char kBadFallbackProxyTunnelRequest[] =
+      static constexpr char kBadFallbackProxyTunnelRequest[] =
           "CONNECT www.example.com:443 HTTP/1.1\r\n"
           "Host: www.example.com:443\r\n"
           "Proxy-Connection: keep-alive\r\n"
@@ -1026,13 +1026,13 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       // bad.
       ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
 
-      constexpr char kBadProxyTunnelRequest[] =
+      static constexpr char kBadProxyTunnelRequest[] =
           "CONNECT www.example.com:443 HTTP/1.1\r\n"
           "Host: www.example.com:443\r\n"
           "Proxy-Connection: keep-alive\r\n"
           "User-Agent: test-ua\r\n"
           "Foo: https://badproxy:99\r\n\r\n";
-      constexpr char kBadFallbackProxyTunnelRequest[] =
+      static constexpr char kBadFallbackProxyTunnelRequest[] =
           "CONNECT www.example.com:443 HTTP/1.1\r\n"
           "Host: www.example.com:443\r\n"
           "Proxy-Connection: keep-alive\r\n"
@@ -1288,13 +1288,13 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       // bad.
       ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
 
-      constexpr char kBadProxyServer1TunnelRequest[] =
+      static constexpr char kBadProxyServer1TunnelRequest[] =
           "CONNECT goodproxyserver:100 HTTP/1.1\r\n"
           "Host: goodproxyserver:100\r\n"
           "Proxy-Connection: keep-alive\r\n"
           "User-Agent: test-ua\r\n"
           "Foo: https://badproxyserver:99\r\n\r\n";
-      constexpr char kBadProxyServer2TunnelRequest[] =
+      static constexpr char kBadProxyServer2TunnelRequest[] =
           "CONNECT goodproxyserver:100 HTTP/1.1\r\n"
           "Host: goodproxyserver:100\r\n"
           "Proxy-Connection: keep-alive\r\n"
@@ -1555,13 +1555,13 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       // bad.
       ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
 
-      constexpr char kBadProxyServer1TunnelRequest[] =
+      static constexpr char kBadProxyServer1TunnelRequest[] =
           "CONNECT badproxyserver:99 HTTP/1.1\r\n"
           "Host: badproxyserver:99\r\n"
           "Proxy-Connection: keep-alive\r\n"
           "User-Agent: test-ua\r\n"
           "Foo: https://goodproxyserver:100\r\n\r\n";
-      constexpr char kBadProxyServer2TunnelRequest[] =
+      static constexpr char kBadProxyServer2TunnelRequest[] =
           "CONNECT badfallbackproxyserver:98 HTTP/1.1\r\n"
           "Host: badfallbackproxyserver:98\r\n"
           "Proxy-Connection: keep-alive\r\n"
@@ -1587,10 +1587,10 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
               HostPortPair::FromURL(dest_url).ToString().c_str());
       const MockWrite kNestedProxyChain1TunnelWrites[] = {
           {ASYNC, kBadProxyServer1TunnelRequest},
-          {ASYNC, kBadProxyServer1EndpointTunnelRequest.c_str()}};
+          {ASYNC, kBadProxyServer1EndpointTunnelRequest}};
       const MockWrite kNestedProxyChain2TunnelWrites[] = {
           {ASYNC, kBadProxyServer2TunnelRequest},
-          {ASYNC, kBadProxyServer2EndpointTunnelRequest.c_str()}};
+          {ASYNC, kBadProxyServer2EndpointTunnelRequest}};
 
       std::vector<MockRead> reads = {
           MockRead(ASYNC, 1, "HTTP/1.1 200 Connection Established\r\n\r\n"),
@@ -1765,7 +1765,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
   // bad.
   ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
 
-  constexpr char kTunnelRequest[] =
+  static constexpr char kTunnelRequest[] =
       "CONNECT www.example.com:443 HTTP/1.1\r\n"
       "Host: www.example.com:443\r\n"
       "Proxy-Connection: keep-alive\r\n"
@@ -1861,8 +1861,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 
     // Before starting the test, verify that there are no proxies marked as bad.
     ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
-    const MockWrite kTunnelWrites[] = {
-        {ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength}};
+    const MockWrite kTunnelWrites[] = {{ASYNC, kSOCKS5GreetRequest}};
     std::vector<MockRead> reads;
 
     // Generate identical errors for both the main proxy and the fallback proxy.

@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cstring>
 #include <memory>
 #include <optional>
@@ -189,17 +190,61 @@ struct MockReadWrite {
   // string_views.
   class ToStringView {
    public:
+    // This class requires the use of implicit constructors to canonicalize the
+    // different possible argument types.
+    // NOLINTNEXTLINE(google-explicit-constructor)
     ToStringView(std::string_view data) : data_(data) {}
-    ToStringView(const char* data) : data_(data) {}
+
+    // String overloads are needed to disambiguate which constructor to call
+    // when a string is passed.
+
+    // NOLINTNEXTLINE(google-explicit-constructor)
+    ToStringView(std::string& data) : data_(data) {}
+    // NOLINTNEXTLINE(google-explicit-constructor)
+    ToStringView(const std::string& data) : data_(data) {}
+
+    // Reject rvalue strings.
+    // NOLINTNEXTLINE(google-explicit-constructor)
+    ToStringView(std::string&&) = delete;
+
+    // Accept string constants. This will also accidentally accept char arrays,
+    // but since it obeys the length, it should always be safe as long as the
+    // lifetime of the char array is long enough.
+    template <size_t N>
+    // NOLINTNEXTLINE(google-explicit-constructor)
+    ToStringView(const char (&data)[N]) : data_(data, N - 1) {
+      // Verify this doesn't accidentally truncate a char array that didn't have
+      // a nul-terminator.
+      CHECK_EQ(data[N - 1], '\0');
+
+      // This CHECK ensures that this constructor is not accidentally used when
+      // matching an embedded nul byte was not intended. If you want to match an
+      // embedded nul byte, the preferred method is to pass a std::array<char,
+      // N>.
+      CHECK(std::ranges::none_of(data_, [](char c) { return c == '\0'; }));
+    }
 
     // The template parameter is not strictly necessary, but it allows
     // `MockReadWrite(base::span(array))` to work, instead of having to use
     // `MockReadWrite(base::span<const uint8_t>(array))`.
     template <size_t Extent>
+    // NOLINTNEXTLINE(google-explicit-constructor)
     ToStringView(base::span<const char, Extent> data)
         : data_(base::as_string_view(data)) {}
     template <size_t Extent>
+    // NOLINTNEXTLINE(google-explicit-constructor)
     ToStringView(base::span<const uint8_t, Extent> data)
+        : data_(base::as_string_view(data)) {}
+
+    // Non-const versions so callers don't have to write extra code to handle
+    // mutable input.
+    template <size_t Extent>
+    // NOLINTNEXTLINE(google-explicit-constructor)
+    ToStringView(base::span<char, Extent> data)
+        : data_(base::as_string_view(data)) {}
+    template <size_t Extent>
+    // NOLINTNEXTLINE(google-explicit-constructor)
+    ToStringView(base::span<uint8_t, Extent> data)
         : data_(base::as_string_view(data)) {}
 
     ~ToStringView() = default;
@@ -235,38 +280,13 @@ struct MockReadWrite {
   explicit MockReadWrite(ToStringView data)
       : mode(ASYNC), result(0), data(data), sequence_number(0), tos(0) {}
 
-  // Read/write success. Doesn't take a string_view so that it can be used with
-  // c-strings with embedded nulls.
-  MockReadWrite(IoMode io_mode, const char* data, int data_len)
-      : mode(io_mode),
-        result(0),
-        data(data, data_len),
-        sequence_number(0),
-        tos(0) {}
+  // This unsafe constructor used to exist. Explicitly delete it to prevent
+  // accidental usage of the 5-argument constructor below.
+  MockReadWrite(IoMode io_mode, const char* data, int data_len) = delete;
 
   // Read/write success with sequence information.
   MockReadWrite(IoMode io_mode, int seq, ToStringView data)
       : mode(io_mode), result(0), data(data), sequence_number(seq), tos(0) {}
-
-  // Read/write success with sequence information.
-  MockReadWrite(IoMode io_mode, const char* data, int data_len, int seq)
-      : mode(io_mode),
-        result(0),
-        data(data, data_len),
-        sequence_number(seq),
-        tos(0) {}
-
-  // Read/write success with sequence and TOS information.
-  MockReadWrite(IoMode io_mode,
-                const char* data,
-                int data_len,
-                int seq,
-                uint8_t tos_byte)
-      : mode(io_mode),
-        result(0),
-        data(data, data_len),
-        sequence_number(seq),
-        tos(tos_byte) {}
 
   // Read/write that defaults to success, with optional sequence and TOS
   // information.
@@ -1480,11 +1500,9 @@ extern const int kSOCKS4TestPort;
 
 // Constants for a successful SOCKS v4 handshake (connecting to kSOCKS4TestHost
 // on port kSOCKS4TestPort, for the request).
-extern const char kSOCKS4OkRequestLocalHostPort80[];
-extern const int kSOCKS4OkRequestLocalHostPort80Length;
+extern const std::string_view kSOCKS4OkRequestLocalHostPort80;
 
-extern const char kSOCKS4OkReply[];
-extern const int kSOCKS4OkReplyLength;
+extern const std::string_view kSOCKS4OkReply;
 
 // Host / port used for SOCKS5 test strings.
 extern const char kSOCKS5TestHost[];
@@ -1492,17 +1510,13 @@ extern const int kSOCKS5TestPort;
 
 // Constants for a successful SOCKS v5 handshake (connecting to kSOCKS5TestHost
 // on port kSOCKS5TestPort, for the request)..
-extern const char kSOCKS5GreetRequest[];
-extern const int kSOCKS5GreetRequestLength;
+extern const std::string_view kSOCKS5GreetRequest;
 
-extern const char kSOCKS5GreetResponse[];
-extern const int kSOCKS5GreetResponseLength;
+extern const std::string_view kSOCKS5GreetResponse;
 
-extern const char kSOCKS5OkRequest[];
-extern const int kSOCKS5OkRequestLength;
+extern const std::string_view kSOCKS5OkRequest;
 
-extern const char kSOCKS5OkResponse[];
-extern const int kSOCKS5OkResponseLength;
+extern const std::string_view kSOCKS5OkResponse;
 
 // Helper function to get the total data size of the MockReads in |reads|.
 int64_t CountReadBytes(base::span<const MockRead> reads);
