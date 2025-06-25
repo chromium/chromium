@@ -497,13 +497,12 @@ TEST_F(PermissionManagerTest, KillSwitchOnIsNotOverridable) {
   std::map<std::string, std::string> params;
   params[PermissionUtil::GetPermissionString(
       ContentSettingsType::GEOLOCATION)] =
-      ContentSettingPermissionContextBase::kPermissionsKillSwitchBlockedValue;
+      PermissionContextBase::kPermissionsKillSwitchBlockedValue;
   base::AssociateFieldTrialParams(
-      ContentSettingPermissionContextBase::kPermissionsKillSwitchFieldStudy,
-      "TestGroup", params);
+      PermissionContextBase::kPermissionsKillSwitchFieldStudy, "TestGroup",
+      params);
   base::FieldTrialList::CreateFieldTrial(
-      ContentSettingPermissionContextBase::kPermissionsKillSwitchFieldStudy,
-      "TestGroup");
+      PermissionContextBase::kPermissionsKillSwitchFieldStudy, "TestGroup");
 
   EXPECT_FALSE(
       IsPermissionOverridable(PermissionType::GEOLOCATION, kLocalHost));
@@ -562,7 +561,7 @@ TEST_F(PermissionManagerTest, GetPermissionStatusDelegation) {
   EXPECT_EQ(PermissionStatus::ASK, GetPermissionStatusForCurrentDocument(
                                        PermissionType::GEOLOCATION, parent));
   // Permission policy is no longer verified in
-  // ContentSettingPermissionContextBase, hence in this code a cross-origin
+  // PermissionContextBase, hence in this code a cross-origin
   // iframe is allowed to use permission.
   EXPECT_EQ(PermissionStatus::ASK, GetPermissionStatusForCurrentDocument(
                                        PermissionType::GEOLOCATION, child));
@@ -739,7 +738,7 @@ TEST_F(PermissionManagerTest, MAYBE_UpdatePermissionStatusWithDeviceStatus) {
 
 TEST_F(PermissionManagerTest,
        GetPermissionContextForNotAddedPermissionContext) {
-  ContentSettingPermissionContextBase* context =
+  PermissionContextBase* context =
       GetPermissionManager()->GetPermissionContextForTesting(
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
 

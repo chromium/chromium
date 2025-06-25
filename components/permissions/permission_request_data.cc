@@ -12,7 +12,7 @@
 namespace permissions {
 
 PermissionRequestData::PermissionRequestData(
-    ContentSettingPermissionContextBase* context,
+    PermissionContextBase* context,
     const PermissionRequestID& id,
     const content::PermissionRequestDescription& request_description,
     const GURL& canonical_requesting_origin,
@@ -35,12 +35,11 @@ PermissionRequestData::PermissionRequestData(
       request_description.permissions[request_description_permission_index]);
 }
 
-PermissionRequestData::PermissionRequestData(
-    ContentSettingPermissionContextBase* context,
-    const PermissionRequestID& id,
-    bool user_gesture,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin)
+PermissionRequestData::PermissionRequestData(PermissionContextBase* context,
+                                             const PermissionRequestID& id,
+                                             bool user_gesture,
+                                             const GURL& requesting_origin,
+                                             const GURL& embedding_origin)
     : request_type(ContentSettingsTypeToRequestTypeIfExists(
           context->content_settings_type())),
       id(id),

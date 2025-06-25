@@ -37,13 +37,13 @@ class RenderProcessHost;
 class WebContents;
 struct PermissionRequestDescription;
 struct PermissionResult;
-}
+}  // namespace content
 
 class GeolocationPermissionContextDelegateTests;
 class SubscriptionInterceptingPermissionManager;
 
 namespace permissions {
-class ContentSettingPermissionContextBase;
+class PermissionContextBase;
 class PermissionManagerTest;
 
 class PermissionManager : public KeyedService,
@@ -53,7 +53,7 @@ class PermissionManager : public KeyedService,
  public:
   using PermissionContextMap =
       std::unordered_map<ContentSettingsType,
-                         std::unique_ptr<ContentSettingPermissionContextBase>,
+                         std::unique_ptr<PermissionContextBase>,
                          ContentSettingsTypeHash>;
   PermissionManager(content::BrowserContext* browser_context,
                     PermissionContextMap permission_contexts);
@@ -70,7 +70,7 @@ class PermissionManager : public KeyedService,
   void OnEmbargoStarted(const GURL& origin,
                         ContentSettingsType content_setting) override;
 
-  ContentSettingPermissionContextBase* GetPermissionContextForTesting(
+  PermissionContextBase* GetPermissionContextForTesting(
       ContentSettingsType type);
 
   PermissionContextMap& PermissionContextsForTesting() {
@@ -95,8 +95,7 @@ class PermissionManager : public KeyedService,
 
   using SubscriptionTypeCounts = base::flat_map<ContentSettingsType, size_t>;
 
-  ContentSettingPermissionContextBase* GetPermissionContext(
-      ContentSettingsType type);
+  PermissionContextBase* GetPermissionContext(ContentSettingsType type);
 
   // content::PermissionControllerDelegate implementation.
   void RequestPermissions(
