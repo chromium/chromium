@@ -321,7 +321,7 @@ void ShareThisTabDialogView::SetupAudioToggle() {
       l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_AUDIO_SHARE));
   audio_toggle_button_->SetIsOn(
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kScreenCaptureAudioDefaultUnchecked));
+          switches::kTabCaptureAudioDefaultUnchecked));
 
   views::BoxLayout* audio_toggle_layout =
       audio_toggle_container->SetLayoutManager(
