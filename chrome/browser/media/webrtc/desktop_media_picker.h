@@ -80,10 +80,15 @@ class DesktopMediaPicker {
     std::u16string target_name;
     // Whether audio capture should be shown as an option in the picker.
     bool request_audio = false;
-    // If audio is requested, |exclude_system_audio| can indicate that
-    // system-audio should nevertheless not be offered to the user.
+    // If audio is requested, |exclude_system_audio| indicates that
+    // audio should not be offered to the user when sharing a window surface.
     // Mutually exclusive with |force_audio_checkboxes_to_default_checked|.
     bool exclude_system_audio = false;
+    // If audio is requested, |window_audio_preference| can indicate that
+    // audio should be offered to the user when sharing a window surface.
+    // Mutually exclusive with |force_audio_checkboxes_to_default_checked|.
+    blink::mojom::WindowAudioPreference window_audio_preference =
+        blink::mojom::WindowAudioPreference::kExclude;
     // Normally, the media-picker sets the default states for the audio
     // checkboxes. If |force_audio_checkboxes_to_default_checked| is |true|,
     // it sets them all to |checked|. This is used by Chromecasting.
