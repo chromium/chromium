@@ -33,7 +33,6 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
 
   void Trace(Visitor*) const override;
 
-  bool CanCreateCanvas2dResourceProvider() const;
   V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
 
   void PageVisibilityChanged() override {}
@@ -81,6 +80,7 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
   scoped_refptr<StaticBitmapImage> GetImageAndResetInternal();
 
  private:
+  CanvasResourceProvider* GetOrCreateResourceProviderForOffscreenCanvas();
   void ResetInternalBitmapToBlackTransparent(int width, int height);
 };
 

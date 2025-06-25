@@ -158,6 +158,15 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   void FlushRecordingForCanvas2D(FlushReason reason);
 
+  // `resource_provider_` must be null.
+  void SetResourceProviderForImageBitmap(
+      std::unique_ptr<CanvasResourceProvider> resource_provider) {
+    CHECK(IsImageBitmapRenderingContext());
+    CHECK(!resource_provider_for_image_bitmap_);
+    resource_provider_for_image_bitmap_ = std::move(resource_provider);
+    UpdateMemoryUsage();
+  }
+
  protected:
   ~CanvasRenderingContextHost() override = default;
 
@@ -167,15 +176,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
     CHECK(IsRenderingContext2D());
     CHECK(!resource_provider_for_canvas2d_);
     resource_provider_for_canvas2d_ = std::move(resource_provider);
-    UpdateMemoryUsage();
-  }
-
-  // `resource_provider_` must be null.
-  void SetResourceProviderForImageBitmap(
-      std::unique_ptr<CanvasResourceProvider> resource_provider) {
-    CHECK(IsImageBitmapRenderingContext());
-    CHECK(!resource_provider_for_image_bitmap_);
-    resource_provider_for_image_bitmap_ = std::move(resource_provider);
     UpdateMemoryUsage();
   }
 
