@@ -62,7 +62,8 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
                .show_recently_closed_tabs
            ? AutocompleteProvider::TYPE_RECENTLY_CLOSED_TABS
            : 0) |
-      (omnibox_feature_configs::ContextualSearch::Get().show_open_lens_action
+      (omnibox_feature_configs::ContextualSearch::Get().show_open_lens_action ||
+               omnibox_feature_configs::Toolbelt::Get().enabled
            ? AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH
            : 0) |
 #else
