@@ -276,10 +276,6 @@ static_library("common_lib") {
     public_deps += [ "//components/cdm/common" ]
   }
 
-  if (enable_ppapi) {
-    public_deps += [ "//ppapi/shared_impl" ]
-  }
-
   if (enable_extensions_core) {
     public_deps += [
       "//chrome/common/extensions",
@@ -726,10 +722,6 @@ mojom("mojo_bindings") {
       "conflicts/module_event_sink_win.mojom",
       "font_prewarmer.mojom",
     ]
-  }
-
-  if (enable_ppapi) {
-    sources += [ "ppapi_metrics.mojom" ]
   }
 
   enabled_features = []

@@ -1181,10 +1181,6 @@ static_library("test_support") {
     public_deps += [ "//components/offline_pages/core:test_support" ]
   }
 
-  if (enable_ppapi) {
-    public_deps += [ "//ppapi/shared_impl" ]
-  }
-
   if (enable_compose) {
     sources += [
       "../browser/compose/mock_chrome_compose_client.cc",
@@ -4311,22 +4307,6 @@ if (!is_android) {
       sources += [
         "../browser/plugins/plugin_info_host_impl_browsertest.cc",
         "../browser/plugins/plugin_response_interceptor_url_loader_throttle_browsertest.cc",
-      ]
-    }
-
-    if (enable_ppapi) {
-      sources += [
-        "ppapi/ppapi_browsertest.cc",
-        "ppapi/ppapi_filechooser_browsertest.cc",
-      ]
-      deps += [ "//ppapi/shared_impl:test_support" ]
-
-      # TODO(thakis): Why do these need copying in browser_tests?
-      # content_browsertests uses the non-copied files instead.
-      data_deps += [
-        "//ppapi:copy_test_files",
-        "//ppapi:copy_test_files2",
-        "//ppapi:ppapi_tests",
       ]
     }
 
@@ -10012,10 +9992,6 @@ test("unit_tests") {
     ]
   }
 
-  if (enable_ppapi) {
-    sources += [ "../common/pepper_permission_util_unittest.cc" ]
-  }
-
   if (enable_printing) {
     sources += [
       "../browser/policy/printing_restrictions_policy_handler_unittest.cc",
@@ -10848,26 +10824,6 @@ if (!is_android) {
       deps += [ "//chrome/browser/os_crypt" ]
     }
 
-    if (enable_ppapi) {
-      sources += [
-        "ppapi/ppapi_test.cc",
-        "ppapi/ppapi_test.h",
-        "ppapi/ppapi_test_select_file_dialog_factory.cc",
-        "ppapi/ppapi_test_select_file_dialog_factory.h",
-      ]
-      deps += [
-        "//chrome/browser/content_settings:content_settings_factory",
-        "//ppapi/shared_impl",
-      ]
-
-      data = [
-        "//ppapi/tests/test_case.html",
-        "//ppapi/tests/test_case.html.mock-http-headers",
-        "//ppapi/tests/test_page.css",
-        "//ppapi/tests/test_page.css.mock-http-headers",
-      ]
-    }
-
     if (enable_extensions) {
       deps += [ "//extensions/browser" ]
     }
@@ -11401,12 +11357,6 @@ if (!is_android && !is_chromeos_device) {
             [ "//chrome/browser/resources/chromeos/accessibility:build" ]
         data += [ "$root_out_dir/resources/chromeos/" ]
       }
-    }
-
-    if (enable_ppapi) {
-      sources += [ "ppapi/ppapi_interactive_browsertest.cc" ]
-      deps += [ "//ppapi/shared_impl:test_support" ]
-      data_deps += [ "//ppapi:ppapi_tests" ]
     }
 
     if (is_linux) {

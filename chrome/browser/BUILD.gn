@@ -8095,22 +8095,6 @@ static_library("browser") {
     ]
   }
 
-  if (enable_ppapi) {
-    sources += [
-      "renderer_host/pepper/chrome_browser_pepper_host_factory.cc",
-      "renderer_host/pepper/chrome_browser_pepper_host_factory.h",
-      "renderer_host/pepper/pepper_isolated_file_system_message_filter.cc",
-      "renderer_host/pepper/pepper_isolated_file_system_message_filter.h",
-    ]
-    deps += [
-      "//ppapi/host",
-      "//ppapi/proxy:ipc",
-    ]
-    if (is_chromeos) {
-      deps += [ "//chromeos/ash/components/cryptohome" ]
-    }
-  }
-
   if (enable_plugins || is_android) {
     sources += [
       "plugins/plugin_observer_common.cc",
