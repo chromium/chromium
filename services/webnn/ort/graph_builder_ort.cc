@@ -57,6 +57,8 @@ constexpr base::cstring_view kOpTypeConcat = "Concat";
 constexpr base::cstring_view kOpTypeConv2d = "Conv";
 constexpr base::cstring_view kOpTypeConvTranspose2d = "ConvTranspose";
 constexpr base::cstring_view kOpTypeExpand = "Expand";
+constexpr base::cstring_view kOpTypeGather = "Gather";
+constexpr base::cstring_view kOpTypeGatherElements = "GatherElements";
 constexpr base::cstring_view kOpTypeGelu = "Gelu";
 constexpr base::cstring_view kOpTypeGemm = "Gemm";
 constexpr base::cstring_view kOpTypeLeakyRelu = "LeakyRelu";
@@ -64,6 +66,7 @@ constexpr base::cstring_view kOpTypeHardSwish = "HardSwish";
 constexpr base::cstring_view kOpTypePRelu = "PRelu";
 constexpr base::cstring_view kOpTypeRelu = "Relu";
 constexpr base::cstring_view kOpTypeReshape = "Reshape";
+constexpr base::cstring_view kOpTypeScatterElements = "ScatterElements";
 constexpr base::cstring_view kOpTypeSigmoid = "Sigmoid";
 constexpr base::cstring_view kOpTypeSoftmax = "Softmax";
 constexpr base::cstring_view kOpTypeSoftsign = "Softsign";
@@ -293,6 +296,44 @@ std::string GraphBuilderOrt::CreateExpandNode(
   const std::string output = GenerateOperandName();
 
   AddExpandNode(node_name, input, output, shape);
+  return output;
+}
+
+std::string GraphBuilderOrt::ClampIndices(base::cstring_view indices,
+                                          OperandDataType data_type,
+                                          uint32_t dim_size) {
+  const std::string node_name = GenerateNodeName(
+      base::JoinString({kInserted, kOpTypeClamp}, kUnderscore));
+  const std::string output = GenerateOperandName();
+
+  // The dimension size must be greater than 0.
+  CHECK_GT(dim_size, 0u);
+
+  std::string min;
+  std::string max;
+  switch (data_type) {
+    case OperandDataType::kInt32: {
+      // A valid dimension must be in the range of int32.
+      // https://www.w3.org/TR/webnn/#valid-dimension
+      min = CreateScalarInitializer(-base::checked_cast<int32_t>(dim_size));
+      max = CreateScalarInitializer(base::checked_cast<int32_t>(dim_size - 1));
+      break;
+    }
+    case OperandDataType::kInt64: {
+      min = CreateScalarInitializer(-static_cast<int64_t>(dim_size));
+      max = CreateScalarInitializer(static_cast<int64_t>(dim_size - 1));
+      break;
+    }
+    default:
+      NOTREACHED() << "[WebNN] Indices can only be one of the int32 and int64 "
+                      "data types.";
+  }
+
+  std::array<const char*, 3> inputs = {indices.data(), min.c_str(),
+                                       max.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeClamp, node_name, inputs, outputs);
   return output;
 }
 
@@ -719,6 +760,32 @@ void GraphBuilderOrt::AddConcatOperation(const mojom::Concat& concat) {
   model_editor_.AddNode(kOpTypeConcat, node_name, inputs, outputs, attributes);
 }
 
+template <typename T>
+void GraphBuilderOrt::AddGatherOperation(const T& operation,
+                                         base::cstring_view op_type) {
+  const std::string node_name = GenerateNodeName(operation.label);
+  const std::string input = GetOperandNameById(operation.input_operand_id);
+  const std::string indices = GetOperandNameById(operation.indices_operand_id);
+  const std::string output = GetOperandNameById(operation.output_operand_id);
+
+  // Clamp the indices operand to prevent out-of-bounds reading which will cause
+  // ORT CPU EP to throw a runtime error.
+  std::string clamped_indices = ClampIndices(
+      indices, GetOperand(operation.indices_operand_id).descriptor.data_type(),
+      GetOperand(operation.input_operand_id)
+          .descriptor.shape()
+          .at(operation.axis));
+
+  std::array<const char*, 2> inputs = {input.c_str(), clamped_indices.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  constexpr base::cstring_view kAttrAxis = "axis";
+  std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
+      kAttrAxis, static_cast<int64_t>(operation.axis))};
+
+  model_editor_.AddNode(op_type, node_name, inputs, outputs, attributes);
+}
+
 void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
   const std::string node_name = GenerateNodeName(gemm.label);
   const std::string input_a = GetOperandNameById(gemm.a_operand_id);
@@ -886,6 +953,47 @@ void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   model_editor_.AddNode(kOpTypeReshape, node_name, inputs, outputs);
 }
 
+void GraphBuilderOrt::AddScatterElementsOperation(
+    const mojom::ScatterElements& scatter_elements) {
+  const std::string node_name = GenerateNodeName(scatter_elements.label);
+  const std::string input =
+      GetOperandNameById(scatter_elements.input_operand_id);
+  const std::string indices =
+      GetOperandNameById(scatter_elements.indices_operand_id);
+  const std::string updates =
+      GetOperandNameById(scatter_elements.updates_operand_id);
+  const std::string output =
+      GetOperandNameById(scatter_elements.output_operand_id);
+
+  const OperandDescriptor& input_descriptor =
+      GetOperand(scatter_elements.input_operand_id).descriptor;
+  const OperandDescriptor& updates_descriptor =
+      GetOperand(scatter_elements.updates_operand_id).descriptor;
+  const OperandDescriptor& indices_descriptor =
+      GetOperand(scatter_elements.indices_operand_id).descriptor;
+  CHECK(context_properties_.data_type_limits.scatter_elements_input.SupportsAll(
+      {input_descriptor, updates_descriptor}));
+  CHECK(context_properties_.data_type_limits.scatter_elements_indices.Supports(
+      indices_descriptor));
+
+  // Clamp the indices operand to prevent out-of-bounds reading which will cause
+  // ORT CPU EP to throw a runtime error.
+  std::string clamped_indices =
+      ClampIndices(indices, indices_descriptor.data_type(),
+                   input_descriptor.shape().at(scatter_elements.axis));
+
+  std::array<const char*, 3> inputs = {input.c_str(), clamped_indices.c_str(),
+                                       updates.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  constexpr base::cstring_view kAttrAxis = "axis";
+  std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
+      kAttrAxis, static_cast<int64_t>(scatter_elements.axis))};
+
+  model_editor_.AddNode(kOpTypeScatterElements, node_name, inputs, outputs,
+                        attributes);
+}
+
 void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
   const std::string node_name = GenerateNodeName(softmax.label);
   const std::string input = GetOperandNameById(softmax.input_operand_id);
@@ -1034,6 +1142,26 @@ GraphBuilderOrt::BuildModel() {
         AddExpandOperation(*operation->get_expand());
         break;
       }
+      case mojom::Operation::Tag::kGather: {
+        CHECK(data_type_limits.gather_input.Supports(
+            GetOperand(operation->get_gather()->input_operand_id).descriptor));
+        CHECK(data_type_limits.gather_indices.Supports(
+            GetOperand(operation->get_gather()->indices_operand_id)
+                .descriptor));
+        AddGatherOperation(*operation->get_gather(), kOpTypeGather);
+        break;
+      }
+      case mojom::Operation::Tag::kGatherElements: {
+        CHECK(data_type_limits.gather_elements_input.Supports(
+            GetOperand(operation->get_gather_elements()->input_operand_id)
+                .descriptor));
+        CHECK(data_type_limits.gather_elements_indices.Supports(
+            GetOperand(operation->get_gather_elements()->indices_operand_id)
+                .descriptor));
+        AddGatherOperation(*operation->get_gather_elements(),
+                           kOpTypeGatherElements);
+        break;
+      }
       case mojom::Operation::Tag::kGelu: {
         CHECK(data_type_limits.gelu_input.Supports(
             GetOperand(operation->get_gelu()->input_operand_id).descriptor));
@@ -1073,6 +1201,10 @@ GraphBuilderOrt::BuildModel() {
         AddReshapeOperation(*operation->get_reshape());
         break;
       }
+      case mojom::Operation::Tag::kScatterElements: {
+        AddScatterElementsOperation(*operation->get_scatter_elements());
+        break;
+      }
       case mojom::Operation::Tag::kSigmoid: {
         CHECK(data_type_limits.sigmoid_input.Supports(
             GetOperand(operation->get_sigmoid()->input_operand_id).descriptor));
@@ -1108,8 +1240,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kElu:
-      case mojom::Operation::Tag::kGather:
-      case mojom::Operation::Tag::kGatherElements:
       case mojom::Operation::Tag::kGatherNd:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
@@ -1125,7 +1255,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kReduce:
       case mojom::Operation::Tag::kResample2d:
       case mojom::Operation::Tag::kReverse:
-      case mojom::Operation::Tag::kScatterElements:
       case mojom::Operation::Tag::kScatterNd:
       case mojom::Operation::Tag::kSlice:
       case mojom::Operation::Tag::kSoftplus:

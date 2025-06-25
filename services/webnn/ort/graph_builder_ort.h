@@ -127,10 +127,18 @@ class GraphBuilderOrt {
   std::string CreateExpandNode(base::cstring_view input,
                                base::span<const uint32_t> shape);
 
+  // Clamp the indices to the range [-dim_size, dim_size), the given data type
+  // should be indices's data type.
+  std::string ClampIndices(base::cstring_view indices,
+                           OperandDataType data_type,
+                           uint32_t dim_size);
+
   template <typename T>
   void AddBinaryOperation(const T& operation, base::cstring_view op_type);
   template <typename T>
   void AddUnaryOperation(const T& operation, base::cstring_view op_type);
+  template <typename T>
+  void AddGatherOperation(const T& operation, base::cstring_view op_type);
 
   void AddArgMinMaxOperation(const mojom::ArgMinMax& arg_min_max);
   void AddCastOperation(const mojom::ElementWiseUnary& cast);
@@ -147,6 +155,8 @@ class GraphBuilderOrt {
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
   void AddPreluOperation(const mojom::Prelu& prelu);
   void AddReshapeOperation(const mojom::Reshape& reshape);
+  void AddScatterElementsOperation(
+      const mojom::ScatterElements& scatter_elements);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
   void AddSplitOperation(const mojom::Split& split);
   void AddTransposeOperation(const mojom::Transpose& transpose);

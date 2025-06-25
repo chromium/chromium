@@ -122,10 +122,13 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*elu_input=*/{},
        /*expand_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
-       /*gather_input=*/{},
-       /*gather_indices=*/{},
-       /*gather_elements_input=*/{},
-       /*gather_elements_indices=*/{},
+       /*gather_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
+       /*gather_indices=*/{DataTypeConstraint::kInt32To64, kMaxRank},
+       /*gather_elements_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
+       /*gather_elements_indices=*/
+       {DataTypeConstraint::kInt32To64, kMaxNonScalarRank},
        /*gather_nd_input=*/{},
        /*gather_nd_indices=*/{},
        /*gelu_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
@@ -177,8 +180,10 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*reshape_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*reverse_input=*/{},
-       /*scatter_elements_input=*/{},
-       /*scatter_elements_indices=*/{},
+       /*scatter_elements_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
+       /*scatter_elements_indices=*/
+       {DataTypeConstraint::kInt32To64, kMaxNonScalarRank},
        /*scatter_nd_input=*/{},
        /*scatter_nd_indices=*/{},
        /*scatter_nd_updates=*/{},
