@@ -42,14 +42,6 @@ class XcodeUnsupportedFeatureError(Error):
   pass
 
 
-class XcodeMacToolchainMismatchError(XcodeInstallError):
-  """The mac_toolchain version can't work with the Xcode package."""
-
-  def __init__(self, xcode_build_version):
-    super(XcodeMacToolchainMismatchError, self).__init__(
-        'Legacy mac_toolchain cannot work with Xcode: %s' % xcode_build_version)
-
-
 class MacToolchainNotFoundError(XcodeInstallError):
   """The mac_toolchain is not specified."""
 
