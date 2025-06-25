@@ -337,6 +337,9 @@ public class DownloadTest {
     @Test
     @LargeTest
     @Feature({"Navigation"})
+    // TestWebServer hosts on [::1] (versus EmbeddedTestServer hosting on 127.0.0.1), so we need to
+    // set this to avoid Local Network Access (LNA) checks.
+    @CommandLineFlags.Add({"ip-address-space-overrides=[::1]:0=public"})
     public void testOMADownloadInterception() throws Exception {
         TestWebServer webServer = TestWebServer.start();
         try {

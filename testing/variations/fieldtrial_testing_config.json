@@ -14313,6 +14313,7 @@
     "LocalNetworkAccessChecks": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
