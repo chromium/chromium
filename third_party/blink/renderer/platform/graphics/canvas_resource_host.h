@@ -20,8 +20,7 @@ class CanvasResourceProvider;
 
 class PLATFORM_EXPORT CanvasResourceHost {
  public:
-  CanvasResourceHost();
-  virtual ~CanvasResourceHost();
+  virtual ~CanvasResourceHost() = default;
 
   virtual void NotifyGpuContextLost() = 0;
   // TODO(crbug.com/399587138): Delete once `cc::Layer` related code is moved to
