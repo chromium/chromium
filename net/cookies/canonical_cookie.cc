@@ -667,8 +667,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   }
 
   CookiePrefix prefix = cookie_util::GetCookiePrefix(name);
-  if (!cookie_util::IsCookiePrefixValid(prefix, url, secure, domain_attribute,
-                                        cookie_path)) {
+  if (!cookie_util::IsCookiePrefixValid(prefix, url, secure, http_only,
+                                        domain_attribute, cookie_path)) {
     status->AddExclusionReason(
         net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX);
   }

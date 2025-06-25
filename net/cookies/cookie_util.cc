@@ -117,6 +117,12 @@ bool HasValidHostPrefixAttributes(const GURL& url,
   return domain.empty() || (url.HostIsIPAddress() && url.host() == domain);
 }
 
+// Tests that a cookie has the attributes for a valid __Http- prefix without
+// testing that the prefix is in the cookie name.
+bool HasValidHttpPrefixAttributes(bool secure, bool http_only) {
+  return secure && http_only;
+}
+
 struct ComputeSameSiteContextResult {
   ContextType context_type = ContextType::CROSS_SITE;
   ContextMetadata metadata;
@@ -756,6 +762,7 @@ bool IsOnPath(const std::string& cookie_path, const std::string& url_path) {
 CookiePrefix GetCookiePrefix(const std::string& name) {
   const char kSecurePrefix[] = "__Secure-";
   const char kHostPrefix[] = "__Host-";
+  const char kHttpPrefix[] = "__Http-";
 
   if (base::StartsWith(name, kSecurePrefix,
                        base::CompareCase::INSENSITIVE_ASCII)) {
@@ -765,20 +772,26 @@ CookiePrefix GetCookiePrefix(const std::string& name) {
                        base::CompareCase::INSENSITIVE_ASCII)) {
     return COOKIE_PREFIX_HOST;
   }
+  if (base::StartsWith(name, kHttpPrefix,
+                       base::CompareCase::INSENSITIVE_ASCII) &&
+      base::FeatureList::IsEnabled(features::kPrefixCookieHttp)) {
+    return COOKIE_PREFIX_HTTP;
+  }
   return COOKIE_PREFIX_NONE;
 }
 
 bool IsCookiePrefixValid(CookiePrefix prefix,
                          const GURL& url,
                          const ParsedCookie& parsed_cookie) {
-  return IsCookiePrefixValid(prefix, url, parsed_cookie.IsSecure(),
-                             parsed_cookie.Domain().value_or(""),
-                             parsed_cookie.Path().value_or(""));
+  return IsCookiePrefixValid(
+      prefix, url, parsed_cookie.IsSecure(), parsed_cookie.IsHttpOnly(),
+      parsed_cookie.Domain().value_or(""), parsed_cookie.Path().value_or(""));
 }
 
 bool IsCookiePrefixValid(CookiePrefix prefix,
                          const GURL& url,
                          bool secure,
+                         bool http_only,
                          std::string_view domain,
                          std::string_view path) {
   if (prefix == COOKIE_PREFIX_SECURE) {
@@ -787,6 +800,9 @@ bool IsCookiePrefixValid(CookiePrefix prefix,
   }
   if (prefix == COOKIE_PREFIX_HOST) {
     return HasValidHostPrefixAttributes(url, secure, domain, path);
+  }
+  if (prefix == COOKIE_PREFIX_HTTP) {
+    return HasValidHttpPrefixAttributes(secure, http_only);
   }
   return true;
 }

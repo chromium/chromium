@@ -90,8 +90,18 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
 
   String cookie_url_host = cookie_url.Host().ToString();
   String domain;
+  // Trying to set `__http-` prefixed cookie will be rejected further down by
+  // CreateSanitizedCookie regardless of the condition below. Its role is to
+  // provide a more meaningful exception message than "Cookie was malformed..".
+  if (name.StartsWithIgnoringASCIICase("__http-")) {
+    exception_state.ThrowTypeError(
+        "Cookies with \"__Http-\" prefix cannot be set using the "
+        "CookieStore API.");
+    return nullptr;
+  }
+  const bool is_host_prefixed_cookie = name.StartsWith("__Host-");
   if (!options->domain().IsNull()) {
-    if (name.StartsWith("__Host-")) {
+    if (is_host_prefixed_cookie) {
       exception_state.ThrowTypeError(
           "Cookies with \"__Host-\" prefix cannot have a domain");
       return nullptr;
@@ -115,7 +125,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
 
   String path = options->path();
   if (!path.empty()) {
-    if (name.StartsWith("__Host-") && path != "/") {
+    if (is_host_prefixed_cookie && path != "/") {
       exception_state.ThrowTypeError(
           "Cookies with \"__Host-\" prefix cannot have a non-\"/\" path");
       return nullptr;

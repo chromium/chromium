@@ -276,6 +276,7 @@ bool IsCookiePrefixValid(CookiePrefix prefix,
 NET_EXPORT_PRIVATE bool IsCookiePrefixValid(CookiePrefix prefix,
                                             const GURL& url,
                                             bool secure,
+                                            bool http_only,
                                             std::string_view domain,
                                             std::string_view path);
 

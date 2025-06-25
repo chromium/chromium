@@ -18278,6 +18278,26 @@
             ]
         }
     ],
+    "PrefixCookieHttp": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrefixCookieHttp"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreloadInlineDeferredImages": [
         {
             "platforms": [

@@ -73,6 +73,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="No special prefix"/>
   <int value="1" label="Secure prefix"/>
   <int value="2" label="Host prefix"/>
+  <int value="3" label="Http prefix"/>
 </enum>
 
 <enum name="CookieRequestScheme">

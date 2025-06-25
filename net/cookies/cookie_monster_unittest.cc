@@ -8521,4 +8521,40 @@ INSTANTIATE_TEST_SUITE_P(/* no label */,
                              {false, true},
                              {true, true}}));
 
+TEST_F(CookieMonsterTest, RejectsHttpOnlyPrefixCookie) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPrefixCookieHttp);
+
+  auto store = base::MakeRefCounted<MockPersistentCookieStore>();
+  auto cookie_monster =
+      std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
+  EXPECT_TRUE(GetAllCookies(cookie_monster.get()).empty());
+
+  std::string cookie_line = "__Http-Test1=1; path=/; secure";
+  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::CreateForTesting(
+      https_www_foo_.url(), cookie_line, base::Time::Now(),
+      /*server_time=*/std::nullopt,
+      /*cookie_partition_key=*/std::nullopt);
+  EXPECT_FALSE(cookie.get());
+}
+
+TEST_F(CookieMonsterTest, AcceptsHttpOnlyPrefixCookie) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPrefixCookieHttp);
+
+  auto store = base::MakeRefCounted<MockPersistentCookieStore>();
+  auto cookie_monster =
+      std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
+  EXPECT_TRUE(GetAllCookies(cookie_monster.get()).empty());
+
+  std::string cookie_line = "__Http-Test2=1; path=/; secure; httponly";
+  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::CreateForTesting(
+      https_www_foo_.url(), cookie_line, base::Time::Now(),
+      /*server_time=*/std::nullopt,
+      /*cookie_partition_key=*/std::nullopt);
+  SetCanonicalCookie(cookie_monster.get(), std::move(cookie),
+                     https_www_foo_.url(), /*can_modify_httponly=*/true);
+  EXPECT_EQ(1u, GetAllCookies(cookie_monster.get()).size());
+}
+
 }  // namespace net
