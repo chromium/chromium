@@ -54,12 +54,12 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
-#include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_cache.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/register_basic_auth_handler.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -629,10 +629,7 @@ constexpr char kOriginHostname[] = "a.test";
 class SystemProxyCredentialsReuseBrowserTest
     : public SystemProxyManagerPolicyCredentialsBrowserTest {
  public:
-  SystemProxyCredentialsReuseBrowserTest()
-      : proxy_server_(std::make_unique<net::SpawnedTestServer>(
-            net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
-            base::FilePath())) {}
+  SystemProxyCredentialsReuseBrowserTest() {}
   SystemProxyCredentialsReuseBrowserTest(
       const SystemProxyCredentialsReuseBrowserTest&) = delete;
   SystemProxyCredentialsReuseBrowserTest& operator=(
@@ -641,9 +638,6 @@ class SystemProxyCredentialsReuseBrowserTest
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    host_resolver()->AddRule(kOriginHostname, "127.0.0.1");
-    proxy_server_->set_redirect_connect_to_localhost(true);
-    ASSERT_TRUE(proxy_server_->Start());
 
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
@@ -651,6 +645,12 @@ class SystemProxyCredentialsReuseBrowserTest
     https_server_->ServeFilesFromSourceDirectory("chrome/test/data");
     net::test_server::RegisterDefaultHandlers(https_server_.get());
     ASSERT_TRUE(https_server_->Start());
+
+    RegisterProxyBasicAuthHandler(proxy_server_, kProxyUsername,
+                                  kProxyPassword);
+    proxy_server_.EnableConnectProxy({net::HostPortPair::FromURL(
+        https_server_->GetURL(kOriginHostname, "/"))});
+    ASSERT_TRUE(proxy_server_.Start());
   }
 
  protected:
@@ -663,7 +663,7 @@ class SystemProxyCredentialsReuseBrowserTest
     auto proxy_config =
         base::Value::Dict()
             .Set("mode", ProxyPrefs::kFixedServersProxyModeName)
-            .Set("server", proxy_server_->host_port_pair().ToString());
+            .Set("server", proxy_server_.host_port_pair().ToString());
     browser()->profile()->GetPrefs()->SetDict(::proxy_config::prefs::kProxy,
                                               std::move(proxy_config));
     RunUntilIdle();
@@ -697,8 +697,8 @@ class SystemProxyCredentialsReuseBrowserTest
     base::RunLoop loop;
     network_context->LookupProxyAuthCredentials(
         net::ProxyServer(net::ProxyServer::SCHEME_HTTP,
-                         proxy_server_->host_port_pair()),
-        auth_scheme, "MyRealm1",
+                         proxy_server_.host_port_pair()),
+        auth_scheme, "TestServer",
         base::BindOnce(
             [](std::string* username, std::string* password,
                base::OnceClosure closure,
@@ -722,7 +722,7 @@ class SystemProxyCredentialsReuseBrowserTest
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   // A proxy server which requires authentication using the 'Basic'
   // authentication method.
-  std::unique_ptr<net::SpawnedTestServer> proxy_server_;
+  net::EmbeddedTestServer proxy_server_{net::EmbeddedTestServer::TYPE_HTTP};
 };
 
 // Verifies that the policy provided credentials are not used for regular users.
