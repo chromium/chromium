@@ -1,2 +1,9 @@
 # crbug.com/329691945
 -DCompPresenterPixelTest.SoftwareVideoSwapchain/*
+
+# crbug.com/40733742
+-DCompPresenterTest.MatchedAndUnmatchedVisualsReused/*
+-DCompPresenterPixelTest.SwapChainImage/*
+
+# crbug.com/40629500
+-DCompPresenterPixelTest.YUY2SwapChain/*

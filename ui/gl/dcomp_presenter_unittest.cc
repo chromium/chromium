@@ -994,12 +994,6 @@ void CreateSwapChain(IDXGIFactory2* dxgi_factory,
 }
 
 TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
-  if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos) {
-    GTEST_SKIP() << "Fails on AMD RX 5500 XT. https://crbug.com/1152565.";
-  }
-
   constexpr gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
@@ -1751,14 +1745,6 @@ TEST_P(DCompPresenterPixelTest, NV12SwapChain) {
 }
 
 TEST_P(DCompPresenterPixelTest, YUY2SwapChain) {
-  if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos) {
-    GTEST_SKIP()
-        << "CreateSwapChainForCompositionSurfaceHandle fails with YUY2 format "
-           "on Win10/AMD bot (Radeon RX550). See https://crbug.com/967860.";
-  }
-
   // By default NV12 is used, so set it to YUY2 explicitly.
   SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT_YUY2);
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
@@ -1997,12 +1983,6 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
 }
 
 TEST_P(DCompPresenterPixelTest, SwapChainImage) {
-  if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos) {
-    GTEST_SKIP() << "Fails on AMD RX 5500 XT. https://crbug.com/1152565.";
-  }
-
   gfx::Size swap_chain_size(50, 50);
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
   Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv;
