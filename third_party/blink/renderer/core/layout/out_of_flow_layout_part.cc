@@ -460,12 +460,8 @@ std::optional<LogicalSize> OutOfFlowLayoutPart::InitialContainingBlockFixedSize(
     return std::nullopt;
   const auto* frame_view = container.GetDocument().View();
   DCHECK(frame_view);
-  PhysicalSize size =
-      RuntimeEnabledFeatures::ScrollbarGutterFixedPosBugfixEnabled()
-          ? PhysicalSize(frame_view->Size())
-          : PhysicalSize(frame_view->LayoutViewport()->ExcludeScrollbars(
-                frame_view->Size()));
-  return ToLogicalSize(size, container.Style().GetWritingMode());
+  return ToLogicalSize(PhysicalSize(frame_view->Size()),
+                       container.Style().GetWritingMode());
 }
 
 OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
@@ -504,15 +500,10 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
   if (container_builder_->HasBlockSize()) {
     default_containing_block_info_for_absolute_.rect.size =
         ShrinkLogicalSize(container_builder_->Size(), border_scrollbar);
-    default_containing_block_info_for_fixed_.rect.size =
-        RuntimeEnabledFeatures::ScrollbarGutterFixedPosBugfixEnabled()
-            ? ShrinkLogicalSize(
-                  InitialContainingBlockFixedSize(container_builder->Node())
-                      .value_or(container_builder_->Size()),
-                  border_scrollbar)
-            : InitialContainingBlockFixedSize(container_builder->Node())
-                  .value_or(
-                      default_containing_block_info_for_absolute_.rect.size);
+    default_containing_block_info_for_fixed_.rect.size = ShrinkLogicalSize(
+        InitialContainingBlockFixedSize(container_builder->Node())
+            .value_or(container_builder_->Size()),
+        border_scrollbar);
   }
   LogicalOffset container_offset = {border_scrollbar.inline_start,
                                     border_scrollbar.block_start};

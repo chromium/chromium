@@ -4304,10 +4304,6 @@
       status: "stable",
     },
     {
-      name: "ScrollbarGutterFixedPosBugfix",
-      status: "stable",
-    },
-    {
       name: "ScrollbarWidth",
       status: "stable",
     },
@@ -4934,10 +4930,6 @@
     {
       // killswitch for fix in M137
       name: "TextareaStableResizing",
-      status: "stable",
-    },
-    {
-      name: "TextAutoSizingDisabledOnFlexbox",
       status: "stable",
     },
     {
