@@ -367,7 +367,7 @@ void BindSharedWorkerConnector(
   SharedWorkerConnectorImpl::Create(host->GetGlobalId(), std::move(receiver));
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS))
 void BindDateTimeChooserForFrame(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::DateTimeChooser> receiver) {
@@ -1260,7 +1260,7 @@ void PopulateBinderMapWithContext(
   RegisterWebUIControllerInterfaceBinder<webxr::mojom::WebXrInternalsHandler,
                                          WebXrInternalsUI>(map);
 #endif
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS))
   map->Add<blink::mojom::DateTimeChooser>(
       base::BindRepeating(&BindDateTimeChooserForFrame));
 #endif
