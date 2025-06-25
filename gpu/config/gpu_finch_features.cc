@@ -271,11 +271,6 @@ const base::FeatureParam<std::string> kWebGPUUnsafeFeatures{
 const base::FeatureParam<std::string> kWGSLUnsafeFeatures{
     &kWebGPUService, "UnsafeWGSLFeatures", ""};
 
-BASE_FEATURE(kWebGPUUseTintIR,
-             "WebGPUUseTintIR",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
-
 BASE_FEATURE(kWebGPUUseVulkanMemoryModel,
              "WebGPUUseVulkanMemoryModel",
              base::FEATURE_ENABLED_BY_DEFAULT);

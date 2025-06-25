@@ -243,8 +243,6 @@ bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
     case dawn::platform::Features::kWebGPUUseDXC:
       // (crbug.com/362247692): Feature is enabled by default.
       return true;
-    case dawn::platform::Features::kWebGPUUseTintIR:
-      return base::FeatureList::IsEnabled(features::kWebGPUUseTintIR);
     case dawn::platform::Features::kWebGPUUseVulkanMemoryModel:
       return base::FeatureList::IsEnabled(
           features::kWebGPUUseVulkanMemoryModel);
