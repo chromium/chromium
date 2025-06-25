@@ -4,6 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
@@ -80,6 +81,10 @@ class SplitTabButtonInteractiveTest
 
   GURL GetTestUrl(std::string relative_url = "/title1.html") const {
     return embedded_test_server()->GetURL(relative_url);
+  }
+
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
   }
 
   auto UpdateSplitTabButtonPinState(bool should_pin) {
@@ -164,6 +169,16 @@ class SplitTabButtonInteractiveTest
                               return root_item->GetMenuItemAt(menu_index);
                             });
   }
+
+  auto CheckMenuHistogram(SplitTabMenuModel::CommandId command_id) {
+    return Do([this, command_id] {
+      histogram_tester().ExpectBucketCount("Tabs.SplitViewMenu.ToolbarButton",
+                                           command_id, 1);
+    });
+  }
+
+ private:
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, PinSplitTabButton) {
@@ -358,34 +373,38 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, ReverseSplitTabPosition) {
                 ->GetWebContentsAt(tab_strip_model->active_index())
                 ->GetURL();
           },
-          GetTestUrl()));
+          GetTestUrl()),
+      CheckMenuHistogram(SplitTabMenuModel::CommandId::kReversePosition));
 }
 
 IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, CloseLeftRightTabs) {
-  RunTestSequence(InstrumentTab(kWebContents1Id),
-                  AddInstrumentedTab(kWebContents2Id, GetTestUrl()),
-                  SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
-                  WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
-                  // Open the button's context menu.
-                  PressButton(kToolbarSplitTabsToolbarButtonElementId),
-                  WaitForShow(SplitTabMenuModel::kCloseStartTabMenuItem),
-                  // Selecting close left menu item should close the left tab
-                  EnsureNotPresent(SplitTabMenuModel::kCloseMenuItem),
-                  SelectMenuItem(SplitTabMenuModel::kCloseStartTabMenuItem),
-                  WaitForHide(kWebContents1Id),
-                  WaitForHide(kToolbarSplitTabsToolbarButtonElementId),
-                  CheckTabCount(1), EnsurePresent(kWebContents2Id),
-                  // Create a new split with a third tab.
-                  AddInstrumentedTab(kWebContents3Id, GetTestUrl()),
-                  SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
-                  WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
-                  PressButton(kToolbarSplitTabsToolbarButtonElementId),
-                  WaitForShow(SplitTabMenuModel::kCloseEndTabMenuItem),
-                  // Selecting close right menu item should close the right tab
-                  SelectMenuItem(SplitTabMenuModel::kCloseEndTabMenuItem),
-                  WaitForHide(kWebContents3Id),
-                  WaitForHide(kToolbarSplitTabsToolbarButtonElementId),
-                  CheckTabCount(1), EnsurePresent(kWebContents2Id));
+  RunTestSequence(
+      InstrumentTab(kWebContents1Id),
+      AddInstrumentedTab(kWebContents2Id, GetTestUrl()),
+      SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+      WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+      // Open the button's context menu.
+      PressButton(kToolbarSplitTabsToolbarButtonElementId),
+      WaitForShow(SplitTabMenuModel::kCloseStartTabMenuItem),
+      // Selecting close left menu item should close the left tab
+      EnsureNotPresent(SplitTabMenuModel::kCloseMenuItem),
+      SelectMenuItem(SplitTabMenuModel::kCloseStartTabMenuItem),
+      WaitForHide(kWebContents1Id),
+      WaitForHide(kToolbarSplitTabsToolbarButtonElementId), CheckTabCount(1),
+      EnsurePresent(kWebContents2Id),
+      CheckMenuHistogram(SplitTabMenuModel::CommandId::kCloseStartTab),
+      // Create a new split with a third tab.
+      AddInstrumentedTab(kWebContents3Id, GetTestUrl()),
+      SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+      WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+      PressButton(kToolbarSplitTabsToolbarButtonElementId),
+      WaitForShow(SplitTabMenuModel::kCloseEndTabMenuItem),
+      // Selecting close right menu item should close the right tab
+      SelectMenuItem(SplitTabMenuModel::kCloseEndTabMenuItem),
+      WaitForHide(kWebContents3Id),
+      WaitForHide(kToolbarSplitTabsToolbarButtonElementId), CheckTabCount(1),
+      EnsurePresent(kWebContents2Id),
+      CheckMenuHistogram(SplitTabMenuModel::CommandId::kCloseEndTab));
 }
 
 IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, ExitSplit) {
@@ -402,8 +421,8 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, ExitSplit) {
       WaitForHide(kToolbarSplitTabsToolbarButtonElementId),
       CheckTabInSplit(0, false), CheckTabInSplit(1, false),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->active_index(); },
-          0));
+          [this]() { return browser()->tab_strip_model()->active_index(); }, 0),
+      CheckMenuHistogram(SplitTabMenuModel::CommandId::kExitSplit));
 }
 
 IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, ButtonUpdatesOnSplit) {

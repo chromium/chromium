@@ -34,6 +34,12 @@ chromium-metrics-reviews@google.com.
   <variant name="Tab" summary="RecentlyClosedTab"/>
 </variants>
 
+<variants name="SplitViewMenuSource">
+  <variant name="MiniToolbar" summary="The split view mini toolbar"/>
+  <variant name="TabContextMenu" summary="The tab context menu"/>
+  <variant name="ToolbarButton" summary="The split view toolbar button"/>
+</variants>
+
 <variants name="TabActiveState">
   <variant name="Active" summary="active"/>
   <variant name="Inactive" summary="inactive"/>
@@ -2763,6 +2769,17 @@ chromium-metrics-reviews@google.com.
     experience. The endpoint is called for every Tab when we enter the Tab grid
     switcher and is cached with a time to live of 1 hour.
   </summary>
+</histogram>
+
+<histogram name="Tabs.SplitViewMenu.{SplitViewMenuSource}"
+    enum="SplitViewMenuEntry" expires_after="2025-12-24">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records the menu item selected from the split view menu anchored to
+    {SplitViewMenuSource}.
+  </summary>
+  <token key="SplitViewMenuSource" variants="SplitViewMenuSource"/>
 </histogram>
 
 <histogram name="Tabs.Startup.RestoreDuration.{TabModelSelectorType}"

@@ -251,6 +251,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h:SharedTabGroupRecallTypeDesktop) -->
 
+<!-- LINT.IfChange(SplitViewMenuEntry) -->
+
+<enum name="SplitViewMenuEntry">
+  <summary>Entries from the split view menu.</summary>
+  <int value="0" label="Reverse position"/>
+  <int value="1" label="Close specified tab"/>
+  <int value="2" label="Close start tab"/>
+  <int value="3" label="Close end tab"/>
+  <int value="4" label="Exit split"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/split_tab_menu_model.h:SplitViewMenuEntry) -->
+
 <enum name="TabActivationTypes">
   <int value="0" label="Activate a tab"/>
   <int value="1" label="Activate the context menu of a tab"/>

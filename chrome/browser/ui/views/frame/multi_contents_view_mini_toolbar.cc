@@ -357,7 +357,7 @@ void MultiContentsViewMiniToolbar::OpenSplitViewMenu() {
   const int index = model->GetIndexOfWebContents(web_contents_);
   menu_model_ = std::make_unique<SplitTabMenuModel>(
       browser_view_->browser()->tab_strip_model(),
-      SplitTabMenuModel::CloseTabMenuItem::kCloseSpecifiedTab, index);
+      SplitTabMenuModel::MenuSource::kMiniToolbar, index);
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model_.get(), views::MenuRunner::HAS_MNEMONICS);
   menu_runner_->RunMenuAt(menu_button_->GetWidget(),

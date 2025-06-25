@@ -38,20 +38,29 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseEndTabMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExitSplitMenuItem);
 
-  // Enum class denoting which close tab menu item the menu should show.
-  enum class CloseTabMenuItem { kCloseStartEndTab, kCloseSpecifiedTab };
-
-  // Start command IDs at 1701 to avoid conflicts with other submenus.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // number values should never be reused.
+  // LINT.IfChange(SplitViewMenuEntry)
   enum class CommandId {
-    kReversePosition = ExistingBaseSubMenuModel::kMinSplitTabMenuModelCommandId,
+    kReversePosition = 0,
     kCloseSpecifiedTab,
     kCloseStartTab,
     kCloseEndTab,
-    kExitSplit
+    kExitSplit,
+    kMaxValue = kExitSplit,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SplitViewMenuEntry)
+
+  // Enum denoting where this menu is opening from. This is used to determine
+  // which close options to show and for logging.
+  enum class MenuSource {
+    kToolbarButton,
+    kMiniToolbar,
+    kTabContextMenu,
   };
 
   SplitTabMenuModel(TabStripModel* tab_strip_model,
-                    CloseTabMenuItem close_menu_item,
+                    MenuSource menu_source,
                     std::optional<int> split_tab_index = std::nullopt);
   ~SplitTabMenuModel() override;
 
@@ -70,6 +79,10 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
   void CloseTabAtIndex(int index);
 
   raw_ptr<TabStripModel> tab_strip_model_ = nullptr;
+
+  // This represents where the menu was opened from, for metrics logging
+  // purposes.
+  MenuSource menu_source_;
 
   // This represents the tab that this menu model should be operating on. If
   // nothing is provided, use the currently active tab.

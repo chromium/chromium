@@ -206,8 +206,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
       }
     } else {
       arrange_split_view_submenu_ = std::make_unique<SplitTabMenuModel>(
-          tab_strip, SplitTabMenuModel::CloseTabMenuItem::kCloseStartEndTab,
-          index);
+          tab_strip, SplitTabMenuModel::MenuSource::kTabContextMenu, index);
       AddSubMenuWithStringId(TabStripModel::CommandArrangeSplit,
                              IDS_TAB_CXMENU_ARRANGE_SPLIT,
                              arrange_split_view_submenu_.get());

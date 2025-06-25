@@ -82,7 +82,7 @@ SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
   UpdateButtonVisibility();
   split_tab_menu_ = std::make_unique<SplitTabMenuModel>(
       browser->tab_strip_model(),
-      SplitTabMenuModel::CloseTabMenuItem::kCloseStartEndTab);
+      SplitTabMenuModel::MenuSource::kToolbarButton);
   browser->tab_strip_model()->AddObserver(this);
 }
 
