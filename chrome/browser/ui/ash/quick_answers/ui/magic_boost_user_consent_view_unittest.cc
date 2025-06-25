@@ -16,8 +16,10 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/test_layout_provider.h"
 
 namespace quick_answers {
@@ -107,6 +109,13 @@ class MagicBoostUserConsentViewTest : public ChromeQuickAnswersTestBase {
         quick_answers::IntentType::kUnit, u"Text");
   }
 
+  void SimulateSettingsButtonClicked() {
+    views::test::ButtonTestApi(
+        GetMagicBoostUserConsentView()->settings_button_for_testing())
+        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                    gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   chromeos::ReadWriteCardsUiController controller_;
@@ -154,11 +163,7 @@ TEST_F(MagicBoostUserConsentViewTest, OpenSettings) {
       mock_settings_window_manager,
       ShowChromePageForProfile(testing::_, testing::_, testing::_, testing::_));
 
-  GetEventGenerator()->MoveMouseTo(GetMagicBoostUserConsentView()
-                                       ->settings_button_for_testing()
-                                       ->GetBoundsInScreen()
-                                       .CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  SimulateSettingsButtonClicked();
 }
 
 TEST_F(MagicBoostUserConsentViewTest, A11yNameAndDescription) {

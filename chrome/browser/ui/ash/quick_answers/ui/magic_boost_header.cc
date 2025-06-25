@@ -28,13 +28,6 @@ views::Builder<views::BoxLayoutView> GetMagicBoostHeader() {
   int vertical_padding = std::max(0, (20 - line_height) / 2);
 
   return views::Builder<views::BoxLayoutView>()
-      .SetProperty(
-          views::kMarginsKey,
-          gfx::Insets::TLBR(
-              0, 0,
-              views::LayoutProvider::Get()->GetDistanceMetric(
-                  views::DistanceMetric::DISTANCE_RELATED_CONTROL_VERTICAL),
-              GetButtonsViewOcclusion(Design::kMagicBoost)))
       .SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetProperty(

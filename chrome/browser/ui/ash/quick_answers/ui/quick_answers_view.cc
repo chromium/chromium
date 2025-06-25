@@ -340,8 +340,18 @@ QuickAnswersView::QuickAnswersView(
                   .AddChild(GetRefreshUiHeader()
                                 .SetVisible(design_ == Design::kRefresh)
                                 .CopyAddressTo(&refreshed_ui_header_))
-                  .AddChild(GetMagicBoostHeader().SetVisible(
-                      design_ == Design::kMagicBoost))
+                  .AddChild(
+                      GetMagicBoostHeader()
+                          .SetProperty(
+                              views::kMarginsKey,
+                              gfx::Insets::TLBR(
+                                  0, 0,
+                                  views::LayoutProvider::Get()
+                                      ->GetDistanceMetric(
+                                          views::DistanceMetric::
+                                              DISTANCE_RELATED_CONTROL_VERTICAL),
+                                  GetButtonsViewOcclusion(Design::kMagicBoost)))
+                          .SetVisible(design_ == Design::kMagicBoost))
                   .AddChild(
                       views::Builder<LoadingView>()
                           .CopyAddressTo(&loading_view_)
