@@ -921,6 +921,8 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool HasDashArray() const { return !StrokeDashArray()->data.empty(); }
 
+  bool IsCaretColorAuto() const { return CaretColor().IsAutoColor(); }
+
   // accent-color
   // An empty optional means the accent-color is 'auto'
   std::optional<blink::Color> AccentColorResolved() const;
