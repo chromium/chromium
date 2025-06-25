@@ -56,7 +56,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -424,6 +426,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                 ProfileProvider.getOrCreateProfile(
                         mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord());
         Tab tab = null;
+        boolean needsShow = false;
         if (checkIfTabReparentingParamsExistForIntent(mIntent)) {
             int reparentingTabIdFromIntent = IntentHandler.getTabId(mIntent);
             AsyncTabParams params =
@@ -436,7 +439,10 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                             null);
         } else if (WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(true)
                 && warmupManager.hasSpareTab(profile, mIntentDataProvider.hasTargetNetwork())) {
-            tab = warmupManager.takeSpareTab(profile, false, TabLaunchType.FROM_EXTERNAL_APP);
+            // Start hidden as Tab needs to be shown after observers are attached.
+            boolean startHidden = ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_SHOW_TAB_FIX);
+            tab = warmupManager.takeSpareTab(profile, startHidden, TabLaunchType.FROM_EXTERNAL_APP);
+            needsShow = startHidden;
             TabAssociatedApp.from(tab)
                     .setAppId(
                             CustomTabsConnection.getInstance()
@@ -458,6 +464,11 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         }
 
         initializeTab(tab, false);
+
+        if (needsShow) {
+            tab.show(
+                    TabSelectionType.FROM_NEW, TabLoadIfNeededCaller.REQUEST_TO_SHOW_TAB_THEN_SHOW);
+        }
 
         if (mIntentDataProvider.getTranslateLanguage() != null) {
             TranslateBridge.setPredefinedTargetLanguage(
