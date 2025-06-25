@@ -855,7 +855,25 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       if (!next_context.element) {
         return kSelectorFailsCompletely;
       }
-      return MatchSelector(next_context, result);
+      MatchStatus match = MatchSelector(next_context, result);
+      if (match == kSelectorFailsLocally) {
+        // If we have a selector like .a > .b ~ .c, and .b's parent
+        // isn't .a, then no other sibling ancestor of .c is going to
+        // match either (they all have the same parent). If we are
+        // matching .a > .b in some other context (i.e., not related
+        // to a sibling combinator), then kSelectorFailsAllSiblings
+        // and kSelectorFailsLocally are the same and this rewrite
+        // is harmless.
+        //
+        // For kDescendant (e.g., .a .b ~ .c), we have similar logic,
+        // but there, we are allowed to return kSelectorFailsCompletely,
+        // which is even stronger. (We cannot do so here, because we
+        // could be in something like .a > .b .c, where we'd have to
+        // keep searching for .b up in the tree.)
+        return kSelectorFailsAllSiblings;
+      } else {
+        return match;
+      }
     }
     case CSSSelector::kRelativeDirectAdjacent:
       DCHECK(result.has_argument_leftmost_compound_matches);
