@@ -5,6 +5,7 @@
 #include "chrome/updater/tag.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <map>
 #include <memory>
