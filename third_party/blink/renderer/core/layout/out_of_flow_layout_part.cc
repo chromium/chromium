@@ -114,7 +114,7 @@ class OOFCandidateStyleIterator {
       AnchorEvaluatorImpl& anchor_evaluator,
       WritingDirectionMode container_writing_direction)
       : element_(DynamicTo<Element>(object.GetNode())),
-        style_(object.Style()),
+        original_style_(object.StyleRef()),
         anchor_evaluator_(anchor_evaluator),
         container_writing_direction_(container_writing_direction) {
     Initialize();
@@ -240,6 +240,9 @@ class OOFCandidateStyleIterator {
 
  private:
   void Initialize() {
+    style_ = &original_style_;
+
+    // Not all OOFs have an element. LayoutViewTransitionRoot is one example.
     if (element_) {
       position_try_fallbacks_ = style_->GetPositionTryFallbacks();
 
@@ -319,6 +322,9 @@ class OOFCandidateStyleIterator {
   }
 
   Element* element_ = nullptr;
+
+  // The ComputedStyle stored on LayoutObject at construction time.
+  const ComputedStyle& original_style_;
 
   // The current candidate style if no auto anchor fallback is triggered.
   // Otherwise, the base style for generating auto anchor fallbacks.
