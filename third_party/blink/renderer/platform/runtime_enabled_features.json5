@@ -5331,6 +5331,11 @@
       name: "VisibilityCollapseColumn",
     },
     {
+      // When enabled, makes links `:visited` even when the visit results in an
+      // HTTP error response code (4XX-5XX).
+      name: "VisitedLinksOnErrorNavigation",
+    },
+    {
       name: "VisualViewportOnScrollEnd",
       status: "stable",
     },
