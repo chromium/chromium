@@ -2920,6 +2920,11 @@ ci.thin_tester(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.7600.gl_tests_passthrough.filter",
                 ],
             ),
+            "gl_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.7600.gl_unittests.filter",
+                ],
+            ),
         },
     ),
     targets_settings = targets.settings(

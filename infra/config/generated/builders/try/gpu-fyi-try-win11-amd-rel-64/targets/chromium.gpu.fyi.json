@@ -53,7 +53,8 @@
       {
         "args": [
           "--use-gpu-in-tests",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.7600.gl_unittests.filter"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
