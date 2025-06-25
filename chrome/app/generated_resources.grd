@@ -19051,6 +19051,19 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
+    <!-- New Tab Page browser feature promotions. -->
+    <if expr="not is_android">
+      <message name="IDS_NTP_CUSTOMIZATION_PROMO" desc="The text shown in the body of the New Tab Page browser customization promotion">
+        Customize Chrome to give your browser a new look
+      </message>
+      <message name="IDS_NTP_EXTENSIONS_PROMO" desc="The text shown in the body of the New Tab Page extensions promotion">
+        Add extensions to stay organized, simplify tasks, and enhance your browsing
+      </message>
+      <message name="IDS_NTP_SIGN_IN_PROMO" desc="The text shown in the body of the New Tab Page sign in promotion">
+        Sign in to Chrome to get your passwords and more on all your devices
+      </message>
+    </if>
+
   </messages>
 </release>
 </grit>
