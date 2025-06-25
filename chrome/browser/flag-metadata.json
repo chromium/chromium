@@ -8184,7 +8184,7 @@
   {
     "name": "pwm-show-suggestions-on-autofocus",
     "owners": [ "kenrb@chromium.org", "derinel@google.com" ],
-    "expiry_milestone": 139
+    "expiry_milestone": 145
   },
   {
     "name": "query-tiles",
@@ -10289,7 +10289,7 @@
       "derinel@google.com",
       "kenrb@chromium.org"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "web-authentication-large-blob-for-icloudkeychain",
