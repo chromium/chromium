@@ -46,6 +46,7 @@
 .emulator_sdk
 .gdb_history
 .gdbinit
+.gemini
 .landmines
 .metadata
 .project
