@@ -9,6 +9,16 @@
 namespace chromecast {
 namespace media {
 
+namespace {
+
+// Checks equality between two RectF objects.
+bool RectFEqual(const RectF& r1, const RectF& r2) {
+  return r1.x == r2.x && r1.y == r2.y && r1.width == r2.width &&
+         r1.height == r2.height;
+}
+
+}  // namespace
+
 StarboardVideoPlane::StarboardVideoPlane() {
   CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
@@ -23,6 +33,13 @@ void StarboardVideoPlane::SetGeometry(const RectF& display_rect,
         FROM_HERE,
         base::BindOnce(&StarboardVideoPlane::SetGeometry,
                        weak_factory_.GetWeakPtr(), display_rect, transform));
+    return;
+  }
+
+  if (current_plane_.has_value() &&
+      RectFEqual(current_plane_->first, display_rect) &&
+      current_plane_->second == transform) {
+    // No change. Avoid spamming starboard with the same bounds.
     return;
   }
 

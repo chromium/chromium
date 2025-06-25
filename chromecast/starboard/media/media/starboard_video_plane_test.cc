@@ -16,6 +16,7 @@ namespace {
 using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::FloatEq;
+using ::testing::InSequence;
 using ::testing::Matcher;
 using ::testing::MockFunction;
 
@@ -76,6 +77,50 @@ TEST(StarboardVideoPlaneTest,
   EXPECT_CALL(cb, Call(MatchesRect(resolution), kNoTransform)).Times(1);
 
   plane.RegisterCallback(base::BindLambdaForTesting(cb.AsStdFunction()));
+}
+
+TEST(StarboardVideoPlaneTest, DoesNotReportDuplicateGeometries) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  const RectF resolution(123.0f, 456.0f);
+
+  StarboardVideoPlane plane;
+  MockFunction<void(const RectF& display_rect, VideoPlane::Transform transform)>
+      cb;
+
+  // This should only be called once, even though we set the geometry multiple
+  // times below.
+  EXPECT_CALL(cb, Call(MatchesRect(resolution), kNoTransform)).Times(1);
+
+  plane.RegisterCallback(base::BindLambdaForTesting(cb.AsStdFunction()));
+  plane.SetGeometry(resolution, kNoTransform);
+  plane.SetGeometry(resolution, kNoTransform);
+  plane.SetGeometry(resolution, kNoTransform);
+}
+
+TEST(StarboardVideoPlaneTest, ReportsNewGeometries) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  const RectF resolution1(123.0f, 456.0f);
+  const RectF resolution2(1000.0f, 2000.0f);
+
+  StarboardVideoPlane plane;
+  MockFunction<void(const RectF& display_rect, VideoPlane::Transform transform)>
+      cb;
+
+  {
+    InSequence s;
+    EXPECT_CALL(cb, Call(MatchesRect(resolution1), kNoTransform)).Times(1);
+    EXPECT_CALL(cb, Call(MatchesRect(resolution2), kNoTransform)).Times(1);
+  }
+
+  plane.RegisterCallback(base::BindLambdaForTesting(cb.AsStdFunction()));
+
+  // The second call for resolution1 should be deduped, but the call for
+  // resolution2 should still go through.
+  plane.SetGeometry(resolution1, kNoTransform);
+  plane.SetGeometry(resolution1, kNoTransform);
+  plane.SetGeometry(resolution2, kNoTransform);
 }
 
 }  // namespace
