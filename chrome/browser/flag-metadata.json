@@ -3469,17 +3469,19 @@
     "name": "enable-fingerprinting-protection-blocklist",
     "owners": [
       "rizvis@google.com",
-      "bcl@google.com"
+      "bcl@google.com",
+      "thesalsa@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "enable-fingerprinting-protection-blocklist-incognito",
     "owners": [
       "rizvis@google.com",
-      "bcl@google.com"
+      "bcl@google.com",
+      "thesalsa@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
       "name": "enable-fontations-backend",
