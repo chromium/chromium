@@ -2426,42 +2426,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Sync.TrustedVaultAutoUpgrade.Validation.OnProfileLoadSampled.{Consistency}.Binary_{Variant}"
-    enum="Boolean" expires_after="2025-06-08">
-  <owner>mastiz@chromium.org</owner>
-  <owner>mmoskvitin@google.com</owner>
-  <summary>
-    Records a {Consistency} that takes a true value with certain probability.
-    The probability is dependent on whether or not the profile is signed into an
-    account that is marked for a synthetic field trial, as encoded in the metric
-    name. It is recoded upon profile load, only for 10% of users (deterministic
-    sampling based on gaia ID) and, among those, only if the profile is actually
-    associated to a synthetic field trial group (which excludes the default
-    group).
-  </summary>
-  <token key="Consistency">
-    <variant name="WithAccountConsistency"
-        summary="random-like boolean computed deterministically for an
-                 account ID"/>
-    <variant name="WithoutAccountConsistency" summary="random boolean"/>
-  </token>
-  <token key="Variant">
-    <variant name="C01_V01"/>
-    <variant name="C01_V04"/>
-    <variant name="C01_V06"/>
-    <variant name="C01_V09"/>
-    <variant name="C20_V20"/>
-    <variant name="C20_V23"/>
-    <variant name="C20_V25"/>
-    <variant name="C20_V28"/>
-    <variant name="C50_V50"/>
-    <variant name="C50_V53"/>
-    <variant name="C50_V55"/>
-    <variant name="C50_V58"/>
-  </token>
-</histogram>
-
 <histogram name="Sync.TrustedVaultErrorShownOnFirstTimeSync2" enum="Boolean"
     expires_after="2025-10-26">
   <owner>mmoskvitin@google.com</owner>

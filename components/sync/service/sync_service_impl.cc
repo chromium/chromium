@@ -269,8 +269,7 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
 }
 
 void SyncServiceImpl::RegisterTrustedVaultSyntheticFieldTrialsIfNecessary() {
-  if (registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_
-          .has_value()) {
+  if (trusted_vault_auto_upgrade_synthetic_field_trial_registered_) {
     // Registration function already invoked. It cannot be invoked twice, as
     // runtime changes to the group assignment is not supported (e.g. signout).
     return;
@@ -290,7 +289,7 @@ void SyncServiceImpl::RegisterTrustedVaultSyntheticFieldTrialsIfNecessary() {
     return;
   }
 
-  registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_ = group;
+  trusted_vault_auto_upgrade_synthetic_field_trial_registered_ = true;
   sync_client_->RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(group);
 }
 
@@ -380,14 +379,6 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
   RecordSyncInitialState(GetDisableReasons(),
                          is_sync_feature_requested_for_metrics,
                          user_settings_->IsInitialSyncFeatureSetupComplete());
-
-  if (registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_
-          .has_value()) {
-    CHECK(registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_
-              ->is_valid());
-    registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_
-        ->LogValidationMetricsUponOnProfileLoad(GetAccountInfo().gaia);
-  }
 
   // Call Stop() on controllers for non-preferred types to clear metadata.
   // This allows clearing metadata for types disabled in previous run early-on

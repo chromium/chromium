@@ -7,7 +7,6 @@
 
 #include <iosfwd>
 #include <string>
-#include <string_view>
 
 class GaiaId;
 
@@ -48,24 +47,9 @@ class TrustedVaultAutoUpgradeSyntheticFieldTrialGroup {
   bool is_valid() const { return !name_.empty(); }
   const std::string& name() const { return name_; }
 
-  // Metric recording.
-  void LogValidationMetricsUponOnProfileLoad(const GaiaId& gaia_id) const;
-
-  // Exposed publicly for unit-testing.
-  static float DeterministicFloatBetweenZeroAndOneFromGaiaIdForTest(
-      const GaiaId& gaia_id,
-      std::string_view salt);
-  static bool ShouldSampleGaiaIdWithTenPercentProbabilityForTest(
-      const GaiaId& gaia_id);
-
  private:
-  void LogValidationMetrics(const GaiaId& gaia_id,
-                            std::string_view short_metric_name) const;
-
   // Empty if `this` is invalid.
   std::string name_;
-  // Set to true if this group has type VALIDATION.
-  bool is_validation_group_type_ = false;
 };
 
 // gMock printer helper.
