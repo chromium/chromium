@@ -10,7 +10,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/printing/web_api/web_printing_utils.h"
 #include "chrome/common/printing/print_media_l10n.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -181,7 +180,8 @@ std::optional<blink::mojom::WebPrintQuality> WebPrintQualityFromIppQuality(
   }
 
   LOG(WARNING) << "Unsupported print-quality IPP value: " << ipp_quality;
-  base::UmaHistogramBoolean("WebApp.Isolated.UnsupportedIPPValue", true);
+  mojo::ReportBadMessage(
+      "Unknown print-quality enum value in advanced capability!");
   return std::nullopt;
 }
 

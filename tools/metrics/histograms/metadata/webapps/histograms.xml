@@ -1530,19 +1530,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApp.Isolated.UnsupportedIPPValue" enum="BooleanValid"
-    expires_after="2025-12-31">
-  <owner>bylica@google.com</owner>
-  <owner>pwa-commercial@google.com</owner>
-  <owner>iwa-team@google.com</owner>
-  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
-  <summary>
-    Records when printers return capability values unsupported by the current
-    chromium implementation. This could happen if the standard changes and the
-    implementation didn't keep up with those changes.
-  </summary>
-</histogram>
-
 <histogram name="WebApp.Isolated.UpdateError" enum="IsolatedWebAppUpdateError"
     expires_after="2025-11-23">
   <owner>giovax@chromium.org</owner>
