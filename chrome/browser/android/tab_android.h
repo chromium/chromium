@@ -28,7 +28,6 @@
 #include "components/tab_groups/token_id.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
-#include "tab_android_data_provider.h"
 
 class GURL;
 class Profile;
