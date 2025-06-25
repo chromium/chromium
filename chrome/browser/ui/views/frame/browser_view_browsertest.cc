@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -685,12 +686,14 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, SplitViewActiveIndexTest) {
   chrome::AddTabAt(browser(), GURL(), -1, true);
   // Add tabs to splits.
   browser()->tab_strip_model()->ActivateTabAt(0);
-  browser()->tab_strip_model()->AddToNewSplit({1},
-                                              split_tabs::SplitTabVisualData());
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   browser()->tab_strip_model()->ActivateTabAt(2);
-  browser()->tab_strip_model()->AddToNewSplit({3},
-                                              split_tabs::SplitTabVisualData());
+  browser()->tab_strip_model()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_TRUE(browser_view()->multi_contents_view());

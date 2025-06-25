@@ -15,6 +15,10 @@
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/test/browser_test.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#endif
+
 class ChromeWebContentsViewDelegateBrowserTest : public InProcessBrowserTest {
  public:
   ChromeWebContentsViewDelegateBrowserTest() = default;
@@ -40,8 +44,9 @@ IN_PROC_BROWSER_TEST_F(ChromeWebContentsViewDelegateBrowserTest,
   // Add a second tab and create split view.
   chrome::AddTabAt(browser(), GURL(), -1, true);
   browser()->tab_strip_model()->ActivateTabAt(0);
-  browser()->tab_strip_model()->AddToNewSplit({1},
-                                              split_tabs::SplitTabVisualData());
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   // Ensure focus is on the left tab.
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -456,7 +457,9 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandDuplicateSplit) {
 
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tab_strip_model, 4, 1, {2}));
-  tab_strip_model->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  tab_strip_model->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
   ASSERT_EQ("0p 1 2s 3s", GetTabStripStateString(tab_strip_model));
   tab_strip_model->ActivateTabAt(1);
 
@@ -474,13 +477,21 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandDuplicateSelected) {
 
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tab_strip_model, 12, 6, {2}));
-  tab_strip_model->AddToNewSplit({3}, split_tabs::SplitTabVisualData());
+  tab_strip_model->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
   tab_strip_model->ActivateTabAt(4);
-  tab_strip_model->AddToNewSplit({5}, split_tabs::SplitTabVisualData());
+  tab_strip_model->AddToNewSplit(
+      {5}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
   tab_strip_model->ActivateTabAt(8);
-  tab_strip_model->AddToNewSplit({9}, split_tabs::SplitTabVisualData());
+  tab_strip_model->AddToNewSplit(
+      {9}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
   tab_strip_model->ActivateTabAt(10);
-  tab_strip_model->AddToNewSplit({11}, split_tabs::SplitTabVisualData());
+  tab_strip_model->AddToNewSplit(
+      {11}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
   ASSERT_EQ("0p 1p 2ps 3ps 4ps 5ps 6 7 8s 9s 10s 11s",
             GetTabStripStateString(tab_strip_model));
   tab_strip_model->ActivateTabAt(1);

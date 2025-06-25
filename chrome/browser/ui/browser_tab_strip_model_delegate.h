@@ -18,6 +18,10 @@ namespace tab_groups {
 class TabGroupId;
 }
 
+namespace split_tabs {
+enum class SplitTabCreatedSource;
+}
+
 namespace chrome {
 
 class BrowserTabStripModelDelegate : public TabStripModelDelegate {
@@ -70,7 +74,8 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   bool CanGoBack(content::WebContents* web_contents) override;
   bool IsNormalWindow() override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
-  void NewSplitTab(std::vector<int> indices) override;
+  void NewSplitTab(std::vector<int> indices,
+                   split_tabs::SplitTabCreatedSource source) override;
   void OnGroupsDestruction(const std::vector<tab_groups::TabGroupId>& group_ids,
                            base::OnceCallback<void()> close_callback,
                            bool delete_groups) override;

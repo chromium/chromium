@@ -101,6 +101,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -4817,8 +4818,9 @@ void RenderViewContextMenu::OpenLinkInSplitView() {
         params_.link_url, new_tab_index, false,
         tab_strip_model->GetTabGroupForTab(active_index));
     tabs::TabInterface* new_tab = tab_strip_model->GetTabAtIndex(new_tab_index);
-    tab_strip_model->AddToNewSplit({new_tab_index},
-                                   split_tabs::SplitTabVisualData());
+    tab_strip_model->AddToNewSplit(
+        {new_tab_index}, split_tabs::SplitTabVisualData(),
+        split_tabs::SplitTabCreatedSource::kLinkContextMenu);
     tab_strip_model->ActivateTabAt(tab_strip_model->GetIndexOfTab(new_tab));
   }
 }

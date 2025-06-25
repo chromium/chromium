@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
@@ -333,12 +334,14 @@ BrowserTabStripModelDelegate::GetBrowserWindowInterface() {
   return browser_;
 }
 
-void BrowserTabStripModelDelegate::NewSplitTab(std::vector<int> indices) {
+void BrowserTabStripModelDelegate::NewSplitTab(
+    std::vector<int> indices,
+    split_tabs::SplitTabCreatedSource source) {
   if (indices.empty()) {
-    chrome::NewSplitTab(browser_);
+    chrome::NewSplitTab(browser_, source);
   } else {
     browser_->tab_strip_model()->AddToNewSplit(
-        indices, split_tabs::SplitTabVisualData());
+        indices, split_tabs::SplitTabVisualData(), source);
   }
 }
 

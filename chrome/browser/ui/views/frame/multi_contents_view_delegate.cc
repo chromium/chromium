@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
@@ -57,5 +58,7 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
   // link in the provided list.
   tab_strip_model_->delegate()->AddTabAt(urls.front(), new_tab_idx, false);
 
-  tab_strip_model_->AddToNewSplit({new_tab_idx}, split_data);
+  tab_strip_model_->AddToNewSplit(
+      {new_tab_idx}, split_data,
+      split_tabs::SplitTabCreatedSource::kDragAndDropLink);
 }

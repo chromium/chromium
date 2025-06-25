@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -3560,7 +3561,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenLinkInExistingSplitTab) {
   const GURL test_url("http://www.example.com/");
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-  chrome::NewSplitTab(browser());
+  chrome::NewSplitTab(browser(),
+                      split_tabs::SplitTabCreatedSource::kLinkContextMenu);
   tab_strip_model->ActivateTabAt(0);
   ASSERT_NE(tab_strip_model->GetWebContentsAt(1)->GetURL(), test_url);
 

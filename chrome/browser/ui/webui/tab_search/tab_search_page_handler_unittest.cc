@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_util.h"
@@ -1293,8 +1294,9 @@ TEST_F(TabSearchPageHandlerTest, ReplaceActiveSplitTab) {
   AddTab(browser(), GURL(kTabUrl2));
   AddTab(browser(), GURL(kTabUrl3));
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  const split_tabs::SplitTabId split_id =
-      tab_strip_model->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
+  const split_tabs::SplitTabId split_id = tab_strip_model->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   const split_tabs::SplitTabData* split_data =
       tab_strip_model->GetSplitData(split_id);
