@@ -14,8 +14,7 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 // Interface of the object controlling UI for app time limits feature.
 class AppTimeLimitInterface {
@@ -43,7 +42,6 @@ class AppTimeLimitInterface {
       apps::AppType app_type) = 0;
 };
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_LIMIT_INTERFACE_H_

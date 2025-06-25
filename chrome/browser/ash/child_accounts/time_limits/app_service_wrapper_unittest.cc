@@ -55,8 +55,7 @@
 using web_app::GenerateAppId;
 using web_app::WebAppProvider;
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 namespace {
 
@@ -440,5 +439,4 @@ TEST_F(AppServiceWrapperTest, IgnoreOtherExtensions) {
 // TODO(agawronska): Add tests for ARC apps activity once crrev.com/c/1906614 is
 // landed.
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time

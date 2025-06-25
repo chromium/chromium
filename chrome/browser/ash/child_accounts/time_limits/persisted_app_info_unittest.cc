@@ -11,8 +11,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 using PersistedAppInfoTest = testing::Test;
 
@@ -98,5 +97,4 @@ TEST_F(PersistedAppInfoTest, UpdateAppActivityPreference) {
   EXPECT_EQ(final_entry->active_times()[0], to_append);
 }
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time

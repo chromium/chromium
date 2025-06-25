@@ -13,8 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 namespace policy {
 
 const char kUrlList[] = "url_list";
@@ -32,30 +31,40 @@ const char kMinInt[] = "minute";
 const char kActivityReportingEnabled[] = "activity_reporting_enabled";
 
 apps::AppType PolicyStringToAppType(const std::string& app_type) {
-  if (app_type == "ARC")
+  if (app_type == "ARC") {
     return apps::AppType::kArc;
-  if (app_type == "BOREALIS")
+  }
+  if (app_type == "BOREALIS") {
     return apps::AppType::kBorealis;
+  }
   // After the splitting of kChromeApp from the kExtension type in which
   // the original kExtension was renamed to kChromeApp (crrev.com/c/3314469),
   // the subsequent kExtension type refers to Chrome browser extensions only.
   // The legacy kChromeApp policy string remains unchanged.
-  if (app_type == "BROWSER-EXTENSION")
+  if (app_type == "BROWSER-EXTENSION") {
     return apps::AppType::kExtension;
-  if (app_type == "BRUSCHETTA")
+  }
+  if (app_type == "BRUSCHETTA") {
     return apps::AppType::kBruschetta;
-  if (app_type == "CROSTINI")
+  }
+  if (app_type == "CROSTINI") {
     return apps::AppType::kCrostini;
-  if (app_type == "EXTENSION")
+  }
+  if (app_type == "EXTENSION") {
     return apps::AppType::kChromeApp;
-  if (app_type == "PLUGIN-VM")
+  }
+  if (app_type == "PLUGIN-VM") {
     return apps::AppType::kPluginVm;
-  if (app_type == "REMOTE")
+  }
+  if (app_type == "REMOTE") {
     return apps::AppType::kRemote;
-  if (app_type == "SYSTEM-WEB")
+  }
+  if (app_type == "SYSTEM-WEB") {
     return apps::AppType::kSystemWeb;
-  if (app_type == "WEB")
+  }
+  if (app_type == "WEB") {
     return apps::AppType::kWeb;
+  }
   // TODO(crbug.com/373972275): remove LACROS-BROWSER, BUILT-IN,
   // LACROS-CHROME-APP and LACROS-EXTENSION once it's guaranteed that old
   // LACROS-CHROME-APP and LACROS-EXTENSION entries got purged as it looks like
@@ -98,10 +107,12 @@ std::string AppTypeToPolicyString(apps::AppType app_type) {
 }
 
 AppRestriction PolicyStringToAppRestriction(const std::string& restriction) {
-  if (restriction == "BLOCK")
+  if (restriction == "BLOCK") {
     return AppRestriction::kBlocked;
-  if (restriction == "TIME_LIMIT")
+  }
+  if (restriction == "TIME_LIMIT") {
     return AppRestriction::kTimeLimit;
+  }
 
   NOTREACHED();
 }
@@ -202,8 +213,9 @@ base::Value::Dict AppLimitToDict(const AppLimit& limit) {
   base::Value::Dict dict;
   dict.Set(kRestrictionEnum,
            base::Value(AppRestrictionToPolicyString(limit.restriction())));
-  if (limit.daily_limit())
+  if (limit.daily_limit()) {
     dict.Set(kDailyLimitInt, base::Value(limit.daily_limit()->InMinutes()));
+  }
   const std::string last_updated_string = base::NumberToString(
       (limit.last_updated() - base::Time::UnixEpoch()).InMilliseconds());
   dict.Set(kLastUpdatedString, base::Value(last_updated_string));
@@ -284,5 +296,4 @@ std::map<AppId, AppLimit> AppLimitsFromDict(const base::Value::Dict& dict) {
 }
 
 }  // namespace policy
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time

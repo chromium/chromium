@@ -7,8 +7,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_policy_helpers.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 AppTimeLimitsAllowlistPolicyBuilder::AppTimeLimitsAllowlistPolicyBuilder() =
     default;
@@ -39,5 +38,4 @@ void AppTimeLimitsAllowlistPolicyBuilder::AppendToList(const std::string& key,
   list->Append(std::move(dict));
 }
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time

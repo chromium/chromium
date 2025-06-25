@@ -11,8 +11,7 @@
 #include "extensions/common/constants.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 enterprise_management::App::AppType AppTypeForReporting(apps::AppType type) {
   switch (type) {
@@ -42,8 +41,9 @@ bool IsWebAppOrExtension(const AppId& app_id) {
 
 // Returns true if the application shares chrome's time limit.
 bool ContributesToWebTimeLimit(const AppId& app_id, AppState state) {
-  if (state == AppState::kAlwaysAvailable)
+  if (state == AppState::kAlwaysAvailable) {
     return false;
+  }
 
   return IsWebAppOrExtension(app_id);
 }
@@ -53,5 +53,4 @@ bool IsValidExtensionUrl(const GURL& app_url) {
          app_url.SchemeIs(extensions::kExtensionScheme);
 }
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time

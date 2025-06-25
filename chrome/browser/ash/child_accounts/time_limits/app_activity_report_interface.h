@@ -11,8 +11,7 @@ namespace enterprise_management {
 class ChildStatusReportRequest;
 }  // namespace enterprise_management
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 // Interface of the object generating app activity for child user.
 class AppActivityReportInterface {
@@ -37,7 +36,6 @@ class AppActivityReportInterface {
       base::Time report_generation_timestamp) = 0;
 };
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_ACTIVITY_REPORT_INTERFACE_H_

@@ -29,8 +29,7 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 class AppId;
 struct PauseAppInfo;
@@ -181,7 +180,6 @@ class AppServiceWrapper : public apps::AppRegistryCache::Observer,
   const raw_ptr<Profile> profile_;
 };
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_SERVICE_WRAPPER_H_

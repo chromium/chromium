@@ -40,8 +40,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 namespace {
 
@@ -300,5 +299,4 @@ IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyMultipleEntries) {
             app_registry_test.GetAppLimit(app4)->restriction());
 }
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time

@@ -8,8 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 TEST(AppTimeLimitUtils, IsValidExtensionUrl) {
   EXPECT_FALSE(IsValidExtensionUrl(GURL("https://chromium.org")));
@@ -26,5 +25,4 @@ TEST(AppTimeLimitUtils, IsValidExtensionUrl) {
       GURL("filesystem:http://example.com/path/file.html")));
 }
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time

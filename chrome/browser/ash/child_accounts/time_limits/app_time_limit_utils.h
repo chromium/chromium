@@ -13,8 +13,7 @@ namespace apps {
 enum class AppType;
 }  // namespace apps
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 class AppId;
 enum class AppState;
@@ -31,7 +30,6 @@ bool ContributesToWebTimeLimit(const AppId& app_id, AppState app_state);
 // Returns whether the given |app_url| is a valid extension url.
 bool IsValidExtensionUrl(const GURL& app_url);
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_LIMIT_UTILS_H_

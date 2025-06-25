@@ -51,8 +51,7 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 const char kAppsWithTimeLimitMetric[] =
     "SupervisedUsers.PerAppTimeLimits.AppsWithTimeLimit";
@@ -168,8 +167,9 @@ bool IsAppOpenedInChrome(const AppId& app_id, Profile* profile) {
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
           app_id.app_id());
-  if (!extension)
+  if (!extension) {
     return false;
+  }
 
   apps::LaunchContainer launch_container = extensions::GetLaunchContainer(
       extensions::ExtensionPrefs::Get(profile), extension);
@@ -223,12 +223,14 @@ AppTimeController::~AppTimeController() {
   app_registry_->RemoveAppStateObserver(this);
 
   auto* time_zone_settings = system::TimezoneSettings::GetInstance();
-  if (time_zone_settings)
+  if (time_zone_settings) {
     time_zone_settings->RemoveObserver(this);
+  }
 
   auto* system_clock_client = SystemClockClient::Get();
-  if (system_clock_client)
+  if (system_clock_client) {
     system_clock_client->RemoveObserver(this);
+  }
 }
 
 void AppTimeController::Init() {
@@ -244,12 +246,14 @@ void AppTimeController::Init() {
   // Start observing system clock client and time zone settings.
   auto* system_clock_client = SystemClockClient::Get();
   // SystemClockClient may not be initialized in some tests.
-  if (system_clock_client)
+  if (system_clock_client) {
     system_clock_client->AddObserver(this);
+  }
 
   auto* time_zone_settings = system::TimezoneSettings::GetInstance();
-  if (time_zone_settings)
+  if (time_zone_settings) {
     time_zone_settings->AddObserver(this);
+  }
 
   // Start observing |app_registry_|
   app_registry_->AddAppStateObserver(this);
@@ -280,8 +284,9 @@ void AppTimeController::RecordMetricsOnShutdown() const {
 }
 
 void AppTimeController::SystemClockUpdated() {
-  if (HasTimeCrossedResetBoundary())
+  if (HasTimeCrossedResetBoundary()) {
     OnResetTimeReached();
+  }
 }
 
 void AppTimeController::TimezoneChanged(const icu::TimeZone& timezone) {
@@ -328,8 +333,9 @@ void AppTimeController::TimeLimitsPolicyUpdated(const std::string& pref_name) {
   std::optional<base::TimeDelta> new_reset_time =
       policy::ResetTimeFromDict(policy);
   // TODO(agawronska): Propagate the information about reset time change.
-  if (new_reset_time && *new_reset_time != limits_reset_time_)
+  if (new_reset_time && *new_reset_time != limits_reset_time_) {
     limits_reset_time_ = *new_reset_time;
+  }
 
   apps_with_limit_ =
       app_registry_->GetAppsWithAppRestriction(AppRestriction::kTimeLimit)
@@ -369,8 +375,9 @@ void AppTimeController::ShowAppTimeLimitNotification(
     AppNotification notification) {
   DCHECK_NE(AppNotification::kUnknown, notification);
 
-  if (notification == AppNotification::kTimeLimitReached)
+  if (notification == AppNotification::kTimeLimitReached) {
     return;
+  }
 
   const std::string app_name = app_service_wrapper_->GetAppName(app_id);
   int size_hint_in_dp = 48;
@@ -385,8 +392,9 @@ void AppTimeController::OnAppLimitReached(const AppId& app_id,
                                           base::TimeDelta time_limit,
                                           bool was_active) {
   bool show_dialog = was_active;
-  if (app_id == GetChromeAppId() || IsAppOpenedInChrome(app_id, profile_))
+  if (app_id == GetChromeAppId() || IsAppOpenedInChrome(app_id, profile_)) {
     show_dialog = false;
+  }
 
   app_service_wrapper_->PauseApp(PauseAppInfo(app_id, time_limit, show_dialog));
 }
@@ -396,14 +404,16 @@ void AppTimeController::OnAppLimitRemoved(const AppId& app_id) {
 }
 
 void AppTimeController::OnAppInstalled(const AppId& app_id) {
-  if (IsWebAppOrExtension(app_id))
+  if (IsWebAppOrExtension(app_id)) {
     return;
+  }
 
   const base::Value::Dict& allowlist_policy = pref_registrar_->prefs()->GetDict(
       prefs::kPerAppTimeLimitsAllowlistPolicy);
   AppTimeLimitsAllowlistPolicyWrapper wrapper(&allowlist_policy);
-  if (base::Contains(wrapper.GetAllowlistAppList(), app_id))
+  if (base::Contains(wrapper.GetAllowlistAppList(), app_id)) {
     app_registry_->SetAppAllowlisted(app_id);
+  }
 
   const base::Value::Dict& policy =
       pref_registrar_->prefs()->GetDict(prefs::kPerAppTimeLimitsPolicy);
@@ -412,8 +422,9 @@ void AppTimeController::OnAppInstalled(const AppId& app_id) {
   const std::map<AppId, AppLimit> limits = policy::AppLimitsFromDict(policy);
   // Update the limit for newly installed app, if it exists.
   auto result = limits.find(app_id);
-  if (result == limits.end())
+  if (result == limits.end()) {
     return;
+  }
 
   app_registry_->SetAppLimit(result->first, result->second);
 }
@@ -426,23 +437,26 @@ base::Time AppTimeController::GetNextResetTime() const {
   base::Time nearest_midnight = now.LocalMidnight();
 
   base::Time prev_midnight;
-  if (now > nearest_midnight)
+  if (now > nearest_midnight) {
     prev_midnight = nearest_midnight;
-  else
+  } else {
     prev_midnight = nearest_midnight - base::Hours(24);
+  }
 
   base::Time next_reset_time = prev_midnight + limits_reset_time_;
 
-  if (next_reset_time > now)
+  if (next_reset_time > now) {
     return next_reset_time;
+  }
 
   // We have already reset for this day. The reset time is the next day.
   return next_reset_time + base::Hours(24);
 }
 
 void AppTimeController::ScheduleForTimeLimitReset() {
-  if (reset_timer_.IsRunning())
+  if (reset_timer_.IsRunning()) {
     reset_timer_.Stop();
+  }
 
   base::TimeDelta time_until_reset = GetNextResetTime() - base::Time::Now();
   reset_timer_.Start(FROM_HERE, time_until_reset,
@@ -484,16 +498,18 @@ void AppTimeController::SetLastResetTime(base::Time timestamp) {
   // specified by policy.
   const base::Time nearest_midnight = timestamp.LocalMidnight();
   base::Time prev_midnight;
-  if (timestamp > nearest_midnight)
+  if (timestamp > nearest_midnight) {
     prev_midnight = nearest_midnight;
-  else
+  } else {
     prev_midnight = nearest_midnight - base::Hours(24);
+  }
 
   base::Time reset_time = prev_midnight + limits_reset_time_;
-  if (reset_time <= timestamp)
+  if (reset_time <= timestamp) {
     last_limits_reset_time_ = reset_time;
-  else
+  } else {
     last_limits_reset_time_ = reset_time - base::Hours(24);
+  }
 
   PrefService* service = profile_->GetPrefs();
   DCHECK(service);
@@ -582,8 +598,9 @@ void AppTimeController::ShowNotificationForApp(
 
   auto* notification_display_service =
       NotificationDisplayServiceFactory::GetForProfile(profile_);
-  if (!notification_display_service)
+  if (!notification_display_service) {
     return;
+  }
 
   // Close the existing notification with notification_id.
   notification_display_service->Close(NotificationHandler::Type::TRANSIENT,
@@ -594,5 +611,4 @@ void AppTimeController::ShowNotificationForApp(
                                         /*metadata=*/nullptr);
 }
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time

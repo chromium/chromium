@@ -12,8 +12,7 @@
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 // Type of usage restriction that can be applied to the installed app.
 enum class AppRestriction {
@@ -254,7 +253,6 @@ class AppActivity {
   base::TimeTicks last_updated_time_ticks_;
 };
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TYPES_H_

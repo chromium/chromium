@@ -35,8 +35,7 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 extern const char kAppsWithTimeLimitMetric[];
 extern const char kBlockedAppsCountMetric[];
@@ -170,7 +169,6 @@ class AppTimeController : public SystemClockClient::Observer,
   base::WeakPtrFactory<AppTimeController> weak_ptr_factory_{this};
 };
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_CONTROLLER_H_
