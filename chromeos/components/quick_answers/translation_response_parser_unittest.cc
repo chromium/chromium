@@ -64,8 +64,7 @@ TEST_F(TranslationResponseParserTest, ProcessResponseSuccess) {
       }
     }
   )";
-  translation_response_parser_->ProcessResponse(
-      std::make_unique<std::string>(kTranslationResponse));
+  translation_response_parser_->ProcessResponse(kTranslationResponse);
   WaitForResponse();
   ASSERT_TRUE(translation_result_);
   EXPECT_EQ("translated text", translation_result_->translated_text);
@@ -84,8 +83,7 @@ TEST_F(TranslationResponseParserTest,
       }
     }
   )";
-  translation_response_parser_->ProcessResponse(
-      std::make_unique<std::string>(kTranslationResponse));
+  translation_response_parser_->ProcessResponse(kTranslationResponse);
   WaitForResponse();
   ASSERT_TRUE(translation_result_);
   // Should correctly unescape ampersand character codes.
@@ -96,15 +94,13 @@ TEST_F(TranslationResponseParserTest, ProcessResponseNoResults) {
   constexpr char kTranslationResponse[] = R"(
     {}
   )";
-  translation_response_parser_->ProcessResponse(
-      std::make_unique<std::string>(kTranslationResponse));
+  translation_response_parser_->ProcessResponse(kTranslationResponse);
   WaitForResponse();
   EXPECT_FALSE(translation_result_);
 }
 
 TEST_F(TranslationResponseParserTest, ProcessResponseInvalidResponse) {
-  translation_response_parser_->ProcessResponse(
-      std::make_unique<std::string>("results {}"));
+  translation_response_parser_->ProcessResponse("results {}");
   WaitForResponse();
   EXPECT_FALSE(translation_result_);
 }

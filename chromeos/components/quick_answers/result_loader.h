@@ -86,7 +86,7 @@ class ResultLoader {
 
   // Process the |response_body| and invoked the callback with |QuickAnswer|.
   virtual void ProcessResponse(const PreprocessedOutput& preprocessed_output,
-                               std::unique_ptr<std::string> response_body,
+                               std::optional<std::string> response_body,
                                ResponseParserCallback complete_callback) = 0;
 
   ResultLoaderDelegate* delegate() const { return delegate_; }
@@ -101,7 +101,7 @@ class ResultLoader {
       std::unique_ptr<network::ResourceRequest> resource_request,
       const std::string& request_body);
   void OnSimpleURLLoaderComplete(const PreprocessedOutput& preprocessed_output,
-                                 std::unique_ptr<std::string> response_body);
+                                 std::optional<std::string> response_body);
   void OnResultParserComplete(
       std::unique_ptr<QuickAnswersSession> quick_answers_session);
 

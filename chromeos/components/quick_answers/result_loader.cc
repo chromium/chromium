@@ -120,10 +120,10 @@ void ResultLoader::OnBuildRequestComplete(
 
 void ResultLoader::OnSimpleURLLoaderComplete(
     const PreprocessedOutput& preprocessed_output,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   base::TimeDelta duration = base::TimeTicks::Now() - fetch_start_time_;
 
-  if (!response_body || loader_->NetError() != net::OK ||
+  if (!response_body.has_value() || loader_->NetError() != net::OK ||
       !loader_->ResponseInfo() || !loader_->ResponseInfo()->headers) {
     int response_code = -1;
     if (loader_->ResponseInfo() && loader_->ResponseInfo()->headers) {

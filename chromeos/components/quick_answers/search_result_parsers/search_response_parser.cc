@@ -32,17 +32,15 @@ SearchResponseParser::~SearchResponseParser() {
     std::move(complete_callback_).Run(/*quick_answer=*/nullptr);
 }
 
-void SearchResponseParser::ProcessResponse(
-    std::unique_ptr<std::string> response_body) {
-  if (response_body->length() < strlen(kJsonSafetyPrefix) ||
-      response_body->substr(0, strlen(kJsonSafetyPrefix)) !=
-          kJsonSafetyPrefix) {
+void SearchResponseParser::ProcessResponse(const std::string& response_body) {
+  if (response_body.length() < strlen(kJsonSafetyPrefix) ||
+      response_body.substr(0, strlen(kJsonSafetyPrefix)) != kJsonSafetyPrefix) {
     LOG(ERROR) << "Invalid search response.";
     std::move(complete_callback_).Run(nullptr);
     return;
   }
   data_decoder::DataDecoder::ParseJsonIsolated(
-      response_body->substr(strlen(kJsonSafetyPrefix)),
+      response_body.substr(strlen(kJsonSafetyPrefix)),
       base::BindOnce(&SearchResponseParser::OnJsonParsed,
                      weak_factory_.GetWeakPtr()));
 }
