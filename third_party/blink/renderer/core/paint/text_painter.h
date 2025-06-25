@@ -105,6 +105,7 @@ class CORE_EXPORT TextPainter {
 
   void PaintDecorationLine(const TextDecorationInfo& decoration_info,
                            const Color& line_color,
+                           const AutoDarkMode& auto_dark_mode,
                            const TextFragmentPaintInfo* fragment_paint_info);
 
   SvgTextPaintState& SetSvgState(const LayoutSVGInlineText&,

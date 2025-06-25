@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 
-#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
-#include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -318,16 +316,13 @@ gfx::RectF DecorationLinePainter::Bounds(const DecorationGeometry& geometry) {
   }
 }
 
-void DecorationLinePainter::Paint(const Color& color,
+void DecorationLinePainter::Paint(const DecorationGeometry& geometry,
+                                  const Color& color,
+                                  const AutoDarkMode& auto_dark_mode,
                                   const cc::PaintFlags* flags) {
-  const DecorationGeometry& geometry = decoration_info_.GetGeometry();
   if (geometry.line.width() <= 0) {
     return;
   }
-
-  AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(decoration_info_.TargetStyle(),
-                        DarkModeFilter::ElementRole::kForeground));
 
   // TODO(crbug.com/1346281) make other decoration styles work with PaintFlags
   switch (geometry.style) {

@@ -17,7 +17,6 @@ struct AutoDarkMode;
 class Color;
 class GraphicsContext;
 class StyledStrokeData;
-class TextDecorationInfo;
 
 // Defines a "wave" for painting a kWavyStroke. See the .cc file for a detailed
 // description.
@@ -62,13 +61,15 @@ class DecorationLinePainter final {
   STACK_ALLOCATED();
 
  public:
-  DecorationLinePainter(GraphicsContext& context,
-                        const TextDecorationInfo& decoration_info)
-      : context_(context), decoration_info_(decoration_info) {}
+  explicit DecorationLinePainter(GraphicsContext& context)
+      : context_(context) {}
 
   static gfx::RectF Bounds(const DecorationGeometry&);
 
-  void Paint(const Color& color, const cc::PaintFlags* flags = nullptr);
+  void Paint(const DecorationGeometry&,
+             const Color& color,
+             const AutoDarkMode& auto_dark_mode,
+             const cc::PaintFlags* flags = nullptr);
 
   static void DrawLineForText(GraphicsContext& context,
                               const gfx::RectF& line_rect,
@@ -80,7 +81,6 @@ class DecorationLinePainter final {
   void PaintWavyTextDecoration(const DecorationGeometry&, const AutoDarkMode&);
 
   GraphicsContext& context_;
-  const TextDecorationInfo& decoration_info_;
 };
 
 }  // namespace blink
