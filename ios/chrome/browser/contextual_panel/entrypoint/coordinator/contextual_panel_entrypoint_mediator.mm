@@ -294,7 +294,7 @@
   _transitionToEntrypointLoudMomentTimer = nullptr;
   _transitionToDefaultEntrypointTimer = nullptr;
   [self dismissEntrypointIPHAnimated:animated];
-  [self.delegate enableFullscreen];
+  [self cleanupAndTransitionToSmallEntrypoint];
 }
 
 // Updates the entrypoint state whenever the active tab changes or new data is

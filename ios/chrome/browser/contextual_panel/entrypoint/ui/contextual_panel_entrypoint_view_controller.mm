@@ -637,9 +637,10 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _shouldCollapseForFullscreen = progress <= kFullscreenProgressThreshold;
   if (_shouldCollapseForFullscreen) {
-    self.view.hidden = YES;
+    [self.visibilityDelegate setContextualPanelEntrypointHidden:YES];
   } else {
-    self.view.hidden = !_entrypointDisplayed;
+    [self.visibilityDelegate
+        setContextualPanelEntrypointHidden:!_entrypointDisplayed];
 
     // Fade in/out the entrypoint badge.
     CGFloat alphaValue = fmax((progress - kFullscreenProgressThreshold) /
