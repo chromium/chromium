@@ -587,7 +587,7 @@ void LogicalLineBuilder::BidiReorder(
   // A sentinel value for items that are opaque to bidi reordering. Should be
   // larger than the maximum resolved level.
   constexpr UBiDiLevel kOpaqueBidiLevel = 0xff;
-  DCHECK_GT(kOpaqueBidiLevel, UBIDI_MAX_EXPLICIT_LEVEL + 1);
+  static_assert(kOpaqueBidiLevel > UBIDI_MAX_EXPLICIT_LEVEL + 1);
 
   // The base direction level is used for the items that should ignore its
   // original level and just use the paragraph level, as trailing opaque
