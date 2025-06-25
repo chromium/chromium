@@ -25,11 +25,15 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "printing/backend/cups_deleters.h"
 #include "printing/backend/cups_helper.h"
 #include "printing/backend/cups_ipp_helper.h"
-#include "printing/backend/cups_weak_functions.h"
 #include "printing/printer_status.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "printing/backend/cups_weak_functions.h"
+#endif
 
 namespace printing {
 namespace {

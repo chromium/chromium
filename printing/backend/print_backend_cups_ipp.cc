@@ -14,12 +14,16 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "printing/backend/cups_connection.h"
 #include "printing/backend/cups_ipp_helper.h"
-#include "printing/backend/cups_weak_functions.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/units.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "printing/backend/cups_weak_functions.h"
+#endif
 
 namespace printing {
 

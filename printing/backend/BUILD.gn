@@ -82,8 +82,11 @@ component("backend") {
       "cups_deleters.h",
       "cups_helper.cc",
       "cups_helper.h",
-      "cups_weak_functions.h",
     ]
+
+    if (is_linux) {
+      sources += [ "cups_weak_functions.h" ]
+    }
 
     if (is_linux || is_chromeos) {
       # CUPS 1.6 deprecated the PPD APIs, but we will stay with this API

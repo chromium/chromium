@@ -30,7 +30,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "printing/backend/cups_deleters.h"
-#include "printing/backend/cups_weak_functions.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/mojom/print.mojom.h"
@@ -40,6 +39,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "printing/backend/cups_weak_functions.h"
+#endif
 
 using base::EqualsCaseInsensitiveASCII;
 
@@ -963,6 +966,7 @@ ScopedHttpPtr HttpConnect2(const char* host,
                            int blocking,
                            int msec,
                            int* cancel) {
+#if BUILDFLAG(IS_LINUX)
   ScopedHttpPtr http;
   if (httpConnect2) {
     http.reset(httpConnect2(host, port,
@@ -985,6 +989,15 @@ ScopedHttpPtr HttpConnect2(const char* host,
   }
 
   return http;
+#else
+  ScopedHttpPtr http(httpConnect2(
+      host, port, /*addrlist=*/nullptr, AF_UNSPEC, encryption, blocking ? 1 : 0,
+      kCupsTimeout.InMilliseconds(), /*cancel=*/nullptr));
+  if (!http) {
+    LOG(ERROR) << "CP_CUPS: Failed connecting to print server: " << host;
+  }
+  return http;
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 }  // namespace printing
