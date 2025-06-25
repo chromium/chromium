@@ -14865,45 +14865,6 @@
             ]
         }
     ],
-    "MemorySaverModeRenderTuning": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "available_memory_threshold_mb": "740"
-                    },
-                    "enable_features": [
-                        "MemorySaverModeRenderTuning",
-                        "OomIntervention"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "available_memory_threshold_mb": "740"
-                    },
-                    "enable_features": [
-                        "MemorySaverModeRenderTuning"
-                    ]
-                }
-            ]
-        }
-    ],
     "MerchantTrust": [
         {
             "platforms": [
