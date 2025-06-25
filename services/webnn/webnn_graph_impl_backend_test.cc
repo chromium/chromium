@@ -363,13 +363,13 @@ void WebNNGraphImplBackendTest::SetUp() {
        {"BuildGemmWithReshapedConstantOperand", DML_FEATURE_LEVEL_4_0},
        // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
        // DML_FEATURE_LEVEL_4_0.
-       {"BuildMaxPooingAsThirdOperator", DML_FEATURE_LEVEL_4_0},
+       {"BuildMaxPoolingAsThirdOperator", DML_FEATURE_LEVEL_4_0},
        // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
        // DML_FEATURE_LEVEL_4_0.
-       {"BuildMaxPooingAsSecondOperator", DML_FEATURE_LEVEL_4_0},
+       {"BuildMaxPoolingAsSecondOperator", DML_FEATURE_LEVEL_4_0},
        // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
        // DML_FEATURE_LEVEL_4_0.
-       {"BuildMaxPooingAsFirstOperator", DML_FEATURE_LEVEL_4_0}});
+       {"BuildMaxPoolingAsFirstOperator", DML_FEATURE_LEVEL_4_0}});
   auto it = kRequiredFeatureLevels.find(
       ::testing::UnitTest::GetInstance()->current_test_info()->name());
   if (it != kRequiredFeatureLevels.end()) {
@@ -3249,7 +3249,7 @@ struct Pool2dAttributes {
 //            relu
 //             |
 //          max pooling
-TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsThirdOperator) {
+TEST_F(WebNNGraphImplBackendTest, BuildMaxPoolingAsThirdOperator) {
   // Build the mojom graph info.
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
       BindNewGraphBuilderRemote();
@@ -3297,7 +3297,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsThirdOperator) {
 //          max pooling
 //             |
 //            relu
-TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsSecondOperator) {
+TEST_F(WebNNGraphImplBackendTest, BuildMaxPoolingAsSecondOperator) {
   // Build the mojom graph info.
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
       BindNewGraphBuilderRemote();
@@ -3346,7 +3346,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsSecondOperator) {
 //               add
 //                |
 //               relu
-TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsFirstOperator) {
+TEST_F(WebNNGraphImplBackendTest, BuildMaxPoolingAsFirstOperator) {
   // Build the mojom graph info.
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
       BindNewGraphBuilderRemote();
