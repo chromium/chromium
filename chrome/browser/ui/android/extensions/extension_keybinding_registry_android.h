@@ -7,10 +7,13 @@
 
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/events/android/key_event_android.h"
 
 namespace content {
 class BrowserContext;
+}
+
+namespace ui {
+class KeyEventAndroid;
 }
 
 namespace extensions {
