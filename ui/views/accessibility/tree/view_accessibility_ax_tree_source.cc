@@ -36,8 +36,11 @@ void ViewAccessibilityAXTreeSource::HandleAccessibleAction(
 
 bool ViewAccessibilityAXTreeSource::GetTreeData(
     ui::AXTreeData* tree_data) const {
-  // TODO(accessibility): Implement.
-  return false;
+  tree_data->tree_id = tree_id_;
+  tree_data->loaded = true;
+  tree_data->loading_progress = 1.0;
+  // TODO(accessibility): Implement focus handling.
+  return true;
 }
 
 ViewAccessibility* ViewAccessibilityAXTreeSource::GetRoot() const {
@@ -62,15 +65,17 @@ void ViewAccessibilityAXTreeSource::CacheChildrenIfNeeded(
 
 size_t ViewAccessibilityAXTreeSource::GetChildCount(
     ViewAccessibility* node) const {
-  // TODO(accessibility): Implement.
-  return 0;
+  return node->GetChildren().size();
 }
 
 ViewAccessibility* ViewAccessibilityAXTreeSource::ChildAt(
     ViewAccessibility* node,
     size_t index) const {
-  // TODO(accessibility): Implement.
-  return nullptr;
+  auto children = node->GetChildren();
+  if (index >= children.size()) {
+    return nullptr;
+  }
+  return children[index];
 }
 
 void ViewAccessibilityAXTreeSource::ClearChildCache(ViewAccessibility* node) {
@@ -79,12 +84,14 @@ void ViewAccessibilityAXTreeSource::ClearChildCache(ViewAccessibility* node) {
 
 ViewAccessibility* ViewAccessibilityAXTreeSource::GetParent(
     ViewAccessibility* node) const {
-  // TODO(accessibility): Implement.
-  return nullptr;
+  if (node->GetUniqueId() == root_id_) {
+    return nullptr;
+  }
+
+  return node->GetUnignoredParent();
 }
 
 bool ViewAccessibilityAXTreeSource::IsIgnored(ViewAccessibility* node) const {
-  // TODO(accessibility): Implement.
   return false;
 }
 

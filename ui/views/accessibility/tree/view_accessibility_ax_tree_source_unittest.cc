@@ -10,6 +10,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_tree_data.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/tree/view_accessibility_ax_tree_source_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -113,6 +115,68 @@ TEST_F(ViewAccessibilityAXTreeSourceTest, GetFromId) {
   ASSERT_EQ(test_api().root_id(), root_id());
 
   EXPECT_EQ(source()->GetFromId(root_id())->GetUniqueId(), root_id());
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, GetTreeData_PopulatesTreeData) {
+  ui::AXTreeData data;
+  EXPECT_TRUE(source()->GetTreeData(&data));
+  EXPECT_EQ(data.tree_id, test_api().tree_id());
+  EXPECT_TRUE(data.loaded);
+  EXPECT_DOUBLE_EQ(data.loading_progress, 1.0);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, GetChildCount_RealChildren) {
+  auto v = std::make_unique<View>();
+  v->AddChildView(std::make_unique<View>());
+  v->AddChildView(std::make_unique<View>());
+  EXPECT_EQ(source()->GetChildCount(&v->GetViewAccessibility()), 2u);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, GetChildCount_VirtualChildren) {
+  auto v = std::make_unique<View>();
+  auto& v_ax = v->GetViewAccessibility();
+  v_ax.AddVirtualChildView(std::make_unique<AXVirtualView>());
+  v_ax.AddVirtualChildView(std::make_unique<AXVirtualView>());
+  EXPECT_EQ(source()->GetChildCount(&v_ax), 2u);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, GetChildCount_MixedChildren) {
+  auto v = std::make_unique<View>();
+  v->AddChildView(std::make_unique<View>());
+  auto& v_ax = v->GetViewAccessibility();
+  v_ax.AddVirtualChildView(std::make_unique<AXVirtualView>());
+  EXPECT_EQ(source()->GetChildCount(&v_ax), 1u);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, GetChildAt_ValidAndInvalidIndices) {
+  auto v = std::make_unique<View>();
+  v->AddChildView(std::make_unique<View>());
+  auto& v_ax = v->GetViewAccessibility();
+  auto children = v_ax.GetChildren();
+  ASSERT_EQ(children.size(), 1u);
+  EXPECT_EQ(source()->ChildAt(&v_ax, 0), children[0]);
+  EXPECT_EQ(source()->ChildAt(&v_ax, children.size()), nullptr);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, GetParent_RootReturnsNull) {
+  auto* root_ax = source()->GetRoot();
+  EXPECT_EQ(source()->GetParent(root_ax), nullptr);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, GetParent_ImmediateUnignoredParent) {
+  auto parent = std::make_unique<View>();
+  auto* child = parent->AddChildView(std::make_unique<View>());
+  EXPECT_EQ(source()->GetParent(&child->GetViewAccessibility()),
+            &parent->GetViewAccessibility());
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, GetParent_SkipIgnoredParent) {
+  auto grand = std::make_unique<View>();
+  auto* parent = grand->AddChildView(std::make_unique<View>());
+  auto* child = parent->AddChildView(std::make_unique<View>());
+  parent->GetViewAccessibility().SetIsIgnored(true);
+  EXPECT_EQ(source()->GetParent(&child->GetViewAccessibility()),
+            &grand->GetViewAccessibility());
 }
 
 }  // namespace views::test
