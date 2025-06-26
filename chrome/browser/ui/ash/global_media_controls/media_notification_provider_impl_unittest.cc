@@ -149,6 +149,7 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
   }
 
   void TearDown() override {
+    provider_->RemoveObserver(observer_.get());
     observer_.reset();
     crosapi_environment_.TearDown();
     ChromeAshTestBase::TearDown();
@@ -330,20 +331,6 @@ TEST_F(CastStartStopMediaNotificationProviderImplTest, ShowDeviceSelectorView) {
       static_cast<global_media_controls::MediaItemUIView*>(media_item_ui_view)
           ->device_selector_view_for_testing();
   EXPECT_TRUE(selector_view);
-}
-
-TEST_F(CastStartStopMediaNotificationProviderImplTest,
-       SetDevicePickerProvider) {
-  provider_->OnPrimaryUserSessionStarted();
-
-  MockDeviceService device_service;
-  EXPECT_CALL(device_service, SetDevicePickerProvider);
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->media_ui_ash()
-      ->RegisterDeviceService(base::UnguessableToken::Create(),
-                              device_service.PassRemote());
-  device_service.FlushForTesting();
 }
 
 }  // namespace ash

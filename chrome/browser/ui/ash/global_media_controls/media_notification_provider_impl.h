@@ -44,8 +44,7 @@ class ASH_EXPORT MediaNotificationProviderImpl
     : public MediaNotificationProvider,
       public global_media_controls::MediaDialogDelegate,
       public global_media_controls::MediaItemManagerObserver,
-      public global_media_controls::MediaItemUIObserver,
-      public crosapi::MediaUIAsh::Observer {
+      public global_media_controls::MediaItemUIObserver {
  public:
   explicit MediaNotificationProviderImpl(
       media_session::MediaSessionService* service);
@@ -98,10 +97,6 @@ class ASH_EXPORT MediaNotificationProviderImpl
 
   // global_media_controls::MediaItemUIObserver:
   void OnMediaItemUISizeChanged() override;
-
-  // crosapi::MediaUIAsh::Observer:
-  void OnDeviceServiceRegistered(
-      global_media_controls::mojom::DeviceService* device_service) override;
 
   global_media_controls::MediaSessionItemProducer*
   media_session_item_producer_for_testing() {

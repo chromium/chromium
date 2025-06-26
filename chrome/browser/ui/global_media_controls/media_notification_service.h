@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
@@ -28,6 +29,15 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/system/media/media_notification_provider.h"
+#include "ash/system/media/media_notification_provider_observer.h"
+#endif
+
+namespace ash {
+class GlobalMediaControlsCastStartTest;
+}  // namespace ash
 
 namespace content {
 class WebContents;
@@ -47,7 +57,12 @@ class MediaNotificationService
     : public KeyedService,
       public MediaItemUIDeviceSelectorDelegate,
       public global_media_controls::MediaSessionItemProducerObserver,
-      public global_media_controls::mojom::DeviceService {
+      public global_media_controls::mojom::DeviceService
+#if BUILDFLAG(IS_CHROMEOS)
+    ,
+      public ash::MediaNotificationProviderObserver
+#endif
+{
  public:
   MediaNotificationService(Profile* profile, bool show_from_all_profiles);
   MediaNotificationService(const MediaNotificationService&) = delete;
@@ -123,11 +138,19 @@ class MediaNotificationService
   void set_device_provider_for_testing(
       std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // ash::MediaNotificationProviderObserver:
+  void OnMediaNotificationProviderWillBeDestroyed() override;
+  void OnNotificationListChanged() override {}
+  void OnNotificationListViewSizeChanged() override {}
+#endif
+
  private:
   friend class MediaNotificationProviderImplTest;
   friend class MediaNotificationServiceTest;
   friend class MediaNotificationServiceCastTest;
   friend class MediaToolbarButtonControllerTest;
+  friend class ash::GlobalMediaControlsCastStartTest;
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceCastTest,
                            CreateCastDialogControllerWithRemotePlayback);
 
@@ -170,6 +193,9 @@ class MediaNotificationService
   // notification hidden). Mainly used for glic.
   bool IsIdBlocked(const std::string& request_id) const;
 
+  global_media_controls::MediaItemManager*
+  GetMediaItemManagerForSupplementalDevicePickerProducer();
+
   const raw_ptr<Profile> profile_;
 
   std::unique_ptr<global_media_controls::MediaItemManager> item_manager_;
@@ -205,6 +231,12 @@ class MediaNotificationService
   // It's set to true when MediaNotificationService receives sink updates for a
   // local media.
   bool should_show_cast_local_media_iph_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  base::ScopedObservation<ash::MediaNotificationProvider,
+                          ash::MediaNotificationProviderObserver>
+      provider_observation_{this};
+#endif
 
   base::WeakPtrFactory<MediaNotificationService> weak_ptr_factory_{this};
 };

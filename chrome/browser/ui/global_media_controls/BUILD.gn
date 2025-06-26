@@ -47,6 +47,10 @@ source_set("global_media_controls") {
     "//ui/base",
     "//ui/gfx",
   ]
+
+  if (is_chromeos) {
+    deps = [ "//ash" ]
+  }
 }
 
 source_set("impl") {

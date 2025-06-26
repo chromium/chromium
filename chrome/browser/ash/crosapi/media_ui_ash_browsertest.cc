@@ -26,17 +26,6 @@ using global_media_controls::mojom::DeviceService;
 
 namespace crosapi {
 
-namespace {
-
-class MockObserver : public MediaUIAsh::Observer {
- public:
-  MOCK_METHOD(void,
-              OnDeviceServiceRegistered,
-              (global_media_controls::mojom::DeviceService * device_service));
-};
-
-}  // namespace
-
 class MediaUIAshBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -94,16 +83,6 @@ IN_PROC_BROWSER_TEST_F(MediaUIAshBrowserTest, UnregisterDeviceService) {
   base::RunLoop().RunUntilIdle();
   device_service_ptr = media_ui_ash()->GetDeviceService(id);
   EXPECT_EQ(nullptr, device_service_ptr);
-}
-
-IN_PROC_BROWSER_TEST_F(MediaUIAshBrowserTest, AddObserver) {
-  MockObserver observer;
-  media_ui_ash()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnDeviceServiceRegistered);
-  RegisterDeviceService();
-
-  testing::Mock::VerifyAndClearExpectations(&observer);
-  media_ui_ash()->RemoveObserver(&observer);
 }
 
 }  // namespace crosapi

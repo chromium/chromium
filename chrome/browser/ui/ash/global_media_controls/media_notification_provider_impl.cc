@@ -70,17 +70,12 @@ MediaNotificationProviderImpl::MediaNotificationProviderImpl(
 
 MediaNotificationProviderImpl::~MediaNotificationProviderImpl() {
   CHECK_EQ(this, MediaNotificationProvider::Get());
+  observers_.Notify(&MediaNotificationProviderObserver::
+                        OnMediaNotificationProviderWillBeDestroyed);
   MediaNotificationProvider::Set(nullptr);
 
   RemoveMediaItemManagerFromCastService(item_manager_.get());
   item_manager_->RemoveObserver(this);
-
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->media_ui_ash()
-        ->RemoveObserver(this);
-  }
 }
 
 void MediaNotificationProviderImpl::AddObserver(
@@ -151,21 +146,6 @@ void MediaNotificationProviderImpl::OnPrimaryUserSessionStarted() {
       CastMediaNotificationProducerKeyedServiceFactory::GetForProfile(
           GetProfile());
   AddMediaItemManagerToCastService(item_manager_.get());
-
-  if (!crosapi::CrosapiManager::IsInitialized()) {
-    return;
-  }
-  supplemental_device_picker_producer_ =
-      std::make_unique<SupplementalDevicePickerProducer>(item_manager_.get());
-  item_manager_->AddItemProducer(supplemental_device_picker_producer_.get());
-  crosapi::MediaUIAsh* media_ui =
-      crosapi::CrosapiManager::Get()->crosapi_ash()->media_ui_ash();
-  media_ui->AddObserver(this);
-
-  for (const auto& device_service : media_ui->device_services()) {
-    device_service.second->SetDevicePickerProvider(
-        supplemental_device_picker_producer_->PassRemote());
-  }
 }
 
 void MediaNotificationProviderImpl::AddMediaItemManagerToCastService(
@@ -292,12 +272,6 @@ void MediaNotificationProviderImpl::OnMediaItemUISizeChanged() {
   for (auto& observer : observers_) {
     observer.OnNotificationListViewSizeChanged();
   }
-}
-
-void MediaNotificationProviderImpl::OnDeviceServiceRegistered(
-    global_media_controls::mojom::DeviceService* device_service) {
-  device_service->SetDevicePickerProvider(
-      supplemental_device_picker_producer_->PassRemote());
 }
 
 global_media_controls::mojom::DeviceService*

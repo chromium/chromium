@@ -18,14 +18,6 @@ namespace crosapi {
 
 class MediaUIAsh : public mojom::MediaUI {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    // The pointer to `device_service` may be invalidated after this call exits,
-    // so it should not be stored.
-    virtual void OnDeviceServiceRegistered(
-        global_media_controls::mojom::DeviceService* device_service) = 0;
-  };
-
   MediaUIAsh();
   MediaUIAsh(const MediaUIAsh&) = delete;
   MediaUIAsh& operator=(const MediaUIAsh&) = delete;
@@ -48,9 +40,6 @@ class MediaUIAsh : public mojom::MediaUI {
     return device_services_;
   }
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
  private:
   void RemoveDeviceService(const base::UnguessableToken& id);
 
@@ -58,7 +47,6 @@ class MediaUIAsh : public mojom::MediaUI {
   std::map<base::UnguessableToken,
            mojo::Remote<global_media_controls::mojom::DeviceService>>
       device_services_;
-  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace crosapi

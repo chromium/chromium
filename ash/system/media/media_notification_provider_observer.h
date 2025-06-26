@@ -12,6 +12,9 @@ namespace ash {
 // Observer for ash to be notified when notification info changed.
 class MediaNotificationProviderObserver : public base::CheckedObserver {
  public:
+  // Called when the notification provider instance is being destroyed.
+  virtual void OnMediaNotificationProviderWillBeDestroyed() {}
+
   // Called when the list of notifications has chagned.
   virtual void OnNotificationListChanged() = 0;
 

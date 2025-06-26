@@ -48,6 +48,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/global_media_controls",
     "//chrome/test:test_support",
     "//components/global_media_controls",
     "//components/global_media_controls:test_support",
