@@ -1026,6 +1026,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
 // Creates and shows the lens overlay UI.
 - (void)openLensOverlay {
+  // TODO(crbug.com/427478234): This event should be fired by the mediator.
   if (self.tracker) {
     self.tracker->NotifyEvent(
         feature_engagement::events::kLensOverlayEntrypointUsed);

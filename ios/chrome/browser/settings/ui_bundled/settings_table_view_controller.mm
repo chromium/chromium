@@ -1792,6 +1792,7 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)signinIPHDismissed {
+  // TODO(crbug.com/427478234): This event should be fired by the mediator.
   _featureEngagementTracker->Dismissed(
       feature_engagement::kIPHiOSReplaceSyncPromosWithSignInPromos);
   _bubblePresenter = nil;
@@ -2000,6 +2001,7 @@ struct EnhancedSafeBrowsingActivePromoData
     return NO;
   }
 
+  // TODO(crbug.com/427478234): This event should be fired by the mediator.
   bool promoIsTriggered = tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
   CHECK(promoIsTriggered);

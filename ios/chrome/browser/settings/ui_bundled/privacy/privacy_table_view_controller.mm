@@ -930,6 +930,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   }
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(_profile);
+  // TODO(crbug.com/427478234): This event should be fired by the mediator.
   tracker->NotifyEvent(
       feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet);
 }
