@@ -319,8 +319,19 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         mTransformers = transformers;
     }
 
+    /** Returns whether the given key is contained in the property model. */
     public boolean containsKey(PropertyKey key) {
         return mData.containsKey(key);
+    }
+
+    /** Returns whether the given key is contained and the value is equal to the passed arg. */
+    public boolean containsKeyEqualTo(ReadableBooleanPropertyKey key, boolean value) {
+        return mData.containsKey(key) && get(key) == value;
+    }
+
+    /** Returns whether the given key is contained and the value is equal to the passed arg. */
+    public boolean containsKeyEqualTo(ReadableIntPropertyKey key, int value) {
+        return mData.containsKey(key) && get(key) == value;
     }
 
     private void validateKey(PropertyKey key) {

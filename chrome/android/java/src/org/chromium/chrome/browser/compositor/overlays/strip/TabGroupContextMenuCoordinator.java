@@ -447,8 +447,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private int getMenuItemIndex(ModelList itemList, int menuItemId) {
         for (int i = 0; i < itemList.size(); i++) {
             PropertyModel model = itemList.get(i).model;
-            if (model.containsKey(ListMenuItemProperties.MENU_ITEM_ID)
-                    && model.get(ListMenuItemProperties.MENU_ITEM_ID) == menuItemId) {
+            if (model.containsKeyEqualTo(ListMenuItemProperties.MENU_ITEM_ID, menuItemId)) {
                 return i;
             }
         }

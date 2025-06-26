@@ -62,8 +62,6 @@ public class TabListHighlighter {
     }
 
     private boolean isHighLighted(PropertyModel model) {
-        return model.containsKey(TAB_ID)
-                && model.containsKey(IS_HIGHLIGHTED)
-                && model.get(IS_HIGHLIGHTED);
+        return model.containsKey(TAB_ID) && model.containsKeyEqualTo(IS_HIGHLIGHTED, true);
     }
 }
