@@ -53,7 +53,6 @@ polymorphic.launcher(
     os = os.LINUX_DEFAULT,
     runner = "reviver/runner",
     target_builders = [
-        "ci/android-pie-x86-rel",
         "ci/android-10-x86-rel",
         "ci/android-12-x64-rel",
         "ci/android-13-x64-rel",
