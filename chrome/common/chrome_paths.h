@@ -80,9 +80,6 @@ enum {
   FILE_RECORDED_SCRIPT,  // Full path to the script.log file that
                          // contains recorded browser events for
                          // playback.
-  DIR_PNACL_BASE,        // Full path to the base dir for PNaCl.
-  DIR_PNACL_COMPONENT,   // Full path to the latest PNaCl version
-                         // (subdir of DIR_PNACL_BASE).
 #if BUILDFLAG(ENABLE_WIDEVINE)
   DIR_BUNDLED_WIDEVINE_CDM,  // Full path to the directory containing the
                              // bundled Widevine CDM.
