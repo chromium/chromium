@@ -23,8 +23,10 @@
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/view_class_properties.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
@@ -43,6 +45,14 @@ MultiContentsView::MultiContentsView(
           gfx::Insets(kSplitViewContentInset).set_top(0).set_right(0)),
       end_contents_view_inset_(
           gfx::Insets(kSplitViewContentInset).set_top(0).set_left(0)) {
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_split_view_drag_and_drop) {
+    is_drag_and_drop_enabled_ = false;
+  }
+#endif
+
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   contents_container_views_.push_back(
       AddChildView(std::make_unique<ContentsContainerView>(browser_view_)));
@@ -71,15 +81,19 @@ MultiContentsView::MultiContentsView(
 
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
 
-  drop_target_view_ =
-      AddChildView(std::make_unique<MultiContentsDropTargetView>(*delegate_));
-  drop_target_controller_ =
-      std::make_unique<MultiContentsViewDropTargetController>(
-          *drop_target_view_);
+  if (is_drag_and_drop_enabled()) {
+    drop_target_view_ =
+        AddChildView(std::make_unique<MultiContentsDropTargetView>(*delegate_));
+    drop_target_controller_ =
+        std::make_unique<MultiContentsViewDropTargetController>(
+            *drop_target_view_);
+  }
 }
 
 MultiContentsView::~MultiContentsView() {
-  drop_target_controller_.reset();
+  if (drop_target_controller_) {
+    drop_target_controller_.reset();
+  }
   drop_target_view_ = nullptr;
   resize_area_ = nullptr;
   RemoveAllChildViews();
@@ -241,7 +255,7 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
   gfx::Rect end_rect(resize_rect.top_right(),
                      gfx::Size(widths.end_width, available_space.height()));
 
-  if (drop_target_view_->side().has_value()) {
+  if (is_drag_and_drop_enabled() && drop_target_view_->side().has_value()) {
     switch (drop_target_view_->side().value()) {
       case MultiContentsDropTargetView::DropSide::START:
         // If the drop target view will show at the start, shift everything
@@ -273,9 +287,11 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
                                      contents_container_views_[1]->GetVisible(),
                                      end_rect);
 
-  layouts.child_layouts.emplace_back(drop_target_view_.get(),
-                                     drop_target_view_->GetVisible(),
-                                     drop_target_rect);
+  if (is_drag_and_drop_enabled()) {
+    layouts.child_layouts.emplace_back(drop_target_view_.get(),
+                                       drop_target_view_->GetVisible(),
+                                       drop_target_rect);
+  }
 
   layouts.host_size = gfx::Size(width, height);
   return layouts;
@@ -294,7 +310,8 @@ MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
         available_space.width() - widths.start_width - widths.resize_width;
   } else {
     CHECK(!contents_container_views_[1]->GetVisible());
-    widths.drop_target_width = drop_target_view_->GetPreferredWidth();
+    widths.drop_target_width =
+        is_drag_and_drop_enabled() ? drop_target_view_->GetPreferredWidth() : 0;
 
     // TODO(crbug.com/394369035): Drop targets currently don't scale with
     // browser size. Consider adding a min width value.

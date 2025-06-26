@@ -19,7 +19,9 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
@@ -54,6 +56,15 @@ class MultiContentsViewBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleDropTargetViewLinkDrop_EndDropTarget) {
+// TODO(crbug.com/425715421): Fix drag and drop on Wayland.
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_split_view_drag_and_drop) {
+    return;
+  }
+#endif
+
   ui::OSExchangeData data;
   const GURL kDropUrl("http://www.chromium.org/");
   data.SetURL(kDropUrl, u"Chromium");
@@ -81,6 +92,14 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleDropTargetViewLinkDrop_StartDropTarget) {
+  // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_split_view_drag_and_drop) {
+    return;
+  }
+#endif
   ui::OSExchangeData data;
   const GURL kDropUrl("http://www.chromium.org/");
   data.SetURL(kDropUrl, u"Chromium");

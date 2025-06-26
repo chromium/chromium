@@ -4958,6 +4958,7 @@ static_library("ui") {
       "//services/device/public/cpp:device_features",
       "//services/media_session/public/mojom",
       "//services/screen_ai/buildflags",
+      "//ui/base:ozone_buildflags",
       "//ui/base/dragdrop:types",
       "//ui/gfx/geometry",
       "//ui/lottie",

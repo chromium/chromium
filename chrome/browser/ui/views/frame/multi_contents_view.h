@@ -118,6 +118,8 @@ class MultiContentsView : public views::View,
 
   gfx::Insets& end_contents_view_inset() { return end_contents_view_inset_; }
 
+  bool is_drag_and_drop_enabled() const { return is_drag_and_drop_enabled_; }
+
   void set_min_contents_width_for_testing(int width) {
     min_contents_width_for_testing_ = std::make_optional(width);
   }
@@ -200,6 +202,11 @@ class MultiContentsView : public views::View,
   gfx::Insets end_contents_view_inset_;
 
   bool show_inactive_scrim_ = false;
+
+  // This is needed because drag and drop is broken on Wayland. Once that is
+  // resolved, this variable should be deleted.
+  // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
+  bool is_drag_and_drop_enabled_ = true;
 
   std::optional<int> min_contents_width_for_testing_ = std::nullopt;
 };

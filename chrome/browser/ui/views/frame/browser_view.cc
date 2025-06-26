@@ -3667,14 +3667,16 @@ content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
 
 void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
                                       const gfx::PointF& point) {
-  if (multi_contents_view_) {
+  if (multi_contents_view_ &&
+      multi_contents_view_->is_drag_and_drop_enabled()) {
     multi_contents_view_->drop_target_controller().OnWebContentsDragUpdate(
         drop_data, point, IsInSplitView());
   }
 }
 
 void BrowserView::PreHandleDragExit() {
-  if (multi_contents_view_) {
+  if (multi_contents_view_ &&
+      multi_contents_view_->is_drag_and_drop_enabled()) {
     multi_contents_view_->drop_target_controller().OnWebContentsDragExit();
   }
 }
