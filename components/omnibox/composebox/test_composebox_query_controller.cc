@@ -74,6 +74,9 @@ TestComposeboxQueryController::CreateEndpointFetcher(
       fake_server_response_code =
           google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR;
     }
+
+    last_sent_file_upload_request_ = lens::LensOverlayServerRequest();
+    last_sent_file_upload_request_->ParseFromString(request_string);
   }
 
   // Create the fake endpoint fetcher to return the fake response.

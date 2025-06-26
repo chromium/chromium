@@ -17,6 +17,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/lens_overlay_server.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kTestUser[] = "test_user@gmail.com";
@@ -366,6 +368,23 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
   EXPECT_EQ(controller().GetFileInfo(file_token)->GetFileUploadStatus(),
             FileUploadStatus::kUploadSuccessful);
 
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .payload()
+                .content()
+                .content_data(0)
+                .content_type(),
+            lens::ContentData::CONTENT_TYPE_PDF);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .payload()
+                .content()
+                .content_data(0)
+                .data(),
+            "");
+
   // Check that the vsrid matches that for a pdf upload.
   EXPECT_EQ(controller()
                 .GetFileInfo(file_token)
@@ -376,6 +395,20 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
                 .GetFileInfo(file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .request_context()
+                .request_id()
+                .sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .request_context()
+                .request_id()
+                .image_sequence_id(),
             1);
 }
 

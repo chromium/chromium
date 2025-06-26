@@ -18,6 +18,8 @@
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/lens_server_proto/lens_overlay_payload.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 
 using endpoint_fetcher::CredentialsMode;
 using endpoint_fetcher::EndpointFetcher;
@@ -69,6 +71,18 @@ ComposeboxQueryController::FileInfo::FileInfo() = default;
 ComposeboxQueryController::FileInfo::~FileInfo() = default;
 
 namespace {
+// Creates a pdf file upload request payload.
+lens::Payload CreatPDFFileUploadPayload(const std::vector<uint8_t> bytes) {
+  lens::Payload payload;
+  auto* content = payload.mutable_content();
+  auto* content_data = content->add_content_data();
+  content_data->set_content_type(lens::ContentData::CONTENT_TYPE_PDF);
+
+  // TODO(crbug.com/427618282): Add compression for PDF bytes.
+  content_data->mutable_data()->assign(bytes.begin(), bytes.end());
+
+  return payload;
+}
 
 // Creates the server request proto for the file upload request. Called
 // off the main thread after StartFileUploadFlow().
@@ -77,7 +91,23 @@ lens::LensOverlayServerRequest CreateFileUploadRequestProto(
     lens::MimeType mime_type,
     scoped_refptr<base::RefCountedBytes> file_data) {
   lens::LensOverlayServerRequest request;
+  auto* objects_request = request.mutable_objects_request();
+  objects_request->mutable_request_context()->mutable_request_id()->CopyFrom(
+      request_id);
+  objects_request->mutable_request_context()
+      ->mutable_client_context()
+      ->CopyFrom(lens::LensOverlayClientContext());
+
   // TODO(crbug.com/426869060): Populate the request proto.
+  switch (mime_type) {
+    case lens::MimeType::kPdf:
+      objects_request->mutable_payload()->CopyFrom(
+          CreatPDFFileUploadPayload(file_data->as_vector()));
+      break;
+    default:
+      // TODO(crbug.com/427624839): Add support for image uploads.
+      break;
+  }
   return request;
 }
 }  // namespace
