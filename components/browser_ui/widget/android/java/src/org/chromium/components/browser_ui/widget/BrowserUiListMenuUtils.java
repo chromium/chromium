@@ -18,12 +18,9 @@ import androidx.annotation.StyleRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.listmenu.BasicListMenu;
-import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenu;
-import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /** Collection of utility methods related to the browser UI list menus. */
 @NullMarked
@@ -73,203 +70,142 @@ public class BrowserUiListMenuUtils {
     }
 
     /**
-     * Helper function to build a list menu item. Pass 0 for attributes that aren't applicable to
-     * the menu item (e.g. if there is no icon or text).
-     *
-     * @param titleId The text on the menu item.
-     * @param menuId Id of the menu item.
-     * @param startIconId The icon on the start of the menu item. Pass 0 for no icon.
-     * @param enabled Whether or not this menu item should be enabled.
-     * @return ListItem Representing an item with text or icon.
+     * @deprecated Use {@link ListItemBuilder} instead.
      */
+    @Deprecated
     public static ListItem buildMenuListItem(
             @StringRes int titleId,
             @IdRes int menuId,
             @DrawableRes int startIconId,
             boolean enabled) {
-        return new ListItem(
-                ListMenuItemType.MENU_ITEM,
-                buildPropertyModel(titleId, menuId, startIconId, enabled));
+        return new ListItemBuilder()
+                .setTitleRes(titleId)
+                .setMenuId(menuId)
+                .setStartIconId(startIconId)
+                .setEnabled(enabled)
+                .build();
     }
 
     /**
-     * Helper function to build a list menu item. Set 0 if there is no icon or text. This ListItem
-     * is set enabled as default.
-     *
-     * @param titleId The text on the menu item.
-     * @param menuId Id of the menu item.
-     * @param startIconId The icon on the start of the menu item. Pass 0 for no icon.
-     * @return ListItem Representing an item with text or icon.
+     * @deprecated Use {@link ListItemBuilder} instead.
      */
+    @Deprecated
     public static ListItem buildMenuListItem(
             @StringRes int titleId, @IdRes int menuId, @DrawableRes int startIconId) {
-        return new ListItem(
-                ListMenuItemType.MENU_ITEM,
-                buildPropertyModel(titleId, menuId, startIconId, /* enabled= */ true));
+        return new ListItemBuilder()
+                .setTitleRes(titleId)
+                .setMenuId(menuId)
+                .setStartIconId(startIconId)
+                .build();
     }
 
     /**
-     * Helper function to build a list menu item. Set 0 if there is no icon or text. This ListItem
-     * is set enabled as default.
-     *
-     * @param title The text on the menu item.
-     * @param menuId Id of the menu item.
-     * @param startIconId The icon on the start of the menu item. Pass 0 for no icon.
-     * @param enabled Whether or not this menu item should be enabled.
-     * @return ListItem Representing an item with text or icon.
+     * @deprecated Use {@link ListItemBuilder} instead.
      */
+    @Deprecated
     public static ListItem buildMenuListItem(
             String title, @IdRes int menuId, @DrawableRes int startIconId, boolean enabled) {
-        return buildMenuListItem(title, menuId, startIconId, null, enabled);
+        return new ListItemBuilder()
+                .setTitle(title)
+                .setMenuId(menuId)
+                .setStartIconId(startIconId)
+                .setEnabled(enabled)
+                .build();
     }
 
     /**
-     * Helper function to build a list menu item. Set 0 if there is no icon or text. This ListItem
-     * is set enabled as default.
-     *
-     * @param title The text on the menu item.
-     * @param menuId Id of the menu item.
-     * @param startIconId The icon on the start of the menu item. Pass 0 for no icon.
-     * @param contentDescription The a11y content description of menu item.
-     * @param enabled Whether or not this menu item should be enabled.
-     * @return ListItem Representing an item with text or icon.
+     * @deprecated Use {@link ListItemBuilder} instead.
      */
+    @Deprecated
     public static ListItem buildMenuListItem(
             String title,
             @IdRes int menuId,
             @DrawableRes int startIconId,
             @Nullable String contentDescription,
             boolean enabled) {
-        PropertyModel.Builder builder =
-                getListItemPropertyBuilder()
-                        .with(ListMenuItemProperties.TITLE, title)
-                        .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
-                        .with(ListMenuItemProperties.START_ICON_ID, startIconId)
-                        .with(ListMenuItemProperties.ENABLED, enabled);
-
+        ListItemBuilder builder =
+                new ListItemBuilder()
+                        .setTitle(title)
+                        .setMenuId(menuId)
+                        .setStartIconId(startIconId)
+                        .setEnabled(enabled);
         if (contentDescription != null) {
-            builder.with(ListMenuItemProperties.CONTENT_DESCRIPTION, contentDescription);
+            builder.setContentDescription(contentDescription);
         }
-        return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, builder.build());
+        return builder.build();
     }
 
     /**
-     * Helper function to build a list menu item. Set 0 if there is no icon or text. This ListItem
-     * is set enabled as default.
-     *
-     * @param title The text on the menu item.
-     * @param menuId Id of the menu item.
-     * @param startIconId The icon on the start of the menu item. Pass 0 for no icon.
-     * @param enabled Whether or not this menu item should be enabled.
-     * @param isTextEllipsizedAtEnd Whether or not the text in this menu item is ellipsized at the
-     *     end
-     * @return ListItem Representing an item with text or icon.
+     * @deprecated Use {@link ListItemBuilder} instead.
      */
+    @Deprecated
     public static ListItem buildMenuListItemWithEllipsizedAtEnd(
             String title,
             @IdRes int menuId,
             @DrawableRes int startIconId,
             boolean enabled,
             boolean isTextEllipsizedAtEnd) {
-        PropertyModel.Builder builder =
-                getListItemPropertyBuilder()
-                        .with(ListMenuItemProperties.TITLE, title)
-                        .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
-                        .with(ListMenuItemProperties.START_ICON_ID, startIconId)
-                        .with(ListMenuItemProperties.ENABLED, enabled)
-                        .with(
-                                ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END,
-                                isTextEllipsizedAtEnd);
-
-        return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, builder.build());
+        return new ListItemBuilder()
+                .setTitle(title)
+                .setMenuId(menuId)
+                .setStartIconId(startIconId)
+                .setEnabled(enabled)
+                .setIsTextEllipsizedAtEnd(isTextEllipsizedAtEnd)
+                .build();
     }
 
     /**
-     * Helper function to build a list menu item. Pass 0 for attributes that aren't applicable to
-     * the menu item (e.g. if there is no icon or text).
-     *
-     * @param title The text on the menu item.
-     * @param menuId Id of the menu item.
-     * @param isIncognito Whether the current menu item will be displayed in incognito mode.
-     * @param enabled Whether or not this menu item should be enabled.
-     * @return ListItem Representing an item with text and maybe an icon.
+     * @deprecated Use {@link ListItemBuilder} instead.
      */
+    @Deprecated
     public static ListItem buildMenuListItemWithIncognitoBranding(
             String title, @IdRes int menuId, boolean isIncognito, boolean enabled) {
-        PropertyModel.Builder builder =
-                getListItemPropertyBuilder()
-                        .with(ListMenuItemProperties.TITLE, title)
-                        .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
-                        .with(ListMenuItemProperties.ENABLED, enabled);
-
-        if (isIncognito) {
-            builder.with(
-                    ListMenuItemProperties.TEXT_APPEARANCE_ID,
-                    R.style.TextAppearance_TextLarge_Primary_Baseline_Light);
-        }
-        return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, builder.build());
+        return new ListItemBuilder()
+                .setTitle(title)
+                .setMenuId(menuId)
+                .setIsIncognito(isIncognito)
+                .setEnabled(enabled)
+                .setTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
+                .build();
     }
 
     /**
-     * Helper function to build a list menu item. Pass 0 for attributes that aren't applicable to
-     * the menu item (e.g. if there is no icon or text).
-     *
-     * @param titleId The text on the menu item.
-     * @param menuId Id of the menu item.
-     * @param isIncognito Whether the current menu item will be displayed in incognito mode.
-     * @param enabled Whether or not this menu item should be enabled.
-     * @return ListItem Representing an item with text and maybe an icon.
+     * @deprecated Use {@link ListItemBuilder} instead.
      */
+    @Deprecated
     public static ListItem buildMenuListItemWithIncognitoBranding(
             @StringRes int titleId, @IdRes int menuId, boolean isIncognito, boolean enabled) {
-        return buildMenuListItemWithIncognitoBranding(
-                titleId,
-                menuId,
-                /* startIconId= */ 0,
-                /* iconTintColorStateList= */ 0,
-                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                isIncognito,
-                enabled);
+        return new ListItemBuilder()
+                .setTitleRes(titleId)
+                .setMenuId(menuId)
+                .setTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
+                .setIsIncognito(isIncognito)
+                .setEnabled(enabled)
+                .build();
     }
 
     /**
-     * Helper function to build a list menu item. Pass 0 for attributes that aren't applicable to
-     * the menu item (e.g. if there is no icon or text).
-     *
-     * @param titleId The text on the menu item.
-     * @param menuId Id of the menu item.
-     * @param startIconId The icon on the start of the menu item. Pass 0 for no icon.
-     * @param isIncognito Whether the current menu item will be displayed in incognito mode.
-     * @return ListItem Representing an item with text and maybe an icon.
+     * @deprecated Use {@link ListItemBuilder} instead.
      */
     public static ListItem buildMenuListItemWithIncognitoBranding(
             @StringRes int titleId,
             @IdRes int menuId,
             @DrawableRes int startIconId,
             boolean isIncognito) {
-        return buildMenuListItemWithIncognitoBranding(
-                titleId,
-                menuId,
-                startIconId,
-                R.color.default_icon_color_light_tint_list,
-                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                isIncognito,
-                /* enabled= */ true);
+        return new ListItemBuilder()
+                .setTitleRes(titleId)
+                .setMenuId(menuId)
+                .setStartIconId(startIconId)
+                .setIconTintColorStateList(R.color.default_icon_color_light_tint_list)
+                .setTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
+                .setIsIncognito(isIncognito)
+                .build();
     }
 
     /**
-     * Helper function to build a list menu item. Pass 0 for attributes that aren't applicable to
-     * the menu item (e.g. if there is no icon or text).
-     *
-     * @param titleId The text on the menu item.
-     * @param menuId Id of the menu item.
-     * @param startIconId The icon on the start of the menu item. Pass 0 for no icon.
-     * @param iconTintColorStateList The appearance of the icon in incognito mode.
-     * @param textAppearanceStyle The appearance of the text in the menu item in incognito mode.
-     * @param isIncognito Whether the current menu item will be displayed in incognito mode.
-     * @param enabled Whether or not this menu item should be enabled.
-     * @return ListItem Representing an item with text and maybe an icon.
+     * @deprecated Use {@link ListItemBuilder} instead.
      */
+    @Deprecated
     public static ListItem buildMenuListItemWithIncognitoBranding(
             @StringRes int titleId,
             @IdRes int menuId,
@@ -278,67 +214,31 @@ public class BrowserUiListMenuUtils {
             @StyleRes int textAppearanceStyle,
             boolean isIncognito,
             boolean enabled) {
-        PropertyModel.Builder builder =
-                getListItemPropertyBuilder()
-                        .with(ListMenuItemProperties.TITLE_ID, titleId)
-                        .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
-                        .with(ListMenuItemProperties.ENABLED, enabled)
-                        .with(ListMenuItemProperties.START_ICON_ID, startIconId);
-
-        if (isIncognito) {
-            builder.with(ListMenuItemProperties.TEXT_APPEARANCE_ID, textAppearanceStyle);
-            builder.with(
-                    ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID, iconTintColorStateList);
-        }
-        return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, builder.build());
+        return new ListItemBuilder()
+                .setTitleRes(titleId)
+                .setMenuId(menuId)
+                .setStartIconId(startIconId)
+                .setIconTintColorStateList(iconTintColorStateList)
+                .setTextAppearanceStyle(textAppearanceStyle)
+                .setIsIncognito(isIncognito)
+                .setEnabled(enabled)
+                .build();
     }
 
     /**
-     * Helper function to build a list menu item. Pass 0 for attributes that aren't applicable to
-     * the menu item (e.g. if there is no icon or text).
-     *
-     * @param titleId The text on the menu item.
-     * @param menuId Id of the menu item.
-     * @param endIconId The icon on the end of the menu item. Pass 0 for no icon.
-     * @param enabled Whether or not this menu item should be enabled.
-     * @return ListItem Representing an item with text or icon.
+     * @deprecated Use {@link ListItemBuilder} instead.
      */
+    @Deprecated
     public static ListItem buildMenuListItemWithEndIcon(
             @StringRes int titleId,
             @IdRes int menuId,
             @DrawableRes int endIconId,
             boolean enabled) {
-        return new ListItem(
-                ListMenuItemType.MENU_ITEM,
-                getListItemPropertyBuilder()
-                        .with(ListMenuItemProperties.TITLE_ID, titleId)
-                        .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
-                        .with(ListMenuItemProperties.END_ICON_ID, endIconId)
-                        .with(ListMenuItemProperties.ENABLED, enabled)
-                        .build());
-    }
-
-    // Internal helper function to build a property model of list menu item.
-
-    private static PropertyModel buildPropertyModel(
-            @StringRes int titleId, @IdRes int menuId, @DrawableRes int iconId, boolean enabled) {
-        return getListItemPropertyBuilder()
-                .with(ListMenuItemProperties.TITLE_ID, titleId)
-                .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
-                .with(ListMenuItemProperties.START_ICON_ID, iconId)
-                .with(ListMenuItemProperties.ENABLED, enabled)
+        return new ListItemBuilder()
+                .setTitleRes(titleId)
+                .setMenuId(menuId)
+                .setEndIconId(endIconId)
+                .setEnabled(enabled)
                 .build();
-    }
-
-    /**
-     * Return a list menu item property builder with universal properties already set e.g the text
-     * appearance & icon tint state list.
-     */
-    private static PropertyModel.Builder getListItemPropertyBuilder() {
-        return new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                .with(
-                        ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
-                        getDefaultIconTintColorStateListId())
-                .with(ListMenuItemProperties.TEXT_APPEARANCE_ID, getDefaultTextAppearanceStyle());
     }
 }
