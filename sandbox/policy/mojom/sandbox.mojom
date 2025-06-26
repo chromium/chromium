@@ -109,10 +109,7 @@ enum Sandbox {
   // iHD). For V4L2, we set up the broker process to allow opening certain V4L2
   // devices and we load the libv4l2.so library.
   //
-  // TODO(b/195769334): we're using the GPU process sandbox policy for now as a
-  // transition step. However, we should create a policy that's tighter just for
-  // hardware video decoding.
-  [EnableIf=enable_oop_video_accelerators] kHardwareVideoDecoding,
+  [EnableIf=enable_oop_video_decoder] kHardwareVideoDecoding,
 
   // Used to protect processes that perform hardware video encode acceleration.
   // Currently uses the same policy as the GPU process sandbox. Warm-up does

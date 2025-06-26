@@ -19,6 +19,7 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "media/gpu/buildflags.h"  // nogncheck
+#include "media/media_buildflags.h"  // nogncheck
 #endif
 
 namespace sandbox::policy {
@@ -323,13 +324,15 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
       return kMirroringSandbox;
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
     case Sandbox::kHardwareVideoDecoding:
       return kHardwareVideoDecodingSandbox;
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     case Sandbox::kHardwareVideoEncoding:
       return kHardwareVideoEncodingSandbox;
-#endif
-#endif
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS)
     case Sandbox::kIme:
       return kImeSandbox;

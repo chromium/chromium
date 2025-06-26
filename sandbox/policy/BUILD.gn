@@ -6,7 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/cast.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
-import("//media/gpu/args.gni")
+import("//media/media_options.gni")
 import("//testing/test.gni")
 
 # Most consumers of sandbox::policy should depend on this target.
@@ -95,7 +95,7 @@ component("policy") {
       "linux/sandbox_seccomp_bpf_linux.cc",
       "linux/sandbox_seccomp_bpf_linux.h",
     ]
-    if (use_linux_video_acceleration) {
+    if (allow_oop_video_decoder) {
       sources += [
         "linux/bpf_hardware_video_decoding_policy_linux.cc",
         "linux/bpf_hardware_video_decoding_policy_linux.h",
@@ -110,6 +110,7 @@ component("policy") {
     ]
     deps += [
       ":chromecast_sandbox_allowlist_buildflags",
+      "//media:media_buildflags",
       "//media/gpu:buildflags",
       "//sandbox:sandbox_buildflags",
       "//sandbox/linux:sandbox_services",

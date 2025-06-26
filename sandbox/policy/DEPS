@@ -1,6 +1,7 @@
 include_rules = [
   "+chromeos/ash/components/assistant/buildflags.h",
   "+media/gpu/buildflags.h",
+  "+media/media_buildflags.h",
   # TODO(crbug.com/40220507): remove this.
   "+net/base/features.h",
   "+ppapi/buildflags",
