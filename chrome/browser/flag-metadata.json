@@ -10232,16 +10232,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "warm-up-compositor",
-    "owners": [
-      "taiyo@chromium.org",
-      "lingqi@chromium.org",
-      "nhiroki@chromium.org",
-      "//content/browser/preloading/prerender/OWNERS"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "wasm-tts-component-updater-enabled",
     "owners": [
       "xiangxiao@google.com",
