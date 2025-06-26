@@ -85,15 +85,12 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)updateAppearance {
-  if (!_omniboxEditModel) {
-    return;
-  }
   // If Siri is thinking, treat that as user input being in progress.  It is
   // unsafe to modify the text field while voice entry is pending.
   if ([self resetDisplayTexts]) {
     // Revert everything to the baseline look.
     [self revertAll];
-  } else if (!_omniboxEditModel->has_focus()) {
+  } else if (_omniboxTextModel && !_omniboxTextModel->HasFocus()) {
     // Even if the change wasn't "user visible" to the model, it still may be
     // necessary to re-color to the URL string.  Only do this if the omnibox is
     // not currently focused.
@@ -134,7 +131,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 - (void)endEditing {
   [self hideKeyboard];
 
-  if (!_omniboxEditModel || !_omniboxEditModel->has_focus()) {
+  if (!_omniboxTextModel || !_omniboxTextModel->HasFocus()) {
     return;
   }
   [self.omniboxAutocompleteController closeOmniboxPopup];
@@ -608,7 +605,8 @@ const char kOmniboxFocusResultedInNavigation[] =
 - (void)textDidChangeWithUserEvent:(BOOL)isProcessingUserEvent {
   OmniboxTextFieldIOS* field = self.textField;
   // Sanitize pasted text.
-  if (_omniboxEditModel && _omniboxEditModel->is_pasting()) {
+  if (_omniboxTextModel &&
+      _omniboxTextModel->paste_state == OmniboxPasteState::kPasting) {
     std::u16string pastedText = base::SysNSStringToUTF16(field.text);
     std::u16string newText = omnibox::SanitizeTextForPaste(pastedText);
     if (pastedText != newText) {
@@ -675,10 +673,16 @@ const char kOmniboxFocusResultedInNavigation[] =
 
   GURL URL;
   bool writeURL = false;
-  // Model can be nullptr in tests.
-  if (_omniboxEditModel) {
-    _omniboxEditModel->AdjustTextForCopy(startLocation, &text, &URL, &writeURL);
-  }
+
+  omnibox::AdjustTextForCopy(
+      startLocation, &text,
+      /*has_user_modified_text=*/_omniboxTextModel->user_input_in_progress ||
+          text != _omniboxTextModel->url_for_editing,
+      /*is_keyword_selected=*/false,
+      _omniboxAutocompleteController.hasSuggestions
+          ? std::optional<AutocompleteMatch>([self currentMatch:nullptr])
+          : std::nullopt,
+      _omniboxClient, &URL, &writeURL);
 
   // Create the pasteboard item manually because the pasteboard expects a single
   // item with multiple representations.  This is expressed as a single
@@ -704,8 +708,9 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)willPaste {
-  if (_omniboxEditModel) {
-    _omniboxEditModel->OnPaste();
+  if (_omniboxTextModel) {
+    UMA_HISTOGRAM_COUNTS_1M("Omnibox.Paste", 1);
+    _omniboxTextModel->paste_state = OmniboxPasteState::kPasting;
   }
 
   [self.textField exitPreEditState];
@@ -827,7 +832,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 - (void)startAutocompleteAfterEdit {
   [self setInputInProgress:YES];
 
-  if (!_omniboxEditModel || !_omniboxEditModel->has_focus()) {
+  if (!_omniboxTextModel || !_omniboxTextModel->HasFocus()) {
     return;
   }
 

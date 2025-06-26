@@ -185,7 +185,7 @@ using base::UserMetricsAction;
   DCHECK(autocompleteController == self.autocompleteController);
   DCHECK(_omniboxClient);
 
-  const bool popup_was_open = _omniboxEditModel->PopupIsOpen();
+  const bool popup_was_open = self.hasSuggestions;
 
   [self updatePopupSuggestions];
   if (defaultMatchChanged) {
@@ -207,7 +207,7 @@ using base::UserMetricsAction;
     }
   }
 
-  const bool popup_is_open = _omniboxEditModel->PopupIsOpen();
+  const bool popup_is_open = self.hasSuggestions;
   if (popup_was_open != popup_is_open && _omniboxClient) {
     _omniboxClient->OnPopupVisibilityChanged(popup_is_open);
   }
@@ -219,7 +219,9 @@ using base::UserMetricsAction;
     // avoid suggesting the omnibox contains a URL suggestion when that may no
     // longer be the case; i.e. when the default suggestion changed from a URL
     // to a search suggestion upon closing the popup.
-    _omniboxEditModel->ClearAdditionalText();
+    TRACE_EVENT0("omnibox",
+                 "OmniboxAutocompleteController::ClearAdditionalText");
+    [self.omniboxTextController setAdditionalText:std::u16string()];
   }
 
   // Note: The client outlives `this`, so bind a weak pointer to the callback

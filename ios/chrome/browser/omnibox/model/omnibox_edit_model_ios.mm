@@ -96,52 +96,6 @@ void OmniboxEditModelIOS::set_text_controller(
   text_controller_ = text_controller;
 }
 
-metrics::OmniboxEventProto::PageClassification
-OmniboxEditModelIOS::GetPageClassification() const {
-  return client_->GetPageClassification(/*is_prefetch=*/false);
-}
-
-bool OmniboxEditModelIOS::CurrentTextIsURL() const {
-  // If !user_text_model_->inputin_progress_, we can determine if the text is a
-  // URL without starting the autocomplete system. This speeds browser startup.
-  return !text_model_->user_input_in_progress ||
-         !AutocompleteMatch::IsSearchType(
-             [text_controller_ currentMatch:nullptr].type);
-}
-
-void OmniboxEditModelIOS::AdjustTextForCopy(int sel_min,
-                                            std::u16string* text,
-                                            GURL* url_from_text,
-                                            bool* write_url) {
-  omnibox::AdjustTextForCopy(
-      sel_min, text,
-      /*has_user_modified_text=*/text_model_->user_input_in_progress ||
-          *text != text_model_->url_for_editing,
-      /*is_keyword_selected=*/false,
-      PopupIsOpen() ? std::optional<AutocompleteMatch>(
-                          [text_controller_ currentMatch:nullptr])
-                    : std::nullopt,
-      client_, url_from_text, write_url);
-}
-
-void OmniboxEditModelIOS::Revert() {
-  [text_controller_ revertState];
-}
-
-void OmniboxEditModelIOS::ClearAdditionalText() {
-  TRACE_EVENT0("omnibox", "OmniboxEditModelIOS::ClearAdditionalText");
-  [text_controller_ setAdditionalText:std::u16string()];
-}
-
-void OmniboxEditModelIOS::OnSetFocus() {
-  text_model_->OnSetFocus();
-}
-
-void OmniboxEditModelIOS::OnPaste() {
-  UMA_HISTOGRAM_COUNTS_1M("Omnibox.Paste", 1);
-  text_model_->paste_state = OmniboxPasteState::kPasting;
-}
-
 void OmniboxEditModelIOS::OpenMatchForTesting(
     AutocompleteMatch match,
     WindowOpenDisposition disposition,
@@ -151,22 +105,6 @@ void OmniboxEditModelIOS::OpenMatchForTesting(
     base::TimeTicks match_selection_timestamp) {
   OpenMatch(OmniboxPopupSelection(index), match, disposition, alternate_nav_url,
             pasted_text, match_selection_timestamp);
-}
-
-bool OmniboxEditModelIOS::PopupIsOpen() const {
-  return omnibox_autocomplete_controller_.hasSuggestions;
-}
-
-void OmniboxEditModelIOS::SetAutocompleteInput(AutocompleteInput input) {
-  text_model_->input = std::move(input);
-}
-
-PrefService* OmniboxEditModelIOS::GetPrefService() {
-  return client_->GetPrefs();
-}
-
-const PrefService* OmniboxEditModelIOS::GetPrefService() const {
-  return client_->GetPrefs();
 }
 
 AutocompleteController* OmniboxEditModelIOS::autocomplete_controller() const {
@@ -231,7 +169,8 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
   // Create a dummy AutocompleteInput for use in calling VerbatimMatchForInput()
   // to create an alternate navigational match.
   AutocompleteInput alternate_input(
-      input_text, GetPageClassification(), client_->GetSchemeClassifier(),
+      input_text, client_->GetPageClassification(/*is_prefetch=*/false),
+      client_->GetSchemeClassifier(),
       client_->ShouldDefaultTypedNavigationsToHttps(), 0, false);
   // Somehow we can occasionally get here with no active tab.  It's not
   // clear why this happens.
@@ -282,8 +221,4 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
               alternate_input, alternate_nav_url, false));
     }
   }
-}
-
-std::u16string OmniboxEditModelIOS::GetText() const {
-  return [text_controller_ displayedText];
 }

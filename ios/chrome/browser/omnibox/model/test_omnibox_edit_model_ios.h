@@ -22,16 +22,9 @@ class TestOmniboxEditModelIOS : public OmniboxEditModelIOS {
   TestOmniboxEditModelIOS(const TestOmniboxEditModelIOS&) = delete;
   TestOmniboxEditModelIOS& operator=(const TestOmniboxEditModelIOS&) = delete;
 
-  // OmniboxEditModel:
-  bool PopupIsOpen() const override;
-
   void SetPopupIsOpen(bool open);
 
   const std::u16string& text() const { return text_; }
-
- protected:
-  PrefService* GetPrefService() override;
-  const PrefService* GetPrefService() const override;
 
  private:
   bool popup_is_open_;

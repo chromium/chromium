@@ -24,20 +24,6 @@ TestOmniboxEditModelIOS::TestOmniboxEditModelIOS(
 
 TestOmniboxEditModelIOS::~TestOmniboxEditModelIOS() = default;
 
-bool TestOmniboxEditModelIOS::PopupIsOpen() const {
-  return popup_is_open_;
-}
-
 void TestOmniboxEditModelIOS::SetPopupIsOpen(bool open) {
   popup_is_open_ = open;
-}
-
-PrefService* TestOmniboxEditModelIOS::GetPrefService() {
-  return const_cast<PrefService*>(
-      const_cast<const TestOmniboxEditModelIOS*>(this)->GetPrefService());
-}
-
-const PrefService* TestOmniboxEditModelIOS::GetPrefService() const {
-  return pref_service_ == nullptr ? OmniboxEditModelIOS::GetPrefService()
-                                  : pref_service_.get();
 }

@@ -95,6 +95,7 @@ namespace {
 
 void OpenUrlFromEditBox(OmniboxControllerIOS* controller,
                         TestOmniboxEditModelIOS* model,
+                        OmniboxTextModel* text_model,
                         TestOmniboxTextController* text_controller,
                         const std::u16string url_text,
                         bool is_autocompleted) {
@@ -108,7 +109,7 @@ void OpenUrlFromEditBox(OmniboxControllerIOS* controller,
   } else {
     [text_controller setUserText:url_text];
   }
-  model->OnSetFocus();
+  text_model->OnSetFocus();
   model->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
                              std::u16string(), 0);
 }
@@ -153,7 +154,14 @@ class OmniboxEditModelIOSTest : public PlatformTest {
     return omnibox_client_->location_bar_model();
   }
   TestOmniboxEditModelIOS* model() { return omnibox_edit_model_.get(); }
+  OmniboxTextModel* text_model() { return omnibox_text_model_.get(); }
   OmniboxControllerIOS* controller() { return omnibox_controller_.get(); }
+
+  bool current_text_is_URL() const {
+    return !omnibox_text_model_->user_input_in_progress ||
+           !AutocompleteMatch::IsSearchType(
+               [omnibox_text_controller_ currentMatch:nullptr].type);
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -183,7 +191,7 @@ TEST_F(OmniboxEditModelIOSTest, InlineAutocompleteText) {
   EXPECT_EQ(u"hello", [omnibox_text_controller_ displayedText]);
   EXPECT_EQ(u"lo", omnibox_text_model_->inline_autocompletion);
 
-  model()->Revert();
+  [omnibox_text_controller_ revertState];
   EXPECT_EQ(std::u16string(), [omnibox_text_controller_ displayedText]);
   EXPECT_EQ(std::u16string(), omnibox_text_model_->inline_autocompletion);
 
@@ -214,7 +222,7 @@ TEST_F(OmniboxEditModelIOSTest, AlternateNavHasHTTP) {
               OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _))
       .WillOnce(SaveArg<10>(&alternate_nav_match));
 
-  model()->OnSetFocus();  // Avoids DCHECK in OpenMatch().
+  omnibox_text_model_->OnSetFocus();  // Avoids DCHECK in OpenMatch().
   [omnibox_text_controller_ setUserText:u"http://abcd"];
   model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
                                alternate_nav_url, std::u16string(), 0);
@@ -238,14 +246,14 @@ TEST_F(OmniboxEditModelIOSTest, CurrentMatch) {
     location_bar_model()->set_url(GURL("http://www.example.com/"));
     location_bar_model()->set_url_for_display(u"example.com");
     [omnibox_text_controller_ resetDisplayTexts];
-    model()->Revert();
+    [omnibox_text_controller_ revertState];
 
     EXPECT_EQ(u"http://www.example.com/",
               [omnibox_text_controller_ displayedText]);
 
     AutocompleteMatch match = [omnibox_text_controller_ currentMatch:nullptr];
     EXPECT_EQ(AutocompleteMatchType::URL_WHAT_YOU_TYPED, match.type);
-    EXPECT_TRUE(model()->CurrentTextIsURL());
+    EXPECT_TRUE(current_text_is_URL());
     EXPECT_EQ("http://www.example.com/", match.destination_url.spec());
   }
 
@@ -255,14 +263,14 @@ TEST_F(OmniboxEditModelIOSTest, CurrentMatch) {
     location_bar_model()->set_url(GURL("https://www.google.com/"));
     location_bar_model()->set_url_for_display(u"google.com");
     [omnibox_text_controller_ resetDisplayTexts];
-    model()->Revert();
+    [omnibox_text_controller_ revertState];
 
     EXPECT_EQ(u"https://www.google.com/",
               [omnibox_text_controller_ displayedText]);
 
     AutocompleteMatch match = [omnibox_text_controller_ currentMatch:nullptr];
     EXPECT_EQ(AutocompleteMatchType::URL_WHAT_YOU_TYPED, match.type);
-    EXPECT_TRUE(model()->CurrentTextIsURL());
+    EXPECT_TRUE(current_text_is_URL());
 
     // Additionally verify we aren't accidentally dropping the HTTPS scheme.
     EXPECT_EQ("https://www.google.com/", match.destination_url.spec());
@@ -274,20 +282,20 @@ TEST_F(OmniboxEditModelIOSTest, DisplayText) {
   location_bar_model()->set_url_for_display(u"example.com");
 
   EXPECT_TRUE([omnibox_text_controller_ resetDisplayTexts]);
-  model()->Revert();
+  [omnibox_text_controller_ revertState];
 
-  EXPECT_TRUE(model()->CurrentTextIsURL());
+  EXPECT_TRUE(current_text_is_URL());
 
   // iOS OmniboxEditModel always provides the full URL as the OmniboxView
   // permanent display text.
   EXPECT_EQ(u"https://www.example.com/", omnibox_text_model_->url_for_editing);
   EXPECT_EQ(u"https://www.example.com/",
             [omnibox_text_controller_ displayedText]);
-  EXPECT_FALSE(model()->user_input_in_progress());
+  EXPECT_FALSE(omnibox_text_model_->user_input_in_progress);
 
   EXPECT_EQ(u"https://www.example.com/",
             [omnibox_text_controller_ displayedText]);
-  EXPECT_TRUE(model()->CurrentTextIsURL());
+  EXPECT_TRUE(current_text_is_URL());
 }
 
 TEST_F(OmniboxEditModelIOSTest, IPv4AddressPartsCount) {
@@ -295,22 +303,23 @@ TEST_F(OmniboxEditModelIOSTest, IPv4AddressPartsCount) {
   constexpr char kIPv4AddressPartsCountHistogramName[] =
       "Omnibox.IPv4AddressPartsCount";
   // Hostnames shall not be recorded.
-  OpenUrlFromEditBox(controller(), model(), omnibox_text_controller_,
-                     u"http://example.com", false);
+  OpenUrlFromEditBox(controller(), model(), text_model(),
+                     omnibox_text_controller_, u"http://example.com", false);
   histogram_tester.ExpectTotalCount(kIPv4AddressPartsCountHistogramName, 0);
 
   // Autocompleted navigations shall not be recorded.
-  OpenUrlFromEditBox(controller(), model(), omnibox_text_controller_,
-                     u"http://127.0.0.1", true);
+  OpenUrlFromEditBox(controller(), model(), text_model(),
+                     omnibox_text_controller_, u"http://127.0.0.1", true);
   histogram_tester.ExpectTotalCount(kIPv4AddressPartsCountHistogramName, 0);
 
   // Test IPv4 parts are correctly counted.
-  OpenUrlFromEditBox(controller(), model(), omnibox_text_controller_,
-                     u"http://127.0.0.1", false);
-  OpenUrlFromEditBox(controller(), model(), omnibox_text_controller_,
-                     u"http://127.1/test.html", false);
-  OpenUrlFromEditBox(controller(), model(), omnibox_text_controller_,
-                     u"http://127.0.1", false);
+  OpenUrlFromEditBox(controller(), model(), text_model(),
+                     omnibox_text_controller_, u"http://127.0.0.1", false);
+  OpenUrlFromEditBox(controller(), model(), text_model(),
+                     omnibox_text_controller_, u"http://127.1/test.html",
+                     false);
+  OpenUrlFromEditBox(controller(), model(), text_model(),
+                     omnibox_text_controller_, u"http://127.0.1", false);
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kIPv4AddressPartsCountHistogramName),
       testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1),
