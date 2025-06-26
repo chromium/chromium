@@ -28,8 +28,10 @@ class BLINK_COMMON_EXPORT CommonSchemeRegistry {
  public:
   // Schemes that represent browser extensions.
   static void RegisterURLSchemeAsExtension(const std::string& scheme);
+  static void RegisterURLSchemeAsIsolatedApp(const std::string& scheme);
   static void RemoveURLSchemeAsExtensionForTest(const std::string& scheme);
   static bool IsExtensionScheme(const std::string& scheme);
+  static bool IsIsolatedAppScheme(const std::string& scheme);
 };
 
 }  // namespace blink

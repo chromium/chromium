@@ -429,6 +429,8 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   extensions_renderer_client->RenderThreadStarted();
   WebSecurityPolicy::RegisterURLSchemeAsExtension(
       WebString::FromASCII(extensions::kExtensionScheme));
+  WebSecurityPolicy::RegisterURLSchemeAsIsolatedApp(
+      WebString::FromASCII(chrome::kIsolatedAppScheme));
   WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(
       WebString::FromASCII(extensions::kExtensionScheme));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

@@ -146,6 +146,8 @@ class CONTENT_EXPORT ContentClient {
     // described in the Custom Handler specification.
     // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
     std::vector<std::pair<std::string, std::string>> predefined_handler_schemes;
+    // Registers a URL scheme as an Isolated Web App scheme.
+    std::vector<std::string> isolated_app_schemes;
 #if BUILDFLAG(IS_ANDROID)
     // Normally, non-standard schemes canonicalize to opaque origins. However,
     // Android WebView requires non-standard schemes to still be preserved.

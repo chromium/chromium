@@ -201,6 +201,8 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->extension_schemes.push_back(extensions::kExtensionScheme);
 #endif
 
+  schemes->isolated_app_schemes.push_back(chrome::kIsolatedAppScheme);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   schemes->savable_schemes.push_back(extensions::kExtensionScheme);
 #endif

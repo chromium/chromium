@@ -149,6 +149,11 @@ void WebSecurityPolicy::RegisterURLSchemeAsExtension(const WebString& scheme) {
   CommonSchemeRegistry::RegisterURLSchemeAsExtension(scheme.Ascii());
 }
 
+void WebSecurityPolicy::RegisterURLSchemeAsIsolatedApp(
+    const WebString& scheme) {
+  CommonSchemeRegistry::RegisterURLSchemeAsIsolatedApp(scheme.Ascii());
+}
+
 void WebSecurityPolicy::RegisterURLSchemeAsWebUI(const WebString& scheme) {
   SchemeRegistry::RegisterURLSchemeAsWebUI(scheme);
 }
