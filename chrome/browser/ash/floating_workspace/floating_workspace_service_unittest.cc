@@ -906,7 +906,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, NoNetworkOnFloatingWorkspaceInit) {
   PopulateAppsCache();
   CleanUpTestNetworkDevices();
   CreateFloatingWorkspaceServiceForTesting(profile());
-  InitFloatingWorkspaceServiceAndStartSession();
+  auto* service = InitFloatingWorkspaceServiceAndStartSession();
   // We always show the default UI first and then show the network screen (if
   // still needed) after a short delay, to account for possible race condition
   // between initializing FloatingWorkspaceService and connecting to network
@@ -914,6 +914,12 @@ TEST_F(FloatingWorkspaceServiceV2Test, NoNetworkOnFloatingWorkspaceInit) {
   EXPECT_EQ(FloatingWorkspaceDialog::State::kDefault,
             FloatingWorkspaceDialog::IsShown());
   WaitForNetworkScreenToAppear();
+
+  // Checking that after any network update that doesn't make us online the
+  // flow doesn't start from the beginning, i.e. we stay on the network screen.
+  service->NetworkConnectionStateChanged(nullptr);
+  EXPECT_EQ(FloatingWorkspaceDialog::State::kNetwork,
+            FloatingWorkspaceDialog::IsShown());
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test, NetworkConnectingShortlyAfterFwsInit) {
