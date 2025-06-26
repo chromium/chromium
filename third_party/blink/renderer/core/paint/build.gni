@@ -7,6 +7,8 @@ blink_core_sources_paint = [
   "background_image_geometry.h",
   "block_paint_invalidator.cc",
   "block_paint_invalidator.h",
+  "border_shape_painter.cc",
+  "border_shape_painter.h",
   "box_background_paint_context.cc",
   "box_background_paint_context.h",
   "box_border_painter.cc",

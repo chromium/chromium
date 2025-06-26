@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_progress.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
+#include "third_party/blink/renderer/core/paint/border_shape_painter.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
@@ -1419,6 +1420,9 @@ void BoxPainterBase::PaintBorder(const ImageResourceObserver& obj,
                                  const ComputedStyle& style,
                                  BackgroundBleedAvoidance bleed_avoidance,
                                  PhysicalBoxSides sides_to_include) {
+  if (BorderShapePainter::Paint(info.context, rect, style)) {
+    return;
+  }
   // border-image is not affected by border-radius.
   if (NinePieceImagePainter::Paint(info.context, obj, document, node, rect,
                                    style, style.BorderImage())) {

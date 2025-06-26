@@ -1346,7 +1346,7 @@ class ComputedStyle final : public ComputedStyleBase {
            BorderBottomWidth();
   }
   bool HasBorderDecoration() const {
-    return HasBorder() || BorderImage().HasImage();
+    return HasBorder() || BorderImage().HasImage() || HasBorderShape();
   }
   bool HasBorderRadius() const {
     if (!BorderTopLeftRadius().Width().IsZero()) {
