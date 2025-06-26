@@ -4378,11 +4378,6 @@
       status: "stable",
     },
     {
-      // Killswitch M136.
-      name: "SelectionVisibilityAfterPaint",
-      status: "stable",
-    },
-    {
       // If enabled, the select element will not dispatch a mouseup event when
       // an option is selected using the keyboard.
       // This should ship in M135, and it can be removed after M137.

@@ -337,7 +337,7 @@ void CaretDisplayItemClient::RecordSelection(GraphicsContext& context,
   // For the caret, the start and end selection bounds are recorded as
   // the same edges, with the type marked as CENTER or HIDDEN.
   PaintedSelectionBound start = {type, paint_rect.origin(),
-                                 paint_rect.bottom_left(), false};
+                                 paint_rect.bottom_left()};
   PaintedSelectionBound end = start;
 
   // Get real world data to help debug crbug.com/1441243.

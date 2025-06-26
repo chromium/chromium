@@ -338,8 +338,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
           selection_for_bounds_recording->State(),
           selection_for_bounds_recording->PhysicalSelectionRect(),
           paint_info.context.GetPaintController(),
-          cursor_.Current().ResolvedDirection(), style.GetWritingMode(),
-          *cursor_.Current().GetLayoutObject());
+          cursor_.Current().ResolvedDirection(), style.GetWritingMode());
     }
   }
 

@@ -1505,17 +1505,15 @@ LayerPropertiesUpdater::PaintedSelectionBoundToLayerSelectionBound(
     const PaintedSelectionBound& bound) const {
   cc::LayerSelectionBound layer_bound;
   layer_bound.type = bound.type;
-  if (RuntimeEnabledFeatures::SelectionVisibilityAfterPaintEnabled()) {
-    // This is similar to ComputeViewportSelectionBound() but is a bit simpler.
-    // Use the end point expanded by 1 as the sample rect to check visibility.
-    gfx::Rect sample(bound.edge_end, gfx::Size());
-    sample.Outset(1);
-    // The bound is treated as visible if the sample rect mapped to layer is
-    // not empty.
-    layer_bound.hidden = chunk_to_layer_mapper_.MapVisualRect(sample).IsEmpty();
-  } else {
-    layer_bound.hidden = bound.hidden;
-  }
+
+  // This is similar to ComputeViewportSelectionBound() but is a bit simpler.
+  // Use the end point expanded by 1 as the sample rect to check visibility.
+  gfx::Rect sample(bound.edge_end, gfx::Size());
+  sample.Outset(1);
+  // The bound is treated as visible if the sample rect mapped to layer is
+  // not empty.
+  layer_bound.hidden = chunk_to_layer_mapper_.MapVisualRect(sample).IsEmpty();
+
   layer_bound.edge_start = MapSelectionBoundPoint(bound.edge_start);
   layer_bound.edge_end = MapSelectionBoundPoint(bound.edge_end);
   return layer_bound;
