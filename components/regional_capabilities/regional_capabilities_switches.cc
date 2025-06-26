@@ -30,4 +30,9 @@ BASE_FEATURE(kUseFinchPermanentCountryForFetchCountryId,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+COMPONENT_EXPORT(REGIONAL_CAPABILITIES_SWITCHES)
+BASE_FEATURE(kTaiyaki, "Taiyaki", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
 }  // namespace switches

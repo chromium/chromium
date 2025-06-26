@@ -55,6 +55,7 @@
 #import "components/payments/core/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/web_ui/features.h"
 #import "components/search/ntp_features.cc"
@@ -2723,6 +2724,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShareExtensionForMultiprofileName,
      flag_descriptions::kShareExtensionForMultiprofileDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kShareExtensionForMultiprofile)},
+    {"taiyaki", flag_descriptions::kTaiyakiName,
+     flag_descriptions::kTaiyakiDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(switches::kTaiyaki)},
     {"lens-camera-no-still-output-required",
      flag_descriptions::kLensCameraNoStillOutputRequiredName,
      flag_descriptions::kLensCameraNoStillOutputRequiredDescription,

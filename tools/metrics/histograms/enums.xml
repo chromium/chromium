@@ -14114,6 +14114,7 @@ from previous Chrome versions.
   <int value="44088203" label="ExpensiveBackgroundTimerThrottling:enabled"/>
   <int value="44240181" label="SharingQRCodeGenerator:disabled"/>
   <int value="45681371" label="CCTResizableSideSheet:enabled"/>
+  <int value="46201270" label="Taiyaki:disabled"/>
   <int value="46334141"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:enabled"/>
   <int value="48159177" label="reduced-referrer-granularity"/>
@@ -18698,6 +18699,7 @@ from previous Chrome versions.
       label="OmniboxTabSwitchSuggestionsDedicatedRow:disabled"/>
   <int value="1741958365"
       label="AutofillSuggestVirtualCardsOnIncompleteForm:disabled"/>
+  <int value="1742365859" label="Taiyaki:enabled"/>
   <int value="1742398600"
       label="OmniboxUIExperimentBoldUserTextOnSearchSuggestions:enabled"/>
   <int value="1743151811" label="CommerceLocalPDPDetection:disabled"/>

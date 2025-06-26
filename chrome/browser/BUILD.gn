@@ -2371,6 +2371,7 @@ static_library("browser") {
     "//components/query_parser",
     "//components/reading_list/core",
     "//components/reduce_accept_language/browser:browser",
+    "//components/regional_capabilities",
     "//components/renderer_context_menu",
     "//components/reporting/client:report_queue",
     "//components/reporting/client:report_queue_configuration",

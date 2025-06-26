@@ -42,6 +42,7 @@ source_set("flags") {
     "//components/payments/core",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",
+    "//components/regional_capabilities",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/ios/browser/web_ui:features",
     "//components/search",

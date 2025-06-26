@@ -9606,7 +9606,14 @@
     ],
     "expiry_milestone": 136
   },
- {
+  {
+    "name": "taiyaki",
+    "owners": [
+      "jlebel@google.com", "dgn@google.com", "chrome-regionalcapabilities@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "tear-off-web-app-tab-opens-web-app-window",
     "owners": [ "davidbienvenu@chromium.org", "dmurph@chromium.org" ],
     "expiry_milestone": 135

@@ -860,6 +860,9 @@ extern const char kTabGroupIndicatorDescription[];
 extern const char kTabGroupSyncName[];
 extern const char kTabGroupSyncDescription[];
 
+extern const char kTaiyakiName[];
+extern const char kTaiyakiDescription[];
+
 extern const char kTFLiteLanguageDetectionName[];
 extern const char kTFLiteLanguageDetectionDescription[];
 
