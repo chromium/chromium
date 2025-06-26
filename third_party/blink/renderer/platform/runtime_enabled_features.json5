@@ -2613,6 +2613,13 @@
       depends_on: ["HTMLInterestForAttribute"],
     },
     {
+      // Prevents the HTMLLinkElement processing model from being invoked when
+      // attributes are processed but their value doesn't change. See
+      // https://crbug.com/41436016.
+      name: "HTMLLinkElementAttributeValueChanges",
+      status: "stable",
+    },
+    {
       // A flag, just for local testing to make the
       // HTML parser yield more often and take longer to resume.
       // This helps when debugging flaky tests caused by parser

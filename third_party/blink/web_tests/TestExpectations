@@ -1652,10 +1652,6 @@ crbug.com/1361453 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-manual-003
 crbug.com/1361453 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-manual-004.html [ Failure ]
 crbug.com/1361453 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-manual-005.html [ Failure ]
 
-# Link event firing
-crbug.com/922618 external/wpt/html/semantics/document-metadata/the-link-element/link-multiple-error-events.html [ Timeout ]
-crbug.com/922618 external/wpt/html/semantics/document-metadata/the-link-element/link-multiple-load-events.html [ Timeout ]
-
 # crbug.com/1095379: These are flaky-slow, but are already present in SlowTests
 crbug.com/73609 http/tests/media/video-play-stall.html [ Failure Pass Timeout ]
 crbug.com/518987 http/tests/xmlhttprequest/navigation-abort-detaches-frame.html [ Pass Timeout ]

@@ -151,8 +151,10 @@ bool LinkStyle::SheetLoaded() {
 
 void LinkStyle::NotifyLoadedSheetAndAllCriticalSubresources(
     Node::LoadedSheetErrorStatus error_status) {
-  if (fired_load_)
+  if (fired_load_ &&
+      !RuntimeEnabledFeatures::HTMLLinkElementAttributeValueChangesEnabled()) {
     return;
+  }
   loaded_sheet_ = (error_status == Node::kNoErrorLoadingSubresource);
   if (owner_)
     owner_->ScheduleEvent();
