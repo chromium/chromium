@@ -41,12 +41,15 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/audio_service.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_captured_surface_controller.h"
+#include "media/audio/audio_features.h"
+#include "media/audio/audio_system.h"
 #include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/features.h"
@@ -136,6 +139,19 @@ struct TestConfigForFakeUI {
 struct TestConfigForMediaResolution {
   int constraint_width;
   int constraint_height;
+};
+
+struct TestConfigForRestrictOwnAudio {
+  TestConfigForRestrictOwnAudio(bool restrict_own_audio,
+                                bool suppress_local_audio_playback)
+      : restrict_own_audio(restrict_own_audio),
+        suppress_local_audio_playback(suppress_local_audio_playback) {}
+
+  explicit TestConfigForRestrictOwnAudio(std::tuple<bool, bool> input_tuple)
+      : TestConfigForRestrictOwnAudio(std::get<0>(input_tuple),
+                                      std::get<1>(input_tuple)) {}
+  bool restrict_own_audio;
+  bool suppress_local_audio_playback;
 };
 
 constexpr char kAppWindowTitle[] = "AppWindow Display Capture Test";
@@ -1150,7 +1166,7 @@ class GetDisplayMediaChangeSourceBrowserTest
     AdjustCommandLineForZeroCopyCapture(command_line);
 
     if (!user_shared_audio_) {
-      command_line->AppendSwitch(switches::kScreenCaptureAudioDefaultUnchecked);
+      command_line->AppendSwitch(switches::kTabCaptureAudioDefaultUnchecked);
     }
   }
 
@@ -2748,3 +2764,126 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestUserRejection,
       /*is_tab_capture=*/true,
       /*expected_error=*/"NotAllowedError: Permission denied by user");
 }
+
+// RestrictOwnAudio is only supported on macOS and Windows.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+class GetDisplayMediaRestrictOwnAudioTest
+    : public WebRtcTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  GetDisplayMediaRestrictOwnAudioTest() : test_config_(GetParam()) {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kAutoSelectScreenCaptureSource);
+    command_line->AppendSwitch(switches::kSystemAudioCaptureDefaultChecked);
+  }
+
+  void SetUpOnMainThread() override {
+    WebRtcTestBase::SetUpOnMainThread();
+    // Ensure that the bot has audio output devices since we know that the test
+    // will fail without it. A real audio track is required to verify that both
+    // the device ID and track label are correct; hence using a fake audio
+    // device will not work for this test.
+    if (!HasAudioOutputDevices()) {
+      GTEST_SKIP() << "Missing output devices: skipping test...";
+    }
+#if BUILDFLAG(IS_MAC)
+    // The API for system audio sharing is available from macOS 14.2. If macOS
+    // older then 14.2 is used, there will be no option in the UI for sharing
+    // system audio, and we will not have an audio track in the test.
+    int mac_os_version = base::mac::MacOSVersion();
+    int major_mac_os_version = mac_os_version / 1'00'00;
+    int minor_mac_os_version = (mac_os_version / 1'00) % 1'00;
+    if (major_mac_os_version <= 13 ||
+        (major_mac_os_version == 14 && minor_mac_os_version < 2)) {
+      GTEST_SKIP() << "macOS version do not support system audio sharing: "
+                      "skipping test...";
+    }
+#endif
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+#if BUILDFLAG(IS_MAC)
+    feature_list_.InitWithFeatures({media::kMacCatapLoopbackAudioForCast,
+                                    media::kMacCatapLoopbackAudioForScreenShare,
+                                    blink::features::kRestrictOwnAudio},
+                                   {media::kUseSCContentSharingPicker});
+#elif BUILDFLAG(IS_WIN)
+    feature_list_.InitWithFeatures({blink::features::kRestrictOwnAudio}, {});
+#endif
+
+    WebRtcTestBase::SetUpInProcessBrowserTestFixture();
+
+    DetectErrorsInJavaScript();
+  }
+
+  // Synchronously checks if the system/bot has audio output devices.
+  bool HasAudioOutputDevices() {
+    bool has_devices = false;
+    base::RunLoop run_loop;
+    auto audio_system = content::CreateAudioSystemForAudioService();
+    audio_system->HasOutputDevices(base::BindOnce(
+        [](base::OnceClosure finished_callback, bool* result, bool received) {
+          *result = received;
+          std::move(finished_callback).Run();
+        },
+        run_loop.QuitClosure(), &has_devices));
+    run_loop.Run();
+    return has_devices;
+  }
+
+  std::string GetConstraintsSystemAudio(bool suppress_local_audio_playback,
+                                        bool restrict_own_audio) const {
+    return base::StringPrintf(
+        "{video: true, audio: {suppressLocalAudioPlayback: %s, "
+        "restrictOwnAudio: %s}, preferCurrentTab: false, systemAudio: "
+        "\"include\"}",
+        base::ToString(suppress_local_audio_playback),
+        base::ToString(restrict_own_audio));
+  }
+
+  const TestConfigForRestrictOwnAudio test_config_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GetDisplayMediaRestrictOwnAudioTest,
+                         Combine(
+                             /*restrict_own_audio=*/Bool(),
+                             /*suppress_local_audio_playback=*/Bool()));
+
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaRestrictOwnAudioTest,
+                       ScreenCaptureWithRestrictOwnAudio) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
+  RunGetDisplayMedia(
+      tab,
+      GetConstraintsSystemAudio(test_config_.suppress_local_audio_playback,
+                                test_config_.restrict_own_audio),
+      /*is_fake_ui=*/false,
+      /*expect_success=*/true,
+      /*is_tab_capture=*/false);
+  EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(), "hasAudioTrack();"),
+            "true");
+  EXPECT_EQ(
+      content::EvalJs(tab->GetPrimaryMainFrame(), "getAudioTrackLabel();"),
+      "System Audio");
+
+  if (test_config_.restrict_own_audio) {
+    EXPECT_EQ(
+        content::EvalJs(tab->GetPrimaryMainFrame(), "getAudioDeviceId();"),
+        "loopbackWithoutChrome");
+  } else if (test_config_.suppress_local_audio_playback) {
+    EXPECT_EQ(
+        content::EvalJs(tab->GetPrimaryMainFrame(), "getAudioDeviceId();"),
+        "loopbackWithMute");
+  } else {
+    EXPECT_EQ(
+        content::EvalJs(tab->GetPrimaryMainFrame(), "getAudioDeviceId();"),
+        "loopback");
+  }
+}
+
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

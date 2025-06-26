@@ -781,7 +781,9 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
   // Failure will not prevent opening but the method must succeed to be able
   // to select raw input capture mode.
   WORD audio_engine_channels = 0;
-  hr = GetAudioEngineNumChannels(&audio_engine_channels);
+  if (!AudioDeviceDescription::IsLoopbackDevice(device_id_)) {
+    hr = GetAudioEngineNumChannels(&audio_engine_channels);
+  }
 
   // Attempt to enable communications category and raw capture mode on the
   // audio stream. Ignoring return value since the method logs its own error
