@@ -121,6 +121,33 @@ You will need to fix the new crate so that it's deemed safe in unsafe review,
 or move the other dependent crates out of `"safe"` as well by setting their
 group in `gnrt_config.toml`.
 
+## Troubleshooting
+
+### Incomplete sources or inputs listing
+
+`gnrt` enumerates all `.rs` files as crate sources, but may need help
+with discovering additional files consumed with something like
+[`include_str!`](https://doc.rust-lang.org/std/macro.include_str.html).
+So, if you see:
+
+```
+ERROR: file not in GN sources:
+../../third_party/rust/chromium_crates_io/vendor/some_crate/README.md
+```
+
+Then you can:
+
+* Add the missing files to
+  `third_party/rust/chromium_crates_io/gnrt_config.toml` - for example:
+
+  ```
+  [crate.some_crate]
+  extra_input_roots = ['../README.md']
+  ```
+
+* Re-generate `BUILD.gn` files by running:
+  `tools/crates/run_gnrt.py gen`
+
 # Updating existing third-party crates
 
 Third-party crates will get updated semi-automatically through the process
