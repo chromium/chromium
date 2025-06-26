@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/share_kit/model/share_kit_avatar_primitive.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -23,11 +24,17 @@ const CGFloat kContainerSubstractredStroke = 2;
 // Font size of `plusXLabel`.
 const CGFloat kPlusXlabelFontSize = 9;
 
-// horizontal inner margin in for the `_plusXLabelContainer`.
+// horizontal inner margin in for the `_plusXLabel`.
 const CGFloat kPlusXlabelContainerHorizontalInnerMargin = 6;
 
-// Alpha value of the `_plusXLabelContainer` background color.
-const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
+// Alpha value of the non-avatar view background color.
+const CGFloat kNonAvatarContainerBackgroundAlpha = 0.2;
+
+// Proportion of the "person waiting" icon compared to the avatar size.
+const CGFloat kPersonWaitingProportion = 0.55;
+
+// Vertical margin for the "person waiting" icon.
+const CGFloat kPersonWaitingVerticalMargin = 1.5;
 
 }  // namespace
 
@@ -43,8 +50,9 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
   UIColor* _facePileBackgroundColor;
   // Size of avatar faces, in points.
   CGFloat _avatarSize;
+  // Container for the non-avatar element.
+  UIView* _nonAvatarContainer;
   // Label to display the "+X" person in the group.
-  UIView* _plusXLabelContainer;
   UILabel* _plusXLabel;
 }
 
@@ -109,7 +117,7 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
 
     // Apply an overlapping mask to all avatar containers except if it's the
     // last displayed container.
-    if (index + 1 < totalNumber) {
+    if (index + 1 < totalNumber || totalNumber == 1) {
       [self applyOverlappingCircleMaskToContainer:avatarContainerView];
     }
 
@@ -124,6 +132,54 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
 
   // Update the `_emptyFacePileLabel` visibility.
   _emptyFacePileLabel.hidden = ![self isEmpty];
+
+  if (totalNumber == 1) {
+    // Create a container view to act as the border.
+    // This is needed to avoid anti-aliasing artifacts around the border itself.
+    UIView* containerView =
+        [self createCircularContainerWithSize:containerSize];
+    containerView.layer.cornerRadius = containerSize / 2.0;
+
+    [_facesStackView addArrangedSubview:containerView];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [containerView.widthAnchor constraintEqualToConstant:containerSize],
+      [containerView.heightAnchor constraintEqualToConstant:containerSize]
+    ]];
+
+    _nonAvatarContainer = [[UIView alloc] init];
+    _nonAvatarContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    _nonAvatarContainer.layer.cornerRadius = _avatarSize / 2.0;
+    _nonAvatarContainer.layer.masksToBounds = YES;
+    [NSLayoutConstraint activateConstraints:@[
+      [_nonAvatarContainer.widthAnchor constraintEqualToConstant:_avatarSize],
+      [_nonAvatarContainer.heightAnchor constraintEqualToConstant:_avatarSize]
+    ]];
+
+    [containerView addSubview:_nonAvatarContainer];
+    AddSameCenterConstraints(_nonAvatarContainer, containerView);
+
+    UIImage* peopleWaitingImage = DefaultSymbolWithPointSize(
+        kPersonClockFillSymbol, _avatarSize * kPersonWaitingProportion);
+    UIImageView* peopleWaitingImageView =
+        [[UIImageView alloc] initWithImage:peopleWaitingImage];
+    peopleWaitingImageView.contentMode = UIViewContentModeCenter;
+    peopleWaitingImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    peopleWaitingImageView.tintColor = UIColor.whiteColor;
+
+    [_nonAvatarContainer addSubview:peopleWaitingImageView];
+    [NSLayoutConstraint activateConstraints:@[
+      [peopleWaitingImageView.centerXAnchor
+          constraintEqualToAnchor:_nonAvatarContainer.centerXAnchor],
+      [peopleWaitingImageView.centerYAnchor
+          constraintEqualToAnchor:_nonAvatarContainer.centerYAnchor
+                         constant:-kPersonWaitingVerticalMargin],
+    ]];
+
+    [self updateColors];
+
+    return;
+  }
 
   // Display the `plusXLabel` if needed.
   NSInteger remainingCount = totalNumber - _avatars.count;
@@ -172,19 +228,19 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
   BOOL isDarkMode =
       self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
   if (_facePileBackgroundColor) {
-    _plusXLabelContainer.backgroundColor =
+    _nonAvatarContainer.backgroundColor =
         [isDarkMode ? [UIColor colorNamed:kSolidWhiteColor]
                     : [UIColor colorNamed:kSolidBlackColor]
-            colorWithAlphaComponent:kPlusXlabelContainerBackgroundAlpha];
+            colorWithAlphaComponent:kNonAvatarContainerBackgroundAlpha];
     _plusXLabel.textColor = [UIColor colorNamed:kSolidWhiteColor];
     return;
   }
   if (isDarkMode) {
-    _plusXLabelContainer.backgroundColor =
+    _nonAvatarContainer.backgroundColor =
         [UIColor colorNamed:kTertiaryBackgroundColor];
     _plusXLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   } else {
-    _plusXLabelContainer.backgroundColor = [UIColor colorNamed:kGrey100Color];
+    _nonAvatarContainer.backgroundColor = [UIColor colorNamed:kGrey100Color];
     _plusXLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
 }
@@ -260,10 +316,10 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
   AddSameCenterConstraints(plusXLabelContainer, plusXLabel);
 
   _plusXLabel = plusXLabel;
-  _plusXLabelContainer = plusXLabelContainer;
+  _nonAvatarContainer = plusXLabelContainer;
 
   [self updateColors];
-  return _plusXLabelContainer;
+  return _nonAvatarContainer;
 }
 
 // Adds and configures the `_emptyFacePileLabel`.
