@@ -77,7 +77,7 @@ class MockTouchToFillDelegateAndroidImpl
   MOCK_METHOD(bool, IsShowingTouchToFill, (), (override));
   MOCK_METHOD(bool,
               IntendsToShowTouchToFill,
-              (FormGlobalId, FieldGlobalId, const FormData&),
+              (FormGlobalId, FieldGlobalId),
               (override));
   MOCK_METHOD(TestBrowserAutofillManager*, GetManager, (), (override));
   MOCK_METHOD(bool, ShouldShowScanCreditCard, (), (override));

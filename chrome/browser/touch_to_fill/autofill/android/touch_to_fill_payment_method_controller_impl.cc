@@ -49,8 +49,7 @@ TouchToFillPaymentMethodControllerImpl::TouchToFillPaymentMethodControllerImpl(
                                  FieldGlobalId field,
                                  const FormData& form_data) {
             return GetDelegate(manager) &&
-                   GetDelegate(manager)->IntendsToShowTouchToFill(form, field,
-                                                                  form_data);
+                   GetDelegate(manager)->IntendsToShowTouchToFill(form, field);
           }),
           base::Seconds(1)) {
   driver_factory_observation_.Observe(

@@ -867,7 +867,7 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
   MOCK_METHOD(BrowserAutofillManager*, GetManager, (), (override));
   MOCK_METHOD(bool,
               IntendsToShowTouchToFill,
-              (FormGlobalId, FieldGlobalId, const FormData&),
+              (FormGlobalId, FieldGlobalId),
               (override));
   MOCK_METHOD(bool,
               TryToShowTouchToFill,
