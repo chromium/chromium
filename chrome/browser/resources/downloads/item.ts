@@ -1122,8 +1122,13 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     if (!this.data || !this.data.url) {
       return;
     }
-    navigator.clipboard.writeText(this.data.url.url);
-    this.displayCopyToast_(e);
+    let copied = true;
+    navigator.clipboard.writeText(this.data.url.url)
+        .catch(error => {
+          console.error('Unable to copy to clipboard:', error);
+          copied = false;
+        })
+        .finally(() => this.displayCopyToast_(e, copied));
   }
 
   protected onMoreActionsClick_() {
@@ -1226,19 +1231,24 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     this.getMoreActionsMenu().close();
   }
 
-  private displayCopyToast_(e: Event) {
+  private displayCopyToast_(e: Event, copied: boolean) {
     if (!this.data || !this.data.url) {
       return;
     }
-
-    const pieces = loadTimeData.getSubstitutedStringPieces(
-                       loadTimeData.getString('toastCopiedDownloadLink'),
-                       this.data.url.url) as unknown as
-        Array<{collapsible: boolean, value: string, arg: string}>;
-    pieces.forEach(p => {
-      p.collapsible = !!p.arg;
-    });
-    getToastManager().showForStringPieces(pieces, /*hideSlotted=*/ true);
+    if (copied) {
+      const pieces = loadTimeData.getSubstitutedStringPieces(
+                         loadTimeData.getString('toastCopiedDownloadLink'),
+                         this.data.url.url) as unknown as
+          Array<{collapsible: boolean, value: string, arg: string}>;
+      pieces.forEach(p => {
+        p.collapsible = !!p.arg;
+      });
+      getToastManager().showForStringPieces(pieces, /*hideSlotted=*/ true);
+    } else {
+      getToastManager().show(
+          loadTimeData.getString('toastCopyDownloadLinkFailed'),
+          /*hideSlotted=*/ true);
+    }
 
     e.stopPropagation();
     e.preventDefault();

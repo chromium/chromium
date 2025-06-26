@@ -2351,6 +2351,10 @@ are declared in tools/grit/grit_args.gni.
                desc="On the chrome://downloads page, the text for the toast shown when the user copies a download's url.">
         <ph name="DOWNLOAD_URL">$1<ex>https://example.com</ex></ph> copied to clipboard
       </message>
+      <message name="IDS_DOWNLOADS_TOAST_COPY_DOWNLOAD_LINK_FAILED"
+               desc="On the chrome://downloads page, the text for the toast shown when the user tried to copy a download's url but the operation failed.">
+        Failed to copy link
+      </message>
 
       <if expr="is_chromeos">
         <message name="IDS_PROMPT_BLOCKED_INSECURE_DOWNLOAD_TITLE"

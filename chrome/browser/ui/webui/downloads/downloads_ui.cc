@@ -131,6 +131,8 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
        IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY_STILL_ON_DEVICE},
       {"toastDeletedFromHistory", IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY},
       {"toastCopiedDownloadLink", IDS_DOWNLOADS_TOAST_COPIED_DOWNLOAD_LINK},
+      {"toastCopyDownloadLinkFailed",
+       IDS_DOWNLOADS_TOAST_COPY_DOWNLOAD_LINK_FAILED},
       {"undo", IDS_DOWNLOAD_UNDO},
       {"controlKeepDangerous", IDS_DOWNLOAD_KEEP_DANGEROUS_FILE},
       {"controlKeepSuspicious", IDS_DOWNLOAD_KEEP_SUSPICIOUS_FILE},
