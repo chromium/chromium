@@ -19,6 +19,11 @@
 #define EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE 0x3209
 #endif /* EGL_ANGLE_platform_angle */
 
+#ifndef EGL_KHR_platform_gbm
+#define EGL_KHR_platform_gbm 1
+#define EGL_PLATFORM_GBM_KHR 0x31D7
+#endif /* EGL_KHR_platform_gbm */
+
 #ifndef EGL_ANGLE_platform_angle_vulkan
 #define EGL_ANGLE_platform_angle_vulkan 1
 #define EGL_PLATFORM_VULKAN_DISPLAY_MODE_HEADLESS_ANGLE 0x34A5
@@ -52,6 +57,11 @@ void WaylandGLEGLUtility::GetAdditionalEGLAttributes(
         EGL_PLATFORM_VULKAN_DISPLAY_MODE_HEADLESS_ANGLE);
     return;
   }
+
+#if defined(WAYLAND_GBM)
+  display_attributes->push_back(EGL_PLATFORM_ANGLE_NATIVE_PLATFORM_TYPE_ANGLE);
+  display_attributes->push_back(EGL_PLATFORM_GBM_KHR);
+#endif  // defined(WAYLAND_GBM)
 
   if (std::find(display_attributes->begin(), display_attributes->end(),
                 EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE) !=

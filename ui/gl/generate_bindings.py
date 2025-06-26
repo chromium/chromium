@@ -2623,7 +2623,9 @@ EGL_CLIENT_EXTENSIONS_EXTRA = [
   'EGL_ANGLE_platform_angle_null',
   'EGL_ANGLE_platform_angle_opengl',
   'EGL_ANGLE_platform_angle_vulkan',
+  'EGL_EXT_platform_base',
   'EGL_EXT_platform_device',
+  'EGL_KHR_platform_gbm',
   'EGL_MESA_platform_surfaceless',
 ]
 
