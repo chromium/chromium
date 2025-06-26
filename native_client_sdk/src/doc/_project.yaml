@@ -1,4 +1,0 @@
-name: "Native Client"
-description: "Native Client documentation for Pepper ${version}"
-home_url: /native-client/${folder}/
-content_license: cc3-apache2

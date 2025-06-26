@@ -1,3 +1,0 @@
-WHERE DID STYLE.CSS GO?
-
-The stylesheet for the demos was moved from static/style.css to css/out/site.css. This is so that the stylesheet path matches the one used on developer.chrome.com.  This was done so that demo pages can be duplicated on that site without being edited. This also allows sharing of stylesheet rules between the two sites, which over time will bring the look of the sites closer together.
