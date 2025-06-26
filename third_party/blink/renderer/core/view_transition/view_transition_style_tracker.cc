@@ -348,17 +348,6 @@ int ComputeMaxCaptureSize(Document& document,
   return std::min(max_bounds_based_on_viewport, max_texture_size_in_layout);
 }
 
-gfx::Transform ConvertFromTopLeftToCenter(
-    const gfx::Transform& transform_from_top_left,
-    const PhysicalSize& box_size) {
-  gfx::Transform transform_from_center;
-  transform_from_center.Translate(-box_size.width / 2, -box_size.height / 2);
-  transform_from_center.PreConcat(transform_from_top_left);
-  transform_from_center.Translate(box_size.width / 2, box_size.height / 2);
-
-  return transform_from_center;
-}
-
 float DevicePixelRatioFromDocument(Document& document) {
   // Prefer to use the effective zoom. This should be the case in most
   // situations, unless the transition is being started before first layout
@@ -1635,9 +1624,6 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
   gfx::Vector2d snapshot_to_fixed_offset = -GetFixedToSnapshotRootOffset();
   snapshot_matrix_in_layout_space.PostTranslate(snapshot_to_fixed_offset);
 
-  auto snapshot_matrix_in_css_space = snapshot_matrix_in_layout_space;
-  snapshot_matrix_in_css_space.Zoom(1.0 / device_pixel_ratio_);
-
   PhysicalOffset offset_in_css_space;
   // In this mode, the max extents rect (the capture rect we guess here) and
   // the border box are in the enclosing layer coordinate space. That's a more
@@ -1681,9 +1667,6 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
     border_box_size_in_css_space.Scale(device_to_css_pixels_ratio);
   }
 
-  snapshot_matrix_in_css_space = ConvertFromTopLeftToCenter(
-      snapshot_matrix_in_css_space, border_box_size_in_css_space);
-
   if (auto* box = DynamicTo<LayoutBoxModelObject>(layout_object)) {
     visual_overflow_rect_in_layout_space = ComputeVisualOverflowRect(*box);
   }
@@ -1694,6 +1677,10 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
   captured_rect_in_layout_space = ComputeCaptureRect(
       max_capture_size, visual_overflow_rect_in_layout_space,
       snapshot_matrix_in_layout_space, *snapshot_root_layout_size_at_capture_);
+
+  auto snapshot_matrix_in_css_space = snapshot_matrix_in_layout_space;
+  snapshot_matrix_in_css_space.Zoom(1.0 / device_pixel_ratio_);
+
   container_properties = {
       PhysicalRect(offset_in_css_space, border_box_size_in_css_space),
       snapshot_matrix_in_css_space};
@@ -2201,29 +2188,29 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
         continue;
       }
 
-      gfx::Transform old_parent_inverse_transform;
-      gfx::Transform new_parent_inverse_transform;
+      gfx::Transform old_parent_transform;
+      gfx::Transform new_parent_transform;
       if (element_data->containing_group_name && HasLiveNewContent()) {
         CHECK(element_data_map_.Contains(element_data->containing_group_name));
         const auto& containing_group_data =
             element_data_map_.at(element_data->containing_group_name);
 
-        auto compute_parent_inverse = [](gfx::Transform matrix,
-                                         const gfx::Vector2d& border_offset) {
+        auto compute_parent_transform = [](gfx::Transform matrix,
+                                           const gfx::Vector2d& border_offset) {
           matrix.Translate(border_offset);
-          return matrix.InverseOrIdentity();
+          return matrix;
         };
 
-        old_parent_inverse_transform = compute_parent_inverse(
+        old_parent_transform = compute_parent_transform(
             containing_group_data->cached_container_properties.snapshot_matrix,
             containing_group_data->border_offset);
 
         if (containing_group_data->container_properties) {
           const auto& new_container_properties =
               *containing_group_data->container_properties;
-          new_parent_inverse_transform =
-              compute_parent_inverse(new_container_properties.snapshot_matrix,
-                                     containing_group_data->border_offset);
+          new_parent_transform =
+              compute_parent_transform(new_container_properties.snapshot_matrix,
+                                       containing_group_data->border_offset);
         }
       }
 
@@ -2231,7 +2218,7 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
       // https://drafts.csswg.org/css-view-transitions-1/#style-transition-pseudo-elements-algorithm.
       builder.AddContainerStyles(
           view_transition_name, *element_data->container_properties,
-          element_data->captured_css_properties, new_parent_inverse_transform);
+          element_data->captured_css_properties, new_parent_transform);
 
       builder.AddGroupChildrenStyles(
           view_transition_name, element_data->group_children_css_properties);
@@ -2252,7 +2239,7 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
         builder.AddAnimations(type, view_transition_name,
                               element_data->cached_container_properties,
                               element_data->cached_animated_css_properties,
-                              old_parent_inverse_transform);
+                              old_parent_transform);
       }
     }
   }
@@ -2476,6 +2463,28 @@ void ViewTransitionStyleTracker::InvalidateInternalPseudoStyle() {
   if (HasInternalPseudoElements()) {
     InvalidatePseudoStyle();
   }
+}
+
+gfx::Transform ViewTransitionStyleTracker::ContainerProperties::
+    ComputeRelativeTransformWithCenterOrigin(
+        const gfx::Transform& parent_transform) const {
+  // Start with the parent inverse.
+  gfx::Transform top_left_transform = parent_transform.InverseOrIdentity();
+
+  // Add the current snapshot matrix transform.
+  top_left_transform.PreConcat(snapshot_matrix);
+
+  // Convert the transform from top-left to center space.
+  gfx::Transform center_transform;
+  center_transform.Translate(
+      -border_box_rect_in_enclosing_layer_css_space.size.width / 2,
+      -border_box_rect_in_enclosing_layer_css_space.size.height / 2);
+  center_transform.PreConcat(top_left_transform);
+  center_transform.Translate(
+      border_box_rect_in_enclosing_layer_css_space.size.width / 2,
+      border_box_rect_in_enclosing_layer_css_space.size.height / 2);
+
+  return center_transform;
 }
 
 }  // namespace blink

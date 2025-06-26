@@ -75,11 +75,16 @@ class ViewTransitionStyleTracker
 
     // Transforms a point from local space into the snapshot viewport. For
     // details of the snapshot viewport, see README.md.
+    // This transform is in CSS space relative to the top-left corner of the
+    // box.
     gfx::Transform snapshot_matrix;
 
     PhysicalSize GroupSize() const {
       return border_box_rect_in_enclosing_layer_css_space.size;
     }
+
+    gfx::Transform ComputeRelativeTransformWithCenterOrigin(
+        const gfx::Transform& parent_transform) const;
   };
 
   explicit ViewTransitionStyleTracker(
