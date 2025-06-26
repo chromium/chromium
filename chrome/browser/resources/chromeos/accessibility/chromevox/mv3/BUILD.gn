@@ -78,7 +78,6 @@ ts_modules = [
   "background/editing/rich_editable_text.ts",
   "background/editing/text_edit_handler.ts",
   "background/editing/typing_echo.ts",
-  "background/es6_loader.ts",
   "background/event_source.ts",
   "background/event/base_automation_handler.ts",
   "background/event/desktop_automation_handler.ts",
