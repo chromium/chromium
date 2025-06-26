@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/transform_utils.h"
 
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"

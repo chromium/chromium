@@ -9,6 +9,7 @@
 
 #include "base/memory/shared_memory_mapper.h"
 #include "base/memory/structured_shared_memory.h"
+#include "base/types/optional_util.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/tracing_support.h"
 #include "components/performance_manager/scenario_api/performance_scenario_memory.h"
@@ -53,6 +54,16 @@ PerformanceScenarioData::PerformanceScenarioData(PerformanceScenarioData&&) =
 
 PerformanceScenarioData& PerformanceScenarioData::operator=(
     PerformanceScenarioData&&) = default;
+
+const perfetto::NamedTrack* PerformanceScenarioData::loading_tracing_track()
+    const {
+  return base::OptionalToPtr(tracing_tracks_->loading_track);
+}
+
+const perfetto::NamedTrack* PerformanceScenarioData::input_tracing_track()
+    const {
+  return base::OptionalToPtr(tracing_tracks_->input_track);
+}
 
 void PerformanceScenarioData::EnsureTracingTracks(
     const ProcessNode* process_node) {

@@ -10,7 +10,6 @@
 
 #include "base/memory/structured_shared_memory.h"
 #include "base/observer_list.h"
-#include "base/types/optional_util.h"
 #include "components/performance_manager/graph/node_inline_data.h"
 #include "components/performance_manager/scenario_api/performance_scenario_memory_forward.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
@@ -85,12 +84,8 @@ class PerformanceScenarioData final
 
   // Returns tracing tracks to log trace events when updating scenarios in the
   // shared memory region, or nullptr if EnsureTracingTracks() wasn't called.
-  const perfetto::NamedTrack* loading_tracing_track() const {
-    return base::OptionalToPtr(tracing_tracks_->loading_track);
-  }
-  const perfetto::NamedTrack* input_tracing_track() const {
-    return base::OptionalToPtr(tracing_tracks_->input_track);
-  }
+  const perfetto::NamedTrack* loading_tracing_track() const;
+  const perfetto::NamedTrack* input_tracing_track() const;
 
   // Creates tracing tracks under the ProcessTrack for `process_node`. The
   // tracks will log trace events when updating scenarios in the shared memory

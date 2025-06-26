@@ -33,12 +33,12 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
-#include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
@@ -296,9 +296,7 @@ class CORE_EXPORT SerializedScriptValue
 
   StreamArray& GetStreams() { return streams_; }
 
-  const v8::SharedValueConveyor* MaybeGetSharedValueConveyor() const {
-    return base::OptionalToPtr(shared_value_conveyor_);
-  }
+  const v8::SharedValueConveyor* MaybeGetSharedValueConveyor() const;
 
   bool IsLockedToAgentCluster() const;
 

@@ -1,16 +1,17 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_ADAPTATION_LOADER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_ADAPTATION_LOADER_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
-#include "base/types/optional_util.h"
 #include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
@@ -38,9 +39,7 @@ class OnDeviceModelAdaptationMetadata {
 
   bool operator==(const OnDeviceModelAdaptationMetadata& other) const;
 
-  const on_device_model::AdaptationAssetPaths* asset_paths() const {
-    return base::OptionalToPtr(asset_paths_);
-  }
+  const on_device_model::AdaptationAssetPaths* asset_paths() const;
 
   scoped_refptr<const OnDeviceModelFeatureAdapter> adapter() const {
     return adapter_;

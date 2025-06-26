@@ -646,6 +646,10 @@ void PaintShader::SetFlagsAndFallback(uint32_t flags,
   fallback_color_ = fallback_color;
 }
 
+const PaintRecord* PaintShader::paint_record() const {
+  return base::OptionalToPtr(record_);
+}
+
 bool PaintShader::IsOpaque() const {
   switch (shader_type_) {
     case Type::kEmpty:

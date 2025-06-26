@@ -38,6 +38,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected_macros.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/public/web/web_serialized_script_value_version.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -655,6 +656,11 @@ void SerializedScriptValue::RegisterMemoryAllocatedWithCurrentScriptContext() {
   int64_t diff = static_cast<int64_t>(DataLengthInBytes());
   DCHECK_GE(diff, 0);
   external_memory_accounter_.Increase(isolate_.get(), diff);
+}
+
+const v8::SharedValueConveyor*
+SerializedScriptValue::MaybeGetSharedValueConveyor() const {
+  return base::OptionalToPtr(shared_value_conveyor_);
 }
 
 bool SerializedScriptValue::IsLockedToAgentCluster() const {

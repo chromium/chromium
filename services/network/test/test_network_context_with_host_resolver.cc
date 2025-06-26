@@ -4,6 +4,11 @@
 
 #include "services/network/test/test_network_context_with_host_resolver.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/types/optional_util.h"
+
 namespace network {
 
 TestNetworkContextWithHostResolver::TestNetworkContextWithHostResolver(

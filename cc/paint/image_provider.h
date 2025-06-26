@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/types/optional_util.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/paint_export.h"
