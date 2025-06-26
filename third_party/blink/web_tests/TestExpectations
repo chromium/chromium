@@ -6062,10 +6062,6 @@ crbug.com/1281792 external/wpt/event-timing/min-duration-threshold.html [ Failur
 # Sheriff 2021-12-22
 crbug.com/1283295 [ Mac ] fast/text-autosizing/hackernews-comments.html [ Failure Pass ]
 
-# Temporarily disabled to land https://crrev.com/c/6667890
-crbug.com/407751705 http/tests/devtools/persistence/persistence-move-breakpoints-on-reload.js [ Failure Pass ]
-crbug.com/407751705 http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Failure Pass ]
-
 # These virtual suites enable text autosizing and should pass.
 crbug.com/340389272 virtual/text-size-adjust/wpt_internal/css/css-size-adjust/* [ Pass ]
 crbug.com/340389272 virtual/text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/* [ Pass ]

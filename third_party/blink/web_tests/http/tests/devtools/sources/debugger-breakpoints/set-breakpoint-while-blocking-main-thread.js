@@ -5,14 +5,15 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
-import * as SourcesComponents from 'devtools/panels/sources/components/components.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
 import * as RenderCoordinator from 'devtools/ui/components/render_coordinator/render_coordinator.js';
 
 async function dumpBreakpointSidebarPane() {
-  var pane = SourcesComponents.BreakpointsView.BreakpointsView.instance();
-  await SourcesComponents.BreakpointsView.BreakpointsSidebarController.instance().update();
+  var pane = Sources.BreakpointsView.BreakpointsView.instance();
+  await Sources.BreakpointsView.BreakpointsSidebarController.instance().update();
   await RenderCoordinator.done();
-  const groupHeader = pane.shadowRoot?.querySelectorAll('[role="group"]');
+  await pane.updateComplete;
+  const groupHeader = pane.contentElement.querySelectorAll('[role="group"]');
   for (let i = 0; i < groupHeader?.length; ++i) {
     const title = groupHeader[i].querySelector('.group-header-title')?.textContent;
     const line = groupHeader[i].querySelector('.breakpoint-item .location')?.textContent;

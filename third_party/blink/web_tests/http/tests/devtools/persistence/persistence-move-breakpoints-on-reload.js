@@ -6,7 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
-import * as SourcesComponents from 'devtools/panels/sources/components/components.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
 import * as Breakpoints from 'devtools/models/breakpoints/breakpoints.js';
 import * as RenderCoordinator from 'devtools/ui/components/render_coordinator/render_coordinator.js';
 
@@ -46,9 +46,9 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
       async function onSourceFrame(sourceFrame) {
         await SourcesTestRunner.setBreakpoint(sourceFrame, 0, '', true);
         // Explicitly request an update to reflect the up-to-date breakpoint list.
-        await SourcesComponents.BreakpointsView.BreakpointsSidebarController.instance().update();
+        await Sources.BreakpointsView.BreakpointsSidebarController.instance().update();
         await RenderCoordinator.done();
-        dumpBreakpointSidebarPane();
+        await dumpBreakpointSidebarPane();
         next();
       }
     },
@@ -56,9 +56,9 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     async function reloadPageAndDumpBreakpoints(next) {
       const onBreakpointSet = async () => {
         // Explicitly request an update to reflect the up-to-date breakpoint list.
-        await SourcesComponents.BreakpointsView.BreakpointsSidebarController.instance().update();
+        await Sources.BreakpointsView.BreakpointsSidebarController.instance().update();
         await RenderCoordinator.done();
-        dumpBreakpointSidebarPane();
+        await dumpBreakpointSidebarPane();
         next();
       }
       // Wait until the move from network => filesystem happens via
@@ -71,10 +71,11 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     }
   ]);
 
-  function dumpBreakpointSidebarPane() {
-    var pane = SourcesComponents.BreakpointsView.BreakpointsView.instance();
-    const location = pane.shadowRoot?.querySelector('.breakpoint-item .location')?.textContent;
-    const groupHeader = pane.shadowRoot?.querySelector('.group-header-title');
+  async function dumpBreakpointSidebarPane() {
+    var pane = Sources.BreakpointsView.BreakpointsView.instance();
+    await pane.updateComplete;
+    const location = pane.contentElement.querySelector('.breakpoint-item .location')?.textContent;
+    const groupHeader = pane.contentElement.querySelector('.group-header-title');
     TestRunner.addResult(`${groupHeader?.title}:${location}`);
   }
 })();
