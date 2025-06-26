@@ -558,6 +558,28 @@ if (is_linux || is_chromeos) {
   ]
 }
 
+if (is_mac) {
+  DEFAULT_MODULE_DEPS += [
+    "//buildtools/third_party/libc++:__wctype",
+    "//buildtools/third_party/libc++:_assert",
+    "//buildtools/third_party/libc++:_ctype",
+    "//buildtools/third_party/libc++:_errno",
+    "//buildtools/third_party/libc++:_inttypes",
+    "//buildtools/third_party/libc++:_limits",
+    "//buildtools/third_party/libc++:_locale",
+    "//buildtools/third_party/libc++:_setjmp",
+    "//buildtools/third_party/libc++:_stdio",
+    "//buildtools/third_party/libc++:_stdlib",
+    "//buildtools/third_party/libc++:_string",
+    "//buildtools/third_party/libc++:_sys_select",
+    "//buildtools/third_party/libc++:_time",
+    "//buildtools/third_party/libc++:_wchar",
+    "//buildtools/third_party/libc++:_wctype",
+    "//buildtools/third_party/libc++:ptrauth",
+    "//buildtools/third_party/libc++:sys_types",
+  ]
+}
+
 # A helper for forwarding testonly and visibility.
 # Forwarding "*" does not include variables from outer scopes (to avoid copying
 # all globals into each template invocation), so it will not pick up
@@ -598,11 +620,15 @@ foreach(_target_type,
         _use_libcxx_modules = invoker.use_libcxx_modules
       }
 
-      if (filter_include(configs,
-                         [
-                           "//build/config/compiler:exceptions",
-                           "//build/config/compiler:rtti",
-                         ]) != []) {
+      if (filter_include(
+              configs,
+              [
+                # TODO(https://github.com/llvm/llvm-project/pull/145654):
+                # Remove mac_no_default_new_delete_symbols after clang roll.
+                ":mac_no_default_new_delete_symbols",
+                "//build/config/compiler:exceptions",
+                "//build/config/compiler:rtti",
+              ]) != []) {
         # Exceptions and RTTI flags are incompatible with libc++ modules build.
         # So disable modules build for such targets.
         _use_libcxx_modules = false
@@ -714,11 +740,15 @@ foreach(_target_type,
         _use_libcxx_modules = invoker.use_libcxx_modules
       }
 
-      if (filter_include(configs,
-                         [
-                           "//build/config/compiler:exceptions",
-                           "//build/config/compiler:rtti",
-                         ]) != []) {
+      if (filter_include(
+              configs,
+              [
+                # TODO(https://github.com/llvm/llvm-project/pull/145654):
+                # Remove mac_no_default_new_delete_symbols after clang roll.
+                ":mac_no_default_new_delete_symbols",
+                "//build/config/compiler:exceptions",
+                "//build/config/compiler:rtti",
+              ]) != []) {
         # Exceptions and RTTI flags are incompatible with libc++ modules build.
         # So disable modules build for such targets.
         _use_libcxx_modules = false

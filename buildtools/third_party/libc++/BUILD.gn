@@ -9,6 +9,10 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 import("//buildtools/third_party/libc++/libcxx_headers.gni")
 
+if (is_mac) {
+  import("//build/config/mac/mac_sdk.gni")
+}
+
 # Used by libc++ and libc++abi.
 # See //build/config/c++:runtime_library for the config used by users of libc++.
 config("config") {
@@ -79,6 +83,100 @@ if (use_libcxx_modules) {
     }
   }
 
+  if (is_mac) {
+    template("DarwinBasic_modules") {
+      modulemap(target_name) {
+        forward_variables_from(invoker, [ "public_deps" ])
+        modulemap = "$mac_sdk_path/usr/include/DarwinBasic.modulemap"
+      }
+    }
+
+    DarwinBasic_modules("sys_types") {
+    }
+
+    template("DarwinFoundation_modules") {
+      modulemap(target_name) {
+        forward_variables_from(invoker, [ "public_deps" ])
+        modulemap = "$mac_sdk_path/usr/include/DarwinFoundation.modulemap"
+      }
+    }
+
+    DarwinFoundation_modules("DarwinFoundation") {
+    }
+
+    DarwinFoundation_modules("_sys_select") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    template("c_standard_library_modules") {
+      modulemap(target_name) {
+        forward_variables_from(invoker, [ "public_deps" ])
+        modulemap = "$mac_sdk_path/usr/include/c_standard_library.modulemap"
+      }
+    }
+
+    c_standard_library_modules("__wctype") {
+      public_deps = [ ":_ctype" ]
+    }
+
+    c_standard_library_modules("_assert") {
+    }
+
+    c_standard_library_modules("_ctype") {
+    }
+
+    c_standard_library_modules("_errno") {
+    }
+
+    c_standard_library_modules("_inttypes") {
+      public_deps = [ ":_stdint" ]
+    }
+
+    c_standard_library_modules("_limits") {
+    }
+
+    c_standard_library_modules("_locale") {
+    }
+
+    c_standard_library_modules("_setjmp") {
+    }
+
+    c_standard_library_modules("_signal") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    c_standard_library_modules("_stdint") {
+    }
+
+    c_standard_library_modules("_stdio") {
+    }
+
+    c_standard_library_modules("_stdlib") {
+      public_deps = [
+        ":_signal",
+        ":_stdint",
+      ]
+    }
+
+    c_standard_library_modules("_string") {
+    }
+
+    c_standard_library_modules("_time") {
+    }
+
+    c_standard_library_modules("_wchar") {
+      public_deps = [
+        ":__wctype",
+        ":_stdio",
+        ":_time",
+      ]
+    }
+
+    c_standard_library_modules("_wctype") {
+      public_deps = [ ":__wctype" ]
+    }
+  }
+
   template("sysroot_modules") {
     modulemap(target_name) {
       forward_variables_from(invoker, [ "public_deps" ])
@@ -132,6 +230,9 @@ if (use_libcxx_modules) {
         ":_Builtin_stddef",
       ]
     }
+    if (is_mac) {
+      public_deps = [ ":_Builtin_stdint" ]
+    }
   }
 
   builtin_modules("_Builtin_inttypes") {
@@ -165,8 +266,13 @@ if (use_libcxx_modules) {
   }
 
   builtin_modules("_Builtin_unwind") {
-    if (is_linux) {
+    if (is_linux || is_mac) {
       public_deps = [ ":_Builtin_stdint" ]
+    }
+  }
+
+  if (is_mac) {
+    builtin_modules("ptrauth") {
     }
   }
 
@@ -238,7 +344,7 @@ if (use_libcxx_modules) {
   }
 
   libcxx_modules("std_math_h") {
-    if (is_linux) {
+    if (is_linux || is_mac) {
       public_deps = [ ":std_core" ]
     }
   }
@@ -259,7 +365,7 @@ if (use_libcxx_modules) {
   }
 
   libcxx_modules("std_uchar_h") {
-    if (is_linux) {
+    if (is_linux || is_mac) {
       public_deps = [ ":std_private_mbstate_t" ]
     }
   }
