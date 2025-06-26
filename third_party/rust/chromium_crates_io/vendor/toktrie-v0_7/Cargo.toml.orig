@@ -1,6 +1,6 @@
 [package]
 name = "toktrie"
-version = "0.7.29"
+version = "0.7.30"
 edition = "2021"
 license = "MIT"
 description = "LLM Token Trie library"

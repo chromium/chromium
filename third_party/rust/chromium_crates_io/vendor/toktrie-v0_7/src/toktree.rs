@@ -115,11 +115,21 @@ pub const INVALID_TOKEN: TokenId = 0xffff_ffff;
 
 const NO_TOKEN: u32 = 0xffffff;
 
+// PARENT_BITS=10 allows for up to 1024 parents, which is likely enough for tokens up to 2k bytes
+// this leaves 32-10 = 22 bits for subtree size, which allows for up to ~2M tokens
+// (4M trie nodes)
+// GLM4 tokenizer has a token with 1024 spaces - it requires PARENT_BITS >= 9
+// Note that because of the ~2M limit, we have ~3 bits left free in 'bits' field
+const PARENT_BITS: u32 = 10;
+const PARENT_MASK: u32 = (1 << PARENT_BITS) - 1;
+
 impl TrieNode {
-    fn new(byte: u8, token_id: u32, num_parents: u8) -> TrieNode {
+    fn new(byte: u8, token_id: u32, num_parents: usize) -> TrieNode {
+        assert!(num_parents > 0);
+        assert!(num_parents <= (1 << PARENT_BITS) as usize);
         TrieNode {
             bits: (token_id << 8) | byte as u32,
-            bits2: num_parents as u32,
+            bits2: (num_parents - 1) as u32,
         }
     }
 
@@ -130,12 +140,17 @@ impl TrieNode {
 
     #[inline(always)]
     pub fn subtree_size(&self) -> usize {
-        (self.bits2 >> 8) as usize
+        (self.bits2 >> PARENT_BITS) as usize
+    }
+
+    fn set_subtree_size(&mut self, size: usize) {
+        assert!(size < (1 << (32 - PARENT_BITS)));
+        self.bits2 = (self.bits2 & PARENT_MASK) | ((size as u32) << PARENT_BITS);
     }
 
     #[inline(always)]
     pub fn num_parents(&self) -> usize {
-        (self.bits2 & 0xff) as usize
+        ((self.bits2 & PARENT_MASK) + 1) as usize
     }
 
     #[inline(always)]
@@ -1090,20 +1105,23 @@ impl TrieHash {
             // }
         }
     }
-    fn serialize(&mut self, data: &mut Vec<TrieNode>, num_parents: u8) {
+
+    fn serialize(&mut self, data: &mut Vec<TrieNode>, num_parents: usize) {
         let idx = data.len();
         let mut num_ch = self.children.len();
-        data.push(TrieNode::new(self.byte, self.token_id, num_parents));
+        data.push(TrieNode::new(
+            self.byte,
+            self.token_id,
+            if num_parents == 0 { 1 } else { num_parents },
+        ));
         //self.children.reverse();
         self.children.sort_by_key(|e| e.byte);
         for entry in &mut self.children {
             num_ch -= 1;
-            assert!(num_parents < 0xff);
             entry.serialize(data, if num_ch == 0 { num_parents + 1 } else { 1 });
         }
         let subtree_size = data.len() - idx;
-        assert!(subtree_size < 0x100_0000);
-        data[idx].bits2 |= (subtree_size as u32) << 8;
+        data[idx].set_subtree_size(subtree_size);
     }
 }
 

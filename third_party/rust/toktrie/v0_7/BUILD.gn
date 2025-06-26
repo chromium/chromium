@@ -29,7 +29,7 @@ cargo_crate("lib") {
   edition = "2021"
   cargo_pkg_name = "toktrie"
   cargo_pkg_description = "LLM Token Trie library"
-  cargo_pkg_version = "0.7.29"
+  cargo_pkg_version = "0.7.30"
 
   allow_unsafe = false
 
