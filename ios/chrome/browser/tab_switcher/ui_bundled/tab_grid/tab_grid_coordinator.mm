@@ -745,9 +745,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       determineTabGridTransitionTypeWithAnimationEnabled:animationEnabled];
 
   Browser* browser = isIncognito ? self.incognitoBrowser : self.regularBrowser;
-  BOOL isNTP = IsUrlNtp(
-      browser->GetWebStateList()->GetActiveWebState()->GetVisibleURL());
-  BOOL isRegularBrowserNTP = !isIncognito && isNTP;
+  web::WebState* activeWebState =
+      browser->GetWebStateList()->GetActiveWebState();
+  BOOL isRegularBrowserNTP = !isIncognito && activeWebState &&
+                             IsUrlNtp(activeWebState->GetVisibleURL());
 
   self.transitionHandler = [[TabGridTransitionHandler alloc]
           initWithTransitionType:transitionType
