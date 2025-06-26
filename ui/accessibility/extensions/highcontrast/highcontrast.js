@@ -19,57 +19,57 @@ var filterMap = {
 var svgContent = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"><defs><filter x="0" y="0" width="99999" height="99999" id="hc_extension_off"><feComponentTransfer><feFuncR type="table" tableValues="0 1"/><feFuncG type="table" tableValues="0 1"/><feFuncB type="table" tableValues="0 1"/></feComponentTransfer></filter><filter x="0" y="0" width="99999" height="99999" id="hc_extension_highcontrast"><feComponentTransfer><feFuncR type="gamma" exponent="3.0"/><feFuncG type="gamma" exponent="3.0"/><feFuncB type="gamma" exponent="3.0"/></feComponentTransfer></filter><filter x="0" y="0" width="99999" height="99999" id="hc_extension_highcontrast_back"><feComponentTransfer><feFuncR type="gamma" exponent="0.33"/><feFuncG type="gamma" exponent="0.33"/><feFuncB type="gamma" exponent="0.33"/></feComponentTransfer></filter><filter x="0" y="0" width="99999" height="99999" id="hc_extension_grayscale"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="gamma" exponent="3"/><feFuncG type="gamma" exponent="3"/><feFuncB type="gamma" exponent="3"/></feComponentTransfer></filter><filter x="0" y="0" width="99999" height="99999" id="hc_extension_grayscale_back"><feComponentTransfer><feFuncR type="gamma" exponent="0.33"/><feFuncG type="gamma" exponent="0.33"/><feFuncB type="gamma" exponent="0.33"/></feComponentTransfer></filter><filter x="0" y="0" width="99999" height="99999" id="hc_extension_invert"><feComponentTransfer><feFuncR type="gamma" amplitude="-1" exponent="3" offset="1"/><feFuncG type="gamma" amplitude="-1" exponent="3" offset="1"/><feFuncB type="gamma" amplitude="-1" exponent="3" offset="1"/></feComponentTransfer></filter><filter x="0" y="0" width="99999" height="99999" id="hc_extension_invert_back"><feComponentTransfer><feFuncR type="table" tableValues="1 0"/><feFuncG type="table" tableValues="1 0"/><feFuncB type="table" tableValues="1 0"/></feComponentTransfer><feComponentTransfer><feFuncR type="gamma" exponent="1.7"/><feFuncG type="gamma" exponent="1.7"/><feFuncB type="gamma" exponent="1.7"/></feComponentTransfer></filter><filter x="0" y="0" width="99999" height="99999" id="hc_extension_invert_grayscale"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="gamma" amplitude="-1" exponent="3" offset="1"/><feFuncG type="gamma" amplitude="-1" exponent="3" offset="1"/><feFuncB type="gamma" amplitude="-1" exponent="3" offset="1"/></feComponentTransfer></filter><filter x="0" y="0" width="99999" height="99999" id="hc_extension_yellow_on_black"><feComponentTransfer><feFuncR type="gamma" amplitude="-1" exponent="3" offset="1"/><feFuncG type="gamma" amplitude="-1" exponent="3" offset="1"/><feFuncB type="gamma" amplitude="-1" exponent="3" offset="1"/></feComponentTransfer><feColorMatrix type="matrix" values="0.3 0.5 0.2 0 0 0.3 0.5 0.2 0 0 0 0 0 0 0 0 0 0 1 0"/></filter><filter x="0" y="0" width="99999" height="99999" id="hc_extension_yellow_on_black_back"><feComponentTransfer><feFuncR type="table" tableValues="1 0"/><feFuncG type="table" tableValues="1 0"/><feFuncB type="table" tableValues="1 0"/></feComponentTransfer><feComponentTransfer><feFuncR type="gamma" exponent="0.33"/><feFuncG type="gamma" exponent="0.33"/><feFuncB type="gamma" exponent="0.33"/></feComponentTransfer></filter></defs></svg>';
 
 var cssTemplate = `
-  html[hc="a0"] {
+  body[hc="a0"] {
     -webkit-filter: url("#hc_extension_off");
   }
-  html[hcx="0"] img[src*="jpg"], html[hcx="0"] img[src*="jpeg"],
-  html[hcx="0"] svg image, html[hcx="0"] img.rg_i, html[hcx="0"] embed,
-  html[hcx="0"] object, html[hcx="0"] video {
+  body[hcx="0"] img[src*="jpg"], body[hcx="0"] img[src*="jpeg"],
+  body[hcx="0"] svg image, body[hcx="0"] img.rg_i, body[hcx="0"] embed,
+  body[hcx="0"] object, body[hcx="0"] video {
     -webkit-filter: url("#hc_extension_off");
   }
 
-  html[hc="a1"] {
+  body[hc="a1"] {
     -webkit-filter: url("#hc_extension_highcontrast");
   }
-  html[hcx="1"] img[src*="jpg"], html[hcx="1"] img[src*="jpeg"],
-  html[hcx="1"] img.rg_i, html[hcx="1"] svg image, html[hcx="1"] embed,
-  html[hcx="1"] object, html[hcx="1"] video {
+  body[hcx="1"] img[src*="jpg"], body[hcx="1"] img[src*="jpeg"],
+  body[hcx="1"] img.rg_i, body[hcx="1"] svg image, body[hcx="1"] embed,
+  body[hcx="1"] object, body[hcx="1"] video {
     -webkit-filter: url("#hc_extension_highcontrast_back");
   }
 
-  html[hc="a2"] {
+  body[hc="a2"] {
     -webkit-filter: url("#hc_extension_grayscale");
   }
-  html[hcx="2"] img[src*="jpg"], html[hcx="2"] img[src*="jpeg"],
-  html[hcx="2"] img.rg_i, html[hcx="2"] svg image, html[hcx="2"] embed,
-  html[hcx="2"] object, html[hcx="2"] video {
+  body[hcx="2"] img[src*="jpg"], body[hcx="2"] img[src*="jpeg"],
+  body[hcx="2"] img.rg_i, body[hcx="2"] svg image, body[hcx="2"] embed,
+  body[hcx="2"] object, body[hcx="2"] video {
     -webkit-filter: url("#hc_extension_grayscale_back");
   }
 
-  html[hc="a3"] {
+  body[hc="a3"] {
     -webkit-filter: url("#hc_extension_invert");
   }
-  html[hcx="3"] img[src*="jpg"], html[hcx="3"] img[src*="jpeg"],
-  html[hcx="3"] img.rg_i, html[hcx="3"] svg image, html[hcx="3"] embed,
-  html[hcx="3"] object, html[hcx="3"] video {
+  body[hcx="3"] img[src*="jpg"], body[hcx="3"] img[src*="jpeg"],
+  body[hcx="3"] img.rg_i, body[hcx="3"] svg image, body[hcx="3"] embed,
+  body[hcx="3"] object, body[hcx="3"] video {
     -webkit-filter: url("#hc_extension_invert_back");
   }
 
-  html[hc="a4"] {
+  body[hc="a4"] {
     -webkit-filter: url("#hc_extension_invert_grayscale");
   }
-  html[hcx="4"] img[src*="jpg"], html[hcx="4"] img[src*="jpeg"],
-  html[hcx="4"] img.rg_i, html[hcx="4"] svg image, html[hcx="4"] embed,
-  html[hcx="4"] object, html[hcx="4"] video {
+  body[hcx="4"] img[src*="jpg"], body[hcx="4"] img[src*="jpeg"],
+  body[hcx="4"] img.rg_i, body[hcx="4"] svg image, body[hcx="4"] embed,
+  body[hcx="4"] object, body[hcx="4"] video {
     -webkit-filter: url("#hc_extension_invert_back");
   }
 
-  html[hc="a5"] {
+  body[hc="a5"] {
     -webkit-filter: url("#hc_extension_yellow_on_black");
   }
-  html[hcx="5"] img[src*="jpg"], html[hcx="5"] img[src*="jpeg"],
-  html[hcx="5"] img.rg_i, html[hcx="5"] svg image, html[hcx="5"] embed,
-  html[hcx="5"] object, html[hcx="5"] video {
+  body[hcx="5"] img[src*="jpg"], body[hcx="5"] img[src*="jpeg"],
+  body[hcx="5"] img.rg_i, body[hcx="5"] svg image, body[hcx="5"] embed,
+  body[hcx="5"] object, body[hcx="5"] video {
     -webkit-filter: url("#hc_extension_yellow_on_black_back");
   }`;
 
@@ -141,28 +141,28 @@ function addOrUpdateExtraElements() {
  * for this page).
  */
 function update() {
-  var html = document.documentElement;
+  var body = document.body;
   if (enabled) {
     if (!document.body) {
       window.setTimeout(update, 100);
       return;
     }
     addOrUpdateExtraElements();
-    if (html.getAttribute('hc') != mode + scheme)
-      html.setAttribute('hc', mode + scheme);
-    if (html.getAttribute('hcx') != scheme)
-      html.setAttribute('hcx', scheme);
+    if (body.getAttribute('hc') != mode + scheme)
+      body.setAttribute('hc', mode + scheme);
+    if (body.getAttribute('hcx') != scheme)
+      body.setAttribute('hcx', scheme);
 
     if (window == window.top) {
       window.scrollBy(0, 1);
       window.scrollBy(0, -1);
     }
   } else {
-    html.setAttribute('hc', mode + '0');
-    html.setAttribute('hcx', '0');
+    body.setAttribute('hc', mode + '0');
+    body.setAttribute('hcx', '0');
     window.setTimeout(function() {
-      html.removeAttribute('hc');
-      html.removeAttribute('hcx');
+      body.removeAttribute('hc');
+      body.removeAttribute('hcx');
       var bg = document.getElementById('hc_extension_bkgnd');
       if (bg)
         bg.style.display = 'none';

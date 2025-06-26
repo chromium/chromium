@@ -107,7 +107,8 @@ function init() {
   $('toggle').addEventListener('click', onToggle, false);
   $('make_default').addEventListener('click', onMakeDefault, false);
   $('forget').addEventListener('click', onForget, false);
-  if (navigator.appVersion.indexOf('Mac') != -1) {
+  if ((navigator.userAgentData && navigator.userAgentData.platform === 'macOS') ||
+    navigator.platform.toUpperCase().indexOf('MAC') !== -1) {
     key1 = '&#x2318;+Shift+F11';
     key2 = '&#x2318;+Shift+F12';
   } else {

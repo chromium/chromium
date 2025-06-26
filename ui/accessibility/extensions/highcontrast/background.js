@@ -56,4 +56,4 @@ async function init() {
   }
 }
 
-self.addEventListener('install', init);
+init();
