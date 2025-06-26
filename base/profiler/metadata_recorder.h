@@ -194,8 +194,8 @@ class BASE_EXPORT MetadataRecorder {
    public:
     // Acquires an exclusive read lock on the metadata recorder which is held
     // until the object is destroyed.
-    explicit MetadataProvider(MetadataRecorder* metadata_recorder,
-                              PlatformThreadId thread_id)
+    MetadataProvider(MetadataRecorder* metadata_recorder,
+                     PlatformThreadId thread_id)
         EXCLUSIVE_LOCK_FUNCTION(metadata_recorder_->read_lock_);
     ~MetadataProvider() UNLOCK_FUNCTION();
     MetadataProvider(const MetadataProvider&) = delete;

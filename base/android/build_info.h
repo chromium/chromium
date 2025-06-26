@@ -160,7 +160,7 @@ class BASE_EXPORT BuildInfo {
  private:
   friend struct BuildInfoSingletonTraits;
 
-  explicit BuildInfo();
+  BuildInfo();
 
   const std::string brand_;
   const std::string device_;

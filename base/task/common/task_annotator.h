@@ -160,10 +160,10 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::ScopedSetIpcHash {
 
 class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::LongTaskTracker {
  public:
-  explicit LongTaskTracker(const TickClock* tick_clock,
-                           PendingTask& pending_task,
-                           TaskAnnotator* task_annotator,
-                           TimeTicks task_start_time);
+  LongTaskTracker(const TickClock* tick_clock,
+                  PendingTask& pending_task,
+                  TaskAnnotator* task_annotator,
+                  TimeTicks task_start_time);
 
   LongTaskTracker(const LongTaskTracker&) = delete;
 

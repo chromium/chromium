@@ -319,7 +319,7 @@ class BASE_EXPORT Pickle {
   // The protected constructor. Note that this creates a Pickle that does not
   // own its own data.
   enum UnownedData { kUnownedData };
-  explicit Pickle(UnownedData, span<const uint8_t> data);
+  Pickle(UnownedData, span<const uint8_t> data);
 
   // Returns size of the header, which can have default value, set by user or
   // calculated by passed raw data.

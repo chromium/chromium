@@ -73,7 +73,7 @@ class BASE_EXPORT ScopedLoggingSettings {
 // must be destroyed in reverse creation order.
 class BASE_EXPORT ScopedVmoduleSwitches {
  public:
-  explicit ScopedVmoduleSwitches();
+  ScopedVmoduleSwitches();
   // Specify which modules and levels to enable. This uses the same syntax as
   // the commandline flag, e.g. "file=1,dir/other_file=2".
   void InitWithSwitches(const std::string& vmodule_switch);

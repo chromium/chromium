@@ -206,7 +206,7 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
   struct RegisteredAsyncObserver;
 
-  explicit TraceLog();
+  TraceLog();
   ~TraceLog() override;
 
   void SetDisabledWhileLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);

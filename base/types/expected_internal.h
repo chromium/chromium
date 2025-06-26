@@ -28,7 +28,7 @@ template <typename E>
 class unexpected;
 
 struct unexpect_t {
-  explicit unexpect_t() = default;
+  unexpect_t() = default;
 };
 
 // in-place construction of unexpected values
@@ -172,9 +172,9 @@ class ExpectedImpl : public ExpectedBase {
       : state_(State::kValue), storage_(kValTag, std::forward<Args>(args)...) {}
 
   template <typename U, typename... Args>
-  constexpr explicit ExpectedImpl(decltype(kValTag),
-                                  std::initializer_list<U> il,
-                                  Args&&... args) noexcept
+  constexpr ExpectedImpl(decltype(kValTag),
+                         std::initializer_list<U> il,
+                         Args&&... args) noexcept
       : state_(State::kValue),
         storage_(kValTag, il, std::forward<Args>(args)...) {}
 
@@ -183,9 +183,9 @@ class ExpectedImpl : public ExpectedBase {
       : state_(State::kError), storage_(kErrTag, std::forward<Args>(args)...) {}
 
   template <typename U, typename... Args>
-  constexpr explicit ExpectedImpl(decltype(kErrTag),
-                                  std::initializer_list<U> il,
-                                  Args&&... args) noexcept
+  constexpr ExpectedImpl(decltype(kErrTag),
+                         std::initializer_list<U> il,
+                         Args&&... args) noexcept
       : state_(State::kError),
         storage_(kErrTag, il, std::forward<Args>(args)...) {}
 
@@ -348,18 +348,18 @@ class ExpectedImpl : public ExpectedBase {
     constexpr explicit Storage(decltype(kValTag), Args&&... args)
         : value(std::forward<Args>(args)...) {}
     template <typename U, typename... Args>
-    constexpr explicit Storage(decltype(kValTag),
-                               std::initializer_list<U> il,
-                               Args&&... args)
+    constexpr Storage(decltype(kValTag),
+                      std::initializer_list<U> il,
+                      Args&&... args)
         : value(il, std::forward<Args>(args)...) {}
 
     template <typename... Args>
     constexpr explicit Storage(decltype(kErrTag), Args&&... args)
         : error(std::forward<Args>(args)...) {}
     template <typename U, typename... Args>
-    constexpr explicit Storage(decltype(kErrTag),
-                               std::initializer_list<U> il,
-                               Args&&... args)
+    constexpr Storage(decltype(kErrTag),
+                      std::initializer_list<U> il,
+                      Args&&... args)
         : error(il, std::forward<Args>(args)...) {}
 
     T value;

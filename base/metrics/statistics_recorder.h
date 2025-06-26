@@ -94,12 +94,12 @@ class BASE_EXPORT StatisticsRecorder {
    public:
     // Constructor. Called with the desired histogram name and the callback to
     // be invoked when a sample is recorded.
-    explicit ScopedHistogramSampleObserver(std::string_view histogram_name,
-                                           OnSampleCallback callback);
-    explicit ScopedHistogramSampleObserver(std::string_view histogram_name,
-                                           OnSampleWithEventCallback callback);
-    explicit ScopedHistogramSampleObserver(std::string_view histogram_name,
-                                           base::RepeatingClosure callback);
+    ScopedHistogramSampleObserver(std::string_view histogram_name,
+                                  OnSampleCallback callback);
+    ScopedHistogramSampleObserver(std::string_view histogram_name,
+                                  OnSampleWithEventCallback callback);
+    ScopedHistogramSampleObserver(std::string_view histogram_name,
+                                  base::RepeatingClosure callback);
     ~ScopedHistogramSampleObserver();
 
    private:

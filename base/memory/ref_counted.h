@@ -413,7 +413,7 @@ class RefCountedThreadSafe : public subtle::RefCountedThreadSafeBase {
  public:
   using RefCountPreferenceTag = subtle::StartRefCountFromZeroTag;
 
-  explicit RefCountedThreadSafe()
+  RefCountedThreadSafe()
       : subtle::RefCountedThreadSafeBase(subtle::GetRefCountPreference<T>()) {}
 
   RefCountedThreadSafe(const RefCountedThreadSafe&) = delete;

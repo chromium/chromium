@@ -26,7 +26,7 @@ namespace base {
 // flat_tree in case the underlying container is already sorted and has no
 // duplicate elements.
 struct sorted_unique_t {
-  constexpr explicit sorted_unique_t() = default;
+  constexpr sorted_unique_t() = default;
 };
 inline constexpr sorted_unique_t sorted_unique;
 

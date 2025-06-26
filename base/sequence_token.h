@@ -104,9 +104,9 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] TaskScope {
   // returned by `CurrentTaskIsThreadBound()` within the scope.
   // `is_running_synchronously` is true iff this is instantiated for a task run
   // synchronously by `RunOrPostTask()`.
-  explicit TaskScope(SequenceToken sequence_token,
-                     bool is_thread_bound,
-                     bool is_running_synchronously = false);
+  TaskScope(SequenceToken sequence_token,
+            bool is_thread_bound,
+            bool is_running_synchronously = false);
   TaskScope(const TaskScope&) = delete;
   TaskScope& operator=(const TaskScope&) = delete;
   ~TaskScope();

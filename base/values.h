@@ -264,8 +264,8 @@ class BASE_EXPORT GSL_OWNER DictValue {
   // results in a faster initial sort operation. Takes move iterators to avoid
   // having to clone the input.
   template <class IteratorType>
-  explicit DictValue(std::move_iterator<IteratorType> first,
-                     std::move_iterator<IteratorType> last);
+  DictValue(std::move_iterator<IteratorType> first,
+            std::move_iterator<IteratorType> last);
 
   DictValue(PassKey<internal::JSONParser>,
             flat_map<std::string, std::unique_ptr<Value>>);

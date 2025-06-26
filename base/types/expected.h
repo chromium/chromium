@@ -146,9 +146,9 @@ class ok final {
       : value_(std::forward<Args>(args)...) {}
 
   template <typename U, typename... Args>
-  constexpr explicit ok(std::in_place_t,
-                        std::initializer_list<U> il,
-                        Args&&... args) noexcept
+  constexpr ok(std::in_place_t,
+               std::initializer_list<U> il,
+               Args&&... args) noexcept
       : value_(il, std::forward<Args>(args)...) {}
 
   constexpr T& value() & noexcept { return value_; }
@@ -175,7 +175,7 @@ template <typename T>
   requires(std::is_void_v<T>)
 class ok<T> final {
  public:
-  constexpr explicit ok() noexcept = default;
+  constexpr ok() noexcept = default;
 
   std::string ToString() const { return "ok()"; }
 };
@@ -212,9 +212,9 @@ class unexpected final {
       : error_(std::forward<Args>(args)...) {}
 
   template <typename U, typename... Args>
-  constexpr explicit unexpected(std::in_place_t,
-                                std::initializer_list<U> il,
-                                Args&&... args) noexcept
+  constexpr unexpected(std::in_place_t,
+                       std::initializer_list<U> il,
+                       Args&&... args) noexcept
       : error_(il, std::forward<Args>(args)...) {}
 
   // [expected.un.obs] Observers
@@ -346,9 +346,9 @@ class [[nodiscard, gsl::Owner]] expected final {
       : impl_(kValTag, std::forward<Args>(args)...) {}
 
   template <typename U, typename... Args>
-  constexpr explicit expected(std::in_place_t,
-                              std::initializer_list<U> il,
-                              Args&&... args) noexcept
+  constexpr expected(std::in_place_t,
+                     std::initializer_list<U> il,
+                     Args&&... args) noexcept
       : impl_(kValTag, il, std::forward<Args>(args)...) {}
 
   template <typename... Args>
@@ -356,9 +356,9 @@ class [[nodiscard, gsl::Owner]] expected final {
       : impl_(kErrTag, std::forward<Args>(args)...) {}
 
   template <typename U, typename... Args>
-  constexpr explicit expected(unexpect_t,
-                              std::initializer_list<U> il,
-                              Args&&... args) noexcept
+  constexpr expected(unexpect_t,
+                     std::initializer_list<U> il,
+                     Args&&... args) noexcept
       : impl_(kErrTag, il, std::forward<Args>(args)...) {}
 
   // [expected.object.assign], assignment
@@ -707,9 +707,9 @@ class [[nodiscard]] expected<T, E> final {
       : impl_(kErrTag, std::forward<Args>(args)...) {}
 
   template <typename U, typename... Args>
-  constexpr explicit expected(unexpect_t,
-                              std::initializer_list<U> il,
-                              Args&&... args) noexcept
+  constexpr expected(unexpect_t,
+                     std::initializer_list<U> il,
+                     Args&&... args) noexcept
       : impl_(kErrTag, il, std::forward<Args>(args)...) {}
 
   // [expected.void.assign], assignment

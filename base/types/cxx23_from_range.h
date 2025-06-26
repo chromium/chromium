@@ -13,7 +13,7 @@ namespace base {
 //
 // https://en.cppreference.com/w/cpp/ranges/from_range
 struct from_range_t {
-  explicit from_range_t() = default;
+  from_range_t() = default;
 };
 
 // The instantiation of `from_range_t`, to be passed to constructors taking the

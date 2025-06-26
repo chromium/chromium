@@ -302,7 +302,7 @@ inline constexpr bool kCanSafelyConvertToByteSpan<std::pair<T, U>> =
 // Type tag to provide to byte span conversion functions to bypass
 // `std::has_unique_object_representations_v<>` check.
 struct allow_nonunique_obj_t {
-  explicit allow_nonunique_obj_t() = default;
+  allow_nonunique_obj_t() = default;
 };
 inline constexpr allow_nonunique_obj_t allow_nonunique_obj{};
 
@@ -454,8 +454,7 @@ class GSL_POINTER span {
     requires(internal::CompatibleIter<element_type, It>)
   // PRECONDITIONS: `first` must point to the first of at least `count`
   // contiguous valid elements.
-  UNSAFE_BUFFER_USAGE constexpr explicit span(It first,
-                                              StrictNumeric<size_type> count)
+  UNSAFE_BUFFER_USAGE constexpr span(It first, StrictNumeric<size_type> count)
       : data_(to_address(first)) {
     CHECK(size_type{count} == extent);
 
@@ -471,7 +470,7 @@ class GSL_POINTER span {
              !std::is_convertible_v<End, size_t>)
   // PRECONDITIONS: `first` and `last` must be for the same allocation and all
   // elements in the range [first, last) must be valid.
-  UNSAFE_BUFFER_USAGE constexpr explicit span(It first, End last)
+  UNSAFE_BUFFER_USAGE constexpr span(It first, End last)
       // SAFETY: The caller must guarantee that `first` and `last` point into
       // the same allocation. In this case, the extent will be the number of
       // elements between the iterators and thus a valid size for the pointer to

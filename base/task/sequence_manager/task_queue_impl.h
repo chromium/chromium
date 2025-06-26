@@ -317,9 +317,9 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
 
   class TaskRunner final : public SingleThreadTaskRunner {
    public:
-    explicit TaskRunner(scoped_refptr<GuardedTaskPoster> task_poster,
-                        scoped_refptr<AssociatedThreadId> associated_thread,
-                        TaskType task_type);
+    TaskRunner(scoped_refptr<GuardedTaskPoster> task_poster,
+               scoped_refptr<AssociatedThreadId> associated_thread,
+               TaskType task_type);
 
     bool PostDelayedTask(const Location& location,
                          OnceClosure callback,

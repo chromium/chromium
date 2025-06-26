@@ -119,9 +119,9 @@ class ValueConverter {
 template <typename StructType, typename FieldType>
 class FieldConverter : public FieldConverterBase<StructType> {
  public:
-  explicit FieldConverter(const std::string& path,
-                          FieldType StructType::*field,
-                          ValueConverter<FieldType>* converter)
+  FieldConverter(const std::string& path,
+                 FieldType StructType::* field,
+                 ValueConverter<FieldType>* converter)
       : FieldConverterBase<StructType>(path),
         field_pointer_(field),
         value_converter_(converter) {}

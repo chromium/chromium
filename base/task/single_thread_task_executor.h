@@ -52,8 +52,8 @@ class BASE_EXPORT SingleThreadTaskExecutor {
   void SetWorkBatchSize(int work_batch_size);
 
  private:
-  explicit SingleThreadTaskExecutor(MessagePumpType type,
-                                    std::unique_ptr<MessagePump> pump);
+  SingleThreadTaskExecutor(MessagePumpType type,
+                           std::unique_ptr<MessagePump> pump);
 
   std::unique_ptr<sequence_manager::SequenceManager> sequence_manager_;
   sequence_manager::TaskQueue::Handle default_task_queue_;

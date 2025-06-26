@@ -69,7 +69,7 @@ enum class SampleMetadataScope {
 class BASE_EXPORT SampleMetadata {
  public:
   // Set the metadata value associated with |name| to be recorded for |scope|.
-  explicit SampleMetadata(std::string_view name, SampleMetadataScope scope);
+  SampleMetadata(std::string_view name, SampleMetadataScope scope);
 
   SampleMetadata(const SampleMetadata&) = default;
   ~SampleMetadata() = default;

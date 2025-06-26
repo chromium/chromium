@@ -15,7 +15,7 @@ namespace base::android {
 // with uniqueness key checking.
 class BASE_EXPORT SharedPreferencesManager {
  public:
-  explicit SharedPreferencesManager(const JavaRef<jobject>& jobj, JNIEnv* env);
+  SharedPreferencesManager(const JavaRef<jobject>& jobj, JNIEnv* env);
   SharedPreferencesManager(const SharedPreferencesManager&);
   SharedPreferencesManager& operator=(const SharedPreferencesManager&) = delete;
   ~SharedPreferencesManager();

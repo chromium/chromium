@@ -55,8 +55,7 @@ bool StringSearch(std::u16string find_this,
 // argument, and precomputation for searching is done only at that time.
 class BASE_I18N_EXPORT GSL_POINTER FixedPatternStringSearch {
  public:
-  explicit FixedPatternStringSearch(std::u16string find_this,
-                                    bool case_sensitive);
+  FixedPatternStringSearch(std::u16string find_this, bool case_sensitive);
   ~FixedPatternStringSearch();
 
   // Returns true if |in_this| contains |find_this|. If |match_index| or

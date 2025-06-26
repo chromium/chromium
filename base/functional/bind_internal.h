@@ -1143,9 +1143,9 @@ struct BindState final : BindStateBase {
 
   template <typename ForwardFunctor, typename... ForwardBoundArgs>
     requires CancellationTraits::is_cancellable
-  explicit BindState(BindStateBase::InvokeFuncStorage invoke_func,
-                     ForwardFunctor&& functor,
-                     ForwardBoundArgs&&... bound_args)
+  BindState(BindStateBase::InvokeFuncStorage invoke_func,
+            ForwardFunctor&& functor,
+            ForwardBoundArgs&&... bound_args)
       : BindStateBase(invoke_func, &Destroy, &QueryCancellationTraits),
         functor_(std::forward<ForwardFunctor>(functor)),
         bound_args_(std::forward<ForwardBoundArgs>(bound_args)...) {
@@ -1154,9 +1154,9 @@ struct BindState final : BindStateBase {
 
   template <typename ForwardFunctor, typename... ForwardBoundArgs>
     requires(!CancellationTraits::is_cancellable)
-  explicit BindState(BindStateBase::InvokeFuncStorage invoke_func,
-                     ForwardFunctor&& functor,
-                     ForwardBoundArgs&&... bound_args)
+  BindState(BindStateBase::InvokeFuncStorage invoke_func,
+            ForwardFunctor&& functor,
+            ForwardBoundArgs&&... bound_args)
       : BindStateBase(invoke_func, &Destroy),
         functor_(std::forward<ForwardFunctor>(functor)),
         bound_args_(std::forward<ForwardBoundArgs>(bound_args)...) {
