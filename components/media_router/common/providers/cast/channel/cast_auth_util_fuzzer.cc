@@ -42,25 +42,20 @@ static bool InitializeOnce() {
   return true;
 }
 
-void UpdateTime(TimeBoundCase c, const base::Time* time, int direction) {
-  auto& mtime = const_cast<base::Time&>(*time);
+base::Time UpdateTime(TimeBoundCase c, int direction) {
   switch (c) {
     case TimeBoundCase::VALID:
       // Create bound that include the current date.
-      mtime = base::Time::Now() + base::Days(direction);
-      break;
+      return base::Time::Now() + base::Days(direction);
     case TimeBoundCase::INVALID:
       // Create a bound that excludes the current date.
-      mtime = base::Time::Now() + base::Days(-direction);
-      break;
+      return base::Time::Now() + base::Days(-direction);
     case TimeBoundCase::OOB:
       // Create a bound so far in the past/future it's not valid.
-      mtime = base::Time::Now() + base::Days(direction * 10000);
-      break;
+      return base::Time::Now() + base::Days(direction * 10000);
     case TimeBoundCase::MISSING:
       // Remove any existing bound.
-      mtime = base::Time();
-      break;
+      return base::Time();
     default:
       NOTREACHED();
   }
@@ -84,8 +79,8 @@ DEFINE_PROTO_FUZZER(CastAuthUtilInputs& input_union) {
   // because validation failures are ignored.
   scoped_refptr<net::X509Certificate> peer_cert =
       net::X509Certificate::CreateFromBytes(kCertData);
-  UpdateTime(input.start_case(), &peer_cert->valid_start(), -1);
-  UpdateTime(input.expiry_case(), &peer_cert->valid_expiry(), +1);
+  peer_cert->set_valid_start_for_testing(UpdateTime(input.start_case(), -1));
+  peer_cert->set_valid_expiry_for_testing(UpdateTime(input.expiry_case(), +1));
 
   AuthContext context = AuthContext::CreateForTest(input.nonce());
 

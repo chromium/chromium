@@ -172,8 +172,15 @@ class NET_EXPORT X509Certificate
   // the |valid_expiry| date.
   // If we were unable to parse either date from the certificate (or if the cert
   // lacks either date), the date will be null (i.e., is_null() will be true).
-  const base::Time& valid_start() const { return parsed_.valid_start_; }
-  const base::Time& valid_expiry() const { return parsed_.valid_expiry_; }
+  base::Time valid_start() const { return parsed_.valid_start_; }
+  base::Time valid_expiry() const { return parsed_.valid_expiry_; }
+
+  void set_valid_start_for_testing(base::Time time) {
+    const_cast<ParsedFields&>(parsed_).valid_start_ = time;
+  }
+  void set_valid_expiry_for_testing(base::Time time) {
+    const_cast<ParsedFields&>(parsed_).valid_expiry_ = time;
+  }
 
   // Gets the subjectAltName extension field from the certificate, if any.
   // For future extension; currently this only returns those name types that
