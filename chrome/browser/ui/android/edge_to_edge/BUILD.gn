@@ -11,7 +11,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeBottomChinSceneLayer.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeController.java",
-    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeFieldTrial.java",
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeFieldTrialImpl.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeUtils.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/NavigationBarColorProvider.java",
   ]

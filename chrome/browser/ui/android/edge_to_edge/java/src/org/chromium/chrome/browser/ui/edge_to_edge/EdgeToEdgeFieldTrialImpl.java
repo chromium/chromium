@@ -14,6 +14,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeFieldTrial;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -38,37 +39,37 @@ import java.util.Map;
  */
 @UiThread
 @NullMarked
-public final class EdgeToEdgeFieldTrial {
+public final class EdgeToEdgeFieldTrialImpl implements EdgeToEdgeFieldTrial {
     private static final String TAG = "E2E_fieldtrial";
     private static final int DEFAULT_MIN_VERSION = 30; // VERSION_CODES.R;
 
     /** Instance for EdgeToEdgeBottomChin. */
-    private static @Nullable EdgeToEdgeFieldTrial sBottomChinOverrides;
+    private static @Nullable EdgeToEdgeFieldTrialImpl sBottomChinOverrides;
 
     /** Instance for EdgeToEdgeEverywhere. */
-    private static @Nullable EdgeToEdgeFieldTrial sEverywhereOverrides;
+    private static @Nullable EdgeToEdgeFieldTrialImpl sEverywhereOverrides;
 
     /** Instance for EdgeToEdgeUseBackupNavbarInsets. */
     private static @Nullable EdgeToEdgeFieldTrial sBackupNavbarInsetsOverrides;
 
     @UiThread
-    static EdgeToEdgeFieldTrial getBottomChinOverrides() {
+    static EdgeToEdgeFieldTrialImpl getBottomChinOverrides() {
         if (sBottomChinOverrides == null) {
             String oemString = ChromeFeatureList.sEdgeToEdgeBottomChinOemList.getValue();
             String minVersionString =
                     ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.getValue();
-            sBottomChinOverrides = new EdgeToEdgeFieldTrial(oemString, minVersionString);
+            sBottomChinOverrides = new EdgeToEdgeFieldTrialImpl(oemString, minVersionString);
         }
         return sBottomChinOverrides;
     }
 
     @UiThread
-    static EdgeToEdgeFieldTrial getEverywhereOverrides() {
+    static EdgeToEdgeFieldTrialImpl getEverywhereOverrides() {
         if (sEverywhereOverrides == null) {
             String oemString = ChromeFeatureList.sEdgeToEdgeEverywhereOemList.getValue();
             String minVersionString =
                     ChromeFeatureList.sEdgeToEdgeEverywhereOemMinVersions.getValue();
-            sEverywhereOverrides = new EdgeToEdgeFieldTrial(oemString, minVersionString);
+            sEverywhereOverrides = new EdgeToEdgeFieldTrialImpl(oemString, minVersionString);
         }
         return sEverywhereOverrides;
     }
@@ -79,7 +80,8 @@ public final class EdgeToEdgeFieldTrial {
             String oemString = ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsetsOemList.getValue();
             String minVersionString =
                     ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsetsOemMinVersions.getValue();
-            sBackupNavbarInsetsOverrides = new EdgeToEdgeFieldTrial(oemString, minVersionString);
+            sBackupNavbarInsetsOverrides =
+                    new EdgeToEdgeFieldTrialImpl(oemString, minVersionString);
         }
         return sBackupNavbarInsetsOverrides;
     }
@@ -100,7 +102,7 @@ public final class EdgeToEdgeFieldTrial {
     private final Map<String, Integer> mOemMinVersionOverrides;
     private @Nullable Boolean mIsSupported;
 
-    private EdgeToEdgeFieldTrial(String oemString, String minVersionString) {
+    private EdgeToEdgeFieldTrialImpl(String oemString, String minVersionString) {
         mOemMinVersionOverrides = new HashMap<>();
         initializeOverrides(oemString, minVersionString);
     }
@@ -142,6 +144,7 @@ public final class EdgeToEdgeFieldTrial {
     }
 
     /** Whether the feature should be enabled according to the field trial min version override. */
+    @Override
     public boolean isEnabledForManufacturerVersion() {
         if (mIsSupported == null) {
             String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.US);

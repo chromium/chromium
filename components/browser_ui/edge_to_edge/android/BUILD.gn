@@ -8,6 +8,7 @@ android_library("java") {
   resources_package = "org.chromium.components.browser_ui.edge_to_edge"
   sources = [
     "java/src/org/chromium/components/browser_ui/edge_to_edge/BaseSystemBarColorHelper.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeFieldTrial.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeManager.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgePadAdjuster.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeStateProvider.java",

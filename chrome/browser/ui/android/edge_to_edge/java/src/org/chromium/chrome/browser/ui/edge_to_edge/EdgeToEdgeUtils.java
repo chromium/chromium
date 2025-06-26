@@ -164,7 +164,7 @@ public class EdgeToEdgeUtils {
     public static boolean isEdgeToEdgeBottomChinEnabled(Activity activity) {
         // Make sure we test SDK version before checking the Feature so Field Trials only collect
         // from qualifying devices.
-        if (!EdgeToEdgeFieldTrial.getBottomChinOverrides().isEnabledForManufacturerVersion()) {
+        if (!EdgeToEdgeFieldTrialImpl.getBottomChinOverrides().isEnabledForManufacturerVersion()) {
             return false;
         }
 
@@ -247,7 +247,7 @@ public class EdgeToEdgeUtils {
     /** Whether edge-to-edge should be enabled everywhere. */
     @OptIn(markerClass = BuildCompat.PrereleaseSdkCheck.class)
     public static boolean isEdgeToEdgeEverywhereEnabled() {
-        if (!EdgeToEdgeFieldTrial.getEverywhereOverrides().isEnabledForManufacturerVersion()) {
+        if (!EdgeToEdgeFieldTrialImpl.getEverywhereOverrides().isEnabledForManufacturerVersion()) {
             return false;
         }
 
@@ -544,7 +544,7 @@ public class EdgeToEdgeUtils {
             WindowInsetsCompat windowInsets,
             @BackupNavbarInsetsCallSite String callSite) {
         if (!isUseBackupNavbarInsetsEnabled()) return null;
-        if (!EdgeToEdgeFieldTrial.getBackupNavbarInsetsOverrides()
+        if (!EdgeToEdgeFieldTrialImpl.getBackupNavbarInsetsOverrides()
                 .isEnabledForManufacturerVersion()) {
             recordBackupNavbarInsetsHistogram(
                     callSite, BackupNavbarInsetsSource.FILTERED_EXPLICITLY_DISABLED);
