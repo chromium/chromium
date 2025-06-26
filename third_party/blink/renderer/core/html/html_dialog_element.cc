@@ -542,8 +542,7 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state,
         "The dialog is already open as a Popover, and therefore cannot be "
         "opened as a modal dialog.");
   }
-  if (!GetDocument().IsActive() &&
-      RuntimeEnabledFeatures::TopLayerInactiveDocumentExceptionsEnabled()) {
+  if (!GetDocument().IsActive()) {
     return exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Invalid for dialogs within documents that are not fully active.");

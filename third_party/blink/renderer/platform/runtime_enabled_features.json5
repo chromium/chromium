@@ -4965,13 +4965,6 @@
       public: true,
       status: "experimental",
     },
-    // This is a killswitch for the behavior where popover.showPopover() and
-    // dialog.showModal() throw DOM exceptions if the document isn't active.
-    // This landed in M132, and can be removed in M134.
-    {
-      name: "TopLayerInactiveDocumentExceptions",
-      status: "stable",
-    },
     {
       name: "TopLevelTpcd",
       origin_trial_feature_name: "TopLevelTpcd",

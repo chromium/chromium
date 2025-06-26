@@ -1323,8 +1323,7 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
                           "Not supported on elements that are not popovers.");
     return false;
   }
-  if (!GetDocument().IsActive() &&
-      RuntimeEnabledFeatures::TopLayerInactiveDocumentExceptionsEnabled()) {
+  if (!GetDocument().IsActive()) {
     maybe_throw_exception(
         DOMExceptionCode::kInvalidStateError,
         "Invalid for popovers within documents that are not fully active.");
