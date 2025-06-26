@@ -115,7 +115,7 @@ Network.responseReceivedExtraInfo{
     }
     headersText : <string>
     requestId : <string>
-    resourceIPAddressSpace : Local
+    resourceIPAddressSpace : Loopback
     statusCode : 200
 }
 Network.loadingFinished{
@@ -265,7 +265,7 @@ Network.responseReceivedExtraInfo{
     }
     headersText : <string>
     requestId : <string>
-    resourceIPAddressSpace : Local
+    resourceIPAddressSpace : Loopback
     statusCode : 302
 }
 Network.requestWillBeSentExtraInfo{
@@ -355,7 +355,7 @@ Network.responseReceivedExtraInfo{
     }
     headersText : <string>
     requestId : <string>
-    resourceIPAddressSpace : Local
+    resourceIPAddressSpace : Loopback
     statusCode : 200
 }
 Network.loadingFinished{

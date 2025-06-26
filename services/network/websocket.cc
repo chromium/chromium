@@ -205,7 +205,7 @@ void WebSocket::WebSocketEventHandler::OnURLRequestConnected(
   if (impl_->url_loader_network_observer_) {
     mojom::IPAddressSpace ip_address_space =
         TransportInfoToIPAddressSpace(info);
-    if (ip_address_space == network::mojom::IPAddressSpace::kLocal ||
+    if (ip_address_space == network::mojom::IPAddressSpace::kLoopback ||
         ip_address_space == network::mojom::IPAddressSpace::kPrivate) {
       impl_->url_loader_network_observer_->OnWebSocketConnectedToPrivateNetwork(
           ip_address_space);

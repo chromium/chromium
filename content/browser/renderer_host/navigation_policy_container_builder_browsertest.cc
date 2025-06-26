@@ -79,8 +79,8 @@ class NavigationPolicyContainerBuilderBrowserTest : public ContentBrowserTest {
     return root_frame_host()->GetStoragePartition();
   }
 
-  // Returns the URL of a page in the local address space.
-  GURL LocalUrl() const { return embedded_test_server()->GetURL("/echo"); }
+  // Returns the URL of a page in the loopback address space.
+  GURL LoopbackUrl() const { return embedded_test_server()->GetURL("/echo"); }
 
   // Returns the URL of a page in the public address space.
   GURL PublicUrl() const {
@@ -121,11 +121,11 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
                        HistoryPoliciesForNetworkScheme) {
   // Navigate to a document with a network scheme. Its history entry should have
   // its policies initialized from the network response.
-  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), LocalUrl()));
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), LoopbackUrl()));
 
   const PolicyContainerPolicies& root_policies = GetPolicies(root_frame_host());
   EXPECT_EQ(root_policies.ip_address_space,
-            network::mojom::IPAddressSpace::kLocal);
+            network::mojom::IPAddressSpace::kLoopback);
 
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, kInvalidChildProcessUniqueId, nullptr,
@@ -167,11 +167,11 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
                        HistoryPoliciesForNonCurentEntry) {
   // Navigate to a document with a network scheme. Its history entry should have
   // its policies initialized from the network response.
-  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), LocalUrl()));
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), LoopbackUrl()));
 
   const PolicyContainerPolicies& root_policies = GetPolicies(root_frame_host());
   EXPECT_EQ(root_policies.ip_address_space,
-            network::mojom::IPAddressSpace::kLocal);
+            network::mojom::IPAddressSpace::kLoopback);
 
   FrameNavigationEntry* entry = GetLastCommittedFrameNavigationEntry();
   NavigationPolicyContainerBuilder builder(
@@ -230,7 +230,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(root, AboutBlankUrl()));
 
   PolicyContainerPolicies initiator_policies;
-  initiator_policies.ip_address_space = network::mojom::IPAddressSpace::kLocal;
+  initiator_policies.ip_address_space =
+      network::mojom::IPAddressSpace::kLoopback;
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
   blink::LocalFrameToken token = root->GetFrameToken();
@@ -286,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
       document.body.appendChild(iframe);
     })
   )";
-  EXPECT_EQ(true, EvalJs(root, JsReplace(script_template, LocalUrl())));
+  EXPECT_EQ(true, EvalJs(root, JsReplace(script_template, LoopbackUrl())));
 
   RenderFrameHostImpl* parent = root->child_at(0)->current_frame_host();
   NavigationPolicyContainerBuilder builder(
@@ -397,29 +398,29 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   EXPECT_EQ(PublicUrl(), tab->GetLastCommittedURL());
 
   // Use replaceState() to change to a same-origin URL with a different policy
-  // (which happens to be no policy for LocalUrl()).
+  // (which happens to be no policy for LoopbackUrl()).
   TestNavigationObserver navigation_observer(shell()->web_contents());
   EXPECT_TRUE(
       ExecJs(root_frame_host(),
              base::StringPrintf("window.history.replaceState('', null, '%s');",
-                                LocalUrl().spec().data())));
+                                LoopbackUrl().spec().data())));
   navigation_observer.WaitForNavigationFinished();
-  EXPECT_EQ(LocalUrl(), tab->GetLastCommittedURL());
+  EXPECT_EQ(LoopbackUrl(), tab->GetLastCommittedURL());
 
   // Because we changed the url via replaceState rather than actually
-  // navigating to LocalUrl(), it shouldn't have modified any policies.
+  // navigating to LoopbackUrl(), it shouldn't have modified any policies.
   EXPECT_FALSE(
       GetPolicies(root_frame_host()).content_security_policies.empty());
   FrameNavigationEntry* entry = GetLastCommittedFrameNavigationEntry();
   EXPECT_FALSE(
       entry->policy_container_policies()->content_security_policies.empty());
 
-  // Navigate away, then back to LocalUrl().
+  // Navigate away, then back to LoopbackUrl().
   EXPECT_TRUE(NavigateToURL(shell()->web_contents(), AboutBlankUrl()));
   EXPECT_TRUE(HistoryGoBack(shell()->web_contents()));
 
-  // This time we actually loaded LocalUrl(). We should use its (non-existent)
-  // content security policies and updated the policies on the
+  // This time we actually loaded LoopbackUrl(). We should use its
+  // (non-existent) content security policies and updated the policies on the
   // FrameNavigationEntry, rather than restoring the previous set from the FNE.
   EXPECT_EQ(entry, GetLastCommittedFrameNavigationEntry());
   EXPECT_TRUE(

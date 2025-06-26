@@ -233,7 +233,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 TEST_F(NavigationPolicyContainerBuilderTest, MHTMLSandboxFlags) {
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
-  builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kLocal);
+  builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kLoopback);
   MockNavigationHandle navigation_handle(GURL("file:///my/page.mhtml"),
                                          nullptr);
   builder.ComputePolicies(&navigation_handle,
@@ -254,7 +254,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   base::test::ScopedFeatureList features(blink::features::kMHTML_Improvements);
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
-  builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kLocal);
+  builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kLoopback);
   MockNavigationHandle navigation_handle(GURL("file:///my/page.mhtml"),
                                          nullptr);
   builder.ComputePolicies(&navigation_handle,

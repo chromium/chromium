@@ -520,7 +520,7 @@ TEST(MixedContentCheckerTest,
 
 // Tests that requests are not autoupgraded if they are a priori known to be
 // local network request because the request's targetAddressSpace was set to
-// kLocal.
+// kLoopback.
 TEST(MixedContentCheckerTest,
      LocalNetworkAccessNotAutoupgradeMixedContentIfTargetAddressSpaceLocal) {
   base::test::ScopedFeatureList feature_list(
@@ -530,7 +530,8 @@ TEST(MixedContentCheckerTest,
   ResourceRequest request;
   request.SetUrl(KURL("http://example2.test/"));
   request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
-  request.SetTargetAddressSpace(network::mojom::blink::IPAddressSpace::kLocal);
+  request.SetTargetAddressSpace(
+      network::mojom::blink::IPAddressSpace::kLoopback);
   TestFetchClientSettingsObject* settings =
       MakeGarbageCollected<TestFetchClientSettingsObject>();
   settings->SetSecurityOrigin("https://example.test", "");

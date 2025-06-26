@@ -2469,10 +2469,10 @@ class InterestGroupPrivateNetworkBrowserTest : public InterestGroupBrowserTest {
   //
   // embedded_https_test_server() is also served from a localhost IP address,
   // but without the command line switch, that's considered
-  // IPAddressSpace::kLocal, using the standard IP to IPAddressSpace mapping
+  // IPAddressSpace::kLoopback, using the standard IP to IPAddressSpace mapping
   // logic.
   //
-  // These are are based around interactions between the "local"
+  // These are are based around interactions between the "loopback"
   // `embedded_https_test_server()` and the "public" `remote_test_server_` and
   // the Private Network Access preflight logic.
   net::test_server::EmbeddedTestServer remote_test_server_;
@@ -18534,7 +18534,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
                        BidderOnPrivateNetwork) {
   URLLoaderMonitor url_loader_monitor;
 
-  // Learn the bidder IG, served from the local server.
+  // Learn the bidder IG, served from the loopback server.
   GURL bidder_url = embedded_https_test_server().GetURL(
       "b.test", "/interest_group/bidding_logic.js");
   ASSERT_TRUE(NavigateToURL(
@@ -18584,7 +18584,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
               Optional(network::CorsErrorStatus(
                   network::mojom::CorsError::kInsecurePrivateNetwork,
                   network::mojom::IPAddressSpace::kUnknown,
-                  network::mojom::IPAddressSpace::kLocal)));
+                  network::mojom::IPAddressSpace::kLoopback)));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
@@ -18642,7 +18642,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       Optional(network::CorsErrorStatus(
           network::mojom::CorsError::kLocalNetworkAccessPermissionDenied,
           network::mojom::IPAddressSpace::kUnknown,
-          network::mojom::IPAddressSpace::kLocal)));
+          network::mojom::IPAddressSpace::kLoopback)));
 }
 
 // Have the auction and worklets server from public IPs, but send reports to a
@@ -18722,7 +18722,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
                 Optional(network::CorsErrorStatus(
                     network::mojom::CorsError::kInsecurePrivateNetwork,
                     network::mojom::IPAddressSpace::kUnknown,
-                    network::mojom::IPAddressSpace::kLocal)));
+                    network::mojom::IPAddressSpace::kLoopback)));
   }
 }
 
@@ -18898,7 +18898,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
           request.trusted_params->client_security_state->ip_address_space);
     } else {
       EXPECT_EQ(
-          network::mojom::IPAddressSpace::kLocal,
+          network::mojom::IPAddressSpace::kLoopback,
           request.trusted_params->client_security_state->ip_address_space);
     }
     // Not the main purpose of this test, but it should be using a transient
@@ -19187,7 +19187,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
           request.trusted_params->client_security_state->ip_address_space);
     } else {
       EXPECT_EQ(
-          network::mojom::IPAddressSpace::kLocal,
+          network::mojom::IPAddressSpace::kLoopback,
           request.trusted_params->client_security_state->ip_address_space);
     }
 

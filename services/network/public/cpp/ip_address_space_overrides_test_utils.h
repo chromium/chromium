@@ -43,7 +43,7 @@ namespace network {
 //  network::AddIpAddressSpaceOverridesToCommandLine(
 //      {network::GenerateIpAddressSpaceOverride(embedded_server_1),
 //       network::GenerateIpAddressSpaceOverride(
-//           embedded_server_2, network::mojom::IPAddressSpace::kLocal)},
+//           embedded_server_2, network::mojom::IPAddressSpace::kLoopback)},
 //      command_line);
 //
 // All net::test_server::EmbeddedTestServers passed in must have their ports

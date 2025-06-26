@@ -589,10 +589,10 @@ bool MixedContentChecker::ShouldBlockFetch(
   // (a) the request is actually an LNA request, and (b) the user has given
   // permission for the LNA request to go through.
   //
-  // Because we're still using PNA 1.0 terminology,
+  // Because we're still using a mix of PNA and LNA terminology:
   //
   //   * local = IPAddressSpace.kPrivate
-  //   * loopback = IPAddressSpace.kLocal
+  //   * loopback = IPAddressSpace.kLoopback
   //
   // This will hopefully be renamed when we can remove PNA 1.0 code.
   //
@@ -619,7 +619,8 @@ bool MixedContentChecker::ShouldBlockFetch(
     // skip when the initiator is more public.
     if (target_address_space ==
             network::mojom::blink::IPAddressSpace::kPrivate ||
-        target_address_space == network::mojom::blink::IPAddressSpace::kLocal ||
+        target_address_space ==
+            network::mojom::blink::IPAddressSpace::kLoopback ||
         network::ParsePrivateIpFromUrl(GURL(url)) ||
         network::IsRFC6762LocalDomain(GURL(url))) {
       allowed = true;
@@ -644,7 +645,7 @@ bool MixedContentChecker::ShouldBlockFetch(
         (target_address_space ==
              network::mojom::blink::IPAddressSpace::kPrivate ||
          target_address_space ==
-             network::mojom::blink::IPAddressSpace::kLocal)) {
+             network::mojom::blink::IPAddressSpace::kLoopback)) {
       UseCounter::Count(frame->GetDocument(),
                         WebFeature::kPrivateNetworkAccessPermissionPrompt);
       allowed = true;
@@ -942,7 +943,7 @@ bool MixedContentChecker::ShouldAutoupgrade(
   // A request is a possible LNA request if one of the following is true:
   //
   // (1) The `targetAddressSpace` fetch option was set.
-  //     `target_address_space` here is private/local only when resource
+  //     `target_address_space` here is private/loopback only when resource
   //     request has explicitly set `targetAddressSpace` fetch option.
   // (2) The host is a private IP address literal (already exempted above)
   // (3) The hostname is a .local domain (per RFC 6762).
@@ -963,7 +964,7 @@ bool MixedContentChecker::ShouldAutoupgrade(
     if (resource_request.GetTargetAddressSpace() ==
             network::mojom::blink::IPAddressSpace::kPrivate ||
         resource_request.GetTargetAddressSpace() ==
-            network::mojom::blink::IPAddressSpace::kLocal ||
+            network::mojom::blink::IPAddressSpace::kLoopback ||
         network::IsRFC6762LocalDomain(GURL(request_url))) {
       if (!request_url.ProtocolIs("https")) {
         if (auto* window =

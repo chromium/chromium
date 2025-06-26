@@ -96,14 +96,14 @@ void PrivateNetworkAccessChecker::ResetForRetry() {
   //
   // 1. `https://public.example` fetches `http://localhost/foo`
   // 2. `OnConnected()` notices that the remote endpoint's IP address space is
-  //    `kLocal`, fails the request with
+  //    `kLoopback`, fails the request with
   //    `CorsError::UnexpectedPrivateNetworkAccess`.
   // 3. A preflight request is sent with `target_ip_address_space_` set to
-  //    `kLocal`, succeeds.
+  //    `kLoopback`, succeeds.
   // 4. `http://localhost/foo` redirects the GET request to
   //    `https://public2.example/bar`.
   //
-  // The target IP address space `kLocal` should not be applied to the new
+  // The target IP address space `kLoopback` should not be applied to the new
   // connection obtained to `https://public2.example`.
   //
   // See also: https://crbug.com/1293891
@@ -263,7 +263,7 @@ bool PrivateNetworkAccessChecker::NeedPermission(
   return base::FeatureList::IsEnabled(
              network::features::kPrivateNetworkAccessPermissionPrompt) &&
          is_web_secure_context && !network::IsUrlPotentiallyTrustworthy(url) &&
-         (target_address_space == mojom::IPAddressSpace::kLocal ||
+         (target_address_space == mojom::IPAddressSpace::kLoopback ||
           target_address_space == mojom::IPAddressSpace::kPrivate);
 }
 

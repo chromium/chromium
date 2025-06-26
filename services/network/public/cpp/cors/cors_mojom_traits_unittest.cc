@@ -14,7 +14,7 @@ namespace {
 
 TEST(CorsMojomTraitsTest, CorsErrorStatusMojoRoundTrip) {
   CorsErrorStatus original(mojom::CorsError::kInsecurePrivateNetwork,
-                           mojom::IPAddressSpace::kLocal,
+                           mojom::IPAddressSpace::kLoopback,
                            mojom::IPAddressSpace::kPrivate);
   original.failed_parameter = "bleep";
   original.has_authorization_covered_by_wildcard_on_preflight = true;

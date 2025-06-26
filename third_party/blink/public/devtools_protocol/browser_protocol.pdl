@@ -7671,7 +7671,7 @@ domain Network
 
   experimental type IPAddressSpace extends string
     enum
-      Local
+      Loopback
       Private
       Public
       Unknown

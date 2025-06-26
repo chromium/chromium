@@ -101,11 +101,11 @@ Policy DerivePolicyForNonSecureContext(
                  ? Policy::kBlock
                  : Policy::kWarn;
     case AddressSpace::kPublic:
-    case AddressSpace::kLocal:
+    case AddressSpace::kLoopback:
       // Private network requests from non secure contexts are blocked if the
       // secure context restriction is enabled in general.
       //
-      // NOTE: We also set this when `ip_address_space` is `kLocal`, but that
+      // NOTE: We also set this when `ip_address_space` is `kLoopback`, but that
       // has no effect. Indeed, requests initiated from the local address space
       // are never considered private network requests - they cannot target
       // more-private address spaces.
@@ -217,18 +217,20 @@ network::mojom::ClientSecurityStatePtr DeriveClientSecurityState(
       policies.document_isolation_policy);
 }
 
-// Special chrome schemes cannot directly be categorized in public/private/local
-// address spaces using information from the network or the PolicyContainer. We
-// have to classify them manually. In its default state an unhandled scheme will
-// have an IPAddressSpace of kUnknown, which is equivalent to public.
+// Special chrome schemes cannot directly be categorized in
+// public/private/loopback address spaces using information from the network or
+// the PolicyContainer. We have to classify them manually. In its default state
+// an unhandled scheme will have an IPAddressSpace of kUnknown, which is
+// equivalent to public.
 // This means a couple of things:
-// - They cannot embed anything private or local without being secure contexts
+// - They cannot embed anything private or loopback without being secure
+// contexts
 //   and triggering a CORS preflight.
 // - Private Network Access does not prevent them being embedded by less private
 //   content.
 // - It pollutes metrics since kUnknown could also mean a missed edge case.
 // To address these issues we list here a number of schemes that should be
-// considered local.
+// considered loopback.
 // TODO(titouan): It might be better to have these schemes (and in general
 // other schemes such as data: or blob:) handled directly by the URLLoaders.
 // Investigate on whether this is worth doing.
@@ -247,7 +249,7 @@ AddressSpace IPAddressSpaceForSpecialScheme(const GURL& url,
 
   for (auto* scheme : special_content_schemes) {
     if (url.SchemeIs(scheme)) {
-      return AddressSpace::kLocal;
+      return AddressSpace::kLoopback;
     }
   }
 

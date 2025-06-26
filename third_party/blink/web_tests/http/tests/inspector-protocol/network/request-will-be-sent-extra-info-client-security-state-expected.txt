@@ -1,7 +1,7 @@
 Tests that client security state is reported on requestWillBeSentExtraInfo.
 Network Enabled
 {
-    initiatorIPAddressSpace : Local
+    initiatorIPAddressSpace : Loopback
     initiatorIsSecureContext : true
     privateNetworkRequestPolicy : PermissionBlock
 }

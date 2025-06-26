@@ -813,7 +813,7 @@ TEST_F(PreflightControllerTest, CheckPrivateNetworkAccessRequest) {
   request.credentials_mode = mojom::CredentialsMode::kOmit;
   request.url = url;
   request.request_initiator = test_initiator_origin();
-  request.target_ip_address_space = network::mojom::IPAddressSpace::kLocal;
+  request.target_ip_address_space = network::mojom::IPAddressSpace::kLoopback;
 
   mojom::ClientSecurityStatePtr client_security_state =
       ClientSecurityStateBuilder()
@@ -836,7 +836,7 @@ TEST_F(PreflightControllerTest, CheckPrivateNetworkAccessRequest) {
 
   CorsErrorStatus expected_status(
       mojom::CorsError::kPreflightMissingAllowPrivateNetwork, "");
-  expected_status.target_address_space = mojom::IPAddressSpace::kLocal;
+  expected_status.target_address_space = mojom::IPAddressSpace::kLoopback;
   EXPECT_THAT(status(), Optional(expected_status));
   EXPECT_EQ(1u, access_count());
 }
@@ -848,7 +848,7 @@ TEST_F(PreflightControllerTest, CheckPrivateNetworkAccessRequestWarningOnly) {
   request.credentials_mode = mojom::CredentialsMode::kOmit;
   request.url = url;
   request.request_initiator = test_initiator_origin();
-  request.target_ip_address_space = network::mojom::IPAddressSpace::kLocal;
+  request.target_ip_address_space = network::mojom::IPAddressSpace::kLoopback;
 
   mojom::ClientSecurityStatePtr client_security_state =
       ClientSecurityStateBuilder()
@@ -871,7 +871,7 @@ TEST_F(PreflightControllerTest, CheckPrivateNetworkAccessRequestWarningOnly) {
 
   CorsErrorStatus expected_status(
       mojom::CorsError::kPreflightMissingAllowPrivateNetwork, "");
-  expected_status.target_address_space = mojom::IPAddressSpace::kLocal;
+  expected_status.target_address_space = mojom::IPAddressSpace::kLoopback;
   EXPECT_THAT(status(), Optional(expected_status));
   EXPECT_EQ(1u, access_count());
 }
@@ -901,7 +901,7 @@ TEST_F(PreflightControllerTest,
   request.request_initiator = url::Origin::Create(url);
   request.mode = mojom::RequestMode::kCors;
   request.credentials_mode = mojom::CredentialsMode::kOmit;
-  request.target_ip_address_space = network::mojom::IPAddressSpace::kLocal;
+  request.target_ip_address_space = network::mojom::IPAddressSpace::kLoopback;
 
   mojom::ClientSecurityStatePtr client_security_state =
       ClientSecurityStateBuilder()
@@ -936,7 +936,7 @@ TEST_F(PreflightControllerTest,
   request.request_initiator = url::Origin::Create(url);
   request.mode = mojom::RequestMode::kCors;
   request.credentials_mode = mojom::CredentialsMode::kOmit;
-  request.target_ip_address_space = network::mojom::IPAddressSpace::kLocal;
+  request.target_ip_address_space = network::mojom::IPAddressSpace::kLoopback;
 
   mojom::ClientSecurityStatePtr client_security_state =
       ClientSecurityStateBuilder()
@@ -971,7 +971,7 @@ TEST_F(PreflightControllerTest,
   request.request_initiator = url::Origin::Create(url);
   request.mode = mojom::RequestMode::kCors;
   request.credentials_mode = mojom::CredentialsMode::kOmit;
-  request.target_ip_address_space = network::mojom::IPAddressSpace::kLocal;
+  request.target_ip_address_space = network::mojom::IPAddressSpace::kLoopback;
 
   mojom::ClientSecurityStatePtr client_security_state =
       ClientSecurityStateBuilder()
@@ -1018,7 +1018,7 @@ TEST_F(PreflightControllerNoPNAPreflightShortTimeoutTest,
   request.request_initiator = url::Origin::Create(url);
   request.mode = mojom::RequestMode::kCors;
   request.credentials_mode = mojom::CredentialsMode::kOmit;
-  request.target_ip_address_space = network::mojom::IPAddressSpace::kLocal;
+  request.target_ip_address_space = network::mojom::IPAddressSpace::kLoopback;
 
   mojom::ClientSecurityStatePtr client_security_state =
       ClientSecurityStateBuilder()

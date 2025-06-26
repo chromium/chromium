@@ -638,7 +638,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
 
   // IP address space of the origin
   network::mojom::IPAddressSpace ip_address_space_ =
-      network::mojom::IPAddressSpace::kLocal;
+      network::mojom::IPAddressSpace::kLoopback;
 
   // Whether an OPTIONS request is expected. When true, set to false once an
   // options request is observed.
@@ -2429,7 +2429,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCrossOriginLNAFailure) {
       })"));
   SetCrossOrigin();
   // Set IP Address space of the origin to be public, making signal requests LNA
-  // requests (as embedded_test_server_ is in IPAddressSpace::kLocal)
+  // requests (as embedded_test_server_ is in IPAddressSpace::kLoopback)
   ip_address_space_ = network::mojom::IPAddressSpace::kPublic;
   // Don't expect signals requests to get handled.
   expect_url_not_requested_ = true;
@@ -2509,7 +2509,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsCrossOriginLNAFailure) {
       })"));
   SetCrossOrigin();
   // Set IP Address space of the origin to be public, making signal requests LNA
-  // requests (as embedded_test_server_ is in IPAddressSpace::kLocal)
+  // requests (as embedded_test_server_ is in IPAddressSpace::kLoopback)
   ip_address_space_ = network::mojom::IPAddressSpace::kPublic;
   // Don't expect signals requests to get handled.
   expect_url_not_requested_ = true;
@@ -2568,7 +2568,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsIsolationInfo) {
   trusted_signals_fetcher.FetchBiddingSignals(
       data_decoder_manager_, &url_loader_factory, FrameTreeNodeId(),
       kAuctionDevtoolsIds, kDefaultMainFrameOrigin,
-      network::mojom::IPAddressSpace::kLocal, network_partition_nonce_,
+      network::mojom::IPAddressSpace::kLoopback, network_partition_nonce_,
       GetScriptOrigin(), TrustedBiddingSignalsUrl(),
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
@@ -2606,7 +2606,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsIsolationInfo) {
   trusted_signals_fetcher.FetchScoringSignals(
       data_decoder_manager_, &url_loader_factory, FrameTreeNodeId(),
       kAuctionDevtoolsIds, kDefaultMainFrameOrigin,
-      network::mojom::IPAddressSpace::kLocal, network_partition_nonce_,
+      network::mojom::IPAddressSpace::kLoopback, network_partition_nonce_,
       GetScriptOrigin(), TrustedScoringSignalsUrl(),
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
@@ -3241,7 +3241,7 @@ TEST(TrustedSignalsFetcherTimeoutTest, BiddingSignalsTimeout) {
       data_decoder_manager, &url_loader_factory, FrameTreeNodeId(),
       {"auction_devtools_id"},
       /*main_frame_origin=*/kSignalsOrigin,
-      network::mojom::IPAddressSpace::kLocal,
+      network::mojom::IPAddressSpace::kLoopback,
       /*network_partition_nonce=*/base::UnguessableToken::Create(),
       kSignalsOrigin, kSignalsUrl,
       BiddingAndAuctionServerKey{

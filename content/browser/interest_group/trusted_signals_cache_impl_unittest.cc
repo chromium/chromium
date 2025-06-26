@@ -1155,7 +1155,7 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.back().description = "Different IP address spaces";
       out.back().request_relation = RequestRelation::kDifferentFetches;
       out.back().params2.ip_address_space =
-          network::mojom::IPAddressSpace::kLocal;
+          network::mojom::IPAddressSpace::kLoopback;
     }
 
     if constexpr (std::is_same<ParamsType, ScoringParams>::value) {
@@ -1262,7 +1262,7 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.back().description = "Different IP address spaces";
       out.back().request_relation = RequestRelation::kDifferentFetches;
       out.back().params2.ip_address_space =
-          network::mojom::IPAddressSpace::kLocal;
+          network::mojom::IPAddressSpace::kLoopback;
     }
 
     // Cases shared by bidder and seller tests.
