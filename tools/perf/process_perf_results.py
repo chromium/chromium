@@ -430,22 +430,20 @@ def process_perf_results(output_json,
   return return_code, benchmark_upload_result_map
 
 
-def _chartjson_results(json_dict):
-  merged_results = {'charts': {}}
+def _chartjson_results(charts_results, json_dict):
   for key in json_dict:
     if key == 'charts':
       for add_key in json_dict[key]:
-        merged_results[key][add_key] = json_dict[key][add_key]
+        charts_results[key][add_key] = json_dict[key][add_key]
     else:
-      merged_results.setdefault(key, json_dict[key])
-  return merged_results
+      charts_results.setdefault(key, json_dict[key])
 
 
 def _merge_perf_results(benchmark_name, results_filename, directories):
   begin_time = time.time()
   charts_count = 0
-  histograms_count = 0
-  merged_results = []
+  charts_results = {'charts': {}}
+  histograms_results = []
   for directory in directories:
     filename = os.path.join(directory, 'perf_results.json')
     try:
@@ -453,21 +451,25 @@ def _merge_perf_results(benchmark_name, results_filename, directories):
         json_obj = json.load(pf)
         if isinstance(json_obj, dict):
           # The Charts results format.
-          merged_results.append(_chartjson_results(json_obj))
+          _chartjson_results(charts_results, json_obj)
           charts_count += 1
         elif isinstance(json_obj, list):
           # The Histograms results format.
-          merged_results += json_obj
-          histograms_count += 1
+          histograms_results += json_obj
     except IOError as e:
       # TODO(crbug.com/40615891): Figure out how to surface these errors. Should
       # we have a non-zero exit code if we error out?
       logging.error('Failed to obtain perf results from %s: %s',
                     directory, e)
-  if len(merged_results) == 0:
+  if len(histograms_results) == 0 and charts_count == 0:
     logging.error('Failed to obtain any perf results from %s.',
                   benchmark_name)
-    return False, charts_count, histograms_count
+    return False, 0, 0
+  if len(histograms_results) > 0:
+    # Ignoring Charts, as uploading mixed results isn't supported.
+    merged_results = histograms_results
+  else:
+    merged_results = charts_results
 
   with open(results_filename, 'w') as rf:
     json.dump(merged_results, rf)
@@ -475,7 +477,7 @@ def _merge_perf_results(benchmark_name, results_filename, directories):
   end_time = time.time()
   print_duration(('%s results merging' % (benchmark_name)),
                  begin_time, end_time)
-  return True, charts_count, histograms_count
+  return True, charts_count, len(histograms_results)
 
 
 def _upload_individual(benchmark_name, directories, configuration_name,
