@@ -231,8 +231,8 @@ TEST_F(VideoFrameStructTraitsTest, InterleavedPlanes) {
 
   frame = media::VideoFrame::WrapExternalYuvData(
       format, kCodedSize, kVisibleRect, kNaturalSize, strides[0], uv_stride,
-      uv_stride, y_plane.data(), uv_plane.data(),
-      uv_plane.subspan(normal_stride).data(), kTimestamp);
+      uv_stride, y_plane, uv_plane, uv_plane.subspan(normal_stride),
+      kTimestamp);
   auto ro_region =
       base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region));
   frame->BackWithSharedMemory(&ro_region);
@@ -280,10 +280,14 @@ TEST_F(VideoFrameStructTraitsTest, InvalidOffsets) {
   auto region = base::ReadOnlySharedMemoryRegion::Create(aggregate_size);
   ASSERT_TRUE(region.IsValid());
 
-  std::array<uint8_t*, 3> data = {};
-  data[0] = const_cast<uint8_t*>(region.mapping.GetMemoryAs<uint8_t>());
-  for (size_t i = 1; i < strides.size(); ++i) {
-    data[i] = data[i - 1] + sizes[i];
+  std::array<base::span<uint8_t>, 3> data = {};
+  std::vector<size_t> offsets;
+  auto mapping_span = region.mapping.GetMemoryAsSpan<uint8_t>();
+  size_t offset = 0;
+  for (size_t i = 0; i < strides.size(); ++i) {
+    offsets.push_back(offset);
+    data[i] = mapping_span.subspan(offset, sizes[i]);
+    offset += sizes[i];
   }
 
   auto frame = VideoFrame::WrapExternalYuvData(
@@ -300,11 +304,6 @@ TEST_F(VideoFrameStructTraitsTest, InvalidOffsets) {
   base::span<uint32_t> body(
       reinterpret_cast<uint32_t*>(message.mutable_payload()),
       message.payload_num_bytes() / sizeof(uint32_t));
-  std::vector<uint32_t> offsets = {
-      static_cast<uint32_t>(data[0] - data[0]),  // offsets[0]
-      static_cast<uint32_t>(data[1] - data[0]),  // offsets[1]
-      static_cast<uint32_t>(data[2] - data[0]),  // offsets[2]
-  };
 
   bool patched_offsets = false;
   for (size_t i = 0; i + 3 < body.size(); ++i) {

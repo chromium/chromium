@@ -38,14 +38,21 @@ class SimpleCdmVideoFrame final : public VideoFrameImpl {
     CHECK(FrameBuffer(), base::NotFatalUntil::M140);
 
     cdm::Buffer* buffer = FrameBuffer();
+    // SAFETY: cdm::Buffer is like `span` from CDM stable interface.
+    auto buffer_span =
+        UNSAFE_BUFFERS(base::span(buffer->Data(), buffer->Size()));
     gfx::Size frame_size(Size().width, Size().height);
     scoped_refptr<media::VideoFrame> frame =
         media::VideoFrame::WrapExternalYuvData(
             PIXEL_FORMAT_I420, frame_size, gfx::Rect(frame_size), natural_size,
             Stride(cdm::kYPlane), Stride(cdm::kUPlane), Stride(cdm::kVPlane),
-            buffer->Data() + PlaneOffset(cdm::kYPlane),
-            buffer->Data() + PlaneOffset(cdm::kUPlane),
-            buffer->Data() + PlaneOffset(cdm::kVPlane),
+            buffer_span.subspan(
+                PlaneOffset(cdm::kYPlane),
+                PlaneOffset(cdm::kUPlane) - PlaneOffset(cdm::kYPlane)),
+            buffer_span.subspan(
+                PlaneOffset(cdm::kUPlane),
+                PlaneOffset(cdm::kVPlane) - PlaneOffset(cdm::kUPlane)),
+            buffer_span.subspan(PlaneOffset(cdm::kVPlane)),
             base::Microseconds(Timestamp()));
 
     frame->metadata().power_efficient = false;

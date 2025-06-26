@@ -124,8 +124,7 @@ class MojoCdmVideoFrame final : public VideoFrameImpl {
     // Destroy the MojoCdmBuffer as it is no longer needed.
     buffer->Destroy();
 
-    uint8_t* data =
-        const_cast<uint8_t*>(mapped_region->mapping.GetMemoryAs<uint8_t>());
+    auto data = mapped_region->mapping.GetMemoryAsSpan<uint8_t>();
     if (PlaneOffset(cdm::kYPlane) != 0u) {
       LOG(ERROR) << "The first buffer offset is not 0";
       return nullptr;
@@ -135,8 +134,12 @@ class MojoCdmVideoFrame final : public VideoFrameImpl {
         natural_size, static_cast<int32_t>(Stride(cdm::kYPlane)),
         static_cast<int32_t>(Stride(cdm::kUPlane)),
         static_cast<int32_t>(Stride(cdm::kVPlane)),
-        data + PlaneOffset(cdm::kYPlane), data + PlaneOffset(cdm::kUPlane),
-        data + PlaneOffset(cdm::kVPlane), base::Microseconds(Timestamp()));
+        data.subspan(PlaneOffset(cdm::kYPlane),
+                     PlaneOffset(cdm::kUPlane) - PlaneOffset(cdm::kYPlane)),
+        data.subspan(PlaneOffset(cdm::kUPlane),
+                     PlaneOffset(cdm::kVPlane) - PlaneOffset(cdm::kUPlane)),
+        data.subspan(PlaneOffset(cdm::kVPlane)),
+        base::Microseconds(Timestamp()));
 
     // |frame| could fail to be created if the memory can't be mapped into
     // this address space.

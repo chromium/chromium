@@ -81,11 +81,11 @@ class MojoDecryptorTest : public ::testing::Test {
     // VideoFrame.
     auto region = base::ReadOnlySharedMemoryRegion::Create(15000);
     CHECK(region.IsValid());
-    uint8_t* data = const_cast<uint8_t*>(region.mapping.GetMemoryAs<uint8_t>());
+    auto data = region.mapping.GetMemoryAsSpan<uint8_t>();
     scoped_refptr<VideoFrame> frame = VideoFrame::WrapExternalYuvData(
         PIXEL_FORMAT_I420, gfx::Size(100, 100), gfx::Rect(100, 100),
-        gfx::Size(100, 100), 100, 50, 50, data, data + 100 * 100,
-        data + (100 * 100 * 5 / 4), base::Seconds(100));
+        gfx::Size(100, 100), 100, 50, 50, data, data.subspan(100u * 100),
+        data.subspan(100u * 100 * 5 / 4), base::Seconds(100));
     auto read_only_mapping = region.region.Map();
     CHECK(read_only_mapping.IsValid());
     frame->BackWithOwnedSharedMemory(std::move(region.region),
