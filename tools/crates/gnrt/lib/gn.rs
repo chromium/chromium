@@ -225,7 +225,7 @@ pub fn build_rule_from_dep(
         for dep in &normal_deps {
             let target_name = NormalizedName::from_crate_name(&dep.package_name).to_string();
             if target_name != dep.use_name {
-                aliases.push((dep.use_name.clone(), create_package_id(&dep)));
+                aliases.push((dep.use_name.clone(), create_package_id(dep)));
             }
         }
         aliases.sort_unstable();

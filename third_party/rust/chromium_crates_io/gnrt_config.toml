@@ -518,20 +518,18 @@ allow_unsafe = false
 
 [crate.temporal_capi]
 extra_kv = { allow_unsafe = false }
-license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
+license_files = ["LICENSE-MIT", "LICENSE-Apache"]
 
 [crate.temporal_rs]
 extra_kv = { allow_unsafe = true }
-license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
+license_files = ["LICENSE-MIT", "LICENSE-Apache"]
 
 [crate.termcolor.extra_kv]
 allow_unsafe = false
 
 [crate.timezone_provider]
-license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
-
-[crate.timezone_provider.extra_kv]
-allow_unsafe = true
+license_files = ["LICENSE-MIT", "LICENSE-Apache"]
+extra_kv = { allow_unsafe = true }
 
 [crate.tinystr.extra_kv]
 allow_unsafe = true

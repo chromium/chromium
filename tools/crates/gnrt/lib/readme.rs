@@ -5,7 +5,7 @@
 use crate::config::BuildConfig;
 use crate::group::Group;
 use crate::paths::{self, get_build_dir_for_package, get_vendor_dir_for_package};
-use anyhow::{bail, format_err, Context, Result};
+use anyhow::{bail, ensure, format_err, Context, Result};
 use guppy::graph::PackageMetadata;
 use guppy::PackageId;
 use itertools::Itertools;
@@ -110,17 +110,32 @@ fn readme_file_from_package<'a>(
         }
     };
 
-    let license_files = if let Some(config_license_files) = crate_config.and_then(|config| {
-        if config.license_files.is_empty() {
+    let config_license_files = crate_config.and_then(|config| {
+        let config_license_files = config
+            .license_files
+            .iter()
+            .map(Path::new)
+            .map(|p| crate_vendor_dir.join(p))
+            .collect::<Vec<_>>();
+        if config_license_files.is_empty() {
             None
         } else {
-            Some(config.license_files.iter().map(Path::new))
+            Some(config_license_files)
         }
-    }) {
+    });
+    let license_files = if let Some(config_license_files) = config_license_files {
+        for path in config_license_files.iter() {
+            ensure!(
+                does_license_file_exist(path)?,
+                "`gnrt_config.toml` for `{crate_name}` crate listed \
+                 a license file that doesn't actually exist: {path}",
+                crate_name = package.name(),
+                path = path.display(),
+            );
+        }
         config_license_files
-            .map(|p| {
-                format!("//{}", paths::normalize_unix_path_separator(&crate_vendor_dir.join(p)))
-            })
+            .into_iter()
+            .map(|p| format!("//{}", paths::normalize_unix_path_separator(&p)))
             .collect()
     } else if let Some(pkg_license) = package.license() {
         let license_kinds = parse_license_string(pkg_license)?;
@@ -342,7 +357,7 @@ fn find_license_files_for_kinds(
         // Try each possible file in priority order.
         for file in possible_files {
             let path = crate_vendor_dir.join(file);
-            if path.try_exists()? {
+            if does_license_file_exist(&path)? {
                 let normalized_path = format!("//{}", paths::normalize_unix_path_separator(&path));
                 found_files.push(normalized_path);
                 break; // Found highest priority file for this license kind.
@@ -356,4 +371,9 @@ fn find_license_files_for_kinds(
     }
 
     Ok(found_files)
+}
+
+fn does_license_file_exist(path: &Path) -> Result<bool> {
+    path.try_exists()
+        .with_context(|| format!("Failed to check if a license file exists at {}", path.display()))
 }
