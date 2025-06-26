@@ -520,6 +520,7 @@ ci.builder(
             ),
         ),
     }),
+    siso_remote_linking = True,
 )
 
 ci.builder(
