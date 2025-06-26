@@ -4059,11 +4059,6 @@
       status: "test",
     },
     {
-      // See https://github.com/whatwg/html/issues/10034
-      name: "RenderBlockingInlineModuleScript",
-      status: "stable",
-    },
-    {
       name: "RenderBlockingStatus",
       status: "stable",
     },

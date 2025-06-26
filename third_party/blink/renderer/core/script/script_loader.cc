@@ -1106,15 +1106,10 @@ PendingScript* ScriptLoader::PrepareScript(
           return nullptr;
         }
 
-        if (RuntimeEnabledFeatures::RenderBlockingInlineModuleScriptEnabled() &&
-            potentially_render_blocking &&
+        if (potentially_render_blocking &&
             element_document.GetRenderBlockingResourceManager()) {
-          // TODO(crbug.com/364904756) - This spec step does not exist. The PR
-          // below has landed, but doesn't contain it. After
-          // https://github.com/whatwg/html/pull/10035: <spec
-          // label="fetch-an-inline-module-script-graph" step="?">If el is
-          // potentially render-blocking, then block rendering on el and set
-          // options's  render-blocking  to true.</spec>
+          // <spec label="script-processing-model" step="31.7">
+          // If el is potentially render-blocking, then block rendering on el.
           element_document.GetRenderBlockingResourceManager()->AddPendingScript(
               *element_);
         }
