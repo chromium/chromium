@@ -2102,7 +2102,7 @@ Called by update_net_error_codes.py.-->
   <int value="-371" label="CONTENT_DECODING_INIT_FAILED"/>
   <int value="-370" label="INVALID_HTTP_RESPONSE"/>
   <int value="-369" label="TEMPORARY_BACKOFF"/>
-  <int value="-368" label="ALTERNATIVE_CERT_NOT_VALID_FOR_ORIGIN"/>
+  <int value="-368" label="PROXY_REQUIRED"/>
   <int value="-367" label="PAC_SCRIPT_TERMINATED"/>
   <int value="-366" label="PROXY_HTTP_1_1_REQUIRED"/>
   <int value="-365" label="HTTP_1_1_REQUIRED"/>
@@ -2157,6 +2157,7 @@ Called by update_net_error_codes.py.-->
   <int value="-302" label="UNKNOWN_URL_SCHEME"/>
   <int value="-301" label="DISALLOWED_URL_SCHEME"/>
   <int value="-300" label="INVALID_URL"/>
+  <int value="-219" label="CERT_SELF_SIGNED_LOCAL_NETWORK"/>
   <int value="-218" label="SSL_OBSOLETE_VERSION"/>
   <int value="-217" label="CERT_KNOWN_INTERCEPTION_BLOCKED"/>
   <int value="-216" label="QUIC_CERT_ROOT_NOT_KNOWN (old)"/>
@@ -2256,6 +2257,7 @@ Called by update_net_error_codes.py.-->
   <int value="-102" label="CONNECTION_REFUSED"/>
   <int value="-101" label="CONNECTION_RESET"/>
   <int value="-100" label="CONNECTION_CLOSED"/>
+  <int value="-34" label="BLOCKED_BY_FINGERPRINTING_PROTECTION"/>
   <int value="-33" label="NETWORK_ACCESS_REVOKED"/>
   <int value="-32" label="BLOCKED_BY_ORB"/>
   <int value="-31" label="H2_OR_QUIC_REQUIRED"/>
@@ -20507,6 +20509,7 @@ Called by update_net_error_codes.py.-->
   <int value="31" label="H2_OR_QUIC_REQUIRED"/>
   <int value="32" label="BLOCKED_BY_ORB"/>
   <int value="33" label="NETWORK_ACCESS_REVOKED"/>
+  <int value="34" label="BLOCKED_BY_FINGERPRINTING_PROTECTION"/>
   <int value="100" label="CONNECTION_CLOSED"/>
   <int value="101" label="CONNECTION_RESET"/>
   <int value="102" label="CONNECTION_REFUSED"/>
@@ -20611,6 +20614,7 @@ Called by update_net_error_codes.py.-->
   <int value="216" label="QUIC_CERT_ROOT_NOT_KNOWN_0"/>
   <int value="217" label="CERT_KNOWN_INTERCEPTION_BLOCKED"/>
   <int value="218" label="SSL_OBSOLETE_VERSION"/>
+  <int value="219" label="CERT_SELF_SIGNED_LOCAL_NETWORK"/>
   <int value="300" label="INVALID_URL"/>
   <int value="301" label="DISALLOWED_URL_SCHEME"/>
   <int value="302" label="UNKNOWN_URL_SCHEME"/>
@@ -20666,7 +20670,7 @@ Called by update_net_error_codes.py.-->
   <int value="365" label="HTTP_1_1_REQUIRED"/>
   <int value="366" label="PROXY_HTTP_1_1_REQUIRED"/>
   <int value="367" label="PAC_SCRIPT_TERMINATED"/>
-  <int value="368" label="ALTERNATIVE_CERT_NOT_VALID_FOR_ORIGIN"/>
+  <int value="368" label="PROXY_REQUIRED"/>
   <int value="369" label="TEMPORARY_BACKOFF"/>
   <int value="370" label="INVALID_HTTP_RESPONSE"/>
   <int value="371" label="CONTENT_DECODING_INIT_FAILED"/>
@@ -20748,6 +20752,13 @@ Called by update_net_error_codes.py.-->
   <int value="812" label="DICTIONARY_LOAD_FAILED (old)"/>
   <int value="813" label="DICTIONARY_ORIGIN_CHECK_FAILED"/>
   <int value="814" label="DNS_SECURE_PROBE_RECORD_INVALID"/>
+  <int value="900" label="BLOB_INVALID_CONSTRUCTION_ARGUMENTS"/>
+  <int value="901" label="BLOB_OUT_OF_MEMORY"/>
+  <int value="902" label="BLOB_FILE_WRITE_FAILED"/>
+  <int value="903" label="BLOB_SOURCE_DIED_IN_TRANSIT"/>
+  <int value="904" label="BLOB_DEREFERENCED_WHILE_BUILDING"/>
+  <int value="905" label="BLOB_REFERENCED_BLOB_BROKEN"/>
+  <int value="906" label="BLOB_REFERENCED_FILE_UNAVAILABLE"/>
   <int value="1478" label="SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS_0"/>
 </enum>
 
