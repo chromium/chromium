@@ -24,10 +24,6 @@ namespace media {
 
 class TestGbmBuffer;
 
-// A local, as opposed to the default IPC-based, implementation of
-// gfx::GpuMemoryBufferManager which interacts with the DRM render node device
-// directly. The TestGbmBufferManager is only for testing purposes and
-// should not be used in production.
 class MEDIA_GPU_EXPORT TestGbmBufferManager {
  public:
   TestGbmBufferManager();

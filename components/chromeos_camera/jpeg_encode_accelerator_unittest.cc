@@ -91,7 +91,7 @@ enum class ClientState {
   ERROR,
 };
 
-scoped_refptr<media::VideoFrame> GetVideoFrameFromGpuMemoryBuffer(
+scoped_refptr<media::VideoFrame> GetVideoFrameFromGbmBuffer(
     media::TestGbmBuffer* buffer,
     gfx::Size size,
     media::VideoPixelFormat format) {
@@ -356,8 +356,8 @@ class JpegClient : public JpegEncodeAccelerator::Client {
   // Output for DMA-buf based encoding.
   scoped_refptr<media::VideoFrame> hw_out_frame_;
 
-  // Used to create Gpu memory buffer for DMA-buf encoding tests.
-  std::unique_ptr<media::TestGbmBufferManager> gpu_memory_buffer_manager_;
+  // Used to create gbm buffer for DMA-buf encoding tests.
+  std::unique_ptr<media::TestGbmBufferManager> gbm_buffer_manager_;
 
   base::WeakPtrFactory<JpegClient> weak_factory_{this};
 };
@@ -371,7 +371,7 @@ JpegClient::JpegClient(const std::vector<TestImage*>& test_aligned_images,
       state_(ClientState::CREATED),
       note_(note),
       exif_size_(exif_size),
-      gpu_memory_buffer_manager_(new media::TestGbmBufferManager()) {}
+      gbm_buffer_manager_(new media::TestGbmBufferManager()) {}
 
 JpegClient::~JpegClient() = default;
 
@@ -675,7 +675,7 @@ void JpegClient::StartEncodeDmaBuf(int32_t bitstream_buffer_id) {
       encoder_->GetMaxCodedBufferSize(test_image->visible_size);
   PrepareMemory(bitstream_buffer_id);
 
-  auto input_buffer = gpu_memory_buffer_manager_->CreateGmbBuffer(
+  auto input_buffer = gbm_buffer_manager_->CreateGmbBuffer(
       test_image->visible_size, gfx::BufferFormat::YUV_420_BIPLANAR,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
       gpu::kNullSurfaceHandle, nullptr);
@@ -692,16 +692,16 @@ void JpegClient::StartEncodeDmaBuf(int32_t bitstream_buffer_id) {
                      input_buffer->stride(0), plane_buf[1],
                      input_buffer->stride(1), width, height);
 
-  auto input_frame = GetVideoFrameFromGpuMemoryBuffer(
+  auto input_frame = GetVideoFrameFromGbmBuffer(
       input_buffer.get(), test_image->visible_size, media::PIXEL_FORMAT_NV12);
   LOG_ASSERT(input_frame.get());
 
-  auto output_buffer = gpu_memory_buffer_manager_->CreateGmbBuffer(
+  auto output_buffer = gbm_buffer_manager_->CreateGmbBuffer(
       gfx::Size(kJpegMaxSize, 1), gfx::BufferFormat::R_8,
       gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE, gpu::kNullSurfaceHandle,
       nullptr);
   ASSERT_EQ(output_buffer->Map(), true);
-  hw_out_frame_ = GetVideoFrameFromGpuMemoryBuffer(
+  hw_out_frame_ = GetVideoFrameFromGbmBuffer(
       output_buffer.get(), test_image->visible_size, media::PIXEL_FORMAT_MJPEG);
   LOG_ASSERT(hw_out_frame_.get());
 

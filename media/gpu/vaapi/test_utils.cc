@@ -158,9 +158,9 @@ class NativePixmapMapping {
   virtual gfx::Size GetSize() const = 0;
 };
 
-class GpuMemoryBufferMapping : public NativePixmapMapping {
+class GbmBufferMapping : public NativePixmapMapping {
  public:
-  static std::unique_ptr<GpuMemoryBufferMapping> CreateGpuMemoryBufferMapping(
+  static std::unique_ptr<GbmBufferMapping> CreateGbmBufferMapping(
       gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
       const gfx::BufferFormat& format) {
@@ -170,21 +170,20 @@ class GpuMemoryBufferMapping : public NativePixmapMapping {
         gbm_buffer_manager->ImportDmaBuf(handle, size, format);
 
     if (!gbm_buffer->Map()) {
-      LOG(ERROR) << "Failed to map GPU memory buffer!";
+      LOG(ERROR) << "Failed to map GBM buffer!";
       return nullptr;
     }
 
-    return std::make_unique<GpuMemoryBufferMapping>(
-        std::move(gbm_buffer_manager), std::move(gbm_buffer));
+    return std::make_unique<GbmBufferMapping>(std::move(gbm_buffer_manager),
+                                              std::move(gbm_buffer));
   }
 
-  GpuMemoryBufferMapping(
-      std::unique_ptr<TestGbmBufferManager> gbm_buffer_manager,
-      std::unique_ptr<TestGbmBuffer> gbm_buffer)
+  GbmBufferMapping(std::unique_ptr<TestGbmBufferManager> gbm_buffer_manager,
+                   std::unique_ptr<TestGbmBuffer> gbm_buffer)
       : gbm_buffer_manager_(std::move(gbm_buffer_manager)),
         gbm_buffer_(std::move(gbm_buffer)) {}
 
-  ~GpuMemoryBufferMapping() override { gbm_buffer_->Unmap(); }
+  ~GbmBufferMapping() override { gbm_buffer_->Unmap(); }
 
   raw_ptr<uint8_t> GetData(size_t plane_idx) const override {
     return static_cast<uint8_t*>(gbm_buffer_->memory(plane_idx));
@@ -240,7 +239,7 @@ class Tile4Mapping : public NativePixmapMapping {
         gbm_buffer_manager.ImportDmaBuf(handle, size, format);
 
     if (!gbm_buffer->Map()) {
-      LOG(ERROR) << "Failed to map GPU memory buffer!";
+      LOG(ERROR) << "Failed to map GBM buffer!";
       return nullptr;
     }
 
@@ -330,8 +329,7 @@ std::unique_ptr<NativePixmapMapping> CreateNativePixmapMapping(
     return Tile4Mapping::CreateTile4Mapping(handle, size, format);
   }
 
-  return GpuMemoryBufferMapping::CreateGpuMemoryBufferMapping(handle, size,
-                                                              format);
+  return GbmBufferMapping::CreateGbmBufferMapping(handle, size, format);
 }
 
 struct NativePixmapDecodedImage : public DecodedImage {
