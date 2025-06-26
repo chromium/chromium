@@ -3779,7 +3779,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.PreconnectHSTSUpgradesUrl"
     enum="HSTSRedirectUpgradeReason" expires_after="2025-12-14">
-  <owner>bingler@chromium.org</owner>
+  <owner>ladan@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     Records whether or not a url was upgraded by HSTS during an attempt to
