@@ -8,10 +8,13 @@
 #import "base/apple/bundle_locations.h"
 #import "base/at_exit.h"
 #import "base/debug/crash_logging.h"
+#import "base/memory/page_size.h"
+#import "base/memory/safety_checks.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/blink_buildflags.h"
 #import "components/component_updater/component_updater_paths.h"
 #import "components/crash/core/app/crashpad.h"
+#import "components/crash/core/common/crash_key.h"
 #import "ios/chrome/app/ios_force_build_chrome_framework_buildflags.h"
 #import "ios/chrome/app/startup/ios_chrome_main.h"
 #import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
@@ -34,6 +37,15 @@ __attribute__((visibility("default"))) int ChromeMain(int argc, char* argv[]);
 }
 
 namespace {
+
+// Kill switch to disable adding memory ranges to crash data when heap
+// corruption or double free is detected by PA-E.
+BASE_FEATURE(kIOSCorruptionDetectedMemoryRangesKillSwitch,
+             "IOSCorruptionDetectedMemoryRangesKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The number of times a PA-E double free or corruption has been detected.
+int g_double_free_or_corruption_detected_count = 0;
 
 NSString* const kUIApplicationDelegateInfoKey = @"UIApplicationDelegate";
 
@@ -115,8 +127,55 @@ int ChromeMain(int argc, char* argv[]) {
   // In any case reports are not sent if the user opted out.
   StartCrashController();
 
+  crashpad::SimpleAddressRangeBag ios_dump_extra_ranges;
+  crash_reporter::SetIntermediateDumpExtraMemoryRanges(&ios_dump_extra_ranges);
+
   crashpad::SimpleAddressRangeBag ios_extra_ranges;
-  crash_reporter::SetIntermediateDumpExtraMemoryRanges(&ios_extra_ranges);
+  crash_reporter::SetExtraMemoryRanges(&ios_extra_ranges);
+
+  auto CorruptionDetectedFn = [](uintptr_t address) {
+    static crash_reporter::CrashKeyString<16>
+        double_free_or_corruption_detected_count_key(
+            "double_free_or_corruption_detected_count");
+    g_double_free_or_corruption_detected_count++;
+    double_free_or_corruption_detected_count_key.Set(
+        base::NumberToString(g_double_free_or_corruption_detected_count));
+
+    // If the kill switch is enabled, skip adding memory ranges.
+    if (base::FeatureList::IsEnabled(
+            kIOSCorruptionDetectedMemoryRangesKillSwitch)) {
+      return;
+    }
+
+    static size_t pagesize = base::GetPageSize();
+    uintptr_t page_size_u = static_cast<uintptr_t>(pagesize);
+    uintptr_t offset_mask = page_size_u - 1;
+    uintptr_t page_base_addr = address & ~offset_mask;
+    crashpad::SimpleAddressRangeBag* ranges =
+        crash_reporter::ExtraMemoryRanges();
+
+    // Crashpad's extra memory ranges bag prohibits writing the first
+    // page (i.e., address zero).
+    if (page_base_addr < pagesize * 2) {
+      return;
+    }
+
+    // Clear ranges, don't keep around a previously suppressed range.
+    crashpad::SimpleAddressRangeBag::Iterator iterator(*ranges);
+    while (const crashpad::SimpleAddressRangeBag::Entry* entry =
+               iterator.Next()) {
+      ranges->Remove(reinterpret_cast<void*>(entry->base), entry->size);
+    }
+
+    // Keep around the current, previous and next page.
+    ranges->Insert(reinterpret_cast<void*>(page_base_addr), pagesize);
+    ranges->Insert(reinterpret_cast<void*>(page_base_addr - pagesize),
+                   pagesize);
+    ranges->Insert(reinterpret_cast<void*>(page_base_addr + pagesize),
+                   pagesize);
+  };
+
+  base::SetDoubleFreeOrCorruptionDetectedFn(CorruptionDetectedFn);
 
   // Always ignore SIGPIPE.  We check the return value of write().
   CHECK_NE(SIG_ERR, signal(SIGPIPE, SIG_IGN));
