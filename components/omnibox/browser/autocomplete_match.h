@@ -535,6 +535,9 @@ struct AutocompleteMatch {
   // and provider type.
   bool IsIPHSuggestion() const;
 
+  // Checks if this match has an attached action with the given `action_id`.
+  bool HasAction(OmniboxActionId action_id) const;
+
   // Checks if this match is a contextual search suggestion to be fulfilled
   // by lens in the side panel.
   bool IsContextualSearchSuggestion() const;

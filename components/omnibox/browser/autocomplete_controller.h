@@ -39,6 +39,7 @@
 #include "third_party/omnibox_proto/types.pb.h"
 
 class ClipboardProvider;
+class ContextualSearchProvider;
 class DocumentProvider;
 class FeaturedSearchProvider;
 class HistoryFuzzyProvider;
@@ -271,6 +272,9 @@ class AutocompleteController : public AutocompleteProviderListener,
     return voice_suggest_provider_;
   }
   OpenTabProvider* open_tab_provider() const { return open_tab_provider_; }
+  ContextualSearchProvider* contextual_search_provider() const {
+    return contextual_search_provider_;
+  }
 
   const AutocompleteInput& input() const { return input_; }
   const AutocompleteResult& result() const { return published_result_; }
@@ -567,6 +571,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   raw_ptr<TabGroupProvider> tab_group_provider_;
 
   raw_ptr<FeaturedSearchProvider> featured_search_provider_;
+
+  raw_ptr<ContextualSearchProvider> contextual_search_provider_;
 
   // A vector of scoring signals annotators for URL suggestions.
   // Unlike the other existing annotators (e.g., pedals and keywords), these

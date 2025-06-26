@@ -1731,6 +1731,12 @@ bool AutocompleteMatch::IsIPHSuggestion() const {
   return iph_type != IphType::kNone;
 }
 
+bool AutocompleteMatch::HasAction(OmniboxActionId action_id) const {
+  return std::ranges::any_of(actions, [&](const auto& action) {
+    return action && action->ActionId() == action_id;
+  });
+}
+
 bool AutocompleteMatch::IsContextualSearchSuggestion() const {
   return subtypes.contains(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
 }

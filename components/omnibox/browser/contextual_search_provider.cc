@@ -24,6 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/contextual_search_action.h"
+#include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -151,6 +152,13 @@ void ContextualSearchProvider::AddProviderInfo(
   if (!matches().empty()) {
     provider_info->back().set_times_returned_results_in_session(1);
   }
+}
+
+bool ContextualSearchProvider::HasToolbeltLensAction() const {
+  return std::ranges::any_of(matches_, [](const auto& match) {
+    return match.IsToolbelt() &&
+           match.HasAction(OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS);
+  });
 }
 
 ContextualSearchProvider::ContextualSearchProvider(
