@@ -138,7 +138,7 @@ def construct_runtime_cache_folder(runtime_cache_prefix, ios_version):
   return runtime_cache_prefix + ios_version
 
 
-def move_runtime(runtime_cache_folder, xcode_app_path, into_xcode):
+def move_runtime(runtime_cache_folder, xcode_app_path):
   """Moves runtime from runtime cache into xcode or vice versa.
 
   The function is intended to only work with new Xcode packages.
@@ -151,8 +151,6 @@ def move_runtime(runtime_cache_folder, xcode_app_path, into_xcode):
   Args:
     runtime_cache_folder: (string) Path to the runtime cache directory.
     xcode_app_path: (string) Path to install the contents of Xcode.app.
-    into_xcode: (bool) Whether the function moves from cache dir into Xcode or
-      from Xcode to cache dir.
 
   Raises:
     IOSRuntimeHandlingError for issues moving runtime around.
@@ -160,8 +158,8 @@ def move_runtime(runtime_cache_folder, xcode_app_path, into_xcode):
   """
   xcode_runtime_folder = os.path.join(xcode_app_path,
                                       XcodeIOSSimulatorRuntimeRelPath)
-  src_folder = runtime_cache_folder if into_xcode else xcode_runtime_folder
-  dst_folder = xcode_runtime_folder if into_xcode else runtime_cache_folder
+  src_folder = runtime_cache_folder
+  dst_folder = xcode_runtime_folder
 
   runtimes_in_src = glob.glob(os.path.join(src_folder, '*.simruntime'))
   if len(runtimes_in_src) != 1:
@@ -317,7 +315,7 @@ def install(mac_toolchain, xcode_build_version, xcode_app_path, **runtime_args):
     # and install only when the runtime doesn't exist in cache.
     _install_runtime(mac_toolchain, runtime_cache_folder, xcode_build_version,
                      ios_version)
-    move_runtime(runtime_cache_folder, xcode_app_path, into_xcode=True)
+    move_runtime(runtime_cache_folder, xcode_app_path)
 
   return is_legacy_xcode_package
 
