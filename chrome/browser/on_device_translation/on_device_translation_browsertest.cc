@@ -46,6 +46,7 @@
 #include "components/services/on_device_translation/public/cpp/features.h"
 #include "components/services/on_device_translation/test/test_util.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
@@ -226,6 +227,14 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
         ->GetLastCommittedOrigin();
   }
 
+  content::RenderProcessHost* GetRenderProcessHost() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame()
+        ->GetProcess();
+  }
+
   // Navigates to an empty page.
   void NavigateToEmptyPage() {
     CHECK(ui_test_utils::NavigateToURL(
@@ -251,12 +260,16 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
                               const std::string_view targetLang,
                               CanCreateTranslatorResult expected_result) {
     NavigateToEmptyPage();
+
+    content::RenderProcessHost* render_process_host = GetRenderProcessHost();
+    CHECK(render_process_host);
+
     // Call TranslationAvailable() via mojo interface to verify the detailed
     // result.
     mojo::Remote<blink::mojom::TranslationManager> remote;
     TestSupportsUserData fake_user_data;
-    TranslationManagerImpl::Bind(GetBrowserContext(), &fake_user_data,
-                                 GetLastCommittedOrigin(),
+    TranslationManagerImpl::Bind(render_process_host, GetBrowserContext(),
+                                 &fake_user_data, GetLastCommittedOrigin(),
                                  remote.BindNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     remote->TranslationAvailable(
@@ -872,7 +885,7 @@ class OnDeviceTranslationProgressMonitorBrowserTest
     OnDeviceTranslationBrowserTest::SetUpOnMainThread();
     NavigateToEmptyPage();
     translation_manager_ = std::make_unique<MockTranslationManagerImpl>(
-        GetBrowserContext(), GetLastCommittedOrigin());
+        GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
 
     // Setup a ComponentUpdateService to be used by the TranslationManager.
     EXPECT_CALL(*translation_manager_, GetComponentUpdateService())
@@ -1137,8 +1150,8 @@ IN_PROC_BROWSER_TEST_F(
   mock_component_manager.InstallMockTranslateKitComponent();
   NavigateToEmptyPage();
 
-  auto manager =
-      MockTranslationManagerImpl(GetBrowserContext(), GetLastCommittedOrigin());
+  auto manager = MockTranslationManagerImpl(
+      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
 
   // Simulate the download of an additional language pack (Japanese) by another
   // site.
@@ -1168,8 +1181,8 @@ IN_PROC_BROWSER_TEST_F(
   mock_component_manager.InstallMockTranslateKitComponent();
   NavigateToEmptyPage();
 
-  auto manager =
-      MockTranslationManagerImpl(GetBrowserContext(), GetLastCommittedOrigin());
+  auto manager = MockTranslationManagerImpl(
+      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
 
   // Simulate the download of an additional language pack (Japanese) by another
   // site.
@@ -1231,8 +1244,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   mock_component_manager.InstallMockTranslateKitComponent();
   NavigateToEmptyPage();
 
-  auto manager =
-      MockTranslationManagerImpl(GetBrowserContext(), GetLastCommittedOrigin());
+  auto manager = MockTranslationManagerImpl(
+      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
   mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
       {LanguagePackKey::kEn_Es});
   EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(0);
@@ -1252,8 +1265,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   mock_component_manager.InstallMockTranslateKitComponent();
   NavigateToEmptyPage();
 
-  auto manager =
-      MockTranslationManagerImpl(GetBrowserContext(), GetLastCommittedOrigin());
+  auto manager = MockTranslationManagerImpl(
+      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
 
   EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(0);
   EXPECT_NE(EvalJsCatchingError(R"(
@@ -1300,8 +1313,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
   NavigateToEmptyPage();
 
-  MockTranslationManagerImpl manager(GetBrowserContext(),
-                                     GetLastCommittedOrigin());
+  MockTranslationManagerImpl manager(
+      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
   manager.SetCrashesAllowed(true);
 
   auto console_observer =
@@ -1332,8 +1345,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   mock_component_manager.InstallMockTranslateKitComponent();
   NavigateToEmptyPage();
 
-  MockTranslationManagerImpl manager(GetBrowserContext(),
-                                     GetLastCommittedOrigin());
+  MockTranslationManagerImpl manager(
+      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
   manager.SetCrashesAllowed(true);
 
   // Tries to call availability() for the fake language code `crash`. This

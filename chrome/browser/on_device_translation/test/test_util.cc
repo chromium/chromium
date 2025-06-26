@@ -138,9 +138,10 @@ void MockComponentManager::InstallMockLanguagePackLater(
 }
 
 MockTranslationManagerImpl::MockTranslationManagerImpl(
+    content::RenderProcessHost* process_host,
     content::BrowserContext* browser_context,
     const url::Origin& origin)
-    : TranslationManagerImpl(browser_context, origin),
+    : TranslationManagerImpl(process_host, browser_context, origin),
       mock_translation_manager_impl_(
           TranslationManagerImpl::SetForTesting(this)) {}
 

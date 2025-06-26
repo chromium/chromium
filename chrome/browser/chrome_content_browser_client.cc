@@ -8424,12 +8424,13 @@ void ChromeContentBrowserClient::BindAIManager(
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 void ChromeContentBrowserClient::BindTranslationManager(
+    content::RenderProcessHost* host,
     content::BrowserContext* browser_context,
     base::SupportsUserData* context_user_data,
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::TranslationManager> receiver) {
   on_device_translation::TranslationManagerImpl::Bind(
-      browser_context, context_user_data, origin, std::move(receiver));
+      host, browser_context, context_user_data, origin, std::move(receiver));
 }
 #endif
 

@@ -14,6 +14,7 @@
 #include "chrome/browser/ai/ai_model_download_progress_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -33,6 +34,7 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
                                public blink::mojom::TranslationManager {
  public:
   TranslationManagerImpl(base::PassKey<TranslationManagerImpl>,
+                         content::RenderProcessHost* process_host,
                          content::BrowserContext* browser_context,
                          const url::Origin& origin);
   TranslationManagerImpl(const TranslationManagerImpl&) = delete;
@@ -45,21 +47,25 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
       TranslationManagerImpl* manager);
 
   static void Bind(
+      content::RenderProcessHost* process_host,
       content::BrowserContext* browser_context,
       base::SupportsUserData* context_user_data,
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::TranslationManager> receiver);
 
  protected:
-  TranslationManagerImpl(content::BrowserContext* browser_context,
+  TranslationManagerImpl(content::RenderProcessHost* process_host,
+                         content::BrowserContext* browser_context,
                          const url::Origin& origin);
 
   content::BrowserContext* browser_context() { return browser_context_.get(); }
+  content::RenderProcessHost* process_host() { return process_host_.get(); }
 
  private:
   friend class TranslationManagerImplTest;
 
   static TranslationManagerImpl* GetOrCreate(
+      content::RenderProcessHost* process_host,
       content::BrowserContext* browser_context,
       base::SupportsUserData* context_user_data,
       const url::Origin& origin);
@@ -130,6 +136,7 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
   // Instance of `TranslationManagerImpl` for testing.
   static TranslationManagerImpl* translation_manager_for_test_;
 
+  raw_ptr<content::RenderProcessHost> process_host_;
   const base::WeakPtr<content::BrowserContext> browser_context_;
   const url::Origin origin_;
 

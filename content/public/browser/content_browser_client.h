@@ -3209,10 +3209,11 @@ class CONTENT_EXPORT ContentBrowserClient {
       RenderFrameHost* rfh,
       mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
-  // Binds the TranslationManager for the given `browser_context`,
-  // `context_user_data` and `origin` to `receiver`. The created
-  // TranslationManager will be owned by the `context_user_data`.
+  // Binds the TranslationManager for the given `process_host`,
+  // `browser_context`, `context_user_data` and `origin` to `receiver`. The
+  // created TranslationManager will be owned by the `context_user_data`.
   virtual void BindTranslationManager(
+      RenderProcessHost* process_host,
       BrowserContext* browser_context,
       base::SupportsUserData* context_user_data,
       const url::Origin& origin,

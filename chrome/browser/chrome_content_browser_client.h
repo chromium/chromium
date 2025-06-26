@@ -1130,6 +1130,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
   void BindTranslationManager(
+      content::RenderProcessHost* host,
       content::BrowserContext* browser_context,
       base::SupportsUserData* context_user_data,
       const url::Origin& origin,

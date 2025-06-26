@@ -1891,6 +1891,7 @@ void ContentBrowserClient::BindAIManager(
 }
 
 void ContentBrowserClient::BindTranslationManager(
+    RenderProcessHost* process_host,
     BrowserContext* browser_context,
     base::SupportsUserData* context_user_data,
     const url::Origin& origin,

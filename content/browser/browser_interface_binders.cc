@@ -1148,8 +1148,9 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
         [](RenderFrameHostImpl* host,
            mojo::PendingReceiver<blink::mojom::TranslationManager> receiver) {
           GetContentClient()->browser()->BindTranslationManager(
-              host->GetBrowserContext(), &host->document_associated_data(),
-              host->GetLastCommittedOrigin(), std::move(receiver));
+              host->GetProcess(), host->GetBrowserContext(),
+              &host->document_associated_data(), host->GetLastCommittedOrigin(),
+              std::move(receiver));
         },
         base::Unretained(host)));
   }
@@ -1450,8 +1451,9 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
     map->Add<blink::mojom::TranslationManager>(base::BindRepeating(
         [](DedicatedWorkerHost* host,
            mojo::PendingReceiver<blink::mojom::TranslationManager> receiver) {
+          auto* process_host = host->GetProcessHost();
           GetContentClient()->browser()->BindTranslationManager(
-              host->GetProcessHost()->GetBrowserContext(), host,
+              process_host, process_host->GetBrowserContext(), host,
               host->GetStorageKey().origin(), std::move(receiver));
         },
         base::Unretained(host)));
@@ -1572,8 +1574,9 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
     map->Add<blink::mojom::TranslationManager>(base::BindRepeating(
         [](SharedWorkerHost* host,
            mojo::PendingReceiver<blink::mojom::TranslationManager> receiver) {
+          auto* process_host = host->GetProcessHost();
           GetContentClient()->browser()->BindTranslationManager(
-              host->GetProcessHost()->GetBrowserContext(), host,
+              process_host, process_host->GetBrowserContext(), host,
               host->GetStorageKey().origin(), std::move(receiver));
         },
         base::Unretained(host)));
@@ -1750,7 +1753,7 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
           if (auto* process_host = static_cast<RenderProcessHostImpl*>(
                   RenderProcessHost::FromID(host->worker_process_id()))) {
             GetContentClient()->browser()->BindTranslationManager(
-                process_host->GetBrowserContext(), host,
+                process_host, process_host->GetBrowserContext(), host,
                 host->GetBucketStorageKey().origin(), std::move(receiver));
           }
         },
