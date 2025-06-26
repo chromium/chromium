@@ -8,7 +8,6 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellActivityTestRule.RESULTS_NULL;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 
 import androidx.test.filters.SmallTest;
 
@@ -22,7 +21,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -204,21 +202,18 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void test_addDialog() {
         performTest("add-dialog.html", "add-dialog-expected-android.txt");
     }
 
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void test_addDialog_describedBy() {
         performTest("add-dialog-described-by.html", "add-dialog-described-by-expected-android.txt");
     }
 
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void test_addDialog_noInfo() {
         performTest("add-dialog-no-info.html", "add-dialog-no-info-expected-android.txt");
     }

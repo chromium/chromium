@@ -74,9 +74,6 @@ public class AccessibilityState {
     public static final String KNOWN_SCREEN_READER_SERVICE_IDS =
             "com.google.android.marvin.talkback/.TalkBackService";
 
-    // Constant value to multiply animation timeouts by for pre-Q Android versions.
-    private static final int ANIMATION_TIMEOUT_MULTIPLIER = 2;
-
     // Histogram strings and constants.
     private static final String UPDATE_ACCESSIBILITY_SERVICES_DID_POLL =
             "Accessibility.Android.UpdateAccessibilityServices.DidPoll";
@@ -454,19 +451,11 @@ public class AccessibilityState {
     public static int getRecommendedTimeoutMillis(int minimumTimeout, int nonA11yTimeout) {
         if (!sInitialized) updateAccessibilityServices();
 
-        int recommendedTimeout = nonA11yTimeout;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            recommendedTimeout =
-                    fetchAccessibilityManager()
-                            .getRecommendedTimeoutMillis(
-                                    nonA11yTimeout,
-                                    FLAG_CONTENT_ICONS | FLAG_CONTENT_TEXT | FLAG_CONTENT_CONTROLS);
-        } else {
-            // For pre-Q Android versions, we will multiply by a constant when services are enabled.
-            if (AccessibilityState.isAnyAccessibilityServiceEnabled()) {
-                recommendedTimeout *= ANIMATION_TIMEOUT_MULTIPLIER;
-            }
-        }
+        int recommendedTimeout =
+                fetchAccessibilityManager()
+                        .getRecommendedTimeoutMillis(
+                                nonA11yTimeout,
+                                FLAG_CONTENT_ICONS | FLAG_CONTENT_TEXT | FLAG_CONTENT_CONTROLS);
 
         return Math.max(minimumTimeout, recommendedTimeout);
     }
