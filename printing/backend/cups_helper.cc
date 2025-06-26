@@ -9,6 +9,11 @@
 
 #include "printing/backend/cups_helper.h"
 
+#include "base/logging.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #include <cups/ppd.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -24,11 +29,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
-#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/time/time.h"
-#include "build/build_config.h"
 #include "printing/backend/cups_deleters.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
@@ -39,12 +41,15 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)
 #include "printing/backend/cups_weak_functions.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 using base::EqualsCaseInsensitiveASCII;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 namespace printing {
 
@@ -55,6 +60,7 @@ namespace {
 // able to start and respond on all systems within this duration.
 constexpr base::TimeDelta kCupsTimeout = base::Seconds(5);
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 // CUPS default max copies value (parsed from kCupsMaxCopies PPD attribute).
 constexpr int32_t kDefaultMaxCopies = 9999;
 constexpr char kCupsMaxCopies[] = "cupsMaxCopies";
@@ -760,9 +766,11 @@ bool GetColorModelSettings(ppd_file_t* ppd,
 
 // Default port for IPP print servers.
 const int kDefaultIPPServerPort = 631;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 }  // namespace
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 // Helper wrapper around http_t structure, with connection and cleanup
 // functionality.
 HttpConnectionCUPS::HttpConnectionCUPS(const GURL& print_server_url,
@@ -957,6 +965,7 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
   *printer_info = caps;
   return true;
 }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 ScopedHttpPtr HttpConnect2(const char* host,
                            int port,
