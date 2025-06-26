@@ -207,8 +207,6 @@ Element* CSSComputedStyleDeclaration::StyledElement() const {
   }
 
   if (pseudo_element_specifier_ == kPseudoIdInvalid) {
-    CHECK(RuntimeEnabledFeatures::
-              CSSComputedStyleFullPseudoElementParserEnabled());
     return nullptr;
   }
 
