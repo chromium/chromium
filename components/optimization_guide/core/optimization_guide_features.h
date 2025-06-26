@@ -171,16 +171,6 @@ bool IsPushNotificationsEnabled();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldDeferStartupActiveTabsHintsFetch();
 
-// The maximum number of hosts allowed to be requested by the client to the
-// remote Optimization Guide Service for use by prediction models.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-size_t MaxHostsForOptimizationGuideServiceModelsFetch();
-
-// The maximum number of hosts allowed to be maintained in a least-recently-used
-// cache by the prediction manager.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-size_t MaxHostModelFeaturesCacheSize();
-
 // The maximum number of hints allowed to be maintained in a least-recently-used
 // cache for hosts.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -190,13 +180,6 @@ size_t MaxHostKeyedHintCacheSize();
 // will just be stored in-memory and evicted if not recently used.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldPersistHintsToDisk();
-
-// Returns true if the optimization target decision for |optimization_target|
-// should not be propagated to the caller in an effort to fully understand the
-// statistics for the served model and not taint the resulting data.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
-    proto::OptimizationTarget optimization_target);
 
 // Returns requests contexts for which personalized metadata should be enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

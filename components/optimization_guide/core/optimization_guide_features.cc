@@ -291,17 +291,6 @@ bool IsPushNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kPushNotifications);
 }
 
-size_t MaxHostsForOptimizationGuideServiceModelsFetch() {
-  return GetFieldTrialParamByFeatureAsInt(
-      kOptimizationTargetPrediction,
-      "max_hosts_for_optimization_guide_service_models_fetch", 30);
-}
-
-size_t MaxHostModelFeaturesCacheSize() {
-  return GetFieldTrialParamByFeatureAsInt(
-      kOptimizationTargetPrediction, "max_host_model_features_cache_size", 100);
-}
-
 size_t MaxHostKeyedHintCacheSize() {
   size_t max_host_keyed_hint_cache_size = GetFieldTrialParamByFeatureAsInt(
       kOptimizationHints, "max_host_keyed_hint_cache_size", 30);
@@ -359,16 +348,6 @@ OptimizationTypeSet GetAllowedOptimizationTypesForProactivePersonalization() {
     }
   }
   return allowed_optimization_types;
-}
-
-bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
-    proto::OptimizationTarget optimization_target) {
-  if (optimization_target != proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD) {
-    return false;
-  }
-
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kOptimizationTargetPrediction, "painful_page_load_metrics_only", false);
 }
 
 base::TimeDelta PredictionModelFetchRandomMinDelay() {
