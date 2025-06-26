@@ -2486,12 +2486,6 @@
       name: "FormControlRestoreStateIfAutocompleteOff",
     },
     {
-      // TODO(crbug.com/1432009) Allow form controls with vertical writing mode
-      // to have direction affect the flow of the control.
-      name: "FormControlsVerticalWritingModeDirectionSupport",
-      status: "stable",
-    },
-    {
       name: "FractionalScrollOffsets",
       base_feature: "none",
       public: true,
