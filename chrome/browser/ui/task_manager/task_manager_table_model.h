@@ -230,9 +230,6 @@ class TaskManagerTableModel : public TaskManagerObserver,
   // values to string16.
   std::unique_ptr<TaskManagerValuesStringifier> stringifier_;
 
-  // The status of the flag #enable-nacl-debug.
-  bool is_nacl_debugging_flag_enabled_;
-
   // Determines which rows should be kept from GetTaskIdsList().
   DisplayCategory display_category_;
 

@@ -12,7 +12,6 @@
 #include "chrome/browser/task_manager/providers/child_process_task_provider.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/nacl/common/nacl_process_type.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/common/process_type.h"
 #include "content/public/test/browser_task_environment.h"
@@ -38,8 +37,6 @@ struct ProcessTypeTaskTypePair {
     { content::PROCESS_TYPE_ZYGOTE, Task::ZYGOTE },
     { content::PROCESS_TYPE_SANDBOX_HELPER, Task::SANDBOX_HELPER },
     { content::PROCESS_TYPE_GPU, Task::GPU },
-    { PROCESS_TYPE_NACL_LOADER, Task::NACL },
-    { PROCESS_TYPE_NACL_BROKER, Task::NACL },
 };
 
 }  // namespace

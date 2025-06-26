@@ -20,7 +20,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/nacl/common/nacl_process_type.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -81,36 +80,6 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
     case content::PROCESS_TYPE_PPAPI_BROKER:
       return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PLUGIN_BROKER_PREFIX,
                                         result_title);
-    case PROCESS_TYPE_NACL_BROKER:
-      return l10n_util::GetStringUTF16(IDS_TASK_MANAGER_NACL_BROKER_PREFIX);
-    case PROCESS_TYPE_NACL_LOADER: {
-#if !BUILDFLAG(IS_ANDROID)
-      auto* profile_manager = g_browser_process->profile_manager();
-      if (profile_manager) {
-        // TODO(afakhry): Fix the below looping by plumbing a way to get the
-        // profile or the profile path from the child process host if any.
-        auto loaded_profiles = profile_manager->GetLoadedProfiles();
-        for (auto* profile : loaded_profiles) {
-          // Some profiles cannot have extensions, such as the System Profile.
-          if (extensions::ChromeContentBrowserClientExtensionsPart::
-                  AreExtensionsDisabledForProfile(profile)) {
-            continue;
-          }
-
-          const extensions::ExtensionSet& enabled_extensions =
-              extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
-          const extensions::Extension* extension =
-              enabled_extensions.GetExtensionOrAppByURL(GURL(result_title));
-          if (extension) {
-            result_title = base::UTF8ToUTF16(extension->name());
-            break;
-          }
-        }
-      }
-#endif  // !BUILDFLAG(IS_ANDROID)
-      return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_NACL_PREFIX,
-                                        result_title);
-    }
     case content::PROCESS_TYPE_RENDERER: {
       switch (subtype) {
         case ChildProcessTask::ProcessSubtype::kSpareRenderProcess:
@@ -224,9 +193,6 @@ Task::Type ChildProcessTask::GetType() const {
       return Task::SANDBOX_HELPER;
     case content::PROCESS_TYPE_GPU:
       return Task::GPU;
-    case PROCESS_TYPE_NACL_LOADER:
-    case PROCESS_TYPE_NACL_BROKER:
-      return Task::NACL;
     case content::PROCESS_TYPE_RENDERER:
       return Task::RENDERER;
     default:

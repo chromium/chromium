@@ -4823,9 +4823,6 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column" formatter_data="android_java">
           Task
         </message>
-        <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
-          NaCl debug port
-        </message>
         <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column" formatter_data="android_java">
           Network
         </message>
@@ -4896,9 +4893,6 @@ are declared in tools/grit/grit_args.gni.
         </message>
         <message name="IDS_TASK_MANAGER_USER_HANDLES_COLUMN" desc="The title for Task Manager USER handles column.">
           USER Handles
-        </message>
-        <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
-          NaCl Debug Port
         </message>
         <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column" formatter_data="android_java">
           Task
@@ -4972,12 +4966,6 @@ are declared in tools/grit/grit_args.gni.
       </message>
       <message name="IDS_TASK_MANAGER_FOREGROUNDED_TEXT" desc="The value displayed for a process with foregrounded priority">
         Normal
-      </message>
-      <message name="IDS_TASK_MANAGER_UNKNOWN_VALUE_TEXT" desc="The value displayed for an unknown NaCl debug stub port in the task manager.">
-        Unknown
-      </message>
-      <message name="IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT" desc="The value displayed for NaCl debug stub port in the task manager when the flag #enable-nacl-debug is disabled.">
-        Disabled
       </message>
       <message name="IDS_TASK_MANAGER_HANDLES_CELL_TEXT" desc="The value displayed in the user/gdi cells.">
         <ph name="NUM_HANDLES">$1<ex>300</ex></ph> (<ph name="NUM_KILOBYTES_LIVE">$2<ex>500</ex></ph> peak)
@@ -5058,12 +5046,6 @@ are declared in tools/grit/grit_args.gni.
       </message>
       <message name="IDS_TASK_MANAGER_UTILITY_PREFIX" desc="The prefix for a utility process row">
         Utility: <ph name="UTILITY_TYPE">$1<ex>Image Decoder</ex></ph>
-      </message>
-      <message name="IDS_TASK_MANAGER_NACL_PREFIX" desc="The prefix for a Task Manager Native Client module row">
-        Native Client module: <ph name="NEXE_NAME">$1<ex>Unknown Native Client module</ex></ph>
-      </message>
-      <message name="IDS_TASK_MANAGER_NACL_BROKER_PREFIX" desc="Task Manager row for Native Client broker, which acts as the sanbox manager for NaCl processes">
-        Native Client security manager
       </message>
       <message name="IDS_TASK_MANAGER_GPU_PREFIX" desc="Task Manager row for the GPU process, which is the process doing all accelerated graphics rendering">
         GPU Process
@@ -7235,11 +7217,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_PLUGIN_BLOCKED_BY_POLICY" desc="The placeholder text for a plugin blocked by enterprise policy.">
         <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> is blocked by enterprise policy
       </message>
-      <if expr="is_chromeos">
-        <message name="IDS_NACL_PLUGIN_BLOCKED" desc="The placeholder text for a blocked plugin.">
-          This plugin is not supported on this device
-        </message>
-      </if>
       <message name="IDS_PLUGIN_NOT_AUTHORIZED" desc="The placeholder text for a plugin that requires user permission to run.">
         <ph name="PLUGIN_NAME">$1<ex>Java</ex></ph> needs your permission to run
       </message>
@@ -7483,11 +7460,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Source
         </message>
       </if>
-
-      <!-- NaCl plugin strings -->
-      <message name="IDS_NACL_APP_MISSING_ARCH_MESSAGE" desc="Shown if a Native Client app does not support the current architecture">
-        This page uses a Native Client app that doesn't work on your computer.
-      </message>
 
       <!-- About box strings -->
       <if expr="is_win or is_macosx">

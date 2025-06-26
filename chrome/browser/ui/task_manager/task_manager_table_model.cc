@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/nacl/browser/nacl_browser.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/common/result_codes.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -76,7 +75,6 @@ bool IsSharedByGroup(int column_id) {
     case IDS_TASK_MANAGER_WEBCORE_IMAGE_CACHE_COLUMN:
     case IDS_TASK_MANAGER_WEBCORE_SCRIPTS_CACHE_COLUMN:
     case IDS_TASK_MANAGER_WEBCORE_CSS_CACHE_COLUMN:
-    case IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN:
     case IDS_TASK_MANAGER_IDLE_WAKEUPS_COLUMN:
     case IDS_TASK_MANAGER_HARD_FAULTS_COLUMN:
     case IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN:
@@ -157,7 +155,6 @@ bool ShouldKeepTaskForSystem(Task::Type type, Task::SubType subtype) {
     case Task::PLUGIN_VM:
     case Task::ZYGOTE:
     case Task::UTILITY:
-    case Task::NACL:
     case Task::SANDBOX_HELPER:
       return true;
 
@@ -184,11 +181,7 @@ class TaskManagerValuesStringifier {
             l10n_util::GetStringUTF16(IDS_TASK_MANAGER_BACKGROUNDED_TEXT)),
         foregrounded_string_(
             l10n_util::GetStringUTF16(IDS_TASK_MANAGER_FOREGROUNDED_TEXT)),
-        asterisk_string_(u"*"),
-        unknown_string_(
-            l10n_util::GetStringUTF16(IDS_TASK_MANAGER_UNKNOWN_VALUE_TEXT)),
-        disabled_nacl_debugging_string_(l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT)) {}
+        asterisk_string_(u"*") {}
 
   TaskManagerValuesStringifier(const TaskManagerValuesStringifier&) = delete;
   TaskManagerValuesStringifier& operator=(const TaskManagerValuesStringifier&) =
@@ -264,20 +257,6 @@ class TaskManagerValuesStringifier {
     return base::FormatNumber(hard_faults);
   }
 
-  std::u16string GetNaClPortText(int nacl_port) {
-    // Only called if NaCl debug stub ports are enabled.
-
-    if (nacl_port == nacl::kGdbDebugStubPortUnused) {
-      return n_a_string_;
-    }
-
-    if (nacl_port == nacl::kGdbDebugStubPortUnknown) {
-      return unknown_string_;
-    }
-
-    return base::NumberToString16(nacl_port);
-  }
-
   std::u16string GetWindowsHandlesText(int64_t current, int64_t peak) {
     return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_HANDLES_CELL_TEXT,
                                       base::NumberToString16(current),
@@ -330,10 +309,6 @@ class TaskManagerValuesStringifier {
     return foregrounded_string_;
   }
   const std::u16string& asterisk_string() const { return asterisk_string_; }
-  const std::u16string& unknown_string() const { return unknown_string_; }
-  const std::u16string& disabled_nacl_debugging_string() const {
-    return disabled_nacl_debugging_string_;
-  }
 
  private:
   // The localized string "N/A".
@@ -351,13 +326,6 @@ class TaskManagerValuesStringifier {
   // The string "*" that is used to show that there exists duplicates in the
   // GPU memory.
   const std::u16string asterisk_string_;
-
-  // The string "Unknown".
-  const std::u16string unknown_string_;
-
-  // The string to show on the NaCl debug port column cells when the flag
-  // #enable-nacl-debug is disabled.
-  const std::u16string disabled_nacl_debugging_string_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -386,7 +354,6 @@ TaskManagerTableModel::TaskManagerTableModel(
       table_view_delegate_(delegate),
       table_model_observer_(nullptr),
       stringifier_(new TaskManagerValuesStringifier),
-      is_nacl_debugging_flag_enabled_(false),
       display_category_(initial_display_category) {
   DCHECK(delegate);
   StartUpdating();
@@ -539,14 +506,6 @@ std::u16string TaskManagerTableModel::GetText(size_t row, int column) {
       return stringifier_->n_a_string();
     }
 
-    case IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN:
-      if (!is_nacl_debugging_flag_enabled_) {
-        return stringifier_->disabled_nacl_debugging_string();
-      }
-
-      return stringifier_->GetNaClPortText(
-          observed_task_manager()->GetNaClDebugStubPort(tasks_[row]));
-
     case IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN:
       return observed_task_manager()->IsTaskOnBackgroundedProcess(tasks_[row])
                  ? stringifier_->backgrounded_string()
@@ -615,11 +574,6 @@ int TaskManagerTableModel::CompareValues(size_t row1,
       return ValueCompare(
           observed_task_manager()->GetSwappedMemoryUsage(tasks_[row1]),
           observed_task_manager()->GetSwappedMemoryUsage(tasks_[row2]));
-
-    case IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN:
-      return ValueCompare(
-          observed_task_manager()->GetNaClDebugStubPort(tasks_[row1]),
-          observed_task_manager()->GetNaClDebugStubPort(tasks_[row2]));
 
     case IDS_TASK_MANAGER_PROCESS_ID_COLUMN: {
       bool vm1 = observed_task_manager()->IsRunningInVM(tasks_[row1]);
@@ -1017,11 +971,6 @@ void TaskManagerTableModel::UpdateRefreshTypes(int column_id, bool visibility) {
 
     case IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN:
       type = REFRESH_TYPE_V8_MEMORY;
-      break;
-
-    case IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN:
-      type = REFRESH_TYPE_NACL;
-      needs_refresh = needs_refresh && is_nacl_debugging_flag_enabled_;
       break;
 
     case IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN:
