@@ -83,8 +83,6 @@ scoped_refptr<AcceleratedStaticBitmapImage>
 AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
     gpu::ExportedSharedImage exported_shared_image,
     const gpu::SyncToken& sync_token,
-    const gfx::Size& size,
-    viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     base::OnceCallback<void(const gpu::SyncToken&)> external_callback) {
@@ -115,6 +113,8 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
       },
       shared_gpu_context, shared_image);
 
+  auto format = shared_image->format();
+  auto size = shared_image->size();
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, 0u, size, format, alpha_type,
       color_space, ImageOrientationEnum::kDefault, shared_gpu_context,

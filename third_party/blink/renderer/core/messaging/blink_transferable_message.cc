@@ -142,7 +142,7 @@ scoped_refptr<StaticBitmapImage> ToStaticBitmapImage(
 scoped_refptr<StaticBitmapImage> WrapAcceleratedBitmapImage(
     AcceleratedImageInfo image) {
   return AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
-      std::move(image.shared_image), image.sync_token, image.size, image.format,
-      image.alpha_type, image.color_space, std::move(image.release_callback));
+      std::move(image.shared_image), image.sync_token, image.alpha_type,
+      image.color_space, std::move(image.release_callback));
 }
 }  // namespace blink

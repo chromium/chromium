@@ -70,8 +70,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   CreateFromExternalSharedImage(
       gpu::ExportedSharedImage exported_shared_image,
       const gpu::SyncToken& sync_token,
-      const gfx::Size& size,
-      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       base::OnceCallback<void(const gpu::SyncToken&)> release_callback);
