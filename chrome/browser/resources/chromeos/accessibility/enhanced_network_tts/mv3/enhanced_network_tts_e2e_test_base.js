@@ -31,6 +31,14 @@ EnhancedNetworkTE2ETestBase = class extends E2ETestBase {
   }
 
   /** @override */
+  testGenCppIncludes() {
+    super.testGenCppIncludes();
+    GEN(`
+#include "ui/accessibility/accessibility_features.h"
+    `);
+  }
+
+  /** @override */
   testGenPreamble() {
     super.testGenPreamble();
     GEN(`
@@ -39,5 +47,10 @@ EnhancedNetworkTE2ETestBase = class extends E2ETestBase {
             &ash::AccessibilityManager::LoadEnhancedNetworkTtsForTest,
             base::Unretained(ash::AccessibilityManager::Get()));
     `);
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['features::kAccessibilityManifestV3EnhancedNetworkTts']};
   }
 };

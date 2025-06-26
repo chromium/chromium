@@ -7,7 +7,7 @@ GEN_INCLUDE(['enhanced_network_tts_e2e_test_base.js']);
 /**
  * Test fixture for enhanced_network_tts_unittest.js.
  */
-EnhancedNetworkTtsUnitTest = class extends EnhancedNetworkTE2ETestBase {
+Mv3EnhancedNetworkTtsUnitTest = class extends EnhancedNetworkTE2ETestBase {
   /** @override */
   testGenPreamble() {
     super.testGenPreamble();
@@ -17,7 +17,7 @@ EnhancedNetworkTtsUnitTest = class extends EnhancedNetworkTE2ETestBase {
 };
 
 SYNC_TEST_F(
-    'EnhancedNetworkTtsUnitTest', 'onSpeakWithAudioStreamEventSucceed',
+    'Mv3EnhancedNetworkTtsUnitTest', 'onSpeakWithAudioStreamEventSucceed',
     async function() {
       // Prepare the mockTtsApi to respond with audio data that corresponds to a
       // 0.2135s playback containing "Hello world".
@@ -34,7 +34,7 @@ SYNC_TEST_F(
       const bufferSize = 400;
       const audioStreamOptions = {bufferSize, sampleRate};
       const decodedAudioData =
-          await EnhancedNetworkTts.decodeAudioDataAtSampleRate(
+          await enhancedNetworkTts.decodeAudioDataAtSampleRateForTesting(
               generateTestBufferData(), sampleRate);
       // Each buffer corresponds to 0.04s.
       const expectedBuffers = [
@@ -91,69 +91,73 @@ SYNC_TEST_F(
           utterance, options, audioStreamOptions, sendTtsAudio);
     });
 
-SYNC_TEST_F('EnhancedNetworkTtsUnitTest', 'GenerateRequest', async function() {
-  let utterance = 'name and lang should be specified together';
-  let options = {voiceName: 'test name', lang: 'en'};
-  let request = EnhancedNetworkTts.generateRequest(utterance, options);
-  assertEqualsJSON(
-      request, {utterance, rate: 1.0, voice: 'test name', lang: 'en'});
+SYNC_TEST_F(
+    'Mv3EnhancedNetworkTtsUnitTest', 'GenerateRequest', async function() {
+      let utterance = 'name and lang should be specified together';
+      let options = {voiceName: 'test name', lang: 'en'};
+      let request = EnhancedNetworkTts.generateRequest(utterance, options);
+      assertEqualsJSON(
+          request, {utterance, rate: 1.0, voice: 'test name', lang: 'en'});
 
-  utterance = 'name without lang will be ignored';
-  options = {voiceName: 'test name'};
-  request = EnhancedNetworkTts.generateRequest(utterance, options);
-  assertEqualsJSON(
-      request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
+      utterance = 'name without lang will be ignored';
+      options = {voiceName: 'test name'};
+      request = EnhancedNetworkTts.generateRequest(utterance, options);
+      assertEqualsJSON(
+          request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
 
-  utterance = 'lang without name will be ignored';
-  options = {lang: 'en'};
-  request = EnhancedNetworkTts.generateRequest(utterance, options);
-  assertEqualsJSON(
-      request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
+      utterance = 'lang without name will be ignored';
+      options = {lang: 'en'};
+      request = EnhancedNetworkTts.generateRequest(utterance, options);
+      assertEqualsJSON(
+          request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
 
-  utterance = 'only lang code (e.g., en) will be used';
-  options = {voiceName: 'test name', lang: 'en_US'};
-  request = EnhancedNetworkTts.generateRequest(utterance, options);
-  assertEqualsJSON(
-      request, {utterance, rate: 1.0, voice: 'test name', lang: 'en'});
+      utterance = 'only lang code (e.g., en) will be used';
+      options = {voiceName: 'test name', lang: 'en_US'};
+      request = EnhancedNetworkTts.generateRequest(utterance, options);
+      assertEqualsJSON(
+          request, {utterance, rate: 1.0, voice: 'test name', lang: 'en'});
 
-  utterance = 'utterance without options can proceed';
-  options = {};
-  request = EnhancedNetworkTts.generateRequest(utterance, options);
-  assertEqualsJSON(
-      request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
+      utterance = 'utterance without options can proceed';
+      options = {};
+      request = EnhancedNetworkTts.generateRequest(utterance, options);
+      assertEqualsJSON(
+          request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
 
-  utterance = 'Rate will be sent along with the request';
-  options = {rate: 3.0};
-  request = EnhancedNetworkTts.generateRequest(utterance, options);
-  assertEqualsJSON(
-      request, {utterance, rate: 3.0, voice: undefined, lang: undefined});
-});
+      utterance = 'Rate will be sent along with the request';
+      options = {rate: 3.0};
+      request = EnhancedNetworkTts.generateRequest(utterance, options);
+      assertEqualsJSON(
+          request, {utterance, rate: 3.0, voice: undefined, lang: undefined});
+    });
 
 SYNC_TEST_F(
-    'EnhancedNetworkTtsUnitTest', 'DecodeAudioDataAtSampleRate',
+    'Mv3EnhancedNetworkTtsUnitTest', 'DecodeAudioDataAtSampleRate',
     async function() {
       const testAudioLength = 0.2135;
       let sampleRate = 4000;
 
-      let audioBuffer = await EnhancedNetworkTts.decodeAudioDataAtSampleRate(
-          generateTestBufferData(), sampleRate);
+      let audioBuffer =
+          await enhancedNetworkTts.decodeAudioDataAtSampleRateForTesting(
+              generateTestBufferData(), sampleRate);
       assertEquals(
           audioBuffer.length, Math.floor(testAudioLength * sampleRate));
 
       sampleRate = 6000;
-      audioBuffer = await EnhancedNetworkTts.decodeAudioDataAtSampleRate(
-          generateTestBufferData(), sampleRate);
+      audioBuffer =
+          await enhancedNetworkTts.decodeAudioDataAtSampleRateForTesting(
+              generateTestBufferData(), sampleRate);
       assertEquals(
           audioBuffer.length, Math.floor(testAudioLength * sampleRate));
 
       sampleRate = 10000;
-      audioBuffer = await EnhancedNetworkTts.decodeAudioDataAtSampleRate(
-          generateTestBufferData(), sampleRate);
+      audioBuffer =
+          await enhancedNetworkTts.decodeAudioDataAtSampleRateForTesting(
+              generateTestBufferData(), sampleRate);
       assertEquals(
           audioBuffer.length, Math.floor(testAudioLength * sampleRate));
     });
 
-SYNC_TEST_F('EnhancedNetworkTtsUnitTest', 'SubarrayFrom', async function() {
+SYNC_TEST_F('Mv3EnhancedNetworkTtsUnitTest', 'SubarrayFrom', async function() {
   const sampleArray = new Float32Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   let subarray = EnhancedNetworkTts.subarrayFrom(
       sampleArray, 0 /* startIdx */, 5 /* subarraySize */);
@@ -175,14 +179,15 @@ SYNC_TEST_F('EnhancedNetworkTtsUnitTest', 'SubarrayFrom', async function() {
 });
 
 SYNC_TEST_F(
-    'EnhancedNetworkTtsUnitTest', 'SendAudioDataInBuffers', async function() {
+    'Mv3EnhancedNetworkTtsUnitTest', 'SendAudioDataInBuffers',
+    async function() {
       // Prepare the decodedAudioData for testing. The data corresponds to a
       // 0.2135s playback.
       const testAudioLength = 0.2135;
       const sampleRate = 10000;
       const decodedAudioDataLength = testAudioLength * sampleRate;  // 2135
       const decodedAudioData =
-          await EnhancedNetworkTts.decodeAudioDataAtSampleRate(
+          await enhancedNetworkTts.decodeAudioDataAtSampleRateForTesting(
               generateTestBufferData(), sampleRate);
       assertEquals(decodedAudioData.length, decodedAudioDataLength);
 
@@ -291,7 +296,7 @@ function generateTestBufferData() {
     74,  40,  33,  234, 158, 16,  44,  104, 9,   73,  154, 65,  180, 184, 46,
     212, 58,  33,  41,  158, 252, 16,  100, 140, 106, 65,  21,  168, 221,
   ];
-  return new Uint8Array(testData).buffer;
+  return testData;
 }
 
 /**

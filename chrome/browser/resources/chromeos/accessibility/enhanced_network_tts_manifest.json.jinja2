@@ -6,7 +6,7 @@
   "manifest_version": 3,
   "minimum_chrome_version": "93",
   "background": {
-    "service_worker": "enhanced_network_tts/background.js",
+    "service_worker": "enhanced_network_tts/mv3/background.rollup.js",
     "type": "module"
   },
 {% else %}
@@ -22,6 +22,9 @@
   "incognito": "split",
 {% endif %}
   "permissions": [
+    {% if is_manifest_v3 == '1' %}
+    "offscreen",
+    {% endif %}
     "ttsEngine"
   ],
   "default_locale": "en",

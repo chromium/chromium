@@ -16,7 +16,7 @@ assert(is_chromeos)
 
 group("build") {
   deps = [
-    ":copy_background",
+    ":copy_html_sources",
     ":minify_js",
   ]
 }
@@ -35,7 +35,9 @@ common_tsc_dir =
 # TS files to compile.
 ts_modules = [
   "background.ts",
+  "commands.ts",
   "enhanced_network_tts.ts",
+  "offscreen.ts",
 ]
 
 # Root dir must be parent directory to access common/.
@@ -54,6 +56,7 @@ ts_library("ts_build") {
     "mojo_bindings_externs.d.ts",
     "../../definitions/extensions.d.ts",
     "../../definitions/extension_types.d.ts",
+    "../../definitions/offscreen.d.ts",
     "../../definitions/runtime.d.ts",
     "../../definitions/tabs.d.ts",
     "../../definitions/tts.d.ts",
@@ -72,7 +75,10 @@ bundle_js("bundle_js") {
 
   host = "_ignored_"
   input = rebase_path("$tsc_out_dir", root_build_dir)
-  js_module_in_files = [ "background.js" ]
+  js_module_in_files = [
+    "background.js",
+    "offscreen.js",
+  ]
   out_folder = "$target_gen_dir/bundle"
 
   deps = [
@@ -86,13 +92,20 @@ minify_js("minify_js") {
 
   deps = [ ":bundle_js" ]
   in_folder = "$target_gen_dir/bundle"
-  in_files = [ "background.rollup.js" ]
+  in_files = [
+    "background.rollup.js",
+    "offscreen.rollup.js",
+    "shared.rollup.js",
+  ]
   out_folder = "$enhanced_network_tts_dir"
 }
 
-copy("copy_background") {
-  sources = [ "background.html" ]
-  outputs = [ "$enhanced_network_tts_dir/background.html" ]
+copy("copy_html_sources") {
+  sources = [
+    "background.html",
+    "offscreen.html",
+  ]
+  outputs = [ "$enhanced_network_tts_dir/{{source_target_relative}}" ]
 }
 
 # Copy all JS and TS sources to a staging folder. All generated TS/JS files

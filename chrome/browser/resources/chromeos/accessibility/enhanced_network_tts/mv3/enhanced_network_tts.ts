@@ -4,6 +4,8 @@
 
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+import {OffscreenCommand, ServiceWorkerCommand} from './commands.js';
+
 type AudioBuffer = chrome.ttsEngine.AudioBuffer;
 type AudioStreamOptions = chrome.ttsEngine.AudioStreamOptions;
 type SpeakOptions = chrome.ttsEngine.SpeakOptions;
@@ -32,6 +34,12 @@ export class EnhancedNetworkTts {
   /** The mojo API for Enhanced Network TTS. */
   private api_: EnhancedNetworkTtsAdapter|null;
 
+  /**
+   * A promise that resolves when the offscreen document is ready to receive
+   * messages.
+   */
+  private offscreenReadyPromise_: Promise<void>|null = null;
+
   constructor() {
     this.processingQueue_ = [];
     this.api_ = null;
@@ -53,6 +61,55 @@ export class EnhancedNetworkTts {
     // The onStop listener is needed for the |tts_engine_events::kOnStop| check
     // in tts_engine_extension_api.cc
     chrome.ttsEngine.onStop.addListener(() => this.onStopEvent());
+  }
+
+  /**
+   * Ensures the offscreen document is created and ready to receive messages.
+   * This handles concurrent calls and the race condition where a message might
+   * be sent before the offscreen document's listeners are active.
+   */
+  private async ensureOffscreenReady_(): Promise<void> {
+    const offscreenUrl =
+        chrome.runtime.getURL('enhanced_network_tts/mv3/offscreen.html');
+    const existingContexts = await chrome.runtime.getContexts({
+      contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
+      documentUrls: [offscreenUrl],
+    });
+
+    if (existingContexts.length > 0) {
+      return;
+    }
+
+    if (this.offscreenReadyPromise_) {
+      await this.offscreenReadyPromise_;
+      return;
+    }
+
+    try {
+      let readyResolver: () => void;
+      this.offscreenReadyPromise_ = new Promise(resolve => {
+        readyResolver = resolve;
+      });
+
+      chrome.runtime.onMessage.addListener((message: any) => {
+        if (message.command === ServiceWorkerCommand.READY) {
+          readyResolver();
+        }
+        // Returns false because no callbacks need to be kept alive.
+        return false;
+      });
+
+      await chrome.offscreen.createDocument({
+        url: offscreenUrl,
+        reasons: [chrome.offscreen.Reason.AUDIO_PLAYBACK],
+        justification: 'Audio decoding for Enhanced Network TTS',
+      });
+      await this.offscreenReadyPromise_;
+    } catch (error) {
+      console.error('Failed to create offscreen document: ', error);
+    } finally {
+      this.offscreenReadyPromise_ = null;
+    }
   }
 
   /**
@@ -160,11 +217,11 @@ export class EnhancedNetworkTts {
     }
 
     const lastData = response.data.lastData;
-    const audioData = new Uint8Array(response.data.audio).buffer;
     const timeInfo = response.data.timeInfo;
-    const decodedAudioData =
-        await EnhancedNetworkTts.decodeAudioDataAtSampleRate(
-            audioData, sampleRate);
+    // ArrayBuffers cannot be sent over chrome.runtime.sendMessage. Instead, we
+    // send the raw array of numbers.
+    const audioData = response.data.audio;
+    const decodedAudioData = await this.decodeAudioData_(audioData, sampleRate);
 
     EnhancedNetworkTts.sendAudioDataInBuffers(
         decodedAudioData, sampleRate, bufferSize, timeInfo, sendTtsAudio,
@@ -175,6 +232,33 @@ export class EnhancedNetworkTts {
     if (this.processingQueue_.length > 0) {
       await this.processResponse_();
     }
+  }
+
+  /**
+   * Sends audio data to the offscreen document for decoding and returns the
+   * result.
+   */
+  private async decodeAudioData_(audioData: number[], sampleRate: number):
+      Promise<Float32Array|null> {
+    await this.ensureOffscreenReady_();
+    const decodedAudioData = await chrome.runtime.sendMessage(
+        /*extensionId=*/ undefined,
+        /*message=*/ {
+          command: OffscreenCommand.DECODE_AUDIO,
+          request: {audioData, sampleRate},
+        });
+
+    if (chrome.runtime.lastError) {
+      console.error('Error decoding audio: ', chrome.runtime.lastError.message);
+      return null;
+    }
+
+    // The data from the offscreen document is serialized, losing its
+    // Float32Array type. We must reconstruct it here before further
+    // processing.
+    return decodedAudioData ?
+        new Float32Array(Object.values(decodedAudioData)) :
+        null;
   }
 
   async onStopEvent(): Promise<void> {
@@ -224,33 +308,7 @@ export class EnhancedNetworkTts {
     return {utterance, rate, voice, lang};
   }
 
-  /**
-   * Decodes |inputAudioData| into a Float32Array at the |targetSampleRate|.
-   * @param inputAudioData The original data from audio files like mp3, ogg, or
-   *     wav.
-   * @param targetSampleRate The sampling rate for decoding.
-   */
-  static async decodeAudioDataAtSampleRate(
-      inputAudioData: ArrayBuffer,
-      targetSampleRate: number): Promise<Float32Array|null> {
-    const context = new AudioContext({sampleRate: targetSampleRate});
 
-    let audioBuffer;
-    try {
-      audioBuffer = await context.decodeAudioData(inputAudioData);
-    } catch (e) {
-      console.warn('Could not decode audio data');
-      return new Promise(resolve => resolve(null));
-    } finally {
-      // Release system resources.
-      context.close();
-    }
-
-    if (!audioBuffer) {
-      return new Promise(resolve => resolve(null));
-    }
-    return audioBuffer.getChannelData(0);
-  }
 
   /**
    * Creates a subarray from |startIdx| in the input |array|, with the size of
@@ -326,6 +384,15 @@ export class EnhancedNetworkTts {
       const isLastBuffer = lastData && (i + bufferSize >= audioData.length);
       sendTtsAudio({audioBuffer, charIndex, isLastBuffer});
     }
+  }
+
+  /**
+   * Decodes audio data at a specific sample rate for testing purposes.
+   */
+  async decodeAudioDataAtSampleRateForTesting(
+      sampleAudioData: number[],
+      sampleRate: number): Promise<Float32Array|null> {
+    return this.decodeAudioData_(sampleAudioData, sampleRate);
   }
 }
 
