@@ -329,8 +329,8 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
 
   file_value->started =
       static_cast<int>(download_item->GetStartTime().ToTimeT());
-  file_value->since_string = base::UTF16ToUTF8(
-      ui::TimeFormat::RelativeDate(download_item->GetStartTime(), nullptr));
+  file_value->since_string = base::UTF16ToUTF8(ui::TimeFormat::RelativeDate(
+      download_item->GetStartTime(), std::nullopt));
   file_value->date_string = TimeFormatLongDate(download_item->GetStartTime());
 
   file_value->id = base::NumberToString(download_item->GetId());

@@ -16,8 +16,8 @@
 namespace history {
 
 std::u16string GetRelativeDateLocalized(const base::Time& visit_time) {
-  base::Time midnight = base::Time::Now().LocalMidnight();
-  std::u16string date_str = ui::TimeFormat::RelativeDate(visit_time, &midnight);
+  std::u16string date_str = ui::TimeFormat::RelativeDate(
+      visit_time, base::Time::Now().LocalMidnight());
   if (date_str.empty()) {
     date_str = base::TimeFormatFriendlyDate(visit_time);
   } else {

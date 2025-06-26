@@ -107,7 +107,7 @@ api::TasksClient* GetTasksClient() {
 std::u16string GetLastUpdateTimeMessage(base::Time time) {
   const std::u16string time_of_day = base::TimeFormatTimeOfDay(time);
   const std::u16string relative_date =
-      ui::TimeFormat::RelativeDate(time, nullptr);
+      ui::TimeFormat::RelativeDate(time, std::nullopt);
   if (relative_date.empty()) {
     return l10n_util::GetStringFUTF16(
         IDS_GLANCEABLES_TASKS_ERROR_LAST_UPDATE_DATE_AND_TIME, time_of_day,

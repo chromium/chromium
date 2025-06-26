@@ -5,6 +5,7 @@
 #include "ui/base/l10n/time_format.h"
 
 #include <limits>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/component_export.h"
@@ -151,8 +152,8 @@ std::u16string TimeFormat::DetailedWithMonthAndYear(
 
 // static
 std::u16string TimeFormat::RelativeDate(
-    const base::Time& time,
-    const base::Time* optional_midnight_today) {
+    base::Time time,
+    std::optional<base::Time> optional_midnight_today) {
   const base::Time midnight_today = optional_midnight_today
                                         ? *optional_midnight_today
                                         : base::Time::Now().LocalMidnight();

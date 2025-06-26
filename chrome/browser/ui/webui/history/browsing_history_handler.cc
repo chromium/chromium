@@ -259,9 +259,8 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
   if (entry.is_search_result) {
     snippet_string = entry.snippet;
   } else {
-    base::Time midnight = clock->Now().LocalMidnight();
     std::u16string date_str =
-        ui::TimeFormat::RelativeDate(entry.time, &midnight);
+        ui::TimeFormat::RelativeDate(entry.time, clock->Now().LocalMidnight());
     if (date_str.empty()) {
       date_str = base::TimeFormatFriendlyDate(entry.time);
     } else {
