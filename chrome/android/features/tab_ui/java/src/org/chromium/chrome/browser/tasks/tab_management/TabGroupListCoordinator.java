@@ -57,11 +57,17 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Orchestrates the displaying of a list of interactable tab groups. */
 public class TabGroupListCoordinator {
-    @IntDef({RowType.TAB_GROUP, RowType.TAB_GROUP_REMOVED_CARD})
+    @IntDef({RowType.TAB_GROUP, RowType.MESSAGE_CARD})
     @Retention(RetentionPolicy.SOURCE)
     public @interface RowType {
         int TAB_GROUP = 0;
-        int TAB_GROUP_REMOVED_CARD = 1;
+        int MESSAGE_CARD = 1;
+    }
+
+    @IntDef({MessageCardType.TAB_GROUP_REMOVED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MessageCardType {
+        int TAB_GROUP_REMOVED = 0;
     }
 
     private final TabGroupListView mView;
@@ -126,7 +132,7 @@ public class TabGroupListCoordinator {
         ViewBuilder<MessageCardView> tabGroupMessageCardLayoutBuilder =
                 new LayoutViewBuilder<>(R.layout.tab_grid_message_card_item);
         mSimpleRecyclerViewAdapter.registerType(
-                RowType.TAB_GROUP_REMOVED_CARD,
+                RowType.MESSAGE_CARD,
                 tabGroupMessageCardLayoutBuilder,
                 MessageCardViewBinder::bind);
 
@@ -166,6 +172,9 @@ public class TabGroupListCoordinator {
                 new ActionConfirmationManager(profile, context, modalDialogManager);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
 
+        TabGroupRemovedMessageMediator tabGroupRemovedMessageMediator =
+                new TabGroupRemovedMessageMediator(context, messagingBackendService, modelList);
+
         mTabGroupListMediator =
                 new TabGroupListMediator(
                         context,
@@ -182,7 +191,8 @@ public class TabGroupListCoordinator {
                         actionConfirmationManager,
                         syncService,
                         enableContainment(),
-                        dataSharingTabManager);
+                        dataSharingTabManager,
+                        tabGroupRemovedMessageMediator);
 
         if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
             mEdgeToEdgePadAdjuster =

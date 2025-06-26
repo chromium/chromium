@@ -4,24 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.ACTION_BUTTON_VISIBLE;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.BOTTOM_MARGIN_OVERRIDE_PX;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DESCRIPTION_TEXT;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.IS_ICON_VISIBLE;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.LEFT_MARGIN_OVERRIDE_PX;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_IDENTIFIER;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.RIGHT_MARGIN_OVERRIDE_PX;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageService.DEFAULT_MESSAGE_IDENTIFIER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupMessageCardViewProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DESTROYABLE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 import static org.chromium.ui.modelutil.ModelListCleaner.destroyAndClearAllRows;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,14 +22,11 @@ import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.RowType;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
-import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.PersistentMessageObserver;
 import org.chromium.components.collaboration.messaging.PersistentMessage;
-import org.chromium.components.collaboration.messaging.PersistentNotificationType;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.sync.DataType;
@@ -58,9 +41,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /** Populates a {@link ModelList} with an item for each tab group. */
 public class TabGroupListMediator {
@@ -84,6 +65,7 @@ public class TabGroupListMediator {
                     mCallbackController.makeCancelable(this::repopulateModelList));
     private final boolean mEnableContainment;
     private final DataSharingTabManager mDataSharingTabManager;
+    private final TabGroupRemovedMessageMediator mTabGroupRemovedMessageMediator;
 
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
@@ -206,6 +188,7 @@ public class TabGroupListMediator {
      * @param syncService Used to query active sync types.
      * @param enableContainment Whether containment is enabled.
      * @param dataSharingTabManager The {@link} DataSharingTabManager to start collaboration flows.
+     * @param tabGroupRemovedMessageMediator The mediator for the tab group removed message card.
      */
     public TabGroupListMediator(
             Context context,
@@ -222,7 +205,8 @@ public class TabGroupListMediator {
             ActionConfirmationManager actionConfirmationManager,
             SyncService syncService,
             boolean enableContainment,
-            @NonNull DataSharingTabManager dataSharingTabManager) {
+            @NonNull DataSharingTabManager dataSharingTabManager,
+            TabGroupRemovedMessageMediator tabGroupRemovedMessageMediator) {
         mContext = context;
         mModelList = modelList;
         mPropertyModel = propertyModel;
@@ -238,6 +222,7 @@ public class TabGroupListMediator {
         mSyncService = syncService;
         mEnableContainment = enableContainment;
         mDataSharingTabManager = dataSharingTabManager;
+        mTabGroupRemovedMessageMediator = tabGroupRemovedMessageMediator;
 
         mFilter.addObserver(mTabModelObserver);
         if (mTabGroupSyncService != null) {
@@ -266,14 +251,7 @@ public class TabGroupListMediator {
 
     private void repopulateModelList() {
         destroyAndClearAllRows(mModelList, DESTROYABLE);
-
-        List<PersistentMessage> tabGroupRemovedMessages = getTabGroupRemovedMessageList();
-        if (!tabGroupRemovedMessages.isEmpty()) {
-            mModelList.add(
-                    new ListItem(
-                            RowType.TAB_GROUP_REMOVED_CARD,
-                            buildTabGroupMessageModel(tabGroupRemovedMessages)));
-        }
+        mTabGroupRemovedMessageMediator.queueMessageIfNeeded();
 
         GroupWindowChecker sortUtil = new GroupWindowChecker(mTabGroupSyncService, mFilter);
         List<SavedTabGroup> sortedTabGroups =
@@ -301,101 +279,6 @@ public class TabGroupListMediator {
         }
         boolean empty = mModelList.isEmpty();
         mPropertyModel.set(TabGroupListProperties.EMPTY_STATE_VISIBLE, empty);
-    }
-
-    private List<PersistentMessage> getTabGroupRemovedMessageList() {
-        List<PersistentMessage> tabGroupRemovedMessages = new ArrayList<>();
-        List<PersistentMessage> messages =
-                mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.TOMBSTONED));
-
-        for (PersistentMessage message : messages) {
-            if (message.collaborationEvent != CollaborationEvent.TAB_GROUP_REMOVED
-                    || !TabShareUtils.isCollaborationIdValid(message.attribution.id)) {
-                continue;
-            }
-
-            tabGroupRemovedMessages.add(message);
-        }
-        return tabGroupRemovedMessages;
-    }
-
-    private PropertyModel buildTabGroupMessageModel(
-            List<PersistentMessage> tabGroupRemovedMessages) {
-        assert !tabGroupRemovedMessages.isEmpty();
-        String dismissButtonContextDescription =
-                mContext.getString(R.string.accessibility_tab_group_removed_dismiss_button);
-        int horizontalPadding =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.tab_group_removed_card_horizontal_padding);
-
-        return new PropertyModel.Builder(ALL_KEYS)
-                .with(MESSAGE_IDENTIFIER, DEFAULT_MESSAGE_IDENTIFIER)
-                .with(
-                        UI_DISMISS_ACTION_PROVIDER,
-                        (unused) -> dismissActionProvider(tabGroupRemovedMessages))
-                .with(
-                        DESCRIPTION_TEXT,
-                        getTabGroupMessageRemovedDescriptionText(tabGroupRemovedMessages))
-                .with(DISMISS_BUTTON_CONTENT_DESCRIPTION, dismissButtonContextDescription)
-                .with(IS_ICON_VISIBLE, false)
-                .with(CARD_TYPE, MESSAGE)
-                .with(ACTION_BUTTON_VISIBLE, false)
-                .with(LEFT_MARGIN_OVERRIDE_PX, horizontalPadding)
-                .with(RIGHT_MARGIN_OVERRIDE_PX, horizontalPadding)
-                .with(BOTTOM_MARGIN_OVERRIDE_PX, 0)
-                .build();
-    }
-
-    private String getTabGroupMessageRemovedDescriptionText(
-            List<PersistentMessage> tabGroupRemovedMessages) {
-        List<String> messageTitles = new ArrayList<>();
-        int removedGroupsCount = tabGroupRemovedMessages.size();
-        for (PersistentMessage message : tabGroupRemovedMessages) {
-            messageTitles.add(MessageUtils.extractTabGroupTitle(message));
-        }
-
-        // If title is present.
-        if (removedGroupsCount == 1 && !TextUtils.isEmpty(messageTitles.get(0))) {
-            return mContext.getString(
-                    R.string.one_tab_group_removed_message_card_description, messageTitles.get(0));
-        }
-        // If both titles are present.
-        else if (removedGroupsCount == 2
-                && !TextUtils.isEmpty(messageTitles.get(0))
-                && !TextUtils.isEmpty(messageTitles.get(1))) {
-            return mContext.getString(
-                    R.string.two_tab_groups_removed_message_card_description,
-                    messageTitles.get(0),
-                    messageTitles.get(1));
-        } else {
-            // When either titles are not present OR count is more than 2.
-            return mContext.getResources()
-                    .getQuantityString(
-                            R.plurals.generic_tab_groups_removed_message_card_description,
-                            removedGroupsCount,
-                            removedGroupsCount);
-        }
-    }
-
-    private void dismissActionProvider(List<PersistentMessage> tabGroupRemovedMessages) {
-        for (PersistentMessage message : tabGroupRemovedMessages) {
-            // Since we are only storing messages with non-empty ID.
-            @Nullable String messageId = message.attribution.id;
-            assert messageId != null && !TextUtils.isEmpty(messageId);
-            mMessagingBackendService.clearPersistentMessage(
-                    messageId, Optional.of(PersistentNotificationType.TOMBSTONED));
-        }
-        removeMessageCardItemFromModelList();
-    }
-
-    private void removeMessageCardItemFromModelList() {
-        if (mModelList.isEmpty()) return;
-        if (mModelList.get(0).type != RowType.TAB_GROUP_REMOVED_CARD) return;
-
-        // There can only one message card.
-        mModelList.removeAt(0);
-        assert mModelList.isEmpty() || mModelList.get(0).type != RowType.TAB_GROUP_REMOVED_CARD;
     }
 
     private boolean shouldShowGroupByState(@GroupWindowState int groupWindowState) {
