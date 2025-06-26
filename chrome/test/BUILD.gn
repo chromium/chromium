@@ -8728,6 +8728,7 @@ test("unit_tests") {
       "//chrome/browser/ash/arc/vmm",
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/attestation:test_support",
+      "//chrome/browser/ash/cert_provisioning",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/ash/crostini:test_support",
