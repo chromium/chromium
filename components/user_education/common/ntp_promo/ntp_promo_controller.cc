@@ -4,11 +4,20 @@
 
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 
+#include "base/time/time.h"
 #include "components/user_education/common/user_education_data.h"
-// #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
-
 namespace user_education {
+
+namespace {
+
+constexpr base::TimeDelta kCompletedPromoShowDuration = base::Days(7);
+
+}  // namespace
+
+using KeyedNtpPromoData = user_education::KeyedNtpPromoData;
+
+using Eligibility = NtpPromoSpecification::Eligibility;
 
 NtpShowablePromos::NtpShowablePromos() = default;
 NtpShowablePromos::~NtpShowablePromos() = default;
@@ -27,8 +36,9 @@ NtpPromoController::NtpPromoController(
 
 NtpPromoController::~NtpPromoController() = default;
 
-NtpShowablePromos NtpPromoController::GetShowablePromos() {
+NtpShowablePromos NtpPromoController::GenerateShowablePromos() {
   NtpShowablePromos showable_promos;
+  const auto now = base::Time::Now();
 
   for (const auto& id : registry_->GetNtpPromoIdentifiers()) {
     const auto* spec = registry_->GetNtpPromoSpecification(id);
@@ -41,22 +51,27 @@ NtpShowablePromos NtpPromoController::GetShowablePromos() {
       continue;
     }
 
-    bool completed =
-        (eligibility == NtpPromoSpecification::Eligibility::kCompleted);
-    if (!completed) {
-      // If the promo has ever been completed in the past, considered it
-      // complete even if it's reverted to eligible state.
-      // TODO(crbug.com/425677412): Show only for a period of time after
-      // completion.
-      const auto prefs = storage_service_->ReadNtpPromoData(id);
-      completed = (prefs.has_value() && !prefs.value().completed.is_null());
+    auto prefs =
+        storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
+
+    // Record the first evidence of completion. In the future, promos may
+    // explicitly notify of completion, but we'll also use this opportunity.
+    if (eligibility == Eligibility::kCompleted && prefs.completed.is_null()) {
+      prefs.completed = now;
+      storage_service_->SaveNtpPromoData(id, prefs);
     }
 
-    (completed ? showable_promos.completed : showable_promos.pending)
-        .emplace_back(id, spec->content());
+    // If the promo was completed sufficiently long ago, don't show it.
+    // Likewise if the completion time is nonsense (in the future).
+    if (!prefs.completed.is_null() &&
+        ((now - prefs.completed >= kCompletedPromoShowDuration) ||
+         (now < prefs.completed))) {
+      continue;
+    }
 
-    // TODO(crbug.com/425677412): Store completed state if observed here, in
-    // lieu of explicit signals from the promo flows.
+    (prefs.completed.is_null() ? showable_promos.pending
+                               : showable_promos.completed)
+        .emplace_back(id, spec->content());
   }
 
   return showable_promos;
@@ -64,6 +79,11 @@ NtpShowablePromos NtpPromoController::GetShowablePromos() {
 
 void NtpPromoController::OnPromoClicked(NtpPromoIdentifier id) {
   registry_->GetNtpPromoSpecification(id)->action_callback().Run(nullptr);
+}
+
+base::TimeDelta NtpPromoController::GetCompletedPromoShowDurationForTest()
+    const {
+  return kCompletedPromoShowDuration;
 }
 
 }  // namespace user_education

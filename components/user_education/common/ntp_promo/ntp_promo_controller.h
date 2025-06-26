@@ -51,11 +51,14 @@ class NtpPromoController {
                      UserEducationStorageService& storage_service);
 
   // Provides ordered lists of eligible and completed promos, intended to be
-  // displayed by the NTP.
-  NtpShowablePromos GetShowablePromos();
+  // displayed by the NTP. May update prefs as a side effect.
+  NtpShowablePromos GenerateShowablePromos();
 
   // Called in response to an NTP promo activation.
   void OnPromoClicked(NtpPromoIdentifier id);
+
+  // Returns the duration for which a promo can be shown after completion.
+  base::TimeDelta GetCompletedPromoShowDurationForTest() const;
 
  private:
   const raw_ref<NtpPromoRegistry> registry_;
