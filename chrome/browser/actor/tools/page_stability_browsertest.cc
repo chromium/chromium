@@ -125,7 +125,8 @@ class ActorPageStabilityTest : public InProcessBrowserTest {
 
 // Ensure the page isn't considered stable until after a network fetch is
 // resolved.
-IN_PROC_BROWSER_TEST_F(ActorPageStabilityTest, WaitOnNetworkFetch) {
+// TODO(crbug.com/427596767): Fails flakily
+IN_PROC_BROWSER_TEST_F(ActorPageStabilityTest, DISABLED_WaitOnNetworkFetch) {
   const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
   const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -155,7 +156,8 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityTest, WaitOnNetworkFetch) {
 
 // Simulate a network fetch followed by heavy main thread activity. Ensure the
 // page isn't considered stable until after the main thread work finishes.
-IN_PROC_BROWSER_TEST_F(ActorPageStabilityTest, WaitOnFetchAndWork) {
+// TODO(crbug.com/427619749): Fails flakily
+IN_PROC_BROWSER_TEST_F(ActorPageStabilityTest, DISABLED_WaitOnFetchAndWork) {
   const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
   const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
