@@ -32,9 +32,11 @@ class WatermarkView : public views::View {
 
   // Convenience function to draw a simple, text-based watermark. `text` must be
   // UTF-8 encoded.
+  // `font_size` must be a positive integer.
   void SetString(const std::string& text,
                  SkColor fill_color,
-                 SkColor outline_color);
+                 SkColor outline_color,
+                 int font_size);
 
   // Alternative to SetString. Allows watermark to be set to any drawing
   // represented by a cc::PaintRecord instance.

@@ -43,6 +43,8 @@ This is another very long line that should be split up into multiple lines
 
 constexpr SkColor kTestFillColor = SkColorSetARGB(0x2A, 0, 0, 0);
 constexpr SkColor kTestOutlineColor = SkColorSetARGB(0x3D, 0, 0, 0);
+constexpr int kTestFontSize =
+    enterprise_connectors::kWatermarkStyleFontSizeDefault;
 
 class WatermarkBrowserTest : public UiBrowserTest,
                              public testing::WithParamInterface<const char*> {
@@ -63,7 +65,7 @@ class WatermarkBrowserTest : public UiBrowserTest,
     if (auto* watermark_view = BrowserView::GetBrowserViewForBrowser(browser())
                                    ->get_watermark_view_for_testing()) {
       watermark_view->SetString(watermark_message, kTestFillColor,
-                                kTestOutlineColor);
+                                kTestOutlineColor, kTestFontSize);
       return true;
     }
     return false;

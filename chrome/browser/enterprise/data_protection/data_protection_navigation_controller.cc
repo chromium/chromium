@@ -150,7 +150,8 @@ void DataProtectionNavigationController::
       enterprise_watermark::DrawWatermarkToPaintRecord(
           settings.watermark_text,
           enterprise_watermark::GetFillColor(profile->GetPrefs()),
-          enterprise_watermark::GetOutlineColor(profile->GetPrefs()));
+          enterprise_watermark::GetOutlineColor(profile->GetPrefs()),
+          enterprise_watermark::GetFontSize());
   enterprise_watermark::WatermarkTextContainer::CreateForWebContents(
       expected_web_contents.get());
   enterprise_watermark::WatermarkTextContainer::FromWebContents(

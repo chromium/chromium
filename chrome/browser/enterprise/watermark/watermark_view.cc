@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_recorder.h"
@@ -30,7 +31,7 @@ WatermarkView::WatermarkView() : background_color_(SkColorSetARGB(0, 0, 0, 0)) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetString(/*text=*/std::string(""), GetDefaultFillColor(),
-            GetDefaultOutlineColor());
+            GetDefaultOutlineColor(), GetFontSize());
   GetViewAccessibility().SetIsInvisible(true);
 }
 
@@ -38,11 +39,13 @@ WatermarkView::~WatermarkView() = default;
 
 void WatermarkView::SetString(const std::string& text,
                               SkColor fill_color,
-                              SkColor outline_color) {
+                              SkColor outline_color,
+                              int font_size) {
   DCHECK(base::IsStringUTF8(text));
+  CHECK_GE(font_size, 1);
 
   watermark_block_ =
-      DrawWatermarkToPaintRecord(text, fill_color, outline_color);
+      DrawWatermarkToPaintRecord(text, fill_color, outline_color, font_size);
 
   // Invalidate the state of the view.
   SchedulePaint();

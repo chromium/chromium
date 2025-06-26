@@ -4,8 +4,9 @@
 
 #include "chrome/browser/enterprise/watermark/settings.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/enterprise/watermark/watermark_features.h"
 #include "chrome/common/channel_info.h"
@@ -18,6 +19,9 @@ namespace {
 // Base RGB colors for the watermark text.
 constexpr SkColor kBaseFillRGB = SkColorSetRGB(0x00, 0x00, 0x00);     // Black
 constexpr SkColor kBaseOutlineRGB = SkColorSetRGB(0xff, 0xff, 0xff);  // White
+
+// Minimum font size as per WatermarkStyle.yaml schema.
+constexpr int kMinFontSize = 1;
 
 // Command line switches that allow users to set fill and outline opacity values
 // as a percentage between 0 and 100, inclusive.
@@ -91,4 +95,12 @@ SkColor GetOutlineColor(const PrefService* prefs) {
       kWatermarkOutlineOpacityPercentFlag);
   return SkColorSetA(kBaseOutlineRGB, alpha);
 }
+
+// Returns the font size for the watermark.
+// This function always returns a positive integer (>= 1).
+int GetFontSize() {
+  return std::max(enterprise_connectors::kWatermarkStyleFontSizeDefault,
+                  kMinFontSize);
+}
+
 }  // namespace enterprise_watermark

@@ -37,19 +37,21 @@ struct WatermarkBlock {
 int GetWatermarkBlockHeight(const std::u16string& utf16_text,
                             int line_count,
                             int block_width,
-                            int text_size);
+                            int font_size);
 
 // Creates a RenderText instance with a fill style.
 std::unique_ptr<gfx::RenderText> CreateFillRenderText(
     const gfx::Rect& display_rect,
     const std::u16string& text,
-    const SkColor color);
+    SkColor color,
+    int font_size);
 
 // Creates a RenderTextInstance with a stroke style for text outlines.
 std::unique_ptr<gfx::RenderText> CreateOutlineRenderText(
     const gfx::Rect& display_rect,
     const std::u16string& text,
-    const SkColor color);
+    SkColor color,
+    int font_size);
 
 // Draws a watermark on the surface represented by the cc::PaintCanvas instance.
 // `block_width` and `block_height` are the dimensions of the watermark block
@@ -76,7 +78,8 @@ void DrawWatermark(SkCanvas* canvas,
 // browser.
 WatermarkBlock DrawWatermarkToPaintRecord(const std::string& watermark_text,
                                           SkColor fill_color,
-                                          SkColor outlint_color);
+                                          SkColor outline_color,
+                                          int font_size);
 
 // Previously: a convenience function that creates the required RenderText
 // instances and computes the required block_height based on inputs. This
@@ -87,7 +90,7 @@ void DrawWatermark(SkCanvas* canvas,
                    SkSize size,
                    const std::string& text,
                    int block_width,
-                   int text_size);
+                   int font_size);
 }  // namespace enterprise_watermark
 
 #endif  // COMPONENTS_ENTERPRISE_WATERMARKING_WATERMARK_H_

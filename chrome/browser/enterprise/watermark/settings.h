@@ -15,6 +15,7 @@ SkColor GetDefaultFillColor();
 SkColor GetDefaultOutlineColor();
 SkColor GetFillColor(const PrefService* prefs);
 SkColor GetOutlineColor(const PrefService* prefs);
+int GetFontSize();
 
 }  // namespace enterprise_watermark
 

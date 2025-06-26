@@ -54,11 +54,12 @@ TEST_P(WatermarkTest, MAYBE_PageRenderedWithWatermark) {
   const int kHeight = 200;
   constexpr SkColor kFillColor = SkColorSetARGB(0xb, 0x00, 0x00, 0x00);
   constexpr SkColor kOutlineColor = SkColorSetARGB(0x11, 0xff, 0xff, 0xff);
+  constexpr int kFontSize = 24;
 
   const std::string kWatermarkText = "Private! Confidential";
 
-  WatermarkBlock watermark_block =
-      DrawWatermarkToPaintRecord(kWatermarkText, kFillColor, kOutlineColor);
+  WatermarkBlock watermark_block = DrawWatermarkToPaintRecord(
+      kWatermarkText, kFillColor, kOutlineColor, kFontSize);
   sk_sp<SkPicture> picture = watermark_block.record.ToSkPicture(
       SkRect::MakeWH(watermark_block.width, watermark_block.height));
 
