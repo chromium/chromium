@@ -1923,7 +1923,8 @@ void HTMLCanvasElement::RemovedFrom(ContainerNode& insertion_point) {
   ColorSchemeMayHaveChanged();
 }
 
-void HTMLCanvasElement::WillDrawImageInCanvas2D(CanvasImageSource* source) {
+void HTMLCanvasElement::WillDrawImageInCanvas2D(CanvasImageSource* source,
+                                                bool image_is_texture_backed) {
   CHECK(IsRenderingContext2D());
 
   // If the source is GPU-accelerated, and the canvas is not, but could be...

@@ -247,8 +247,10 @@ void CanvasRenderingContext2D::Trace(Visitor* visitor) const {
   SVGResourceClient::Trace(visitor);
 }
 
-void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source) const {
-  canvas()->WillDrawImageInCanvas2D(source);
+void CanvasRenderingContext2D::WillDrawImage(
+    CanvasImageSource* source,
+    bool image_is_texture_backed) const {
+  canvas()->WillDrawImageInCanvas2D(source, image_is_texture_backed);
 }
 
 bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,

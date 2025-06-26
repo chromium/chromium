@@ -300,7 +300,8 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void DetachContext() override { context_ = nullptr; }
 
-  void WillDrawImageInCanvas2D(CanvasImageSource*);
+  void WillDrawImageInCanvas2D(CanvasImageSource*,
+                               bool image_is_texture_backed);
 
   ExecutionContext* GetTopExecutionContext() const override {
     return GetDocument().GetExecutionContext();

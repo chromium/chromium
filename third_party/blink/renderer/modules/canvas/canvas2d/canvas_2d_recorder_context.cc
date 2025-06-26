@@ -2472,7 +2472,7 @@ void Canvas2DRecorderContext::drawImage(CanvasImageSource* image_source,
 
   ValidateStateStack();
 
-  WillDrawImage(image_source);
+  WillDrawImage(image_source, image && image->IsTextureBacked());
 
   if (!origin_tainted_by_content_ && WouldTaintCanvasOrigin(image_source)) {
     SetOriginTaintedByContent();
@@ -2794,7 +2794,7 @@ void Canvas2DRecorderContext::drawMesh(
       index_buffer->GetBuffer();
   CHECK_NE(index_data, nullptr);
 
-  WillDrawImage(image_source);
+  WillDrawImage(image_source, image && image->IsTextureBacked());
 
   if (!origin_tainted_by_content_ && WouldTaintCanvasOrigin(image_source)) {
     SetOriginTaintedByContent();
