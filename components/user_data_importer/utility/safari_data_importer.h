@@ -5,10 +5,17 @@
 #ifndef COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORTER_H_
 #define COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORTER_H_
 
-#include "base/task/sequenced_task_runner.h"
-#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
+
+namespace autofill {
+class CreditCard;
+class PaymentsDataManager;
+}  // namespace autofill
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace history {
 class HistoryService;
@@ -36,6 +43,7 @@ class SafariDataImporter {
   using PasswordImportResults = password_manager::ImportResults;
 
   SafariDataImporter(password_manager::SavedPasswordsPresenter* presenter,
+                     autofill::PaymentsDataManager* payments_data_manager,
                      history::HistoryService* history_service,
                      std::unique_ptr<SafariDataImportManager> manager,
                      std::string app_locale);
@@ -123,6 +131,9 @@ class SafariDataImporter {
   void ImportPaymentCards(std::vector<PaymentCardEntry> payment_cards,
                           ImportCallback payment_cards_callback);
 
+  // Imports Credit Cards to the Payments Data Manager.
+  void ContinueImportPaymentCards(ImportCallback payment_cards_callback);
+
   // Launches the task which will call "ImportBookmarks".
   void LaunchImportBookmarksTask(ImportCallback bookmarks_callback);
 
@@ -146,6 +157,9 @@ class SafariDataImporter {
 
   // The password importer used to import passwords and resolve conflicts.
   std::unique_ptr<password_manager::PasswordImporter> password_importer_;
+
+  // The payments data manager.
+  const raw_ref<autofill::PaymentsDataManager> payments_data_manager_;
 
   // Service used to import history URLs.
   const raw_ref<history::HistoryService> history_service_;

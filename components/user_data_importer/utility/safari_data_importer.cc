@@ -10,8 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/user_data_importer/utility/history_callback_from_rust.h"
@@ -106,12 +109,14 @@ namespace user_data_importer {
 
 SafariDataImporter::SafariDataImporter(
     password_manager::SavedPasswordsPresenter* presenter,
+    autofill::PaymentsDataManager* payments_data_manager,
     history::HistoryService* history_service,
     std::unique_ptr<SafariDataImportManager> manager,
     std::string app_locale)
     : password_importer_(std::make_unique<password_manager::PasswordImporter>(
           presenter,
           /*user_confirmation_required=*/true)),
+      payments_data_manager_(CHECK_DEREF(payments_data_manager)),
       history_service_(CHECK_DEREF(history_service)),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       manager_(std::move(manager)),
@@ -165,7 +170,11 @@ void SafariDataImporter::ContinueImport(
 
   // TODO(crbug.com/407587751): Import other types here.
   PostCallback(std::move(bookmarks_callback), /*number_of_imports=*/0);
-  PostCallback(std::move(payment_cards_callback), /*number_of_imports=*/0);
+
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&SafariDataImporter::ContinueImportPaymentCards,
+                                base::Unretained(this),
+                                std::move(payment_cards_callback)));
 }
 
 // Called after calling "Import" in order to cancel the import process.
@@ -326,6 +335,38 @@ void SafariDataImporter::ImportPaymentCards(
                          });
 
   PostCallback(std::move(payment_cards_callback), cards_to_import_.size());
+}
+
+void SafariDataImporter::ContinueImportPaymentCards(
+    ImportCallback payment_cards_callback) {
+  if (cards_to_import_.empty()) {
+    PostCallback(std::move(payment_cards_callback), /*number_of_imports=*/0);
+    return;
+  }
+
+  size_t imported_credit_cards = 0u;
+
+  for (const auto& credit_card : cards_to_import_) {
+    if (!credit_card.IsValid()) {
+      continue;
+    }
+
+    const autofill::CreditCard* existing_card =
+        payments_data_manager_->GetCreditCardByNumber(
+            base::UTF16ToUTF8(credit_card.number()));
+
+    // If a local card with the same number already exists, update it.
+    if (existing_card && existing_card->record_type() ==
+                             autofill::CreditCard::RecordType::kLocalCard) {
+      payments_data_manager_->UpdateCreditCard(credit_card);
+    } else {
+      payments_data_manager_->AddCreditCard(credit_card);
+    }
+
+    imported_credit_cards++;
+  }
+
+  PostCallback(std::move(payment_cards_callback), imported_credit_cards);
 }
 
 void SafariDataImporter::ImportBookmarks(std::string html_data,

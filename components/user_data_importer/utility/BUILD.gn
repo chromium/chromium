@@ -77,6 +77,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
+    "//components/autofill/core/browser:test_support",
     "//components/history/core/browser",
     "//components/history/core/test",
     "//components/password_manager/core/browser/import:csv",

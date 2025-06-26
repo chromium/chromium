@@ -15,6 +15,7 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
@@ -58,8 +59,9 @@ class SafariDataImporterTest : public testing::Test {
     history_service_ = history::CreateHistoryService(history_dir_.GetPath(),
                                                      /*create_db=*/false);
     importer_ = std::make_unique<SafariDataImporter>(
-        &presenter_, history_service_.get(),
-        std::make_unique<TestSafariDataImportManager>(), "en-US");
+        &presenter_, &client_.GetPersonalDataManager().payments_data_manager(),
+        history_service_.get(), std::make_unique<TestSafariDataImportManager>(),
+        "en-US");
 
     mojo::PendingRemote<password_manager::mojom::CSVPasswordParser>
         pending_remote{receiver_.BindNewPipeAndPassRemote()};
@@ -314,6 +316,7 @@ class SafariDataImporterTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   password_manager::FakePasswordParserService service_;
   mojo::Receiver<password_manager::mojom::CSVPasswordParser> receiver_;
+  autofill::TestAutofillClient client_;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> history_service_;
   bool presenter_ready_ = false;
@@ -467,9 +470,7 @@ TEST_F(SafariDataImporterTest, ExecuteImport) {
   // TODO(crbug.com/407587751): Update test when bookmarks parsing is
   // implemented.
   ASSERT_EQ(GetNumberOfBookmarksImported(), 0);
-  // TODO(crbug.com/407587751): Update test when payment cards import is
-  // implemented.
-  ASSERT_EQ(GetNumberOfPaymentCardsImported(), 0);
+  ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
   ASSERT_EQ(GetNumberOfURLsImported(), 5);
 }
 
