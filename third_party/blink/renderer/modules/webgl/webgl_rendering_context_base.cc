@@ -1966,9 +1966,8 @@ void WebGLRenderingContextBase::MarkLayerComposited() {
 }
 
 bool WebGLRenderingContextBase::IsAccelerated() const {
-  auto* resource_provider = resource_provider_.get();
-  return resource_provider ? resource_provider->IsAccelerated()
-                           : Host()->ShouldTryToUseGpuRaster();
+  // This method is not supported for WebGL and should not be called.
+  NOTREACHED();
 }
 
 bool WebGLRenderingContextBase::UsingSwapChain() const {
