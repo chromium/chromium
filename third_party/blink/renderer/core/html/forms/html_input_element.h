@@ -382,6 +382,8 @@ class CORE_EXPORT HTMLInputElement
                              CommandEventType command) override;
 
   void SetFocused(bool is_focused, mojom::blink::FocusType) override;
+  bool IsKeyboardFocusableSlow(UpdateBehavior update_behavior =
+                                   UpdateBehavior::kStyleAndLayout) const final;
 
   // These methods are used to determine what the nearest ancestor <select>
   // element is and whether this is the first <input> in tree order within that
@@ -410,8 +412,6 @@ class CORE_EXPORT HTMLInputElement
   bool HasActivationBehavior() const override;
 
   bool HasCustomFocusLogic() const final;
-  bool IsKeyboardFocusableSlow(UpdateBehavior update_behavior =
-                                   UpdateBehavior::kStyleAndLayout) const final;
   bool MayTriggerVirtualKeyboard() const final;
   bool ShouldHaveFocusAppearance() const final;
   bool IsEnumeratable() const final;
