@@ -313,16 +313,6 @@ void MemoryDumpManager::CreateProcessDump(const MemoryDumpRequestArgs& args,
                                     TRACE_ID_LOCAL(args.dump_guid), "dump_guid",
                                     TRACE_STR_COPY(guid_str));
 
-  // If argument filter is enabled then only background mode dumps should be
-  // allowed. In case the trace config passed for background tracing session
-  // missed the allowed modes argument, it crashes here instead of creating
-  // unexpected dumps.
-  if (TraceLog::GetInstance()
-          ->GetCurrentTraceConfig()
-          .IsArgumentFilterEnabled()) {
-    CHECK_EQ(MemoryDumpLevelOfDetail::kBackground, args.level_of_detail);
-  }
-
   std::unique_ptr<ProcessMemoryDumpAsyncState> pmd_async_state;
   {
     AutoLock lock(lock_);

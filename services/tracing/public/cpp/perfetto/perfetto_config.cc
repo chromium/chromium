@@ -89,8 +89,8 @@ void AddDataSourceConfigs(
   }
 
   auto* trace_event_data_source = AddDataSourceConfig(
-      perfetto_config, tracing::mojom::kTraceEventDataSourceName,
-      chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
+      perfetto_config, tracing::mojom::kTraceEventDataSourceName, "",
+      privacy_filtering_enabled, convert_to_legacy_json,
       json_agent_label_filter, enable_package_name_filter);
   auto* trace_event_source_config = trace_event_data_source->mutable_config();
   trace_event_source_config->set_name("track_event");

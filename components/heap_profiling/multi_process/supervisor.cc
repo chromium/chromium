@@ -28,15 +28,11 @@ namespace heap_profiling {
 
 namespace {
 
-base::trace_event::TraceConfig GetBackgroundTracingConfig(bool anonymize) {
+base::trace_event::TraceConfig GetBackgroundTracingConfig() {
   // Disable all categories other than memory-infra.
   base::trace_event::TraceConfig trace_config(
       "-*,disabled-by-default-memory-infra",
       base::trace_event::RECORD_UNTIL_FULL);
-
-  // This flag is set by background tracing to filter out undesired events.
-  if (anonymize)
-    trace_config.EnableArgumentFilter();
 
   return trace_config;
 }
@@ -181,8 +177,7 @@ void Supervisor::RequestTraceWithHeapDump(TraceFinishedCallback callback,
   // The only reason this should return false is if tracing is already enabled,
   // which we've already checked.
   bool result = content::TracingController::GetInstance()->StartTracing(
-      GetBackgroundTracingConfig(anonymize),
-      std::move(trigger_memory_dump_callback));
+      GetBackgroundTracingConfig(), std::move(trigger_memory_dump_callback));
   DCHECK(result);
 }
 

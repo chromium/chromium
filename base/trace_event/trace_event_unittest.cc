@@ -1723,49 +1723,4 @@ TEST_F(TraceEventTestFixture, ContextLambda) {
   EXPECT_EQ(*args_dict->FindString("arg"), "foobar");
 }
 
-class ConfigObserver : public TraceLog::EnabledStateObserver {
- public:
-  ConfigObserver() = default;
-  ~ConfigObserver() override = default;
-
-  void OnTraceLogEnabled() override {
-    observed_config = TraceLog::GetInstance()->GetCurrentTraceConfig();
-    tracing_enabled.Signal();
-  }
-
-  void OnTraceLogDisabled() override { tracing_disabled.Signal(); }
-
-  TraceConfig observed_config;
-  WaitableEvent tracing_enabled{WaitableEvent::ResetPolicy::AUTOMATIC,
-                                WaitableEvent::InitialState::NOT_SIGNALED};
-  WaitableEvent tracing_disabled{WaitableEvent::ResetPolicy::AUTOMATIC,
-                                 WaitableEvent::InitialState::NOT_SIGNALED};
-};
-
-// Test that GetCurrentTraceConfig() returns the correct config when tracing
-// was started through Perfetto SDK.
-TEST_F(TraceEventTestFixture, GetCurrentTraceConfig) {
-  ConfigObserver observer;
-  TraceLog::GetInstance()->AddEnabledStateObserver(&observer);
-
-  const TraceConfig actual_config{"foo,bar", ""};
-  perfetto::TraceConfig perfetto_config;
-  perfetto_config.add_buffers()->set_size_kb(1000);
-  auto* source_config = perfetto_config.add_data_sources()->mutable_config();
-  source_config->set_name("track_event");
-  source_config->set_target_buffer(0);
-  source_config->mutable_chrome_config()->set_trace_config(
-      actual_config.ToString());
-
-  auto tracing_session = perfetto::Tracing::NewTrace();
-  tracing_session->Setup(perfetto_config);
-  tracing_session->Start();
-
-  observer.tracing_enabled.Wait();
-  tracing_session->Stop();
-  observer.tracing_disabled.Wait();
-
-  EXPECT_EQ(actual_config.ToString(), observer.observed_config.ToString());
-}
-
 }  // namespace base::trace_event

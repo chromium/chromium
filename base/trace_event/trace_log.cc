@@ -483,15 +483,6 @@ std::vector<TraceLog::TrackEventSession> TraceLog::GetTrackEventSessions()
   return track_event_sessions_;
 }
 
-perfetto::DataSourceConfig TraceLog::GetCurrentTrackEventDataSourceConfig()
-    const {
-  AutoLock lock(track_event_lock_);
-  if (track_event_sessions_.empty()) {
-    return perfetto::DataSourceConfig();
-  }
-  return track_event_sessions_[0].config;
-}
-
 void TraceLog::InitializePerfettoIfNeeded() {
   // When we're using the Perfetto client library, only tests should be
   // recording traces directly through TraceLog. Production code should instead
@@ -567,12 +558,6 @@ void TraceLog::SetMetadataFilterPredicate(
 MetadataFilterPredicate TraceLog::GetMetadataFilterPredicate() const {
   AutoLock lock(lock_);
   return metadata_filter_predicate_;
-}
-
-TraceConfig TraceLog::GetCurrentTraceConfig() const {
-  const auto chrome_config =
-      GetCurrentTrackEventDataSourceConfig().chrome_config();
-  return TraceConfig(chrome_config.trace_config());
 }
 
 void TraceLog::SetDisabled() {

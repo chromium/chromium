@@ -48,9 +48,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
   TraceLog(const TraceLog&) = delete;
   TraceLog& operator=(const TraceLog&) = delete;
 
-  // Retrieves a copy (for thread-safety) of the current TraceConfig.
-  TraceConfig GetCurrentTraceConfig() const;
-
   // See TraceConfig comments for details on how to control which categories
   // will be traced.
   void SetEnabled(const TraceConfig& trace_config);
@@ -185,12 +182,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
   };
   std::vector<TrackEventSession> GetTrackEventSessions() const;
 
-  // DEPRECATED. In the presence of multiple simultaneous sessions, this method
-  // returns only the first session's config. When no tracing sessions are
-  // active, returns an empty config for compatibility with legacy code.
-  // TODO(khokhlov): Remove this method and migrate all its uses to
-  // GetTrackEventSessions().
-  perfetto::DataSourceConfig GetCurrentTrackEventDataSourceConfig() const;
   void InitializePerfettoIfNeeded();
   bool IsPerfettoInitializedByTraceLog() const;
   void SetEnabledImpl(const TraceConfig& trace_config,
