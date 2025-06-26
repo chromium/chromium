@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/android/client_side_detection_intelligent_scan_delegate_android.h"
 
+#include "base/notimplemented.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace safe_browsing {
@@ -16,6 +17,18 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
 bool ClientSideDetectionIntelligentScanDelegateAndroid::
     IsOnDeviceModelAvailable(bool log_failed_eligibility_reason) {
   return false;
+}
+
+void ClientSideDetectionIntelligentScanDelegateAndroid::InquireOnDeviceModel(
+    std::string rendered_texts,
+    InquireOnDeviceModelDoneCallback callback) {
+  NOTIMPLEMENTED();
+  return;
+}
+
+void ClientSideDetectionIntelligentScanDelegateAndroid::ResetOnDeviceSession(
+    bool inquiry_complete) {
+  return;
 }
 
 void ClientSideDetectionIntelligentScanDelegateAndroid::

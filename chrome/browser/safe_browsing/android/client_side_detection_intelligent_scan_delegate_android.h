@@ -26,6 +26,9 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   // IntelligentScanDelegate implementation.
   bool ShouldRequestIntelligentScan(ClientPhishingRequest* verdict) override;
   bool IsOnDeviceModelAvailable(bool log_failed_eligibility_reason) override;
+  void InquireOnDeviceModel(std::string rendered_texts,
+                            InquireOnDeviceModelDoneCallback callback) override;
+  void ResetOnDeviceSession(bool inquiry_complete) override;
   void StartListeningToOnDeviceModelUpdate() override;
   void StopListeningToOnDeviceModelUpdate() override;
 };

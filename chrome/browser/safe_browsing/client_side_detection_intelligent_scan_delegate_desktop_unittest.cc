@@ -7,20 +7,30 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::optimization_guide::AnyWrapProto;
 using ::optimization_guide::MockSession;
+using ::optimization_guide::OptimizationGuideModelExecutionError;
+using ::optimization_guide::OptimizationGuideModelStreamingExecutionResult;
+using ::optimization_guide::proto::ScamDetectionResponse;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 
 namespace safe_browsing {
+
+using IntelligentScanResult =
+    ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanResult;
 
 class ClientSideDetectionIntelligentScanDelegateDesktopTest
     : public testing::Test {
@@ -39,9 +49,59 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
   }
 
  protected:
+  void EnableOnDeviceModel() {
+    optimization_guide::OnDeviceModelAvailabilityObserver*
+        availability_observer = nullptr;
+    base::RunLoop run_loop_for_add_observer;
+    EXPECT_CALL(mock_opt_guide_,
+                AddOnDeviceModelAvailabilityChangeObserver(_, _))
+        .WillOnce(
+            Invoke([&](optimization_guide::ModelBasedCapabilityKey feature,
+                       optimization_guide::OnDeviceModelAvailabilityObserver*
+                           observer) {
+              availability_observer = observer;
+              run_loop_for_add_observer.Quit();
+            }));
+
+    delegate_->StartListeningToOnDeviceModelUpdate();
+
+    run_loop_for_add_observer.Run();
+    CHECK(availability_observer);
+
+    availability_observer->OnDeviceModelAvailabilityChanged(
+        optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+        optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+    ASSERT_TRUE(delegate_->IsOnDeviceModelAvailable(
+        /*log_failed_eligibility_reason=*/true));
+  }
+
+  void EnableOnDeviceModelWithSession() {
+    EnableOnDeviceModel();
+    EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+        .WillOnce(testing::Invoke(
+            [&](optimization_guide::ModelBasedCapabilityKey feature,
+                const std::optional<optimization_guide::SessionConfigParams>&
+                    config_params) {
+              return std::make_unique<NiceMock<MockSession>>(&session_);
+            }));
+  }
+
+  optimization_guide::StreamingResponse CreateScamDetectionResponse(
+      const std::string& brand,
+      const std::string& intent,
+      bool is_complete) {
+    ScamDetectionResponse response;
+    response.set_brand(brand);
+    response.set_intent(intent);
+    return optimization_guide::StreamingResponse{
+        .response = AnyWrapProto(response), .is_complete = is_complete};
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide_;
+  testing::NiceMock<MockSession> session_;
   std::unique_ptr<ClientSideDetectionIntelligentScanDelegateDesktop> delegate_;
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
@@ -381,6 +441,275 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   EXPECT_TRUE(delegate_->IsOnDeviceModelAvailable(
       /*log_failed_eligibility_reason=*/true));
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       TestSessionCreationFailure) {
+  EnableOnDeviceModel();
+
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; });
+
+  base::test::TestFuture<std::optional<IntelligentScanResult>> future;
+  delegate_->InquireOnDeviceModel("", future.GetCallback());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 0);
+
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       TestSessionCreationSuccess) {
+  EnableOnDeviceModelWithSession();
+
+  base::test::TestFuture<std::optional<IntelligentScanResult>> future;
+  delegate_->InquireOnDeviceModel("", future.GetCallback());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", false, 1);
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       TestSessionCreationSuccessWithAPreviousAliveSession) {
+  EnableOnDeviceModelWithSession();
+
+  base::test::TestFuture<std::optional<IntelligentScanResult>> future;
+  delegate_->InquireOnDeviceModel("", future.GetCallback());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
+
+  // We will expect a second time, but since the InquireOnDeviceModel function
+  // wasn't finished and the future callback wasn't completed, we will remove
+  // the "old" session and recreate a new one.
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          }));
+
+  base::test::TestFuture<std::optional<IntelligentScanResult>> future2;
+  delegate_->InquireOnDeviceModel("", future2.GetCallback());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 2);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 2);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", false, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", true, 1);
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       TestSessionExecutionFailure) {
+  EnableOnDeviceModelWithSession();
+
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            callback.Run(OptimizationGuideModelStreamingExecutionResult(
+                base::unexpected(
+                    OptimizationGuideModelExecutionError::
+                        FromModelExecutionError(
+                            OptimizationGuideModelExecutionError::
+                                ModelExecutionError::kGenericFailure)),
+                /*provided_by_on_device=*/true, nullptr));
+          })));
+
+  base::test::TestFuture<std::optional<IntelligentScanResult>> future;
+  delegate_->InquireOnDeviceModel("", future.GetCallback());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelExecutionDuration", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelExecutionSuccess", false, 1);
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       TestSessionExecutionSuccessButNotComplete) {
+  EnableOnDeviceModelWithSession();
+
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            callback.Run(OptimizationGuideModelStreamingExecutionResult(
+                base::ok(CreateScamDetectionResponse("Google", "Search Engine",
+                                                     /*is_complete=*/false)),
+                /*provided_by_on_device=*/false));
+          })));
+
+  base::test::TestFuture<std::optional<IntelligentScanResult>> future;
+  delegate_->InquireOnDeviceModel("", future.GetCallback());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+
+  // Because the execution result isn't complete yet, we do not intend on
+  // tracking the duration or success since we're still waiting. For the purpose
+  // of the test, we do not complete the execution result to make sure that
+  // they're not logged.
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelExecutionDuration", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelExecutionSuccess", 0);
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       TestSessionExecutionSuccessButFailedParsing) {
+  EnableOnDeviceModelWithSession();
+
+  optimization_guide::proto::DefaultResponse default_response;
+  optimization_guide::StreamingResponse default_streaming_response{
+      .response = AnyWrapProto(default_response), .is_complete = true};
+
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            callback.Run(OptimizationGuideModelStreamingExecutionResult(
+                base::ok(default_streaming_response),
+                /*provided_by_on_device=*/true));
+          })));
+
+  base::test::TestFuture<std::optional<IntelligentScanResult>> future;
+  delegate_->InquireOnDeviceModel("", future.GetCallback());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelExecutionDuration", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelExecutionSuccess", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelResponseParseSuccess", false, 1);
+
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       TestSessionExecutionAndResponseParseSuccess) {
+  EnableOnDeviceModelWithSession();
+
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            callback.Run(OptimizationGuideModelStreamingExecutionResult(
+                base::ok(CreateScamDetectionResponse("Google", "Search Engine",
+                                                     /*is_complete=*/true)),
+                /*provided_by_on_device=*/false));
+          })));
+
+  base::test::TestFuture<std::optional<IntelligentScanResult>> future;
+  delegate_->InquireOnDeviceModel("", future.GetCallback());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelExecutionDuration", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelExecutionSuccess", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelResponseParseSuccess", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelSuccessfulResponseCallbackAlive", true, 1);
+
+  EXPECT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->brand, "Google");
+  EXPECT_EQ(future.Get()->intent, "Search Engine");
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       TestExecutionSuccessButCallbackIsNotAlive) {
+  EnableOnDeviceModelWithSession();
+
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            callback.Run(OptimizationGuideModelStreamingExecutionResult(
+                base::ok(CreateScamDetectionResponse("Google", "Search Engine",
+                                                     /*is_complete=*/true)),
+                /*provided_by_on_device=*/false));
+          })));
+
+  // Create an empty callback.
+  ClientSideDetectionHost::IntelligentScanDelegate::
+      InquireOnDeviceModelDoneCallback host_callback;
+  delegate_->InquireOnDeviceModel("", std::move(host_callback));
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelExecutionDuration", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelExecutionSuccess", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelResponseParseSuccess", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelSuccessfulResponseCallbackAlive", false,
+      1);
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       ResetOnDeviceSession) {
+  EnableOnDeviceModelWithSession();
+
+  base::test::TestFuture<std::optional<IntelligentScanResult>> future;
+  delegate_->InquireOnDeviceModel("", future.GetCallback());
+
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", true, 0);
+
+  delegate_->ResetOnDeviceSession(/*inquiry_complete=*/false);
+
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", true, 1);
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       ResetOnDeviceSession_HistogramNotLoggedIfInquiryComplete) {
+  EnableOnDeviceModelWithSession();
+
+  base::test::TestFuture<std::optional<IntelligentScanResult>> future;
+  delegate_->InquireOnDeviceModel("", future.GetCallback());
+
+  delegate_->ResetOnDeviceSession(/*inquiry_complete=*/true);
+
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", true, 0);
 }
 
 class

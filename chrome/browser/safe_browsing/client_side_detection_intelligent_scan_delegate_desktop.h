@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_DESKTOP_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_DESKTOP_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
@@ -35,6 +36,9 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
   // IntelligentScanDelegate implementation.
   bool ShouldRequestIntelligentScan(ClientPhishingRequest* verdict) override;
   bool IsOnDeviceModelAvailable(bool log_failed_eligibility_reason) override;
+  void InquireOnDeviceModel(std::string rendered_texts,
+                            InquireOnDeviceModelDoneCallback callback) override;
+  void ResetOnDeviceSession(bool inquiry_complete) override;
   void StartListeningToOnDeviceModelUpdate() override;
   void StopListeningToOnDeviceModelUpdate() override;
 
@@ -51,6 +55,13 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
 
   void LogOnDeviceModelEligibilityReason();
 
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+  GetModelExecutorSession();
+
+  void ModelExecutionCallback(
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult
+          result);
+
   // It is set to true when the on-device model is not readily available, but
   // it's expected to be ready soon. See `kWaitableReasons` for more details.
   bool observing_on_device_model_availability_ = false;
@@ -59,8 +70,17 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
   bool on_device_model_available_ = false;
   base::TimeTicks on_device_fetch_time_;
 
+  base::TimeTicks session_execution_start_time_;
+  // The underlying session provided by optimization guide component.
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+      session_;
+  InquireOnDeviceModelDoneCallback inquire_on_device_model_callback_;
+
   const raw_ref<PrefService> pref_;
   const raw_ptr<OptimizationGuideKeyedService> opt_guide_;
+
+  base::WeakPtrFactory<ClientSideDetectionIntelligentScanDelegateDesktop>
+      weak_factory_{this};
 };
 
 }  // namespace safe_browsing

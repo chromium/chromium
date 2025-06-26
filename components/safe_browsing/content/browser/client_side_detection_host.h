@@ -104,6 +104,14 @@ class ClientSideDetectionHost
   // object is responsible for all interactions with the on-device model.
   class IntelligentScanDelegate : public KeyedService {
    public:
+    // Represents the result of an intelligent scan.
+    struct IntelligentScanResult {
+      std::string brand;
+      std::string intent;
+    };
+    using InquireOnDeviceModelDoneCallback =
+        base::OnceCallback<void(std::optional<IntelligentScanResult>)>;
+
     ~IntelligentScanDelegate() override = default;
 
     // Determines if an intelligent scan should be requested based on the
@@ -115,6 +123,15 @@ class ClientSideDetectionHost
     // histograms if |log_failed_eligibility_reason| is true.
     virtual bool IsOnDeviceModelAvailable(
         bool log_failed_eligibility_reason) = 0;
+    // Gets the intelligent scan result from the on-device model. The callback
+    // will return an empty optional if the on-device model is not available.
+    virtual void InquireOnDeviceModel(
+        std::string rendered_texts,
+        InquireOnDeviceModelDoneCallback callback) = 0;
+    // Resets the session that's created by the on-device model. Does nothing if
+    // there is no session. |inquiry_complete| indicates whether the inquiry is
+    // complete.
+    virtual void ResetOnDeviceSession(bool inquiry_complete) = 0;
     // Starts listening to the on-device model update through OptimizationGuide.
     // A check will be made in the delegate to confirm that it's not listening
     // for availability before subscribing. This will be called when the user

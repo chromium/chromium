@@ -276,6 +276,11 @@ class MockIntelligentScanDelegate
   MOCK_METHOD(bool, IsOnDeviceModelAvailable, (bool), (override));
   MOCK_METHOD(void, StartListeningToOnDeviceModelUpdate, (), (override));
   MOCK_METHOD(void, StopListeningToOnDeviceModelUpdate, (), (override));
+  MOCK_METHOD(void,
+              InquireOnDeviceModel,
+              (std::string, InquireOnDeviceModelDoneCallback),
+              (override));
+  MOCK_METHOD(void, ResetOnDeviceSession, (bool), (override));
 };
 
 }  // namespace

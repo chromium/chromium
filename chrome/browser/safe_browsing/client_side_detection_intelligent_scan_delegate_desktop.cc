@@ -12,8 +12,12 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace {
+using ScamDetectionRequest = optimization_guide::proto::ScamDetectionRequest;
+using ScamDetectionResponse = optimization_guide::proto::ScamDetectionResponse;
+
 // Currently, the following errors, which are used when a model may have been
 // installed but not yet loaded, are treated as waitable.
 static constexpr auto kWaitableReasons =
@@ -30,6 +34,37 @@ static constexpr auto kWaitableReasons =
 void LogOnDeviceModelDownloadSuccess(bool success) {
   base::UmaHistogramBoolean("SBClientPhishing.OnDeviceModelDownloadSuccess",
                             success);
+}
+
+void LogOnDeviceModelSessionAliveOnNewRequest(bool is_alive) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", is_alive);
+}
+
+void LogOnDeviceModelSessionCreationSuccess(bool success) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", success);
+}
+
+void LogOnDeviceModelExecutionSuccessAndTime(
+    bool success,
+    base::TimeTicks session_execution_start_time) {
+  base::UmaHistogramBoolean("SBClientPhishing.OnDeviceModelExecutionSuccess",
+                            success);
+  base::UmaHistogramMediumTimes(
+      "SBClientPhishing.OnDeviceModelExecutionDuration",
+      base::TimeTicks::Now() - session_execution_start_time);
+}
+
+void LogOnDeviceModelExecutionParse(bool success) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelResponseParseSuccess", success);
+}
+
+void LogOnDeviceModelCallbackStateOnSuccessfulResponse(bool is_alive) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelSuccessfulResponseCallbackAlive",
+      is_alive);
 }
 }  // namespace
 
@@ -73,21 +108,123 @@ bool ClientSideDetectionIntelligentScanDelegateDesktop::
   return on_device_model_available_;
 }
 
+void ClientSideDetectionIntelligentScanDelegateDesktop::InquireOnDeviceModel(
+    std::string rendered_texts,
+    InquireOnDeviceModelDoneCallback callback) {
+  // We have checked the model availability prior to calling this function, but
+  // we want to check one last time before creating a session.
+  if (!IsOnDeviceModelAvailable(/*log_failed_eligibility_reason=*/false)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // Close off the previous session if session's model execution from a previous
+  // call into InquireOnDeviceModel is still happening.
+  if (session_) {
+    LogOnDeviceModelSessionAliveOnNewRequest(true);
+    session_.reset();
+  } else {
+    LogOnDeviceModelSessionAliveOnNewRequest(false);
+  }
+
+  base::TimeTicks session_creation_start_time = base::TimeTicks::Now();
+
+  session_ = GetModelExecutorSession();
+
+  if (!session_) {
+    LogOnDeviceModelSessionCreationSuccess(false);
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  base::UmaHistogramMediumTimes(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime",
+      base::TimeTicks::Now() - session_creation_start_time);
+  LogOnDeviceModelSessionCreationSuccess(true);
+
+  ScamDetectionRequest request;
+  request.set_rendered_text(rendered_texts);
+
+  inquire_on_device_model_callback_ = std::move(callback);
+  session_execution_start_time_ = base::TimeTicks::Now();
+  session_->ExecuteModel(
+      *std::make_unique<ScamDetectionRequest>(request),
+      base::BindRepeating(&ClientSideDetectionIntelligentScanDelegateDesktop::
+                              ModelExecutionCallback,
+                          weak_factory_.GetWeakPtr()));
+}
+
+void ClientSideDetectionIntelligentScanDelegateDesktop::ModelExecutionCallback(
+    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
+  if (!result.response.has_value()) {
+    LogOnDeviceModelExecutionSuccessAndTime(/*success=*/false,
+                                            session_execution_start_time_);
+    if (inquire_on_device_model_callback_) {
+      std::move(inquire_on_device_model_callback_).Run(std::nullopt);
+    }
+    return;
+  }
+
+  // This is a non-error response, but it's not completed, yet so we wait till
+  // it's complete. We will not respond to the callback yet because of this.
+  if (!result.response->is_complete) {
+    return;
+  }
+
+  LogOnDeviceModelExecutionSuccessAndTime(/*success=*/true,
+                                          session_execution_start_time_);
+
+  auto scam_detection_response = optimization_guide::ParsedAnyMetadata<
+      optimization_guide::proto::ScamDetectionResponse>(
+      result.response->response);
+
+  if (!scam_detection_response) {
+    LogOnDeviceModelExecutionParse(false);
+    if (inquire_on_device_model_callback_) {
+      std::move(inquire_on_device_model_callback_).Run(std::nullopt);
+    }
+    return;
+  }
+
+  LogOnDeviceModelExecutionParse(true);
+
+  ResetOnDeviceSession(/*inquiry_complete=*/true);
+
+  LogOnDeviceModelCallbackStateOnSuccessfulResponse(
+      !!inquire_on_device_model_callback_);
+  if (inquire_on_device_model_callback_) {
+    ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanResult
+        intelligent_scan_result;
+    intelligent_scan_result.brand = scam_detection_response->brand();
+    intelligent_scan_result.intent = scam_detection_response->intent();
+    std::move(inquire_on_device_model_callback_).Run(intelligent_scan_result);
+  }
+}
+
+void ClientSideDetectionIntelligentScanDelegateDesktop::ResetOnDeviceSession(
+    bool inquiry_complete) {
+  // Because of the use of DeleteSoon below, we can't guarantee that session_
+  // is still available when the callback is invoked.
+  if (session_) {
+    // Reset session immediately so that future inference is not affected by the
+    // old context.
+    // TODO(crbug.com/380928557): Call session_.reset() directly once
+    // crbug.com/384774788 is fixed.
+    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                                   std::move(session_));
+    if (!inquiry_complete) {
+      LogOnDeviceModelSessionAliveOnNewRequest(true);
+    }
+  }
+}
+
 void ClientSideDetectionIntelligentScanDelegateDesktop::
     StartListeningToOnDeviceModelUpdate() {
   if (observing_on_device_model_availability_) {
     return;
   }
 
-  using ::optimization_guide::SessionConfigParams;
-  SessionConfigParams config_params = SessionConfigParams{
-      .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
-  };
-
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      session = opt_guide_->StartSession(
-          optimization_guide::ModelBasedCapabilityKey::kScamDetection,
-          config_params);
+  auto session = GetModelExecutorSession();
 
   if (session) {
     NotifyOnDeviceModelAvailable();
@@ -102,6 +239,9 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::
 void ClientSideDetectionIntelligentScanDelegateDesktop::
     StopListeningToOnDeviceModelUpdate() {
   on_device_model_available_ = false;
+  if (session_) {
+    session_.reset();
+  }
   if (!observing_on_device_model_availability_) {
     return;
   }
@@ -151,6 +291,19 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::
   base::UmaHistogramEnumeration(
       "SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure",
       eligibility);
+}
+
+std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+ClientSideDetectionIntelligentScanDelegateDesktop::GetModelExecutorSession() {
+  using ::optimization_guide::SessionConfigParams;
+  SessionConfigParams config_params = SessionConfigParams{
+      .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
+      .logging_mode = SessionConfigParams::LoggingMode::kDefault,
+  };
+
+  return opt_guide_->StartSession(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      config_params);
 }
 
 }  // namespace safe_browsing
