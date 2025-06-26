@@ -53,6 +53,7 @@ extern const char kEnableCrashReporterForTesting[];
 extern const char kAndroidSkipChildServiceInitForTesting[];
 extern const char kDefaultCountryCodeAtInstall[];
 extern const char kEnableIdleTracing[];
+extern const char kForceDesktopAndroid[];
 extern const char kHostPackageName[];
 extern const char kHostPackageLabel[];
 extern const char kHostVersionCode[];
