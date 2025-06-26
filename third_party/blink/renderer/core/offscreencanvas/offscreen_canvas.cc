@@ -104,16 +104,17 @@ OffscreenCanvas::~OffscreenCanvas() {
   external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(), memory_usage_);
 }
 
-void OffscreenCanvas::Commit(scoped_refptr<CanvasResource>&& canvas_resource,
+bool OffscreenCanvas::Commit(scoped_refptr<CanvasResource>&& canvas_resource,
                              const SkIRect& damage_rect) {
   if (!HasPlaceholderCanvas() || !canvas_resource)
-    return;
+    return false;
   RecordCanvasSizeToUMA();
 
   current_frame_damage_rect_.join(damage_rect);
   GetOrCreateResourceDispatcher()->DispatchFrameSync(
       std::move(canvas_resource), current_frame_damage_rect_, IsOpaque());
   current_frame_damage_rect_ = SkIRect::MakeEmpty();
+  return true;
 }
 
 void OffscreenCanvas::Dispose() {

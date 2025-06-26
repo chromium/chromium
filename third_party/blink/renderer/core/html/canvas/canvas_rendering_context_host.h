@@ -97,7 +97,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   virtual bool ShouldAccelerate2dContext() const = 0;
 
-  virtual void Commit(scoped_refptr<CanvasResource>&& canvas_resource,
+  virtual bool Commit(scoped_refptr<CanvasResource>&& canvas_resource,
                       const SkIRect& damage_rect);
 
   virtual UkmParameters GetUkmParameters() = 0;

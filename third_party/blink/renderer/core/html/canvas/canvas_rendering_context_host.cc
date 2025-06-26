@@ -91,9 +91,10 @@ CanvasRenderingContextHost::CreateTransparentImage() const {
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
 }
 
-void CanvasRenderingContextHost::Commit(scoped_refptr<CanvasResource>&&,
+bool CanvasRenderingContextHost::Commit(scoped_refptr<CanvasResource>&&,
                                         const SkIRect&) {
   NOTIMPLEMENTED();
+  return false;
 }
 
 bool CanvasRenderingContextHost::IsValidImageSize() const {
