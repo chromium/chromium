@@ -1896,27 +1896,6 @@
     ]
   },
   {
-    "prefix": "lna",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/fetch/local-network-access"
-    ],
-    "args": [
-      "--enable-features=LocalNetworkAccessChecks:LocalNetworkAccessChecksWarn/false"
-    ],
-    "exclusive_tests": "ALL",
-    "owners": [
-      "cthomp@chromium.org",
-      "hchao@chromium.org",
-      "chrome-secure-web-and-net@chromium.org"
-    ],
-    "expires": "Oct 2, 2025"
-  },
-  {
     "prefix": "log-dns-prefetch-and-preconnect",
     "owners": [
       "leimy@google.com"
@@ -2494,29 +2473,6 @@
     ],
     "args": [
       "--disable-features=LocalNetworkAccessChecks"
-    ],
-    "exclusive_tests": "ALL",
-    "owners": [
-      "cthomp@chromium.org",
-      "hchao@chromium.org",
-      "chrome-secure-web-and-net@chromium.org"
-    ],
-    "expires": "July 31, 2025"
-  },
-  {
-    "prefix": "pna-permission",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/fetch/private-network-access"
-    ],
-    "args": [
-      "--enable-features=PrivateNetworkAccessPermissionPrompt",
-      "--disable-features=LocalNetworkAccessChecks",
-      "--enable-blink-features=PrivateNetworkAccessPermissionPrompt"
     ],
     "exclusive_tests": "ALL",
     "owners": [
