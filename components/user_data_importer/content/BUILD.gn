@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content") {
+  sources = [
+    "content_bookmark_parser.cc",
+    "content_bookmark_parser.h",
+  ]
+  deps = [
+    "//base",
+    "//components/user_data_importer/utility:safari_data_importer",
+  ]
+}

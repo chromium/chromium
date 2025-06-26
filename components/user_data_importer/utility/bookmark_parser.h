@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORT_MANAGER_H_
-#define COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORT_MANAGER_H_
+#ifndef COMPONENTS_USER_DATA_IMPORTER_UTILITY_BOOKMARK_PARSER_H_
+#define COMPONENTS_USER_DATA_IMPORTER_UTILITY_BOOKMARK_PARSER_H_
 
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
@@ -15,14 +15,19 @@ class FilePath;
 
 namespace user_data_importer {
 
-// Interface for providing platform-specific implementations of certain
-// model-layer logic (e.g., some parsing).
-class SafariDataImportManager {
+// Interface for opening and parsing an HTML file containing bookmarks.
+class BookmarkParser {
  public:
   // Result of a successful invocation of `ParseBookmarks` below.
   struct ParsedBookmarks {
     ParsedBookmarks();
     ~ParsedBookmarks();
+
+    // Moveable, but not copyable.
+    ParsedBookmarks(ParsedBookmarks&&);
+    ParsedBookmarks& operator=(ParsedBookmarks&&);
+    ParsedBookmarks(const ParsedBookmarks&) = delete;
+    ParsedBookmarks& operator=(const ParsedBookmarks&) = delete;
 
     // List of standard bookmarks and folders.
     std::vector<ImportedBookmarkEntry> bookmarks;
@@ -40,24 +45,32 @@ class SafariDataImportManager {
     kParsingFailed,
 
     // The operation did not complete within the allotted time.
-    kTimedOut
+    kTimedOut,
+
+    // Generic error.
+    kOther
   };
 
-  virtual ~SafariDataImportManager() = default;
+  virtual ~BookmarkParser() = default;
 
   using BookmarkParsingResult =
       base::expected<ParsedBookmarks, BookmarkParsingError>;
+  using BookmarkParsingCallback =
+      base::OnceCallback<void(BookmarkParsingResult)>;
 
   // Opens the file at the given FilePath, treating it as an HTML file matching
   // the Netscape bookmarks format:
   // https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa753582(v=vs.85)
   // Parses the document and extracts bookmarks and reading list entries.
   // Invokes `callback` with the result of parsing.
-  virtual void ParseBookmarks(
-      const base::FilePath& bookmarks_html,
-      base::OnceCallback<void(BookmarkParsingResult)> callback) = 0;
+  virtual void Parse(const base::FilePath& bookmarks_html,
+                     BookmarkParsingCallback callback) = 0;
 };
+
+// Returns a suitable concrete BookmarkParser instance. See implementations in
+// ios_bookmark_parser.mm and content_bookmark_parser.cc.
+std::unique_ptr<BookmarkParser> MakeBookmarkParser();
 
 }  //  namespace user_data_importer
 
-#endif  // COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORT_MANAGER_H_
+#endif  // COMPONENTS_USER_DATA_IMPORTER_UTILITY_BOOKMARK_PARSER_H_

@@ -4,6 +4,7 @@
 
 #include "components/user_data_importer/utility/safari_data_importer.h"
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -26,7 +27,7 @@
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/services/csv_password/fake_password_parser_service.h"
-#include "components/user_data_importer/utility/safari_data_import_manager.h"
+#include "components/user_data_importer/utility/bookmark_parser.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -34,16 +35,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace user_data_importer {
-
-class TestSafariDataImportManager : public SafariDataImportManager {
- public:
-  TestSafariDataImportManager() = default;
-  ~TestSafariDataImportManager() override = default;
-
-  void ParseBookmarks(
-      const base::FilePath& bookmarks_html,
-      base::OnceCallback<void(BookmarkParsingResult)> callback) override {}
-};
 
 class SafariDataImporterTest : public testing::Test {
  public:
@@ -60,8 +51,7 @@ class SafariDataImporterTest : public testing::Test {
                                                      /*create_db=*/false);
     importer_ = std::make_unique<SafariDataImporter>(
         &presenter_, &client_.GetPersonalDataManager().payments_data_manager(),
-        history_service_.get(), std::make_unique<TestSafariDataImportManager>(),
-        "en-US");
+        history_service_.get(), MakeBookmarkParser(), "en-US");
 
     mojo::PendingRemote<password_manager::mojom::CSVPasswordParser>
         pending_remote{receiver_.BindNewPipeAndPassRemote()};
@@ -129,8 +119,13 @@ class SafariDataImporterTest : public testing::Test {
 
   void ImportBookmarks(std::string html_data) {
     bookmarks_callback_called_ = false;
+    base::ScopedTempDir dir;
+    ASSERT_TRUE(dir.CreateUniqueTempDir());
+    base::FilePath path = dir.GetPath().AppendASCII("bookmarks.html");
+    ASSERT_TRUE(base::WriteFile(path, html_data));
+
     importer_->ImportBookmarks(
-        std::move(html_data),
+        path,
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
         base::BindOnce(&SafariDataImporterTest::OnBookmarksConsumed,
@@ -272,6 +267,17 @@ class SafariDataImporterTest : public testing::Test {
     importer_->history_size_threshold_ = history_size_threshold;
   }
 
+  // Asserts that GetNumberOfBookmarksImported() is `num_bookmarks` on platforms
+  // where bookmark import is implemented, or 0 (callback ran with error) on
+  // other platforms.
+  void ExpectBookmarksIfImplemented(int num_bookmarks) {
+#if BUILDFLAG(IS_IOS)
+    EXPECT_EQ(GetNumberOfBookmarksImported(), num_bookmarks);
+#else
+    EXPECT_EQ(GetNumberOfBookmarksImported(), 0);
+#endif  // BUILDFLAG(IS_IOS)
+  }
+
  private:
   // Formats an error message when timing out while waiting for callbacks.
   std::string CallbackTimeoutMessage() {
@@ -343,11 +349,20 @@ class SafariDataImporterTest : public testing::Test {
       mock_delete_file_;
 };
 
-TEST_F(SafariDataImporterTest, NoBookmark) {
-  ImportBookmarks("");
-
-  ASSERT_EQ(GetNumberOfBookmarksImported(), 0);
+// TODO(crbug.com/407587751): Enable Bookmark tests on non-IOS once stub method
+// in content_bookmark_parser is functional.
+#if BUILDFLAG(IS_IOS)
+TEST_F(SafariDataImporterTest, WithBookmarks) {
+  ImportBookmarks(
+      "<!DOCTYPE NETSCAPE-Bookmark-file-1>\
+       <!--This is an automatically generated file.\
+       It will be read and overwritten.\
+       Do Not Edit! -->\
+       <Title>Bookmarks</Title>\
+       <H1>Bookmarks</H1>");
+  ASSERT_EQ(GetNumberOfBookmarksImported(), 1);
 }
+#endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(SafariDataImporterTest, NoHistory) {
   ImportHistory();
@@ -440,7 +455,7 @@ TEST_F(SafariDataImporterTest, CancelImport) {
   ASSERT_EQ(import_results.number_to_import, 3u);
   // TODO(crbug.com/407587751): Update test when bookmarks parsing is
   // implemented.
-  ASSERT_EQ(GetNumberOfBookmarksImported(), 0);
+  ExpectBookmarksIfImplemented(1);
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
   ASSERT_EQ(GetNumberOfURLsImported(), 5);  // Note: Approximation.
 
@@ -455,7 +470,7 @@ TEST_F(SafariDataImporterTest, ExecuteImport) {
   ASSERT_EQ(import_results.number_imported, 0u);
   // TODO(crbug.com/407587751): Update test when bookmarks parsing is
   // implemented.
-  ASSERT_EQ(GetNumberOfBookmarksImported(), 0);
+  ExpectBookmarksIfImplemented(1);
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
   ASSERT_EQ(GetNumberOfURLsImported(), 5);  // Note: Approximation.
 

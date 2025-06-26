@@ -7,9 +7,9 @@ import("//build/rust/rust_static_library.gni")
 
 source_set("safari_data_importer") {
   sources = [
+    "bookmark_parser.cc",
+    "bookmark_parser.h",
     "history_callback_from_rust.h",
-    "safari_data_import_manager.cc",
-    "safari_data_import_manager.h",
     "safari_data_importer.cc",
     "safari_data_importer.h",
   ]
@@ -95,9 +95,13 @@ source_set("unit_tests") {
     deps += [
       ":test_archive_bundle_data",
       "//components/password_manager/services/csv_password/ios:fake_password_parser_service",
+      "//components/user_data_importer/ios",
     ]
   } else {
     data_deps = [ ":test_archive" ]
-    deps += [ "//components/password_manager/services/csv_password:fake_password_parser_service" ]
+    deps += [
+      "//components/password_manager/services/csv_password:fake_password_parser_service",
+      "//components/user_data_importer/content",
+    ]
   }
 }

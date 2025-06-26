@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORTER_H_
 #define COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORTER_H_
 
+#include "base/files/scoped_temp_dir.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
+#include "components/user_data_importer/utility/bookmark_parser.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
 
 namespace autofill {
@@ -23,14 +25,14 @@ class HistoryService;
 
 namespace user_data_importer {
 
-class SafariDataImportManager;
+struct ImportedBookmarkEntry;
 
 // Main model-layer object for extracting and importing user data from a bundle
 // of data exported by Safari. The bundle is a ZIP file containing various data
 // types in individual files, the format of which is documented here:
 // https://developer.apple.com/documentation/safariservices/importing-data-exported-from-safari?language=objc
 // Users of this class must also provide an object implementing the
-// `SafariDataImportManager` interface, which abstracts out certain logic which
+// `BookmarkParser` interface, which abstracts out certain logic which
 // can't live in the components layer (because of platform dependencies).
 class SafariDataImporter {
  public:
@@ -45,7 +47,7 @@ class SafariDataImporter {
   SafariDataImporter(password_manager::SavedPasswordsPresenter* presenter,
                      autofill::PaymentsDataManager* payments_data_manager,
                      history::HistoryService* history_service,
-                     std::unique_ptr<SafariDataImportManager> manager,
+                     std::unique_ptr<BookmarkParser> bookmark_parser,
                      std::string app_locale);
   ~SafariDataImporter();
 
@@ -105,8 +107,12 @@ class SafariDataImporter {
 
   // Attempts to import bookmarks by parsing the provided HTML data.
   // Calls "bookmarks_callback" when done.
-  void ImportBookmarks(std::string html_data,
-                       ImportCallback bookmarks_callback);
+  void ImportBookmarks(base::FilePath html, ImportCallback bookmarks_callback);
+
+  // Receives the result of parsing bookmarks, stores them for later use,
+  // and invokes `callback` with the number of parsed bookmarks.
+  void OnBookmarksParsed(ImportCallback callback,
+                         BookmarkParser::BookmarkParsingResult result);
 
   // Calls "history_callback" with an approximation of the number of URLs
   // contains in the history file contained in the zip file archive.
@@ -133,6 +139,11 @@ class SafariDataImporter {
 
   // Imports Credit Cards to the Payments Data Manager.
   void ContinueImportPaymentCards(ImportCallback payment_cards_callback);
+
+  // Writes the contents of `html_data` to a `bookmarks.html` file in a tmp
+  // directory.
+  std::optional<base::FilePath> WriteBookmarksToTmpFile(
+      const std::string& html_data);
 
   // Launches the task which will call "ImportBookmarks".
   void LaunchImportBookmarksTask(ImportCallback bookmarks_callback);
@@ -164,18 +175,28 @@ class SafariDataImporter {
   // Service used to import history URLs.
   const raw_ref<history::HistoryService> history_service_;
 
+  // The model-layer object used to parse bookmarks from an HTML file.
+  std::unique_ptr<BookmarkParser> bookmark_parser_;
+
   // The task runner from which the import task was launched. The purpose of
   // this task runner is to post tasks on the thread where the importer lives,
   // which we have to do for "password_importer_" tasks and for all callbacks,
   // for example.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // Encapsulates model-layer logic that has to be injected (e.g.,
-  // platform-specific logic).
-  std::unique_ptr<SafariDataImportManager> manager_;
-
   // Stores the credit cards parsed from the "PaymentCards" JSON file.
   std::vector<autofill::CreditCard> cards_to_import_;
+
+  // Stores bookmarks data on disk after unzip but before parsing.
+  base::ScopedTempDir temp_dir_;
+
+  // Bookmarks which have been parsed, but not yet committed to permanent
+  // storage.
+  std::vector<ImportedBookmarkEntry> pending_bookmarks_;
+
+  // Reading List entries which have been parsed, but not yet committed to
+  // permanent storage.
+  std::vector<ImportedBookmarkEntry> pending_reading_list_;
 
   // The application locale, used to set credit card information.
   const std::string app_locale_;
@@ -186,6 +207,9 @@ class SafariDataImporter {
   // Maximum size the history entries vector can reach before calling
   // "ParseHistoryCallback". Can be modified for testing purposes.
   size_t history_size_threshold_ = 1000;
+
+  // Creates WeakPtr to this. Use with caution across sequence boundaries.
+  base::WeakPtrFactory<SafariDataImporter> weak_factory_{this};
 };
 
 }  // namespace user_data_importer
