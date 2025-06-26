@@ -5,7 +5,6 @@
 package org.chromium.ui.test.util;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DisableIfSkipCheck;
@@ -24,29 +23,28 @@ public class UiDisableIfSkipCheck extends DisableIfSkipCheck {
 
     @Override
     protected boolean deviceTypeApplies(String type) {
-        final boolean desktopOnly = TextUtils.equals(type, DeviceFormFactor.DESKTOP);
-        final boolean phoneOnly = TextUtils.equals(type, DeviceFormFactor.PHONE);
-        final boolean tabletOnly = TextUtils.equals(type, DeviceFormFactor.ONLY_TABLET);
-        if (!desktopOnly && !phoneOnly && !tabletOnly) {
-            return false;
-        }
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    boolean isDesktopBuild = DeviceFormFactor.isDesktop();
-                    boolean isTablet =
-                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(mTargetContext);
                     switch (type) {
                         case DeviceFormFactor.PHONE:
-                            return !isDesktopBuild && !isTablet;
+                            return !isDesktopBuild() && !isTablet();
                         case DeviceFormFactor.ONLY_TABLET:
-                            return !isDesktopBuild && isTablet;
+                            return !isDesktopBuild() && isTablet();
                         case DeviceFormFactor.DESKTOP:
-                            return isDesktopBuild;
+                            return isDesktopBuild();
                         case DeviceFormFactor.TABLET_OR_DESKTOP:
-                            return isTablet;
+                            return isTablet();
                         default:
                             return false;
                     }
                 });
+    }
+
+    private boolean isDesktopBuild() {
+        return DeviceFormFactor.isDesktop();
+    }
+
+    private boolean isTablet() {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mTargetContext);
     }
 }
