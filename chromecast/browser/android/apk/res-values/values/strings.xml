@@ -9,5 +9,4 @@
            xmlns:tools="http://schemas.android.com/tools"
            tools:ignore="MissingTranslation,UnusedResources">
     <string name="app_name">Google Cast</string>
-    <string name="browser_process_initialization_failed">Initialization failed.</string>
 </resources>
