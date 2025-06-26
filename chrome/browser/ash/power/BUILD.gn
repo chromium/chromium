@@ -10,8 +10,6 @@ static_library("power") {
   sources = [
     "cpu_data_collector.cc",
     "cpu_data_collector.h",
-    "extension_event_observer.cc",
-    "extension_event_observer.h",
     "freezer_cgroup_process_manager.cc",
     "freezer_cgroup_process_manager.h",
     "idle_action_warning_dialog_view.cc",
@@ -55,7 +53,6 @@ source_set("unit_tests") {
 
   sources = [
     "cpu_data_collector_unittest.cc",
-    "extension_event_observer_unittest.cc",
     "power_data_collector_unittest.cc",
     "renderer_freezer_unittest.cc",
     "suspend_perf_reporter_unittest.cc",
