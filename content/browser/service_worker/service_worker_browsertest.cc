@@ -2781,16 +2781,17 @@ class CacheStorageSideDataSizeChecker
     return result;
   }
 
-  void OnCacheStorageOpenCallback(int* result,
-                                  base::OnceClosure continuation,
-                                  blink::mojom::OpenResultPtr open_result) {
-    ASSERT_TRUE(open_result->is_cache());
+  void OnCacheStorageOpenCallback(
+      int* result,
+      base::OnceClosure continuation,
+      blink::mojom::CacheStorage::OpenResult open_result) {
+    ASSERT_TRUE(open_result.has_value());
 
     auto scoped_request = blink::mojom::FetchAPIRequest::New();
     scoped_request->url = url_;
 
     // Preserve lifetime of this remote across the Match call.
-    cache_storage_cache_.emplace(std::move(open_result->get_cache()));
+    cache_storage_cache_.emplace(std::move(open_result.value()));
 
     (*cache_storage_cache_)
         ->Match(std::move(scoped_request),
@@ -6859,16 +6860,17 @@ class CacheStorageDataChecker
     return result;
   }
 
-  void OnCacheStorageOpenCallback(Status* result,
-                                  base::OnceClosure continuation,
-                                  blink::mojom::OpenResultPtr open_result) {
-    ASSERT_TRUE(open_result->is_cache());
+  void OnCacheStorageOpenCallback(
+      Status* result,
+      base::OnceClosure continuation,
+      blink::mojom::CacheStorage::OpenResult open_result) {
+    ASSERT_TRUE(open_result.has_value());
 
     auto scoped_request = blink::mojom::FetchAPIRequest::New();
     scoped_request->url = url_;
 
     // Preserve lifetime of this remote across the Match call.
-    cache_storage_cache_.emplace(std::move(open_result->get_cache()));
+    cache_storage_cache_.emplace(std::move(open_result.value()));
 
     (*cache_storage_cache_)
         ->Match(std::move(scoped_request),

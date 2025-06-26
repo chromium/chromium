@@ -133,14 +133,14 @@ void DidGenerateCacheableMetadataInCacheStorageOnUI(
           [](const GURL& url, base::Time expected_response_time,
              mojo_base::BigBuffer data, int64_t trace_id,
              mojo::Remote<blink::mojom::CacheStorage> preserve_remote_lifetime,
-             blink::mojom::OpenResultPtr result) {
-            if (result->is_status()) {
+             blink::mojom::CacheStorage::OpenResult result) {
+            if (!result.has_value()) {
               // Silently ignore errors.
               return;
             }
 
             mojo::AssociatedRemote<blink::mojom::CacheStorageCache> remote;
-            remote.Bind(std::move(result->get_cache()));
+            remote.Bind(std::move(result.value()));
             remote->WriteSideData(
                 url, expected_response_time, std::move(data), trace_id,
                 base::BindOnce(

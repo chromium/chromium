@@ -157,7 +157,7 @@ class DatabaseTask : public DatabaseTaskHost {
                             blink::ServiceWorkerStatusCode status);
   void DidOpenCache(
       base::OnceCallback<void(blink::mojom::CacheStorageError)> callback,
-      blink::mojom::OpenResultPtr result);
+      blink::mojom::CacheStorage::OpenResult result);
 
   base::WeakPtr<DatabaseTaskHost> GetWeakPtr() override;
 

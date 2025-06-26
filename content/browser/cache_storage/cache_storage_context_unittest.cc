@@ -205,11 +205,13 @@ TEST_F(CacheStorageContextTest, GetDefaultBucketError) {
   base::RunLoop loop_5;
   example_remote->Open(
       u"cache_name", /*trace_id=*/0,
-      base::BindLambdaForTesting([&](blink::mojom::OpenResultPtr result) {
-        EXPECT_EQ(result->get_status(),
-                  blink::mojom::CacheStorageError::kErrorStorage);
-        loop_5.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](blink::mojom::CacheStorage::OpenResult result) {
+            EXPECT_FALSE(result.has_value());
+            EXPECT_EQ(result.error(),
+                      blink::mojom::CacheStorageError::kErrorStorage);
+            loop_5.Quit();
+          }));
   loop_5.Run();
 }
 

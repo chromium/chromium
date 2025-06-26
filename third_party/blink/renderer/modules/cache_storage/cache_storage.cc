@@ -140,21 +140,20 @@ const char kSecurityErrorMessage[] =
 void OpenComplete(GlobalFetch::ScopedFetcher* fetcher,
                   CacheStorageBlobClientList* blob_client_list,
                   int64_t trace_id,
-                  mojom::blink::OpenResultPtr result,
+                  mojom::blink::CacheStorage::OpenResult result,
                   ScriptPromiseResolver<Cache>* resolver) {
-  if (result->is_status()) {
+  if (!result.has_value()) {
     TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Open::Callback",
                            TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
-                           "status",
-                           CacheStorageTracedValue(result->get_status()));
-    RejectCacheStorageWithError(resolver, result->get_status());
+                           "status", CacheStorageTracedValue(result.error()));
+    RejectCacheStorageWithError(resolver, result.error());
   } else {
     TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Open::Callback",
                            TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
                            "status", "success");
     // See https://bit.ly/2S0zRAS for task types.
     resolver->Resolve(MakeGarbageCollected<Cache>(
-        fetcher, blob_client_list, std::move(result->get_cache()),
+        fetcher, blob_client_list, std::move(result.value()),
         resolver->GetExecutionContext(), blink::TaskType::kMiscPlatformAPI));
   }
 }
@@ -406,7 +405,7 @@ void CacheStorage::OpenImpl(const String& cache_name,
              CacheStorageBlobClientList* blob_client_list,
              base::TimeTicks start_time, int64_t trace_id,
              ScriptPromiseResolver<Cache>* resolver,
-             mojom::blink::OpenResultPtr result) {
+             mojom::blink::CacheStorage::OpenResult result) {
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Open",
                 base::TimeTicks::Now() - start_time);

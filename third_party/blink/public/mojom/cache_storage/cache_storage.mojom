@@ -75,12 +75,6 @@ struct BatchOperation {
   CacheQueryOptions? match_options;
 };
 
-// Result of Open method. |status| is only set if there is a failure.
-union OpenResult {
-  CacheStorageError status;
-  pending_associated_remote<CacheStorageCache> cache;
-};
-
 // EagerResponse: A blob response where the source has eagerly started reading
 // the body into a DataPipe.
 struct EagerResponse {
@@ -182,5 +176,6 @@ interface CacheStorage {
       => result<MatchResponse, CacheStorageError>;
 
   // Opens and returns a mojo interface to a cache, it creates if doesn't exist.
-  Open(mojo_base.mojom.String16 cache_name, int64 trace_id) => (OpenResult result);
+  Open(mojo_base.mojom.String16 cache_name, int64 trace_id)
+    => result<pending_associated_remote<CacheStorageCache>, CacheStorageError>;
 };

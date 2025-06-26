@@ -192,13 +192,13 @@ void DatabaseTask::OpenCache(
 
 void DatabaseTask::DidOpenCache(
     base::OnceCallback<void(blink::mojom::CacheStorageError)> callback,
-    blink::mojom::OpenResultPtr result) {
-  if (result->is_status()) {
-    std::move(callback).Run(result->get_status());
+    blink::mojom::CacheStorage::OpenResult result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(result.error());
     return;
   }
 
-  cache_storage_cache_remote_.Bind(std::move(result->get_cache()));
+  cache_storage_cache_remote_.Bind(std::move(result.value()));
   std::move(callback).Run(blink::mojom::CacheStorageError::kSuccess);
 }
 

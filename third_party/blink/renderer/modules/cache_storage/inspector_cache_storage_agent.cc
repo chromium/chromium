@@ -759,16 +759,17 @@ void InspectorCacheStorageAgent::requestEntries(
       WTF::BindOnce(
           [](scoped_refptr<RequestCallbackWrapper<RequestEntriesCallback>>
                  callback_wrapper,
-             DataRequestParams params, mojom::blink::OpenResultPtr result) {
-            if (result->is_status()) {
+             DataRequestParams params,
+             mojom::blink::CacheStorage::OpenResult result) {
+            if (!result.has_value()) {
               callback_wrapper->SendFailure(ProtocolResponse::ServerError(
                   String::Format("Error requesting cache %s: %s",
                                  params.cache_name.Latin1().c_str(),
-                                 CacheStorageErrorString(result->get_status()))
+                                 CacheStorageErrorString(result.error()))
                       .Utf8()));
             } else {
               auto request = std::make_unique<GetCacheKeysForRequestData>(
-                  params, std::move(result->get_cache()),
+                  params, std::move(result.value()),
                   std::move(callback_wrapper));
               auto* request_ptr = request.get();
               request_ptr->Dispatch(std::move(request));
@@ -838,12 +839,12 @@ void InspectorCacheStorageAgent::deleteEntry(
           [](String request, int64_t trace_id,
              scoped_refptr<RequestCallbackWrapper<DeleteEntryCallback>>
                  callback_wrapper,
-             String cache_name, mojom::blink::OpenResultPtr result) {
-            if (result->is_status()) {
+             String cache_name, mojom::blink::CacheStorage::OpenResult result) {
+            if (!result.has_value()) {
               callback_wrapper->SendFailure(ProtocolResponse::ServerError(
                   String::Format("Error requesting cache %s: %s",
                                  cache_name.Latin1().c_str(),
-                                 CacheStorageErrorString(result->get_status()))
+                                 CacheStorageErrorString(result.error()))
                       .Utf8()));
             } else {
               Vector<mojom::blink::BatchOperationPtr> batch_operations;
@@ -856,7 +857,7 @@ void InspectorCacheStorageAgent::deleteEntry(
 
               mojo::AssociatedRemote<mojom::blink::CacheStorageCache>
                   cache_remote;
-              cache_remote.Bind(std::move(result->get_cache()));
+              cache_remote.Bind(std::move(result.value()));
               auto* cache = cache_remote.get();
               cache->Batch(
                   std::move(batch_operations), trace_id,

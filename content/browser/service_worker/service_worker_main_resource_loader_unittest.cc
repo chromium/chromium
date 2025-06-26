@@ -700,8 +700,9 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     base::RunLoop run_loop;
     cache_storage->Open(
         kTestCacheNameU16, /* trace_id= */ 0,
-        base::BindLambdaForTesting([&](blink::mojom::OpenResultPtr result) {
-          EXPECT_TRUE(result->is_cache());
+        base::BindLambdaForTesting([&](blink::mojom::CacheStorage::OpenResult
+                                           result) {
+          EXPECT_TRUE(result.has_value());
 
           std::vector<blink::mojom::BatchOperationPtr> operation_ptr_vec;
           operation_ptr_vec.push_back(blink::mojom::BatchOperation::New());
@@ -712,7 +713,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
               OkResponse(nullptr /* blob_body */,
                          network::mojom::FetchResponseSource::kUnspecified,
                          cache_response_time, kTestCacheName);
-          cache.Bind(std::move(result->get_cache()));
+          cache.Bind(std::move(result.value()));
           cache->Batch(
               std::move(operation_ptr_vec), /* trace_id= */ 0,
               base::BindOnce(

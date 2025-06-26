@@ -986,7 +986,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
               CacheStorageTracedValue(error));
 
           if (error != CacheStorageError::kSuccess) {
-            std::move(callback).Run(blink::mojom::OpenResult::NewStatus(error));
+            std::move(callback).Run(base::unexpected(error));
             return;
           }
           DCHECK(self->bucket_.has_value());
@@ -1014,8 +1014,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
               std::move(cache_impl),
               pending_remote.InitWithNewEndpointAndPassReceiver());
 
-          std::move(callback).Run(
-              blink::mojom::OpenResult::NewCache(std::move(pending_remote)));
+          std::move(callback).Run(base::ok(std::move(pending_remote)));
         },
         weak_factory_.GetWeakPtr(), base::TimeTicks::Now(), trace_id,
         std::move(callback));

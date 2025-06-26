@@ -484,13 +484,14 @@ class BackgroundFetchDataManagerTest
     base::RunLoop run_loop;
     background_fetch_data_manager_->OpenCache(
         storage_key(), kExampleUniqueId, trace_id,
-        base::BindLambdaForTesting([&](blink::mojom::OpenResultPtr result) {
-          EXPECT_FALSE(result->is_status());
+        base::BindLambdaForTesting([&](blink::mojom::CacheStorage::OpenResult
+                                           result) {
+          EXPECT_TRUE(result.has_value());
 
           auto match_options = blink::mojom::CacheQueryOptions::New();
           match_options->ignore_search = true;
 
-          cache.Bind(std::move(result->get_cache()));
+          cache.Bind(std::move(result.value()));
           cache->Match(
               BackgroundFetchSettledFetch::CloneRequest(request),
               std::move(match_options),
@@ -512,8 +513,9 @@ class BackgroundFetchDataManagerTest
         storage_key(),
         /* unique_id= */ kExampleUniqueId,
         /* trace_id= */ 0,
-        base::BindLambdaForTesting([&](blink::mojom::OpenResultPtr result) {
-          EXPECT_TRUE(result->is_cache());
+        base::BindLambdaForTesting([&](blink::mojom::CacheStorage::OpenResult
+                                           result) {
+          EXPECT_TRUE(result.has_value());
 
           std::vector<blink::mojom::BatchOperationPtr> operation_ptr_vec;
           operation_ptr_vec.push_back(blink::mojom::BatchOperation::New());
@@ -525,7 +527,7 @@ class BackgroundFetchDataManagerTest
               blink::mojom::CacheQueryOptions::New();
           operation_ptr_vec[0]->match_options->ignore_search = true;
 
-          cache.Bind(std::move(result->get_cache()));
+          cache.Bind(std::move(result.value()));
           cache->Batch(
               std::move(operation_ptr_vec), /* trace_id= */ 0,
               base::BindOnce(&BackgroundFetchDataManagerTest::DidBatchOperation,
@@ -542,8 +544,9 @@ class BackgroundFetchDataManagerTest
         storage_key(),
         /* unique_id= */ kExampleUniqueId,
         /* trace_id= */ 0,
-        base::BindLambdaForTesting([&](blink::mojom::OpenResultPtr result) {
-          EXPECT_TRUE(result->is_cache());
+        base::BindLambdaForTesting([&](blink::mojom::CacheStorage::OpenResult
+                                           result) {
+          EXPECT_TRUE(result.has_value());
 
           std::vector<blink::mojom::BatchOperationPtr> operation_ptr_vec;
           operation_ptr_vec.push_back(blink::mojom::BatchOperation::New());
@@ -553,7 +556,7 @@ class BackgroundFetchDataManagerTest
               BackgroundFetchSettledFetch::CloneRequest(request);
           operation_ptr_vec[0]->response = std::move(response);
 
-          cache.Bind(std::move(result->get_cache()));
+          cache.Bind(std::move(result.value()));
           cache->Batch(
               std::move(operation_ptr_vec), /* trace_id= */ 0,
               base::BindOnce(&BackgroundFetchDataManagerTest::DidBatchOperation,
