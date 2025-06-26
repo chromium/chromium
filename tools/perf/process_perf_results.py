@@ -431,11 +431,13 @@ def process_perf_results(output_json,
 
 
 def _chartjson_results(json_dict):
-  merged_results = {}
+  merged_results = {'charts': {}}
   for key in json_dict:
     if key == 'charts':
       for add_key in json_dict[key]:
         merged_results[key][add_key] = json_dict[key][add_key]
+    else:
+      merged_results.setdefault(key, json_dict[key])
   return merged_results
 
 

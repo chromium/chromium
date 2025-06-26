@@ -272,6 +272,44 @@ class ProcessPerfResults_HardenedUnittest(unittest.TestCase):
     finally:
       shutil.rmtree(temp_parent_dir)
 
+  def test_chartjson_results(self):
+    json_dict = {
+        "benchmark_name": "sizes",
+        "charts": {
+            "chrome.dll": {
+                "chrome.dll": {
+                    "value": 294921216,
+                    "units": "bytes"
+                }
+            },
+            "chrome.dll.pdb": {
+                "chrome.dll.pdb": {
+                    "value": 2131410944,
+                    "units": "bytes"
+                }
+            }
+        }
+    }
+    expected = {
+        'benchmark_name': 'sizes',
+        'charts': {
+            'chrome.dll': {
+                'chrome.dll': {
+                    'value': 294921216,
+                    'units': 'bytes'
+                }
+            },
+            'chrome.dll.pdb': {
+                'chrome.dll.pdb': {
+                    'value': 2131410944,
+                    'units': 'bytes'
+                }
+            }
+        }
+    }
+    merged_results = ppr_module._chartjson_results(json_dict)
+    self.assertEqual(merged_results, expected)
+
   @decorators.Disabled('chromeos')  # crbug.com/956178
   def test_merge_perf_results_IOError(self):
     results_filename = None
