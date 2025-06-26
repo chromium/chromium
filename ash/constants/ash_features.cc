@@ -2056,7 +2056,7 @@ BASE_FEATURE(kNotificationsInContextMenu,
 // Enables showing OfflineItems in Notifications.
 BASE_FEATURE(kOfflineItemsInNotifications,
              "OfflineItemsInNotifications",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to enable on-device grammar check service.
 BASE_FEATURE(kOnDeviceGrammarCheck,
