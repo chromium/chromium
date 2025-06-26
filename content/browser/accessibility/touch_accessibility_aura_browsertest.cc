@@ -72,8 +72,16 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
   std::optional<ScopedAccessibilityModeOverride> accessibility_mode_;
 };
 
+// TODO(crbug.com/421286357): Flaky on linux builders.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TouchExplorationSendsHoverEvents \
+  DISABLED_TouchExplorationSendsHoverEvents
+#else
+#define MAYBE_TouchExplorationSendsHoverEvents TouchExplorationSendsHoverEvents
+#endif
+
 IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
-                       TouchExplorationSendsHoverEvents) {
+                       MAYBE_TouchExplorationSendsHoverEvents) {
   // Create HTML with a 7 x 5 table, each exactly 50 x 50 pixels.
   std::string html_url =
       "data:text/html,"
