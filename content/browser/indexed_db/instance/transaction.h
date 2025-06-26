@@ -108,12 +108,6 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // the highest priority (0).
   bool IsTransactionBlockingOtherClients(bool consider_priority = false) const;
 
-  // Returns the locks required for this transaction to start. NB: this is only
-  // relevant to readonly and readwrite transactions. Lock requests for version
-  // change transactions are created by the `ConnectionCoordinator`.
-  std::vector<PartitionedLockManager::PartitionedLockRequest>
-  BuildLockRequests() const;
-
   void OnSchedulingPriorityUpdated(int new_priority);
 
   blink::mojom::IDBTransactionMode mode() const { return mode_; }

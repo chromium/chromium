@@ -341,8 +341,7 @@ class CONTENT_EXPORT BucketContext
         client_state_checker_remote;
   };
 
-  Database* AddDatabase(const std::u16string& name,
-                        std::unique_ptr<Database> database);
+  Database* CreateAndAddDatabase(const std::u16string& name);
 
   void OnHandleCreated();
   void OnHandleDestruction();
@@ -416,6 +415,7 @@ class CONTENT_EXPORT BucketContext
   // Databases in the backing store which are already loaded/represented by
   // Database objects. The backing store may have other databases which
   // have not yet been loaded.
+  uint32_t next_database_id_for_locks_ = 0;
   DBMap databases_;
   // This is the refcount for the number of BucketContextHandle's given out for
   // this bucket context using OpenReference. This is used as closing criteria

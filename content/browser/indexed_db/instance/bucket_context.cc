@@ -625,11 +625,9 @@ void BucketContext::Open(
   Database* database_ptr = nullptr;
   auto it = databases_.find(name);
   if (it == databases_.end()) {
-    auto database = std::make_unique<Database>(name, *this);
     // The database must be added before the schedule call, as the
     // CreateDatabaseDeleteClosure can be called synchronously.
-    database_ptr = database.get();
-    AddDatabase(name, std::move(database));
+    database_ptr = CreateAndAddDatabase(name);
   } else {
     database_ptr = it->second.get();
   }
@@ -712,8 +710,7 @@ void BucketContext::DeleteDatabase(
 
   // If it exists but does not already have an `Database` object,
   // create it and initiate deletion.
-  auto database = std::make_unique<Database>(name, *this);
-  Database* database_ptr = AddDatabase(name, std::move(database));
+  Database* database_ptr = CreateAndAddDatabase(name);
   database_ptr->ScheduleDeleteDatabase(
       std::make_unique<FactoryClient>(std::move(factory_client)),
       std::move(on_deletion_complete));
@@ -763,10 +760,11 @@ void BucketContext::BindMockFailureSingletonForTesting(
   level_db::BindMockFailureSingletonForTesting(std::move(receiver));  // IN-TEST
 }
 
-Database* BucketContext::AddDatabase(const std::u16string& name,
-                                     std::unique_ptr<Database> database) {
+Database* BucketContext::CreateAndAddDatabase(const std::u16string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!base::Contains(databases_, name));
+  auto database =
+      std::make_unique<Database>(next_database_id_for_locks_++, name, *this);
   return databases_.emplace(name, std::move(database)).first->second.get();
 }
 
