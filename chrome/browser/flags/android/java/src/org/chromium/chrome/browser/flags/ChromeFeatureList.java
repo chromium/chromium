@@ -387,6 +387,8 @@ public abstract class ChromeFeatureList {
             "EdgeToEdgeMonitorConfigurations";
     public static final String EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT = "EdgeToEdgeSafeAreaConstraint";
     public static final String EDGE_TO_EDGE_TABLET = "EdgeToEdgeTablet";
+    public static final String EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS =
+            "EdgeToEdgeUseBackupNavbarInsets";
     public static final String EDGE_TO_EDGE_WEB_OPT_IN = "EdgeToEdgeWebOptIn";
     public static final String EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD =
             "EducationalTipDefaultBrowserPromoCard";
@@ -843,6 +845,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEdgeToEdgeMonitorConfigurations =
             newCachedFlag(EDGE_TO_EDGE_MONITOR_CONFIGURATIONS, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeTablet = newCachedFlag(EDGE_TO_EDGE_TABLET, false);
+    public static final CachedFlag sEdgeToEdgeUseBackupNavbarInsets =
+            newCachedFlag(EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, true);
     public static final CachedFlag sEdgeToEdgeWebOptIn =
             newCachedFlag(EDGE_TO_EDGE_WEB_OPT_IN, true);
     public static final CachedFlag sEducationalTipDefaultBrowserPromoCard =
@@ -1092,6 +1096,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeEverywhere,
                     sEdgeToEdgeMonitorConfigurations,
                     sEdgeToEdgeTablet,
+                    sEdgeToEdgeUseBackupNavbarInsets,
                     sEdgeToEdgeWebOptIn,
                     sEducationalTipDefaultBrowserPromoCard,
                     sEducationalTipModule,
@@ -1549,6 +1554,12 @@ public abstract class ChromeFeatureList {
             newStringCachedFeatureParam(
                     EDGE_TO_EDGE_EVERYWHERE, "e2e_field_trial_oem_min_versions", "");
 
+    public static final StringCachedFeatureParam sEdgeToEdgeUseBackupNavbarInsetsOemMinVersions =
+            newStringCachedFeatureParam(
+                    EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS,
+                    "e2e_backup_navbar_insets_oem_min_versions",
+                    "");
+
     /**
      * Param for the OEMs that need an exception for min versions. Its value should be a comma
      * separated list of manufacturer, and its index should match {@link
@@ -1560,6 +1571,18 @@ public abstract class ChromeFeatureList {
 
     public static final StringCachedFeatureParam sEdgeToEdgeEverywhereOemList =
             newStringCachedFeatureParam(EDGE_TO_EDGE_EVERYWHERE, "e2e_field_trial_oem_list", "");
+
+    public static final StringCachedFeatureParam sEdgeToEdgeUseBackupNavbarInsetsOemList =
+            newStringCachedFeatureParam(
+                    EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, "e2e_backup_navbar_insets_oem_list", "");
+
+    public static final BooleanCachedFeatureParam sEdgeToEdgeUseBackupNavbarInsetsUseTappable =
+            newBooleanCachedFeatureParam(
+                    EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, "use_tappable_element", true);
+
+    public static final BooleanCachedFeatureParam sEdgeToEdgeUseBackupNavbarInsetsUseGestures =
+            newBooleanCachedFeatureParam(
+                    EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, "use_gesture_insets", true);
 
     public static final BooleanCachedFeatureParam sEdgeToEdgeEverywhereIsDebugging =
             newBooleanCachedFeatureParam(EDGE_TO_EDGE_EVERYWHERE, "e2e_everywhere_debug", false);
@@ -1721,8 +1744,12 @@ public abstract class ChromeFeatureList {
                     sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e,
                     sEdgeToEdgeBottomChinOemList,
                     sEdgeToEdgeBottomChinOemMinVersions,
+                    sEdgeToEdgeUseBackupNavbarInsetsOemMinVersions,
                     sEdgeToEdgeEverywhereIsDebugging,
                     sEdgeToEdgeEverywhereOemList,
+                    sEdgeToEdgeUseBackupNavbarInsetsOemList,
+                    sEdgeToEdgeUseBackupNavbarInsetsUseTappable,
+                    sEdgeToEdgeUseBackupNavbarInsetsUseGestures,
                     sEdgeToEdgeEverywhereOemMinVersions,
                     sEdgeToEdgeTabletInvisibleBottomChinMinWidth,
                     sEdgeToEdgeTabletMinWidthThreshold,

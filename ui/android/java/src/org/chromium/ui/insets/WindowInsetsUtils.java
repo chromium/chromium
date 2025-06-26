@@ -223,6 +223,13 @@ public final class WindowInsetsUtils {
         ResettersForTesting.register(() -> sWidestUnoccludedRectForTesting = new Rect());
     }
 
+    /** Returns whether the insets has a non-zero left, right, or bottom inset. */
+    public static boolean hasOneNonZeroInsetExcludingTop(Insets insets) {
+        return (insets.bottom > 0 && insets.left == 0 && insets.right == 0)
+                || (insets.bottom == 0 && insets.left > 0 && insets.right == 0)
+                || (insets.bottom == 0 && insets.left == 0 && insets.right > 0);
+    }
+
     private static void forEachRect(Region region, Callback<Rect> rectConsumer) {
         final RegionIterator it = new RegionIterator(region);
         final Rect rect = new Rect();

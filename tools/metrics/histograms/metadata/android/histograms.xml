@@ -1959,6 +1959,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.EdgeToEdge.BackupNavbarInsets.EdgeToEdgeController"
+    enum="BackupNavbarInsetsSource" expires_after="2025-12-01">
+  <owner>clhager@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>edge-to-edge@chromium.org</owner>
+  <summary>
+    Records the source, if applicable, used to provide back-up navbar insets to
+    the EdgeToEdgeController. The EdgeToEdgeController will request back-up
+    insets once every time it receives a window inset update, if the navigation
+    bar insets are 0.
+  </summary>
+</histogram>
+
 <histogram name="Android.EdgeToEdge.Debugging.ConfigurationSwitchOutcome"
     enum="EdgeToEdgeConfigurationSwitchOutcome" expires_after="2025-11-23">
   <owner>clhager@google.com</owner>

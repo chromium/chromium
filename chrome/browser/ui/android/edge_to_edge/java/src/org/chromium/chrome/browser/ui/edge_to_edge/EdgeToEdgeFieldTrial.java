@@ -48,6 +48,9 @@ public final class EdgeToEdgeFieldTrial {
     /** Instance for EdgeToEdgeEverywhere. */
     private static @Nullable EdgeToEdgeFieldTrial sEverywhereOverrides;
 
+    /** Instance for EdgeToEdgeUseBackupNavbarInsets. */
+    private static @Nullable EdgeToEdgeFieldTrial sBackupNavbarInsetsOverrides;
+
     @UiThread
     static EdgeToEdgeFieldTrial getBottomChinOverrides() {
         if (sBottomChinOverrides == null) {
@@ -68,6 +71,17 @@ public final class EdgeToEdgeFieldTrial {
             sEverywhereOverrides = new EdgeToEdgeFieldTrial(oemString, minVersionString);
         }
         return sEverywhereOverrides;
+    }
+
+    @UiThread
+    static EdgeToEdgeFieldTrial getBackupNavbarInsetsOverrides() {
+        if (sBackupNavbarInsetsOverrides == null) {
+            String oemString = ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsetsOemList.getValue();
+            String minVersionString =
+                    ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsetsOemMinVersions.getValue();
+            sBackupNavbarInsetsOverrides = new EdgeToEdgeFieldTrial(oemString, minVersionString);
+        }
+        return sBackupNavbarInsetsOverrides;
     }
 
     /** Clear the static instance for testing. */

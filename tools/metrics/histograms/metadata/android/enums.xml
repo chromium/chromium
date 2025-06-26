@@ -791,6 +791,14 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/back_press/android/java/src/org/chromium/chrome/browser/back_press/MinimizeAppAndCloseTabBackPressHandler.java:TabClosureType)-->
 
+<enum name="BackupNavbarInsetsSource">
+  <int value="0" label="None"/>
+  <int value="1" label="Tappable Element"/>
+  <int value="2" label="Mandatory system gestures"/>
+  <int value="3" label="Filtered explicitly disabled"/>
+  <int value="4" label="Filtered weaker signals"/>
+</enum>
+
 <enum name="BiometricsAvailability">
   <int value="0" label="Other error"/>
   <int value="1" label="Available"/>

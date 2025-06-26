@@ -8,12 +8,17 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 
+import androidx.annotation.StringDef;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.util.TokenHolder;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 @NullMarked
 public class EdgeToEdgeManager {
@@ -22,6 +27,14 @@ public class EdgeToEdgeManager {
     private @Nullable EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private int mEdgeToEdgeToken = TokenHolder.INVALID_TOKEN;
     private final EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
+
+    @StringDef({
+        BackupNavbarInsetsCallSite.EDGE_TO_EDGE_CONTROLLER,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BackupNavbarInsetsCallSite {
+        String EDGE_TO_EDGE_CONTROLLER = "EdgeToEdgeController";
+    }
 
     /**
      * Creates an EdgeToEdgeManager for managing central edge-to-edge functionality.

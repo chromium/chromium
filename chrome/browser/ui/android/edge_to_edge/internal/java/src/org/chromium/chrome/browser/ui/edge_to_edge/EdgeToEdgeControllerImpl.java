@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager.BackupNavbarInsetsCallSite;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.content_public.browser.Page;
@@ -624,7 +625,8 @@ public class EdgeToEdgeControllerImpl
         }
 
         Insets originalSystemInsets = mSystemInsets;
-        Insets newInsets = getSystemInsets(windowInsets);
+        Insets newInsets =
+                getSystemInsets(windowInsets, mInsetObserver.hasSeenNonZeroNavigationBarInsets());
         Insets newKeyboardInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
 
         if (updateVisibilityRects(rootView)
@@ -890,7 +892,28 @@ public class EdgeToEdgeControllerImpl
         return mAppliedContentViewPadding;
     }
 
-    private static Insets getSystemInsets(WindowInsetsCompat windowInsets) {
-        return windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+    private static Insets getSystemInsets(
+            WindowInsetsCompat windowInsets, boolean hasSeenNonZeroNavigationBarInsets) {
+        Insets systemBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+        if (systemBarInsets.left == 0
+                && systemBarInsets.right == 0
+                && systemBarInsets.bottom == 0) {
+            @Nullable Insets backupNavbarInsets =
+                    EdgeToEdgeUtils.getBackupNavbarInsets(
+                            hasSeenNonZeroNavigationBarInsets,
+                            windowInsets,
+                            BackupNavbarInsetsCallSite.EDGE_TO_EDGE_CONTROLLER);
+            // If applicable, apply backup navbar insets to the left, right, and bottom (not the
+            // top, as that's always the status bar).
+            if (backupNavbarInsets != null) {
+                systemBarInsets =
+                        Insets.of(
+                                backupNavbarInsets.left,
+                                systemBarInsets.top,
+                                backupNavbarInsets.right,
+                                backupNavbarInsets.bottom);
+            }
+        }
+        return systemBarInsets;
     }
 }
