@@ -66,9 +66,8 @@
           <div role="gridcell">
             <cr-icon-button id="resetSite" class="icon-delete-gray"
                 on-click="onResetButtonClick_"
-                aria-label="$i18n{siteSettingsActionReset}
-                    [[computeDisplayName_(model)]]" focus-row-control
-                focus-type="reset"></cr-icon-button>
+                aria-label="[[computeRemoveButtonAriaLabel_(model)]]"
+                focus-row-control focus-type="reset"></cr-icon-button>
           </div>
         </template>
         <template is="dom-if"

@@ -268,4 +268,31 @@ suite('SiteListEntry', function() {
     const siteDescription = testElement.$$('#siteDescription')!;
     assertEquals('foo', siteDescription.textContent);
   });
+
+  test('the reset button aria-label includes the section header', function() {
+    testElement.model = {
+      category: ContentSettingsTypes.GEOLOCATION,
+      controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
+      displayName: 'example.com',
+      embeddingOrigin: 'http://bar',
+      description: 'foo',
+      enforcement: null,
+      incognito: false,
+      isEmbargoed: true,
+      origin: 'https://example.com',
+      setting: ContentSetting.DEFAULT,
+    };
+    testElement.setSectionHeaderForTest(
+        loadTimeData.getString('siteSettingsLocationAllowedExceptions'));
+    flush();
+
+    const resetSite = testElement.shadowRoot!.querySelector('#resetSite');
+    assertTrue(!!resetSite);
+
+    assertEquals(
+        loadTimeData.getStringF(
+            'siteSettingsActionResetFromList', 'example.com',
+            loadTimeData.getString('siteSettingsLocationAllowedExceptions')),
+        resetSite.getAttribute('aria-label'));
+  });
 });

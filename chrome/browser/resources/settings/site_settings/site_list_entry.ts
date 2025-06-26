@@ -216,6 +216,18 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
   }
 
   /**
+   * Returns an appropriate aria-label for the remove button. This aria-label
+   * clearly indicates a site name and section header. It should help the
+   * screenreader user understand that this button will remove the site from the
+   * list. There are two lists, one for allowed sites and one for blocked sites.
+   */
+  private computeRemoveButtonAriaLabel_(): string {
+    return this.i18n(
+        'siteSettingsActionResetFromList', this.computeDisplayName_(),
+        this.sectionHeader);
+  }
+
+  /**
    * Returns the appropriate origin that a favicon will be fetched for.
    */
   private computeFaviconOrigin_(): string {
@@ -319,6 +331,10 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
   private getActionMenuButtonLabel_() {
     return this.i18n(
         'siteDataPageAddSiteContextMenuLabel', this.computeDisplayName_());
+  }
+
+  setSectionHeaderForTest(sectionHeader: string) {
+    this.sectionHeader = sectionHeader;
   }
 }
 
