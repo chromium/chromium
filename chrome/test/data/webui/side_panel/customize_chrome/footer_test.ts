@@ -41,7 +41,7 @@ suite('FooterTest', () => {
 
   async function setChecked(checked: boolean): Promise<void> {
     await handler.whenCalled('updateFooterSettings');
-    callbackRouterRemote.setFooterSettings(checked, false);
+    callbackRouterRemote.setFooterSettings(checked, false, false);
     await callbackRouterRemote.$.flushForTesting();
   }
 
@@ -54,7 +54,7 @@ suite('FooterTest', () => {
 
   async function setManaged(managed: boolean): Promise<void> {
     await handler.whenCalled('updateFooterSettings');
-    callbackRouterRemote.setFooterSettings(true, managed);
+    callbackRouterRemote.setFooterSettings(true, managed, false);
     await callbackRouterRemote.$.flushForTesting();
   }
 

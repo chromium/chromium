@@ -345,4 +345,81 @@ suite('AppTest', () => {
                   .classList.contains('selected'));
         });
   });
+
+  suite('Footer', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        'footerEnabled': true,
+      });
+    });
+
+    ([
+      [
+        NewTabPageType.kFirstPartyWebUI,
+        false,
+        false,
+        'hidden when neither notice is showing',
+      ],
+      [
+        NewTabPageType.kFirstPartyWebUI,
+        true,
+        true,
+        'visible when enterprise badge is showing',
+      ],
+      [
+        NewTabPageType.kExtension,
+        false,
+        true,
+        'visible when extension notice is showing',
+      ],
+      [
+        NewTabPageType.kExtension,
+        true,
+        true,
+        'visible when both notices are showing',
+      ],
+    ] as Array<[NewTabPageType, boolean, boolean, string]>)
+        .forEach(([tabType, managed, expected, description]) => {
+          test(`toggle should be ${description}`, async () => {
+            await Promise.all([
+              handler.whenCalled('updateFooterSettings'),
+              handler.whenCalled('updateAttachedTabState'),
+            ]);
+            callbackRouter.setFooterSettings(true, managed, true);
+            callbackRouter.attachedTabStateUpdated(tabType);
+            await callbackRouter.$.flushForTesting();
+            assertEquals(
+                expected,
+                !!customizeChromeApp.shadowRoot.querySelector('#footer'));
+          });
+        });
+
+    ([
+      [
+        false,
+        true,
+        'visible with extension notice shown but extension policy disabled',
+      ],
+      [
+        true,
+        true,
+        'visible with extension notice shown but extension policy disabled',
+      ],
+    ] as Array<[boolean, boolean, string]>)
+        .forEach(([extensionPolicyEnabled, expected, description]) => {
+          test(`toogle should be ${description}`, async () => {
+            await Promise.all([
+              handler.whenCalled('updateFooterSettings'),
+              handler.whenCalled('updateAttachedTabState'),
+            ]);
+            callbackRouter.setFooterSettings(
+                true, true, extensionPolicyEnabled);
+            callbackRouter.attachedTabStateUpdated(NewTabPageType.kExtension);
+            await callbackRouter.$.flushForTesting();
+            assertEquals(
+                expected,
+                !!customizeChromeApp.shadowRoot.querySelector('#footer'));
+          });
+        });
+  });
 });
