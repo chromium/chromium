@@ -4228,7 +4228,9 @@ enum class ToolbarKind {
   // Attempting to snapshot while the overscroll "bounce back" animation is
   // occurring will cut the animation short.
   web::WebState* activeWebState = self.activeWebState;
-  DCHECK(activeWebState);
+  if (!activeWebState) {
+    return;
+  }
   ProfileIOS* profile = self.profile;
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForProfile(profile);
