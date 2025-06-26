@@ -57,6 +57,7 @@
 - (id<GREYMatcher>)securityBackButton {
   return grey_allOf(
       testing::NavigationBarBackButton(),
+      grey_kindOfClassName(@"_UIButtonBarButton"),
       grey_ancestor(grey_accessibilityID(
           kPageInfoSecurityViewNavigationBarAccessibilityIdentifier)),
       nil);
