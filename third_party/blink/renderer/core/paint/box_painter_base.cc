@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
+#include "third_party/blink/renderer/core/style/style_border_shape.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
@@ -1300,10 +1301,12 @@ void BoxPainterBase::PaintFillLayer(
       style_, fill_layer_info, bg_layer, rect, object_has_multiple_boxes,
       flow_box_size, bleed_avoidance, border_padding_insets);
 
+  const StyleBorderShape* border_shape = style_.BorderShape();
+
   // Fast path for drawing simple color/image backgrounds.
   if (CanUseBottomLayerFastPath(fill_layer_info, bg_paint_context,
                                 bleed_avoidance, did_adjust_paint_rect) &&
-      border_rect.HasRoundCurvature() &&
+      border_rect.HasRoundCurvature() && !border_shape &&
       PaintFastBottomLayer(document_, node_, style_, context, fill_layer_info,
                            rect, border_rect.AsRoundedRect(), geometry,
                            image.get(), composite_op)) {
@@ -1311,7 +1314,14 @@ void BoxPainterBase::PaintFillLayer(
   }
 
   std::optional<RoundedInnerRectClipper> clip_to_border;
-  if (fill_layer_info.is_rounded_fill) {
+  std::optional<GraphicsContextStateSaver> border_shape_saver;
+  if (border_shape) {
+    DCHECK(!bg_paint_context.CanCompositeBackgroundAttachmentFixed());
+    border_shape_saver.emplace(context);
+    context.ClipPath(border_shape->InnerShape()
+                         .GetPath(gfx::RectF(rect), style_.EffectiveZoom(), 1)
+                         .GetSkPath());
+  } else if (fill_layer_info.is_rounded_fill) {
     DCHECK(!bg_paint_context.CanCompositeBackgroundAttachmentFixed());
     clip_to_border.emplace(context, rect, border_rect);
   }
@@ -1336,7 +1346,7 @@ void BoxPainterBase::PaintFillLayer(
       // https://drafts.fxtf.org/css-masking/#the-mask-clip
       case EFillBox::kPadding:
       case EFillBox::kContent: {
-        if (fill_layer_info.is_rounded_fill) {
+        if (fill_layer_info.is_rounded_fill || border_shape) {
           break;
         }
 
