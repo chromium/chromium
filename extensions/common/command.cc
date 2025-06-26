@@ -119,10 +119,6 @@ std::string Command::CommandPlatform() {
   return ui::kKeybindingPlatformChromeOs;
 #elif BUILDFLAG(IS_LINUX)
   return ui::kKeybindingPlatformLinux;
-#elif BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/40220501): Change this once we decide what string should be
-  // used for Fuchsia.
-  return ui::kKeybindingPlatformLinux;
 #elif BUILDFLAG(IS_DESKTOP_ANDROID)
   // For now, we use linux keybindings on desktop android.
   // TODO(https://crbug.com/356905053): Should this be ChromeOS keybindings?

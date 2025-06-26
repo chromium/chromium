@@ -28,8 +28,6 @@ Feature::Platform Feature::GetCurrentPlatform() {
   return MACOSX_PLATFORM;
 #elif BUILDFLAG(IS_WIN)
   return WIN_PLATFORM;
-#elif BUILDFLAG(IS_FUCHSIA)
-  return FUCHSIA_PLATFORM;
 #elif BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   return DESKTOP_ANDROID_PLATFORM;
 #else

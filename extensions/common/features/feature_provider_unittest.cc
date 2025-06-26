@@ -127,10 +127,8 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
 
   // A permission only available to allowlisted extensions returns availability
   // NOT_FOUND_IN_ALLOWLIST.
-  // TODO(crbug.com/40198321): Port //device/bluetooth to Fuchsia to
-  // enable bluetooth extensions.
   // bluetoothPrivate is unsupported in desktop-android build.
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_DESKTOP_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   feature = provider->GetFeature("bluetoothPrivate");
   ASSERT_TRUE(feature);
   EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
@@ -139,7 +137,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
                                        mojom::ContextType::kUnspecified, GURL(),
                                        kUnspecifiedContextId, TestContextData())
                 .result());
-#endif  // !BUILDFLAG(IS_FUCHSIA)
+#endif
 
   // A permission that isn't part of the manifest returns NOT_PRESENT.
   feature = provider->GetFeature("unlimitedStorage");

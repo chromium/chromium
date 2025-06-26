@@ -35,14 +35,7 @@ TEST_F(BluetoothSocketApiUnittest, Permission) {
 
 // Tests bluetoothSocket.create() and bluetoothSocket.close().
 // Regression test for https://crbug.com/831651.
-// TODO(crbug.com/40198321): Port //device/bluetooth to Fuchsia to enable
-// bluetooth extensions.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_CreateThenClose DISABLED_CreateThenClose
-#else
-#define MAYBE_CreateThenClose CreateThenClose
-#endif
-TEST_F(BluetoothSocketApiUnittest, MAYBE_CreateThenClose) {
+TEST_F(BluetoothSocketApiUnittest, CreateThenClose) {
   scoped_refptr<const Extension> extension_with_socket_permitted =
       ExtensionBuilder()
           .SetManifest(
