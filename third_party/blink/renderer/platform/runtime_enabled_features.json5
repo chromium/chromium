@@ -5244,12 +5244,6 @@
       public: true,
     },
     {
-      // This is a performance improvement which has slight visual differences.
-      // Enabled in M137. http://crbug.com/334963179
-      name: "ValidationBubbleNoForcedLayout",
-      status: "stable",
-    },
-    {
       name: "VideoAspectRatioNaturalDimension",
       status: "stable",
     },
