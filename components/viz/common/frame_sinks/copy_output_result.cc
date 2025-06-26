@@ -25,6 +25,12 @@ namespace viz {
 
 namespace {
 
+// matches usage from
+// `SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia()`
+constexpr gpu::SharedImageUsageSet kDefaultSharedImageUsage =
+    gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+    gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+
 // Translate `CopyOutputResult::Format to `SharedImageFormat`
 SharedImageFormat GetSharedImageFormatFor(CopyOutputResult::Format format) {
   switch (format) {
@@ -38,16 +44,6 @@ SharedImageFormat GetSharedImageFormatFor(CopyOutputResult::Format format) {
 }
 
 }  // namespace
-
-CopyOutputResult::TextureResult::TextureResult(
-    const CopyOutputResult::TextureResult& other) = default;
-CopyOutputResult::TextureResult& CopyOutputResult::TextureResult::operator=(
-    const CopyOutputResult::TextureResult& other) = default;
-
-CopyOutputResult::TextureResult::TextureResult(
-    const gpu::Mailbox& mailbox,
-    const gfx::ColorSpace& color_space)
-    : mailbox(mailbox), color_space(color_space) {}
 
 CopyOutputResult::CopyOutputResult(Format format,
                                    Destination destination,
@@ -83,11 +79,6 @@ const SkBitmap& CopyOutputResult::AsSkBitmap() const {
 CopyOutputResult::ScopedSkBitmap CopyOutputResult::ScopedAccessSkBitmap()
     const {
   return ScopedSkBitmap(this);
-}
-
-const CopyOutputResult::TextureResult* CopyOutputResult::GetTextureResult()
-    const {
-  return nullptr;
 }
 
 CopyOutputResult::ReleaseCallbacks CopyOutputResult::TakeTextureOwnership() {
@@ -241,19 +232,38 @@ CopyOutputSkBitmapResult::~CopyOutputSkBitmapResult() = default;
 CopyOutputTextureResult::CopyOutputTextureResult(
     Format format,
     const gfx::Rect& rect,
-    TextureResult texture_result,
+    const gpu::Mailbox& mailbox,
+    const gfx::ColorSpace& color_space,
+    std::string_view debug_label,
+    ReleaseCallbacks release_callbacks)
+    : CopyOutputTextureResult(
+          format,
+          rect,
+          base::WrapRefCounted(new gpu::ClientSharedImage(
+              mailbox,
+              gpu::SharedImageInfo{GetSharedImageFormatFor(format), rect.size(),
+                                   color_space, kDefaultSharedImageUsage,
+                                   debug_label})),
+          std::move(release_callbacks)) {}
+
+CopyOutputTextureResult::CopyOutputTextureResult(
+    Format format,
+    const gfx::Rect& rect,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     ReleaseCallbacks release_callbacks)
     : CopyOutputResult(format, Destination::kNativeTextures, rect, false),
-      texture_result_(std::move(texture_result)),
+      shared_image_(std::move(shared_image)),
       release_callbacks_(std::move(release_callbacks)) {
+  // check non-null `shared_image_`
+  DCHECK(shared_image_);
   // If we're constructing empty result, all mailbox_holders must be zero.
   // Otherwise, the first mailbox must be non-zero.
-  DCHECK_EQ(rect.IsEmpty(), texture_result_.mailbox.IsZero());
+  DCHECK_EQ(rect.IsEmpty(), shared_image_->mailbox().IsZero());
   // If we're constructing empty result, the callbacks must be empty.
   // From definition of implication: p => q  <=>  !p || q.
   DCHECK(!rect.IsEmpty() || release_callbacks_.empty());
   // Color space must be valid for non-empty results.
-  DCHECK(rect.IsEmpty() || texture_result_.color_space.IsValid());
+  DCHECK(rect.IsEmpty() || shared_image_->color_space().IsValid());
 }
 
 CopyOutputTextureResult::~CopyOutputTextureResult() {
@@ -265,36 +275,17 @@ CopyOutputTextureResult::~CopyOutputTextureResult() {
   }
 }
 
-const CopyOutputResult::TextureResult*
-CopyOutputTextureResult::GetTextureResult() const {
-  return &texture_result_;
+scoped_refptr<gpu::ClientSharedImage>
+CopyOutputTextureResult::GetSharedImage() {
+  return shared_image_;
 }
 
 CopyOutputResult::ReleaseCallbacks
 CopyOutputTextureResult::TakeTextureOwnership() {
-  texture_result_.mailbox = {};
-  texture_result_.color_space = {};
-
   CopyOutputResult::ReleaseCallbacks result = std::move(release_callbacks_);
   release_callbacks_.clear();
 
   return result;
-}
-
-scoped_refptr<gpu::ClientSharedImage>
-CopyOutputTextureResult::GetSharedImage() {
-  // matches usage from
-  // `SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia()`
-  constexpr gpu::SharedImageUsageSet kUsage =
-      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
-
-  return {new gpu::ClientSharedImage(
-      texture_result_.mailbox,
-      gpu::SharedImageInfo{GetSharedImageFormatFor(format()), size(),
-                           texture_result_.color_space, kUsage,
-                           "CopyOutputResults"})};
 }
 
 CopyOutputResult::ScopedSkBitmap::ScopedSkBitmap() = default;

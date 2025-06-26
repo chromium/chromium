@@ -285,9 +285,8 @@ void FakeSkiaOutputSurface::CopyOutput(
             weak_ptr_factory_.GetWeakPtr(), std::move(client_shared_image))));
 
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
-        CopyOutputResult::Format::RGBA, geometry.result_bounds,
-        CopyOutputResult::TextureResult(local_mailbox, color_space),
-        std::move(release_callbacks)));
+        CopyOutputResult::Format::RGBA, geometry.result_bounds, local_mailbox,
+        color_space, "CopyOutput", std::move(release_callbacks)));
     return;
   }
 

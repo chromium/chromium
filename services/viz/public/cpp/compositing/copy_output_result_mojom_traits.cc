@@ -161,7 +161,7 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
 
   // Only RGBA can travel across process boundaries.
   DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
-  return mojo::OptionalAsPointer(&result->GetTextureResult()->mailbox);
+  return mojo::OptionalAsPointer(&result->GetSharedImage()->mailbox());
 }
 
 // static
@@ -174,7 +174,7 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
       result->IsEmpty()) {
     return nullptr;
   }
-  return mojo::OptionalAsPointer(&result->GetTextureResult()->color_space);
+  return mojo::OptionalAsPointer(&result->GetSharedImage()->color_space());
 }
 
 // static
@@ -183,8 +183,9 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
              std::unique_ptr<viz::CopyOutputResult>>::
     releaser(const std::unique_ptr<viz::CopyOutputResult>& result) {
   if (result->destination() !=
-      viz::CopyOutputResult::Destination::kNativeTextures)
+      viz::CopyOutputResult::Destination::kNativeTextures) {
     return mojo::NullRemote();
+  }
 
   // Only RGBA can travel across process boundaries, in which case there will be
   // at most one release callback set in the |result|:
@@ -279,9 +280,8 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
               base::BindOnce(&Release, std::move(releaser)));
 
           *out_p = std::make_unique<viz::CopyOutputTextureResult>(
-              viz::CopyOutputResult::Format::RGBA, rect,
-              viz::CopyOutputResult::TextureResult(*mailbox, *color_space),
-              std::move(release_callbacks));
+              viz::CopyOutputResult::Format::RGBA, rect, *mailbox, *color_space,
+              "ReadStructTraits", std::move(release_callbacks));
           return true;
         }
       }

@@ -55,15 +55,16 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
 
   // Specifies how the results are delivered to the issuer of the request.
   // This should usually (but not always!) correspond to the value found in
-  // CopyOutputRequest::result_destination() of the request that caused this
+  // `CopyOutputRequest::result_destination()` of the request that caused this
   // result to be produced. For details, see the comment on
-  // CopyOutputRequest::ResultDestination.
+  // `CopyOutputRequest::ResultDestination`.
   enum class Destination : uint8_t {
     // Place the results in system memory.
     kSystemMemory,
-    // Place the results in native textures. The GPU textures are returned via a
-    // mailbox. The caller can use |GetTextureResult()| and
-    // |TakeTextureOwnership()| to access the results.
+    // TODO: rename to `kSharedImage` next CL
+    // Place the results in a shared image. The caller can use
+    // `GetSharedImageResult()` and `TakeSharedImageOwnership()` to access the
+    // results.
     kNativeTextures,
   };
 
@@ -103,43 +104,20 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // after ScopedSkBitmap is released.
   ScopedSkBitmap ScopedAccessSkBitmap() const;
 
-  // Returns a pointer with a mailbox referencing a texture-backed result, or
-  // null if this is not a texture-backed result.
+  // Get the shared image referencing a texture-backed result, or null if this
+  // is not a texture-backed result.
   // Clients can either:
   //   1. Let CopyOutputResult retain ownership and the texture will only be
-  //      valid for use during CopyOutputResult's lifetime.
-  //   2. Take over ownership of the texture by calling TakeTextureOwnership(),
-  //      and the client must guarantee all the release callbacks will be run at
-  //      some point.
-  // Even when the returned pointer is non-null, the object that it points to
-  // can be default-constructed (the resulting mailboxes can be empty) in the
-  // case of a failed reply, in which case IsEmpty() would report true.
-  // NOTE: The shared image referenced by the mailbox are read-only and only
-  // accessible by raster interface (from the client's POV).
-  struct VIZ_COMMON_EXPORT TextureResult {
-    gpu::Mailbox mailbox;
-    gfx::ColorSpace color_space;
-
-    TextureResult(const gpu::Mailbox& mailbox,
-                  const gfx::ColorSpace& color_space);
-
-    TextureResult(const TextureResult& other);
-    TextureResult& operator=(const TextureResult& other);
-  };
-  virtual const TextureResult* GetTextureResult() const;
+  //      valid for use during the CopyOutputResult's lifetime.
+  //   2. Take over ownership by calling `TakeSharedImageOwnership()`, and the
+  //      client must guarantee that all release callbacks will be run.
+  virtual scoped_refptr<gpu::ClientSharedImage> GetSharedImage();
 
   using ReleaseCallbacks = std::vector<ReleaseCallback>;
-  // Returns a vector of release callbacks for the textures in |mailbox_holders|
-  // array of TextureResult. `i`th element in this collection is a release
-  // callback for the `i`th element in |mailbox_holders| array. The size of the
-  // collection must match the number of valid entries in |mailbox_holders|
-  // array. The vector will be empty iff the CopyOutputResult |IsEmpty()| is
-  // true.
+  // TODO(crbug.com/427238674): rename to `TakeSharedImageOwnership()`
+  // Returns a vector of release callbacks for the contained shared image. The
+  // vector will be empty iff the CopyOutputResult `IsEmpty()` is true.
   virtual ReleaseCallbacks TakeTextureOwnership();
-
-  // Get the shared image belonging to this output result;
-  // null if not available.
-  virtual scoped_refptr<gpu::ClientSharedImage> GetSharedImage();
 
   //
   // Subsampled YUV format result description
@@ -252,18 +230,28 @@ class VIZ_COMMON_EXPORT CopyOutputSkBitmapResult : public CopyOutputResult {
   const SkBitmap& AsSkBitmap() const override;
 };
 
-// Subclass of CopyOutputResult that holds references to textures (via
-// mailboxes). The owner of the result must take ownership of the textures if it
-// wants to use them by calling |TakeTextureOwnership()|, and then call the
-// ReleaseCallbacks when the textures will no longer be used to release
-// ownership and allow the textures to be reused or destroyed. If ownership is
-// not claimed, it will be released when this class is destroyed.
+// TODO(crbug.com/427238674): rename to `CopyOutputSharedImageResult`
+// Subclass of `CopyOutputResult` that holds `ClientSharedImage`. The owner of
+// the result must take ownership of the shared images if it wants to use them
+// by calling `TakeSharedImageOwnership()`, and then call the `ReleaseCallbacks`
+// when the shared images will no longer be used to release ownership and allow
+// the shared images to be reused or destroyed. If ownership is not claimed, it
+// will be released when this class is destroyed.
 class VIZ_COMMON_EXPORT CopyOutputTextureResult : public CopyOutputResult {
  public:
-  // Construct a non-empty texture result:
+  // Construct a non-empty shared-image result;
+  // will create unowned `ClientSharedImage` with the provided metadata.
   CopyOutputTextureResult(Format format,
                           const gfx::Rect& rect,
-                          TextureResult texture_result,
+                          const gpu::Mailbox& mailbox,
+                          const gfx::ColorSpace& color_space,
+                          std::string_view debug_label,
+                          ReleaseCallbacks release_callbacks);
+
+  // Construct a non-empty shared-image result; `shared_image` must be non-null.
+  CopyOutputTextureResult(Format format,
+                          const gfx::Rect& rect,
+                          scoped_refptr<gpu::ClientSharedImage> shared_image,
                           ReleaseCallbacks release_callbacks);
 
   CopyOutputTextureResult(const CopyOutputTextureResult&) = delete;
@@ -271,13 +259,12 @@ class VIZ_COMMON_EXPORT CopyOutputTextureResult : public CopyOutputResult {
 
   ~CopyOutputTextureResult() override;
 
-  const TextureResult* GetTextureResult() const override;
-  ReleaseCallbacks TakeTextureOwnership() override;
-
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() override;
 
+  ReleaseCallbacks TakeTextureOwnership() override;
+
  private:
-  TextureResult texture_result_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   ReleaseCallbacks release_callbacks_;
 };
 

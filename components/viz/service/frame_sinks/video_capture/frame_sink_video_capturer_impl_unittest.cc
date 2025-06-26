@@ -328,24 +328,6 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
-class FakeGpuCopyResult : public CopyOutputResult {
- public:
-  FakeGpuCopyResult(Format format, const gfx::Rect rect)
-      : CopyOutputResult(format,
-                         CopyOutputResult::Destination::kNativeTextures,
-                         rect,
-                         false),
-        result_(TextureResult(
-            gpu::Mailbox{},
-            GetColorSpaceForPixelFormat(
-                CopyOutputRequestFormatToVideoPixelFormat(format)))) {}
-
-  const TextureResult* GetTextureResult() const final { return &result_; }
-
- private:
-  TextureResult result_;
-};
-
 class SolidColorRGBAResult : public CopyOutputResult {
  public:
   SolidColorRGBAResult(const gfx::Rect rect, SkColor color)
@@ -514,8 +496,10 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
       }
       case CopyOutputResult::Destination::kNativeTextures: {
         // We don't need to provide a real GPU result.
-        result = std::make_unique<FakeGpuCopyResult>(
-            request->result_format(), request->result_selection());
+        result = std::make_unique<CopyOutputTextureResult>(
+            request->result_format(), request->result_selection(),
+            gpu::ClientSharedImage::CreateForTesting(),
+            CopyOutputResult::ReleaseCallbacks{});
         break;
       }
       default: {

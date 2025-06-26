@@ -749,9 +749,8 @@ void SoftwareRenderer::CopyDrawnRenderPass(
 
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
         CopyOutputResult::Format::RGBA, geometry.result_selection,
-        CopyOutputResult::TextureResult(request->blit_request().mailbox(),
-                                        representation->color_space()),
-        CopyOutputResult::ReleaseCallbacks()));
+        request->blit_request().mailbox(), representation->color_space(),
+        "CopyDrawnRenderPass", CopyOutputResult::ReleaseCallbacks()));
 
     return;
   }
