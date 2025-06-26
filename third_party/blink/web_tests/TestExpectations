@@ -9249,3 +9249,6 @@ crbug.com/427523525 [ Linux ] virtual/threaded-prefer-compositing/external/wpt/c
 
 # Issues found with test suite 2025-06-21
 crbug.com/426602897 external/wpt/screen-capture/delegate-request.https.sub.html [ Failure Pass ]
+
+# Gardener 2025-06-26
+crbug.com/427778335 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-button-after-text.tentative.html [ Failure Pass ]
