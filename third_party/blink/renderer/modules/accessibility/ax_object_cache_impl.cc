@@ -2712,7 +2712,21 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
   // Ensure that ChildrenChanged() occurs on the correct parent in the case
   // where Blink layout code did not have a corresponding LayoutObject parent
   // to fire ChildrenChanged() on, such as in a display:contents case.
-  ChildrenChanged(AXObject::GetParentNodeForComputeParent(*this, node));
+  auto* parent = AXObject::GetParentNodeForComputeParent(*this, node);
+  ChildrenChanged(parent);
+
+  // If a child is attached to a parent with pseudo elements, the
+  // `previousOnLineId` or the `nextOnLineId` of the static text children
+  // may need to be recomputed. Force that by marking the subtree dirty.
+  // Sample flake: AccessibilityAriaTreeitemNestedInLists
+  if (Element* parent_element = DynamicTo<Element>(parent)) {
+    if (parent_element->GetPseudoElement(kPseudoIdAfter) ||
+        parent_element->GetPseudoElement(kPseudoIdBefore) ||
+        parent_element->GetPseudoElement(kPseudoIdMarker)) {
+      MarkSubtreeDirty(parent);
+      return;
+    }
+  }
 
   // It normally is not necessary to process text nodes here, because we'll
   // also get a call for the attachment of the parent element. However in the

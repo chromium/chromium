@@ -1970,17 +1970,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-tree-discontinuous.html"));
 }
 
-// TODO(crbug.com/367650908): Flaky on Linux and sanitizer bots.
-#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER) || \
-    defined(LEAK_SANITIZER) || defined(MEMORY_SANITIZER)
-#define MAYBE_AccessibilityAriaTreeitemNestedInLists \
-  DISABLED_AccessibilityAriaTreeitemNestedInLists
-#else
-#define MAYBE_AccessibilityAriaTreeitemNestedInLists \
-  AccessibilityAriaTreeitemNestedInLists
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityAriaTreeitemNestedInLists) {
+                       AccessibilityAriaTreeitemNestedInLists) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-treeitem-nested-in-lists.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityAriaTreeitemNestedInLists) {
   RunAriaTest(FILE_PATH_LITERAL("aria-treeitem-nested-in-lists.html"));
 }
 
