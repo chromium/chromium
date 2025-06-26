@@ -472,9 +472,14 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
 // Tests that FillNavigationParamsResponseAndBodyLoader populates referrer
 // on redirects correctly.
 TEST_F(NavigationBodyLoaderTest, FillResponseReferrerRedirects) {
+  const GURL start_url("https://example.test?param=1");
+  const GURL commit_url("https://www.google.com");
+  const GURL first_redirect_url = GURL("https://foo.com");
+  const GURL second_redirect_url = commit_url;
+
   auto response = network::mojom::URLResponseHead::New();
   auto common_params = CreateCommonNavigationParams();
-  common_params->url = GURL("https://example.test");
+  common_params->url = commit_url;
   common_params->request_destination =
       network::mojom::RequestDestination::kDocument;
   auto commit_params = CreateCommitNavigationParams();
@@ -482,9 +487,9 @@ TEST_F(NavigationBodyLoaderTest, FillResponseReferrerRedirects) {
   // output of the default WebString. The second has an actual referrer, which
   // should be populated verbatim.
   net::RedirectInfo first_redirect_info;
+  first_redirect_info.new_url = first_redirect_url;
   net::RedirectInfo second_redirect_info;
-  GURL first_redirect_url = GURL("");
-  GURL second_redirect_url = GURL("https://www.google.com");
+  second_redirect_info.new_url = second_redirect_url;
   second_redirect_info.new_referrer = second_redirect_url.spec();
 
   network::mojom::URLResponseHeadPtr first_redirect_response =
@@ -519,6 +524,8 @@ TEST_F(NavigationBodyLoaderTest, FillResponseReferrerRedirects) {
             WebString(Referrer::NoReferrer()));
   ASSERT_EQ(navigation_params.redirects[1].new_referrer,
             WebString::FromUTF8(second_redirect_url.spec()));
+  ASSERT_EQ(navigation_params.response.CurrentRequestUrl().GetString().Utf8(),
+            WebString::FromUTF8(commit_url.spec()).Utf8());
 }
 
 // A loader client which keeps track of chunks of data that are received in a

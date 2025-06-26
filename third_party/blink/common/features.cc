@@ -2625,6 +2625,12 @@ BASE_FEATURE(kUrgentMainFrameForInput,
              "UrgentMainFrameForInput",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Flag guard for changes in how navigation code handles the URL to commit.
+// https://crbug.com/422803238
+BASE_FEATURE(kUseCommitUrlInsteadOfRedirectUrl,
+             "UseCommitUrlInsteadOfRedirectUrl",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Uses page viewport instead of frame viewport in the Largest Contentful Paint
 // heuristic where images occupying the full viewport are ignored.
 BASE_FEATURE(kUsePageViewportInLCP,
