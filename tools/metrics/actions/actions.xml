@@ -9989,6 +9989,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DesktopSplitView_OpenMiniToolbarMenu">
+  <owner>agale@google.com</owner>
+  <owner>chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user opens the split view mini toolbar 3-dot menu.
+  </description>
+</action>
+
 <action name="Destination_Application_Edit">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -50570,6 +50578,7 @@ should be able to be added at any place in this file.
       label="Show read anything side panel action"/>
   <suffix name="kActionSidePanelShowReadingList"
       label="Show reading list side panel action"/>
+  <suffix name="kActionSplitTab" label="Split view action"/>
   <suffix name="kActionTabSearch" label="Tab search action"/>
   <suffix name="kActionTaskManager" label="Task manager action"/>
   <affected-action name="Actions.PinnedToolbarButton.Pinned"/>

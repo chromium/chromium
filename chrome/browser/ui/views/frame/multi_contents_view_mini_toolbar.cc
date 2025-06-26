@@ -7,6 +7,8 @@
 #include <optional>
 
 #include "base/i18n/rtl.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
@@ -354,6 +356,9 @@ void MultiContentsViewMiniToolbar::UpdateFavicon(TabRendererData tab_data) {
 }
 
 void MultiContentsViewMiniToolbar::OpenSplitViewMenu() {
+  base::RecordAction(
+      base::UserMetricsAction("DesktopSplitView_OpenMiniToolbarMenu"));
+
   TabStripModel* const model = browser_view_->browser()->tab_strip_model();
   const int index = model->GetIndexOfWebContents(web_contents_);
   menu_model_ = std::make_unique<SplitTabMenuModel>(

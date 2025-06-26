@@ -700,8 +700,9 @@ TEST_F(PinnedToolbarActionsContainerTest, MetricsRecordedForPinnableActions) {
   const auto pinnable_action_suffixes = base::ReadActionSuffixesForAction(
       "Actions.PinnedToolbarButtonActivation");
   EXPECT_EQ(1U, pinnable_action_suffixes.size());
-  // Only one of history or history clusters should be pinnable.
-  size_t expected_pinnable_count = pinnable_action_suffixes[0].size() - 1;
+  // Only one of history or history clusters should be pinnable. The Split View
+  // action is not available via `root_action_item()`.
+  size_t expected_pinnable_count = pinnable_action_suffixes[0].size() - 2;
   if (!features::HasTabSearchToolbarButton()) {
     // Tab search is not pinnable if the feature is disabled.
     expected_pinnable_count -= 1;

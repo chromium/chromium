@@ -271,11 +271,12 @@ void PinnedActionToolbarButtonMenuModel::UpdatePinState(
         ->InvokeAction(actions::ActionInvocationContext::Builder()
                            .SetProperty(kActionIdKey, action_id_)
                            .Build());
-    const std::optional<std::string> metrics_name =
-        actions::ActionIdMap::ActionIdToString(action_id_);
-    CHECK(metrics_name.has_value());
-    base::RecordComputedAction(base::StrCat(
-        {"Actions.PinnedToolbarButton.", should_pin ? "Pinned" : "Unpinned",
-         ".ByContextMenu.", metrics_name.value()}));
   }
+
+  const std::optional<std::string> metrics_name =
+      actions::ActionIdMap::ActionIdToString(action_id_);
+  CHECK(metrics_name.has_value());
+  base::RecordComputedAction(base::StrCat(
+      {"Actions.PinnedToolbarButton.", should_pin ? "Pinned" : "Unpinned",
+       ".ByContextMenu.", metrics_name.value()}));
 }
