@@ -4,7 +4,8 @@
       "win",
       "linux",
       "mac",
-      "chromeos"
+      "chromeos",
+      "android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "profile.managed_local_network_access_blocked_for_urls",

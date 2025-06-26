@@ -199,13 +199,10 @@ inline constexpr char kManagedControlledFrameAllowedForUrls[] =
 inline constexpr char kManagedControlledFrameBlockedForUrls[] =
     "profile.managed_controlled_frame_blocked_for_urls";
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/400455013): Add LNA support on Android
 inline constexpr char kManagedLocalNetworkAccessAllowedForUrls[] =
     "profile.managed_local_network_access_allowed_for_urls";
 inline constexpr char kManagedLocalNetworkAccessBlockedForUrls[] =
     "profile.managed_local_network_access_blocked_for_urls";
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Boolean indicating whether the quiet UI is enabled for notification
 // permission requests. This and kEnableNotificationCPSS can't both be true

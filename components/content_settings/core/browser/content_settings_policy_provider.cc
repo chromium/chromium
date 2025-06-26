@@ -153,15 +153,11 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::CONTROLLED_FRAME, CONTENT_SETTING_ALLOW},
         {prefs::kManagedControlledFrameBlockedForUrls,
          ContentSettingsType::CONTROLLED_FRAME, CONTENT_SETTING_BLOCK},
-#if !BUILDFLAG(IS_ANDROID)
-        // TODO(crbug.com/400455013): Add LNA support on Android
-
-        // Block takes precedence over Allow
+        // LocalNetworkAccess: Block takes precedence over Allow
         {prefs::kManagedLocalNetworkAccessAllowedForUrls,
          ContentSettingsType::LOCAL_NETWORK_ACCESS, CONTENT_SETTING_ALLOW},
         {prefs::kManagedLocalNetworkAccessBlockedForUrls,
          ContentSettingsType::LOCAL_NETWORK_ACCESS, CONTENT_SETTING_BLOCK},
-#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -189,11 +185,8 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedJavaScriptOptimizerAllowedForSites,
     prefs::kManagedJavaScriptOptimizerBlockedForSites,
     prefs::kManagedLegacyCookieAccessAllowedForDomains,
-#if !BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/400455013): Add LNA support on Android
     prefs::kManagedLocalNetworkAccessAllowedForUrls,
     prefs::kManagedLocalNetworkAccessBlockedForUrls,
-#endif  // !BUILDFLAG(IS_ANDROID)
     prefs::kManagedNotificationsAllowedForUrls,
     prefs::kManagedNotificationsBlockedForUrls,
     prefs::kManagedPopupsAllowedForUrls,

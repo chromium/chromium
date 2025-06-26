@@ -541,9 +541,6 @@ IN_PROC_BROWSER_TEST_F(WebPrintingPolicyTest, WebPrintingBlockedForUrls) {
 }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-
-// TODO(crbug.com/400455013): Add LNA support on Android
 class LocalNetworkAccessPolicyTest : public PolicyTest {
  public:
   ContentSetting GetLocalNetworkAccessDefaultContentSetting() {
@@ -740,6 +737,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, MixBlockAndAllowPolicies) {
             GetLocalNetworkAccessContentSetting(GURL("https://bleep.com")));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class DirectSocketsPolicyTest : public PolicyTest {
  public:
   void SetUpOnMainThread() override {

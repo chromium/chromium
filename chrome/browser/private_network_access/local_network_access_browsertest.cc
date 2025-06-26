@@ -225,8 +225,6 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   CheckCounter(WebFeature::kLocalNetworkAccessPrivateAliasUse, 0);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/400455013): Add LNA support on Android
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                        LocalNetworkAccessAllowedForUrlsPolicy) {
   policy::PolicyMap policies;
@@ -287,4 +285,3 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                                      https_server().GetURL("b.com", kLnaPath))),
               content::EvalJsResult::IsError());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)

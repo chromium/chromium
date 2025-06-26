@@ -27,6 +27,7 @@ example_value:
 supported_on:
 - chrome.*:139-
 - chrome_os:139-
+- android:140-
 
 features:
   dynamic_refresh: true
