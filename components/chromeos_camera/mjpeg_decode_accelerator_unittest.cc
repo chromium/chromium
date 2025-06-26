@@ -218,12 +218,12 @@ class MjpegDecodeAcceleratorTestEnvironment : public ::testing::Environment {
       media::VideoPixelFormat format,
       const gfx::Size& coded_size,
       const gfx::Size& visible_size,
-      std::unique_ptr<media::TestGmbBuffer>* backing_buffer = nullptr);
+      std::unique_ptr<media::TestGbmBuffer>* backing_buffer = nullptr);
 
   // Maps |buffer| into a VideoFrame containing the data pointers. |buffer|
   // should outlive the returned Videoframe.
   scoped_refptr<media::VideoFrame> MapToVideoFrame(
-      media::TestGmbBuffer* buffer,
+      media::TestGbmBuffer* buffer,
       const media::VideoFrameLayout& layout,
       const gfx::Rect& visible_rect);
 
@@ -320,7 +320,7 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
     media::VideoPixelFormat format,
     const gfx::Size& coded_size,
     const gfx::Size& visible_size,
-    std::unique_ptr<media::TestGmbBuffer>* backing_buffer) {
+    std::unique_ptr<media::TestGbmBuffer>* backing_buffer) {
   DCHECK(gpu_memory_buffer_manager_);
 
   // Create a buffer and get a NativePixmapHandle from it.
@@ -330,7 +330,7 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
     LOG(ERROR) << "Unsupported pixel format: " << format;
     return nullptr;
   }
-  std::unique_ptr<media::TestGmbBuffer> buffer =
+  std::unique_ptr<media::TestGbmBuffer> buffer =
       gpu_memory_buffer_manager_->CreateGmbBuffer(
           coded_size, *gfx_format, kBufferUsage, gpu::kNullSurfaceHandle,
           nullptr);
@@ -394,7 +394,7 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
 
 scoped_refptr<media::VideoFrame>
 MjpegDecodeAcceleratorTestEnvironment::MapToVideoFrame(
-    media::TestGmbBuffer* buffer,
+    media::TestGbmBuffer* buffer,
     const media::VideoFrameLayout& layout,
     const gfx::Rect& visible_rect) {
   DCHECK(buffer);
@@ -414,7 +414,7 @@ MjpegDecodeAcceleratorTestEnvironment::MapToVideoFrame(
     return nullptr;
   }
   frame->AddDestructionObserver(
-      base::BindOnce(&media::TestGmbBuffer::Unmap, base::Unretained(buffer)));
+      base::BindOnce(&media::TestGbmBuffer::Unmap, base::Unretained(buffer)));
   return frame;
 }
 
@@ -428,7 +428,7 @@ base::ScopedFD MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufFd(
   // The DMA-buf FD is intended to allow importing into hardware accelerators,
   // so we allocate the buffer by GMB manager instead of simply memfd_create().
   // The buffer has R_8 format and dimensions (|size|, 1).
-  std::unique_ptr<media::TestGmbBuffer> buffer =
+  std::unique_ptr<media::TestGbmBuffer> buffer =
       gpu_memory_buffer_manager_->CreateGmbBuffer(
           gfx::Size(base::checked_cast<int>(size), 1), gfx::BufferFormat::R_8,
           kBufferUsage, gpu::kNullSurfaceHandle, nullptr);
@@ -575,7 +575,7 @@ class JpegClient : public MjpegDecodeAccelerator::Client {
   // Input DMA buffer file descriptor.
   base::ScopedFD in_dmabuf_fd_;
   // Output video frame from the hardware decoder.
-  std::unique_ptr<media::TestGmbBuffer> hw_out_buffer_;
+  std::unique_ptr<media::TestGbmBuffer> hw_out_buffer_;
   scoped_refptr<media::VideoFrame> hw_out_dmabuf_frame_;
   scoped_refptr<media::VideoFrame> hw_out_frame_;
   // Output and intermediate frame for the software decoder.

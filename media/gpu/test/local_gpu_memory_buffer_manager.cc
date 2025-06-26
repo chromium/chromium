@@ -103,7 +103,7 @@ uint32_t GetGbmUsage(gfx::BufferUsage usage) {
 
 }  // namespace
 
-TestGmbBuffer::TestGmbBuffer(gfx::BufferFormat format, gbm_bo* buffer_object)
+TestGbmBuffer::TestGbmBuffer(gfx::BufferFormat format, gbm_bo* buffer_object)
     : buffer_object_(buffer_object), mapped_(false) {
   gfx::NativePixmapHandle native_pixmap_handle;
   for (size_t i = 0;
@@ -119,7 +119,7 @@ TestGmbBuffer::TestGmbBuffer(gfx::BufferFormat format, gbm_bo* buffer_object)
   handle_.id = gfx::GpuMemoryBufferId(0);
 }
 
-TestGmbBuffer::~TestGmbBuffer() {
+TestGbmBuffer::~TestGbmBuffer() {
   if (mapped_) {
     Unmap();
   }
@@ -127,7 +127,7 @@ TestGmbBuffer::~TestGmbBuffer() {
   gbm_bo_destroy(buffer_object_.ExtractAsDangling());
 }
 
-bool TestGmbBuffer::Map() {
+bool TestGbmBuffer::Map() {
   if (mapped_) {
     return true;
   }
@@ -141,7 +141,7 @@ bool TestGmbBuffer::Map() {
                     gbm_bo_get_height(buffer_object_),
                     GBM_BO_TRANSFER_READ_WRITE, &stride, &mapped_data, i);
     if (addr == MAP_FAILED) {
-      LOG(ERROR) << "Failed to map TestGmbBuffer plane " << i;
+      LOG(ERROR) << "Failed to map TestGbmBuffer plane " << i;
       Unmap();
       return false;
     }
@@ -152,7 +152,7 @@ bool TestGmbBuffer::Map() {
   return true;
 }
 
-void* TestGmbBuffer::memory(size_t plane) {
+void* TestGbmBuffer::memory(size_t plane) {
   if (!mapped_) {
     LOG(ERROR) << "Buffer is not mapped";
     return nullptr;
@@ -164,7 +164,7 @@ void* TestGmbBuffer::memory(size_t plane) {
   return mapped_planes_[plane].addr;
 }
 
-void TestGmbBuffer::Unmap() {
+void TestGbmBuffer::Unmap() {
   for (size_t i = 0; i < mapped_planes_.size(); ++i) {
     if (mapped_planes_[i].addr) {
       gbm_bo_unmap(buffer_object_, mapped_planes_[i].mapped_data);
@@ -176,16 +176,16 @@ void TestGmbBuffer::Unmap() {
   mapped_ = false;
 }
 
-gfx::Size TestGmbBuffer::GetSize() const {
+gfx::Size TestGbmBuffer::GetSize() const {
   return gfx::Size(gbm_bo_get_width(buffer_object_),
                    gbm_bo_get_height(buffer_object_));
 }
 
-int TestGmbBuffer::stride(size_t plane) const {
+int TestGbmBuffer::stride(size_t plane) const {
   return gbm_bo_get_stride_for_plane(buffer_object_, plane);
 }
 
-gfx::GpuMemoryBufferHandle TestGmbBuffer::CloneHandle() const {
+gfx::GpuMemoryBufferHandle TestGbmBuffer::CloneHandle() const {
   DCHECK_EQ(handle_.type, gfx::NATIVE_PIXMAP);
   gfx::GpuMemoryBufferHandle handle(
       gfx::CloneHandleForIPC(handle_.native_pixmap_handle()));
@@ -197,7 +197,7 @@ LocalGpuMemoryBufferManager::LocalGpuMemoryBufferManager()
     : gbm_device_(CreateGbmDevice()) {}
 LocalGpuMemoryBufferManager::~LocalGpuMemoryBufferManager() = default;
 
-std::unique_ptr<TestGmbBuffer> LocalGpuMemoryBufferManager::CreateGmbBuffer(
+std::unique_ptr<TestGbmBuffer> LocalGpuMemoryBufferManager::CreateGmbBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -233,10 +233,10 @@ std::unique_ptr<TestGmbBuffer> LocalGpuMemoryBufferManager::CreateGmbBuffer(
     return nullptr;
   }
 
-  return std::make_unique<TestGmbBuffer>(format, buffer_object);
+  return std::make_unique<TestGbmBuffer>(format, buffer_object);
 }
 
-std::unique_ptr<TestGmbBuffer> LocalGpuMemoryBufferManager::ImportDmaBuf(
+std::unique_ptr<TestGbmBuffer> LocalGpuMemoryBufferManager::ImportDmaBuf(
     const gfx::NativePixmapHandle& handle,
     const gfx::Size& size,
     gfx::BufferFormat format) {
@@ -278,7 +278,7 @@ std::unique_ptr<TestGmbBuffer> LocalGpuMemoryBufferManager::ImportDmaBuf(
     PLOG(ERROR) << "Could not import the DmaBuf into gbm";
     return nullptr;
   }
-  return std::make_unique<TestGmbBuffer>(format, buffer_object);
+  return std::make_unique<TestGbmBuffer>(format, buffer_object);
 }
 
 bool LocalGpuMemoryBufferManager::IsFormatAndUsageSupported(

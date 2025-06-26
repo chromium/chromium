@@ -22,7 +22,7 @@ class Size;
 
 namespace media {
 
-class TestGmbBuffer;
+class TestGbmBuffer;
 
 // A local, as opposed to the default IPC-based, implementation of
 // gfx::GpuMemoryBufferManager which interacts with the DRM render node device
@@ -38,24 +38,24 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager {
 
   ~LocalGpuMemoryBufferManager();
 
-  std::unique_ptr<TestGmbBuffer> CreateGmbBuffer(
+  std::unique_ptr<TestGbmBuffer> CreateGmbBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
       base::WaitableEvent* shutdown_event);
 
-  // Imports a DmaBuf as a TestGmbBuffer to be able to map it. The
+  // Imports a DmaBuf as a TestGbmBuffer to be able to map it. The
   // GBM_BO_USE_SW_READ_OFTEN usage is specified so that the user of the
-  // returned TestGmbBuffer is guaranteed to have a linear view when mapping
+  // returned TestGbmBuffer is guaranteed to have a linear view when mapping
   // it.
-  std::unique_ptr<TestGmbBuffer> ImportDmaBuf(
+  std::unique_ptr<TestGbmBuffer> ImportDmaBuf(
       const gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
       gfx::BufferFormat format);
 
   // Returns true if the combination of |format| and |usage| is supported by
-  // CreateTestGmbBuffer().
+  // CreateTestGbmBuffer().
   bool IsFormatAndUsageSupported(gfx::BufferFormat format,
                                  gfx::BufferUsage usage);
 
@@ -63,16 +63,16 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager {
   ui::ScopedGbmDevice gbm_device_;
 };
 
-class TestGmbBuffer {
+class TestGbmBuffer {
  public:
-  TestGmbBuffer() = delete;
+  TestGbmBuffer() = delete;
 
-  TestGmbBuffer(gfx::BufferFormat format, gbm_bo* buffer_object);
+  TestGbmBuffer(gfx::BufferFormat format, gbm_bo* buffer_object);
 
-  TestGmbBuffer(const TestGmbBuffer&) = delete;
-  TestGmbBuffer& operator=(const TestGmbBuffer&) = delete;
+  TestGbmBuffer(const TestGbmBuffer&) = delete;
+  TestGbmBuffer& operator=(const TestGbmBuffer&) = delete;
 
-  ~TestGmbBuffer();
+  ~TestGbmBuffer();
 
   bool Map();
   void* memory(size_t plane);

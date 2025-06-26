@@ -166,7 +166,7 @@ class GpuMemoryBufferMapping : public NativePixmapMapping {
       const gfx::BufferFormat& format) {
     std::unique_ptr<LocalGpuMemoryBufferManager> gbm_buffer_manager =
         std::make_unique<LocalGpuMemoryBufferManager>();
-    std::unique_ptr<TestGmbBuffer> gbm_buffer =
+    std::unique_ptr<TestGbmBuffer> gbm_buffer =
         gbm_buffer_manager->ImportDmaBuf(handle, size, format);
 
     if (!gbm_buffer->Map()) {
@@ -180,7 +180,7 @@ class GpuMemoryBufferMapping : public NativePixmapMapping {
 
   GpuMemoryBufferMapping(
       std::unique_ptr<LocalGpuMemoryBufferManager> gbm_buffer_manager,
-      std::unique_ptr<TestGmbBuffer> gbm_buffer)
+      std::unique_ptr<TestGbmBuffer> gbm_buffer)
       : gbm_buffer_manager_(std::move(gbm_buffer_manager)),
         gbm_buffer_(std::move(gbm_buffer)) {}
 
@@ -199,11 +199,11 @@ class GpuMemoryBufferMapping : public NativePixmapMapping {
  private:
   // It's very important these two objects are initialized in this order,
   // because C++ guarantees they will be destroyed in the reverse order.
-  // Unfortunately, the destructor for TestGmbBuffer calls the GBM
+  // Unfortunately, the destructor for TestGbmBuffer calls the GBM
   // device that gets destroyed by the LocalGpuMemoryBufferManager destructor,
   // so there is an order we need to do this in to prevent a segfault.
   const std::unique_ptr<LocalGpuMemoryBufferManager> gbm_buffer_manager_;
-  const std::unique_ptr<TestGmbBuffer> gbm_buffer_;
+  const std::unique_ptr<TestGbmBuffer> gbm_buffer_;
 };
 
 class Tile4Mapping : public NativePixmapMapping {
@@ -236,7 +236,7 @@ class Tile4Mapping : public NativePixmapMapping {
     handle.modifier = gfx::NativePixmapHandle::kNoModifier;
 
     LocalGpuMemoryBufferManager gbm_buffer_manager;
-    std::unique_ptr<TestGmbBuffer> gbm_buffer =
+    std::unique_ptr<TestGbmBuffer> gbm_buffer =
         gbm_buffer_manager.ImportDmaBuf(handle, size, format);
 
     if (!gbm_buffer->Map()) {

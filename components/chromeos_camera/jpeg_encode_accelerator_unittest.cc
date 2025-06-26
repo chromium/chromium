@@ -92,7 +92,7 @@ enum class ClientState {
 };
 
 scoped_refptr<media::VideoFrame> GetVideoFrameFromGpuMemoryBuffer(
-    media::TestGmbBuffer* buffer,
+    media::TestGbmBuffer* buffer,
     gfx::Size size,
     media::VideoPixelFormat format) {
   auto buffer_handle = buffer->CloneHandle().native_pixmap_handle();
