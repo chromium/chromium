@@ -9188,3 +9188,5 @@ crbug.com/426602897 external/wpt/screen-capture/delegate-request.https.sub.html 
 crbug.com/427778335 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-button-after-text.tentative.html [ Failure Pass ]
 crbug.com/427766096 virtual/soft-navigation-heuristics-pre-paint-attribution/external/wpt/soft-navigation-heuristics/load-classic-script-history-push.tentative.html [ Failure Pass ]
 crbug.com/427679620 virtual/soft-navigation-heuristics-pre-paint-attribution/external/wpt/soft-navigation-heuristics/load-module-script-history-push.tentative.html [ Failure Pass ]
+crbug.com/427612820 external/wpt/soft-navigation-heuristics/load-module-script-history-push.tentative.html [ Failure Pass ]
+crbug.com/427612820 external/wpt/soft-navigation-heuristics/load-classic-script-history-push.tentative.html [ Failure Pass ]
