@@ -1802,7 +1802,7 @@ class TestNavigationManager : public WebContentsObserver {
   // don't use ResumeNavigation() after this call since it assumes we paused
   // from the TestNavigationManagerThrottle. Returns false if the waiting was
   // terminated before reaching DidStartNavigation (e.g. timeout).
-  bool WaitForFirstYieldAfterDidStartNavigation();
+  [[nodiscard]] bool WaitForFirstYieldAfterDidStartNavigation();
 
   // Waits until the navigation request is ready to be sent to the network
   // stack. This will wait until all NavigationThrottles have proceeded through
