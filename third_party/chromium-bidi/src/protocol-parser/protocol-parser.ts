@@ -318,6 +318,12 @@ export namespace Emulation {
       WebDriverBidi.Emulation.SetGeolocationOverrideParametersSchema,
     ) as Protocol.Emulation.SetGeolocationOverrideParameters;
   }
+  export function parseSetScreenOrientationOverrideParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetScreenOrientationOverrideParametersSchema,
+    ) as Protocol.Emulation.SetScreenOrientationOverrideParameters;
+  }
 }
 
 export namespace Input {

@@ -22,7 +22,7 @@ import {Bluetooth} from '../../../protocol/chromium-bidi.js';
 import {
   type BrowsingContext,
   type ChromiumBidi,
-  type Emulation,
+  Emulation,
   Session,
   UnknownErrorException,
   UnsupportedOperationException,
@@ -65,7 +65,14 @@ export class CdpTarget {
   readonly #logger: LoggerFn | undefined;
 
   // Keeps track of the previously set viewport.
-  #previousViewport: {width: number; height: number} = {width: 0, height: 0};
+  #previousDeviceMetricsOverride: Protocol.Emulation.SetDeviceMetricsOverrideRequest =
+    {
+      width: 0,
+      height: 0,
+      deviceScaleFactor: 0,
+      mobile: false,
+      dontSetVisibleSize: true,
+    };
 
   /**
    * Target's window id. Is filled when the CDP target is created and do not reflect
@@ -575,32 +582,30 @@ export class CdpTarget {
       return;
     }
 
-    // CDP's `viewport` is required, so provide either new value, 0 for disabling, or
-    // previous viewport to keep it unchanged.
-    let newViewport;
-    if (viewport === undefined) {
-      // Set previously set viewport, effectively
-      newViewport = this.#previousViewport;
-    } else if (viewport === null) {
+    const newViewport = {...this.#previousDeviceMetricsOverride};
+
+    if (viewport === null) {
       // Disable override.
-      newViewport = {
-        width: 0,
-        height: 0,
-      };
-    } else {
-      // Set the provided viewport
-      newViewport = viewport;
+      newViewport.width = 0;
+      newViewport.height = 0;
+    } else if (viewport !== undefined) {
+      newViewport.width = viewport.width;
+      newViewport.height = viewport.height;
+    }
+
+    if (devicePixelRatio === null) {
+      // Disable override.
+      newViewport.deviceScaleFactor = 0;
+    } else if (devicePixelRatio !== undefined) {
+      newViewport.deviceScaleFactor = devicePixelRatio;
     }
 
     try {
-      await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', {
-        width: newViewport.width,
-        height: newViewport.height,
-        deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
-        mobile: false,
-        dontSetVisibleSize: true,
-      });
-      this.#previousViewport = newViewport;
+      await this.cdpClient.sendCommand(
+        'Emulation.setDeviceMetricsOverride',
+        newViewport,
+      );
+      this.#previousDeviceMetricsOverride = newViewport;
     } catch (err) {
       if (
         (err as Error).message.startsWith(
@@ -642,6 +647,17 @@ export class CdpTarget {
     ) {
       promises.push(
         this.setGeolocationOverride(this.#userContextConfig.geolocation),
+      );
+    }
+
+    if (
+      this.#userContextConfig.screenOrientation !== undefined &&
+      this.#userContextConfig.screenOrientation !== null
+    ) {
+      promises.push(
+        this.setScreenOrientationOverride(
+          this.#userContextConfig.screenOrientation,
+        ),
       );
     }
 
@@ -712,5 +728,91 @@ export class CdpTarget {
         'Unexpected geolocation coordinates value',
       );
     }
+  }
+
+  async setScreenOrientationOverride(
+    screenOrientation: Emulation.ScreenOrientation | null,
+  ): Promise<void> {
+    const newViewport = {...this.#previousDeviceMetricsOverride};
+    if (screenOrientation === null) {
+      delete newViewport.screenOrientation;
+    } else {
+      newViewport.screenOrientation =
+        this.#toCdpScreenOrientationAngle(screenOrientation);
+    }
+
+    await this.cdpClient.sendCommand(
+      'Emulation.setDeviceMetricsOverride',
+      newViewport,
+    );
+    this.#previousDeviceMetricsOverride = newViewport;
+  }
+
+  #toCdpScreenOrientationAngle(
+    orientation: Emulation.ScreenOrientation,
+  ): Protocol.Emulation.ScreenOrientation {
+    // https://w3c.github.io/screen-orientation/#the-current-screen-orientation-type-and-angle
+    if (orientation.natural === Emulation.ScreenOrientationNatural.Portrait) {
+      switch (orientation.type) {
+        case 'portrait-primary':
+          return {
+            angle: 0,
+            type: 'portraitPrimary',
+          };
+        case 'landscape-primary':
+          return {
+            angle: 90,
+            type: 'landscapePrimary',
+          };
+        case 'portrait-secondary':
+          return {
+            angle: 180,
+            type: 'portraitSecondary',
+          };
+        case 'landscape-secondary':
+          return {
+            angle: 270,
+            type: 'landscapeSecondary',
+          };
+        default:
+          // Unreachable.
+          throw new UnknownErrorException(
+            `Unexpected screen orientation type ${orientation.type}`,
+          );
+      }
+    }
+    if (orientation.natural === Emulation.ScreenOrientationNatural.Landscape) {
+      switch (orientation.type) {
+        case 'landscape-primary':
+          return {
+            angle: 0,
+            type: 'landscapePrimary',
+          };
+        case 'portrait-primary':
+          return {
+            angle: 90,
+            type: 'portraitPrimary',
+          };
+        case 'landscape-secondary':
+          return {
+            angle: 180,
+            type: 'landscapeSecondary',
+          };
+        case 'portrait-secondary':
+          return {
+            angle: 270,
+            type: 'portraitSecondary',
+          };
+        default:
+          // Unreachable.
+          throw new UnknownErrorException(
+            `Unexpected screen orientation type ${orientation.type}`,
+          );
+      }
+    }
+    // Unreachable.
+    throw new UnknownErrorException(
+      `Unexpected orientation natural ${orientation.natural}`,
+    );
   }
 }

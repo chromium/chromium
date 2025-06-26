@@ -973,7 +973,9 @@ export namespace BrowsingContext {
     defaultValue?: string;
   };
 }
-export type EmulationCommand = Emulation.SetGeolocationOverride;
+export type EmulationCommand =
+  | Emulation.SetGeolocationOverride
+  | Emulation.SetScreenOrientationOverride;
 export namespace Emulation {
   export type SetGeolocationOverride = {
     method: 'emulation.setGeolocationOverride';
@@ -1039,6 +1041,41 @@ export namespace Emulation {
 export namespace Emulation {
   export type GeolocationPositionError = {
     type: 'positionUnavailable';
+  };
+}
+export namespace Emulation {
+  export type SetScreenOrientationOverride = {
+    method: 'emulation.setScreenOrientationOverride';
+    params: Emulation.SetScreenOrientationOverrideParameters;
+  };
+}
+export namespace Emulation {
+  export const enum ScreenOrientationNatural {
+    Portrait = 'portrait',
+    Landscape = 'landscape',
+  }
+}
+export namespace Emulation {
+  export type ScreenOrientationType =
+    | 'portrait-primary'
+    | 'portrait-secondary'
+    | 'landscape-primary'
+    | 'landscape-secondary';
+}
+export namespace Emulation {
+  export type ScreenOrientation = {
+    natural: Emulation.ScreenOrientationNatural;
+    type: Emulation.ScreenOrientationType;
+  };
+}
+export namespace Emulation {
+  export type SetScreenOrientationOverrideParameters = {
+    screenOrientation: Emulation.ScreenOrientation | null;
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
   };
 }
 export type NetworkCommand =

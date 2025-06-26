@@ -95,6 +95,31 @@ export class EmulationProcessor {
     return {};
   }
 
+  async setScreenOrientationOverride(
+    params: Emulation.SetScreenOrientationOverrideParameters,
+  ): Promise<EmptyResult> {
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const userContextId of params.userContexts ?? []) {
+      const userContextConfig =
+        this.#userContextStorage.getConfig(userContextId);
+      userContextConfig.screenOrientation = params.screenOrientation;
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) =>
+          await context.cdpTarget.setScreenOrientationOverride(
+            params.screenOrientation,
+          ),
+      ),
+    );
+    return {};
+  }
+
   /**
    * Returns a list of top-level browsing contexts.
    */

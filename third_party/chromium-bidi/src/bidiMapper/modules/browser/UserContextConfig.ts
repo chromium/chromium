@@ -33,6 +33,7 @@ export class UserContextConfig {
     | Emulation.GeolocationCoordinates
     | Emulation.GeolocationPositionError
     | null;
+  screenOrientation?: Emulation.ScreenOrientation | null;
 
   constructor(userContextId: string) {
     this.userContextId = userContextId;
