@@ -331,8 +331,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
-                              URL:net::NSURLWithGURL(
-                                      [self loginAutofocusPageURL])
+                              URL:net::NSURLWithGURL([self loginPageURL])
                            shared:NO
                    backupPassword:@"backup password"];
   [self loadLoginPage];
