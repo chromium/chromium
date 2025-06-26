@@ -148,6 +148,13 @@ class CONTENT_EXPORT PageLifecycleStateManager {
 
   raw_ptr<TestDelegate> test_delegate_{nullptr};
 
+  // TODO(https://crbug.com/427316606): Remove this after debugging.
+  struct {
+    unsigned int no = 0;
+    unsigned int entering = 0;
+    unsigned int entered = 0;
+  } back_forward_cache_state_counts_;
+
   // NOTE: This must be the last member.
   base::WeakPtrFactory<PageLifecycleStateManager> weak_ptr_factory_{this};
 };

@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
 
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -106,12 +107,31 @@ void PageLifecycleStateManager::SetBackForwardCacheEntered(
            {BackForwardCacheEntered::kNo, BackForwardCacheEntered::kEntered}},
           {BackForwardCacheEntered::kEntered, {BackForwardCacheEntered::kNo}},
       }));
-  // TODO(https://crbug.com/427316606): Remove this when we have data from
-  // crashes.
-  SCOPED_CRASH_KEY_NUMBER("bfcache", "current_entered_",
-                          static_cast<int>(back_forward_cache_entered_));
-  SCOPED_CRASH_KEY_NUMBER("bfcache", "new_entered_", static_cast<int>(entered));
-  CHECK_STATE_TRANSITION(transitions, back_forward_cache_entered_, entered);
+  // TODO(https://crbug.com/427316606): Remove this when we understand how this
+  // transition sometimes occurs.
+  switch (entered) {
+    case BackForwardCacheEntered::kNo:
+      back_forward_cache_state_counts_.no++;
+      break;
+    case BackForwardCacheEntered::kEntering:
+      back_forward_cache_state_counts_.entering++;
+      break;
+    case BackForwardCacheEntered::kEntered:
+      back_forward_cache_state_counts_.entered++;
+      break;
+  }
+  if (back_forward_cache_entered_ == BackForwardCacheEntered::kNo &&
+      entered == BackForwardCacheEntered::kEntered) {
+    SCOPED_CRASH_KEY_NUMBER("bfcache", "count_no",
+                            back_forward_cache_state_counts_.no);
+    SCOPED_CRASH_KEY_NUMBER("bfcache", "count_entering",
+                            back_forward_cache_state_counts_.entering);
+    SCOPED_CRASH_KEY_NUMBER("bfcache", "count_entered",
+                            back_forward_cache_state_counts_.entered);
+    base::debug::DumpWithoutCrashing();
+  } else {
+    CHECK_STATE_TRANSITION(transitions, back_forward_cache_entered_, entered);
+  }
   back_forward_cache_entered_ = entered;
 }
 
