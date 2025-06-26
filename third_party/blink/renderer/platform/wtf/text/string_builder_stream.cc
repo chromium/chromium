@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
-namespace WTF {
+namespace blink {
 
 void WriteIndent(StringBuilder& builder, wtf_size_t indent) {
   for (wtf_size_t i = 0; i < indent; ++i) {
@@ -12,4 +12,4 @@ void WriteIndent(StringBuilder& builder, wtf_size_t indent) {
   }
 }
 
-}  // namespace WTF
+}  // namespace blink

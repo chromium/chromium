@@ -37,15 +37,12 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-
-namespace WTF {
-class StringBuilder;
-}  // namespace WTF
 
 namespace blink {
 
@@ -88,8 +85,8 @@ class PLATFORM_EXPORT JSONValue {
 
   String ToJSONString() const;
   String ToPrettyJSONString() const;
-  virtual void WriteJSON(WTF::StringBuilder* output) const;
-  virtual void PrettyWriteJSON(WTF::StringBuilder* output) const;
+  virtual void WriteJSON(StringBuilder* output) const;
+  virtual void PrettyWriteJSON(StringBuilder* output) const;
   virtual std::unique_ptr<JSONValue> Clone() const;
 
   static String QuoteString(const String&);
@@ -97,8 +94,7 @@ class PLATFORM_EXPORT JSONValue {
  protected:
   JSONValue() : type_(kTypeNull) {}
   explicit JSONValue(ValueType type) : type_(type) {}
-  virtual void PrettyWriteJSONInternal(WTF::StringBuilder* output,
-                                       int depth) const;
+  virtual void PrettyWriteJSONInternal(StringBuilder* output, int depth) const;
 
  private:
   friend class JSONObject;
@@ -119,7 +115,7 @@ class PLATFORM_EXPORT JSONBasicValue : public JSONValue {
   bool AsBoolean(bool* output) const override;
   bool AsDouble(double* output) const override;
   bool AsInteger(int* output) const override;
-  void WriteJSON(WTF::StringBuilder* output) const override;
+  void WriteJSON(StringBuilder* output) const override;
   std::unique_ptr<JSONValue> Clone() const override;
 
  private:
@@ -138,7 +134,7 @@ class PLATFORM_EXPORT JSONString : public JSONValue {
       : JSONValue(kTypeString), string_value_(value) {}
 
   bool AsString(String* output) const override;
-  void WriteJSON(WTF::StringBuilder* output) const override;
+  void WriteJSON(StringBuilder* output) const override;
   std::unique_ptr<JSONValue> Clone() const override;
 
  private:
@@ -173,7 +169,7 @@ class PLATFORM_EXPORT JSONObject : public JSONValue {
   static void Cast(JSONObject*) = delete;
   static void Cast(std::unique_ptr<JSONObject>) = delete;
 
-  void WriteJSON(WTF::StringBuilder* output) const override;
+  void WriteJSON(StringBuilder* output) const override;
   std::unique_ptr<JSONValue> Clone() const override;
 
   wtf_size_t size() const { return data_.size(); }
@@ -207,8 +203,7 @@ class PLATFORM_EXPORT JSONObject : public JSONValue {
   ~JSONObject() override;
 
  protected:
-  void PrettyWriteJSONInternal(WTF::StringBuilder* output,
-                               int depth) const override;
+  void PrettyWriteJSONInternal(StringBuilder* output, int depth) const override;
 
  private:
   template <typename T>
@@ -254,7 +249,7 @@ class PLATFORM_EXPORT JSONArray : public JSONValue {
   JSONArray();
   ~JSONArray() override;
 
-  void WriteJSON(WTF::StringBuilder* output) const override;
+  void WriteJSON(StringBuilder* output) const override;
   std::unique_ptr<JSONValue> Clone() const override;
 
   void PushBoolean(bool);
@@ -269,8 +264,7 @@ class PLATFORM_EXPORT JSONArray : public JSONValue {
   wtf_size_t size() const { return data_.size(); }
 
  protected:
-  void PrettyWriteJSONInternal(WTF::StringBuilder* output,
-                               int depth) const override;
+  void PrettyWriteJSONInternal(StringBuilder* output, int depth) const override;
 
  private:
   Vector<std::unique_ptr<JSONValue>> data_;
@@ -280,8 +274,8 @@ inline constexpr char kJSONNullString[] = "null";
 inline constexpr char kJSONTrueString[] = "true";
 inline constexpr char kJSONFalseString[] = "false";
 
-PLATFORM_EXPORT void EscapeStringForJSON(const String&, WTF::StringBuilder*);
-void DoubleQuoteStringForJSON(const String&, WTF::StringBuilder*);
+PLATFORM_EXPORT void EscapeStringForJSON(const String&, StringBuilder*);
+void DoubleQuoteStringForJSON(const String&, StringBuilder*);
 
 }  // namespace blink
 

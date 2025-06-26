@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace WTF {
+namespace blink {
 
 // Append a Latin-1 string
 inline StringBuilder& operator<<(StringBuilder& builder, const char* cstr) {
@@ -56,6 +56,6 @@ StringBuilder& operator<<(StringBuilder& builder, const Vector<T>& vector) {
 // Append index*2 spaces.
 WTF_EXPORT void WriteIndent(StringBuilder& builder, wtf_size_t indent);
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUILDER_STREAM_H_

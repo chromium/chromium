@@ -31,6 +31,8 @@ class scoped_refptr;
 
 namespace blink {
 
+class StringBuilder;
+
 template <typename T>
 class StringBuffer;
 
@@ -49,7 +51,6 @@ class OrdinalNumber;
 class SegmentedBuffer;
 class SharedBuffer;
 class String;
-class StringBuilder;
 class StringImpl;
 class StringView;
 
@@ -61,7 +62,6 @@ using WTF::AtomicString;
 using WTF::SegmentedBuffer;
 using WTF::SharedBuffer;
 using WTF::String;
-using WTF::StringBuilder;
 using WTF::StringImpl;
 using WTF::StringView;
 

@@ -85,7 +85,7 @@ AtomicString PerformanceScriptTiming::invoker() const {
     }
     case ScriptTimingInfo::InvokerType::kEventHandler:
     case ScriptTimingInfo::InvokerType::kUserCallback: {
-      WTF::StringBuilder builder;
+      StringBuilder builder;
       if (info_->GetInvokerType() ==
           ScriptTimingInfo::InvokerType::kEventHandler) {
         builder.Append(info_->ClassLikeName());
@@ -98,7 +98,7 @@ AtomicString PerformanceScriptTiming::invoker() const {
 
     case ScriptTimingInfo::InvokerType::kPromiseResolve:
     case ScriptTimingInfo::InvokerType::kPromiseReject: {
-      WTF::StringBuilder builder;
+      StringBuilder builder;
       if (info_->PropertyLikeName().empty()) {
         return AtomicString(
             info_->GetInvokerType() ==

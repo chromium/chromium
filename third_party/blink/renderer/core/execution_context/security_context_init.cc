@@ -139,7 +139,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   PolicyParserMessageBuffer report_only_permissions_policy_logger(
       "Error with Permissions-Policy-Report-Only header: ");
 
-  WTF::StringBuilder policy_builder;
+  StringBuilder policy_builder;
   policy_builder.Append(response.HttpHeaderField(http_names::kFeaturePolicy));
   String feature_policy_header = policy_builder.ToString();
   if (!feature_policy_header.empty())

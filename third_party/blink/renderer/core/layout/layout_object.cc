@@ -5377,7 +5377,7 @@ void ShowLayoutTree(const blink::LayoutObject* object1,
     while (root->Parent())
       root = root->Parent();
     if (object1) {
-      StringBuilder string_builder;
+      blink::StringBuilder string_builder;
       root->DumpLayoutTreeAndMark(string_builder, object1, "*", object2, "-",
                                   0);
       DLOG(INFO) << "\n" << string_builder.ToString().Utf8();

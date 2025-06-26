@@ -61,7 +61,7 @@ bool VerifyParameterValues(const T& value,
     return true;
   }
 
-  WTF::StringBuilder error_builder;
+  StringBuilder error_builder;
   error_builder.Append(error_message_base_base);
   error_builder.Append(" Supported values: ");
   for (auto i = 0u; i < supported_values.size(); i++) {

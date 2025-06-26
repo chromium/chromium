@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 
 String StringBuilder::ReleaseString() {
   if (!length_)
@@ -329,4 +329,4 @@ void StringBuilder::erase(unsigned index) {
   --length_;
 }
 
-}  // namespace WTF
+}  // namespace blink

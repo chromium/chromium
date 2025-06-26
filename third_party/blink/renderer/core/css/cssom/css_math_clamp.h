@@ -12,10 +12,6 @@
 #include "third_party/blink/renderer/core/css/cssom/css_math_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_array.h"
 
-namespace WTF {
-class StringBuilder;
-}  // namespace WTF
-
 namespace blink {
 
 // Represents the central calculation of three CSSNumericValues.
@@ -94,7 +90,7 @@ class CORE_EXPORT CSSMathClamp final : public CSSMathValue {
   CSSMathExpressionNode* ToCalcExpressionNode() const final;
 
  private:
-  void BuildCSSText(Nested, ParenLess, WTF::StringBuilder&) const final;
+  void BuildCSSText(Nested, ParenLess, StringBuilder&) const final;
 
   std::optional<CSSNumericSumValue> SumValue() const final;
 

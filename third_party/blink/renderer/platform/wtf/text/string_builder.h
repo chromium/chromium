@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 class WTF_EXPORT StringBuilder {
   USING_FAST_MALLOC(StringBuilder);
@@ -142,7 +142,7 @@ class WTF_EXPORT StringBuilder {
 
   template <typename IntegerType>
   void AppendNumber(IntegerType number) {
-    IntegerToStringConverter<IntegerType> converter(number);
+    WTF::IntegerToStringConverter<IntegerType> converter(number);
     Append(converter.Span());
   }
 
@@ -313,8 +313,6 @@ inline bool operator!=(const String& a, const StringBuilder& b) {
   return !Equal(b, a);
 }
 
-}  // namespace WTF
-
-using WTF::StringBuilder;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUILDER_H_

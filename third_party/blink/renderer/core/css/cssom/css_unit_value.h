@@ -67,7 +67,7 @@ class CORE_EXPORT CSSUnitValue final : public CSSNumericValue {
   double ConvertFixedLength(CSSPrimitiveValue::UnitType) const;
   double ConvertAngle(CSSPrimitiveValue::UnitType) const;
 
-  void BuildCSSText(Nested, ParenLess, WTF::StringBuilder&) const final;
+  void BuildCSSText(Nested, ParenLess, StringBuilder&) const final;
 
   // From CSSNumericValue
   CSSNumericValue* Negate() final;

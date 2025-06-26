@@ -25,13 +25,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_PROPERTY_SERIALIZER_H_
 
 #include <bitset>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
-
-namespace WTF {
-class StringBuilder;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -93,7 +91,7 @@ class CORE_EXPORT StylePropertySerializer {
   String FontSynthesisValue() const;
   String FontVariantValue() const;
   bool AppendFontLonghandValueIfNotNormal(const CSSProperty&,
-                                          WTF::StringBuilder& result) const;
+                                          StringBuilder& result) const;
   String OffsetValue() const;
   String TextBoxValue() const;
   String TextDecorationValue() const;
@@ -110,7 +108,7 @@ class CORE_EXPORT StylePropertySerializer {
   bool IsPropertyShorthandAvailable(const StylePropertyShorthand&) const;
   bool ShorthandHasOnlyInitialOrInheritedValue(
       const StylePropertyShorthand&) const;
-  void AppendBackgroundPropertyAsText(WTF::StringBuilder& result,
+  void AppendBackgroundPropertyAsText(StringBuilder& result,
                                       unsigned& num_decls) const;
 
   // This function does checks common to all shorthands, and returns:

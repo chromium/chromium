@@ -38,11 +38,8 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/bit_field.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
-
-namespace WTF {
-class StringBuilder;
-}  // namespace WTF
 
 namespace blink {
 
@@ -701,16 +698,16 @@ class CORE_EXPORT CSSSelector {
   unsigned SpecificityForPage() const;
 
   template <bool expand_pseudo_references>
-  bool SerializeSimpleSelector(WTF::StringBuilder& builder,
+  bool SerializeSimpleSelector(StringBuilder& builder,
                                uintptr_t scope_id) const;
 
   template <bool expand_pseudo_references>
-  const CSSSelector* SerializeCompound(WTF::StringBuilder&,
+  const CSSSelector* SerializeCompound(StringBuilder&,
                                        uintptr_t scope_id) const;
 
   template <bool expand_pseudo_references>
   static void SerializeSelectorList(const CSSSelectorList* selector_list,
-                                    WTF::StringBuilder& builder,
+                                    StringBuilder& builder,
                                     uintptr_t scope_id);
 
   template <bool expand_pseudo_references>

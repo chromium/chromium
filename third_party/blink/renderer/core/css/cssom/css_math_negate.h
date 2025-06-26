@@ -69,7 +69,7 @@ class CORE_EXPORT CSSMathNegate : public CSSMathValue {
   CSSNumericValue* Negate() final { return value_.Get(); }
   std::optional<CSSNumericSumValue> SumValue() const final;
 
-  void BuildCSSText(Nested, ParenLess, WTF::StringBuilder&) const final;
+  void BuildCSSText(Nested, ParenLess, StringBuilder&) const final;
 
   Member<CSSNumericValue> value_;
 };

@@ -17,7 +17,7 @@ String LinearTimingFunction::ToString() const {
   if (linear_->IsTrivial()) {
     return "linear";
   }
-  WTF::StringBuilder builder;
+  StringBuilder builder;
   builder.Append("linear(");
   for (wtf_size_t i = 0; i < linear_->Points().size(); ++i) {
     if (i != 0) {

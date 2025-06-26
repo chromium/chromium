@@ -34,7 +34,7 @@
 namespace blink::cssvalue {
 
 String CSSLinearTimingFunctionValue::CustomCSSText() const {
-  WTF::StringBuilder builder;
+  StringBuilder builder;
   builder.Append("linear(");
   for (wtf_size_t i = 0; i < points_.size(); ++i) {
     if (i != 0) {

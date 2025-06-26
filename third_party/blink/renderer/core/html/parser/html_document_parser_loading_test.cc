@@ -64,7 +64,7 @@ TEST_P(HTMLDocumentParserLoadingTest,
   // But _without_ calling Append, to replicate the deadlock situation
   // encountered in crbug.com/1132508. First, build some problematic input in a
   // StringBuilder.
-  WTF::StringBuilder sb;
+  StringBuilder sb;
   sb.Append("<html>");
   sb.Append(R"HTML(
     <head>

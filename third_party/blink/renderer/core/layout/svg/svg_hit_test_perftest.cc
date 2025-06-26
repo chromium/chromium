@@ -38,7 +38,7 @@ class SvgHitTestPerfTest : public RenderingTest {
     constexpr float row_stride = kSvgHeight / num_rows;
     constexpr float column_stride = kSvgWidth / num_rows;
 
-    WTF::StringBuilder html;
+    StringBuilder html;
     html.AppendFormat(
         "<svg width='%.2f' height='%.2f' viewBox='0 0 %.2f %.2f' "
         "style='cursor: auto;'>",

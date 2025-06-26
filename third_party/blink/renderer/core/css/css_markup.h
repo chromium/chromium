@@ -25,11 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_MARKUP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_MARKUP_H_
 
-namespace WTF {
-class AtomicString;
-class String;
-class StringBuilder;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 // Helper functions for converting from CSSValues to text.
 
@@ -37,13 +33,13 @@ namespace blink {
 
 // Common serializing methods. See:
 // https://drafts.csswg.org/cssom/#common-serializing-idioms
-void SerializeIdentifier(const WTF::String& identifier,
-                         WTF::StringBuilder& append_to,
+void SerializeIdentifier(const String& identifier,
+                         StringBuilder& append_to,
                          bool skip_start_checks = false);
-void SerializeString(const WTF::String&, WTF::StringBuilder& append_to);
-WTF::String SerializeString(const WTF::String&);
-WTF::String SerializeURI(const WTF::String&);
-WTF::String SerializeFontFamily(const WTF::AtomicString&);
+void SerializeString(const String&, StringBuilder& append_to);
+String SerializeString(const String&);
+String SerializeURI(const String&);
+String SerializeFontFamily(const AtomicString&);
 
 }  // namespace blink
 

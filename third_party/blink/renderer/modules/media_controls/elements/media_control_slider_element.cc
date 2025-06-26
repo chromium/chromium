@@ -43,7 +43,7 @@ void SetSegmentDivPosition(blink::HTMLDivElement* segment,
   if (segment_width == current_width && segment_left == current_left)
     return;
 
-  StringBuilder builder;
+  blink::StringBuilder builder;
   builder.Append("width: ");
   builder.AppendNumber(segment_width);
   builder.Append("px; left: ");

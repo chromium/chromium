@@ -220,7 +220,7 @@ String StringView::EncodeForDebugging() const {
     return "<null>";
   }
 
-  StringBuilder builder;
+  blink::StringBuilder builder;
   builder.Append('"');
   for (unsigned index = 0; index < length(); ++index) {
     // Print shorthands for select cases.

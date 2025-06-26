@@ -31,11 +31,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_behavior.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
-namespace WTF {
-class StringBuilder;
-}  // namespace WTF
 
 namespace blink {
 
@@ -57,7 +54,7 @@ class CORE_EXPORT TextIteratorTextState {
   UChar CharacterAt(unsigned index) const;
   // TODO(xiaochengh): Rename to |GetText()| as it's used in production code.
   String GetTextForTesting() const;
-  void AppendTextToStringBuilder(WTF::StringBuilder&) const;
+  void AppendTextToStringBuilder(StringBuilder&) const;
 
   // Emits code unit relative to |node|.
   void EmitChar16AfterNode(UChar code_unit, const Node& node);

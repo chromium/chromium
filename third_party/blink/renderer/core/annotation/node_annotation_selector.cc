@@ -28,7 +28,7 @@ void NodeAnnotationSelector::Trace(Visitor* visitor) const {
 }
 
 String NodeAnnotationSelector::Serialize() const {
-  WTF::StringBuilder builder;
+  StringBuilder builder;
   builder.AppendNumber(node_id_);
   return builder.ToString();
 }

@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -510,4 +510,4 @@ TEST(StringBuilderTest, DoesAppendCauseOverflow) {
   }
 }
 
-}  // namespace WTF
+}  // namespace blink

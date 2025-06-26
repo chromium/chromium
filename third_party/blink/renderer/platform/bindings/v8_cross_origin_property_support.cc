@@ -60,7 +60,7 @@ v8::MaybeLocal<v8::Value> GetCrossOriginGetterSetter(
   if (!callback) {
     return v8::Undefined(isolate);
   }
-  WTF::StringBuilder builder;
+  StringBuilder builder;
   builder.Append(func_length > 0 ? "set " : "get ");
   builder.Append(func_name);
   v8::Local<v8::Function> function;

@@ -78,7 +78,7 @@ void CollectFilteredCallStack(v8::Isolate* isolate, StringBuilder& builder) {
 
 void PostHandleCollectedCallStackTask(
     JavaScriptCallStackCollector* collector,
-    WTF::StringBuilder& builder,
+    StringBuilder& builder,
     std::optional<LocalFrameToken> frame_token = std::nullopt) {
   DCHECK(Platform::Current());
   PostCrossThreadTask(
@@ -94,7 +94,7 @@ void GenerateJavaScriptCallStack(v8::Isolate* isolate, void* data) {
 
   auto* collector = static_cast<JavaScriptCallStackCollector*>(data);
   v8::HandleScope handle_scope(isolate);
-  WTF::StringBuilder builder;
+  StringBuilder builder;
   if (!isolate->InContext()) {
     PostHandleCollectedCallStackTask(collector, builder);
     return;

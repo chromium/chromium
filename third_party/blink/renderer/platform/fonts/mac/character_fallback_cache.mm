@@ -44,7 +44,7 @@ String BuildIdentifierKey(CTFontRef ct_font) {
       return String();
     }
 
-    WTF::StringBuilder result_builder;
+    StringBuilder result_builder;
 
     ScopedCFTypeRef<CFDictionaryRef> attributes(
         CTFontDescriptorCopyAttributes(font_descriptor.get()));

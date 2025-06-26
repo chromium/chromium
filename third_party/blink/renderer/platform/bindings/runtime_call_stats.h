@@ -33,11 +33,6 @@ namespace base {
 class TickClock;
 }
 
-namespace WTF {
-class String;
-class StringBuilder;
-}  // namespace WTF
-
 namespace blink {
 
 class TracedValue;
