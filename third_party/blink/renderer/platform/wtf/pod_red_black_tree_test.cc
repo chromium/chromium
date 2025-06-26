@@ -34,17 +34,17 @@
 
 namespace blink {
 
+using arena_test_helpers::TrackedAllocator;
 using tree_test_helpers::InitRandom;
 using tree_test_helpers::NextRandom;
-using WTF::arena_test_helpers::TrackedAllocator;
 
 TEST(PodRedBlackTreeTest, TestTreeAllocatesFromArena) {
   scoped_refptr<TrackedAllocator> allocator = TrackedAllocator::Create();
   {
-    using PodIntegerArena = WTF::PODFreeListArena<PodRedBlackTree<int>::Node>;
+    using PodIntegerArena = PodFreeListArena<PodRedBlackTree<int>::Node>;
     scoped_refptr<PodIntegerArena> arena = PodIntegerArena::Create(allocator);
     PodRedBlackTree<int> tree(arena);
-    int num_additions = 2 * WTF::PODArena::kDefaultChunkSize / sizeof(int);
+    int num_additions = 2 * PodArena::kDefaultChunkSize / sizeof(int);
     for (int i = 0; i < num_additions; ++i)
       tree.Add(i);
     EXPECT_GT(allocator->NumRegions(), 1);

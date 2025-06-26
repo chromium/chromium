@@ -30,21 +30,21 @@
 #include "third_party/blink/renderer/platform/wtf/pod_arena.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
-namespace WTF {
+namespace blink {
 
 template <class T>
-class PODFreeListArena : public RefCounted<PODFreeListArena<T>> {
-  USING_FAST_MALLOC(PODFreeListArena);
+class PodFreeListArena : public RefCounted<PodFreeListArena<T>> {
+  USING_FAST_MALLOC(PodFreeListArena);
 
  public:
-  static scoped_refptr<PODFreeListArena> Create() {
-    return base::AdoptRef(new PODFreeListArena);
+  static scoped_refptr<PodFreeListArena> Create() {
+    return base::AdoptRef(new PodFreeListArena);
   }
 
-  // Creates a new PODFreeListArena configured with the given Allocator.
-  static scoped_refptr<PODFreeListArena> Create(
-      scoped_refptr<PODArena::Allocator> allocator) {
-    return base::AdoptRef(new PODFreeListArena(std::move(allocator)));
+  // Creates a new PodFreeListArena configured with the given Allocator.
+  static scoped_refptr<PodFreeListArena> Create(
+      scoped_refptr<PodArena::Allocator> allocator) {
+    return base::AdoptRef(new PodFreeListArena(std::move(allocator)));
   }
 
   // Allocates an object from the arena.
@@ -57,7 +57,7 @@ class PODFreeListArena : public RefCounted<PODFreeListArena<T>> {
       return static_cast<T*>(ptr);
     }
 
-    // PODArena::allocateObject calls T's constructor.
+    // PodArena::AllocateObject calls T's constructor.
     return static_cast<T*>(arena_->AllocateObject<T>());
   }
 
@@ -71,7 +71,7 @@ class PODFreeListArena : public RefCounted<PODFreeListArena<T>> {
       return static_cast<T*>(ptr);
     }
 
-    // PODArena::allocateObject calls T's constructor.
+    // PodArena::AllocateObject calls T's constructor.
     return static_cast<T*>(arena_->AllocateObject<T>(argument1));
   }
 
@@ -83,12 +83,12 @@ class PODFreeListArena : public RefCounted<PODFreeListArena<T>> {
   }
 
  private:
-  PODFreeListArena() : arena_(PODArena::Create()), free_list_(nullptr) {}
+  PodFreeListArena() : arena_(PodArena::Create()), free_list_(nullptr) {}
 
-  explicit PODFreeListArena(scoped_refptr<PODArena::Allocator> allocator)
-      : arena_(PODArena::Create(std::move(allocator))), free_list_(nullptr) {}
+  explicit PodFreeListArena(scoped_refptr<PodArena::Allocator> allocator)
+      : arena_(PodArena::Create(std::move(allocator))), free_list_(nullptr) {}
 
-  ~PODFreeListArena() = default;
+  ~PodFreeListArena() = default;
 
   void* AllocateFromFreeList() {
     if (free_list_) {
@@ -107,7 +107,7 @@ class PODFreeListArena : public RefCounted<PODFreeListArena<T>> {
     return total;
   }
 
-  scoped_refptr<PODArena> arena_;
+  scoped_refptr<PodArena> arena_;
 
   // This free list contains pointers within every chunk that's been allocated
   // so far. None of the individual chunks can be freed until the arena is
@@ -119,12 +119,12 @@ class PODFreeListArena : public RefCounted<PODFreeListArena<T>> {
   FixedSizeMemoryChunk* free_list_;
 
   static_assert(sizeof(T) >= sizeof(FixedSizeMemoryChunk),
-                "PODFreeListArena type should be larger");
+                "PodFreeListArena type should be larger");
 
-  friend class WTF::RefCounted<PODFreeListArena>;
-  friend class PODFreeListArenaTest;
+  friend class WTF::RefCounted<PodFreeListArena>;
+  friend class PodFreeListArenaTest;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_FREE_LIST_ARENA_H_

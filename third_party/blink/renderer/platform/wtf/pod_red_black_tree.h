@@ -120,9 +120,9 @@ class PodRedBlackTree {
   }
 
   // Constructs a new red-black tree, allocating temporary objects
-  // from a newly constructed PODFreeListArena.
+  // from a newly constructed PodFreeListArena.
   PodRedBlackTree()
-      : arena_(WTF::PODFreeListArena<Node>::Create()),
+      : arena_(PodFreeListArena<Node>::Create()),
         root_(nullptr),
         needs_full_ordering_comparisons_(false)
 #ifndef NDEBUG
@@ -133,8 +133,8 @@ class PodRedBlackTree {
   }
 
   // Constructs a new red-black tree, allocating temporary objects
-  // from the given PODArena.
-  explicit PodRedBlackTree(scoped_refptr<WTF::PODFreeListArena<Node>> arena)
+  // from the given PodArena.
+  explicit PodRedBlackTree(scoped_refptr<PodFreeListArena<Node>> arena)
       : arena_(std::move(arena)),
         root_(nullptr),
         needs_full_ordering_comparisons_(false)
@@ -159,10 +159,10 @@ class PodRedBlackTree {
 
   void InitIfNeeded() {
     if (!arena_)
-      arena_ = WTF::PODFreeListArena<Node>::Create();
+      arena_ = PodFreeListArena<Node>::Create();
   }
 
-  void InitIfNeeded(WTF::PODFreeListArena<Node>* arena) {
+  void InitIfNeeded(PodFreeListArena<Node>* arena) {
     if (!arena_)
       arena_ = arena;
   }
@@ -790,7 +790,7 @@ class PodRedBlackTree {
   //----------------------------------------------------------------------
   // Data members
 
-  scoped_refptr<WTF::PODFreeListArena<Node>> arena_;
+  scoped_refptr<PodFreeListArena<Node>> arena_;
   Node* root_;
   bool needs_full_ordering_comparisons_;
 #ifndef NDEBUG

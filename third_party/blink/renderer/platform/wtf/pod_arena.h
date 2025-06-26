@@ -40,15 +40,15 @@
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace WTF {
+namespace blink {
 
 // An arena which allocates only Plain Old Data (POD), or classes and
 // structs bottoming out in Plain Old Data. NOTE: the constructors of
 // the objects allocated in this arena are called, but _not_ their
 // destructors.
 
-class PODArena final : public RefCounted<PODArena> {
-  USING_FAST_MALLOC(PODArena);
+class PodArena final : public RefCounted<PodArena> {
+  USING_FAST_MALLOC(PodArena);
 
  public:
   // The arena is configured with an allocator, which is responsible
@@ -73,7 +73,7 @@ class PODArena final : public RefCounted<PODArena> {
 
     void* Allocate(size_t size) override {
       return WTF::Partitions::FastMalloc(size,
-                                         WTF_HEAP_PROFILER_TYPE_NAME(PODArena));
+                                         WTF_HEAP_PROFILER_TYPE_NAME(PodArena));
     }
     void Free(void* ptr) override { WTF::Partitions::FastFree(ptr); }
 
@@ -81,14 +81,14 @@ class PODArena final : public RefCounted<PODArena> {
     FastMallocAllocator() = default;
   };
 
-  // Creates a new PODArena configured with a FastMallocAllocator.
-  static scoped_refptr<PODArena> Create() {
-    return base::AdoptRef(new PODArena);
+  // Creates a new PodArena configured with a FastMallocAllocator.
+  static scoped_refptr<PodArena> Create() {
+    return base::AdoptRef(new PodArena);
   }
 
-  // Creates a new PODArena configured with the given Allocator.
-  static scoped_refptr<PODArena> Create(scoped_refptr<Allocator> allocator) {
-    return base::AdoptRef(new PODArena(std::move(allocator)));
+  // Creates a new PodArena configured with the given Allocator.
+  static scoped_refptr<PodArena> Create(scoped_refptr<Allocator> allocator) {
+    return base::AdoptRef(new PodArena(std::move(allocator)));
   }
 
   // Allocates an object from the arena.
@@ -108,14 +108,14 @@ class PODArena final : public RefCounted<PODArena> {
   enum { kDefaultChunkSize = 16384 };
 
  protected:
-  friend class WTF::RefCounted<PODArena>;
+  friend class WTF::RefCounted<PodArena>;
 
-  PODArena()
+  PodArena()
       : allocator_(FastMallocAllocator::Create()),
         current_(nullptr),
         current_chunk_size_(kDefaultChunkSize) {}
 
-  explicit PODArena(scoped_refptr<Allocator> allocator)
+  explicit PodArena(scoped_refptr<Allocator> allocator)
       : allocator_(std::move(allocator)),
         current_(nullptr),
         current_chunk_size_(kDefaultChunkSize) {}
@@ -188,6 +188,6 @@ class PODArena final : public RefCounted<PODArena> {
   Vector<std::unique_ptr<Chunk>> chunks_;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_ARENA_H_

@@ -26,25 +26,23 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_ARENA_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_ARENA_TEST_HELPERS_H_
 
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/pod_arena.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-#include <gtest/gtest.h>
+namespace blink::arena_test_helpers {
 
-namespace WTF {
-namespace arena_test_helpers {
-
-// An allocator for the PODArena which tracks the regions which have
+// An allocator for the PodArena which tracks the regions which have
 // been allocated.
-class TrackedAllocator final : public PODArena::FastMallocAllocator {
+class TrackedAllocator final : public PodArena::FastMallocAllocator {
  public:
   static scoped_refptr<TrackedAllocator> Create() {
     return base::AdoptRef(new TrackedAllocator);
   }
 
   void* Allocate(size_t size) override {
-    void* result = PODArena::FastMallocAllocator::Allocate(size);
+    void* result = PodArena::FastMallocAllocator::Allocate(size);
     allocated_regions_.push_back(result);
     return result;
   }
@@ -53,7 +51,7 @@ class TrackedAllocator final : public PODArena::FastMallocAllocator {
     size_t slot = allocated_regions_.Find(ptr);
     ASSERT_NE(slot, kNotFound);
     allocated_regions_.EraseAt(slot);
-    PODArena::FastMallocAllocator::Free(ptr);
+    PodArena::FastMallocAllocator::Free(ptr);
   }
 
   bool IsEmpty() const { return !NumRegions(); }
@@ -65,7 +63,6 @@ class TrackedAllocator final : public PODArena::FastMallocAllocator {
   Vector<void*> allocated_regions_;
 };
 
-}  // namespace arena_test_helpers
-}  // namespace WTF
+}  // namespace blink::arena_test_helpers
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_ARENA_TEST_HELPERS_H_
