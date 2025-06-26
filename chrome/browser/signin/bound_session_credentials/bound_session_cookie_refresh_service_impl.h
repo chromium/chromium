@@ -173,8 +173,8 @@ class BoundSessionCookieRefreshServiceImpl
       const bound_session_credentials::BoundSessionParams& bound_session_params,
       bool is_off_the_record_profile);
   void InitializeBoundSession(
-      const bound_session_credentials::BoundSessionParams&
-          bound_session_params);
+      const bound_session_credentials::BoundSessionParams& bound_session_params,
+      bool is_new_session);
 
   void UpdateAllRenderers();
 

@@ -32,6 +32,19 @@ class BoundSessionRefreshCookieFetcher {
     kMaxValue = kChallengeRequiredSessionIdMismatch,
   };
 
+  // Enumerates different reasons for triggering a refresh request. Used mainly
+  // for metrics.
+  enum class Trigger {
+    kOther,
+    kNewSession,
+    kStartup,
+    kBlockedRequest,
+    kCookieExpired,
+    kPreemptiveRefresh,
+    kRetryWithBackoff,
+    kConnectionChanged,
+  };
+
   static constexpr char kRotationChallengeHeader[] =
       "Sec-Session-Google-Challenge";
   static constexpr char kRotationChallengeResponseHeader[] =
@@ -67,6 +80,8 @@ class BoundSessionRefreshCookieFetcher {
   virtual std::optional<std::string> TakeSecSessionChallengeResponseIfAny() = 0;
   // Returns names of the cookies that haven't been refreshed by this fetcher.
   virtual base::flat_set<std::string> GetNonRefreshedCookieNames() = 0;
+  // Returns `Trigger` for this refresh.
+  virtual Trigger GetTrigger() const = 0;
 };
 
 std::ostream& operator<<(

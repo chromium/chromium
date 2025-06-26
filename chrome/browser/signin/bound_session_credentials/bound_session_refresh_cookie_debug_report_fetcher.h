@@ -45,6 +45,7 @@ class BoundSessionRefreshCookieDebugReportFetcher
   bool IsChallengeReceived() const override;
   std::optional<std::string> TakeSecSessionChallengeResponseIfAny() override;
   base::flat_set<std::string> GetNonRefreshedCookieNames() override;
+  Trigger GetTrigger() const override;
 
  private:
   void OnURLLoaderComplete(scoped_refptr<net::HttpResponseHeaders> headers);

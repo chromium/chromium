@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -21,6 +22,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_switches.h"
 #include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
@@ -41,6 +43,11 @@ constexpr char kChallengeItemKey[] = "challenge";
 constexpr char kSessionIdItemKey[] = "session_id";
 const size_t kMaxAssertionRequestsAllowed = 5;
 const size_t kMaxGenerateAssertionFailuresAllowed = 1;
+
+constexpr std::string_view kRotationResultHistogramName =
+    "Signin.BoundSessionCredentials.CookieRotationResult";
+constexpr std::string_view kRotationTotalDurationHistogramName =
+    "Signin.BoundSessionCredentials.CookieRotationTotalDuration";
 
 bool IsExpectedCookie(
     const GURL& url,
@@ -85,6 +92,32 @@ std::string_view GetRotationHttpResultHistogramName(
              : kHistogramNameWithoutChallenge;
 }
 
+// LINT.IfChange(GetRotationHistogramTriggerSuffix)
+std::string_view GetRotationHistogramTriggerSuffix(
+    BoundSessionRefreshCookieFetcher::Trigger trigger) {
+  using enum BoundSessionRefreshCookieFetcher::Trigger;
+  switch (trigger) {
+    case kOther:
+      return ".Other";
+    case kNewSession:
+      return ".NewSession";
+    case kStartup:
+      return ".Startup";
+    case kBlockedRequest:
+      return ".BlockedRequest";
+    case kCookieExpired:
+      return ".CookieExpired";
+    case kPreemptiveRefresh:
+      return ".PreemptiveRefresh";
+    case kRetryWithBackoff:
+      return ".RetryWithBackoff";
+    case kConnectionChanged:
+      return ".ConnectionChanged";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:BoundSessionRefreshCookieFetcherTrigger)
+
 }  // namespace
 
 BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
@@ -95,6 +128,7 @@ BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
     const GURL& cookie_url,
     base::flat_set<std::string> cookie_names,
     bool is_off_the_record_profile,
+    Trigger trigger,
     bound_session_credentials::RotationDebugInfo debug_info)
     : url_loader_factory_(std::move(url_loader_factory)),
       session_binding_helper_(session_binding_helper),
@@ -103,6 +137,7 @@ BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
       expected_cookie_domain_(cookie_url),
       expected_cookie_names_(std::move(cookie_names)),
       is_off_the_record_profile_(is_off_the_record_profile),
+      trigger_(trigger),
       non_refreshed_cookie_names_(expected_cookie_names_),
       debug_info_(std::move(debug_info)) {
   CHECK(refresh_url.is_valid());
@@ -151,6 +186,11 @@ BoundSessionRefreshCookieFetcherImpl::TakeSecSessionChallengeResponseIfAny() {
 base::flat_set<std::string>
 BoundSessionRefreshCookieFetcherImpl::GetNonRefreshedCookieNames() {
   return non_refreshed_cookie_names_;
+}
+
+BoundSessionRefreshCookieFetcherImpl::Trigger
+BoundSessionRefreshCookieFetcherImpl::GetTrigger() const {
+  return trigger_;
 }
 
 void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
@@ -302,14 +342,21 @@ void BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult() {
   TRACE_EVENT("browser",
               "BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult",
               perfetto::TerminatingFlow::FromPointer(this), "result", result_);
+  const std::string_view histogram_trigger_suffix =
+      GetRotationHistogramTriggerSuffix(trigger_);
+  base::UmaHistogramEnumeration(kRotationResultHistogramName, result_);
   base::UmaHistogramEnumeration(
-      "Signin.BoundSessionCredentials.CookieRotationResult", result_);
+      base::StrCat({kRotationResultHistogramName, histogram_trigger_suffix}),
+      result_);
 
   CHECK(cookie_refresh_duration_.has_value());
   base::TimeDelta duration = base::TimeTicks::Now() - *cookie_refresh_duration_;
   cookie_refresh_duration_.reset();
-  base::UmaHistogramMediumTimes(
-      "Signin.BoundSessionCredentials.CookieRotationTotalDuration", duration);
+  base::UmaHistogramMediumTimes(kRotationTotalDurationHistogramName, duration);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {kRotationTotalDurationHistogramName, histogram_trigger_suffix}),
+      result_);
 
   std::move(callback_).Run(result_);
 }

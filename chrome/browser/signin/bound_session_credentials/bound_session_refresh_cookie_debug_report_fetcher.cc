@@ -105,6 +105,11 @@ BoundSessionRefreshCookieDebugReportFetcher::GetNonRefreshedCookieNames() {
   return {};
 }
 
+BoundSessionRefreshCookieDebugReportFetcher::Trigger
+BoundSessionRefreshCookieDebugReportFetcher::GetTrigger() const {
+  return Trigger::kOther;
+}
+
 void BoundSessionRefreshCookieDebugReportFetcher::OnURLLoaderComplete(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   net::Error net_error = static_cast<net::Error>(url_loader_->NetError());

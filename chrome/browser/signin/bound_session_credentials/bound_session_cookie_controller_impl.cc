@@ -170,18 +170,21 @@ BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
   RecordCookieRotationOutageMetricsIfNeeded(/*periodic=*/false);
 }
 
-void BoundSessionCookieControllerImpl::Initialize() {
+void BoundSessionCookieControllerImpl::Initialize(bool is_new_session) {
   network_connection_observer_.Observe(network_connection_tracker_);
   is_offline_ = network_connection_tracker_->IsOffline();
   CreateBoundCookiesObservers();
-  MaybeRefreshCookie();
+  MaybeRefreshCookie(
+      is_new_session ? BoundSessionRefreshCookieFetcher::Trigger::kNewSession
+                     : BoundSessionRefreshCookieFetcher::Trigger::kStartup);
 }
 
 void BoundSessionCookieControllerImpl::OnConnectionChanged(
     network::mojom::ConnectionType type) {
   if (is_offline_ && type != network::mojom::ConnectionType::CONNECTION_NONE) {
     // We are back online. Schedule a new cookie rotation if needed.
-    MaybeScheduleCookieRotation();
+    MaybeScheduleCookieRotation(
+        BoundSessionRefreshCookieFetcher::Trigger::kConnectionChanged);
   }
 
   is_offline_ = type == network::mojom::ConnectionType::CONNECTION_NONE;
@@ -204,7 +207,8 @@ void BoundSessionCookieControllerImpl::HandleRequestBlockedOnCookie(
   }
 
   resume_blocked_requests_.push_back(std::move(resume_blocked_request));
-  MaybeRefreshCookie();
+  MaybeRefreshCookie(
+      BoundSessionRefreshCookieFetcher::Trigger::kBlockedRequest);
 
   if (!resume_blocked_requests_timer_.IsRunning() &&
       !resume_blocked_requests_.empty()) {
@@ -258,7 +262,10 @@ void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
 
   if (min_cookie_expiration_time() != old_min_expiration_time) {
     delegate_->OnBoundSessionThrottlerParamsChanged();
-    MaybeScheduleCookieRotation();
+    MaybeScheduleCookieRotation(
+        AreAllCookiesFresh()
+            ? BoundSessionRefreshCookieFetcher::Trigger::kPreemptiveRefresh
+            : BoundSessionRefreshCookieFetcher::Trigger::kCookieExpired);
   }
 }
 
@@ -277,16 +284,17 @@ void BoundSessionCookieControllerImpl::CreateBoundCookiesObservers() {
 }
 
 std::unique_ptr<BoundSessionRefreshCookieFetcher>
-BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
+BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher(
+    BoundSessionRefreshCookieFetcher::Trigger trigger) const {
   return refresh_cookie_fetcher_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
                    storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
                    *session_binding_helper_, session_id_, refresh_url_,
                    scope_url_, bound_cookie_names(), is_off_the_record_profile_,
-                   debug_info_)
+                   trigger, debug_info_)
              : refresh_cookie_fetcher_factory_for_testing_.Run(
                    storage_partition_->GetCookieManagerForBrowserProcess(),
-                   scope_url_, bound_cookie_names());
+                   scope_url_, bound_cookie_names(), trigger);
 }
 
 bool BoundSessionCookieControllerImpl::AreAllCookiesFresh() {
@@ -298,13 +306,14 @@ bool BoundSessionCookieControllerImpl::CanCreateRefreshCookieFetcher() const {
          !refresh_cookie_fetcher_backoff_.ShouldRejectRequest();
 }
 
-void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
+void BoundSessionCookieControllerImpl::MaybeRefreshCookie(
+    BoundSessionRefreshCookieFetcher::Trigger trigger) {
   cookie_refresh_timer_.Stop();
   if (!CanCreateRefreshCookieFetcher()) {
     return;
   }
 
-  refresh_cookie_fetcher_ = CreateRefreshCookieFetcher();
+  refresh_cookie_fetcher_ = CreateRefreshCookieFetcher(trigger);
   std::optional<std::string> sec_session_challenge_response;
   std::swap(cached_sec_session_challenge_response_,
             sec_session_challenge_response);
@@ -336,6 +345,8 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(Result result) {
                                 kServerUnexepectedResponse
                       ? refresh_cookie_fetcher_->GetNonRefreshedCookieNames()
                       : base::flat_set<std::string>());
+  BoundSessionRefreshCookieFetcher::Trigger refresh_trigger =
+      refresh_cookie_fetcher_->GetTrigger();
   refresh_cookie_fetcher_.reset();
 
   UpdateCookieFetcherBackoff(result);
@@ -346,7 +357,7 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(Result result) {
     // On transient error, retry the cookie refresh before releasing
     // throttled requests. Do not retry preemptive refreshes.
     cookie_rotation_retries_on_transient_error_++;
-    MaybeRefreshCookie();
+    MaybeRefreshCookie(refresh_trigger);
     return;
   }
 
@@ -403,7 +414,8 @@ void BoundSessionCookieControllerImpl::UpdateCookieFetcherBackoff(
 
   // Request throttling is paused due to an outage, schedule cookie rotation in
   // the background with backoff.
-  MaybeScheduleCookieRotation();
+  MaybeScheduleCookieRotation(
+      BoundSessionRefreshCookieFetcher::Trigger::kRetryWithBackoff);
 }
 
 void BoundSessionCookieControllerImpl::
@@ -450,20 +462,26 @@ void BoundSessionCookieControllerImpl::ResetCookieFetcherBackoff() {
   // cookie's expiration date.
 }
 
-void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation() {
+void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation(
+    BoundSessionRefreshCookieFetcher::Trigger trigger) {
   const base::TimeDelta kCookieRefreshInterval = base::Minutes(2);
   base::TimeDelta preemptive_refresh_in =
       min_cookie_expiration_time() - base::Time::Now() - kCookieRefreshInterval;
 
+  const bool throttling_paused = ShouldPauseThrottlingRequests();
   // Respect backoff release time if set, otherwise follow the time for
   // preemptive cookie refresh.
   base::TimeDelta refresh_in =
-      ShouldPauseThrottlingRequests()
-          ? refresh_cookie_fetcher_backoff_.GetTimeUntilRelease()
-          : preemptive_refresh_in;
+      throttling_paused ? refresh_cookie_fetcher_backoff_.GetTimeUntilRelease()
+                        : preemptive_refresh_in;
+  if (throttling_paused) {
+    // If throttling is paused, all refreshes follow the backoff policy, so
+    // the actual trigger doesn't matter.
+    trigger = BoundSessionRefreshCookieFetcher::Trigger::kRetryWithBackoff;
+  }
 
   if (!refresh_in.is_positive()) {
-    MaybeRefreshCookie();
+    MaybeRefreshCookie(trigger);
     return;
   }
 
@@ -473,7 +491,7 @@ void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation() {
   cookie_refresh_timer_.Start(
       FROM_HERE, refresh_in,
       base::BindRepeating(&BoundSessionCookieControllerImpl::MaybeRefreshCookie,
-                          base::Unretained(this)));
+                          base::Unretained(this), trigger));
 }
 
 void BoundSessionCookieControllerImpl::ResumeBlockedRequests(

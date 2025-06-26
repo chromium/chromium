@@ -38,7 +38,7 @@ BoundSessionCookieController::BoundSessionCookieController(
 
 BoundSessionCookieController::~BoundSessionCookieController() = default;
 
-void BoundSessionCookieController::Initialize() {}
+void BoundSessionCookieController::Initialize(bool is_new_session) {}
 
 base::Time BoundSessionCookieController::min_cookie_expiration_time() const {
   CHECK(!bound_cookies_info_.empty());
