@@ -36,7 +36,7 @@ promise_test(async (test) => {
 
   await controlledFrame.addContentScripts([{
     name: 'test',
-    matches: ['https://*/*'],
+    urlPatterns: ['https://*/*'],
     js: {files: ['/resources/content_script.js']},
     runAt: 'document-start',
   }]);
@@ -58,7 +58,7 @@ promise_test(async (test) => {
 
   const result = controlledFrame.addContentScripts([{
     name: 'test',
-    matches: ['*invalid pattern*'],
+    urlPatterns: ['*invalid pattern*'],
     js: {files: ['/resources/content_script.js']},
     runAt: 'document-start',
   }]);
