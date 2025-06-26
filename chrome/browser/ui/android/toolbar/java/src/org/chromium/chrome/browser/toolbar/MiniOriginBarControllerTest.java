@@ -61,6 +61,7 @@ import java.util.function.BooleanSupplier;
 public class MiniOriginBarControllerTest {
 
     private static final int CONTROL_CONTAINER_WIDTH = 400;
+    private static final int FULL_TOOLBAR_HEIGHT = 56;
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
 
     @Mock private ControlContainer mControlContainer;
@@ -110,6 +111,7 @@ public class MiniOriginBarControllerTest {
         doReturn(mLocationBarView).when(mLocationBar).getContainerView();
         doReturn(mLocationBarLayoutParams).when(mLocationBarView).getLayoutParams();
         doReturn(mControlContainerView).when(mControlContainer).getView();
+        doReturn(FULL_TOOLBAR_HEIGHT).when(mControlContainer).getToolbarHeight();
         doReturn(mControlContainerLayoutParams.width).when(mControlContainerView).getWidth();
         doReturn(mImeAdapter).when(mWebContents).getOrSetUserData(eq(ImeAdapterImpl.class), any());
         mIsFormFieldFocused.onWebContentsChanged(mWebContents);
@@ -402,7 +404,7 @@ public class MiniOriginBarControllerTest {
                                 - (1.0f - mImeAnimation.getFraction())
                                         / MiniOriginBarController.LOCATION_BAR_SCALE_DENOMINATOR);
 
-        currentKeyboardHeight = 40;
+        currentKeyboardHeight = 45;
         insets =
                 insetsBuilder
                         .setInsets(
@@ -495,6 +497,49 @@ public class MiniOriginBarControllerTest {
         Assert.assertEquals(
                 mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height),
                 mControlContainerHeightSupplier.get().intValue());
+    }
+
+    @Test
+    public void testAnimateWithKeyboard_endEarly() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
+        mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
+        final MiniOriginWindowInsetsAnimationListener animationListener =
+                mMiniOriginBarController.getAnimationListenerForTesting();
+
+        final int finalKeyboardHeight = 100;
+        final BoundsCompat bounds =
+                new BoundsCompat(Insets.NONE, Insets.of(0, 0, 0, finalKeyboardHeight));
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+
+        animationListener.onPrepare(mImeAnimation);
+        animationListener.onStart(mImeAnimation, bounds);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+
+        animationListener.onEnd(mImeAnimation);
+        Assert.assertEquals(
+                MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+
+        // Simulate the beginning of an animation hiding the keyboard
+        animationListener.onPrepare(mImeAnimation);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(false);
+        animationListener.onStart(mImeAnimation, bounds);
+
+        final int miniOriginBarHeight =
+                mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height);
+        int currentKeyboardHeight = FULL_TOOLBAR_HEIGHT - miniOriginBarHeight;
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.ime(),
+                                Insets.of(0, 0, 0, currentKeyboardHeight))
+                        .build();
+        animationListener.onProgress(insets, Collections.singletonList(mImeAnimation));
+
+        Assert.assertEquals(
+                MiniOriginState.READY, mMiniOriginBarController.getCurrentStateForTesting());
+        assertEquals(0, (int) mControlContainerTranslationSupplier.get());
+        verify(mLocationBarView).setScaleX(1.0f);
+        verify(mLocationBarView).setScaleY(1.0f);
     }
 
     @Test
