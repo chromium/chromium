@@ -233,7 +233,7 @@
 <translation id="1382378825779654399">値下げしたサイトがある場合、メールで通知します。このページは <ph name="LAST_BOOKMARKS_FOLDER" /> に保存されます。</translation>
 <translation id="1384725838384960382">保護されたお支払い認証情報の認証シート</translation>
 <translation id="1386623374109090026">アノテーション</translation>
-<translation id="138810468159004008">サイトへのアクセス時のみ許可する</translation>
+<translation id="138810468159004008">サイトへのアクセス時は許可</translation>
 <translation id="139161720020179799">ダークグレー 1</translation>
 <translation id="1391625539203220400">IBAN をこのデバイスに保存しますか？</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> からデータが送信されませんでした。</translation>
@@ -628,7 +628,7 @@
 <translation id="2081482239432306393">番地のオプションが選択されました</translation>
 <translation id="20817612488360358">システム プロキシ設定を使用するように設定されていますが、明示的なプロキシの設定も指定されています。</translation>
 <translation id="2082238445998314030">結果 <ph name="TOTAL_RESULTS" /> 件中 <ph name="RESULT_NUMBER" /> 件目</translation>
-<translation id="2083256696566019397">すべてのアクセスで許可</translation>
+<translation id="2083256696566019397">サイトアクセス時は常に許可</translation>
 <translation id="2085876078937250610">保存…</translation>
 <translation id="2090451897496479509">詳しくはプロバイダにお問い合わせください</translation>
 <translation id="2091887806945687916">音声</translation>
