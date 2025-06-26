@@ -311,6 +311,7 @@ class WebIdlSchemaTest(unittest.TestCase):
     # A function without a preceding comment has no 'description' key.
     self.assertTrue('description' not in getFunction(schema, 'noDescription'))
 
+    # Basic single and multi-line function comments.
     self.assertEqual(
         'One line description.',
         getFunction(schema, 'oneLineDescription').get('description'))
@@ -322,6 +323,7 @@ class WebIdlSchemaTest(unittest.TestCase):
         ' paragraph tags.</p>',
         getFunction(schema, 'paragraphedDescription').get('description'))
 
+    # Function with parameter comments.
     function = getFunction(schema, 'parameterComments')
     self.assertEqual('This function has parameter comments.',
                      function.get('description'))
@@ -346,13 +348,14 @@ class WebIdlSchemaTest(unittest.TestCase):
             '$ref': 'ExampleType'
         }, function_parameters[1])
 
-    promise_function = getFunction(schema, 'namedPromiseReturn')
+    # Basic descriptions on a promise returning async function.
+    promise_function = getFunction(schema, 'describedPromiseReturn')
     self.assertEqual(
         ('Promise returning function, with a comment that provides the name and'
          ' description of the value the promise resolves to.'),
         promise_function.get('description'))
-    promise_function_parameters = getFunctionParameters(schema,
-                                                        'namedPromiseReturn')
+    promise_function_parameters = getFunctionParameters(
+        schema, 'describedPromiseReturn')
     self.assertEqual(1, len(promise_function_parameters))
     self.assertEqual(
         {
@@ -363,7 +366,7 @@ class WebIdlSchemaTest(unittest.TestCase):
         promise_function_parameters[0],
     )
     promise_function_async_return = getFunctionAsyncReturn(
-        schema, 'namedPromiseReturn')
+        schema, 'describedPromiseReturn')
     self.assertEqual(
         {
             'name':
@@ -381,9 +384,23 @@ class WebIdlSchemaTest(unittest.TestCase):
                 ('A description for the value the promise resolves to: with'
                  ' an extra colon for good measure.'),
             }],
-        },
-        promise_function_async_return,
-    )
+        }, promise_function_async_return)
+
+    # Promise returning function with just a name for the promise value and no
+    # further description.
+    named_promise_function_async_return = getFunctionAsyncReturn(
+        schema, 'namedPromiseReturn')
+    self.assertEqual(
+        {
+            'name': 'callback',
+            'optional': True,
+            'type': 'promise',
+            'parameters': [{
+                'type': 'boolean',
+                'name': 'justAName'
+            }],
+        }, named_promise_function_async_return)
+
 
   # Tests that API events are processed as expected.
   def testEvents(self):

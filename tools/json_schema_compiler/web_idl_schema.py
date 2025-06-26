@@ -450,14 +450,17 @@ class PromiseType(TypedProperty):
   def Process(self) -> dict:
     if self.type_node.GetProperty('NULLABLE'):
       self.properties['optional'] = True
-    # If the descriptions use the 'PromiseValue' key, we use that to extract a
-    # name and description for the typed value the promise will resolve to. The
-    # comment consists of the name to use, followed by a colon + space and then
-    # the description string.
+    # If the descriptions use the 'PromiseValue' key, we use that to extract the
+    # name and any description for the typed value the promise will resolve to.
+    # The comment consists of the name to use, followed by an optional
+    # description string indicated by a colon + space and then the description.
     if self.descriptions and 'PromiseValue' in self.descriptions:
-      name, description = self.descriptions['PromiseValue'].split(': ', 1)
-      self.properties['name'] = name
-      self.properties['description'] = description
+      name_and_description = self.descriptions['PromiseValue'].split(': ', 1)
+      self.properties['name'] = name_and_description.pop(0)
+      # We only add the promise value description if one was included in the
+      # comment after the name.
+      if name_and_description:
+        self.properties['description'] = name_and_description.pop()
     return self.properties
 
 
