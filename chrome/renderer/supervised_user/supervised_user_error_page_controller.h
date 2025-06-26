@@ -54,6 +54,10 @@ class SupervisedUserErrorPageController
 
   void OnRequestUrlAccessRemote(bool success);
 
+#if BUILDFLAG(IS_ANDROID)
+  void OnLearnMore();
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // gin::WrappableBase
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;

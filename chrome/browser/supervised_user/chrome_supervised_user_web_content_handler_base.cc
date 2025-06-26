@@ -4,10 +4,12 @@
 
 #include "chrome/browser/supervised_user/chrome_supervised_user_web_content_handler_base.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "chrome/browser/supervised_user/supervised_user_interstitial_tab_closer.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -76,6 +78,13 @@ void ChromeSupervisedUserWebContentHandlerBase::GoBack() {
   }
   OnInterstitialDone();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromeSupervisedUserWebContentHandlerBase::LearnMore(base::OnceClosure open_help_page) {
+  std::move(open_help_page).Run();
+  OnInterstitialDone();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ChromeSupervisedUserWebContentHandlerBase::MaybeCloseLocalApproval() {}
 

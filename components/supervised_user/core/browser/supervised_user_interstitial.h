@@ -45,7 +45,8 @@ class SupervisedUserInterstitial {
     // NTP = 2,
     REMOTE_ACCESS_REQUEST = 3,
     LOCAL_ACCESS_REQUEST = 4,
-    HISTOGRAM_BOUNDING_VALUE = 5
+    HISTOGRAM_BOUNDING_VALUE = 5,
+    LEARN_MORE = 6  // TODO(crbug.com/427016945): Add to enums.xml.
   };
 
   // For use in the kInterstitialPermissionSourceHistogramName histogram.
@@ -95,6 +96,9 @@ class SupervisedUserInterstitial {
   void GoBack();
   void RequestUrlAccessRemote(base::OnceCallback<void(bool)> callback);
   void RequestUrlAccessLocal(base::OnceCallback<void(bool)> callback);
+#if BUILDFLAG(IS_ANDROID)
+  void LearnMore(base::OnceClosure open_help_page);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Getter methods.
   const GURL& url() const { return url_; }
