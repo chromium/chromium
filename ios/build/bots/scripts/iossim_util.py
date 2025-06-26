@@ -364,7 +364,8 @@ def get_simulator_runtime_info_by_build(runtime_build):
   """
   runtimes = get_simulator_runtime_list()
   for runtime in runtimes.values():
-    if runtime['build'].lower() == runtime_build.lower():
+    build = runtime.get('build')
+    if build and build.lower() == runtime_build.lower():
       return runtime
   return None
 
@@ -390,7 +391,8 @@ def get_simulator_runtime_info_by_id(identifier):
   """
   runtimes = get_simulator_runtime_list()
   for runtime in runtimes.values():
-    if runtime['identifier'].lower() == identifier.lower():
+    runtime_id = runtime.get('identifier')
+    if runtime_id and runtime_id.lower() == identifier.lower():
       return runtime
   return None
 
@@ -419,7 +421,8 @@ def get_simulator_runtime_info(ios_version):
     # The output might use version with a patch number (e.g. 17.0.1)
     # but the passed in version does not have a patch number (e.g. 17.0)
     # Therefore, we should use startswith for substring match.
-    if runtime['version'].startswith(ios_version):
+    version = runtime.get('version')
+    if version and version.startswith(ios_version):
       return runtime
   return None
 
@@ -525,8 +528,7 @@ def delete_least_recently_used_simulator_runtimes(
                    (runtime_id, value['version']))
       continue
     if keep_count < max_to_keep:
-      LOGGER.debug('Runtime %s with iOS %s should be kept undeleted' %
-                   (runtime_id, value['version']))
+      LOGGER.debug('Runtime %s should be kept undeleted' % value)
       keep_count += 1
     else:
       delete_simulator_runtime(runtime_id, True)

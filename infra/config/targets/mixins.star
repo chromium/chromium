@@ -2620,12 +2620,12 @@ targets.mixin(
     generate_pyl_entry = False,
     args = [
         "--xcode-build-version",
-        "17a5241e",
+        "17a5241o",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_17a5241e",
+                name = "xcode_ios_17a5241o",
                 path = "Xcode.app",
             ),
         ],

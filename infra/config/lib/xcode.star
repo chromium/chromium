@@ -31,7 +31,7 @@ xcode = struct(
     # Xcode 16 beta version used on beta bots.
     x16betabots = xcode_enum("16f6"),
     # Xcode 26 beta version used on beta bots.
-    x26betabots = xcode_enum("17a5241e"),
+    x26betabots = xcode_enum("17a5241o"),
     # in use by ios-webkit-tot
     x14wk = xcode_enum("14c18wk"),
 )
