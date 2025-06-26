@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsFileAccess) {
 // Tests loading of files or directory listings when an extension has file
 // access.
 IN_PROC_BROWSER_TEST_F(PermissionsApiTest, FileLoad) {
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Enable access to arbitrary files via file: schema. Ordinarily Chrome on
   // Android blocks access to many directories, which affects the built-in
   // web server this test extension accesses.
