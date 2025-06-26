@@ -888,6 +888,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_SUBTITLE" desc="Safari import entry point screen - Subtitle. [iOS only]">
         Import your data to use your passwords, history, bookmarks and credit cards on Chrome
       </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_SUBTITLE" desc="Safari import import screen - Subtitle. [iOS only]">
+        Use your Safari passwords, history, bookmarks, and credit cards in Chrome
+      </message>
       <message name="IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_UPDATE_CHROME" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Update Chrome check finds an issue. [iOS only]">
         Your Chrome is out of date.
       </message>
