@@ -87,7 +87,7 @@ ci.builder(
             "rust_build_tests",
         ],
         mixins = [
-            "chromium_pixel_2_pie",
+            "chromium_pixel_2_q",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -136,7 +136,7 @@ ci.builder(
             "rust_build_tests",
         ],
         mixins = [
-            "chromium_pixel_2_pie",
+            "chromium_pixel_2_q",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -186,7 +186,7 @@ ci.builder(
             "rust_build_tests",
         ],
         mixins = [
-            "chromium_pixel_2_pie",
+            "chromium_pixel_2_q",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
