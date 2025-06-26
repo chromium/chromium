@@ -342,7 +342,7 @@ class _ApkDelegate:
       except device_errors.DeviceUnreachableError as e:
         exception_recorder.register(e)
         logging.exception('gtest shard device unreachable.')
-      except Exception:
+      except Exception as e:
         exception_recorder.register(
             test_exception.StartInstrumentationError(e))
         device.ForceStop(self._package)
