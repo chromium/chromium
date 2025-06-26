@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//services/network/public/cpp/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/test.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")  # TODO(crbug.com/397934758)
 
 _is_directory_transfer_required = is_fuchsia
@@ -840,6 +841,15 @@ source_set("perftests") {
     "//testing/gtest",
     "//testing/perf:perf",
     "//third_party/google_benchmark",
+  ]
+}
+
+test("coep_fuzztest") {
+  sources = [ "cross_origin_embedder_policy_parser_fuzztest.cc" ]
+  fuzztests = [ "CrossOriginEmbedderPolicyParserTest.CrossOriginEmbedderPolicyParserFuzzerTest" ]
+  deps = [
+    ":cpp",
+    "//third_party/fuzztest:fuzztest_gtest_main",
   ]
 }
 

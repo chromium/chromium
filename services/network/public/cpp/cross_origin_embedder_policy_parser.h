@@ -16,9 +16,7 @@ namespace network {
 struct CrossOriginEmbedderPolicy;
 
 // Specification:
-// https://wicg.github.io/cross-origin-embedder-policy/
-//
-// TODO(arthursonzogni): Add a fuzzer.
+// https://html.spec.whatwg.org/multipage/browsers.html#coep
 COMPONENT_EXPORT(NETWORK_CPP)
 CrossOriginEmbedderPolicy ParseCrossOriginEmbedderPolicy(
     const net::HttpResponseHeaders& headers);
