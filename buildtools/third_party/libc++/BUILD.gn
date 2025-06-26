@@ -65,18 +65,28 @@ configs_to_remove = [
 ]
 
 if (use_libcxx_modules) {
-  template("sysroot_modules") {
+  template("modulemap") {
     source_set(target_name) {
-      forward_variables_from(invoker, [ "public_deps" ])
+      forward_variables_from(invoker,
+                             [
+                               "deps",
+                               "public_deps",
+                             ])
       use_libcxx_modules = false
-      sources = [ SYSROOT_MODULEMAP ]
+      sources = [ invoker.modulemap ]
+      configs -= configs_to_remove
+      configs += configs_to_add
+    }
+  }
+
+  template("sysroot_modules") {
+    modulemap(target_name) {
+      forward_variables_from(invoker, [ "public_deps" ])
+      modulemap = SYSROOT_MODULEMAP
       deps = [
         ":copy_custom_headers",
         ":copy_libcxx_headers",
       ]
-
-      configs -= configs_to_remove
-      configs += configs_to_add
     }
   }
 
@@ -106,13 +116,9 @@ if (use_libcxx_modules) {
 
   template("builtin_modules") {
     # This is a template to build clang builtin's module file.
-    source_set(target_name) {
+    modulemap(target_name) {
       forward_variables_from(invoker, [ "public_deps" ])
-      use_libcxx_modules = false
-      sources = [ "${clang_base_path}/lib/clang/${clang_version}/include/module.modulemap" ]
-
-      configs -= configs_to_remove
-      configs += configs_to_add
+      modulemap = "${clang_base_path}/lib/clang/${clang_version}/include/module.modulemap"
     }
   }
 
@@ -160,9 +166,7 @@ if (use_libcxx_modules) {
 
   builtin_modules("_Builtin_unwind") {
     if (is_linux) {
-      public_deps = [
-        ":_Builtin_stdint"
-      ]
+      public_deps = [ ":_Builtin_stdint" ]
     }
   }
 
@@ -185,20 +189,14 @@ if (use_libcxx_modules) {
 
   template("libcxx_modules") {
     # This is a template to build libc++'s module file.
-    source_set(target_name) {
+    modulemap(target_name) {
       forward_variables_from(invoker, [ "public_deps" ])
-
-      use_libcxx_modules = false
-      deps = []
-      sources =
-          [ "${root_gen_dir}/third_party/libc++/src/include/module.modulemap" ]
-      deps += [
+      modulemap =
+          "${root_gen_dir}/third_party/libc++/src/include/module.modulemap"
+      deps = [
         ":copy_custom_headers",
         ":copy_libcxx_headers",
       ]
-
-      configs -= configs_to_remove
-      configs += configs_to_add
     }
   }
 
