@@ -1,7 +1,10 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
+//
+// META: --screen-info={label='#1'}{label='#2'}
+// META: --disable-popup-blocking
+//
 (async function(testRunner) {
   const {session, dp} =
       await testRunner.startBlank('Tests window open on a secondary screen.');

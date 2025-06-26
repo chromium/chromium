@@ -1,6 +1,9 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// META: --screen-info={label=#1}{600x800 label='#2'}
+//
 (async function(testRunner) {
   const {session, dp} =
       await testRunner.startBlank(`Tests multiple screen configuration.`);

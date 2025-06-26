@@ -40,11 +40,27 @@ source_set("test") {
   }
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "bitmap_utils_unittest.cc" ]
+source_set("meta_info") {
+  sources = [
+    "test_meta_info.cc",
+    "test_meta_info.h",
+  ]
 
   deps = [
+    "//base",
+    "//third_party/re2",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bitmap_utils_unittest.cc",
+    "test_meta_info_unittest.cc",
+  ]
+
+  deps = [
+    ":meta_info",
     ":test",
     "//base",
     "//base/test:test_support",
