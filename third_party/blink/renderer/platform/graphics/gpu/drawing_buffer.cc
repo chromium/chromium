@@ -748,12 +748,9 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
 
   DCHECK(release_callback);
 
-  const auto format = shared_image->format();
-  const auto size = shared_image->size();
-
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(shared_image), sync_token,
-      /* shared_image_texture_id = */ 0, size, format, kPremul_SkAlphaType,
+      /*shared_image_texture_id=*/0, kPremul_SkAlphaType,
       gfx::ColorSpace::CreateSRGB(), context_provider_->GetWeakPtr(),
       base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),

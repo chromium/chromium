@@ -37,9 +37,8 @@ class StaticBitmapImageTransformTest : public ::testing::Test {
          "CanvasResourceRaster"},
         gpu::kNullSurfaceHandle);
     return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-        std::move(client_si), test_sii_->GenUnverifiedSyncToken(), 0, size,
-        format, alpha_type, color_space,
-        SharedGpuContext::ContextProviderWrapper(),
+        std::move(client_si), test_sii_->GenUnverifiedSyncToken(), 0,
+        alpha_type, color_space, SharedGpuContext::ContextProviderWrapper(),
         base::PlatformThread::CurrentRef(),
         base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing());
   }
