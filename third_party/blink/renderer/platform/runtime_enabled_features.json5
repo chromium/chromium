@@ -4209,13 +4209,6 @@
       name: "RubyShortHeuristics",
       status: "stable",
     },
-    // This is a finch killswitch for a bug fix to the behavior of
-    // node.setTextContent(). The fix landed in M135, and this flag can be
-    // removed in M137 pending no issues.
-    {
-      name: "SameValueTextContentFiresMutationObservers",
-      status: "stable",
-    },
     {
       // Spec: https://wicg.github.io/sanitizer-api/
       // Tracking bug: crbug.com/356601280
