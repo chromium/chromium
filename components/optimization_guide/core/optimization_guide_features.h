@@ -171,16 +171,6 @@ bool IsPushNotificationsEnabled();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldDeferStartupActiveTabsHintsFetch();
 
-// The amount of time host model features will be considered fresh enough
-// to be used and remain in the OptimizationGuideStore.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta StoredHostModelFeaturesFreshnessDuration();
-
-// The maximum duration for which models can remain in the
-// OptimizationGuideStore without being loaded.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta StoredModelsValidDuration();
-
 // The maximum number of hosts allowed to be requested by the client to the
 // remote Optimization Guide Service for use by prediction models.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

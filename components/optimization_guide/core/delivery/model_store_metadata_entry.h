@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -37,6 +38,10 @@ class ModelStoreMetadataEntry {
   // Returns the valid model dirs in the model store base dir, that were in sync
   // with the `local_state`.
   static std::set<base::FilePath> GetValidModelDirs(PrefService* local_state);
+
+  // This is the default duration for models that do not specify retention.
+  static constexpr base::TimeDelta kDefaultStoredModelValidDuration =
+      base::Days(30);
 
   ModelStoreMetadataEntry& operator=(const ModelStoreMetadataEntry&) = delete;
   ~ModelStoreMetadataEntry();

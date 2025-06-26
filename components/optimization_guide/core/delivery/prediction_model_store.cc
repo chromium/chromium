@@ -363,7 +363,7 @@ void PredictionModelStore::UpdateModel(
       base::Time::Now() +
       (model_info.has_valid_duration()
            ? base::Seconds(model_info.valid_duration().seconds())
-           : features::StoredModelsValidDuration()));
+           : ModelStoreMetadataEntry::kDefaultStoredModelValidDuration));
   metadata.SetKeepBeyondValidDuration(model_info.keep_beyond_valid_duration());
 
   auto old_model_dir = metadata.GetModelBaseDir();

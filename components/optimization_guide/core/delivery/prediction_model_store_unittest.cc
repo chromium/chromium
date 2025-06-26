@@ -374,8 +374,9 @@ TEST_F(PredictionModelStoreTest, ExpiredModelRemoved) {
       model_detail.base_model_dir.Append(GetBaseFileNameForModels())));
 
   // Fast forward so that the model has expired.
-  task_environment_.FastForwardBy(features::StoredModelsValidDuration() +
-                                  base::Seconds(1));
+  task_environment_.FastForwardBy(
+      ModelStoreMetadataEntry::kDefaultStoredModelValidDuration +
+      base::Seconds(1));
 
   // Recreate the store and it will remove the expired model.
   CreateAndInitializePredictionModelStore();
@@ -405,8 +406,9 @@ TEST_F(PredictionModelStoreTest, ExpiredModelRemovedOnLoadModel) {
   RunUntilIdle();
 
   // Fast forward so that the model has expired.
-  task_environment_.FastForwardBy(features::StoredModelsValidDuration() +
-                                  base::Seconds(1));
+  task_environment_.FastForwardBy(
+      ModelStoreMetadataEntry::kDefaultStoredModelValidDuration +
+      base::Seconds(1));
 
   WaitForModeLoad(kTestOptimizationTargetFoo, model_cache_key);
   EXPECT_FALSE(last_loaded_prediction_model());

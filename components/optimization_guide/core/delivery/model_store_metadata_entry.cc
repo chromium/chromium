@@ -139,8 +139,10 @@ std::optional<int64_t> ModelStoreMetadataEntry::GetVersion() const {
 }
 
 base::Time ModelStoreMetadataEntry::GetExpiryTime() const {
+  // TODO: crbug.com/40191801 - It seems like we should probably be able to
+  // consider all entries that don't have expiries as expired at this point.
   return base::ValueToTime(metadata_entry_->Find(kKeyExpiryTime))
-      .value_or(base::Time::Now() + features::StoredModelsValidDuration());
+      .value_or(base::Time::Now() + kDefaultStoredModelValidDuration);
 }
 
 bool ModelStoreMetadataEntry::GetKeepBeyondValidDuration() const {

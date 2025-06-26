@@ -291,23 +291,6 @@ bool IsPushNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kPushNotifications);
 }
 
-base::TimeDelta StoredHostModelFeaturesFreshnessDuration() {
-  return base::Days(GetFieldTrialParamByFeatureAsInt(
-      kOptimizationTargetPrediction,
-      "max_store_duration_for_host_model_features_in_days", 7));
-}
-
-base::TimeDelta StoredModelsValidDuration() {
-  // TODO(crbug.com/40191801) This field should not be changed without VERY
-  // careful consideration. This is the default duration for models that do not
-  // specify retention, so changing this can cause models to be removed and
-  // refetch would only apply to newer models. Any feature relying on the model
-  // would have a period of time without a valid model, and would need to push a
-  // new version.
-  return base::Days(GetFieldTrialParamByFeatureAsInt(
-      kOptimizationTargetPrediction, "valid_duration_for_models_in_days", 30));
-}
-
 size_t MaxHostsForOptimizationGuideServiceModelsFetch() {
   return GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction,
