@@ -453,11 +453,13 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
     match.actions.push_back(base::MakeRefCounted<T>());
   };
 
-  // AI mode is only allowed if the DSE is google and locale is EN.
+  // AI mode is only allowed if the DSE is google, locale is EN, and the
+  // `kAIModeSettings` policy is enabled.
   bool google_dse = search::DefaultSearchProviderIsGoogle(turl_service);
   bool english_locale =
       l10n_util::GetLanguage(client()->GetApplicationLocale()) == "en";
   if (google_dse && english_locale &&
+      omnibox::IsAimAllowedByPolicy(client()->GetPrefs()) &&
       ActionEnabledForPageContext(input, config.show_ai_mode_action_on_non_ntp,
                                   config.show_ai_mode_action_on_ntp)) {
     check_and_add.operator()<StarterPackAiModeAction>(

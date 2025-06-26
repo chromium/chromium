@@ -14,5 +14,5 @@ jboolean JNI_ComposeplateUtils_IsEnabledByPolicy(JNIEnv* env,
                                                  Profile* profile) {
   DCHECK(profile);
 
-  return omnibox::IsMiaAllowedByPolicy(profile->GetPrefs());
+  return omnibox::IsAimAllowedByPolicy(profile->GetPrefs());
 }
