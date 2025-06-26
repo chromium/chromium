@@ -7,9 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/tree/view_accessibility_ax_tree_source_test_api.h"
@@ -46,6 +48,38 @@ class ViewAccessibilityAXTreeSourceTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kAccessibilityTreeForViews};
+};
+
+class ActionTestView : public View {
+ public:
+  ActionTestView() = default;
+  ~ActionTestView() override = default;
+
+  bool HandleAccessibleAction(const ui::AXActionData& action) override {
+    last_action_id_ = action.target_node_id;
+    return true;
+  }
+
+  ui::AXNodeID last_action_id() const { return last_action_id_; }
+
+ private:
+  ui::AXNodeID last_action_id_ = ui::kInvalidAXNodeID;
+};
+
+class ActionTestVirtualView : public AXVirtualView {
+ public:
+  ActionTestVirtualView() = default;
+  ~ActionTestVirtualView() override = default;
+
+  bool HandleAccessibleAction(const ui::AXActionData& action) override {
+    last_action_id_ = action.target_node_id;
+    return true;
+  }
+
+  ui::AXNodeID last_action_id() const { return last_action_id_; }
+
+ private:
+  ui::AXNodeID last_action_id_ = ui::kInvalidAXNodeID;
 };
 
 TEST_F(ViewAccessibilityAXTreeSourceTest, CacheInsertGetRemove) {
@@ -177,6 +211,100 @@ TEST_F(ViewAccessibilityAXTreeSourceTest, GetParent_SkipIgnoredParent) {
   parent->GetViewAccessibility().SetIsIgnored(true);
   EXPECT_EQ(source()->GetParent(&child->GetViewAccessibility()),
             &grand->GetViewAccessibility());
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, HandleAccessibleAction_OnKnownView) {
+  auto v = std::make_unique<ActionTestView>();
+  test_api().cache().Insert(&v->GetViewAccessibility());
+
+  ui::AXActionData action;
+  action.action = ax::mojom::Action::kFocus;  // Unimportant for the test.
+  action.target_node_id = v->GetViewAccessibility().GetUniqueId();
+
+  EXPECT_EQ(v->last_action_id(), ui::kInvalidAXNodeID);
+  source()->HandleAccessibleAction(action);
+  EXPECT_EQ(v->last_action_id(), action.target_node_id);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest,
+       HandleAccessibleAction_OnUnknownView) {
+  auto v = std::make_unique<ActionTestView>();
+  // Don't add the view to the cache so it can't find it.
+
+  ui::AXActionData action;
+  action.action = ax::mojom::Action::kFocus;  // Irrelevant for the test.
+  action.target_node_id = v->GetViewAccessibility().GetUniqueId();
+
+  EXPECT_EQ(v->last_action_id(), ui::kInvalidAXNodeID);
+  source()->HandleAccessibleAction(action);
+  EXPECT_EQ(v->last_action_id(), ui::kInvalidAXNodeID);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest,
+       HandleAccessibleAction_OnKnownVirtualView) {
+  auto v = std::make_unique<ActionTestVirtualView>();
+
+  test_api().cache().Insert(v.get());
+
+  ui::AXActionData action;
+  action.action = ax::mojom::Action::kFocus;  // Irrelevant for the test.
+  action.target_node_id = v->ViewAccessibility::GetUniqueId();
+
+  EXPECT_EQ(v->last_action_id(), ui::kInvalidAXNodeID);
+  source()->HandleAccessibleAction(action);
+  EXPECT_EQ(v->last_action_id(), action.target_node_id);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest,
+       HandleAccessibleAction_OnUnknownVirtualView) {
+  auto v = std::make_unique<ActionTestVirtualView>();
+  // Don't add the virtual view to the cache so it can't find it.
+
+  ui::AXActionData action;
+  action.action = ax::mojom::Action::kFocus;
+  action.target_node_id = v->ViewAccessibility::GetUniqueId();
+
+  EXPECT_EQ(v->last_action_id(), ui::kInvalidAXNodeID);
+  source()->HandleAccessibleAction(action);
+  EXPECT_EQ(v->last_action_id(), ui::kInvalidAXNodeID);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest,
+       HandleAccessibleAction_SetSelection_MismatchedDeath) {
+  ui::AXActionData action;
+  action.action = ax::mojom::Action::kSetSelection;
+  action.anchor_node_id = 1;
+  action.focus_node_id = 2;
+
+  // CHECK_EQ(anchor, focus) should fail because the IDs do not match.
+  EXPECT_CHECK_DEATH(source()->HandleAccessibleAction(action));
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest,
+       HandleAccessibleAction_SetSelection_UsesAnchorNotTarget) {
+  auto target = std::make_unique<ActionTestView>();
+  auto anchor = std::make_unique<ActionTestView>();
+
+  test_api().cache().Insert(&target->GetViewAccessibility());
+  test_api().cache().Insert(&anchor->GetViewAccessibility());
+
+  // Prepare a SetSelection action where target != anchor == focus.
+  ui::AXActionData action;
+  action.action = ax::mojom::Action::kSetSelection;
+  action.target_node_id = target->GetViewAccessibility().GetUniqueId();
+  action.anchor_node_id = anchor->GetViewAccessibility().GetUniqueId();
+  action.focus_node_id = anchor->GetViewAccessibility().GetUniqueId();
+
+  EXPECT_EQ(target->last_action_id(), ui::kInvalidAXNodeID);
+  EXPECT_EQ(anchor->last_action_id(), ui::kInvalidAXNodeID);
+
+  source()->HandleAccessibleAction(action);
+
+  // The action should be performed on the anchor, not the target. However,
+  // because of how the test view is structured, we still expect the last
+  // action ID of the anchor to be the target's ID.
+  EXPECT_EQ(target->last_action_id(), ui::kInvalidAXNodeID);
+  EXPECT_EQ(anchor->last_action_id(), action.target_node_id);
 }
 
 }  // namespace views::test

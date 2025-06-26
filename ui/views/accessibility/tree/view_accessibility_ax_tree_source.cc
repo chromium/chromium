@@ -31,7 +31,27 @@ ViewAccessibilityAXTreeSource::~ViewAccessibilityAXTreeSource() = default;
 
 void ViewAccessibilityAXTreeSource::HandleAccessibleAction(
     const ui::AXActionData& action) {
-  // TODO(accessibility): Implement.
+  int id = action.target_node_id;
+
+  // In Views, we only support setting the selection within a single node,
+  // not across multiple nodes like on the web.
+  if (action.action == ax::mojom::Action::kSetSelection) {
+    CHECK_EQ(action.anchor_node_id, action.focus_node_id);
+    id = action.anchor_node_id;
+  }
+
+  // TODO(crbug.com/40672441): Add a convenience virtual function
+  // HandleAccessibleAction on ViewAccessibility once AXVirtualView, a subclass
+  // of ViewAccessibility, doesn't need to extend the AXPlatformNodeDelegate
+  // anymore -- there's currently a function with a conflicting name.
+  if (ViewAccessibility* node = GetFromId(id)) {
+    if (View* view = node->view()) {
+      view->HandleAccessibleAction(action);
+    } else if (AXVirtualView* virtual_view =
+                   static_cast<AXVirtualView*>(node)) {
+      virtual_view->HandleAccessibleAction(action);
+    }
+  }
 }
 
 bool ViewAccessibilityAXTreeSource::GetTreeData(
