@@ -416,7 +416,7 @@ UChar32 StringImpl::CharacterStartingAt(wtf_size_t i) {
   if (Is8Bit()) {
     return Span8()[i];
   }
-  const UChar32 c = CodePointAt(Span16(), i);
+  const UChar32 c = blink::CodePointAt(Span16(), i);
   return U_IS_SURROGATE(c) ? 0 : c;
 }
 

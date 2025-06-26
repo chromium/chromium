@@ -306,7 +306,7 @@ UChar32 StringView::CodepointAt(unsigned i) const {
   SECURITY_DCHECK(i < length());
   if (Is8Bit())
     return (*this)[i];
-  return CodePointAt(Span16(), i);
+  return blink::CodePointAt(Span16(), i);
 }
 
 unsigned StringView::NextCodePointOffset(unsigned i) const {
@@ -325,7 +325,7 @@ UChar32 StringView::CodePointAtAndNext(unsigned& i) const {
   if (Is8Bit()) {
     return (*this)[i++];
   }
-  return WTF::CodePointAtAndNext(Span16(), i);
+  return blink::CodePointAtAndNext(Span16(), i);
 }
 
 blink::CodePointIterator StringView::begin() const {

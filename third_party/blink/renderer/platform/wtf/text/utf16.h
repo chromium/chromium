@@ -10,7 +10,7 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
-namespace WTF {
+namespace blink {
 
 // U16_GET() for base::span.
 //  - If text[offset] is a leading surrogate and text[offset + 1] is a
@@ -59,10 +59,6 @@ UChar32 CodePointAtAndPrevious(base::span<const UChar> text,
   return code_point;
 }
 
-}  // namespace WTF
-
-using WTF::CodePointAt;
-using WTF::CodePointAtAndNext;
-using WTF::CodePointAtAndPrevious;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_UTF16_H_
