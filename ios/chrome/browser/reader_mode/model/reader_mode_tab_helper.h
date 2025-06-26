@@ -10,9 +10,9 @@
 #import "base/scoped_observation.h"
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
-#import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_delegate.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_viewer.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -169,7 +169,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
       web_state_observation_{this};
   raw_ptr<DistillerService> distiller_service_;
 
-  std::unique_ptr<OfflinePageDistillerViewer> distiller_viewer_;
+  std::unique_ptr<ReaderModeDistillerViewer> distiller_viewer_;
 
   base::ObserverList<Observer, true> observers_;
 

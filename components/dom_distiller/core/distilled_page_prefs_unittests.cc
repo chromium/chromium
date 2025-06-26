@@ -64,9 +64,9 @@ class DistilledPagePrefsTest : public testing::Test {
 TEST_F(DistilledPagePrefsTest, TestingOnChangeFontIsBeingCalled) {
   TestingObserver obs;
   distilled_page_prefs_->AddObserver(&obs);
+  EXPECT_EQ(mojom::FontFamily::kSansSerif, obs.GetFontFamily());
 
   distilled_page_prefs_->SetFontFamily(mojom::FontFamily::kMonospace);
-  EXPECT_EQ(mojom::FontFamily::kSansSerif, obs.GetFontFamily());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::FontFamily::kMonospace, obs.GetFontFamily());
 
@@ -100,9 +100,9 @@ TEST_F(DistilledPagePrefsTest, TestingMultipleObserversFont) {
 TEST_F(DistilledPagePrefsTest, TestingOnChangeThemeIsBeingCalled) {
   TestingObserver obs;
   distilled_page_prefs_->AddObserver(&obs);
+  EXPECT_EQ(mojom::Theme::kLight, obs.GetTheme());
 
   distilled_page_prefs_->SetTheme(mojom::Theme::kSepia);
-  EXPECT_EQ(mojom::Theme::kLight, obs.GetTheme());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::Theme::kSepia, obs.GetTheme());
 
@@ -137,9 +137,9 @@ TEST_F(DistilledPagePrefsTest, TestingMultipleObserversTheme) {
 TEST_F(DistilledPagePrefsTest, TestingOnChangeFontScalingIsBeingCalled) {
   TestingObserver obs;
   distilled_page_prefs_->AddObserver(&obs);
+  ASSERT_FLOAT_EQ(1.0f, obs.GetFontScaling());
 
   distilled_page_prefs_->SetFontScaling(1.5f);
-  ASSERT_FLOAT_EQ(1.0f, obs.GetFontScaling());
   base::RunLoop().RunUntilIdle();
   ASSERT_FLOAT_EQ(1.5f, obs.GetFontScaling());
 

@@ -13,6 +13,8 @@ source_set("model") {
     "reader_mode_content_tab_helper.mm",
     "reader_mode_distiller_page.h",
     "reader_mode_distiller_page.mm",
+    "reader_mode_distiller_viewer.h",
+    "reader_mode_distiller_viewer.mm",
     "reader_mode_java_script_feature.h",
     "reader_mode_java_script_feature.mm",
     "reader_mode_model.h",
