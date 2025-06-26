@@ -913,7 +913,8 @@ class SearchEngineRepromptBrowserTest
 
     feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features= */
-        {{switches::kSearchEngineChoiceTrigger, std::move(field_trial_params)},
+        {{switches::kSearchEngineChoiceTriggerReprompt,
+          std::move(field_trial_params)},
          {switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection, {}}},
         /* disabled_features= */ {});
   }

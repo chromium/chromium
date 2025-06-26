@@ -759,7 +759,7 @@ TEST_F(SearchEngineChoiceServiceTest, NoRepromptForSyntaxError) {
   // Set the reprompt parameters with invalid syntax.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      switches::kSearchEngineChoiceTrigger,
+      switches::kSearchEngineChoiceTriggerReprompt,
       {{switches::kSearchEngineChoiceTriggerRepromptParams.name, "Foo"}});
   ASSERT_EQ("Foo", switches::kSearchEngineChoiceTriggerRepromptParams.Get());
 
@@ -849,7 +849,7 @@ TEST_F(SearchEngineChoiceServiceTest, NoRepromptByDefault) {
 TEST_F(SearchEngineChoiceServiceTest, RepromptForMissingChoiceVersion) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      switches::kSearchEngineChoiceTrigger,
+      switches::kSearchEngineChoiceTriggerReprompt,
       {{switches::kSearchEngineChoiceTriggerRepromptParams.name, "{}"}});
   ASSERT_EQ("{}", switches::kSearchEngineChoiceTriggerRepromptParams.Get());
 
@@ -882,7 +882,7 @@ TEST_F(SearchEngineChoiceServiceTest, RepromptForMissingChoiceVersion) {
 TEST_F(SearchEngineChoiceServiceTest, RepromptForMissingTimestamp) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      switches::kSearchEngineChoiceTrigger,
+      switches::kSearchEngineChoiceTriggerReprompt,
       {{switches::kSearchEngineChoiceTriggerRepromptParams.name, "{}"}});
   ASSERT_EQ("{}", switches::kSearchEngineChoiceTriggerRepromptParams.Get());
 
@@ -1128,7 +1128,7 @@ TEST_P(SearchEngineChoiceUtilsParamTest, Reprompt) {
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      switches::kSearchEngineChoiceTrigger,
+      switches::kSearchEngineChoiceTriggerReprompt,
       {{switches::kSearchEngineChoiceTriggerRepromptParams.name,
         feature_param_value}});
   ASSERT_EQ(feature_param_value,

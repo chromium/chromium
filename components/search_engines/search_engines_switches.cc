@@ -62,8 +62,12 @@ BASE_FEATURE(kRemoveSearchEngineChoiceAttribution,
 // Use an explicit "NO_REPROMPT" value as default to avoid reprompting users
 // who saw the choice screen in M121.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_FEATURE(kSearchEngineChoiceTriggerReprompt,
+             "SearchEngineChoiceTriggerReprompt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 const base::FeatureParam<std::string> kSearchEngineChoiceTriggerRepromptParams{
-    &kSearchEngineChoiceTrigger,
+    &kSearchEngineChoiceTriggerReprompt,
     /*name=*/"reprompt",
     /*default_value=*/kSearchEngineChoiceNoRepromptString};
 

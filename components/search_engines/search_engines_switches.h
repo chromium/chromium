@@ -55,6 +55,8 @@ inline constexpr char kSearchEngineChoiceNoRepromptString[] = "NO_REPROMPT";
 // 5, and users in all other countries who made the choice strictly before
 // version 2.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kSearchEngineChoiceTriggerReprompt);
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const base::FeatureParam<std::string>
     kSearchEngineChoiceTriggerRepromptParams;
 
