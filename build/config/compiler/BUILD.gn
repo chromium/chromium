@@ -1827,7 +1827,7 @@ config("libcxx_module") {
 
     if (is_linux || is_chromeos) {
       sysroot_modulemap =
-          rebase_path("//build/linux/amd64/module.modulemap", root_build_dir)
+          rebase_path(SYSROOT_MODULEMAP, root_build_dir)
 
       cflags_cc += [ "-fmodule-map-file=" + sysroot_modulemap ]
     }

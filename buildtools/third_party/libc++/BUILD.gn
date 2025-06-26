@@ -65,22 +65,22 @@ configs_to_remove = [
 ]
 
 if (use_libcxx_modules) {
-  if (is_linux || is_chromeos) {
-    template("sysroot_modules") {
-      source_set(target_name) {
-        forward_variables_from(invoker, [ "public_deps" ])
-        use_libcxx_modules = false
-        sources = [ "//build/linux/amd64/module.modulemap" ]
-        deps = [
-          ":copy_custom_headers",
-          ":copy_libcxx_headers",
-        ]
+  template("sysroot_modules") {
+    source_set(target_name) {
+      forward_variables_from(invoker, [ "public_deps" ])
+      use_libcxx_modules = false
+      sources = [ SYSROOT_MODULEMAP ]
+      deps = [
+        ":copy_custom_headers",
+        ":copy_libcxx_headers",
+      ]
 
-        configs -= configs_to_remove
-        configs += configs_to_add
-      }
+      configs -= configs_to_remove
+      configs += configs_to_add
     }
+  }
 
+  if (is_linux || is_chromeos) {
     sysroot_modules("sysroot_features") {
     }
 
@@ -120,17 +120,18 @@ if (use_libcxx_modules) {
   }
 
   builtin_modules("_Builtin_intrinsics") {
-    public_deps = [
-      ":_Builtin_limits",
-      ":_Builtin_stddef",
-    ]
+    if (is_linux) {
+      public_deps = [
+        ":_Builtin_limits",
+        ":_Builtin_stddef",
+      ]
+    }
   }
 
   builtin_modules("_Builtin_inttypes") {
   }
 
   builtin_modules("_Builtin_limits") {
-    public_deps = []
   }
 
   builtin_modules("_Builtin_stdalign") {
@@ -149,9 +150,8 @@ if (use_libcxx_modules) {
   }
 
   builtin_modules("_Builtin_stdint") {
-    public_deps = []
     if (is_mac) {
-      public_deps += [
+      public_deps = [
         ":_Builtin_stdarg",
         ":_Builtin_stddef",
       ]
@@ -159,7 +159,11 @@ if (use_libcxx_modules) {
   }
 
   builtin_modules("_Builtin_unwind") {
-    public_deps = [ ":_Builtin_stdint" ]
+    if (is_linux) {
+      public_deps = [
+        ":_Builtin_stdint"
+      ]
+    }
   }
 
   # We need to have libc++ headers, __assertion_handler and __config_site in the
@@ -236,7 +240,9 @@ if (use_libcxx_modules) {
   }
 
   libcxx_modules("std_math_h") {
-    public_deps = [ ":std_core" ]
+    if (is_linux) {
+      public_deps = [ ":std_core" ]
+    }
   }
 
   libcxx_modules("std_private_mbstate_t") {
@@ -255,16 +261,17 @@ if (use_libcxx_modules) {
   }
 
   libcxx_modules("std_uchar_h") {
-    public_deps = [ ":std_private_mbstate_t" ]
+    if (is_linux) {
+      public_deps = [ ":std_private_mbstate_t" ]
+    }
   }
 
   libcxx_modules("std_wchar_h") {
   }
 
   libcxx_modules("std_wctype_h") {
-    public_deps = []
     if (is_mac) {
-      public_deps += [ ":std_ctype_h" ]
+      public_deps = [ ":std_ctype_h" ]
     }
   }
 }

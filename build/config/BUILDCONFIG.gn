@@ -551,6 +551,7 @@ DEFAULT_MODULE_DEPS = [
 ]
 
 if (is_linux || is_chromeos) {
+  SYSROOT_MODULEMAP = "//build/linux/amd64/module.modulemap"
   DEFAULT_MODULE_DEPS += [
     "//buildtools/third_party/libc++:sysroot_features",
     "//buildtools/third_party/libc++:sysroot_types",
