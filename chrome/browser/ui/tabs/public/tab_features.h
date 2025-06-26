@@ -30,6 +30,10 @@ class TranslatePageActionController;
 class QwacWebContentsObserver;
 class ManagePasswordsPageActionController;
 
+namespace actor {
+class ActorUiTabController;
+}  // namespace actor
+
 namespace commerce {
 class CommerceUiTabHelper;
 class PriceInsightsPageActionViewController;
@@ -246,6 +250,10 @@ class TabFeatures {
 
   TabUIHelper* tab_ui_helper() { return tab_ui_helper_.get(); }
 
+  actor::ActorUiTabController* actor_ui_tab_controller() {
+    return actor_ui_tab_controller_.get();
+  }
+
   // Note: Temporary until there is a more uniform way to swap out features for
   // testing.
   TabResourceUsageTabHelper* SetResourceUsageHelperForTesting(
@@ -396,6 +404,8 @@ class TabFeatures {
   std::unique_ptr<TabUIHelper> tab_ui_helper_;
 
   std::unique_ptr<QwacWebContentsObserver> qwac_web_contents_observer_;
+
+  std::unique_ptr<actor::ActorUiTabController> actor_ui_tab_controller_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

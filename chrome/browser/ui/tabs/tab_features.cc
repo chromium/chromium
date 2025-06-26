@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -336,6 +337,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   tab_ui_helper_ = std::make_unique<TabUIHelper>(tab);
 
   task_manager::WebContentsTags::CreateForTabContents(tab.GetContents());
+
+  // TODO(crbug.com/425952887): Gate behind feature flag.
+  actor_ui_tab_controller_ = std::make_unique<actor::ActorUiTabController>(tab);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

@@ -28,6 +28,7 @@ source_set("actor") {
   public_deps = [
     ":types",
     "//base",
+    "//chrome/browser/actor/ui:states",
     "//chrome/browser/profiles",
     "//chrome/common",
     "//components/optimization_guide/content/browser",
