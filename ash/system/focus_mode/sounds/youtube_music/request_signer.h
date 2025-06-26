@@ -5,6 +5,9 @@
 #ifndef ASH_SYSTEM_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_REQUEST_SIGNER_H_
 #define ASH_SYSTEM_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_REQUEST_SIGNER_H_
 
+#include <string>
+#include <vector>
+
 #include "ash/ash_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
