@@ -221,6 +221,14 @@ class SqlPersistentStoreTest : public testing::Test {
     return future.Get();
   }
 
+  // Synchronous wrapper for UpdateEntryLastUsed.
+  SqlPersistentStore::Error UpdateEntryLastUsed(const CacheEntryKey& key,
+                                                base::Time last_used) {
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    store_->UpdateEntryLastUsed(key, last_used, future.GetCallback());
+    return future.Get();
+  }
+
   // Helper to count rows in the resource table.
   int64_t CountResourcesTable() {
     auto db = ManuallyOpenDatabase();
@@ -1420,6 +1428,56 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetweenWithCorruptToken) {
   EXPECT_TRUE(OpenEntry(kKeyToKeep).value().has_value());
 }
 
+TEST_F(SqlPersistentStoreTest, UpdateEntryLastUsedSuccess) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+
+  auto create_result = CreateEntry(kKey);
+  ASSERT_TRUE(create_result.has_value());
+  const base::Time create_time = create_result->last_used;
+
+  // Open to verify initial time.
+  auto open_result1 = OpenEntry(kKey);
+  ASSERT_TRUE(open_result1.has_value() && open_result1->has_value());
+  EXPECT_EQ((*open_result1)->last_used, create_time);
+
+  // Advance time and update.
+  task_environment_.AdvanceClock(base::Minutes(5));
+  const base::Time kNewTime = base::Time::Now();
+  ASSERT_NE(kNewTime, create_time);
+
+  ASSERT_EQ(UpdateEntryLastUsed(kKey, kNewTime),
+            SqlPersistentStore::Error::kOk);
+
+  // Open again to verify the updated time.
+  auto open_result2 = OpenEntry(kKey);
+  ASSERT_TRUE(open_result2.has_value() && open_result2->has_value());
+  EXPECT_EQ((*open_result2)->last_used, kNewTime);
+}
+
+TEST_F(SqlPersistentStoreTest, UpdateEntryLastUsedOnNonExistentEntry) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("non-existent-key");
+  ASSERT_EQ(UpdateEntryLastUsed(kKey, base::Time::Now()),
+            SqlPersistentStore::Error::kNotFound);
+  EXPECT_EQ(GetEntryCount(), 0);
+}
+
+TEST_F(SqlPersistentStoreTest, UpdateEntryLastUsedOnDoomedEntry) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("doomed-key");
+
+  // Create and then doom the entry.
+  auto create_result = CreateEntry(kKey);
+  ASSERT_TRUE(create_result.has_value());
+  ASSERT_EQ(DoomEntry(kKey, create_result->token),
+            SqlPersistentStore::Error::kOk);
+
+  // Attempting to update a doomed entry should fail as if it's not found.
+  ASSERT_EQ(UpdateEntryLastUsed(kKey, base::Time::Now()),
+            SqlPersistentStore::Error::kNotFound);
+}
+
 TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdEmptyCache) {
   CreateAndInitStore();
   auto result = OpenLatestEntryBeforeResId(std::numeric_limits<int64_t>::max());
@@ -1719,6 +1777,23 @@ TEST_F(SqlPersistentStoreTest,
 
   store_->DeleteLiveEntriesBetween(
       base::Time(), base::Time::Max(), {},
+      base::BindLambdaForTesting(
+          [&](SqlPersistentStore::Error) { callback_run = true; }));
+  store_.reset();
+  FlushPendingTask();
+
+  EXPECT_FALSE(callback_run);
+}
+
+TEST_F(SqlPersistentStoreTest,
+       UpdateEntryLastUsedCallbackNotRunOnStoreDestruction) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  ASSERT_TRUE(CreateEntry(kKey).has_value());
+
+  bool callback_run = false;
+  store_->UpdateEntryLastUsed(
+      kKey, base::Time::Now(),
       base::BindLambdaForTesting(
           [&](SqlPersistentStore::Error) { callback_run = true; }));
   store_.reset();

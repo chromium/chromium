@@ -142,6 +142,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OpenEntry"/>
   <variant name="OpenLatestEntryBeforeResId"/>
   <variant name="OpenOrCreateEntry"/>
+  <variant name="UpdateEntryLastUsed"/>
 </variants>
 
 <variants name="SuccessOrFailure">

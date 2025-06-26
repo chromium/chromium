@@ -177,6 +177,13 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                                         std::set<CacheEntryKey> excluded_keys,
                                         ErrorCallback callback) = 0;
 
+  // Updates the `last_used` timestamp for the entry with the specified `key`.
+  // `callback` is invoked with `kOk` on success, or `kNotFound` if the entry
+  // does not exist or is already doomed.
+  virtual void UpdateEntryLastUsed(const CacheEntryKey& key,
+                                   base::Time last_used,
+                                   ErrorCallback callback) = 0;
+
   // Opens the latest (highest `res_id`) cache entry that has a `res_id` less
   // than `res_id_cursor`. This method is used for iterating through entries
   // in reverse `res_id` order. To fetch all entries, start with
