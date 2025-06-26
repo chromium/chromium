@@ -57,8 +57,6 @@ namespace {
 // that a timeout less than 4ms is increased to 4ms when the nesting level is
 // greater than 5. Since the counters in this file start at 1 (rather than the
 // 0 in the spec), we should use the value 6 here.
-// (The value is still 4 until StandardizedTimerClamping has shipped.)
-constexpr int kMaxTimerNestingLevel = 4;
 constexpr int kSpecCompliantMaxTimerNestingLevel = 6;
 constexpr base::TimeDelta kMinimumInterval = base::Milliseconds(4);
 
@@ -287,10 +285,7 @@ DOMTimer::DOMTimer(ExecutionContext& context,
   bool precise = (timeout < GetMaxHighResolutionInterval()) ||
                  scheduler::IsAlignWakeUpsDisabledForProcess();
 
-  const int max_timer_nesting_level =
-      RuntimeEnabledFeatures::StandardizedTimerClampingEnabled()
-          ? kSpecCompliantMaxTimerNestingLevel
-          : kMaxTimerNestingLevel;
+  const int max_timer_nesting_level = kSpecCompliantMaxTimerNestingLevel;
 
   // Step 11:
   if (nesting_level_ > max_timer_nesting_level && timeout < kMinimumInterval) {
@@ -379,10 +374,7 @@ void DOMTimer::Fired() {
   probe::AsyncTask async_task(context, &async_task_context_,
                               is_interval ? "fired" : nullptr);
 
-  const int max_timer_nesting_level =
-      RuntimeEnabledFeatures::StandardizedTimerClampingEnabled()
-          ? kSpecCompliantMaxTimerNestingLevel
-          : kMaxTimerNestingLevel;
+  const int max_timer_nesting_level = kSpecCompliantMaxTimerNestingLevel;
 
   // Simple case for non-one-shot timers.
   if (IsActive()) {

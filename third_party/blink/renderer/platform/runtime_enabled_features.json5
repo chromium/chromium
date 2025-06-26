@@ -4681,11 +4681,6 @@
       origin_trial_allows_third_party: true,
     },
     {
-      name: "StandardizedTimerClamping",
-      status: "stable",
-      public: true,
-    },
-    {
       name: "StorageBuckets",
       status: "stable",
     },
