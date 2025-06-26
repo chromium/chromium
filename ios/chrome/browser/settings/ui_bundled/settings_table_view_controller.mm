@@ -1497,7 +1497,6 @@ struct EnhancedSafeBrowsingActivePromoData
   if (_googleServicesSettingsCoordinator &&
       self.navigationController.topViewController != self) {
     base::debug::DumpWithoutCrashing();
-    return;
   }
 
   // Stop the coordinator before restarting it, if it exists.
@@ -1514,7 +1513,6 @@ struct EnhancedSafeBrowsingActivePromoData
 - (void)showTabsSettings {
   if (_tabsCoordinator && self.navigationController.topViewController != self) {
     base::debug::DumpWithoutCrashing();
-    return;
   }
 
   // Stop the coordinator before restarting it, if it exists.
@@ -1531,7 +1529,6 @@ struct EnhancedSafeBrowsingActivePromoData
   if (_addressBarPreferenceCoordinator &&
       self.navigationController.topViewController != self) {
     base::debug::DumpWithoutCrashing();
-    return;
   }
 
   // Stop the coordinator before restarting it, if it exists.
@@ -1548,7 +1545,6 @@ struct EnhancedSafeBrowsingActivePromoData
   if (_manageSyncSettingsCoordinator &&
       self.navigationController.topViewController != self) {
     base::debug::DumpWithoutCrashing();
-    return;
   }
 
   // Stop the coordinator before restarting it, if it exists.
@@ -1565,7 +1561,6 @@ struct EnhancedSafeBrowsingActivePromoData
   if (_passwordsCoordinator &&
       self.navigationController.topViewController != self) {
     base::debug::DumpWithoutCrashing();
-    return;
   }
 
   // Stop the coordinator before restarting it, if it exists.
@@ -1583,7 +1578,6 @@ struct EnhancedSafeBrowsingActivePromoData
   if (_safetyCheckCoordinator &&
       self.navigationController.topViewController != self) {
     base::debug::DumpWithoutCrashing();
-    return;
   }
 
   // Stop the coordinator before restarting it, if it exists.
@@ -1644,7 +1638,6 @@ struct EnhancedSafeBrowsingActivePromoData
   if (_notificationsCoordinator &&
       self.navigationController.topViewController != self) {
     base::debug::DumpWithoutCrashing();
-    return;
   }
 
   // Stop the coordinator before restarting it, if it exists.
@@ -1662,7 +1655,6 @@ struct EnhancedSafeBrowsingActivePromoData
   if (_privacyCoordinator &&
       self.navigationController.topViewController != self) {
     base::debug::DumpWithoutCrashing();
-    return;
   }
 
   // Stop the coordinator before restarting it, if it exists.
@@ -1922,7 +1914,6 @@ struct EnhancedSafeBrowsingActivePromoData
   if (_downloadsSettingsCoordinator &&
       self.navigationController.topViewController != self) {
     base::debug::DumpWithoutCrashing();
-    return;
   }
 
   // Stop the coordinator before restarting it, if it exists.
