@@ -268,8 +268,7 @@ Element* TreeScope::ElementForHitTest(Node* node, HitTestPointType type) const {
   if (!node || node->IsDocumentNode())
     return nullptr;
   Element* element;
-  if ((node->IsPseudoElement() && !node->IsScrollMarkerPseudoElement()) ||
-      node->IsTextNode()) {
+  if (node->IsPseudoElement() || node->IsTextNode()) {
     element = node->ParentOrShadowHostElement();
   } else {
     element = To<Element>(node);
