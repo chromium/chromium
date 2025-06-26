@@ -699,8 +699,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.CookieAgeHours2" units="hours"
-    expires_after="2025-11-16">
-  <owner>chlily@chromium.org</owner>
+    expires_after="2026-06-26">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the age of the Safe Browsing cookie at profile startup or when a new
@@ -1561,8 +1561,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.HasCookieAtStartup2" enum="Boolean"
-    expires_after="2025-07-13">
-  <owner>chlily@chromium.org</owner>
+    expires_after="2026-06-26">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether a Safe Browsing cookie exists at profile startup or when a
@@ -2803,8 +2803,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Request.HadCookie.{RequestType}{UserType}"
-    enum="BooleanPresent" expires_after="2025-09-12">
-  <owner>chlily@chromium.org</owner>
+    enum="BooleanPresent" expires_after="2026-06-26">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs whether the Safe Browsing real time request had a cookie, recorded for
