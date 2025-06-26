@@ -258,9 +258,9 @@ void SupervisedUserNavigationObserver::OnURLFilterChanged() {
       });
 }
 
-void SupervisedUserNavigationObserver::OnSearchContentFiltersEnabled() {
-  GURL url = web_contents()->GetLastCommittedURL();
-  if (google_util::IsGoogleSearchUrl(url)) {
+void SupervisedUserNavigationObserver::OnSearchContentFiltersChanged() {
+  if (supervised_user_service()->IsLocalSearchFilteringEnabled() &&
+      google_util::IsGoogleSearchUrl(web_contents()->GetLastCommittedURL())) {
     web_contents()->GetController().Reload(content::ReloadType::NORMAL,
                                            /*check_for_repost=*/false);
   }

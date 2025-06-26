@@ -1594,6 +1594,8 @@ static_library("browser") {
     "supervised_user/chrome_supervised_user_web_content_handler_base.h",
     "supervised_user/classify_url_navigation_throttle.cc",
     "supervised_user/classify_url_navigation_throttle.h",
+    "supervised_user/metrics_service_accessor_delegate.cc",
+    "supervised_user/metrics_service_accessor_delegate.h",
     "supervised_user/supervised_user_browser_utils.cc",
     "supervised_user/supervised_user_browser_utils.h",
     "supervised_user/supervised_user_google_auth_navigation_throttle.cc",

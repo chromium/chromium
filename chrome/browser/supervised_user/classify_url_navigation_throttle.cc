@@ -260,7 +260,7 @@ std::string ClassifyUrlNavigationThrottle::GetInterstitialHTML(
     bool already_sent_request,
     bool is_main_frame) const {
 #if BUILDFLAG(IS_ANDROID)
-  if (supervised_user_service()->IsLocalContentFilteringEnabled() &&
+  if (supervised_user_service()->IsLocalBrowserFilteringEnabled() &&
       base::FeatureList::IsEnabled(
           kSupervisedUserInterstitialWithoutApprovals)) {
     return SupervisedUserInterstitial::GetHTMLContentsWithoutApprovals(result.url,

@@ -125,7 +125,10 @@ class SupervisedUserService : public KeyedService {
   bool IsSupervisedLocally() const;
   // Returns true if the user is supervised locally (e.g. on the device) and
   // requested browser content to be filtered.
-  bool IsLocalContentFilteringEnabled() const;
+  bool IsLocalBrowserFilteringEnabled() const;
+  // Returns true if the user is supervised locally (e.g. on the device) and
+  // requested search content to be filtered.
+  bool IsLocalSearchFilteringEnabled() const;
 
   std::optional<Custodian> GetCustodian() const;
   std::optional<Custodian> GetSecondCustodian() const;
@@ -209,8 +212,11 @@ class SupervisedUserService : public KeyedService {
   void RemoveCustodianPrefChangeHandlers();
 
 #if BUILDFLAG(IS_ANDROID)
-  // Enables search content filters and then notifies observers that the search content filters are enabled.
+  // Enables content filters and then notifies observers.
   void EnableSearchContentFilters();
+  void DisableSearchContentFilters();
+  void EnableBrowserContentFilters();
+  void DisableBrowserContentFilters();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   const raw_ref<PrefService> user_prefs_;
