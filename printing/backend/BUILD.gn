@@ -93,12 +93,6 @@ component("backend") {
       cflags += [ "-Wno-deprecated-declarations" ]
     }
 
-    if (is_mac) {
-      # CUPS 1.6 deprecated the PPD APIs. We need to evaluate the
-      # effect of migrating Mac. More info: crbug.com/41003486
-      cflags += [ "-Wno-deprecated-declarations" ]
-    }
-
     # PRINT_BACKEND_AVAILABLE disables the default dummy implementation
     # of the print backend and enables a custom implementation instead.
     defines += [ "PRINT_BACKEND_AVAILABLE" ]
@@ -131,9 +125,9 @@ component("backend") {
         "ipp_handlers.h",
         ipp_handler_map_path,
       ]
-    } else {
-      # TODO(crbug.com/40122734): Remove the original CUPS backend for macOS
-      # when Cloud Print support is terminated. Follow up after Jan 1, 2021.
+    }
+
+    if (is_linux) {
       sources += [
         "print_backend_cups.cc",
         "print_backend_cups.h",

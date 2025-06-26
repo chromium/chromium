@@ -14,6 +14,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -21,23 +22,15 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
-#include "build/build_config.h"
+#include "printing/backend/cups_connection.h"
 #include "printing/backend/cups_helper.h"
+#include "printing/backend/cups_weak_functions.h"
 #include "printing/backend/print_backend_consts.h"
+#include "printing/backend/print_backend_cups_ipp.h"
 #include "printing/backend/print_backend_utils.h"
 #include "printing/mojom/print.mojom.h"
-#include "url/gurl.h"
-
-#if BUILDFLAG(IS_LINUX)
-#include "printing/backend/cups_weak_functions.h"
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#include "base/feature_list.h"
-#include "printing/backend/cups_connection.h"
-#include "printing/backend/print_backend_cups_ipp.h"
 #include "printing/printing_features.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#include "url/gurl.h"
 
 namespace printing {
 
@@ -62,13 +55,11 @@ int CaptureCupsDestCallback(void* data, unsigned flags, cups_dest_t* dest) {
   return 1;  // Keep going.
 }
 
-#if BUILDFLAG(IS_LINUX)
 // This may be removed when Amazon Linux 2 reaches EOL (30 Jun 2026).
 bool AreNewerCupsFunctionsAvailable() {
   return cupsFindDestDefault && cupsFindDestSupported && cupsUserAgent &&
          ippValidateAttributes;
 }
-#endif
 
 }  // namespace
 
@@ -286,24 +277,16 @@ bool PrintBackendCUPS::IsValidPrinter(const std::string& printer_name) {
   return !!GetNamedDest(printer_name);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+// static
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
     const std::string& locale) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#if BUILDFLAG(IS_LINUX)
-  bool cups_functions_available = AreNewerCupsFunctionsAvailable();
-#else
-  static constexpr bool cups_functions_available = true;
-#endif
-  if (cups_functions_available &&
+  if (AreNewerCupsFunctionsAvailable() &&
       base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
     return base::MakeRefCounted<PrintBackendCupsIpp>(CupsConnection::Create());
   }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   return base::MakeRefCounted<PrintBackendCUPS>(
       GURL(), HTTP_ENCRYPT_NEVER, /*cups_blocking=*/false, locale);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 int PrintBackendCUPS::GetDests(cups_dest_t** dests) {
   // Default to the local print server (CUPS scheduler)

@@ -8,7 +8,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/strings/stringprintf.h"
-#include "build/build_config.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
@@ -812,11 +811,7 @@ TEST(PrintBackendCupsHelperTest,
 }
 
 TEST(PrintBackendCupsHelperTest, PpdParsingResolutionNoResolution) {
-#if BUILDFLAG(IS_MAC)
-  constexpr gfx::Size kExpectedDpi(kDefaultMacDpi, kDefaultMacDpi);
-#else
   constexpr gfx::Size kExpectedDpi(kDefaultPdfDpi, kDefaultPdfDpi);
-#endif
 
   // If the PPD does not have a valid resolution, the DPI should still be set to
   // an OS-dependent default value.
@@ -951,11 +946,7 @@ TEST(PrintBackendCupsHelperTest, NoTempFileLeftBehind) {
   EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir.GetPath()));
 
   {
-#if BUILDFLAG(IS_MAC)
-    const char kTempDirEnvVar[] = "MAC_CHROMIUM_TMPDIR";
-#else
-    const char kTempDirEnvVar[] = "TMPDIR";
-#endif
+    static constexpr char kTempDirEnvVar[] = "TMPDIR";
     base::ScopedEnvironmentVariableOverride env_override(
         kTempDirEnvVar, temp_dir.GetPath().value());
 

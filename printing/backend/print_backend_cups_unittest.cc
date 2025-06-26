@@ -7,7 +7,6 @@
 #include <cups/cups.h>
 
 #include "base/strings/string_number_conversions.h"
-#include "build/build_config.h"
 #include "printing/backend/cups_deleters.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
@@ -57,20 +56,10 @@ TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPS) {
 
   int num_options = 0;
   cups_option_t* options = nullptr;
-#if BUILDFLAG(IS_MAC)
-  constexpr char kInfo[] = "info";
-  num_options =
-      cupsAddOption(kCUPSOptPrinterInfo, kInfo, num_options, &options);
-  num_options = cupsAddOption(kCUPSOptPrinterMakeAndModel, kDescription,
-                              num_options, &options);
-  ASSERT_EQ(2, num_options);
-  ASSERT_TRUE(options);
-#else
   num_options =
       cupsAddOption(kCUPSOptPrinterInfo, kDescription, num_options, &options);
   ASSERT_EQ(1, num_options);
   ASSERT_TRUE(options);
-#endif
   printer->num_options = num_options;
   printer->options = options;
 
@@ -79,23 +68,13 @@ TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPS) {
             mojom::ResultCode::kSuccess);
 
   EXPECT_EQ(kName, printer_info.printer_name);
-#if BUILDFLAG(IS_MAC)
-  EXPECT_EQ(kInfo, printer_info.display_name);
-#else
   EXPECT_EQ(kName, printer_info.display_name);
-#endif
   EXPECT_EQ(kDescription, printer_info.printer_description);
 
-  // The option value of `kCUPSOptPrinterMakeAndModel` is used to set the value
-  // for `kDriverInfoTagName`.
-  auto driver = printer_info.options.find(kDriverInfoTagName);
-#if BUILDFLAG(IS_MAC)
-  ASSERT_NE(driver, printer_info.options.end());
-  EXPECT_EQ(kDescription, driver->second);
-#else
-  // Didn't set option for `kCUPSOptPrinterMakeAndModel`.
-  EXPECT_EQ(driver, printer_info.options.end());
-#endif
+  // Check that `kDriverInfoTagName` did not get set. This was Mac-only
+  // behavior.
+  EXPECT_EQ(printer_info.options.find(kDriverInfoTagName),
+            printer_info.options.end());
 }
 
 TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPSNoOptionsDisplayName) {

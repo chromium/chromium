@@ -122,4 +122,12 @@ bool PrintBackendCupsIpp::IsValidPrinter(const std::string& printer_name) {
   return !!cups_connection_->GetPrinter(printer_name);
 }
 
+#if BUILDFLAG(IS_MAC)
+// static
+scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
+    const std::string& locale) {
+  return base::MakeRefCounted<PrintBackendCupsIpp>(CupsConnection::Create());
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace printing

@@ -17,6 +17,8 @@
 #include "printing/mojom/print.mojom.h"
 #include "url/gurl.h"
 
+static_assert(BUILDFLAG(IS_LINUX));
+
 namespace printing {
 
 class PrintBackendCUPS : public PrintBackend {

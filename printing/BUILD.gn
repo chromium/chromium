@@ -448,7 +448,8 @@ test("printing_unittests") {
 
     if (is_chromeos) {
       sources += [ "printing_context_chromeos_unittest.cc" ]
-    } else {
+    }
+    if (is_linux) {
       sources += [
         "backend/cups_helper_unittest.cc",
         "backend/print_backend_cups_unittest.cc",

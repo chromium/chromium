@@ -28,7 +28,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants_cups.h"
 #include "printing/print_settings_initializer_mac.h"
-#include "printing/printing_features.h"
 #include "printing/units.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
@@ -723,13 +722,6 @@ bool PrintingContextMac::SetDuplexModeInPrintSettings(mojom::DuplexMode mode) {
 
 bool PrintingContextMac::SetOutputColor(int color_mode) {
   const mojom::ColorModel color_model = ColorModeToColorModel(color_mode);
-
-  if (!base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
-    std::string color_setting_name;
-    std::string color_value;
-    GetColorModelForModel(color_model, &color_setting_name, &color_value);
-    return SetKeyValue(color_setting_name, color_value);
-  }
 
   // First, set the default CUPS IPP output color.
   if (!SetKeyValue(CUPS_PRINT_COLOR_MODE,
