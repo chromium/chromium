@@ -921,7 +921,7 @@
       "izuzic@google.com",
       "friedrichh@chromium.org",
       "//components/autofill/android/OWNERS" ],
-    "expiry_milestone": 138
+    "expiry_milestone": 143
   },
   {
     "name": "autofill-throttle-doc-form-scans",
@@ -1850,7 +1850,7 @@
     "owners": [
       "izuzic@google.com",
       "friedrichh@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 143
   },
   {
     "name": "cros-apps-background-event-handling",
