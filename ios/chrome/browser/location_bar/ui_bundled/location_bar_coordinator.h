@@ -67,6 +67,9 @@
 // Sets whether Lens overlay is currently visible.
 - (void)setLensOverlayVisible:(BOOL)lensOverlayVisible;
 
+// Sets command dispatcher for page action menu entry point.
+- (void)setPageActionMenuEntryPointDispatcher;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_COORDINATOR_H_

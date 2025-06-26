@@ -74,6 +74,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_entry_point_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -336,6 +337,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     return;
   }
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
+  [self.browser->GetCommandDispatcher()
+      stopDispatchingToTarget:self.viewController
+                                  .pageActionMenuEntryPointHandler];
 
   [self.contextualPanelEntrypointCoordinator stop];
   self.contextualPanelEntrypointCoordinator.delegate = nil;
@@ -406,6 +410,13 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)setLensOverlayVisible:(BOOL)lensOverlayVisible {
   self.badgeViewController.forceDisabled = lensOverlayVisible;
   [self.viewController setLensOverlayVisible:lensOverlayVisible];
+}
+
+- (void)setPageActionMenuEntryPointDispatcher {
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self.viewController
+                                   .pageActionMenuEntryPointHandler
+                   forProtocol:@protocol(PageActionMenuEntryPointCommands)];
 }
 
 #pragma mark - LoadQueryCommands

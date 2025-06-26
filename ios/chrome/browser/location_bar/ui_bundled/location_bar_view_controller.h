@@ -26,6 +26,7 @@
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
 @protocol PageActionMenuCommands;
+@protocol PageActionMenuEntryPointCommands;
 @protocol ReaderModeChipVisibilityDelegate;
 @protocol TextFieldViewContaining;
 class PrefService;
@@ -120,6 +121,12 @@ class Tracker;
 
 // The BWG command handler.
 @property(nonatomic, weak) id<BWGCommands> BWGHandler;
+
+// The page action menu entry point handler. Returns the page action menu entry
+// point view for direct communication between a command dispatched and the page
+// action button.
+@property(nonatomic, weak, readonly) id<PageActionMenuEntryPointCommands>
+    pageActionMenuEntryPointHandler;
 
 // An object to provide a snapshot of the fakebox buttons to be used during
 // focus and defocus transitions.

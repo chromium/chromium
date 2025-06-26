@@ -15,6 +15,7 @@
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
 class OverlayPresenter;
+@protocol PageActionMenuEntryPointCommands;
 @protocol PopupMenuCommands;
 @protocol TabStripCommands;
 @protocol ToolbarCommands;
@@ -49,6 +50,10 @@ class DeviceSwitcherResultDispatcher;
 
 // Delegate object to handle interactions.
 @property(nonatomic, weak) id<BubblePresenterDelegate> delegate;
+
+// Command handler for dispatching page action menu entry point commands.
+@property(nonatomic, weak) id<PageActionMenuEntryPointCommands>
+    pageActionMenuEntryPointHandler;
 
 // The view controller that presents the bubbles.
 @property(nonatomic, weak) UIViewController* rootViewController;

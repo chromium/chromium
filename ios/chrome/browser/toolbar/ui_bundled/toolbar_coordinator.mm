@@ -8,6 +8,7 @@
 #import "base/memory/raw_ptr.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -180,6 +181,10 @@
     [self.primaryToolbarCoordinator
         setLocationBarViewController:self.locationBarCoordinator
                                          .locationBarViewController];
+  }
+
+  if (IsPageActionMenuEnabled()) {
+    [self.locationBarCoordinator setPageActionMenuEntryPointDispatcher];
   }
 
   [self updateToolbarsLayout];

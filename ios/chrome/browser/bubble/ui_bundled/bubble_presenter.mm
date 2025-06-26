@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_entry_point_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
@@ -764,15 +765,22 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   // are fixed.
   CGFloat anchorXOffset = UseRTLLayout() ? -2 : 2;
 
-  BubbleViewControllerPresenter* presenter =
-      [self presentBubbleForFeature:feature_engagement::kIPHIOSPageActionMenu
-                          direction:arrowDirection
-                          alignment:BubbleAlignmentTopOrLeading
-                               text:text
-              voiceOverAnnouncement:text
-                        anchorPoint:CGPoint(pageActionMenuEntrypointAnchor.x +
-                                                anchorXOffset,
-                                            pageActionMenuEntrypointAnchor.y)];
+  __weak __typeof(self) weakSelf = self;
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::kIPHIOSPageActionMenu
+      direction:arrowDirection
+      alignment:BubbleAlignmentTopOrLeading
+      text:text
+      voiceOverAnnouncement:text
+      anchorPoint:CGPoint(pageActionMenuEntrypointAnchor.x + anchorXOffset,
+                          pageActionMenuEntrypointAnchor.y)
+      presentAction:^{
+        [weakSelf.pageActionMenuEntryPointHandler
+            toggleEntryPointHighlight:YES];
+      }
+      dismissAction:^{
+        [weakSelf.pageActionMenuEntryPointHandler toggleEntryPointHighlight:NO];
+      }];
 
   if (presenter) {
     _pageActionMenuBubblePresenter = presenter;

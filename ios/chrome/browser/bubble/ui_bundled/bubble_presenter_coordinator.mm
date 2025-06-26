@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_entry_point_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
@@ -194,6 +195,9 @@
     }
     case InProductHelpType::kPageActionMenu: {
       CHECK(IsPageActionMenuEnabled());
+      CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+      _presenter.pageActionMenuEntryPointHandler =
+          HandlerForProtocol(dispatcher, PageActionMenuEntryPointCommands);
       [_presenter presentPageActionMenuBubble];
       break;
     }

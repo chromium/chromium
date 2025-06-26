@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_entry_point_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -198,6 +199,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 - (void)switchToEditing:(BOOL)editing {
   self.editView.hidden = !editing;
   self.locationBarSteadyView.hidden = editing;
+}
+
+- (id<PageActionMenuEntryPointCommands>)pageActionMenuEntryPointHandler {
+  return _pageActionMenuEntrypointView;
 }
 
 - (void)setIncognito:(BOOL)incognito {
