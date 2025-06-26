@@ -400,6 +400,7 @@ void CollaborationControllerDelegateDesktop::MaybeShowSignInAndSyncUi() {
                                       chrome::kSyncSetupAdvancedSubPage);
           break;
         case collaboration::SyncStatus::kSyncEnabled:
+        case collaboration::SyncStatus::kSyncDisabledByEnterprise:
           NOTREACHED();
       }
       break;

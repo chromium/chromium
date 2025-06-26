@@ -22,7 +22,8 @@ enum class SigninStatus {
 enum class SyncStatus {
   kNotSyncing = 0,
   kSyncWithoutTabGroup = 1,
-  kSyncEnabled = 2
+  kSyncEnabled = 2,
+  kSyncDisabledByEnterprise = 3,
 };
 
 // GENERATED_JAVA_ENUM_PACKAGE: (
