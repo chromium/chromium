@@ -4269,17 +4269,13 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
   // frame is display locked or the layout is dirty, this will create a
   // degenerate "not intersecting" notification or schedule a delayed update
   // if needed.
-  if (RuntimeEnabledFeatures::ForceDelayedIntersectionUpdateEnabled() ||
-      !NeedsLayout() || IsDisplayLocked()) {
-    if (controller) {
-      needs_occlusion_tracking = controller->ComputeIntersections(
-          flags, *this,
-          accumulated_scroll_delta_since_last_intersection_update_, context);
-      accumulated_scroll_delta_since_last_intersection_update_ =
-          gfx::Vector2dF();
-    }
-    intersection_observation_state_ = kNotNeeded;
+  if (controller) {
+    needs_occlusion_tracking = controller->ComputeIntersections(
+        flags, *this, accumulated_scroll_delta_since_last_intersection_update_,
+        context);
+    accumulated_scroll_delta_since_last_intersection_update_ = gfx::Vector2dF();
   }
+  intersection_observation_state_ = kNotNeeded;
 
   {
     SCOPED_UMA_AND_UKM_TIMER(
@@ -4321,14 +4317,10 @@ void LocalFrameView::DeliverSynchronousIntersectionObservations() {
 }
 
 void LocalFrameView::ScheduleDelayedIntersection(base::TimeDelta delay) {
-  if (RuntimeEnabledFeatures::ForceDelayedIntersectionUpdateEnabled()) {
-    auto& timer = frame_->LocalFrameRoot().View()->delayed_intersection_timer_;
-    if (!timer.IsActive() || timer.NextFireInterval() > delay) {
-      timer.Stop();
-      timer.StartOneShot(delay, FROM_HERE);
-    }
-  } else {
-    ScheduleAnimation(delay);
+  auto& timer = frame_->LocalFrameRoot().View()->delayed_intersection_timer_;
+  if (!timer.IsActive() || timer.NextFireInterval() > delay) {
+    timer.Stop();
+    timer.StartOneShot(delay, FROM_HERE);
   }
 }
 
@@ -4337,7 +4329,6 @@ bool LocalFrameView::HasScheduledDelayedIntersectionForTesting() const {
 }
 
 void LocalFrameView::DelayedIntersectionTimerFired(TimerBase*) {
-  CHECK(RuntimeEnabledFeatures::ForceDelayedIntersectionUpdateEnabled());
   DCHECK(frame_->IsLocalRoot());
   needs_update_delayed_intersection_ = true;
   ScheduleAnimation();

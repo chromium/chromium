@@ -333,14 +333,10 @@ const LayoutObject* IntersectionGeometry::GetTargetLayoutObject(
       [[unlikely]] {
     return nullptr;
   }
-  if (RuntimeEnabledFeatures::ForceDelayedIntersectionUpdateEnabled()) {
-    // We may have dirty layout in a throttled frame when the frame is not
-    // required to update intersection. Assuming "not intersecting".
-    if (target->GetFrameView()->NeedsLayout()) [[unlikely]] {
-      return nullptr;
-    }
-  } else {
-    DCHECK(!target_element.GetDocument().View()->NeedsLayout());
+  // We may have dirty layout in a throttled frame when the frame is not
+  // required to update intersection. Assuming "not intersecting".
+  if (target->GetFrameView()->NeedsLayout()) [[unlikely]] {
+    return nullptr;
   }
   return target;
 }
