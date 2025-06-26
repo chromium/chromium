@@ -13,8 +13,8 @@
 #include "base/test/task_environment.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
-#include "components/saved_tab_groups/public/versioning_message_controller.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
+#include "components/saved_tab_groups/test_support/mock_versioning_message_controller.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -51,21 +51,6 @@ MATCHER_P3(TabBuilderEq, title, url, position, "") {
   return arg.title() == title && arg.url() == url &&
          static_cast<int>(arg.position()) == position;
 }
-
-class MockVersioningMessageController : public VersioningMessageController {
- public:
-  MockVersioningMessageController() = default;
-  ~MockVersioningMessageController() override = default;
-
-  MOCK_METHOD(bool, IsInitialized, (), (override));
-  MOCK_METHOD(bool, ShouldShowMessageUi, (MessageType), (override));
-  MOCK_METHOD(void,
-              ShouldShowMessageUiAsync,
-              (MessageType, base::OnceCallback<void(bool)>),
-              (override));
-  MOCK_METHOD(void, OnMessageUiShown, (MessageType), (override));
-  MOCK_METHOD(void, OnMessageUiDismissed, (MessageType), (override));
-};
 
 }  // namespace
 

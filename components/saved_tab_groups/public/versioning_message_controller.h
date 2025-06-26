@@ -44,14 +44,14 @@ class VersioningMessageController {
   virtual bool IsInitialized() = 0;
 
   // Invoke this method to query if the given message UI should be shown. This
-  // should not be called if the VersioningMessageController is not initialized.
+  // should not be called if the TabGroupSyncService is not initialized.
   // See comments on MessageType for when the UI should inform this class about
   // display / dismissed events.
   virtual bool ShouldShowMessageUi(MessageType message_type) = 0;
 
   // Same as ShouldShowMessageUi but waits on the initialization before calling
-  // the callback. If the VersioningMessageController is already initialized,
-  // then the callback is called synchronously.
+  // the callback. If the TabGroupSyncService is already initialized, then the
+  // callback is called synchronously.
   // See comments on MessageType for when the UI should inform this class about
   // display / dismissed events.
   virtual void ShouldShowMessageUiAsync(

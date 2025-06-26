@@ -25,8 +25,8 @@ public interface VersioningMessageController {
 
     /**
      * Invoke this method to query if the given message UI should be shown. This should not be
-     * called if the VersioningMessageController is not initialized. See comments on MessageType for
-     * when the UI should inform this class about display / dismissed events.
+     * called if the TabGroupSyncService is not initialized. See comments on MessageType for when
+     * the UI should inform this class about display / dismissed events.
      *
      * @param messageType The {@link MessageType} to query.
      * @return Whether or not the message UI should be shown.
@@ -35,8 +35,8 @@ public interface VersioningMessageController {
 
     /**
      * Same as ShouldShowMessageUi but waits on the initialization before calling the callback. If
-     * the VersioningMessageController is already initialized, then the callback is called
-     * synchronously. See comments on MessageType for when the UI should inform this class about
+     * the TabGroupSyncService is already initialized, then the callback is called synchronously.
+     * See comments on MessageType for when the UI should inform this class about
      * display / dismissed events.
      *
      * @param messageType The {@link MessageType} to query.
