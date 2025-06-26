@@ -8371,6 +8371,36 @@ chromium-metrics-reviews@google.com.
   <token key="StartupMode" variants="WebViewChromiumStartupMode"/>
 </histogram>
 
+<histogram name="Android.WebView.Startup.CreationTime.AssetsAddTime" units="ms"
+    expires_after="2025-12-31">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The total time to add WebView assets to AssetManager. Reported on S+.
+
+    This task is performed and measured in the framework.
+
+    This time is included in
+    `Android.WebView.Startup.CreationTime.TotalFactoryInitTime`.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.Startup.CreationTime.CreateContextTime"
+    units="ms" expires_after="2025-12-31">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The total time to create the WebView APK context. Reported on S+.
+
+    This task is performed and measured in the framework.
+
+    This time is included in
+    `Android.WebView.Startup.CreationTime.TotalFactoryInitTime`.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.WebView.Startup.CreationTime.FirstInstanceAfterGlobalStartup"
     units="ms" expires_after="2025-12-31">
@@ -8406,6 +8436,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Startup.CreationTime.GetClassLoaderTime"
+    units="ms" expires_after="2025-12-31">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The total time to create the WebView ClassLoader. Reported on S+.
+
+    This task is performed and measured in the framework.
+
+    This time is included in
+    `Android.WebView.Startup.CreationTime.TotalFactoryInitTime`.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.Startup.CreationTime.GetProviderClassForNameTime"
+    units="ms" expires_after="2025-12-31">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The total time taken by `getWebViewProviderClass` method
+    (https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/webkit/WebViewFactory.java;l=270;drc=61197364367c9e404c7da6900658f1b16c42d0da)
+    in the framework. Reported on S+.
+
+    This task is performed and measured in the framework.
+
+    This time is included in
+    `Android.WebView.Startup.CreationTime.TotalFactoryInitTime`.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Startup.CreationTime.InitReason"
     enum="WebViewStartupCallSite" expires_after="2025-12-31">
   <owner>torne@chromium.org</owner>
@@ -8416,6 +8479,23 @@ chromium-metrics-reviews@google.com.
     static methods.
 
     Recorded in M125+.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.Startup.CreationTime.NativeLoadTime"
+    units="ms" expires_after="2025-12-31">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The total time to load the WebView native library for the first time.
+    Reported on S+. This also includes the time taken for processing relocations
+    using the relro sharing mechanism.
+
+    This task is performed and measured in the framework.
+
+    This time is included in
+    `Android.WebView.Startup.CreationTime.TotalFactoryInitTime`.
   </summary>
 </histogram>
 
