@@ -286,7 +286,6 @@ FEATURE_GRAMMAR = ({
             'enum_map': {
                 'chromeos': 'Feature::CHROMEOS_PLATFORM',
                 'desktop_android': 'Feature::DESKTOP_ANDROID_PLATFORM',
-                'fuchsia': 'Feature::FUCHSIA_PLATFORM',
                 'linux': 'Feature::LINUX_PLATFORM',
                 'mac': 'Feature::MACOSX_PLATFORM',
                 'win': 'Feature::WIN_PLATFORM',

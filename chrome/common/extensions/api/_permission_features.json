@@ -15,13 +15,13 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "accessibilityFeatures.read": [{
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   }, {
     "channel": "stable",
     "extension_types": ["legacy_packaged_app"],
@@ -65,7 +65,7 @@
     "extension_types": ["extension", "platform_app"],
     "location": "component",
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "autotestPrivate": {
     "channel": "stable",
@@ -91,7 +91,7 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "location": "component",
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "browsingData": {
     "channel": "stable",
@@ -179,7 +179,7 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "location": "component",
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "commands.accessibility": {
     "channel": "stable",
@@ -193,7 +193,7 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "contextMenus": {
     "channel": "stable",
@@ -220,13 +220,13 @@
       "channel": "stable",
       "extension_types": ["extension", "legacy_packaged_app"],
       // "desktop_android" is not supported.
-      "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+      "platforms": ["chromeos", "linux", "mac", "win"]
     },
     {
       "channel": "stable",
       "extension_types": ["platform_app"],
       // "desktop_android" is not supported.
-      "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"],
+      "platforms": ["chromeos", "linux", "mac", "win"],
       "allowlist": [
         "AE27D69DBE571F4B1694F05C89B710C646792231" // Published ADT.
       ]
@@ -257,7 +257,7 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "documentScan": {
     "channel": "stable",
@@ -268,7 +268,7 @@
     "channel": "stable",
     "extension_types": ["extension"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "downloads.open": {
     "channel": "stable",
@@ -374,7 +374,7 @@
     "channel": "stable",
     "extension_types": ["extension"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"],
+    "platforms": ["chromeos", "linux", "mac", "win"],
     "allowlist" : [
       "86D63D90308742AA65B8B29AE2D39FED2D6DC310",  // https://crbug.com/882461 SecureConnect
       "031E5E4A54C39E4F46E11CE643584E9187915908",  // https://crbug.com/882461 SecureConnect
@@ -406,14 +406,14 @@
     "channel": "stable",
     "command_line_switch": "extension-actor-api",
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "experimentalAiData": {
     "extension_types": ["extension"],
     "channel": "stable",
     "command_line_switch": "extension-ai-data-collection",
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "favicon": {
     "channel": "stable",
@@ -517,7 +517,7 @@
       "extension_types": ["extension", "platform_app"],
       "location": "component",
       // "desktop_android" is not supported.
-      "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+      "platforms": ["chromeos", "linux", "mac", "win"]
     },
     {
       "channel": "stable",
@@ -721,7 +721,7 @@
     "channel": "stable",
     "extension_types": ["extension"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"],
+    "platforms": ["chromeos", "linux", "mac", "win"],
     "allowlist": [
       "1BFB3A47AA4A1E1C4714D919217602685CDD0FA7",  // http://crbug.com/574600
       "DD87C93131FF8D3DE4E483DC1EB298D73C7223A6",  // http://crbug.com/1328114
@@ -733,13 +733,13 @@
     "channel": "stable",
     "extension_types": ["platform_app"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   {
     "channel": "dev",
     "extension_types": ["extension"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   }],
   "notifications": [{
     // The chrome.notifications functionality listed in notifications.idl is
@@ -775,20 +775,20 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "passwordsPrivate": {
     "channel": "trunk",
     "extension_types": ["extension", "platform_app"],
     "location": "component",
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "pdfViewerPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"],
+    "platforms": ["chromeos", "linux", "mac", "win"],
     "allowlist": [
       "CBCC42ABED43A4B58FE3810E62AFFA010EB0349F"  // PDF Viewer
     ]
@@ -849,7 +849,7 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   }, {
     "channel": "stable",
     "extension_types": ["platform_app"],
@@ -859,7 +859,7 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"],
+    "platforms": ["chromeos", "linux", "mac", "win"],
     "allowlist": [
       // TODO(ntang): Remove these 2 hashes when the app is no longer active.
       "A291B26E088FA6BA53FFD72F0916F06EBA7C585A", // http://crbug.com/329088
@@ -888,13 +888,13 @@
     ],
     "location": "component",
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "safeBrowsingPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"],
+    "platforms": ["chromeos", "linux", "mac", "win"],
     "allowlist": [
       "B281B98DDD6A379EF50D59BB1135419536C1C353",  // Report site to Safe Browsing Extension, crbug.com/932161
       "FD15C63ABA854733FDCBC1D4D34A71E963A12ABD",  // Chrome Reporting Extension
@@ -910,20 +910,20 @@
     "channel": "stable",
     "extension_types": ["extension"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "sessions": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "settingsPrivate": [{
     "channel": "trunk",
     "extension_types": ["extension", "platform_app"],
     "location": "component",
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   {
     // TODO(devlin): Remove these entries. Unfortunately, this causes a bit of
@@ -932,7 +932,7 @@
     "channel": "stable",
     "extension_types": ["extension"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"],
+    "platforms": ["chromeos", "linux", "mac", "win"],
     "allowlist": [
       "63ED55E43214C211F82122ED56407FF1A807F2A3",  // Media Router Dev
       "226CF815E39A363090A1E547D53063472B8279FA"   // Media Router Release
@@ -960,7 +960,7 @@
     "extension_types": ["extension"],
     "min_manifest_version": 3,
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "smartCardProviderPrivate": {
     "channel": "stable",
@@ -1003,14 +1003,14 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "location": "component",
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "tabGroups": {
     "channel": "stable",
     "extension_types": ["extension"],
     "min_manifest_version": 3,
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "tabs": [
     {
@@ -1031,7 +1031,7 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "terminalPrivate": {
     "channel": "stable",
@@ -1086,13 +1086,13 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "webrtcAudioPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"],
+    "platforms": ["chromeos", "linux", "mac", "win"],
     "allowlist": [
       // Hangouts test extension
       "80B9DC58E5210749F052F5B4DB239C50CF72AEB6",
@@ -1106,7 +1106,7 @@
     "channel": "stable",
     "extension_types": ["extension"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"],
+    "platforms": ["chromeos", "linux", "mac", "win"],
     "allowlist": [
       // Hangouts test extension
       "80B9DC58E5210749F052F5B4DB239C50CF72AEB6",

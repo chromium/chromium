@@ -109,7 +109,7 @@
       "chrome://settings/*"
     ],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   }],
   "autotestPrivate": {
     "dependencies": ["permission:autotestPrivate"],
@@ -124,7 +124,7 @@
       "chrome://read-later.top-chrome/*"
     ],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "bookmarks": [{
     "dependencies": ["permission:bookmarks"],
@@ -748,7 +748,7 @@
     "dependencies": ["manifest:omnibox"],
     "contexts": ["privileged_extension"],
     // "desktop_android" is not supported.
-    "platforms": ["chromeos", "fuchsia", "linux", "mac", "win"]
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "pageAction": {
     "dependencies": ["manifest:page_action"],

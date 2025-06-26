@@ -41,8 +41,6 @@ class Feature {
     LINUX_PLATFORM,
     MACOSX_PLATFORM,
     WIN_PLATFORM,
-    // TODO(crbug.com/427801971): Remove this platform entry.
-    FUCHSIA_PLATFORM,
     DESKTOP_ANDROID_PLATFORM,
   };
 
