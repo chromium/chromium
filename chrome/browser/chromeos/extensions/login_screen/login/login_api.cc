@@ -10,16 +10,26 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/login_ash.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/errors.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/extensions/api/login.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "ui/base/user_activity/user_activity_detector.h"
 
 namespace extensions {
 
@@ -27,7 +37,83 @@ namespace {
 crosapi::LoginAsh* GetLoginApi() {
   return crosapi::CrosapiManager::Get()->crosapi_ash()->login_ash();
 }
+
+base::expected<void, std::string> LockSession(
+    std::optional<user_manager::UserType> user_type) {
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
+
+  const auto* user_manager = user_manager::UserManager::Get();
+  const user_manager::User* active_user = user_manager->GetActiveUser();
+  if (!active_user || !active_user->CanLock() ||
+      (user_type && active_user->GetType() != user_type)) {
+    return base::unexpected(extensions::login_api_errors::kNoLockableSession);
+  }
+
+  if (session_manager::SessionManager::Get()->session_state() !=
+      session_manager::SessionState::ACTIVE) {
+    return base::unexpected(extensions::login_api_errors::kSessionIsNotActive);
+  }
+
+  chromeos::LoginApiLockHandler::Get()->RequestLockScreen();
+  return base::ok();
+}
+
+void UnlockSession(
+    std::string password,
+    std::optional<user_manager::UserType> user_type,
+    base::OnceCallback<void(base::expected<void, std::string>)> callback) {
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
+
+  const auto* user_manager = user_manager::UserManager::Get();
+  const user_manager::User* active_user = user_manager->GetActiveUser();
+  if (!active_user || !active_user->CanLock() ||
+      (user_type && active_user->GetType() != user_type)) {
+    std::move(callback).Run(
+        base::unexpected(extensions::login_api_errors::kNoUnlockableSession));
+    return;
+  }
+
+  if (session_manager::SessionManager::Get()->session_state() !=
+      session_manager::SessionState::LOCKED) {
+    std::move(callback).Run(
+        base::unexpected(extensions::login_api_errors::kSessionIsNotLocked));
+    return;
+  }
+
+  auto* handler = chromeos::LoginApiLockHandler::Get();
+  if (handler->IsUnlockInProgress()) {
+    std::move(callback).Run(base::unexpected(
+        extensions::login_api_errors::kAnotherUnlockAttemptInProgress));
+    return;
+  }
+
+  ash::UserContext context(active_user->GetType(), active_user->GetAccountId());
+  context.SetKey(ash::Key(std::move(password)));
+
+  handler->Authenticate(
+      context,
+      base::BindOnce([](bool success) -> base::expected<void, std::string> {
+        if (!success) {
+          return base::unexpected(
+              extensions::login_api_errors::kAuthenticationFailed);
+        }
+        return base::ok();
+      }).Then(std::move(callback)));
+}
+
 }  // namespace
+
+namespace internal {
+
+LoginAsyncFunctionBase::~LoginAsyncFunctionBase() = default;
+
+void LoginAsyncFunctionBase::OnResult(
+    base::expected<void, std::string> result) {
+  Respond(result.has_value() ? NoArguments()
+                             : Error(std::move(result.error())));
+}
+
+}  // namespace internal
 
 ExtensionFunctionWithOptionalErrorResult::
     ~ExtensionFunctionWithOptionalErrorResult() = default;
@@ -106,11 +192,9 @@ LoginLockManagedGuestSessionFunction::~LoginLockManagedGuestSessionFunction() =
     default;
 
 ExtensionFunction::ResponseAction LoginLockManagedGuestSessionFunction::Run() {
-  auto callback =
-      base::BindOnce(&LoginLockManagedGuestSessionFunction::OnResult, this);
-
-  GetLoginApi()->LockManagedGuestSession(std::move(callback));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  auto result = LockSession(user_manager::UserType::kPublicAccount);
+  return RespondNow(result.has_value() ? NoArguments()
+                                       : Error(std::move(result.error())));
 }
 
 LoginUnlockManagedGuestSessionFunction::
@@ -124,11 +208,9 @@ LoginUnlockManagedGuestSessionFunction::Run() {
       api::login::UnlockManagedGuestSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  auto callback =
-      base::BindOnce(&LoginUnlockManagedGuestSessionFunction::OnResult, this);
-
-  GetLoginApi()->UnlockManagedGuestSession(parameters->password,
-                                           std::move(callback));
+  UnlockSession(
+      parameters->password, user_manager::UserType::kPublicAccount,
+      base::BindOnce(&LoginUnlockManagedGuestSessionFunction::OnResult, this));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
@@ -136,11 +218,9 @@ LoginLockCurrentSessionFunction::LoginLockCurrentSessionFunction() = default;
 LoginLockCurrentSessionFunction::~LoginLockCurrentSessionFunction() = default;
 
 ExtensionFunction::ResponseAction LoginLockCurrentSessionFunction::Run() {
-  auto callback =
-      base::BindOnce(&LoginLockCurrentSessionFunction::OnResult, this);
-
-  GetLoginApi()->LockCurrentSession(std::move(callback));
-  return RespondLater();
+  auto result = LockSession(std::nullopt);
+  return RespondNow(result.has_value() ? NoArguments()
+                                       : Error(std::move(result.error())));
 }
 
 LoginUnlockCurrentSessionFunction::LoginUnlockCurrentSessionFunction() =
@@ -152,12 +232,10 @@ ExtensionFunction::ResponseAction LoginUnlockCurrentSessionFunction::Run() {
   auto parameters = api::login::UnlockCurrentSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  auto callback =
-      base::BindOnce(&LoginUnlockCurrentSessionFunction::OnResult, this);
-
-  GetLoginApi()->UnlockCurrentSession(parameters->password,
-                                      std::move(callback));
-  return RespondLater();
+  UnlockSession(
+      parameters->password, std::nullopt,
+      base::BindOnce(&LoginUnlockCurrentSessionFunction::OnResult, this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 LoginLaunchSamlUserSessionFunction::LoginLaunchSamlUserSessionFunction() =

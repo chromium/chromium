@@ -12,6 +12,16 @@
 
 namespace extensions {
 
+namespace internal {
+class LoginAsyncFunctionBase : public ExtensionFunction {
+ protected:
+  ~LoginAsyncFunctionBase() override;
+
+  // ExtensionFunction:
+  void OnResult(base::expected<void, std::string> result);
+};
+}  // namespace internal
+
 class ExtensionFunctionWithOptionalErrorResult : public ExtensionFunction {
  protected:
   ~ExtensionFunctionWithOptionalErrorResult() override;
@@ -81,8 +91,7 @@ class LoginFetchDataForNextLoginAttemptFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class LoginLockManagedGuestSessionFunction
-    : public ExtensionFunctionWithOptionalErrorResult {
+class LoginLockManagedGuestSessionFunction : public ExtensionFunction {
  public:
   LoginLockManagedGuestSessionFunction();
 
@@ -103,7 +112,7 @@ class LoginLockManagedGuestSessionFunction
 };
 
 class LoginUnlockManagedGuestSessionFunction
-    : public ExtensionFunctionWithOptionalErrorResult {
+    : public internal::LoginAsyncFunctionBase {
  public:
   LoginUnlockManagedGuestSessionFunction();
 
@@ -145,7 +154,7 @@ class LoginLockCurrentSessionFunction
 };
 
 class LoginUnlockCurrentSessionFunction
-    : public ExtensionFunctionWithOptionalErrorResult {
+    : public internal::LoginAsyncFunctionBase {
  public:
   LoginUnlockCurrentSessionFunction();
 
