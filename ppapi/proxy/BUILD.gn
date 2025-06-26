@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/nacl/config.gni")
-import("//components/nacl/toolchain.gni")
 import("//ppapi/buildflags/buildflags.gni")
 
 assert(enable_ppapi)
@@ -247,7 +246,7 @@ component("proxy") {
     "//ui/gfx/ipc/geometry",
   ]
 
-  if (!is_nacl && !is_minimal_toolchain) {
+  if (!is_nacl) {
     deps += [
       "//gin",
       "//skia",
@@ -321,7 +320,7 @@ source_set("ipc_sources") {
 
   public_deps = [ "//ipc" ]
 
-  if (!is_nacl && !is_minimal_toolchain) {
+  if (!is_nacl) {
     deps += [ "//skia" ]
   }
 }

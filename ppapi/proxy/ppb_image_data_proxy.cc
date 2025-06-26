@@ -21,7 +21,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/nacl/common/buildflags.h"
 #include "ppapi/c/pp_completion_callback.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/pp_resource.h"
@@ -38,7 +37,7 @@
 #include "ppapi/thunk/enter.h"
 #include "ppapi/thunk/thunk.h"
 
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#if !BUILDFLAG(IS_NACL)
 #include "skia/ext/platform_canvas.h"  //nogncheck
 #include "ui/surface/transport_dib.h"  //nogncheck
 #endif
@@ -377,7 +376,7 @@ void ImageData::RecycleToPlugin(bool zero_contents) {
 
 // PlatformImageData -----------------------------------------------------------
 
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#if !BUILDFLAG(IS_NACL)
 PlatformImageData::PlatformImageData(
     const HostResource& resource,
     const PP_ImageDataDesc& desc,
@@ -417,7 +416,7 @@ void PlatformImageData::Unmap() {
 SkCanvas* PlatformImageData::GetCanvas() {
   return mapped_canvas_.get();
 }
-#endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#endif  // !BUILDFLAG(IS_NACL)
 
 // SimpleImageData -------------------------------------------------------------
 
@@ -496,7 +495,7 @@ PP_Resource PPB_ImageData_Proxy::CreateProxyResource(
       break;
     }
     case PPB_ImageData_Shared::PLATFORM: {
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#if !BUILDFLAG(IS_NACL)
       ppapi::proxy::SerializedHandle image_handle;
       dispatcher->Send(new PpapiHostMsg_PPBImageData_CreatePlatform(
           kApiID, instance, format, size, init_to_zero, &result, &desc,
@@ -524,7 +523,7 @@ PP_Resource PPB_ImageData_Proxy::CreateProxyResource(
 bool PPB_ImageData_Proxy::OnMessageReceived(const IPC::Message& msg) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(PPB_ImageData_Proxy, msg)
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#if !BUILDFLAG(IS_NACL)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBImageData_CreatePlatform,
                         OnHostMsgCreatePlatform)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBImageData_CreateSimple,
@@ -538,7 +537,7 @@ bool PPB_ImageData_Proxy::OnMessageReceived(const IPC::Message& msg) {
   return handled;
 }
 
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#if !BUILDFLAG(IS_NACL)
 // static
 PP_Resource PPB_ImageData_Proxy::CreateImageData(
     PP_Instance instance,
@@ -646,7 +645,7 @@ void PPB_ImageData_Proxy::OnHostMsgCreateSimple(
     result_image_handle->set_null_shmem_region();
   }
 }
-#endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#endif  // !BUILDFLAG(IS_NACL)
 
 void PPB_ImageData_Proxy::OnPluginMsgNotifyUnusedImageData(
     const HostResource& old_image_data) {

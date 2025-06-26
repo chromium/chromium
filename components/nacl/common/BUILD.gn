@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//components/nacl/features.gni")
-import("//components/nacl/toolchain.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 if (enable_nacl) {
@@ -137,8 +136,5 @@ static_library("switches") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [
-    "ENABLE_NACL=$enable_nacl",
-    "IS_MINIMAL_TOOLCHAIN=$is_minimal_toolchain",
-  ]
+  flags = [ "ENABLE_NACL=$enable_nacl" ]
 }

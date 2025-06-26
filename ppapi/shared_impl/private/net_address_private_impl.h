@@ -9,12 +9,11 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "components/nacl/common/buildflags.h"
 #include "ppapi/c/pp_stdint.h"
 #include "ppapi/c/ppb_net_address.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#if !BUILDFLAG(IS_NACL)
 #include "net/base/ip_address.h"  //nogncheck
 #endif
 
@@ -29,7 +28,7 @@ class PPAPI_SHARED_EXPORT NetAddressPrivateImpl {
   NetAddressPrivateImpl(const NetAddressPrivateImpl&) = delete;
   NetAddressPrivateImpl& operator=(const NetAddressPrivateImpl&) = delete;
 
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#if !BUILDFLAG(IS_NACL)
   static bool ValidateNetAddress(const PP_NetAddress_Private& addr);
 
   static bool SockaddrToNetAddress(const sockaddr* sa,

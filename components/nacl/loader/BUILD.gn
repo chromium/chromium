@@ -6,7 +6,6 @@ import("//build/config/c++/c++.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/nacl/config.gni")
 import("//components/nacl/features.gni")
-import("//components/nacl/toolchain.gni")
 import("//testing/test.gni")
 
 assert(enable_nacl)
@@ -153,13 +152,6 @@ if ((is_linux || is_chromeos) && current_cpu != "arm64") {
       "//content/public/common",
       "//media/audio",
     ]
-
-    if (is_minimal_toolchain) {
-      assert_no_deps += [
-        "//net",
-        "//skia",
-      ]
-    }
   }
 
   # For setting up nacl_helper.

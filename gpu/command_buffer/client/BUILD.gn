@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/nacl/toolchain.gni")
 import("//ui/gl/features.gni")
 
-if (!is_nacl && !is_minimal_toolchain) {
+if (!is_nacl) {
   import("//skia/features.gni")
 }
 
@@ -101,7 +100,7 @@ source_set("client_sources") {
   }
 
   # These files now rely on Skia which isn't allowed as a dependency in nacl builds.
-  if (!is_nacl && !is_minimal_toolchain) {
+  if (!is_nacl) {
     sources += [
       "client_shared_image.cc",
       "client_shared_image.h",
@@ -263,7 +262,7 @@ component("gles2_implementation") {
     "//ui/gfx/geometry",
   ]
 
-  if (!is_nacl && !is_minimal_toolchain) {
+  if (!is_nacl) {
     deps += [
       "//components/viz/common:shared_image_format",
       "//ui/gfx:color_space",

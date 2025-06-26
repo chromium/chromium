@@ -6,9 +6,8 @@
 
 #include "base/notimplemented.h"
 #include "build/build_config.h"
-#include "components/nacl/common/buildflags.h"
 
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#if !BUILDFLAG(IS_NACL)
 #include "third_party/skia/include/core/SkTypes.h"  //nogncheck
 #endif
 
@@ -20,9 +19,6 @@ PP_ImageDataFormat PPB_ImageData_Shared::GetNativeImageDataFormat() {
   // In NaCl, just default to something. If we're wrong, it will be converted
   // later.
   // TODO(dmichael): Really proxy this.
-  return PP_IMAGEDATAFORMAT_BGRA_PREMUL;
-#elif BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
-  NOTIMPLEMENTED();
   return PP_IMAGEDATAFORMAT_BGRA_PREMUL;
 #else
   if (SK_B32_SHIFT == 0)
