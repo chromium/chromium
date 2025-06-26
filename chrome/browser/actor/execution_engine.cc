@@ -83,6 +83,9 @@ bool ActionRequiresTabScopedSafetyChecks(const Action& action) {
     case Action::kYieldToUser:
     case Action::ACTION_NOT_SET:
       return false;
+    default:
+      NOTIMPLEMENTED();
+      return false;
   }
 }
 
@@ -119,6 +122,9 @@ tabs::TabHandle GetTabHandleFromAction(
     case Action::kYieldToUser:
     case Action::ACTION_NOT_SET:
       return tabs::TabHandle();
+    default:
+      NOTIMPLEMENTED();
+      return tabs::TabHandle();
   }
 }
 
@@ -144,6 +150,9 @@ bool ActionRequiresTab(const Action& action) {
     case Action::kActivateWindow:
     case Action::kYieldToUser:
     case Action::ACTION_NOT_SET:
+      return false;
+    default:
+      NOTIMPLEMENTED();
       return false;
   }
 }

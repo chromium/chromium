@@ -468,6 +468,9 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
     case optimization_guide::proto::Action::ACTION_NOT_SET:
       ACTOR_LOG() << "Action Type Not Set!";
       break;
+    default:
+      NOTIMPLEMENTED();
+      break;
   }
 
   return nullptr;
