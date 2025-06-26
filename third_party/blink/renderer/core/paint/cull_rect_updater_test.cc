@@ -857,13 +857,7 @@ TEST_F(CullRectUpdaterTest, OverriddenCullRectWithoutExpansion) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(clip).Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 300, 300), GetContentsCullRect(clip).Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 300, 300), GetCullRect(scroller).Rect());
-  if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
-    EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000),
-              GetContentsCullRect(scroller).Rect());
-  } else {
-    EXPECT_EQ(gfx::Rect(0, 0, 1300, 1300),
-              GetContentsCullRect(scroller).Rect());
-  }
+  EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000), GetContentsCullRect(scroller).Rect());
 
   {
     const bool disable_expansion = true;
@@ -880,66 +874,7 @@ TEST_F(CullRectUpdaterTest, OverriddenCullRectWithoutExpansion) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(clip).Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 300, 300), GetContentsCullRect(clip).Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 300, 300), GetCullRect(scroller).Rect());
-  if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
-    EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000),
-              GetContentsCullRect(scroller).Rect());
-  } else {
-    EXPECT_EQ(gfx::Rect(0, 0, 1300, 1300),
-              GetContentsCullRect(scroller).Rect());
-  }
-}
-
-TEST_F(CullRectUpdaterTest, LimitedDynamicCullRectExpansionY) {
-  if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
-    // This test doesn't provide additional test coverage.
-    GTEST_SKIP();
-  }
-
-  SetBodyInnerHTML(R"HTML(
-    <style>body { margin: 0 }</style>
-    <div id="clip" style="width: 300px; height: 300px; overflow: hidden">
-      <div id="scroller" style="width: 1000px; height: 1000px;
-                                overflow: scroll; will-change: scroll-position">
-        <div style="width: 1000px; height: 2000px"></div>
-      <div>
-    </div>
-  )HTML");
-
-  auto& clip = *GetPaintLayerByElementId("clip");
-  auto& scroller = *GetPaintLayerByElementId("scroller");
-  EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(clip).Rect());
-  EXPECT_EQ(gfx::Rect(0, 0, 300, 300), GetContentsCullRect(clip).Rect());
-  EXPECT_EQ(gfx::Rect(0, 0, 300, 300), GetCullRect(scroller).Rect());
-  EXPECT_EQ(gfx::Rect(0, 0, 300, 1300), GetContentsCullRect(scroller).Rect());
-}
-
-TEST_F(CullRectUpdaterTest, LimitedDynamicCullRectExpansionX) {
-  if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
-    // This test doesn't provide additional test coverage.
-    GTEST_SKIP();
-  }
-
-  SetBodyInnerHTML(R"HTML(
-    <style>body { margin: 0 }</style>
-    <div id="clip" style="width: 300px; height: 300px; overflow: hidden">
-      <div id="scroller" style="width: 1000px; height: 1000px;
-                                overflow: scroll; will-change: scroll-position">
-        <div style="width: 2000px; height: 1000px"></div>
-      <div>
-    </div>
-  )HTML");
-
-  // The outer overflow:hidden div causes CullRect::rect_ to be 300x300 and
-  // the scroll range is 1000, so we end up with an expanded rect of (-1000, 0,
-  // 2300, 300). Since the contents_rect is (0, 0, 2000, 1000), we intersect to
-  // (0, 0, 1300, 300).  If we don't limit to the scroll range, we expand to
-  // (-4000, 0, 8300, 300) and clip to (0, 0, 2000, 300).
-  auto& clip = *GetPaintLayerByElementId("clip");
-  auto& scroller = *GetPaintLayerByElementId("scroller");
-  EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(clip).Rect());
-  EXPECT_EQ(gfx::Rect(0, 0, 300, 300), GetContentsCullRect(clip).Rect());
-  EXPECT_EQ(gfx::Rect(0, 0, 300, 300), GetCullRect(scroller).Rect());
-  EXPECT_EQ(gfx::Rect(0, 0, 1300, 300), GetContentsCullRect(scroller).Rect());
+  EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000), GetContentsCullRect(scroller).Rect());
 }
 
 TEST_F(CullRectUpdaterTest, ViewScrollNeedsCullRectUpdate) {

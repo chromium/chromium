@@ -4233,11 +4233,6 @@
       name: "ScrollbarWidth",
       status: "stable",
     },
-    // Killswitch added in M134, changed in M135.
-    {
-      name: "ScrollCullRectFromContainerRect",
-      status: "stable",
-    },
     {
       name: "ScrollEndEvents",
       status: "stable",
