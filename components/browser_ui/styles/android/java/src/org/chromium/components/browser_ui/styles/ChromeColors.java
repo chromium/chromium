@@ -174,18 +174,6 @@ public class ChromeColors {
         return elevationOverlayProvider.compositeOverlayWithThemeSurfaceColorIfNeeded(elevation);
     }
 
-    /**
-     * Returns the drag handlebar color.
-     *
-     * @param context The {@link Context} used to retrieve attrs, colors, and dimens.
-     * @return the {@link ColorInt} for the drag handle bar.
-     * @deprecated Use {@link SemanticColorUtils#getDragHandlebarColor(Context)}
-     */
-    @Deprecated
-    public static @ColorInt int getDragHandleBarColor(Context context) {
-        return SemanticColorUtils.getDragHandlebarColor(context);
-    }
-
     /** {@return The {@link ColorInt} keyboard focus ring color} */
     public static @ColorInt int getKeyboardFocusRingColor(Context context, boolean isIncognito) {
         return isIncognito

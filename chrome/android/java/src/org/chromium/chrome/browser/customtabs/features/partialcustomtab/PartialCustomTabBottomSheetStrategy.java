@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -431,7 +431,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
         ImageView handle = mActivity.findViewById(R.id.drag_handle);
         if (Color.alpha(scrimColor) != 0) {
-            @ColorInt int handleColor = ChromeColors.getDragHandleBarColor(mActivity);
+            @ColorInt int handleColor = SemanticColorUtils.getDragHandlebarColor(mActivity);
             handle.setColorFilter(ColorUtils.overlayColor(handleColor, scrimColor));
         } else {
             handle.clearColorFilter();

@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.LocalizationUtils;
@@ -887,9 +887,12 @@ public class ContextualSearchPanel extends OverlayPanel {
 
         scrimImage(
                 R.id.drag_handlebar,
-                ChromeColors.getDragHandleBarColor(getContext()),
+                SemanticColorUtils.getDragHandlebarColor(getContext()),
                 scrimFraction);
-        scrimImage(R.id.toolbar_hairline, R.color.divider_line_bg_color_baseline, scrimFraction);
+        scrimImage(
+                R.id.toolbar_hairline,
+                SemanticColorUtils.getDividerLineBgColor(getContext()),
+                scrimFraction);
     }
 
     private void scrimImage(int viewId, int colorId, float scrimFraction) {
