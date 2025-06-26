@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
+#include "google_apis/gaia/core_account_id.h"
 #endif
 
 namespace signin {
@@ -43,7 +44,7 @@ class JniIdentityMutator {
   //   - there is not already a primary account set.
   jint SetPrimaryAccount(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& primary_account_id,
+      const CoreAccountId& primary_account_id,
       jint consent_level,
       jint access_point,
       const base::android::JavaParamRef<jobject>& j_prefs_committed_callback);

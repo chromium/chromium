@@ -5,6 +5,7 @@
 package org.chromium.components.signin.identitymanager;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -85,7 +86,7 @@ public class IdentityMutator {
     interface Natives {
         public @PrimaryAccountError int setPrimaryAccount(
                 long nativeJniIdentityMutator,
-                CoreAccountId accountId,
+                @JniType("CoreAccountId") CoreAccountId accountId,
                 @ConsentLevel int consentLevel,
                 @SigninAccessPoint int accessPoint,
                 Runnable prefsSavedCallback);

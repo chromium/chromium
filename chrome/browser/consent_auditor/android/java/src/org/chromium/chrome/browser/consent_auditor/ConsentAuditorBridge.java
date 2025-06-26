@@ -68,7 +68,7 @@ public final class ConsentAuditorBridge {
         void recordConsent(
                 ConsentAuditorBridge caller,
                 @JniType("Profile*") Profile profile,
-                GaiaId gaiaId,
+                @JniType("GaiaId") GaiaId gaiaId,
                 int feature,
                 int[] consentDescription,
                 int consentConfirmation);

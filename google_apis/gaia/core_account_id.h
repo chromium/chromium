@@ -13,6 +13,10 @@
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_id.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Represent the id of an account for interaction with GAIA.
 //
 // --------------------------------------------------------------------------
@@ -109,5 +113,35 @@ struct hash<CoreAccountId> {
   }
 };
 }  // namespace std
+
+#if BUILDFLAG(IS_ANDROID)
+// Constructs a Java CoreAccountId from the provided C++ CoreAccountId.
+COMPONENT_EXPORT(GOOGLE_APIS)
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountId(
+    JNIEnv* env,
+    const CoreAccountId& account_id);
+
+// Constructs a C++ CoreAccountId from the provided Java CoreAccountId.
+COMPONENT_EXPORT(GOOGLE_APIS)
+CoreAccountId ConvertFromJavaCoreAccountId(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_core_account_id);
+
+namespace jni_zero {
+template <>
+inline CoreAccountId FromJniType<CoreAccountId>(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_core_account_id) {
+  return ConvertFromJavaCoreAccountId(env, j_core_account_id);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(
+    JNIEnv* env,
+    const CoreAccountId& core_account_id) {
+  return ConvertToJavaCoreAccountId(env, core_account_id);
+}
+}  // namespace jni_zero
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #endif  // GOOGLE_APIS_GAIA_CORE_ACCOUNT_ID_H_

@@ -33,8 +33,7 @@ void JNI_ChromeBackupAgentImpl_CommitPendingPrefWrites(
 void JNI_ChromeBackupAgentImpl_MigrateGlobalDataTypePrefsToAccount(
     JNIEnv* env,
     PrefService* pref_service,
-    const base::android::JavaParamRef<jobject>& j_gaia_id) {
+    GaiaId& gaia_id) {
   syncer::SyncPrefs sync_prefs(pref_service);
-  sync_prefs.MigrateGlobalDataTypePrefsToAccount(
-      pref_service, ConvertFromJavaGaiaId(env, j_gaia_id));
+  sync_prefs.MigrateGlobalDataTypePrefsToAccount(pref_service, gaia_id);
 }

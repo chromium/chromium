@@ -141,16 +141,6 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountInfo(
     JNIEnv* env,
     const AccountInfo& account_info);
 
-// Constructs a Java CoreAccountId from the provided C++ CoreAccountId.
-base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountId(
-    JNIEnv* env,
-    const CoreAccountId& account_id);
-
-// Constructs a Java GaiaId from the provided C++ GaiaId.
-base::android::ScopedJavaLocalRef<jobject> ConvertToJavaGaiaId(
-    JNIEnv* env,
-    const GaiaId& gaia_id);
-
 // Constructs a C++ CoreAccountInfo from the provided Java CoreAccountInfo.
 CoreAccountInfo ConvertFromJavaCoreAccountInfo(
     JNIEnv* env,
@@ -160,15 +150,6 @@ CoreAccountInfo ConvertFromJavaCoreAccountInfo(
 AccountInfo ConvertFromJavaAccountInfo(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_account_info);
-
-// Constructs a C++ CoreAccountId from the provided Java CoreAccountId.
-CoreAccountId ConvertFromJavaCoreAccountId(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_core_account_id);
-
-// Constructs a C++ GaiaId from the provided Java GaiaId.
-GaiaId ConvertFromJavaGaiaId(JNIEnv* env,
-                             const base::android::JavaRef<jobject>& j_gaia_id);
 
 namespace jni_zero {
 template <>

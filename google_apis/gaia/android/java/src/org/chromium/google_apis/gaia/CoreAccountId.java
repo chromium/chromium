@@ -5,6 +5,7 @@
 package org.chromium.google_apis.gaia;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -19,17 +20,17 @@ public class CoreAccountId {
 
     /** Constructs a new CoreAccountId from a Gaia ID. */
     @CalledByNative
-    public CoreAccountId(GaiaId id) {
+    public CoreAccountId(@JniType("GaiaId") GaiaId id) {
         assert id != null;
         mId = id;
     }
 
-    public GaiaId getId() {
+    @CalledByNative
+    public @JniType("GaiaId") GaiaId getId() {
         return mId;
     }
 
     @Override
-    @CalledByNative
     public String toString() {
         return mId.toString();
     }

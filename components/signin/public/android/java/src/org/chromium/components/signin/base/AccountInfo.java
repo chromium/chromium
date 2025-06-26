@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -106,11 +107,11 @@ public class AccountInfo extends CoreAccountInfo {
     /** Used from JNI to marshal `AccountInfo` from C++ to Java. */
     @CalledByNative
     private AccountInfo(
-            CoreAccountId id,
-            String email,
-            GaiaId gaiaId,
-            String fullName,
-            String givenName,
+            @JniType("CoreAccountId") CoreAccountId id,
+            @JniType("std::string") String email,
+            @JniType("GaiaId") GaiaId gaiaId,
+            @JniType("std::string") String fullName,
+            @JniType("std::string") String givenName,
             @Nullable String hostedDomain,
             @Nullable Bitmap accountImage,
             AccountCapabilities accountCapabilities) {
@@ -141,13 +142,13 @@ public class AccountInfo extends CoreAccountInfo {
 
     /** Returns the full name of the account. */
     @CalledByNative
-    public String getFullName() {
+    public @JniType("std::string") String getFullName() {
         return mFullName;
     }
 
     /** Returns the given name of the account. */
     @CalledByNative
-    public String getGivenName() {
+    public @JniType("std::string") String getGivenName() {
         return mGivenName;
     }
 

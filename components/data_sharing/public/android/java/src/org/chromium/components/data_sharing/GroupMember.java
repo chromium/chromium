@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.data_sharing.member_role.MemberRole;
@@ -45,7 +46,7 @@ public class GroupMember {
 
     @CalledByNative
     private static GroupMember createGroupMember(
-            GaiaId gaiaId,
+            @JniType("GaiaId") GaiaId gaiaId,
             String displayName,
             String email,
             @MemberRole int role,

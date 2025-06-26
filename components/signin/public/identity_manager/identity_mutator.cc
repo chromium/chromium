@@ -18,6 +18,7 @@
 #include "components/signin/public/android/jni_headers/IdentityMutator_jni.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "google_apis/gaia/core_account_id.h"
 #endif
 
 namespace signin {
@@ -28,7 +29,7 @@ JniIdentityMutator::JniIdentityMutator(IdentityMutator* identity_mutator)
 
 jint JniIdentityMutator::SetPrimaryAccount(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& primary_account_id,
+    const CoreAccountId& primary_account_id,
     jint j_consent_level,
     jint j_access_point,
     const base::android::JavaParamRef<jobject>& j_prefs_committed_callback) {
@@ -38,8 +39,7 @@ jint JniIdentityMutator::SetPrimaryAccount(
 
   PrimaryAccountMutator::PrimaryAccountError error =
       primary_account_mutator->SetPrimaryAccount(
-          ConvertFromJavaCoreAccountId(env, primary_account_id),
-          static_cast<ConsentLevel>(j_consent_level),
+          primary_account_id, static_cast<ConsentLevel>(j_consent_level),
           static_cast<signin_metrics::AccessPoint>(j_access_point),
           base::BindOnce(base::android::RunRunnableAndroid,
                          base::android::ScopedJavaGlobalRef<jobject>(

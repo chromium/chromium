@@ -522,9 +522,8 @@ class IdentityManager : public KeyedService,
   // Else refreshes all accounts with refresh tokens if they are stale. See
   // RefreshAccountInfoIfStale(const CoreAccountId&).
   // TODO(crbug.com/40284908): Remove |j_core_account_id| from parameters.
-  void RefreshAccountInfoIfStale(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_core_account_id);
+  void RefreshAccountInfoIfStale(JNIEnv* env,
+                                 const CoreAccountId& j_core_account_id);
 
   // Returns true if the browser allows the primary account to be cleared.
   jboolean IsClearPrimaryAccountAllowed(JNIEnv* env) const;

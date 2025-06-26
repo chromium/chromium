@@ -838,6 +838,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         // Calls syncer::MigrateGlobalDataTypePrefsToAccount() to migrate global boolean sync prefs
         // to account settings.
         void migrateGlobalDataTypePrefsToAccount(
-                @JniType("PrefService*") PrefService prefService, GaiaId gaiaId);
+                @JniType("PrefService*") PrefService prefService, @JniType("GaiaId") GaiaId gaiaId);
     }
 }

@@ -32,6 +32,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/android/jni_headers/IdentityManager_jni.h"
+#include "google_apis/gaia/core_account_id.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -418,11 +419,8 @@ void IdentityManager::RefreshAccountInfoIfStale(
 
 void IdentityManager::RefreshAccountInfoIfStale(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_core_account_id) {
-  if (j_core_account_id) {
-    RefreshAccountInfoIfStale(
-        ConvertFromJavaCoreAccountId(env, j_core_account_id));
-  }
+    const CoreAccountId& core_account_id) {
+  RefreshAccountInfoIfStale(core_account_id);
 }
 
 base::android::ScopedJavaLocalRef<jobject>
