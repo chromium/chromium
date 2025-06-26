@@ -14,12 +14,10 @@
 #import "components/content_settings/core/common/content_settings_pattern.h"
 #import "components/content_settings/core/common/pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/content_setting_backed_boolean.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
@@ -53,7 +51,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @interface BlockPopupsTableViewController () <
     BooleanObserver,
     PopoverLabelViewControllerDelegate> {
-  raw_ptr<ProfileIOS> _profile;  // weak
+  raw_ptr<HostContentSettingsMap> _settingsMap;  // weak
+
+  raw_ptr<PrefService> _prefService;  // weak
 
   // List of url patterns that are allowed to display popups.
   base::Value::List _exceptions;
@@ -75,14 +75,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @implementation BlockPopupsTableViewController
 
-- (instancetype)initWithProfile:(ProfileIOS*)profile {
-  DCHECK(profile);
+- (instancetype)initWithHostContentSettingsMap:
+                    (HostContentSettingsMap*)settingsMap
+                                   prefService:(PrefService*)prefService {
+  DCHECK(settingsMap);
+  DCHECK(prefService);
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _profile = profile;
-    HostContentSettingsMap* settingsMap =
-        ios::HostContentSettingsMapFactory::GetForProfile(_profile);
+    _settingsMap = settingsMap;
+    _prefService = prefService;
     _disablePopupsSetting = [[ContentSettingBackedBoolean alloc]
         initWithHostContentSettingsMap:settingsMap
                              settingID:ContentSettingsType::POPUPS
@@ -115,8 +117,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Block popups switch.
   [model addSectionWithIdentifier:SectionIdentifierMainSwitch];
 
-  if (_profile->GetPrefs()->IsManagedPreference(
-          prefs::kManagedDefaultPopupsSetting)) {
+  if (_prefService->IsManagedPreference(prefs::kManagedDefaultPopupsSetting)) {
     _blockPopupsManagedItem = [self blockPopupsManagedItem];
     [model addItem:_blockPopupsManagedItem
         toSectionWithIdentifier:SectionIdentifierMainSwitch];
@@ -301,11 +302,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
     // Remove the exception for the site by resetting its popup setting to the
     // default.
-    ios::HostContentSettingsMapFactory::GetForProfile(_profile)
-        ->SetContentSettingCustomScope(
-            ContentSettingsPattern::FromString(urlToRemove),
-            ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
-            CONTENT_SETTING_DEFAULT);
+    _settingsMap->SetContentSettingCustomScope(
+        ContentSettingsPattern::FromString(urlToRemove),
+        ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
+        CONTENT_SETTING_DEFAULT);
 
     // Remove the site from `_exceptions`.
     _exceptions.erase(_exceptions.begin() + urlIndex);
@@ -345,8 +345,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // chrome/browser/ui/webui/options/content_settings_handler.cc and simplified
   // to only deal with urls/patterns that allow popups.
   ContentSettingsForOneType entries =
-      ios::HostContentSettingsMapFactory::GetForProfile(_profile)
-          ->GetSettingsForOneType(ContentSettingsType::POPUPS);
+      _settingsMap->GetSettingsForOneType(ContentSettingsType::POPUPS);
   for (size_t i = 0; i < entries.size(); ++i) {
     // Skip default settings from extensions and policy, and the default content
     // settings; all of them will affect the default setting UI.

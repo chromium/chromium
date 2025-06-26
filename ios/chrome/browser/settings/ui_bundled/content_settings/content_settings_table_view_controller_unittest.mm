@@ -6,6 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
@@ -32,8 +34,14 @@ class ContentSettingsTableViewControllerTest
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
+    HostContentSettingsMap* settingsMap =
+        ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
+    MailtoHandlerService* mailtoHandlerService =
+        MailtoHandlerServiceFactory::GetForProfile(profile_.get());
     return [[ContentSettingsTableViewController alloc]
-        initWithBrowser:browser_.get()];
+        initWithHostContentSettingsMap:settingsMap
+                  mailtoHandlerService:mailtoHandlerService
+                           prefService:profile_->GetPrefs()];
   }
 
  private:

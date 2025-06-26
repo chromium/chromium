@@ -7,13 +7,17 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
-class ProfileIOS;
+class HostContentSettingsMap;
+class PrefService;
 
 // Controller for the UI that allows the user to block popups.
 @interface BlockPopupsTableViewController : SettingsRootTableViewController
 
 // The designated initializer. `profile` must not be nil.
-- (instancetype)initWithProfile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithHostContentSettingsMap:
+                    (HostContentSettingsMap*)settingsMap
+                                   prefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

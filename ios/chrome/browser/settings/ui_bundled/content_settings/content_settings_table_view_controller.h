@@ -10,6 +10,9 @@
 
 class Browser;
 @class ContentSettingsTableViewController;
+class HostContentSettingsMap;
+class MailtoHandlerService;
+class PrefService;
 
 // Delegate for presentation events related to
 // ContentSettingsTableViewController.
@@ -17,6 +20,14 @@ class Browser;
 
 // Called when the view controller is removed from its parent.
 - (void)contentSettingsTableViewControllerWasRemoved:
+    (ContentSettingsTableViewController*)controller;
+
+// Called when the Default Page Mode option is selected.
+- (void)contentSettingsTableViewControllerSelectedDefaultPageMode:
+    (ContentSettingsTableViewController*)controller;
+
+// Called when the Web Inspector option is selected.
+- (void)contentSettingsTableViewControllerSelectedWebInspector:
     (ContentSettingsTableViewController*)controller;
 
 @end
@@ -31,7 +42,11 @@ class Browser;
         presentationDelegate;
 
 // The designated initializer. `browser` must not be null.
-- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+    initWithHostContentSettingsMap:(HostContentSettingsMap*)settingsMap
+              mailtoHandlerService:(MailtoHandlerService*)mailtoHandlerService
+                       prefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @end

@@ -41,34 +41,38 @@ class BlockPopupsTableViewControllerTest
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
-    return
-        [[BlockPopupsTableViewController alloc] initWithProfile:profile_.get()];
+    return [[BlockPopupsTableViewController alloc]
+        initWithHostContentSettingsMap:settings_map()
+                           prefService:pref_service()];
   }
 
   void SetDisallowPopups() {
-    ios::HostContentSettingsMapFactory::GetForProfile(profile_.get())
-        ->SetDefaultContentSetting(ContentSettingsType::POPUPS,
-                                   CONTENT_SETTING_BLOCK);
+    settings_map()->SetDefaultContentSetting(ContentSettingsType::POPUPS,
+                                             CONTENT_SETTING_BLOCK);
   }
 
   void SetAllowPopups() {
-    ios::HostContentSettingsMapFactory::GetForProfile(profile_.get())
-        ->SetDefaultContentSetting(ContentSettingsType::POPUPS,
-                                   CONTENT_SETTING_ALLOW);
+    settings_map()->SetDefaultContentSetting(ContentSettingsType::POPUPS,
+                                             CONTENT_SETTING_ALLOW);
   }
 
   void AddAllowedPattern(const std::string& pattern, const GURL& url) {
     ContentSettingsPattern allowed_pattern =
         ContentSettingsPattern::FromString(pattern);
 
-    ios::HostContentSettingsMapFactory::GetForProfile(profile_.get())
-        ->SetContentSettingCustomScope(
-            allowed_pattern, ContentSettingsPattern::Wildcard(),
-            ContentSettingsType::POPUPS, CONTENT_SETTING_ALLOW);
+    settings_map()->SetContentSettingCustomScope(
+        allowed_pattern, ContentSettingsPattern::Wildcard(),
+        ContentSettingsType::POPUPS, CONTENT_SETTING_ALLOW);
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               ios::HostContentSettingsMapFactory::GetForProfile(profile_.get())
                   ->GetContentSetting(url, url, ContentSettingsType::POPUPS));
   }
+
+  HostContentSettingsMap* settings_map() {
+    return ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  }
+
+  PrefService* pref_service() { return profile_->GetPrefs(); }
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
