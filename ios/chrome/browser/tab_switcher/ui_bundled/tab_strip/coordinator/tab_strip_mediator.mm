@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/collaboration/public/messaging/message.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
@@ -29,6 +30,8 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -50,6 +53,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon_configurator.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_mediator_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_tab_item.h"
@@ -283,6 +287,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // The bridge between the C++ MessagingBackendService observer and this
   // Objective-C class.
   std::unique_ptr<MessagingBackendServiceBridge> _messagingBackendServiceBridge;
+  // The service for shared tab group flows.
+  raw_ptr<ShareKitService> _shareKitService;
   // The collaboration service for shared tab group.
   raw_ptr<collaboration::CollaborationService> _collaborationService;
   // Helper class to configure tab item images.
@@ -303,12 +309,14 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
              browserList:(BrowserList*)browserList
         messagingService:
             (collaboration::messaging::MessagingBackendService*)messagingService
+         shareKitService:(ShareKitService*)shareKitService
     collaborationService:
         (collaboration::CollaborationService*)collaborationService
            faviconLoader:(FaviconLoader*)faviconLoader {
   if ((self = [super init])) {
     CHECK(browserList);
     _browserList = browserList;
+    _shareKitService = shareKitService;
     _collaborationService = collaborationService;
     _tabGroupSyncService = tabGroupSyncService;
     _consumer = consumer;
@@ -1397,6 +1405,27 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // favicon, as the snapshot is not used in the tab strip.
   _tabImagesConfigurator->FetchFaviconForTabSwitcherItem(tabSwitcherItem,
                                                          completion);
+}
+
+#pragma mark -  TabStripTabGroupCellDataSource
+
+- (id<FacePileProviding>)facePileProviderForItem:
+    (TabStripItemIdentifier*)itemIdentifier {
+  CHECK(itemIdentifier.tabGroupItem);
+  if (!_shareKitService || !_shareKitService->IsSupported() ||
+      !_collaborationService || !_tabGroupSyncService) {
+    return nil;
+  }
+
+  const TabGroup* group = itemIdentifier.tabGroupItem.tabGroup;
+  tab_groups::CollaborationId collaborationID =
+      tab_groups::utils::GetTabGroupCollabID(group, _tabGroupSyncService);
+  if (collaborationID->empty()) {
+    return nil;
+  }
+  UIColor* groupColor = tab_groups::ColorForTabGroupColorId(group->GetColor());
+  return [self.delegate facePileProviderForGroupID:collaborationID.value()
+                                        groupColor:groupColor];
 }
 
 #pragma mark - Private

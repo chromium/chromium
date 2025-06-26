@@ -31,9 +31,6 @@ const CGFloat kDotSize = 14;
 @implementation TabGroupsPanelCell {
   // The main stack view that contains subviews.
   UIStackView* _stackView;
-  // The FacePileProvider, responsible for providing and managing the
-  // FacePileView and ensuring its updates.
-  id<FacePileProviding> _facePileProvider;
   // Spacer view used when `facePile` is added to the `_stackView`.
   UIView* _spacerFacePileView;
 }

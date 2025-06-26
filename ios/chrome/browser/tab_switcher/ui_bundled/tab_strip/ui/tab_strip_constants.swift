@@ -41,14 +41,13 @@ public struct TabStripConstants {
   /// Group item constants.
   public struct GroupItem {
     public static let height: CGFloat = TabItem.height
-    public static let titleContainerHorizontalPadding: CGFloat = 10
-    public static let titleContainerHorizontalMargin: CGFloat = 4
+    public static let contentContainerHorizontalPadding: CGFloat = 10
+    public static let contentContainerHorizontalMargin: CGFloat = 4
     public static let fontSize: CGFloat = TabItem.fontSize
     public static let maxTitleWidth: CGFloat = 150
     public static let minCellWidth =
-      titleContainerHorizontalPadding * 2 + titleContainerHorizontalMargin * 2
+      contentContainerHorizontalPadding * 2 + contentContainerHorizontalMargin * 2
     public static let maxCellWidth = maxTitleWidth + minCellWidth
-    public static let notificationDotSize: CGFloat = 6
     public static let notificationDotAccessibilityIdentifier: String =
       "TabStripNotificationDotAccessibilityIdentifier"
   }

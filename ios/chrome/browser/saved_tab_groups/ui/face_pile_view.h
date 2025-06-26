@@ -18,6 +18,9 @@
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
+// The width that the FacePileView will take.
+@property(nonatomic, readonly) CGFloat optimalWidth;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_UI_FACE_PILE_VIEW_H_

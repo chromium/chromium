@@ -31,15 +31,15 @@ import ios_chrome_browser_tab_switcher_ui_bundled_tab_strip_ui_swift_constants
 
 /// Bridge to access `TabStripConstants.GroupItem` from Objective-C code.
 @objcMembers public class TabStripGroupItemConstants: NSObject {
-  public static let titleContainerHorizontalPadding = TabStripConstants.GroupItem
-    .titleContainerHorizontalPadding
-  public static let titleContainerHorizontalMargin = TabStripConstants.GroupItem
-    .titleContainerHorizontalMargin
+  public static let contentContainerHorizontalPadding = TabStripConstants.GroupItem
+    .contentContainerHorizontalPadding
+  public static let contentContainerHorizontalMargin = TabStripConstants.GroupItem
+    .contentContainerHorizontalMargin
   public static let fontSize = TabStripConstants.GroupItem.fontSize
   public static let maxTitleWidth = TabStripConstants.GroupItem.maxTitleWidth
-  public static let notificationDotSize = TabStripConstants.GroupItem.notificationDotSize
   public static let notificationDotAccessibilityIdentifier = TabStripConstants.GroupItem
     .notificationDotAccessibilityIdentifier
+  public static let maxCellWidth = TabStripConstants.GroupItem.maxCellWidth
 }
 
 /// Bridge to access `TabStripConstants.StaticSeparator` from Objective-C code.

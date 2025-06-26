@@ -8,6 +8,7 @@ source_set("coordinator") {
     "tab_strip_coordinator.mm",
     "tab_strip_mediator.h",
     "tab_strip_mediator.mm",
+    "tab_strip_mediator_delegate.h",
   ]
   deps = [
     ":tab_strip_mediator_utils",
@@ -27,10 +28,12 @@ source_set("coordinator") {
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/saved_tab_groups/coordinator",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
     "//ios/chrome/browser/saved_tab_groups/ui:utils",
     "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/share_kit/model:factory",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",

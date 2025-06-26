@@ -10,7 +10,16 @@
 
 #pragma mark - FacePileProviding
 
+- (CGFloat)facePileWdith {
+  return 60;
+}
+
 - (UIView*)facePileView {
   return [[UIView alloc] init];
 }
+
+- (BOOL)isEqualFacePileProviding:(id<FacePileProviding>)otherProvider {
+  return NO;
+}
+
 @end
