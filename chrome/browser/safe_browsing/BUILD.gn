@@ -51,6 +51,7 @@ static_library("safe_browsing") {
     "//components/safe_browsing/content/browser/notification_content_detection:notification_content_detection",
     "//components/safe_browsing/content/browser/triggers:suspicious_site_trigger",
     "//components/safe_browsing/content/browser/web_ui",
+    "//components/safe_browsing/content/browser/web_ui:local_state_delegate",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:download_check_result",
     "//components/safe_browsing/core/browser:referrer_chain_provider",

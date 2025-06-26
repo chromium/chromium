@@ -13,6 +13,7 @@ static_library("web_ui") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    ":local_state_delegate",
     "//base",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:connectors_proto_extras",
@@ -45,6 +46,10 @@ static_library("web_ui") {
   ]
 
   public_deps = [ "//components/safe_browsing/core/common/proto:webui_proto" ]
+}
+
+source_set("local_state_delegate") {
+  sources = [ "safe_browsing_local_state_delegate.h" ]
 }
 
 source_set("unit_tests") {

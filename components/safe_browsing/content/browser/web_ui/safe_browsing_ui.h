@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_local_state_delegate.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
@@ -36,7 +37,6 @@
 #endif
 
 namespace safe_browsing {
-class WebUIInfoSingleton;
 class ReferrerChainProvider;
 class SafeBrowsingUIHandler;
 
@@ -113,20 +113,6 @@ struct HPRTLookupRequest {
 struct ClientPhishingRequestAndToken {
   ClientPhishingRequest request;
   std::string token;
-};
-
-// Provides access to local state preferences.
-class SafeBrowsingLocalStateDelegate {
- public:
-  SafeBrowsingLocalStateDelegate() = default;
-  virtual ~SafeBrowsingLocalStateDelegate() = default;
-  SafeBrowsingLocalStateDelegate(const SafeBrowsingLocalStateDelegate&) =
-      delete;
-  SafeBrowsingLocalStateDelegate& operator=(
-      const SafeBrowsingLocalStateDelegate&) = delete;
-  explicit SafeBrowsingLocalStateDelegate(content::WebUI* web_ui) {}
-  // Returns the local state preference service.
-  virtual PrefService* GetLocalState() = 0;
 };
 
 class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
