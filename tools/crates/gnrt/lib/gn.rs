@@ -77,7 +77,7 @@ pub struct RuleDetail {
     pub cargo_pkg_description: Option<String>,
     pub deps: Vec<DepGroup>,
     pub build_deps: Vec<DepGroup>,
-    pub aliased_deps: Vec<(String, String)>,
+    pub aliased_deps: Vec<(String, PackageId)>,
     pub features: Vec<String>,
     pub build_root: Option<String>,
     pub build_script_sources: Vec<String>,
@@ -198,6 +198,17 @@ pub fn build_rule_from_dep(
         ..Default::default()
     };
 
+    // Lambda for translating `DepOfDep` into a `PackageId`.
+    let create_package_id = |dep: &DepOfDep| {
+        let name = NormalizedName::from_crate_name(&dep.package_name).to_string();
+        let epoch = match name_lib_style {
+            // TODO(danakj): Separate this choice to another parameter option.
+            NameLibStyle::LibLiteral => Some(Epoch::from_version(&dep.version).to_string()),
+            NameLibStyle::PackageName => None,
+        };
+        PackageId { name, epoch }
+    };
+
     // Add only normal and build dependencies: we don't run unit tests.
     let normal_deps: Vec<&DepOfDep> = dep
         .dependencies
@@ -214,7 +225,7 @@ pub fn build_rule_from_dep(
         for dep in &normal_deps {
             let target_name = NormalizedName::from_crate_name(&dep.package_name).to_string();
             if target_name != dep.use_name {
-                aliases.push((dep.use_name.clone(), format!(":{target_name}")));
+                aliases.push((dep.use_name.clone(), create_package_id(&dep)));
             }
         }
         aliases.sort_unstable();
@@ -227,24 +238,10 @@ pub fn build_rule_from_dep(
 
     // Group the dependencies by condition, where the unconditional deps come
     // first.
-    detail_template.deps = group_deps(&normal_deps, |d| PackageId {
-        name: NormalizedName::from_crate_name(&d.package_name).to_string(),
-        epoch: match name_lib_style {
-            // TODO(danakj): Separate this choice to another parameter option.
-            NameLibStyle::LibLiteral => Some(Epoch::from_version(&d.version).to_string()),
-            NameLibStyle::PackageName => None,
-        },
-    })
-    .with_context(|| format!("Error processing dependencies of {}", dep.package_name))?;
-    detail_template.build_deps = group_deps(&build_deps, |d| PackageId {
-        name: NormalizedName::from_crate_name(&d.package_name).to_string(),
-        epoch: match name_lib_style {
-            // TODO(danakj): Separate this choice to another parameter option.
-            NameLibStyle::LibLiteral => Some(Epoch::from_version(&d.version).to_string()),
-            NameLibStyle::PackageName => None,
-        },
-    })
-    .with_context(|| format!("Error processing build dependencies of {}", dep.package_name))?;
+    detail_template.deps = group_deps(&normal_deps, create_package_id)
+        .with_context(|| format!("Error processing dependencies of {}", dep.package_name))?;
+    detail_template.build_deps = group_deps(&build_deps, create_package_id)
+        .with_context(|| format!("Error processing build dependencies of {}", dep.package_name))?;
     detail_template.aliased_deps = aliased_normal_deps;
 
     detail_template.sources =
