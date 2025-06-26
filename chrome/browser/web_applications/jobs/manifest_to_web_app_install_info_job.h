@@ -58,6 +58,7 @@ class ManifestToWebAppInstallInfoJob {
       webapps::WebappInstallSource install_source,
       base::WeakPtr<content::WebContents> web_contents,
       base::FunctionRef<void(IconUrlSizeSet&)> icon_url_modifications,
+      base::Value::Dict& debug_data,
       WebAppInstallInfoCreationCallback creation_callback,
       WebAppInstallInfoConstructOptions options =
           WebAppInstallInfoConstructOptions{});
@@ -68,6 +69,7 @@ class ManifestToWebAppInstallInfoJob {
       WebAppDataRetriever& data_retriever,
       bool background_installation,
       webapps::WebappInstallSource install_source,
+      base::Value::Dict& debug_data,
       WebAppInstallInfoCreationCallback creation_callback,
       WebAppInstallInfoConstructOptions options);
 
@@ -84,6 +86,7 @@ class ManifestToWebAppInstallInfoJob {
   blink::mojom::ManifestPtr manifest_;
   base::raw_ref<WebAppDataRetriever> data_retriever_;
   InstallErrorLogEntry install_error_log_entry_;
+  base::raw_ref<base::Value::Dict> debug_data_;
   WebAppInstallInfoCreationCallback creation_callback_;
   WebAppInstallInfoConstructOptions options_;
 

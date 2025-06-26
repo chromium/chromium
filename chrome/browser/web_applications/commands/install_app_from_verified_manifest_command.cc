@@ -200,7 +200,7 @@ void InstallAppFromVerifiedManifestCommand::OnManifestParsed(
           *manifest, *data_retriever_.get(), /*background_installation=*/true,
           install_source_,
           web_contents_lock_->shared_web_contents().GetWeakPtr(),
-          icon_url_modifications,
+          icon_url_modifications, GetMutableDebugValue(),
           base::BindOnce(&InstallAppFromVerifiedManifestCommand::
                              OnInstallInfoParsedFromManifest,
                          weak_ptr_factory_.GetWeakPtr()),

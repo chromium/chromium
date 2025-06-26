@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <utility>
@@ -34,6 +35,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-data-view.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -377,11 +379,12 @@ ManifestToWebAppInstallInfoJob::CreateAndStart(
     webapps::WebappInstallSource install_source,
     base::WeakPtr<content::WebContents> web_contents,
     base::FunctionRef<void(IconUrlSizeSet&)> icon_url_modifications,
+    base::Value::Dict& debug_data,
     WebAppInstallInfoCreationCallback creation_callback,
     WebAppInstallInfoConstructOptions options) {
   auto job = base::WrapUnique(new ManifestToWebAppInstallInfoJob(
       manifest, data_retriever, background_installation, install_source,
-      std::move(creation_callback), options));
+      debug_data, std::move(creation_callback), options));
   job->Start(web_contents, icon_url_modifications);
   return job;
 }
@@ -391,13 +394,30 @@ ManifestToWebAppInstallInfoJob::ManifestToWebAppInstallInfoJob(
     WebAppDataRetriever& data_retriever,
     bool background_installation,
     webapps::WebappInstallSource install_source,
+    base::Value::Dict& debug_data,
     WebAppInstallInfoCreationCallback creation_callback,
     WebAppInstallInfoConstructOptions options)
     : manifest_(manifest.Clone()),
       data_retriever_(data_retriever),
       install_error_log_entry_(background_installation, install_source),
+      debug_data_(debug_data),
       creation_callback_(std::move(creation_callback)),
-      options_(options) {}
+      options_(options) {
+  // These are the pre-requisites for constructing a WebAppInstallInfo from a
+  // valid manifest id and start url.
+  CHECK(manifest_->id.is_valid());
+  CHECK(!manifest_->id.has_ref());
+  CHECK(manifest_->start_url.is_valid());
+
+  debug_data_->Set("manifest_id", manifest_->id.spec());
+  debug_data_->Set("start_url", manifest_->start_url.spec());
+  if (manifest_->name && !manifest_->name->empty()) {
+    debug_data_->Set("manifest_name", *manifest_->name);
+  }
+  if (manifest_->short_name && !manifest_->short_name->empty()) {
+    debug_data_->Set("manifest_short_name", *manifest_->short_name);
+  }
+}
 
 void ManifestToWebAppInstallInfoJob::Start(
     base::WeakPtr<content::WebContents> web_contents,
@@ -412,11 +432,6 @@ void ManifestToWebAppInstallInfoJob::Start(
     return;
   }
 
-  // These are the pre-requisites for constructing a WebAppInstallInfo from a
-  // valid manifest id and start url.
-  CHECK(manifest_->id.is_valid());
-  CHECK(!manifest_->id.has_ref());
-  CHECK(manifest_->start_url.is_valid());
   install_info_ =
       std::make_unique<WebAppInstallInfo>(manifest_->id, manifest_->start_url);
 
@@ -429,6 +444,10 @@ void ManifestToWebAppInstallInfoJob::Start(
   IconUrlSizeSet icon_urls_to_download =
       GetValidIconUrlsToDownload(*install_info_.get());
   icon_url_modifications(icon_urls_to_download);
+  for (const IconUrlWithSize& icon_with_size : icon_urls_to_download) {
+    debug_data_->EnsureList("icon_urls_from_manifest")
+        ->Append(icon_with_size.ToString());
+  }
 
   // This needs to be async to prevent re-entry issues on the caller and to
   // ensure that the outcome of this task is always async, as GetIcons() is
@@ -565,6 +584,15 @@ void ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo(
     IconsDownloadedResult result,
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
+  base::Value::Dict* icons_downloaded =
+      debug_data_->EnsureDict("icons_created");
+  for (const auto& [url, bitmap_vector] : icons_map) {
+    base::Value::List* sizes = icons_downloaded->EnsureList(url.spec());
+    for (const SkBitmap& bitmap : bitmap_vector) {
+      sizes->Append(bitmap.width());
+    }
+  }
+
   PopulateProductIcons(install_info_.get(), &icons_map);
   PopulateOtherIcons(install_info_.get(), icons_map);
   RecordDownloadedIconsResultAndHttpStatusCodes(result, icons_http_results);
