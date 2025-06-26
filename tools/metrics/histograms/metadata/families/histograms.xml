@@ -143,7 +143,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ChromeOS.FamilyLinkUser.LogSegment"
-    enum="FamilyLinkUserLogSegment" expires_after="never">
+    enum="SupervisedUserLogSegment" expires_after="never">
 <!-- expires-never: used internally for filtering -->
 
   <owner>courtneywong@chromium.org</owner>
@@ -442,7 +442,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </summary>
 </histogram>
 
-<histogram name="FamilyLinkUser.LogSegment" enum="FamilyLinkUserLogSegment"
+<histogram name="FamilyLinkUser.LogSegment" enum="SupervisedUserLogSegment"
     expires_after="never">
 <!-- expires-never: used internally for filtering -->
 

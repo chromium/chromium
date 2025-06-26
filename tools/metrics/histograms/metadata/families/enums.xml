@@ -186,42 +186,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:LocalApprovalResult) -->
 
-<!-- LINT.IfChange(FamilyLinkUserLogSegment) -->
-
-<enum name="FamilyLinkUserLogSegment">
-  <summary>
-    Filters family link user metrics into categories of interest.
-  </summary>
-  <int value="0" label="Unsupervised">
-    None of the users are supervised or parents. This includes signed out users,
-    and where a secondary account is supervised.
-  </int>
-  <int value="1" label="Family Link policy enabled supervision">
-    All profiles are under the age of consent and have supervision applied to
-    their accounts (managed by Family Link).
-  </int>
-  <int value="2" label="Family Link user enabled supervision">
-    All profiles are over the age of consent and have opted in to supervision
-    (managed by Family Link).
-  </int>
-  <int value="3" label="Mixed profile with supervision">
-    Profiles with different supervision types were in use during the reporting
-    window. At least one profile must be supervised.
-  </int>
-  <int value="4" label="Parent">
-    Users that have parent accounts (family manager or parent) in Family Link.
-    There must be at least one profile with a parent and no supervision across
-    the profiles.
-  </int>
-  <int value="5" label="Supervision enabled locally">
-    Users with or without accounts that have supervision applied to their
-    devices locally. These users are mutually exclusive with those with Family
-    Link enabled supervisions. Only available for Android users.
-  </int>
-</enum>
-
-<!-- LINT.ThenChange(//components/supervised_user/core/browser/family_link_user_log_record.h:FamilyLinkUserLogSegment) -->
-
 <!-- LINT.IfChange(FamilyLinkUserParentAccessWidgetError) -->
 
 <enum name="FamilyLinkUserParentAccessWidgetError">
@@ -292,7 +256,7 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="1" label="Try to block mature sites">
     Uses external service to detect mature sites. This is the only available
-    setting for local supervision (see FamilyLinkUserLogSegment).
+    setting for local supervision (see SupervisedUserLogSegment).
   </int>
   <int value="2" label="Only allow Certain Sites">
     In this mode all sites are blocked, unless explicitly allowlisted.
@@ -588,6 +552,42 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h:ImplicitExtensionApprovalEntryPoint) -->
+
+<!-- LINT.IfChange(SupervisedUserLogSegment) -->
+
+<enum name="SupervisedUserLogSegment">
+  <summary>
+    Filters supervised user metrics into categories of interest.
+  </summary>
+  <int value="0" label="Unsupervised">
+    None of the users are supervised or parents. This includes signed out users,
+    and where a secondary account is supervised.
+  </int>
+  <int value="1" label="Family Link policy enabled supervision">
+    All profiles are under the age of consent and have supervision applied to
+    their accounts (managed by Family Link).
+  </int>
+  <int value="2" label="Family Link user enabled supervision">
+    All profiles are over the age of consent and have opted in to supervision
+    (managed by Family Link).
+  </int>
+  <int value="3" label="Mixed profile with supervision">
+    Profiles with different supervision types were in use during the reporting
+    window. At least one profile must be supervised.
+  </int>
+  <int value="4" label="Parent">
+    Users that have parent accounts (family manager or parent) in Family Link.
+    There must be at least one profile with a parent and no supervision across
+    the profiles.
+  </int>
+  <int value="5" label="Supervision enabled locally">
+    Users with or without accounts that have supervision applied to their
+    devices locally. These users are mutually exclusive with those with Family
+    Link enabled supervisions. Only available for Android users.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/browser/supervised_user_log_record.h:SupervisedUserLogSegment) -->
 
 <enum name="SupervisedUserParentPermissionDialog">
   <summary>

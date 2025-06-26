@@ -57,9 +57,9 @@ void ChromeSupervisedUserServicePlatformDelegateBase::
   // where a supervised user can access incognito.
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfileIfExists(&profile_.get());
-  std::optional<supervised_user::FamilyLinkUserLogRecord::Segment>
+  std::optional<supervised_user::SupervisedUserLogRecord::Segment>
       user_log_segment =
-          supervised_user::FamilyLinkUserLogRecord::Create(
+          supervised_user::SupervisedUserLogRecord::Create(
               IdentityManagerFactory::GetForProfile(&profile_.get()),
               *profile_->GetPrefs(),
               *HostContentSettingsMapFactory::GetForProfile(&profile_.get()),
@@ -70,11 +70,11 @@ void ChromeSupervisedUserServicePlatformDelegateBase::
   }
 
   switch (user_log_segment.value()) {
-    case supervised_user::FamilyLinkUserLogRecord::Segment::
+    case supervised_user::SupervisedUserLogRecord::Segment::
         kSupervisionEnabledByFamilyLinkPolicy:
-    case supervised_user::FamilyLinkUserLogRecord::Segment::
+    case supervised_user::SupervisedUserLogRecord::Segment::
         kSupervisionEnabledByFamilyLinkUser:
-    case supervised_user::FamilyLinkUserLogRecord::Segment::
+    case supervised_user::SupervisedUserLogRecord::Segment::
         kSupervisionEnabledLocally:
       if (!supervised_user_service->IsLocalContentFilteringEnabled()) {
         CHECK(supervised_user_service->IsSupervisedLocally());
@@ -111,9 +111,9 @@ void ChromeSupervisedUserServicePlatformDelegateBase::
       }
       break;
 
-    case supervised_user::FamilyLinkUserLogRecord::Segment::kParent:
-    case supervised_user::FamilyLinkUserLogRecord::Segment::kUnsupervised:
-    case supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile:
+    case supervised_user::SupervisedUserLogRecord::Segment::kParent:
+    case supervised_user::SupervisedUserLogRecord::Segment::kUnsupervised:
+    case supervised_user::SupervisedUserLogRecord::Segment::kMixedProfile:
       // Incognito usage is expected, so don't output any more detailed metrics.
       break;
   }

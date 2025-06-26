@@ -16,7 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/supervised_user/core/browser/family_link_user_log_record.h"
+#include "components/supervised_user/core/browser/supervised_user_log_record.h"
 #include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
 #include "components/supervised_user/core/browser/proto/transaction_data.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -77,43 +77,43 @@ std::optional<T> GetMergedRecord(const std::vector<std::optional<T>> records,
 }
 
 bool HasSupervisedStatus(
-    std::optional<FamilyLinkUserLogRecord::Segment> segment) {
+    std::optional<SupervisedUserLogRecord::Segment> segment) {
   if (!segment.has_value()) {
     return false;
   }
   switch (segment.value()) {
-    case FamilyLinkUserLogRecord::Segment::kUnsupervised:
-    case FamilyLinkUserLogRecord::Segment::kParent:
+    case SupervisedUserLogRecord::Segment::kUnsupervised:
+    case SupervisedUserLogRecord::Segment::kParent:
       return false;
-    case FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkPolicy:
-    case FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkUser:
-    case FamilyLinkUserLogRecord::Segment::kSupervisionEnabledLocally:
+    case SupervisedUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkPolicy:
+    case SupervisedUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkUser:
+    case SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally:
       return true;
-    case FamilyLinkUserLogRecord::Segment::kMixedProfile:
+    case SupervisedUserLogRecord::Segment::kMixedProfile:
       NOTREACHED();
   }
 }
 
-std::optional<FamilyLinkUserLogRecord::Segment> GetLogSegmentForHistogram(
-    const std::vector<FamilyLinkUserLogRecord>& records) {
+std::optional<SupervisedUserLogRecord::Segment> GetLogSegmentForHistogram(
+    const std::vector<SupervisedUserLogRecord>& records) {
   bool has_supervised_status = false;
-  std::optional<FamilyLinkUserLogRecord::Segment> merged_log_segment;
-  for (const FamilyLinkUserLogRecord& record : records) {
-    std::optional<FamilyLinkUserLogRecord::Segment> supervision_status =
+  std::optional<SupervisedUserLogRecord::Segment> merged_log_segment;
+  for (const SupervisedUserLogRecord& record : records) {
+    std::optional<SupervisedUserLogRecord::Segment> supervision_status =
         record.GetSupervisionStatusForPrimaryAccount();
     has_supervised_status |= HasSupervisedStatus(supervision_status);
     if (merged_log_segment.has_value() &&
         merged_log_segment.value() != supervision_status) {
       if (has_supervised_status) {
-        // A Family Link user record is only expected to be mixed if there is at
+        // A supervised user record is only expected to be mixed if there is at
         // least one supervised user.
-        return FamilyLinkUserLogRecord::Segment::kMixedProfile;
+        return SupervisedUserLogRecord::Segment::kMixedProfile;
       }
       CHECK(merged_log_segment.value() ==
-                FamilyLinkUserLogRecord::Segment::kParent ||
+                SupervisedUserLogRecord::Segment::kParent ||
             merged_log_segment.value() ==
-                FamilyLinkUserLogRecord::Segment::kUnsupervised);
-      merged_log_segment = FamilyLinkUserLogRecord::Segment::kParent;
+                SupervisedUserLogRecord::Segment::kUnsupervised);
+      merged_log_segment = SupervisedUserLogRecord::Segment::kParent;
     } else {
       merged_log_segment = supervision_status;
     }
@@ -122,18 +122,18 @@ std::optional<FamilyLinkUserLogRecord::Segment> GetLogSegmentForHistogram(
 }
 
 std::optional<WebFilterType> GetWebFilterForHistogram(
-    const std::vector<FamilyLinkUserLogRecord>& records) {
+    const std::vector<SupervisedUserLogRecord>& records) {
   std::vector<std::optional<WebFilterType>> filter_types;
-  for (const FamilyLinkUserLogRecord& record : records) {
+  for (const SupervisedUserLogRecord& record : records) {
     filter_types.push_back(record.GetWebFilterTypeForPrimaryAccount());
   }
   return GetMergedRecord(filter_types, WebFilterType::kMixed);
 }
 
 std::optional<ToggleState> GetPermissionsToggleStateForHistogram(
-    const std::vector<FamilyLinkUserLogRecord>& records) {
+    const std::vector<SupervisedUserLogRecord>& records) {
   std::vector<std::optional<ToggleState>> permissions_toggle_states;
-  for (const FamilyLinkUserLogRecord& record : records) {
+  for (const SupervisedUserLogRecord& record : records) {
     permissions_toggle_states.push_back(
         record.GetPermissionsToggleStateForPrimaryAccount());
   }
@@ -141,9 +141,9 @@ std::optional<ToggleState> GetPermissionsToggleStateForHistogram(
 }
 
 std::optional<ToggleState> GetExtensionsToggleStateForHistogram(
-    const std::vector<FamilyLinkUserLogRecord>& records) {
+    const std::vector<SupervisedUserLogRecord>& records) {
   std::vector<std::optional<ToggleState>> extensions_toggle_states;
-  for (const FamilyLinkUserLogRecord& record : records) {
+  for (const SupervisedUserLogRecord& record : records) {
     extensions_toggle_states.push_back(
         record.GetExtensionsToggleStateForPrimaryAccount());
   }
@@ -317,10 +317,10 @@ GURL NormalizeUrl(const GURL& url) {
 }
 
 bool EmitLogRecordHistograms(
-    const std::vector<FamilyLinkUserLogRecord>& records) {
+    const std::vector<SupervisedUserLogRecord>& records) {
   bool did_emit_histogram = false;
 
-  std::optional<FamilyLinkUserLogRecord::Segment> segment =
+  std::optional<SupervisedUserLogRecord::Segment> segment =
       GetLogSegmentForHistogram(records);
   if (segment.has_value()) {
     base::UmaHistogramEnumeration(kFamilyLinkUserLogSegmentHistogramName,

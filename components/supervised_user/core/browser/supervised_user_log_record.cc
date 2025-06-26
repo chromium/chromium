@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/family_link_user_log_record.h"
+#include "components/supervised_user/core/browser/supervised_user_log_record.h"
 
 #include <optional>
 
@@ -35,7 +35,7 @@ bool IsParentFamilyMemberRole(const PrefService& pref_service) {
   return family_link_role == "parent" || family_link_role == "family_manager";
 }
 
-std::optional<FamilyLinkUserLogRecord::Segment> GetSupervisionStatus(
+std::optional<SupervisedUserLogRecord::Segment> GetSupervisionStatus(
     signin::IdentityManager* identity_manager,
     const PrefService& pref_service,
     SupervisedUserService* supervised_user_service) {
@@ -43,13 +43,13 @@ std::optional<FamilyLinkUserLogRecord::Segment> GetSupervisionStatus(
       supervised_user_service->IsSupervisedLocally()) {
     // This type of supervision is signin-status independent (but only available
     // to non-incognito profiles).
-    return FamilyLinkUserLogRecord::Segment::kSupervisionEnabledLocally;
+    return SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally;
   }
 
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // Unsigned users who are not supervised locally are considered
     // unsupervised.
-    return FamilyLinkUserLogRecord::Segment::kUnsupervised;
+    return SupervisedUserLogRecord::Segment::kUnsupervised;
   }
 
   AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
@@ -66,34 +66,34 @@ std::optional<FamilyLinkUserLogRecord::Segment> GetSupervisionStatus(
     auto is_opted_in_to_parental_supervision =
         account_info.capabilities.is_opted_in_to_parental_supervision();
     if (is_opted_in_to_parental_supervision == signin::Tribool::kTrue) {
-      return FamilyLinkUserLogRecord::Segment::
+      return SupervisedUserLogRecord::Segment::
           kSupervisionEnabledByFamilyLinkUser;
     } else {
       // Log as a supervised user that has parental supervision enabled
       // by a policy applied to their account, e.g. Unicorn accounts.
-      return FamilyLinkUserLogRecord::Segment::
+      return SupervisedUserLogRecord::Segment::
           kSupervisionEnabledByFamilyLinkPolicy;
     }
   } else if (account_info.capabilities.can_fetch_family_member_info() ==
              signin::Tribool::kTrue) {
     if (IsParentFamilyMemberRole(pref_service)) {
-      return FamilyLinkUserLogRecord::Segment::kParent;
+      return SupervisedUserLogRecord::Segment::kParent;
     }
   }
   // Log as unsupervised user if the account is not subject to parental
   // controls and is not a parent in Family Link.
-  return FamilyLinkUserLogRecord::Segment::kUnsupervised;
+  return SupervisedUserLogRecord::Segment::kUnsupervised;
 }
 
 // Returns true if there is no available supervision status or the account is
 // not subject to parental controls.
 bool IsUnsupervisedStatus(
-    std::optional<FamilyLinkUserLogRecord::Segment> supervision_status) {
+    std::optional<SupervisedUserLogRecord::Segment> supervision_status) {
   return !supervision_status.has_value() ||
          supervision_status.value() ==
-             FamilyLinkUserLogRecord::Segment::kUnsupervised ||
+             SupervisedUserLogRecord::Segment::kUnsupervised ||
          supervision_status.value() ==
-             FamilyLinkUserLogRecord::Segment::kParent;
+             SupervisedUserLogRecord::Segment::kParent;
 }
 
 // Returns the web filter type of the primary account user. This function
@@ -103,7 +103,7 @@ bool IsUnsupervisedStatus(
 // users yield kDisabled filter type when they decide to control other features
 // than browser content.
 std::optional<WebFilterType> GetWebFilterType(
-    std::optional<FamilyLinkUserLogRecord::Segment> supervision_status,
+    std::optional<SupervisedUserLogRecord::Segment> supervision_status,
     SupervisedUserService* supervised_user_service) {
   if (!supervised_user_service || IsUnsupervisedStatus(supervision_status)) {
     return std::nullopt;
@@ -113,7 +113,7 @@ std::optional<WebFilterType> GetWebFilterType(
 }
 
 std::optional<ToggleState> GetPermissionsToggleState(
-    std::optional<FamilyLinkUserLogRecord::Segment> supervision_status,
+    std::optional<SupervisedUserLogRecord::Segment> supervision_status,
     const PrefService& pref_service,
     const HostContentSettingsMap& content_settings_map) {
 #if BUILDFLAG(IS_IOS)
@@ -156,7 +156,7 @@ bool SupervisedUserCanSkipExtensionParentApprovals(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 std::optional<ToggleState> GetExtensionToggleState(
-    std::optional<FamilyLinkUserLogRecord::Segment> supervision_status,
+    std::optional<SupervisedUserLogRecord::Segment> supervision_status,
     const PrefService& pref_service) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (IsUnsupervisedStatus(supervision_status)) {
@@ -173,15 +173,15 @@ std::optional<ToggleState> GetExtensionToggleState(
 
 }  // namespace
 
-FamilyLinkUserLogRecord FamilyLinkUserLogRecord::Create(
+SupervisedUserLogRecord SupervisedUserLogRecord::Create(
     signin::IdentityManager* identity_manager,
     const PrefService& pref_service,
     const HostContentSettingsMap& content_settings_map,
     SupervisedUserService* supervised_user_service) {
-  std::optional<FamilyLinkUserLogRecord::Segment> supervision_status =
+  std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       GetSupervisionStatus(identity_manager, pref_service,
                            supervised_user_service);
-  return FamilyLinkUserLogRecord(
+  return SupervisedUserLogRecord(
       supervision_status,
       GetWebFilterType(supervision_status, supervised_user_service),
       GetPermissionsToggleState(supervision_status, pref_service,
@@ -189,8 +189,8 @@ FamilyLinkUserLogRecord FamilyLinkUserLogRecord::Create(
       GetExtensionToggleState(supervision_status, pref_service));
 }
 
-FamilyLinkUserLogRecord::FamilyLinkUserLogRecord(
-    std::optional<FamilyLinkUserLogRecord::Segment> supervision_status,
+SupervisedUserLogRecord::SupervisedUserLogRecord(
+    std::optional<SupervisedUserLogRecord::Segment> supervision_status,
     std::optional<WebFilterType> web_filter_type,
     std::optional<ToggleState> permissions_toggle_state,
     std::optional<ToggleState> extensions_toggle_state)
@@ -199,23 +199,23 @@ FamilyLinkUserLogRecord::FamilyLinkUserLogRecord(
       permissions_toggle_state_(permissions_toggle_state),
       extensions_toggle_state_(extensions_toggle_state) {}
 
-std::optional<FamilyLinkUserLogRecord::Segment>
-FamilyLinkUserLogRecord::GetSupervisionStatusForPrimaryAccount() const {
+std::optional<SupervisedUserLogRecord::Segment>
+SupervisedUserLogRecord::GetSupervisionStatusForPrimaryAccount() const {
   return supervision_status_;
 }
 
 std::optional<WebFilterType>
-FamilyLinkUserLogRecord::GetWebFilterTypeForPrimaryAccount() const {
+SupervisedUserLogRecord::GetWebFilterTypeForPrimaryAccount() const {
   return web_filter_type_;
 }
 
 std::optional<ToggleState>
-FamilyLinkUserLogRecord::GetPermissionsToggleStateForPrimaryAccount() const {
+SupervisedUserLogRecord::GetPermissionsToggleStateForPrimaryAccount() const {
   return permissions_toggle_state_;
 }
 
 std::optional<ToggleState>
-FamilyLinkUserLogRecord::GetExtensionsToggleStateForPrimaryAccount() const {
+SupervisedUserLogRecord::GetExtensionsToggleStateForPrimaryAccount() const {
   return extensions_toggle_state_;
 }
 

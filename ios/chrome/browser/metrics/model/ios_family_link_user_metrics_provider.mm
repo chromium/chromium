@@ -7,7 +7,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "components/supervised_user/core/browser/family_link_user_log_record.h"
+#import "components/supervised_user/core/browser/supervised_user_log_record.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
@@ -21,10 +21,10 @@ IOSFamilyLinkUserMetricsProvider::IOSFamilyLinkUserMetricsProvider() = default;
 IOSFamilyLinkUserMetricsProvider::~IOSFamilyLinkUserMetricsProvider() = default;
 
 bool IOSFamilyLinkUserMetricsProvider::ProvideHistograms() {
-  std::vector<supervised_user::FamilyLinkUserLogRecord> records;
+  std::vector<supervised_user::SupervisedUserLogRecord> records;
   for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
+    records.push_back(supervised_user::SupervisedUserLogRecord::Create(
         IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
         *ios::HostContentSettingsMapFactory::GetForProfile(profile),
         SupervisedUserServiceFactory::GetForProfile(profile)));

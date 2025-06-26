@@ -12,7 +12,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/supervised_user/core/browser/family_link_user_log_record.h"
+#include "components/supervised_user/core/browser/supervised_user_log_record.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 
@@ -27,7 +27,7 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
   // session, so guarantee it will never crash.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   std::vector<Profile*> profile_list = profile_manager->GetLoadedProfiles();
-  std::vector<supervised_user::FamilyLinkUserLogRecord> records;
+  std::vector<supervised_user::SupervisedUserLogRecord> records;
   for (Profile* profile : profile_list) {
 #if !BUILDFLAG(IS_ANDROID)
     // TODO(b/274889379): Mock call to GetBrowserCount().
@@ -39,7 +39,7 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
       continue;
     }
 #endif
-    records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
+    records.push_back(supervised_user::SupervisedUserLogRecord::Create(
         IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
         *HostContentSettingsMapFactory::GetForProfile(profile),
         SupervisedUserServiceFactory::GetForProfile(profile)));
