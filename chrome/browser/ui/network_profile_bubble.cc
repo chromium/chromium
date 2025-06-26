@@ -33,7 +33,7 @@ namespace {
 // The duration of the silent period before we start nagging the user again.
 const int kSilenceDurationDays = 100;
 
-// The number of warnings to be shown on consequtive starts of Chrome before the
+// The number of warnings to be shown on consecutive starts of Chrome before the
 // silent period starts.
 const int kMaxWarnings = 2;
 
@@ -125,19 +125,14 @@ void NetworkProfileBubble::CheckNetworkProfile(
   if (*type == WTS_PROTOCOL_TYPE_CONSOLE) {
     bool profile_on_network = false;
     if (!profile_folder.empty()) {
-      base::FilePath temp_file;
-      // Try to create some non-empty temp file in the profile dir and use
-      // it to check if there is a reparse-point free path to it.
-      if (base::CreateTemporaryFileInDir(profile_folder, &temp_file) &&
-          base::WriteFile(temp_file, ".")) {
-        base::FilePath normalized_temp_file;
-        if (!base::NormalizeFilePath(temp_file, &normalized_temp_file)) {
+      base::FilePath normalized_profile_folder;
+      if (base::NormalizeFilePath(profile_folder, &normalized_profile_folder)) {
+        if (normalized_profile_folder.IsNetwork()) {
           profile_on_network = true;
         }
       } else {
         RecordUmaEvent(METRIC_CHECK_IO_FAILED);
       }
-      base::DeleteFile(temp_file);
     }
     if (profile_on_network) {
       RecordUmaEvent(METRIC_PROFILE_ON_NETWORK);

@@ -25,7 +25,7 @@ class NetworkProfileBubble {
     METRIC_CHECK_SUPPRESSED,
     // WTSQuerySessionInformation call failed.
     METRIC_CHECK_FAILED,
-    // File access in profile dir failed.
+    // Checking if profile dir is on a network share failed.
     METRIC_CHECK_IO_FAILED,
 
     // Profile on a network share detected.

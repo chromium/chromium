@@ -37,6 +37,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
+#include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
@@ -51,6 +52,7 @@
 #include "testing/multiprocess_func_list.h"
 #include "testing/platform_test.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <tchar.h>
@@ -424,10 +426,14 @@ TEST_F(FileUtilTest, NormalizeFilePathBasic) {
   CreateTextFile(file_a_path, bogus_content);
   ASSERT_TRUE(PathExists(file_a_path));
   ASSERT_TRUE(NormalizeFilePath(file_a_path, &normalized_file_a_path));
+  ASSERT_FALSE(normalized_file_a_path.empty());
+  ASSERT_TRUE(PathExists(normalized_file_a_path));
 
   CreateTextFile(file_b_path, bogus_content);
   ASSERT_TRUE(PathExists(file_b_path));
   ASSERT_TRUE(NormalizeFilePath(file_b_path, &normalized_file_b_path));
+  ASSERT_FALSE(normalized_file_b_path.empty());
+  ASSERT_TRUE(PathExists(normalized_file_b_path));
 
   // Because this test created |dir_path|, we know it is not a link
   // or junction.  So, the real path of the directory holding file a
@@ -456,10 +462,14 @@ TEST_F(FileUtilTest, NormalizeFileEmptyFile) {
   CreateTextFile(file_a_path, empty_content);
   ASSERT_TRUE(PathExists(file_a_path));
   EXPECT_TRUE(NormalizeFilePath(file_a_path, &normalized_file_a_path));
+  EXPECT_FALSE(normalized_file_a_path.empty());
+  EXPECT_TRUE(PathExists(normalized_file_a_path));
 
   CreateTextFile(file_b_path, empty_content);
   ASSERT_TRUE(PathExists(file_b_path));
   EXPECT_TRUE(NormalizeFilePath(file_b_path, &normalized_file_b_path));
+  EXPECT_FALSE(normalized_file_b_path.empty());
+  EXPECT_TRUE(PathExists(normalized_file_b_path));
 
   // Because this test created |dir_path|, we know it is not a link
   // or junction.  So, the real path of the directory holding file a
@@ -609,6 +619,80 @@ TEST_F(FileUtilTest, NormalizeFilePathWithLongPath) {
   FilePath normalized_path;
   ASSERT_FALSE(NormalizeFilePath(long_path, &normalized_path));
 }
+
+TEST_F(FileUtilTest, NormalizeFilePathWithNetworkPath) {
+  FilePath temp_path = temp_dir_.GetPath();
+
+  // Create a test file to be read.
+  const std::string kTestData("The quick brown fox jumps over the lazy dog.");
+  const FilePath::StringType kTestFileName = FPL("NetworkPathTest");
+  FilePath file_path = temp_path.Append(kTestFileName);
+
+  ASSERT_TRUE(WriteFile(file_path, kTestData));
+
+  // Make sure that a network path is supported by converting a path such as
+  // C:\temp to \\localhost\c$\temp.
+  base::FilePath::CharType drive_letter =
+      base::ToLowerASCII(temp_path.value().at(0));
+  EXPECT_GE(drive_letter, 'a');
+  EXPECT_LE(drive_letter, 'z');
+  EXPECT_EQ(temp_path.value().at(1), ':');
+  EXPECT_EQ(temp_path.value().at(2), '\\');
+  base::FilePath temp_path_network(
+      base::FilePath::StringType(FPL("\\\\localhost\\")) + drive_letter +
+      FPL("$\\") + temp_path.value().substr(3));
+
+  // Long paths aren't supported.
+  EXPECT_LT(temp_path_network.value().length(), MAX_PATH);
+
+  // The normalization should succeed.
+  FilePath normalized_path;
+  ASSERT_TRUE(NormalizeFilePath(temp_path_network, &normalized_path));
+  EXPECT_FALSE(normalized_path.empty());
+  EXPECT_TRUE(PathExists(normalized_path));
+
+  // The normalized path should point to the same file as the original
+  // path.
+  std::string read_data;
+  ASSERT_TRUE(
+      ReadFileToString(normalized_path.Append(kTestFileName), &read_data));
+  EXPECT_EQ(kTestData, read_data);
+}
+
+TEST_F(FileUtilTest, RemoveWindowsExtendedPathPrefix) {
+  EXPECT_EQ(
+      FilePath(FPL(R"(C:\path\to\file)")),
+      RemoveWindowsExtendedPathPrefixForTesting(LR"(\\?\C:\path\to\file)"));
+  EXPECT_EQ(FilePath(FPL(R"(\\server\share\path)")),
+            RemoveWindowsExtendedPathPrefixForTesting(
+                LR"(\\?\UNC\server\share\path)"));
+  EXPECT_TRUE(
+      RemoveWindowsExtendedPathPrefixForTesting(LR"(\\.\pipe\test_pipe)")
+          .empty());
+}
+
+class FileUtilFuzzTest {
+ public:
+  FileUtilFuzzTest() {
+    // A warning is logged for unsupported paths, avoid outputting these logs
+    // during fuzzing.
+    logging::SetMinLogLevel(logging::LOGGING_ERROR);
+  }
+
+  void RemoveWindowsExtendedPathPrefixNoCrash(const std::wstring& input) {
+    RemoveWindowsExtendedPathPrefixForTesting(input);
+  }
+
+ private:
+  logging::ScopedLoggingSettings scoped_logging_settings_;
+};
+
+FUZZ_TEST_F(FileUtilFuzzTest, RemoveWindowsExtendedPathPrefixNoCrash)
+    .WithSeeds({
+        LR"(\\?\C:\path\to\file)",
+        LR"(\\?\UNC\server\share\path)",
+        LR"(\\.\pipe\test_pipe)",
+    });
 
 TEST_F(FileUtilTest, DevicePathToDriveLetter) {
   // Get a drive letter.

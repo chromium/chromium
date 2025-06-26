@@ -619,7 +619,8 @@ void SkiaGoldPixelDiff::GenerateLocalDiff(
         return {path->png_path.MaybeAsASCII()};
       }
 
-      return {std::string("file:///") +
+      return {(path_normalized.IsNetwork() ? std::string("file:")
+                                           : std::string("file:///")) +
               path_normalized.NormalizePathSeparatorsTo(FILE_PATH_LITERAL('/'))
                   .MaybeAsASCII()};
     } else {

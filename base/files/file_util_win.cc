@@ -413,6 +413,32 @@ bool IsUserDefaultAdmin() {
   return elevation_type == TokenElevationTypeDefault;
 }
 
+// This function removes the Windows extended-length path prefix from a prefixed
+// path. It supports both the native UNC prefix and the native local path
+// prefix. If the prefix is not recognized, it logs a warning and returns an
+// empty FilePath.
+//
+// Examples:
+// \\?\UNC\server\share\path -> \\server\share\path
+// \\?\C:\path\to\file -> C:\path\to\file
+FilePath RemoveWindowsExtendedPathPrefix(std::wstring_view prefixed_path) {
+  constexpr std::wstring_view kPrefixNativeUNC = L"\\\\?\\UNC\\";
+  if (prefixed_path.starts_with(kPrefixNativeUNC)) {
+    std::wstring normalized_path = L"\\\\";
+    normalized_path.append(prefixed_path.substr(kPrefixNativeUNC.length()));
+    return FilePath(normalized_path);
+  }
+
+  constexpr std::wstring_view kPrefixNativeLocalPath = L"\\\\?\\";
+  if (prefixed_path.starts_with(kPrefixNativeLocalPath)) {
+    return FilePath(prefixed_path.substr(kPrefixNativeLocalPath.length()));
+  }
+
+  // Other prefixes are not supported.
+  DLOG(WARNING) << "Unsupported prefix for path " << prefixed_path;
+  return FilePath();
+}
+
 // This function verifies that no code is attempting to set an ACL on a file
 // that is outside of 'safe' paths. A 'safe' path is defined as one that is
 // within the user data dir, or the temporary directory. This is explicitly to
@@ -832,32 +858,34 @@ bool NormalizeFilePath(const FilePath& path, FilePath* real_path) {
     return false;
   }
 
-  // The expansion of `path` into a full path may make it longer. Since
-  // '\Device\HarddiskVolume1' is 23 characters long, we can add 30 characters.
-  constexpr int kMaxPathLength = MAX_PATH + 30;
-  wchar_t native_file_path[kMaxPathLength];
+  // Add space for the `\\?\` or `\\?\UNC\` prefix.
+  constexpr int kMaxPathLength = MAX_PATH + 16;
+  wchar_t prefixed_file_path_buffer[kMaxPathLength];
   // On success, `used_wchars` returns the number of written characters, not
   // including the trailing '\0'. Thus, failure is indicated by returning 0 or
   // >= kMaxPathLength.
   DWORD used_wchars = ::GetFinalPathNameByHandle(
-      file.GetPlatformFile(), native_file_path, kMaxPathLength,
-      FILE_NAME_NORMALIZED | VOLUME_NAME_NT);
+      file.GetPlatformFile(), prefixed_file_path_buffer, kMaxPathLength,
+      FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
   if (used_wchars >= kMaxPathLength || used_wchars == 0) {
     return false;
   }
 
-  // With `VOLUME_NAME_NT` flag, GetFinalPathNameByHandle() returns the path
-  // with the volume device path and existing code expects we return a path
-  // starting 'X:\' so we need to call DevicePathToDriveLetterPath.
-  if (!DevicePathToDriveLetterPath(
-          FilePath(FilePath::StringViewType(native_file_path, used_wchars)),
-          real_path)) {
-    return false;
-  }
+  std::wstring_view prefixed_file_path(prefixed_file_path_buffer, used_wchars);
+  *real_path = RemoveWindowsExtendedPathPrefix(prefixed_file_path);
 
   // `real_path` can be longer than MAX_PATH and we should only return paths
   // that are less than MAX_PATH.
-  return real_path->value().size() <= MAX_PATH;
+  if (real_path->value().size() >= MAX_PATH) {
+    real_path->clear();
+  }
+
+  return !real_path->empty();
+}
+
+FilePath RemoveWindowsExtendedPathPrefixForTesting(
+    std::wstring_view prefixed_path) {
+  return RemoveWindowsExtendedPathPrefix(prefixed_path);
 }
 
 bool DevicePathToDriveLetterPath(const FilePath& nt_device_path,

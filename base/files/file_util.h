@@ -488,18 +488,20 @@ BASE_EXPORT OnceCallback<std::optional<int64_t>()> GetFileSizeCallback(
     const FilePath& path);
 
 // Sets |real_path| to |path| with symbolic links and junctions expanded.
-// On Windows, the function ensures that the resulting |real_path| starts with a
-// drive letter.
 //
 // The |path| parameter can reference either a file or a directory. The function
-// will fail if |path| points to a nonexistent path or to a volume that isn't
-// mapped to a drive letter on Windows.
+// will fail if |path| points to a nonexistent path.
 //
 // In addition, on Windows this function will fail if the resulting |real_path|
 // would exceed 'MAX_PATH' characters in length.
 BASE_EXPORT bool NormalizeFilePath(const FilePath& path, FilePath* real_path);
 
 #if BUILDFLAG(IS_WIN)
+
+// Removes the Windows extended-length path prefix from a prefixed path.
+// Exported for testing. Refer to the function implementation for details.
+BASE_EXPORT FilePath
+RemoveWindowsExtendedPathPrefixForTesting(std::wstring_view prefixed_path);
 
 // Given a path in NT native form ("\Device\HarddiskVolumeXX\..."),
 // return in |drive_letter_path| the equivalent path that starts with
