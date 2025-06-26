@@ -849,9 +849,16 @@ impl ZipFileData {
         } else {
             0
         };
+
+        let using_data_descriptor_bit = if self.using_data_descriptor {
+            1u16 << 3
+        } else {
+            0
+        };
+
         let encrypted_bit: u16 = if self.encrypted { 1u16 << 0 } else { 0 };
 
-        utf8_bit | encrypted_bit
+        utf8_bit | using_data_descriptor_bit | encrypted_bit
     }
 
     fn clamp_size_field(&self, field: u64) -> u32 {
@@ -863,8 +870,14 @@ impl ZipFileData {
     }
 
     pub(crate) fn local_block(&self) -> ZipResult<ZipLocalEntryBlock> {
-        let compressed_size: u32 = self.clamp_size_field(self.compressed_size);
-        let uncompressed_size: u32 = self.clamp_size_field(self.uncompressed_size);
+        let (compressed_size, uncompressed_size) = if self.using_data_descriptor {
+            (0, 0)
+        } else {
+            (
+                self.clamp_size_field(self.compressed_size),
+                self.clamp_size_field(self.uncompressed_size),
+            )
+        };
         let extra_field_length: u16 = self
             .extra_field_len()
             .try_into()
@@ -938,6 +951,28 @@ impl ZipFileData {
             self.compressed_size,
             self.header_start,
         )
+    }
+
+    pub(crate) fn data_descriptor_block(&self) -> Option<ZipDataDescriptorBlock> {
+        if self.large_file {
+            return None;
+        }
+
+        Some(ZipDataDescriptorBlock {
+            magic: ZipDataDescriptorBlock::MAGIC,
+            crc32: self.crc32,
+            compressed_size: self.compressed_size as u32,
+            uncompressed_size: self.uncompressed_size as u32,
+        })
+    }
+
+    pub(crate) fn zip64_data_descriptor_block(&self) -> Zip64DataDescriptorBlock {
+        Zip64DataDescriptorBlock {
+            magic: Zip64DataDescriptorBlock::MAGIC,
+            crc32: self.crc32,
+            compressed_size: self.compressed_size,
+            uncompressed_size: self.uncompressed_size,
+        }
     }
 }
 
@@ -1124,6 +1159,64 @@ impl Zip64ExtraFieldBlock {
 
         ret.into_boxed_slice()
     }
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(packed, C)]
+pub(crate) struct ZipDataDescriptorBlock {
+    magic: spec::Magic,
+    pub crc32: u32,
+    pub compressed_size: u32,
+    pub uncompressed_size: u32,
+}
+
+unsafe impl Pod for ZipDataDescriptorBlock {}
+
+impl FixedSizeBlock for ZipDataDescriptorBlock {
+    const MAGIC: spec::Magic = spec::Magic::DATA_DESCRIPTOR_SIGNATURE;
+
+    #[inline(always)]
+    fn magic(self) -> spec::Magic {
+        self.magic
+    }
+
+    const WRONG_MAGIC_ERROR: ZipError = invalid!("Invalid data descriptor header");
+
+    to_and_from_le![
+        (magic, spec::Magic),
+        (crc32, u32),
+        (compressed_size, u32),
+        (uncompressed_size, u32),
+    ];
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(packed, C)]
+pub(crate) struct Zip64DataDescriptorBlock {
+    magic: spec::Magic,
+    pub crc32: u32,
+    pub compressed_size: u64,
+    pub uncompressed_size: u64,
+}
+
+unsafe impl Pod for Zip64DataDescriptorBlock {}
+
+impl FixedSizeBlock for Zip64DataDescriptorBlock {
+    const MAGIC: spec::Magic = spec::Magic::DATA_DESCRIPTOR_SIGNATURE;
+
+    #[inline(always)]
+    fn magic(self) -> spec::Magic {
+        self.magic
+    }
+
+    const WRONG_MAGIC_ERROR: ZipError = invalid!("Invalid zip64 data descriptor header");
+
+    to_and_from_le![
+        (magic, spec::Magic),
+        (crc32, u32),
+        (compressed_size, u64),
+        (uncompressed_size, u64),
+    ];
 }
 
 /// The encryption specification used to encrypt a file with AES.

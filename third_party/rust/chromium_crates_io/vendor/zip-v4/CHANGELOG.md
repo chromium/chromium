@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.2.0](https://github.com/zip-rs/zip2/compare/v4.1.0...v4.2.0) - 2025-06-21
+
+### <!-- 0 -->🚀 Features
+
+- Write ZIP file to stream ([#246](https://github.com/zip-rs/zip2/pull/246))
+
 ## [4.1.0](https://github.com/zip-rs/zip2/compare/v4.0.0...v4.1.0) - 2025-06-14
 
 ### <!-- 0 -->🚀 Features

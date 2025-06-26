@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.75.0"
 name = "zip"
-version = "4.1.0"
+version = "4.2.0"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",

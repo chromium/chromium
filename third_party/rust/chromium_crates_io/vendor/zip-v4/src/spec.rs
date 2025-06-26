@@ -49,6 +49,7 @@ impl Magic {
     pub const CENTRAL_DIRECTORY_END_SIGNATURE: Self = Self::literal(0x06054b50);
     pub const ZIP64_CENTRAL_DIRECTORY_END_SIGNATURE: Self = Self::literal(0x06064b50);
     pub const ZIP64_CENTRAL_DIRECTORY_END_LOCATOR_SIGNATURE: Self = Self::literal(0x07064b50);
+    pub const DATA_DESCRIPTOR_SIGNATURE: Self = Self::literal(0x08074b50);
 }
 
 /// Similar to [`Magic`], but used for extra field tags as per section 4.5.3 of APPNOTE.TXT.
