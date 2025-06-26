@@ -158,12 +158,6 @@ TEST_F(MacUtilTest, TestGetInnermostAppBundlePath) {
 }
 
 TEST_F(MacUtilTest, MacOSVersion) {
-  // TODO(https://crbug.com/423933062, https://crbug.com/424162749): Build with
-  // the macOS 26 SDK and enable this test.
-  if (MacOSMajorVersion() >= 26) {
-    GTEST_SKIP();
-  }
-
   int32_t major, minor, bugfix;
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
 
@@ -197,9 +191,7 @@ TEST_F(MacUtilTest, ParseOSProductVersion) {
   EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("१०.१५.७"), "");
   EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("7.6.1"), "");
   EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("10.16"), "");
-  // TODO(https://crbug.com/423933062, https://crbug.com/424162749): Build with
-  // the macOS 26 SDK and enable this test.
-  // EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("16.0"), "");
+  EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("16.0"), "");
 }
 
 TEST_F(MacUtilTest, TestRemoveQuarantineAttribute) {
