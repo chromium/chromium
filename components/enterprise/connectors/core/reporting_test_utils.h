@@ -86,8 +86,12 @@ class EventReportValidatorBase {
                                 const std::string& expected_profile_username,
                                 const std::string& expected_profile_identifier);
 
-  // TODO(crbug.com/396437063): Use password changed event proto instead of raw
-  // json string for validation.
+  void ExpectPasswordChangedEvent(
+      chrome::cros::reporting::proto::SafeBrowsingPasswordChangedEvent
+          expected_password_changed_event);
+
+  // TODO(crbug.com/396437063): Delete this method once proto migration is
+  // complete.
   void ExpectPassowrdChangedEvent(
       const std::string& expected_username,
       const std::string& expected_profile_username,

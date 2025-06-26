@@ -73,7 +73,9 @@ GetPasswordReuseEvent(const GURL& url,
                       const std::string& profile_username);
 
 chrome::cros::reporting::proto::SafeBrowsingPasswordChangedEvent
-GetPasswordChangedEvent(const std::string& user_name);
+GetPasswordChangedEvent(const std::string& user_name,
+                        const std::string& profile_identifier,
+                        const std::string& profile_username);
 
 chrome::cros::reporting::proto::LoginEvent GetLoginEvent(
     const GURL& url,

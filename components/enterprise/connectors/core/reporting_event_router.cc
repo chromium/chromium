@@ -200,13 +200,24 @@ void ReportingEventRouter::OnPasswordChanged(const std::string& user_name) {
     return;
   }
 
-  base::Value::Dict event;
-  event.Set(kKeyUserName, user_name);
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::Event event;
+    *event.mutable_password_changed_event() = GetPasswordChangedEvent(
+        user_name, reporting_client_->GetProfileIdentifier(),
+        reporting_client_->GetProfileUserName());
+    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-  reporting_client_->ReportEventWithTimestampDeprecated(
-      kKeyPasswordChangedEvent, std::move(settings.value()), std::move(event),
-      base::Time::Now(),
-      /*include_profile_user_name=*/true);
+    reporting_client_->ReportEvent(std::move(event), settings.value());
+  } else {
+    base::Value::Dict event;
+    event.Set(kKeyUserName, user_name);
+
+    reporting_client_->ReportEventWithTimestampDeprecated(
+        kKeyPasswordChangedEvent, std::move(settings.value()), std::move(event),
+        base::Time::Now(),
+        /*include_profile_user_name=*/true);
+  }
 }
 
 void ReportingEventRouter::OnUrlFilteringInterstitial(

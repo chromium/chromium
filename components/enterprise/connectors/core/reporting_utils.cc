@@ -282,9 +282,13 @@ proto::SafeBrowsingPasswordReuseEvent GetPasswordReuseEvent(
 }
 
 proto::SafeBrowsingPasswordChangedEvent GetPasswordChangedEvent(
-    const std::string& user_name) {
+    const std::string& user_name,
+    const std::string& profile_identifier,
+    const std::string& profile_username) {
   proto::SafeBrowsingPasswordChangedEvent event;
   event.set_user_name(user_name);
+  event.set_profile_identifier(profile_identifier);
+  event.set_profile_user_name(profile_username);
 
   return event;
 }

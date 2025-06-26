@@ -100,8 +100,11 @@ TEST(ReportingUtilsTest, GetPasswordReuseEventWithoutWarning) {
 }
 
 TEST(ReportingUtilsTest, GetPasswordChangedEvent) {
-  auto event = GetPasswordChangedEvent(kUsername);
+  auto event =
+      GetPasswordChangedEvent(kUsername, "identifier", "profile_username");
   ASSERT_EQ(event.user_name(), kUsername);
+  ASSERT_EQ(event.profile_identifier(), "identifier");
+  ASSERT_EQ(event.profile_user_name(), "profile_username");
 }
 
 TEST(ReportingUtilsTest, GetLoginEvent) {

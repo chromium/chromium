@@ -685,18 +685,26 @@ TEST_P(ReportingEventRouterTest, TestPasswordReuseAllowed) {
 }
 
 TEST_P(ReportingEventRouterTest, TestPasswordChanged) {
-  // TODO(crbug.com//396437063): Migrate password changed event to proto format.
-  if (use_proto_format()) {
-    return;
-  }
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyPasswordChangedEvent},
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectPassowrdChangedEvent(
-      "user_name_1", profile_->GetProfileUserName(), GetProfileIdentifier());
+  chrome::cros::reporting::proto::SafeBrowsingPasswordChangedEvent
+      expected_event;
+
+  if (use_proto_format()) {
+    expected_event.set_user_name("user_name_1");
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+
+    validator.ExpectPasswordChangedEvent(std::move(expected_event));
+  } else {
+    validator.ExpectPassowrdChangedEvent(
+        "user_name_1", profile_->GetProfileUserName(), GetProfileIdentifier());
+  }
+
   reporting_event_router_->OnPasswordChanged("user_name_1");
 }
 
