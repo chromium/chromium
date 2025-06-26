@@ -4686,7 +4686,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '374f16764a6a603d02d2588b1fe3699d99b7c841',
+        '36b0e5cee6c3f8787e1daa9bc808c9187ace192a',
       'condition': 'checkout_src_internal',
   },
 
