@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -69,9 +70,10 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.internal.SyncPrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -134,9 +136,7 @@ public class ChromeBackupAgentTest {
     private AsyncInitTaskRunner mTaskRunner;
     private boolean mIsAccountManaged;
 
-    private final CoreAccountInfo mAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId(
-                    "user1", FakeAccountManagerFacade.toGaiaId("user1"));
+    private final AccountInfo mAccountInfo = TestAccounts.ACCOUNT1;
 
     private static final String SHARED_PREF_NOT_BACKED_UP = "shared_pref_not_backed_up";
     private static final String NATIVE_PREF_NOT_BACKED_UP = "native_pref_not_backed_up";
@@ -872,6 +872,31 @@ public class ChromeBackupAgentTest {
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.RESTORE_AFTER_FIRST_RUN));
     }
 
+    /**
+     * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
+     * signed-in user only. An account is already signed-in.
+     */
+    @Test
+    public void testOnRestore_alreadySignedIn() throws IOException {
+        BackupDataInput backupData =
+                createMockBackupData(
+                        /* hasSyncingUser= */ false,
+                        /* hasSignedInUser= */ true,
+                        /* hasAccountSettings= */ true);
+        mAccountManagerTestRule.addAccount(mAccountInfo);
+        doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount(anyInt());
+
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+            mAgent.onRestore(backupData, 0, newState);
+        }
+
+        assertEquals(
+                ChromeBackupAgentImpl.RestoreStatus.ALREADY_SIGNED_IN,
+                ChromeBackupAgentImpl.getRestoreStatus());
+    }
+
     /** Test of {@link ChromeBackupAgent#getRestoreStatus} */
     @Test
     public void testGetRestoreStatus() {
@@ -955,7 +980,7 @@ public class ChromeBackupAgentTest {
                         /* hasSyncingUser= */ withSyncingUser,
                         /* hasSignedInUser= */ withSignedInUser,
                         /* hasAccountSettings= */ withAccountSettings);
-        mAccountManagerTestRule.addAccount(mAccountInfo.getEmail());
+        mAccountManagerTestRule.addAccount(mAccountInfo);
 
         try (ParcelFileDescriptor newState =
                 ParcelFileDescriptor.open(

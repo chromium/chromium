@@ -217,6 +217,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Failed: Sign-in timed-out or interrupted"/>
   <int value="8" label="Failed: Restore flow timed-out or crashed"/>
   <int value="9" label="Failed: Backup contains no signed-in account"/>
+  <int value="10" label="Failed: User already signed-in"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/backup/ChromeBackupAgentImpl.java:RestoreStatus)-->
