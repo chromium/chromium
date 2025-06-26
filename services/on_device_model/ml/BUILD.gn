@@ -12,7 +12,10 @@ source_set("api") {
     "chrome_ml_types.h",
   ]
   sources = [ "chrome_ml_audio_buffer.cc" ]
-  deps = [ "//third_party/dawn/src/dawn/native:headers" ]
+  deps = [
+    "//skia:skia_core_public_headers",
+    "//third_party/dawn/src/dawn/native:headers",
+  ]
 
   # Any target that pulls in this source set needs to specify its own skia_config.
 }

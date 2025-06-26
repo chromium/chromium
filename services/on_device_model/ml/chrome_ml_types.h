@@ -10,8 +10,7 @@
 #include <vector>
 
 #include "services/on_device_model/ml/chrome_ml_audio_buffer.h"
-
-class SkBitmap;
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace ml {
 
