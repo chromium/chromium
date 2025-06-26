@@ -2594,5 +2594,55 @@ TEST_F(
                   .empty());
 }
 
+// Fixture for testing that forms can[not] be extracted on certain URLs.
+class FormAutofillUtilsTest_AdmissibleUrls
+    : public FormAutofillUtilsTest,
+      public testing::WithParamInterface<std::pair<std::string_view, bool>> {
+ public:
+  std::string_view Url() const { return GetParam().first; }
+  bool extractable() const { return GetParam().second; }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FormAutofillUtilsTest_AdmissibleUrls,
+    testing::Values(std::pair("https://foo.com", true),
+                    std::pair("http://foo.com", true),
+                    std::pair("about:srcdoc", true),
+                    std::pair("data:text/html,blabla", true),
+                    std::pair("about:blank", false),
+                    std::pair("chrome:new-tab-page", false),
+                    std::pair("chrome://autofill-internals", false)));
+
+// Tests that <div contenteditable> can be extracted from admissible URLs.
+TEST_P(FormAutofillUtilsTest_AdmissibleUrls, ExtractFormData) {
+  LoadHTMLWithUrlOverride(R"(
+    "<form id=f><input></form>"
+  )",
+                          Url());
+  std::optional<FormData> form =
+      ExtractFormData(GetFormElementById(GetDocument(), "f"));
+  if (extractable()) {
+    EXPECT_NE(form, std::nullopt);
+  } else {
+    EXPECT_EQ(form, std::nullopt);
+  }
+}
+
+// Tests that <div contenteditable> can be extracted from admissible URLs.
+TEST_P(FormAutofillUtilsTest_AdmissibleUrls, FindFormForContentEditable) {
+  LoadHTMLWithUrlOverride(R"(
+    "<div id=ce contenteditable></div>"
+  )",
+                          Url());
+  std::optional<FormData> form =
+      FindFormForContentEditable(GetDocument().GetElementById("ce"));
+  if (extractable()) {
+    EXPECT_NE(form, std::nullopt);
+  } else {
+    EXPECT_EQ(form, std::nullopt);
+  }
+}
+
 }  // namespace
 }  // namespace autofill::form_util
