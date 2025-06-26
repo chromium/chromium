@@ -58,6 +58,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -749,8 +750,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
     // not have a valid name+value size length
     bool valid_cookie_name_value_pair =
         ParsedCookie::IsValidCookieNameValuePair(cc->Name(), cc->Value());
-    base::UmaHistogramBoolean("Cookie.FromStorageWithValidLength",
-                              valid_cookie_name_value_pair);
+    UMA_HISTOGRAM_BOOLEAN("Cookie.FromStorageWithValidLength",
+                          valid_cookie_name_value_pair);
   } else {
     return nullptr;
   }
