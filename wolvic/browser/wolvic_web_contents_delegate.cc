@@ -128,4 +128,55 @@ bool WolvicWebContentsDelegate::CheckMediaAccessPermission(
                                                         security_origin.GetURL(), type);
 }
 
+void WolvicWebContentsDelegate::FindReply(
+    content::WebContents* web_contents,
+    int request_id,
+    int number_of_matches,
+    const gfx::Rect& selection_rect,
+    int active_match_ordinal,
+    bool final_update) {
+  find_in_page::FindTabHelper* find_tab_helper =
+      find_in_page::FindTabHelper::FromWebContents(web_contents);
+  if (!find_result_observations_.IsObservingSource(find_tab_helper))
+    find_result_observations_.AddObservation(find_tab_helper);
+
+  find_tab_helper->HandleFindReply(request_id,
+                                   number_of_matches,
+                                   selection_rect,
+                                   active_match_ordinal,
+                                   final_update);
+}
+
+void WolvicWebContentsDelegate::OnFindResultAvailable(
+    content::WebContents* web_contents) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  const find_in_page::FindNotificationDetails& find_result =
+      find_in_page::FindTabHelper::FromWebContents(web_contents)->find_result();
+
+  gfx::Rect rect = find_result.selection_rect();
+  ScopedJavaLocalRef<jobject> selection_rect =
+      Java_WolvicWebContentsDelegate_createRect(
+          env, static_cast<int>(rect.x()), static_cast<int>(rect.y()),
+          static_cast<int>(rect.right()), static_cast<int>(rect.bottom()));
+
+  // Create the details object.
+  ScopedJavaLocalRef<jobject> details_object =
+      Java_WolvicWebContentsDelegate_createFindNotificationDetails(
+          env, find_result.number_of_matches(), selection_rect,
+          find_result.active_match_ordinal(), find_result.final_update());
+
+  Java_WolvicWebContentsDelegate_onFindResultAvailable(env, obj,
+                                                       details_object);
+}
+
+void WolvicWebContentsDelegate::OnFindTabHelperDestroyed(
+    find_in_page::FindTabHelper* helper) {
+  find_result_observations_.RemoveObservation(helper);
+}
+
 } // namespace wolvic

@@ -5,14 +5,18 @@
 #ifndef WOLVIC_BROWSER_WOLVIC_WEB_CONTENTS_DELEGATE_H_
 #define WOLVIC_BROWSER_WOLVIC_WEB_CONTENTS_DELEGATE_H_
 
+#include "base/scoped_multi_source_observation.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
+#include "components/find_in_page/find_result_observer.h"
+#include "components/find_in_page/find_tab_helper.h"
 
 namespace wolvic {
 
 class WolvicJavascriptDialogManager;
 
 class WolvicWebContentsDelegate
-    : public web_contents_delegate_android::WebContentsDelegateAndroid {
+    : public web_contents_delegate_android::WebContentsDelegateAndroid,
+      public find_in_page::FindResultObserver {
  public:
   WolvicWebContentsDelegate(JNIEnv* env, jobject obj);
   ~WolvicWebContentsDelegate() override;
@@ -55,9 +59,24 @@ class WolvicWebContentsDelegate
                                   const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;
 
+  void FindReply(content::WebContents* web_contents,
+                 int request_id,
+                 int number_of_matches,
+                 const gfx::Rect& selection_rect,
+                 int active_match_ordinal,
+                 bool final_update) override;
+
+  // find_in_page::FindResultObserver:
+  void OnFindResultAvailable(content::WebContents* web_contents) override;
+  void OnFindTabHelperDestroyed(find_in_page::FindTabHelper* helper) override;
+
  private:
   std::unique_ptr<content::WebContents> new_contents_;
   std::unique_ptr<WolvicJavascriptDialogManager> javascript_dialog_manager_;
+
+  base::ScopedMultiSourceObservation<find_in_page::FindTabHelper,
+                                     find_in_page::FindResultObserver>
+      find_result_observations_{this};
 };
 
 }// namespace wolvic

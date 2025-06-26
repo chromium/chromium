@@ -4,6 +4,7 @@
 
 #include "wolvic/browser/wolvic_contents.h"
 
+#include "components/find_in_page/find_tab_helper.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -49,7 +50,9 @@ WolvicContents* WolvicContents::FromWebContents(WebContents* web_contents) {
 WolvicContents::WolvicContents(
     std::unique_ptr<content::WebContents> web_contents)
     : content::WebContentsObserver(web_contents.get()),
-      web_contents_(std::move(web_contents)) {}
+      web_contents_(std::move(web_contents)) {
+  find_in_page::FindTabHelper::CreateForWebContents(web_contents_.get());
+}
 
 void
 WolvicContents::Init() {
