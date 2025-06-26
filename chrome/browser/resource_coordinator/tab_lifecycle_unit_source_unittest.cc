@@ -26,6 +26,7 @@
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -37,6 +38,7 @@
 #include "components/performance_manager/test_support/graph_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/tabs/public/split_tab_visual_data.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_web_contents_observer.h"
@@ -389,6 +391,98 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
                     .GetPendingEntry());
   }
 
+  void DiscardAndActivateSplitTest(LifecycleUnitDiscardReason reason) {
+    LifecycleUnit* first_lifecycle_unit = nullptr;
+    LifecycleUnit* second_lifecycle_unit = nullptr;
+    CreateTwoTabs(true /* focus_tab_strip */, &first_lifecycle_unit,
+                  &second_lifecycle_unit);
+
+    content::WebContents* initial_first_web_contents =
+        tab_strip_model_->GetWebContentsAt(0);
+    content::WebContents* initial_second_web_contents =
+        tab_strip_model_->GetWebContentsAt(1);
+
+    // Combine the first and second tabs into a split tab.
+    tab_strip_model_->AddToNewSplit(
+        {0}, split_tabs::SplitTabVisualData(),
+        split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+    // Add a third foreground tab to the focused tab strip.
+    task_environment()->FastForwardBy(kShortDelay);
+    LifecycleUnit* third_lifecycle_unit = nullptr;
+    EXPECT_CALL(source_observer_, OnLifecycleUnitCreated(_))
+        .WillOnce(::testing::Invoke([&](LifecycleUnit* lifecycle_unit) {
+          third_lifecycle_unit = lifecycle_unit;
+        }));
+    std::unique_ptr<content::WebContents> third_web_contents =
+        CreateAndNavigateWebContents();
+    content::WebContents* raw_third_web_contents = third_web_contents.get();
+    tab_strip_model_->AppendWebContents(std::move(third_web_contents), true);
+    ::testing::Mock::VerifyAndClear(&source_observer_);
+    EXPECT_TRUE(source_->GetTabLifecycleUnitExternal(raw_third_web_contents));
+
+    // Advance time so tabs are urgent discardable.
+    task_environment()->AdvanceClock(kBackgroundUrgentProtectionTime);
+
+    // Discard both tabs in the split.
+    EXPECT_EQ(LifecycleUnitState::ACTIVE, first_lifecycle_unit->GetState());
+    EXPECT_CALL(tab_observer_,
+                MockOnLifecycleUnitStateChanged(
+                    first_lifecycle_unit, ::mojom::LifecycleUnitState::ACTIVE,
+                    _, ::mojom::LifecycleUnitState::DISCARDED, reason));
+    first_lifecycle_unit->Discard(reason);
+    ::testing::Mock::VerifyAndClear(&tab_observer_);
+
+    EXPECT_NE(initial_first_web_contents,
+              tab_strip_model_->GetWebContentsAt(0));
+    EXPECT_FALSE(tab_strip_model_->GetWebContentsAt(0)
+                     ->GetController()
+                     .GetPendingEntry());
+
+    EXPECT_EQ(LifecycleUnitState::ACTIVE, second_lifecycle_unit->GetState());
+    EXPECT_CALL(tab_observer_,
+                MockOnLifecycleUnitStateChanged(
+                    second_lifecycle_unit, ::mojom::LifecycleUnitState::ACTIVE,
+                    _, ::mojom::LifecycleUnitState::DISCARDED, reason));
+    second_lifecycle_unit->Discard(reason);
+    ::testing::Mock::VerifyAndClear(&tab_observer_);
+
+    EXPECT_NE(initial_second_web_contents,
+              tab_strip_model_->GetWebContentsAt(1));
+    EXPECT_FALSE(tab_strip_model_->GetWebContentsAt(1)
+                     ->GetController()
+                     .GetPendingEntry());
+
+    // Focus the first tab in the split. Expect both tabs' states to be ACTIVE.
+    EXPECT_CALL(
+        tab_observer_,
+        MockOnLifecycleUnitStateChanged(
+            first_lifecycle_unit, ::mojom::LifecycleUnitState::DISCARDED, _,
+            ::mojom::LifecycleUnitState::ACTIVE, reason));
+    EXPECT_CALL(
+        tab_observer_,
+        MockOnLifecycleUnitStateChanged(
+            second_lifecycle_unit, ::mojom::LifecycleUnitState::DISCARDED, _,
+            ::mojom::LifecycleUnitState::ACTIVE, reason));
+    tab_strip_model_->ActivateTabAt(
+        0, TabStripUserGestureDetails(
+               TabStripUserGestureDetails::GestureType::kOther));
+    ::testing::Mock::VerifyAndClear(&tab_observer_);
+    EXPECT_EQ(LifecycleUnitState::ACTIVE, first_lifecycle_unit->GetState());
+    EXPECT_EQ(LifecycleUnitState::ACTIVE, second_lifecycle_unit->GetState());
+    EXPECT_TRUE(tab_strip_model_->GetWebContentsAt(0)
+                    ->GetController()
+                    .GetPendingEntry());
+    EXPECT_TRUE(tab_strip_model_->GetWebContentsAt(1)
+                    ->GetController()
+                    .GetPendingEntry());
+
+    // Expect notifications when tabs are closed.
+    CloseTabsAndExpectNotifications(
+        tab_strip_model_.get(),
+        {first_lifecycle_unit, second_lifecycle_unit, third_lifecycle_unit});
+  }
+
   void DiscardAndExplicitlyReloadTest(LifecycleUnitDiscardReason reason) {
     LifecycleUnit* background_lifecycle_unit = nullptr;
     LifecycleUnit* foreground_lifecycle_unit = nullptr;
@@ -678,6 +772,14 @@ TEST_F(TabLifecycleUnitSourceTest, DiscardAndActivate_Urgent) {
 
 TEST_F(TabLifecycleUnitSourceTest, DiscardAndActivate_External) {
   DiscardAndActivateTest(LifecycleUnitDiscardReason::EXTERNAL);
+}
+
+TEST_F(TabLifecycleUnitSourceTest, DiscardAndActivateSplit_Urgent) {
+  DiscardAndActivateSplitTest(LifecycleUnitDiscardReason::URGENT);
+}
+
+TEST_F(TabLifecycleUnitSourceTest, DiscardAndActivateSplit_External) {
+  DiscardAndActivateSplitTest(LifecycleUnitDiscardReason::EXTERNAL);
 }
 
 TEST_F(TabLifecycleUnitSourceTest, DiscardAndExplicitlyReload_Urgent) {

@@ -63,7 +63,8 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // content is displayed).
   void SetWebContents(content::WebContents* web_contents);
 
-  // Invoked when the tab gains or loses focus.
+  // Invoked when the tab gains or loses focus. This will attempt to load the
+  // tab if it was discarded, and focus it if that load was successful.
   void SetFocused(bool focused);
 
   // Sets the "recently audible" state of this tab. A tab is "recently audible"
@@ -102,6 +103,10 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   base::TimeTicks GetWallTimeWhenHiddenForTesting() const {
     return wall_time_when_hidden_;
   }
+
+  // Attempt to load the tab if it is discarded. Returns whether the load was
+  // successful. This doesn't focus the loaded tab.
+  bool MaybeLoad();
 
  protected:
   friend class TabManagerTest;

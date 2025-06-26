@@ -29,6 +29,7 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -203,11 +204,12 @@ void TabLifecycleUnitSource::UpdateFocusedTab(Browser* browser) {
   // restore this to DCHECK(!focused_web_contents || focused_lifecycle_unit);
   // else case will be handled by following OnTabInserted().
   if (!focused_web_contents || focused_lifecycle_unit)
-    UpdateFocusedTabTo(focused_lifecycle_unit);
+    UpdateFocusedTabTo(focused_lifecycle_unit, focused_tab_strip_model);
 }
 
 void TabLifecycleUnitSource::UpdateFocusedTabTo(
-    TabLifecycleUnit* new_focused_lifecycle_unit) {
+    TabLifecycleUnit* new_focused_lifecycle_unit,
+    TabStripModel* tab_strip_model) {
   if (new_focused_lifecycle_unit == focused_lifecycle_unit_) {
     return;
   }
@@ -216,6 +218,18 @@ void TabLifecycleUnitSource::UpdateFocusedTabTo(
   }
   if (new_focused_lifecycle_unit) {
     new_focused_lifecycle_unit->SetFocused(true);
+
+    // Load other tabs in the same split as this tab.
+    if (tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(
+            new_focused_lifecycle_unit->GetWebContents());
+        tab->IsSplit()) {
+      for (auto other_tab :
+           tab_strip_model->GetSplitData(tab->GetSplit().value())->ListTabs()) {
+        if (other_tab != tab) {
+          GetTabLifecycleUnit(other_tab->GetContents())->MaybeLoad();
+        }
+      }
+    }
   }
   focused_lifecycle_unit_ = new_focused_lifecycle_unit;
 }
@@ -238,7 +252,7 @@ void TabLifecycleUnitSource::OnTabInserted(TabStripModel* tab_strip_model,
     lifecycle_unit = holder->lifecycle_unit();
     lifecycle_unit_observations_.AddObservation(lifecycle_unit);
     if (GetFocusedTabStripModel() == tab_strip_model && foreground) {
-      UpdateFocusedTabTo(lifecycle_unit);
+      UpdateFocusedTabTo(lifecycle_unit, tab_strip_model);
     }
 
     // Add a self-owned observers to record metrics and trace events.
@@ -252,7 +266,7 @@ void TabLifecycleUnitSource::OnTabDetached(content::WebContents* contents) {
   TabLifecycleUnit* lifecycle_unit = GetTabLifecycleUnit(contents);
   DCHECK(lifecycle_unit);
   if (focused_lifecycle_unit_ == lifecycle_unit)
-    UpdateFocusedTabTo(nullptr);
+    UpdateFocusedTabTo(nullptr, nullptr);
   lifecycle_unit->SetTabStripModel(nullptr);
 }
 
