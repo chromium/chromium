@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/spdy/bidirectional_stream_spdy_impl.h"
 
 #include <string>
@@ -448,7 +443,7 @@ TEST_F(BidirectionalStreamSpdyImplTest, SendDataAfterStreamFailed) {
   EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   // BidirectionalStreamSpdyStreamJob does not count the bytes sent for |rst|
   // because it is sent after SpdyStream::Delegate::OnClose is called.
-  EXPECT_EQ(CountWriteBytes(base::span(writes, 1u)),
+  EXPECT_EQ(CountWriteBytes(base::span(writes).first(1u)),
             delegate->GetTotalSentBytes());
   EXPECT_EQ(0, delegate->GetTotalReceivedBytes());
 }
@@ -523,8 +518,7 @@ TEST_P(BidirectionalStreamSpdyImplTest, RstWithNoErrorBeforeSendIsComplete) {
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(is_test_sendv ? 2 : 4, delegate->on_data_sent_count());
   EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
-  EXPECT_EQ(CountWriteBytes(base::span(writes, 1u)),
-            delegate->GetTotalSentBytes());
+  EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   // Should not count RST stream.
   EXPECT_EQ(CountReadBytes(base::span(reads).first(std::size(reads) - 2)),
             delegate->GetTotalReceivedBytes());

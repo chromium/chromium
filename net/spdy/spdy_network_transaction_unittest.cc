@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <algorithm>
 #include <cmath>
 #include <string_view>
 #include <utility>
@@ -3391,28 +3387,27 @@ TEST_P(SpdyNetworkTransactionTest,
 TEST_P(SpdyNetworkTransactionTest, ResponseHeaders) {
   struct ResponseHeadersTests {
     std::vector<std::string_view> extra_headers;
-    size_t expected_header_count;
-    std::string_view expected_headers[8];
-  } test_cases[] = {
-      // No extra headers.
-      {{}, 1, {"hello", "bye"}},
-      // Comma-separated header value.
-      {{"cookie", "val1, val2"}, 2, {"hello", "bye", "cookie", "val1, val2"}},
-      // Multiple headers are preserved: they are joined with \0 separator in
-      // quiche::HttpHeaderBlock.AppendValueOrAddHeader(), then split up in
-      // HpackEncoder, then joined with \0 separator when
-      // spdy::HpackDecoderAdapter::ListenerAdapter::OnHeader() calls
-      // quiche::HttpHeaderBlock.AppendValueOrAddHeader(), then split up again
-      // in
-      // HttpResponseHeaders.
-      {{"content-encoding", "val1", "content-encoding", "val2"},
-       3,
-       {"hello", "bye", "content-encoding", "val1", "content-encoding",
-        "val2"}},
-      // Cookie header is not split up by HttpResponseHeaders.
-      {{"cookie", "val1", "cookie", "val2"},
-       2,
-       {"hello", "bye", "cookie", "val1; val2"}}};
+    std::vector<std::string_view> expected_headers;
+  };
+
+  auto test_cases = std::to_array<ResponseHeadersTests>(
+      {// No extra headers.
+       {{}, {"hello", "bye"}},
+       // Comma-separated header value.
+       {{"cookie", "val1, val2"}, {"hello", "bye", "cookie", "val1, val2"}},
+       // Multiple headers are preserved: they are joined with \0 separator in
+       // quiche::HttpHeaderBlock.AppendValueOrAddHeader(), then split up in
+       // HpackEncoder, then joined with \0 separator when
+       // spdy::HpackDecoderAdapter::ListenerAdapter::OnHeader() calls
+       // quiche::HttpHeaderBlock.AppendValueOrAddHeader(), then split up again
+       // in
+       // HttpResponseHeaders.
+       {{"content-encoding", "val1", "content-encoding", "val2"},
+        {"hello", "bye", "content-encoding", "val1", "content-encoding",
+         "val2"}},
+       // Cookie header is not split up by HttpResponseHeaders.
+       {{"cookie", "val1", "cookie", "val2"},
+        {"hello", "bye", "cookie", "val1; val2"}}});
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(i);
@@ -3447,14 +3442,15 @@ TEST_P(SpdyNetworkTransactionTest, ResponseHeaders) {
     std::string name, value;
     size_t expected_header_index = 0;
     while (headers->EnumerateHeaderLines(&iter, &name, &value)) {
-      ASSERT_LT(expected_header_index, test_cases[i].expected_header_count);
+      ASSERT_LT(expected_header_index,
+                test_cases[i].expected_headers.size() / 2);
       EXPECT_EQ(name,
                 test_cases[i].expected_headers[2 * expected_header_index]);
       EXPECT_EQ(value,
                 test_cases[i].expected_headers[2 * expected_header_index + 1]);
       ++expected_header_index;
     }
-    EXPECT_EQ(expected_header_index, test_cases[i].expected_header_count);
+    EXPECT_EQ(expected_header_index * 2, test_cases[i].expected_headers.size());
   }
 }
 
@@ -3462,10 +3458,13 @@ TEST_P(SpdyNetworkTransactionTest, ResponseHeaders) {
 TEST_P(SpdyNetworkTransactionTest, InvalidResponseHeaders) {
   struct InvalidResponseHeadersTests {
     std::vector<std::string_view> headers;
-  } test_cases[] = {// Response headers missing status header
-                    {{"cookie", "val1", "cookie", "val2"}},
-                    // Response headers with no headers
-                    {{}}};
+  };
+
+  auto test_cases = std::to_array<InvalidResponseHeadersTests>(
+      {// Response headers missing status header
+       {{"cookie", "val1", "cookie", "val2"}},
+       // Response headers with no headers
+       {{}}});
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(i);
@@ -3538,7 +3537,7 @@ TEST_P(SpdyNetworkTransactionTest, GoAwayOnDecompressionFailure) {
   // Read HEADERS with corrupted payload.
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyGetReply(
       base::span<const std::string_view>(), 1));
-  memset(resp.data() + 12, 0xcf, resp.size() - 12);
+  std::ranges::fill(base::as_writable_byte_span(resp).subspan(12u), 0xcf);
   MockRead reads[] = {CreateMockRead(resp, 1)};
 
   SequencedSocketData data(reads, writes);
@@ -3604,7 +3603,8 @@ TEST_P(SpdyNetworkTransactionTest, PartialWrite) {
   spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyGet(
       base::span<const std::string_view>(), 1, LOWEST));
   const size_t kChunks = 5u;
-  std::unique_ptr<MockWrite[]> writes = ChopWriteFrame(req, kChunks);
+  std::vector<MockWrite> writes = ChopWriteFrame(req, kChunks);
+  ASSERT_EQ(kChunks, writes.size());
   for (size_t i = 0; i < kChunks; ++i) {
     writes[i].sequence_number = i;
   }
@@ -3617,7 +3617,7 @@ TEST_P(SpdyNetworkTransactionTest, PartialWrite) {
       MockRead(ASYNC, 0, kChunks + 2)  // EOF
   };
 
-  SequencedSocketData data(reads, base::span(writes.get(), kChunks));
+  SequencedSocketData data(reads, writes);
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
   helper.RunToCompletion(&data);
   TransactionHelperResult out = helper.output();
@@ -4485,8 +4485,8 @@ TEST_P(SpdyNetworkTransactionTest,
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
-  const NetworkIsolationKey kNetworkIsolationKeys[] = {
-      kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()};
+  const auto kNetworkIsolationKeys = std::to_array(
+      {kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()});
 
   base::test::ScopedFeatureList feature_list;
   // Need to partition connections by NetworkAnonymizationKey for
@@ -4699,11 +4699,11 @@ TEST_P(SpdyNetworkTransactionTest,
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
-  const NetworkAnonymizationKey kNetworkAnonymizationKeys[] = {
-      kNetworkAnonymizationKey1, kNetworkAnonymizationKey2,
-      NetworkAnonymizationKey()};
-  const NetworkIsolationKey kNetworkIsolationKeys[] = {
-      kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()};
+  const auto kNetworkAnonymizationKeys =
+      std::to_array({kNetworkAnonymizationKey1, kNetworkAnonymizationKey2,
+                     NetworkAnonymizationKey()});
+  const auto kNetworkIsolationKeys = std::to_array(
+      {kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()});
 
   base::test::ScopedFeatureList feature_list;
   // Need to partition connections by NetworkAnonymizationKey for

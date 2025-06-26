@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/spdy/spdy_session.h"
 
 #include <algorithm>
@@ -18,6 +13,7 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -804,19 +800,16 @@ TEST_F(SpdySessionTest, GoAwayWhileDraining) {
   size_t joint_size = goaway.size() * 2 + body.size();
 
   // Compose interleaved |goaway| and |body| frames into a single read.
-  auto buffer = std::make_unique<char[]>(joint_size);
+  auto buffer = base::HeapArray<char>::Uninit(joint_size);
   {
-    size_t out = 0;
-    memcpy(&buffer[out], goaway.data(), goaway.size());
-    out += goaway.size();
-    memcpy(&buffer[out], body.data(), body.size());
-    out += body.size();
-    memcpy(&buffer[out], goaway.data(), goaway.size());
-    out += goaway.size();
-    ASSERT_EQ(out, joint_size);
+    base::span<char> out_span = buffer.as_span();
+    out_span.take_first(goaway.size()).copy_from(goaway);
+    out_span.take_first(body.size()).copy_from(body);
+    out_span.take_first(goaway.size()).copy_from(goaway);
+    ASSERT_EQ(out_span.size(), 0u);
   }
   spdy::SpdySerializedFrame joint_frames(
-      spdy::test::MakeSerializedFrame(buffer.get(), joint_size));
+      spdy::test::MakeSerializedFrame(buffer.data(), buffer.size()));
 
   MockRead reads[] = {
       CreateMockRead(resp, 1), CreateMockRead(joint_frames, 2),

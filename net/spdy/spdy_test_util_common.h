@@ -74,9 +74,8 @@ const uint32_t kMaxHeaderListSizeForTest = 1024;
 // Chop a spdy::SpdySerializedFrame into an array of MockWrites.
 // |frame| is the frame to chop.
 // |num_chunks| is the number of chunks to create.
-std::unique_ptr<MockWrite[]> ChopWriteFrame(
-    const spdy::SpdySerializedFrame& frame,
-    int num_chunks);
+std::vector<MockWrite> ChopWriteFrame(const spdy::SpdySerializedFrame& frame,
+                                      int num_chunks);
 
 // Adds headers and values to a map.
 // |extra_headers| is an array of { name, value } pairs, arranged as strings
