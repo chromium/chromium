@@ -442,8 +442,9 @@ bool LayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
   // Currently, cc does not support rounded corners for layer whose transform
   // does not preserve 2d-axis alignment and ignores the radii.
   // (See `cc::Layer::SetRoundedCornerRadius()` comment).
-  const bool ignore_layer =
-      !transform.Preserves2dAxisAlignment() || !layer->visible();
+  const bool ignore_layer = layer->rounded_corner_radii().IsEmpty() ||
+                            !layer->visible() ||
+                            !transform.Preserves2dAxisAlignment();
   if (!ignore_layer) {
     // Get the `layer` bounds in the `root_layer_` coordinate space.
     // `transform` accounts for layer offset from its parent.
