@@ -124,14 +124,25 @@ pub fn readme_file_from_package<'a>(
 
     if license_files.is_empty() {
         bail!(
-            "License file not found for crate {name}.\n
-             \n
-             You can specify the `license_files` in `crate.{name}]` \
-             section of the `gnrt_config.toml` to manually point out \
-             a license file relative to the crate's root. \
-             (Alternatively you can tweak `gnrt`'s source code to improve \
-             its ability to recognize license files based on their name).",
-            name = package.name()
+            r#"License file not found for crate `{name}-{version}`.
+
+* If a license file exists but `gnrt` can't find it under
+  `{crate_vendor_dir}` then,
+    * Specify `license_files` in `[crate.{name}]`
+      section of `chromium_crates_io/gnrt_config.toml`
+    * Or tweak the `LICENSE_KIND_TO_LICENSE_FILES` map in
+      `tools/crates/gnrt/lib/readme.rs` to teach `gnrt`
+      about alternative filenames
+* If the crate didn't publish the license, then this may need
+  to be fixed upstream before the crate can be imported.
+  See also:
+    - https://crbug.com/369075726
+    - https://github.com/brendanzab/codespan/pull/355
+    - https://github.com/rust-lang/rustc-demangle/issues/72
+    - https://github.com/udoprog/relative-path/pull/60"#,
+            name = package.name(),
+            version = package.version(),
+            crate_vendor_dir = crate_vendor_dir.display(),
         );
     }
 
