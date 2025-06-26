@@ -20,4 +20,5 @@ parcelable IChildProcessArgs {
   IAndroidInfo androidInfo;
   IDeviceInfo deviceInfo;
   int channel;
+  boolean bindToCaller;
 }

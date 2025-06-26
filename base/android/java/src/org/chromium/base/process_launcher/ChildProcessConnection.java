@@ -434,7 +434,6 @@ public class ChildProcessConnection {
         mServiceName = serviceName;
         mFallbackServiceName = fallbackServiceName;
         mServiceBundle = serviceBundle != null ? serviceBundle : new Bundle();
-        mServiceBundle.putBoolean(ChildProcessConstants.EXTRA_BIND_TO_CALLER, bindToCaller);
         mServiceBundle.putString(
                 ChildProcessConstants.EXTRA_BROWSER_PACKAGE_NAME,
                 BuildInfo.getInstance().packageName);
@@ -667,6 +666,7 @@ public class ChildProcessConnection {
         try (TraceEvent te = TraceEvent.scoped("ChildProcessConnection.setupConnection")) {
             mConnectionCallback = connectionCallback;
             mZygoteInfoCallback = zygoteInfoCallback;
+            childProcessArgs.bindToCaller = mBindToCaller;
             mConnectionParams = new ConnectionParams(childProcessArgs, clientInterfaces, binderBox);
             // Run the setup if the service is already connected. If not, doConnectionSetup() will
             // be called from onServiceConnected().

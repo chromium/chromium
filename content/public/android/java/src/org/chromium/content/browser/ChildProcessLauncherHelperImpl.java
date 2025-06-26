@@ -36,7 +36,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryLoader.MultiProcessMediator;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
-import org.chromium.base.process_launcher.ChildProcessConstants;
 import org.chromium.base.process_launcher.ChildProcessLauncher;
 import org.chromium.base.process_launcher.IChildProcessArgs;
 import org.chromium.base.process_launcher.IFileDescriptorInfo;
@@ -997,9 +996,7 @@ public final class ChildProcessLauncherHelperImpl {
 
     private static Bundle populateServiceBundle(Bundle bundle) {
         ChildProcessCreationParamsImpl.addIntentExtras(bundle);
-        bundle.putBoolean(
-                ChildProcessConstants.EXTRA_BIND_TO_CALLER,
-                ChildProcessCreationParamsImpl.getBindToCallerCheck());
+
         MultiProcessMediator m = LibraryLoader.getInstance().getMediator();
         m.ensureInitializedInMainProcess();
         m.putLoadAddressToBundle(bundle);

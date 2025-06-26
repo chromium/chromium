@@ -87,10 +87,6 @@ public class ChildProcessService {
     private final Object mBinderLock = new Object();
     private final Object mLibraryInitializedLock = new Object();
 
-    // True if we should enforce that bindToCaller() is called before setupConnection().
-    // Only set once in bind(), does not require synchronization.
-    private boolean mBindToCallerCheck;
-
     // PID of the client of this service, set in bindToCaller(), if mBindToCallerCheck is true.
     @GuardedBy("mBinderLock")
     private int mBoundCallingPid;
@@ -138,7 +134,6 @@ public class ChildProcessService {
                 // NOTE: Implement any IChildProcessService methods here.
                 @Override
                 public boolean bindToCaller(String clazz) {
-                    assert mBindToCallerCheck;
                     assert mServiceBound;
                     synchronized (mBinderLock) {
                         int callingPid = Binder.getCallingPid();
@@ -179,7 +174,7 @@ public class ChildProcessService {
                         throws RemoteException {
                     assert mServiceBound;
                     synchronized (mBinderLock) {
-                        if (mBindToCallerCheck && mBoundCallingPid == 0) {
+                        if (args.bindToCaller && mBoundCallingPid == 0) {
                             Log.e(TAG, "Service has not been bound with bindToCaller()");
                             parentProcess.finishSetupConnection(-1, 0, 0, null);
                             return;
@@ -417,8 +412,6 @@ public class ChildProcessService {
         // time.
         mService.stopSelf();
 
-        mBindToCallerCheck =
-                intent.getBooleanExtra(ChildProcessConstants.EXTRA_BIND_TO_CALLER, false);
         mServiceBound = true;
         mDelegate.onServiceBound(intent);
 
