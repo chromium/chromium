@@ -111,6 +111,10 @@ gfx::Insets OmniboxRowView::GetInsets() const {
     return gfx::Insets::TLBR(8, LRInsets, 8, LRInsets);
   }
 
+  if (result_view_->GetThemeState() == OmniboxPartState::TOOLBELT) {
+    return gfx::Insets::TLBR(0, 0, 0, 0);
+  }
+
   return gfx::Insets::TLBR(0, 0, 0, 16);
 }
 
