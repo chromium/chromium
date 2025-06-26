@@ -935,18 +935,7 @@ void WebGLRenderingContextBase::commit() {
   if (!GetDrawingBuffer() || (Host() && Host()->IsOffscreenCanvas()))
     return;
 
-  // Note: we commit only if (a) the paint operation succeeded and (b) it
-  // actually updated the returned resource provider.
-  bool resource_provider_was_updated = false;
-  auto* resource_provider = PaintRenderingResultsToCanvas(
-      kBackBuffer, &resource_provider_was_updated);
-  if (resource_provider && resource_provider_was_updated) {
-    const int width = GetDrawingBuffer()->Size().width();
-    const int height = GetDrawingBuffer()->Size().height();
-    Host()->Commit(resource_provider->ProduceCanvasResource(FlushReason::kNone),
-                   SkIRect::MakeWH(width, height));
-  }
-  MarkLayerComposited();
+  PushFrameWithCopy(/*for_commit_api=*/true);
 }
 
 scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
@@ -1792,7 +1781,8 @@ void WebGLRenderingContextBase::Dispose() {
   CanvasRenderingContext::Dispose();
 }
 
-bool WebGLRenderingContextBase::PushFrameWithCopy() {
+bool WebGLRenderingContextBase::PushFrameWithCopy(
+    bool for_commit_api /*=false*/) {
   bool submitted_frame = false;
 
   // Note: we push a frame only if (a) the paint operation succeeded and (b) it
@@ -1803,9 +1793,12 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
   if (resource_provider && resource_provider_was_updated) {
     const int width = GetDrawingBuffer()->Size().width();
     const int height = GetDrawingBuffer()->Size().height();
-    submitted_frame = Host()->PushFrame(
-        resource_provider->ProduceCanvasResource(FlushReason::kNon2DCanvas),
-        SkIRect::MakeWH(width, height));
+    auto resource =
+        resource_provider->ProduceCanvasResource(FlushReason::kNon2DCanvas);
+    auto size = SkIRect::MakeWH(width, height);
+    submitted_frame = for_commit_api
+                          ? Host()->Commit(std::move(resource), size)
+                          : Host()->PushFrame(std::move(resource), size);
   }
   MarkLayerComposited();
   return submitted_frame;
