@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
@@ -105,7 +106,26 @@ void OpenNewIncognitoTab() {
 
 web::WebState* GetCurrentWebState() {
   WebStateList* web_state_list = GetCurrentWebStateList();
-  return web_state_list ? web_state_list->GetActiveWebState() : nullptr;
+  if (!web_state_list) {
+    return nullptr;
+  }
+  web::WebState* current_web_state = web_state_list->GetActiveWebState();
+  if (!current_web_state) {
+    return nullptr;
+  }
+
+  // If there is a Reading Mode web state enabled on the page, run tests on the
+  // content that is displayed here.
+  ReaderModeTabHelper* reader_mode_tab_helper =
+      ReaderModeTabHelper::FromWebState(current_web_state);
+  if (reader_mode_tab_helper &&
+      reader_mode_tab_helper->IsReaderModeWebStateAvailable()) {
+    web::WebState* reader_mode_web_state =
+        reader_mode_tab_helper->GetReaderModeWebState();
+    CHECK(reader_mode_web_state);
+    return reader_mode_web_state;
+  }
+  return current_web_state;
 }
 
 web::WebState* GetNextWebState() {

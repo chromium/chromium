@@ -4,6 +4,8 @@
 
 #import <XCTest/XCTest.h>
 
+#import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
+#import "components/dom_distiller/core/pref_names.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
@@ -14,6 +16,23 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "testing/gmock/include/gmock/gmock-matchers.h"
+
+using testing::HasSubstr;
+
+namespace {
+// Verifies that the theme and font have been set as expected in the document
+// body.
+void ExpectBodyHasThemeAndFont(const std::string& theme,
+                               const std::string& font) {
+  NSString* js = @"(function() { return document.body.className; })();";
+  base::Value result = [ChromeEarlGrey evaluateJavaScript:js];
+  ASSERT_TRUE(result.is_string());
+
+  const std::string resultStr = result.GetString();
+  EXPECT_THAT(resultStr, HasSubstr(theme));
+  EXPECT_THAT(resultStr, HasSubstr(font));
+}
+}  // namespace
 
 // Tests interactions with Reader Mode on a web page.
 @interface ReaderModeTestCase : ChromeTestCase
@@ -179,6 +198,57 @@
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+}
+
+// Tests that theme change is applied to the Reading Mode web page.
+- (void)testUpdateReaderModeTheme {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+
+  [ChromeEarlGreyUI openToolsMenu];
+  id<GREYMatcher> tableViewMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
+          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuReaderMode),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:tableViewMatcher] performAction:grey_tap()];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  ExpectBodyHasThemeAndFont("light", "sans-serif");
+
+  [ChromeEarlGrey setIntegerValue:(int)dom_distiller::mojom::Theme::kDark
+                      forUserPref:dom_distiller::prefs::kTheme];
+
+  ExpectBodyHasThemeAndFont("dark", "sans-serif");
+}
+
+// Tests that font change is applied to the Reading Mode web page.
+- (void)testUpdateReaderModeFont {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+
+  [ChromeEarlGreyUI openToolsMenu];
+  id<GREYMatcher> tableViewMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
+          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuReaderMode),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:tableViewMatcher] performAction:grey_tap()];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  ExpectBodyHasThemeAndFont("light", "sans-serif");
+
+  [ChromeEarlGrey
+      setIntegerValue:(int)dom_distiller::mojom::FontFamily::kMonospace
+          forUserPref:dom_distiller::prefs::kFont];
+
+  ExpectBodyHasThemeAndFont("light", "monospace");
 }
 
 @end

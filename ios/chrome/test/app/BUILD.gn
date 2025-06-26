@@ -83,6 +83,7 @@ source_set("test_support") {
     "//ios/chrome/browser/metrics/model:metrics_browser_agent",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/passwords/ui_bundled/bottom_sheet:common",
+    "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/sessions/model:session_restoration_service",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/settings/ui_bundled/password:test_support",
