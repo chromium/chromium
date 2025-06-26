@@ -36,6 +36,7 @@ class CookieControlsPageActionController
       CookieControlsState controls_state,
       CookieBlocking3pcdStatus blocking_status,
       bool should_highlight) override;
+  void OnFinishedPageReloadWithChangedSettings() override;
 
  private:
   // Encapsulates values provided by `OnCookieControlsIconStatusChanged`.
@@ -46,8 +47,9 @@ class CookieControlsPageActionController
     bool should_highlight;
   };
 
-  void UpdatePageActionIcon(const CookieControlsIconStatus& icon_status);
+  void UpdatePageActionIcon(bool from_page_reload);
 
   const raw_ref<page_actions::PageActionController> page_action_controller_;
+  CookieControlsIconStatus icon_status_;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_PAGE_ACTION_CONTROLLER_H_

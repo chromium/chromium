@@ -18,13 +18,13 @@
 
 namespace {
 int GetLabelForStatus(CookieControlsState controls_state,
-                      CookieBlocking3pcdStatus blocking_status) {
+                      CookieBlocking3pcdStatus blocking_status,
+                      bool from_page_reload) {
   switch (controls_state) {
     case CookieControlsState::kActiveTp:
-      // TODO(crbug.com/376283777): Use
-      // IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_RESUMED_LABEL when
-      // animating in.
-      return IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_ENABLED_LABEL;
+      return from_page_reload
+                 ? IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_RESUMED_LABEL
+                 : IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_ENABLED_LABEL;
     case CookieControlsState::kPausedTp:
       return IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_PAUSED_LABEL;
     case CookieControlsState::kAllowed3pc:
@@ -47,8 +47,6 @@ const gfx::VectorIcon& GetVectorIcon(CookieControlsState controls_state) {
 // TODO(crbug.com/376283777): This class needs further work to achieve full
 // parity with the legacy page action, including:
 // - Update icon visibility to always show if there's a bubble showing.
-// - Support animations for specific cookie settings and for indication when a
-//   page is reloaded with new cookie settings.
 // - Add IPH handling logic.
 // - Implement the logic for executing the page action.
 // - Add metrics reporting.
@@ -66,34 +64,17 @@ void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
     CookieControlsState controls_state,
     CookieBlocking3pcdStatus blocking_status,
     bool should_highlight) {
-  UpdatePageActionIcon(CookieControlsIconStatus{
+  icon_status_ = CookieControlsIconStatus{
       .icon_visible = icon_visible,
       .controls_state = controls_state,
       .blocking_status = blocking_status,
       .should_highlight = should_highlight,
-  });
-}
+  };
+  UpdatePageActionIcon(/*from_page_reload=*/false);
 
-void CookieControlsPageActionController::UpdatePageActionIcon(
-    const CookieControlsIconStatus& icon_status) {
-  if (!icon_status.icon_visible) {
-    page_action_controller_->HideSuggestionChip(kActionShowCookieControls);
-    page_action_controller_->Hide(kActionShowCookieControls);
-    return;
-  }
-
-  const std::u16string& label = l10n_util::GetStringUTF16(GetLabelForStatus(
-      icon_status.controls_state, icon_status.blocking_status));
-  page_action_controller_->OverrideImage(
-      kActionShowCookieControls, ui::ImageModel::FromVectorIcon(GetVectorIcon(
-                                     icon_status.controls_state)));
-  page_action_controller_->OverrideTooltip(kActionShowCookieControls, label);
-  page_action_controller_->OverrideText(kActionShowCookieControls, label);
-  page_action_controller_->Show(kActionShowCookieControls);
-
-  if (icon_status.controls_state == CookieControlsState::kBlocked3pc &&
-      icon_status.should_highlight) {
-    if (icon_status.blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd) {
+  if (icon_status_.controls_state == CookieControlsState::kBlocked3pc &&
+      icon_status_.should_highlight) {
+    if (icon_status_.blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd) {
       page_action_controller_->OverrideText(
           kActionShowCookieControls,
           l10n_util::GetStringUTF16(
@@ -105,4 +86,36 @@ void CookieControlsPageActionController::UpdatePageActionIcon(
                                        .should_announce_chip = true,
                                    });
   }
+}
+
+void CookieControlsPageActionController::
+    OnFinishedPageReloadWithChangedSettings() {
+  if (icon_status_.icon_visible) {
+    if (base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx)) {
+      UpdatePageActionIcon(/*from_page_reload=*/true);
+      // Animate the label to provide a visual confirmation to the user that
+      // their protection status on the site has changed.
+      page_action_controller_->ShowSuggestionChip(kActionShowCookieControls,
+                                                  {.should_animate = true});
+    }
+  }
+}
+
+void CookieControlsPageActionController::UpdatePageActionIcon(
+    bool from_page_reload) {
+  if (!icon_status_.icon_visible) {
+    page_action_controller_->HideSuggestionChip(kActionShowCookieControls);
+    page_action_controller_->Hide(kActionShowCookieControls);
+    return;
+  }
+
+  const std::u16string& label = l10n_util::GetStringUTF16(
+      GetLabelForStatus(icon_status_.controls_state,
+                        icon_status_.blocking_status, from_page_reload));
+  page_action_controller_->OverrideImage(
+      kActionShowCookieControls, ui::ImageModel::FromVectorIcon(GetVectorIcon(
+                                     icon_status_.controls_state)));
+  page_action_controller_->OverrideTooltip(kActionShowCookieControls, label);
+  page_action_controller_->OverrideText(kActionShowCookieControls, label);
+  page_action_controller_->Show(kActionShowCookieControls);
 }

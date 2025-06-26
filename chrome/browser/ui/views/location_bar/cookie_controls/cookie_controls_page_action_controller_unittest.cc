@@ -14,6 +14,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +24,7 @@
 namespace {
 
 using testing::_;
+using testing::Return;
 
 std::u16string AllowedLabel() {
   return l10n_util::GetStringUTF16(
@@ -32,6 +34,21 @@ std::u16string AllowedLabel() {
 std::u16string SiteNotWorkingLabel() {
   return l10n_util::GetStringUTF16(
       IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL);
+}
+
+std::u16string TrackingProtectionPausedLabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_PAUSED_LABEL);
+}
+
+std::u16string TrackingProtectionResumedLabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_RESUMED_LABEL);
+}
+
+std::u16string TrackingProtectionEnabledLabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_ENABLED_LABEL);
 }
 
 class FakePageActionController : public page_actions::MockPageActionController {
@@ -61,9 +78,13 @@ class CookieControlsPageActionControllerTest
       public testing::WithParamInterface<CookieBlocking3pcdStatus> {
  public:
   CookieControlsPageActionControllerTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPageActionsMigration,
-        {{features::kPageActionsMigrationCookieControls.name, "true"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kPageActionsMigration,
+             {{features::kPageActionsMigrationCookieControls.name, "true"}}},
+            {privacy_sandbox::kActUserBypassUx, {}},
+        },
+        {});
 
     cookie_controls_page_action_controller_ =
         std::make_unique<CookieControlsPageActionController>(
@@ -192,6 +213,72 @@ TEST_P(CookieControlsPageActionControllerTest,
   controller().OnCookieControlsIconStatusChanged(
       /*icon_visible=*/false, CookieControlsState::kAllowed3pc, GetParam(),
       /*should_highlight=*/false);
+}
+
+TEST_P(CookieControlsPageActionControllerTest,
+       IconAnimatesOnPageReloadWithChanged3pcSettings) {
+  // Set initial state without highlighting.
+  EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls));
+  EXPECT_CALL(page_action_controller(), ShowSuggestionChip(_, _)).Times(0);
+  controller().OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::kBlocked3pc, GetParam(),
+      /*should_highlight=*/false);
+  testing::Mock::VerifyAndClearExpectations(&page_action_controller());
+
+  // Force the icon to animate and set the label again upon reload.
+  EXPECT_CALL(page_action_controller(),
+              ShowSuggestionChip(kActionShowCookieControls, _));
+  EXPECT_CALL(page_action_controller(),
+              OverrideTooltip(kActionShowCookieControls, BlockedLabel()));
+  controller().OnFinishedPageReloadWithChangedSettings();
+
+  // The label for the chip should be the "Blocked" label.
+  EXPECT_EQ(page_action_controller().last_text(), BlockedLabel());
+}
+
+TEST_P(CookieControlsPageActionControllerTest,
+       IconAnimatesOnPageReloadWithChangedTpSettings) {
+  // Default state when tracking protections are active.
+  EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls));
+  EXPECT_CALL(page_action_controller(), ShowSuggestionChip(_, _)).Times(0);
+  EXPECT_CALL(page_action_controller(),
+              OverrideTooltip(kActionShowCookieControls,
+                              TrackingProtectionEnabledLabel()));
+  controller().OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::kActiveTp, GetParam(),
+      /*should_highlight=*/false);
+  // The icon is visible, but not animating, and has the correct tooltip.
+  testing::Mock::VerifyAndClearExpectations(&page_action_controller());
+
+  // When tracking protections are paused, the label is shown and updated.
+  controller().OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::kPausedTp, GetParam(),
+      /*should_highlight=*/false);
+  EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls));
+  EXPECT_CALL(page_action_controller(),
+              ShowSuggestionChip(kActionShowCookieControls, _));
+  EXPECT_CALL(page_action_controller(),
+              OverrideTooltip(kActionShowCookieControls,
+                              TrackingProtectionPausedLabel()));
+  controller().OnFinishedPageReloadWithChangedSettings();
+  EXPECT_EQ(page_action_controller().last_text(),
+            TrackingProtectionPausedLabel());
+  testing::Mock::VerifyAndClearExpectations(&page_action_controller());
+
+  // When tracking protections are resumed, the label is shown and updated.
+  controller().OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::kActiveTp, GetParam(),
+      /*should_highlight=*/false);
+
+  EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls));
+  EXPECT_CALL(page_action_controller(),
+              ShowSuggestionChip(kActionShowCookieControls, _));
+  EXPECT_CALL(page_action_controller(),
+              OverrideTooltip(kActionShowCookieControls,
+                              TrackingProtectionResumedLabel()));
+  controller().OnFinishedPageReloadWithChangedSettings();
+  EXPECT_EQ(page_action_controller().last_text(),
+            TrackingProtectionResumedLabel());
 }
 
 }  // namespace
