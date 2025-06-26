@@ -88,6 +88,19 @@ export declare interface HostRequestTypes {
       effectiveMax: number,
     },
   };
+  glicBrowserCreateTask: {
+    response: {
+      taskId: number,
+    },
+  };
+  glicBrowserPerformActions: {
+    request: {
+      actions: ArrayBuffer,
+    },
+    response: {
+      actionsResult: ArrayBuffer,
+    },
+  };
   glicBrowserActInFocusedTab: {
     request: {
       actInFocusedTabParams: ActInFocusedTabParams,
@@ -437,6 +450,8 @@ type HostRequestEnumNamesType = {
     DropScrollToHighlight: 0,
     MaybeRefreshUserStatus: 0,
     OnClosedCaptionsShown: 0,
+    CreateTask: 0,
+    PerformActions: 0,
   };
   return apiRequestTypes;
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType)

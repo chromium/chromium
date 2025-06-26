@@ -1089,6 +1089,7 @@ export declare interface ErrorReasonTypes {
   webClientInitialize: WebClientInitializeErrorReason;
   actInFocusedTab: ActInFocusedTabErrorReason;
   createTask: CreateTaskErrorReason;
+  performActions: PerformActionsErrorReason;
 }
 
 /** Reason why the web client could not initialize. */
@@ -1132,6 +1133,13 @@ export enum CreateTaskErrorReason {
   TASK_SYSTEM_UNAVAILABLE = 1,
 }
 
+export enum PerformActionsErrorReason {
+  UNKNOWN = 0,
+
+  /** The serialized Actions proto failed to parse. */
+  INVALID_ACTION_PROTO = 1,
+}
+
 /**
  * Reason why capturing desktop screenshot failed. NOTE: This may be extended in
  * the future so avoid using complete switches on the currently used enum
@@ -1171,6 +1179,9 @@ export type ActInFocusedTabError = ErrorWithReason<'actInFocusedTab'>;
 
 /** Error type used for create task errors. */
 export type CreateTaskError = ErrorWithReason<'createTask'>;
+
+/** Error type used for perform actions errors. */
+export type PerformActionsError = ErrorWithReason<'performActions'>;
 
 /** Params for scrollTo(). */
 export declare interface ScrollToParams {
@@ -1467,5 +1478,6 @@ export interface ExtensibleEnums {
   invocationSource: typeof InvocationSource;
   actInFocusedTabErrorReason: typeof ActInFocusedTabErrorReason;
   createTaskErrorReason: typeof CreateTaskErrorReason;
+  performActionsErrorReason: typeof PerformActionsErrorReason;
   settingsPageField: typeof SettingsPageField;
 }

@@ -58,19 +58,29 @@ class ActorKeyedService : public KeyedService {
   // not to modify them.
   const std::map<TaskId, std::unique_ptr<ActorTask>>& GetTasks();
 
-  // Executes an actor action. The first action in a task must be navigate.
-  void ExecuteAction(
-      optimization_guide::proto::BrowserAction action,
-      base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
-          callback);
+  // Starts a new task with an execution engine and returns the new task's id.
+  TaskId CreateTask();
 
-  // Starts a new task and fires `callback` when the task is ready. Implicitly
-  // calls AddTask.
+  // Executes the given actions using the execution engine. The actions proto
+  // must explicitly specify the task_id of an existing task started using
+  // CreateTask. Once all actions have been completed, returns the ActionsResult
+  // proto which includes new observations and an error code for the first
+  // failed action.
+  // TODO(crbug.com/411462297): The result doesn't yet include observations.
   void PerformActions(
       optimization_guide::proto::Actions actions,
       base::OnceCallback<void(optimization_guide::proto::ActionsResult)>
           callback);
 
+  // TODO(crbug.com/411462297): DEPRECATED - to be replaced with PerformActions.
+  // Executes an actor action.
+  void ExecuteAction(
+      optimization_guide::proto::BrowserAction action,
+      base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
+          callback);
+
+  // TODO(crbug.com/411462297): DEPRECATED - to be replaced with CreateTask
+  // above.
   // Starts a new task using the execution engine and fires
   // `callback` when the task is ready. Implicitly calls AddTask.
   void StartTask(
@@ -100,7 +110,6 @@ class ActorKeyedService : public KeyedService {
   // will become synchronous.
   void FinishStartTask(
       tabs::TabHandle handle,
-      optimization_guide::proto::BrowserStartTask task,
       base::OnceCallback<
           void(optimization_guide::proto::BrowserStartTaskResult)> callback);
 

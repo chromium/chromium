@@ -154,6 +154,10 @@ class GlicKeyedService : public KeyedService {
     return is_context_access_indicator_enabled_;
   }
 
+  void CreateTask(mojom::WebClientHandler::CreateTaskCallback callback);
+  void PerformActions(const std::vector<uint8_t>& actions_proto,
+                      mojom::WebClientHandler::PerformActionsCallback callback);
+
   void ActInFocusedTab(
       const std::vector<uint8_t>& action_proto,
       const mojom::GetTabContextOptions& options,

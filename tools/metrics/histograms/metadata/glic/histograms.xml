@@ -70,6 +70,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ClosePanel"/>
     <variant name="ClosePanelAndShutdown"/>
     <variant name="CreateTab"/>
+    <variant name="CreateTask"/>
     <variant name="DetachPanel"/>
     <variant name="DropScrollToHighlight"/>
     <variant name="EnableDragResize"/>
@@ -96,6 +97,7 @@ chromium-metrics-reviews@google.com.
     <variant name="OpenGlicSettingsPage"/>
     <variant name="OpenOsPermissionSettingsMenu"/>
     <variant name="PauseActorTask"/>
+    <variant name="PerformActions"/>
     <variant name="PinTabs"/>
     <variant name="RefreshSignInCookies"/>
     <variant name="ResizeWindow"/>

@@ -16,6 +16,8 @@
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -30,6 +32,7 @@
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_actor_controller.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
@@ -51,6 +54,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/log/net_log_with_source.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -341,6 +345,38 @@ void GlicKeyedService::SetContextAccessIndicator(bool show) {
   }
   is_context_access_indicator_enabled_ = show;
   context_access_indicator_callback_list_.Notify(show);
+}
+
+void GlicKeyedService::CreateTask(
+    mojom::WebClientHandler::CreateTaskCallback callback) {
+  if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+    std::move(callback).Run(
+        base::unexpected(mojom::CreateTaskErrorReason::kTaskSystemUnavailable));
+    return;
+  }
+  actor::TaskId task_id = actor::ActorKeyedService::Get(profile_)->CreateTask();
+  std::move(callback).Run(task_id.value());
+}
+
+void PerformActionsFinished(
+    mojom::WebClientHandler::PerformActionsCallback callback,
+    optimization_guide::proto::ActionsResult actions_results) {
+  std::move(callback).Run(mojo_base::ProtoWrapper(actions_results));
+}
+
+void GlicKeyedService::PerformActions(
+    const std::vector<uint8_t>& actions_proto,
+    mojom::WebClientHandler::PerformActionsCallback callback) {
+  optimization_guide::proto::Actions actions;
+  if (!actions.ParseFromArray(actions_proto.data(), actions_proto.size())) {
+    std::move(callback).Run(
+        base::unexpected(mojom::PerformActionsErrorReason::kInvalidProto));
+    return;
+  }
+
+  actor::ActorKeyedService::Get(profile_)->PerformActions(
+      std::move(actions),
+      base::BindOnce(PerformActionsFinished, std::move(callback)));
 }
 
 void GlicKeyedService::ActInFocusedTab(

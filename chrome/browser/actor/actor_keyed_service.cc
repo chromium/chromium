@@ -99,6 +99,13 @@ void ActorKeyedService::ExecuteAction(
 #endif
 }
 
+TaskId ActorKeyedService::CreateTask() {
+  auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());
+  auto actor_task = std::make_unique<ActorTask>(std::move(execution_engine));
+  TaskId task_id = AddTask(std::move(actor_task));
+  return task_id;
+}
+
 void ActorKeyedService::StartTask(
     optimization_guide::proto::BrowserStartTask task,
     base::OnceCallback<void(optimization_guide::proto::BrowserStartTaskResult)>
@@ -122,18 +129,17 @@ void ActorKeyedService::StartTask(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ActorKeyedService::FinishStartTask,
-                       weak_ptr_factory_.GetWeakPtr(), handle, std::move(task),
+                       weak_ptr_factory_.GetWeakPtr(), handle,
                        std::move(callback)),
         kDelayForNewTab);
     return;
   }
 
-  FinishStartTask(handle, std::move(task), std::move(callback));
+  FinishStartTask(handle, std::move(callback));
 }
 
 void ActorKeyedService::FinishStartTask(
     tabs::TabHandle handle,
-    optimization_guide::proto::BrowserStartTask task,
     base::OnceCallback<void(optimization_guide::proto::BrowserStartTaskResult)>
         callback) {
   tabs::TabInterface* tab = handle.Get();

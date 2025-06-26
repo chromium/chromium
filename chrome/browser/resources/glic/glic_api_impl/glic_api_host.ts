@@ -19,7 +19,7 @@ import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
 import type {FocusedTabData as FocusedTabDataMojo, GetTabContextOptionsMojoType as TabContextOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabContextMojoType as TabContextMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {SettingsPageField as SettingsPageFieldMojo, WebClientHandlerRemote, WebClientMode, WebClientReceiver, WebClientSizingMode} from '../glic.mojom-webui.js';
 import type {ActInFocusedTabParams, DraggableArea, Journal, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData, ZeroStateSuggestions} from '../glic_api/glic_api.js';
-import {ActInFocusedTabErrorReason, CaptureScreenshotErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, ScrollToErrorReason} from '../glic_api/glic_api.js';
+import {ActInFocusedTabErrorReason, CaptureScreenshotErrorReason, CreateTaskErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, PerformActionsErrorReason, ScrollToErrorReason} from '../glic_api/glic_api.js';
 import {ObservableValue} from '../observable.js';
 import type {ObservableValueReadOnly} from '../observable.js';
 import {OneShotTimer} from '../timer.js';
@@ -385,6 +385,40 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     const {effectiveMax} =
         await this.handler.setMaximumNumberOfPinnedTabs(requestedMax);
     return {effectiveMax};
+  }
+
+  async glicBrowserCreateTask(_request: void): Promise<{taskId: number}> {
+    try {
+      const taskId = await this.handler.createTask();
+      return {
+        taskId: taskId,
+      };
+    } catch (errorReason) {
+      throw new ErrorWithReasonImpl(
+          'createTask',
+          (errorReason as CreateTaskErrorReason | undefined) ??
+              CreateTaskErrorReason.UNKNOWN);
+    }
+  }
+
+  async glicBrowserPerformActions(request: {actions: ArrayBuffer}):
+      Promise<{actionsResult: ArrayBuffer}> {
+    try {
+      const resultProto = await this.handler.performActions(
+          byteArrayFromClient(request.actions));
+      const buffer = getArrayBufferFromBigBuffer(resultProto.smuggled);
+      if (!buffer) {
+        throw PerformActionsErrorReason.UNKNOWN;
+      }
+      return {
+        actionsResult: buffer,
+      };
+    } catch (errorReason) {
+      throw new ErrorWithReasonImpl(
+          'performActions',
+          (errorReason as PerformActionsErrorReason | undefined) ??
+              PerformActionsErrorReason.UNKNOWN);
+    }
   }
 
   async glicBrowserActInFocusedTab(

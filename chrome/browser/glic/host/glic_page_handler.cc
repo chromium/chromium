@@ -694,6 +694,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_sharing_manager_->UnpinAllTabs();
   }
 
+  void CreateTask(CreateTaskCallback callback) override {
+    glic_service_->CreateTask(std::move(callback));
+  }
+
+  void PerformActions(const std::vector<uint8_t>& actions_proto,
+                      PerformActionsCallback callback) override {
+    glic_service_->PerformActions(actions_proto, std::move(callback));
+  }
+
   void ActInFocusedTab(const std::vector<uint8_t>& action_proto,
                        glic::mojom::GetTabContextOptionsPtr options,
                        ActInFocusedTabCallback callback) override {
