@@ -78,14 +78,15 @@ class Buffer {
   // are no longer required.
   using PerCommitExplicitReleaseCallback =
       base::OnceCallback<void(gfx::GpuFenceHandle)>;
-  virtual bool ProduceTransferableResource(
+  virtual std::optional<viz::TransferableResource> ProduceTransferableResource(
       FrameSinkResourceManager* resource_manager,
       std::unique_ptr<gfx::GpuFence> acquire_fence,
       bool secure_output_only,
-      viz::TransferableResource* resource,
       gfx::ColorSpace color_space,
       ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
-      PerCommitExplicitReleaseCallback per_commit_explicit_release_callback);
+      PerCommitExplicitReleaseCallback per_commit_explicit_release_callback,
+      gpu::SyncToken prev_sync_token,
+      viz::TransferableResource::SynchronizationType prev_synchronization_type);
 
   // This should be called when the buffer is attached to a Surface.
   void OnAttach();
@@ -276,14 +277,15 @@ class SolidColorBuffer : public Buffer {
 
   SkColor4f GetColor() const override;
   gfx::Size GetSize() const override;
-  bool ProduceTransferableResource(
+  std::optional<viz::TransferableResource> ProduceTransferableResource(
       FrameSinkResourceManager* resource_manager,
       std::unique_ptr<gfx::GpuFence> acquire_fence,
       bool secure_output_only,
-      viz::TransferableResource* resource,
       gfx::ColorSpace color_space,
       ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
-      PerCommitExplicitReleaseCallback per_commit_explicit_release_callback)
+      PerCommitExplicitReleaseCallback per_commit_explicit_release_callback,
+      gpu::SyncToken prev_sync_token,
+      viz::TransferableResource::SynchronizationType prev_synchronization_type)
       override;
 
   base::WeakPtr<Buffer> AsWeakPtr() override;
