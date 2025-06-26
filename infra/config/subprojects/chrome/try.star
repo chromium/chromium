@@ -377,6 +377,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "test-emulator",
+)
+
+chrome_internal_verifier(
     branch_selector = branches.selector.ANDROID_BRANCHES,
     builder = "webview-arm64-rel-ready",
 )
