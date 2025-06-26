@@ -72,23 +72,31 @@ TEST(ReportingUtilsTest,
 TEST(ReportingUtilsTest, GetPasswordReuseEventWithWarning) {
   auto event = GetPasswordReuseEvent(
       /*url=*/GURL("https://google.com/"), /*user_name=*/kUsername,
-      /*is_phishing_url=*/false, /*warning_shown=*/true);
+      /*is_phishing_url=*/false, /*warning_shown=*/true,
+      /*profile_identifier=*/"identifier",
+      /*profile_username=*/"profile_username");
   ASSERT_EQ(event.url(), "https://google.com/");
   ASSERT_EQ(event.user_name(), kUsername);
   ASSERT_FALSE(event.is_phishing_url());
   ASSERT_EQ(event.event_result(),
             chrome::cros::reporting::proto::EVENT_RESULT_WARNED);
+  ASSERT_EQ(event.profile_identifier(), "identifier");
+  ASSERT_EQ(event.profile_user_name(), "profile_username");
 }
 
 TEST(ReportingUtilsTest, GetPasswordReuseEventWithoutWarning) {
   auto event = GetPasswordReuseEvent(
       /*url=*/GURL("https://google.com/"), /*user_name=*/kUsername,
-      /*is_phishing_url=*/false, /*warning_shown=*/true);
+      /*is_phishing_url=*/false, /*warning_shown=*/true,
+      /*profile_identifier=*/"identifier",
+      /*profile_username=*/"profile_username");
   ASSERT_EQ(event.url(), "https://google.com/");
   ASSERT_EQ(event.user_name(), kUsername);
   ASSERT_FALSE(event.is_phishing_url());
   ASSERT_EQ(event.event_result(),
             chrome::cros::reporting::proto::EVENT_RESULT_WARNED);
+  ASSERT_EQ(event.profile_identifier(), "identifier");
+  ASSERT_EQ(event.profile_user_name(), "profile_username");
 }
 
 TEST(ReportingUtilsTest, GetPasswordChangedEvent) {

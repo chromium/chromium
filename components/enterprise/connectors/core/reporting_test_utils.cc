@@ -495,6 +495,30 @@ void EventReportValidatorBase::ExpectPasswordReuseEvent(
       });
 }
 
+void EventReportValidatorBase::ExpectPasswordReuseEvent(
+    chrome::cros::reporting::proto::SafeBrowsingPasswordReuseEvent
+        expected_password_reuse_event) {
+  EXPECT_CALL(*client_, UploadSecurityEvent)
+      .WillOnce(
+          [this, expected_password_reuse_event](
+              bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest request,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
+            // There should only be 1 event per test.
+            ASSERT_EQ(1, request.events_size());
+            ASSERT_TRUE(request.events().Get(0).has_password_reuse_event());
+            auto password_reuse_event =
+                request.events().Get(0).password_reuse_event();
+            EXPECT_THAT(password_reuse_event,
+                        EqualsProto(expected_password_reuse_event));
+
+            if (!done_closure_.is_null()) {
+              done_closure_.Run();
+            }
+          });
+}
+
 void EventReportValidatorBase::ExpectPassowrdChangedEvent(
     const std::string& expected_username,
     const std::string& expected_profile_username,

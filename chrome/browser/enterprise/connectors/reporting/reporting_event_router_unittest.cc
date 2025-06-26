@@ -627,38 +627,58 @@ TEST_P(ReportingEventRouterTest, TestInterstitialProceeded) {
 }
 
 TEST_P(ReportingEventRouterTest, TestPasswordReuseWarned) {
-  // TODO(crbug.com/396437152): Migrate password reuse event to proto format.
-  if (use_proto_format()) {
-    return;
-  }
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyPasswordReuseEvent},
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectPasswordReuseEvent(
-      "https://phishing.com/", "user_name_1", true, "EVENT_RESULT_WARNED",
-      profile_->GetProfileUserName(), GetProfileIdentifier());
+  chrome::cros::reporting::proto::SafeBrowsingPasswordReuseEvent expected_event;
+  if (use_proto_format()) {
+    expected_event.set_url("https://phishing.com/");
+    expected_event.set_user_name("user_name_1");
+    expected_event.set_is_phishing_url(true);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EVENT_RESULT_WARNED);
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+
+    validator.ExpectPasswordReuseEvent(std::move(expected_event));
+  } else {
+    validator.ExpectPasswordReuseEvent(
+        "https://phishing.com/", "user_name_1", true, "EVENT_RESULT_WARNED",
+        profile_->GetProfileUserName(), GetProfileIdentifier());
+  }
+
   reporting_event_router_->OnPasswordReuse(
       GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
       /*warning_shown*/ true);
 }
 
 TEST_P(ReportingEventRouterTest, TestPasswordReuseAllowed) {
-  // TODO(crbug.com/396437152): Migrate password reuse event to proto format.
-  if (use_proto_format()) {
-    return;
-  }
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyPasswordReuseEvent},
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectPasswordReuseEvent(
-      "https://phishing.com/", "user_name_1", true, "EVENT_RESULT_ALLOWED",
-      profile_->GetProfileUserName(), GetProfileIdentifier());
+  chrome::cros::reporting::proto::SafeBrowsingPasswordReuseEvent expected_event;
+  if (use_proto_format()) {
+    expected_event.set_url("https://phishing.com/");
+    expected_event.set_user_name("user_name_1");
+    expected_event.set_is_phishing_url(true);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EVENT_RESULT_ALLOWED);
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+
+    validator.ExpectPasswordReuseEvent(std::move(expected_event));
+  } else {
+    validator.ExpectPasswordReuseEvent(
+        "https://phishing.com/", "user_name_1", true, "EVENT_RESULT_ALLOWED",
+        profile_->GetProfileUserName(), GetProfileIdentifier());
+  }
+
   reporting_event_router_->OnPasswordReuse(
       GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
       /*warning_shown*/ false);

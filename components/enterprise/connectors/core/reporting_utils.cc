@@ -266,13 +266,17 @@ proto::SafeBrowsingPasswordReuseEvent GetPasswordReuseEvent(
     const GURL& url,
     const std::string& user_name,
     bool is_phishing_url,
-    bool warning_shown) {
+    bool warning_shown,
+    const std::string& profile_identifier,
+    const std::string& profile_username) {
   proto::SafeBrowsingPasswordReuseEvent event;
   event.set_url(url.spec());
   event.set_user_name(user_name);
   event.set_is_phishing_url(is_phishing_url);
   event.set_event_result(warning_shown ? proto::EVENT_RESULT_WARNED
                                        : proto::EVENT_RESULT_ALLOWED);
+  event.set_profile_identifier(profile_identifier);
+  event.set_profile_user_name(profile_username);
 
   return event;
 }

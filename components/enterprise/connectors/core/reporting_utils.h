@@ -68,7 +68,9 @@ chrome::cros::reporting::proto::SafeBrowsingPasswordReuseEvent
 GetPasswordReuseEvent(const GURL& url,
                       const std::string& user_name,
                       bool is_phishing_url,
-                      bool warning_shown);
+                      bool warning_shown,
+                      const std::string& profile_identifier,
+                      const std::string& profile_username);
 
 chrome::cros::reporting::proto::SafeBrowsingPasswordChangedEvent
 GetPasswordChangedEvent(const std::string& user_name);

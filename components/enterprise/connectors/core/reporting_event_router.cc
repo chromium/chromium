@@ -166,18 +166,30 @@ void ReportingEventRouter::OnPasswordReuse(const GURL& url,
     return;
   }
 
-  base::Value::Dict event;
-  event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyUserName, user_name);
-  event.Set(kKeyIsPhishingUrl, is_phishing_url);
-  event.Set(kKeyEventResult,
-            EventResultToString(warning_shown ? EventResult::WARNED
-                                              : EventResult::ALLOWED));
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::Event event;
+    *event.mutable_password_reuse_event() =
+        GetPasswordReuseEvent(url, user_name, is_phishing_url, warning_shown,
+                              reporting_client_->GetProfileIdentifier(),
+                              reporting_client_->GetProfileUserName());
+    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-  reporting_client_->ReportEventWithTimestampDeprecated(
-      kKeyPasswordReuseEvent, std::move(settings.value()), std::move(event),
-      base::Time::Now(),
-      /*include_profile_user_name=*/true);
+    reporting_client_->ReportEvent(std::move(event), settings.value());
+  } else {
+    base::Value::Dict event;
+    event.Set(kKeyUrl, url.spec());
+    event.Set(kKeyUserName, user_name);
+    event.Set(kKeyIsPhishingUrl, is_phishing_url);
+    event.Set(kKeyEventResult,
+              EventResultToString(warning_shown ? EventResult::WARNED
+                                                : EventResult::ALLOWED));
+
+    reporting_client_->ReportEventWithTimestampDeprecated(
+        kKeyPasswordReuseEvent, std::move(settings.value()), std::move(event),
+        base::Time::Now(),
+        /*include_profile_user_name=*/true);
+  }
 }
 
 void ReportingEventRouter::OnPasswordChanged(const std::string& user_name) {
