@@ -161,6 +161,9 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
       "enableCsbMotionTweaks",
       lens::features::GetVisualSelectionUpdatesEnableCsbMotionTweaks());
   html_source->AddBoolean(
+      "enableVisualSelectionUpdates",
+      lens::features::IsLensOverlayVisualSelectionUpdatesEnabled());
+  html_source->AddBoolean(
       "enableThumbnailSizingTweaks",
       lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
 }

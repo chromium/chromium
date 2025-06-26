@@ -83,6 +83,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableCsbMotionTweaks'),
       },
+      enableVisualSelectionUpdates: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableVisualSelectionUpdates'),
+      },
       isBackArrowVisible: {
         type: Boolean,
         value: false,
@@ -181,6 +186,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   // Whether CSB motion tweaks are enabled via feature flag.
   declare private enableCsbMotionTweaks: boolean;
+  // Whether the visual selection updates are enabled via feature flag.
+  declare private enableVisualSelectionUpdates: boolean;
   // Public for use in browser tests.
   declare isBackArrowVisible: boolean;
   // Whether the user is currently focused into the searchbox.

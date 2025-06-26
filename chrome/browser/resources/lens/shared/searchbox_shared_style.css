@@ -57,3 +57,8 @@
   --cr-searchbox-results-search-icon-size: 20px;
   --cr-searchbox-shadow: 0 1px 3px 0 var(--color-searchbox-shadow);
 }
+
+:host([enable-visual-selection-updates]) #searchboxContainer {
+  --cr-searchbox-icon-size-in-searchbox: 24px;
+  --cr-searchbox-icon-container-size: 28px;
+}

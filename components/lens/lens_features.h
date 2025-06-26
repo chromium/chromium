@@ -815,6 +815,12 @@ extern int GetTranslateTextReceivedTimeout();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetShouldCopyAsImage();
 
+// Whether the visual selection updates are enabled. This is true if the
+// visual selection updates feature flag is enabled or if the omnibox
+// suggestions feature flag is enabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayVisualSelectionUpdatesEnabled();
+
 // Whether to enable the border glow for the visual selection updates. Enabling
 // this will disable the shimmer animation.
 COMPONENT_EXPORT(LENS_FEATURES)

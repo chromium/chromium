@@ -315,6 +315,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableCsbMotionTweaks",
       lens::features::GetVisualSelectionUpdatesEnableCsbMotionTweaks());
+  html_source->AddBoolean(
+      "enableVisualSelectionUpdates",
+      lens::features::IsLensOverlayVisualSelectionUpdatesEnabled());
   html_source->AddBoolean("reportMetrics", false);
   html_source->AddLocalizedString("searchBoxHintDefault",
                                   IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL);
