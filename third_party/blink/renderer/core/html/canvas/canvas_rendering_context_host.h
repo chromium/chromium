@@ -75,6 +75,10 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   virtual void UpdateMemoryUsage() = 0;
   virtual size_t GetMemoryUsage() const = 0;
 
+  // Initialize the indicated cc::Layer with the HTMLCanvasElement's CSS
+  // properties. This is a no-op if `this` is not an HTMLCanvasElement.
+  virtual void InitializeLayerWithCSSProperties(cc::Layer* layer) {}
+
   // If WebGL1 is disabled by enterprise policy or command line switch.
   virtual bool IsWebGL1Enabled() const = 0;
   // If WebGL2 is disabled by enterprise policy or command line switch.
