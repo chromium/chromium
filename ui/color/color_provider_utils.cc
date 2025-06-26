@@ -742,8 +742,6 @@ void CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
   mixer[kColorCssSystemGrayText] = {SkColorSetRGB(0x80, 0x80, 0x80)};
   mixer[kColorCssSystemHighlight] = {SkColorSetRGB(0x19, 0x67, 0xD2)};
   mixer[kColorCssSystemHighlightText] = {SK_ColorWHITE};
-  mixer[kColorCssSystemLinkText] = {SkColorSetRGB(0x00, 0x00, 0xEE)};
-  mixer[kColorCssSystemVisitedText] = {SkColorSetRGB(0x55, 0x1A, 0x8B)};
   if (dark_mode) {
     mixer[kColorCssSystemBtnFace] = {SkColorSetRGB(0x6B, 0x6B, 0x6B)};
     mixer[kColorCssSystemBtnText] = {SK_ColorWHITE};
@@ -754,6 +752,8 @@ void CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
     mixer[kColorCssSystemWindow] = {SkColorSetRGB(0x12, 0x12, 0x12)};
     mixer[kColorCssSystemWindowText] = {SK_ColorWHITE};
     mixer[kColorCssSystemHotlight] = {SkColorSetRGB(0x9E, 0x9E, 0xFF)};
+    mixer[kColorCssSystemLinkText] = {SkColorSetRGB(0x9E, 0x9E, 0xFF)};
+    mixer[kColorCssSystemVisitedText] = {SkColorSetRGB(0xD0, 0xAD, 0xF0)};
   } else {
     mixer[kColorCssSystemBtnFace] = {SkColorSetRGB(0xEF, 0xEF, 0xEF)};
     mixer[kColorCssSystemBtnText] = {SK_ColorBLACK};
@@ -764,6 +764,8 @@ void CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
     mixer[kColorCssSystemWindow] = {SK_ColorWHITE};
     mixer[kColorCssSystemWindowText] = {SK_ColorBLACK};
     mixer[kColorCssSystemHotlight] = {SkColorSetRGB(0x00, 0x00, 0xEE)};
+    mixer[kColorCssSystemLinkText] = {SkColorSetRGB(0x00, 0x00, 0xEE)};
+    mixer[kColorCssSystemVisitedText] = {SkColorSetRGB(0x55, 0x1A, 0x8B)};
   }
 }
 
