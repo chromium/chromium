@@ -2784,7 +2784,6 @@ if (!is_robolectric && enable_java_templates) {
                                "jacoco_never_instrument",
                                "jar_excluded_patterns",
                                "javac_args",
-                               "library_always_compress",
                                "mergeable_android_manifests",
                                "native_lib_placeholders",
                                "parent_module_target",
@@ -2793,7 +2792,7 @@ if (!is_robolectric && enable_java_templates) {
                                "secondary_native_lib_placeholders",
                                "sources",
                                "suffix_apk_assets_used_by",
-                               "uses_split",
+                               "library_always_compress",
                              ])
       version_code = _version_code
       version_name = _version_name
@@ -2904,6 +2903,7 @@ if (!is_robolectric && enable_java_templates) {
           # Generates proguard configs
           deps += [ ":$_compile_resources_target" ]
           proguard_mapping_path = _proguard_mapping_path
+          has_apk_under_test = defined(invoker.apk_under_test)
 
           # Must not be set via write_build_config, because that will cause it
           # to be picked up by test apks that use apk_under_test.
@@ -3553,6 +3553,10 @@ if (!is_robolectric && enable_java_templates) {
           ])
       is_bundle_module = true
       generate_buildconfig_java = _is_base_module
+      if (defined(uses_split)) {
+        assert(defined(parent_module_target),
+               "Must set parent_module_target when uses_split is set")
+      }
     }
   }
 
@@ -4788,6 +4792,7 @@ if (!is_robolectric && enable_java_templates) {
       possible_config_deps = _module_targets + [ _android_sdk_dep ]
       build_config = _build_config
       proguard_enabled = _proguard_enabled
+      modules = _modules
 
       if (_proguard_enabled) {
         add_view_trace_events = _add_view_trace_events
