@@ -32,8 +32,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual void SetNeedsCompositingUpdate() = 0;
   virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;
 
-  virtual bool LowLatencyEnabled() const { return false; }
-
   virtual CanvasResourceProvider* GetResourceProviderForCanvas2D() const = 0;
 
   virtual void ResetResourceProviderForCanvas2D() = 0;

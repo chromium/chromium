@@ -105,6 +105,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   bool IsValidImageSize() const;
   bool IsPaintable() const;
 
+  virtual bool LowLatencyEnabled() const { return false; }
+
   // Required by template functions in WebGLRenderingContextBase
   int width() const { return Size().width(); }
   int height() const { return Size().height(); }
