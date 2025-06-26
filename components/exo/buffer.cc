@@ -174,8 +174,7 @@ class Buffer::Texture : public viz::ContextLostObserver {
  public:
   Texture(scoped_refptr<viz::RasterContextProvider> context_provider,
           const gfx::Size& size,
-          gfx::ColorSpace color_space,
-          gpu::SyncToken& sync_token_out);
+          gfx::ColorSpace color_space);
   Texture(scoped_refptr<viz::RasterContextProvider> context_provider,
           gfx::GpuMemoryBufferHandle* gpu_memory_buffer_handle,
           const gfx::BufferFormat buffer_format,
@@ -183,8 +182,7 @@ class Buffer::Texture : public viz::ContextLostObserver {
           gfx::ColorSpace color_space,
           unsigned query_type,
           base::TimeDelta wait_for_release_time,
-          bool is_overlay_candidate,
-          gpu::SyncToken& sync_token_out);
+          bool is_overlay_candidate);
 
   Texture(const Texture&) = delete;
   Texture& operator=(const Texture&) = delete;
@@ -204,10 +202,7 @@ class Buffer::Texture : public viz::ContextLostObserver {
 
   // Updates the contents referenced by |gpu_memory_buffer_handle_| returned by
   // mailbox().
-  // Returns a sync token that can be used when accessing the SharedImage from a
-  // different context.
-  gpu::SyncToken UpdateSharedImage(
-      std::unique_ptr<gfx::GpuFence> acquire_fence);
+  void UpdateSharedImage(std::unique_ptr<gfx::GpuFence> acquire_fence);
 
   // Releases the contents referenced by |mailbox_| after |sync_token| has
   // passed and runs |callback| when completed.
@@ -216,17 +211,19 @@ class Buffer::Texture : public viz::ContextLostObserver {
       viz::ReturnedResource resource);
 
   // Copy the contents of texture to |destination| and runs |callback| when
-  // completed. Returns a sync token that can be used when accessing texture
-  // from a different context.
-  gpu::SyncToken CopyTexImage(std::unique_ptr<gfx::GpuFence> acquire_fence,
-                              Texture* destination,
-                              base::OnceClosure callback);
+  // completed.
+  void CopyTexImage(std::unique_ptr<gfx::GpuFence> acquire_fence,
+                    Texture* destination,
+                    base::OnceClosure callback);
 
   // Returns the ClientSharedImage for this texture.
   gpu::ClientSharedImage* shared_image() const { return shared_image_.get(); }
 
   // Returns the mailbox for this texture.
   gpu::Mailbox mailbox() const { return shared_image_->mailbox(); }
+
+  // Returns sync token to wait before read.
+  gpu::SyncToken sync_token() { return sync_token_; }
 
  private:
   void DestroyResources();
@@ -260,8 +257,7 @@ class Buffer::Texture : public viz::ContextLostObserver {
 Buffer::Texture::Texture(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     const gfx::Size& size,
-    gfx::ColorSpace color_space,
-    gpu::SyncToken& sync_token_out)
+    gfx::ColorSpace color_space)
     : gpu_memory_buffer_handle_(nullptr),
       size_(size),
       context_provider_(std::move(context_provider)),
@@ -282,8 +278,7 @@ Buffer::Texture::Texture(
                              gpu::kNullSurfaceHandle);
   CHECK(shared_image_);
   DCHECK(!shared_image_->mailbox().IsZero());
-  sync_token_out = sii->GenUnverifiedSyncToken();
-  sync_token_ = sync_token_out;
+  sync_token_ = sii->GenUnverifiedSyncToken();
 
   // Provides a notification when |context_provider_| is lost.
   context_provider_->AddObserver(this);
@@ -297,8 +292,7 @@ Buffer::Texture::Texture(
     gfx::ColorSpace color_space,
     unsigned query_type,
     base::TimeDelta wait_for_release_delay,
-    bool is_overlay_candidate,
-    gpu::SyncToken& sync_token_out)
+    bool is_overlay_candidate)
     : gpu_memory_buffer_handle_(gpu_memory_buffer_handle),
       size_(size),
       context_provider_(std::move(context_provider)),
@@ -328,8 +322,7 @@ Buffer::Texture::Texture(
   CHECK(shared_image_);
   DCHECK(!shared_image_->mailbox().IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-  sync_token_out = sii->GenUnverifiedSyncToken();
-  sync_token_ = sync_token_out;
+  sync_token_ = sii->GenUnverifiedSyncToken();
   ri->GenQueriesEXT(1, &query_id_);
 
   // Provides a notification when |context_provider_| is lost.
@@ -372,7 +365,7 @@ void Buffer::Texture::Release(
   std::move(callback).Run(std::move(resource.release_fence));
 }
 
-gpu::SyncToken Buffer::Texture::UpdateSharedImage(
+void Buffer::Texture::UpdateSharedImage(
     std::unique_ptr<gfx::GpuFence> acquire_fence) {
   if (context_provider_) {
     gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
@@ -386,7 +379,6 @@ gpu::SyncToken Buffer::Texture::UpdateSharedImage(
     sync_token_ = sii->GenUnverifiedSyncToken();
     TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, GetBufferId(), "bound");
   }
-  return sync_token_;
 }
 
 void Buffer::Texture::ReleaseSharedImage(
@@ -415,10 +407,9 @@ void Buffer::Texture::ReleaseSharedImage(
   std::move(callback).Run(std::move(resource.release_fence));
 }
 
-gpu::SyncToken Buffer::Texture::CopyTexImage(
-    std::unique_ptr<gfx::GpuFence> acquire_fence,
-    Texture* destination,
-    base::OnceClosure callback) {
+void Buffer::Texture::CopyTexImage(std::unique_ptr<gfx::GpuFence> acquire_fence,
+                                   Texture* destination,
+                                   base::OnceClosure callback) {
   if (context_provider_) {
     CHECK(shared_image_);
     gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
@@ -449,7 +440,6 @@ gpu::SyncToken Buffer::Texture::CopyTexImage(
         gpu::RasterScopedAccess::EndAccess(std::move(ri_dst_access));
     sync_token_ = gpu::RasterScopedAccess::EndAccess(std::move(ri_src_access));
   }
-  return sync_token_;
 }
 
 void Buffer::Texture::DestroyResources() {
@@ -703,7 +693,8 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
     contents_texture_ = std::make_unique<Texture>(
         context_provider, &gpu_memory_buffer_handle_, buffer_format_, size_,
         color_space, query_type_, wait_for_release_delay_,
-        is_overlay_candidate_, resource.mutable_sync_token());
+        is_overlay_candidate_);
+    resource.set_sync_token(contents_texture_->sync_token());
   }
   Texture* contents_texture = contents_texture_.get();
 
@@ -749,8 +740,8 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
     // raster/composite when the fence already signaled at this stage.
 
     if (acquire_fence && !acquire_fence->GetGpuFenceHandle().is_null()) {
-      resource.set_sync_token(
-          contents_texture->UpdateSharedImage(std::move(acquire_fence)));
+      contents_texture->UpdateSharedImage(std::move(acquire_fence));
+      resource.set_sync_token(contents_texture->sync_token());
     }
     uint32_t texture_target =
         contents_texture->shared_image()->GetTextureTarget();
@@ -781,22 +772,22 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
   // Create a mailbox texture that we copy the buffer contents to.
   if (!texture_) {
     texture_ =
-        std::make_unique<Texture>(context_provider, GetSize(), color_space,
-                                  resource.mutable_sync_token());
+        std::make_unique<Texture>(context_provider, GetSize(), color_space);
+    resource.set_sync_token(texture_->sync_token());
   }
   Texture* texture = texture_.get();
 
   // Copy the contents of |contents_texture| to |texture| and produce a
   // texture mailbox from the result in |texture|. The contents texture will
   // be released when copy has completed.
-  gpu::SyncToken sync_token = contents_texture->CopyTexImage(
+  contents_texture->CopyTexImage(
       std::move(acquire_fence), texture,
       base::BindOnce(&Buffer::ReleaseContentsTexture, AsWeakPtr(),
                      std::move(contents_texture_),
                      release_contents_callback_.callback(), next_commit_id_,
                      /*release_fence=*/gfx::GpuFenceHandle()));
   resource.set_mailbox(texture->mailbox());
-  resource.set_sync_token(sync_token);
+  resource.set_sync_token(texture_->sync_token());
   resource.set_texture_target(GL_TEXTURE_2D);
   resource.is_overlay_candidate = false;
 
