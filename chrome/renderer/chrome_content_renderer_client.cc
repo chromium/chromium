@@ -233,7 +233,6 @@
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if BUILDFLAG(ENABLE_PPAPI)
-#include "chrome/renderer/pepper/pepper_helper.h"
 #include "ppapi/shared_impl/ppapi_switches.h"  // nogncheck crbug.com/1125897
 #endif
 
