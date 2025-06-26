@@ -905,7 +905,6 @@
     "owners": [ "siyua@chromium.org", "payments-autofill-team@google.com"],
     "expiry_milestone": 135
   },
-  
   {
     "name": "autofill-sync-ewallet-accounts",
     "owners": ["junhuihe@chromium.org", "chrome-payments-team@google.com", "payments-autofill-team@google.com"],
@@ -9620,7 +9619,7 @@
   {
     "name": "test-third-party-cookie-phaseout",
     "owners": [ "selya@google.com" , "dylancutler@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "tethering-experimental-functionality",
