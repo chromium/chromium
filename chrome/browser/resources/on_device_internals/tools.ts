@@ -109,7 +109,6 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
 
   static override get properties() {
     return {
-      defaultModelPath_: {type: String},
       modelPath_: {type: String},
       error_: {type: String},
       imageError_: {type: String},
@@ -139,7 +138,6 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
   protected accessor currentResponse_: Response|null = null;
   protected accessor error_: string = '';
   protected accessor imageError_: string = '';
-  protected accessor defaultModelPath_: string = '';
   private loadModelDuration_: number = -1;
   private accessor loadModelStart_: number = 0;
   private accessor modelPath_: string = '';
@@ -162,7 +160,6 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
 
   override firstUpdated() {
     this.getPerformanceClass_();
-    this.getDefaultModelPath_();
     this.$.temperatureInput.inputElement.step = '0.1';
     this.$.imageInput.addEventListener(
         'change', this.onImageChange_.bind(this));
@@ -188,14 +185,6 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
             .performanceInfo.performanceClass);
   }
 
-  private async getDefaultModelPath_() {
-    const defaultModelPath = await this.proxy_.handler.getDefaultModelPath();
-    if (defaultModelPath.modelPath === null) {
-      return;
-    }
-    this.defaultModelPath_ = filePathToString(defaultModelPath.modelPath);
-  }
-
   private onModelOrErrorChanged_() {
     if (this.model_ !== null) {
       this.loadModelDuration_ = new Date().getTime() - this.loadModelStart_;
@@ -205,7 +194,24 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
   }
 
   protected onLoadClick_() {
-    this.onModelSelected_();
+    const modelPathString = this.$.modelInput.value;
+    // <if expr="is_win">
+    // Windows file paths are std::wstring, so use Array<Number>.
+    const processedPath = Array.from(modelPathString, (c) => c.charCodeAt(0));
+    // </if>
+    // <if expr="not is_win">
+    const processedPath = modelPathString;
+    // </if>
+    this.onModelSelected_({path: processedPath});
+  }
+
+  protected async onLoadDefaultClick_() {
+    const defaultModelPath = await this.proxy_.handler.getDefaultModelPath();
+    if (defaultModelPath.modelPath === null) {
+      this.error_ = 'Unable to get default model path.';
+      return;
+    }
+    this.onModelSelected_(defaultModelPath.modelPath);
   }
 
   protected onAddImageClick_() {
@@ -262,7 +268,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
   }
 
 
-  private async onModelSelected_() {
+  private async onModelSelected_(modelPath: FilePath) {
     this.error_ = '';
     if (this.model_) {
       this.model_.$.close();
@@ -277,18 +283,9 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
     this.loadModelStart_ = new Date().getTime();
     const performanceHint = ModelPerformanceHint[(
         this.performanceHint_ as keyof typeof ModelPerformanceHint)];
-    const modelPath = this.$.modelInput.value;
-    // <if expr="is_win">
-    // Windows file paths are std::wstring, so use Array<Number>.
-    const processedPath = Array.from(modelPath, (c) => c.charCodeAt(0));
-    // </if>
-    // <if expr="not is_win">
-    const processedPath = modelPath;
-    // </if>
     const newModel = new OnDeviceModelRemote();
     const {result, capabilities} = await this.proxy_.handler.loadModel(
-        {path: processedPath}, performanceHint,
-        newModel.$.bindNewPipeAndPassReceiver());
+        modelPath, performanceHint, newModel.$.bindNewPipeAndPassReceiver());
     if (result !== LoadModelResult.kSuccess) {
       this.error_ =
           'Unable to load model. Specify a correct and absolute path.';
@@ -299,7 +296,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
         this.onServiceCrashed_();
       });
       this.startNewSession_();
-      this.modelPath_ = modelPath;
+      this.modelPath_ = filePathToString(modelPath);
       this.loadedPerformanceHint_ = performanceHint;
     }
   }
