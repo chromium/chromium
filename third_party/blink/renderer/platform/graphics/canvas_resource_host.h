@@ -41,7 +41,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual bool IsPageVisible() const = 0;
 
   virtual bool IsPrinting() const { return false; }
-  virtual bool PrintedInCurrentTask() const = 0;
   virtual bool IsHibernating() const { return false; }
 
   // Called when the CC texture layer that this instance is holding (if any)

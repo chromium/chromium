@@ -385,7 +385,9 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   // preserve the display list for printing, FlushRecording needs to know
   // whether any printing occurred in the current task.
   FlushReason reason = FlushReason::kCanvasPushFrame;
-  if (PrintedInCurrentTask() || IsPrinting()) {
+  bool printed_in_current_task =
+      RenderingContext() && RenderingContext()->did_print_in_current_task();
+  if (printed_in_current_task || IsPrinting()) {
     reason = FlushReason::kCanvasPushFrameWhilePrinting;
   }
   FlushRecordingForCanvas2D(reason);

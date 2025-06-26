@@ -125,10 +125,6 @@ bool CanvasRenderingContextHost::IsPaintable() const {
          IsValidImageSize();
 }
 
-bool CanvasRenderingContextHost::PrintedInCurrentTask() const {
-  return RenderingContext() && RenderingContext()->did_print_in_current_task();
-}
-
 void CanvasRenderingContextHost::InitializeForRecording(
     cc::PaintCanvas* canvas) const {
   if (RenderingContext())
