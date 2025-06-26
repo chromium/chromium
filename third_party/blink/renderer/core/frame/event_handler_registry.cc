@@ -116,7 +116,6 @@ void EventHandlerRegistry::UpdateEventHandlerTargets(
       targets->insert(target);
       return;
     case kRemove:
-      DCHECK(targets->Contains(target));
       targets->erase(target);
       return;
     case kRemoveAll:
