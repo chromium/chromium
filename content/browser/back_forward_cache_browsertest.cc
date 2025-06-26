@@ -71,6 +71,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
@@ -253,6 +254,10 @@ void BackForwardCacheBrowserTest::DisableFeature(const base::Feature& feature) {
 }
 
 void BackForwardCacheBrowserTest::SetUpOnMainThread() {
+  // Set up WebSocket handlers, as a number of tests use them.
+  net::test_server::InstallDefaultWebSocketHandlers(
+      embedded_test_server(), /*serve_websocket_test_data=*/false);
+
   mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
   host_resolver()->AddRule("*", "127.0.0.1");
   // TestAutoSetUkmRecorder's constructor requires a sequenced context.

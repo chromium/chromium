@@ -26,7 +26,7 @@
 #include "net/device_bound_sessions/test_support.h"
 #include "net/net_buildflags.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -128,9 +128,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestDisableCCNS,
 #endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestDisableCCNS,
                        MAYBE_CCNSAndWebSocketBothRecorded) {
-  net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
-                                   net::GetWebSocketTestDataDirectory());
-  ASSERT_TRUE(ws_server.Start());
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url_a_no_store(embedded_test_server()->GetURL(
@@ -147,8 +144,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestDisableCCNS,
         socket.addEventListener('open', () => resolve(42));
       });)";
   ASSERT_EQ(42, EvalJs(rfh_a.get(),
-                       JsReplace(script,
-                                 ws_server.GetURL("echo-with-no-extension"))));
+                       JsReplace(script, net::test_server::GetWebSocketURL(
+                                             *embedded_test_server(),
+                                             "/echo-with-no-extension"))));
 
   // 2. Navigate away and expect frame to be deleted.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
