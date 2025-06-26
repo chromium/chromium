@@ -23,6 +23,7 @@ source_set("collaboration_delegate") {
     "//ios/chrome/browser/share_kit/model:factory",
     "//ios/chrome/browser/share_kit/model:items",
     "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
