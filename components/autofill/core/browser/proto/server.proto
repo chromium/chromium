@@ -6,9 +6,9 @@
 
 syntax = "proto2";
 
-option optimize_for = LITE_RUNTIME;
-
 package autofill;
+
+option optimize_for = LITE_RUNTIME;
 
 // This message contains a randomized encoding of a string, where each bit
 // in the encoded string is randomly sent as either the true value seen by
@@ -207,9 +207,57 @@ message FormatString {
   optional string format_string = 50;
 }
 
+// The collection of autofill field metadata hashes using three bits.
+message ThreeBitHashedFieldMetadata {
+  // Input element id attribute hash.
+  optional int32 id = 1;
+
+  // Input element name attribute hash.
+  optional int32 name = 2;
+
+  // Input element type attribute hash.
+  optional int32 type = 3;
+
+  // Input field label hash.
+  optional int32 label = 4;
+
+  // Input field aria-label attribute hash.
+  optional int32 aria_label = 5;
+
+  // Input field aria-description attribute hash.
+  optional int32 aria_description = 6;
+
+  // Input field placeholder attribute hash.
+  optional int32 placeholder = 7;
+
+  // Input field initial value hash.
+  optional int32 initial_value = 8;
+
+  // Input field autocomplete attribute hash.
+  optional int32 autocomplete = 9;
+
+  // Input field pattern attribute hash.
+  optional int32 pattern = 10;
+}
+
+// The collection of autofill form metadata hashes using three bits.
+message ThreeBitHashedFormMetadata {
+  // Form element id attribute hash.
+  optional int32 id = 1;
+
+  // Form element name attribute hash.
+  optional int32 name = 2;
+
+  // Form element action attribute hash.
+  optional int32 action = 3;
+
+  // Hash of all button titles in the form.
+  optional int32 button_titles_concatenated = 4;
+}
+
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 49
+// Next available id: 50
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
@@ -255,6 +303,9 @@ message AutofillUploadContents {
 
     // The field-level metadata associated with this field, randomized.
     optional AutofillRandomizedFieldMetadata randomized_field_metadata = 33;
+
+    // Low precision hashes for field-level metadata associated with this field.
+    optional ThreeBitHashedFieldMetadata three_bit_hashed_field_metadata = 52;
 
     enum PasswordGenerationType {
       NO_GENERATION = 0;
@@ -444,6 +495,9 @@ message AutofillUploadContents {
 
   // Form-level metadata observed by the client, randomized.
   optional AutofillRandomizedFormMetadata randomized_form_metadata = 32;
+
+  // Low precision hashes for form-level metadata observed by the client.
+  optional ThreeBitHashedFormMetadata three_bit_hashed_form_metadata = 49;
 
   // Information about a button's title (sync with another ButtonTitle in this
   // proto).
