@@ -242,8 +242,7 @@ void OnDeviceModelComponentStateManager::OnStartup() {
           switches::GetOnDeviceModelExecutionOverride()) {
     is_model_allowed_ = true;
     SetReady(
-        base::Version("override"),
-        *StringToFilePath(*model_path_override_switch),
+        base::Version("override"), *model_path_override_switch,
         base::Value::Dict().Set("BaseModelSpec", base::Value::Dict()
                                                      .Set("version", "override")
                                                      .Set("name", "override")));

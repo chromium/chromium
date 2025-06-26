@@ -143,7 +143,7 @@ bool ShouldValidateModelExecution();
 
 // Returns the path to the on-device base model provided on the command line.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-std::optional<std::string> GetOnDeviceModelExecutionOverride();
+std::optional<base::FilePath> GetOnDeviceModelExecutionOverride();
 
 // Returns the file path to the text file to use for the on-device request
 // override.

@@ -247,12 +247,12 @@ bool ShouldValidateModelExecution() {
   return command_line->HasSwitch(kModelExecutionValidate);
 }
 
-std::optional<std::string> GetOnDeviceModelExecutionOverride() {
+std::optional<base::FilePath> GetOnDeviceModelExecutionOverride() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(kOnDeviceModelExecutionOverride)) {
     return std::nullopt;
   }
-  return command_line->GetSwitchValueASCII(kOnDeviceModelExecutionOverride);
+  return command_line->GetSwitchValuePath(kOnDeviceModelExecutionOverride);
 }
 
 std::optional<base::FilePath> GetOnDeviceValidationRequestOverride() {

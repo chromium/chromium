@@ -87,16 +87,6 @@ const char kEmptyExpectedOutputLanguageWarning[] =
     "when possible for best and most reliable results using our supported "
     "list: ['en']";
 
-// Checks if the model path configured via command line is valid.
-bool IsModelPathValid(const std::string& model_path_str) {
-  std::optional<base::FilePath> model_path =
-      optimization_guide::StringToFilePath(model_path_str);
-  if (!model_path) {
-    return false;
-  }
-  return base::PathExists(*model_path);
-}
-
 blink::mojom::ModelAvailabilityCheckResult
 ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
     optimization_guide::OnDeviceModelEligibilityReason
@@ -882,11 +872,11 @@ void AIManager::CanCreateSession(
       optimization_guide::switches::GetOnDeviceModelExecutionOverride();
   if (model_path.has_value()) {
     // If the model path is provided, we do this additional check and post a
-    // warning message to dev tools if it's invalid.
+    // warning message to dev tools if it does not exist.
     // This needs to be done in a task runner with `MayBlock` trait.
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(IsModelPathValid, model_path.value()),
+        base::BindOnce(base::PathExists, model_path.value()),
         base::BindOnce(&AIManager::OnModelPathValidationComplete,
                        weak_factory_.GetWeakPtr(), model_path.value()));
   }
@@ -942,13 +932,13 @@ void AIManager::FinishCanCreateSession(
       blink::mojom::ModelAvailabilityCheckResult::kAvailable);
 }
 
-void AIManager::OnModelPathValidationComplete(const std::string& model_path,
+void AIManager::OnModelPathValidationComplete(const base::FilePath& model_path,
                                               bool is_valid_path) {
   // TODO(crbug.com/346491542): Remove this when the error page is implemented.
   if (!is_valid_path) {
     VLOG(1) << base::StringPrintf(
         "Unable to create a session because the model path ('%s') is invalid.",
-        model_path.c_str());
+        model_path.AsUTF8Unsafe());
   }
 }
 

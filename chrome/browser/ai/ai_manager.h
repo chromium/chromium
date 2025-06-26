@@ -132,7 +132,7 @@ class AIManager : public base::SupportsUserData::Data,
   bool IsBuiltInAIAPIsEnabledByPolicy();
 
  private:
-  void OnModelPathValidationComplete(const std::string& model_path,
+  void OnModelPathValidationComplete(const base::FilePath& model_path,
                                      bool is_valid_path);
 
   // Creates an `AILanguageModel`, as a new session. Clones are created
