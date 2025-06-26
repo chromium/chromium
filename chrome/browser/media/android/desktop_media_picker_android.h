@@ -21,7 +21,7 @@ class DesktopMediaPickerAndroid : public DesktopMediaPicker {
   DesktopMediaPickerAndroid& operator=(DesktopMediaPickerAndroid&&) = delete;
   ~DesktopMediaPickerAndroid() override;
 
-  void NotifyDialogResult(const content::DesktopMediaID& source);
+  void NotifyDialogResult(DoneCallbackArgumentType source);
 
   // DesktopMediaPicker:
   void Show(const DesktopMediaPicker::Params& params,

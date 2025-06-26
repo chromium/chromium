@@ -30,7 +30,7 @@ void DesktopMediaPickerAndroid::Show(
 }
 
 void DesktopMediaPickerAndroid::NotifyDialogResult(
-    const content::DesktopMediaID& source) {
+    DoneCallbackArgumentType source) {
   auto callback = std::move(callback_);
   DesktopMediaPickerManager::Get()->OnHideDialog();
 
@@ -41,7 +41,7 @@ void DesktopMediaPickerAndroid::NotifyDialogResult(
   // Notify the |callback_| asynchronously because it may need to destroy
   // DesktopMediaPicker.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), source));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(source)));
 }
 
 // static
