@@ -17,28 +17,20 @@ import test_runner_test
 import wpr_runner
 
 
-class WprProxySimulatorTestRunnerTest(test_runner_test.TestCase):
+class WprProxySimulatorTestRunnerTest(test_runner_test.SimulatorTestRunnerTest):
   """Tests for test_runner.WprProxySimulatorTestRunner."""
 
   def setUp(self):
     super(WprProxySimulatorTestRunnerTest, self).setUp()
 
-    self.mock(test_runner, 'get_current_xcode_info', lambda: {
-        'version': 'test version', 'build': 'test build', 'path': 'test/path'})
     self.mock(test_runner.subprocess,
               'check_output', lambda _: b'fake-bundle-id')
-    self.mock(os.path, 'abspath', lambda path: '/abs/path/to/%s' % path)
-    self.mock(os.path, 'exists', lambda _: True)
-    self.mock(test_runner.TestRunner, 'set_sigterm_handler',
-              lambda self, handler: 0)
     self.mock(test_runner.SimulatorTestRunner, 'getSimulator',
               lambda _: 'fake-id')
     self.mock(test_runner.SimulatorTestRunner, 'deleteSimulator',
               lambda a, b: True)
     self.mock(wpr_runner.WprProxySimulatorTestRunner,
               'copy_trusted_certificate', lambda a, b: True)
-    self.mock(iossim_util, 'get_simulator',
-              lambda a, b: 'E4E66320-177A-450A-9BA1-488D85B7278E')
 
   def test_app_not_found(self):
     """Ensures AppNotFoundError is raised."""

@@ -14,6 +14,7 @@ import sys
 import time
 from typing import Tuple, List, Optional
 
+import constants
 import iossim_util
 import test_apps
 import test_runner_errors
@@ -453,6 +454,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     return test_apps.EgtestsApp(
         self.app_path,
         self.all_eg_test_names,
+        self.platform_type,
         included_tests=self.test_cases,
         env_vars=self.env_vars,
         test_args=self.test_args,
@@ -573,6 +575,13 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
       XCTestPlugInNotFoundError: If the .xctest PlugIn does not exist.
     """
     test_runner.DeviceTestRunner.__init__(self, app_path, out_dir, **kwargs)
+
+    # SimulatorParallelTestRunner.get_launch_test_app() needs
+    # self.platform_type, which is set in its constructor, but it is not
+    # called by this constructor. Since device tests are only supported on iOS
+    # at the moment, just hardcode its value here.
+    self.platform_type = constants.IOSPlatformType.IPHONEOS
+
     self.clones = 1  # For tests on real devices clones=1
     self.version = None
     self.platform = None
