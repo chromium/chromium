@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs_api {
@@ -34,6 +35,9 @@ class NodeId {
   // TODO(crbug.com/425390972): remove this helper and use TabCollectionHandle
   // everywhere.
   static NodeId FromTabGroupId(const tab_groups::TabGroupId& group_id);
+
+  std::optional<tabs::TabHandle> ToTabHandle() const;
+  std::optional<tabs::TabCollectionHandle> ToTabCollectionHandle() const;
 
   std::string_view Id() const { return id_; }
 

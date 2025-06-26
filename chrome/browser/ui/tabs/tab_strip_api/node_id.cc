@@ -20,4 +20,26 @@ NodeId NodeId::FromTabGroupId(const tab_groups::TabGroupId& group_id) {
   return NodeId(Type::kCollection, group_id.ToString());
 }
 
+std::optional<tabs::TabHandle> NodeId::ToTabHandle() const {
+  if (type_ != Type::kContent) {
+    return std::nullopt;
+  }
+  int32_t handle_id;
+  if (!base::StringToInt(id_, &handle_id)) {
+    return std::nullopt;
+  }
+  return tabs::TabHandle(handle_id);
+}
+
+std::optional<tabs::TabCollectionHandle> NodeId::ToTabCollectionHandle() const {
+  if (type_ != Type::kCollection) {
+    return std::nullopt;
+  }
+  int32_t handle_id;
+  if (!base::StringToInt(id_, &handle_id)) {
+    return std::nullopt;
+  }
+  return tabs::TabCollectionHandle(handle_id);
+}
+
 }  // namespace tabs_api
