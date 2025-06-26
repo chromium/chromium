@@ -1278,3 +1278,6 @@ crbug.com/387598611 fast/overflow/scrollbar-drag-origin.html [ Slow ]
 
 # WPT soft-navigation-heuristics test suite flakiness
 crbug.com/423705202 external/wpt/soft-navigation-heuristics/smoke/tentative/dom.html [ Slow ]
+
+# Gardener 2025-06-26
+crbug.com/40284969 external/wpt/performance-timeline/navigation-id-reset.tentative.html [ Slow ]
