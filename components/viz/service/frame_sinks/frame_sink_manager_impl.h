@@ -445,7 +445,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   // TOOD(crbug.com/414568877): Remove once the crash investigation is complete.
   void DumpCrashKeys(base::TimeDelta total_time_taken_to_destroy,
-                     base::TimeTicks browser_request_time);
+                     base::TimeTicks browser_request_time,
+                     base::TimeDelta viz_execution_time);
 
   void RecursivelyAttachBeginFrameSource(const FrameSinkId& frame_sink_id,
                                          BeginFrameSource* source);

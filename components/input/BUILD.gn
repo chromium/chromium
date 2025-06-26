@@ -36,6 +36,8 @@ component("input") {
     "input_event_ack_state.h",
     "input_event_stream_validator.cc",
     "input_event_stream_validator.h",
+    "input_manager_operation_tracker.cc",
+    "input_manager_operation_tracker.h",
     "input_router.h",
     "input_router_client.h",
     "input_router_config_helper.cc",
