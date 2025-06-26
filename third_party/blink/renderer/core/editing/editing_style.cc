@@ -973,9 +973,16 @@ EditingTriState EditingStyle::TriStateOfStyle(
     return EditingTriState::kFalse;
 
   if (selection.IsCaret()) {
+    EditingStyle* style_at_start =
+        RuntimeEnabledFeatures::
+                    ConsiderSubOrSuperScriptAncestorAlignForCaretSelectionEnabled() &&
+                is_vertical_align_
+            ? EditingStyleUtilities::CreateStyleAtSelectionStart(selection,
+                                                                 false, Style())
+            : EditingStyleUtilities::CreateStyleAtSelectionStart(selection);
+
     return TriStateOfStyle(
-        selection.Start().AnchorNode()->GetExecutionContext(),
-        EditingStyleUtilities::CreateStyleAtSelectionStart(selection),
+        selection.Start().AnchorNode()->GetExecutionContext(), style_at_start,
         secure_context_mode);
   }
 

@@ -87,7 +87,7 @@ class CORE_EXPORT EditingStyle final : public GarbageCollected<EditingStyle> {
   explicit EditingStyle(const CSSPropertyValueSet*);
   EditingStyle(CSSPropertyID, const String& value, SecureContextMode);
 
-  MutableCSSPropertyValueSet* Style() { return mutable_style_.Get(); }
+  MutableCSSPropertyValueSet* Style() const { return mutable_style_.Get(); }
   bool GetTextDirection(mojo_base::mojom::blink::TextDirection&) const;
   bool IsEmpty() const;
   void OverrideWithStyle(const CSSPropertyValueSet*);
