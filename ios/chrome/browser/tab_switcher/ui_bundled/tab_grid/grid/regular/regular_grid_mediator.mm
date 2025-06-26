@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
-#import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -30,6 +29,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_toolbars_configuration_provider.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_toolbars_mutator.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular/regular_grid_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_idle_status_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
@@ -53,9 +53,6 @@ namespace {
 using ScopedTabGroupSyncObservation =
     base::ScopedObservation<tab_groups::TabGroupSyncService,
                             tab_groups::TabGroupSyncService::Observer>;
-
-// The preferred size in points for the avatar icons.
-constexpr CGFloat kFacePileAvatarSize = 16;
 
 }  // namespace
 
@@ -473,7 +470,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
 
 #pragma mark - BaseGridMediatorItemProvider
 
-- (UIView*)facePileViewForItem:(GridItemIdentifier*)itemID {
+- (id<FacePileProviding>)facePileProviderForItem:(GridItemIdentifier*)itemID {
   CHECK(itemID.type == GridItemType::kGroup);
 
   const TabGroup* tabGroup = itemID.tabGroupItem.tabGroup;
@@ -488,18 +485,12 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   if (collaborationID->empty()) {
     return nil;
   }
-  NSString* savedCollabID = base::SysUTF8ToNSString(collaborationID.value());
 
-  // Configure the face pile.
-  ShareKitFacePileConfiguration* config =
-      [[ShareKitFacePileConfiguration alloc] init];
-  config.collabID = savedCollabID;
-  config.backgroundColor =
+  UIColor* groupColor =
       tab_groups::ColorForTabGroupColorId(tabGroup->GetColor());
-  config.showsEmptyState = NO;
-  config.avatarSize = kFacePileAvatarSize;
-
-  return _shareKitService->FacePileView(config);
+  return
+      [self.regularDelegate facePileProviderForGroupID:collaborationID.value()
+                                            groupColor:groupColor];
 }
 
 #pragma mark - MessagingBackendServiceObserving

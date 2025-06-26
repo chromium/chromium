@@ -215,6 +215,7 @@ source_set("grid_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/commerce/ui_bundled:price_card",
     "//ios/chrome/browser/menu/ui_bundled",
+    "//ios/chrome/browser/saved_tab_groups/ui",
     "//ios/chrome/browser/saved_tab_groups/ui:utils",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list:utils",

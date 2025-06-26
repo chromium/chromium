@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 
 @class ActivityLabelData;
+@protocol FacePileProviding;
 @class GridItemIdentifier;
 @class TabSnapshotAndFavicon;
 namespace web {
@@ -31,7 +32,7 @@ typedef void (^GroupTabSnapshotAndFaviconCompletionBlock)(
 - (ActivityLabelData*)activityLabelDataForItem:(GridItemIdentifier*)itemID;
 
 // Returns the facePile view associated with the `itemID`.
-- (UIView*)facePileViewForItem:(GridItemIdentifier*)itemID;
+- (id<FacePileProviding>)facePileProviderForItem:(GridItemIdentifier*)itemID;
 
 // Fetches snapshots and favicons for the tabs within `tabGroupItem`.
 // The `completion` block is called multiple times, executing each time a

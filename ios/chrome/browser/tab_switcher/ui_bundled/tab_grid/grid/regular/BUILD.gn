@@ -8,6 +8,7 @@ source_set("regular") {
     "regular_grid_coordinator.mm",
     "regular_grid_mediator.h",
     "regular_grid_mediator.mm",
+    "regular_grid_mediator_delegate.h",
   ]
 
   deps = [
@@ -108,6 +109,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
+    "//ios/chrome/browser/saved_tab_groups/ui:test_support",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/share_kit/model:test_support",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

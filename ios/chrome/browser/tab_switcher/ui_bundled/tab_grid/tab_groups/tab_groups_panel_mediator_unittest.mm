@@ -716,7 +716,8 @@ TEST_F(TabGroupsPanelMediatorTest, DeleteLocalGroup) {
   EXPECT_EQ(0, browser_->GetWebStateList()->count());
 }
 
-// Tests that `facePileViewForItem` returns an UIView when the group is shared.
+// Tests that `facePileProviderForItem` returns an UIView when the group is
+// shared.
 TEST_F(TabGroupsPanelMediatorTest, facePileProviderForItem) {
   auto sync_service = std::make_unique<tab_groups::FakeTabGroupSyncService>();
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
