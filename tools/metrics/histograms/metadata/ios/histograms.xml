@@ -2607,7 +2607,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.Tips" units="index"
-    expires_after="2025-08-05">
+    expires_after="2025-09-26">
   <owner>bwwilliams@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
