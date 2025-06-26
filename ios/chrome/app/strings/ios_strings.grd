@@ -1053,6 +1053,9 @@
       <message name="IDS_IOS_BWG_PROMO_FIRST_BOX_TITLE" desc="Text for the BWG Promo first box title.">
         Ask about any page
       </message>
+      <message name="IDS_IOS_BWG_PROMO_GRADIENT_TEXT" desc="Text for the BWG Promo that will have a gradient color.">
+        Gemini
+      </message>
       <message name="IDS_IOS_BWG_PROMO_MAIN_TITLE" desc="Text for the BWG Promo main title.">
         Get answers faster with Gemini in Chrome
       </message>

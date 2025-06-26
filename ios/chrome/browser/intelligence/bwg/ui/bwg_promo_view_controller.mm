@@ -14,6 +14,7 @@
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/font/font_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -204,15 +205,7 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
 
 // Creates the main title.
 - (UIView*)createMainTitle {
-  UILabel* mainTitleLabel = [[UILabel alloc] init];
-  mainTitleLabel.text = l10n_util::GetNSString(IDS_IOS_BWG_PROMO_MAIN_TITLE);
-  mainTitleLabel.textAlignment = NSTextAlignmentCenter;
-  mainTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  mainTitleLabel.numberOfLines = 0;
-
-  mainTitleLabel.font =
-      PreferredFontForTextStyle(UIFontTextStyleTitle2, UIFontWeightBold);
-
+  UILabel* mainTitleLabel = [self createGradientMainTitleLabel];
   UIView* titleContainerView = [[UIView alloc] init];
   titleContainerView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -220,6 +213,68 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
 
   AddSameConstraints(mainTitleLabel, titleContainerView);
   return titleContainerView;
+}
+
+// Create a gradient main title label.
+- (UILabel*)createGradientMainTitleLabel {
+  UILabel* mainTitleLabel = [[UILabel alloc] init];
+  mainTitleLabel.textAlignment = NSTextAlignmentCenter;
+  mainTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  mainTitleLabel.numberOfLines = 0;
+  UIFont* labelFont =
+      PreferredFontForTextStyle(UIFontTextStyleTitle1, UIFontWeightSemibold);
+  mainTitleLabel.font = labelFont;
+
+  NSString* mainTitleString =
+      l10n_util::GetNSString(IDS_IOS_BWG_PROMO_MAIN_TITLE);
+  NSString* gradientSubstring =
+      l10n_util::GetNSString(IDS_IOS_BWG_PROMO_GRADIENT_TEXT);
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc] initWithString:mainTitleString];
+
+  CGSize mainTitleTextSize = [attributedString size];
+  CAGradientLayer* gradientLayer = [CAGradientLayer layer];
+  gradientLayer.colors = [self createGradientColorsArray];
+  gradientLayer.startPoint = CGPointMake(0, 0.5);
+  gradientLayer.endPoint = CGPointMake(0.8, 0.5);
+  gradientLayer.frame =
+      CGRectMake(0, 0, mainTitleTextSize.width, labelFont.pointSize);
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:mainTitleTextSize];
+  UIImage* textImage = [renderer
+      imageWithActions:^(UIGraphicsImageRendererContext* rendererContext) {
+        [gradientLayer renderInContext:rendererContext.CGContext];
+      }];
+
+  UIColor* gradientColor = [UIColor colorWithPatternImage:textImage];
+  NSRange gradientRange = [mainTitleString rangeOfString:gradientSubstring];
+  [attributedString addAttribute:NSForegroundColorAttributeName
+                           value:gradientColor
+                           range:gradientRange];
+
+  UIFont* gradientStringFont =
+      ios::provider::GetBrandedProductRegularFont(labelFont.pointSize);
+  [attributedString addAttribute:NSFontAttributeName
+                           value:gradientStringFont
+                           range:gradientRange];
+
+  mainTitleLabel.attributedText = attributedString;
+  return mainTitleLabel;
+}
+
+// Create an array of colors representing a gradient color palette.
+- (NSArray*)createGradientColorsArray {
+  NSArray<UIColor*>* colors = @[
+    [UIColor colorNamed:kBlue400Color], [UIColor colorNamed:kBlue700Color],
+    [UIColor colorNamed:kBlue300Color]
+  ];
+
+  NSMutableArray<id>* gradientColorArray = [[NSMutableArray alloc] init];
+  for (UIColor* color in colors) {
+    [gradientColorArray addObject:static_cast<id>(color.CGColor)];
+  }
+  return gradientColorArray;
 }
 
 // Creates the iconBox container view with the  inner box and icon.

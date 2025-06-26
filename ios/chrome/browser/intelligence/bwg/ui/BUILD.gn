@@ -32,6 +32,7 @@ source_set("ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/font:font_api",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
   ]
   public_deps = [ ":bwg_lottie_resources" ]
