@@ -733,30 +733,34 @@ TEST_F(PaintCanvasVideoRendererTest, Yuv420P12OddWidth) {
   constexpr int kImgHeight = 3;
   constexpr int kUvWidth = (kImgWidth + 1) / 2;
   constexpr int kUvHeight = (kImgHeight + 1) / 2;
-  auto y_plane = base::HeapArray<uint16_t>::Uninit(kImgWidth * kImgHeight);
-  auto u_plane = base::HeapArray<uint16_t>::Uninit(kUvWidth * kUvHeight);
-  auto v_plane = base::HeapArray<uint16_t>::Uninit(kUvWidth * kUvHeight);
-  // Set all pixels to white.
-  for (int i = 0; i < kImgHeight; ++i) {
-    for (int j = 0; j < kImgWidth; ++j) {
-      y_plane[i * kImgWidth + j] = 4095;
-    }
-  }
-  for (int i = 0; i < kUvHeight; ++i) {
-    for (int j = 0; j < kUvWidth; ++j) {
-      u_plane[i * kUvWidth + j] = 2048;
-      v_plane[i * kUvWidth + j] = 2048;
-    }
-  }
+  auto y_plane = base::HeapArray<uint8_t>::Uninit(kImgWidth * kImgHeight *
+                                                  sizeof(uint16_t));
+  auto u_plane =
+      base::HeapArray<uint8_t>::Uninit(kUvWidth * kUvHeight * sizeof(uint16_t));
+  auto v_plane =
+      base::HeapArray<uint8_t>::Uninit(kUvWidth * kUvHeight * sizeof(uint16_t));
   const int32_t y_stride = sizeof(uint16_t) * kImgWidth;
   const int32_t uv_stride = sizeof(uint16_t) * kUvWidth;
+  // Set all pixels to white.
+  uint16_t* y_plane_ptr = reinterpret_cast<uint16_t*>(y_plane.data());
+  for (int i = 0; i < kImgHeight; ++i) {
+    for (int j = 0; j < kImgWidth; ++j) {
+      y_plane_ptr[i * kImgWidth + j] = 4095;
+    }
+  }
+  uint16_t* u_plane_ptr = reinterpret_cast<uint16_t*>(u_plane.data());
+  uint16_t* v_plane_ptr = reinterpret_cast<uint16_t*>(v_plane.data());
+  for (int i = 0; i < kUvHeight; ++i) {
+    for (int j = 0; j < kUvWidth; ++j) {
+      u_plane_ptr[i * kUvWidth + j] = 2048;
+      v_plane_ptr[i * kUvWidth + j] = 2048;
+    }
+  }
 
   auto size = gfx::Size(kImgWidth, kImgHeight);
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapExternalYuvData(
       PIXEL_FORMAT_YUV420P12, size, gfx::Rect(size), size, y_stride, uv_stride,
-      uv_stride, reinterpret_cast<uint8_t*>(y_plane.data()),
-      reinterpret_cast<uint8_t*>(u_plane.data()),
-      reinterpret_cast<uint8_t*>(v_plane.data()), base::TimeDelta());
+      uv_stride, y_plane, u_plane, v_plane, base::TimeDelta());
 
   auto rgba = base::HeapArray<uint32_t>::Uninit(kImgWidth * kImgHeight);
   PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
@@ -815,8 +819,7 @@ TEST_F(PaintCanvasVideoRendererTest, I420WithFilters) {
   auto size = gfx::Size(kImgWidth, kImgHeight);
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapExternalYuvData(
       PIXEL_FORMAT_I420, size, gfx::Rect(size), size, kImgWidth, kUvWidth,
-      kUvWidth, y_plane.data(), u_plane.data(), v_plane.data(),
-      base::TimeDelta());
+      kUvWidth, y_plane, u_plane, v_plane, base::TimeDelta());
   frame->set_color_space(gfx::ColorSpace::CreateJpeg());
 
   auto rgba = base::HeapArray<uint32_t>::Uninit(kImgWidth * kImgHeight);
