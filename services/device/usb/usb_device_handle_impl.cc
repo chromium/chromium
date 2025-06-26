@@ -536,6 +536,9 @@ void UsbDeviceHandleImpl::Close() {
   if (!device_)
     return;
 
+  // Cancelling transfers may run or destroy callbacks holding the last
+  // reference to this object so hold a reference for the rest of this method.
+  scoped_refptr<UsbDeviceHandleImpl> self(this);
   // Cancel all the transfers, their callbacks will be called some time later.
   for (Transfer* transfer : transfers_)
     transfer->Cancel();
