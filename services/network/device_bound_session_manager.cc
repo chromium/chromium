@@ -38,14 +38,17 @@ void DeviceBoundSessionManager::GetAllSessions(
 }
 
 void DeviceBoundSessionManager::DeleteSession(
+    net::device_bound_sessions::DeletionReason reason,
     const net::device_bound_sessions::SessionKey& session_key) {
   service_->DeleteSessionAndNotify(
+      reason,
       {session_key.site,
        net::device_bound_sessions::Session::Id(session_key.id)},
       base::NullCallback());
 }
 
 void DeviceBoundSessionManager::DeleteAllSessions(
+    net::device_bound_sessions::DeletionReason reason,
     std::optional<base::Time> created_after_time,
     std::optional<base::Time> created_before_time,
     network::mojom::ClearDataFilterPtr filter,
@@ -76,7 +79,7 @@ void DeviceBoundSessionManager::DeleteAllSessions(
         *filter);
   }
 
-  service_->DeleteAllSessions(created_after_time, created_before_time,
+  service_->DeleteAllSessions(reason, created_after_time, created_before_time,
                               origin_and_site_matcher,
                               std::move(completion_callback));
 }

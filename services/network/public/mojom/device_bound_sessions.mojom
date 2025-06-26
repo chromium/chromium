@@ -51,6 +51,20 @@ enum DeviceBoundSessionUsage {
 
 // LINT.ThenChange(//net/device_bound_sessions/session_usage.h)
 
+// LINT.IfChange(DeviceBoundSessionDeletionReason)
+enum DeviceBoundSessionDeletionReason {
+  kExpired = 0,  // Session was not used for too long.
+  kFailedToRestoreKey = 1,  // Could not restore key from disk.
+  kFailedToUnwrapKey = 2,  // Could not unwrap a key loaded from disk.
+  kStoragePartitionCleared = 3,  // Site data is being cleared due to the Clear-Site-Data header.
+  kClearBrowsingData = 4,  // Site data is being cleared by the user on chrome://settings/clearBrowsingData.
+  kServerRequested = 5,  // Server explicitly requested termination.
+  kInvalidSessionParams = 6,  // Refresh provided invalid params.
+  kRefreshFatalError = 7,  // Fatal error during refresh.
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/deletion_reason.h:DeletionReason)
+
 // DeviceBoundSessionManager is a privileged interface that should only
 // be used in trusted processes.
 [RequireContext=sandbox.mojom.Context.kBrowser]
@@ -59,14 +73,16 @@ interface DeviceBoundSessionManager {
   GetAllSessions() => (array<DeviceBoundSessionKey> sessions);
 
   // Delete a session by key.
-  DeleteSession(DeviceBoundSessionKey session);
+  DeleteSession(
+      DeviceBoundSessionDeletionReason reason, DeviceBoundSessionKey session);
 
   // Delete all sessions matching the filter logic. Conditions are AND'ed
   // together and providing no arguments at all will delete all sessions.
   // - If present, sessions must be created after `created_after_time`.
   // - If present, sessions must be created before `created_before_time`.
   // - If present, sessions must match `filter` (see clear_data_filter.mojom).
-  DeleteAllSessions(mojo_base.mojom.Time? created_after_time,
+  DeleteAllSessions(DeviceBoundSessionDeletionReason reason,
+                    mojo_base.mojom.Time? created_after_time,
                     mojo_base.mojom.Time? created_before_time,
                     ClearDataFilter? filter) => ();
 

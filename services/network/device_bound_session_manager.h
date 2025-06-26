@@ -33,8 +33,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DeviceBoundSessionManager
   // network::mojom::DeviceBoundSessionManager
   void GetAllSessions(GetAllSessionsCallback callback) override;
   void DeleteSession(
+      net::device_bound_sessions::DeletionReason reason,
       const net::device_bound_sessions::SessionKey& session_key) override;
-  void DeleteAllSessions(std::optional<base::Time> created_after_time,
+  void DeleteAllSessions(net::device_bound_sessions::DeletionReason reason,
+                         std::optional<base::Time> created_after_time,
                          std::optional<base::Time> created_before_time,
                          network::mojom::ClearDataFilterPtr filter,
                          base::OnceClosure completion_callback) override;

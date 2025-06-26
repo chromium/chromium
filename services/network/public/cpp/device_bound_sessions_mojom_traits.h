@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_DEVICE_BOUND_SESSIONS_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_DEVICE_BOUND_SESSIONS_MOJOM_TRAITS_H_
 
+#include "net/device_bound_sessions/deletion_reason.h"
 #include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom-shared.h"
@@ -82,6 +83,74 @@ struct StructTraits<network::mojom::DeviceBoundSessionAccessDataView,
 
   static bool Read(network::mojom::DeviceBoundSessionAccessDataView data,
                    net::device_bound_sessions::SessionAccess* out);
+};
+
+template <>
+struct EnumTraits<network::mojom::DeviceBoundSessionDeletionReason,
+                  net::device_bound_sessions::DeletionReason> {
+  static network::mojom::DeviceBoundSessionDeletionReason ToMojom(
+      net::device_bound_sessions::DeletionReason reason) {
+    using enum net::device_bound_sessions::DeletionReason;
+    switch (reason) {
+      case kExpired:
+        return network::mojom::DeviceBoundSessionDeletionReason::kExpired;
+      case kFailedToRestoreKey:
+        return network::mojom::DeviceBoundSessionDeletionReason::
+            kFailedToRestoreKey;
+      case kFailedToUnwrapKey:
+        return network::mojom::DeviceBoundSessionDeletionReason::
+            kFailedToUnwrapKey;
+      case kStoragePartitionCleared:
+        return network::mojom::DeviceBoundSessionDeletionReason::
+            kStoragePartitionCleared;
+      case kClearBrowsingData:
+        return network::mojom::DeviceBoundSessionDeletionReason::
+            kClearBrowsingData;
+      case kServerRequested:
+        return network::mojom::DeviceBoundSessionDeletionReason::
+            kServerRequested;
+      case kInvalidSessionParams:
+        return network::mojom::DeviceBoundSessionDeletionReason::
+            kInvalidSessionParams;
+      case kRefreshFatalError:
+        return network::mojom::DeviceBoundSessionDeletionReason::
+            kRefreshFatalError;
+    }
+  }
+
+  static bool FromMojom(network::mojom::DeviceBoundSessionDeletionReason input,
+                        net::device_bound_sessions::DeletionReason* output) {
+    using enum net::device_bound_sessions::DeletionReason;
+    switch (input) {
+      case network::mojom::DeviceBoundSessionDeletionReason::kExpired:
+        *output = kExpired;
+        return true;
+      case network::mojom::DeviceBoundSessionDeletionReason::
+          kFailedToRestoreKey:
+        *output = kFailedToRestoreKey;
+        return true;
+      case network::mojom::DeviceBoundSessionDeletionReason::kFailedToUnwrapKey:
+        *output = kFailedToUnwrapKey;
+        return true;
+      case network::mojom::DeviceBoundSessionDeletionReason::
+          kStoragePartitionCleared:
+        *output = kStoragePartitionCleared;
+        return true;
+      case network::mojom::DeviceBoundSessionDeletionReason::kClearBrowsingData:
+        *output = kClearBrowsingData;
+        return true;
+      case network::mojom::DeviceBoundSessionDeletionReason::kServerRequested:
+        *output = kServerRequested;
+        return true;
+      case network::mojom::DeviceBoundSessionDeletionReason::
+          kInvalidSessionParams:
+        *output = kInvalidSessionParams;
+        return true;
+      case network::mojom::DeviceBoundSessionDeletionReason::kRefreshFatalError:
+        *output = kRefreshFatalError;
+        return true;
+    }
+  }
 };
 
 }  // namespace mojo

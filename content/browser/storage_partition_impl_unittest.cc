@@ -2335,10 +2335,10 @@ TEST_F(StoragePartitionImplTest, RemoveDeviceBoundSessions) {
 
   EXPECT_CALL(
       *device_bound_session_manager_raw,
-      DeleteAllSessions(Eq(created_after_time), Eq(created_before_time), _, _))
-      .WillOnce(WithArg<3>(Invoke([](base::OnceClosure completion_closure) {
-        std::move(completion_closure).Run();
-      })));
+      DeleteAllSessions(Eq(net::device_bound_sessions::DeletionReason::
+                               kStoragePartitionCleared),
+                        Eq(created_after_time), Eq(created_before_time), _, _))
+      .WillOnce(base::test::RunOnceClosure<4>());
 
   base::RunLoop run_loop;
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS,

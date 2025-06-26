@@ -2177,6 +2177,7 @@ IN_PROC_BROWSER_TEST_F(
 
   base::RunLoop run_loop;
   device_bound_session_manager->DeleteAllSessions(
+      net::device_bound_sessions::DeletionReason::kClearBrowsingData,
       /*created_after_time=*/std::nullopt,
       /*created_before_time=*/std::nullopt,
       /*filter=*/nullptr, run_loop.QuitClosure());
@@ -2237,6 +2238,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
   cached_rfh->SetDeviceBoundSessionTerminatedCallback(run_loop.QuitClosure());
   device_bound_session_manager->DeleteAllSessions(
+      net::device_bound_sessions::DeletionReason::kClearBrowsingData,
       /*created_after_time=*/std::nullopt,
       /*created_before_time=*/std::nullopt,
       /*filter=*/nullptr, base::DoNothing());
@@ -2320,6 +2322,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
   cached_rfh->SetDeviceBoundSessionTerminatedCallback(run_loop.QuitClosure());
   device_bound_session_manager->DeleteAllSessions(
+      net::device_bound_sessions::DeletionReason::kClearBrowsingData,
       /*created_after_time=*/std::nullopt,
       /*created_before_time=*/std::nullopt,
       /*filter=*/nullptr, base::DoNothing());

@@ -995,6 +995,10 @@ mojom("url_loader_base") {
           mojom = "network.mojom.DeviceBoundSessionAccess"
           cpp = "::net::device_bound_sessions::SessionAccess"
         },
+        {
+          mojom = "network.mojom.DeviceBoundSessionDeletionReason"
+          cpp = "::net::device_bound_sessions::DeletionReason"
+        },
       ]
       traits_headers = [
         "//services/network/public/cpp/device_bound_sessions_mojom_traits.h",

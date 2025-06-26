@@ -87,9 +87,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       base::OnceCallback<void(const std::vector<SessionKey>&)> callback)
       override;
   void DeleteSessionAndNotify(
+      DeletionReason reason,
       const SessionKey& session_key,
       SessionService::OnAccessCallback per_request_callback) override;
   void DeleteAllSessions(
+      DeletionReason reason,
       std::optional<base::Time> created_after_time,
       std::optional<base::Time> created_before_time,
       base::RepeatingCallback<bool(const url::Origin&,
@@ -150,6 +152,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // from `session_store_` and notifies any observers (including
   // `per_request_callback`) about the termination.
   void DeleteSessionAndNotifyInternal(
+      DeletionReason reason,
       SessionsMap::iterator it,
       SessionService::OnAccessCallback per_request_callback);
 

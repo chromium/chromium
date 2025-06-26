@@ -1549,6 +1549,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.DeletionReason"
+    enum="DeviceBoundSessionDeletionReason" expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records the reason a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) was deleted.
+    This is logged every time we terminate a session.
+  </summary>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.RefreshResult"
     enum="DeviceBoundSessionError" expires_after="2026-02-18">
   <owner>drubery@chromium.org</owner>

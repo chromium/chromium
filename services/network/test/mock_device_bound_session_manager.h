@@ -22,11 +22,13 @@ class MockDeviceBoundSessionManager : public mojom::DeviceBoundSessionManager {
               (override));
   MOCK_METHOD(void,
               DeleteSession,
-              (const net::device_bound_sessions::SessionKey& session_key),
+              (net::device_bound_sessions::DeletionReason reason,
+               const net::device_bound_sessions::SessionKey& session_key),
               (override));
   MOCK_METHOD(void,
               DeleteAllSessions,
-              (std::optional<base::Time> created_after_time,
+              (net::device_bound_sessions::DeletionReason reason,
+               std::optional<base::Time> created_after_time,
                std::optional<base::Time> created_before_time,
                network::mojom::ClearDataFilterPtr filter,
                base::OnceClosure completion_callback),

@@ -56,12 +56,14 @@ class SessionServiceMock : public SessionService {
       (override));
   MOCK_METHOD(void,
               DeleteSessionAndNotify,
-              (const SessionKey& session_key,
+              (DeletionReason reason,
+               const SessionKey& session_key,
                SessionService::OnAccessCallback per_request_callback),
               (override));
   MOCK_METHOD(void,
               DeleteAllSessions,
-              (std::optional<base::Time> created_after_time,
+              (DeletionReason reason,
+               std::optional<base::Time> created_after_time,
                std::optional<base::Time> created_before_time,
                base::RepeatingCallback<bool(const url::Origin&,
                                             const net::SchemefulSite&)>

@@ -391,7 +391,7 @@ void StorageRemoverHelper::Visitor::operator()<
     const net::device_bound_sessions::SessionKey& data_key) {
   CHECK(types.Has(BrowsingDataModel::StorageType::kDeviceBoundSession));
   helper->storage_partition_->GetDeviceBoundSessionManager()->DeleteSession(
-      data_key);
+      net::device_bound_sessions::kClearBrowsingData, data_key);
 }
 
 void StorageRemoverHelper::RemoveDataKeyEntries(
