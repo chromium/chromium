@@ -1132,22 +1132,6 @@
       status: "experimental",
     },
     {
-      // Remember the scroll offset of the default anchor when initially
-      // displaying an anchor-positioned element, and when it switches position
-      // options (`position-try-fallbacks`), also known as an anchor
-      // recalculation point.
-      //
-      // https://drafts.csswg.org/css-anchor-position-1/#scroll
-      //
-      // This remembered scroll offset may affect the sizing of an
-      // anchor-positioned element, if it is tethered to the default anchor at
-      // one edge, and to the original containing block at the other edge.
-      // This feature was shipped in M135, and the flag can be cleaned up in
-      // M137, assuming no issues.
-      name: "CSSAnchorRememberedScrollOffset",
-      status: "stable",
-    },
-    {
       // Support for the anchor-scope property.
       // https://drafts.csswg.org/css-anchor-position-1/#anchor-scope
       name: "CSSAnchorScope",

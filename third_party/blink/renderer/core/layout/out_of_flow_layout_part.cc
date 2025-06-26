@@ -2062,8 +2062,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   std::optional<wtf_size_t> last_successful_index;
   PhysicalOffset last_remembered_scroll_offset;
   bool find_last_successful_option = false;
-  if (oof_data &&
-      RuntimeEnabledFeatures::CSSAnchorRememberedScrollOffsetEnabled()) {
+  if (oof_data) {
     // Unless `position-try-fallbacks` has changed, prefer the last successful
     // option.
     if (oof_data->HasLastSuccessfulPositionFallback() &&
@@ -2254,18 +2253,16 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   ContainingBlockInfo container_info = node_info.base_container_info;
   if (const std::optional<PositionAreaOffsets> offsets =
           candidate_style.PositionAreaOffsets()) {
-    if (RuntimeEnabledFeatures::CSSAnchorRememberedScrollOffsetEnabled()) {
-      Element* elm = To<Element>(node_info.node.GetDOMNode());
-      if (offsets->behaves_as_auto.top != offsets->behaves_as_auto.bottom ||
-          offsets->behaves_as_auto.left != offsets->behaves_as_auto.right) {
-        // When one inset for an axis is tethered to the default anchor, and the
-        // other one is tethered to the original containing block, the IMCB is
-        // affected by the default anchor scroll shift. Schedule for calculation
-        // of the default scroll shift.
-        elm->EnsureOutOfFlowData();
-        StyleEngine& style_engine = elm->GetDocument().GetStyleEngine();
-        style_engine.MarkForDefaultAnchorScrollShift(*elm);
-      }
+    Element* elm = To<Element>(node_info.node.GetDOMNode());
+    if (offsets->behaves_as_auto.top != offsets->behaves_as_auto.bottom ||
+        offsets->behaves_as_auto.left != offsets->behaves_as_auto.right) {
+      // When one inset for an axis is tethered to the default anchor, and the
+      // other one is tethered to the original containing block, the IMCB is
+      // affected by the default anchor scroll shift. Schedule for calculation
+      // of the default scroll shift.
+      elm->EnsureOutOfFlowData();
+      StyleEngine& style_engine = elm->GetDocument().GetStyleEngine();
+      style_engine.MarkForDefaultAnchorScrollShift(*elm);
     }
     container_info = ApplyPositionAreaOffsets(
         *offsets, default_anchor_scroll_shift, container_info);
