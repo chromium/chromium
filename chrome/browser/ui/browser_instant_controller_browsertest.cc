@@ -14,13 +14,14 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
+#include "chrome/browser/search/instant_browsertest_base.h"
 #include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/search/instant_unittest_base.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/reload_type.h"
@@ -34,17 +35,9 @@ namespace chrome {
 
 namespace {
 
-class BrowserInstantControllerTest : public InstantUnitTestBase {
+class BrowserInstantControllerTest : public InstantBrowserTestBase {
  protected:
   friend class FakeWebContentsObserver;
-
-  // BrowserWithTestWindowTest:
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return {TestingProfile::TestingFactory{
-        ChromeSigninClientFactory::GetInstance(),
-        base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                            test_url_loader_factory())}};
-  }
 };
 
 struct TabReloadTestCase {
@@ -105,13 +98,17 @@ class FakeWebContentsObserver : public content::WebContentsObserver {
   int num_reloads_ = 0;
 };
 
-TEST_F(BrowserInstantControllerTest, DefaultSearchProviderChanged) {
+IN_PROC_BROWSER_TEST_F(BrowserInstantControllerTest,
+                       DefaultSearchProviderChanged) {
   size_t num_tests = std::size(kTabReloadTestCasesFinalProviderNotGoogle);
   std::vector<std::unique_ptr<FakeWebContentsObserver>> observers;
   for (size_t i = 0; i < num_tests; ++i) {
     const TabReloadTestCase& test =
         kTabReloadTestCasesFinalProviderNotGoogle[i];
-    AddTab(browser(), GURL(test.start_url));
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(test.start_url),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -124,6 +121,13 @@ TEST_F(BrowserInstantControllerTest, DefaultSearchProviderChanged) {
 
     // Setup an observer to verify reload or absence thereof.
     observers.push_back(std::make_unique<FakeWebContentsObserver>(contents));
+
+    // Tests for which tabs finish in the NTP should start in the default NTP
+    // before the provider is changed.
+    if (test.end_in_ntp) {
+      EXPECT_EQ(GURL(chrome::kChromeUINewTabPageURL),
+                observers.back()->current_url());
+    }
   }
 
   SetUserSelectedDefaultSearchProvider("https://bar.com/");
@@ -143,7 +147,8 @@ TEST_F(BrowserInstantControllerTest, DefaultSearchProviderChanged) {
     }
 
     if (test.end_in_ntp) {
-      EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), observer->current_url())
+      EXPECT_EQ(GURL(chrome::kChromeUINewTabPageThirdPartyURL),
+                observer->current_url())
           << test.description;
     }
   }

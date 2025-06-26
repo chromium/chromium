@@ -118,7 +118,7 @@ class InstantService : public KeyedService,
 
  private:
   friend class InstantExtendedTest;
-  friend class InstantUnitTestBase;
+  friend class InstantBrowserTestBase;
   friend class TestInstantService;
 
   FRIEND_TEST_ALL_PREFIXES(InstantServiceTest, GetNTPTileSuggestion);

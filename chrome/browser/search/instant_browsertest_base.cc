@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search/instant_unittest_base.h"
+#include "chrome/browser/search/instant_browsertest_base.h"
 
 #include <string>
 
@@ -15,40 +15,45 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/test/browser_test.h"
 
-InstantUnitTestBase::InstantUnitTestBase() = default;
+InstantBrowserTestBase::InstantBrowserTestBase() = default;
 
-InstantUnitTestBase::~InstantUnitTestBase() = default;
+InstantBrowserTestBase::~InstantBrowserTestBase() = default;
 
-void InstantUnitTestBase::SetUp() {
-  BrowserWithTestWindowTest::SetUp();
+void InstantBrowserTestBase::SetUpOnMainThread() {
+  InProcessBrowserTest::SetUpOnMainThread();
 
   clock_ = new base::SimpleTestClock();
 
-  template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile());
+  template_url_service_ =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
   search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service_);
 
   SetUserSelectedDefaultSearchProvider("{google:baseURL}");
-  instant_service_ = InstantServiceFactory::GetForProfile(profile());
+  instant_service_ = InstantServiceFactory::GetForProfile(browser()->profile());
 }
 
-void InstantUnitTestBase::TearDown() {
+void InstantBrowserTestBase::TearDownOnMainThread() {
   delete clock_;
   clock_ = nullptr;
 
-  BrowserWithTestWindowTest::TearDown();
+  InProcessBrowserTest::TearDownOnMainThread();
 }
 
-ntp_tiles::MostVisitedSites* InstantUnitTestBase::most_visited_sites() {
+ntp_tiles::MostVisitedSites* InstantBrowserTestBase::most_visited_sites() {
   return instant_service_->most_visited_sites_.get();
 }
 
-void InstantUnitTestBase::SetUserSelectedDefaultSearchProvider(
+void InstantBrowserTestBase::SetUserSelectedDefaultSearchProvider(
     const std::string& base_url) {
   TemplateURLData data;
   data.SetShortName(base::UTF8ToUTF16(base_url));
@@ -62,10 +67,9 @@ void InstantUnitTestBase::SetUserSelectedDefaultSearchProvider(
   template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
 }
 
-TestingProfile* InstantUnitTestBase::CreateProfile(
+Profile* InstantBrowserTestBase::CreateProfile(
     const std::string& profile_name) {
-  TestingProfile* profile =
-      BrowserWithTestWindowTest::CreateProfile(profile_name);
+  Profile* profile = browser()->profile();
   TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
       profile,
       base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));

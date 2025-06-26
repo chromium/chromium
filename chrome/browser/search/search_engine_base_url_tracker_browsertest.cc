@@ -5,13 +5,14 @@
 #include "chrome/browser/search/search_engine_base_url_tracker.h"
 
 #include "base/test/mock_callback.h"
-#include "chrome/browser/search/instant_unittest_base.h"
+#include "chrome/browser/search/instant_browsertest_base.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "url/gurl.h"
 
-using SearchEngineBaseURLTrackerTest = InstantUnitTestBase;
+using SearchEngineBaseURLTrackerTest = InstantBrowserTestBase;
 
-TEST_F(SearchEngineBaseURLTrackerTest, DispatchDefaultSearchProviderChanged) {
+IN_PROC_BROWSER_TEST_F(SearchEngineBaseURLTrackerTest,
+                       DispatchDefaultSearchProviderChanged) {
   base::MockCallback<SearchEngineBaseURLTracker::BaseURLChangedCallback>
       callback;
   SearchEngineBaseURLTracker tracker(
