@@ -24,12 +24,58 @@
 
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
 
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
+
+ScopedSVGTransformState::ScopedSVGTransformState(const PaintInfo& paint_info,
+                                                 const LayoutObject& object)
+    : content_paint_info_(paint_info) {
+  DCHECK(object.IsSVGChild());
+
+  const auto* fragment = &object.FirstFragment();
+  const auto* properties = fragment->PaintProperties();
+  if (!properties) {
+    return;
+  }
+
+  // TODO(https://crbug.com/40208169): Also consider Translate, Rotate,
+  // Scale, and Offset.
+  if (const auto* transform_node = properties->Transform()) {
+    transform_property_scope_.emplace(
+        paint_info.context.GetPaintController(), *transform_node, object,
+        DisplayItem::PaintPhaseToSVGTransformType(paint_info.phase));
+    if (auto* context_paints = paint_info.GetSvgContextPaints()) {
+      transformed_context_paints_.emplace(
+          context_paints->fill, context_paints->stroke,
+          context_paints->transform *
+              AffineTransform::FromTransform(transform_node->Matrix()));
+      content_paint_info_.SetSvgContextPaints(
+          base::OptionalToPtr(transformed_context_paints_));
+    }
+  }
+}
+
+ScopedSVGPaintState::ScopedSVGPaintState(const LayoutObject& object,
+                                         const PaintInfo& paint_info)
+    : ScopedSVGPaintState(object, paint_info, object) {}
+
+ScopedSVGPaintState::ScopedSVGPaintState(
+    const LayoutObject& object,
+    const PaintInfo& paint_info,
+    const DisplayItemClient& display_item_client)
+    : object_(object),
+      paint_info_(paint_info),
+      display_item_client_(display_item_client) {
+  if (paint_info.phase == PaintPhase::kForeground) {
+    ApplyEffects();
+  }
+}
 
 ScopedSVGPaintState::~ScopedSVGPaintState() {
   // Paint mask before clip path as mask because if both exist, the ClipPathMask
