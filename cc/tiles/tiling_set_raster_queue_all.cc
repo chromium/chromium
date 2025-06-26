@@ -42,11 +42,10 @@ std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
 
   const PictureLayerTilingClient* client = tiling_set->client();
   WhichTree tree = tiling_set->tree();
-  // Find high and low res tilings and initialize the iterators.
+  // Find high res tiling and initialize the iterator.
   PictureLayerTiling* high_res_tiling = nullptr;
-  PictureLayerTiling* low_res_tiling = nullptr;
-  // This variable would point to a tiling that has a NON_IDEAL_RESOLUTION or
-  // LOW_RESOLUTION on the active tree, but HIGH_RESOLUTION on the pending tree.
+  // This variable would point to a tiling that has a NON_IDEAL_RESOLUTION on
+  // the active tree, but HIGH_RESOLUTION on the pending tree.
   // These tilings are the only non-high res tilings that could have required
   // for activation tiles, so they need to be considered for rasterization.
   PictureLayerTiling* active_non_ideal_pending_high_res_tiling = nullptr;
@@ -62,8 +61,6 @@ std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
     }
   }
 
-  bool use_low_res_tiling = low_res_tiling && low_res_tiling->has_tiles() &&
-                            !low_res_tiling->all_tiles_done();
   bool use_high_res_tiling = high_res_tiling && high_res_tiling->has_tiles() &&
                              !high_res_tiling->all_tiles_done();
   bool use_active_non_ideal_pending_high_res_tiling =
@@ -71,15 +68,13 @@ std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
       active_non_ideal_pending_high_res_tiling->has_tiles() &&
       !active_non_ideal_pending_high_res_tiling->all_tiles_done();
 
-  if (!use_low_res_tiling && !use_high_res_tiling &&
-      !use_active_non_ideal_pending_high_res_tiling &&
+  if (!use_high_res_tiling && !use_active_non_ideal_pending_high_res_tiling &&
       features::IsCCSlimmingEnabled()) {
     return nullptr;
   }
 
   return base::WrapUnique(new TilingSetRasterQueueAll(
-      use_high_res_tiling ? high_res_tiling : nullptr,
-      use_low_res_tiling ? low_res_tiling : nullptr,
+      use_high_res_tiling ? high_res_tiling : nullptr, nullptr,
       use_active_non_ideal_pending_high_res_tiling
           ? active_non_ideal_pending_high_res_tiling
           : nullptr,
