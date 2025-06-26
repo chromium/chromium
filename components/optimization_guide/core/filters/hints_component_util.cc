@@ -62,10 +62,9 @@ std::unique_ptr<BloomFilter> ProcessBloomFilter(
     return nullptr;
   }
 
-  if (static_cast<int>(bloom_filter_proto.num_bits()) >
-      features::MaxServerBloomFilterByteSize() * 8) {
+  if (bloom_filter_proto.num_bits() > kMaxServerBloomFilterBits) {
     DLOG(ERROR) << "Bloom filter data exceeds maximum size of "
-                << optimization_guide::features::MaxServerBloomFilterByteSize()
+                << kMaxServerBloomFilterByteSize
                 << " bytes. Actual size for type "
                 << proto::OptimizationType_Name(
                        optimization_filter.optimization_type())

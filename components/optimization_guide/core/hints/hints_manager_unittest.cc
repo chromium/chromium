@@ -1089,7 +1089,7 @@ TEST_F(HintsManagerTest, InvalidOptimizationFilterNotLoaded) {
 
   base::HistogramTester histogram_tester;
 
-  int too_many_bits = features::MaxServerBloomFilterByteSize() * 8 + 1;
+  int too_many_bits = kMaxServerBloomFilterBits + 1;
 
   proto::Configuration config;
   BloomFilter blocklist_bloom_filter(kDefaultHostBloomFilterNumHashFunctions,

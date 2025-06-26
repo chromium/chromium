@@ -164,12 +164,6 @@ bool IsOptimizationHintsEnabled();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsPushNotificationsEnabled();
 
-// The maximum data byte size for a server-provided bloom filter. This is
-// a client-side safety limit for RAM use in case server sends too large of
-// a bloom filter.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int MaxServerBloomFilterByteSize();
-
 // Returns whether fetching hints for active tabs should happen on deferred
 // startup. Otherwise active tabs hints will be fetched after a random interval
 // between ActiveTabsHintsFetchRandomMinDelay() and

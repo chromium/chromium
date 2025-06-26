@@ -297,7 +297,7 @@ TEST_F(
 }
 
 TEST_F(HintsComponentUtilTest, ProcessOptimizationFilterWithTooLargeFilter) {
-  int too_many_bits = features::MaxServerBloomFilterByteSize() * 8 + 1;
+  int too_many_bits = kMaxServerBloomFilterBits + 1;
 
   proto::OptimizationFilter optimization_filter_proto;
   BloomFilter bloom_filter(7, too_many_bits);

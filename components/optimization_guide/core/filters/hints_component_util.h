@@ -18,6 +18,13 @@ class OptimizationFilter;
 // the cache and are ready for use.
 extern const char kComponentHintsUpdatedResultHistogramString[];
 
+// The maximum data byte size for a server-provided bloom filter. This is
+// a client-side safety limit for RAM use in case server sends too large of
+// a bloom filter.
+inline constexpr size_t kMaxServerBloomFilterByteSize = 250 * 1024 /* 250KB */;
+inline constexpr size_t kMaxServerBloomFilterBits =
+    kMaxServerBloomFilterByteSize * 8;
+
 // Enumerates the possible outcomes of processing the hints component.
 //
 // Used in UMA histograms, so the order of enumerators should not be changed.

@@ -291,11 +291,6 @@ bool IsPushNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kPushNotifications);
 }
 
-int MaxServerBloomFilterByteSize() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kOptimizationHints, "max_bloom_filter_byte_size", 250 * 1024 /* 250KB */);
-}
-
 base::TimeDelta StoredHostModelFeaturesFreshnessDuration() {
   return base::Days(GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction,
