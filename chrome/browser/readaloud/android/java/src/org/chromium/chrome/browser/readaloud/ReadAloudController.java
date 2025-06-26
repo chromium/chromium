@@ -262,7 +262,7 @@ public class ReadAloudController
       }
 
       boolean isReadable(PlaybackArgs.PlaybackMode mode) {
-      return getReadabilityResultForMode(mode).readable;
+        return getReadabilityResultForMode(mode).readable;
       }
 
       long getResponseTime() {
@@ -905,12 +905,10 @@ public class ReadAloudController
                 && !ReadAloudFeatures.isInMultiWindowAndDisabled(mActivity);
     }
 
-    /** Returns true if the web contents within current Tab is readable. */
-    @Contract("null -> false")
-    public boolean isReadable(@Nullable Tab tab) {
-        // If we don't have a valid Profile, playback won't work.
+    private boolean isTabUnavailableForReadAloud(@Nullable Tab tab) {
+      // If we don't have a valid Profile, playback won't work.
         // TODO(crbug.com/41491180): Remove when valid profile is guaranteed.
-        if (tab == null
+      return tab == null
                 || GURL.isEmptyOrInvalid(tab.getUrl())
                 || tab.getWebContents() == null
                 || mProfileSupplier.get() == null
@@ -918,18 +916,45 @@ public class ReadAloudController
                 || DeviceConditions.getCurrentNetConnectionType(mActivity.getApplicationContext())
                         == ConnectionType.CONNECTION_NONE
                 // TODO(crbug.com/363326024): Remove once feature is supported for PDF.
-                || (tab.isNativePage() && assumeNonNull(tab.getNativePage()).isPdf())) {
+                || (tab.isNativePage() && assumeNonNull(tab.getNativePage()).isPdf());
+    }
+
+    /** Returns true if the web contents within current Tab is readable. */
+    @Contract("null -> false")
+    public boolean isReadable(@Nullable Tab tab) {
+        if (isTabUnavailableForReadAloud(tab)) {
             return false;
         }
-
-        if (isTabLanguageSupported(tab) && isAvailable()) {
-            int sanitizedUrlHash = urlToHash(stripUserData(tab.getUrl()).getSpec());
+        Tab nonNullTab = assumeNonNull(tab);
+        TabLanguageStatus tabLanguageStatus = isTabLanguageSupported(nonNullTab);
+        if (tabLanguageStatus.mSupported && isAvailable()) {
+            int sanitizedUrlHash = urlToHash(stripUserData(nonNullTab.getUrl()).getSpec());
             ReadabilityInfo info = getReadabilityInfoIfUnexpired(sanitizedUrlHash);
             if (info != null) {
                 return info.isReadable();
             }
         }
         return false;
+    }
+
+    /** Returns which mode would be played if the user chooses to listen to this page, or UNSPECIFIED if unsupported. */
+    public PlaybackMode getModeToPlay(@Nullable Tab tab) {
+        // If we don't have a valid Profile, playback won't work.
+        // TODO(crbug.com/41491180): Remove when valid profile is guaranteed.
+        if (isTabUnavailableForReadAloud(tab)) {
+            return PlaybackMode.UNSPECIFIED;
+        }
+
+        Tab nonNullTab = assumeNonNull(tab);
+        TabLanguageStatus tabLanguageStatus = isTabLanguageSupported(nonNullTab);
+        if (tabLanguageStatus.mSupported && isAvailable()) {
+            int sanitizedUrlHash = urlToHash(stripUserData(nonNullTab.getUrl()).getSpec());
+            ReadabilityInfo info = getReadabilityInfoIfUnexpired(sanitizedUrlHash);
+            if (info != null && info.isReadable()) {
+                return getPlaybackModeForNewPlayback(info, tabLanguageStatus.mLanguage);
+            }
+        }
+        return PlaybackMode.UNSPECIFIED;
     }
 
     /**
@@ -954,13 +979,13 @@ public class ReadAloudController
     }
 
     /** Returns true if the tab's current language is supported by the available voices. */
-    private boolean isTabLanguageSupported(Tab tab) {
+    private TabLanguageStatus isTabLanguageSupported(Tab tab) {
         if (mReadabilityHooks == null) {
-            return false;
+            return new TabLanguageStatus("und", false);
         }
 
         String playbackLanguage = getLanguageForNewPlayback(tab);
-        return mReadabilityHooks.getCompatibleLanguages().contains(playbackLanguage);
+        return new TabLanguageStatus(playbackLanguage, mReadabilityHooks.getCompatibleLanguages().contains(playbackLanguage));
     }
 
     /**
@@ -2002,5 +2027,15 @@ public class ReadAloudController
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void setActivePlaybackTab(Tab tab) {
         mActivePlaybackTabSupplier.set(tab);
+    }
+
+    private static class TabLanguageStatus {
+      final String mLanguage;
+      final boolean mSupported;
+
+      TabLanguageStatus(String language, boolean supported) {
+        this.mLanguage = language;
+        this.mSupported = supported;
+      }
     }
 }

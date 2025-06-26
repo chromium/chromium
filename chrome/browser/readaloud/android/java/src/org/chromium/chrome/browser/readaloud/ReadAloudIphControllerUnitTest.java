@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.readaloud;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -44,6 +45,8 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+
 /** Unit test for {@link ReadAloudIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -79,7 +82,7 @@ public class ReadAloudIphControllerUnitTest {
 
         mReadAloudControllerSupplier = new ObservableSupplierImpl<>();
         mReadAloudControllerSupplier.set(mReadAloudController);
-        doReturn(true).when(mReadAloudController).isReadable(mTab);
+        doReturn(PlaybackMode.CLASSIC).when(mReadAloudController).getModeToPlay(mTab);
 
         mController =
                 new ReadAloudIphController(
@@ -99,6 +102,7 @@ public class ReadAloudIphControllerUnitTest {
         verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
 
         IphCommand command = mIphCommandCaptor.getValue();
+        assertEquals(R.string.menu_listen_to_this_page_iph, command.stringId);
         command.onShowCallback.run();
         verify(mAppMenuHandler).setMenuHighlight(R.id.readaloud_menu_id, true);
 
@@ -108,8 +112,25 @@ public class ReadAloudIphControllerUnitTest {
 
     @Test
     @SmallTest
+    public void maybeShowReadAloudAppMenuIph_withAi() {
+      doReturn(PlaybackMode.OVERVIEW).when(mReadAloudController).getModeToPlay(mTab);
+
+      mController.maybeShowReadAloudAppMenuIph();
+      verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+
+      IphCommand command = mIphCommandCaptor.getValue();
+      assertEquals(R.string.menu_listen_to_this_page_with_ai_iph, command.stringId);
+      command.onShowCallback.run();
+      verify(mAppMenuHandler).setMenuHighlight(R.id.readaloud_menu_id, true);
+
+      command.onDismissCallback.run();
+      verify(mAppMenuHandler).clearMenuHighlight();
+    }
+
+    @Test
+    @SmallTest
     public void maybeShowReadAloudAppMenuIph_false() {
-        doReturn(false).when(mReadAloudController).isReadable(mTab);
+        doReturn(PlaybackMode.UNSPECIFIED).when(mReadAloudController).getModeToPlay(mTab);
 
         mController.maybeShowReadAloudAppMenuIph();
         verify(mUserEducationHelper, never()).requestShowIph(mIphCommandCaptor.capture());

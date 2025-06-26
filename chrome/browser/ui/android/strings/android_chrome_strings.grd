@@ -3108,6 +3108,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_LISTEN_TO_THIS_PAGE_IPH" desc="The in-product-help message that encourages users to use the Listen to this Page feature in the app menu">
         You can listen to this page
       </message>
+      <message name="IDS_MENU_LISTEN_TO_THIS_PAGE_WITH_AI_IPH" desc="The in-product-help message that encourages users to listen to this page in Audio Overivew mode in the app menu">
+        Listen to this page with AI
+      </message>
 
       <message name="IDS_MENU_PRINT" desc="Menu item for printing the current page. [CHAR_LIMIT=27]">
         Print…

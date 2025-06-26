@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+
 /**
  * Controller to manage when and how we show ReadAloud in-product-help messages to users in the app
  * menu and the CCT app menu.
@@ -92,26 +94,28 @@ public class ReadAloudIphController {
      * @param url URL the readability check returns
      */
     public void maybeShowReadAloudAppMenuIph() {
-        if (shouldShowIph()) {
-            boolean isHighlightEnabled =
-                    mShowAppMenuTextBubble
-                            ? true
-                            : ReadAloudFeatures.isIPHMenuButtonHighlightCctEnabled();
-            mUserEducationHelper.requestShowIph(
-                    new IphCommandBuilder(
-                                    mToolbarMenuButton.getContext().getResources(),
-                                    FeatureConstants.READ_ALOUD_APP_MENU_FEATURE,
-                                    R.string.menu_listen_to_this_page_iph,
-                                    R.string.menu_listen_to_this_page_iph)
-                            .setAnchorView(mToolbarMenuButton)
-                            .setShowTextBubble(mShowAppMenuTextBubble)
-                            .setOnShowCallback(
-                                    () ->
-                                            turnOnHighlightForMenuItem(
-                                                    R.id.readaloud_menu_id, isHighlightEnabled))
-                            .setOnDismissCallback(this::turnOffHighlightForMenuItem)
-                            .build());
-        }
+      AppMenuIphAvailability appMenuIphAvailability = shouldShowIph();
+      if (appMenuIphAvailability == AppMenuIphAvailability.NO_IPH) {
+        return;
+      }
+      boolean isHighlightEnabled =
+              mShowAppMenuTextBubble
+                      ? true
+                      : ReadAloudFeatures.isIPHMenuButtonHighlightCctEnabled();
+      mUserEducationHelper.requestShowIph(
+              new IphCommandBuilder(
+                              mToolbarMenuButton.getContext().getResources(),
+                              FeatureConstants.READ_ALOUD_APP_MENU_FEATURE,
+                              getIphStringResId(appMenuIphAvailability),
+                              getIphStringResId(appMenuIphAvailability))
+                      .setAnchorView(mToolbarMenuButton)
+                      .setShowTextBubble(mShowAppMenuTextBubble)
+                      .setOnShowCallback(
+                              () ->
+                                      turnOnHighlightForMenuItem(
+                                              R.id.readaloud_menu_id, isHighlightEnabled))
+                      .setOnDismissCallback(this::turnOffHighlightForMenuItem)
+                      .build());
     }
 
     private void turnOnHighlightForMenuItem(int highlightMenuItemId, boolean highlightMenuButton) {
@@ -122,13 +126,32 @@ public class ReadAloudIphController {
         mAppMenuHandler.clearMenuHighlight();
     }
 
-    private boolean shouldShowIph() {
+    private AppMenuIphAvailability shouldShowIph() {
         if (mCurrentTabSupplier.get() == null
                 || !mCurrentTabSupplier.get().getUrl().isValid()
                 || mReadAloudControllerSupplier.get() == null) {
-            return false;
+            return AppMenuIphAvailability.NO_IPH;
         }
-        return mReadAloudControllerSupplier.get().isReadable(mCurrentTabSupplier.get());
+        PlaybackMode modeToPlay = mReadAloudControllerSupplier.get().getModeToPlay(mCurrentTabSupplier.get());
+        switch (modeToPlay) {
+          case CLASSIC:
+            return AppMenuIphAvailability.STANDARD_IPH;
+          case OVERVIEW:
+            return AppMenuIphAvailability.AI_IPH;
+          default:
+            return AppMenuIphAvailability.NO_IPH;
+        }
+    }
+
+    private int getIphStringResId(AppMenuIphAvailability appMenuIphAvailability) {
+        switch (appMenuIphAvailability) {
+          case STANDARD_IPH:
+            return R.string.menu_listen_to_this_page_iph;
+          case AI_IPH:
+            return R.string.menu_listen_to_this_page_with_ai_iph;
+          default:
+            return 0;
+        }
     }
 
     void readAloudControllerReady(@Nullable ReadAloudController readAloudController) {
@@ -148,5 +171,11 @@ public class ReadAloudIphController {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     void setShowAppMenuTextBubble(boolean showAppMenuTextBubble) {
         mShowAppMenuTextBubble = showAppMenuTextBubble;
+    }
+
+    private enum AppMenuIphAvailability {
+      NO_IPH,
+      STANDARD_IPH,
+      AI_IPH;
     }
 }
