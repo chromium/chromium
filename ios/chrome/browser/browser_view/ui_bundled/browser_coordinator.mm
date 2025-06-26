@@ -34,6 +34,7 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/send_tab_to_self/features.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
@@ -2490,6 +2491,29 @@ enum class ToolbarKind {
 - (void)dismissNotificationsOptIn {
   [_notificationsOptInCoordinator stop];
   _notificationsOptInCoordinator = nil;
+}
+
+- (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint {
+  if (_signinCoordinator) {
+    // The browser agent may trigger the add account any time in case of network
+    // delay. Early return ensure we don’t interrupt the sign-in operation the
+    // user is currently doing.
+    return;
+  }
+  SigninContextStyle contextStyle = SigninContextStyle::kDefault;
+  _signinCoordinator = [SigninCoordinator
+      addAccountCoordinatorWithBaseViewController:self.viewController
+                                          browser:self.browser
+                                     contextStyle:contextStyle
+                                      accessPoint:accessPoint
+                             continuationProvider:
+                                 DoNothingContinuationProvider()];
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+        [weakSelf stopSigninCoordinator];
+      };
+  [_signinCoordinator start];
 }
 
 #pragma mark - ContextualPanelEntrypointIPHCommands

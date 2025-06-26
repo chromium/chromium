@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -117,20 +118,12 @@ void AccountConsistencyBrowserAgent::OnAddAccount(const GURL& url) {
   if (ShouldShowAccountMenu()) {
     ShowAccountMenu(url);
   } else {
+    id<BrowserCoordinatorCommands> browser_coordinator_handler =
+        HandlerForProtocol(browser_->GetCommandDispatcher(),
+                           BrowserCoordinatorCommands);
     signin_metrics::AccessPoint access_point =
         signin_metrics::AccessPoint::kAccountConsistencyService;
-    SigninContextStyle context_style = SigninContextStyle::kDefault;
-    add_account_coordinator_ = [SigninCoordinator
-        addAccountCoordinatorWithBaseViewController:base_view_controller_
-                                            browser:browser_
-                                       contextStyle:context_style
-                                        accessPoint:access_point
-                               continuationProvider:
-                                   DoNothingContinuationProvider()];
-    add_account_coordinator_.signinCompletion = CallbackToBlock(
-        base::BindOnce(&AccountConsistencyBrowserAgent::StopSigninCoordinator,
-                       base::Unretained(this)));
-    [add_account_coordinator_ start];
+    [browser_coordinator_handler showAddAccountWithAccessPoint:access_point];
   }
 }
 
@@ -176,8 +169,6 @@ bool AccountConsistencyBrowserAgent::ShouldShowAccountMenu() const {
 
 void AccountConsistencyBrowserAgent::ShowAccountMenu(const GURL& url) {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-  // TODO(crbug.com/411614444): Open the account menu here instead of going
-  // through the handler.
   [application_handler_
       showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb
                                  URL:url];

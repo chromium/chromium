@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -52,6 +53,11 @@ class AccountConsistencyBrowserAgentTestBase : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:settings_commands_mock_
                      forProtocol:@protocol(SettingsCommands)];
+    browser_coordinator_commands_mock_ =
+        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:browser_coordinator_commands_mock_
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     base_view_controller_mock_ = OCMStrictClassMock([UIViewController class]);
     LensBrowserAgent::CreateForBrowser(browser_.get());
@@ -69,6 +75,7 @@ class AccountConsistencyBrowserAgentTestBase : public PlatformTest {
   void TearDown() override {
     EXPECT_OCMOCK_VERIFY((id)application_commands_mock_);
     EXPECT_OCMOCK_VERIFY((id)settings_commands_mock_);
+    EXPECT_OCMOCK_VERIFY((id)browser_coordinator_commands_mock_);
     EXPECT_OCMOCK_VERIFY((id)base_view_controller_mock_);
   }
 
@@ -83,6 +90,7 @@ class AccountConsistencyBrowserAgentTestBase : public PlatformTest {
   raw_ptr<AccountConsistencyBrowserAgent> agent_;
   id<ApplicationCommands> application_commands_mock_;
   id<SettingsCommands> settings_commands_mock_;
+  id<BrowserCoordinatorCommands> browser_coordinator_commands_mock_;
   UIViewController* base_view_controller_mock_;
 };
 
@@ -152,17 +160,11 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnAddAccountWithPresentedView) {
 TEST_P(AccountConsistencyBrowserAgentTest, OnAddAccountWithoutPresentedView) {
   OCMStub([base_view_controller_mock_ presentedViewController])
       .andReturn((id)nil);
-  __block void (^completion)() = nil;
-  OCMExpect([base_view_controller_mock_
-      presentViewController:[OCMArg any]
-                   animated:YES
-                 completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                   completion = value;
-                   return YES;
-                 }]]);
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kAccountConsistencyService;
+  OCMExpect([browser_coordinator_commands_mock_
+      showAddAccountWithAccessPoint:access_point]);
   agent_->OnAddAccount(GURL());
-  CHECK(completion);
-  completion();
 }
 
 TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,

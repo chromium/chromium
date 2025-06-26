@@ -14,6 +14,9 @@ class ScopedClosureRunner;
 @protocol BadgeItem;
 class GURL;
 enum class NotificationOptInAccessPoint;
+namespace signin_metrics {
+enum class AccessPoint;
+}  // namespace signin_metrics
 
 // Protocol for commands that will be handled by the BrowserCoordinator.
 // TODO(crbug.com/41427057) : Rename this protocol to one that is more
@@ -123,6 +126,9 @@ enum class NotificationOptInAccessPoint;
 
 // Dismisses the notifications opt-in view.
 - (void)dismissNotificationsOptIn;
+
+// Show the add account view
+- (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint;
 
 @end
 
