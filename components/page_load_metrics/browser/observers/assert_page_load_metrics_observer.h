@@ -229,6 +229,12 @@ class AssertPageLoadMetricsObserver final
                            bool is_on_device_auction,
                            content::AuctionResult result) override {}
   void OnPrimaryPageRenderProcessGone() override {}
+  void OnUserTimingMarkFullyLoaded(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override {}
+  void OnUserTimingMarkFullyVisible(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override {}
+  void OnUserTimingMarkInteractive(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override {}
 
   // Reference implementations duplicated from PageLoadMetricsObserver
   ObservePolicy ShouldObserveMimeTypeByDefault(

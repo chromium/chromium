@@ -154,6 +154,56 @@ void AndroidPageLoadMetricsObserver::OnLoadedResource(
   }
 }
 
+void AndroidPageLoadMetricsObserver::OnUserTimingMarkFullyLoaded(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  DCHECK(timing.user_timing_mark_fully_loaded);
+  if (!timing.user_timing_mark_fully_loaded) {
+    return;
+  }
+  base::android::ScopedJavaLocalRef<jobject> java_web_contents =
+      GetDelegate().GetWebContents()->GetJavaWebContents();
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PageLoadMetrics_onUserTimingMarkFullyLoaded(
+      env, java_web_contents, static_cast<jlong>(navigation_id_),
+      GetDelegate().GetNavigationStart().ToUptimeMicros(),
+      static_cast<jlong>(
+          timing.user_timing_mark_fully_loaded->InMilliseconds()),
+      static_cast<jboolean>(IsPrerendering()));
+}
+
+void AndroidPageLoadMetricsObserver::OnUserTimingMarkFullyVisible(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  DCHECK(timing.user_timing_mark_fully_visible);
+  if (!timing.user_timing_mark_fully_visible) {
+    return;
+  }
+  base::android::ScopedJavaLocalRef<jobject> java_web_contents =
+      GetDelegate().GetWebContents()->GetJavaWebContents();
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PageLoadMetrics_onUserTimingMarkFullyVisible(
+      env, java_web_contents, static_cast<jlong>(navigation_id_),
+      GetDelegate().GetNavigationStart().ToUptimeMicros(),
+      static_cast<jlong>(
+          timing.user_timing_mark_fully_visible->InMilliseconds()),
+      static_cast<jboolean>(IsPrerendering()));
+}
+
+void AndroidPageLoadMetricsObserver::OnUserTimingMarkInteractive(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  DCHECK(timing.user_timing_mark_interactive);
+  if (!timing.user_timing_mark_interactive) {
+    return;
+  }
+  base::android::ScopedJavaLocalRef<jobject> java_web_contents =
+      GetDelegate().GetWebContents()->GetJavaWebContents();
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PageLoadMetrics_onUserTimingMarkInteractive(
+      env, java_web_contents, static_cast<jlong>(navigation_id_),
+      GetDelegate().GetNavigationStart().ToUptimeMicros(),
+      static_cast<jlong>(timing.user_timing_mark_interactive->InMilliseconds()),
+      static_cast<jboolean>(IsPrerendering()));
+}
+
 void AndroidPageLoadMetricsObserver::ReportNewNavigation(
     int64_t navigation_id) {
   DCHECK_GE(navigation_id, 0);

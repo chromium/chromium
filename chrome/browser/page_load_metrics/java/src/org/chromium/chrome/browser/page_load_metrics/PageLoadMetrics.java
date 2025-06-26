@@ -196,15 +196,63 @@ public class PageLoadMetrics {
          * @param webContents the WebContents this metrics is related to.
          * @param navigationId the unique id of a navigation this metrics is related to.
          * @param layoutShiftScoreBeforeInputOrScroll the cumulative layout shift score, before user
-         *         input or scroll.
+         *     input or scroll.
          * @param layoutShiftScoreOverall the cumulative layout shift score over the lifetime of the
-         *         web page.
+         *     web page.
          */
         default void onLayoutShiftScore(
                 WebContents webContents,
                 long navigationId,
                 float layoutShiftScoreBeforeInputOrScroll,
                 float layoutShiftScoreOverall) {}
+
+        /**
+         * Called when the standard UserTiming mark `performance.mark("mark_fully_loaded")` occurs
+         * in the main frame.
+         *
+         * @param webContents the WebContents this metrics is related to.
+         * @param navigationId the unique id of a navigation this metrics is related to.
+         * @param navigationStartMicros Absolute navigation start time, in microseconds, in the same
+         *     timebase as {@link SystemClock#uptimeMillis()} and {@link System#nanoTime()}.
+         * @param markFullyLoadedMs Time to the mark from navigation start.
+         */
+        default void onUserTimingMarkFullyLoaded(
+                WebContents webContents,
+                long navigationId,
+                long navigationStartMicros,
+                long markFullyLoadedMs) {}
+
+        /**
+         * Called when the standard UserTiming mark `performance.mark("mark_fully_visible")` occurs
+         * in the main frame.
+         *
+         * @param webContents the WebContents this metrics is related to.
+         * @param navigationId the unique id of a navigation this metrics is related to.
+         * @param navigationStartMicros Absolute navigation start time, in microseconds, in the same
+         *     timebase as {@link SystemClock#uptimeMillis()} and {@link System#nanoTime()}.
+         * @param markFullyVisibleMs Time to the mark from navigation start.
+         */
+        default void onUserTimingMarkFullyVisible(
+                WebContents webContents,
+                long navigationId,
+                long navigationStartMicros,
+                long markFullyVisibleMs) {}
+
+        /**
+         * Called when the standard UserTiming mark `performance.mark("mark_interactive")` occurs in
+         * the main frame.
+         *
+         * @param webContents the WebContents this metrics is related to.
+         * @param navigationId the unique id of a navigation this metrics is related to.
+         * @param navigationStartMicros Absolute navigation start time, in microseconds, in the same
+         *     timebase as {@link SystemClock#uptimeMillis()} and {@link System#nanoTime()}.
+         * @param markInteractiveMs Time to the mark from navigation start.
+         */
+        default void onUserTimingMarkInteractive(
+                WebContents webContents,
+                long navigationId,
+                long navigationStartMicros,
+                long markInteractiveMs) {}
     }
 
     private static final ObserverList<Observer> sObservers = new ObserverList<>();
@@ -404,6 +452,54 @@ public class PageLoadMetrics {
                     navigationId,
                     layoutShiftScoreBeforeInputOrScroll,
                     layoutShiftScoreOverall);
+        }
+    }
+
+    @CalledByNative
+    private static void onUserTimingMarkFullyLoaded(
+            WebContents webContents,
+            long navigationId,
+            long navigationStartMicros,
+            long markFullyLoadedMs,
+            boolean isPrerendering) {
+        ThreadUtils.assertOnUiThread();
+        ObserverList<Observer> observers = isPrerendering ? sPrerenderObservers : sObservers;
+        sIsPrerendering = isPrerendering;
+        for (Observer observer : observers) {
+            observer.onUserTimingMarkFullyLoaded(
+                    webContents, navigationId, navigationStartMicros, markFullyLoadedMs);
+        }
+    }
+
+    @CalledByNative
+    private static void onUserTimingMarkFullyVisible(
+            WebContents webContents,
+            long navigationId,
+            long navigationStartMicros,
+            long markFullyVisibleMs,
+            boolean isPrerendering) {
+        ThreadUtils.assertOnUiThread();
+        ObserverList<Observer> observers = isPrerendering ? sPrerenderObservers : sObservers;
+        sIsPrerendering = isPrerendering;
+        for (Observer observer : observers) {
+            observer.onUserTimingMarkFullyVisible(
+                    webContents, navigationId, navigationStartMicros, markFullyVisibleMs);
+        }
+    }
+
+    @CalledByNative
+    private static void onUserTimingMarkInteractive(
+            WebContents webContents,
+            long navigationId,
+            long navigationStartMicros,
+            long markInteractiveMs,
+            boolean isPrerendering) {
+        ThreadUtils.assertOnUiThread();
+        ObserverList<Observer> observers = isPrerendering ? sPrerenderObservers : sObservers;
+        sIsPrerendering = isPrerendering;
+        for (Observer observer : observers) {
+            observer.onUserTimingMarkInteractive(
+                    webContents, navigationId, navigationStartMicros, markInteractiveMs);
         }
     }
 

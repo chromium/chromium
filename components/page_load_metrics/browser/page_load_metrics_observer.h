@@ -192,6 +192,12 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnFirstMeaningfulPaintInMainFrameDocument(
       const mojom::PageLoadTiming& timing) override {}
   void OnFirstInputInPage(const mojom::PageLoadTiming& timing) override {}
+  void OnUserTimingMarkFullyLoaded(
+      const mojom::PageLoadTiming& timing) override {}
+  void OnUserTimingMarkFullyVisible(
+      const mojom::PageLoadTiming& timing) override {}
+  void OnUserTimingMarkInteractive(
+      const mojom::PageLoadTiming& timing) override {}
   void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
                                  int behavior_flags) override {}
   void OnJavaScriptFrameworksObserved(

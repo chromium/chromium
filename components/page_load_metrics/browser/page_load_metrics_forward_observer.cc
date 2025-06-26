@@ -289,6 +289,15 @@ void PageLoadMetricsForwardObserver::OnFirstMeaningfulPaintInMainFrameDocument(
 void PageLoadMetricsForwardObserver::OnFirstInputInPage(
     const mojom::PageLoadTiming& timing) {}
 
+void PageLoadMetricsForwardObserver::OnUserTimingMarkFullyLoaded(
+    const mojom::PageLoadTiming& timing) {}
+
+void PageLoadMetricsForwardObserver::OnUserTimingMarkFullyVisible(
+    const mojom::PageLoadTiming& timing) {}
+
+void PageLoadMetricsForwardObserver::OnUserTimingMarkInteractive(
+    const mojom::PageLoadTiming& timing) {}
+
 // OnLoadingBehaviorObserved and OnJavaScriptFrameworksObserved are called
 // through PageLoadTracker::UpdateMetrics. So, the event is always forwarded at
 // the PageLoadTracker layer.

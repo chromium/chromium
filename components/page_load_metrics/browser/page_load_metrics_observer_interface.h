@@ -438,6 +438,21 @@ class PageLoadMetricsObserverInterface {
 
   virtual void OnFirstInputInPage(const mojom::PageLoadTiming& timing) = 0;
 
+  // Called when the standard UserTiming mark
+  // `performance.mark("mark_fully_loaded")` occurs in the main frame.
+  virtual void OnUserTimingMarkFullyLoaded(
+      const mojom::PageLoadTiming& timing) = 0;
+
+  // Called when the standard UserTiming mark
+  // `performance.mark("mark_fully_visible")` occurs in the main frame.
+  virtual void OnUserTimingMarkFullyVisible(
+      const mojom::PageLoadTiming& timing) = 0;
+
+  // Called when the standard UserTiming mark
+  // `performance.mark("mark_interactive")` occurs in the main frame.
+  virtual void OnUserTimingMarkInteractive(
+      const mojom::PageLoadTiming& timing) = 0;
+
   // Invoked when there is an update to the loading behavior_flags in the given
   // frame.
   virtual void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
