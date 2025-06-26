@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">5.30 p.m.</translation>
 <translation id="1217294226280635614">Split view</translation>
 <translation id="1219674500290482172">Unable to connect to the Internet.</translation>
+<translation id="1223498995510244364">Summarise</translation>
 <translation id="1227113644794103810">Inactive tabs</translation>
 <translation id="1231733316453485619">Turn on sync?</translation>
 <translation id="1253032109800629289">Hide 'Get price tracking notifications'</translation>
@@ -834,6 +835,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="446314443268698477">Shop, translate and identify what you see with your camera or photos.</translation>
 <translation id="4469324811108161144">Notes can save up to <ph name="CHARACTER_LIMIT" /> characters.</translation>
 <translation id="4471472356135655769">Can't export passwords</translation>
+<translation id="4472575034687746823">Get started</translation>
 <translation id="4473608001744970767">Hide Track price</translation>
 <translation id="4474142134969976028">No matching results</translation>
 <translation id="4474494258097106883">Built for your iPhone</translation>
@@ -1252,7 +1254,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6140600850356225166">Ask to open links from other apps in Incognito</translation>
 <translation id="6140948187512243695">Show details</translation>
 <translation id="6144589619057374135">Open ${url} in Incognito</translation>
-<translation id="6145820728009071857">Show Reader Mode</translation>
 <translation id="6147279996212084542">Explain</translation>
 <translation id="6151006591088192882">Unlock Incognito tabs with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inactive</translation>
@@ -1520,7 +1521,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7102005569666697658">Downloading… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Settings → Payment methods</translation>
 <translation id="7108338896283013870">Hide</translation>
-<translation id="7115051913071512405">Try it out</translation>
 <translation id="7128693485119315539">Your organisation may need to see and manage browsing data tied to your managed account, such as your browsing history and passwords.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Camera is unavailable</translation>
@@ -2009,7 +2009,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9008201768610948239">Ignore</translation>
 <translation id="9012585441087414258">Protects against sites, downloads and extensions that are known to be dangerous. If a page does something suspicious, URLs and bits of page content are sent to Google Safe Browsing.</translation>
 <translation id="9013605037177245304">Turn on notifications</translation>
-<translation id="9013632079355478927">Hide Reader Mode</translation>
 <translation id="9029650858822697271">You were signed out</translation>
 <translation id="9032405509996909363">Confirm delete browsing data</translation>
 <translation id="9039373489628511875">Bandwidth</translation>

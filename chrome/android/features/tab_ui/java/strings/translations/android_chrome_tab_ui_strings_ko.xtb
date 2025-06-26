@@ -122,14 +122,12 @@
 <translation id="6054741997831917303">상품 가격이 최근 인하됨, 기존 가격: <ph name="PREVIOUS_PRICE" />, 인하된 가격: <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">이제 가장 최근에 사용한 사본을 제외한 모든 중복 탭도 보관처리됩니다.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{그룹을 새 창으로 이동}other{그룹을 다른 창으로 이동}}</translation>
-<translation id="6193448654517602979">탭 선택</translation>
 <translation id="6220820548421939212">예. 동의합니다.</translation>
 <translation id="6228793724645064692">(매장 평점)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{새 그룹에 탭 추가}other{새 그룹에 탭 추가}}</translation>
 <translation id="6333260925957816943">매장에 관한 정보</translation>
 <translation id="6381032505162537930">여기에서 탭 그룹을 확인할 수 있습니다</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개 그룹 해제}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개 그룹 해제}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
 <translation id="6499296376514955580">공유 탭 그룹 변경사항의 알림이 닫힘</translation>
 <translation id="6527303717912515753">공유</translation>
 <translation id="6549021453810473782">매장 정보 보기</translation>

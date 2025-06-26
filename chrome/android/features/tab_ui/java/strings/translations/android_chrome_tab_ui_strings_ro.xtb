@@ -122,14 +122,12 @@
 <translation id="6054741997831917303">Prețul articolului a scăzut recent de la <ph name="PREVIOUS_PRICE" /> la <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Toate filele dublură vor fi acum arhivate, cu excepția copiei folosite cel mai recent.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mută grupul într-o fereastră nouă}few{Mută grupul în altă fereastră}other{Mută grupul în altă fereastră}}</translation>
-<translation id="6193448654517602979">Selectează file</translation>
 <translation id="6220820548421939212">Da. Accept</translation>
 <translation id="6228793724645064692">(evaluare a magazinului)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Adaugă fila într-un grup nou}few{Adaugă filele într-un grup nou}other{Adaugă filele într-un grup nou}}</translation>
 <translation id="6333260925957816943">Informații despre magazin</translation>
 <translation id="6381032505162537930">Aici vei vedea grupurile de file</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Anulează <ph name="TABS_COUNT_ONE" /> filă selectată}few{Anulează <ph name="TABS_COUNT_MANY" /> file selectate}other{Anulează <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
 <translation id="6499296376514955580">Notificare privind modificările grupului de file comun, închisă</translation>
 <translation id="6527303717912515753">Trimite</translation>
 <translation id="6549021453810473782">Vezi informații despre magazin</translation>

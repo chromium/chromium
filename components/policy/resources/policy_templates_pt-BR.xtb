@@ -5284,11 +5284,6 @@ Após a configuração inicial, os usuários poderão ativar ou desativar os Ser
 <translation id="468822697351680932">Usar a política de lista de sites do Internet Explorer como fonte de regras</translation>
 <translation id="4693190628432874457">Ativar relatórios de localização do dispositivo</translation>
 <translation id="4693779768620889402">Destinos baseados em extensões</translation>
-<translation id="4693861751987983072">Se a política for ativada, o <ph name="PRODUCT_OS_NAME" /> vai informar métricas de uso e dados de diagnóstico, incluindo relatórios de erros, para o Google. Se a política for desativada, as informações de métrica e dados de diagnóstico serão desativados.
-
-Nos dispositivos gerenciados, ela é ativada por padrão e envia métricas ao Google.
-
-No caso de dispositivos não gerenciados, o usuário pode decidir enviar as métricas ou não.</translation>
 <translation id="4694138212536142867">Ativar relatórios sobre o status de hardware do dispositivo</translation>
 <translation id="4697581738794063407">Controlar o recurso de filtro do parâmetro de URL</translation>
 <translation id="4698895924806859508">Não informar eventos de rede</translation>
@@ -11307,11 +11302,6 @@ ID dessa configuração. Além disso, todas as políticas de ambiente de execuç
 para essa VM. É possível instalar várias VMs de uma configuração no mesmo dispositivo.</translation>
 <translation id="8685018726115727387">Desativar a importação do histórico de navegação na primeira execução</translation>
 <translation id="8685024486845674965">O aviso de proteção de senha é acionado pela reutilização da senha</translation>
-<translation id="8685680544554917389">Se a política for definida como verdadeira, o <ph name="PRODUCT_NAME" /> poderá tocar mídia automaticamente. Se a política for definida como falsa, o <ph name="PRODUCT_NAME" /> será impedido de tocar mídia automaticamente.
-
-       Por padrão, o <ph name="PRODUCT_NAME" /> não toca mídia automaticamente, mas você pode usar a política <ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME" /> para mudar essa configuração para padrões de URL específicos.
-
-      Se a política for modificada enquanto o <ph name="PRODUCT_NAME" /> estiver em execução, ela se aplicará apenas a guias abertas recentemente.</translation>
 <translation id="8685748277907759932">Impedir que os usuários usem o recurso Pesquisa por toque</translation>
 <translation id="8686700500128191717">Ativar relatórios sobre os usuários do dispositivo</translation>
 <translation id="8687958770985542440">Reativar API Web Components v0 até o M84.</translation>

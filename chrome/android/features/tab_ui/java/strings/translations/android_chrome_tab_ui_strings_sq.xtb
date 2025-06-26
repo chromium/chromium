@@ -122,14 +122,12 @@
 <translation id="6054741997831917303">Çmimi i artikullit ra së fundi nga <ph name="PREVIOUS_PRICE" /> në <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Të gjitha skedat dublikata tani do të arkivohen gjithashtu, me përjashtim të kopjes së përdorur më së fundi.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Zhvendose grupin në dritaren e re}other{Zhvendose grupin në një dritare tjetër}}</translation>
-<translation id="6193448654517602979">Zgjidh skedat</translation>
 <translation id="6220820548421939212">Po. Jam dakord</translation>
 <translation id="6228793724645064692">(vlerësimi i dyqanit)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Shto skedën te grupi i ri}other{Shto skedat te grupi i ri}}</translation>
 <translation id="6333260925957816943">Informacioni për këtë dyqan</translation>
 <translation id="6381032505162537930">Grupet e skedave do t'i gjesh këtu</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Anulo grupimin për <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Anulo grupimin për <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
 <translation id="6499296376514955580">Njoftimi për ndryshimet në grupin e ndarë të skedave u mbyll</translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="6549021453810473782">Shiko informacionet për dyqanin</translation>

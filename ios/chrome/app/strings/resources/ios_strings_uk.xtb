@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Режим розділеного екрана</translation>
 <translation id="1219674500290482172">Неможливо під’єднатися до Інтернету.</translation>
+<translation id="1223498995510244364">Підсумувати</translation>
 <translation id="1227113644794103810">Неактивні вкладки</translation>
 <translation id="1231733316453485619">Увімкнути синхронізацію?</translation>
 <translation id="1253032109800629289">Сховати пропозицію "Отримувати сповіщення про відстеження цін"</translation>
@@ -834,6 +835,7 @@
 <translation id="446314443268698477">Здійснюйте покупки, перекладайте тексти й визначайте об’єкти, які бачите у видошукачі камери або на фотографіях.</translation>
 <translation id="4469324811108161144">Нотатки можуть містити щонайбільше стільки символів: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4471472356135655769">Не вдається експортувати паролі</translation>
+<translation id="4472575034687746823">Початок роботи</translation>
 <translation id="4473608001744970767">Сховати опцію "Відстежувати ціну"</translation>
 <translation id="4474142134969976028">Немає результатів</translation>
 <translation id="4474494258097106883">Створено для iPhone</translation>
@@ -1252,7 +1254,6 @@
 <translation id="6140600850356225166">Запитувати дозвіл відкривати посилання з інших додатків в анонімному режимі</translation>
 <translation id="6140948187512243695">Показати докладні дані</translation>
 <translation id="6144589619057374135">Відкрити URL-адресу ${url} в анонімному режимі</translation>
-<translation id="6145820728009071857">Показати в режимі зручного читання</translation>
 <translation id="6147279996212084542">Пояснити</translation>
 <translation id="6151006591088192882">Розблокувати анонімні вкладки за допомогою такого методу автентифікації: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Неактивні</translation>
@@ -1520,7 +1521,6 @@
 <translation id="7102005569666697658">Завантаження файлу… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Налаштування → Способи оплати</translation>
 <translation id="7108338896283013870">Сховати</translation>
-<translation id="7115051913071512405">Спробувати</translation>
 <translation id="7128693485119315539">Адміністратор організації зможе бачити дані вебперегляду (зокрема історію і паролі) у вашому керованому обліковому записі й керувати ними.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
@@ -2009,7 +2009,6 @@
 <translation id="9008201768610948239">Ігнорувати</translation>
 <translation id="9012585441087414258">Захищає від відомих небезпечних веб-сайтів, завантажень і розширень. Якщо сторінка виконує підозрілі дії, URL-адреси й фрагменти контенту надсилаються в Безпечний перегляд Google.</translation>
 <translation id="9013605037177245304">Увімкнути сповіщення</translation>
-<translation id="9013632079355478927">Сховати режим читання</translation>
 <translation id="9029650858822697271">Ви вийшли з облікового запису</translation>
 <translation id="9032405509996909363">Підтвердити видалення даних вебперегляду</translation>
 <translation id="9039373489628511875">Трафік</translation>

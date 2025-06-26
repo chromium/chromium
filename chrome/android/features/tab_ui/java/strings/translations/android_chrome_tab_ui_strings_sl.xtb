@@ -122,14 +122,12 @@
 <translation id="6054741997831917303">Cena tega izdelka je bila nedavno <ph name="PREVIOUS_PRICE" />, zdaj je <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Vsi podvojeni zavihki, razen nazadnje uporabljene kopije, bodo zdaj tudi arhivirani.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Premik skupine v novo okno}one{Premik skupine v drugo okno}two{Premik skupine v drugo okno}few{Premik skupine v drugo okno}other{Premik skupine v drugo okno}}</translation>
-<translation id="6193448654517602979">Izberite zavihke</translation>
 <translation id="6220820548421939212">Da. Sem za.</translation>
 <translation id="6228793724645064692">(ocena trgovine)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Dodaj zavihek novi skupini}one{Dodaj zavihke novi skupini}two{Dodaj zavihke novi skupini}few{Dodaj zavihke novi skupini}other{Dodaj zavihke novi skupini}}</translation>
 <translation id="6333260925957816943">Informacije o tej trgovini</translation>
 <translation id="6381032505162537930">Skupine zavihkov bodo prikazane tukaj</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Razdruži <ph name="TABS_COUNT_ONE" /> izbrani zavihek}one{Razdruži <ph name="TABS_COUNT_MANY" /> izbrani zavihek}two{Razdruži <ph name="TABS_COUNT_MANY" /> izbrana zavihka}few{Razdruži <ph name="TABS_COUNT_MANY" /> izbrane zavihke}other{Razdruži <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> zavihek}one{<ph name="TABS_COUNT_MANY" /> zavihek}two{<ph name="TABS_COUNT_MANY" /> zavihka}few{<ph name="TABS_COUNT_MANY" /> zavihki}other{<ph name="TABS_COUNT_MANY" /> zavihkov}}</translation>
 <translation id="6499296376514955580">Obvestilo o spremembah deljene skupine zavihkov je zaprto</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
 <translation id="6549021453810473782">Ogled podatkov o trgovini</translation>

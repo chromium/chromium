@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Skiptur skjár</translation>
 <translation id="1219674500290482172">Ekki er hægt að tengjast internetinu.</translation>
+<translation id="1223498995510244364">Samantekt</translation>
 <translation id="1227113644794103810">Óvirkir flipar</translation>
 <translation id="1231733316453485619">Kveikja á samstillingu?</translation>
 <translation id="1253032109800629289">Fela „Fá tilkynningar fyrir verðrakningu“</translation>
@@ -834,6 +835,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="446314443268698477">Notaðu myndavélina þína eða myndirnar til að versla, þýða og bera kennsl á það sem þú sérð.</translation>
 <translation id="4469324811108161144">Glósur geta verið allt að <ph name="CHARACTER_LIMIT" /> stafir að lengd.</translation>
 <translation id="4471472356135655769">Ekki tókst að flytja út aðgangsorð</translation>
+<translation id="4472575034687746823">Hefjast handa</translation>
 <translation id="4473608001744970767">Fela „Vakta verð“</translation>
 <translation id="4474142134969976028">Engar niðurstöður fundust</translation>
 <translation id="4474494258097106883">Sérhannað fyrir iPhone</translation>
@@ -1252,7 +1254,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6140600850356225166">Biðja um að opna tengla úr öðrum forritum í huliðsstillingu</translation>
 <translation id="6140948187512243695">Sýna upplýsingar</translation>
 <translation id="6144589619057374135">Opna ${url} í huliðsstillingu</translation>
-<translation id="6145820728009071857">Sýna lestrarstillingu</translation>
 <translation id="6147279996212084542">Útskýring</translation>
 <translation id="6151006591088192882">Taka huliðsflipa úr lás með <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Óvirkt</translation>
@@ -1520,7 +1521,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7102005569666697658">Sækir… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Valmynd → Stillingar → Greiðslumátar</translation>
 <translation id="7108338896283013870">Fela</translation>
-<translation id="7115051913071512405">Prófa</translation>
 <translation id="7128693485119315539">Fyrirtækið þitt þarf hugsanlega að skoða og stjórna vefskoðunargögnum sem tengjast stýrða reikningnum þínum, t.d. vafraferli og aðgangsorðum.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Myndavélin er ekki tiltæk</translation>
@@ -2009,7 +2009,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9008201768610948239">Hunsa</translation>
 <translation id="9012585441087414258">Vernda þig gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg. Ef grunsamleg virkni greinist á síðu eru vefslóðir og hlutar af innihaldi síðna sendir í örugga vefskoðun Google.</translation>
 <translation id="9013605037177245304">Kveikja á tilkynningum</translation>
-<translation id="9013632079355478927">Fela lesstillingu</translation>
 <translation id="9029650858822697271">Þú skráðist út</translation>
 <translation id="9032405509996909363">Staðfesta eyðingu vefskoðunargagna</translation>
 <translation id="9039373489628511875">Bandvídd</translation>

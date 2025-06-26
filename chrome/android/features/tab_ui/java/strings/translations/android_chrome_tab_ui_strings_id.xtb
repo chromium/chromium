@@ -122,14 +122,12 @@
 <translation id="6054741997831917303">Harga item ini baru-baru ini turun dari <ph name="PREVIOUS_PRICE" /> ke <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Semua tab duplikat kini juga akan diarsipkan, kecuali salinan yang terakhir digunakan.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Pindahkan grup ke jendela baru}other{Pindahkan grup ke jendela lain}}</translation>
-<translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6220820548421939212">Ya. Izinkan</translation>
 <translation id="6228793724645064692">(rating toko)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tambahkan tab ke grup baru}other{Tambahkan tab ke grup baru}}</translation>
 <translation id="6333260925957816943">Informasi tentang toko ini</translation>
 <translation id="6381032505162537930">Anda akan menemukan grup tab di sini</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Pisahkan <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Pisahkan <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="6499296376514955580">Pemberitahuan terkait perubahan Grup Tab Bersama ditutup</translation>
 <translation id="6527303717912515753">Bagikan</translation>
 <translation id="6549021453810473782">Lihat info toko</translation>

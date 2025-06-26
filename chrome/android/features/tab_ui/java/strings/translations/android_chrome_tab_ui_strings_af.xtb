@@ -122,14 +122,12 @@
 <translation id="6054741997831917303">Hierdie item se prys het onlangs van <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /> gedaal</translation>
 <translation id="6109251075362363230">Alle duplikaatoortjies sal nou ook geargiveer word, met die uitsondering van die mees onlangse kopie.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Skuif groep na nuwe venster}other{Skuif groep na ’n ander venster}}</translation>
-<translation id="6193448654517602979">Kies oortjies</translation>
 <translation id="6220820548421939212">Ja. Ek is in</translation>
 <translation id="6228793724645064692">(winkelgradering)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Voeg oortjie by nuwe groep}other{Voeg oortjies by nuwe groep}}</translation>
 <translation id="6333260925957816943">Inligting oor hierdie winkel</translation>
 <translation id="6381032505162537930">Jy sal jou oortjiegroepe hier kry</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ongroepeer <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie}other{Ongroepeer <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> oortjie}other{<ph name="TABS_COUNT_MANY" /> oortjies}}</translation>
 <translation id="6499296376514955580">Kennisgewing oor Gedeelde Oortjiegroep-veranderinge is toegemaak</translation>
 <translation id="6527303717912515753">Deel</translation>
 <translation id="6549021453810473782">Bekyk winkelinligting</translation>

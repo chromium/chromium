@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">ಸಂಜೆ 5:30</translation>
 <translation id="1217294226280635614">ವಿಭಜಿತ ವೀಕ್ಷಣೆ</translation>
 <translation id="1219674500290482172">ಇಂಟರ್ನೆಟ್‌ ಸಂಪರ್ಕ ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
+<translation id="1223498995510244364">ಸಾರಾಂಶಗೊಳಿಸಿ</translation>
 <translation id="1227113644794103810">ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="1231733316453485619">ಸಿಂಕ್ ಆನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="1253032109800629289">"ದರ ಟ್ರ್ಯಾಕಿಂಗ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ" ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
@@ -834,6 +835,7 @@
 <translation id="446314443268698477">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಅಥವಾ ಫೋಟೋಗಳನ್ನು ಬಳಸಿಕೊಂಡು ನೀವು ಏನನ್ನು ನೋಡುತ್ತೀರಿ ಎಂಬುದನ್ನು ಶಾಪಿಂಗ್ ಮಾಡಿ, ಅನುವಾದಿಸಿ ಮತ್ತು ಗುರುತಿಸಿ.</translation>
 <translation id="4469324811108161144">ಟಿಪ್ಪಣಿಗಳು ಗರಿಷ್ಠ <ph name="CHARACTER_LIMIT" /> ಅಕ್ಷರಗಳನ್ನು ಉಳಿಸಬಲ್ಲವು.</translation>
 <translation id="4471472356135655769">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="4472575034687746823">ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4473608001744970767">ಬೆಲೆ ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="4474142134969976028">ಹೊಂದಾಣಿಕೆಯಾಗುವ ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="4474494258097106883">ನಿಮ್ಮ iPhone ಗಾಗಿ ನಿರ್ಮಿಸಲಾಗಿದೆ</translation>
@@ -1252,7 +1254,6 @@
 <translation id="6140600850356225166">ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ಇತರ ಆ್ಯಪ್‌ಗಳಿಂದ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಲು ಕೇಳಿ</translation>
 <translation id="6140948187512243695">ವಿವರಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6144589619057374135">${url} ಅನ್ನು ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
-<translation id="6145820728009071857">ರೀಡರ್ ಮೋಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6147279996212084542">ವಿವರಿಸಿ</translation>
 <translation id="6151006591088192882"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ಬಳಸಿಕೊಂಡು ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="6152340033632117531">ನಿಷ್ಕ್ರಿಯವಾಗಿದೆ</translation>
@@ -1520,7 +1521,6 @@
 <translation id="7102005569666697658">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">ಮೆನು → ಸೆಟ್ಟಿಂಗ್‌ಗಳು → ಪಾವತಿ ವಿಧಾನಗಳು</translation>
 <translation id="7108338896283013870">ಮರೆಮಾಡಿ</translation>
-<translation id="7115051913071512405">ಇದನ್ನು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7128693485119315539">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್‌ಗಳಂತಹ ನಿಮ್ಮ ನಿರ್ವಹಿಸಲಾದ ಖಾತೆಗೆ ಸಂಬಂಧಿಸಿರುವ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನೋಡಬೇಕಾಗಬಹುದು ಮತ್ತು ನಿರ್ವಹಿಸಬೇಕಾಗಬಹುದು.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">ಕ್ಯಾಮರಾ ಲಭ್ಯವಿಲ್ಲ</translation>
@@ -2009,7 +2009,6 @@
 <translation id="9008201768610948239">ನಿರ್ಲಕ್ಷಿಸಿ</translation>
 <translation id="9012585441087414258">ಅಪಾಯಕಾರಿ ಎಂದು ತಿಳಿದಿರುವ ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ವಿರುದ್ಧ ರಕ್ಷಿಸುತ್ತದೆ. ಯಾವುದೇ ಪುಟವು ಅನುಮಾನಾಸ್ಪದವಾಗಿದ್ದರೆ, URL ಗಳು, ಪುಟದ ಕಂಟೆಂಟ್ ಬಿಟ್‌ಗಳನ್ನು Google Safe Browsing ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="9013605037177245304">ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಿ</translation>
-<translation id="9013632079355478927">ರೀಡರ್ ಮೋಡ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="9029650858822697271">ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="9032405509996909363">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾ ಅಳಿಸುವುದನ್ನು ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="9039373489628511875">ಬ್ಯಾಂಡ್‌ವಿಡ್ತ್</translation>

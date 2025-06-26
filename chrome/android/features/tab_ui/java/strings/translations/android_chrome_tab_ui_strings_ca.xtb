@@ -122,14 +122,12 @@
 <translation id="6054741997831917303">El preu d'aquest article fa poc ha baixat de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Ara també s'arxivaran totes les pestanyes duplicades, a excepció de la còpia que s'hagi utilitzat més recentment.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mou el grup a una finestra nova}other{Mou el grup a una altra finestra}}</translation>
-<translation id="6193448654517602979">Selecciona pestanyes</translation>
 <translation id="6220820548421939212">Sí, d’acord</translation>
 <translation id="6228793724645064692">(puntuació de la botiga)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Afegeix una pestanya al grup nou}other{Afegeix pestanyes al grup nou}}</translation>
 <translation id="6333260925957816943">Informació sobre aquesta botiga</translation>
 <translation id="6381032505162537930">Trobaràs els teus grups de pestanyes aquí</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupa la pestanya seleccionada (<ph name="TABS_COUNT_ONE" />)}other{Desagrupa les <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya}other{<ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
 <translation id="6499296376514955580">Avís sobre els canvis en el grup de pestanyes compartit tancat</translation>
 <translation id="6527303717912515753">Comparteix</translation>
 <translation id="6549021453810473782">Consulta la informació de la botiga</translation>

@@ -122,14 +122,12 @@
 <translation id="6054741997831917303">Mức giá của mặt hàng này gần đây đã giảm từ <ph name="PREVIOUS_PRICE" /> xuống còn <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Giờ đây, tất cả các thẻ trùng lặp cũng sẽ được lưu trữ, ngoại trừ thẻ trùng lặp được sử dụng gần đây nhất.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Di chuyển nhóm sang cửa sổ mới}other{Di chuyển nhóm sang cửa sổ khác}}</translation>
-<translation id="6193448654517602979">Chọn các thẻ</translation>
 <translation id="6220820548421939212">Có. Tôi đồng ý</translation>
 <translation id="6228793724645064692">(điểm xếp hạng cửa hàng)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Thêm thẻ vào nhóm mới}other{Thêm các thẻ vào nhóm mới}}</translation>
 <translation id="6333260925957816943">Thông tin về cửa hàng này</translation>
 <translation id="6381032505162537930">Bạn sẽ thấy các nhóm thẻ của mình tại đây</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Huỷ nhóm <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Huỷ nhóm <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> thẻ}other{<ph name="TABS_COUNT_MANY" /> thẻ}}</translation>
 <translation id="6499296376514955580">Thông báo về các thay đổi trong Nhóm thẻ được chia sẻ đã đóng</translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="6549021453810473782">Xem thông tin cửa hàng</translation>

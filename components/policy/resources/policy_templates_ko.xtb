@@ -5130,11 +5130,6 @@ SpeculationRules 미리 가져오기가 허용되지 않습니다. 이는 기존
 <translation id="468822697351680932">Internet Explorer SiteList 정책을 규칙 소스로 사용</translation>
 <translation id="4693190628432874457">기기 위치 보고 사용 설정</translation>
 <translation id="4693779768620889402">확장 기반 목적지</translation>
-<translation id="4693861751987983072">정책을 사용 설정하면 <ph name="PRODUCT_OS_NAME" />에서 비정상 종료 보고서 등 사용 측정항목과 진단 데이터를 Google에 보고합니다. 정책을 사용 중지하면 측정항목 및 진단 데이터 보고가 사용 중지됩니다.
-
-관리 기기의 경우 이 정책은 기본적으로 사용 설정되며 측정항목이 Google에 전송됩니다.
-
-관리되지 않는 기기의 경우 사용자가 측정항목 전송 여부를 결정할 수 있습니다.</translation>
 <translation id="4694138212536142867">기기 하드웨어 상태 보고 사용 설정</translation>
 <translation id="4697581738794063407">URL 매개변수 필터링 기능 제어</translation>
 <translation id="4698895924806859508">네트워크 이벤트 보고 안 함</translation>
@@ -10984,11 +10979,6 @@ JavaScript 최적화를 사용 중지하면(이 정책의 값을 2로 설정) <p
 이 정책은 구성 ID를 VM 구성에 매핑합니다. 구성에서 VM이 설치되면 해당 구성 ID와 영구적으로 연결되며, 해당 구성의 모든 런타임 정책이 VM에 적용됩니다. 같은 기기에 있는 동일한 구성에서 여러 VM을 설치할 수 있습니다.</translation>
 <translation id="8685018726115727387">처음 실행 시 방문 기록 가져오기 사용 중지</translation>
 <translation id="8685024486845674965">비밀번호가 재사용되어 비밀번호 보호 경고가 실행됨</translation>
-<translation id="8685680544554917389">정책을 True로 설정하면 <ph name="PRODUCT_NAME" />의 미디어 자동 재생이 허용됩니다. 정책을 False로 설정하면 <ph name="PRODUCT_NAME" />의 미디어 자동 재생이 중지됩니다.
-
-       기본적으로 <ph name="PRODUCT_NAME" />에서는 미디어를 자동 재생하지 않습니다. 하지만 특정 URL 패턴에 <ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME" /> 정책을 사용하여 이 설정을 변경할 수 있습니다.
-
-      <ph name="PRODUCT_NAME" />을 실행하는 동안 정책을 변경하면 새로 열린 탭에만 적용됩니다.</translation>
 <translation id="8685748277907759932">사용자가 터치하여 검색을 사용하지 못하도록 차단</translation>
 <translation id="8686700500128191717">기기 사용자 보고 사용 설정</translation>
 <translation id="8687958770985542440">M84까지 Web Components v0 API를 다시 사용 설정합니다.</translation>

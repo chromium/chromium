@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">15.30</translation>
 <translation id="1217294226280635614">Delad skärm</translation>
 <translation id="1219674500290482172">Det går inte att ansluta till internet.</translation>
+<translation id="1223498995510244364">Sammanfatta</translation>
 <translation id="1227113644794103810">Inaktiva flikar</translation>
 <translation id="1231733316453485619">Vill du aktivera synkronisering?</translation>
 <translation id="1253032109800629289">Dölj Få aviseringar om prisbevakning</translation>
@@ -834,6 +835,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="446314443268698477">Köp, översätt och identifiera det du ser med kameran eller foton.</translation>
 <translation id="4469324811108161144">Ledtrådar kan innehålla upp till <ph name="CHARACTER_LIMIT" /> tecken.</translation>
 <translation id="4471472356135655769">Det gick inte att exportera lösenord</translation>
+<translation id="4472575034687746823">Kom igång</translation>
 <translation id="4473608001744970767">Dölj Bevaka pris</translation>
 <translation id="4474142134969976028">Det finns inga matchande resultat</translation>
 <translation id="4474494258097106883">Byggd för iPhone</translation>
@@ -1252,7 +1254,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6140600850356225166">Be om att öppna länkar från andra appar i inkognitoläge</translation>
 <translation id="6140948187512243695">Visa detaljerad information</translation>
 <translation id="6144589619057374135">Öppna ${url} i inkognitoläget</translation>
-<translation id="6145820728009071857">Visa läsarläge</translation>
 <translation id="6147279996212084542">Förklara</translation>
 <translation id="6151006591088192882">Lås upp inkognitoflikar med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inaktivera</translation>
@@ -1520,7 +1521,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7102005569666697658">Laddar ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meny → Inställningar → Betalningsmetod</translation>
 <translation id="7108338896283013870">Dölj</translation>
-<translation id="7115051913071512405">Testa själv</translation>
 <translation id="7128693485119315539">Organisationen behöver kanske se och hantera webbinformation som är kopplad till ditt hanterade konto, till exempel webbhistorik och lösenord.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kameran är inte tillgänglig</translation>
@@ -2009,7 +2009,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9008201768610948239">Ignorera</translation>
 <translation id="9012585441087414258">Skyddar mot skadliga webbplatser, nedladdningar och tillägg. Om något misstänkt händer på en sida skickas webbadresser och delar av sidinnehållet till Google Säker webbsökning.</translation>
 <translation id="9013605037177245304">Aktivera aviseringar</translation>
-<translation id="9013632079355478927">Dölj läsarläge</translation>
 <translation id="9029650858822697271">Du loggades ut</translation>
 <translation id="9032405509996909363">Bekräfta att du vill radera webbinformation</translation>
 <translation id="9039373489628511875">Bandbredd</translation>

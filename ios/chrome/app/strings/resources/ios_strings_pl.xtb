@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Widok dzielony</translation>
 <translation id="1219674500290482172">Nie można połączyć się z internetem.</translation>
+<translation id="1223498995510244364">Streść</translation>
 <translation id="1227113644794103810">Nieaktywne karty</translation>
 <translation id="1231733316453485619">Włączyć synchronizację?</translation>
 <translation id="1253032109800629289">Ukryj moduł „Otrzymuj powiadomienia ze śledzenia cen”</translation>
@@ -835,6 +836,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="446314443268698477">Kupuj, tłumacz i rozpoznawaj to, co widzisz na obrazie z aparatu lub na zdjęciach.</translation>
 <translation id="4469324811108161144">Limit znaków w notatce wynosi <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4471472356135655769">Nie można wyeksportować haseł</translation>
+<translation id="4472575034687746823">Rozpocznij</translation>
 <translation id="4473608001744970767">Ukryj opcję Śledzenie cen</translation>
 <translation id="4474142134969976028">Brak pasujących wyników</translation>
 <translation id="4474494258097106883">Dla Twojego iPhone'a</translation>
@@ -1253,7 +1255,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6140600850356225166">Pytaj, czy otwierać linki z innych aplikacji w trybie incognito</translation>
 <translation id="6140948187512243695">Pokaż szczegóły</translation>
 <translation id="6144589619057374135">Otwórz ${url} w trybie incognito</translation>
-<translation id="6145820728009071857">Pokaż tryb czytnika</translation>
 <translation id="6147279996212084542">Wyjaśnij</translation>
 <translation id="6151006591088192882">Odblokuj karty incognito za pomocą <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Nieaktywne</translation>
@@ -1521,7 +1522,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7102005569666697658">Pobieram… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Ustawienia → Formy płatności</translation>
 <translation id="7108338896283013870">Ukryj</translation>
-<translation id="7115051913071512405">Wypróbuj</translation>
 <translation id="7128693485119315539">Twoja organizacja może potrzebować dostępu do danych przeglądania powiązanych z Twoim kontem zarządzanym, takich jak historia przeglądania i hasła, oraz chcieć nimi zarządzać.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Aparat jest niedostępny</translation>
@@ -2010,7 +2010,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9008201768610948239">Ignoruj</translation>
 <translation id="9012585441087414258">Chroni przed stronami, pobieranymi plikami i rozszerzeniami, o których wiadomo, że są niebezpieczne. Jeśli strona robi coś podejrzanego, adresy URL i fragmenty jej zawartości są wysyłane do usługi Bezpieczne przeglądanie Google.</translation>
 <translation id="9013605037177245304">Włącz powiadomienia</translation>
-<translation id="9013632079355478927">Ukryj tryb czytnika</translation>
 <translation id="9029650858822697271">Nastąpiło wylogowanie</translation>
 <translation id="9032405509996909363">Potwierdź usunięcie danych przeglądania</translation>
 <translation id="9039373489628511875">Przepustowość</translation>

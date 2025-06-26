@@ -90,6 +90,7 @@ Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</t
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="2986402782150919988">Agregar favoritos a Chrome</translation>
 <translation id="3030414234702425231">Como estás saliendo de una cuenta que administra <ph name="SIGNOUT_MANAGED_DOMAIN" />, tus datos de Chrome se borrarán de este dispositivo, pero permanecerán en tu Cuenta de Google.</translation>
+<translation id="3042447686908081308">Importar a Chrome</translation>
 <translation id="3051521853355903257">Administrar contraseñas en Chrome</translation>
 <translation id="309672519329227863">Accede a tus contraseñas de Chrome y más en otras apps.</translation>
 <translation id="3109170945534582468">Acciones de Chrome</translation>
@@ -337,6 +338,7 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="9176561303811134420">Administrar las formas de pago en Chrome</translation>
 <translation id="9181628561061032322">Abre las pestañas recientes de Chrome.</translation>
 <translation id="948597495737267756">Abre la página del Historial de Chrome.</translation>
+<translation id="954347330803595209">Importa tus datos para usar tus contraseñas, historial, favoritos y tarjetas de crédito en Chrome</translation>
 <translation id="97300214378190234">Usa Chrome cada vez que presiones vínculos en otras apps.</translation>
 <translation id="997929539742564806">Accede rápidamente a apps y sitios con el autocompletado de contraseñas y llaves de acceso de Chrome</translation>
 <translation id="998677222109959694">Administrar la configuración de Chrome</translation>

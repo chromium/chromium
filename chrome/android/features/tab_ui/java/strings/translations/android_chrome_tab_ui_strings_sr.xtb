@@ -123,14 +123,12 @@
 <translation id="6054741997831917303">Цена ове ставке је недавно снижена са <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Све дупликате картица ћемо сада архивирати, изузев последње коришћене копије.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Премести групу у нови прозор}one{Премести групу у други прозор}few{Премести групу у други прозор}other{Премести групу у други прозор}}</translation>
-<translation id="6193448654517602979">Изаберите картице</translation>
 <translation id="6220820548421939212">Да. Може</translation>
 <translation id="6228793724645064692">(оцена продавнице)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Додај картицу у нову групу}one{Додај картице у нову групу}few{Додај картице у нову групу}other{Додај картице у нову групу}}</translation>
 <translation id="6333260925957816943">Информације о овој продавници</translation>
 <translation id="6381032505162537930">Овде ћете пронаћи групе картица</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Опозовите груписање за <ph name="TABS_COUNT_ONE" /> изабрану картицу}one{Опозовите груписање за <ph name="TABS_COUNT_MANY" /> изабрану картицу}few{Опозовите груписање за <ph name="TABS_COUNT_MANY" /> изабране картице}other{Опозовите груписање за <ph name="TABS_COUNT_MANY" /> изабраних картица}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картица}one{<ph name="TABS_COUNT_MANY" /> картица}few{<ph name="TABS_COUNT_MANY" /> картице}other{<ph name="TABS_COUNT_MANY" /> картица}}</translation>
 <translation id="6499296376514955580">Обавештење о променама у вези са дељеном групом картица је затворено</translation>
 <translation id="6527303717912515753">Дели</translation>
 <translation id="6549021453810473782">Прикажи детаље о продавници</translation>

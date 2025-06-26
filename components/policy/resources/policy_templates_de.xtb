@@ -5059,11 +5059,6 @@ Nach der Ersteinrichtung können Nutzer die Standortdienste von Google flexibel 
 <translation id="468822697351680932">SiteList-Richtlinie in Internet Explorer als Quelle für Regeln verwenden</translation>
 <translation id="4693190628432874457">Melden des Standorts auf Geräten aktivieren</translation>
 <translation id="4693779768620889402">Erweiterungsbasierte Ziele</translation>
-<translation id="4693861751987983072">Wenn die Richtlinie aktiviert ist, sendet <ph name="PRODUCT_OS_NAME" /> Messwerte zur Nutzung und Diagnosedaten wie Absturzberichte an Google. Ist sie deaktiviert, werden Messwerte und Diagnosedaten nicht gesendet.
-
-Bei verwalteten Geräten ist diese Richtlinie standardmäßig aktiviert und sendet Messwerte an Google.
-
-Bei nicht verwalteten Geräten kann der Nutzer entscheiden, ob Messwerte gesendet werden sollen.</translation>
 <translation id="4694138212536142867">Melden des Hardwarestatus auf Geräten aktivieren</translation>
 <translation id="4697581738794063407">Funktion zum Filtern von URL-Parametern konfigurieren</translation>
 <translation id="4698895924806859508">Keine Netzwerkereignisse melden</translation>
@@ -10821,11 +10816,6 @@ Ist diese Richtlinie nicht konfiguriert, sind JavaScript-Optimierungen aktiviert
 Die Richtlinie ist eine Zuordnung von Konfigurations-IDs zu VM-Konfigurationen. Wenn eine VM aus einer Konfiguration installiert wird, wird sie dauerhaft mit dieser Konfigurations-ID verknüpft und alle Laufzeitrichtlinien in der Konfiguration gelten für diese VM. Es können mehrere VMs aus derselben Konfiguration auf demselben Gerät installiert werden.</translation>
 <translation id="8685018726115727387">Import des Browserverlaufs bei der ersten Ausführung deaktivieren</translation>
 <translation id="8685024486845674965">Die Passwortschutzwarnung wird durch die Wiederverwendung eines Passworts ausgelöst</translation>
-<translation id="8685680544554917389">Wenn die Richtlinie auf "True" gesetzt ist, kann <ph name="PRODUCT_NAME" /> Medien automatisch abspielen. Wenn die Richtlinie auf "False" gesetzt ist, kann <ph name="PRODUCT_NAME" /> Medien nicht mehr automatisch abspielen.
-
-       Standardmäßig spielt <ph name="PRODUCT_NAME" /> Medien nicht automatisch ab. Aber für bestimmte URL-Muster kannst du diese Einstellung über die Richtlinie "<ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME" />" ändern.
-
-      Wird die Richtlinie während der Ausführung von <ph name="PRODUCT_NAME" /> geändert, wird sie nur auf neu geöffnete Tabs angewendet.</translation>
 <translation id="8685748277907759932">Verhindern, dass Nutzer „Zum Suchen antippen“ verwenden</translation>
 <translation id="8686700500128191717">Melden der Nutzer auf Geräten aktivieren</translation>
 <translation id="8687958770985542440">Damit wird die Web Components v0 API bis M84 wieder aktiviert.</translation>

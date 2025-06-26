@@ -121,15 +121,14 @@
 <translation id="6051432659151380973">Os seus grupos de separadores são guardados automaticamente</translation>
 <translation id="6054741997831917303">O preço deste artigo desceu recentemente de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Agora, todos os separadores duplicados também vão ser arquivados, com exceção da cópia usada mais recentemente.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> item selecionado}other{Fechar <ph name="TABS_COUNT_MANY" /> itens selecionados}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo para nova janela}other{Mover grupo para outra janela}}</translation>
-<translation id="6193448654517602979">Selecione separadores</translation>
 <translation id="6220820548421939212">Sim. Aceito</translation>
 <translation id="6228793724645064692">(classificação da loja)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Adicionar separador a novo grupo}other{Adicionar separadores a novo grupo}}</translation>
 <translation id="6333260925957816943">Informações acerca desta loja</translation>
 <translation id="6381032505162537930">Os seus grupos de separadores vão ser apresentados aqui</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Desagrupar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
 <translation id="6499296376514955580">Aviso sobre as alterações ao grupo de separadores partilhado fechado</translation>
 <translation id="6527303717912515753">Partilhar</translation>
 <translation id="6549021453810473782">Veja as informações da loja</translation>
@@ -156,6 +155,7 @@
 <translation id="7369451074646620503">Grupo de separadores "<ph name="TAB_GROUP_NAME" />" indisponível</translation>
 <translation id="7452985128687107478">Os grupos de separadores são guardados e atualizados automaticamente em todos os seus dispositivos</translation>
 <translation id="747459581954555080">Restaurar tudo</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Restaurar <ph name="TABS_COUNT_ONE" /> item selecionado}other{Restaurar <ph name="TABS_COUNT_MANY" /> itens selecionados}}</translation>
 <translation id="753732157349120914">Switch de separadores</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> crítica da Google}other{<ph name="REVIEWS_COUNT_MANY" /> críticas da Google}}</translation>
 <translation id="7559245342362162951">Mostrar os separadores do grupo numa grelha em ecrã inteiro</translation>

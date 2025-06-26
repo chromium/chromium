@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">বিকেল ৫:৩০</translation>
 <translation id="1217294226280635614">স্প্লিট ভিউ</translation>
 <translation id="1219674500290482172">ইন্টারনেটের সাথে সংযোগ করতে অক্ষম৷</translation>
+<translation id="1223498995510244364">সংক্ষিপ্ত করুন</translation>
 <translation id="1227113644794103810">ইনঅ্যাক্টিভ ট্যাব</translation>
 <translation id="1231733316453485619">সিঙ্ক চালু করবেন?</translation>
 <translation id="1253032109800629289">"প্রাইস ট্র্যাকিং সম্পর্কিত বিজ্ঞপ্তি পান" বিকল্প লুকান</translation>
@@ -834,6 +835,7 @@
 <translation id="446314443268698477">আপনার ক্যামেরা বা ফটোর মাধ্যমে যা দেখছেন তা কিনুন, অনুবাদ ও শনাক্ত করুন।</translation>
 <translation id="4469324811108161144">নোট সর্বাধিক <ph name="CHARACTER_LIMIT" />টি অক্ষর সেভ করতে পারে।</translation>
 <translation id="4471472356135655769">পাসওয়ার্ড এক্সপোর্ট করা যাচ্ছে না</translation>
+<translation id="4472575034687746823">শুরু করা যাক</translation>
 <translation id="4473608001744970767">'দাম ট্র্যাক করুন' বিকল্পটি লুকান</translation>
 <translation id="4474142134969976028">কোনও ফলাফল মিলছে না</translation>
 <translation id="4474494258097106883">আপনার iPhone-এর জন্য তৈরি করা হয়েছে</translation>
@@ -1253,7 +1255,6 @@
 <translation id="6140600850356225166">অন্য অ্যাপ থেকে লিঙ্ক ছদ্মবেশী মোডে খুলতে বলুন</translation>
 <translation id="6140948187512243695">বিশদ বিবরণ দেখান</translation>
 <translation id="6144589619057374135">'ছদ্মবেশী মোডে' ${url} খুলুন</translation>
-<translation id="6145820728009071857">রিডার মোডে দেখুন</translation>
 <translation id="6147279996212084542">ব্যাখ্যা করুন</translation>
 <translation id="6151006591088192882"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> দিয়ে ছদ্মবেশী ট্যাব আনলক করুন</translation>
 <translation id="6152340033632117531">অ্যাক্টিভ নেই</translation>
@@ -1521,7 +1522,6 @@
 <translation id="7102005569666697658"><ph name="FILE_SIZE" /> ডাউনলোড করা হচ্ছে…</translation>
 <translation id="7104701424653979232">মেনু → সেটিংস → পেমেন্ট পদ্ধতি</translation>
 <translation id="7108338896283013870">লুকান</translation>
-<translation id="7115051913071512405">এটি চেষ্টা করে দেখুন</translation>
 <translation id="7128693485119315539">আপনার ম্যানেজ করা অ্যাকাউন্টের সাথে যুক্ত থাকা ব্রাউজ করা ডেটা, আপনার প্রতিষ্ঠান দেখতে চাইতে পারে, যেমন আপনার ব্রাউজিং ইতিহাস ও পাসওয়ার্ড।</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">ক্যামেরা অনুপলব্ধ</translation>
@@ -2010,7 +2010,6 @@
 <translation id="9008201768610948239">উপেক্ষা করুন</translation>
 <translation id="9012585441087414258">বিপজ্জনক হতে পারে এমন সাইট, ডাউনলোড ও এক্সটেনশন থেকে সুরক্ষিত রাখে। কোনও পৃষ্ঠাতে সন্দেহজনক কিছু পাওয়া গেলে, URL ও পৃষ্ঠার কন্টেন্টের কিছু অংশ Google Safe Browsing-এ পাঠানো হয়।</translation>
 <translation id="9013605037177245304">বিজ্ঞপ্তি চালু করুন</translation>
-<translation id="9013632079355478927">রিডার মোড লুকান</translation>
 <translation id="9029650858822697271">আপনি সাইন-আউট হয়ে গেছেন</translation>
 <translation id="9032405509996909363">ব্রাউজ করা ডেটা মোছার বিষয়টি কনফার্ম করুন</translation>
 <translation id="9039373489628511875">ব্যান্ডউইথ</translation>

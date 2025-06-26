@@ -122,14 +122,12 @@
 <translation id="6054741997831917303">Prisen på denne varen falt nylig fra <ph name="PREVIOUS_PRICE" /> til <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Alle duplikatfaner blir nå også arkivert, med unntak av den sist brukte kopien.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Flytt gruppen til et nytt vindu}other{Flytt gruppen til et annet vindu}}</translation>
-<translation id="6193448654517602979">Velg faner</translation>
 <translation id="6220820548421939212">Ja. Jeg er med</translation>
 <translation id="6228793724645064692">(butikkvurdering)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Legg fanen til i en ny gruppe}other{Legg fanene til i en ny gruppe}}</translation>
 <translation id="6333260925957816943">Informasjon om denne butikken</translation>
 <translation id="6381032505162537930">Her finner du fanegruppene dine</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Opphev grupperingen av <ph name="TABS_COUNT_ONE" /> valgt fane}other{Opphev grupperingen av <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
 <translation id="6499296376514955580">Merknad om endringer i delte fanegrupper er lukket</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="6549021453810473782">Se butikkinformasjon</translation>

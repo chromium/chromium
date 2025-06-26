@@ -122,14 +122,12 @@
 <translation id="6054741997831917303">Cijena ove stavke je nedavno pala sa <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Svi duplikati kartica će se sada arhivirati s izuzetkom posljednje korištene kopije.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Premjesti grupu u novi prozor}one{Premjesti grupu u drugi prozor}few{Premjesti grupu u drugi prozor}other{Premjesti grupu u drugi prozor}}</translation>
-<translation id="6193448654517602979">Odaberite kartice</translation>
 <translation id="6220820548421939212">Da. Pristajem</translation>
 <translation id="6228793724645064692">(ocjena trgovine)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Dodaj karticu u novu grupu}one{Dodaj kartice u novu grupu}few{Dodaj kartice u novu grupu}other{Dodaj kartice u novu grupu}}</translation>
 <translation id="6333260925957816943">Informacije o ovoj trgovini</translation>
 <translation id="6381032505162537930">Ovdje ćete pronaći grupe kartica</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Razgrupisanje <ph name="TABS_COUNT_ONE" /> odabrane kartice}one{Razgrupisanje <ph name="TABS_COUNT_MANY" /> odabrane kartice}few{Razgrupisanje <ph name="TABS_COUNT_MANY" /> odabranih kartica}other{Razgrupisanje <ph name="TABS_COUNT_MANY" /> odabranih kartica}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
 <translation id="6499296376514955580">Obavještenje o promjenama dijeljene grupe kartica je zatvoreno</translation>
 <translation id="6527303717912515753">Dijeli</translation>
 <translation id="6549021453810473782">Pregledajte informacije o trgovini</translation>

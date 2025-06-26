@@ -122,14 +122,12 @@
 <translation id="6054741997831917303">The price of this item recently dropped from <ph name="PREVIOUS_PRICE" /> to <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">All duplicate tabs will now also be archived, with the exception of the most recently used copy.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Move group to new window}other{Move group to another window}}</translation>
-<translation id="6193448654517602979">Select tabs</translation>
 <translation id="6220820548421939212">Yes. I'm in</translation>
 <translation id="6228793724645064692">(store rating)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>
 <translation id="6333260925957816943">Information about this shop</translation>
 <translation id="6381032505162537930">You'll find your tab groups here</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ungroup <ph name="TABS_COUNT_ONE" /> selected tab}other{Ungroup <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tabs}}</translation>
 <translation id="6499296376514955580">Notice about shared tab group changes closed</translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="6549021453810473782">View shop info</translation>

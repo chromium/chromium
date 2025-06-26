@@ -420,6 +420,7 @@
 <translation id="1706625117072057435">Επίπεδα εστίασης</translation>
 <translation id="1706922226983368260">Κλειδί πρόσβασης • <ph name="PHONE_NAME" /></translation>
 <translation id="1706954506755087368">{1,plural, =1{Αυτός ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι το <ph name="DOMAIN" />. Η ημερομηνία του πιστοποιητικού ασφαλείας του υποτίθεται ότι είναι αυριανή. Αυτό μπορεί να οφείλεται σε εσφαλμένη ρύθμιση ή σε κάποιον εισβολέα που παρεμβαίνει στη σύνδεσή σας.}other{Αυτός ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι το <ph name="DOMAIN" />. Η ημερομηνία του πιστοποιητικού ασφαλείας του υποτίθεται ότι είναι από # ημέρες μετά. Αυτό μπορεί να οφείλεται σε εσφαλμένη ρύθμιση ή σε κάποιον εισβολέα που παρεμβαίνει στη σύνδεσή σας.}}</translation>
+<translation id="1709711942721576168">Κουμπί Λειτουργίας AI, ενεργοποίηση για ερώτηση στη Λειτουργία AI</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">Παραβλέφθηκε επειδή η πολιτική <ph name="POLICY_NAME" /> δεν έχει οριστεί σε <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520">Ο ιστότοπος <ph name="URL" /> θέλει να αποθηκεύσει μόνιμα δεδομένα στον τοπικό υπολογιστή σας</translation>
@@ -2159,6 +2160,7 @@
 <translation id="4635278307999235413">Αποστολή δεδομένων στην κονσόλα διαχειριστή</translation>
 <translation id="4636930964841734540">Πληροφορίες</translation>
 <translation id="4640225694041297329">Εμφάνιση αποτελεσμάτων από τις τελευταίες 7 ημέρες</translation>
+<translation id="4642296966515958616">Για συμμετοχή σε αυτή την ομάδα καρτελών, ενημερώστε το Chrome</translation>
 <translation id="464342062220857295">Λειτουργίες αναζήτησης</translation>
 <translation id="4644567637638438744">Η μεταφόρτωση αρχείων είναι δυνατή μόνο αν είστε συνδεδεμένοι στο Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Αντίστροφη σειρά με την πρόσοψη προς τα κάτω</translation>
@@ -2933,6 +2935,7 @@
 <translation id="5967592137238574583">Επεξεργασία στοιχείων επικοινωνίας</translation>
 <translation id="5967867314010545767">Κατάργηση από το ιστορικό</translation>
 <translation id="5968022600320704045">Δεν υπάρχουν αποτελέσματα αναζήτησης</translation>
+<translation id="5968400720580217226">Λειτουργία AI</translation>
 <translation id="5969199813874624822">Αποθήκευση και παρακολούθηση τιμής</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Έκτο ρολό</translation>
@@ -3028,6 +3031,7 @@
 <translation id="6108849843016142864">Ερπετά και αμφίβια</translation>
 <translation id="610911394827799129">Ο Λογαριασμός Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">Οι αναζητήσεις, οι καλύτερες αντιστοιχίσεις και το περιεχόμενο των σελίδων τους αποστέλλονται στην Google και ενδέχεται να ελεγχθούν από αναθεωρητές, με σκοπό τη βελτίωση αυτής της λειτουργίας.</translation>
+<translation id="6115793664998531464"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Enter για να ρωτήσετε τη Λειτουργία AI</translation>
 <translation id="6116338172782435947">Δει κείμενο και εικόνες που αντιγράψατε στο πρόχειρο</translation>
 <translation id="6117833587752089929">Φωτογραφία (Σατέν)</translation>
 <translation id="6118782133429281336">Η λίστα προέλευσης είναι κενή.</translation>
@@ -3153,6 +3157,8 @@
 <translation id="6326947323444967009">Ορίστε το Chrome ως το προεπιλεγμένο πρόγραμμα περιήγησης του συστήματος στις ρυθμίσεις του iOS</translation>
 <translation id="6327065120806001832">πρόσβαση στο τοπικό δίκτυο</translation>
 <translation id="6328639280570009161">Δοκιμάστε να απενεργοποιήσετε την πρόβλεψη δικτύου</translation>
+<translation id="6329815962353376655">&lt;Πληκτρολογήστε μια ερώτηση&gt;</translation>
+<translation id="6334834493885103305">Τώρα μπορείτε να πληρώσετε σε βάθος χρόνου, χρησιμοποιώντας Affirm, Zip ή Klarna</translation>
 <translation id="6335029926534404762">Αθλητικά παπούτσια</translation>
 <translation id="6336948221660696475">Δεν επιτρέπεται η χρήση του VR</translation>
 <translation id="6337133576188860026">Απελευθερώνει λιγότερο από <ph name="SIZE" />. Ορισμένοι ιστότοποι μπορεί να φορτωθούν πιο αργά κατά την επόμενη επίσκεψή σας.</translation>
@@ -3866,6 +3872,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Μπορείτε να τη χρησιμοποιήσετε σε όλα τα προϊόντα Google</translation>
 <translation id="7523408071729642236">Κατασκευές</translation>
+<translation id="7524958309155133228">Ερώτηση στο <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Δημιουργία</translation>
 <translation id="7525804896095537619">Το όνομα δεν μπορεί να είναι κενό</translation>
 <translation id="7526934274050461096">Η σύνδεσή σας σε αυτόν τον ιστότοπο δεν είναι ιδιωτική</translation>
@@ -4078,6 +4085,7 @@
 <translation id="7878562273885520351">Ο κωδικός πρόσβασής σας μπορεί να έχει παραβιαστεί</translation>
 <translation id="7881044256965445977">Αναζητήστε και συνδεθείτε σε οποιαδήποτε συσκευή στο τοπικό σας δίκτυο</translation>
 <translation id="7882421473871500483">Καφέ</translation>
+<translation id="7885670691503039914">Αν η τιμή πέσει σε οποιονδήποτε ιστότοπο, θα λάβετε ειδοποιήσεις ηλεκτρονικού ταχυδρομείου. Αυτή η σελίδα θα αποθηκευτεί στον φάκελο σελιδοδεικτών <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Επιλέξτε τις ευρείες κατηγορίες θεμάτων που μπορούν να χρησιμοποιηθούν για την εξατομίκευση των διαφημίσεων</translation>
 <translation id="7887683347370398519">Ελέγξτε τον κωδικό σας CVC και δοκιμάστε ξανά</translation>
 <translation id="7887885240995164102">Είσοδος στη λειτουργία picture-in-picture</translation>
@@ -4732,6 +4740,7 @@
 <translation id="9042617223719777575">Μεγάλη χωρητικότητα</translation>
 <translation id="9042827002460091668">Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618">Ο ιστότοπος <ph name="URL" /> θέλει να αναζητήσει και να συνδεθεί σε οποιαδήποτε συσκευή στο τοπικό σας δίκτυο</translation>
 <translation id="9046864189129893978">Μικρόφωνα (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Αυτές οι ενέργειες απαιτούν η πολιτική <ph name="POLICY_NAME" /> να έχει οριστεί σε <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 ίντσες</translation>

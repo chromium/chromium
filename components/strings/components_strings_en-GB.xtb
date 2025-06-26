@@ -724,6 +724,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2212735316055980242">Policy not found</translation>
 <translation id="2213606439339815911">Fetching entries...</translation>
 <translation id="2213612003795704869">Page is printed</translation>
+<translation id="2214086901479959524">Update Chrome to continue using your shared tab groups</translation>
 <translation id="2215368073167343359">Autofill with Google</translation>
 <translation id="2215539479425228550">Climbing and mountaineering</translation>
 <translation id="2215727959747642672">File editing</translation>
@@ -802,6 +803,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2328651992442742497">Allowed (default)</translation>
 <translation id="2328955282645810595">Construction and Power Tools</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="2334327033751265975">Your shared tab groups are available again</translation>
 <translation id="2337852623177822836">Setting controlled by your administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wants to pair</translation>
 <translation id="2344529975040861103">You can autofill this card because your account is linked to Google Pay</translation>

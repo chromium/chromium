@@ -424,6 +424,7 @@
 <translation id="5968921426641056619">వెబ్ అడ్రస్‌ను ఎంటర్ చేయండి</translation>
 <translation id="5975083100439434680">దూరంగా జూమ్ చేయి</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">డిస్కవర్ ఫీడ్‌ను ఆన్ చేయండి</translation>
 <translation id="6015775454662021376">మీ పరికరానికి ఈ సైట్ యాక్సెస్‌ని నియంత్రించండి</translation>
 <translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="6042308850641462728">మరింత చూపించు</translation>
@@ -463,6 +464,7 @@
 <translation id="6545864417968258051">బ్లూటూత్ స్కానింగ్</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> బ్లాక్ చేయబడ్డాయి}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> రోజుల క్రితం చివరిగా సందర్శించారు</translation>
+<translation id="6557290421156335491">నా షార్ట్‌కట్‌లు</translation>
 <translation id="656065428026159829">మరిన్ని చూడండి</translation>
 <translation id="6561560012278703671">నిశ్శబ్ద మెసేజ్‌లను ఉపయోగించండి (మీకు అంతరాయం కలిగించకుండా నోటిఫికేషన్ ప్రాంప్ట్‌లను బ్లాక్ చేస్తుంది)</translation>
 <translation id="6565144332292237355">మీ లోకల్ నెట్‌వర్క్‌లో ఏదైనా పరికరం కోసం చూడటానికి లేదా కనెక్ట్ చేయడానికి సైట్‌లు ఈ ఫీచర్‌ను ఉపయోగించవచ్చు</translation>

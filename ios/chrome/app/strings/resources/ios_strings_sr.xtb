@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Подељени приказ</translation>
 <translation id="1219674500290482172">Повезивање са интернетом није могуће.</translation>
+<translation id="1223498995510244364">Резимирај</translation>
 <translation id="1227113644794103810">Неактивне картице</translation>
 <translation id="1231733316453485619">Желите ли да укључите синхронизацију?</translation>
 <translation id="1253032109800629289">Сакриј опцију Добијај обавештења о праћењу цена</translation>
@@ -835,6 +836,7 @@
 <translation id="446314443268698477">Купујте, преводите и идентификујте оно што видите помоћу камере или слика.</translation>
 <translation id="4469324811108161144">Белешке могу да сачувају највише <ph name="CHARACTER_LIMIT" /> знакова.</translation>
 <translation id="4471472356135655769">Извоз лозинки није успео</translation>
+<translation id="4472575034687746823">Започнимо</translation>
 <translation id="4473608001744970767">Сакриј опцију Прати цену</translation>
 <translation id="4474142134969976028">Нема подударних резултата</translation>
 <translation id="4474494258097106883">Направљено за iPhone</translation>
@@ -1253,7 +1255,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6140600850356225166">Затражи отварање линкова из других апликација у режиму без архивирања</translation>
 <translation id="6140948187512243695">Прикажи детаље</translation>
 <translation id="6144589619057374135">Отвори ${url} у режиму без архивирања</translation>
-<translation id="6145820728009071857">Прикажи режим читача</translation>
 <translation id="6147279996212084542">Објасни</translation>
 <translation id="6151006591088192882">Откључај картице без архивирања помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Неактивно</translation>
@@ -1521,7 +1522,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7102005569666697658"><ph name="FILE_SIZE" /> се преузима…</translation>
 <translation id="7104701424653979232">Мени → Подешавања → Начини плаћања</translation>
 <translation id="7108338896283013870">Сакриј</translation>
-<translation id="7115051913071512405">Испробајте</translation>
 <translation id="7128693485119315539">Организација може да има потребу да види податке прегледања повезане са вашим управљаним налогом, попут историје прегледања и лозинки, као и да управља њима.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Камера је недоступна</translation>
@@ -2010,7 +2010,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9008201768610948239">Игнориши</translation>
 <translation id="9012585441087414258">Штити вас од сајтова, преузимања и додатака за које се зна да су штетни. Ако страница уради нешто сумњиво, URL-ови и делови садржаја странице се шаљу у Google безбедно прегледање.</translation>
 <translation id="9013605037177245304">Укључи обавештења</translation>
-<translation id="9013632079355478927">Сакриј режим читача</translation>
 <translation id="9029650858822697271">Одјављени сте</translation>
 <translation id="9032405509996909363">Потврдите брисање података прегледања</translation>
 <translation id="9039373489628511875">Пропусни опсег</translation>

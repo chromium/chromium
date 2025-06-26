@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">17:30 ч.</translation>
 <translation id="1217294226280635614">Разделен изглед</translation>
 <translation id="1219674500290482172">Не може да се установи връзка с интернет.</translation>
+<translation id="1223498995510244364">Обобщаване</translation>
 <translation id="1227113644794103810">Неактивни раздели</translation>
 <translation id="1231733316453485619">Да се включи ли синхронизирането?</translation>
 <translation id="1253032109800629289">Скриване на „Получаване на известия за проследяване на цената“</translation>
@@ -834,6 +835,7 @@
 <translation id="446314443268698477">Пазарувайте, превеждайте и идентифицирайте това, което виждате с камерата или в снимките си.</translation>
 <translation id="4469324811108161144">Бележките могат да съдържат най-много <ph name="CHARACTER_LIMIT" /> знака.</translation>
 <translation id="4471472356135655769">Паролите не могат да се експортират</translation>
+<translation id="4472575034687746823">Първи стъпки</translation>
 <translation id="4473608001744970767">Скриване на „Проследяване на цената“</translation>
 <translation id="4474142134969976028">Няма съответстващи резултати</translation>
 <translation id="4474494258097106883">Създаден за вашия iPhone</translation>
@@ -1252,7 +1254,6 @@
 <translation id="6140600850356225166">Запитване за отваряне на връзки от други приложения в режим „инкогнито“</translation>
 <translation id="6140948187512243695">Показване на подробностите</translation>
 <translation id="6144589619057374135">Отваряне на ${url} в режим „инкогнито“</translation>
-<translation id="6145820728009071857">Показване на режима за четене</translation>
 <translation id="6147279996212084542">Обясняване</translation>
 <translation id="6151006591088192882">Отключване на разделите в режим „инкогнито“ с <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Неактивно</translation>
@@ -1520,7 +1521,6 @@
 <translation id="7102005569666697658">Изтегля се… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Настройки → Начини на плащане</translation>
 <translation id="7108338896283013870">Скриване</translation>
-<translation id="7115051913071512405">Изпробване</translation>
 <translation id="7128693485119315539">Може да е необходимо организацията ви да вижда и управлява данните за сърфиране, свързани с управлявания ви профил, като например историята на сърфиране и паролите ви.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Няма достъп до камерата</translation>
@@ -2009,7 +2009,6 @@
 <translation id="9008201768610948239">Пренебрегване</translation>
 <translation id="9012585441087414258">Защитава срещу сайтове, изтегляния и разширения, за които е известно, че са опасни. Ако дадена страница направи нещо подозрително, URL адресите и част от съдържанието ѝ се изпращат до Google Безопасно сърфиране.</translation>
 <translation id="9013605037177245304">Включване на известията</translation>
-<translation id="9013632079355478927">Скриване на режима на четене</translation>
 <translation id="9029650858822697271">Излязохте от профила си</translation>
 <translation id="9032405509996909363">Потвърждаване на изтриването на данните за сърфирането</translation>
 <translation id="9039373489628511875">Капацитет</translation>

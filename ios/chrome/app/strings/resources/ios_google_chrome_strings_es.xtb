@@ -90,6 +90,7 @@ Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora,
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Añadir marcadores a Chrome</translation>
 <translation id="3030414234702425231">Al cerrar sesión en una cuenta gestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, se eliminan tus datos de Chrome en este dispositivo, pero permanecen en tu cuenta de Google.</translation>
+<translation id="3042447686908081308">Importar a Chrome</translation>
 <translation id="3051521853355903257">Gestionar contraseñas en Chrome</translation>
 <translation id="309672519329227863">Accede a tus contraseñas de Chrome y más en otras aplicaciones.</translation>
 <translation id="3109170945534582468">Acciones de Chrome</translation>
@@ -337,6 +338,7 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="9176561303811134420">Gestionar métodos de pago en Chrome</translation>
 <translation id="9181628561061032322">Abre las pestañas recientes de Chrome.</translation>
 <translation id="948597495737267756">Abre la página Historial de Chrome.</translation>
+<translation id="954347330803595209">Importa tus datos para usar tus contraseñas, historial, marcadores y tarjetas de crédito en Chrome</translation>
 <translation id="97300214378190234">Usa Chrome cada vez que toques enlaces de otras aplicaciones.</translation>
 <translation id="997929539742564806">Inicia sesión rápidamente en aplicaciones y sitios con el autocompletado de contraseñas y llaves de acceso de Chrome</translation>
 <translation id="998677222109959694">Gestionar la configuración de Chrome</translation>

@@ -122,14 +122,12 @@
 <translation id="6054741997831917303"><ph name="PREVIOUS_PRICE" /> турган бул нерсенин баасы <ph name="NEW_PRICE" /> болуп калды</translation>
 <translation id="6109251075362363230">Эми эң акыркы колдонулгандан башка бардык кайталанма өтмөктөр архивделет.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Топту жаңы терезеге жылдыруу}other{Топту башка терезеге жылдыруу}}</translation>
-<translation id="6193448654517602979">Өтмөктөрдү тандоо</translation>
 <translation id="6220820548421939212">Ооба</translation>
 <translation id="6228793724645064692">(дүкөндүн рейтинги)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Өтмөктү жаңы топко кошуу}other{Өтмөктү жаңы топко кошуу}}</translation>
 <translation id="6333260925957816943">Бул дүкөн тууралуу маалымат</translation>
 <translation id="6381032505162537930">Өтмөк топторун ушул жерден табасыз</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү топтон ажыратуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү топтон ажыратуу}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк}other{<ph name="TABS_COUNT_MANY" /> өтмөк}}</translation>
 <translation id="6499296376514955580">Бөлүшүлгөн өтмөктөр тобунун өзгөрүүсү тууралуу эскертүү жабылды</translation>
 <translation id="6527303717912515753">Бөлүшүү</translation>
 <translation id="6549021453810473782">Дүкөн жөнүндө маалыматты көрүү</translation>

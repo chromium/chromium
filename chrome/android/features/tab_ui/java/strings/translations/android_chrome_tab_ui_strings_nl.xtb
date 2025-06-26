@@ -122,15 +122,14 @@
 <translation id="6051432659151380973">Je tabbladgroepen worden automatisch opgeslagen</translation>
 <translation id="6054741997831917303">De prijs van dit item is recent verlaagd van <ph name="PREVIOUS_PRICE" /> naar <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Alle dubbele tabbladen worden nu ook gearchiveerd, met uitzondering van het meest recent gebruikte exemplaar.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd item sluiten}other{<ph name="TABS_COUNT_MANY" /> geselecteerde items sluiten}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Groep verplaatsen naar nieuw venster}other{Groep verplaatsen naar ander venster}}</translation>
-<translation id="6193448654517602979">Tabbladen selecteren</translation>
 <translation id="6220820548421939212">Ja. Nu aanzetten</translation>
 <translation id="6228793724645064692">(winkelbeoordeling)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tabblad toevoegen aan nieuwe groep}other{Tabbladen toevoegen aan nieuwe groep}}</translation>
 <translation id="6333260925957816943">Informatie over deze winkel</translation>
 <translation id="6381032505162537930">Hier vind je je tabbladgroepen</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Groepering van <ph name="TABS_COUNT_ONE" /> geselecteerd tabblad opheffen}other{Groepering van <ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen opheffen}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad}other{<ph name="TABS_COUNT_MANY" /> tabbladen}}</translation>
 <translation id="6499296376514955580">Kennisgeving over wijzigingen in gedeelde tabbladgroepen gesloten</translation>
 <translation id="6527303717912515753">Delen</translation>
 <translation id="6549021453810473782">Winkelinformatie bekijken</translation>
@@ -157,6 +156,7 @@
 <translation id="7369451074646620503">Tabbladgroep <ph name="TAB_GROUP_NAME" /> is niet meer beschikbaar</translation>
 <translation id="7452985128687107478">Tabbladgroepen worden automatisch opgeslagen en geüpdatet op al je apparaten</translation>
 <translation id="747459581954555080">Alles herstellen</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd item herstellen}other{<ph name="TABS_COUNT_MANY" /> geselecteerde items herstellen}}</translation>
 <translation id="753732157349120914">Tabbladschakelaar</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> review van Google}other{<ph name="REVIEWS_COUNT_MANY" /> reviews van Google}}</translation>
 <translation id="7559245342362162951">Tabbladen van groep bekijken in raster op volledig scherm</translation>

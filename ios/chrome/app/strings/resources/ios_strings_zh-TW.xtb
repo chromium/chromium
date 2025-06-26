@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">下午 5:30</translation>
 <translation id="1217294226280635614">分割檢視畫面</translation>
 <translation id="1219674500290482172">無法連線至網際網路。</translation>
+<translation id="1223498995510244364">摘要</translation>
 <translation id="1227113644794103810">閒置分頁</translation>
 <translation id="1231733316453485619">要開啟同步功能嗎？</translation>
 <translation id="1253032109800629289">隱藏「接收價格追蹤通知」</translation>
@@ -835,6 +836,7 @@
 <translation id="446314443268698477">用相機拍攝或提供相片，就能購買、翻譯或辨識眼前事物。</translation>
 <translation id="4469324811108161144">附註最多可以儲存 <ph name="CHARACTER_LIMIT" /> 個半形字元。</translation>
 <translation id="4471472356135655769">無法匯出密碼</translation>
+<translation id="4472575034687746823">開始使用</translation>
 <translation id="4473608001744970767">隱藏「追蹤價格」</translation>
 <translation id="4474142134969976028">沒有相符的搜尋結果</translation>
 <translation id="4474494258097106883">專為 iPhone 量身打造</translation>
@@ -1253,7 +1255,6 @@
 <translation id="6140600850356225166">要求在無痕模式中開啟其他應用程式的連結</translation>
 <translation id="6140948187512243695">顯示詳細資訊</translation>
 <translation id="6144589619057374135">在無痕模式中開啟 ${url}</translation>
-<translation id="6145820728009071857">顯示閱讀器模式</translation>
 <translation id="6147279996212084542">說明</translation>
 <translation id="6151006591088192882">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁</translation>
 <translation id="6152340033632117531">閒置</translation>
@@ -1521,7 +1522,6 @@
 <translation id="7102005569666697658">下載中… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">「選單」→「設定」→「付款方式」</translation>
 <translation id="7108338896283013870">隱藏</translation>
-<translation id="7115051913071512405">立即體驗</translation>
 <translation id="7128693485119315539">貴機構可能需要查看及管理與代管帳戶相關聯的瀏覽資料，例如瀏覽記錄和密碼。</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">無法使用相機</translation>
@@ -2010,7 +2010,6 @@
 <translation id="9008201768610948239">略過</translation>
 <translation id="9012585441087414258">防範已知的不安全網站、下載內容和擴充功能。如果某個網頁含有可疑內容，系統會將網址和部分網頁內容傳送給「Google 安全瀏覽」功能。</translation>
 <translation id="9013605037177245304">開啟通知</translation>
-<translation id="9013632079355478927">隱藏閱讀器模式</translation>
 <translation id="9029650858822697271">系統已將你登出</translation>
 <translation id="9032405509996909363">確認刪除瀏覽資料</translation>
 <translation id="9039373489628511875">頻寬</translation>

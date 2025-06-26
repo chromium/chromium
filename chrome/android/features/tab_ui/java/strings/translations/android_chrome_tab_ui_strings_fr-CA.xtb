@@ -122,14 +122,12 @@
 <translation id="6054741997831917303">Le prix de cet article est récemment passé de <ph name="PREVIOUS_PRICE" /> à <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Tous les onglets en double seront désormais également archivés, à l'exception de la copie la plus récemment utilisée.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Déplacer le groupe vers la nouvelle fenêtre}one{Déplacer le groupe vers une autre fenêtre}other{Déplacer le groupe vers une autre fenêtre}}</translation>
-<translation id="6193448654517602979">Sélectionnez des onglets</translation>
 <translation id="6220820548421939212">Oui. Accepter</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Ajouter un onglet au nouveau groupe}one{Ajouter un onglet au nouveau groupe}other{Ajouter des onglets au nouveau groupe}}</translation>
 <translation id="6333260925957816943">Renseignements à propos de ce magasin</translation>
 <translation id="6381032505162537930">Vous trouverez vos groupes d'onglets ici</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Dégrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Dégrouper <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Dégrouper <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="6499296376514955580">Avis sur les modifications apportées aux groupes d'onglets partagé fermé</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6549021453810473782">Affichez les renseignements sur le magasin</translation>

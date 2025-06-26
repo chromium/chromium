@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">Saa 11:30 Mchana</translation>
 <translation id="1217294226280635614">Mwonekano wa madirisha yaliyogawanywa</translation>
 <translation id="1219674500290482172">Haikuweza kuunganisha kwenye Intaneti.</translation>
+<translation id="1223498995510244364">Andaa muhtasari</translation>
 <translation id="1227113644794103810">Vichupo visivyotumika</translation>
 <translation id="1231733316453485619">Ungependa kuwasha usawazishaji?</translation>
 <translation id="1253032109800629289">Ficha sehemu ya "Pata Arifa za Ufuatiliaji wa Bei"</translation>
@@ -834,6 +835,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="446314443268698477">Nunua, tafsiri na utambue unachokiona kwenye kamera au picha zako.</translation>
 <translation id="4469324811108161144">Vidokezo vinaweza kuhifadhi hadi herufi <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4471472356135655769">Imeshindwa kuhamisha manenosiri</translation>
+<translation id="4472575034687746823">Anza</translation>
 <translation id="4473608001744970767">Ficha Kipengele cha Kufuatilia Bei</translation>
 <translation id="4474142134969976028">Hakuna matokeo yanayolingana</translation>
 <translation id="4474494258097106883">Imeundwa kwa ajili ya iPhone Yako</translation>
@@ -1252,7 +1254,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6140600850356225166">Omba kufungua viungo kwenye programu nyingine katika hali ya Faraghani</translation>
 <translation id="6140948187512243695">Onyesha maelezo</translation>
 <translation id="6144589619057374135">Fungua ${url} katika Hali Fiche</translation>
-<translation id="6145820728009071857">Onyesha Hali ya Kisomaji</translation>
 <translation id="6147279996212084542">Fafanua</translation>
 <translation id="6151006591088192882">Fungua Vichupo vya faragha ukitumia <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Hakitumiki</translation>
@@ -1520,7 +1521,6 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7102005569666697658">Inapakua… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menyu → Mipangilio → Njia za kulipa</translation>
 <translation id="7108338896283013870">Ficha</translation>
-<translation id="7115051913071512405">Ijaribu</translation>
 <translation id="7128693485119315539">Huenda shirika lako likahitaji kuona na kudhibiti data ya kuvinjari inayohusishwa na akaunti yako inayosimamiwa, kama vile manenosiri na historia yako ya kuvinjari.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera haipatikani</translation>
@@ -2009,7 +2009,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="9008201768610948239">Puuza</translation>
 <translation id="9012585441087414258">Hukulinda dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari Iwapo ukurasa utafanya kitu chenye kutia mashaka, URL na sehemu za maudhui hutumwa kwenye kipengele cha Kuvinjari Salama na Google.</translation>
 <translation id="9013605037177245304">Washa Arifa</translation>
-<translation id="9013632079355478927">Ficha Hali ya Kisomaji</translation>
 <translation id="9029650858822697271">Uliondolewa kwenye akaunti</translation>
 <translation id="9032405509996909363">Thibitisha kufuta data ya kuvinjari</translation>
 <translation id="9039373489628511875">Kipimo data</translation>

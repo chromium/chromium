@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Vista dividida</translation>
 <translation id="1219674500290482172">Non se puido conectar a Internet.</translation>
+<translation id="1223498995510244364">Resumir</translation>
 <translation id="1227113644794103810">Pestanas inactivas</translation>
 <translation id="1231733316453485619">Queres activar a sincronización?</translation>
 <translation id="1253032109800629289">Ocultar Obter notificacións de seguimento de prezos</translation>
@@ -834,6 +835,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="446314443268698477">Compra, traduce e identifica o que vexas mediante a cámara ou nas fotos.</translation>
 <translation id="4469324811108161144">As notas poden conter <ph name="CHARACTER_LIMIT" /> caracteres como máximo.</translation>
 <translation id="4471472356135655769">Non se puideron exportar os contrasinais</translation>
+<translation id="4472575034687746823">Comezar</translation>
 <translation id="4473608001744970767">Ocultar Facer seguimento do prezo</translation>
 <translation id="4474142134969976028">Non hai ningún resultado que coincida</translation>
 <translation id="4474494258097106883">Deseñado para iPhone</translation>
@@ -1252,7 +1254,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6140600850356225166">Preguntar para abrir ligazóns doutras aplicacións no modo de incógnito</translation>
 <translation id="6140948187512243695">Mostrar detalles</translation>
 <translation id="6144589619057374135">Abre ${url} no modo de incógnito</translation>
-<translation id="6145820728009071857">Mostrar modo de lectura</translation>
 <translation id="6147279996212084542">Explicar</translation>
 <translation id="6151006591088192882">Desbloquear as pestanas do modo de incógnito co seguinte método: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inactivas</translation>
@@ -1520,7 +1521,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7102005569666697658">Descargando… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menú → Configuración → Métodos de pago</translation>
 <translation id="7108338896283013870">Ocultar</translation>
-<translation id="7115051913071512405">Próbao</translation>
 <translation id="7128693485119315539">É posible que a túa organización necesite consultar e administrar os datos de navegación asociados á túa conta xestionada, como o teu historial de navegación e os contrasinais.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">A cámara non está dispoñible</translation>
@@ -2009,7 +2009,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9012585441087414258">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Se algunha páxina leva a cabo unha acción sospeitosa, os URL e algúns fragmentos do contido da páxina enviaranse a Navegación segura de Google.</translation>
 <translation id="9013605037177245304">Activar notificacións</translation>
-<translation id="9013632079355478927">Ocultar modo de lector</translation>
 <translation id="9029650858822697271">Pechouse a túa sesión</translation>
 <translation id="9032405509996909363">Confirmar a eliminación dos datos de navegación</translation>
 <translation id="9039373489628511875">Largura de banda</translation>

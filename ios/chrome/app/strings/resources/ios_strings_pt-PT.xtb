@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Vista dividida</translation>
 <translation id="1219674500290482172">Não é possível estabelecer ligação à Internet.</translation>
+<translation id="1223498995510244364">Resumir</translation>
 <translation id="1227113644794103810">Separadores inativos</translation>
 <translation id="1231733316453485619">Ativar a sincronização?</translation>
 <translation id="1253032109800629289">Ocultar "Receba notificações de acompanhamento de preço"</translation>
@@ -834,6 +835,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="446314443268698477">Compre, traduza e identifique o que vê com a câmara ou as fotos.</translation>
 <translation id="4469324811108161144">As notas podem ter até <ph name="CHARACTER_LIMIT" /> carateres.</translation>
 <translation id="4471472356135655769">Não é possível exportar palavras-passe</translation>
+<translation id="4472575034687746823">Começar</translation>
 <translation id="4473608001744970767">Ocultar Acompanhar preço</translation>
 <translation id="4474142134969976028">Sem resultados</translation>
 <translation id="4474494258097106883">Concebido para o iPhone</translation>
@@ -1252,7 +1254,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6140600850356225166">Pedir para abrir links de outras apps na Navegação anónima</translation>
 <translation id="6140948187512243695">Mostrar detalhes</translation>
 <translation id="6144589619057374135">Abrir ${url} na Navegação anónima</translation>
-<translation id="6145820728009071857">Mostrar modo de leitor</translation>
 <translation id="6147279996212084542">Explicar</translation>
 <translation id="6151006591088192882">Desbloquear separadores de navegação anónima com <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inativos</translation>
@@ -1520,7 +1521,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7102005569666697658">A transferir… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Definições → Métodos de pagamento</translation>
 <translation id="7108338896283013870">Ocultar</translation>
-<translation id="7115051913071512405">Experimente</translation>
 <translation id="7128693485119315539">A sua organização pode ter de ver e gerir os dados de navegação associados à sua conta gerida, como o histórico de navegação e as palavras-passe.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">A câmara não está disponível</translation>
@@ -2009,7 +2009,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9012585441087414258">Protege contra sites, transferências e extensões identificados como perigosos. Se uma página fizer algo suspeito, os URLs e partes do conteúdo da página são enviados para a Navegação segura do Google.</translation>
 <translation id="9013605037177245304">Ativar notificações</translation>
-<translation id="9013632079355478927">Ocultar modo de leitor</translation>
 <translation id="9029650858822697271">A sua sessão foi terminada</translation>
 <translation id="9032405509996909363">Confirmar eliminação de dados de navegação</translation>
 <translation id="9039373489628511875">Largura de banda</translation>

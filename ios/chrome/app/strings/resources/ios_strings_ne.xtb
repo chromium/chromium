@@ -54,6 +54,7 @@
 <translation id="1207493287814084192">बेलुका ५:३० बजे</translation>
 <translation id="1217294226280635614">स्प्लिट भ्यू</translation>
 <translation id="1219674500290482172">इन्टर्नेटमा जडान गर्न असमर्थ भयो।</translation>
+<translation id="1223498995510244364">सारांश प्रस्तुत गर्नुहोस्</translation>
 <translation id="1227113644794103810">निष्क्रिय ट्याबहरू</translation>
 <translation id="1231733316453485619">सिंक गर्ने सुविधा सक्रिय गर्ने हो?</translation>
 <translation id="1253032109800629289">"मूल्यको ट्र्याकिङसम्बन्धी नोटिफिकेसन प्राप्त गर्नुहोस्" लुकाउनुहोस्</translation>
@@ -388,6 +389,7 @@
 <translation id="251837347827266434">तपाईंलाई साइन आउट गरिने छ, ट्याबहरू बन्द गरिने छन्, ब्राउजिङ डेटा मेटाइने छ</translation>
 <translation id="2520787026086861736">यो सुविधा अफ गर्न <ph name="BEGIN_LINK" />अटोफिल तथा पासवर्डहरू<ph name="END_LINK" />मा जानुहोस्</translation>
 <translation id="2523295204312809179">तपाईंले कुनै ट्याब समूह बन्द गर्दा उक्त ट्याब समूह यहाँ स्वतः सेभ हुन्छ</translation>
+<translation id="2524699375503213836">Safari बाट आफ्नो डेटा इम्पोर्ट गर्नुहोस्</translation>
 <translation id="2529021024822217800">सबै खोल्नुहोस्</translation>
 <translation id="2536991091671391962">तपाईं सेभ गरिएका पासवर्डहरू जुनसुकै डिभाइसमा प्रयोग गर्न सक्नुहुन्छ। ती पासवर्डहरू <ph name="EMAIL" /> को Google पासवर्ड म्यानेजरमा सेभ गरिन्छन्।</translation>
 <translation id="2538103551183528357">लुकाइएको, पासवर्ड</translation>
@@ -834,6 +836,7 @@
 <translation id="446314443268698477">क्यामेरा वा फोटोमा देखिएका कुराहरू किनमेल, अनुवाद तथा पहिचान गर्नुहोस्।</translation>
 <translation id="4469324811108161144">टिपोटहरूमा बढीमा <ph name="CHARACTER_LIMIT" /> वटा वर्ण समावेश गर्न सकिन्छ।</translation>
 <translation id="4471472356135655769">पासवर्डहरू एक्स्पोर्ट गर्न सकिएन</translation>
+<translation id="4472575034687746823">सुरु गर्नुहोस्</translation>
 <translation id="4473608001744970767">"मूल्य ट्र्याक गर्नुहोस्" लुकाउनुहोस्</translation>
 <translation id="4474142134969976028">कुनै पनि मिल्दोजुल्दो परिणाम भेटिएन</translation>
 <translation id="4474494258097106883">तपाईंको iPhone का लागि बनाइएको</translation>
@@ -1252,7 +1255,6 @@
 <translation id="6140600850356225166">अन्य एपका लिंकहरू इन्कोग्निटो मोडमा खोल्ने अनुमति माग्नुहोस्</translation>
 <translation id="6140948187512243695">विवरणहरू देखाउनुहोस्</translation>
 <translation id="6144589619057374135">${url} इन्कोग्निटो मोडमा खोल्नुहोस्</translation>
-<translation id="6145820728009071857">पाठक मोड देखाउनुहोस्</translation>
 <translation id="6147279996212084542">व्याख्या गर्नुहोस्</translation>
 <translation id="6151006591088192882"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गरी इन्कोग्निटो ट्याबहरू अनलक गर्नुहोस्</translation>
 <translation id="6152340033632117531">निष्क्रिय</translation>
@@ -1520,7 +1522,6 @@
 <translation id="7102005569666697658">डाउनलोड गरिँदै छ… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">मेनु → सेटिङ → भुक्तानी विधि</translation>
 <translation id="7108338896283013870">लुकाउनुहोस्</translation>
-<translation id="7115051913071512405">यसलाई प्रयास गर्नुहोस्</translation>
 <translation id="7128693485119315539">तपाईंको सङ्गठनले तपाईंको व्यवस्थापन गरिएको खातासँग सम्बन्धित ब्राउजिङ डेटा (जस्तै, तपाईंका ब्राउजिङ हिस्ट्री र पासवर्ड) हेर्नु पर्ने र व्यवस्थापन गर्नु पर्ने हुन सक्छ।</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">क्यामेरा उपलब्ध छैन</translation>
@@ -1707,7 +1708,7 @@
 <translation id="7925108652071887026">स्वतः भरण डेटा</translation>
 <translation id="7926975587469166629">कार्डको उपनाम</translation>
 <translation id="7927711904086083099">चयन गरिएको छैन</translation>
-<translation id="7927902634113905831">तपाईंले <ph name="FILESIZE" /> आकार भएको "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" सेभ गर्ने प्रयोजनका लागि प्रयोग गर्न चाहेको खाता चयन गर्नुहोस्</translation>
+<translation id="7927902634113905831">तपाईंले "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILESIZE" />) सेभ गर्ने प्रयोजनका लागि प्रयोग गर्न चाहेको खाता चयन गर्नुहोस्</translation>
 <translation id="7930998711684428189">डेटा चोरीको घटनामा पासवर्डको खुलासा हुँदा तपाईंलाई चेतावनी दिन्छ।</translation>
 <translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> मा खोज्नुहोस्</translation>
 <translation id="7938254975914653459">फेसटाइम</translation>
@@ -2009,7 +2010,6 @@
 <translation id="9008201768610948239">बेवास्ता गर्नुहोस्</translation>
 <translation id="9012585441087414258">खतरनाक मानिने साइट, डाउनलोड र एक्स्टेन्सनहरूबाट सुरक्षित राख्छ। कुनै पेजले केही शङ्कास्पद क्रियाकलाप गरेमा उक्त पेजको सामग्रीका URL र बिटहरू Google सुरक्षित ब्राउजिङमा पठाइन्छन्।</translation>
 <translation id="9013605037177245304">नोटिफिकेसन अन गर्नुहोस्</translation>
-<translation id="9013632079355478927">रिडर मोड लुकाउनुहोस्</translation>
 <translation id="9029650858822697271">तपाईंलाई साइन आउट गरियो</translation>
 <translation id="9032405509996909363">ब्राउजिङ डेटा मेटाउने कार्य पुष्टि गर्नुहोस्</translation>
 <translation id="9039373489628511875">व्याण्डविथ</translation>

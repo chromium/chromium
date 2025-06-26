@@ -5157,11 +5157,6 @@ Sau quá trình thiết lập ban đầu, người dùng có thể bật hoặc 
 <translation id="468822697351680932">Sử dụng chính sách SiteList của Internet Explorer làm nguồn quy tắc</translation>
 <translation id="4693190628432874457">Bật tính năng báo cáo vị trí của thiết bị</translation>
 <translation id="4693779768620889402">Đích dựa trên tiện ích</translation>
-<translation id="4693861751987983072">Nếu bạn đặt chính sách này thành Bật, <ph name="PRODUCT_OS_NAME" /> sẽ báo cáo lại cho Google chỉ số sử dụng và dữ liệu chẩn đoán, bao gồm cả báo cáo sự cố. Nếu bạn đặt chính sách này thành Tắt, tính năng báo cáo chỉ số và dữ liệu chẩn đoán sẽ tắt.
-
-Đối với các thiết bị được quản lý, chính sách này sẽ bật theo mặc định và gửi các chỉ số cho Google.
-
-Đối với các thiết bị không được quản lý, việc có gửi chỉ số hay không là quyền của người dùng.</translation>
 <translation id="4694138212536142867">Bật tính năng báo cáo trạng thái phần cứng của thiết bị</translation>
 <translation id="4697581738794063407">Kiểm soát tính năng lọc tham số URL</translation>
 <translation id="4698895924806859508">Không báo cáo sự kiện mạng</translation>
@@ -11054,11 +11049,6 @@ Nếu bạn không đặt chính sách này thì tính năng tối ưu hoá Java
 Chính sách này liên kết các mã cấu hình đến các cấu hình máy ảo. Khi được cài đặt từ một cấu hình, máy ảo sẽ được liên kết vĩnh viễn với mã cấu hình đó và áp dụng mọi chính sách thời gian chạy trong cấu hình đó. Bạn có thể cài đặt nhiều máy ảo từ cùng một cấu hình trên cùng một thiết bị.</translation>
 <translation id="8685018726115727387">Tắt chính sách nhập nhật ký duyệt web trong lần chạy đầu tiên</translation>
 <translation id="8685024486845674965">Cảnh báo bảo vệ mật khẩu được kích hoạt bằng cách sử dụng lại mật khẩu</translation>
-<translation id="8685680544554917389">Nếu bạn đặt chính sách này thành True, thì <ph name="PRODUCT_NAME" /> có thể tự động phát nội dung nghe nhìn. Nếu bạn đặt chính sách này thành False, thì <ph name="PRODUCT_NAME" /> sẽ không tự động phát nội dung nghe nhìn.
-
-       Theo mặc định, <ph name="PRODUCT_NAME" /> không tự động phát nội dung nghe nhìn. Tuy nhiên, đối với một số mẫu URL, bạn có thể sử dụng chính sách <ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME" /> để thay đổi tùy chọn cài đặt này.
-
-      Nếu chính sách này thay đổi khi <ph name="PRODUCT_NAME" /> đang chạy, thì chính sách này chỉ áp dụng cho các thẻ mới mở.</translation>
 <translation id="8685748277907759932">Ngăn người dùng sử dụng tính năng Chạm để tìm kiếm</translation>
 <translation id="8686700500128191717">Bật tính năng báo cáo người dùng thiết bị</translation>
 <translation id="8687958770985542440">Bật lại API Thành phần web phiên bản 0 cho đến M84.</translation>

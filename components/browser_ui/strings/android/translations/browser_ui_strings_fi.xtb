@@ -129,6 +129,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="2490684707762498678">Ylläpitäjä: <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Ohjeet ja palaute</translation>
 <translation id="2501278716633472235">Takaisin</translation>
+<translation id="2533138527374486328">Kun tämä on päällä, sivustot voivat pyytää lupaa yhdistää paikallisessa verkossa oleviin laitteisiin. Kun tämä on pois päältä, sivustot eivät voi yhdistää paikallisessa verkossa oleviin laitteisiin.</translation>
 <translation id="2546283357679194313">Evästeet ja sivustotiedot</translation>
 <translation id="2570922361219980984">Sijainti on poissa käytöstä myös tällä laitteella. Voit ottaa sen käyttöön <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Laajennettu – tiivistä klikkaamalla.</translation>
@@ -463,6 +464,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="6545864417968258051">Bluetooth-haku</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta estetty}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta estetty}}</translation>
 <translation id="6554732001434021288">Viimeksi avattu <ph name="NUM_DAYS" /> päivää sitten</translation>
+<translation id="6557290421156335491">Omat pikakuvakkeet</translation>
 <translation id="656065428026159829">Katso lisää</translation>
 <translation id="6561560012278703671">Hiljaisemmat viestit (estää ilmoituksia häiritsemästä sinua)</translation>
 <translation id="6565144332292237355">Sivustot voivat käyttää tätä ominaisuutta etsiäkseen paikallisessa verkossa olevia laitteita ja muodostaakseen niihin yhteyden</translation>
@@ -511,6 +513,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="7188508872042490670">Laitepohjainen sivustodata</translation>
 <translation id="7201549776650881587">Tämä toiminto poistaa kaiken datan ja kaikki evästeet sivuston <ph name="ORIGIN" /> alla olevilta sivustoilta tai sen sovelluksesta aloitusnäytöllä</translation>
 <translation id="7203150201908454328">Laajennettu</translation>
+<translation id="7213166370492037743">Älä salli sivustojen yhdistää mihinkään paikallisessa verkossa olevaan laitteeseen</translation>
 <translation id="7219254577985949841">Poistetaanko sivustodata?</translation>
 <translation id="723171743924126238">Valitse kuvat</translation>
 <translation id="7243246278722455312">"Muuta Uusi välilehti ‑sivua" -alapaneeli</translation>

@@ -420,6 +420,7 @@
 <translation id="1706625117072057435">Масштабтау деңгейлері</translation>
 <translation id="1706922226983368260">Кіру кілті • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Бұл сервер өзінің <ph name="DOMAIN" /> екендігін дәлелдей алмады; оның қауіпсіздік сертификаты ертеңнен басталатын сияқты. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіруінен болуы мүмкін.}other{Бұл сервер өзінің <ph name="DOMAIN" /> екендігін дәлелдей алмады; оның қауіпсіздік сертификаты # күн өткеннен кейін басталатын сияқты. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіруінен болуы мүмкін.}}</translation>
+<translation id="1709711942721576168">AI режимі түймесі. AI режимінен сұрау үшін іске қосыңыз</translation>
 <translation id="1710259589646384581">ОЖ</translation>
 <translation id="1711234383449478798">Еленбеді, себебі <ph name="POLICY_NAME" /> саясатына <ph name="VALUE" /> мәні орнатылмаған.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> деректерді жергілікті компьютеріңізде біржола сақтағысы келеді</translation>
@@ -724,6 +725,7 @@
 <translation id="2212735316055980242">Саясат табылмады</translation>
 <translation id="2213606439339815911">Жазбалар алынуда…</translation>
 <translation id="2213612003795704869">Бет басып шығарылды.</translation>
+<translation id="2214086901479959524">Ортақ қойындылар топтарын пайдалануды жалғастыру үшін Chrome-ды жаңартыңыз</translation>
 <translation id="2215368073167343359">Google-мен автотолтыру</translation>
 <translation id="2215539479425228550">Альпинизм және құзға өрмелеу</translation>
 <translation id="2215727959747642672">Файлды өңдеу</translation>
@@ -802,6 +804,7 @@
 <translation id="2328651992442742497">Рұқсат етілген (әдепкі)</translation>
 <translation id="2328955282645810595">Құрылыс және электр құралдары</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, жарамдылық мерзімі: <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="2334327033751265975">Ортақ қойындылар топтары қайтадан қолжетімді</translation>
 <translation id="2337852623177822836">Әкімші басқаратын параметр</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сайты жұптасқысы келеді</translation>
 <translation id="2344529975040861103">Бұл картаны автоматты түрде толтыра аласыз, себебі аккаунтыңыз Google Pay-мен байланыстырылған.</translation>
@@ -2155,6 +2158,7 @@
 <translation id="4635278307999235413">Деректер әкімші консоліне жіберіліп жатыр.</translation>
 <translation id="4636930964841734540">Ақпарат</translation>
 <translation id="4640225694041297329">Соңғы 7 күндегі нәтижелерді көрсету</translation>
+<translation id="4642296966515958616">Бұл қойындылар тобына қосылу үшін Chrome-ды жаңартыңыз.</translation>
 <translation id="464342062220857295">Іздеу функциялары</translation>
 <translation id="4644567637638438744">Файлдар Microsoft OneDrive аккаунтына кірген кезіңізде ғана жүктеп алынады</translation>
 <translation id="4644670975240021822">Кері ретпен артқы жағында</translation>
@@ -2928,6 +2932,7 @@
 <translation id="5967592137238574583">Байланыс ақпаратын өңдеу</translation>
 <translation id="5967867314010545767">Тарихтан алып тастау</translation>
 <translation id="5968022600320704045">Іздеу нәтижелері жоқ.</translation>
+<translation id="5968400720580217226">AI режимі</translation>
 <translation id="5969199813874624822">Бағаны сақтау және бақылау</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Алтыншы орам</translation>
@@ -3023,6 +3028,7 @@
 <translation id="6108849843016142864">Бауырымен жорғалаушылар мен қосмекенділер</translation>
 <translation id="610911394827799129"><ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> бетінде Google аккаунтымен шолу тарихының басқа да үлгілері болуы мүмкін.</translation>
 <translation id="611018310643025551">Іздеу сұрауларыңыз, ең қолайлы сәйкестіктер және олардың бет контенттері Google-ға жіберіліп, оларды тексерушілер осы функцияны жақсарту үшін көруі мүмкін.</translation>
+<translation id="6115793664998531464"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />. AI режимінен сұрау үшін Enter пернесін басыңыз</translation>
 <translation id="6116338172782435947">Буферге көшірілетін мәтіндер мен кескіндерді көру</translation>
 <translation id="6117833587752089929">Фотосурет (сәтен)</translation>
 <translation id="6118782133429281336">Дереккөздер тізімі бос.</translation>
@@ -3148,6 +3154,7 @@
 <translation id="6326947323444967009">Chrome-ды iOS параметрлерінде жүйенің әдепкі браузері етіп орнату</translation>
 <translation id="6327065120806001832">жергілікті желіге кіру</translation>
 <translation id="6328639280570009161">Желілік болжамды өшіруге әрекет ету</translation>
+<translation id="6329815962353376655">&lt;Сұрақты теріңіз&gt;</translation>
 <translation id="6334834493885103305">Енді Affirm, Zip немесе Klarna көмегімен кейін төлеуге болады</translation>
 <translation id="6335029926534404762">Спорттық аяқ киім</translation>
 <translation id="6336948221660696475">VR-ға рұқсат берілмеген.</translation>
@@ -3314,6 +3321,7 @@
 <translation id="6587893660316489419">B5 хатқалтасы</translation>
 <translation id="6587923378399804057">Көшірілген сілтеме</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> құрылғыңыз басқарылмайды.</translation>
+<translation id="6595495738567740002">Бұл құрылғыдағы Google-дың cookie файлдарын жою үшін <ph name="BEGIN_LINK" />Chrome-нан шығыңыз<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Шифрлау опциялары</translation>
 <translation id="6596573334527383067">Кешегі нәтижелерді көрсету</translation>
 <translation id="6597665340361269064">90 градус</translation>
@@ -3860,6 +3868,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Оны Google өнімдерінде пайдалана аласыз</translation>
 <translation id="7523408071729642236">Өндіріс</translation>
+<translation id="7524958309155133228"><ph name="ENGINE" /> көмекшісінен сұрау</translation>
 <translation id="7525067979554623046">Жасау</translation>
 <translation id="7525804896095537619">Атауы бос болмауы керек</translation>
 <translation id="7526934274050461096">Бұл сайтқа жеке режимде кірмедіңіз</translation>
@@ -4704,6 +4713,7 @@
 <translation id="9004367719664099443">VR сеансы жүруде</translation>
 <translation id="9005998258318286617">PDF құжаты жүктелмеді</translation>
 <translation id="9008201768610948239">Елемеу</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Жоқ}=1{1 сайт}other{# сайт}}</translation>
 <translation id="9012194306129927220">Енді Affirm немесе Zip көмегімен кейін төлеуге болады</translation>
 <translation id="9014705027639070815">Сіз кірген сайттар жарнамалар өнімділігін өлшеуге көмек алу үшін Chrome браузерінен ақпарат сұрай алады. Chrome сайттарға (мысалы, сайтқа кіргеннен кейін, тауар сатып алған-алмағаныңыз туралы) шектеулі дерек түрін жинауға мүмкіндік береді.</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> қауіпсіздік кодын енгізіңіз</translation>
@@ -4726,6 +4736,7 @@
 <translation id="9042617223719777575">Үлкен сыйымдылық</translation>
 <translation id="9042827002460091668">Интернет байланысын тексеріп, әрекетті қайталаңыз.</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> жергілікті желідегі кез келген құрылғыны іздегісі және оған қосылғысы келеді</translation>
 <translation id="9046864189129893978">Микрофондар (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Мына әрекеттер <ph name="POLICY_NAME" /> саясатының <ph name="POLICY_VALUE" /> күйіне орнатылуын қажет етеді: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 дюйм</translation>

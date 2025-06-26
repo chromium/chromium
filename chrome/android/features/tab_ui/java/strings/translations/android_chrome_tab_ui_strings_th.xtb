@@ -122,14 +122,12 @@
 <translation id="6054741997831917303">ราคาสินค้านี้เพิ่งลดลงจาก <ph name="PREVIOUS_PRICE" /> เหลือ <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">ตอนนี้ระบบจะเก็บแท็บที่ซ้ำกันทั้งหมดด้วย ยกเว้นสำเนาที่ใช้ล่าสุด</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ย้ายกลุ่มไปยังหน้าต่างใหม่}other{ย้ายกลุ่มไปยังหน้าต่างอื่น}}</translation>
-<translation id="6193448654517602979">เลือกแท็บ</translation>
 <translation id="6220820548421939212">ได้ ตกลง</translation>
 <translation id="6228793724645064692">(คะแนนร้านค้า)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{เพิ่มแท็บไปยังกลุ่มใหม่}other{เพิ่มแท็บไปยังกลุ่มใหม่}}</translation>
 <translation id="6333260925957816943">ข้อมูลเกี่ยวกับร้านนี้</translation>
 <translation id="6381032505162537930">คุณจะเห็นกลุ่มแท็บที่นี่</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{เลิกจัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{เลิกจัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
-<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ}other{<ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="6499296376514955580">ปิดประกาศเกี่ยวกับการเปลี่ยนแปลงกลุ่มแท็บที่แชร์ไว้แล้ว</translation>
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="6549021453810473782">ดูข้อมูลร้านค้า</translation>
