@@ -26,6 +26,7 @@ namespace net::device_bound_sessions {
 base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
     GURL fetcher_url,
     unexportable_keys::UnexportableKeyId key_id,
+    std::optional<std::string> expected_session_id,
     std::string_view response_json);
 
 }  // namespace net::device_bound_sessions

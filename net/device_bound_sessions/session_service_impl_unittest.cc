@@ -668,10 +668,10 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
 
   base::test::TestFuture<SessionService::RefreshResult> future;
 
-  // Set up the fetcher for a successful refresh with a new session ID
+  // Set up the fetcher for a failed refresh due to a new session ID
   // which doesn't equal to the refreshing one.
-  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
-      kSessionId2, kRefreshUrlString, kOrigin);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
+      SessionError::ErrorType::kInvalidSessionId, kRefreshUrlString);
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
       future.GetCallback());
@@ -683,14 +683,12 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
                                 SessionKey(site, Session::Id(kSessionId))},
                   SessionAccess{SessionAccess::AccessType::kTermination,
                                 SessionKey(site, Session::Id(kSessionId)),
-                                std::vector<std::string>{"test_cookie"}},
-                  SessionAccess{SessionAccess::AccessType::kCreation,
-                                SessionKey(site, Session::Id(kSessionId2))}));
+                                std::vector<std::string>{"test_cookie"}}));
 
-  // Check session is refreshed.
-  EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
+  // Check session hits fatal error
+  EXPECT_EQ(future.Take(), SessionService::RefreshResult::kFatalError);
 
-  ASSERT_TRUE(service().GetSession({site, Session::Id(kSessionId2)}));
+  ASSERT_FALSE(service().GetSession({site, Session::Id(kSessionId2)}));
   ASSERT_FALSE(service().GetSession({site, Session::Id(kSessionId)}));
 }
 

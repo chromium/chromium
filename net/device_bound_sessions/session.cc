@@ -440,6 +440,7 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kScopeOriginSameSiteMismatch:
     case kRefreshUrlSameSiteMismatch:
     case kInvalidScopeOrigin:
+    case kMismatchedSessionId:
 
     // We do not want to back off on many network connection errors
     // (e.g. internet disconnected), so we do not hit our maximum

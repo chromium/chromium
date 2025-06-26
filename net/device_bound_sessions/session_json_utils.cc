@@ -78,6 +78,7 @@ std::vector<SessionParams::Credential> ParseCredentials(
 base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
     GURL fetcher_url,
     unexportable_keys::UnexportableKeyId key_id,
+    std::optional<std::string> expected_session_id,
     std::string_view response_json) {
   // TODO(kristianm): Skip XSSI-escapes, see for example:
   // https://hg.mozilla.org/mozilla-central/rev/4cee9ec9155e
@@ -103,6 +104,12 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
     return base::unexpected(
         SessionError{SessionError::ErrorType::kInvalidSessionId, fetcher_site,
                      /*session_id=*/std::nullopt});
+  }
+
+  if (expected_session_id.has_value() && *expected_session_id != *session_id) {
+    return base::unexpected(SessionError{
+        SessionError::ErrorType::kMismatchedSessionId, fetcher_site,
+        /*session_id=*/*expected_session_id});
   }
 
   std::optional<bool> continue_value = maybe_root->FindBool("continue");

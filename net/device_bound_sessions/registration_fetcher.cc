@@ -357,8 +357,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
       return;
     }
 
-    RunCallbackAndDeleteSelf(
-        ParseSessionInstructionJson(request_->url(), key_id_, data_received_));
+    RunCallbackAndDeleteSelf(ParseSessionInstructionJson(
+        request_->url(), key_id_, session_identifier_, data_received_));
   }
 
   // Running callback when fetching is complete or on error.

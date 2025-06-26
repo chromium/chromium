@@ -576,12 +576,7 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
 
     std::unique_ptr<Session> new_session = std::move(*session_or_error);
     CHECK(new_session);
-
-    // TODO(crbug.com/407801066): Remove this block.
-    if (new_session->id() != session_key.id) {
-      DeleteSessionAndNotify(DeletionReason::kServerRequested, session_key,
-                             on_access_callback);
-    }
+    CHECK_EQ(new_session->id(), session_key.id);
 
     SchemefulSite new_site(
         url::Origin::Create(GURL(params_or_error->fetcher_url)));
