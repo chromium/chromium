@@ -211,6 +211,35 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
+#pragma mark - Public
+
+- (void)disconnect {
+  [_disablePopupsSetting stop];
+  _disablePopupsSetting.observer = nil;
+  _disablePopupsSetting = nil;
+  [_requestDesktopSetting stop];
+  _requestDesktopSetting.observer = nil;
+  _requestDesktopSetting = nil;
+  [_linkPreviewEnabled stop];
+  _linkPreviewEnabled.observer = nil;
+  _linkPreviewEnabled = nil;
+  [_detectAddressesEnabled stop];
+  _detectAddressesEnabled.observer = nil;
+  _detectAddressesEnabled = nil;
+  [_miniMapShowNativeEnabled stop];
+  _miniMapShowNativeEnabled.observer = nil;
+  _miniMapShowNativeEnabled = nil;
+  [_detectUnitsEnabled stop];
+  _detectUnitsEnabled.observer = nil;
+  _detectUnitsEnabled = nil;
+  [_webInspectorEnabled stop];
+  _webInspectorEnabled.observer = nil;
+  _webInspectorEnabled = nil;
+  _settingsMap = nullptr;
+  _mailtoHandlerService = nullptr;
+  _prefService = nullptr;
+}
+
 #pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
@@ -617,31 +646,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)settingsWillBeDismissed {
   // TODO(crbug.com/40272467)
-  DUMP_WILL_BE_CHECK(_mailtoHandlerService);
-  [_disablePopupsSetting stop];
-  _disablePopupsSetting.observer = nil;
-  _disablePopupsSetting = nil;
-  [_requestDesktopSetting stop];
-  _requestDesktopSetting.observer = nil;
-  _requestDesktopSetting = nil;
-  [_linkPreviewEnabled stop];
-  _linkPreviewEnabled.observer = nil;
-  _linkPreviewEnabled = nil;
-  [_detectAddressesEnabled stop];
-  _detectAddressesEnabled.observer = nil;
-  _detectAddressesEnabled = nil;
-  [_miniMapShowNativeEnabled stop];
-  _miniMapShowNativeEnabled.observer = nil;
-  _miniMapShowNativeEnabled = nil;
-  [_detectUnitsEnabled stop];
-  _detectUnitsEnabled.observer = nil;
-  _detectUnitsEnabled = nil;
-  [_webInspectorEnabled stop];
-  _webInspectorEnabled.observer = nil;
-  _webInspectorEnabled = nil;
-  _settingsMap = nullptr;
-  _mailtoHandlerService = nullptr;
-  _prefService = nullptr;
+  [self disconnect];
 }
 
 @end

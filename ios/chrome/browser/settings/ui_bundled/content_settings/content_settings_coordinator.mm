@@ -10,9 +10,11 @@
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/default_page_mode_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/web_inspector_state_coordinator.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @interface ContentSettingsCoordinator () <
+    BrowserObserving,
     ContentSettingsTableViewControllerPresentationDelegate>
 
 @end
@@ -25,6 +27,13 @@
 
   // The coordinator showing the view to enable or disable Web Inspector.
   WebInspectorStateCoordinator* _webInspectorStateViewCoordinator;
+
+  // Bridge for browser observation, to make sure any references are cut when
+  // the browser is destroyed.
+  std::unique_ptr<BrowserObserverBridge> _browserObserverBridge;
+
+  // Verifies that `stop` is always called before dealloc.
+  BOOL _stopped;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -41,6 +50,9 @@
 }
 
 - (void)start {
+  _browserObserverBridge =
+      std::make_unique<BrowserObserverBridge>(self.browser, self);
+
   HostContentSettingsMap* settingsMap =
       ios::HostContentSettingsMapFactory::GetForProfile(self.profile);
   MailtoHandlerService* mailtoHandlerService =
@@ -58,11 +70,21 @@
 }
 
 - (void)stop {
+  _stopped = YES;
   [_defaultModeViewCoordinator stop];
   _defaultModeViewCoordinator = nil;
 
   [_webInspectorStateViewCoordinator stop];
   _webInspectorStateViewCoordinator = nil;
+
+  [_viewController disconnect];
+  _viewController = nil;
+}
+
+- (void)dealloc {
+  // TODO(crbug.com/427791214): If stop is always called before dealloc, then
+  // do all C++ cleanup in stop.
+  CHECK(_stopped, base::NotFatalUntil::M150);
 }
 
 #pragma mark - ContentSettingsTableViewControllerPresentationDelegate
@@ -88,6 +110,12 @@
       initWithBaseNavigationController:_baseNavigationController
                                browser:self.browser];
   [_webInspectorStateViewCoordinator start];
+}
+
+#pragma mark - BrowserObserving
+
+- (void)browserDestroyed:(Browser*)browser {
+  [_viewController disconnect];
 }
 
 @end

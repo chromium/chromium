@@ -49,6 +49,9 @@ class PrefService;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
+// Stop observing any C++ objects.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CONTENT_SETTINGS_CONTENT_SETTINGS_TABLE_VIEW_CONTROLLER_H_
