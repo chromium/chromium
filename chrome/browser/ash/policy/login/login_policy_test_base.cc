@@ -115,7 +115,7 @@ void LoginPolicyTestBase::SetConfiguration() {
   params.id_token = GetIdToken();
   params.session_sid_cookie = kTestSessionSIDCookie;
   params.session_lsid_cookie = kTestSessionLSIDCookie;
-  params.email = account_id().GetUserEmail();
+  params.emails = {account_id().GetUserEmail()};
   fake_gaia_.fake_gaia()->SetConfiguration(params);
 }
 

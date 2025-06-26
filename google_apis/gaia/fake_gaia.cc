@@ -193,10 +193,14 @@ void FakeGaia::Configuration::Update(const Configuration& update) {
   maybe_update_field(&Configuration::id_token);
   maybe_update_field(&Configuration::session_sid_cookie);
   maybe_update_field(&Configuration::session_lsid_cookie);
-  maybe_update_field(&Configuration::email);
 
-  if (!update.signed_out_gaia_ids.empty())
+  if (!update.emails.empty()) {
+    emails = update.emails;
+  }
+
+  if (!update.signed_out_gaia_ids.empty()) {
     signed_out_gaia_ids = update.signed_out_gaia_ids;
+  }
 }
 
 FakeGaia::SyncTrustedVaultKeys::SyncTrustedVaultKeys() = default;
@@ -224,7 +228,7 @@ void FakeGaia::SetConfigurationHelper(const std::string& email,
   params.access_token = kTestAuthLoginAccessToken;
   params.session_sid_cookie = kTestSessionSIDCookie;
   params.session_lsid_cookie = kTestSessionLSIDCookie;
-  params.email = email;
+  params.emails = {email};
   SetConfiguration(params);
 }
 
@@ -263,14 +267,19 @@ std::string FakeGaia::GetEmailOfGaiaId(const GaiaId& gaia_id) const {
   return kDefaultEmail;
 }
 
-void FakeGaia::AddGoogleAccountsSigninHeader(BasicHttpResponse* http_response,
-                                             const std::string& email) const {
+void FakeGaia::AddGoogleAccountsSigninHeader(
+    BasicHttpResponse* http_response,
+    const std::vector<std::string>& emails) const {
   DCHECK(http_response);
-  http_response->AddCustomHeader(
-      "google-accounts-signin",
-      base::StringPrintf("email=\"%s\", obfuscatedid=\"%s\", sessionindex=0",
-                         email.c_str(),
-                         GetGaiaIdOfEmail(email).ToString().c_str()));
+  std::vector<std::string> accounts;
+  for (size_t i = 0; i < emails.size(); ++i) {
+    accounts.push_back(base::StringPrintf(
+        "email=\"%s\", obfuscatedid=\"%s\", sessionindex=%d", emails[i],
+        GetGaiaIdOfEmail(emails[i]).ToString().c_str(), i));
+  }
+
+  http_response->AddCustomHeader("google-accounts-signin",
+                                 base::JoinString(accounts, ", "));
 }
 
 void FakeGaia::SetOAuthCodeCookie(BasicHttpResponse* http_response) const {
@@ -611,7 +620,7 @@ void FakeGaia::HandleEmbeddedSigninChallenge(const HttpRequest& request,
                configuration_.auth_lsid_cookie);
   }
 
-  AddGoogleAccountsSigninHeader(http_response, email);
+  AddGoogleAccountsSigninHeader(http_response, {email});
 
   if (issue_oauth_code_cookie_)
     SetOAuthCodeCookie(http_response);
@@ -635,7 +644,7 @@ void FakeGaia::HandleSSO(const HttpRequest& request,
   http_response->AddCustomHeader("Location", redirect_url);
   http_response->AddCustomHeader("Google-Accounts-SAML", "End");
 
-  AddGoogleAccountsSigninHeader(http_response, configuration_.email);
+  AddGoogleAccountsSigninHeader(http_response, configuration_.emails);
 
   if (issue_oauth_code_cookie_)
     SetOAuthCodeCookie(http_response);
@@ -773,12 +782,17 @@ void FakeGaia::HandleIssueToken(const HttpRequest& request,
 
 void FakeGaia::HandleListAccounts(const HttpRequest& request,
                                   BasicHttpResponse* http_response) {
-  // Add the primary signed in account.
-  std::vector<gaia::CookieParams> params{{.email = configuration_.email,
-                                          .gaia_id = GetDefaultGaiaId(),
-                                          .valid = true,
-                                          .signed_out = false,
-                                          .verified = true}};
+  // Add the signed in accounts.
+  std::vector<gaia::CookieParams> params;
+  for (const std::string& email : configuration_.emails) {
+    params.push_back({
+        .email = email,
+        .gaia_id = GetGaiaIdOfEmail(email),
+        .valid = true,
+        .signed_out = false,
+        .verified = true,
+    });
+  }
 
   // Add the other signed out accounts.
   for (const GaiaId& gaia_id : configuration_.signed_out_gaia_ids) {

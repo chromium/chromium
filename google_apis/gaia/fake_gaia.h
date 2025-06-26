@@ -81,8 +81,8 @@ class FakeGaia {
     std::string session_sid_cookie;
     std::string session_lsid_cookie;
 
-    // The e-mail address returned by /ListAccounts.
-    std::string email;
+    // The e-mail addresses returned by /ListAccounts.
+    std::vector<std::string> emails;
 
     // List of signed out gaia IDs returned by /ListAccounts.
     std::vector<GaiaId> signed_out_gaia_ids;
@@ -242,7 +242,7 @@ class FakeGaia {
 
   void AddGoogleAccountsSigninHeader(
       net::test_server::BasicHttpResponse* http_response,
-      const std::string& email) const;
+      const std::vector<std::string>& emails) const;
 
   void SetOAuthCodeCookie(
       net::test_server::BasicHttpResponse* http_response) const;

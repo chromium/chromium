@@ -128,7 +128,7 @@ class DeviceIDTest : public OobeBaseTest,
     EnsureInstallAttributesCreated();
 
     FakeGaia::Configuration params;
-    params.email = user_id;
+    params.emails = {user_id};
     params.refresh_token = refresh_token;
     fake_gaia_.fake_gaia()->UpdateConfiguration(params);
     fake_gaia_.fake_gaia()->MapEmailToGaiaId(user_id, gaia_id);

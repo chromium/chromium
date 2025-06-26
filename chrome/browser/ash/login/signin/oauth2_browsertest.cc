@@ -304,7 +304,7 @@ class OAuth2Test : public OobeBaseTest {
 
   void SetupGaiaServerForUnexpiredAccount() {
     FakeGaia::Configuration params;
-    params.email = kTestEmail;
+    params.emails = {kTestEmail};
     fake_gaia_.fake_gaia()->SetConfiguration(params);
     fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, kTestGaiaId,
                                      kTestRefreshToken);
