@@ -477,13 +477,24 @@ BASE_FEATURE(kContextMenuSearchForVideoFrame,
 BASE_FEATURE(kChromeWideEchoCancellation,
              "ChromeWideEchoCancellation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif
+
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+// If echo cancellation for a mic signal is requested, use system loopback
+// audio as reference signal to be able to cancel echo from all audio processes
+// and not only audio from Chrome.
 BASE_FEATURE(kSystemLoopbackAsAecReference,
              "SystemLoopbackAsAecReference",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kAddedProcessingDelay{
-    &kSystemLoopbackAsAecReference, "added_delay_ms", 100};
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// If we are using system loopback as AEC reference, we delay the capture
+// signal with `added_delay_ms` so that the reference signal arrives before
+// the capture signal.
+const base::FeatureParam<int> kAddedProcessingDelayMs{
+    &kSystemLoopbackAsAecReference, "added_delay_ms", 170};
+// Modifies the number of matched filters used in the AEC delay estimation when
+// loopback system AEC is enabled.
+const base::FeatureParam<int> kAecDelayNumFilters{
+    &kSystemLoopbackAsAecReference, "num_filters", 6};
 #endif
 
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
@@ -1762,23 +1773,24 @@ bool IsChromeWideEchoCancellationEnabled() {
 }
 
 bool IsSystemLoopbackAsAecReferenceEnabled() {
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
   return base::FeatureList::IsEnabled(kSystemLoopbackAsAecReference);
 #else
   return false;
 #endif
 }
 
-std::optional<base::TimeDelta> GetAecAddedDelay() {
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
-  if (IsSystemLoopbackAsAecReferenceEnabled()) {
-    return base::Milliseconds(kAddedProcessingDelay.Get());
-  }
-#endif
-  return std::nullopt;
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+base::TimeDelta GetAecAddedDelay() {
+  CHECK(IsSystemLoopbackAsAecReferenceEnabled());
+  return base::Milliseconds(kAddedProcessingDelayMs.Get());
 }
+
+int GetAecDelayNumFilters() {
+  CHECK(IsSystemLoopbackAsAecReferenceEnabled());
+  return kAecDelayNumFilters.Get();
+}
+#endif  // BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
 
 bool IsSystemEchoCancellationEnforced() {
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))

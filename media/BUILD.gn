@@ -33,6 +33,7 @@ buildflag_header("media_buildflags") {
     "ALLOW_HOSTING_OOP_VIDEO_DECODER=$allow_hosting_oop_video_decoder",
     "ALTERNATE_CDM_STORAGE_ID_KEY=\"$alternate_cdm_storage_id_key\"",
     "CHROME_WIDE_ECHO_CANCELLATION=$chrome_wide_echo_cancellation_supported",
+    "SYSTEM_LOOPBACK_AS_AEC_REFERENCE=$system_loopback_as_aec_reference_supported",
     "ENABLE_PLATFORM_AC3_EAC3_AUDIO=$enable_platform_ac3_eac3_audio",
     "ENABLE_PLATFORM_AC4_AUDIO=$enable_platform_ac4_audio",
     "ENABLE_CAST_AUDIO_RENDERER=$enable_cast_audio_renderer",

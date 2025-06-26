@@ -212,11 +212,14 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuSaveVideoFrameAs);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuSearchForVideoFrame);
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kChromeWideEchoCancellation);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kSystemLoopbackAsAecReference);
-MEDIA_EXPORT extern const base::FeatureParam<int> kAddedProcessingDelay;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #endif
+
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kSystemLoopbackAsAecReference);
+MEDIA_EXPORT extern const base::FeatureParam<int> kAddedProcessingDelayMs;
+MEDIA_EXPORT extern const base::FeatureParam<int> kAecDelayNumFilters;
+#endif  // BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kEnforceSystemEchoCancellation);
 MEDIA_EXPORT extern const base::FeatureParam<bool>
@@ -548,7 +551,10 @@ MEDIA_EXPORT std::string GetEffectiveAutoplayPolicy(
 
 MEDIA_EXPORT bool IsChromeWideEchoCancellationEnabled();
 MEDIA_EXPORT bool IsSystemLoopbackAsAecReferenceEnabled();
-MEDIA_EXPORT std::optional<base::TimeDelta> GetAecAddedDelay();
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+MEDIA_EXPORT base::TimeDelta GetAecAddedDelay();
+MEDIA_EXPORT int GetAecDelayNumFilters();
+#endif
 MEDIA_EXPORT bool IsSystemEchoCancellationEnforced();
 MEDIA_EXPORT bool IsSystemEchoCancellationEnforcedAndAllowAgcInTandem();
 MEDIA_EXPORT bool IsSystemEchoCancellationEnforcedAndAllowNsInTandem();

@@ -349,6 +349,11 @@ declare_args() {
   chrome_wide_echo_cancellation_supported = is_win || is_mac || is_linux
 }
 
+declare_args() {
+  system_loopback_as_aec_reference_supported =
+      (is_win || is_mac) && chrome_wide_echo_cancellation_supported
+}
+
 # Do not expand this list without double-checking with OWNERS, this is a list of
 # all targets which roll up into the //media component. It controls visibility
 # of subcomponent targets and public_deps for //media.
