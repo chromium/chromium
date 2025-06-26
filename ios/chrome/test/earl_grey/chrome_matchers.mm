@@ -76,6 +76,11 @@ id<GREYMatcher> ActionSheetItemWithAccessibilityLabelId(int message_id) {
       actionSheetItemWithAccessibilityLabelID:message_id];
 }
 
+id<GREYMatcher> AlertItemWithAccessibilityLabelId(int message_id) {
+  return
+      [ChromeMatchersAppInterface alertItemWithAccessibilityLabelId:message_id];
+}
+
 id<GREYMatcher> ImageViewWithImageNamed(NSString* imageName) {
   return [ChromeMatchersAppInterface imageViewWithImageNamed:imageName];
 }

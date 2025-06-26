@@ -65,6 +65,10 @@
 // corresponding to `messageID`.
 + (id<GREYMatcher>)actionSheetItemWithAccessibilityLabelID:(int)messageID;
 
+// Matcher for an alert item with accessibility label corresponding to
+// `messageID`.
++ (id<GREYMatcher>)alertItemWithAccessibilityLabelId:(int)messageID;
+
 // Matcher for element with an image corresponding to `image`.
 + (id<GREYMatcher>)imageViewWithImage:(UIImage*)image;
 

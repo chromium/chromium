@@ -70,6 +70,10 @@ id<GREYMatcher> ActionSheetItemWithAccessibilityLabel(NSString* label);
 // corresponding to `message_id`.
 id<GREYMatcher> ActionSheetItemWithAccessibilityLabelId(int message_id);
 
+// Returns a matcher for an alert item with accessibility label corresponding to
+// `message_id`.
+id<GREYMatcher> AlertItemWithAccessibilityLabelId(int message_id);
+
 // Returns a matcher for element with an image corresponding to `image_id`.
 id<GREYMatcher> ImageViewWithImage(UIImage* image);
 

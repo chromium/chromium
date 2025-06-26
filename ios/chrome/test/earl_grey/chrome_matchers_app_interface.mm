@@ -301,6 +301,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_minimumVisiblePercent(0.5), nil);
 }
 
++ (id<GREYMatcher>)alertItemWithAccessibilityLabelId:(int)messageID {
+  return grey_allOf(
+      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(messageID)],
+      grey_ancestor(grey_kindOfClassName(
+          @"_UIInterfaceActionCustomViewRepresentationView")),
+      grey_minimumVisiblePercent(0.5), nil);
+}
+
 + (id<GREYMatcher>)imageViewWithImageNamed:(NSString*)imageName {
   UIImage* expectedImage = [UIImage imageNamed:imageName];
   GREYMatchesBlock matches = ^BOOL(UIImageView* imageView) {
