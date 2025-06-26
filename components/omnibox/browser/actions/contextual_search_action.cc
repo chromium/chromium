@@ -70,10 +70,10 @@ ContextualSearchOpenLensAction::ContextualSearchOpenLensAction()
                     IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUFFIX,
                     IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION)
               : OmniboxAction::LabelStrings(
-                    l10n_util::GetStringUTF16(GetOpenLensActionLabelId()),
-                    u"",
-                    u"",
-                    u""),
+                    GetOpenLensActionLabelId(),
+                    GetOpenLensActionLabelId(),
+                    IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUFFIX,
+                    IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION),
           GURL()) {}
 
 OmniboxActionId ContextualSearchOpenLensAction::ActionId() const {
