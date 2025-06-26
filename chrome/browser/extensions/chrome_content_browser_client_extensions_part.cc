@@ -70,6 +70,7 @@
 #include "extensions/common/switches.h"
 #include "pdf/buildflags.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -865,6 +866,14 @@ void ChromeContentBrowserClientExtensionsPart::OverrideWebPreferences(
     WebPreferences* web_prefs) {
   OverrideWebPreferencesAfterNavigation(web_contents, main_frame_site,
                                         web_prefs);
+
+  // Ensure to disable text autosizing for extension popups since it is
+  // fundamentally incompatible with frame autoresizing.
+  // See: https://crbug.com/422896512
+  mojom::ViewType view_type = GetViewType(web_contents->GetPrimaryMainFrame());
+  if (view_type == mojom::ViewType::kExtensionPopup) {
+    web_prefs->text_autosizing_enabled = false;
+  }
 }
 
 void ChromeContentBrowserClientExtensionsPart::BrowserURLHandlerCreated(
