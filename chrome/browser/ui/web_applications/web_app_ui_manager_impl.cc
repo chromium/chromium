@@ -66,7 +66,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/native_window_tracker.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -481,9 +481,9 @@ void WebAppUiManagerImpl::PresentUserUninstallDialog(
     gfx::NativeWindow parent_window,
     UninstallCompleteCallback uninstall_complete_callback,
     UninstallScheduledCallback uninstall_scheduled_callback) {
-  std::unique_ptr<views::NativeWindowTracker> parent_window_tracker;
+  std::unique_ptr<ui::NativeWindowTracker> parent_window_tracker;
   if (parent_window) {
-    parent_window_tracker = views::NativeWindowTracker::Create(parent_window);
+    parent_window_tracker = ui::NativeWindowTracker::Create(parent_window);
   }
 
   if (parent_window && parent_window_tracker->WasNativeWindowDestroyed()) {
@@ -706,7 +706,7 @@ void WebAppUiManagerImpl::OnIconsReadForUninstall(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
     gfx::NativeWindow parent_window,
-    std::unique_ptr<views::NativeWindowTracker> parent_window_tracker,
+    std::unique_ptr<ui::NativeWindowTracker> parent_window_tracker,
     UninstallCompleteCallback complete_callback,
     UninstallScheduledCallback uninstall_scheduled_callback,
     std::map<SquareSizePx, SkBitmap> icon_bitmaps) {

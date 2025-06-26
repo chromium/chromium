@@ -23,11 +23,11 @@
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/widget_focus_observer.h"
-#include "ui/views/native_window_tracker.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -256,12 +256,12 @@ class InteractiveViewsTestPrivate::WindowHintCacheEntry {
       return;
     }
     window_ = window;
-    tracker_ = window ? views::NativeWindowTracker::Create(window) : nullptr;
+    tracker_ = window ? ui::NativeWindowTracker::Create(window) : nullptr;
   }
 
  private:
   gfx::NativeWindow window_ = gfx::NativeWindow();
-  std::unique_ptr<NativeWindowTracker> tracker_;
+  std::unique_ptr<ui::NativeWindowTracker> tracker_;
 };
 
 InteractiveViewsTestPrivate::InteractiveViewsTestPrivate(

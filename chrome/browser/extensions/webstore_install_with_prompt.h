@@ -9,7 +9,7 @@
 
 #include "chrome/browser/extensions/webstore_standalone_installer.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/native_window_tracker.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 
 namespace content {
 class WebContents;
@@ -61,7 +61,7 @@ class WebstoreInstallWithPrompt : public WebstoreStandaloneInstaller {
   std::unique_ptr<content::WebContents> dummy_web_contents_;
 
   gfx::NativeWindow parent_window_;
-  std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_;
+  std::unique_ptr<ui::NativeWindowTracker> parent_window_tracker_;
 };
 
 }  // namespace extensions

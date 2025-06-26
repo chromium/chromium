@@ -40,6 +40,7 @@ static_library("app_install") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/abseil-cpp:absl",
+    "//ui/native_window_tracker",
     "//ui/views",
     "//ui/web_dialogs",
     "//ui/webui/resources/cr_components/color_change_listener:mojom",

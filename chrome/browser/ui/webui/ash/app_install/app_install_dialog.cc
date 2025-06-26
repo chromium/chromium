@@ -101,7 +101,7 @@ void AppInstallDialog::ShowApp(
   profile_ = profile->GetWeakPtr();
 
   if (parent) {
-    parent_window_tracker_ = views::NativeWindowTracker::Create(parent);
+    parent_window_tracker_ = ui::NativeWindowTracker::Create(parent);
   }
   parent_ = std::move(parent);
 

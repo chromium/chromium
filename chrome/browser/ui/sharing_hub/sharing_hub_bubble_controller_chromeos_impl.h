@@ -11,7 +11,7 @@
 #include "chromeos/components/sharesheet/constants.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "ui/views/native_window_tracker.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
@@ -81,7 +81,7 @@ class SharingHubBubbleControllerChromeOsImpl final
 
   views::ViewTracker highlighted_button_tracker_;
   gfx::NativeWindow parent_window_ = gfx::NativeWindow();
-  std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_ = nullptr;
+  std::unique_ptr<ui::NativeWindowTracker> parent_window_tracker_ = nullptr;
   bool bubble_showing_ = false;
   base::WeakPtrFactory<SharingHubBubbleControllerChromeOsImpl>
       weak_ptr_factory_{this};

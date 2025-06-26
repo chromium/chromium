@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_
-#define UI_VIEWS_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_
+#ifndef UI_NATIVE_WINDOW_TRACKER_NATIVE_WINDOW_TRACKER_COCOA_H_
+#define UI_NATIVE_WINDOW_TRACKER_NATIVE_WINDOW_TRACKER_COCOA_H_
 
 #include <memory>
 
-#include "ui/views/native_window_tracker.h"
-#include "ui/views/views_export.h"
+#include "base/component_export.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 
-namespace views {
+namespace ui {
 
-class VIEWS_EXPORT NativeWindowTrackerCocoa : public NativeWindowTracker {
+class COMPONENT_EXPORT(UI_NATIVE_WINDOW_TRACKER) NativeWindowTrackerCocoa
+    : public NativeWindowTracker {
  public:
   explicit NativeWindowTrackerCocoa(gfx::NativeWindow window);
 
@@ -29,6 +30,6 @@ class VIEWS_EXPORT NativeWindowTrackerCocoa : public NativeWindowTracker {
   std::unique_ptr<ObjCStorage> objc_storage_;
 };
 
-}  // namespace views
+}  // namespace ui
 
-#endif  // UI_VIEWS_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_
+#endif  // UI_NATIVE_WINDOW_TRACKER_NATIVE_WINDOW_TRACKER_COCOA_H_

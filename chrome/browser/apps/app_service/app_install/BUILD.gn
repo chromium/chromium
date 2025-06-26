@@ -70,6 +70,7 @@ source_set("implementation") {
     "//components/webapps/browser",
     "//components/webapps/common",
     "//services/network/public/cpp",
+    "//ui/native_window_tracker",
   ]
 
   # Outside of //chrome/browser only tests should be depending on this target.

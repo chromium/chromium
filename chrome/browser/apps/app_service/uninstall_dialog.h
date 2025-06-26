@@ -22,14 +22,14 @@ namespace gfx {
 class ImageSkia;
 }
 
-namespace views {
-class NativeWindowTracker;
-}
-
 namespace apps {
 class IconLoader;
 class UninstallDialog;
 }  // namespace apps
+
+namespace ui {
+class NativeWindowTracker;
+}  // namespace ui
 
 namespace apps {
 
@@ -134,7 +134,7 @@ class UninstallDialog {
   raw_ptr<views::Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
 
   // Tracks whether |parent_window_| got destroyed.
-  std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_;
+  std::unique_ptr<ui::NativeWindowTracker> parent_window_tracker_;
 
   base::WeakPtrFactory<UninstallDialog> weak_ptr_factory_{this};
 };

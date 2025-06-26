@@ -43,9 +43,9 @@ namespace base {
 class FilePath;
 }
 
-namespace views {
+namespace ui {
 class NativeWindowTracker;
-}  // namespace views
+}  // namespace ui
 
 namespace webapps {
 enum class WebappUninstallSource;
@@ -222,7 +222,7 @@ class WebAppUiManagerImpl : public BrowserListObserver,
       const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source,
       gfx::NativeWindow parent_window,
-      std::unique_ptr<views::NativeWindowTracker> parent_window_tracker,
+      std::unique_ptr<ui::NativeWindowTracker> parent_window_tracker,
       UninstallCompleteCallback complete_callback,
       UninstallScheduledCallback uninstall_scheduled_callback,
       std::map<SquareSizePx, SkBitmap> icon_bitmaps);

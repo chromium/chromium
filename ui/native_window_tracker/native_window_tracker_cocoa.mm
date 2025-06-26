@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/cocoa/native_window_tracker_cocoa.h"
+#include "ui/native_window_tracker/native_window_tracker_cocoa.h"
 
 #import <AppKit/AppKit.h>
 
@@ -47,7 +47,7 @@
 
 @end
 
-namespace views {
+namespace ui {
 
 struct NativeWindowTrackerCocoa::ObjCStorage {
   BridgedNativeWindowTracker* __strong tracker;
@@ -72,4 +72,4 @@ std::unique_ptr<NativeWindowTracker> NativeWindowTracker::Create(
   return std::make_unique<NativeWindowTrackerCocoa>(window);
 }
 
-}  // namespace views
+}  // namespace ui

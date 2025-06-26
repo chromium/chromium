@@ -25,6 +25,7 @@ source_set("sharing_hub") {
     public_deps += [
       "//chrome/browser/sharesheet",
       "//chromeos/components/sharesheet:constants",
+      "//ui/native_window_tracker",
       "//ui/views",
     ]
   } else {

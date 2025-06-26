@@ -27,8 +27,11 @@
 #include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 
-namespace views {
+namespace ui {
 class NativeWindowTracker;
+}  // namespace ui
+
+namespace views {
 class View;
 }  // namespace views
 

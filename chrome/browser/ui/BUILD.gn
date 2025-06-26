@@ -666,6 +666,7 @@ static_library("ui") {
     "//ui/message_center/public/cpp",
     "//ui/native_theme",
     "//ui/native_theme:native_theme_browser",
+    "//ui/native_window_tracker",
     "//ui/resources",
     "//ui/shell_dialogs",
     "//ui/snapshot",

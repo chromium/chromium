@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/native_window_tracker_aura.h"
+#include "ui/native_window_tracker/native_window_tracker_aura.h"
 
 #include <memory>
 
 #include "ui/aura/window.h"
 
-namespace views {
+namespace ui {
 
 NativeWindowTrackerAura::NativeWindowTrackerAura(gfx::NativeWindow window)
     : window_(window) {
@@ -36,4 +36,4 @@ std::unique_ptr<NativeWindowTracker> NativeWindowTracker::Create(
   return std::make_unique<NativeWindowTrackerAura>(window);
 }
 
-}  // namespace views
+}  // namespace ui

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_NATIVE_WINDOW_TRACKER_H_
-#define UI_VIEWS_NATIVE_WINDOW_TRACKER_H_
+#ifndef UI_NATIVE_WINDOW_TRACKER_NATIVE_WINDOW_TRACKER_H_
+#define UI_NATIVE_WINDOW_TRACKER_NATIVE_WINDOW_TRACKER_H_
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/views_export.h"
 
-namespace views {
+namespace ui {
 
 // An observer which detects when a gfx::NativeWindow is closed.
-class VIEWS_EXPORT NativeWindowTracker {
+class COMPONENT_EXPORT(UI_NATIVE_WINDOW_TRACKER) NativeWindowTracker {
  public:
   virtual ~NativeWindowTracker() = default;
 
@@ -23,6 +23,6 @@ class VIEWS_EXPORT NativeWindowTracker {
   virtual bool WasNativeWindowDestroyed() const = 0;
 };
 
-}  // namespace views
+}  // namespace ui
 
-#endif  // UI_VIEWS_NATIVE_WINDOW_TRACKER_H_
+#endif  // UI_NATIVE_WINDOW_TRACKER_NATIVE_WINDOW_TRACKER_H_

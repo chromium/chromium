@@ -34,7 +34,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/native_window_tracker.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 #include "url/origin.h"
 
 namespace extensions {
@@ -74,7 +74,7 @@ ExtensionUninstallDialog::ExtensionUninstallDialog(
     : profile_(profile), parent_(parent), delegate_(delegate) {
   DCHECK(delegate_);
   if (parent)
-    parent_window_tracker_ = views::NativeWindowTracker::Create(parent);
+    parent_window_tracker_ = ui::NativeWindowTracker::Create(parent);
   profile_observation_.Observe(profile_.get());
 }
 

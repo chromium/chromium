@@ -290,6 +290,7 @@ source_set("app_service") {
       "//services/metrics/public/cpp:ukm_builders",
       "//third_party/smhasher:murmurhash2",
       "//ui/chromeos/styles:cros_tokens_color_mappings",
+      "//ui/native_window_tracker",
       "//ui/wm/public",
     ]
 

@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_NATIVE_WINDOW_TRACKER_AURA_H_
-#define UI_VIEWS_NATIVE_WINDOW_TRACKER_AURA_H_
+#ifndef UI_NATIVE_WINDOW_TRACKER_NATIVE_WINDOW_TRACKER_AURA_H_
+#define UI_NATIVE_WINDOW_TRACKER_NATIVE_WINDOW_TRACKER_AURA_H_
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
-#include "ui/views/native_window_tracker.h"
-#include "ui/views/views_export.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 
-namespace views {
+namespace ui {
 
-class VIEWS_EXPORT NativeWindowTrackerAura : public NativeWindowTracker,
-                                             public aura::WindowObserver {
+class COMPONENT_EXPORT(UI_NATIVE_WINDOW_TRACKER) NativeWindowTrackerAura
+    : public NativeWindowTracker,
+      public aura::WindowObserver {
  public:
   explicit NativeWindowTrackerAura(gfx::NativeWindow window);
 
@@ -32,6 +33,6 @@ class VIEWS_EXPORT NativeWindowTrackerAura : public NativeWindowTracker,
   raw_ptr<aura::Window> window_;
 };
 
-}  // namespace views
+}  // namespace ui
 
-#endif  // UI_VIEWS_NATIVE_WINDOW_TRACKER_AURA_H_
+#endif  // UI_NATIVE_WINDOW_TRACKER_NATIVE_WINDOW_TRACKER_AURA_H_

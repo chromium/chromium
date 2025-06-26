@@ -48,6 +48,7 @@ source_set("document_scan") {
     "//chrome/browser/ui/extensions",
     "//chrome/common:constants",
     "//components/prefs",
+    "//ui/native_window_tracker",
     "//ui/views",
   ]
 }

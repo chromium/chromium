@@ -15,7 +15,7 @@
 #include "extensions/common/extension.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/native_window_tracker.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 
 namespace extensions {
 
@@ -50,7 +50,7 @@ ScannerDiscoveryRunner::ScannerDiscoveryRunner(
       document_scan_(document_scan) {
   CHECK(extension_);
   if (native_window_) {
-    native_window_tracker_ = views::NativeWindowTracker::Create(native_window_);
+    native_window_tracker_ = ui::NativeWindowTracker::Create(native_window_);
   }
 }
 

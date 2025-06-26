@@ -18,7 +18,7 @@
 #include "chrome/browser/apps/app_service/app_install/arc_app_installer.h"
 #include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/native_window_tracker.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS));
 
@@ -94,7 +94,7 @@ class AppInstallServiceAsh : public AppInstallService {
       AppInstallSurface surface,
       PackageId expected_package_id,
       std::optional<gfx::NativeWindow> anchor_window,
-      std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker,
+      std::unique_ptr<ui::NativeWindowTracker> anchor_window_tracker,
       base::OnceCallback<void(AppInstallResult)> callback,
       base::expected<AppInstallData, QueryError> data);
   void InstallIfDialogAccepted(

@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
-#include "ui/views/native_window_tracker.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 
 namespace apps {
 class AlmanacAppIconLoader;
@@ -85,7 +85,7 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   // Temporary variables for ShowApp().
   base::WeakPtr<Profile> profile_;
   gfx::NativeWindow parent_;
-  std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_;
+  std::unique_ptr<ui::NativeWindowTracker> parent_window_tracker_;
   AppInfoArgs app_info_args_;
   std::unique_ptr<apps::AlmanacAppIconLoader> icon_loader_;
 

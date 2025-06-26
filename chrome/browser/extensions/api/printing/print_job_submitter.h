@@ -28,10 +28,6 @@ namespace gfx {
 class Image;
 }  // namespace gfx
 
-namespace views {
-class NativeWindowTracker;
-}  // namespace views
-
 namespace printing {
 class PdfBlobDataFlattener;
 class PrintedDocument;
@@ -40,6 +36,10 @@ class PrintSettings;
 struct FlattenPdfResult;
 struct PrintJobCreatedInfo;
 }  // namespace printing
+
+namespace ui {
+class NativeWindowTracker;
+}  // namespace ui
 
 namespace extensions {
 
@@ -112,7 +112,7 @@ class PrintJobSubmitter {
   const raw_ptr<content::BrowserContext> browser_context_;
 
   // Tracks whether `native_window_` got destroyed.
-  std::unique_ptr<views::NativeWindowTracker> native_window_tracker_;
+  std::unique_ptr<ui::NativeWindowTracker> native_window_tracker_;
 
   // These objects are owned by PrintingAPIHandler.
   const raw_ptr<printing::PrintJobController> print_job_controller_;

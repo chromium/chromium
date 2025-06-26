@@ -22,6 +22,7 @@ static_library("eye_dropper") {
     "//ui/base",
     "//ui/color",
     "//ui/gfx/geometry",
+    "//ui/native_window_tracker",
     "//ui/views",
   ]
 }
