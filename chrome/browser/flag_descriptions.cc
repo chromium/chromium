@@ -8433,14 +8433,12 @@ const char kWebBluetoothConfirmPairingSupportDescription[] =
     "Bluetooth";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_PRINTING)
 const char kCupsIppPrintingBackendName[] = "CUPS IPP Printing Backend";
 const char kCupsIppPrintingBackendDescription[] =
     "Use the CUPS IPP printing backend instead of the original CUPS backend "
     "that calls the PPD API.";
-#endif  // BUILDFLAG(ENABLE_PRINTING)
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_PRINTING)
 
 #if BUILDFLAG(IS_CHROMEOS)
 const char kScreenlockReauthCardName[] =

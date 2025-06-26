@@ -1995,7 +1995,7 @@
   },
   {
     "name": "cups-ipp-printing-backend",
-    "owners": [ "awscreen@chromium.org", "//printing/OWNERS" ],
+    "owners": [ "thestig@chromium.org", "//printing/OWNERS" ],
     "expiry_milestone": 145
   },
   {
