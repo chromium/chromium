@@ -211,12 +211,6 @@ bool LocalTestServer::AddCommandLineArguments(
     case TYPE_WSS:
       command_line->AppendArg("--websocket");
       break;
-    case TYPE_BASIC_AUTH_PROXY:
-      command_line->AppendArg("--basic-auth-proxy");
-      break;
-    case TYPE_PROXY:
-      command_line->AppendArg("--proxy");
-      break;
     default:
       NOTREACHED();
   }

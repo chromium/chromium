@@ -330,11 +330,6 @@ std::optional<base::Value::Dict> BaseTestServer::GenerateArguments() const {
     arguments.Set("ws-basic-auth", base::Value());
   }
 
-  if (redirect_connect_to_localhost_) {
-    DCHECK(type_ == TYPE_BASIC_AUTH_PROXY || type_ == TYPE_PROXY);
-    arguments.Set("redirect-connect-to-localhost", base::Value());
-  }
-
   if (UsingSSL(type_)) {
     // Check the certificate arguments of the HTTPS server.
     base::FilePath certificate_path(certificates_dir_);

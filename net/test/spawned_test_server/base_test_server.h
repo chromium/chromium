@@ -37,10 +37,8 @@ class BaseTestServer {
   typedef std::pair<std::string, std::string> StringPair;
 
   enum Type {
-    TYPE_BASIC_AUTH_PROXY,
     TYPE_WS,
     TYPE_WSS,
-    TYPE_PROXY,
   };
 
   // Container for various options to control how the HTTPS or WSS server is
@@ -167,11 +165,6 @@ class BaseTestServer {
     ws_basic_auth_ = ws_basic_auth;
   }
 
-  // Redirect proxied CONNECT requests to localhost.
-  void set_redirect_connect_to_localhost(bool redirect_connect_to_localhost) {
-    redirect_connect_to_localhost_ = redirect_connect_to_localhost;
-  }
-
   // Registers the test server's certs for the current process.
   [[nodiscard]] static ScopedTestRoot RegisterTestCerts();
 
@@ -250,9 +243,6 @@ class BaseTestServer {
 
   // Is WebSocket basic HTTP authentication enabled?
   bool ws_basic_auth_ = false;
-
-  // Redirect proxied CONNECT requests to localhost?
-  bool redirect_connect_to_localhost_ = false;
 
   std::unique_ptr<ScopedPortException> allowed_port_;
 };
