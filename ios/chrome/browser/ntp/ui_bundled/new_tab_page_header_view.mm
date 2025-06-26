@@ -1190,6 +1190,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   }
   _miaAnimationView = [self createMIAAnimationView];
   _miaAnimationView.userInteractionEnabled = NO;
+  _miaAnimationView.alpha =
+      MIAAnimationOpacityForScrollProgress(_lastAnimationPercent);
   [_miaAnimation play];
   [self.miaButton addSubview:_miaAnimationView];
   AddSameCenterConstraints(_miaAnimationView, self.miaButton);
