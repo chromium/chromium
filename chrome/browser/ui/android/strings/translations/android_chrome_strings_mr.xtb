@@ -256,6 +256,7 @@
 <translation id="2175927920773552910">QR कोड</translation>
 <translation id="2184272387334793084">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="218608176142494674">शेअर करत आहे</translation>
+<translation id="2186779861549045980">तुमच्या Google खाते मध्ये कोणता डेटा सेव्ह केला जावा हे तुम्ही निवडू शकता.\nतुम्ही हे आयटम तुमचे बुकमार्क, वाचन सूची किंवा Password Manager यामध्ये पाहू शकता आणि व्यवस्थापित करू शकता.</translation>
 <translation id="219283042927675668">गटामधील टॅब</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
 <translation id="22091350895006575">वापरकर्ता नाव जोडा</translation>
@@ -264,6 +265,7 @@
 <translation id="2230777942707397948">रिकामी विंडो</translation>
 <translation id="223356358902285214">वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी</translation>
 <translation id="2234827758954819389">गोपनीयता मार्गदर्शक</translation>
+<translation id="2238038374973843156">गट दुसऱ्या विंडोवर हलवा</translation>
 <translation id="2239812875700136898">Discover साठी पर्याय बटणावरून तुमच्या स्टोरी नियंत्रित करा</translation>
 <translation id="2247789808226901522">कार्ड एक्स्पायर झाले आहे</translation>
 <translation id="2248941474044011069">तुमचे पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी तुमच्या डिव्हाइसवर एंक्रिप्ट केले जातात</translation>
@@ -391,6 +393,7 @@
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="281504910091592009">तुमच्या <ph name="BEGIN_LINK" />Google खात्यामध्ये<ph name="END_LINK" /> सेव्ह केलेले पासवर्ड पहा आणि व्यवस्थापित करा</translation>
 <translation id="2819849308549746319">सर्वांचे सदस्यत्व रद्द करा</translation>
+<translation id="2820047235535485532">तुमच्या <ph name="ACCOUNT_EMAIL" /> या Google खाते मध्ये कोणता डेटा सेव्ह केला जावा हे तुम्ही निवडू शकता.\nतुम्ही हे आयटम तुमच्या बुकमार्क, वाचन सूची किंवा पासवर्ड व्यवस्थापक यामध्ये पाहू शकता आणि व्यवस्थापित करू शकता.</translation>
 <translation id="2826576843404243001">सुरक्षित कनेक्शनला सपोर्ट न करणाऱ्या साइटसाठी, साइटला भेट देण्यापूर्वी चेतावणी मिळवा. प्रगत संरक्षण सुरू केल्यामुळे, तुम्ही हे सेटिंग बदलू शकत नाही.</translation>
 <translation id="2827278682606527653">फीड कार्ड मेनू अर्ध्या उंचीवर आहे</translation>
 <translation id="2830783625999891985">क्लिपबोर्डचा आशय लपवला</translation>
@@ -1233,6 +1236,7 @@
 <translation id="6545017243486555795">सर्व डेटा साफ करा</translation>
 <translation id="6546511553472444032">फाइल हानिकारक असू शकते</translation>
 <translation id="6550891580932862748">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून तुमचे संरक्षण करत नाही. तुमच्या इतर Google उत्पादनांमधील सुरक्षित ब्राउझिंग सेटिंग्जवर परिणाम होणार नाही.</translation>
+<translation id="6554822972009632311">आशय फिल्टर सुरू आहे</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> आणि आणखी <ph name="TAB_COUNT_ONE" /> टॅब बंद केला जाईल}other{<ph name="TAB_TITLE" /> आणि आणखी <ph name="TAB_COUNT_MANY" /> टॅब बंद केले जातील}}</translation>
 <translation id="6560414384669816528">Sogou सह शोध करा</translation>
 <translation id="656065428026159829">आणखी पहा</translation>
@@ -1389,6 +1393,7 @@
 <translation id="71503698506017927">पासफ्रेझ एन्क्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो.
 
 हे सेटिंग बदलण्यासाठी, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा हटवणे<ph name="END_LINK" /> हे करा.</translation>
+<translation id="7165972437814027679">Chrome काही फाइल का ब्लॉक करते याबद्दल अधिक जाणून घ्या</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> म्हणून साइन इन केले. सेटिंग उघडते.</translation>
 <translation id="7173114856073700355">सेटिंग्ज उघडा</translation>
 <translation id="7173338713290252554">संपूर्ण वेबवरील किमतीचा इतिहास</translation>
@@ -1707,6 +1712,7 @@
 <translation id="8439974325294139057"><ph name="LANG" /> - भाषा वापरासाठी तयार आहे, <ph name="APP_NAME" /> रीस्टार्ट करा.</translation>
 <translation id="8442258441309440798">कोणत्याही बातम्या उपलब्ध नाहीत</translation>
 <translation id="8443209985646068659">Chrome अपडेट होऊ शकत नाही</translation>
+<translation id="8443600937324357591">टॅब दुसर्‍या विंडोवर हलवा</translation>
 <translation id="8445448999790540984">पासवर्ड एक्सपोर्ट करू शकत नाही</translation>
 <translation id="8446884382197647889">अधिक जाणून घ्या</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{एका साइटवरून परवानग्या काढून टाकल्या आहेत}other{# साइटवरून परवानग्या काढून टाकल्या आहेत}}</translation>

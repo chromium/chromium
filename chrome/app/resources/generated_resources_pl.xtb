@@ -358,6 +358,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1232569758102978740">Bez tytułu</translation>
 <translation id="1233497634904001272">Jeszcze raz dotknij klucza bezpieczeństwa, by dokończyć operację.</translation>
 <translation id="1233721473400465416">Ustawienia lokalne</translation>
+<translation id="1233835246554936745">{0,plural, =1{Zapisz 1 element na koncie}few{Zapisz # elementy na koncie}many{Zapisz # elementów na koncie}other{Zapisz # elementu na koncie}}</translation>
 <translation id="1234736487471201993">Utwórz kod QR powiązany z tym obrazem</translation>
 <translation id="1234808891666923653">Procesy Service Worker</translation>
 <translation id="1235458158152011030">Znane sieci</translation>
@@ -5630,6 +5631,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4918844574251943176">Zdjęcie zostało skopiowane</translation>
 <translation id="4921348630401250116">Zamiana tekstu na mowę</translation>
 <translation id="4922104989726031751">Aby używać Menedżera haseł w swoim systemie operacyjnym, uruchom ponownie Chromium i zezwól na dostęp do menedżera haseł na komputerze. Po ponownym uruchomieniu karty zostaną otwarte.</translation>
+<translation id="4923561999941435531">{0,plural, =1{Zapisz 1 element na koncie}few{Zapisz # elementy na koncie}many{Zapisz # elementów na koncie}other{Zapisz # elementu na koncie}}</translation>
 <translation id="492363500327720082">Odinstalowuję <ph name="APP_NAME" />...</translation>
 <translation id="4923977675318667854">Pokaż grupy kart</translation>
 <translation id="4924002401726507608">Prześlij opinię</translation>
@@ -9511,6 +9513,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="7722040605881499779">Aktualizacja potrzebuje <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Przywróć domyślny motyw Chrome</translation>
 <translation id="7724603315864178912">Wytnij</translation>
+<translation id="7724711098786238351">Tryb demonstracyjny jest przeznaczony dla użytkowników powyżej 18 roku życia i podlega Warunkom korzystania z usług oraz Polityce prywatności Google. Dane wprowadzone na tym urządzeniu mogą być widoczne dla innych osób między okresowymi operacjami czyszczenia.</translation>
 <translation id="7726288096350730168">Usuń z tego urządzenia</translation>
 <translation id="7726391492136714301">Zobacz powiadomienia i aplikacje z telefonu</translation>
 <translation id="7727898923446098954">Karta została ukryta</translation>
@@ -11002,6 +11005,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8749805710397399240">Nie można przesłać ekranu Twojego urządzenia. Sprawdź uprawnienia rejestrowania zawartości ekranu w Preferencjach systemowych.</translation>
 <translation id="8749826920799243530">Urządzenie nie jest zarejestrowane</translation>
 <translation id="8749863574775030885">Dostęp do urządzeń USB od nieznanego dostawcy</translation>
+<translation id="8749865622265861882">Używasz urządzenia demonstracyjnego</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> chce się połączyć z portem szeregowym</translation>
 <translation id="8750346984209549530">APN sieci komórkowej</translation>
 <translation id="8750786237117206586">Zarządzanie ustawieniami dźwięku w ChromeOS Flex</translation>

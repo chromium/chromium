@@ -129,6 +129,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="2490684707762498678">Spravuje <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Pomocník a spätná väzba</translation>
 <translation id="2501278716633472235">Prejsť späť</translation>
+<translation id="2533138527374486328">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie pripojiť sa k akémukoľvek zariadeniu vo vašej miestnej sieti. Keď je vypnutá, weby sa nemôžu pripájať k zariadeniam v nej.</translation>
 <translation id="2546283357679194313">Súbory cookie a dáta webov</translation>
 <translation id="2570922361219980984">Prístup k polohe je vypnutý aj v tomto zariadení. Zapnite ho v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozbalená (zbalíte ju kliknutím)</translation>
@@ -424,6 +425,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5968921426641056619">Zadajte webovú adresu</translation>
 <translation id="5975083100439434680">Oddialiť</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Zapnúť feed Objaviť</translation>
 <translation id="6015775454662021376">Ovládajte prístup tohto webu do vášho zariadenia</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6042308850641462728">Viac</translation>
@@ -511,6 +513,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="7188508872042490670">Dáta webov v zariadení</translation>
 <translation id="7201549776650881587">Touto akciou odstránite všetky údaje a súbory cookie uložené všetkými webmi domény <ph name="ORIGIN" /> alebo jej aplikáciou na ploche</translation>
 <translation id="7203150201908454328">Rozbalené</translation>
+<translation id="7213166370492037743">Nepovoliť webom pripájať sa k zariadeniam vo vašej miestnej sieti</translation>
 <translation id="7219254577985949841">Chcete odstrániť dáta webu?</translation>
 <translation id="723171743924126238">Výber obrázkov</translation>
 <translation id="7243308994586599757">Možnosti sú k dispozícii v dolnej časti obrazovky</translation>

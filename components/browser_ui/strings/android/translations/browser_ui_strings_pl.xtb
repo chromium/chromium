@@ -129,6 +129,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="2490684707762498678">Zarządzane przez <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Pomoc i opinie</translation>
 <translation id="2501278716633472235">Wróć</translation>
+<translation id="2533138527374486328">Gdy ta opcja jest włączona, strony mogą prosić o zgodę na połączenie z dowolnym urządzeniem w Twojej sieci lokalnej. Gdy jest wyłączona, strony nie mogą łączyć się z urządzeniami w sieci lokalnej.</translation>
 <translation id="2546283357679194313">Pliki cookie i dane witryn</translation>
 <translation id="2570922361219980984">Dostęp do lokalizacji jest wyłączony też na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozwinięty – kliknij, by zwinąć.</translation>
@@ -512,6 +513,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="7188508872042490670">Dane witryn na urządzeniu</translation>
 <translation id="7201549776650881587">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez strony internetowe w grupie <ph name="ORIGIN" /> lub jej aplikację na ekranie głównym</translation>
 <translation id="7203150201908454328">Rozwinięty</translation>
+<translation id="7213166370492037743">Nie zezwalaj witrynom na łączenie się z żadnym urządzeniem w sieci lokalnej</translation>
 <translation id="7219254577985949841">Usunąć dane witryny?</translation>
 <translation id="723171743924126238">Wybierz zdjęcia</translation>
 <translation id="7243308994586599757">Opcje dostępne u dołu ekranu</translation>

@@ -724,6 +724,7 @@
 <translation id="2212735316055980242">ନୀତି ମିଳିଲା ନାହିଁ</translation>
 <translation id="2213606439339815911">ପ୍ରବିଷ୍ଟଗୁଡ଼ିକୁ ଅଣାଯାଉଛି...</translation>
 <translation id="2213612003795704869">ପୃଷ୍ଠା ପ୍ରିଣ୍ଟ କରାଯାଇଛି</translation>
+<translation id="2214086901479959524">ସେୟାର କରାଯାଇଥିବା ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକର ବ୍ୟବହାର ଜାରି ରଖିବାକୁ Chromeକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="2215368073167343359">Google ସାହାଯ୍ୟରେ ଅଟୋଫିଲ କରିବା</translation>
 <translation id="2215539479425228550">କ୍ଲାଇମ୍ବିଂ ଏବଂ ପର୍ବତାରୋହଣ</translation>
 <translation id="2215727959747642672">ଫାଇଲ୍ ଏଡିଟିଂ</translation>
@@ -802,6 +803,7 @@
 <translation id="2328651992442742497">ଅନୁମତି ଦିଆଯାଇଛି (ଡିଫଲ୍ଟ)</translation>
 <translation id="2328955282645810595">ନିର୍ମାଣକାର୍ଯ୍ୟ ଏବଂ ପାୱାର ଟୁଲ</translation>
 <translation id="2330137317877982892"><ph name="EXPIRATION_DATE_ABBR" />ରେ <ph name="CREDIT_CARD" />ର ମିଆଦ ସମାପ୍ତ ହେଉଛି</translation>
+<translation id="2334327033751265975">ସେୟାର କରାଯାଇଥିବା ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ ପୁଣି ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="2337852623177822836">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ବାରା ସେଟିଂ ନିୟନ୍ତ୍ରଣ କରାଯାଇଛି</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ପେୟାର୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="2344529975040861103">ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ Google Pay ସହ ଲିଙ୍କ କରାଯାଇଥିବା ଯୋଗୁଁ ଆପଣ ଏହି କାର୍ଡକୁ ଅଟୋଫିଲ କରିପାରିବେ</translation>
@@ -3310,6 +3312,7 @@
 <translation id="6587893660316489419">ଏନଭେଲପ B5</translation>
 <translation id="6587923378399804057">ଆପଣ କପି କରିଥିବା ଲିଙ୍କ୍</translation>
 <translation id="6591833882275308647">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ପରିଚାଳିତ ହେଉ ନାହିଁ</translation>
+<translation id="6595495738567740002">ଏହି ଡିଭାଇସରୁ Google କୁକୀଗୁଡ଼ିକୁ ଡିଲିଟ କରିବା ପାଇଁ <ph name="BEGIN_LINK" />Chromeରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="6596325263575161958">ଏନ୍‌କ୍ରିପ୍ସନ୍ ବିକଳ୍ପ</translation>
 <translation id="6596573334527383067">ଗତକାଲିର ଫଳାଫଳ ଦେଖାଅ</translation>
 <translation id="6597665340361269064">90 ଡିଗ୍ରୀ</translation>
@@ -4700,6 +4703,7 @@
 <translation id="9004367719664099443">VR ସମୟ ଅବଧି ପ୍ରକ୍ରିୟାରତ ଅଛି</translation>
 <translation id="9005998258318286617">PDF ଡକ୍ୟୁମେଣ୍ଟ ଲୋଡ୍ ହେବାରେ ବିଫଳ ହେଲା।</translation>
 <translation id="9008201768610948239">ଅଣଦେଖା କରନ୍ତୁ</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{1 ସାଇଟରୁ}other{# ସାଇଟରୁ}}</translation>
 <translation id="9012194306129927220">ବର୍ତ୍ତମାନ ଆପଣ Affirm କିମ୍ବା Zip ବ୍ୟବହାର କରି ସମୟ ଅନୁସାରେ ପେମେଣ୍ଟ କରିପାରିବେ</translation>
 <translation id="9014705027639070815">ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକ, ନିଜର ବିଜ୍ଞାପନଗୁଡ଼ିକର ପରଫରମାନ୍ସ ମାପିବାରେ ସେଗୁଡ଼ିକୁ ସାହାଯ୍ୟ କରିବା ପାଇଁ Chromeକୁ ସୂଚନା ମାଗିପାରେ। Chrome ସାଇଟଗୁଡ଼ିକୁ ସୀମିତ ପ୍ରକାରର ଡାଟା ସଂଗ୍ରହ କରିବାକୁ ଦେଇଥାଏ, ଯେପରି ଆପଣ ଏକ ସାଇଟକୁ ଭିଜିଟ କରିବା ପରେ କୌଣସି କ୍ରୟ କରିଛନ୍ତି ନା ନାହିଁ।</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> ପାଇଁ ଆପଣଙ୍କ ସୁରକ୍ଷା କୋଡ ଲେଖନ୍ତୁ</translation>

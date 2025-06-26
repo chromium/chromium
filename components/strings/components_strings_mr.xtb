@@ -724,6 +724,7 @@
 <translation id="2212735316055980242">धोरण आढळले नाही</translation>
 <translation id="2213606439339815911">एंट्री आणत आहे...</translation>
 <translation id="2213612003795704869">पेज प्रिंट केले आहे</translation>
+<translation id="2214086901479959524">तुमचे शेअर केलेले टॅब गट वापरणे पुढे सुरू ठेवण्यासाठी Chrome अपडेट करा</translation>
 <translation id="2215368073167343359">Autofill with Google</translation>
 <translation id="2215539479425228550">आरोहण आणि पर्वतारोहण</translation>
 <translation id="2215727959747642672">फाइलचे संपादन</translation>
@@ -802,6 +803,7 @@
 <translation id="2328651992442742497">अनुमती आहे (डीफॉल्ट)</translation>
 <translation id="2328955282645810595">बांधकाम आणि मोटारद्वारे चालवली जाणारी टूल</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> रोजी एक्स्पायर होईल</translation>
+<translation id="2334327033751265975">तुमचे शेअर केलेले टॅब गट पुन्हा उपलब्ध आहेत</translation>
 <translation id="2337852623177822836">सेटिंग तुमच्या ॲडमिनिस्ट्रेटरने नियंत्रित केलेले आहे</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> जोडू इच्छिते</translation>
 <translation id="2344529975040861103">तुम्ही हे कार्ड ऑटोफिल करू शकता, कारण तुमचे खाते Google Pay शी लिंक केलेले आहे</translation>
@@ -2154,6 +2156,7 @@
 <translation id="4635278307999235413">डेटा ॲडमिन कन्सोलवर पाठवत आहे</translation>
 <translation id="4636930964841734540">माहिती</translation>
 <translation id="4640225694041297329">मागील ७ दिवसांमधील परिणाम दाखवा</translation>
+<translation id="4642296966515958616">या टॅब गटामध्ये सामील होण्यासाठी, Chrome अपडेट करा</translation>
 <translation id="464342062220857295">शोध वैशिष्ट्ये</translation>
 <translation id="4644567637638438744">तुम्ही Microsoft OneDrive मध्ये साइन इन केलेले असेल तरच फाइल अपलोड करता येतात</translation>
 <translation id="4644670975240021822">उलट्या क्रमाने फेस डाउन</translation>
@@ -2927,6 +2930,7 @@
 <translation id="5967592137238574583">संपर्क माहिती संपादित करा</translation>
 <translation id="5967867314010545767">इतिहासातून काढून टाका</translation>
 <translation id="5968022600320704045">कोणतेही शोध परिणाम नाहीत</translation>
+<translation id="5968400720580217226">AI मोड</translation>
 <translation id="5969199813874624822">किंमत सेव्ह करून तिचा माग ठेवा</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">सहावा रोल</translation>
@@ -3148,6 +3152,7 @@
 <translation id="6326947323444967009">iOS सेटिंग्जमध्ये Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
 <translation id="6327065120806001832">स्थानिक नेटवर्क अ‍ॅक्सेस</translation>
 <translation id="6328639280570009161">नेटवर्क पूर्वानुमान अक्षम करून पहा</translation>
+<translation id="6329815962353376655">&lt;प्रश्न टाइप करा&gt;</translation>
 <translation id="6334834493885103305">तुम्ही आता Affirm, Zip किंवा Klarna वापरून कालांतराने पेमेंट करू शकता</translation>
 <translation id="6335029926534404762">ॲथलेटिक शूज</translation>
 <translation id="6336948221660696475">VR ला अनुमती नाही</translation>
@@ -3861,6 +3866,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">तुम्ही ते संपूर्ण Google उत्पादनांवर वापरू शकता</translation>
 <translation id="7523408071729642236">उत्पादन</translation>
+<translation id="7524958309155133228"><ph name="ENGINE" /> ला विचारा</translation>
 <translation id="7525067979554623046">तयार करा</translation>
 <translation id="7525804896095537619">नाव रिकामे असू शकत नाही</translation>
 <translation id="7526934274050461096">या साइटवर तुमचे कनेक्शन खाजगी नाही</translation>
@@ -4727,6 +4733,7 @@
 <translation id="9042617223719777575">जास्त क्षमता</translation>
 <translation id="9042827002460091668">तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> ला तुमच्या स्थानिक नेटवर्कवरील कोणतेही डिव्हाइस शोधून त्याच्याशी कनेक्ट करायचे आहे</translation>
 <translation id="9046864189129893978">मायक्रोफोन (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">या कृतींसाठी <ph name="POLICY_NAME" /> हे धोरण <ph name="POLICY_VALUE" />वर सेट करणे आवश्यक आहे : <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 in</translation>

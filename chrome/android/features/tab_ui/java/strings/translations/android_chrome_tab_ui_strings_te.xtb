@@ -46,6 +46,7 @@
 <translation id="2569352796411618312">సూచన: మీ <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లను ఇటీవల ఉపయోగించలేదు. వాటిని మూసివేయాలా?</translation>
 <translation id="257674075312929031">గ్రూప్‌గా చేయి</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్</translation>
+<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{మీరు <ph name="AUTO_DELETE_DELAY_ONE" /> రోజు నుండి ఉపయోగించని ఇన్‌యాక్టివ్ విభాగంలోని ఐటెమ్‌లను Chrome ఆటోమేటిక్‌గా మూసివేస్తుంది. మీరు దీన్ని ఇప్పుడు లేదా ఎప్పుడు కావాలంటే అప్పుడు సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.}other{మీరు <ph name="AUTO_DELETE_DELAY_MANY" /> రోజుల నుండి ఉపయోగించని ఇన్‌యాక్టివ్ విభాగంలోని ఐటెమ్‌లను Chrome ఆటోమేటిక్‌గా మూసివేస్తుంది. మీరు దీన్ని ఇప్పుడు లేదా ఎప్పుడు కావాలంటే అప్పుడు సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.}}</translation>
 <translation id="266935134738038806">సైట్‌కు వెళ్లండి</translation>
 <translation id="2671423594960767771">గ్రూప్‌ను షేర్ చేయండి</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> వారం క్రితం అప్‌డేట్ చేయబడింది}other{<ph name="NUM_WEEKS_MANY" /> వారాల క్రితం అప్‌డేట్ చేయబడింది}}</translation>
@@ -80,6 +81,7 @@
 <translation id="4076226664360336092">ట్యాబ్ గ్రూప్ లిస్ట్, ఫుల్ స్క్రీన్‌లో తెరవబడింది</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు సంబంధించినవిగా అనిపిస్తున్నాయి. వాటిని గ్రూప్ చేయాలా?</translation>
 <translation id="4159784952369912983">వంగపండు రంగు</translation>
+<translation id="4203448675570432781">ట్యాబ్స్ ఆటోమేటిక్ తొలగింపునకు సంబంధించిన మార్పుల షీట్ గురించి నోటీసు.</translation>
 <translation id="427987768447457592">కొత్త ట్యాబ్ గ్రూప్</translation>
 <translation id="4371591986692297148">ఇన్‌యాక్టివ్</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{ఐటెమ్‌ను రీస్టోర్ చేయండి}other{ఐటెమ్‌లను రీస్టోర్ చేయండి}}</translation>
@@ -187,6 +189,7 @@
 <translation id="8205266828577616993">ట్యాబ్‌ను పైక్ తరలించండి</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> నిమిషం క్రితం అప్‌డేట్ చేయబడింది}other{<ph name="NUM_MINS_MANY" /> నిమిషాల క్రితం అప్‌డేట్ చేయబడింది}}</translation>
 <translation id="8236097722223016103">బుక్‌మార్క్‌లకు జోడించండి</translation>
+<translation id="827881768507898324">ట్యాబ్స్ ఆటోమేటిక్ తొలగింపునకు చెందిన షీట్ పూర్తిగా తెరుచుకోవడానికి సంబంధించిన నోటీసు</translation>
 <translation id="8338427544764842461">మీ ట్యాబ్ గ్రూప్‌లు ఇక్కడ సేవ్ చేయబడతాయి, మీరు సైన్ ఇన్ చేసిన అన్ని పరికరాలలో అప్‌డేట్ చేయబడతాయి</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్, <ph name="COLOR_NAME" /> రంగును కలిగి ఉన్న షేర్ చేసిన ట్యాబ్ గ్రూప్‌ను విస్తరించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు, <ph name="COLOR_NAME" /> రంగును కలిగి ఉన్న షేర్ చేసిన ట్యాబ్ గ్రూప్‌ను విస్తరించండి.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ఎంపిక చేసిన <ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను మూసివేయండి}other{ఎంపిక చేసిన <ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లను మూసివేయండి}}</translation>
@@ -207,6 +210,7 @@
 <translation id="9090098097337832354">ఈ స్టోర్ గురించిన సమాచారాన్ని చూపించే స్క్రీన్ మూసివేయబడింది</translation>
 <translation id="9114502155681725011">ట్యాబ్ గ్రూప్ <ph name="TITLE_OF_GROUP" />, <ph name="COLOR_NAME" /> రంగు కోసం ట్యాబ్ గ్రూప్ చర్యల మెనూను తెరవండి.</translation>
 <translation id="9169594135889675189">గ్రూప్‌నకు కొత్త ట్యాబ్‌ను జోడించండి</translation>
+<translation id="9187834032751045001">ట్యాబ్స్ ఆటోమేటిక్ తొలగింపునకు చెందిన షీట్ సగం మాత్రమే తెరుచుకోవడానికి సంబంధించిన నోటీసు.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌తో ఉన్న ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో విస్తరించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ఉన్న ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో విస్తరించండి.}}</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="992256792861109788">గులాబి రంగు</translation>

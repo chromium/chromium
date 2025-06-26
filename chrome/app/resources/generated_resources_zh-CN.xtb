@@ -1596,6 +1596,7 @@
 <translation id="2096716221239095980">删除所有数据</translation>
 <translation id="2097950021134740304">取消清除订阅</translation>
 <translation id="2098805196501063469">检查其余的密码</translation>
+<translation id="2099883893520019102">过去 15 分钟</translation>
 <translation id="2101225219012730419">版本：</translation>
 <translation id="2102396546234652240">不允许网站使用您的麦克风</translation>
 <translation id="2102495993840063010">Android 应用</translation>
@@ -2155,6 +2156,7 @@
 <translation id="2476901513051581836">在知道离线存储空间大小之前，无法清理存储空间。</translation>
 <translation id="2476974672882258506">请关闭 Windows 以卸载 <ph name="PARALLELS_DESKTOP" />。</translation>
 <translation id="2477065602824695373">由于您设置了多个开关，“自动扫描”功能已关闭。</translation>
+<translation id="2477607419416067650">其他 Google 数据</translation>
 <translation id="2478176599153288112">“<ph name="EXTENSION" />”的媒体文件权限</translation>
 <translation id="24786041351753425">启用数据恢复服务。</translation>
 <translation id="2479541499757560845">无障碍键盘设置</translation>
@@ -2272,6 +2274,7 @@
 <translation id="2552966063069741410">时区</translation>
 <translation id="2553290675914258594">已验证的访问权限</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />无法连接到<ph name="NETWORK_ID" />。请选择其他网络或重试。</translation>
+<translation id="2553352788023127673">可在管理设置中删除搜索记录和密码</translation>
 <translation id="2553440850688409052">隐藏此插件</translation>
 <translation id="2554553592469060349">所选文件太大（大小上限为3mb）。</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> 个应用（共 <ph name="TOTAL_NUM_APPS" /> 个）可以发送通知</translation>
@@ -3447,6 +3450,7 @@
 <translation id="3408555740610481810">正在使用摄像头和麦克风</translation>
 <translation id="3409157109901479672">左侧</translation>
 <translation id="3409513286451883969">将所选内容翻译为<ph name="LANGUAGE" />(&amp;T)</translation>
+<translation id="3410151451624226773">在 Google 密码管理工具中管理</translation>
 <translation id="3412265149091626468">跳到所选部分</translation>
 <translation id="3413122095806433232">CA 证书颁发者：<ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">大小：</translation>
@@ -4663,7 +4667,7 @@
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4242577469625748426">无法在设备上安装策略设置：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4242825475818569385">您的<ph name="BEGIN_LINK" />浏览器和个人资料<ph name="END_LINK" />由 <ph name="DOMAIN" /> 管理</translation>
-<translation id="424315890655130736">请输入密码</translation>
+<translation id="424315890655130736">输入口令</translation>
 <translation id="4243504193894350135">打印机已暂停运行</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />，<ph name="GRADE" />级</translation>
 <translation id="4244238649050961491">查找更多触控笔应用</translation>
@@ -5872,6 +5876,7 @@
 <translation id="5102244391872941183">具有位置信息权限的应用和网站以及系统服务可以使用您的位置信息</translation>
 <translation id="5103311607312269661">调高显示屏亮度</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{删除分组}other{删除分组}}</translation>
+<translation id="5105442806410269908">管理其他 Google 数据</translation>
 <translation id="5106350808162641062">移除</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> 由 Family Link 监管。您可添加学校账号，以便在家长监管下访问学校资源。</translation>
 <translation id="5107093668001980925">一律不显示<ph name="MODULE_NAME" /></translation>
@@ -6175,6 +6180,7 @@
 <translation id="5320135788267874712">新的设备名称</translation>
 <translation id="532247166573571973">可能无法连接到服务器，请稍后重试。</translation>
 <translation id="5323328004379641163">自定义 Chrome 和此页面的外观</translation>
+<translation id="5323501626199324454">在您的 Google 账号中管理</translation>
 <translation id="5324300749339591280">应用列表</translation>
 <translation id="5324780743567488672">使用您的位置信息自动设置时区</translation>
 <translation id="5327248766486351172">名称</translation>
@@ -6522,6 +6528,7 @@
 <translation id="557722062034137776">重置您的设备不会影响您的 Google 账号或已同步到这些账号的任何数据，但您的设备中本地保存的所有文件都将被删除。</translation>
 <translation id="5578059481725149024">自动登录</translation>
 <translation id="5578387000057347457">输入自定义提示或突出显示文本，以创建图片</translation>
+<translation id="5579225964082017560">从“<ph name="SECTION_HEADER" />”列表中移除 <ph name="SITE" /></translation>
 <translation id="5581134892342029705">已将源语言翻译成<ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Microsoft Windows 硬件驱动程序验证</translation>
 <translation id="5581972110672966454">无法将设备加入到网域中。请重试，或与设备所有者/管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
@@ -8820,6 +8827,7 @@
 <translation id="7250616558727237648">目标设备未响应您的文件分享请求。请重试。</translation>
 <translation id="725109152065019550">抱歉，您的管理员已停用了您账号上的外部存储功能。</translation>
 <translation id="7251635775446614726">您的管理员说：“<ph name="CUSTOM_MESSAGE" />”</translation>
+<translation id="7252424535852086046">如需删除此数据，请前往其管理设置</translation>
 <translation id="7253521419891527137">了解详情(&amp;L)</translation>
 <translation id="7254951428499890870">确定要以诊断模式启动“<ph name="APP_NAME" />”吗？</translation>
 <translation id="725497546968438223">书签文件夹按钮</translation>
@@ -9106,6 +9114,7 @@
 <translation id="7450761244949417357">正在<ph name="ALTERNATIVE_BROWSER_NAME" />中打开</translation>
 <translation id="7450926666485653189">通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google</translation>
 <translation id="7453008956351770337">选择此打印机即表示您允许以下扩展程序访问您的打印机：</translation>
+<translation id="7453032093368223821">管理其他数据</translation>
 <translation id="7454548535253569100">门户网站：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">贵组织已关闭密码保存功能</translation>
 <translation id="7455730275746867420">管理额外容器</translation>
@@ -9506,6 +9515,7 @@
 <translation id="7722040605881499779">要更新，所需空间为：<ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">重置为默认 Chrome</translation>
 <translation id="7724603315864178912">剪切</translation>
+<translation id="7726288096350730168">从此设备中删除</translation>
 <translation id="7726391492136714301">查看您手机上的通知和应用</translation>
 <translation id="7727898923446098954">标签页已隐藏</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{暂停此标签页}other{暂停这些标签页}}</translation>
@@ -11061,6 +11071,7 @@
 <translation id="8791157330927639737">详细了解更新</translation>
 <translation id="8791534160414513928">将“Do Not Track”请求与浏览流量一起发送</translation>
 <translation id="8793390639824829328">网站使用此功能来滚动和缩放分享的标签页</translation>
+<translation id="8793895150509408038">查看“<ph name="SECTION_HEADER" />”列表中 <ph name="SITE" /> 的网站详情</translation>
 <translation id="879413103056696865">开启热点后，您的 <ph name="PHONE_NAME" /> 将会：</translation>
 <translation id="8794548468611058947">您可以为此 <ph name="DEVICE_TYPE" /> 创建 PIN 码，而无需输入您的 Google 账号密码进行登录</translation>
 <translation id="8795916974678578410">打开新的窗口</translation>
@@ -11697,7 +11708,7 @@
 <translation id="936801553271523408">系统诊断数据</translation>
 <translation id="93766956588638423">修复扩展程序</translation>
 <translation id="938623846785894166">不常用的文件</translation>
-<translation id="939598580284253335">请输入密码</translation>
+<translation id="939598580284253335">输入口令</translation>
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="940212040923880623">查找和修改(&amp;F)</translation>
 <translation id="942296794412775122">麦克风开/关</translation>

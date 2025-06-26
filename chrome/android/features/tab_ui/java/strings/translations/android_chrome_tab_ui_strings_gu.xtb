@@ -46,6 +46,7 @@
 <translation id="2569352796411618312">સૂચન: હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
 <translation id="257674075312929031">જૂથ</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ</translation>
+<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{નિષ્ક્રિય વિભાગમાંની જે આઇટમનો તમે <ph name="AUTO_DELETE_DELAY_ONE" /> દિવસમાં ઉપયોગ ન કર્યો હોય, તેને Chrome ઑટોમૅટિક રીતે બંધ કરે છે. તમે સેટિંગમાં જઈને આને અત્યારે અથવા કોઈપણ સમયે બંધ કરી શકો છો.}one{નિષ્ક્રિય વિભાગમાંની જે આઇટમનો તમે <ph name="AUTO_DELETE_DELAY_MANY" /> દિવસમાં ઉપયોગ ન કર્યો હોય, તેને Chrome ઑટોમૅટિક રીતે બંધ કરે છે. તમે સેટિંગમાં જઈને આને અત્યારે અથવા કોઈપણ સમયે બંધ કરી શકો છો.}other{નિષ્ક્રિય વિભાગમાંની જે આઇટમનો તમે <ph name="AUTO_DELETE_DELAY_MANY" /> દિવસમાં ઉપયોગ ન કર્યો હોય, તેને Chrome ઑટોમૅટિક રીતે બંધ કરે છે. તમે સેટિંગમાં જઈને આને અત્યારે અથવા કોઈપણ સમયે બંધ કરી શકો છો.}}</translation>
 <translation id="266935134738038806">સાઇટની મુલાકાત લો</translation>
 <translation id="2671423594960767771">જૂથ શેર કરો</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> અઠવાડિયા પહેલાં અપડેટ કરવામાં આવ્યું}one{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં અપડેટ કરવામાં આવ્યું}other{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં અપડેટ કરવામાં આવ્યું}}</translation>
@@ -80,6 +81,7 @@
 <translation id="4076226664360336092">ટૅબના ગ્રૂપની સૂચિ સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવી</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="4159784952369912983">જાંબલી</translation>
+<translation id="4203448675570432781">ટૅબને ઑટોમૅટિક રીતે ડિલીટ કરવાની સુવિધામાં કરેલા ફેરફારોની બોટમ શીટ બંધ હોવાની સૂચના.</translation>
 <translation id="427987768447457592">ટૅબનું નવું ગ્રૂપ</translation>
 <translation id="4371591986692297148">નિષ્ક્રિય</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{આઇટમને રિસ્ટોર કરો}one{આઇટમને રિસ્ટોર કરો}other{આઇટમને રિસ્ટોર કરો}}</translation>
@@ -187,6 +189,7 @@
 <translation id="8205266828577616993">ટૅબ ઉપર ખસેડો</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}one{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}other{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}}</translation>
 <translation id="8236097722223016103">બુકમાર્કમાં ઉમેરો</translation>
+<translation id="827881768507898324">ટૅબને ઑટોમૅટિક રીતે ડિલીટ કરવાની સુવિધામાં કરેલા ફેરફારોની બોટમ શીટ સંપૂર્ણપણે ખોલેલી હોવાની સૂચના</translation>
 <translation id="8338427544764842461">તમારા ટૅબના ગ્રૂપ અહીં સાચવવામાં આવે છે અને તમારા સાઇન ઇન કરેલા બધા ડિવાઇસ પર અપડેટ કરવામાં આવે છે</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને મોટું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને મોટું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને બંધ કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}}</translation>
@@ -207,6 +210,7 @@
 <translation id="9090098097337832354">આ સ્ટોર વિશેની માહિતી બતાવવાની બંધ કરી છે</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> રંગના, ટૅબના ગ્રૂપ <ph name="TITLE_OF_GROUP" /> માટેનું ટૅબના ગ્રૂપનું ક્રિયા મેનૂ ખોલો.</translation>
 <translation id="9169594135889675189">ગ્રૂપમાં નવું ટૅબ ઉમેરો</translation>
+<translation id="9187834032751045001">ટૅબને ઑટોમૅટિક રીતે ડિલીટ કરવાની સુવિધામાં કરેલા ફેરફારોની બોટમ શીટ અડધી ખોલેલી હોવાની સૂચના.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને મોટું કરો.}one{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને મોટું કરો.}other{<ph name="COLOR_NAME" /> રંગના <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="992256792861109788">ગુલાબી</translation>

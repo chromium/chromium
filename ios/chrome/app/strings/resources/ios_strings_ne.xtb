@@ -388,6 +388,7 @@
 <translation id="251837347827266434">तपाईंलाई साइन आउट गरिने छ, ट्याबहरू बन्द गरिने छन्, ब्राउजिङ डेटा मेटाइने छ</translation>
 <translation id="2520787026086861736">यो सुविधा अफ गर्न <ph name="BEGIN_LINK" />अटोफिल तथा पासवर्डहरू<ph name="END_LINK" />मा जानुहोस्</translation>
 <translation id="2523295204312809179">तपाईंले कुनै ट्याब समूह बन्द गर्दा उक्त ट्याब समूह यहाँ स्वतः सेभ हुन्छ</translation>
+<translation id="2524699375503213836">Safari बाट आफ्नो डेटा इम्पोर्ट गर्नुहोस्</translation>
 <translation id="2529021024822217800">सबै खोल्नुहोस्</translation>
 <translation id="2536991091671391962">तपाईं सेभ गरिएका पासवर्डहरू जुनसुकै डिभाइसमा प्रयोग गर्न सक्नुहुन्छ। ती पासवर्डहरू <ph name="EMAIL" /> को Google पासवर्ड म्यानेजरमा सेभ गरिन्छन्।</translation>
 <translation id="2538103551183528357">लुकाइएको, पासवर्ड</translation>
@@ -1707,7 +1708,7 @@
 <translation id="7925108652071887026">स्वतः भरण डेटा</translation>
 <translation id="7926975587469166629">कार्डको उपनाम</translation>
 <translation id="7927711904086083099">चयन गरिएको छैन</translation>
-<translation id="7927902634113905831">तपाईंले <ph name="FILESIZE" /> आकार भएको "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" सेभ गर्ने प्रयोजनका लागि प्रयोग गर्न चाहेको खाता चयन गर्नुहोस्</translation>
+<translation id="7927902634113905831">तपाईंले "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILESIZE" />) सेभ गर्ने प्रयोजनका लागि प्रयोग गर्न चाहेको खाता चयन गर्नुहोस्</translation>
 <translation id="7930998711684428189">डेटा चोरीको घटनामा पासवर्डको खुलासा हुँदा तपाईंलाई चेतावनी दिन्छ।</translation>
 <translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> मा खोज्नुहोस्</translation>
 <translation id="7938254975914653459">फेसटाइम</translation>

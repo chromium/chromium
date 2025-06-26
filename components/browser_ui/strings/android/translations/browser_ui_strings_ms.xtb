@@ -129,6 +129,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="2490684707762498678">Diurus oleh <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Bantuan &amp; maklum balas</translation>
 <translation id="2501278716633472235">Kembali</translation>
+<translation id="2533138527374486328">Apabila dihidupkan, laman boleh meminta untuk menyambung kepada mana-mana peranti pada rangkaian setempat anda. Apabila dimatikan, laman tidak boleh menyambung kepada peranti pada rangkaian setempat anda.</translation>
 <translation id="2546283357679194313">Kuki dan data tapak</translation>
 <translation id="2570922361219980984">Akses lokasi turut dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Dikembangkan - klik untuk meruntuhkan.</translation>
@@ -512,6 +513,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7188508872042490670">Data laman pada peranti</translation>
 <translation id="7201549776650881587">Tindakan ini akan memadamkan semua data dan kuki yang disimpan oleh semua laman di bawah <ph name="ORIGIN" /> atau disimpan oleh apl laman tersebut pada Skrin utama anda</translation>
 <translation id="7203150201908454328">Diperluas</translation>
+<translation id="7213166370492037743">Jangan benarkan laman menyambung kepada mana-mana peranti pada rangkaian setempat anda</translation>
 <translation id="7219254577985949841">Padamkan data laman?</translation>
 <translation id="723171743924126238">Pilih imej</translation>
 <translation id="7243308994586599757">Pilihan tersedia berhampiran bahagian bawah skrin</translation>

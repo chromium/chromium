@@ -356,6 +356,7 @@
 <translation id="1232569758102978740">अशीर्षकांकित</translation>
 <translation id="1233497634904001272">विनंती पूर्ण करण्यासाठी तुमच्या सिक्युरिटी की ला पुन्हा स्पर्श करा.</translation>
 <translation id="1233721473400465416">लोकॅल</translation>
+<translation id="1233835246554936745">{0,plural, =1{खात्यामध्ये १ आयटम सेव्ह करा}other{खात्यामध्ये # आयटम सेव्ह करा}}</translation>
 <translation id="1234736487471201993">या इमेजसाठी QR कोड तयार करा</translation>
 <translation id="1234808891666923653">सेवा कामगार</translation>
 <translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
@@ -5655,6 +5656,7 @@
 <translation id="4918844574251943176">इमेज कॉपी केली</translation>
 <translation id="4921348630401250116">टेक्‍स्‍ट टू स्‍पीच</translation>
 <translation id="4922104989726031751">तुमच्या ऑपरेटिंग सिस्टीमसह Password Manager वापरण्यासाठी, Chromium पुन्हा लाँच करा आणि तुमच्या कॉंप्युटरच्या पासवर्ड व्यवस्थापकाचा अ‍ॅक्सेस द्या. पुन्हा लाँच केल्यानंतर तुमचे टॅब पुन्हा उघडतील.</translation>
+<translation id="4923561999941435531">{0,plural, =1{खात्यामध्ये १ आयटम सेव्ह करा}other{खात्यामध्ये # आयटम सेव्ह करा}}</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> अनइंस्टॉल करत आहे...</translation>
 <translation id="4923977675318667854">टॅब गट दाखवा</translation>
 <translation id="4924002401726507608">फीडबॅक सबमिट करा</translation>
@@ -9535,6 +9537,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7722040605881499779">अपडेटसाठी आवश्यक: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">डीफॉल्ट Chrome वर रीसेट करा</translation>
 <translation id="7724603315864178912">कट करा</translation>
+<translation id="7724711098786238351">डेमो मोड हा १८ वर्षांहून अधिक वयाच्या वापरकर्त्यांसाठी असून, तो Google च्या सेवा अटी आणि गोपनीयता धोरण यांद्वारा संचालित केला जातो. या डिव्हाइसवर एंटर केलेला डेटा वेळोवेळी पुसून टाकण्याच्या कृतीदरम्यान इतर लोक पाहू शकतात.</translation>
 <translation id="7726391492136714301">तुमच्या फोनच्या सूचना आणि अ‍ॅप्स पहा</translation>
 <translation id="7727898923446098954">टॅब लपवला आहे</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{हा टॅब थांबवा}other{हे टॅब थांबवा}}</translation>
@@ -11027,6 +11030,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8749805710397399240">तुमची स्क्रीन कास्ट करू शकत नाही. सिस्टीम प्राधान्ये यामध्ये स्क्रीन रेकॉर्डिंग परवानगी तपासा.</translation>
 <translation id="8749826920799243530">डिव्हाइसची नोंदणी केलेली नाही</translation>
 <translation id="8749863574775030885">अज्ञात विक्रेत्याकडील USB डिव्हाइस ॲक्सेस करा</translation>
+<translation id="8749865622265861882">तुम्ही डेमो डिव्हाइस वापरत आहात</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> ला सिरीअल पोर्टशी कनेक्ट करायचे आहे</translation>
 <translation id="8750346984209549530">मोबाइल APN</translation>
 <translation id="8750786237117206586">ChromeOS Flex ऑडिओ सेटिंग्ज व्यवस्थापित करा</translation>

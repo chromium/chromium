@@ -122,6 +122,7 @@
 <translation id="2569974318947988067">Chrome ले HTTPS मा नेभिगेसन अपग्रेड गर्ने प्रयास गर्ने छ</translation>
 <translation id="2571392474191184472">तपाईंको सङ्गठनले Chrome व्यवस्थापन गर्छ</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> अहिले यो Chrome प्रोफाइलमा साइन इन हुनुहुन्छ। तपाईंले ब्राउज गर्ने डेटा गोप्य राख्न Chrome ले तपाईंका निम्ति छुट्टै प्रोफाइल बनाइदिन सक्छ।</translation>
+<translation id="2579190314336775785">पासवर्डहरू Chrome बाहिरबाट मात्र मेटाउन सकिन्छ</translation>
 <translation id="2580411288591421699">हाल चलिरहेको Google Chrome संस्करणलाई स्थापना गर्न सकिँदैन। कृपया Google Chrome बन्द गर्नुहोस् र पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="2586406160782125153">यसले यस यन्त्रको तपाईंको ब्राउजिङको डेटा मेट्नेछ। पछि आफ्नो डेटा प्राप्त गर्न Chrome मा <ph name="USER_EMAIL" /> को रूपमा साइन इन गर्नुहोस्।</translation>
 <translation id="259935314519650377">डाउनलोड गरिएको इन्स्टलरको क्यास बनाउन सकिएन। त्रुटि भयो: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>

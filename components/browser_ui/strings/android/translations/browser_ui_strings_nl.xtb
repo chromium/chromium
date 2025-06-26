@@ -129,6 +129,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="2490684707762498678">Beheerd door <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Hulp en feedback</translation>
 <translation id="2501278716633472235">Terug</translation>
+<translation id="2533138527374486328">Als deze optie aanstaat, kunnen sites vragen of ze verbinding mogen maken met apparaten in je lokale netwerk. Staat de optie uit, dan kunnen sites geen verbinding maken met apparaten in je lokale netwerk.</translation>
 <translation id="2546283357679194313">Cookies en sitegegevens</translation>
 <translation id="2570922361219980984">Locatietoegang staat ook uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Uitgevouwen; klik om samen te vouwen.</translation>
@@ -512,6 +513,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7188508872042490670">Sitegegevens op het apparaat</translation>
 <translation id="7201549776650881587">Met deze actie verwijder je alle gegevens en cookies die zijn opgeslagen door alle sites onder <ph name="ORIGIN" /> of door de bijbehorende app op je startscherm</translation>
 <translation id="7203150201908454328">Uitgevouwen</translation>
+<translation id="7213166370492037743">Niet toestaan dat sites verbinding maken met apparaten in je lokale netwerk</translation>
 <translation id="7219254577985949841">Sitegegevens verwijderen?</translation>
 <translation id="723171743924126238">Afbeeldingen selecteren</translation>
 <translation id="7243308994586599757">Opties beschikbaar onder aan het scherm</translation>

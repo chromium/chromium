@@ -356,6 +356,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1232569758102978740">Sem nome</translation>
 <translation id="1233497634904001272">Toque novamente na chave de segurança para concluir o pedido.</translation>
 <translation id="1233721473400465416">Local</translation>
+<translation id="1233835246554936745">{0,plural, =1{Guardar 1 item na conta}other{Guardar # itens na conta}}</translation>
 <translation id="1234736487471201993">Criar código QR para esta imagem</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
@@ -5646,6 +5647,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4918844574251943176">Imagem copiada</translation>
 <translation id="4921348630401250116">Síntese de voz</translation>
 <translation id="4922104989726031751">Para usar o Gestor de Palavras-passe com o seu sistema operativo, reinicie o Chromium e permita o acesso ao gestor de palavras-passe do computador. Os separadores reabrem depois de serem reiniciados.</translation>
+<translation id="4923561999941435531">{0,plural, =1{Guardar 1 item na conta}other{Guardar # itens na conta}}</translation>
 <translation id="492363500327720082">A desinstalar a app <ph name="APP_NAME" />…</translation>
 <translation id="4923977675318667854">Mostrar grupos de separadores</translation>
 <translation id="4924002401726507608">Enviar feedback</translation>
@@ -9524,6 +9526,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="7722040605881499779">Necessário para atualizar: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Repor a predefinição do Chrome</translation>
 <translation id="7724603315864178912">Cortar</translation>
+<translation id="7724711098786238351">O modo de demonstração destina-se a utilizadores com mais de 18 anos e é regido pelos Termos de Utilização e pela Política de Privacidade da Google. Os dados introduzidos neste dispositivo podem ser vistos por outras pessoas entre limpezas periódicas.</translation>
 <translation id="7726391492136714301">Veja as notificações e as apps do seu telemóvel</translation>
 <translation id="7727898923446098954">Separador oculto</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{Pausar este separador}other{Pausar estes separadores}}</translation>
@@ -11018,6 +11021,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8749805710397399240">Não é possível transmitir o seu ecrã. Verifique a autorização Gravação de ecrã nas Preferências do sistema.</translation>
 <translation id="8749826920799243530">O dispositivo não está inscrito</translation>
 <translation id="8749863574775030885">Aceder a dispositivos USB de um fornecedor desconhecido</translation>
+<translation id="8749865622265861882">Está a usar um dispositivo de demonstração</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> quer estabelecer ligação a uma porta de série</translation>
 <translation id="8750346984209549530">APN de rede móvel</translation>
 <translation id="8750786237117206586">Gerir definições de áudio do ChromeOS Flex</translation>

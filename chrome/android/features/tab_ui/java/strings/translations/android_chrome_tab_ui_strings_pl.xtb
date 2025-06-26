@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">Twoje grupy kart są automatycznie zapisywane</translation>
 <translation id="6054741997831917303">Ostatnio cena tego elementu spadła z <ph name="PREVIOUS_PRICE" /> do <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Wszystkie zduplikowane karty będą teraz również archiwizowane, z wyjątkiem ostatnio używanej kopii.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Zamknij <ph name="TABS_COUNT_ONE" /> wybrany element}few{Zamknij <ph name="TABS_COUNT_MANY" /> wybrane elementy}many{Zamknij <ph name="TABS_COUNT_MANY" /> wybranych elementów}other{Zamknij <ph name="TABS_COUNT_MANY" /> wybranego elementu}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Przenieś grupę do nowego okna}few{Przenieś grupę do innego okna}many{Przenieś grupę do innego okna}other{Przenieś grupę do innego okna}}</translation>
 <translation id="6193448654517602979">Wybierz karty</translation>
 <translation id="6220820548421939212">Tak. Chętnie</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">Grupa kart „<ph name="TAB_GROUP_NAME" />” nie jest już dostępna</translation>
 <translation id="7452985128687107478">Grupy kart są automatycznie zapisywane i aktualizowane na wszystkich Twoich urządzeniach</translation>
 <translation id="747459581954555080">Przywróć wszystkie</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Przywróć <ph name="TABS_COUNT_ONE" /> wybrany element}few{Przywróć <ph name="TABS_COUNT_MANY" /> wybrane elementy}many{Przywróć <ph name="TABS_COUNT_MANY" /> wybranych elementów}other{Przywróć <ph name="TABS_COUNT_MANY" /> wybranego elementu}}</translation>
 <translation id="753732157349120914">Przełącznik kart</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> opinia z Google}few{<ph name="REVIEWS_COUNT_MANY" /> opinie z Google}many{<ph name="REVIEWS_COUNT_MANY" /> opinii z Google}other{<ph name="REVIEWS_COUNT_MANY" /> opinii z Google}}</translation>
 <translation id="7559245342362162951">Pokazuj karty grupy na siatce pełnego ekranu</translation>

@@ -129,6 +129,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" /> басқарады</translation>
 <translation id="2498359688066513246">Анықтама және пікір</translation>
 <translation id="2501278716633472235">Артқа қайту</translation>
+<translation id="2533138527374486328">Қосулы болса, сайттар жергілікті желідегі кез келген құрылғыға қосылуды сұрай алады. Өшірулі болса, сайттар жергілікті желідегі құрылғыларға қосыла алмайды.</translation>
 <translation id="2546283357679194313">Cookie файлдары және торап деректері</translation>
 <translation id="2570922361219980984">Бұл құрылғыда да орынды анықтау қызметі өшірулі. Оны <ph name="BEGIN_LINK" />Android параметрлері<ph name="END_LINK" /> арқылы қосыңыз.</translation>
 <translation id="257931822824936280">Жайылған – жию үшін басыңыз.</translation>
@@ -424,6 +425,7 @@
 <translation id="5968921426641056619">Веб-мекенжайды енгізіңіз</translation>
 <translation id="5975083100439434680">Кішірейту</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Discover фидін қосу</translation>
 <translation id="6015775454662021376">Осы сайттың құрылғыңызға кіруін басқарыңыз.</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6042308850641462728">Жаю</translation>
@@ -511,6 +513,7 @@
 <translation id="7188508872042490670">Құрылғыдағы сайт деректері</translation>
 <translation id="7201549776650881587"><ph name="ORIGIN" /> доменіндегі барлық сайт немесе негізгі экрандағы оның қолданбасы сақтаған барлық дерек пен cookie файлы жойылады.</translation>
 <translation id="7203150201908454328">Кеңейтілген</translation>
+<translation id="7213166370492037743">Сайттарға жергілікті желідегі құрылғыларға қосылуға рұқсат бермеу</translation>
 <translation id="7219254577985949841">Сайт деректерін жою керек пе?</translation>
 <translation id="723171743924126238">Кескіндерді таңдау</translation>
 <translation id="7243308994586599757">Опциялар экранның төменгі жағында тұрады</translation>

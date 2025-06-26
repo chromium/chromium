@@ -46,6 +46,7 @@
 <translation id="2569352796411618312">Sugerencia: Últimamente no usaste <ph name="NUMBER_OF_TABS" /> de tus pestañas. ¿Quieres cerrarlas?</translation>
 <translation id="257674075312929031">Agrupar</translation>
 <translation id="2662028055331606429">Calificación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{Chrome cierra automáticamente los elementos de la sección inactiva que no usaste en <ph name="AUTO_DELETE_DELAY_ONE" /> día. Puedes desactivar esta opción ahora o en cualquier momento en Configuración.}other{Chrome cierra automáticamente los elementos de la sección inactiva que no usaste en <ph name="AUTO_DELETE_DELAY_MANY" /> días. Puedes desactivar esta opción ahora o en cualquier momento en Configuración.}}</translation>
 <translation id="266935134738038806">Visitar sitio</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Se actualizó hace <ph name="NUM_WEEKS_ONE" /> semana}other{Se actualizó hace <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
@@ -80,6 +81,7 @@
 <translation id="4076226664360336092">Lista de grupos de pestañas, abierta en tamaño completo</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>
 <translation id="4159784952369912983">Púrpura</translation>
+<translation id="4203448675570432781">Se cerró el aviso sobre los cambios en la función de eliminación automática de pestañas.</translation>
 <translation id="427987768447457592">Nuevo grupo de pestañas</translation>
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{Restablecer elemento}other{Restablecer elementos}}</translation>
@@ -112,6 +114,7 @@
 <translation id="5556417849629758491">Ver información de la tienda (la opción está disponible cerca de la parte superior de la pantalla)</translation>
 <translation id="5627941783489838464">No hay actualizaciones de pestañas</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vínculo de Chrome}other{<ph name="TABS_COUNT_MANY" /> vínculos de Chrome}}</translation>
+<translation id="5746204836956568669">¿Quieres agrupar <ph name="NUMBER_OF_TABS" /> pestañas para trabajar más rápido?</translation>
 <translation id="58326064309361797">Arrastra las pestañas para agruparlas</translation>
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5972844218283131174">Anular la selección</translation>
@@ -186,6 +189,7 @@
 <translation id="8205266828577616993">Mover la pestaña hacia arriba</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Se actualizó hace <ph name="NUM_MINS_ONE" /> minuto}other{Se actualizó hace <ph name="NUM_MINS_MANY" /> minutos}}</translation>
 <translation id="8236097722223016103">Agregar a favoritos</translation>
+<translation id="827881768507898324">Aviso sobre la función de eliminación automática de pestañas en tamaño completo</translation>
 <translation id="8338427544764842461">Tus grupos de pestañas se guardan aquí y se actualizan en todos los dispositivos en los que accediste a tu cuenta</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Expandir el grupo de pestañas compartido con <ph name="TABS_COUNT_ONE" /> pestaña, en color <ph name="COLOR_NAME" />.}other{Expandir el grupo de pestañas compartido con <ph name="TABS_COUNT_MANY" /> pestañas, en color <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Cierra <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Cierra <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
@@ -206,6 +210,7 @@
 <translation id="9090098097337832354">La hoja de información sobre esta tienda está cerrada</translation>
 <translation id="9114502155681725011">Abrir el menú de acciones del grupo de pestañas <ph name="TITLE_OF_GROUP" />, de color <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Agrega una pestaña nueva al grupo</translation>
+<translation id="9187834032751045001">Aviso sobre la función de eliminación automática de pestañas a media altura.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Expandir el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña, en color <ph name="COLOR_NAME" />.}other{Expandir el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas, en color <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="992256792861109788">Rosa</translation>

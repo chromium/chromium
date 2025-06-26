@@ -299,7 +299,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1486096554574027028">Cerca password</translation>
 <translation id="1492194039220927094">Push delle policy:</translation>
 <translation id="1495677929897281669">Torna alla scheda</translation>
-<translation id="1500286806237135498">Fotocamere (<ph name="CAMERAS_COUNT" />)</translation>
+<translation id="1500286806237135498">Videocamere (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">In cavo</translation>
 <translation id="1507202001669085618">&lt;p&gt;Vedrai questo errore se stai utilizzando un portale Wi-Fi che richiede l'accesso per poterti connettere a Internet.&lt;/p&gt;
     &lt;p&gt;Per risolvere il problema, fai clic su &lt;strong&gt;Connetti&lt;/strong&gt; nella pagina che stai cercando di aprire.&lt;/p&gt;</translation>
@@ -724,6 +724,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2212735316055980242">Policy non trovata</translation>
 <translation id="2213606439339815911">Recupero voci...</translation>
 <translation id="2213612003795704869">La pagina è stampata</translation>
+<translation id="2214086901479959524">Aggiorna Chrome per continuare a utilizzare i gruppi di schede condivisi</translation>
 <translation id="2215368073167343359">Compilazione automatica Google</translation>
 <translation id="2215539479425228550">Alpinismo e arrampicata</translation>
 <translation id="2215727959747642672">Modifica di file</translation>
@@ -802,6 +803,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2328651992442742497">Consentita (opzione predefinita)</translation>
 <translation id="2328955282645810595">Edilizia e utensili elettrici</translation>
 <translation id="2330137317877982892">Scadenza della carta <ph name="CREDIT_CARD" />: <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="2334327033751265975">I gruppi di schede condivisi sono di nuovo disponibili</translation>
 <translation id="2337852623177822836">Impostazione controllata dall'amministratore</translation>
 <translation id="2340263603246777781">Il sito <ph name="ORIGIN" /> richiede l'accoppiamento tramite Bluetooth</translation>
 <translation id="2344529975040861103">Puoi usare la compilazione automatica per questa carta perché il tuo account è collegato a Google Pay</translation>

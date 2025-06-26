@@ -2158,6 +2158,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4635278307999235413">Menghantar data kepada konsol pentadbiran</translation>
 <translation id="4636930964841734540">Maklumat</translation>
 <translation id="4640225694041297329">Paparkan hasil carian dari 7 hari yang lalu</translation>
+<translation id="4642296966515958616">Untuk menyertai kumpulan tab ini, kemas kinikan Chrome</translation>
 <translation id="464342062220857295">Ciri carian</translation>
 <translation id="4644567637638438744">Fail hanya boleh dimuat naik jika anda telah log masuk ke Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Susunan terbalik menghadap ke bawah</translation>
@@ -2931,6 +2932,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5967592137238574583">Edit Maklumat Hubungan</translation>
 <translation id="5967867314010545767">Buang daripada sejarah</translation>
 <translation id="5968022600320704045">Tiada hasil carian</translation>
+<translation id="5968400720580217226">Mod AI</translation>
 <translation id="5969199813874624822">Simpan dan Jejak Harga</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Gulungan Keenam</translation>
@@ -3151,6 +3153,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6326947323444967009">Tetapkan Chrome sebagai penyemak imbas lalai sistem dalam tetapan iOS</translation>
 <translation id="6327065120806001832">akses rangkaian setempat</translation>
 <translation id="6328639280570009161">Cuba lumpuhkan ramalan rangkaian</translation>
+<translation id="6329815962353376655">&lt;Taip soalan&gt;</translation>
 <translation id="6334834493885103305">Kini anda boleh membayar secara ansuran menggunakan Affirm, Zip atau Klarna</translation>
 <translation id="6335029926534404762">Kasut Sukan</translation>
 <translation id="6336948221660696475">VR tidak dibenarkan</translation>
@@ -3865,6 +3868,7 @@ Butiran tambahan:
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Anda boleh menggunakan alamat ini merentas produk Google</translation>
 <translation id="7523408071729642236">Pembuatan</translation>
+<translation id="7524958309155133228">Tanya <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Cipta</translation>
 <translation id="7525804896095537619">Nama tidak boleh dibiarkan kosong</translation>
 <translation id="7526934274050461096">Sambungan anda ke tapak ini tidak berciri peribadi</translation>
@@ -4733,6 +4737,7 @@ Butiran tambahan:
 <translation id="9042617223719777575">Kapasiti Besar</translation>
 <translation id="9042827002460091668">Periksa sambungan Internet anda, kemudian cuba lagi</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> mahu menemukan dan menyambung kepada mana-mana peranti pada rangkaian setempat anda</translation>
 <translation id="9046864189129893978">Mikrofon (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Tindakan ini memerlukan dasar <ph name="POLICY_NAME" /> ditetapkan kepada <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 in</translation>

@@ -112,6 +112,7 @@
 <translation id="5556417849629758491">Geschäftsinformationen anzeigen, Option ist oben auf dem Bildschirm verfügbar</translation>
 <translation id="5627941783489838464">Keine Tab-Updates</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Link aus Chrome}other{<ph name="TABS_COUNT_MANY" /> Links aus Chrome}}</translation>
+<translation id="5746204836956568669"><ph name="NUMBER_OF_TABS" /> Tabs gruppieren, um schneller zu arbeiten?</translation>
 <translation id="58326064309361797">Tabs zum Gruppieren ziehen</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5972844218283131174">Auswahl für alle aufheben</translation>

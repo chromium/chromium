@@ -121,6 +121,7 @@
 <translation id="6051432659151380973">Välilehtiryhmät tallentuvat automaattisesti</translation>
 <translation id="6054741997831917303">Tämän tuotteen hinta on laskenut äskettäin: aiemmin <ph name="PREVIOUS_PRICE" />, nyt <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Myös kaikki välilehtien kopiot arkistoidaan nyt, lukuun ottamatta viimeksi käytettyä kopiota.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu kohde}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua kohdetta}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Siirrä ryhmä uuteen ikkunaan}other{Siirrä ryhmä toiseen ikkunaan}}</translation>
 <translation id="6193448654517602979">Valitse välilehdet</translation>
 <translation id="6220820548421939212">Kyllä. Laita päälle</translation>
@@ -157,6 +158,7 @@
 <translation id="7369451074646620503">Välilehtiryhmä "<ph name="TAB_GROUP_NAME" />" ei enää saatavilla</translation>
 <translation id="7452985128687107478">Välilehtiryhmät tallentuvat ja päivittyvät automaattisesti kaikilla laitteillasi</translation>
 <translation id="747459581954555080">Palauta kaikki</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Palauta <ph name="TABS_COUNT_ONE" /> valittu kohde}other{Palauta <ph name="TABS_COUNT_MANY" /> valittua kohdetta}}</translation>
 <translation id="753732157349120914">Välilehtien vaihtaja</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> arvostelu Googlesta}other{<ph name="REVIEWS_COUNT_MANY" /> arvostelua Googlesta}}</translation>
 <translation id="7559245342362162951">Näytä ryhmän välilehdet koko näytön ruudukossa</translation>

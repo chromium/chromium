@@ -121,6 +121,7 @@
 <translation id="6051432659151380973">तुमचे टॅब गट आपोआप सेव्ह होतात</translation>
 <translation id="6054741997831917303">या आयटमची किंमत अलीकडे <ph name="PREVIOUS_PRICE" /> वरून <ph name="NEW_PRICE" /> इतकी कमी झाली</translation>
 <translation id="6109251075362363230">सर्वात अलीकडे वापरलेल्या कॉपीचा अपवाद वगळता, सर्व डुप्लिकेट टॅबदेखील आता संग्रहित केले जातील.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> आयटम बंद करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> आयटम बंद करा}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{गट नवीन विंडोवर हलवा}other{गट दुसऱ्या विंडोवर हलवा}}</translation>
 <translation id="6193448654517602979">टॅब निवडा</translation>
 <translation id="6220820548421939212">होय. मी तयार आहे</translation>
@@ -157,6 +158,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" हा टॅब गट आता उपलब्ध नाही</translation>
 <translation id="7452985128687107478">टॅब गट आपोआप सेव्ह होतात आणि तुमच्या सर्व डिव्हाइसवर अपडेट होतात</translation>
 <translation id="747459581954555080">सर्व पुनर्संचयित करा</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> आयटम रिस्टोअर करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> आयटम रिस्टोअर करा}}</translation>
 <translation id="753732157349120914">टॅब स्विचर</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google कडून <ph name="REVIEWS_COUNT_ONE" /> पुनरावलोकन}other{Google कडून <ph name="REVIEWS_COUNT_MANY" /> पुनरावलोकने}}</translation>
 <translation id="7559245342362162951">फुलस्क्रीन ग्रिडमध्ये गटाचे टॅब दाखवा</translation>

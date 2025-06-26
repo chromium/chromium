@@ -725,6 +725,7 @@
 <translation id="2212735316055980242">नीति नहीं मिली</translation>
 <translation id="2213606439339815911">प्रविष्टियां फ़ेच की जा रही हैं...</translation>
 <translation id="2213612003795704869">पेज प्रिंट कर दिया गया</translation>
+<translation id="2214086901479959524">शेयर किए गए टैब ग्रुप का इस्तेमाल जारी रखने के लिए, Chrome को अपडेट करें</translation>
 <translation id="2215368073167343359">Google की मदद से, जानकारी ऑटोमैटिक भरने की सुविधा</translation>
 <translation id="2215539479425228550">क्लाइंबिंग और माउंटेनियरिंग</translation>
 <translation id="2215727959747642672">फ़ाइल में बदलाव करना</translation>
@@ -803,6 +804,7 @@
 <translation id="2328651992442742497">अनुमति है (डिफ़ॉल्ट रूप से)</translation>
 <translation id="2328955282645810595">निर्माण और पावर टूल</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> को खत्म होने वाला है</translation>
+<translation id="2334327033751265975">आपके शेयर किए गए टैब ग्रुप फिर से उपलब्ध हैं</translation>
 <translation id="2337852623177822836">वह सेटिंग जिसे आपका व्यवस्थापक नियंत्रित करता है</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> युग्मित करना चाहता है</translation>
 <translation id="2344529975040861103">आपका खाता, Google Pay से लिंक है. इसलिए, कार्ड की जानकारी को भरने के लिए, ऑटोमैटिक भरने की सुविधा का इस्तेमाल किया जा सकता है</translation>
@@ -3314,6 +3316,7 @@
 <translation id="6587893660316489419">B5 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="6587923378399804057">आपका कॉपी किया हुआ लिंक</translation>
 <translation id="6591833882275308647">आपका <ph name="DEVICE_TYPE" /> प्रबंधित नहीं किया जाता</translation>
+<translation id="6595495738567740002">इस डिवाइस से Google की कुकी मिटाने के लिए, <ph name="BEGIN_LINK" />Chrome से साइन आउट करें<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">एनक्रिप्ट (सुरक्षित) करने के तरीकों के लिए विकल्प</translation>
 <translation id="6596573334527383067">कल की गई खोजों की जानकारी दिखाएं</translation>
 <translation id="6597665340361269064">90 डिग्री</translation>
@@ -4706,6 +4709,7 @@
 <translation id="9004367719664099443">वीआर सेशन चल रहा है</translation>
 <translation id="9005998258318286617">PDF दस्तावेज़ लोड नहीं किया जा सका.</translation>
 <translation id="9008201768610948239">ध्यान न दें</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{किसी साइट से नहीं}=1{1 साइट से}one{# साइट से}other{# साइटों से}}</translation>
 <translation id="9012194306129927220">अब Affirm या Zip का इस्तेमाल करके, किस्तों में पेमेंट किया जा सकता है</translation>
 <translation id="9014705027639070815">आपने जिन साइटों पर विज़िट किया है वे अपने विज्ञापनों की परफ़ॉर्मेंस को मापने के लिए, Chrome से जानकारी मांग सकती हैं. Chrome, साइटों को सीमित डेटा इकट्ठा करने की अनुमति देता है. जैसे, क्या आपने किसी साइट पर जाकर कोई खरीदारी की है.</translation>
 <translation id="9018120810758822233">अपने <ph name="CREDIT_CARD" /> का सुरक्षा कोड डालें</translation>

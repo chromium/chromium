@@ -46,6 +46,7 @@
 <translation id="2569352796411618312">सुझाव: तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>
 <translation id="257674075312929031">समूह</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन</translation>
+<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{Chrome ले तपाईंले <ph name="AUTO_DELETE_DELAY_ONE" /> दिनदेखि प्रयोग नगरेका निष्क्रिय ट्याबहरूको खण्डमा रहेका वस्तुहरू स्वतः बन्द गर्छ। तपाईं अहिले वा जुनसुकै बेला सेटिङमा गई यसलाई अफ गर्न सक्नुहुन्छ।}other{Chrome ले तपाईंले <ph name="AUTO_DELETE_DELAY_MANY" /> दिनदेखि प्रयोग नगरेका निष्क्रिय ट्याबहरूको खण्डमा रहेका वस्तुहरू स्वतः बन्द गर्छ। तपाईं अहिले वा जुनसुकै बेला सेटिङमा गई यसलाई अफ गर्न सक्नुहुन्छ।}}</translation>
 <translation id="266935134738038806">साइटमा जानुहोस्</translation>
 <translation id="2671423594960767771">समूहमा आदान प्रदान गर्नु</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> हप्ताअघि अपडेट गरिएको}other{<ph name="NUM_WEEKS_MANY" /> हप्ताअघि अपडेट गरिएको}}</translation>
@@ -80,6 +81,7 @@
 <translation id="4076226664360336092">ट्याब समूहको सूची, पूरै स्क्रिनमा खोलिएको छ</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ट्याबहरू एकअर्कासँग सम्बन्धित देखिन्छन्। यिनलाई एउटै समूहमा राख्ने हो?</translation>
 <translation id="4159784952369912983">बैजनी</translation>
+<translation id="4203448675570432781">ट्याबहरू स्वतः मेटाउने सुविधाको प्रोमोको पुछारको पाना बन्द गरिएको सूचना।</translation>
 <translation id="427987768447457592">नयाँ ट्याब समूह</translation>
 <translation id="4371591986692297148">निष्क्रिय</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{आइटम रिस्टोर गर्नुहोस्}other{आइटमहरू रिस्टोर गर्नुहोस्}}</translation>
@@ -187,6 +189,7 @@
 <translation id="8205266828577616993">ट्याब माथि सार्नुहोस्</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनेटअघि अपडेट गरिएको}other{<ph name="NUM_MINS_MANY" /> मिनेटअघि अपडेट गरिएको}}</translation>
 <translation id="8236097722223016103">बुकमार्कहरूमा हाल्नुहोस्</translation>
+<translation id="827881768507898324">ट्याबहरू स्वतः मेटाउने सुविधाको प्रोमोको पुछारको पानाको पूरै स्क्रिन खोलिएको सूचना</translation>
 <translation id="8338427544764842461">तपाईंका ट्याब समूहहरू यहाँ सेभ गरिएका छन् र तपाईंले साइन इन गरेका सबै डिभाइसमा ती समूह अपडेट हुन्छन्</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको साझा ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको साझा ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> ट्याब बन्द गर्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> ट्याबहरू बन्द गर्नुहोस्}}</translation>
@@ -207,6 +210,7 @@
 <translation id="9090098097337832354">यो स्टोरसम्बन्धी जानकारी बन्द गरिएको छ</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> नामक ट्याब समूहको एक्सन मेनु खोल्नुहोस्।</translation>
 <translation id="9169594135889675189">नयाँ ट्याबलाई समूहमा थप्नुहोस्</translation>
+<translation id="9187834032751045001">ट्याबहरू स्वतः मेटाउने सुविधाको प्रोमोको पुछारको पानाको आधा स्क्रिन खोलिएको सूचना।</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="992256792861109788">गुलाबी</translation>

@@ -724,6 +724,7 @@
 <translation id="2212735316055980242">Политика для устройства не найдена</translation>
 <translation id="2213606439339815911">Извлечение записей…</translation>
 <translation id="2213612003795704869">Страница напечатана.</translation>
+<translation id="2214086901479959524">Чтобы продолжить использовать общие группы вкладок, обновите Chrome.</translation>
 <translation id="2215368073167343359">Автозаполнение от Google</translation>
 <translation id="2215539479425228550">Альпинизм и скалолазание</translation>
 <translation id="2215727959747642672">Редактирование файлов</translation>
@@ -802,6 +803,7 @@
 <translation id="2328651992442742497">Разрешено (по умолчанию)</translation>
 <translation id="2328955282645810595">Строительные и механические инструменты</translation>
 <translation id="2330137317877982892">Карта <ph name="CREDIT_CARD" />, действует до <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="2334327033751265975">Ваши общие группы вкладок снова доступны</translation>
 <translation id="2337852623177822836">Эта настройка управляется администратором</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> запрашивает подключение</translation>
 <translation id="2344529975040861103">Вы можете использовать для автозаполнения данные этой карты, потому что ваш аккаунт связан с Google Pay.</translation>
@@ -3147,6 +3149,7 @@
 <translation id="6326947323444967009">Сделать Chrome браузером по умолчанию в настройках iOS</translation>
 <translation id="6327065120806001832">доступ к локальной сети</translation>
 <translation id="6328639280570009161">Отключите предсказание сетевых действий</translation>
+<translation id="6334834493885103305">Теперь платить в рассрочку можно с помощью сервисов Affirm, Zip и Klarna.</translation>
 <translation id="6335029926534404762">Спортивная обувь</translation>
 <translation id="6336948221660696475">Запрос на использование VR отклонен</translation>
 <translation id="6337133576188860026">Освободится менее <ph name="SIZE" /> пространства. При следующем вашем посещении некоторые сайты могут загружаться медленнее.</translation>
@@ -3312,6 +3315,7 @@
 <translation id="6587893660316489419">Конверт B5</translation>
 <translation id="6587923378399804057">Скопированная ссылка</translation>
 <translation id="6591833882275308647">Это устройство <ph name="DEVICE_TYPE" /> не управляется администратором.</translation>
+<translation id="6595495738567740002">Чтобы удалить файлы cookie сервисов Google с устройства, <ph name="BEGIN_LINK" />выйдите из Chrome<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Параметры шифрования</translation>
 <translation id="6596573334527383067">Показать результаты за вчерашний день</translation>
 <translation id="6597665340361269064">90 градусов</translation>
@@ -4071,6 +4075,7 @@
 <translation id="7878562273885520351">Злоумышленники могли узнать ваш пароль</translation>
 <translation id="7881044256965445977">Поиск устройств в локальной сети и подключение к ним</translation>
 <translation id="7882421473871500483">Коричневый</translation>
+<translation id="7885670691503039914">Если на одном из сайтов появится скидка, вы получите оповещение по электронной почте. Закладка будет сохранена в папку "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="7886897188117641322">Выбирайте, какие категории тем могут использоваться для персонализации рекламы</translation>
 <translation id="7887683347370398519">Проверьте CVC-код и повторите попытку</translation>
 <translation id="7887885240995164102">Включить режим "Картинка в картинке"</translation>
@@ -4702,6 +4707,7 @@
 <translation id="9004367719664099443">Сеанс VR запущен</translation>
 <translation id="9005998258318286617">Не удалось загрузить PDF-документ.</translation>
 <translation id="9008201768610948239">Пропустить</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Нет сайтов.}=1{С одного сайта.}one{С # сайта.}few{С # сайтов.}many{С # сайтов.}other{С # сайта.}}</translation>
 <translation id="9012194306129927220">Теперь вы можете платить в рассрочку с помощью сервисов Affirm или Zip</translation>
 <translation id="9014705027639070815">Посещаемые вами сайты могут запрашивать у Chrome информацию, которая помогает им оценивать эффективность рекламы. Chrome разрешает сайтам собирать определенные данные, например сведения о том, совершили ли вы покупку после посещения сайта.</translation>
 <translation id="9018120810758822233">Введите защитный код для карты "<ph name="CREDIT_CARD" />"</translation>
