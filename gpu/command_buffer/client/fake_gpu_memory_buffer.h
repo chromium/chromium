@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_CLIENT_FAKE_GPU_MEMORY_BUFFER_H_
 
 #include <memory>
+#include <vector>
 
 #include "media/base/video_types.h"
 #include "ui/gfx/gpu_memory_buffer.h"
