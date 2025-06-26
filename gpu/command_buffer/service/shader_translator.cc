@@ -168,16 +168,12 @@ bool ShaderTranslator::Init(GLenum shader_type,
     compile_options_string += ":rewriteTexelFetchOffsetToTexelFetch";
   if (compile_options_.addAndTrueToLoopCondition)
     compile_options_string += ":addAndTrueToLoopCondition";
-  if (compile_options_.rewriteDoWhileLoops)
-    compile_options_string += ":rewriteDoWhileLoops";
   if (compile_options_.emulateIsnanFloatFunction)
     compile_options_string += ":emulateIsnanFloatFunction";
   if (compile_options_.useUnusedStandardSharedBlocks)
     compile_options_string += ":useUnusedStandardSharedBlocks";
   if (compile_options_.removeInvariantAndCentroidForESSL3)
     compile_options_string += ":removeInvariantAndCentroidForESSL3";
-  if (compile_options_.rewriteFloatUnaryMinusOperator)
-    compile_options_string += ":rewriteFloatUnaryMinusOperator";
   if (compile_options_.dontUseLoopsToInitializeVariables)
     compile_options_string += ":dontUseLoopsToInitializeVariables";
   if (compile_options_.removeDynamicIndexingOfSwizzledVector)
