@@ -3,8 +3,6 @@ default: null
 desc: |-
   This policy controls a custom label used to indicate a managed browser. For managed browsers, this label will be shown in a management disclaimer on a footer on the New Tab page. The custom label will not be translated.
 
-  When this policy is applied, any strings that surpass 16 characters will be truncated with a “...” Please refrain from using extended names.
-
   Note that this policy is only applied for managed browsers, so it will have no effect for managed users on unmanaged browsers.
 
   On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
