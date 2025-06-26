@@ -238,7 +238,7 @@ void SslHmacChannelAuthenticator::SecureAndAuthenticate(
     ssl_config.require_ecdhe = true;
 
     socket_context_.server_context = net::CreateSSLServerContext(
-        cert.get(), *local_key_pair_->private_key(), ssl_config);
+        cert.get(), local_key_pair_->private_key(), ssl_config);
 
     std::unique_ptr<net::SSLServerSocket> server_socket =
         socket_context_.server_context->CreateSSLServerSocket(

@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
-#include "crypto/rsa_private_key.h"
 #include "remoting/base/source_location.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/datagram_channel_factory.h"
