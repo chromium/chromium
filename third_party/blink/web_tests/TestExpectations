@@ -2952,7 +2952,6 @@ crbug.com/417576322 [ Mac14-arm64 ] virtual/threaded/external/wpt/long-animation
 crbug.com/422822316 [ Win11-arm64 ] external/wpt/touch-events/single-touch-vertical-rl.html [ Timeout ]
 [ Win10.20h2 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/no-vary-search.https.html?2-2 [ Crash ]
 crbug.com/417031845 [ Win10.20h2 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/dynamic-stylesheet-animations-timing-function.html [ Pass Timeout ]
-crbug.com/416633174 [ Mac ] external/wpt/html/semantics/the-button-element/interest-for/interestfor-keyboard-invalidation.tentative.html [ Failure Pass ]
 crbug.com/416129743 [ Mac15-arm64 ] external/wpt/css/css-flexbox/overflow-auto-005.html [ Failure ]
 crbug.com/416704402 virtual/not-split-http-cache/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]
 crbug.com/416704402 virtual/split-cache-by-include-credentials/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]
