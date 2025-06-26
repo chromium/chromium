@@ -266,9 +266,9 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_credManEnabledGpmInCredMan_success() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
-        handleGetAssertionRequest();
+    public void testGetCredential_credManEnabledGpmInCredMan_success() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
+        handleGetCredentialRequest();
 
         verify(mGmsCoreGetCredentialsHelperMock, never())
                 .getCredentials(
@@ -294,13 +294,13 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_GpmNotInCredMan_callCredManGetCredentialsAndGmsCoreInParallel() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
+    public void testGetCredential_GpmNotInCredMan_callCredManGetCredentialsAndGmsCoreInParallel() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
                 /* overrideForcesGpm= */ false);
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         verifyGetCredentialsAndTriggerSuccess(
                 GmsCoreGetCredentialsHelper.Reason.GET_ASSERTION_NON_GOOGLE,
@@ -327,10 +327,10 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_allowListMatchWithExplicitHash_goesToGmsCore() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ true);
+    public void testGetCredential_allowListMatchWithExplicitHash_goesToGmsCore() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ true);
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         verifyGetCredentialsAndTriggerSuccess(
                 GmsCoreGetCredentialsHelper.Reason.CHECK_FOR_MATCHING_CREDENTIALS,
@@ -342,11 +342,11 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_NoCredentials_fallbackToPlayServices() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
+    public void testGetCredential_NoCredentials_fallbackToPlayServices() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mFido2ApiCallHelper.mCredentialsError = new IllegalStateException("injected error");
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         verify(mGmsCoreGetCredentialsHelperMock, never())
                 .getCredentials(
@@ -374,9 +374,9 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_allowListNoMatch_goesToCredMan() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ true);
-        handleGetAssertionRequest();
+    public void testGetCredential_allowListNoMatch_goesToCredMan() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ true);
+        handleGetCredentialRequest();
 
         verifyGetCredentialsAndTriggerSuccess(
                 GmsCoreGetCredentialsHelper.Reason.CHECK_FOR_MATCHING_CREDENTIALS,
@@ -389,9 +389,9 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_allowListEnumerationFails_goesToCredMan() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ true);
-        handleGetAssertionRequest();
+    public void testGetCredential_allowListEnumerationFails_goesToCredMan() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ true);
+        handleGetCredentialRequest();
 
         verifyGetCredentialsAndTriggerFailure(
                 GmsCoreGetCredentialsHelper.Reason.CHECK_FOR_MATCHING_CREDENTIALS,
@@ -406,10 +406,10 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_allowListMatch_goesToPlayServices() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ true);
+    public void testGetCredential_allowListMatch_goesToPlayServices() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ true);
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         verifyGetCredentialsAndTriggerSuccess(
                 GmsCoreGetCredentialsHelper.Reason.CHECK_FOR_MATCHING_CREDENTIALS,
@@ -421,13 +421,13 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_allowListNoMatchAndGpmNotInCredMan_goesToCredMan() {
+    public void testGetCredential_allowListNoMatchAndGpmNotInCredMan_goesToCredMan() {
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
                 /* overrideForcesGpm= */ false);
-        setGetAssertionRequestOptions(/* hasAllowList= */ true);
+        setGetCredentialRequestOptions(/* hasAllowList= */ true);
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         verifyGetCredentialsAndTriggerSuccess(
                 GmsCoreGetCredentialsHelper.Reason.CHECK_FOR_MATCHING_CREDENTIALS,
@@ -441,8 +441,8 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_WebAuthnModeApp_GoesToPlayServices() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
+    public void testGetCredential_WebAuthnModeApp_GoesToPlayServices() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.TIRAMISU,
                 /* overrideForcesGpm= */ false);
@@ -450,7 +450,7 @@ public class Fido2CredentialRequestRobolectricTest {
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
         Mockito.when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.NONE);
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         verifyNoInteractions(mCredManHelperMock);
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
@@ -458,8 +458,8 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_WebAuthnModeApp_failsIfGmscoreNotAvailable() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
+    public void testGetCredential_WebAuthnModeApp_failsIfGmscoreNotAvailable() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.TIRAMISU,
                 /* overrideForcesGpm= */ false);
@@ -470,7 +470,7 @@ public class Fido2CredentialRequestRobolectricTest {
         Fido2CredentialRequest request =
                 new Fido2CredentialRequest(mAuthenticationContextProviderMock);
 
-        request.handleGetAssertionRequest(
+        request.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -487,11 +487,11 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testConditionalGetAssertion_success() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
+    public void testConditionalGetCredential_success() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         String originString = Fido2CredentialRequest.convertOriginToString(mOrigin);
         verify(mCredManHelperMock, times(1))
@@ -509,14 +509,14 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testConditionalGetAssertion_GpmNotInCredMan_success() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
+    public void testConditionalGetCredential_GpmNotInCredMan_success() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
                 /* overrideForcesGpm= */ false);
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         verifyGetCredentialsAndTriggerSuccess(
                 GmsCoreGetCredentialsHelper.Reason.GET_ASSERTION_NON_GOOGLE,
@@ -541,13 +541,13 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testConditionalGetAssertion_webauthnModeNotChrome_notImplemented() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
+    public void testConditionalGetCredential_webauthnModeNotChrome_notImplemented() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
         Mockito.when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.NONE);
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         assertThat(mCallback.getStatus()).isEqualTo(AuthenticatorStatus.NOT_IMPLEMENTED);
         verifyNoInteractions(mCredManHelperMock);
@@ -555,11 +555,11 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testConditionalGetAssertion_RpCancelWhileIdleWithGpmInCredMan_notAllowedError() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
+    public void testConditionalGetCredential_RpCancelWhileIdleWithGpmInCredMan_notAllowedError() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         mRequest.cancelConditionalGetAssertion();
 
@@ -572,14 +572,14 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testConditionalGetAssertion_RpCancelWhileIdleWithGpmNotInCredMan_notAllowedError() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
+    public void testConditionalGetCredential_RpCancelWhileIdleWithGpmNotInCredMan_notAllowedError() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
                 /* overrideForcesGpm= */ false);
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         verifyGetCredentialsAndTriggerSuccess(
                 GmsCoreGetCredentialsHelper.Reason.GET_ASSERTION_NON_GOOGLE,
@@ -597,8 +597,8 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testConditionalGetAssertion_abortedWhileWaitingForRpIdValidation_aborted() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
+    public void testConditionalGetCredential_abortedWhileWaitingForRpIdValidation_aborted() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
         // Capture the RP ID validation callback and let the request sit
         // waiting for it.
         var rpIdValidationCallback = new Callback[1];
@@ -615,7 +615,7 @@ public class Fido2CredentialRequestRobolectricTest {
                         Mockito.nullable(Origin.class),
                         any(Callback.class));
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         // The request should have requested RP ID validation.
         assertThat(rpIdValidationCallback[0]).isNotNull();
@@ -633,15 +633,15 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testConditionalGetAssertion_webauthnModeChrome3pp_goesToCredMan() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
+    public void testConditionalGetCredential_webauthnModeChrome3pp_goesToCredMan() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
         Mockito.when(mModeProviderMock.getWebauthnMode(any()))
                 .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
         Mockito.when(mModeProviderMock.getGlobalWebauthnMode())
                 .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         assertThat(mCallback.getStatus()).isNull();
         verify(mCredManHelperMock, times(1))
@@ -651,14 +651,14 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_webauthnModeChrome3pp_goesToCredMan() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
+    public void testGetCredential_webauthnModeChrome3pp_goesToCredMan() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
         Mockito.when(mModeProviderMock.getWebauthnMode(any()))
                 .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
         Mockito.when(mModeProviderMock.getGlobalWebauthnMode())
                 .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         verify(mCredManHelperMock, times(1))
                 .startGetRequest(any(), any(), any(), any(), any(), any(), anyBoolean());
@@ -667,11 +667,11 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testImmediateGetAssertion_success() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ false);
+    public void testImmediateGetCredential_success() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.IMMEDIATE;
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         String originString = Fido2CredentialRequest.convertOriginToString(mOrigin);
         verify(mCredManHelperMock)
@@ -688,11 +688,11 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
-    public void testImmediateGetAssertion_withAllowList_notAllowed() {
-        setGetAssertionRequestOptions(/* hasAllowList= */ true);
+    public void testImmediateGetCredential_withAllowList_notAllowed() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ true);
         mRequestOptions.mediation = Mediation.IMMEDIATE;
 
-        handleGetAssertionRequest();
+        handleGetCredentialRequest();
 
         verify(mCredManHelperMock, never())
                 .startGetRequest(any(), any(), any(), any(), any(), any(), anyBoolean());
@@ -712,8 +712,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mCallback::onRequestOutcome);
     }
 
-    private void handleGetAssertionRequest() {
-        mRequest.handleGetAssertionRequest(
+    private void handleGetCredentialRequest() {
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -771,7 +771,7 @@ public class Fido2CredentialRequestRobolectricTest {
         return details;
     }
 
-    private void setGetAssertionRequestOptions(boolean hasAllowList) {
+    private void setGetCredentialRequestOptions(boolean hasAllowList) {
         if (hasAllowList) {
             PublicKeyCredentialDescriptor descriptor = new PublicKeyCredentialDescriptor();
             descriptor.type = 0;

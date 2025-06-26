@@ -1098,10 +1098,10 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     @DisabledTest(message = "crbug.com/347310677")
-    public void testGetAssertionWithoutUvmRequested_success() {
+    public void testGetCredentialWithoutUvmRequested_success() {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1118,11 +1118,11 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     @DisabledTest(message = "crbug.com/347310677")
-    public void testGetAssertionWithUvmRequestedWithoutUvmResponded_success() {
+    public void testGetCredentialWithUvmRequestedWithoutUvmResponded_success() {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
 
         mRequestOptions.extensions.userVerificationMethods = true;
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1139,12 +1139,12 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     @DisabledTest(message = "crbug.com/347310677")
-    public void testGetAssertionWithUvmRequestedWithUvmResponded_success() {
+    public void testGetCredentialWithUvmRequestedWithUvmResponded_success() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
 
         mRequestOptions.extensions.userVerificationMethods = true;
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1162,11 +1162,11 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testGetAssertionWithUserId_success() {
+    public void testGetCredentialWithUserId_success() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUserId());
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1182,8 +1182,8 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_unsuccessfulAttemptToShowCancelableIntent() {
-        mRequest.handleGetAssertionRequest(
+    public void testGetCredential_unsuccessfulAttemptToShowCancelableIntent() {
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1199,11 +1199,11 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_missingExtra() {
+    public void testGetCredential_missingExtra() {
         // An intent missing FIDO2_KEY_RESPONSE_EXTRA.
         mIntentSender.setNextResultIntent(new Intent());
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1219,11 +1219,11 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_nullIntent() {
+    public void testGetCredential_nullIntent() {
         // Don't set an intent to be returned at all.
         mIntentSender.setNextResultIntent(null);
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1239,10 +1239,10 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_resultCanceled() {
+    public void testGetCredential_resultCanceled() {
         mIntentSender.setNextResult(Activity.RESULT_CANCELED, null);
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1265,7 +1265,7 @@ public class Fido2CredentialRequestTest {
                 Activity.RESULT_FIRST_USER,
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1286,7 +1286,7 @@ public class Fido2CredentialRequestTest {
                 Fido2ApiTestHelper.createErrorIntent(
                         Fido2Api.UNKNOWN_ERR, "Low level error 0x6a80"));
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1311,7 +1311,7 @@ public class Fido2CredentialRequestTest {
         customOptions.extensions.appid = "www.example.com";
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1638,7 +1638,7 @@ public class Fido2CredentialRequestTest {
         // local passkeys available.
         mFido2ApiCallHelper.setReturnedCredentialDetails(new ArrayList<>());
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1674,7 +1674,7 @@ public class Fido2CredentialRequestTest {
         // local passkeys available.
         mFido2ApiCallHelper.setReturnedCredentialDetails(new ArrayList<>());
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1722,7 +1722,7 @@ public class Fido2CredentialRequestTest {
                 Fido2ApiTestHelper.createErrorIntent(
                         Fido2Api.CONSTRAINT_ERR, "The device is not secured with any screen lock"));
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1763,11 +1763,11 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     @UseMethodParameter(ErrorTestParams.class)
-    public void testGetAssertion_with_param(Integer errorCode, String errorMsg, Integer status) {
+    public void testGetCredential_with_param(Integer errorCode, String errorMsg, Integer status) {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createErrorIntent(errorCode, errorMsg));
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1804,11 +1804,11 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     @UseMethodParameter(ErrorTestParams.class)
-    public void testGetAssertion_with_param_nullErrorMessage(
+    public void testGetCredential_with_param_nullErrorMessage(
             Integer errorCode, String errorMsg, Integer status) {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createErrorIntent(errorCode, null));
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1834,7 +1834,7 @@ public class Fido2CredentialRequestTest {
 
         PaymentOptions payment = Fido2ApiTestHelper.createPaymentOptions();
         mRequestOptions.challenge = new byte[3];
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1864,7 +1864,7 @@ public class Fido2CredentialRequestTest {
 
         PaymentOptions payment = Fido2ApiTestHelper.createPaymentOptions();
         mRequestOptions.challenge = new byte[3];
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1894,7 +1894,7 @@ public class Fido2CredentialRequestTest {
 
         PaymentOptions payment = Fido2ApiTestHelper.createPaymentOptions();
         mRequestOptions.challenge = new byte[3];
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 topOrigin,
@@ -1935,7 +1935,7 @@ public class Fido2CredentialRequestTest {
 
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1964,7 +1964,7 @@ public class Fido2CredentialRequestTest {
 
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -1993,7 +1993,7 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
         mRequestOptions.mediation = Mediation.CONDITIONAL;
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -2024,7 +2024,7 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
         mRequestOptions.mediation = Mediation.CONDITIONAL;
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -2055,7 +2055,7 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
         mRequestOptions.mediation = Mediation.CONDITIONAL;
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -2078,7 +2078,7 @@ public class Fido2CredentialRequestTest {
 
         mFido2ApiCallHelper.setInvokeCallbackImmediately(false);
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -2113,7 +2113,7 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
         mRequestOptions.mediation = Mediation.CONDITIONAL;
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -2144,7 +2144,7 @@ public class Fido2CredentialRequestTest {
 
         mIntentSender.setInvokeCallbackImmediately(false);
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -2179,7 +2179,7 @@ public class Fido2CredentialRequestTest {
 
         mIntentSender.setInvokeCallbackImmediately(false);
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -2212,7 +2212,7 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
         mRequestOptions.mediation = Mediation.CONDITIONAL;
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -2241,7 +2241,7 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
         mRequestOptions.mediation = Mediation.CONDITIONAL;
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -2276,7 +2276,7 @@ public class Fido2CredentialRequestTest {
 
         mRequestOptions.mediation = Mediation.CONDITIONAL;
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -2307,7 +2307,7 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
         mRequestOptions.mediation = Mediation.CONDITIONAL;
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -2421,7 +2421,7 @@ public class Fido2CredentialRequestTest {
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
         mRequestOptions.mediation = Mediation.CONDITIONAL;
 
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -2561,7 +2561,7 @@ public class Fido2CredentialRequestTest {
         mFrameHost.setLastCommittedUrl(new GURL("https://www.example.com"));
 
         mRequestOptions.challenge = new byte[3];
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,
@@ -2793,7 +2793,7 @@ public class Fido2CredentialRequestTest {
                 sameOriginWithAncestors;
 
         mFrameHost.setLastCommittedUrl(new GURL("https://www.example.com"));
-        mRequest.handleGetAssertionRequest(
+        mRequest.handleGetCredentialRequest(
                 mRequestOptions,
                 mOrigin,
                 mOrigin,

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@ import org.chromium.build.annotations.Nullable;
  * authenticator, or a username/password `CredentialInfo` in some cases.
  */
 @NullMarked
-public interface GetAssertionResponseCallback {
-    public void onSignResponse(
+public interface GetCredentialResponseCallback {
+    public void onCredentialResponse(
             @Nullable GetAssertionAuthenticatorResponse assertionResponse,
             @Nullable CredentialInfo passwordCredential);
 }

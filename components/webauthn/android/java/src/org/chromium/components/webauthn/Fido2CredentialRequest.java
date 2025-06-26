@@ -83,9 +83,9 @@ public class Fido2CredentialRequest
     // available.
     private final boolean mPlayServicesAvailable;
     private final AuthenticationContextProvider mAuthenticationContextProvider;
-    private @Nullable GetAssertionResponseCallback mGetAssertionCallback;
+    private @Nullable GetCredentialResponseCallback mGetCredentialCallback;
     private @Nullable MakeCredentialResponseCallback mMakeCredentialCallback;
-    private @Nullable FidoErrorResponseCallback mErrorCallback;
+    private @Nullable AuthenticatorErrorResponseCallback mErrorCallback;
     private @Nullable RecordOutcomeCallback mRecordingCallback;
     private CredManHelper mCredManHelper;
     private final IdentityCredentialsHelper mIdentityCredentialsHelper;
@@ -140,7 +140,7 @@ public class Fido2CredentialRequest
     private void recordOutcomeMetric() {
         if (mRecordingCallback != null) {
             int resultValue;
-            if (mGetAssertionCallback != null) {
+            if (mGetCredentialCallback != null) {
                 resultValue = mGetAssertionErrorOutcome;
             } else {
                 assert mMakeCredentialCallback != null;
@@ -155,7 +155,7 @@ public class Fido2CredentialRequest
     // returnErrorAndResetCallback.
     private void setOutcomeAndReturnError(int error, @Nullable Integer metricsOutcome) {
         if (metricsOutcome != null) {
-            if (mGetAssertionCallback != null) {
+            if (mGetCredentialCallback != null) {
                 mGetAssertionErrorOutcome = metricsOutcome;
             } else if (mMakeCredentialCallback != null) {
                 mMakeCredentialErrorOutcome = metricsOutcome;
@@ -170,7 +170,7 @@ public class Fido2CredentialRequest
         if (mErrorCallback == null) return;
         mErrorCallback.onError(error);
         mErrorCallback = null;
-        mGetAssertionCallback = null;
+        mGetCredentialCallback = null;
         mMakeCredentialCallback = null;
     }
 
@@ -212,7 +212,7 @@ public class Fido2CredentialRequest
             @Nullable Origin topOrigin,
             @Nullable PaymentOptions paymentOptions,
             MakeCredentialResponseCallback callback,
-            FidoErrorResponseCallback errorCallback,
+            AuthenticatorErrorResponseCallback errorCallback,
             RecordOutcomeCallback recordingCallback) {
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         assert frameHost != null;
@@ -414,18 +414,18 @@ public class Fido2CredentialRequest
      *     this implicitly.
      */
     @SuppressWarnings("NewApi")
-    public void handleGetAssertionRequest(
+    public void handleGetCredentialRequest(
             PublicKeyCredentialRequestOptions options,
             Origin origin,
             @Nullable Origin topOrigin,
             @Nullable PaymentOptions payment,
-            GetAssertionResponseCallback callback,
-            FidoErrorResponseCallback errorCallback,
+            GetCredentialResponseCallback callback,
+            AuthenticatorErrorResponseCallback errorCallback,
             RecordOutcomeCallback recordingCallback) {
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         assert frameHost != null;
-        assert mGetAssertionCallback == null && mErrorCallback == null;
-        mGetAssertionCallback = callback;
+        assert mGetCredentialCallback == null && mErrorCallback == null;
+        mGetCredentialCallback = callback;
         mErrorCallback = errorCallback;
         mRecordingCallback = recordingCallback;
 
@@ -484,13 +484,13 @@ public class Fido2CredentialRequest
                         returnErrorAndResetCallback(results.securityCheckResult);
                         return;
                     }
-                    continueGetAssertionRequestAfterRpIdValidation(
+                    continueGetCredentialRequestAfterRpIdValidation(
                             options, origin, topOrigin, payment, results.isCrossOrigin);
                 });
     }
 
     @SuppressWarnings("NewApi")
-    private void continueGetAssertionRequestAfterRpIdValidation(
+    private void continueGetCredentialRequestAfterRpIdValidation(
             PublicKeyCredentialRequestOptions options,
             Origin origin,
             @Nullable Origin topOrigin,
@@ -564,7 +564,7 @@ public class Fido2CredentialRequest
                             callerOriginString,
                             mClientDataJson,
                             clientDataHash,
-                            mGetAssertionCallback,
+                            mGetCredentialCallback,
                             this::setOutcomeAndReturnError,
                             /* ignoreGpm= */ false);
             if (result != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(result);
@@ -585,7 +585,7 @@ public class Fido2CredentialRequest
                         convertOriginToString(origin),
                         mClientDataJson,
                         clientDataHash,
-                        mGetAssertionCallback,
+                        mGetCredentialCallback,
                         this::setOutcomeAndReturnError,
                         mBarrier,
                         /* ignoreGpm= */ false);
@@ -629,7 +629,7 @@ public class Fido2CredentialRequest
                                 convertOriginToString(origin),
                                 mClientDataJson,
                                 clientDataHash,
-                                mGetAssertionCallback,
+                                mGetCredentialCallback,
                                 this::setOutcomeAndReturnError,
                                 /* ignoreGpm= */ false);
                 if (response != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(response);
@@ -664,7 +664,7 @@ public class Fido2CredentialRequest
                         callerOriginString,
                         mClientDataJson,
                         clientDataHash,
-                        mGetAssertionCallback,
+                        mGetCredentialCallback,
                         this::setOutcomeAndReturnError,
                         mBarrier,
                         /* ignoreGpm= */ true);
@@ -788,7 +788,7 @@ public class Fido2CredentialRequest
             byte[][] allowCredentialIds,
             boolean requireThirdPartyPayment,
             GetMatchingCredentialIdsResponseCallback callback,
-            FidoErrorResponseCallback errorCallback) {
+            AuthenticatorErrorResponseCallback errorCallback) {
         assert mErrorCallback == null;
         mErrorCallback = errorCallback;
 
@@ -964,7 +964,7 @@ public class Fido2CredentialRequest
                                     convertOriginToString(callerOrigin),
                                     mClientDataJson,
                                     clientDataHash,
-                                    mGetAssertionCallback,
+                                    mGetCredentialCallback,
                                     this::setOutcomeAndReturnError,
                                     mode == Barrier.Mode.BOTH);
                         });
@@ -1026,7 +1026,7 @@ public class Fido2CredentialRequest
                 convertOriginToString(callerOrigin),
                 mClientDataJson,
                 clientDataHash,
-                mGetAssertionCallback,
+                mGetCredentialCallback,
                 this::setOutcomeAndReturnError,
                 mode == Barrier.Mode.BOTH);
     }
@@ -1212,7 +1212,7 @@ public class Fido2CredentialRequest
                 break;
 
             case Activity.RESULT_CANCELED:
-                if (mGetAssertionCallback != null) {
+                if (mGetCredentialCallback != null) {
                     mGetAssertionErrorOutcome = GetAssertionOutcome.USER_CANCELLATION;
                 } else if (mMakeCredentialCallback != null) {
                     mMakeCredentialErrorOutcome = MakeCredentialOutcome.USER_CANCELLATION;
@@ -1270,7 +1270,7 @@ public class Fido2CredentialRequest
                             + " "
                             + (error.second != null ? error.second : ""));
             errorCode = convertError(error);
-            if (mGetAssertionCallback != null) {
+            if (mGetCredentialCallback != null) {
                 mGetAssertionErrorOutcome = getAssertionOutcomeCodeFromFidoError(error);
             } else if (mMakeCredentialCallback != null) {
                 mMakeCredentialErrorOutcome = makeCredentialOutcomeCodeFromFidoError(error);
@@ -1293,7 +1293,7 @@ public class Fido2CredentialRequest
                 mMakeCredentialCallback = null;
                 return;
             }
-        } else if (mGetAssertionCallback != null) {
+        } else if (mGetCredentialCallback != null) {
             if (response instanceof GetAssertionAuthenticatorResponse) {
                 GetAssertionAuthenticatorResponse r = (GetAssertionAuthenticatorResponse) response;
                 if (mClientDataJson != null) {
@@ -1302,8 +1302,8 @@ public class Fido2CredentialRequest
                     frameHost.notifyWebAuthnAssertionRequestSucceeded();
                 }
                 r.extensions.echoAppidExtension = mAppIdExtensionUsed;
-                mGetAssertionCallback.onSignResponse(r, /* passwordCredential= */ null);
-                mGetAssertionCallback = null;
+                mGetCredentialCallback.onCredentialResponse(r, /* passwordCredential= */ null);
+                mGetCredentialCallback = null;
                 return;
             }
         }

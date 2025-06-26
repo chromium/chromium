@@ -42,7 +42,7 @@ import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.Fido2CredentialRequest.ConditionalUiState;
 import org.chromium.components.webauthn.Fido2CredentialRequestJni;
 import org.chromium.components.webauthn.GetAssertionOutcome;
-import org.chromium.components.webauthn.GetAssertionResponseCallback;
+import org.chromium.components.webauthn.GetCredentialResponseCallback;
 import org.chromium.components.webauthn.MakeCredentialOutcome;
 import org.chromium.components.webauthn.MakeCredentialResponseCallback;
 import org.chromium.components.webauthn.WebauthnBrowserBridge;
@@ -193,7 +193,7 @@ public class CredManHelper {
             String originString,
             byte @Nullable [] clientDataJson,
             byte @Nullable [] clientDataHash,
-            @Nullable GetAssertionResponseCallback getCallback,
+            @Nullable GetCredentialResponseCallback getCallback,
             ErrorCallback errorCallback,
             Barrier barrier,
             boolean ignoreGpm) {
@@ -311,7 +311,7 @@ public class CredManHelper {
             String originString,
             byte @Nullable [] clientDataJson,
             byte @Nullable [] clientDataHash,
-            @Nullable GetAssertionResponseCallback getCallback,
+            @Nullable GetCredentialResponseCallback getCallback,
             ErrorCallback errorCallback,
             boolean ignoreGpm) {
         mClientDataJson = clientDataJson;
@@ -406,7 +406,7 @@ public class CredManHelper {
                                                 data.getString(
                                                         CRED_MAN_PREFIX + "BUNDLE_KEY_PASSWORD"));
                                 assumeNonNull(getCallback);
-                                getCallback.onSignResponse(
+                                getCallback.onCredentialResponse(
                                         /* assertionResponse= */ null, passwordCredential);
                                 return;
                             }
@@ -475,7 +475,7 @@ public class CredManHelper {
                             frameHost.notifyWebAuthnAssertionRequestSucceeded();
                         }
                         assumeNonNull(getCallback);
-                        getCallback.onSignResponse(response, /* passwordCredential= */ null);
+                        getCallback.onCredentialResponse(response, /* passwordCredential= */ null);
                     }
                 };
 

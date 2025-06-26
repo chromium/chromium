@@ -231,12 +231,12 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         }
 
         mPendingFido2CredentialRequest = getFido2CredentialRequest();
-        mPendingFido2CredentialRequest.handleGetAssertionRequest(
+        mPendingFido2CredentialRequest.handleGetCredentialRequest(
                 options,
                 assertNonNull(mOrigin),
                 mTopOrigin,
                 mPayment,
-                this::onSignResponse,
+                this::onCredentialResponse,
                 this::onError,
                 this::recordOutcomeEvent);
     }
@@ -406,7 +406,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         cleanupRequest();
     }
 
-    public void onSignResponse(
+    public void onCredentialResponse(
             @Nullable GetAssertionAuthenticatorResponse assertionResponse,
             @Nullable CredentialInfo passwordCredential) {
         assert assertionResponse == null ^ passwordCredential == null;
