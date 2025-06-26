@@ -5,6 +5,7 @@
 #import "base/test/ios/wait_util.h"
 #import "build/branding_buildflags.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
@@ -482,8 +483,9 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
                  grey_accessibilityLabel(l10n_util::GetNSString(
                      IDS_IOS_PASSWORD_SHARING_FETCHING_RECIPIENTS_ERROR_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
 
   // Check that the current view is the password details view.
   [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]

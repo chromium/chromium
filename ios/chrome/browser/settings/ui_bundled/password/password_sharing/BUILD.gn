@@ -159,6 +159,7 @@ source_set("eg2_tests") {
     "//build:branding_buildflags",
     "//components/password_manager/core/browser:password_switches",
     "//components/password_manager/core/common",
+    "//components/strings:components_strings_grit",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
