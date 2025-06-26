@@ -819,8 +819,9 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
   [SigninEarlGrey signOut];
 }
 
+// TODO(crbug.com/427946024): This test is flaky.
 // Tests that the local profile is migrated to account.
-- (void)testMigrateToAccount {
+- (void)FLAKY_testMigrateToAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleProfile];
   [self
