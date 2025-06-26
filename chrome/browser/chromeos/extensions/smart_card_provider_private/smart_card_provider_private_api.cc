@@ -4,9 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/smart_card_provider_private/smart_card_provider_private_api.h"
 
-#include <queue>
-#include <variant>
-
+#include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -21,6 +19,8 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace scard_api = extensions::api::smart_card_provider_private;
 
@@ -339,15 +339,15 @@ struct SmartCardProviderPrivateAPI::ContextData {
   // This queue contains requests from device::mojom::SmartCardContext or
   // device::mojom::SmartCardConnection for this context that have arrived
   // while it was waiting for the result of a previous request.
-  std::queue<base::OnceClosure> task_queue;
+  base::circular_deque<base::OnceClosure> task_queue;
 
   // All device::mojom::SmartCardConnection receivers created on this context.
-  std::set<mojo::ReceiverId> connection_receiver_ids;
+  absl::flat_hash_set<mojo::ReceiverId> connection_receiver_ids;
 
   // Maps a valid PC/SC Handle to whether it has an active transaction. Ie,
   // transactions begun by the browser and that, therefore, the browser should
   // also end.
-  std::map<Handle, bool> handles_map;
+  absl::flat_hash_map<Handle, bool> handles_map;
 };
 
 // static
@@ -531,7 +531,7 @@ void SmartCardProviderPrivateAPI::OnScardHandleDisconnected(
 void SmartCardProviderPrivateAPI::RunOrQueueRequest(ContextId scard_context,
                                                     base::OnceClosure request) {
   if (IsContextBusy(scard_context)) {
-    GetContextData(scard_context).task_queue.push(std::move(request));
+    GetContextData(scard_context).task_queue.push_back(std::move(request));
     return;
   }
 
@@ -970,7 +970,7 @@ void SmartCardProviderPrivateAPI::RunNextRequestForContext(
   }
 
   auto task = std::move(context_data.task_queue.front());
-  context_data.task_queue.pop();
+  context_data.task_queue.pop_front();
   std::move(task).Run();
 }
 
