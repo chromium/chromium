@@ -37,6 +37,7 @@ namespace sync_preferences {
 
 namespace {
 
+using testing::Eq;
 using testing::NotNull;
 
 const char kStringPrefName[] = "pref.string";
@@ -882,6 +883,58 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
 
   MergeDataAndStartSyncing(initial_data);
   ASSERT_EQ(pref_service_->GetString(kStringPrefName), "new value");
+}
+
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+       ShouldRemoveAccountValuesUponStayStoppedAndMaybeClearData) {
+  // Load pre-existing values in the local and the account stores.
+  local_pref_store_->SetValue(kStringPrefName, base::Value("local value"), 0);
+  account_pref_store_->SetValue(kStringPrefName, base::Value("account value"),
+                                0);
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "account value");
+
+  // Listen to pref changes.
+  MockPrefChangeCallback observer(pref_service_.get());
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  registrar.Add(kStringPrefName, observer.GetCallback());
+
+  // Observer should get notified since the effective value changes.
+  EXPECT_CALL(observer, OnPreferenceChanged(kStringPrefName));
+
+  pref_model_associator_->StayStoppedAndMaybeClearData(syncer::PREFERENCES);
+  EXPECT_EQ(pref_service_->GetString(kStringPrefName), "local value");
+
+  const base::Value* local_value = nullptr;
+  local_pref_store_->GetValue(kStringPrefName, &local_value);
+  EXPECT_THAT(local_value, Pointee(Eq("local value")));
+  EXPECT_TRUE(account_pref_store_->GetValues().empty());
+}
+
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+       ShouldBeNoOpUponStayStoppedAndMaybeClearDataIfNoAccountValue) {
+  // Load pre-existing value in the local store.
+  local_pref_store_->SetValue(kStringPrefName, base::Value("local value"), 0);
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "local value");
+  ASSERT_TRUE(account_pref_store_->GetValues().empty());
+
+  // Listen to pref changes.
+  MockPrefChangeCallback observer(pref_service_.get());
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  registrar.Add(kStringPrefName, observer.GetCallback());
+
+  // Observer should not get notified since there are no account values to
+  // be cleared.
+  EXPECT_CALL(observer, OnPreferenceChanged).Times(0);
+
+  pref_model_associator_->StayStoppedAndMaybeClearData(syncer::PREFERENCES);
+  EXPECT_EQ(pref_service_->GetString(kStringPrefName), "local value");
+
+  const base::Value* local_value = nullptr;
+  local_pref_store_->GetValue(kStringPrefName, &local_value);
+  EXPECT_THAT(local_value, Pointee(Eq("local value")));
+  EXPECT_TRUE(account_pref_store_->GetValues().empty());
 }
 
 }  // namespace

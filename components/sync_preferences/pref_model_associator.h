@@ -92,6 +92,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::DataType type) override;
   void OnBrowserShutdown(syncer::DataType type) override;
+  void StayStoppedAndMaybeClearData(syncer::DataType type) override;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;

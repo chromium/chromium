@@ -129,6 +129,8 @@ class ThemeLocalDataBatchUploaderTestBase
     // Avoid using the real SyncService instance, to avoid triggering sync
     // startup notifications, specifically clearing of existing account data
     // upon startup when there is no sync metadata.
+    // TODO(crbug.com/425913203): Remove once usage of TestSyncService is
+    // simplified.
     SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile_.get(),
         base::BindRepeating([](content::BrowserContext* context)

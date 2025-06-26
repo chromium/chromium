@@ -46,6 +46,7 @@
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -1349,6 +1350,20 @@ class PrefHashBrowserTestAccountValueUntrustedAddition
  public:
   PrefHashBrowserTestAccountValueUntrustedAddition()
       : feature_list_(switches::kEnablePreferencesAccountStorage) {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrefHashBrowserTestBase::SetUpCommandLine(command_line);
+    // Disable sync to avoid triggering sync startup notifications, specifically
+    // clearing of existing account data upon startup when there is no sync
+    // metadata. Otherwise, the test fails to verify the functionality to reset
+    // the tracked preference account value since the account values are anyway
+    // cleared by sync.
+    // TODO(crbug.com/427167130): Use SyncServiceImplHarness to simulate
+    // non-empty sync metadata and avoid causing a clearing of existing account
+    // data upon startup. This would allow testing the real-world scenario and
+    // remove this command line switch to disable sync.
+    command_line->AppendSwitch(syncer::kDisableSync);
+  }
 
   void SetupPreferences() override {
     EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));

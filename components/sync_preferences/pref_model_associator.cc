@@ -273,6 +273,14 @@ void PrefModelAssociator::OnBrowserShutdown(syncer::DataType type) {
   Stop(/*is_browser_shutdown=*/true);
 }
 
+void PrefModelAssociator::StayStoppedAndMaybeClearData(syncer::DataType type) {
+  CHECK_EQ(type_, type);
+  CHECK(!sync_processor_);
+  if (dual_layer_user_prefs_) {
+    dual_layer_user_prefs_->DisableTypeAndClearAccountStore(type_);
+  }
+}
+
 void PrefModelAssociator::Stop(bool is_browser_shutdown) {
   models_associated_ = false;
   sync_processor_.reset();
