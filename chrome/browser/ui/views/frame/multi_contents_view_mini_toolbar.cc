@@ -95,13 +95,14 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
   domain_label_->SetElideBehavior(gfx::ELIDE_HEAD);
   domain_label_->SetTruncateLength(20);
   domain_label_->SetSubpixelRenderingEnabled(false);
+  domain_label_->SetEnabledColor(kColorMulitContentsViewMiniToolbarForeground);
+  domain_label_->SetBackgroundColor(kColorToolbar);
   alert_state_indicator_ = AddChildView(std::make_unique<views::ImageView>());
   alert_state_indicator_->SetProperty(views::kFlexBehaviorKey,
                                       icon_flex_spec.WithOrder(2));
   menu_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::RepeatingClosure(), kBrowserToolsChromeRefreshIcon, 16,
-      kColorSidePanelHeaderButtonIcon,
-      kColorSidePanelHeaderButtonIconDisabled));
+      kColorMulitContentsViewMiniToolbarForeground));
   menu_button_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,

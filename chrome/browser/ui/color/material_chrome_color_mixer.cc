@@ -178,6 +178,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // Split View colors.
   mixer[kColorSplitViewBackground] = {ui::kColorSysSurface2};
   mixer[kColorSplitViewScrim] = ui::SetAlpha(ui::kColorRefNeutral99, 0x99);
+  mixer[kColorMulitContentsViewMiniToolbarForeground] = {
+      ui::kColorSysOnSurfaceSubtle};
 
   // Side Panel colors.
   mixer[kColorSidePanelBackground] = {ui::kColorSysBaseContainer};

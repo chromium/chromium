@@ -224,6 +224,7 @@
   /* Multi contents view colors. */ \
   E_CPONLY(kColorMulitContentsViewActiveContentOutline) \
   E_CPONLY(kColorMulitContentsViewInactiveContentOutline) \
+  E_CPONLY(kColorMulitContentsViewMiniToolbarForeground) \
   /* New tab button colors. */ \
   E_CPONLY(kColorNewTabButtonForegroundFrameActive) \
   E_CPONLY(kColorNewTabButtonForegroundFrameInactive) \

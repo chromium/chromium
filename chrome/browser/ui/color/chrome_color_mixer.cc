@@ -294,6 +294,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnSurfacePrimary};
   mixer[kColorMulitContentsViewInactiveContentOutline] = {
       ui::kColorSysNeutralOutline};
+  mixer[kColorMulitContentsViewMiniToolbarForeground] = {kColorToolbarText};
   mixer[kColorOmniboxChipBackground] = {kColorTabBackgroundActiveFrameActive};
   mixer[kColorOmniboxChipBlockedActivityIndicatorBackground] = {
       kColorInfoBarBackground};
