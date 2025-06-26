@@ -542,6 +542,12 @@ def ExtractTextLayerIDs(lottie_json: dict) -> set[str]:
     if 'layers' in lottie_json:
         process_layers(lottie_json['layers'])
 
+    # Check assets for compositions that might have layers
+    if 'assets' in lottie_json:
+        for asset in lottie_json['assets']:
+            if 'layers' in asset:
+                process_layers(asset['layers'])
+
     return text_layer_ids
 
 
