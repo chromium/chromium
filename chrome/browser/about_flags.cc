@@ -8958,10 +8958,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBlockTpcsIncognitoDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(privacy_sandbox::kAlwaysBlock3pcsIncognito)},
 
-    {"rws-v2-ui", flag_descriptions::kRwsV2UiName,
-     flag_descriptions::kRwsV2UiDescription, kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi)},
-
     {"tracking-protection-3pcd", flag_descriptions::kTrackingProtection3pcdName,
      flag_descriptions::kTrackingProtection3pcdDescription,
      kOsDesktop | kOsAndroid,

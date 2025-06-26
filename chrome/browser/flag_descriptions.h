@@ -2480,9 +2480,6 @@ extern const char kBlockTpcsIncognitoDescription[];
 extern const char kTrackingProtection3pcdName[];
 extern const char kTrackingProtection3pcdDescription[];
 
-extern const char kRwsV2UiName[];
-extern const char kRwsV2UiDescription[];
-
 extern const char kUnifiedPasswordManagerAndroidReenrollmentName[];
 extern const char kUnifiedPasswordManagerAndroidReenrollmentDescription[];
 

@@ -8609,13 +8609,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "rws-v2-ui",
-    "owners": [
-      "fmacintosh@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "safe-browsing-local-lists-use-sbv5",
     "owners": [
       "thefrog@chromium.org",

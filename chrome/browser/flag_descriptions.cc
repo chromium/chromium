@@ -4338,9 +4338,6 @@ const char kTrackingProtection3pcdDescription[] =
     "Enables the tracking protection UI + prefs that will be used for the 3PCD "
     "1%.";
 
-const char kRwsV2UiName[] = "RWS V2 UI";
-const char kRwsV2UiDescription[] = "Updated RWS UI";
-
 const char kUseSearchClickForRightClickName[] =
     "Use Search+Click for right click";
 const char kUseSearchClickForRightClickDescription[] =
