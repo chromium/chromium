@@ -1929,9 +1929,6 @@ void ListBoxSelectType::ManuallyAssignSlots() {
   }
   CHECK(option_slot_);
   option_slot_->Assign(option_nodes);
-  if (HTMLSelectElement::CustomizableSelectEnabled(select_)) {
-    select_->GetShadowRoot()->SetDelegatesFocus(false);
-  }
 }
 
 HTMLButtonElement* ListBoxSelectType::SlottedButton() const {
