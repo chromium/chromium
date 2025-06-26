@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "base/win/elevation_util.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
@@ -239,7 +240,8 @@ MULTIPROCESS_TEST_MAIN(OnlyOneSessionInChild) {
 
 // Relaunches the test process de-elevated; using the multi-process test
 // facilitied to run the named function.
-base::Process RunInChildDeElevated(std::string_view function_name) {
+base::expected<base::Process, DWORD> RunInChildDeElevated(
+    std::string_view function_name) {
   base::CommandLine command_line =
       base::GetMultiProcessTestChildBaseCommandLine();
   command_line.AppendSwitchASCII(switches::kTestChildProcess, function_name);
@@ -320,13 +322,13 @@ TEST_F(TracingServiceTest, GetServiceProcessHandleInChild) {
   // base::debug::WaitForDebugger(30, /*silent=*/false); in
   // `GetServiceProcessHandleInChild()` to more easily debug in the child
   // process.
-  auto child = RunInChildDeElevated("GetServiceProcessHandleInChild");
+  auto child_or_error = RunInChildDeElevated("GetServiceProcessHandleInChild");
 
-  if (!child.IsValid()) {
+  if (!child_or_error.has_value()) {
     GTEST_SKIP() << "Cannot de-elevate when UAC is disabled.";
   }
   int exit_code;
-  ASSERT_TRUE(child.WaitForExit(&exit_code));
+  ASSERT_TRUE(child_or_error->WaitForExit(&exit_code));
   ASSERT_EQ(exit_code, 0);
 }
 
@@ -337,13 +339,13 @@ TEST_F(TracingServiceTest, OnlyOneInvitationInChild) {
   // base::debug::WaitForDebugger(30, /*silent=*/false); in
   // `GetServiceProcessHandleInChild()` to more easily debug in the child
   // process.
-  auto child = RunInChildDeElevated("OnlyOneInvitationInChild");
+  auto child_or_error = RunInChildDeElevated("OnlyOneInvitationInChild");
 
-  if (!child.IsValid()) {
+  if (!child_or_error.has_value()) {
     GTEST_SKIP() << "Cannot de-elevate when UAC is disabled.";
   }
   int exit_code;
-  ASSERT_TRUE(child.WaitForExit(&exit_code));
+  ASSERT_TRUE(child_or_error->WaitForExit(&exit_code));
   ASSERT_EQ(exit_code, 0);
 }
 
@@ -354,12 +356,12 @@ TEST_F(TracingServiceTest, OnlyOneSessionInChild) {
   // base::debug::WaitForDebugger(30, /*silent=*/false); in
   // `GetServiceProcessHandleInChild()` to more easily debug in the child
   // process.
-  auto child = RunInChildDeElevated("OnlyOneSessionInChild");
+  auto child_or_error = RunInChildDeElevated("OnlyOneSessionInChild");
 
-  if (!child.IsValid()) {
+  if (!child_or_error.has_value()) {
     GTEST_SKIP() << "Cannot de-elevate when UAC is disabled.";
   }
   int exit_code;
-  ASSERT_TRUE(child.WaitForExit(&exit_code));
+  ASSERT_TRUE(child_or_error->WaitForExit(&exit_code));
   ASSERT_EQ(exit_code, 0);
 }

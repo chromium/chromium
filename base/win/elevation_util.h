@@ -11,6 +11,7 @@
 #include "base/base_export.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/types/expected.h"
 #include "base/win/windows_types.h"
 
 namespace base {
@@ -25,10 +26,10 @@ BASE_EXPORT ProcessId GetExplorerPid();
 // Returns `true` if `process_id` is running at medium integrity.
 BASE_EXPORT bool IsProcessRunningAtMediumOrLower(ProcessId process_id);
 
-// Runs `command_line` de-elevated and returns the spawned process. Returns an
-// invalid process on failure. `::GetLastError` can be used to get the last
-// error in the failure case.
-BASE_EXPORT Process RunDeElevated(const CommandLine& command_line);
+// Runs `command_line` de-elevated and returns the spawned process. Returns a
+// Windows error code on failure.
+BASE_EXPORT expected<Process, DWORD> RunDeElevated(
+    const CommandLine& command_line);
 
 // Runs `command_line` de-elevated. The function does not wait for the spawned
 // process.
