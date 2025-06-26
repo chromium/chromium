@@ -103,7 +103,8 @@ class MODULES_EXPORT UserMediaRequest final
                                   ExceptionState&,
                                   IdentifiableSurface surface);
   static UserMediaRequest* CreateForTesting(const MediaConstraints& audio,
-                                            const MediaConstraints& video);
+                                            const MediaConstraints& video,
+                                            bool is_user_media = true);
 
   UserMediaRequest(ExecutionContext*,
                    UserMediaClient*,

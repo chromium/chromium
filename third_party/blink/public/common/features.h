@@ -664,6 +664,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGMSCoreEmoji);
 
+// If enabled, then display audio track permission failures are ignored.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kGetDisplayMediaIgnoreAudioPermissionFailures);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 // Defers device selection until after permission is granted.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

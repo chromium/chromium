@@ -4394,6 +4394,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.MediaDevices.GetDisplayMedia.Audio.PermissionDeniedBySystem"
+    enum="Boolean" expires_after="2026-05-01">
+  <owner>kron@chromium.org</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Tracks the number of attempts to start an audio track from getDisplayMedia
+    that results in PermissionDeniedBySystem. This is recorded in
+    UserMediaProcessor::RequestInfo::OnTrackStarted when the result of the
+    attempt to start the track is availble.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaDevices.GetDisplayMedia.Latency" units="ms"
     expires_after="2025-11-02">
   <owner>toprice@chromium.org</owner>

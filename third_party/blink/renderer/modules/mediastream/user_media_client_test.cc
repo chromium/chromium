@@ -76,6 +76,7 @@ using EchoCancellationType =
     blink::AudioProcessingProperties::EchoCancellationType;
 
 namespace {
+enum class SourceCreationStatus { kOk, kFailed, kFailedSystemPermissionError };
 
 MediaConstraints CreateDefaultConstraints() {
   blink::MockConstraintFactory factory;
@@ -168,6 +169,10 @@ class MockLocalMediaStreamAudioSource : public blink::MediaStreamAudioSource {
 
   void ChangeSourceImpl(const blink::MediaStreamDevice& new_device) override {
     EnsureSourceIsStopped();
+  }
+  void StopSourceDueToPermissionError() {
+    StopSourceOnError(media::AudioCapturerSource::ErrorCode::kSystemPermissions,
+                      "");
   }
 };
 
@@ -501,8 +506,8 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
     return local_audio_source_;
   }
 
-  void SetCreateSourceThatFails(bool should_fail) {
-    create_source_that_fails_ = should_fail;
+  void SetAudioSourceCreationStatus(SourceCreationStatus status) {
+    source_creation_status_ = status;
   }
 
   MediaStreamDescriptor* last_generated_descriptor() {
@@ -543,7 +548,7 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
       blink::WebPlatformMediaStreamSource::ConstraintsRepeatingCallback
           source_ready) override {
     std::unique_ptr<blink::MediaStreamAudioSource> source;
-    if (create_source_that_fails_) {
+    if (source_creation_status_ == SourceCreationStatus::kFailed) {
       class FailedAtLifeAudioSource : public blink::MediaStreamAudioSource {
        public:
         FailedAtLifeAudioSource()
@@ -556,7 +561,11 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
         bool EnsureSourceIsStarted() override { return false; }
       };
       source = std::make_unique<FailedAtLifeAudioSource>();
-    } else if (blink::IsDesktopCaptureMediaType(device.type)) {
+    }
+    // TODO(crbug.com/410466097): Remove extra `DISPLAY_AUDIO_CAPTURE` condition
+    // once `kDisplayAudioCaptureKillSwitch` is removed.
+    else if (blink::IsDesktopCaptureMediaType(device.type) ||
+             device.type == mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE) {
       local_audio_source_ = new MockLocalMediaStreamAudioSource();
       source = base::WrapUnique(local_audio_source_.get());
     } else {
@@ -566,12 +575,20 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
 
     source->SetDevice(device);
 
-    if (!create_source_that_fails_) {
+    if (source_creation_status_ == SourceCreationStatus::kOk) {
       // RunUntilIdle is required for this task to complete.
       blink::scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
           FROM_HERE,
           base::BindOnce(&UserMediaProcessorUnderTest::SignalSourceReady,
                          std::move(source_ready), source.get()));
+    } else if (source_creation_status_ ==
+                   SourceCreationStatus::kFailedSystemPermissionError &&
+               local_audio_source_) {
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &UserMediaProcessorUnderTest::SignalSystemPermissionError,
+              local_audio_source_.get()));
     }
 
     return source;
@@ -609,6 +626,11 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
         .Run(source, blink::mojom::blink::MediaStreamRequestResult::OK, "");
   }
 
+  static void SignalSystemPermissionError(
+      MockLocalMediaStreamAudioSource* local_source) {
+    local_source->StopSourceDueToPermissionError();
+  }
+
   std::unique_ptr<WebMediaStreamDeviceObserver> media_stream_device_observer_;
   HeapMojoRemote<blink::mojom::blink::MediaDevicesDispatcherHost>
       media_devices_dispatcher_;
@@ -616,7 +638,7 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
       nullptr;
   raw_ptr<MockLocalMediaStreamAudioSource, DanglingUntriaged>
       local_audio_source_ = nullptr;
-  bool create_source_that_fails_ = false;
+  SourceCreationStatus source_creation_status_ = SourceCreationStatus::kOk;
   Member<MediaStreamDescriptor> last_generated_descriptor_;
   blink::mojom::blink::MediaStreamRequestResult result_ =
       blink::mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS;
@@ -643,9 +665,9 @@ class UserMediaClientUnderTest : public UserMediaClient {
     base::RunLoop().RunUntilIdle();
   }
 
-  void RequestUserMediaForTest() {
+  void RequestUserMediaForTest(bool is_user_media = true) {
     UserMediaRequest* user_media_request = UserMediaRequest::CreateForTesting(
-        CreateDefaultConstraints(), CreateDefaultConstraints());
+        CreateDefaultConstraints(), CreateDefaultConstraints(), is_user_media);
     RequestUserMediaForTest(user_media_request);
   }
 
@@ -1030,7 +1052,8 @@ TEST_F(UserMediaClientTest, MediaVideoSourceFailToStart) {
 
 // This test what happens if an audio source fail to initialize.
 TEST_F(UserMediaClientTest, MediaAudioSourceFailToInitialize) {
-  user_media_processor_->SetCreateSourceThatFails(true);
+  user_media_processor_->SetAudioSourceCreationStatus(
+      SourceCreationStatus::kFailed);
   user_media_client_impl_->RequestUserMediaForTest();
   StartMockedVideoSource(user_media_processor_);
   base::RunLoop().RunUntilIdle();
@@ -1782,6 +1805,52 @@ TEST_F(UserMediaClientTest, DesktopCaptureChangeSourceWithoutAudio) {
   EXPECT_CALL(*audio_source, EnsureSourceIsStopped()).Times(0);
   user_media_client_impl_->CancelUserMediaRequest(request);
   base::RunLoop().RunUntilIdle();
+}
+
+// This test what happens if a display audio source fail to initialize due to no
+// system permissions. The default behavior is that this will cause the request
+// to fail.
+TEST_F(UserMediaClientTest, DesktopCaptureWithoutAudioSystemPermission) {
+  display_user_media_processor_->SetAudioSourceCreationStatus(
+      SourceCreationStatus::kFailedSystemPermissionError);
+
+  user_media_client_impl_->RequestUserMediaForTest(/*is_user_media=*/false);
+  StartMockedVideoSource(display_user_media_processor_);
+  EXPECT_EQ(kRequestFailed, request_state());
+  EXPECT_EQ(blink::mojom::blink::MediaStreamRequestResult::
+                PERMISSION_DENIED_BY_SYSTEM,
+            display_user_media_processor_->error_reason());
+  blink::WebHeap::CollectAllGarbageForTesting();
+}
+
+// This test what happens if a display audio source fail to initialize due to no
+// system permissions. If kGetDisplayMediaIgnoreAudioPermissionFailures is
+// enabled, this should be ignored and result in an audio track with
+// readyState:ended.
+TEST_F(UserMediaClientTest, DesktopCaptureIgnoreAudioSystemPermission) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kGetDisplayMediaIgnoreAudioPermissionFailures);
+
+  display_user_media_processor_->SetAudioSourceCreationStatus(
+      SourceCreationStatus::kFailedSystemPermissionError);
+
+  user_media_client_impl_->RequestUserMediaForTest(/*is_user_media=*/false);
+  StartMockedVideoSource(display_user_media_processor_);
+  EXPECT_EQ(kRequestSucceeded, request_state());
+
+  MediaStreamDescriptor* desc =
+      display_user_media_processor_->last_generated_descriptor();
+  auto audio_components = desc->AudioComponents();
+  auto video_components = desc->VideoComponents();
+
+  EXPECT_EQ(1u, audio_components.size());
+  EXPECT_EQ(1u, video_components.size());
+  EXPECT_EQ(audio_components[0]->GetReadyState(),
+            MediaStreamSource::kReadyStateEnded);
+  EXPECT_EQ(video_components[0]->GetReadyState(),
+            MediaStreamSource::kReadyStateLive);
+  blink::WebHeap::CollectAllGarbageForTesting();
 }
 
 TEST_F(UserMediaClientTest, PanConstraintRequestPanTiltZoomPermission) {

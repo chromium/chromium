@@ -30,19 +30,31 @@ void MockMojoMediaStreamDispatcherHost::GenerateStreams(
   if (controls.audio.requested() &&
       audio_stream_selection_info_ptr->is_search_by_session_id() &&
       !audio_stream_selection_info_ptr->get_search_by_session_id().is_null()) {
-    stream_devices_.audio_device = MediaStreamDevice(
-        controls.audio.stream_type, controls.audio.device_ids.front(),
-        "microphone:" +
-            MaybeAppendSessionId(controls.audio.device_ids.front()));
+    if (controls.audio.stream_type ==
+        mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE) {
+      stream_devices_.audio_device = MediaStreamDevice(
+          controls.audio.stream_type, "loopback", "System Audio");
+    } else {
+      stream_devices_.audio_device = MediaStreamDevice(
+          controls.audio.stream_type, controls.audio.device_ids.front(),
+          "microphone:" +
+              MaybeAppendSessionId(controls.audio.device_ids.front()));
+    }
     stream_devices_.audio_device->set_session_id(session_id_);
     stream_devices_.audio_device->matched_output_device_id =
         MaybeAppendSessionId("associated_output_device_id");
   }
 
   if (controls.video.requested()) {
-    stream_devices_.video_device = MediaStreamDevice(
-        controls.video.stream_type, controls.video.device_ids.front(),
-        "camera:" + MaybeAppendSessionId(controls.video.device_ids.front()));
+    if (controls.video.stream_type ==
+        mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE) {
+      stream_devices_.video_device = MediaStreamDevice(
+          controls.video.stream_type, "screen:1:0", "screen:1:0");
+    } else {
+      stream_devices_.video_device = MediaStreamDevice(
+          controls.video.stream_type, controls.video.device_ids.front(),
+          "camera:" + MaybeAppendSessionId(controls.video.device_ids.front()));
+    }
     stream_devices_.video_device->video_facing = media::MEDIA_VIDEO_FACING_USER;
     stream_devices_.video_device->set_session_id(session_id_);
   }

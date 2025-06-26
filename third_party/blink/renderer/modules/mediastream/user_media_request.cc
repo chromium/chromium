@@ -598,9 +598,13 @@ UserMediaRequest* UserMediaRequest::Create(
 
 UserMediaRequest* UserMediaRequest::CreateForTesting(
     const MediaConstraints& audio,
-    const MediaConstraints& video) {
+    const MediaConstraints& video,
+    bool is_user_media) {
   return MakeGarbageCollected<UserMediaRequest>(
-      nullptr, nullptr, UserMediaRequestType::kUserMedia, audio, video,
+      nullptr, nullptr,
+      is_user_media ? UserMediaRequestType::kUserMedia
+                    : UserMediaRequestType::kDisplayMedia,
+      audio, video,
       /*should_prefer_current_tab=*/false,
       /*capture_controller=*/nullptr, /*callbacks=*/nullptr,
       IdentifiableSurface());

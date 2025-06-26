@@ -1128,6 +1128,11 @@ BASE_FEATURE(kFrequencyCappingForOverlayPopupDetection,
 
 BASE_FEATURE(kGMSCoreEmoji, "GMSCoreEmoji", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, then display audio track permission failures are ignored.
+BASE_FEATURE(kGetDisplayMediaIgnoreAudioPermissionFailures,
+             "GetDisplayMediaIgnoreAudioPermissionFailures",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 // Defers device selection until after permission is granted.
 BASE_FEATURE(kGetUserMediaDeferredDeviceSettingsSelection,
