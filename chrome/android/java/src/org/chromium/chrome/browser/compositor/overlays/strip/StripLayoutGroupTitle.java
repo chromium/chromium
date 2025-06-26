@@ -95,7 +95,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     // Reorder background constants.
     public static final float REORDER_BACKGROUND_TOP_MARGIN = StripLayoutTab.TOP_MARGIN_DP;
     public static final float REORDER_BACKGROUND_BOTTOM_MARGIN =
-            StripLayoutUtils.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
+            StripLayoutTabDelegate.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
     public static final float REORDER_BACKGROUND_PADDING_START = 5.f;
     public static final float REORDER_BACKGROUND_PADDING_END = 10.f;
     public static final float REORDER_BACKGROUND_CORNER_RADIUS = 12.f;

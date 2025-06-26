@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTabDelegate.VisualState;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -148,6 +149,7 @@ public class StripLayoutTab extends StripLayoutView {
     private boolean mIsDying;
     private boolean mIsClosed;
     private boolean mIsSelected;
+    private boolean mIsHovered;
     private boolean mCanShowCloseButton = true;
     private boolean mFolioAttached = true;
     private boolean mStartDividerVisible;
@@ -174,6 +176,8 @@ public class StripLayoutTab extends StripLayoutView {
     private final RectF mClosePlacement = new RectF();
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
+
+    private @VisualState int mVisualState = VisualState.NORMAL;
 
     /**
      * Create a {@link StripLayoutTab} that represents the {@link Tab} with an id of {@code id}.
@@ -253,6 +257,44 @@ public class StripLayoutTab extends StripLayoutView {
 
         mCloseButton.setIncognito(incognito);
         resetCloseRect();
+    }
+
+    /**
+     * Sets the selected state for this tab.
+     *
+     * @param isSelected Whether the tab is selected.
+     */
+    public void setIsSelected(boolean isSelected) {
+        mIsSelected = isSelected;
+    }
+
+    /** Gets the selected state for this tab. */
+    public boolean getIsSelected() {
+        return mIsSelected;
+    }
+
+    /**
+     * Sets the hovered state for this tab.
+     *
+     * @param isHovered Whether the tab is hovered.
+     */
+    public void setIsHovered(boolean isHovered) {
+        mIsHovered = isHovered;
+    }
+
+    /** Gets the hovered state for this tab. */
+    public boolean getIsHovered() {
+        return mIsHovered;
+    }
+
+    /** Sets the {@link VisualState} for this tab. */
+    public void setVisualState(@VisualState int visualState) {
+        mVisualState = visualState;
+    }
+
+    /** Gets the {@link VisualState} for this tab. */
+    public int getVisualState() {
+        return mVisualState;
     }
 
     /**
@@ -390,22 +432,27 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /**
-     * @param foreground Whether or not this tab is a foreground tab.
-     * @param hovered Whether or not this tab is hovered on.
-     * @return The tint color resource that represents the tab background. A foreground tab will
-     *     have the same tint irrespective of its hover state.
+     * Gets the tint color for the tab background based on its current VisualState.
+     *
+     * @return The tint color resource that represents the tab background.
      */
-    public @ColorInt int getTint(boolean foreground, boolean hovered) {
-        // TODO(crbug.com/40888366): Avoid calculating every time. Instead, store the tab's
-        //  color and only re-determine when the color could have changed (i.e. on selection).
-        if (foreground) {
-            return TabUiThemeUtil.getTabStripSelectedTabColor(mContext, isIncognito());
-        } else if (hovered) {
-            return TabUiThemeUtil.getHoveredTabContainerColor(mContext, isIncognito());
-        } else if (mIsPlaceholder) {
-            return TabUiThemeUtil.getTabStripStartupContainerColor(mContext);
+    public @ColorInt int getTint() {
+        switch (mVisualState) {
+            case VisualState.SELECTED_HOVERED:
+                return TabUiThemeUtil.getTabStripSelectedTabColor(mContext, isIncognito());
+            case VisualState.SELECTED:
+                return TabUiThemeUtil.getTabStripSelectedTabColor(mContext, isIncognito());
+            case VisualState.HOVERED:
+                return TabUiThemeUtil.getHoveredTabContainerColor(mContext, isIncognito());
+            case VisualState.NORMAL:
+                if (mIsPlaceholder) {
+                    return TabUiThemeUtil.getTabStripStartupContainerColor(mContext);
+                }
+                return ChromeColors.getDefaultBgColor(mContext, isIncognito());
+            default:
+                assert false : "Invalid Visual State";
+                return -1;
         }
-        return ChromeColors.getDefaultBgColor(mContext, isIncognito());
     }
 
     /**
@@ -793,10 +840,6 @@ public class StripLayoutTab extends StripLayoutView {
     /** {@return The width of the keyboard focus ring stroke and tab group color line in px} */
     public int getLineWidth() {
         return TabUiThemeUtil.getLineWidth(mContext);
-    }
-
-    public void setIsSelected(boolean isSelected) {
-        mIsSelected = isSelected;
     }
 
     // TODO(dtrainor): Don't animate this if we're selecting or deselecting this tab.

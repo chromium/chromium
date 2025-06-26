@@ -49,8 +49,6 @@ public class StripLayoutUtils {
 
     // Reorder Constants.
     public static final long INVALID_TIME = 0L;
-    public static final float FOLIO_ATTACHED_BOTTOM_MARGIN_DP = 0.f;
-    public static final float FOLIO_DETACHED_BOTTOM_MARGIN_DP = 4.f;
     public static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
 
     // ============================================================================================

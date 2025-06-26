@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTabDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener;
@@ -332,13 +333,13 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
             StripLayoutTab tab, boolean attached, @NonNull List<Animator> animationList) {
         float startValue =
                 attached
-                        ? StripLayoutUtils.FOLIO_DETACHED_BOTTOM_MARGIN_DP
-                        : StripLayoutUtils.FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
+                        ? StripLayoutTabDelegate.FOLIO_DETACHED_BOTTOM_MARGIN_DP
+                        : StripLayoutTabDelegate.FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
         float intermediateValue = FOLIO_ANIM_INTERMEDIATE_MARGIN_DP;
         float endValue =
                 attached
-                        ? StripLayoutUtils.FOLIO_ATTACHED_BOTTOM_MARGIN_DP
-                        : StripLayoutUtils.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
+                        ? StripLayoutTabDelegate.FOLIO_ATTACHED_BOTTOM_MARGIN_DP
+                        : StripLayoutTabDelegate.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
 
         ArrayList<Animator> attachAnimationList = new ArrayList<>();
         CompositorAnimator dropAnimation =

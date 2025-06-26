@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
@@ -167,11 +165,9 @@ public class StripLayoutHelper
     private static final int ANIM_TAB_RESIZE_MS = 250;
     private static final int ANIM_TAB_DRAW_X_MS = 250;
     private static final int ANIM_BUTTONS_FADE_MS = 150;
-    private static final int ANIM_HOVERED_TAB_CONTAINER_FADE_MS = 200;
     private static final int NEW_ANIM_TAB_RESIZE_MS = 200;
 
     // Visibility Constants
-    private static final float TAB_WIDTH_MEDIUM = 156.f;
     private static final float NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;
     private static final float NEW_TAB_BUTTON_CLICK_SLOP_DP = 8.f;
     private static final float NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP = 32.f;
@@ -184,15 +180,12 @@ public class StripLayoutHelper
     private static final float NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY = 0.2f;
     private static final float NEW_TAB_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.12f;
     private static final float NEW_TAB_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.08f;
-    static final float TAB_OPACITY_HIDDEN = 0.f;
-    static final float TAB_OPACITY_VISIBLE = 1.f;
     static final float FADE_FULL_OPACITY_THRESHOLD_DP = 24.f;
     private static final float NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING = 8.f;
 
     private static final int MESSAGE_RESIZE = 1;
     private static final int MESSAGE_UPDATE_SPINNER = 2;
     private static final int MESSAGE_HOVER_CARD = 3;
-    private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_START = 96.f;
     private static final long TAB_SWITCH_METRICS_MAX_ALLOWED_SCROLL_INTERVAL =
             DateUtils.MINUTE_IN_MILLIS;
 
@@ -548,6 +541,8 @@ public class StripLayoutHelper
 
     private final List<QueuedIph> mQueuedIphList = new ArrayList<>();
 
+    private final StripLayoutTabDelegate mTabDelegate;
+
     @FunctionalInterface
     interface QueuedIph {
         boolean attemptToShow();
@@ -759,6 +754,8 @@ public class StripLayoutHelper
         mGroupIdToHideSupplier.addObserver((newIdToHide) -> rebuildStripViews());
 
         mIsFirstLayoutPass = true;
+
+        mTabDelegate = new StripLayoutTabDelegate(mUpdateHost);
     }
 
     /** Cleans up internal state. An instance should not be used after this method is called. */
@@ -1416,6 +1413,18 @@ public class StripLayoutHelper
         }
     }
 
+    /** Updates the current selected tab. */
+    private void updateSelectedTab(int newFocusedTabId, int previouslyFocusedTabId) {
+        StripLayoutTab previouslyFocusedTab = findTabById(previouslyFocusedTabId);
+        if (previouslyFocusedTab != null) {
+            mTabDelegate.setIsTabSelected(previouslyFocusedTab, false);
+        }
+        StripLayoutTab newFocusedTab = findTabById(newFocusedTabId);
+        if (newFocusedTab != null) {
+            mTabDelegate.setIsTabSelected(newFocusedTab, true);
+        }
+    }
+
     /**
      * Called when a tab get selected.
      *
@@ -1425,9 +1434,12 @@ public class StripLayoutHelper
      */
     public void tabSelected(long time, int id, int prevId) {
         StripLayoutTab stripTab = findTabById(id);
+
         if (stripTab == null) {
             tabCreated(time, id, prevId, true, false, false);
+            updateSelectedTab(id, prevId);
         } else {
+            updateSelectedTab(id, prevId);
             updateCloseButtons();
 
             Tab tab = getTabById(id);
@@ -1450,10 +1462,6 @@ public class StripLayoutHelper
                 setAccessibilityDescription(findTabById(prevId), getTabById(prevId));
             }
         }
-        StripLayoutTab previouslyFocusedTab = findTabById(prevId);
-        if (previouslyFocusedTab != null) previouslyFocusedTab.setIsSelected(false);
-        StripLayoutTab newFocusedTab = findTabById(id);
-        if (newFocusedTab != null) newFocusedTab.setIsSelected(true);
     }
 
     /**
@@ -1709,7 +1717,8 @@ public class StripLayoutHelper
         // container is visible.
         if (mActiveTabIndexOnStartup != TabModel.INVALID_TAB_INDEX) {
             bringSelectedTabToVisibleArea(LayoutManagerImpl.time(), false);
-            mStripTabs[mActiveTabIndexOnStartup].setContainerOpacity(TAB_OPACITY_VISIBLE);
+            StripLayoutTabDelegate.setTabVisibility(
+                    mStripTabs[mActiveTabIndexOnStartup], /* isVisible= */ true);
         }
 
         // 4. Mark that the placeholder strip layout is ready and request a visual update.
@@ -1850,30 +1859,26 @@ public class StripLayoutHelper
      */
     private void updateCloseButtons() {
         final int count = mStripTabs.length;
-        int selectedIndex = getSelectedStripTabIndex();
 
         for (int i = 0; i < count; i++) {
             final StripLayoutTab tab = mStripTabs[i];
-            boolean tabSelected = selectedIndex == i;
-            boolean canShowCloseButton =
-                    (tab.getWidth() >= TAB_WIDTH_MEDIUM
-                            || (tabSelected && shouldShowCloseButton(tab, i)));
-            // TODO(crbug.com/419843587): Await UX direction for close button appearance
-            if (ChromeFeatureList.sTabletTabStripAnimation.isEnabled()
-                    && tab.isDying()
-                    && !tabSelected) {
-                mStripTabs[i].setCanShowCloseButton(false, false);
-            } else {
-                mStripTabs[i].setCanShowCloseButton(canShowCloseButton, !mIsFirstLayoutPass);
-            }
+            boolean isLastTab = i == mStripTabs.length - 1;
+            mTabDelegate.updateTabCloseButtonVisibility(
+                    tab,
+                    isLastTab,
+                    mLeftFadeWidth,
+                    mRightFadeWidth,
+                    getVisibleLeftBound(),
+                    getVisibleRightBound(),
+                    mNewTabButton,
+                    mIsFirstLayoutPass);
         }
     }
 
     private void setTabContainerVisible(StripLayoutTab tab, boolean selected) {
         // The container will be visible if the tab is selected or is a placeholder tab.
-        float containerOpacity =
-                selected || tab.getIsPlaceholder() ? TAB_OPACITY_VISIBLE : TAB_OPACITY_HIDDEN;
-        tab.setContainerOpacity(containerOpacity);
+        boolean isVisible = selected || tab.getIsPlaceholder();
+        StripLayoutTabDelegate.setTabVisibility(tab, isVisible);
     }
 
     private void updateTabContainersAndDividers() {
@@ -1887,13 +1892,13 @@ public class StripLayoutHelper
             if (hoveredId != currTab.getTabId()) {
                 setTabContainerVisible(currTab, isSelectedTab(currTab.getTabId()));
             }
-            boolean currContainerHidden = currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
+            boolean currContainerHidden = StripLayoutTabDelegate.isTabHidden(currTab);
 
             boolean hideDividerForDyingTab =
                     ChromeFeatureList.sTabletTabStripAnimation.isEnabled() && currTab.isDying();
             // 2. Set start divider visibility.
             if (i > 0 && viewsOnStrip[i - 1] instanceof StripLayoutTab prevTab) {
-                boolean prevContainerHidden = prevTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
+                boolean prevContainerHidden = StripLayoutTabDelegate.isTabHidden(prevTab);
                 boolean prevTabHasMargin = prevTab.getTrailingMargin() > 0;
                 boolean startDividerVisible =
                         !hideDividerForDyingTab
@@ -1940,49 +1945,6 @@ public class StripLayoutHelper
             touchableRect.right = Math.min(ntbTouchRect.right, getVisibleRightBound());
         }
         mTouchableRect.set(touchableRect);
-    }
-
-    /**
-     * Checks whether a tab at the edge of the strip is partially hidden, in which case the close
-     * button will be hidden to avoid accidental clicks.
-     *
-     * @param tab The tab to check.
-     * @param index The index of the tab.
-     * @return Whether the close button should be shown for this tab.
-     */
-    private boolean shouldShowCloseButton(StripLayoutTab tab, int index) {
-        boolean tabStartHidden;
-        boolean tabEndHidden;
-        boolean isLastTab = index == mStripTabs.length - 1;
-        if (LocalizationUtils.isLayoutRtl()) {
-            if (isLastTab) {
-                tabStartHidden =
-                        tab.getDrawX() + TAB_OVERLAP_WIDTH_DP
-                                < getVisibleLeftBound()
-                                        + mNewTabButton.getDrawX()
-                                        + mNewTabButton.getWidth();
-            } else {
-                tabStartHidden =
-                        tab.getDrawX() + TAB_OVERLAP_WIDTH_DP
-                                < getVisibleLeftBound() + getCloseBtnVisibilityThreshold(false);
-            }
-            tabEndHidden =
-                    tab.getDrawX() > getVisibleRightBound() - getCloseBtnVisibilityThreshold(true);
-        } else {
-            tabStartHidden =
-                    tab.getDrawX() + tab.getWidth()
-                            < getVisibleLeftBound() + getCloseBtnVisibilityThreshold(true);
-            if (isLastTab) {
-                tabEndHidden =
-                        tab.getDrawX() + tab.getWidth() - TAB_OVERLAP_WIDTH_DP
-                                > getVisibleLeftBound() + mNewTabButton.getDrawX();
-            } else {
-                tabEndHidden =
-                        (tab.getDrawX() + tab.getWidth() - TAB_OVERLAP_WIDTH_DP
-                                > getVisibleRightBound() - getCloseBtnVisibilityThreshold(false));
-            }
-        }
-        return !tabStartHidden && !tabEndHidden;
     }
 
     /**
@@ -2454,9 +2416,8 @@ public class StripLayoutHelper
         // Hovered into a tab on the strip.
         if (hoveredTab != null) {
             updateLastHoveredTab(hoveredTab);
-
             // Check whether the close button on the hovered tab is being hovered on.
-            hoveredTab.setCloseHovered(hoveredTab.checkCloseHitTest(x, y));
+            StripLayoutTabDelegate.updateTabCloseHoverState(hoveredTab, x, y);
         } else {
             // Check whether new tab button or model selector button is being hovered.
             updateCompositorButtonHoverState(x, y);
@@ -2477,25 +2438,13 @@ public class StripLayoutHelper
         // Hovered into a non-tab region within the strip.
         if (hoveredTab == null) {
             clearLastHoveredTab();
-            mUpdateHost.requestUpdate();
-            return;
-        }
-
-        // Hovered within the same tab that was last hovered into and close button hover state
-        // remains unchanged.
-        boolean isCloseHit = hoveredTab.checkCloseHitTest(x, y);
-        if (hoveredTab == mLastHoveredTab && hoveredTab.isCloseHovered() == isCloseHit) {
-            return;
         } else if (hoveredTab == mLastHoveredTab) {
-            // Hovered within the same tab that was last hovered into, but close button hover state
-            // has changed.
-            hoveredTab.setCloseHovered(isCloseHit);
+            if (!StripLayoutTabDelegate.updateTabCloseHoverState(hoveredTab, x, y)) return;
         } else {
             // Hovered from one tab to another tab on the strip.
             clearLastHoveredTab();
             updateLastHoveredTab(hoveredTab);
         }
-
         mUpdateHost.requestUpdate();
     }
 
@@ -2585,6 +2534,7 @@ public class StripLayoutHelper
 
     void setLastHoveredTabForTesting(StripLayoutTab tab) {
         mLastHoveredTab = tab;
+        mTabDelegate.setIsTabHovered(tab, true);
     }
 
     @Nullable StripLayoutTab getLastHoveredTab() {
@@ -2607,12 +2557,8 @@ public class StripLayoutHelper
         if (mLastHoveredTab == null) {
             return;
         }
-        // Clear close button hover state.
-        mLastHoveredTab.setCloseHovered(false);
-        // Remove the highlight from the last hovered tab.
-        updateHoveredTabAttachedState(mLastHoveredTab, false);
+        mTabDelegate.setIsTabHovered(mLastHoveredTab, false);
         mLastHoveredTab = null;
-
         // Hide hover card view.
         mStripTabEventHandler.removeMessages(MESSAGE_HOVER_CARD);
         // Hover card view can be null if hover event was processed before view inflation completes.
@@ -2639,15 +2585,7 @@ public class StripLayoutHelper
         if (isViewCompletelyHidden(hoveredTab)) return;
 
         mLastHoveredTab = hoveredTab;
-        CompositorAnimator.ofFloatProperty(
-                        mUpdateHost.getAnimationHandler(),
-                        hoveredTab,
-                        StripLayoutTab.OPACITY,
-                        hoveredTab.getContainerOpacity(),
-                        TAB_OPACITY_VISIBLE,
-                        ANIM_HOVERED_TAB_CONTAINER_FADE_MS)
-                .start();
-        updateHoveredTabAttachedState(mLastHoveredTab, true);
+        mTabDelegate.setIsTabHovered(hoveredTab, true);
 
         // Show the tab hover card.
         // Just in case, cancel the previous delayed hover card event.
@@ -2728,18 +2666,6 @@ public class StripLayoutHelper
                 mLastHoveredTab.getWidth(),
                 mHeight,
                 mTopPadding);
-    }
-
-    private void updateHoveredTabAttachedState(StripLayoutTab tab, boolean hovered) {
-        if (tab == null) return;
-
-        // Do not update the attached state of a selected tab that is hovered on.
-        if (isSelectedTab(tab.getTabId())) return;
-
-        // If a tab is hovered on, detach its container.
-        tab.setFolioAttached(!hovered);
-        tab.setBottomMargin(
-                hovered ? FOLIO_DETACHED_BOTTOM_MARGIN_DP : FOLIO_ATTACHED_BOTTOM_MARGIN_DP);
     }
 
     /**
@@ -3845,7 +3771,7 @@ public class StripLayoutHelper
                         mIncognito);
 
         tab.setIsPlaceholder(true);
-        tab.setContainerOpacity(TAB_OPACITY_VISIBLE);
+        StripLayoutTabDelegate.setTabVisibility(tab, /* isVisible= */ true);
 
         // TODO(crbug.com/40942588): Added placeholder a11y descriptions to prevent crash due
         //  to invalid a11y node. Replace with official strings when available.
@@ -3872,7 +3798,7 @@ public class StripLayoutHelper
                         mIncognito);
 
         if (isSelectedTab(id)) {
-            tab.setContainerOpacity(TAB_OPACITY_VISIBLE);
+            StripLayoutTabDelegate.setTabVisibility(tab, /* isVisible= */ true);
         }
 
         pushPropertiesToTab(tab);
@@ -3884,7 +3810,7 @@ public class StripLayoutHelper
         if (tab == null) return;
         placeholderTab.setTabId(tab.getId());
         placeholderTab.setIsPlaceholder(false);
-        placeholderTab.setContainerOpacity(TAB_OPACITY_HIDDEN);
+        StripLayoutTabDelegate.setTabVisibility(placeholderTab, /* isVisible= */ false);
 
         setAccessibilityDescription(placeholderTab, tab);
     }
@@ -3892,7 +3818,8 @@ public class StripLayoutHelper
     private void pushPropertiesToTab(StripLayoutTab tab) {
         // The close button is visible by default. If it should be hidden on tab creation, do not
         // animate the fade-out. See (https://crbug.com/1342654).
-        boolean shouldShowCloseButton = getCachedTabWidth() >= TAB_WIDTH_MEDIUM;
+        boolean shouldShowCloseButton =
+                getCachedTabWidth() >= StripLayoutTabDelegate.TAB_WIDTH_MEDIUM;
         tab.setCanShowCloseButton(shouldShowCloseButton, false);
         tab.setHeight(mHeight);
         tab.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
@@ -4423,7 +4350,7 @@ public class StripLayoutHelper
         // tab is in foreground (e.g. the previously selected tab in destination strip).
         return stripLayoutTab.getFolioAttached()
                 && (isSelectedTab(stripLayoutTab.getTabId())
-                        || stripLayoutTab.getContainerOpacity() == TAB_OPACITY_VISIBLE);
+                        || StripLayoutTabDelegate.isTabVisible(stripLayoutTab));
     }
 
     private void handleReorderAutoScrolling(long time) {
@@ -4713,24 +4640,6 @@ public class StripLayoutHelper
         return viewX + viewWidth <= getVisibleLeftBound() + mLeftFadeWidth
                 // ... or to the right.
                 || viewX >= getVisibleRightBound() - mRightFadeWidth;
-    }
-
-    /**
-     * To prevent accidental tab closures, when the close button of a tab is very close to the edge
-     * of the tab strip, we hide the close button. The threshold for hiding is different based on
-     * the length of the fade at the end of the strip.
-     *
-     * @param start Whether its the start of the tab strip.
-     * @return The distance threshold from the edge of the tab strip to hide the close button.
-     */
-    private float getCloseBtnVisibilityThreshold(boolean start) {
-        if (start) {
-            // TODO(zheliooo): Add unit tests to cover start tab cases for testTabSelected in
-            // StripLayoutHelperTest.
-            return CLOSE_BTN_VISIBILITY_THRESHOLD_START;
-        } else {
-            return LocalizationUtils.isLayoutRtl() ? mLeftFadeWidth : mRightFadeWidth;
-        }
     }
 
     /**

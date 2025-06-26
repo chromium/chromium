@@ -1,0 +1,275 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.compositor.overlays.strip;
+
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
+
+import androidx.annotation.IntDef;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
+import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
+import org.chromium.ui.base.LocalizationUtils;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/** A delegate that handles the presentation logic for all {@link StripLayoutTab} instances. */
+@NullMarked
+public class StripLayoutTabDelegate {
+    // Opacity
+    public static final float TAB_OPACITY_HIDDEN = 0.f;
+    public static final float TAB_OPACITY_VISIBLE = 1.f;
+    // Lifted effect for hovered tabs.
+    public static final float FOLIO_ATTACHED_BOTTOM_MARGIN_DP = 0.f;
+    public static final float FOLIO_DETACHED_BOTTOM_MARGIN_DP = 4.f;
+
+    public static final float TAB_WIDTH_MEDIUM = 156.f;
+
+    private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_START = 96.f;
+
+    public static final int ANIM_HOVERED_TAB_CONTAINER_FADE_MS = 200;
+    private final LayoutUpdateHost mUpdateHost;
+
+    /** Defines the different visual states a tab can be in, used for determining its tint. */
+    @IntDef({
+        VisualState.NORMAL,
+        VisualState.HOVERED,
+        VisualState.SELECTED,
+        VisualState.SELECTED_HOVERED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface VisualState {
+        int NORMAL = 0;
+        int HOVERED = 1;
+        int SELECTED = 2;
+        int SELECTED_HOVERED = 3;
+    }
+
+    /**
+     * Constructs a new delegate to handle tab presentation logic.
+     *
+     * @param updateHost The {@link LayoutUpdateHost} for requesting animations and updates.
+     */
+    public StripLayoutTabDelegate(LayoutUpdateHost updateHost) {
+        mUpdateHost = updateHost;
+    }
+
+    /**
+     * Determines if the close button for a tab should be visible based on its state and position.
+     *
+     * @param tab The {@link StripLayoutTab} to update.
+     * @param isLastTab Whether this is the last tab in the strip.
+     * @param stripLeftFadeWidth The width of the fade overlay on the left side of the strip.
+     * @param stripRightFadeWidth The width of the fade overlay on the right side of the strip.
+     * @param visibleLeftBound The strip's visible left bound, in dps.
+     * @param visibleRightBound The strip's visible right bound, in dps.
+     * @param newTabButton The New Tab Button, used for positioning calculations.
+     * @param isFirstLayoutPass Whether this is the first layout pass, used to suppress animations.
+     */
+    public void updateTabCloseButtonVisibility(
+            StripLayoutTab tab,
+            boolean isLastTab,
+            float stripLeftFadeWidth,
+            float stripRightFadeWidth,
+            float visibleLeftBound,
+            float visibleRightBound,
+            TintedCompositorButton newTabButton,
+            boolean isFirstLayoutPass) {
+        // A tab's close button is hidden if the tab is too narrow, or if it is partially obscured
+        // by the edge of the screen, unless it is also the selected tab.
+        boolean isFullyVisible =
+                isFullyVisible(
+                        tab,
+                        isLastTab,
+                        stripLeftFadeWidth,
+                        stripRightFadeWidth,
+                        visibleLeftBound,
+                        visibleRightBound,
+                        newTabButton);
+
+        boolean canShow =
+                (tab.getWidth() >= TAB_WIDTH_MEDIUM || (tab.getIsSelected() && isFullyVisible));
+
+        // A dying tab that is not selected should not show its close button.
+        // TODO(crbug.com/419843587): Await UX direction for close button appearance
+        if (ChromeFeatureList.sTabletTabStripAnimation.isEnabled()
+                && tab.isDying()
+                && !tab.getIsSelected()) {
+            tab.setCanShowCloseButton(false, false);
+        } else {
+            tab.setCanShowCloseButton(canShow, !isFirstLayoutPass);
+        }
+    }
+
+    /**
+     * Sets the selected state for this tab and updates its visual appearance instantly.
+     *
+     * @param tab The {@link StripLayoutTab} the is being modified.
+     * @param isSelected Whether the tab is selected.
+     */
+    public void setIsTabSelected(StripLayoutTab tab, boolean isSelected) {
+        tab.setIsSelected(isSelected);
+        updateTabVisualState(tab, false);
+    }
+
+    /**
+     * Sets the hovered state for this tab.
+     *
+     * @param tab The {@link StripLayoutTab} is being modified.
+     * @param isHovered Whether the tab is hovered.
+     */
+    public void setIsTabHovered(StripLayoutTab tab, boolean isHovered) {
+        tab.setIsHovered(isHovered);
+        if (!isHovered) tab.setCloseHovered(false);
+        updateTabVisualState(tab, isHovered);
+    }
+
+    /**
+     * Checks if the tab's background container is fully transparent.
+     *
+     * @param tab The {@link StripLayoutTab} to check.
+     * @return True if the tab container is hidden.
+     */
+    public static boolean isTabHidden(StripLayoutTab tab) {
+        return tab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
+    }
+
+    /**
+     * Checks if the tab's background container is fully opaque.
+     *
+     * @param tab The {@link StripLayoutTab} to check.
+     * @return True if the tab container is visible.
+     */
+    public static boolean isTabVisible(StripLayoutTab tab) {
+        return tab.getContainerOpacity() == TAB_OPACITY_VISIBLE;
+    }
+
+    /**
+     * Sets the visibility of the tab's background container directly.
+     *
+     * @param tab The {@link StripLayoutTab} to modify.
+     * @param isVisible Whether the container should be visible.
+     */
+    public static void setTabVisibility(StripLayoutTab tab, boolean isVisible) {
+        float containerOpacity = isVisible ? TAB_OPACITY_VISIBLE : TAB_OPACITY_HIDDEN;
+        tab.setContainerOpacity(containerOpacity);
+    }
+
+    /**
+     * Updates the hover state of a tab's close button based on the pointer's coordinates.
+     *
+     * @param tab The {@link StripLayoutTab} whose close button will be updated.
+     * @param x The x-coordinate of the pointer.
+     * @param y The y-coordinate of the pointer.
+     * @return {@link Boolean} Whether or not the close button hover state changed.
+     */
+    public static boolean updateTabCloseHoverState(StripLayoutTab tab, float x, float y) {
+        boolean isCloseHit = tab.checkCloseHitTest(x, y);
+        if (isCloseHit == tab.isCloseHovered()) return false;
+        tab.setCloseHovered(isCloseHit);
+        return true;
+    }
+
+    /** Central method to update a tab's appearance based on its state. */
+    private void updateTabVisualState(StripLayoutTab tab, boolean animate) {
+        @VisualState int visualState = calculateVisualState(tab);
+        if (tab.getVisualState() == visualState) return;
+        tab.setVisualState(visualState);
+        // 1. Update Container Opacity.
+        boolean shouldBeOpaque =
+                tab.getIsSelected() || tab.getIsHovered() || tab.getIsPlaceholder();
+
+        if (animate) {
+            float targetOpacity = shouldBeOpaque ? TAB_OPACITY_VISIBLE : TAB_OPACITY_HIDDEN;
+            CompositorAnimator.ofFloatProperty(
+                            mUpdateHost.getAnimationHandler(),
+                            tab,
+                            StripLayoutTab.OPACITY,
+                            tab.getContainerOpacity(),
+                            targetOpacity,
+                            ANIM_HOVERED_TAB_CONTAINER_FADE_MS)
+                    .start();
+        } else {
+            setTabVisibility(tab, shouldBeOpaque);
+        }
+
+        // 2. Update the "folio" lifted effect.
+        // It should only apply to non-selected tabs.
+        if (!tab.getIsSelected()) {
+            tab.setFolioAttached(!tab.getIsHovered());
+            tab.setBottomMargin(
+                    tab.getIsHovered()
+                            ? FOLIO_DETACHED_BOTTOM_MARGIN_DP
+                            : FOLIO_ATTACHED_BOTTOM_MARGIN_DP);
+        } else {
+            // Ensure selected tabs are "attached".
+            tab.setFolioAttached(true);
+            tab.setBottomMargin(FOLIO_ATTACHED_BOTTOM_MARGIN_DP);
+        }
+    }
+
+    /** Calculates if the tab is fully visible and not partially hidden off-screen. */
+    private static boolean isFullyVisible(
+            StripLayoutTab tab,
+            boolean isLastTab,
+            float stripLeftFadeWidth,
+            float stripRightFadeWidth,
+            float visibleLeftBound,
+            float visibleRightBound,
+            TintedCompositorButton newTabButton) {
+        boolean tabStartHidden;
+        boolean tabEndHidden;
+
+        if (LocalizationUtils.isLayoutRtl()) {
+            // For RTL, the "start" of the tab is its right edge and the "end" is its left.
+            if (isLastTab) {
+                // The last tab is positioned next to the new tab button.
+                tabStartHidden =
+                        tab.getDrawX() + TAB_OVERLAP_WIDTH_DP
+                                < visibleLeftBound
+                                        + newTabButton.getDrawX()
+                                        + newTabButton.getWidth();
+            } else {
+                tabStartHidden =
+                        tab.getDrawX() + TAB_OVERLAP_WIDTH_DP
+                                < visibleLeftBound + stripLeftFadeWidth;
+            }
+            tabEndHidden =
+                    tab.getDrawX() > visibleRightBound - CLOSE_BTN_VISIBILITY_THRESHOLD_START;
+        } else {
+            // For LTR, the "start" of the tab is its left edge and the "end" is its right.
+            tabStartHidden =
+                    tab.getDrawX() + tab.getWidth()
+                            < visibleLeftBound + CLOSE_BTN_VISIBILITY_THRESHOLD_START;
+            if (isLastTab) {
+                // The last tab is positioned next to the new tab button.
+                tabEndHidden =
+                        tab.getDrawX() + tab.getWidth() - TAB_OVERLAP_WIDTH_DP
+                                > visibleLeftBound + newTabButton.getDrawX();
+            } else {
+                tabEndHidden =
+                        (tab.getDrawX() + tab.getWidth() - TAB_OVERLAP_WIDTH_DP
+                                > visibleRightBound - stripRightFadeWidth);
+            }
+        }
+        return !tabStartHidden && !tabEndHidden;
+    }
+
+    /** Determines the visual state of a tab based on its selected and hovered properties. */
+    private static @VisualState int calculateVisualState(StripLayoutTab tab) {
+        if (tab.getIsSelected() && tab.getIsHovered()) {
+            return VisualState.SELECTED_HOVERED;
+        } else if (tab.getIsSelected()) {
+            return VisualState.SELECTED;
+        } else if (tab.getIsHovered()) {
+            return VisualState.HOVERED;
+        } else {
+            return VisualState.NORMAL;
+        }
+    }
+}

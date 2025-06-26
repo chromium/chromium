@@ -136,12 +136,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     rightPaddingPx,
                     topPaddingPx);
             pushGroupIndicators(stripLayoutGroupTitlesToRender, layerTitleCache);
-            pushStripTabs(
-                    layoutHelper,
-                    layerTitleCache,
-                    stripLayoutTabsToRender,
-                    selectedTabId,
-                    hoveredTabId);
+            pushStripTabs(layoutHelper, layerTitleCache, stripLayoutTabsToRender, selectedTabId);
         }
         TabStripSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabStripSceneLayer.this);
     }
@@ -241,8 +236,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             StripLayoutHelperManager layoutHelper,
             LayerTitleCache layerTitleCache,
             StripLayoutTab[] stripTabs,
-            int selectedTabId,
-            int hoveredTabId) {
+            int selectedTabId) {
         final int tabsCount = stripTabs != null ? stripTabs.length : 0;
 
         // TODO(crbug.com/40270147): Cleanup params, as some don't change and others are now
@@ -250,7 +244,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         for (int i = 0; i < tabsCount; i++) {
             final StripLayoutTab st = stripTabs[i];
             boolean isSelected = st.getTabId() == selectedTabId;
-            boolean isHovered = st.getTabId() == hoveredTabId;
             boolean shouldShowOutline = layoutHelper.shouldShowTabOutline(st);
             @DrawableRes
             int focusBackground =
@@ -274,7 +267,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.getCloseButton().getTint(),
                             st.getCloseButton().getBackgroundTint(),
                             st.getDividerTint(),
-                            st.getTint(isSelected, isHovered),
+                            st.getTint(),
                             layoutHelper.getSelectedOutlineGroupTint(
                                     st.getTabId(), shouldShowOutline),
                             st.isForegrounded(),

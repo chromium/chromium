@@ -1056,7 +1056,7 @@ public class TabStripTest {
         Assert.assertFalse("|mFolioAttached| for tab1 should be false.", tab1.getFolioAttached());
         Assert.assertEquals(
                 "tab1 container bottom margin should match.",
-                StripLayoutUtils.FOLIO_DETACHED_BOTTOM_MARGIN_DP,
+                StripLayoutTabDelegate.FOLIO_DETACHED_BOTTOM_MARGIN_DP,
                 tab1.getBottomMargin(),
                 0.f);
 
@@ -1073,7 +1073,7 @@ public class TabStripTest {
         Assert.assertTrue("|mFolioAttached| for tab1 should be true.", tab1.getFolioAttached());
         Assert.assertEquals(
                 "tab1 container bottom margin should match.",
-                StripLayoutUtils.FOLIO_ATTACHED_BOTTOM_MARGIN_DP,
+                StripLayoutTabDelegate.FOLIO_ATTACHED_BOTTOM_MARGIN_DP,
                 tab1.getBottomMargin(),
                 0.f);
 

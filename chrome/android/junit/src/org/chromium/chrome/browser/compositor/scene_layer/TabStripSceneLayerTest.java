@@ -256,8 +256,7 @@ public class TabStripSceneLayerTest {
                 mStripLayoutHelperManager,
                 mLayerTitleCache,
                 new StripLayoutTab[] {mStripLayoutTab},
-                0,
-                -1);
+                0);
         verify(mTabStripSceneMock, times(1))
                 .putStripTabLayer(
                         eq(1L),
@@ -318,8 +317,7 @@ public class TabStripSceneLayerTest {
                 mStripLayoutHelperManager,
                 mLayerTitleCache,
                 new StripLayoutTab[] {mStripLayoutTab},
-                0,
-                -1);
+                0);
         verify(mTabStripSceneMock, times(1))
                 .putStripTabLayer(
                         eq(1L),
@@ -378,8 +376,7 @@ public class TabStripSceneLayerTest {
                 mStripLayoutHelperManager,
                 mLayerTitleCache,
                 new StripLayoutTab[] {mStripLayoutTab},
-                mStripLayoutTab.getTabId(),
-                -1);
+                mStripLayoutTab.getTabId());
         verify(mTabStripSceneMock, times(1))
                 .putStripTabLayer(
                         eq(1L),
@@ -439,8 +436,7 @@ public class TabStripSceneLayerTest {
                 mStripLayoutHelperManager,
                 mLayerTitleCache,
                 new StripLayoutTab[] {mStripLayoutTab},
-                0,
-                -1);
+                0);
         verify(mTabStripSceneMock, times(1))
                 .putStripTabLayer(
                         eq(1L),
