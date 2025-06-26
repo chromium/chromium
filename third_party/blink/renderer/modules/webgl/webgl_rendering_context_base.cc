@@ -935,15 +935,14 @@ void WebGLRenderingContextBase::commit() {
   if (!GetDrawingBuffer() || (Host() && Host()->IsOffscreenCanvas()))
     return;
 
-  int width = GetDrawingBuffer()->Size().width();
-  int height = GetDrawingBuffer()->Size().height();
-
   // Note: we commit only if (a) the paint operation succeeded and (b) it
   // actually updated the returned resource provider.
   bool resource_provider_was_updated = false;
   auto* resource_provider = PaintRenderingResultsToCanvas(
       kBackBuffer, &resource_provider_was_updated);
   if (resource_provider && resource_provider_was_updated) {
+    const int width = GetDrawingBuffer()->Size().width();
+    const int height = GetDrawingBuffer()->Size().height();
     Host()->Commit(resource_provider->ProduceCanvasResource(FlushReason::kNone),
                    SkIRect::MakeWH(width, height));
   }
