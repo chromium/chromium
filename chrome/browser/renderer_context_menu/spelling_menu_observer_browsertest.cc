@@ -181,8 +181,16 @@ SpellingMenuObserverTest::~SpellingMenuObserverTest() = default;
 
 }  // namespace
 
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
 // Tests that right-clicking a correct word does not add any items.
-IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, InitMenuWithCorrectWord) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InitMenuWithCorrectWord DISABLED_InitMenuWithCorrectWord
+#else
+#define MAYBE_InitMenuWithCorrectWord InitMenuWithCorrectWord
+#endif
+IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
+                       MAYBE_InitMenuWithCorrectWord) {
   InitMenu("", nullptr);
   EXPECT_EQ(static_cast<size_t>(0), menu()->GetMenuSize());
 }
