@@ -133,6 +133,8 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
   if (player_info.video_pipeline_info.decoder_type ==
       VideoDecoderType::kDecrypting) {
     return uma_name + "DVD";
+  } else if (player_info.is_eme) {
+    uma_name += (is_hardware_secure_ ? "HardwareSecure." : "SoftwareSecure.");
   }
 #endif
 

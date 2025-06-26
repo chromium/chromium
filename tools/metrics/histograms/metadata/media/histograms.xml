@@ -5237,6 +5237,9 @@ chromium-metrics-reviews@google.com.
         summary="RendererImpl with software decoder and
                  DecryptingDemuxerStream"/>
     <variant name="DVD" summary="RendererImpl with DecryptingVideoDecoder"/>
+    <variant name="HardwareSecure.HW"
+        summary="RendererImpl with hardware decoder and hardware secure
+                 decryption"/>
     <variant name="HW" summary="RendererImpl with hardware decoder"/>
     <variant name="MediaDrm.HardwareSecure"
         summary="RendererImpl with requested hardware secure decryption and
