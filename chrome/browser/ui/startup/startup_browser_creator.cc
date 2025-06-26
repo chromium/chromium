@@ -597,8 +597,8 @@ void OpenNewWindowForFirstRun(const base::CommandLine& command_line,
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Returns the app id of the kiosk app associated with the current user session.
-// Returns nullopt for non-kiosk user sessions, since crash recovery is not
-// supported there.
+// Returns nullopt for non-kiosk user sessions and for ARCVM kiosk sessions,
+// since crash recovery is not supported there.
 std::optional<ash::KioskAppId> GetAppId(const base::CommandLine& command_line,
                                         Profile* profile) {
   const user_manager::User* user =
@@ -621,6 +621,7 @@ std::optional<ash::KioskAppId> GetAppId(const base::CommandLine& command_line,
     case user_manager::UserType::kChild:
     case user_manager::UserType::kGuest:
     case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kKioskArcvmApp:
       return std::nullopt;
   }
 }

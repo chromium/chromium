@@ -872,6 +872,9 @@ message FatalCrashTelemetry {
 
     // When presenting to the admin, the following will be KIOSK
     SESSION_TYPE_KIOSK_IWA = 9;
+    // TODO(crbug.com/423049262): Update MetricEnumConverter.java to support
+    // SESSION_TYPE_KIOSK_ARCVM_APP
+    SESSION_TYPE_KIOSK_ARCVM_APP = 10;
   }
   // required
   optional CrashType type = 1;

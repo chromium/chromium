@@ -1185,9 +1185,7 @@ void WallpaperControllerImpl::ShowUserWallpaper(
     const AccountId& account_id,
     const user_manager::UserType user_type) {
   current_account_id_ = account_id;
-  if (user_type == user_manager::UserType::kKioskChromeApp ||
-      user_type == user_manager::UserType::kKioskWebApp ||
-      user_type == user_manager::UserType::kKioskIWA) {
+  if (user_manager::User::TypeIsKiosk(user_type)) {
     RepaintWallpaper();
     return;
   }

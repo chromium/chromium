@@ -53,8 +53,11 @@ enum class UserType {
   // Gaia account. Could be ephemeral depending on the device policy.
   // kActiveDirectory = 8,    // deprecated
 
+  // Kiosk type for ARCVM.
+  kKioskArcvmApp = 11,
+
   // Alias for histogram.
-  kMaxValue = kKioskIWA,
+  kMaxValue = kKioskArcvmApp,
 };
 // LINT.ThenChange(//components/policy/proto/device_management_backend.proto:UserType)
 

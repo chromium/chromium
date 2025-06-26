@@ -207,6 +207,7 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   bool IsLoggedInAsKioskChromeApp() const override;
   bool IsLoggedInAsKioskWebApp() const override;
   bool IsLoggedInAsKioskIWA() const override;
+  bool IsLoggedInAsKioskArcvmApp() const override;
   bool IsLoggedInAsAnyKioskApp() const override;
   bool IsLoggedInAsStub() const override;
   bool IsUserNonCryptohomeDataEphemeral(

@@ -97,6 +97,7 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
     if (!exo::WMHelper::HasInstance()) {
       return false;
     }
+    aura::Window* active = exo::WMHelper::GetInstance()->GetActiveWindow();
     for (; window; window = window->parent()) {
       if (ash::IsArcWindow(window)) {
         return true;
@@ -106,6 +107,14 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
       // notifications. It should be okay for now because only the ARC++ windows
       // have kSkipImeProcessing.
       if (window->GetProperty(aura::client::kSkipImeProcessing)) {
+        return true;
+      }
+
+      // TODO(crbug.com/424593108): Use ash::IsArcWindow check.
+      // ash::IsArcWindow might return false for a window of ARCVM Kiosk app, so
+      // we are checking application id of the active window to cover that case.
+      if (window == active && IsArcvmKioskMode() &&
+          GetWindowTaskId(window).has_value()) {
         return true;
       }
     }

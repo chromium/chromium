@@ -41,6 +41,7 @@ class FakeChromeUserManager : public user_manager::UserManagerImpl {
   user_manager::User* AddKioskWebAppUser(const AccountId& account_id);
   user_manager::User* AddKioskIwaUser(const AccountId& account_id);
   user_manager::User* AddPublicAccountUser(const AccountId& account_id);
+  user_manager::User* AddKioskArcvmAppUser(const AccountId& account_id);
 
   // Calculates the user name hash and calls UserLoggedIn to login a user.
   // Sets the user as having its profile created if `set_profile_created_flag`

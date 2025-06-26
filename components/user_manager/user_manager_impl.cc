@@ -339,6 +339,7 @@ bool UserManagerImpl::EnsureUser(const AccountId& account_id,
     case UserType::kKioskChromeApp:
     case UserType::kKioskWebApp:
     case UserType::kKioskIWA:
+    case UserType::kKioskArcvmApp:
       // Do nothing. User should be already there.
       break;
 
@@ -1007,6 +1008,12 @@ bool UserManagerImpl::IsLoggedInAsKioskWebApp() const {
 bool UserManagerImpl::IsLoggedInAsKioskIWA() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsUserLoggedIn() && active_user_->GetType() == UserType::kKioskIWA;
+}
+
+bool UserManagerImpl::IsLoggedInAsKioskArcvmApp() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return IsUserLoggedIn() &&
+         active_user_->GetType() == UserType::kKioskArcvmApp;
 }
 
 bool UserManagerImpl::IsLoggedInAsAnyKioskApp() const {

@@ -75,6 +75,8 @@ FatalCrashTelemetry::SessionType GetSessionType(
       return FatalCrashTelemetry::SESSION_TYPE_WEB_KIOSK_APP;
     case user_manager::UserType::kKioskIWA:
       return FatalCrashTelemetry::SESSION_TYPE_KIOSK_IWA;
+    case user_manager::UserType::kKioskArcvmApp:
+      return FatalCrashTelemetry::SESSION_TYPE_KIOSK_ARCVM_APP;
     default:
       NOTREACHED();
   }

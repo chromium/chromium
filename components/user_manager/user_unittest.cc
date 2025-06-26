@@ -46,6 +46,9 @@ TEST(UserTest, DeviceLocalAccountAffiliation) {
 
   ScopedUser web_kiosk_user(User::CreateKioskWebAppUser(account_id));
   EXPECT_TRUE(web_kiosk_user.IsAffiliated());
+
+  ScopedUser arcvm_kiosk_user(User::CreateKioskArcvmAppUser(account_id));
+  EXPECT_TRUE(arcvm_kiosk_user.IsAffiliated());
 }
 
 }  // namespace user_manager

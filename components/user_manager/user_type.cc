@@ -23,6 +23,8 @@ const char* UserTypeToString(UserType user_type) {
       return "web-kiosk";
     case UserType::kKioskIWA:
       return "iwa-kiosk";
+    case UserType::kKioskArcvmApp:
+      return "arcvm-kiosk";
   }
 }
 

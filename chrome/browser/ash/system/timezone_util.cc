@@ -337,6 +337,7 @@ bool CanSetSystemTimezone(const user_manager::User* user) {
     case user_manager::UserType::kKioskChromeApp:
     case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
     case user_manager::UserType::kChild:
       return true;
 

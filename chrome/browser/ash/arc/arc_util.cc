@@ -496,10 +496,15 @@ bool IsArcBlockedDueToIncompatibleFileSystem(const Profile* profile) {
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
 
-  // Do not block ARC for public accounts as they only have ext4.
-  // Without this check it fails to start after browser crash as compatibility
-  // info is stored in RAM.
-  if (user && user->GetType() == user_manager::UserType::kPublicAccount) {
+  // Unblock Arc for public accounts as they only have ext4 and
+  // for ARC kiosk as migration to ext4 should always be triggered.
+  // Without this check it fails to start after browser crash as
+  // compatibility info is stored in RAM.
+  // In the other kiosk types we do not/should not start ARCVM or allow android
+  // apps to run hence this method should evaluate the actual file system and
+  // not be bypassed here.
+  if (user && (user->GetType() == user_manager::UserType::kPublicAccount ||
+               user->GetType() == user_manager::UserType::kKioskArcvmApp)) {
     return false;
   }
 
@@ -758,7 +763,7 @@ void UpdateArcFileSystemCompatibilityPrefIfNeeded(
   // old devices without ARC. We can always safely remove the following 4 lines
   // without changing any functionality when, say, the code clarity becomes
   // more important in the future.
-  if (!IsArcAvailable()) {
+  if (!IsArcAvailable() && !IsArcvmKioskAvailable()) {
     std::move(callback).Run();
     return;
   }

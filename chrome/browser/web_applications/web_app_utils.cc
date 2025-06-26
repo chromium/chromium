@@ -218,8 +218,9 @@ bool AreWebAppsEnabled(Profile* profile) {
   }
   auto* user_manager = user_manager::UserManager::Get();
 
-  // Don't enable for Chrome App Kiosk sessions.
-  if (user_manager && user_manager->IsLoggedInAsKioskChromeApp()) {
+  // Don't enable for Chrome App or ARC Kiosk sessions.
+  if (user_manager && (user_manager->IsLoggedInAsKioskChromeApp() ||
+                       user_manager->IsLoggedInAsKioskArcvmApp())) {
     return false;
   }
 

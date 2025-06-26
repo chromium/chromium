@@ -464,6 +464,9 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if we're logged in as a kiosk Isolated web app (IWA).
   virtual bool IsLoggedInAsKioskIWA() const = 0;
 
+  // Returns true if we're logged in as an ARCVM kiosk app.
+  virtual bool IsLoggedInAsKioskArcvmApp() const = 0;
+
   // Returns true if we're logged in as any kiosk app: chrome, web or IWA.
   virtual bool IsLoggedInAsAnyKioskApp() const = 0;
 

@@ -56,7 +56,7 @@ bool User::TypeHasGaiaAccount(UserType user_type) {
 // static
 bool User::TypeIsKiosk(UserType type) {
   return type == UserType::kKioskChromeApp || type == UserType::kKioskWebApp ||
-         type == UserType::kKioskIWA;
+         type == UserType::kKioskIWA || type == UserType::kKioskArcvmApp;
 }
 
 User::User(const AccountId& account_id, UserType type)
@@ -68,6 +68,7 @@ User::User(const AccountId& account_id, UserType type)
     case user_manager::UserType::kKioskChromeApp:
     case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
       set_display_email(account_id.GetUserEmail());
       break;
     case user_manager::UserType::kGuest:
@@ -88,6 +89,7 @@ User::User(const AccountId& account_id, UserType type)
     case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
     case user_manager::UserType::kGuest:
+    case user_manager::UserType::kKioskArcvmApp:
       user_image_ = UserImage::CreateStub();
       image_index_ = UserImage::Type::kInvalid;
       image_is_stub_ = true;
@@ -153,6 +155,7 @@ bool User::CanLock() const {
     case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
     case user_manager::UserType::kGuest:
+    case user_manager::UserType::kKioskArcvmApp:
       return false;
     case user_manager::UserType::kPublicAccount:
       if (!profile_prefs_ ||
@@ -183,8 +186,8 @@ bool User::is_active() const {
 }
 
 bool User::has_gaia_account() const {
-  static_assert(static_cast<int>(user_manager::UserType::kMaxValue) == 10,
-                "kMaxValue should equal 10");
+  static_assert(static_cast<int>(user_manager::UserType::kMaxValue) == 11,
+                "kMaxValue should equal 11");
   switch (GetType()) {
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
@@ -194,6 +197,7 @@ bool User::has_gaia_account() const {
     case user_manager::UserType::kKioskChromeApp:
     case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
       return false;
   }
   return false;
@@ -241,6 +245,7 @@ bool User::IsDeviceLocalAccount() const {
     case user_manager::UserType::kKioskChromeApp:
     case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
       return true;
   }
   return false;
@@ -279,6 +284,10 @@ User* User::CreatePublicAccountUser(const AccountId& account_id,
   User* user = new User(account_id, UserType::kPublicAccount);
   user->set_using_saml(is_using_saml);
   return user;
+}
+
+User* User::CreateKioskArcvmAppUser(const AccountId& arcvm_kiosk_account_id) {
+  return new User(arcvm_kiosk_account_id, UserType::kKioskArcvmApp);
 }
 
 void User::SetAccountLocale(const std::string& resolved_account_locale) {

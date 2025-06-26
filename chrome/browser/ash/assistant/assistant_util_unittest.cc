@@ -115,6 +115,7 @@ class ScopedLogIn {
       case user_manager::UserType::kKioskChromeApp:
       case user_manager::UserType::kKioskWebApp:
       case user_manager::UserType::kKioskIWA:
+      case user_manager::UserType::kKioskArcvmApp:
         EXPECT_FALSE(IsGaiaAccount());
         return;
       case user_manager::UserType::kGuest:
@@ -146,6 +147,9 @@ class ScopedLogIn {
         return;
       case user_manager::UserType::kGuest:
         fake_user_manager_->AddGuestUser();
+        return;
+      case user_manager::UserType::kKioskArcvmApp:
+        fake_user_manager_->AddKioskArcvmAppUser(account_id_);
         return;
     }
   }

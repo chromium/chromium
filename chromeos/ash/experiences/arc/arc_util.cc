@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
@@ -37,6 +38,8 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -283,9 +286,43 @@ bool ShouldShowOptInForTesting() {
       ash::switches::kArcForceShowOptInUi);
 }
 
+bool IsArcvmKioskAvailable() {
+  return IsArcVmEnabled() && ash::features::IsHeliumArcvmKioskEnabled();
+}
+
+// TODO(crbug.com/425999592): Pass current session of
+// components/session_manager/core/session.h to this method then check the
+// condition as needed from that, instead of depending on the global state in
+// UserManager, which is to be removed.
+bool IsArcvmKioskMode() {
+  // Ensure valid session id exists for the currently active user.
+  uint32_t user_session_id = 0u;
+  const user_manager::User* active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  const AccountId& account_id = active_user->GetAccountId();
+  for (const auto& session :
+       session_manager::SessionManager::Get()->sessions()) {
+    if (session->account_id() == account_id) {
+      user_session_id = session->session_id();
+    }
+  }
+  CHECK_NE(0u, user_session_id);
+
+  return active_user->GetType() == user_manager::UserType::kKioskArcvmApp;
+}
+
+// TODO(crbug.com/425999592): Pass current session of
+// components/session_manager/core/session.h to this method then check the
+// condition as needed from that, instead of depending on the global state in
+// UserManager, which is to be removed.
 bool IsRobotOrOfflineDemoAccountMode() {
+  // Since the ManagedGuestSession check does not return true for ARCVM Kiosk we
+  // add it here explicitly. We do not check for other kiosk user types since
+  // ARCVM is not launched during other kiosk session types and this method is
+  // currently not invoked for kiosk flows other than ARCVM Kiosk.
   return user_manager::UserManager::IsInitialized() &&
-         user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
+         (user_manager::UserManager::Get()->IsLoggedInAsKioskArcvmApp() ||
+          user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession());
 }
 
 bool IsArcAllowedForUser(const user_manager::User* user) {
@@ -294,16 +331,18 @@ bool IsArcAllowedForUser(const user_manager::User* user) {
     return false;
   }
 
-  // ARC is only supported for the following cases:
+  // ARCVM is only supported for the following cases:
   // - Users have Gaia accounts;
+  // - ARCVM kiosk session;
   // - Public Session users;
-  //   kPublicAccount check is compatible with IsRobotOrOfflineDemoAccountMode()
-  //   above because public account user is always the primary/active user of a
-  //   user session.
+  //   kUserTypeKioskArcvmApp check is compatible with IsArcvmKioskMode()
+  //   above because ARCVM kiosk user is always the primary/active user of a
+  //   user session. The same for kPublicAccount.
   if (!user->HasGaiaAccount() &&
+      user->GetType() != user_manager::UserType::kKioskArcvmApp &&
       user->GetType() != user_manager::UserType::kPublicAccount) {
-    VLOG(1) << "Only users with GAIA account or managed guest session users "
-               "are supported in ARC.";
+    VLOG(1) << "Users without GAIA account, or not ARCVM kiosk apps are not "
+               "supported in ARCVM.";
     return false;
   }
 

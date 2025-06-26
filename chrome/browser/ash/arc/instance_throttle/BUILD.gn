@@ -26,6 +26,8 @@ static_library("instance_throttle") {
     "arc_provisioning_throttle_observer.h",
     "arc_switch_throttle_observer.cc",
     "arc_switch_throttle_observer.h",
+    "arcvm_kiosk_mode_throttle_observer.cc",
+    "arcvm_kiosk_mode_throttle_observer.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

@@ -626,6 +626,7 @@ std::string ProfilePolicyConnector::GetTimeToFirstPolicyLoadMetricSuffix()
     case user_manager::UserType::kKioskChromeApp:
     case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
       return "Kiosk";
     case user_manager::UserType::kGuest:
       // Don't report the metric in uninteresting or unreachable cases.

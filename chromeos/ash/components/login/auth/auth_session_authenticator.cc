@@ -665,6 +665,13 @@ void AuthSessionAuthenticator::LoginAsIwaKioskAccount(
                    /*force_dircrypto=*/false, /*ephemeral=*/ephemeral);
 }
 
+void AuthSessionAuthenticator::LoginAsArcvmKioskAccount(
+    const AccountId& app_account_id,
+    bool ephemeral) {
+  LoginAsKioskImpl(app_account_id, user_manager::UserType::kKioskArcvmApp,
+                   /*force_dircrypto=*/true, ephemeral);
+}
+
 void AuthSessionAuthenticator::LoginAsKioskImpl(
     const AccountId& app_account_id,
     user_manager::UserType user_type,

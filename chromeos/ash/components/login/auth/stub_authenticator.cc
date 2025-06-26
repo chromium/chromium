@@ -143,6 +143,12 @@ void StubAuthenticator::LoginAsIwaKioskAccount(
   LoginAsKioskAccountStub(user_manager::UserType::kKioskIWA);
 }
 
+void StubAuthenticator::LoginAsArcvmKioskAccount(
+    const AccountId& /* app_account_id */,
+    bool /* ephemeral */) {
+  LoginAsKioskAccountStub(user_manager::UserType::kKioskArcvmApp);
+}
+
 void StubAuthenticator::OnAuthSuccess() {
   // If we want to be more like the real thing, we could save the user ID
   // in AuthenticateToLogin, but there's not much of a point.

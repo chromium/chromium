@@ -220,6 +220,7 @@ class USER_MANAGER_EXPORT User {
   static User* CreateKioskChromeAppUser(const AccountId& kiosk_app_account_id);
   static User* CreateKioskWebAppUser(const AccountId& web_kiosk_account_id);
   static User* CreateKioskIwaUser(const AccountId& kiosk_iwa_account_id);
+  static User* CreateKioskArcvmAppUser(const AccountId& arcvm_kiosk_account_id);
   static User* CreatePublicAccountUser(const AccountId& account_id,
                                        bool is_using_saml = false);
 

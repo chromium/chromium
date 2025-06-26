@@ -1625,6 +1625,11 @@ void ExistingUserController::DoLogin(const UserContext& user_context,
     return;
   }
 
+  if (user_context.GetUserType() == user_manager::UserType::kKioskArcvmApp) {
+    LoginAsKioskApp(KioskAppId::ForArcvmApp(user_context.GetAccountId()));
+    return;
+  }
+
   // Regular user or supervised user login.
 
   if (!user_context.HasCredentials()) {

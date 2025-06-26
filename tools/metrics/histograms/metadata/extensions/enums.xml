@@ -3510,6 +3510,7 @@ Called by update_extension_permission.py.-->
   <int value="8" label="Active Directory"/>
   <int value="9" label="Web App Kiosk"/>
   <int value="10" label="Isolated Web App Kiosk"/>
+  <int value="11" label="ARCVM App Kiosk"/>
 </enum>
 
 <enum name="SettingsOverriddenDialogResult">

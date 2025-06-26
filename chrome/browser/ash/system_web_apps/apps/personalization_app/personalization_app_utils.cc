@@ -110,6 +110,7 @@ bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile) {
     case user_manager::UserType::kKioskChromeApp:
     case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
       return false;
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
@@ -176,6 +177,7 @@ bool IsAllowedToInstallSeaPen(Profile* profile) {
     case user_manager::UserType::kKioskChromeApp:
     case user_manager::UserType::kKioskWebApp:
     case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
     case user_manager::UserType::kChild:
     // Demo mode retail devices are type kPublicAccount and may have been
     // handled earlier in this function. But not all kPublicAccount users are in

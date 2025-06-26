@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/arc/instance_throttle/arc_power_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_provisioning_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_switch_throttle_observer.h"
+#include "chrome/browser/ash/arc/instance_throttle/arcvm_kiosk_mode_throttle_observer.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -293,6 +294,7 @@ ArcInstanceThrottle::ArcInstanceThrottle(content::BrowserContext* context,
   AddObserver(std::make_unique<ArcActiveWindowThrottleObserver>());
   AddObserver(std::make_unique<ArcAppLaunchThrottleObserver>());
   AddObserver(std::make_unique<ArcBootPhaseThrottleObserver>());
+  AddObserver(std::make_unique<ArcvmKioskModeThrottleObserver>());
   AddObserver(std::make_unique<ArcPipWindowThrottleObserver>());
   AddObserver(std::make_unique<ArcPowerThrottleObserver>());
   AddObserver(std::make_unique<ArcProvisioningThrottleObserver>());
@@ -378,6 +380,10 @@ void ArcInstanceThrottle::ThrottleInstance(bool should_throttle) {
     // * ArcSwitchThrottleObserver:
     //   This is for disabling throttling for testing. If the observer gets
     //   activated, the quota shouldn't be applied either.
+    //
+    // * ArcKioskModeThrottleObserver:
+    //   If this gets activated, ARC will be used for Kiosk. There's no point in
+    //   applying quota since ARC will always be foreground.
     //
     // * ArcProvisioningThrottleObserver:
     //   If this gets activated, the provisioning is ongoing. The quota
