@@ -626,10 +626,8 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
         'test/xcode/path',
         runtime_cache_folder='test/runtime-ios-14.4',
         ios_version='14.4')
-    self.assertEqual(1, mock_construct_runtime_cache_folder.call_count)
-    mock_construct_runtime_cache_folder.assert_has_calls(calls=[
-        mock.call('test/runtime-ios-', '14.4'),
-    ])
+    mock_construct_runtime_cache_folder.assert_called_once_with(
+        'test/runtime-ios-', '14.4')
     self.assertFalse(mock_install_runtime_dmg.called)
 
   @mock.patch('test_runner.defaults_delete')
