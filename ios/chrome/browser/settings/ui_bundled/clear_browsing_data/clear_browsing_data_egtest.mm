@@ -62,14 +62,6 @@ id<GREYMatcher> clearBrowsingDataButton() {
   return grey_accessibilityID(kClearBrowsingDataButtonIdentifier);
 }
 
-id<GREYMatcher> confirmClearBrowsingDataButton() {
-  return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(IDS_IOS_CLEAR_BUTTON)),
-      grey_accessibilityTrait(UIAccessibilityTraitButton),
-      grey_not(grey_accessibilityID(kClearBrowsingDataButtonIdentifier)),
-      grey_userInteractionEnabled(), nil);
-}
-
 id<GREYMatcher> clearBrowsingHistoryButton() {
   // Needs to use grey_sufficientlyVisible() to make the difference between a
   // cell used by the tableview and a invisible recycled cell.
@@ -112,6 +104,7 @@ id<GREYMatcher> clearAutofillButton() {
 
 }  // namespace
 
+using chrome_test_util::ActionSheetItemWithAccessibilityLabelId;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
@@ -350,7 +343,8 @@ using chrome_test_util::WindowWithNumber;
       tapPrivacyMenuButton:chrome_test_util::ButtonWithAccessibilityLabelId(
                                IDS_IOS_CLEAR_BROWSING_DATA_TITLE)];
   [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:clearBrowsingDataButton()];
-  [[EarlGrey selectElementWithMatcher:confirmClearBrowsingDataButton()]
+  [[EarlGrey selectElementWithMatcher:ActionSheetItemWithAccessibilityLabelId(
+                                          IDS_IOS_CLEAR_BROWSING_DATA_TITLE)]
       performAction:grey_tap()];
   WaitForActivityOverlayToDisappear();
 }
