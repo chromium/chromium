@@ -530,32 +530,23 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // default behavior).
   if (element && !element->IsMouseFocusable()) {
     if (Element* delegated_target = element->GetFocusableArea()) {
-      if (!RuntimeEnabledFeatures::DelegatesFocusTextControlFixEnabled()) {
-        // Use FocusType::kMouse instead of FocusType::kForward
-        // in order to prevent :focus-visible from being set
-        delegated_target->Focus(FocusParams(
-            SelectionBehaviorOnFocus::kReset, mojom::blink::FocusType::kMouse,
-            nullptr, FocusOptions::Create(), FocusTrigger::kUserGesture));
-        return WebInputEventResult::kNotHandled;
-      } else {
-        // If element has a shadow host with a delegated target, we should slide
-        // focus on this target only if it is not already focused.
-        if (delegated_target->IsFocusedElementInDocument()) {
-          return WebInputEventResult::kNotHandled;
-        }
-        // Use FocusType::kMouse instead of FocusType::kForward
-        // in order to prevent :focus-visible from being set
-        delegated_target->Focus(FocusParams(
-            SelectionBehaviorOnFocus::kReset, mojom::blink::FocusType::kMouse,
-            nullptr, FocusOptions::Create(), FocusTrigger::kUserGesture));
-        // If the delegated target is a text control element such as input text,
-        // the event is handled.
-        if (delegated_target->IsTextControl()) {
-          return WebInputEventResult::kHandledSystem;
-        }
-        // Else, we should mark it not handled so its selection can be set.
+      // If element has a shadow host with a delegated target, we should slide
+      // focus on this target only if it is not already focused.
+      if (delegated_target->IsFocusedElementInDocument()) {
         return WebInputEventResult::kNotHandled;
       }
+      // Use FocusType::kMouse instead of FocusType::kForward
+      // in order to prevent :focus-visible from being set
+      delegated_target->Focus(FocusParams(
+          SelectionBehaviorOnFocus::kReset, mojom::blink::FocusType::kMouse,
+          nullptr, FocusOptions::Create(), FocusTrigger::kUserGesture));
+      // If the delegated target is a text control element such as input text,
+      // the event is handled.
+      if (delegated_target->IsTextControl()) {
+        return WebInputEventResult::kHandledSystem;
+      }
+      // Else, we should mark it not handled so its selection can be set.
+      return WebInputEventResult::kNotHandled;
     }
   }
 
