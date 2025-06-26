@@ -414,9 +414,7 @@ const CorpusChunk* CorpusChunk::FindNext(const String& level) const {
   wtf_size_t delimiter_index = level.ReverseFind(kLevelDelimiter);
   if (delimiter_index == kNotFound) {
     // No link for `level`. We should apply the base level link.
-    return RuntimeEnabledFeatures::FindNestedAnnotationFixEnabled()
-               ? FindNext(base_level)
-               : nullptr;
+    return FindNext(base_level);
   }
   return FindNext(level.Substring(0, delimiter_index));
 }

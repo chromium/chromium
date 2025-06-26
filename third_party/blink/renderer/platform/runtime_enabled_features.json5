@@ -2297,11 +2297,6 @@
       status: "stable",
     },
     {
-      // crbug.com/408309951
-      name: "FindNestedAnnotationFix",
-      status: "stable",
-    },
-    {
       // crbug.com/409358630
       name: "FindOrphanAnnotationFix",
       status: "stable",
