@@ -16,7 +16,7 @@ namespace {
 int ComputeUnderlineOffsetAuto(const blink::FontMetrics& font_metrics,
                                float text_underline_offset,
                                float text_decoration_thickness,
-                               bool is_fixed) {
+                               bool is_auto) {
   // Compute the gap between the font and the underline.
   // Underline position of zero means draw underline on Baseline Position.
   // When text-underline-offset is a fixed length, the gap should be zero.
@@ -24,8 +24,8 @@ int ComputeUnderlineOffsetAuto(const blink::FontMetrics& font_metrics,
   // pixel gap. If underline is thick then use a bigger gap.
   // Positive underline Position means underline should be drawn below baseline
   // and negative value means drawing above baseline.
-  int gap{is_fixed ? 0
-                   : std::max<int>(1, ceilf(text_decoration_thickness / 2.f))};
+  int gap{is_auto ? std::max<int>(1, ceilf(text_decoration_thickness / 2.f))
+                  : 0};
 
   // Position underline near the alphabetic baseline.
   return font_metrics.Ascent() + gap + roundf(text_underline_offset);
@@ -99,11 +99,11 @@ int TextDecorationOffset::ComputeUnderlineOffset(
                                             style_underline_offset_pixels)
           .value_or(ComputeUnderlineOffsetAuto(
               font_metrics, style_underline_offset_pixels,
-              text_decoration_thickness, style_underline_offset.IsFixed()));
+              text_decoration_thickness, style_underline_offset.IsAuto()));
     case ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto:
       return ComputeUnderlineOffsetAuto(
           font_metrics, style_underline_offset_pixels,
-          text_decoration_thickness, style_underline_offset.IsFixed());
+          text_decoration_thickness, style_underline_offset.IsAuto());
     case ResolvedUnderlinePosition::kUnder:
       // Position underline at the under edge of the lowest element's
       // content box.
