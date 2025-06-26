@@ -48,10 +48,11 @@ void ReaderModeContentTabHelper::ShouldAllowRequest(
     RequestInfo request_info,
     PolicyDecisionCallback callback) {
   const GURL request_url = net::GURLWithNSURL(request.URL);
-  if (request_url.EqualsIgnoringRef(content_url_) &&
-      !content_url_request_allowed_) {
-    // If the requested URL is the content URL and the request was not
-    // previously allowed, allow the request.
+  if ((request_url.EqualsIgnoringRef(content_url_) &&
+       !content_url_request_allowed_) ||
+      !request_info.target_frame_is_main) {
+    // If the requested URL is the content and was not already allowed,
+    // or if the request does not target the main frame, then allow it.
     content_url_request_allowed_ = true;
     std::move(callback).Run(PolicyDecision::Allow());
     return;
