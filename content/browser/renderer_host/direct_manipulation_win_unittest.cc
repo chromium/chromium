@@ -4,6 +4,8 @@
 
 #include <objbase.h>
 
+#include <utility>
+
 #include "content/browser/renderer_host/direct_manipulation_helper_win.h"
 #include "content/browser/renderer_host/direct_manipulation_test_helper_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,24 +16,30 @@ namespace content {
 
 namespace {
 
+template <typename Interface>
+using ComPtr = Microsoft::WRL::ComPtr<Interface>;
+
+template <typename Interface>
+using RuntimeFtmBaseClass = Microsoft::WRL::RuntimeClass<
+    Microsoft::WRL::RuntimeClassFlags<
+        Microsoft::WRL::RuntimeClassType::ClassicCom>,
+    Microsoft::WRL::Implements<
+        Microsoft::WRL::RuntimeClassFlags<
+            Microsoft::WRL::RuntimeClassType::ClassicCom>,
+        Microsoft::WRL::FtmBase,
+        Interface>>;
+
 class MockDirectManipulationViewport
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<
-              Microsoft::WRL::RuntimeClassType::ClassicCom>,
-          Microsoft::WRL::Implements<
-              Microsoft::WRL::RuntimeClassFlags<
-                  Microsoft::WRL::RuntimeClassType::ClassicCom>,
-              Microsoft::WRL::FtmBase,
-              IDirectManipulationViewport>> {
+    : public RuntimeFtmBaseClass<IDirectManipulationViewport> {
  public:
-  MockDirectManipulationViewport() {}
+  MockDirectManipulationViewport() = default;
 
   MockDirectManipulationViewport(const MockDirectManipulationViewport&) =
       delete;
   MockDirectManipulationViewport& operator=(
       const MockDirectManipulationViewport&) = delete;
 
-  ~MockDirectManipulationViewport() override {}
+  ~MockDirectManipulationViewport() override = default;
 
   bool WasZoomToRectCalled() {
     bool called = zoom_to_rect_called_;
@@ -173,6 +181,88 @@ class MockDirectManipulationViewport
   bool zoom_to_rect_called_ = false;
 };
 
+class MockDirectManipulationUpdateManager
+    : public RuntimeFtmBaseClass<IDirectManipulationUpdateManager> {
+ public:
+  MockDirectManipulationUpdateManager() = default;
+
+  MockDirectManipulationUpdateManager(
+      const MockDirectManipulationUpdateManager&) = delete;
+  MockDirectManipulationUpdateManager& operator=(
+      const MockDirectManipulationUpdateManager&) = delete;
+
+  ~MockDirectManipulationUpdateManager() override = default;
+
+  HRESULT STDMETHODCALLTYPE
+  RegisterWaitHandleCallback(HANDLE,
+                             IDirectManipulationUpdateHandler*,
+                             DWORD* cookie) override {
+    *cookie = 123;
+    return S_OK;
+  }
+
+  HRESULT STDMETHODCALLTYPE UnregisterWaitHandleCallback(DWORD) override {
+    return S_OK;
+  }
+
+  HRESULT STDMETHODCALLTYPE
+  Update(IDirectManipulationFrameInfoProvider*) override {
+    return S_OK;
+  }
+};
+
+class MockDirectManipulationManager
+    : public RuntimeFtmBaseClass<IDirectManipulationManager> {
+ public:
+  explicit MockDirectManipulationManager(
+      ComPtr<MockDirectManipulationViewport> viewport)
+      : viewport_(std::move(viewport)) {}
+
+  MockDirectManipulationManager(const MockDirectManipulationManager&) = delete;
+  MockDirectManipulationManager& operator=(
+      const MockDirectManipulationManager&) = delete;
+
+  ~MockDirectManipulationManager() override = default;
+
+  HRESULT STDMETHODCALLTYPE Activate(HWND) override { return S_OK; }
+
+  HRESULT STDMETHODCALLTYPE CreateContent(IDirectManipulationFrameInfoProvider*,
+                                          REFCLSID,
+                                          REFIID,
+                                          void**) override {
+    return S_OK;
+  }
+
+  HRESULT STDMETHODCALLTYPE
+  CreateViewport(IDirectManipulationFrameInfoProvider*,
+                 HWND,
+                 REFIID riid,
+                 void** object) override {
+    return viewport_.CopyTo(riid, object);
+  }
+
+  HRESULT STDMETHODCALLTYPE Deactivate(HWND) override { return S_OK; }
+
+  HRESULT STDMETHODCALLTYPE GetUpdateManager(REFIID riid,
+                                             void** object) override {
+    return update_manager_.CopyTo(riid, object);
+  }
+
+  HRESULT STDMETHODCALLTYPE ProcessInput(const MSG*, BOOL*) override {
+    return S_OK;
+  }
+
+  HRESULT STDMETHODCALLTYPE
+  RegisterHitTestTarget(HWND, HWND, DIRECTMANIPULATION_HITTEST_TYPE) override {
+    return S_OK;
+  }
+
+ private:
+  ComPtr<MockDirectManipulationViewport> viewport_;
+  ComPtr<MockDirectManipulationUpdateManager> update_manager_ =
+      Microsoft::WRL::Make<MockDirectManipulationUpdateManager>();
+};
+
 enum class EventGesture {
   kScrollBegin,
   kScroll,
@@ -308,19 +398,22 @@ class MockWindowEventTarget : public ui::WindowEventTarget {
 
 class DirectManipulationUnitTest : public testing::Test {
  public:
-  DirectManipulationUnitTest() {
-    viewport_ = Microsoft::WRL::Make<MockDirectManipulationViewport>();
-    content_ = Microsoft::WRL::Make<MockDirectManipulationContent>();
-    direct_manipulation_helper_ =
-        DirectManipulationHelper::CreateInstanceForTesting(&event_target_,
-                                                           viewport_);
-  }
+  DirectManipulationUnitTest() = default;
 
   DirectManipulationUnitTest(const DirectManipulationUnitTest&) = delete;
   DirectManipulationUnitTest& operator=(const DirectManipulationUnitTest&) =
       delete;
 
-  ~DirectManipulationUnitTest() override {}
+  ~DirectManipulationUnitTest() override = default;
+
+  void SetUp() override {
+    testing::Test::SetUp();
+    direct_manipulation_helper_ =
+        DirectManipulationHelper::CreateInstanceForTesting(
+            &event_target_,
+            Microsoft::WRL::Make<MockDirectManipulationManager>(viewport_));
+    ASSERT_TRUE(direct_manipulation_helper_);
+  }
 
   DirectManipulationHelper* GetDirectManipulationHelper() {
     return direct_manipulation_helper_.get();
@@ -348,8 +441,10 @@ class DirectManipulationUnitTest : public testing::Test {
 
  private:
   std::unique_ptr<DirectManipulationHelper> direct_manipulation_helper_;
-  Microsoft::WRL::ComPtr<MockDirectManipulationViewport> viewport_;
-  Microsoft::WRL::ComPtr<MockDirectManipulationContent> content_;
+  ComPtr<MockDirectManipulationViewport> viewport_ =
+      Microsoft::WRL::Make<MockDirectManipulationViewport>();
+  ComPtr<MockDirectManipulationContent> content_ =
+      Microsoft::WRL::Make<MockDirectManipulationContent>();
   MockWindowEventTarget event_target_;
 };
 

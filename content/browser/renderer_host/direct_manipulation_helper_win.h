@@ -53,10 +53,12 @@ class CONTENT_EXPORT DirectManipulationHelper
       base::WeakPtr<aura::WindowTreeHost> window_tree_host,
       ui::WindowEventTarget* event_target);
 
-  // Creates and initializes an instance for testing.
+  // Creates and initializes an instance for testing. The given `manager` should
+  // implement IDirectManipulationManager::CreateViewport() and
+  // IDirectManipulationManager::GetUpdateManager() to return test mocks.
   static std::unique_ptr<DirectManipulationHelper> CreateInstanceForTesting(
       ui::WindowEventTarget* event_target,
-      Microsoft::WRL::ComPtr<IDirectManipulationViewport> viewport);
+      Microsoft::WRL::ComPtr<IDirectManipulationManager> manager);
 
   DirectManipulationHelper(const DirectManipulationHelper&) = delete;
   DirectManipulationHelper& operator=(const DirectManipulationHelper&) = delete;
@@ -94,22 +96,38 @@ class CONTENT_EXPORT DirectManipulationHelper
   friend class DirectManipulationBrowserTestBase;
   friend class DirectManipulationUnitTest;
 
-  DirectManipulationHelper(HWND window,
-                           base::WeakPtr<aura::WindowTreeHost> window_tree_host,
-                           ui::WindowEventTarget* event_target);
+  template <typename T>
+  using ComPtr = Microsoft::WRL::ComPtr<T>;
 
+  // Shared implementation of CreateInstance and CreateInstanceForTesting.
   // This function instantiates Direct Manipulation and creates a viewport for
-  // |window_|. Return false if initialize failed.
+  // `window_`. Returns nullptr on failure.
+  static std::unique_ptr<DirectManipulationHelper> CreateInstanceImpl(
+      ComPtr<IDirectManipulationManager> manager,
+      HWND window,
+      base::WeakPtr<aura::WindowTreeHost> window_tree_host,
+      ui::WindowEventTarget* event_target);
+
+  DirectManipulationHelper(
+      ComPtr<IDirectManipulationManager> manager,
+      ComPtr<IDirectManipulationUpdateManager> update_manager,
+      ComPtr<IDirectManipulationViewport> viewport,
+      HWND window,
+      base::WeakPtr<aura::WindowTreeHost> window_tree_host,
+      ui::WindowEventTarget* event_target);
+
+  // This function applies Direct Manipulation settings and installs a viewport
+  // event handler for `event_target_`. Return false if initialize failed.
   bool Initialize();
 
   void SetDeviceScaleFactorForTesting(float factor);
 
   void Destroy();
 
-  Microsoft::WRL::ComPtr<IDirectManipulationManager> manager_;
-  Microsoft::WRL::ComPtr<IDirectManipulationUpdateManager> update_manager_;
-  Microsoft::WRL::ComPtr<IDirectManipulationViewport> viewport_;
-  Microsoft::WRL::ComPtr<DirectManipulationEventHandler> event_handler_;
+  ComPtr<IDirectManipulationManager> manager_;
+  ComPtr<IDirectManipulationUpdateManager> update_manager_;
+  ComPtr<IDirectManipulationViewport> viewport_;
+  ComPtr<DirectManipulationEventHandler> event_handler_;
   HWND window_;
   base::WeakPtr<aura::WindowTreeHost> window_tree_host_;
   raw_ptr<ui::WindowEventTarget> event_target_ = nullptr;

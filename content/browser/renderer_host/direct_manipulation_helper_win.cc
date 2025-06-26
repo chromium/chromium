@@ -7,6 +7,7 @@
 #include <objbase.h>
 
 #include <cmath>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -31,41 +32,79 @@ DirectManipulationHelper::CreateInstance(
     return nullptr;
   }
 
-  std::unique_ptr<DirectManipulationHelper> instance = base::WrapUnique(
-      new DirectManipulationHelper(window, window_tree_host, event_target));
-
-  if (instance->Initialize()) {
-    return instance;
+  // IDirectManipulationUpdateManager is the first COM object created by the
+  // application to retrieve other objects in the Direct Manipulation API.
+  // It also serves to activate and deactivate Direct Manipulation functionality
+  // on a per-HWND basis.
+  ComPtr<IDirectManipulationManager> manager;
+  HRESULT hr = ::CoCreateInstance(CLSID_DirectManipulationManager, nullptr,
+                                  CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&manager));
+  if (!SUCCEEDED(hr)) {
+    return nullptr;
   }
 
-  return nullptr;
+  return CreateInstanceImpl(std::move(manager), window, window_tree_host,
+                            event_target);
 }
 
 // static
 std::unique_ptr<DirectManipulationHelper>
 DirectManipulationHelper::CreateInstanceForTesting(
     ui::WindowEventTarget* event_target,
-    Microsoft::WRL::ComPtr<IDirectManipulationViewport> viewport) {
-  std::unique_ptr<DirectManipulationHelper> instance =
-      base::WrapUnique(new DirectManipulationHelper(
-          /*window=*/nullptr, /*window_tree_host=*/nullptr, event_target));
-  instance->viewport_ = viewport;
-  return instance;
+    ComPtr<IDirectManipulationManager> manager) {
+  return CreateInstanceImpl(std::move(manager), /*window=*/nullptr,
+                            /*window_tree_host=*/nullptr, event_target);
 }
 
-DirectManipulationHelper::~DirectManipulationHelper() {
-  Destroy();
+// static
+std::unique_ptr<DirectManipulationHelper>
+DirectManipulationHelper::CreateInstanceImpl(
+    ComPtr<IDirectManipulationManager> manager,
+    HWND window,
+    base::WeakPtr<aura::WindowTreeHost> window_tree_host,
+    ui::WindowEventTarget* event_target) {
+  // Since we want to use fake viewport, we need UpdateManager to tell a fake
+  // fake render frame.
+  ComPtr<IDirectManipulationUpdateManager> update_manager;
+  HRESULT hr = manager->GetUpdateManager(IID_PPV_ARGS(&update_manager));
+  if (!SUCCEEDED(hr)) {
+    return nullptr;
+  }
+
+  ComPtr<IDirectManipulationViewport> viewport;
+  hr = manager->CreateViewport(nullptr, window, IID_PPV_ARGS(&viewport));
+  if (!SUCCEEDED(hr)) {
+    return nullptr;
+  }
+
+  auto instance = base::WrapUnique(new DirectManipulationHelper(
+      std::move(manager), std::move(update_manager), std::move(viewport),
+      window, window_tree_host, event_target));
+  if (instance->Initialize()) {
+    return instance;
+  }
+  return nullptr;
 }
 
 DirectManipulationHelper::DirectManipulationHelper(
+    ComPtr<IDirectManipulationManager> manager,
+    ComPtr<IDirectManipulationUpdateManager> update_manager,
+    ComPtr<IDirectManipulationViewport> viewport,
     HWND window,
     base::WeakPtr<aura::WindowTreeHost> window_tree_host,
     ui::WindowEventTarget* event_target)
-    : window_(window),
+    : manager_(std::move(manager)),
+      update_manager_(std::move(update_manager)),
+      viewport_(std::move(viewport)),
+      window_(window),
       window_tree_host_(window_tree_host),
       event_target_(event_target) {
   event_handler_ = Microsoft::WRL::Make<DirectManipulationEventHandler>(
       weak_factory_.GetWeakPtr());
+}
+
+DirectManipulationHelper::~DirectManipulationHelper() {
+  Destroy();
 }
 
 void DirectManipulationHelper::OnAnimationStep(base::TimeTicks timestamp) {
@@ -83,29 +122,6 @@ bool DirectManipulationHelper::Initialize() {
   // Shouldn't be called again after Destroy().
   DCHECK(event_handler_);
 
-  // IDirectManipulationUpdateManager is the first COM object created by the
-  // application to retrieve other objects in the Direct Manipulation API.
-  // It also serves to activate and deactivate Direct Manipulation functionality
-  // on a per-HWND basis.
-  HRESULT hr =
-      ::CoCreateInstance(CLSID_DirectManipulationManager, nullptr,
-                         CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&manager_));
-  if (!SUCCEEDED(hr)) {
-    return false;
-  }
-
-  // Since we want to use fake viewport, we need UpdateManager to tell a fake
-  // fake render frame.
-  hr = manager_->GetUpdateManager(IID_PPV_ARGS(&update_manager_));
-  if (!SUCCEEDED(hr)) {
-    return false;
-  }
-
-  hr = manager_->CreateViewport(nullptr, window_, IID_PPV_ARGS(&viewport_));
-  if (!SUCCEEDED(hr)) {
-    return false;
-  }
-
   DIRECTMANIPULATION_CONFIGURATION configuration =
       DIRECTMANIPULATION_CONFIGURATION_INTERACTION |
       DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_X |
@@ -115,7 +131,7 @@ bool DirectManipulationHelper::Initialize() {
       DIRECTMANIPULATION_CONFIGURATION_RAILS_Y |
       DIRECTMANIPULATION_CONFIGURATION_SCALING;
 
-  hr = viewport_->ActivateConfiguration(configuration);
+  HRESULT hr = viewport_->ActivateConfiguration(configuration);
   if (!SUCCEEDED(hr)) {
     return false;
   }
@@ -224,15 +240,10 @@ void DirectManipulationHelper::Destroy() {
   event_target_ = nullptr;
   event_handler_.Reset();
 
-  if (viewport_) {
-    viewport_->Stop();
-    viewport_->RemoveEventHandler(view_port_handler_cookie_);
-    viewport_->Abandon();
-  }
-
-  if (manager_) {
-    manager_->Deactivate(window_);
-  }
+  viewport_->Stop();
+  viewport_->RemoveEventHandler(view_port_handler_cookie_);
+  viewport_->Abandon();
+  manager_->Deactivate(window_);
 }
 
 }  // namespace content
