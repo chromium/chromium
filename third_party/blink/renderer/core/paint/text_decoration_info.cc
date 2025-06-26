@@ -70,7 +70,7 @@ inline bool ShouldUseDecoratingBox(const ComputedStyle& style) {
 }
 
 float ComputeDecorationThickness(
-    const TextDecorationThickness text_decoration_thickness,
+    const TextDecorationThickness& text_decoration_thickness,
     float computed_font_size,
     const SimpleFontData* font_data) {
   const float auto_underline_thickness = computed_font_size / 10.f;
