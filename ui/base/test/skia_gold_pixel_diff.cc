@@ -11,6 +11,8 @@
 
 #include <memory>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -29,11 +31,13 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_switches.h"
@@ -47,46 +51,46 @@
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
 
-namespace ui {
-namespace test {
+namespace ui::test {
 
-const char* kSkiaGoldInstance = "chrome";
-const char* kSkiaGoldPublicInstance = "chrome-public";
+constexpr char kSkiaGoldInstance[] = "chrome";
+constexpr char kSkiaGoldPublicInstance[] = "chrome-public";
 
 #if BUILDFLAG(IS_WIN)
-const wchar_t* kSkiaGoldCtl = L"tools/skia_goldctl/win/goldctl.exe";
+constexpr wchar_t kSkiaGoldCtl[] = L"tools/skia_goldctl/win/goldctl.exe";
 #elif BUILDFLAG(IS_APPLE)
 #if defined(ARCH_CPU_ARM64)
-const char* kSkiaGoldCtl = "tools/skia_goldctl/mac_arm64/goldctl";
+constexpr char kSkiaGoldCtl[] = "tools/skia_goldctl/mac_arm64/goldctl";
 #else
-const char* kSkiaGoldCtl = "tools/skia_goldctl/mac_amd64/goldctl";
+constexpr char kSkiaGoldCtl[] = "tools/skia_goldctl/mac_amd64/goldctl";
 #endif  // defined(ARCH_CPU_ARM64)
 #else
-const char* kSkiaGoldCtl = "tools/skia_goldctl/linux/goldctl";
+constexpr char kSkiaGoldCtl[] = "tools/skia_goldctl/linux/goldctl";
 #endif
 
-const char* kBuildRevisionKey = "git-revision";
+constexpr char kBuildRevisionKey[] = "git-revision";
 
 // A dummy build revision used only under a dry run.
 constexpr char kDummyBuildRevision[] = "12345";
 
 // The switch keys for tryjob.
-const char* kIssueKey = "gerrit-issue";
-const char* kPatchSetKey = "gerrit-patchset";
-const char* kJobIdKey = "buildbucket-id";
-const char* kCodeReviewSystemKey = "code-review-system";
+constexpr char kIssueKey[] = "gerrit-issue";
+constexpr char kPatchSetKey[] = "gerrit-patchset";
+constexpr char kJobIdKey[] = "buildbucket-id";
+constexpr char kCodeReviewSystemKey[] = "code-review-system";
 
-const char* kNoLuciAuth = "no-luci-auth";
-const char* kBypassSkiaGoldFunctionality = "bypass-skia-gold-functionality";
-const char* kDryRun = "dryrun";
+constexpr char kNoLuciAuth[] = "no-luci-auth";
+constexpr char kBypassSkiaGoldFunctionality[] =
+    "bypass-skia-gold-functionality";
+constexpr char kDryRun[] = "dryrun";
 
 // The switch key for saving png file locally for debugging. This will allow
 // the framework to save the screenshot png file to this path.
-const char* kPngFilePathDebugging = "skia-gold-local-png-write-directory";
+constexpr char kPngFilePathDebugging[] = "skia-gold-local-png-write-directory";
 
-const char* kGoldOutputTriageFormat =
+constexpr char kGoldOutputTriageFormat[] =
     "Untriaged or negative image: https://chrome-gold.skia.org";
-const char* kPublicTriageLink = "https://chrome-public-gold.skia.org";
+constexpr char kPublicTriageLink[] = "https://chrome-public-gold.skia.org";
 
 // The separator used in the names of the screenshots taken on Ash platform.
 constexpr char kAshSeparator[] = ".";
@@ -265,8 +269,8 @@ SkiaGoldPixelDiff* SkiaGoldPixelDiff::GetSession(
   SessionCacheKey key(corpus_name, std::move(test_environment));
   auto it = g_sessions.Get(key);
   if (it == g_sessions.end()) {
-    std::unique_ptr<SkiaGoldPixelDiff> pixel_diff =
-        std::unique_ptr<SkiaGoldPixelDiff>(new SkiaGoldPixelDiff());
+    // private ctor.
+    auto pixel_diff = base::WrapUnique(new SkiaGoldPixelDiff());
     pixel_diff->Init(corpus_name, key.second);
     it = g_sessions.Put(std::move(key), std::move(pixel_diff));
   }
@@ -587,7 +591,7 @@ void SkiaGoldPixelDiff::GenerateLocalDiff(
           .png_path = png_path,
           .mtime = mtime,
       };
-    };
+    }
   };
 
   DiffLinks results;
@@ -607,39 +611,38 @@ void SkiaGoldPixelDiff::GenerateLocalDiff(
 
   auto FormatPathForTerminalOutput =
       [](std::optional<DiffLink>& path) -> std::optional<std::string> {
-    if (path.has_value()) {
-      base::FilePath path_absolute = path.value().png_path;
-      if (!path_absolute.IsAbsolute()) {
-        path_absolute = base::PathService::CheckedGet(base::DIR_CURRENT)
-                            .Append(path_absolute);
-      }
-
-      base::FilePath path_normalized;
-      if (!base::NormalizeFilePath(path_absolute, &path_normalized)) {
-        return {path->png_path.MaybeAsASCII()};
-      }
-
-      return {(path_normalized.IsNetwork() ? std::string("file:")
-                                           : std::string("file:///")) +
-              path_normalized.NormalizePathSeparatorsTo(FILE_PATH_LITERAL('/'))
-                  .MaybeAsASCII()};
-    } else {
+    if (!path.has_value()) {
       return std::nullopt;
     }
+
+    base::FilePath path_absolute = path.value().png_path;
+    if (!path_absolute.IsAbsolute()) {
+      path_absolute = base::PathService::CheckedGet(base::DIR_CURRENT)
+                          .Append(path_absolute);
+    }
+
+    base::FilePath path_normalized;
+    if (!base::NormalizeFilePath(path_absolute, &path_normalized)) {
+      return {path->png_path.MaybeAsASCII()};
+    }
+
+    return base::StrCat(
+        {path_normalized.IsNetwork() ? "file:" : "file:///",
+         path_normalized.NormalizePathSeparatorsTo(FILE_PATH_LITERAL('/'))
+             .MaybeAsASCII()});
   };
 
-  const char* failure_message = "Unable to retrieve link";
+  static constexpr char kFailureMessage[] = "Unable to retrieve link";
   LOG(INFO) << "\n  Generated image: "
             << FormatPathForTerminalOutput(results.given_image)
-                   .value_or(failure_message)
+                   .value_or(kFailureMessage)
             << "\n  Closest image: "
             << FormatPathForTerminalOutput(results.closest_image)
-                   .value_or(failure_message)
+                   .value_or(kFailureMessage)
             << "\n  Diff image: "
             << FormatPathForTerminalOutput(results.diff_image)
-                   .value_or(failure_message)
+                   .value_or(kFailureMessage)
             << "\n";
 }
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test
