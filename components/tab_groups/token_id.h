@@ -32,6 +32,13 @@ class COMPONENT_EXPORT(TAB_GROUPS) TokenId {
     return token ? std::optional<T>(FromRawToken(*token)) : std::nullopt;
   }
 
+  // Converts an optional TokenId to an optional base::Token.
+  static std::optional<base::Token> ToOptionalToken(
+      const std::optional<T>& token_id) {
+    return token_id ? std::optional<base::Token>(token_id->token())
+                    : std::nullopt;
+  }
+
   // Should only be used if intending to populate the TokenId by reference,
   // using a valid existing ID. Primarily needed for the extensions API.
   static T CreateEmpty() { return T(TokenId(base::Token())); }

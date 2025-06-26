@@ -329,10 +329,8 @@ void TabModelJniBridge::UnpinTab(tabs::TabHandle tab) {
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
     const std::set<tabs::TabHandle>& tabs) {
-  std::optional<base::Token> requested_group_id = std::nullopt;
-  if (group_id) {
-    requested_group_id = group_id->token();
-  }
+  std::optional<base::Token> requested_group_id =
+      tab_groups::TabGroupId::ToOptionalToken(group_id);
   std::vector<TabAndroid*> tabs_to_add = GetAllTabsFromHandles(tabs);
 
   JNIEnv* env = AttachCurrentThread();
