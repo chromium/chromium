@@ -181,11 +181,6 @@ base::TimeDelta StoredHostModelFeaturesFreshnessDuration();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta StoredModelsValidDuration();
 
-// The amount of time URL-keyed hints within the hint cache will be
-// allowed to be used and not be purged.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta URLKeyedHintValidCacheDuration();
-
 // The maximum number of hosts allowed to be requested by the client to the
 // remote Optimization Guide Service for use by prediction models.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -200,11 +195,6 @@ size_t MaxHostModelFeaturesCacheSize();
 // cache for hosts.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 size_t MaxHostKeyedHintCacheSize();
-
-// The maximum number of hints allowed to be maintained in a least-recently-used
-// cache for URLs.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-size_t MaxURLKeyedHintCacheSize();
 
 // Returns true if hints should be persisted to disk. If this is false, hints
 // will just be stored in-memory and evicted if not recently used.

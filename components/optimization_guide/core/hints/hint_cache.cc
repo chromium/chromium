@@ -15,12 +15,18 @@
 
 namespace optimization_guide {
 
+namespace {
+
+size_t kMaxURLKeyedHintCacheSize = 50;
+
+}  // namespace
+
 HintCache::HintCache(
     base::WeakPtr<OptimizationGuideStore> optimization_guide_store,
     int max_memory_cache_host_keyed_hints)
     : optimization_guide_store_(optimization_guide_store),
       host_keyed_cache_(max_memory_cache_host_keyed_hints),
-      url_keyed_hint_cache_(features::MaxURLKeyedHintCacheSize()),
+      url_keyed_hint_cache_(kMaxURLKeyedHintCacheSize),
       clock_(base::DefaultClock::GetInstance()) {}
 
 HintCache::~HintCache() = default;
@@ -368,11 +374,11 @@ bool HintCache::ProcessAndCacheHints(
       continue;
     }
 
-    base::Time expiry_time =
+    base::TimeDelta cache_duration =
         hint.has_max_cache_duration()
-            ? clock_->Now() + base::Seconds(hint.max_cache_duration().seconds())
-            : clock_->Now() + features::URLKeyedHintValidCacheDuration();
-
+            ? base::Seconds(hint.max_cache_duration().seconds())
+            : base::Hours(1);
+    base::Time expiry_time = clock_->Now() + cache_duration;
     switch (hint.key_representation()) {
       case proto::HOST:
         host_keyed_cache_.Put(

@@ -308,12 +308,6 @@ base::TimeDelta StoredModelsValidDuration() {
       kOptimizationTargetPrediction, "valid_duration_for_models_in_days", 30));
 }
 
-base::TimeDelta URLKeyedHintValidCacheDuration() {
-  return base::Seconds(GetFieldTrialParamByFeatureAsInt(
-      kOptimizationHints, "max_url_keyed_hint_valid_cache_duration_in_seconds",
-      60 * 60 /* 1 hour */));
-}
-
 size_t MaxHostsForOptimizationGuideServiceModelsFetch() {
   return GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction,
@@ -329,12 +323,6 @@ size_t MaxHostKeyedHintCacheSize() {
   size_t max_host_keyed_hint_cache_size = GetFieldTrialParamByFeatureAsInt(
       kOptimizationHints, "max_host_keyed_hint_cache_size", 30);
   return max_host_keyed_hint_cache_size;
-}
-
-size_t MaxURLKeyedHintCacheSize() {
-  size_t max_url_keyed_hint_cache_size = GetFieldTrialParamByFeatureAsInt(
-      kOptimizationHints, "max_url_keyed_hint_cache_size", 50);
-  return max_url_keyed_hint_cache_size;
 }
 
 bool ShouldPersistHintsToDisk() {
