@@ -100,7 +100,7 @@ const char kScript[] =
     "            ['captureStackTrace']);\n"
     "saveBuiltin(Promise,\n"
     "            ['then', 'catch'],\n"
-    "            ['resolve']);\n"
+    "            ['race', 'resolve']);\n"
     "\n"
     "// JSON is trickier because extensions can override toJSON in\n"
     "// incompatible ways, and we need to prevent that.\n"
