@@ -105,7 +105,8 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view) override;
+                               views::View* starting_view,
+                               bool visible) override;
   void OnViewFocused(views::View* view) override;
   void OnViewBlurred(views::View* view) override;
 

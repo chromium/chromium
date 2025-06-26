@@ -2470,7 +2470,8 @@ class OriginTextVisibilityWaiter : public views::ViewObserver {
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* view_or_ancestor,
-                               views::View* starting_view) override {
+                               views::View* starting_view,
+                               bool visible) override {
     log_.push_back(origin_text_->GetVisible() ? VisibilityChange::kAppear
                                               : VisibilityChange::kDisappear);
     if (origin_text_->GetVisible() && observed_text_.empty()) {

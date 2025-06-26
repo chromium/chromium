@@ -60,7 +60,8 @@ class VIEWS_EXPORT InkDropEventHandler : public ui::EventHandler,
 
   // ViewObserver:
   void OnViewVisibilityChanged(View* observed_view,
-                               View* starting_view) override;
+                               View* starting_view,
+                               bool visible) override;
   void OnViewHierarchyChanged(
       View* observed_view,
       const ViewHierarchyChangedDetails& details) override;

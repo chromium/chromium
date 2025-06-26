@@ -3230,8 +3230,8 @@ void View::PropagateVisibilityNotifications(View* start, bool is_visible) {
 
 void View::VisibilityChangedImpl(View* starting_from, bool is_visible) {
   VisibilityChanged(starting_from, is_visible);
-  observers_.Notify(&ViewObserver::OnViewVisibilityChanged, this,
-                    starting_from);
+  observers_.Notify(&ViewObserver::OnViewVisibilityChanged, this, starting_from,
+                    is_visible);
 }
 
 void View::SnapLayerToPixelBoundary(const LayerOffsetData& offset_data) {

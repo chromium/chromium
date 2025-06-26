@@ -828,7 +828,8 @@ void VideoOverlayWindowViews::OnDisplayMetricsChanged(
 
 void VideoOverlayWindowViews::OnViewVisibilityChanged(
     views::View* observed_view,
-    views::View* starting_view) {
+    views::View* starting_view,
+    bool visible) {
   // If the visibility is changing due to a parent view/widget, then we don't
   // care about it.
   if (starting_view != overlay_view_) {

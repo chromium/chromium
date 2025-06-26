@@ -248,7 +248,8 @@ class ViewVisibilityChangedWaiter : public views::ViewObserver {
  private:
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* view,
-                               views::View* starting_view) override {
+                               views::View* starting_view,
+                               bool visible) override {
     wait_loop_->Quit();
   }
 

@@ -45,8 +45,9 @@ QuickInsertSubmenuController::~QuickInsertSubmenuController() = default;
 
 void QuickInsertSubmenuController::OnViewVisibilityChanged(
     views::View* observed_view,
-    views::View* starting_view) {
-  if (!observed_view->IsDrawn()) {
+    views::View* starting_view,
+    bool visible) {
+  if (!visible) {
     Close();
   }
 }

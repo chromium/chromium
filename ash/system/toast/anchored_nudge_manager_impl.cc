@@ -157,7 +157,8 @@ class AnchoredNudgeManagerImpl::AnchorViewObserver
 
   // ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view) override {
+                               views::View* starting_view,
+                               bool visible) override {
     if (!observed_view->GetVisible()) {
       HandleAnchorViewIsDeletingOrHiding(observed_view);
     }

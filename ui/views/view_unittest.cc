@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/command_line.h"
@@ -6970,9 +6971,12 @@ class TestViewObserver : public ViewObserver {
     child_view_removed_parent_ = parent;
   }
 
-  void OnViewVisibilityChanged(View* view, View* starting_view) override {
+  void OnViewVisibilityChanged(View* view,
+                               View* starting_view,
+                               bool visible) override {
     view_visibility_changed_ = view;
     view_visibility_changed_starting_ = starting_view;
+    last_view_visibility_ = visible;
   }
 
   void OnViewBoundsChanged(View* view) override { view_bounds_changed_ = view; }
@@ -7019,6 +7023,9 @@ class TestViewObserver : public ViewObserver {
   const View* view_visibility_changed_starting() const {
     return view_visibility_changed_starting_;
   }
+  std::optional<bool> last_view_visibility() const {
+    return last_view_visibility_;
+  }
   const View* view_bounds_changed() const { return view_bounds_changed_; }
   const View* view_reordered() const { return view_reordered_; }
 
@@ -7036,6 +7043,7 @@ class TestViewObserver : public ViewObserver {
   raw_ptr<View> child_view_removed_parent_ = nullptr;
   raw_ptr<View> view_visibility_changed_ = nullptr;
   raw_ptr<View> view_visibility_changed_starting_ = nullptr;
+  std::optional<bool> last_view_visibility_;
   raw_ptr<View> view_bounds_changed_ = nullptr;
   raw_ptr<View> view_reordered_ = nullptr;
 };
@@ -7112,6 +7120,7 @@ TEST_F(ViewObserverTest, ViewVisibilityChanged) {
     weak_child->SetVisible(false);
     EXPECT_EQ(weak_child, observer.view_visibility_changed());
     EXPECT_EQ(weak_child, observer.view_visibility_changed_starting());
+    EXPECT_EQ(false, observer.last_view_visibility());
   }
 
   // Ditto for setting it visible.
@@ -7120,6 +7129,7 @@ TEST_F(ViewObserverTest, ViewVisibilityChanged) {
     weak_child->SetVisible(true);
     EXPECT_EQ(weak_child, observer.view_visibility_changed());
     EXPECT_EQ(weak_child, observer.view_visibility_changed_starting());
+    EXPECT_EQ(true, observer.last_view_visibility());
   }
 
   // Ensure setting |parent| not visible also calls the
@@ -7129,6 +7139,7 @@ TEST_F(ViewObserverTest, ViewVisibilityChanged) {
     parent->SetVisible(false);
     EXPECT_EQ(weak_child, observer.view_visibility_changed());
     EXPECT_EQ(parent.get(), observer.view_visibility_changed_starting());
+    EXPECT_EQ(false, observer.last_view_visibility());
   }
 }
 
