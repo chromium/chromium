@@ -8,25 +8,16 @@
 
 #include "base/logging.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/ui/helpers.h"
 #include "chrome/browser/actor/ui/tool_request_variant.h"
 #include "chrome/common/actor/action_result.h"
 
 namespace actor::ui {
 
-// ToolRequestVisitor is a functor that must be able to apply to every
-// ToolRequestVariant type.
-template <typename... Base>
-struct ToolRequestVisitor : Base... {
-  using Base::operator()...;
-};
-
-template <typename... T>
-ToolRequestVisitor(T...) -> ToolRequestVisitor<T...>;
-
 // TODO(crbug.com/425784083): This is just a placeholder (that's redundant with
 // tool_request.JournalEvent()).  Remove it and replace with functors that
 // perform type translation for OnPreTool and OnPostTool.
-constexpr ToolRequestVisitor RequestTypeNameFn{
+constexpr Visitor RequestTypeNameFn{
     [](const ClickToolRequest& tr) { return "ClickToolRequest"; },
     [](const ActivateTabToolRequest& tr) { return "ActivateTabToolRequest"; },
     [](const CloseTabToolRequest& tr) { return "CloseTabToolRequest"; },

@@ -29,6 +29,7 @@ source_set("event_dispatcher") {
     "//chrome/browser/actor:types",
   ]
   deps = [
+    ":helpers",
     ":tool_request_variant",
     "//chrome/browser/actor:actor",
   ]
@@ -59,4 +60,8 @@ source_set("tool_request_variant") {
     "//base",
     "//chrome/browser/actor:actor",
   ]
+}
+
+source_set("helpers") {
+  sources = [ "helpers.h" ]
 }
