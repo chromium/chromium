@@ -80,6 +80,8 @@ found in the LICENSE file.
     <dimen name="extension_action_button_list_menu_width" tools:ignore="UnusedResources">300dp</dimen>
 
     <!-- Extension Action Popup dimensions -->
+    <dimen name="extension_action_popup_min_width" tools:ignore="UnusedResources">25dp</dimen>
+    <dimen name="extension_action_popup_min_height" tools:ignore="UnusedResources">25dp</dimen>
     <dimen name="extension_action_popup_elevation" tools:ignore="UnusedResources">6dp</dimen>
 
     <!-- Divider dimensions -->

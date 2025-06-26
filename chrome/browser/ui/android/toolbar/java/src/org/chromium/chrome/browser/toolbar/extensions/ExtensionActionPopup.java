@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.PopupWindow.OnDismissListener;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -24,6 +23,7 @@ import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -52,9 +52,6 @@ class ExtensionActionPopup implements Destroyable {
 
     /** The ThinWebView component that renders the extension's HTML content. */
     private final ThinWebView mThinWebView;
-
-    /** The View containing the popup contents. Content sizing can be applied to this view. */
-    private final View mMainView;
 
     /** The PopupWindow that is displayed on the screen, anchored to a view. */
     private final AnchoredPopupWindow mPopupWindow;
@@ -99,29 +96,27 @@ class ExtensionActionPopup implements Destroyable {
                         NullUtil.assumeNonNull(windowAndroid.getIntentRequestTracker()));
         mThinWebView.attachWebContents(webContents, contentView, null);
 
-        mMainView = mThinWebView.getView();
-        // TODO(crbug.com/385987224): Resize according to the content size.
-        mMainView.setLayoutParams(new FrameLayout.LayoutParams(480, 480));
-
-        // This intermediate frame is needed in order for LayoutParams to take effect.
-        FrameLayout frame = new FrameLayout(context);
-        frame.addView(mMainView);
-
         View decorView = ((Activity) anchorView.getContext()).getWindow().getDecorView();
         mPopupWindow =
                 new AnchoredPopupWindow(
                         context,
                         decorView,
                         new ColorDrawable(Color.WHITE),
-                        frame,
+                        mThinWebView.getView(),
                         new ViewRectProvider(anchorView));
 
         mPopupWindow.setHorizontalOverlapAnchor(true);
         mPopupWindow.setOutsideTouchable(true);
+        mPopupWindow.setAllowNonTouchableSize(true);
 
         Resources resources = mContext.getResources();
         mPopupWindow.setElevation(
                 resources.getDimensionPixelSize(R.dimen.extension_action_popup_elevation));
+
+        // Set the content size to the minimum initially.
+        mPopupWindow.setDesiredContentSize(
+                resources.getDimensionPixelSize(R.dimen.extension_action_popup_min_width),
+                resources.getDimensionPixelSize(R.dimen.extension_action_popup_min_height));
 
         contents.setDelegate(new ContentsDelegate());
     }
@@ -152,7 +147,8 @@ class ExtensionActionPopup implements Destroyable {
     private class ContentsDelegate implements ExtensionActionPopupContents.Delegate {
         @Override
         public void resizeDueToAutoResize(int width, int height) {
-            // TODO(crbug.com/385987224): Resize according to the content size.
+            mPopupWindow.setDesiredContentSize(
+                    ViewUtils.dpToPx(mContext, width), ViewUtils.dpToPx(mContext, height));
         }
 
         @Override

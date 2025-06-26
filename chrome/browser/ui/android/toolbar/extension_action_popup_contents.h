@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "chrome/browser/extensions/extension_view.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class RenderFrameHost;
@@ -31,7 +32,8 @@ class ExtensionViewHost;
 // instance. When the Java object is no longer needed (e.g. the popup is
 // closed), its `destroy()` method is called. This, in turn, calls the native
 // `Destroy()` method on this C++ object, which then calls `delete this`.
-class ExtensionActionPopupContents : public ExtensionView {
+class ExtensionActionPopupContents : public content::WebContentsObserver,
+                                     public ExtensionView {
  public:
   explicit ExtensionActionPopupContents(
       std::unique_ptr<ExtensionViewHost> popup_host);
@@ -42,6 +44,10 @@ class ExtensionActionPopupContents : public ExtensionView {
 
   // Returns a local JNI reference to the Java counterpart of this object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+
+  // WebContentsObserver:
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override;
 
   // ExtensionView:
   void ResizeDueToAutoResize(content::WebContents* web_contents,
@@ -59,6 +65,8 @@ class ExtensionActionPopupContents : public ExtensionView {
   void LoadInitialPage(JNIEnv* env);
 
  private:
+  void SetUpNewMainFrame(content::RenderFrameHost* render_frame_host);
+
   std::unique_ptr<ExtensionViewHost> host_;
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
