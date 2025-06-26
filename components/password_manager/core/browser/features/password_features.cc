@@ -162,8 +162,13 @@ BASE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected,
-             "TriggerPasswordResyncWhenUndecryptablePasswordsDetected",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+            "TriggerPasswordResyncWhenUndecryptablePasswordsDetected",
+#if BUILDFLAG(IS_WIN)
+            base::FEATURE_ENABLED_BY_DEFAULT
+#else
+            base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kBiometricAuthIdentityCheck,
