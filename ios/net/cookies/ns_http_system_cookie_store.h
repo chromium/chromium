@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "ios/net/cookies/system_cookie_store.h"
 
 namespace net {
@@ -39,7 +41,7 @@ class NSHTTPSystemCookieStore : public net::SystemCookieStore {
 
   // Sets cookie, and calls |callback| async after that.
   void SetCookieAsync(NSHTTPCookie* cookie,
-                      const base::Time* optional_creation_time,
+                      std::optional<base::Time> optional_creation_time,
                       SystemCookieCallback callback) override;
 
   // Clears all cookies from the store and call |callback| after all cookies are
@@ -64,7 +66,7 @@ class NSHTTPSystemCookieStore : public net::SystemCookieStore {
   // if the |optional_creation_time| is nullptr, uses Time::Now() as the
   // creation time.
   void SetCookie(NSHTTPCookie* cookie,
-                 const base::Time* optional_creation_time);
+                 std::optional<base::Time> optional_creation_time);
 
   // Clears all cookies from the internal cookie store.
   void ClearStore();

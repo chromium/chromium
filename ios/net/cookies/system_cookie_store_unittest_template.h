@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "base/barrier_closure.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -74,7 +76,8 @@ class SystemCookieStoreTest : public PlatformTest {
   // callback and doesn't set creation time.
   void SetCookieInStoreWithNoCallback(NSHTTPCookie* cookie) {
     base::RunLoop run_loop;
-    GetCookieStore()->SetCookieAsync(cookie, /*optional_creation_time=*/nullptr,
+    GetCookieStore()->SetCookieAsync(cookie,
+                                     /*optional_creation_time=*/std::nullopt,
                                      run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -109,8 +112,8 @@ TYPED_TEST_P(SystemCookieStoreTest, SetCookieAsyncWithIdenticalCreationTime) {
   base::RunLoop run_loop;
   base::RepeatingClosure closure =
       base::BarrierClosure(2, run_loop.QuitClosure());
-  cookie_store->SetCookieAsync(system_cookie_1, &creation_time, closure);
-  cookie_store->SetCookieAsync(system_cookie_2, &creation_time, closure);
+  cookie_store->SetCookieAsync(system_cookie_1, creation_time, closure);
+  cookie_store->SetCookieAsync(system_cookie_2, creation_time, closure);
   run_loop.Run();
 
   EXPECT_TRUE(this->IsCookieSet(system_cookie_1, this->test_cookie_url1_));
@@ -183,7 +186,7 @@ TYPED_TEST_P(SystemCookieStoreTest, DeleteCookiesAsync) {
   NSHTTPCookie* system_cookie2 =
       this->CreateCookie(@"x", @"d", this->test_cookie_url2_);
   cookie_store->SetCookieAsync(system_cookie2,
-                               /*optional_creation_time=*/nullptr,
+                               /*optional_creation_time=*/std::nullopt,
                                SystemCookieStore::SystemCookieCallback());
   this->SetCookieInStoreWithNoCallback(system_cookie2);
   EXPECT_EQ(2, this->CookiesCount());

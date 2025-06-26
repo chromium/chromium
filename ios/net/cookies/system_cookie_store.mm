@@ -20,7 +20,7 @@ SystemCookieStore::SystemCookieStore()
 
 void SystemCookieStore::SetCookieAsync(NSHTTPCookie* cookie,
                                        SystemCookieCallback callback) {
-  SetCookieAsync(cookie, /*optional_creation_time=*/nullptr,
+  SetCookieAsync(cookie, /*optional_creation_time=*/std::nullopt,
                  std::move(callback));
 }
 

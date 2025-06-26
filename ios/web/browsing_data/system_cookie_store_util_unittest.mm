@@ -6,6 +6,8 @@
 
 #import <WebKit/WebKit.h>
 
+#import <optional>
+
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
@@ -66,7 +68,7 @@ bool SetCookieInCookieStore(NSHTTPCookie* cookie,
   bool success = false;
 
   base::RunLoop run_loop;
-  store->SetCookieAsync(cookie, /*optional_creation_time=*/nullptr,
+  store->SetCookieAsync(cookie, /*optional_creation_time=*/std::nullopt,
                         base::ReturnValueOnce(true)
                             .Then(CaptureOutput(&success))
                             .Then(run_loop.QuitClosure()));

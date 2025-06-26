@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
+#import <optional>
+
 #import "base/sequence_checker.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/net/cookies/system_cookie_store.h"
@@ -39,7 +41,7 @@ class WKHTTPSystemCookieStore : public net::SystemCookieStore {
 
   void SetCookieAsync(
       NSHTTPCookie* cookie,
-      const base::Time* optional_creation_time,
+      std::optional<base::Time> optional_creation_time,
       net::SystemCookieStore::SystemCookieCallback callback) override;
 
   void ClearStoreAsync(

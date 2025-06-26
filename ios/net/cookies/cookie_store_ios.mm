@@ -260,7 +260,7 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
 
   if (ns_cookie != nil) {
     system_store_->SetCookieAsync(
-        ns_cookie, &cookie->CreationDate(),
+        ns_cookie, cookie->CreationDate(),
         BindSetCookiesCallback(&callback, access_result));
     return;
   }

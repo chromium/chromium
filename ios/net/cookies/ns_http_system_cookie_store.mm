@@ -4,6 +4,8 @@
 
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
 
+#import <optional>
+
 #import "base/functional/bind.h"
 #import "base/time/time.h"
 #import "ios/net/cookies/cookie_creation_time_manager.h"
@@ -57,7 +59,7 @@ void NSHTTPSystemCookieStore::DeleteCookieAsync(NSHTTPCookie* cookie,
 
 void NSHTTPSystemCookieStore::SetCookieAsync(
     NSHTTPCookie* cookie,
-    const base::Time* optional_creation_time,
+    std::optional<base::Time> optional_creation_time,
     SystemCookieCallback callback) {
   SetCookie(cookie, optional_creation_time);
   RunCookieCallback(std::move(callback));
@@ -96,7 +98,7 @@ void NSHTTPSystemCookieStore::DeleteCookie(NSHTTPCookie* cookie) {
 
 void NSHTTPSystemCookieStore::SetCookie(
     NSHTTPCookie* cookie,
-    const base::Time* optional_creation_time) {
+    std::optional<base::Time> optional_creation_time) {
   [cookie_store_ setCookie:cookie];
   base::Time cookie_time = base::Time::Now();
   if (optional_creation_time && !optional_creation_time->is_null()) {

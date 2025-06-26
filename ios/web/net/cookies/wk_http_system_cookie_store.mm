@@ -498,7 +498,7 @@ void WKHTTPSystemCookieStore::DeleteCookieAsync(NSHTTPCookie* cookie,
 
 void WKHTTPSystemCookieStore::SetCookieAsync(
     NSHTTPCookie* cookie,
-    const base::Time* optional_creation_time,
+    std::optional<base::Time> optional_creation_time,
     SystemCookieCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Time creation_time =
