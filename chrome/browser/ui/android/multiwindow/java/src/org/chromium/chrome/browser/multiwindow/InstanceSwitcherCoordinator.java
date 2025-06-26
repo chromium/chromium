@@ -430,9 +430,13 @@ public class InstanceSwitcherCoordinator {
                 li.model.set(InstanceSwitcherItemProperties.IS_SELECTED, false);
             } else if (id == instanceId) {
                 li.model.set(InstanceSwitcherItemProperties.IS_SELECTED, true);
-                // Enables the positive button (e.g. "Open" or "Restore") once a valid selection is
-                // made.
-                mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, false);
+                // Block inactive instance restoration when active instance count is at instance
+                // limit.
+                if (!mIsInactiveListShowing || getActiveInstanceCount() < mMaxInstanceCount) {
+                    // Enables the positive button (e.g. "Open" or "Restore") once a valid selection
+                    // is made.
+                    mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, false);
+                }
             }
         }
         mSelectedItem = clickedItem;
@@ -523,13 +527,19 @@ public class InstanceSwitcherCoordinator {
             // Exclude COMMAND item from list size.
             return mModelList.size() - 1;
         }
-        int numActiveInstances = mActiveModelList.size();
+        int numActiveInstances = getActiveInstanceCount();
         int numInactiveInstances = mInactiveModelList.size();
+        return numActiveInstances + numInactiveInstances;
+    }
+
+    /* Only applicable to instance switcher v2. */
+    private int getActiveInstanceCount() {
+        int numActiveInstances = mActiveModelList.size();
         // Exclude COMMAND item from active list size if exists.
         if (mActiveModelList.get(numActiveInstances - 1).type == EntryType.COMMAND) {
             numActiveInstances -= 1;
         }
-        return numActiveInstances + numInactiveInstances;
+        return numActiveInstances;
     }
 
     private void removeInstance(InstanceInfo item) {
