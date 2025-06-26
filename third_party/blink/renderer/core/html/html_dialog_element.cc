@@ -682,10 +682,6 @@ void HTMLDialogElement::SetFocusForDialog() {
 bool HTMLDialogElement::DispatchToggleEvents(bool opening,
                                              Element* source,
                                              bool asModal) {
-  if (!RuntimeEnabledFeatures::DialogElementToggleEventsEnabled()) {
-    return true;
-  }
-
   String old_state = opening ? "closed" : "open";
   String new_state = opening ? "open" : "closed";
 
