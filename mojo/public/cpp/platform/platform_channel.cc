@@ -62,7 +62,7 @@ namespace {
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
   std::wstring pipe_name = NamedPlatformChannel::GetPipeNameFromServerName(
-      NamedPlatformChannel::GenerateRandomServerName());
+      NamedPlatformChannel::GenerateRandomServerName(), /*is_local_pipe=*/true);
   DWORD kOpenMode =
       PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED | FILE_FLAG_FIRST_PIPE_INSTANCE;
   const DWORD kPipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE;

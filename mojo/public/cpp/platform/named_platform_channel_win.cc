@@ -43,8 +43,24 @@ NamedPlatformChannel::GenerateRandomServerName() {
 
 // static
 std::wstring NamedPlatformChannel::GetPipeNameFromServerName(
-    const NamedPlatformChannel::ServerName& server_name) {
-  return L"\\\\.\\pipe\\mojo." + server_name;
+    const NamedPlatformChannel::ServerName& server_name,
+    bool is_local_pipe) {
+  // https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createnamedpipea
+  // "Windows 10, version 1709:  Pipes are only supported within an
+  // app-container; ie, from one UWP process to another UWP process that's part
+  // of the same app. Also, named pipes must use the syntax \\.\pipe\LOCAL\ for
+  // the pipe name."
+  //
+  // Without "LOCAL" pipes can't be created inside an AppContainer sandbox.
+  // However older versions of mojo didn't include the "LOCAL" segment, and to
+  // communicate across versions both ends need to use the same pipe name.
+  //
+  // As a workaround, "LOCAL" is only included for local pipes that won't be
+  // exposed to other apps. So AppContainer sandboxes can create PlatformChannel
+  // pipes but not NamedPlatformChannel pipes, which must be opened in an
+  // unsandboxed broker.
+  return base::StrCat({L"\\\\.\\pipe", is_local_pipe ? L"\\LOCAL" : L"",
+                       L"\\mojo.", server_name});
 }
 
 // static
