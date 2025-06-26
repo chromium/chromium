@@ -335,7 +335,7 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     TRACE_EVENT_INSTANT("loading",
                         "SoftNavigationHeuristics::"
                         "SameDocumentNavigationCommittedWithoutContext",
-                        "url", url);
+                        perfetto::Track::FromPointer(this), "url", url);
     base::UmaHistogramEnumeration(
         kPageLoadInternalSoftNavigationOutcome,
         SoftNavigationOutcome::kNoSoftNavContextDuringUrlChange);
@@ -710,7 +710,7 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
           *window_, paint_attribution_mode_);
       potential_soft_navigations_.insert(active_interaction_context_);
       TRACE_EVENT_BEGIN(
-          "loading", "SoftNavigationHeuristics::SoftNavigation",
+          "loading", "SoftNavigation",
           perfetto::Track::FromPointer(active_interaction_context_));
       TRACE_EVENT_INSTANT(
           "loading", "SoftNavigationHeuristics::CreateNewContext",
