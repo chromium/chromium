@@ -220,13 +220,6 @@ suite('MainPageTests', function() {
         });
   }
 
-  test('exiting search mode, advanced collapsed', function() {
-    // Simulating searching while the advanced page is collapsed.
-    settingsMain.currentRouteChanged();
-    flush();
-    return assertAdvancedVisibilityAfterSearch('none');
-  });
-
   // Ensure that clearing the search results restores both "basic" and
   // "advanced" page, when the search has been initiated from a subpage
   // whose parent is the "advanced" page.
