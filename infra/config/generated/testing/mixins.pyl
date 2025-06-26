@@ -243,6 +243,11 @@
       '--extra-browser-args=--enable-features=SkiaGraphite',
     ],
   },
+  'gpu_gtest_common_args': {
+    'android_args': [
+      '$$MAGIC_SUBSTITUTION_AndroidDesktopForceMainUser',
+    ],
+  },
   'gpu_integration_test_common_args': {
     'args': [
       '$$MAGIC_SUBSTITUTION_GPUParallelJobs',

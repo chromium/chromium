@@ -25,6 +25,31 @@ def CreateConfigWithPool(pool, device_type=None, board=None):
   return dims
 
 
+class AndroidDesktopForceMainuserTest(unittest.TestCase):
+
+  def testNonAndroid(self):
+    test_config = CreateConfigWithPool('chromium.tests', board='brya')
+    with self.assertRaises(AssertionError):
+      magic_substitutions.AndroidDesktopForceMainUser(test_config, None,
+                                                      {'os_type': 'linux'})
+
+  def testNoBoard(self):
+    test_config = CreateConfigWithPool('chromium.tests')
+    self.assertEqual(
+        magic_substitutions.AndroidDesktopForceMainUser(test_config, None,
+                                                        {'os_type': 'android'}),
+        [])
+
+  def testSuccess(self):
+    test_config = CreateConfigWithPool('chromium.tests', board='brya')
+    self.assertEqual(
+        magic_substitutions.AndroidDesktopForceMainUser(test_config, None,
+                                                        {'os_type': 'android'}),
+        [
+            '--force-main-user',
+        ])
+
+
 class AndroidDesktopTelemetryRemoteTest(unittest.TestCase):
 
   def testNonAndroid(self):

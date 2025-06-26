@@ -524,6 +524,11 @@
     'chromium_gtests': {
       'absl_hardening_tests': {},
       'angle_unittests': {
+        'test_common': {
+          'mixins': [
+            'gpu_gtest_common_args',
+          ],
+        },
         'android_args': [
           '-v',
         ],
@@ -579,7 +584,13 @@
       'gcm_unit_tests': {},
       'gin_unittests': {},
       'google_apis_unittests': {},
-      'gpu_unittests': {},
+      'gpu_unittests': {
+        'test_common': {
+          'mixins': [
+            'gpu_gtest_common_args',
+          ],
+        },
+      },
       'gwp_asan_unittests': {},
       'ipc_tests': {},
       'latency_unittests': {},
@@ -831,7 +842,13 @@
       'gcm_unit_tests': {},
       'gin_unittests': {},
       'google_apis_unittests': {},
-      'gpu_unittests': {},
+      'gpu_unittests': {
+        'test_common': {
+          'mixins': [
+            'gpu_gtest_common_args',
+          ],
+        },
+      },
       'headless_browsertests': {},
       'headless_unittests': {},
       'interactive_ui_tests': {},
@@ -1850,7 +1867,13 @@
       'aura_unittests': {},
       'chromeos_components_unittests': {},
       'exo_unittests': {},
-      'gl_unittests_ozone': {},
+      'gl_unittests_ozone': {
+        'test_common': {
+          'mixins': [
+            'gpu_gtest_common_args',
+          ],
+        },
+      },
       'keyboard_unittests': {},
       'ozone_gl_unittests': {
         'args': [

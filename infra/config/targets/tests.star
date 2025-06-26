@@ -89,66 +89,114 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "angle_deqp_egl_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_deqp_gles2_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_deqp_gles31_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_deqp_gles3_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_deqp_khr_gles2_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_deqp_khr_gles3_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_deqp_khr_gles31_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_deqp_gles3_rotate180_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_deqp_gles3_rotate270_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_deqp_gles3_rotate90_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_deqp_gles31_rotate180_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_deqp_gles31_rotate270_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_deqp_gles31_rotate90_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_end2end_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_unittests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "angle_white_box_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
@@ -1222,6 +1270,9 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "gl_tests_passthrough",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
     args = [
         "--use-cmd-decoder=passthrough",
     ],
@@ -1230,6 +1281,9 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "gl_tests_validating",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
     args = [
         "--use-cmd-decoder=validating",
     ],
@@ -1238,14 +1292,23 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "gl_unittests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "gl_unittests_ozone",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.gtest_test(
     name = "gpu_memory_buffer_impl_tests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
     binary = "gpu_unittests",
 )
 
@@ -1359,6 +1422,9 @@ targets.tests.isolated_script_test(
 
 targets.tests.gtest_test(
     name = "gpu_unittests",
+    mixins = [
+        "gpu_gtest_common_args",
+    ],
 )
 
 targets.tests.isolated_script_test(

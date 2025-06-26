@@ -99,6 +99,14 @@ def _get_cros_board_name(spec_value):
 
     return dimensions.get("device_type", "amd64-generic")
 
+def _android_desktop_force_main_user(_, settings, spec_value):
+    """Automatically adds --force-main-user to gtests on Android Desktop."""
+    if settings.os_type != common.os_type.ANDROID:
+        fail("Ran an Android Desktop-specific substitution on a non-Android builder")
+    if not _get_android_desktop_board_name(spec_value):
+        return []
+    return ["--force-main-user"]
+
 def _android_desktop_telemetry_remote(_, settings, spec_value):
     """Substitutes the correct Android Desktop remote Telemetry arguments."""
     if settings.os_type != common.os_type.ANDROID:
@@ -417,6 +425,10 @@ def _placeholder(*, pyl_arg_value, function):
     )
 
 magic_args = struct(
+    ANDROID_DESKTOP_FORCE_MAIN_USER = _placeholder(
+        pyl_arg_value = "$$MAGIC_SUBSTITUTION_AndroidDesktopForceMainUser",
+        function = _android_desktop_force_main_user,
+    ),
     ANDROID_DESKTOP_TELEMETRY_REMOTE = _placeholder(
         pyl_arg_value = "$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote",
         function = _android_desktop_telemetry_remote,

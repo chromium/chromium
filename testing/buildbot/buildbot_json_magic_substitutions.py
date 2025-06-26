@@ -51,6 +51,14 @@ ANDROID_VULKAN_DEVICES = {
 }
 
 
+def AndroidDesktopForceMainUser(test_config, _, tester_config):
+  """Automatically adds --force-main-user to gtests on Android Desktop."""
+  assert _IsAndroid(tester_config)
+  if not _GetAndroidDesktopBoardName(test_config):
+    return []
+  return ['--force-main-user']
+
+
 def AndroidDesktopTelemetryRemote(test_config, _, tester_config):
   """Substitutes the correct Android Desktop remote Telemetry arguments."""
   assert _IsAndroid(tester_config)
