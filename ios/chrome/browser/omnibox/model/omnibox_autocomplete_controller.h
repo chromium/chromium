@@ -9,6 +9,8 @@
 
 #import <string>
 
+#import "base/time/time.h"
+#import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
 #import "ui/base/window_open_disposition.h"
 
@@ -68,6 +70,18 @@ struct OmniboxTextModel;
 /// Cancels any pending asynchronous query. If `clearSuggestions` is true, will
 /// also erase the suggestions.
 - (void)stopAutocompleteWithClearSuggestions:(BOOL)clearSuggestions;
+
+/// Opens given selection. Most kinds of selection invoke an action or
+/// otherwise call `OpenMatch`, but some may `acceptInputWithDisposition` which
+/// is not guaranteed to open a match or commit the omnibox.
+- (void)openSelection:(OmniboxPopupSelection)selection
+            timestamp:(base::TimeTicks)timestamp
+          disposition:(WindowOpenDisposition)disposition;
+
+/// A simplified version of OpenSelection that opens the model's current
+/// selection.
+- (void)openCurrentSelectionWithDisposition:(WindowOpenDisposition)disposition
+                                  timestamp:(base::TimeTicks)timestamp;
 
 #pragma mark - OmniboxPopup event
 

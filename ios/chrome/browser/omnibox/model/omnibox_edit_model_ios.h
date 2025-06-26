@@ -89,20 +89,30 @@ class OmniboxEditModelIOS {
   // Reverts the edit model back to its unedited state (permanent text showing,
   // no user input in progress).
   void Revert();
-
-  // Opens given selection. Most kinds of selection invoke an action or
-  // otherwise call `OpenMatch`, but some may `AcceptInput` which is not
-  // guaranteed to open a match or commit the omnibox.
-  virtual void OpenSelection(
-      OmniboxPopupSelection selection,
-      base::TimeTicks timestamp = base::TimeTicks(),
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
-
-  // A simplified version of OpenSelection that opens the model's current
-  // selection.
-  virtual void OpenSelection(
-      base::TimeTicks timestamp = base::TimeTicks(),
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
+  // Asks the browser to load `match` or execute one of its actions
+  // according to `selection`.
+  //
+  // OpenMatch() needs to know the original text that drove this action.  If
+  // `pasted_text` is non-empty, this is a Paste-And-Go/Search action, and
+  // that's the relevant input text.  Otherwise, the relevant input text is
+  // either the user text or the display URL, depending on if user input is
+  // in progress.
+  //
+  // `match` is passed by value for two reasons:
+  // (1) This function needs to modify `match`, so a const ref isn't
+  //     appropriate.  Callers don't actually care about the modifications, so a
+  //     pointer isn't required.
+  // (2) The passed-in match is, on the caller side, typically coming from data
+  //     associated with the popup.  Since this call can close the popup, that
+  //     could clear that data, leaving us with a pointer-to-garbage.  So at
+  //     some point someone needs to make a copy of the match anyway, to
+  //     preserve it past the popup closure.
+  void OpenMatch(OmniboxPopupSelection selection,
+                 AutocompleteMatch match,
+                 WindowOpenDisposition disposition,
+                 const GURL& alternate_nav_url,
+                 const std::u16string& pasted_text,
+                 base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
   OmniboxFocusState focus_state() const { return text_model_->focus_state; }
   bool has_focus() const {
@@ -183,37 +193,6 @@ class OmniboxEditModelIOS {
   };
 
   AutocompleteController* autocomplete_controller() const;
-
-  // Asks the browser to load the popup's currently selected item, using the
-  // supplied disposition.  This may close the popup.
-  void AcceptInput(
-      WindowOpenDisposition disposition,
-      base::TimeTicks match_selection_timestamp = base::TimeTicks());
-
-  // Asks the browser to load `match` or execute one of its actions
-  // according to `selection`.
-  //
-  // OpenMatch() needs to know the original text that drove this action.  If
-  // `pasted_text` is non-empty, this is a Paste-And-Go/Search action, and
-  // that's the relevant input text.  Otherwise, the relevant input text is
-  // either the user text or the display URL, depending on if user input is
-  // in progress.
-  //
-  // `match` is passed by value for two reasons:
-  // (1) This function needs to modify `match`, so a const ref isn't
-  //     appropriate.  Callers don't actually care about the modifications, so a
-  //     pointer isn't required.
-  // (2) The passed-in match is, on the caller side, typically coming from data
-  //     associated with the popup.  Since this call can close the popup, that
-  //     could clear that data, leaving us with a pointer-to-garbage.  So at
-  //     some point someone needs to make a copy of the match anyway, to
-  //     preserve it past the popup closure.
-  void OpenMatch(OmniboxPopupSelection selection,
-                 AutocompleteMatch match,
-                 WindowOpenDisposition disposition,
-                 const GURL& alternate_nav_url,
-                 const std::u16string& pasted_text,
-                 base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
   // Returns view text if there is a view. Until the model is made the
   // primary data source, this should not be called when there's no view.

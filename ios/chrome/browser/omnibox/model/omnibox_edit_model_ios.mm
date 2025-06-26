@@ -128,34 +128,6 @@ void OmniboxEditModelIOS::Revert() {
   [text_controller_ revertState];
 }
 
-void OmniboxEditModelIOS::OpenSelection(OmniboxPopupSelection selection,
-                                        base::TimeTicks timestamp,
-                                        WindowOpenDisposition disposition) {
-  // Intentionally accept input when selection has no line.
-  // This will usually reach `OpenMatch` indirectly.
-  if (selection.line >= autocomplete_controller()->result().size()) {
-    AcceptInput(disposition, timestamp);
-    return;
-  }
-
-  const AutocompleteMatch& match =
-      autocomplete_controller()->result().match_at(selection.line);
-
-  // Open the match.
-  GURL alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
-      text_model_->input, match,
-      autocomplete_controller()->autocomplete_provider_client());
-  OpenMatch(selection, match, disposition, alternate_nav_url, std::u16string(),
-            timestamp);
-}
-
-void OmniboxEditModelIOS::OpenSelection(base::TimeTicks timestamp,
-                                        WindowOpenDisposition disposition) {
-  OpenSelection(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
-                                      OmniboxPopupSelection::NORMAL),
-                timestamp, disposition);
-}
-
 void OmniboxEditModelIOS::ClearAdditionalText() {
   TRACE_EVENT0("omnibox", "OmniboxEditModelIOS::ClearAdditionalText");
   [text_controller_ setAdditionalText:std::u16string()];
@@ -199,30 +171,6 @@ const PrefService* OmniboxEditModelIOS::GetPrefService() const {
 
 AutocompleteController* OmniboxEditModelIOS::autocomplete_controller() const {
   return controller_->autocomplete_controller();
-}
-
-void OmniboxEditModelIOS::AcceptInput(
-    WindowOpenDisposition disposition,
-    base::TimeTicks match_selection_timestamp) {
-  // Get the URL and transition type for the selected entry.
-  GURL alternate_nav_url;
-  AutocompleteMatch match = [text_controller_ currentMatch:&alternate_nav_url];
-
-  if (!match.destination_url.is_valid()) {
-    return;
-  }
-
-  if (text_model_->paste_state != OmniboxPasteState::kNone &&
-      match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED) {
-    // When the user pasted in a URL and hit enter, score it like a link click
-    // rather than a normal typed URL, so it doesn't get inline autocompleted
-    // as aggressively later.
-    match.transition = ui::PAGE_TRANSITION_LINK;
-  }
-
-  OpenMatch(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), match,
-            disposition, alternate_nav_url, std::u16string(),
-            match_selection_timestamp);
 }
 
 void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,

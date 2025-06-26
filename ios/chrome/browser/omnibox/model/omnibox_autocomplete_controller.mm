@@ -148,6 +148,35 @@ using base::UserMetricsAction;
   }
 }
 
+- (void)openSelection:(OmniboxPopupSelection)selection
+            timestamp:(base::TimeTicks)timestamp
+          disposition:(WindowOpenDisposition)disposition {
+  // Intentionally accept input when selection has no line.
+  // This will usually reach `OpenMatch` indirectly.
+  if (selection.line >= self.autocompleteController->result().size()) {
+    [self acceptInputWithDisposition:disposition timestamp:timestamp];
+    return;
+  }
+
+  const AutocompleteMatch& match =
+      self.autocompleteController->result().match_at(selection.line);
+
+  // Open the match.
+  GURL alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
+      _omniboxTextModel->input, match,
+      self.autocompleteController->autocomplete_provider_client());
+  _omniboxEditModel->OpenMatch(selection, match, disposition, alternate_nav_url,
+                               std::u16string(), timestamp);
+}
+
+- (void)openCurrentSelectionWithDisposition:(WindowOpenDisposition)disposition
+                                  timestamp:(base::TimeTicks)timestamp {
+  [self openSelection:OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
+                                            OmniboxPopupSelection::NORMAL)
+            timestamp:timestamp
+          disposition:disposition];
+}
+
 #pragma mark - AutocompleteControllerObserver
 
 - (void)autocompleteController:(AutocompleteController*)autocompleteController
@@ -299,8 +328,9 @@ using base::UserMetricsAction;
   }
 
   if (_omniboxEditModel) {
-    _omniboxEditModel->OpenSelection(OmniboxPopupSelection(row),
-                                     matchSelectionTimestamp, disposition);
+    [self openSelection:OmniboxPopupSelection(row)
+              timestamp:matchSelectionTimestamp
+            disposition:disposition];
   }
 }
 
@@ -483,7 +513,7 @@ using base::UserMetricsAction;
   }
   OmniboxPopupSelection selection(
       autocompleteController->InjectAdHocMatch(match.value()));
-  _omniboxEditModel->OpenSelection(selection, timestamp, disposition);
+  [self openSelection:selection timestamp:timestamp disposition:disposition];
 }
 
 /// Wraps the suggestions and send them to the delegate.
@@ -502,6 +532,32 @@ using base::UserMetricsAction;
           self.autocompleteController) {
     autocompleteController->Start(input);
   }
+}
+
+// Asks the browser to load the popup's currently selected item, using the
+// supplied disposition.  This may close the popup.
+- (void)acceptInputWithDisposition:(WindowOpenDisposition)disposition
+                         timestamp:(base::TimeTicks)timestamp {
+  // Get the URL and transition type for the selected entry.
+  GURL alternate_nav_url;
+  AutocompleteMatch match =
+      [self.omniboxTextController currentMatch:&alternate_nav_url];
+
+  if (!match.destination_url.is_valid()) {
+    return;
+  }
+
+  if (_omniboxTextModel->paste_state != OmniboxPasteState::kNone &&
+      match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED) {
+    // When the user pasted in a URL and hit enter, score it like a link click
+    // rather than a normal typed URL, so it doesn't get inline autocompleted
+    // as aggressively later.
+    match.transition = ui::PAGE_TRANSITION_LINK;
+  }
+
+  _omniboxEditModel->OpenMatch(
+      OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), match,
+      disposition, alternate_nav_url, std::u16string(), timestamp);
 }
 
 #pragma mark Clipboard match handling

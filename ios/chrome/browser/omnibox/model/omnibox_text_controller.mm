@@ -452,7 +452,9 @@ const char kOmniboxFocusResultedInNavigation[] =
     if (_omniboxClient && !self.textField.text.length) {
       _omniboxClient->OnThumbnailOnlyAccept();
     } else {
-      _omniboxEditModel->OpenSelection();
+      [self.omniboxAutocompleteController
+          openCurrentSelectionWithDisposition:WindowOpenDisposition::CURRENT_TAB
+                                    timestamp:base::TimeTicks()];
     }
   }
 

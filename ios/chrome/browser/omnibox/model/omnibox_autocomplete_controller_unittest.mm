@@ -15,6 +15,7 @@
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #import "components/omnibox/browser/omnibox_client.h"
+#import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/prefs/testing_pref_service.h"
@@ -72,33 +73,26 @@ class MockAutocompleteController : public AutocompleteController {
   metrics::OmniboxEventProto::OmniboxPosition omnibox_position;
 };
 
-/// A mock class for OmniboxEditModel.
-class MockOmniboxEditModel : public OmniboxEditModelIOS {
- public:
-  MockOmniboxEditModel(OmniboxControllerIOS* controller,
-                       OmniboxClient* omnibox_client,
-                       OmniboxTextModel* text_model)
-      : OmniboxEditModelIOS(controller, omnibox_client, text_model, nil),
-        last_opened_selection(OmniboxPopupSelection(UINT_MAX)) {}
-  MockOmniboxEditModel(const MockOmniboxEditModel&) = delete;
-  MockOmniboxEditModel& operator=(const MockOmniboxEditModel&) = delete;
-  ~MockOmniboxEditModel() override = default;
-
-  void OpenSelection(OmniboxPopupSelection selection,
-                     base::TimeTicks timestamp,
-                     WindowOpenDisposition disposition) override {
-    last_opened_selection = selection;
-    if (open_selection_closure) {
-      open_selection_closure.Run();
-      open_selection_closure.Reset();
-    }
-  }
-
-  OmniboxPopupSelection last_opened_selection;
-  base::RepeatingClosure open_selection_closure;
-};
-
 }  // namespace
+
+@interface TestOmniboxAutocompleteController : OmniboxAutocompleteController
+@property(nonatomic, assign) NSUInteger lastOpenedSelectionLineIndex;
+@property(nonatomic, assign) base::RepeatingClosure openSelectionClosure;
+@end
+
+@implementation TestOmniboxAutocompleteController
+
+- (void)openSelection:(OmniboxPopupSelection)selection
+            timestamp:(base::TimeTicks)timestamp
+          disposition:(WindowOpenDisposition)disposition {
+  _lastOpenedSelectionLineIndex = selection.line;
+  if (_openSelectionClosure) {
+    _openSelectionClosure.Run();
+    _openSelectionClosure.Reset();
+  }
+}
+
+@end
 
 class OmniboxAutocompleteControllerTest : public PlatformTest {
  public:
@@ -123,14 +117,14 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     omnibox_text_model_ =
         std::make_unique<OmniboxTextModel>(omnibox_client_.get());
 
-    omnibox_edit_model_ = std::make_unique<MockOmniboxEditModel>(
+    omnibox_edit_model_ = std::make_unique<OmniboxEditModelIOS>(
         omnibox_controller_.get(), omnibox_client_.get(),
-        omnibox_text_model_.get());
+        omnibox_text_model_.get(), nil);
 
     controller_delegate_ =
         OCMProtocolMock(@protocol(OmniboxAutocompleteControllerDelegate));
 
-    controller_ = [[OmniboxAutocompleteController alloc]
+    controller_ = [[TestOmniboxAutocompleteController alloc]
         initWithOmniboxController:omnibox_controller_.get()
                     omniboxClient:omnibox_client_.get()
                  omniboxEditModel:omnibox_edit_model_.get()
@@ -163,7 +157,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
   /// Returns the match opened by OmniboxEditModel::OpenSelection.
   const AutocompleteMatch& LastOpenedMatch() {
     return autocomplete_controller_->result().match_at(
-        omnibox_edit_model_->last_opened_selection.line);
+        controller_.lastOpenedSelectionLineIndex);
   }
 
  protected:
@@ -171,14 +165,13 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
   base::test::TaskEnvironment environment_;
   // Application pref service.
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
-
-  OmniboxAutocompleteController* controller_;
+  TestOmniboxAutocompleteController* controller_;
   raw_ptr<MockAutocompleteController> autocomplete_controller_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
   raw_ptr<FakeClipboardRecentContent> clipboard_;
   std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
-  std::unique_ptr<MockOmniboxEditModel> omnibox_edit_model_;
+  std::unique_ptr<OmniboxEditModelIOS> omnibox_edit_model_;
   id controller_delegate_;
 };
 
@@ -302,7 +295,8 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenCreatedMatch) {
   EXPECT_THAT(LastOpenedMatch(), IsSameAsMatch(match));
 
   // Reset the last opened selection.
-  omnibox_edit_model_->last_opened_selection = OmniboxPopupSelection(UINT_MAX);
+  controller_.lastOpenedSelectionLineIndex =
+      OmniboxPopupSelection(UINT_MAX).line;
 
   // Open match that doesn't come from the autocomplete controller. Row is
   // smaller than autocomplete_controller_->result().size().
@@ -373,8 +367,7 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenClipboardImageMatch) {
 
   // Setup the OpenSelection waiter.
   base::RunLoop open_selection_waiter;
-  omnibox_edit_model_->open_selection_closure =
-      open_selection_waiter.QuitClosure();
+  controller_.openSelectionClosure = open_selection_waiter.QuitClosure();
 
   // Open the clipboard match.
   [controller_ selectMatchForOpening:clipboard_match
