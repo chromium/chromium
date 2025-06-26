@@ -12,6 +12,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "components/input/android/jni_headers/InputUtils_jni.h"
 #include "components/input/features.h"
 #endif
@@ -38,7 +40,14 @@ bool InputUtils::HasSecurityUpdate(const std::string& security_patch) {
   CHECK(base::Time::FromString("2025-02-05", &min_security_patch_date));
 
   base::Time security_patch_date;
-  CHECK(base::Time::FromString(security_patch.c_str(), &security_patch_date));
+  if (!base::Time::FromString(security_patch.c_str(), &security_patch_date)) {
+    {
+      // TODO(427757664): Cleanup after investigation.
+      SCOPED_CRASH_KEY_STRING64("b427757664", "security_patch", security_patch);
+      base::debug::DumpWithoutCrashing();
+    }
+    return false;
+  }
 
   return security_patch_date >= min_security_patch_date;
 }
@@ -47,6 +56,12 @@ bool InputUtils::HasSecurityUpdate(const std::string& security_patch) {
 // static
 bool InputUtils::IsTransferInputToVizSupported() {
 #if BUILDFLAG(IS_ANDROID)
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SdkVersion::SDK_VERSION_V) {
+    // InputOnViz does not work on < Android V, since the touch transfer APIs
+    // were introduced in Android V.
+    return false;
+  }
   // Thread safety: In normal operation (GPU out of process) only a single
   // thread per process calls this function. In the --in-process-gpu or
   // --single-process case two threads technically could race to initialize
@@ -58,12 +73,8 @@ bool InputUtils::IsTransferInputToVizSupported() {
         HasSecurityUpdate(base::android::android_info::security_patch());
     initialized_ = true;
   }
-  const bool is_at_least_v =
-      base::android::android_info::sdk_int() >=
-      base::android::android_info::SdkVersion::SDK_VERSION_V;
   // Enable on user debug builds to have test coverage on older Android 15 bots.
-  return is_at_least_v &&
-         (has_security_update_ ||
+  return (has_security_update_ ||
           base::android::android_info::is_debug_android()) &&
          base::FeatureList::IsEnabled(input::features::kInputOnViz);
 #else
