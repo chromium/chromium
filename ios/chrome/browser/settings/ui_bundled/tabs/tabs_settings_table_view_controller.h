@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_consumer.h"
 
 @protocol TabsSettingsTableViewControllerDelegate;
+@protocol TabsSettingsTableViewControllerDismissalDelegate;
 
 // Controller for the UI that allows the user to change settings that affect
 // Tabs.
@@ -19,10 +20,21 @@
 
 // The delegate receives events related to this view controller.
 @property(nonatomic, weak) id<TabsSettingsTableViewControllerDelegate> delegate;
+// The dismissal delegate receives events related to the dismissal of this view
+// controller.
+@property(nonatomic, weak) id<TabsSettingsTableViewControllerDismissalDelegate>
+    dismissalDelegate;
 
 // The designated initializer.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+@end
+
+// Delegate for when the TabsSettingsTableViewController is dismissed.
+@protocol TabsSettingsTableViewControllerDismissalDelegate
+// Called when the view controller is removed from the navigation controller.
+- (void)tabsSettingsTableViewControllerDidDisappear:
+    (TabsSettingsTableViewController*)controller;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_TABS_TABS_SETTINGS_TABLE_VIEW_CONTROLLER_H_

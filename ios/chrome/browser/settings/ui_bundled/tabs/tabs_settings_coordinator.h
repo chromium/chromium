@@ -7,8 +7,19 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-// Coordinator for the tabs settings view.
+@class TabsSettingsCoordinator;
+
+// Delegate for TabsSettingsCoordinator.
+@protocol TabsSettingsCoordinatorDelegate
+// Called when the UI for the coordinator is removed / dismissed.
+- (void)tabsSettingsCoordinatorDidRemove:(TabsSettingsCoordinator*)coordinator;
+@end
+
+// Coordinator for the tabs settings.
 @interface TabsSettingsCoordinator : ChromeCoordinator
+
+// Delegate.
+@property(nonatomic, weak) id<TabsSettingsCoordinatorDelegate> delegate;
 
 // Designated initializer.
 - (instancetype)initWithBaseNavigationController:

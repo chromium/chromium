@@ -57,6 +57,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self loadModel];
 }
 
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent) {
+    [self.dismissalDelegate tabsSettingsTableViewControllerDidDisappear:self];
+  }
+}
+
 #pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {

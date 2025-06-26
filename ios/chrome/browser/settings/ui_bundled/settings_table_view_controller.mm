@@ -205,7 +205,8 @@ struct EnhancedSafeBrowsingActivePromoData
     PrivacyCoordinatorDelegate,
     SafetyCheckCoordinatorDelegate,
     SearchEngineObserving,
-    SyncObserverModelBridge> {
+    SyncObserverModelBridge,
+    TabsSettingsCoordinatorDelegate> {
   // The browser where the settings are being displayed.
   raw_ptr<Browser> _browser;
   // The profile for `_browser`. Never off the record.
@@ -1485,6 +1486,13 @@ struct EnhancedSafeBrowsingActivePromoData
   _manageSyncSettingsCoordinator = nil;
 }
 
+// Stops and cleans up the TabsSettingsCoordinator.
+- (void)stopTabsCoordinator {
+  [_tabsCoordinator stop];
+  _tabsCoordinator.delegate = nil;
+  _tabsCoordinator = nil;
+}
+
 - (void)showGoogleServices {
   if (_googleServicesSettingsCoordinator &&
       self.navigationController.topViewController != self) {
@@ -1515,6 +1523,7 @@ struct EnhancedSafeBrowsingActivePromoData
   _tabsCoordinator = [[TabsSettingsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
+  _tabsCoordinator.delegate = self;
   [_tabsCoordinator start];
 }
 
@@ -2118,8 +2127,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
   [self stopManageSyncSettingsCoordinator];
 
-  [_tabsCoordinator stop];
-  _tabsCoordinator = nil;
+  [self stopTabsCoordinator];
 
   [_addressBarPreferenceCoordinator stop];
   _addressBarPreferenceCoordinator.delegate = nil;
@@ -2475,6 +2483,13 @@ struct EnhancedSafeBrowsingActivePromoData
     (ManageSyncSettingsCoordinator*)coordinator {
   DCHECK_EQ(_manageSyncSettingsCoordinator, coordinator);
   [self stopManageSyncSettingsCoordinator];
+}
+
+#pragma mark - TabsSettingsCoordinatorDelegate
+
+- (void)tabsSettingsCoordinatorDidRemove:(TabsSettingsCoordinator*)coordinator {
+  DCHECK_EQ(coordinator, _tabsCoordinator);
+  [self stopTabsCoordinator];
 }
 
 #pragma mark - NotificationsSettingsObserverDelegate

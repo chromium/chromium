@@ -11,7 +11,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-@interface TabsSettingsCoordinator () <TabsSettingsNavigationCommands>
+@interface TabsSettingsCoordinator () <
+    TabsSettingsNavigationCommands,
+    TabsSettingsTableViewControllerDismissalDelegate>
 @end
 
 @implementation TabsSettingsCoordinator {
@@ -37,6 +39,7 @@
 
 - (void)start {
   _viewController = [[TabsSettingsTableViewController alloc] init];
+  _viewController.dismissalDelegate = self;
   _mediator = [[TabsSettingsMediator alloc]
       initWithProfilePrefService:self.profile->GetPrefs()
                         consumer:_viewController];
@@ -67,6 +70,13 @@
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser];
   [_inactiveTabsSettingsCoordinator start];
+}
+
+#pragma mark - TabsSettingsTableViewControllerDismissalDelegate
+
+- (void)tabsSettingsTableViewControllerDidDisappear:
+    (TabsSettingsTableViewController*)controller {
+  [self.delegate tabsSettingsCoordinatorDidRemove:self];
 }
 
 @end
