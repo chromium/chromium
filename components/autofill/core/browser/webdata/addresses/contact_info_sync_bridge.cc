@@ -49,7 +49,7 @@ bool IsIncompleteHomeAndWorkAddress(const AutofillProfile& profile) {
     return false;
   }
   const bool is_incomplete = !IsMinimumAddress(profile);
-  base::UmaHistogramBoolean("Autofill.HomeWorkProfiles.ProfileFiltered",
+  base::UmaHistogramBoolean("Autofill.HomeAndWork.ProfileFiltered",
                             is_incomplete);
   return is_incomplete;
 }

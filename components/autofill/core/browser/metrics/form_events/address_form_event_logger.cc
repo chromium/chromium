@@ -240,15 +240,13 @@ void AddressFormEventLogger::OnDestroyed() {
       has_logged_suggestions_shown_) {
     if (profile_categories_available_.contains(
             AutofillProfileRecordTypeCategory::kAccountHome)) {
-      base::UmaHistogramBoolean(
-          "Autofill.HomeWorkProfiles.SuggestionPresent.Home",
-          home_profile_suggestion_present_);
+      base::UmaHistogramBoolean("Autofill.HomeAndWork.SuggestionPresent.Home",
+                                home_profile_suggestion_present_);
     }
     if (profile_categories_available_.contains(
             AutofillProfileRecordTypeCategory::kAccountWork)) {
-      base::UmaHistogramBoolean(
-          "Autofill.HomeWorkProfiles.SuggestionPresent.Work",
-          work_profile_suggestion_present_);
+      base::UmaHistogramBoolean("Autofill.HomeAndWork.SuggestionPresent.Work",
+                                work_profile_suggestion_present_);
     }
   }
 }

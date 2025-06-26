@@ -279,8 +279,8 @@ TEST_F(ContactInfoSyncBridgeTest,
   ASSERT_TRUE(StartSyncing({remote}));
 
   // Since `remote` is a complete H/W profile, expect it in local storage.
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.HomeWorkProfiles.ProfileFiltered", false, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.HomeAndWork.ProfileFiltered",
+                                      false, 1);
   EXPECT_THAT(GetAllDataFromTable(), ElementsAre(remote));
 
   // Receive an update for remote that makes it incomplete.
@@ -292,9 +292,9 @@ TEST_F(ContactInfoSyncBridgeTest,
       bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
 
   // Expect that the profile was removed locally.
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.HomeWorkProfiles.ProfileFiltered"),
-              BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.HomeAndWork.ProfileFiltered"),
+      BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
   EXPECT_THAT(GetAllDataFromTable(), testing::IsEmpty());
 }
 

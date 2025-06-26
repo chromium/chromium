@@ -227,10 +227,10 @@ void LogProfileUpdateImportDecision(
   }
 }
 
-void LogHomeWorkSupersetImportDecision(
+void LogHomeAndWorkSupersetImportDecision(
     AutofillClient::AddressPromptUserDecision decision) {
   base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.HomeWorkSupersetProfileDecision", decision);
+      "Autofill.ProfileImport.HomeAndWorkSupersetProfileDecision", decision);
 }
 
 // static

@@ -481,10 +481,10 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
       .Reset(autofill_driver());
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.HomeWorkProfiles.SuggestionPresent.Home"),
+                  "Autofill.HomeAndWork.SuggestionPresent.Home"),
               BucketsAre(base::Bucket(false, 0), base::Bucket(true, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.HomeWorkProfiles.SuggestionPresent.Work"),
+                  "Autofill.HomeAndWork.SuggestionPresent.Work"),
               BucketsAre(base::Bucket(false, 0), base::Bucket(true, 0)));
 }
 
@@ -523,10 +523,10 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
       .Reset(autofill_driver());
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.HomeWorkProfiles.SuggestionPresent.Home"),
+                  "Autofill.HomeAndWork.SuggestionPresent.Home"),
               BucketsAre(base::Bucket(false, 1), base::Bucket(true, 0)));
   EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.HomeWorkProfiles.SuggestionPresent.Work"),
+                  "Autofill.HomeAndWork.SuggestionPresent.Work"),
               BucketsAre(base::Bucket(false, 0), base::Bucket(true, 0)));
 }
 

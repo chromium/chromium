@@ -475,7 +475,7 @@ void ProfileImportProcess::CollectMetrics(
           *confirmed_import_candidate_);
     }
   } else if (import_type_ == AutofillProfileImportType::kHomeAndWorkSuperset) {
-    autofill_metrics::LogHomeWorkSupersetImportDecision(user_decision_);
+    autofill_metrics::LogHomeAndWorkSupersetImportDecision(user_decision_);
   } else if (is_confirmable_update()) {
     autofill_metrics::LogProfileUpdateImportDecision(
         user_decision_, existing_profiles,
