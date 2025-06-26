@@ -32,10 +32,13 @@ namespace {
 const CGFloat kHeaderInsetSides = 7.5;
 
 // The number of skeleton sections to display while content is loading.
-NSInteger kSkeletonSectionCount = 3;
+const NSInteger kSkeletonSectionCount = 3;
 
 // The number of skeleton items to show in each section during loading.
-NSInteger kSkeletonItemsPerSection = 4;
+const NSInteger kSkeletonItemsPerSection = 4;
+
+// The time interval between loading animation updates, in seconds.
+const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 }  // namespace
 
 @interface HomeCustomizationBackgroundPresetGalleryPickerViewController () <
@@ -64,6 +67,12 @@ NSInteger kSkeletonItemsPerSection = 4;
 
   // The id of the selected background cell.
   NSString* _selectedBackgroundId;
+
+  // Timer used to periodically trigger the loading animation update.
+  NSTimer* _loadingTimer;
+
+  // The current index of the cell being dimmed in the loading animation.
+  NSInteger _skeletonAnimationIndex;
 }
 @end
 
@@ -120,6 +129,13 @@ NSInteger kSkeletonItemsPerSection = 4;
   [_diffableDataSource applySnapshot:[self skeletonSnapshot]
                 animatingDifferences:NO];
 
+  _loadingTimer =
+      [NSTimer scheduledTimerWithTimeInterval:(kAnimationIntervalSeconds)
+                                       target:self
+                                     selector:@selector(updateLoadingAnimation)
+                                     userInfo:nil
+                                      repeats:YES];
+
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_collectionView];
 
@@ -132,6 +148,7 @@ NSInteger kSkeletonItemsPerSection = 4;
             (NSArray<BackgroundCollectionConfiguration*>*)
                 backgroundCollectionConfigurations
                          selectedBackgroundId:(NSString*)selectedBackgroundId {
+  [self stopLoadingAnimation];
   NSMutableDictionary<NSString*, id<BackgroundCustomizationConfiguration>>*
       backgroundCustomizationConfigurationMap =
           [NSMutableDictionary dictionary];
@@ -154,6 +171,10 @@ NSInteger kSkeletonItemsPerSection = 4;
   _backgroundCollectionConfigurations = backgroundCollectionConfigurations;
   [_diffableDataSource applySnapshot:[self dataSnapshot]
                 animatingDifferences:NO];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [self stopLoadingAnimation];
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -380,6 +401,53 @@ NSInteger kSkeletonItemsPerSection = 4;
 // Dismisses the current customization menu page.
 - (void)dismissCustomizationMenuPage {
   [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+// This method simulates a loading shimmer effect by dimming one cell at a time.
+// Only one cell per section is dimmed at any given moment.
+- (void)updateLoadingAnimation {
+  NSInteger previousIndex =
+      (_skeletonAnimationIndex - 1 + kSkeletonItemsPerSection) %
+      kSkeletonItemsPerSection;
+
+  for (NSInteger section = 0; section < kSkeletonSectionCount; section++) {
+    NSIndexPath* previousIndexPath = [NSIndexPath indexPathForItem:previousIndex
+                                                         inSection:section];
+    NSIndexPath* currentIndexPath =
+        [NSIndexPath indexPathForItem:_skeletonAnimationIndex
+                            inSection:section];
+
+    UICollectionViewCell* previousCell =
+        [self.collectionView cellForItemAtIndexPath:previousIndexPath];
+    UICollectionViewCell* currentCell =
+        [self.collectionView cellForItemAtIndexPath:currentIndexPath];
+
+    previousCell.alpha = 1;
+    currentCell.alpha = 0.5;
+  }
+
+  _skeletonAnimationIndex =
+      (_skeletonAnimationIndex + 1) % kSkeletonItemsPerSection;
+}
+
+// Stops the loading animation by invalidating the timer and resetting the alpha
+// of currently dimmed cells back to fully opaque.
+- (void)stopLoadingAnimation {
+  if (!_loadingTimer) {
+    return;
+  }
+
+  [_loadingTimer invalidate];
+  _loadingTimer = nil;
+
+  for (NSInteger section = 0; section < kSkeletonSectionCount; section++) {
+    NSIndexPath* indexPath =
+        [NSIndexPath indexPathForItem:_skeletonAnimationIndex
+                            inSection:section];
+    UICollectionViewCell* cell =
+        [self.collectionView cellForItemAtIndexPath:indexPath];
+    cell.alpha = 1.0;
+  }
 }
 
 @end
