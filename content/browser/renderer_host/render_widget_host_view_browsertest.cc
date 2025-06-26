@@ -693,13 +693,21 @@ IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
   }
 }
 
+// TODO(crbug.com/345980824): This test is flaky on some Linux builders.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_BFCachedPageResizedWhileHiddenShouldNotHavePreservedFallback \
+  DISABLED_BFCachedPageResizedWhileHiddenShouldNotHavePreservedFallback
+#else
+#define MAYBE_BFCachedPageResizedWhileHiddenShouldNotHavePreservedFallback \
+  BFCachedPageResizedWhileHiddenShouldNotHavePreservedFallback
+#endif
 // Same as the above test, except we resize the viewport while the page is in
 // BFCache. The net effect is that we will NOT be using the last surface as
 // the fallback for BFCache activation because resizing always regenerates a
 // new ID as the fallback.
 IN_PROC_BROWSER_TEST_F(
     BFCachedRenderWidgetHostViewBrowserTest,
-    BFCachedPageResizedWhileHiddenShouldNotHavePreservedFallback) {
+    MAYBE_BFCachedPageResizedWhileHiddenShouldNotHavePreservedFallback) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
