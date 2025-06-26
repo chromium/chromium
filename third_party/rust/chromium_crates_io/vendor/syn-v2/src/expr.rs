@@ -1213,7 +1213,7 @@ pub(crate) mod parsing {
     use crate::ty::{ReturnType, Type};
     use crate::verbatim;
     #[cfg(feature = "full")]
-    use proc_macro2::TokenStream;
+    use proc_macro2::{Span, TokenStream};
     use std::mem;
 
     // When we're parsing expressions which occur before blocks, like in an if
@@ -1599,7 +1599,18 @@ pub(crate) mod parsing {
 
         if let Expr::Verbatim(tokens) = &mut e {
             *tokens = verbatim::between(&begin, input);
-        } else {
+        } else if !attrs.is_empty() {
+            if let Expr::Range(range) = e {
+                let spans: &[Span] = match &range.limits {
+                    RangeLimits::HalfOpen(limits) => &limits.spans,
+                    RangeLimits::Closed(limits) => &limits.spans,
+                };
+                return Err(crate::error::new2(
+                    spans[0],
+                    *spans.last().unwrap(),
+                    "attributes are not allowed on range expressions starting with `..`",
+                ));
+            }
             let inner_attrs = e.replace_attrs(Vec::new());
             attrs.extend(inner_attrs);
             e.replace_attrs(attrs);
@@ -3833,18 +3844,37 @@ pub(crate) mod printing {
     }
 
     #[cfg(feature = "full")]
-    fn print_expr_range(e: &ExprRange, tokens: &mut TokenStream, fixup: FixupContext) {
+    fn print_expr_range(e: &ExprRange, tokens: &mut TokenStream, mut fixup: FixupContext) {
         outer_attrs_to_tokens(&e.attrs, tokens);
-        if let Some(start) = &e.start {
-            let (left_prec, left_fixup) =
-                fixup.leftmost_subexpression_with_operator(start, true, false, Precedence::Range);
-            print_subexpression(start, left_prec <= Precedence::Range, tokens, left_fixup);
+
+        let needs_group = !e.attrs.is_empty();
+        if needs_group {
+            fixup = FixupContext::NONE;
         }
-        e.limits.to_tokens(tokens);
-        if let Some(end) = &e.end {
-            let right_fixup = fixup.rightmost_subexpression_fixup(false, true, Precedence::Range);
-            let right_prec = right_fixup.rightmost_subexpression_precedence(end);
-            print_subexpression(end, right_prec <= Precedence::Range, tokens, right_fixup);
+
+        let do_print_expr = |tokens: &mut TokenStream| {
+            if let Some(start) = &e.start {
+                let (left_prec, left_fixup) = fixup.leftmost_subexpression_with_operator(
+                    start,
+                    true,
+                    false,
+                    Precedence::Range,
+                );
+                print_subexpression(start, left_prec <= Precedence::Range, tokens, left_fixup);
+            }
+            e.limits.to_tokens(tokens);
+            if let Some(end) = &e.end {
+                let right_fixup =
+                    fixup.rightmost_subexpression_fixup(false, true, Precedence::Range);
+                let right_prec = right_fixup.rightmost_subexpression_precedence(end);
+                print_subexpression(end, right_prec <= Precedence::Range, tokens, right_fixup);
+            }
+        };
+
+        if needs_group {
+            token::Paren::default().surround(tokens, do_print_expr);
+        } else {
+            do_print_expr(tokens);
         }
     }
 

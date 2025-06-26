@@ -425,6 +425,53 @@ fn test_range_precedence() {
 }
 
 #[test]
+fn test_range_attrs() {
+    // Attributes are not allowed on range expressions starting with `..`
+    syn::parse_str::<Expr>("#[allow()] ..").unwrap_err();
+    syn::parse_str::<Expr>("#[allow()] .. hi").unwrap_err();
+
+    snapshot!("#[allow()] lo .. hi" as Expr, @r#"
+    Expr::Range {
+        start: Some(Expr::Path {
+            attrs: [
+                Attribute {
+                    style: AttrStyle::Outer,
+                    meta: Meta::List {
+                        path: Path {
+                            segments: [
+                                PathSegment {
+                                    ident: "allow",
+                                },
+                            ],
+                        },
+                        delimiter: MacroDelimiter::Paren,
+                        tokens: TokenStream(``),
+                    },
+                },
+            ],
+            path: Path {
+                segments: [
+                    PathSegment {
+                        ident: "lo",
+                    },
+                ],
+            },
+        }),
+        limits: RangeLimits::HalfOpen,
+        end: Some(Expr::Path {
+            path: Path {
+                segments: [
+                    PathSegment {
+                        ident: "hi",
+                    },
+                ],
+            },
+        }),
+    }
+    "#);
+}
+
+#[test]
 fn test_ranges_bailout() {
     syn::parse_str::<Expr>(".. ?").unwrap_err();
     syn::parse_str::<Expr>(".. .field").unwrap_err();

@@ -77,7 +77,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "syn"
   cargo_pkg_description = "Parser for Rust source code"
-  cargo_pkg_version = "2.0.103"
+  cargo_pkg_version = "2.0.104"
 
   allow_unsafe = true
 

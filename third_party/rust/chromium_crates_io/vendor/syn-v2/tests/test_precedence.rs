@@ -276,16 +276,16 @@ fn librustc_parenthesize(mut librustc_expr: Box<ast::Expr>) -> Box<ast::Expr> {
     }
 
     impl MutVisitor for FullyParenthesize {
-        fn visit_expr(&mut self, e: &mut Box<Expr>) {
+        fn visit_expr(&mut self, e: &mut Expr) {
             noop_visit_expr(e, self);
             match e.kind {
                 ExprKind::Block(..) | ExprKind::If(..) | ExprKind::Let(..) => {}
                 ExprKind::Binary(..) if contains_let_chain(e) => {}
                 _ => {
                     let inner = mem::replace(e, Expr::dummy());
-                    **e = Expr {
+                    *e = Expr {
                         id: ast::DUMMY_NODE_ID,
-                        kind: ExprKind::Paren(inner),
+                        kind: ExprKind::Paren(Box::new(inner)),
                         span: DUMMY_SP,
                         attrs: ThinVec::new(),
                         tokens: None,
@@ -363,11 +363,11 @@ fn librustc_parenthesize(mut librustc_expr: Box<ast::Expr>) -> Box<ast::Expr> {
         // We don't want to look at expressions that might appear in patterns or
         // types yet. We'll look into comparing those in the future. For now
         // focus on expressions appearing in other places.
-        fn visit_pat(&mut self, pat: &mut Box<Pat>) {
+        fn visit_pat(&mut self, pat: &mut Pat) {
             let _ = pat;
         }
 
-        fn visit_ty(&mut self, ty: &mut Box<Ty>) {
+        fn visit_ty(&mut self, ty: &mut Ty) {
             let _ = ty;
         }
 

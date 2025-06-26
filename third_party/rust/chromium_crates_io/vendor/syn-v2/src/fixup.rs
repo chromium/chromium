@@ -612,7 +612,7 @@ fn scan_right(
                 Scan::Bailout
             }
         }
-        Expr::Range(e) => match &e.end {
+        Expr::Range(e) if e.attrs.is_empty() => match &e.end {
             Some(end) => {
                 if fail_offset >= 2 {
                     return Scan::Consume;
@@ -754,6 +754,7 @@ fn scan_right(
         | Expr::MethodCall(_)
         | Expr::Paren(_)
         | Expr::Path(_)
+        | Expr::Range(_)
         | Expr::Repeat(_)
         | Expr::Struct(_)
         | Expr::Try(_)
