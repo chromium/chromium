@@ -1314,6 +1314,9 @@
       <message name="IDS_NTP_CUSTOMIZATION_FEED_SETTINGS_TITLE" desc="Open setting page for feed section customization when clicked">
         Discover feed
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_TITLE" desc="Open setting page for NTP appearance customization when clicked">
+        Appearance
+      </message>
       <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page customization main bottom sheet is fully opened.">
         Customize your new tab page bottom sheet opened at full height
       </message>
@@ -1322,6 +1325,9 @@
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_FEED_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the feed bottom sheet is fully opened.">
         Discover feed bottom sheet opened at full height
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page appearance bottom sheet is fully opened.">
+        New tab page appearance bottom sheet opened at full height
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_CLOSED" desc="Accessibility string that describes a new tab page customization bottom sheet is closed">
         Customize your new tab page bottom sheet closed
@@ -1346,6 +1352,21 @@
       </message>
       <message name="IDS_LEARN_MORE_DISCOVER_FEED" desc="Accessibility string to announce the currently selected item is a button direct to a page with more information on customizing feed" is_accessibility_with_no_ui="true">
         Learn more about discover feed
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the new tab page appearance bottom sheet.">
+        New tab page appearance bottom sheet
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_BOTTOM_SHEET_DEFAULT_OPTION" desc="Title of the default option in the new tab page customization theme bottom sheet">
+        Chrome Default
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_BOTTOM_SHEET_UPLOAD_IMAGE_OPTION" desc="Title of the upload image option in the new tab page customization theme bottom sheet">
+        Upload an image
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_BOTTOM_SHEET_CHROME_COLORS_OPTION" desc="Title of the chrome colors option in the new tab page customization theme bottom sheet">
+        Chrome Colors
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_BOTTOM_SHEET_THEME_COLLECTIONS_OPTION" desc="Title of the theme collections option in the new tab page customization theme bottom sheet">
+        Theme Collections
       </message>
 
       <!-- Time Last Accessed strings -->

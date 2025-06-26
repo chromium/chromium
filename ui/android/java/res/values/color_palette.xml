@@ -164,6 +164,7 @@ found in the LICENSE file.
     <color name="material_secondary_60">@color/baseline_secondary_60</color>
     <color name="material_secondary_50">@color/baseline_secondary_50</color>
     <color name="material_secondary_40">@color/baseline_secondary_40</color>
+    <color name="material_tertiary_90">@color/baseline_tertiary_90</color>
     <color name="material_tertiary_80">@color/baseline_tertiary_80</color>
     <color name="material_tertiary_40">@color/baseline_tertiary_40</color>
 

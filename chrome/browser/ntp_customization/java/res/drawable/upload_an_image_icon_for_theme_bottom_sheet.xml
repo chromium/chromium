@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources"
+    android:width="80dp"
+    android:height="80dp"
+    android:viewportWidth="80"
+    android:viewportHeight="80">
+  <path
+      android:pathData="M16,0L64,0A16,16 0,0 1,80 16L80,64A16,16 0,0 1,64 80L16,80A16,16 0,0 1,0 64L0,16A16,16 0,0 1,16 0z"
+      android:fillColor="@color/material_tertiary_90"/>
+  <group>
+    <clip-path
+        android:pathData="M25,25h30v30h-30z"/>
+    <!-- Todo(crbug.com/427250558): Update the color to dynamic color -->
+    <path
+        android:pathData="M39,44V35.85L36.4,38.45L35,37L40,32L45,37L43.6,38.45L41,35.85V44H39ZM34,48C33.45,48 32.975,47.808 32.575,47.425C32.192,47.025 32,46.55 32,46V43H34V46H46V43H48V46C48,46.55 47.8,47.025 47.4,47.425C47.017,47.808 46.55,48 46,48H34Z"
+        android:fillColor="#072711"/>
+  </group>
+</vector>
