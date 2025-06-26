@@ -268,8 +268,9 @@
   [[self class] dismissDefaultBrowserAndRemainingScreens];
 }
 
+// TODO(crbug.com/427943675): This test is flaky.
 // Tests that incognito can be forced through the FRE with search engine screen.
-- (void)testIncognitoForcedByPolicy {
+- (void)FLAKY_testIncognitoForcedByPolicy {
   // Configure the policy to force sign-in.
   [self relaunchAppWithPolicyKey:policy::key::kIncognitoModeAvailability
                   xmlPolicyValue:"<integer>2</integer>"];
