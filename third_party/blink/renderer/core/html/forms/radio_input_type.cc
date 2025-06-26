@@ -46,10 +46,7 @@ namespace {
 HTMLInputElement* NextInputElement(const HTMLInputElement& element,
                                    const HTMLFormElement* form,
                                    bool forward) {
-  const Node* stay_within =
-      form && RuntimeEnabledFeatures::RadioInputNextButtonInScopeEnabled()
-          ? form->GetListedElementsScope()
-          : form;
+  const Node* stay_within = form ? form->GetListedElementsScope() : nullptr;
   return forward ? Traversal<HTMLInputElement>::Next(element, stay_within)
                  : Traversal<HTMLInputElement>::Previous(element, stay_within);
 }
