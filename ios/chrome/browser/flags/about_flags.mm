@@ -1955,9 +1955,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnablePrefetchingRiskDataForRetrieval)},
-    {"autofill-sticky-infobar", flag_descriptions::kAutofillStickyInfobarName,
-     flag_descriptions::kAutofillStickyInfobarDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kAutofillStickyInfobarIos)},
+
     {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
      flag_descriptions::kPageContentAnnotationsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
@@ -2250,11 +2248,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(segmentation_platform::features::
                             kSegmentationPlatformTipsEphemeralCard)},
-    {"ios-password-suggestion-bottom-sheet-v2",
-     flag_descriptions::kPasswordSuggestionBottomSheetV2Name,
-     flag_descriptions::kPasswordSuggestionBottomSheetV2Description,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordBottomSheetV2)},
+
     {"lens-unary-apis-with-http-transport-enabled",
      flag_descriptions::kLensUnaryApisWithHttpTransportEnabledName,
      flag_descriptions::kLensUnaryApisWithHttpTransportEnabledDescription,

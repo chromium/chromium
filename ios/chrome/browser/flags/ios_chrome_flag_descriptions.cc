@@ -161,12 +161,6 @@ const char kAutofillPaymentsSheetV2Description[] =
     "When enabled, the V2 of the payments suggestion bottom sheet will be "
     "used.";
 
-const char kPasswordSuggestionBottomSheetV2Name[] =
-    "Enable the password suggestion bottom sheet V2";
-const char kPasswordSuggestionBottomSheetV2Description[] =
-    "When enabled, the V2 of the password suggestion bottom sheet will be "
-    "used.";
-
 const char kAutofillLocalSaveCardBottomSheetName[] =
     "Enable save card bottomsheet for local save";
 const char kAutofillLocalSaveCardBottomSheetDescription[] =
@@ -198,11 +192,6 @@ const char kAutofillShowManualFillForVirtualCardsName[] =
 const char kAutofillShowManualFillForVirtualCardsDescription[] =
     "When enabled, Autfoill will show the manual fill view directly on form "
     "focusing events for virtual cards.";
-
-const char kAutofillStickyInfobarName[] = "Sticky Autofill Infobar";
-const char kAutofillStickyInfobarDescription[] =
-    "Makes the Address Infobar sticky to only dismiss on navigation from user "
-    "gesture.";
 
 const char kAutofillThrottleDocumentFormScanName[] =
     "Throttle Autofill Document Form Scans";

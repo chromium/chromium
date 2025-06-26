@@ -100,9 +100,6 @@ extern const char kAutofillIsolatedWorldForJavascriptIOSDescription[];
 extern const char kAutofillPaymentsSheetV2Name[];
 extern const char kAutofillPaymentsSheetV2Description[];
 
-extern const char kPasswordSuggestionBottomSheetV2Name[];
-extern const char kPasswordSuggestionBottomSheetV2Description[];
-
 extern const char kAutofillLocalSaveCardBottomSheetName[];
 extern const char kAutofillLocalSaveCardBottomSheetDescription[];
 
@@ -117,9 +114,6 @@ extern const char kAutofillSaveCardBottomSheetDescription[];
 
 extern const char kAutofillShowManualFillForVirtualCardsName[];
 extern const char kAutofillShowManualFillForVirtualCardsDescription[];
-
-extern const char kAutofillStickyInfobarName[];
-extern const char kAutofillStickyInfobarDescription[];
 
 extern const char kAutofillThrottleDocumentFormScanName[];
 extern const char kAutofillThrottleDocumentFormScanDescription[];
