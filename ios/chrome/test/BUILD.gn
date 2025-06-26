@@ -349,6 +349,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/omnibox/coordinator/popup:unit_tests",
     "//ios/chrome/browser/omnibox/eg_tests:unit_tests",
     "//ios/chrome/browser/omnibox/model:unit_tests",
+    "//ios/chrome/browser/omnibox/model/placeholder_service:unit_tests",
     "//ios/chrome/browser/omnibox/ui:unit_tests",
     "//ios/chrome/browser/omnibox/ui/popup:unit_tests",
     "//ios/chrome/browser/omnibox/ui/popup/carousel:unit_tests",
