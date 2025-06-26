@@ -35,6 +35,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** See comments on `DesktopCapturerAndroid`. */
@@ -74,6 +75,9 @@ public class ScreenCapture {
         @GuardedBy("mBackgroundLock")
         int mAcquiredImageCount;
 
+        @GuardedBy("mBackgroundLock")
+        boolean mClosing;
+
         ImageHandler(CaptureState captureState) {
             mImageReader =
                     ImageReader.newInstance(
@@ -92,8 +96,22 @@ public class ScreenCapture {
 
         void close() {
             synchronized (mBackgroundLock) {
+                // If we have no acquired images, then it's safe to close the ImageReader because
+                // we are guaranteed that the native side is not using any of those Images.
+                if (mAcquiredImageCount == 0) {
+                    closeNow();
+                } else {
+                    mClosing = true;
+                }
+            }
+        }
+
+        void closeNow() {
+            synchronized (mBackgroundLock) {
                 mImageReader.close();
                 mAcquiredImageCount = 0;
+                boolean removed = mImageHandlerQueue.remove(this);
+                assert removed;
             }
         }
 
@@ -129,13 +147,17 @@ public class ScreenCapture {
 
                 // If we recreate the ImageReader, we may get an old release here. The image will
                 // already have been closed since the ImageReader is closed, but it's safe to call
-                // close
-                // again here.
+                // close again here.
                 image.close();
                 mAcquiredImageCount--;
+                assert mAcquiredImageCount >= 0;
 
-                // Now that we closed an image, we may be able to acquire a new image.
-                onImageAvailable(reader);
+                if (mClosing) {
+                    if (mAcquiredImageCount == 0) closeNow();
+                } else {
+                    // Now that we closed an image, we may be able to acquire a new image.
+                    onImageAvailable(reader);
+                }
             }
         }
 
@@ -211,8 +233,11 @@ public class ScreenCapture {
     @GuardedBy("mBackgroundLock")
     private @Nullable VirtualDisplay mVirtualDisplay;
 
+    // We need to store multiple ImageHandlers here because the native side may still be using
+    // Images from the previous ImageHandler when we do a resize. Once all the Images are no longer
+    // in use (the release callback is called), then we can close the ImageHandler.
     @GuardedBy("mBackgroundLock")
-    private @Nullable ImageHandler mImageHandler;
+    private final ArrayList<ImageHandler> mImageHandlerQueue = new ArrayList<>();
 
     @GuardedBy("mBackgroundLock")
     private @Nullable WebContents mWebContents;
@@ -297,7 +322,7 @@ public class ScreenCapture {
             var windowMetrics = windowManager.getMaximumWindowMetrics();
             final Rect bounds = windowMetrics.getBounds();
 
-            recreateListener(
+            createListener(
                     new CaptureState(
                             bounds.width(),
                             bounds.height(),
@@ -323,7 +348,19 @@ public class ScreenCapture {
                 mMediaProjection.stop();
                 mMediaProjection = null;
             }
-            destroyListener();
+            for (int i = mImageHandlerQueue.size() - 1; i >= 0; i--) {
+                // Note that we can only immediately close the ImageHandler if we are guaranteed the
+                // native side will not try to access Images from it again. We are guaranteed this
+                // here since the native side is being destroyed.
+                mImageHandlerQueue.get(i).closeNow();
+            }
+            assert mImageHandlerQueue.isEmpty();
+            mImageHandlerQueue.clear();
+
+            if (mVirtualDisplay != null) {
+                mVirtualDisplay.release();
+                mVirtualDisplay = null;
+            }
             mNativeDesktopCapturerAndroid = 0;
         }
     }
@@ -331,8 +368,20 @@ public class ScreenCapture {
     private class MediaProjectionCallback extends MediaProjection.Callback {
         @Override
         public void onCapturedContentResize(int width, int height) {
-            // TODO(crbug.com/352187279): Handle content resize and rotate.
             assert mBackgroundThread.getLooper().isCurrentThread();
+            synchronized (mBackgroundLock) {
+                if (mNativeDesktopCapturerAndroid == 0) return;
+
+                final Context context = maybeGetContext();
+                if (context == null) return;
+
+                recreateListener(
+                        new CaptureState(
+                                width,
+                                height,
+                                context.getResources().getConfiguration().densityDpi,
+                                PixelFormat.RGBA_8888));
+            }
         }
 
         @Override
@@ -352,28 +401,36 @@ public class ScreenCapture {
         }
     }
 
-    @GuardedBy("this.mBackgroundLock")
-    private void destroyListener() {
-        assert mCaptureThread.getId() == Thread.currentThread().getId();
-        // Note that we can only close the ImageHandler if we are guaranteed the native side will
-        // not try to access Images from it again.
-        if (mImageHandler != null) {
-            mImageHandler.close();
-            mImageHandler = null;
-        }
-        if (mVirtualDisplay != null) {
-            mVirtualDisplay.release();
-            mVirtualDisplay = null;
-        }
+    @GuardedBy("mBackgroundLock")
+    private ImageHandler createImageHandler(CaptureState captureState) {
+        final var imageHandler = new ImageHandler(captureState);
+        mImageHandlerQueue.add(imageHandler);
+        return imageHandler;
     }
 
     @GuardedBy("mBackgroundLock")
     private void recreateListener(CaptureState captureState) {
+        assert mBackgroundThread.getLooper().isCurrentThread();
+
+        final var imageHandler = createImageHandler(captureState);
+
+        assert mVirtualDisplay != null;
+        mVirtualDisplay.resize(captureState.width, captureState.height, captureState.dpi);
+        mVirtualDisplay.setSurface(imageHandler.getSurface());
+
+        if (mImageHandlerQueue.size() >= 2) {
+            mImageHandlerQueue.get(mImageHandlerQueue.size() - 2).close();
+        }
+    }
+
+    @GuardedBy("mBackgroundLock")
+    private void createListener(CaptureState captureState) {
         assert mCaptureThread.getId() == Thread.currentThread().getId();
-        destroyListener();
-        mImageHandler = new ImageHandler(captureState);
+
+        final var imageHandler = createImageHandler(captureState);
 
         assert mMediaProjection != null;
+        assert mVirtualDisplay == null;
         mVirtualDisplay =
                 mMediaProjection.createVirtualDisplay(
                         "ScreenCapture",
@@ -381,7 +438,7 @@ public class ScreenCapture {
                         captureState.height,
                         captureState.dpi,
                         DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                        mImageHandler.getSurface(),
+                        imageHandler.getSurface(),
                         null,
                         null);
     }
