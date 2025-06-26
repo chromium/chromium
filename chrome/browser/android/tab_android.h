@@ -64,6 +64,10 @@ class TabAndroid : public tabs::TabInterface,
   // WebContents.  Can return NULL.
   static TabAndroid* FromWebContents(const content::WebContents* web_contents);
 
+  // Returns the native TabAndroid associated with the given `handle`.
+  // Returns nullptr if the `handle` is not associated with a TabAndroid.
+  static TabAndroid* FromTabHandle(tabs::TabHandle handle);
+
   // Returns the native TabAndroid stored in the Java Tab represented by
   // |obj|.
   static TabAndroid* GetNativeTab(JNIEnv* env,

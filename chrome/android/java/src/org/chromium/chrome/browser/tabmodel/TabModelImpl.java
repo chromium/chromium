@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -1032,6 +1033,40 @@ public class TabModelImpl extends TabModelJniBridge {
     @Override
     public List<Tab> getAllTabs() {
         return mTabs;
+    }
+
+    // This is only for TabListInterface, prefer calling TabGroupModelFilter methods.
+    @Override
+    protected @Nullable Token addTabsToGroup(@Nullable Token tabGroupId, List<Tab> tabs) {
+        if (tabs.isEmpty()) return null;
+
+        TabGroupModelFilter filter = mModelDelegate.getFilter(isIncognitoBranded());
+        if (tabGroupId == null) {
+            // TODO(crbug.com/427929717): Ensure any pinned tabs get unpinned.
+            ungroup(tabs);
+            Tab destinationTab = tabs.get(0);
+            filter.mergeListOfTabsToGroup(tabs, destinationTab, false);
+            return destinationTab.getTabGroupId();
+        }
+        List<Tab> tabsInGroup = filter.getTabsInGroup(tabGroupId);
+        if (tabsInGroup.isEmpty()) return null;
+
+        // TODO(crbug.com/427929717): Ensure any pinned tabs get unpinned.
+        List<Tab> tabsToGroup = new ArrayList<>();
+        for (Tab tab : tabs) {
+            if (!tabsInGroup.contains(tab)) {
+                tabsToGroup.add(tab);
+            }
+        }
+        // Ungroup the tabs first to ensure they are not in any groups.
+        ungroup(tabsToGroup);
+        filter.mergeListOfTabsToGroup(tabsToGroup, tabsInGroup.get(0), false);
+        return tabsInGroup.get(0).getTabGroupId();
+    }
+
+    @Override
+    protected TabUngrouper getTabUngrouper() {
+        return mModelDelegate.getFilter(isIncognitoBranded()).getTabUngrouper();
     }
 
     private void notifyOnFinishingMultipleTabClosure(

@@ -456,6 +456,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         return Collections.emptyList();
     }
 
+    @Override
+    protected @Nullable Token addTabsToGroup(@Nullable Token tabGroupId, List<Tab> tabs) {
+        return null;
+    }
+
     // TabGroupModelFilter overrides.
 
     @Override

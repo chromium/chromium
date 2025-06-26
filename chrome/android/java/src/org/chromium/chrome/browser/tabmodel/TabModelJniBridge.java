@@ -17,6 +17,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.WarmupManager;
@@ -420,6 +421,20 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
     @CalledByNative
     protected abstract @JniType("std::vector<TabAndroid*>") List<Tab> getAllTabs();
+
+    @CalledByNative
+    protected abstract @JniType("std::optional<base::Token>") @Nullable Token addTabsToGroup(
+            @JniType("std::optional<base::Token>") @Nullable Token tabGroupId,
+            @JniType("std::vector<TabAndroid*>") List<Tab> tabs);
+
+    protected abstract TabUngrouper getTabUngrouper();
+
+    @CalledByNative
+    protected void ungroup(@JniType("std::vector<TabAndroid*>") List<Tab> tabs) {
+        if (tabs.isEmpty()) return;
+
+        getTabUngrouper().ungroupTabs(tabs, /* trailing= */ true, /* allowDialog= */ false);
+    }
 
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

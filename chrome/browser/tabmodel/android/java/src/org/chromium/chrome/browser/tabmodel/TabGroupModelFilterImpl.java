@@ -506,6 +506,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {
         TabModel tabModel = getTabModel();
         Tab sourceTab = tabModel.getTabByIdChecked(sourceTabId);
+        if (sourceTab.getTabGroupId() == null) return;
+
         int sourceIndex = tabModel.indexOf(sourceTab);
         int oldRootId = sourceTab.getRootId();
         TabGroup sourceTabGroup = assumeNonNull(mRootIdToGroupMap.get(oldRootId));

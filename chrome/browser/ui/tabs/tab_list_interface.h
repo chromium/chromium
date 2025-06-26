@@ -28,8 +28,7 @@ class TabListInterface {
   // strip. `index` may be ignored by the implementation if necessary.
   virtual void OpenTab(const GURL& url, int index) = 0;
 
-  // Attempts to discard the renderer for the `tab` from memory. An
-  // out-of-bounds `index` is ignored.
+  // Attempts to discard the renderer for the `tab` from memory.
   //
   // For details refer to:
   // docs/website/site/chromium-os/chromiumos-design-docs/tab-discarding-and-reloading/index.md
@@ -64,11 +63,12 @@ class TabListInterface {
   // in moving the tab if necessary.
   virtual void UnpinTab(tabs::TabHandle tab) = 0;
 
-  // Adds `tabs` to the `group_id` if provided or creates a new tab group. Tabs
-  // will be moved as necessary to make the group contiguous. Pinned tabs will
-  // no longer be pinned, tabs that were in other groups will be removed from
-  // those groups. Will return nullopt if all indices are invalid or groups are
-  // not supported otherwise returns the tab group id that was used.
+  // Adds `tabs` to the `group_id` if provided or creates a new tab group.
+  // Returns the tab group ID of the created or added to group. Tabs will be
+  // moved as necessary to make the group contiguous. Pinned tabs will no longer
+  // be pinned, and tabs that were in other groups will be removed from those
+  // groups. Will no-op and return nullopt if the provided `group_id` is not an
+  // existing tab group.
   virtual std::optional<tab_groups::TabGroupId> AddTabsToGroup(
       std::optional<tab_groups::TabGroupId> group_id,
       const std::set<tabs::TabHandle>& tabs) = 0;

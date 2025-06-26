@@ -138,6 +138,11 @@ TabAndroid* TabAndroid::FromWebContents(
 }
 
 // static
+TabAndroid* TabAndroid::FromTabHandle(tabs::TabHandle handle) {
+  return static_cast<TabAndroid*>(handle.Get());
+}
+
+// static
 TabAndroid* TabAndroid::GetNativeTab(JNIEnv* env, const JavaRef<jobject>& obj) {
   return reinterpret_cast<TabAndroid*>(Java_TabImpl_getNativePtr(env, obj));
 }

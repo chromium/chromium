@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -492,6 +493,173 @@ public class TabModelImplTest {
                     assertMoveTabToIndex(
                             oldIndex, newIndex, newIndex, /* movingInsideGroup= */ false);
                     // Group0: 0:Tab1 | 1:Tab0 | 2:Tab3 | Group1: 3:Tab2
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testAddTabsToGroup() {
+        createTabs(2);
+        // 0:Tab0 | 1:Tab1 | 2:Tab2
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(3, mTabModelJni.getCount());
+                    Tab tab1 = mTabModelJni.getTabAt(1);
+                    Tab tab2 = mTabModelJni.getTabAt(2);
+                    assertNull(tab1.getTabGroupId());
+                    assertNull(tab2.getTabGroupId());
+
+                    List<Tab> tabsToGroup = new ArrayList<>();
+                    tabsToGroup.add(tab1);
+                    tabsToGroup.add(tab2);
+
+                    Token groupId = mTabModelJni.addTabsToGroup(null, tabsToGroup);
+                    assertNotNull(groupId);
+
+                    assertEquals(groupId, tab1.getTabGroupId());
+                    assertEquals(groupId, tab2.getTabGroupId());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testAddTabsToGroup_existingGroup() {
+        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
+        createTabGroup(2, filter);
+        Tab tab3 = createTab();
+        // 0:Tab0 | Group0: 1:Tab1, 2:Tab2 | 3:Tab3
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(4, mTabModelJni.getCount());
+                    Tab tab1 = mTabModelJni.getTabAt(1);
+                    Tab tab2 = mTabModelJni.getTabAt(2);
+                    assertNotNull(tab1.getTabGroupId());
+                    assertEquals(tab1.getTabGroupId(), tab2.getTabGroupId());
+                    assertNull(tab3.getTabGroupId());
+
+                    Token groupId = tab1.getTabGroupId();
+                    List<Tab> tabsToGroup = List.of(tab3);
+
+                    Token returnedGroupId = mTabModelJni.addTabsToGroup(groupId, tabsToGroup);
+                    assertEquals(groupId, returnedGroupId);
+
+                    assertEquals(groupId, tab1.getTabGroupId());
+                    assertEquals(groupId, tab2.getTabGroupId());
+                    assertEquals(groupId, tab3.getTabGroupId());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testAddTabsToGroup_existingGroup_someTabsAlreadyInGroup() {
+        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
+        createTabGroup(2, filter);
+        Tab tab3 = createTab();
+        // 0:Tab0 | Group0: 1:Tab1, 2:Tab2 | 3:Tab3
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(4, mTabModelJni.getCount());
+                    Tab tab1 = mTabModelJni.getTabAt(1);
+                    Tab tab2 = mTabModelJni.getTabAt(2);
+                    assertNotNull(tab1.getTabGroupId());
+                    assertEquals(tab1.getTabGroupId(), tab2.getTabGroupId());
+                    assertNull(tab3.getTabGroupId());
+
+                    Token groupId = tab1.getTabGroupId();
+                    List<Tab> tabsToGroup = List.of(tab2, tab3);
+
+                    Token returnedGroupId = mTabModelJni.addTabsToGroup(groupId, tabsToGroup);
+                    assertEquals(groupId, returnedGroupId);
+
+                    assertEquals(groupId, tab1.getTabGroupId());
+                    assertEquals(groupId, tab2.getTabGroupId());
+                    assertEquals(groupId, tab3.getTabGroupId());
+                    assertEquals(3, filter.getTabCountForGroup(groupId));
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testAddTabsToGroup_existingGroup_someTabsInAnotherGroup() {
+        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
+        createTabGroup(2, filter); // Group A: Tab1, Tab2
+        createTabGroup(2, filter); // Group B: Tab3, Tab4
+        // 0:Tab0 | GroupA: 1:Tab1, 2:Tab2 | GroupB: 3:Tab3, 4:Tab4
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(5, mTabModelJni.getCount());
+                    Tab tab1 = mTabModelJni.getTabAt(1);
+                    Tab tab3 = mTabModelJni.getTabAt(3);
+                    Tab tab4 = mTabModelJni.getTabAt(4);
+
+                    Token groupAId = tab1.getTabGroupId();
+                    Token groupBId = tab3.getTabGroupId();
+                    assertNotNull(groupAId);
+                    assertNotNull(groupBId);
+                    assertNotEquals(groupAId, groupBId);
+                    assertEquals(groupBId, tab4.getTabGroupId());
+
+                    List<Tab> tabsToGroup = List.of(tab3);
+                    Token returnedGroupId = mTabModelJni.addTabsToGroup(groupAId, tabsToGroup);
+                    assertEquals(groupAId, returnedGroupId);
+
+                    assertEquals(groupAId, tab3.getTabGroupId());
+                    assertEquals(groupBId, tab4.getTabGroupId());
+                    assertEquals(3, filter.getTabCountForGroup(groupAId));
+                    assertEquals(1, filter.getTabCountForGroup(groupBId));
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testAddTabsToGroup_invalidGroupId() {
+        createTabs(2);
+        // 0:Tab0 | 1:Tab1 | 2:Tab2
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(3, mTabModelJni.getCount());
+                    Tab tab1 = mTabModelJni.getTabAt(1);
+                    Tab tab2 = mTabModelJni.getTabAt(2);
+                    assertNull(tab1.getTabGroupId());
+                    assertNull(tab2.getTabGroupId());
+
+                    List<Tab> tabsToGroup = List.of(tab1, tab2);
+                    Token invalidGroupId = Token.createRandom();
+
+                    Token returnedGroupId =
+                            mTabModelJni.addTabsToGroup(invalidGroupId, tabsToGroup);
+                    assertNull(returnedGroupId);
+
+                    assertNull(tab1.getTabGroupId());
+                    assertNull(tab2.getTabGroupId());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testUngroup() {
+        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
+        createTabGroup(2, filter);
+        // 0:Tab0 | Group0: 1:Tab1, 2:Tab2
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(3, mTabModelJni.getCount());
+                    Tab tab1 = mTabModelJni.getTabAt(1);
+                    Tab tab2 = mTabModelJni.getTabAt(2);
+                    assertNotNull(tab1.getTabGroupId());
+                    assertEquals(tab1.getTabGroupId(), tab2.getTabGroupId());
+
+                    List<Tab> tabsToUngroup = List.of(tab1, tab2);
+                    mTabModelJni.ungroup(tabsToUngroup);
+
+                    assertNull(tab1.getTabGroupId());
+                    assertNull(tab2.getTabGroupId());
                 });
     }
 

@@ -10,9 +10,11 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
+#include "base/android/token_android.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,6 +37,24 @@ using base::android::SafeGetArrayLength;
 using base::android::ScopedJavaLocalRef;
 using chrome::android::ActivityType;
 using content::WebContents;
+
+namespace {
+
+std::vector<TabAndroid*> GetAllTabsFromHandles(
+    const std::set<tabs::TabHandle>& handles) {
+  std::vector<TabAndroid*> tabs;
+  tabs.reserve(tabs.size());
+  for (tabs::TabHandle handle : handles) {
+    TabAndroid* tab_android = TabAndroid::FromTabHandle(handle);
+    if (!tab_android) {
+      continue;
+    }
+    tabs.push_back(tab_android);
+  }
+  return tabs;
+}
+
+}  // namespace
 
 TabModelJniBridge::TabModelJniBridge(JNIEnv* env,
                                      const jni_zero::JavaRef<jobject>& jobj,
@@ -309,14 +329,25 @@ void TabModelJniBridge::UnpinTab(tabs::TabHandle tab) {
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
     const std::set<tabs::TabHandle>& tabs) {
-  // TODO(crbug.com/415351293): Implement.
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  std::optional<base::Token> requested_group_id = std::nullopt;
+  if (group_id) {
+    requested_group_id = group_id->token();
+  }
+  std::vector<TabAndroid*> tabs_to_add = GetAllTabsFromHandles(tabs);
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  std::optional<base::Token> final_group_id =
+      Java_TabModelJniBridge_addTabsToGroup(env, jobj, requested_group_id,
+                                            tabs_to_add);
+  return tab_groups::TabGroupId::FromOptionalToken(final_group_id);
 }
 
 void TabModelJniBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {
-  // TODO(crbug.com/415351293): Implement.
-  NOTIMPLEMENTED();
+  std::vector<TabAndroid*> tabs_to_ungroup = GetAllTabsFromHandles(tabs);
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  Java_TabModelJniBridge_ungroup(env, jobj, tabs_to_ungroup);
 }
 
 void TabModelJniBridge::MoveGroupTo(tab_groups::TabGroupId group_id,
