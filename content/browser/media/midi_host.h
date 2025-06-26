@@ -17,7 +17,6 @@
 #include "base/thread_annotations.h"
 #include "base/tuple.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/midi/midi_manager.h"

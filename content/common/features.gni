@@ -17,7 +17,4 @@ declare_args() {
   # Whether or not MBI mode (Multiple Blink Isolates) should be enabled,
   # depending on the build argument.
   mbi_mode = is_linux || is_chromeos || is_mac || is_win || is_android
-
-  # We allow legacy IPC to be enabled for Pepper usage.
-  content_enable_legacy_ipc = false
 }

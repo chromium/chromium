@@ -549,13 +549,6 @@ source_set("browser_sources") {
         [ "//third_party/webrtc/modules/desktop_capture:pipewire_config" ]
   }
 
-  if (content_enable_legacy_ipc) {
-    sources += [
-      "browser_message_filter.cc",
-      "browser_message_filter.h",
-    ]
-  }
-
   public_deps = [
     "//base",
     "//build:chromecast_buildflags",
