@@ -182,11 +182,11 @@ struct CardMetadataLoggingContext {
 
 // Get histogram suffix based on a given card issuer id or network.
 std::string_view GetCardIssuerIdOrNetworkSuffix(
-    const std::string& card_issuer_id_or_network);
+    std::string_view card_issuer_id_or_network);
 
 // Get histogram suffix based on a given card benefit source.
 std::string_view GetCardBenefitSourceSuffix(
-    const std::string& card_benefit_source);
+    std::string_view card_benefit_source);
 
 // Get the CardMetadataLoggingContext for the given credit cards.
 CardMetadataLoggingContext GetMetadataLoggingContext(
@@ -225,15 +225,14 @@ void LogBenefitFormEventToAllBenefitHistograms(
 
 // Log the given `event` to the general benefit histogram, as well as to the
 // `benefit_source`'s specific subhistogram.
-void LogBenefitFormEventToAllBenefitHistograms(
-    const std::string& benefit_source,
-    CardBenefitFormEvent event);
+void LogBenefitFormEventToAllBenefitHistograms(std::string_view benefit_source,
+                                               CardBenefitFormEvent event);
 
 // Log the given `event` for card benefits on a benefit source level.
 // TODO(crbug.com/417228483): Remove this function after adding benefit form
 // event enums to a new histogram with a new enum class.
 void LogBenefitFormEventToBenefitSourceHistogramDeprecated(
-    const std::string& benefit_source,
+    std::string_view benefit_source,
     FormEvent event);
 
 // Log the given `event` for every card benefit source with benefits available

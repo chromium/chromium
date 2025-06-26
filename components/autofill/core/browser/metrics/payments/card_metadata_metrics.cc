@@ -83,7 +83,7 @@ void CardMetadataLoggingContext::SetSelectedCardInfo(
 }
 
 std::string_view GetCardIssuerIdOrNetworkSuffix(
-    const std::string& card_issuer_id_or_network) {
+    std::string_view card_issuer_id_or_network) {
   if (card_issuer_id_or_network == kAmexCardIssuerId) {
     return kAmericanExpress;
   } else if (card_issuer_id_or_network == kAnzCardIssuerId) {
@@ -116,7 +116,7 @@ std::string_view GetCardIssuerIdOrNetworkSuffix(
 }
 
 std::string_view GetCardBenefitSourceSuffix(
-    const std::string& card_benefit_source) {
+    std::string_view card_benefit_source) {
   if (card_benefit_source == kAmexCardBenefitSource) {
     return kAmericanExpress;
   } else if (card_benefit_source == kBmoCardBenefitSource) {
@@ -394,9 +394,8 @@ void LogBenefitFormEventToAllBenefitHistograms(
   }
 }
 
-void LogBenefitFormEventToAllBenefitHistograms(
-    const std::string& benefit_source,
-    CardBenefitFormEvent event) {
+void LogBenefitFormEventToAllBenefitHistograms(std::string_view benefit_source,
+                                               CardBenefitFormEvent event) {
   std::string_view benefit_source_suffix =
       GetCardBenefitSourceSuffix(benefit_source);
   if (benefit_source_suffix.empty()) {
@@ -407,7 +406,7 @@ void LogBenefitFormEventToAllBenefitHistograms(
 }
 
 void LogBenefitFormEventToBenefitSourceHistogramDeprecated(
-    const std::string& benefit_source,
+    std::string_view benefit_source,
     FormEvent event) {
   base::UmaHistogramEnumeration(
       base::StrCat({"Autofill.FormEvents.CreditCard.WithBenefits.",
