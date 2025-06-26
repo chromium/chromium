@@ -79,7 +79,8 @@ bool VirtualCardEnrollmentManager::ShouldOfferVirtualCardEnrollment(
     return false;
   }
 
-  if (credit_card.instrument_id() != fetched_card_instrument_id.value()) {
+  if (!fetched_card_instrument_id.has_value() ||
+      credit_card.instrument_id() != fetched_card_instrument_id.value()) {
     return false;
   }
 
