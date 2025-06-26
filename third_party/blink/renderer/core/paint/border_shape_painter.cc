@@ -13,6 +13,9 @@
 #include "third_party/blink/renderer/core/style/style_border_shape.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context_state.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context_types.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -27,16 +30,31 @@ bool BorderShapePainter::Paint(GraphicsContext& context,
     return false;
   }
 
+  const float zoom = style.EffectiveZoom();
+  const Path outer_path =
+      border_shape->OuterShape().GetPath(gfx::RectF(rect), zoom, 1);
+  const Path inner_path =
+      border_shape->InnerShape().GetPath(gfx::RectF(rect), zoom, 1);
+
+  const AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBorder));
+  context.SetShouldAntialias(true);
+
+  // TODO(nrosenthal) support other fill methods
+  if (style.FillPaint().HasColor() && outer_path != inner_path) {
+    GraphicsContextStateSaver saver(context);
+    context.ClipPath(inner_path.GetSkPath(), kAntiAliased,
+                     SkClipOp::kDifference);
+
+    context.SetFillColor(style.FillPaint().color.GetColor());
+    context.FillPath(outer_path, auto_dark_mode);
+  }
+
   if (!style.HasVisibleStroke()) {
     return true;
   }
 
-  const float zoom = style.EffectiveZoom();
-  const Path outer_path =
-      border_shape->OuterShape().GetPath(gfx::RectF(rect), zoom, 1);
   StrokeData stroke_data;
-  const AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBorder));
   const float zoomed_reference_box_normal_length =
       gfx::Vector2dF(rect.size.width, rect.size.height).Length() /
       std::numbers::sqrt2;
@@ -49,11 +67,13 @@ bool BorderShapePainter::Paint(GraphicsContext& context,
   stroke_data.SetThickness(thickness);
   stroke_data.SetLineJoin(style.JoinStyle());
   stroke_data.SetMiterLimit(style.StrokeMiterLimit());
-  context.SetShouldAntialias(true);
   context.SetStrokeColor(style.StrokePaint().GetColor().GetColor());
   stroke_data.SetLineCap(style.CapStyle());
   context.SetStroke(stroke_data);
   context.StrokePath(outer_path, auto_dark_mode);
+  if (outer_path != inner_path) {
+    context.StrokePath(inner_path, auto_dark_mode);
+  }
   return true;
 }
 
