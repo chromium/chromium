@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/tools/select_tool_request.h"
 
+#include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 
 namespace actor {
@@ -16,6 +17,10 @@ SelectToolRequest::SelectToolRequest(TabHandle tab_handle,
     : PageToolRequest(tab_handle, target), value_(value) {}
 
 SelectToolRequest::~SelectToolRequest() = default;
+
+void SelectToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
+  f.Apply(*this);
+}
 
 std::string SelectToolRequest::JournalEvent() const {
   return "Select";

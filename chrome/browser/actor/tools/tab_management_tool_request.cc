@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/actor/tools/tab_management_tool.h"
+#include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
 
 namespace actor {
@@ -25,6 +26,10 @@ ToolRequest::CreateToolResult CreateTabToolRequest::CreateTool(
   return {std::make_unique<TabManagementTool>(task_id, journal, window_id_,
                                               disposition_),
           MakeOkResult()};
+}
+
+void CreateTabToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
+  f.Apply(*this);
 }
 
 std::string CreateTabToolRequest::JournalEvent() const {
@@ -49,6 +54,10 @@ ToolRequest::CreateToolResult ActivateTabToolRequest::CreateTool(
           MakeOkResult()};
 }
 
+void ActivateTabToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
+  f.Apply(*this);
+}
+
 std::string ActivateTabToolRequest::JournalEvent() const {
   return "ActivateTab";
 }
@@ -69,6 +78,10 @@ ToolRequest::CreateToolResult CloseTabToolRequest::CreateTool(
   return {std::make_unique<TabManagementTool>(
               task_id, journal, TabManagementTool::kClose, GetTabHandle()),
           MakeOkResult()};
+}
+
+void CloseTabToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
+  f.Apply(*this);
 }
 
 std::string CloseTabToolRequest::JournalEvent() const {

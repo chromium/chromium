@@ -12,12 +12,15 @@
 #include "chrome/common/actor.mojom-forward.h"
 
 namespace actor {
+class ToolRequestVisitorFunctor;
 
 // Injects a mouse move event at the given target.
 class MoveMouseToolRequest : public PageToolRequest {
  public:
   MoveMouseToolRequest(tabs::TabHandle tab_handle, const Target& target);
   ~MoveMouseToolRequest() override;
+
+  void Apply(ToolRequestVisitorFunctor& f) const override;
 
   // ToolRequest
   std::string JournalEvent() const override;
