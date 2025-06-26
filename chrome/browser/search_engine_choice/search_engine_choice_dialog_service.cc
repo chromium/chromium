@@ -187,6 +187,8 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
       break;
     }
   }
+  CHECK_NE(selected_engine_index, -1);
+  CHECK(selected_engine);
 
   const TemplateURL* default_search_provider_for_debug =
       template_url_service_->GetDefaultSearchProvider();
@@ -213,28 +215,16 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
   CHECK_LE(prepopulate_id,
            TemplateURLPrepopulateData::kMaxPrepopulatedEngineID);
 
-  if (selected_engine == nullptr) {
-    // The ID associated with the selection was not found in the cached list
-    // of search engines. That could be maybe caused by something like a race
-    // with enterprise policies, see https://crbug.com/328041262.
-    // We have a way to recover for it, by just letting the user proceed without
-    // attempting to apply the choice, so we don't immediately crash the
-    // browser.
-    // TODO(crbug.com/400119363): Investigate whether we can more formally
-    // handle this.
-    NOTREACHED(base::NotFatalUntil::M141);
-  } else {
-    if (search_engine_choice_service_->IsDsePropagationAllowedForGuest()) {
-      base::UmaHistogramBoolean("Search.SaveGuestModeSelection",
-                                save_guest_mode_selection);
-      if (save_guest_mode_selection) {
-        search_engine_choice_service_->SetSavedSearchEngineBetweenGuestSessions(
-            prepopulate_id);
-      }
+  if (search_engine_choice_service_->IsDsePropagationAllowedForGuest()) {
+    base::UmaHistogramBoolean("Search.SaveGuestModeSelection",
+                              save_guest_mode_selection);
+    if (save_guest_mode_selection) {
+      search_engine_choice_service_->SetSavedSearchEngineBetweenGuestSessions(
+          prepopulate_id);
     }
-    template_url_service_->SetUserSelectedDefaultSearchProvider(
-        selected_engine, search_engines::ChoiceMadeLocation::kChoiceScreen);
   }
+  template_url_service_->SetUserSelectedDefaultSearchProvider(
+      selected_engine, search_engines::ChoiceMadeLocation::kChoiceScreen);
 
   browser_registry_.CloseAllDialogs();
 
