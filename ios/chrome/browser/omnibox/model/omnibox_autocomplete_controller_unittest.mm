@@ -78,7 +78,7 @@ class MockOmniboxEditModel : public OmniboxEditModelIOS {
   MockOmniboxEditModel(OmniboxControllerIOS* controller,
                        OmniboxClient* omnibox_client,
                        OmniboxTextModel* text_model)
-      : OmniboxEditModelIOS(controller, omnibox_client, text_model),
+      : OmniboxEditModelIOS(controller, omnibox_client, text_model, nil),
         last_opened_selection(OmniboxPopupSelection(UINT_MAX)) {}
   MockOmniboxEditModel(const MockOmniboxEditModel&) = delete;
   MockOmniboxEditModel& operator=(const MockOmniboxEditModel&) = delete;

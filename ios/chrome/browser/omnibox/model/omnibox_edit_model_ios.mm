@@ -79,10 +79,15 @@
 using bookmarks::BookmarkModel;
 using metrics::OmniboxEventProto;
 
-OmniboxEditModelIOS::OmniboxEditModelIOS(OmniboxControllerIOS* controller,
-                                         OmniboxClient* client,
-                                         OmniboxTextModel* text_model)
-    : controller_(controller), client_(client), text_model_(text_model) {}
+OmniboxEditModelIOS::OmniboxEditModelIOS(
+    OmniboxControllerIOS* controller,
+    OmniboxClient* client,
+    OmniboxTextModel* text_model,
+    OmniboxMetricsRecorder* metrics_recorder)
+    : controller_(controller),
+      client_(client),
+      text_model_(text_model),
+      metrics_recorder_(metrics_recorder) {}
 
 OmniboxEditModelIOS::~OmniboxEditModelIOS() = default;
 
@@ -262,22 +267,8 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
   TRACE_EVENT("omnibox", "OmniboxEditModelIOS::OpenMatch", "match", match,
               "disposition", disposition, "altenate_nav_url", alternate_nav_url,
               "pasted_text", pasted_text);
-  const base::TimeTicks& now(base::TimeTicks::Now());
-  base::TimeDelta elapsed_time_since_user_first_modified_omnibox(
-      now - text_model_->time_user_first_modified_omnibox);
-  autocomplete_controller()
-      ->UpdateMatchDestinationURLWithAdditionalSearchboxStats(
-          elapsed_time_since_user_first_modified_omnibox, &match);
 
   GURL destination_url = action ? action->getUrl() : match.destination_url;
-
-  // Save the result of the interaction, but do not record the histogram yet.
-  text_model_->focus_resulted_in_navigation = true;
-
-  omnibox::RecordActionShownForAllActions(autocomplete_controller()->result(),
-                                          selection);
-  HistoryFuzzyProvider::RecordOpenMatchMetrics(
-      autocomplete_controller()->result(), match);
 
   std::u16string input_text(pasted_text);
   if (input_text.empty()) {
@@ -285,6 +276,10 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
                      ? text_model_->user_text
                      : text_model_->url_for_editing;
   }
+
+  // Save the result of the interaction, but do not record the histogram yet.
+  text_model_->focus_resulted_in_navigation = true;
+
   // Create a dummy AutocompleteInput for use in calling VerbatimMatchForInput()
   // to create an alternate navigational match.
   AutocompleteInput alternate_input(
@@ -295,139 +290,13 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
   alternate_input.set_current_url(client_->GetURL());
   alternate_input.set_current_title(client_->GetTitle());
 
-  base::TimeDelta elapsed_time_since_last_change_to_default_match(
-      now - autocomplete_controller()->last_time_default_match_changed());
-  DCHECK(match.provider);
-  // These elapsed times don't really make sense for matches that come from
-  // omnibox focus (because the user did not modify the omnibox), so for those
-  // we set the elapsed times to something that will be ignored by
-  // metrics_log.cc.  They also don't necessarily make sense if the omnibox
-  // dropdown is closed or the user used paste-and-go.  (In most
-  // cases when this happens, the user never modified the omnibox.)
-  const bool popup_open = PopupIsOpen();
-  const base::TimeDelta default_time_delta = base::Milliseconds(-1);
-  if (text_model_->input.IsZeroSuggest() || !pasted_text.empty()) {
-    elapsed_time_since_user_first_modified_omnibox = default_time_delta;
-    elapsed_time_since_last_change_to_default_match = default_time_delta;
-  }
-
-  base::TimeDelta elapsed_time_since_user_focused_omnibox = default_time_delta;
-  if (!text_model_->last_omnibox_focus.is_null()) {
-    elapsed_time_since_user_focused_omnibox =
-        now - text_model_->last_omnibox_focus;
-    // Only record focus to open time when a focus actually happened (as
-    // opposed to, say, dragging a link onto the omnibox).
-
-    omnibox::LogFocusToOpenTime(
-        elapsed_time_since_user_focused_omnibox,
-        text_model_->input.IsZeroSuggest(), GetPageClassification(), match,
-        selection.IsAction() ? selection.action_index : -1);
-  }
-
-  // In some unusual cases, we ignore autocomplete_controller()->result() and
-  // instead log a fake result set with a single element (`match`) and
-  // selected_index of 0. For these cases:
-  //  1. If the popup is closed (there is no result set). This doesn't apply
-  //  for WebUI searchboxes since they don't have an associated popup.
-  //  2. If the index is out of bounds. This should only happen if
-  //  `selection.line` is
-  //     kNoMatch, which can happen if the default search provider is disabled.
-  //  3. If this is paste-and-go (meaning the contents of the dropdown
-  //     are ignored regardless).
-  const bool dropdown_ignored =
-      (!popup_open && !omnibox::IsWebUISearchbox(GetPageClassification())) ||
-      selection.line >= autocomplete_controller()->result().size() ||
-      !pasted_text.empty();
-  ACMatches fake_single_entry_matches;
-  fake_single_entry_matches.push_back(match);
-  AutocompleteResult fake_single_entry_result;
-  fake_single_entry_result.AppendMatches(fake_single_entry_matches);
-
-  std::u16string user_text =
-      text_model_->input.IsZeroSuggest() ? std::u16string() : input_text;
-  size_t completed_length = match.allowed_to_be_default_match
-                                ? match.inline_autocompletion.length()
-                                : std::u16string::npos;
-  bool is_incognito = autocomplete_controller()
-                          ->autocomplete_provider_client()
-                          ->IsOffTheRecord();
-  OmniboxLog log(
-      user_text, text_model_->just_deleted_text, text_model_->input.type(),
-      /*is_keyword_selected=*/false, OmniboxEventProto::INVALID, popup_open,
-      dropdown_ignored ? OmniboxPopupSelection(0) : selection, disposition,
-      !pasted_text.empty(),
-      SessionID::InvalidValue(),  // don't know tab ID; set later if appropriate
-      GetPageClassification(), elapsed_time_since_user_first_modified_omnibox,
-      completed_length, elapsed_time_since_last_change_to_default_match,
-      dropdown_ignored ? fake_single_entry_result
-                       : autocomplete_controller()->result(),
-      destination_url, is_incognito, text_model_->input.IsZeroSuggest(),
-      match.session);
-// Check disabled on iOS as the platform shows a default suggestion on focus
-// (crbug.com/40061502).
-#if !BUILDFLAG(IS_IOS)
-  DCHECK(dropdown_ignored ||
-         (log.elapsed_time_since_user_first_modified_omnibox >=
-          log.elapsed_time_since_last_change_to_default_match))
-      << "We should've got the notification that the user modified the "
-      << "omnibox text at same time or before the most recent time the "
-      << "default match changed.";
-#endif
-  log.elapsed_time_since_user_focused_omnibox =
-      elapsed_time_since_user_focused_omnibox;
-  log.ukm_source_id = client_->GetUKMSourceId();
-
-  if ((disposition == WindowOpenDisposition::CURRENT_TAB) &&
-      client_->CurrentPageExists()) {
-    // If we know the destination is being opened in the current tab,
-    // we can easily get the tab ID.  (If it's being opened in a new
-    // tab, we don't know the tab ID yet.)
-    log.tab_id = client_->GetSessionID();
-  }
-  autocomplete_controller()->AddProviderAndTriggeringLogs(&log);
-
-  base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.RichAutocompletion",
-                                match.rich_autocompletion_triggered);
-
-  omnibox::LogIPv4PartsCount(user_text, destination_url, completed_length);
-
-  client_->OnURLOpenedFromOmnibox(&log);
-  OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
-
-  LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);
-  omnibox::answer_data_parser::LogAnswerUsed(match.answer_type);
-
-  TemplateURLService* service = client_->GetTemplateURLService();
-  TemplateURL* template_url = match.GetTemplateURL(service, false);
-  if (template_url) {
-    // `match` is a Search navigation; log search engine usage metrics.
-    AutocompleteMatch::LogSearchEngineUsed(match, service);
-
-      DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(
-                 match.transition, ui::PAGE_TRANSITION_GENERATED) ||
-             ui::PageTransitionTypeIncludingQualifiersIs(
-                 match.transition, ui::PAGE_TRANSITION_RELOAD));
-  } else {
-    // `match` is a URL navigation, not a search.
-    // For logging the below histogram, only record uses that depend on the
-    // omnibox suggestion system, i.e., TYPED navigations.  That is, exclude
-    // omnibox URL interactions that are treated as reloads or link-following
-    // (i.e., cut-and-paste of URLs) or paste-and-go.
-    if (ui::PageTransitionTypeIncludingQualifiersIs(
-            match.transition, ui::PAGE_TRANSITION_TYPED) &&
-        pasted_text.empty()) {
-      navigation_metrics::RecordOmniboxURLNavigation(destination_url);
-    }
-
-    // The following histograms should be recorded for both TYPED and pasted
-    // URLs, but should still exclude reloads.
-    if (ui::PageTransitionTypeIncludingQualifiersIs(
-            match.transition, ui::PAGE_TRANSITION_TYPED) ||
-        ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
-                                                    ui::PAGE_TRANSITION_LINK)) {
-      net::cookie_util::RecordCookiePortOmniboxHistograms(destination_url);
-    }
-  }
+  [metrics_recorder_ recordOpenMatch:match
+                      destinationURL:destination_url
+                           inputText:input_text
+                      popupSelection:selection
+               windowOpenDisposition:disposition
+                            isAction:action
+                        isPastedText:!pasted_text.empty()];
 
   if (action) {
     OmniboxAction::ExecutionContext context(
@@ -444,22 +313,6 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
   }
 
   if (!action) {
-    // Track whether the destination URL sends us to a search results page
-    // using the default search provider.
-    TemplateURLService* template_url_service = client_->GetTemplateURLService();
-    if (template_url_service &&
-        template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
-            match.destination_url)) {
-      base::RecordAction(
-          base::UserMetricsAction("OmniboxDestinationURLIsSearchOnDSP"));
-      base::UmaHistogramBoolean("Omnibox.Search.OffTheRecord", is_incognito);
-    }
-
-    BookmarkModel* bookmark_model = client_->GetBookmarkModel();
-    if (bookmark_model && bookmark_model->IsBookmarked(destination_url)) {
-      client_->OnBookmarkLaunched();
-    }
-
     // This block should be the last call in OpenMatch, because controller_ is
     // not guaranteed to exist after client()->OnAutocompleteAccept is called.
     if (destination_url.is_valid()) {

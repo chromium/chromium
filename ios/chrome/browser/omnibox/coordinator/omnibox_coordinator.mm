@@ -102,6 +102,9 @@
   /// Controller for the omnibox text.
   OmniboxTextController* _omniboxTextController;
 
+  /// Metrics recorder.
+  OmniboxMetricsRecorder* _omniboxMetricsRecorder;
+
   /// Object handling interactions in the keyboard accessory view.
   OmniboxAssistiveKeyboardMediator* _keyboardMediator;
 
@@ -181,8 +184,16 @@
   _omniboxTextModel = std::make_unique<OmniboxTextModel>(_client.get());
   OmniboxTextFieldIOS* textField = viewController.textField;
   _omniboxController = std::make_unique<OmniboxControllerIOS>(_client.get());
+
+  _omniboxMetricsRecorder =
+      [[OmniboxMetricsRecorder alloc] initWithClient:_client.get()
+                                           textModel:_omniboxTextModel.get()];
+  [_omniboxMetricsRecorder
+      setAutocompleteController:_omniboxController->autocomplete_controller()];
+
   _omniboxEditModel = std::make_unique<OmniboxEditModelIOS>(
-      _omniboxController.get(), _client.get(), _omniboxTextModel.get());
+      _omniboxController.get(), _client.get(), _omniboxTextModel.get(),
+      _omniboxMetricsRecorder);
 
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [textField setPasteDelegate:self.pasteDelegate];
@@ -221,10 +232,14 @@
       _omniboxAutocompleteController;
   _omniboxTextController.textField = textField;
   _omniboxAutocompleteController.omniboxTextController = _omniboxTextController;
+  _omniboxAutocompleteController.omniboxMetricsRecorder =
+      _omniboxMetricsRecorder;
 
   _omniboxEditModel->set_text_controller(_omniboxTextController);
   _omniboxEditModel->set_omnibox_autocomplete_controller(
       _omniboxAutocompleteController);
+  _omniboxMetricsRecorder.omniboxAutocompleteController =
+      _omniboxAutocompleteController;
 
   mediator.omniboxTextController = _omniboxTextController;
 
@@ -262,6 +277,8 @@
   _omniboxAutocompleteController = nil;
   [_omniboxTextController disconnect];
   _omniboxTextController = nil;
+  [_omniboxMetricsRecorder disconnect];
+  _omniboxMetricsRecorder = nil;
 
   [self.popupCoordinator stop];
   self.popupCoordinator = nil;

@@ -16,7 +16,8 @@ class TestOmniboxEditModelIOS : public OmniboxEditModelIOS {
   TestOmniboxEditModelIOS(OmniboxControllerIOS* omnibox_controller,
                           OmniboxClient* omnibox_client,
                           PrefService* pref_service,
-                          OmniboxTextModel* text_model);
+                          OmniboxTextModel* text_model,
+                          OmniboxMetricsRecorder* omnibox_metrics_recorder);
   ~TestOmniboxEditModelIOS() override;
   TestOmniboxEditModelIOS(const TestOmniboxEditModelIOS&) = delete;
   TestOmniboxEditModelIOS& operator=(const TestOmniboxEditModelIOS&) = delete;

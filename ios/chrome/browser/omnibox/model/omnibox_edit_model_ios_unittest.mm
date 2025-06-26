@@ -124,9 +124,17 @@ class OmniboxEditModelIOSTest : public PlatformTest {
         std::make_unique<OmniboxControllerIOS>(omnibox_client_.get());
     omnibox_text_model_ =
         std::make_unique<OmniboxTextModel>(omnibox_client_.get());
+    omnibox_metrics_recorder_ = [[OmniboxMetricsRecorder alloc]
+        initWithClient:omnibox_client_.get()
+             textModel:omnibox_text_model_.get()];
+    [omnibox_metrics_recorder_
+        setAutocompleteController:omnibox_controller_
+                                      ->autocomplete_controller()];
+
     omnibox_edit_model_ = std::make_unique<TestOmniboxEditModelIOS>(
         omnibox_controller_.get(), omnibox_client_.get(),
-        /*pref_service=*/nullptr, omnibox_text_model_.get());
+        /*pref_service=*/nullptr, omnibox_text_model_.get(),
+        omnibox_metrics_recorder_);
     omnibox_text_controller_ = [[TestOmniboxTextController alloc]
         initWithOmniboxController:omnibox_controller_.get()
                     omniboxClient:omnibox_client_.get()
@@ -134,6 +142,11 @@ class OmniboxEditModelIOSTest : public PlatformTest {
                  omniboxTextModel:omnibox_text_model_.get()
                     inLensOverlay:NO];
     omnibox_edit_model_->set_text_controller(omnibox_text_controller_);
+  }
+
+  ~OmniboxEditModelIOSTest() override {
+    [omnibox_metrics_recorder_ disconnect];
+    omnibox_metrics_recorder_ = nil;
   }
 
   TestLocationBarModel* location_bar_model() {
@@ -145,6 +158,7 @@ class OmniboxEditModelIOSTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment task_environment_;
   TestOmniboxTextController* omnibox_text_controller_;
+  OmniboxMetricsRecorder* omnibox_metrics_recorder_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
   std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;

@@ -21,6 +21,7 @@ class AutocompleteResult;
 class OmniboxClient;
 class OmniboxControllerIOS;
 class OmniboxEditModelIOS;
+@class OmniboxMetricsRecorder;
 @class OmniboxTextController;
 struct OmniboxTextModel;
 
@@ -42,6 +43,9 @@ struct OmniboxTextModel;
 
 /// Controller of the omnibox text.
 @property(nonatomic, weak) OmniboxTextController* omniboxTextController;
+
+/// Metrics recorder.
+@property(nonatomic, weak) OmniboxMetricsRecorder* omniboxMetricsRecorder;
 
 // Whether or not the popup has suggestions.
 @property(nonatomic, assign, readonly) BOOL hasSuggestions;

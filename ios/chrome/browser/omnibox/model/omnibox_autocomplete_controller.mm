@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_metrics_recorder.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -639,6 +640,10 @@ using base::UserMetricsAction;
           self.autocompleteController) {
     autocompleteController->AddObserver(
         _autocompleteControllerObserverBridge.get());
+
+    // Update the autocomplete controller in the metrics recorder.
+    [self.omniboxMetricsRecorder
+        setAutocompleteController:autocompleteController];
   }
 }
 

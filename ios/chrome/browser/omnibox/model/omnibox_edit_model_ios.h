@@ -23,6 +23,7 @@
 #import "components/omnibox/browser/omnibox.mojom-shared.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_metrics_recorder.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "third_party/metrics_proto/omnibox_event.pb.h"
 #import "ui/base/window_open_disposition.h"
@@ -31,13 +32,15 @@
 @class OmniboxAutocompleteController;
 class OmniboxClient;
 class OmniboxControllerIOS;
+@class OmniboxMetricsRecorder;
 @class OmniboxTextController;
 
 class OmniboxEditModelIOS {
  public:
   OmniboxEditModelIOS(OmniboxControllerIOS* controller,
                       OmniboxClient* client,
-                      OmniboxTextModel* text_model);
+                      OmniboxTextModel* text_model,
+                      OmniboxMetricsRecorder* metrics_recorder);
   virtual ~OmniboxEditModelIOS();
   OmniboxEditModelIOS(const OmniboxEditModelIOS&) = delete;
   OmniboxEditModelIOS& operator=(const OmniboxEditModelIOS&) = delete;
@@ -230,6 +233,9 @@ class OmniboxEditModelIOS {
 
   // The autocomplete controller.
   __weak OmniboxAutocompleteController* omnibox_autocomplete_controller_ = nil;
+
+  // The metrics recorder
+  __weak OmniboxMetricsRecorder* metrics_recorder_ = nil;
 
   base::WeakPtrFactory<OmniboxEditModelIOS> weak_factory_{this};
 };

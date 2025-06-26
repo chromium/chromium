@@ -76,6 +76,8 @@ source_set("model") {
     "omnibox_icon_formatter.mm",
     "omnibox_image_fetcher.h",
     "omnibox_image_fetcher.mm",
+    "omnibox_metrics_recorder.h",
+    "omnibox_metrics_recorder.mm",
     "omnibox_pedal_annotator.h",
     "omnibox_pedal_annotator.mm",
     "omnibox_text_controller.h",
