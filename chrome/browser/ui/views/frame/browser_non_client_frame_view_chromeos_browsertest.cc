@@ -711,8 +711,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
   SetUpWebApp();
   content::WebContents* web_contents =
       app_browser_->tab_strip_model()->GetActiveWebContents();
-  IconLabelBubbleView* manage_passwords_icon =
-      GetPageActionView(PageActionIconType::kManagePasswords);
+  IconLabelBubbleView* manage_passwords_icon = GetPageActionView(
+      PageActionIconType::kManagePasswords, kActionShowPasswordsBubbleOrPage);
 
   EXPECT_TRUE(manage_passwords_icon);
   EXPECT_FALSE(manage_passwords_icon->GetVisible());
