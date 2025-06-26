@@ -48,7 +48,7 @@ void TabStripModelAdapterImpl::MoveTab(tabs::TabHandle tab, Position position) {
   auto maybe_index = GetIndexForHandle(tab);
   CHECK(maybe_index.has_value());
   auto index = maybe_index.value();
-  tab_strip_model_->MoveWebContentsAt(index, position.index,
+  tab_strip_model_->MoveWebContentsAt(index, position.index(),
                                       /*select_after_move=*/false);
 }
 

@@ -43,7 +43,7 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
   // tabs_api::mojom::TabStripService overrides
   void GetTabs(GetTabsCallback callback) override;
   void GetTab(const tabs_api::NodeId& id, GetTabCallback callback) override;
-  void CreateTabAt(tabs_api::mojom::PositionPtr pos,
+  void CreateTabAt(const std::optional<tabs_api::Position>& pos,
                    const std::optional<GURL>& url,
                    CreateTabAtCallback callback) override;
   void CloseTabs(const std::vector<tabs_api::NodeId>& ids,
@@ -51,7 +51,7 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
   void ActivateTab(const tabs_api::NodeId& id,
                    ActivateTabCallback callback) override;
   void MoveTab(const tabs_api::NodeId& id,
-               tabs_api::mojom::PositionPtr position,
+               const tabs_api::Position& position,
                MoveTabCallback callback) override;
 
  private:

@@ -125,9 +125,10 @@ void TabStripServiceImpl::GetTab(const tabs_api::NodeId& tab_mojom_id,
   }
 }
 
-void TabStripServiceImpl::CreateTabAt(tabs_api::mojom::PositionPtr pos,
-                                      const std::optional<GURL>& url,
-                                      CreateTabAtCallback callback) {
+void TabStripServiceImpl::CreateTabAt(
+    const std::optional<tabs_api::Position>& pos,
+    const std::optional<GURL>& url,
+    CreateTabAtCallback callback) {
   MutationSession recorder_session(recorder_.get());
 
   GURL target_url;
@@ -135,8 +136,10 @@ void TabStripServiceImpl::CreateTabAt(tabs_api::mojom::PositionPtr pos,
     target_url = url.value();
   }
   std::optional<int> index;
-  if (pos) {
-    index = pos->index;
+  if (pos.has_value()) {
+    // TODO(crbug.com/409086859): Does not use the parent_id yet. Currently only
+    // inserts in the unpinned collection.
+    index = pos->index();
   }
 
   auto tab_handle = browser_adapter_->AddTabAt(target_url, index);
@@ -240,7 +243,7 @@ void TabStripServiceImpl::ActivateTab(const tabs_api::NodeId& id,
 }
 
 void TabStripServiceImpl::MoveTab(const tabs_api::NodeId& id,
-                                  tabs_api::mojom::PositionPtr position,
+                                  const tabs_api::Position& position,
                                   MoveTabCallback callback) {
   MutationSession recorder_session(recorder_.get());
 
@@ -262,14 +265,14 @@ void TabStripServiceImpl::MoveTab(const tabs_api::NodeId& id,
   }
 
   auto tab_handle = tabs::TabHandle(handle_id);
-  if (position->index >= tab_strip_model_adapter_->GetTabs().size()) {
+  if (position.index() >= tab_strip_model_adapter_->GetTabs().size()) {
     std::move(callback).Run(base::unexpected(
         mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
                                      "position cannot exceed tab strip")));
     return;
   }
 
-  tab_strip_model_adapter_->MoveTab(tab_handle, {position->index});
+  tab_strip_model_adapter_->MoveTab(tab_handle, position);
 
   std::move(callback).Run(mojo_base::mojom::Empty::New());
 }

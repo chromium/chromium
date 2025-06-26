@@ -29,13 +29,21 @@ mojom("mojom") {
           mojom = "tabs_api.mojom.NodeId.Type"
           cpp = "enum ::tabs_api::NodeId::Type"
         },
+        {
+          mojom = "tabs_api.mojom.Position"
+          cpp = "::tabs_api::Position"
+        },
       ]
       traits_headers = [
         "//chrome/browser/ui/tabs/tab_strip_api/node_id.h",
         "//chrome/browser/ui/tabs/tab_strip_api/node_id_traits.h",
+        "//chrome/browser/ui/tabs/tab_strip_api/position.h",
+        "//chrome/browser/ui/tabs/tab_strip_api/position_traits.h",
       ]
-      traits_sources =
-          [ "//chrome/browser/ui/tabs/tab_strip_api/node_id_traits.cc" ]
+      traits_sources = [
+        "//chrome/browser/ui/tabs/tab_strip_api/node_id_traits.cc",
+        "//chrome/browser/ui/tabs/tab_strip_api/position_traits.cc",
+      ]
       traits_public_deps = [
         ":types",
         "//base",
@@ -85,6 +93,8 @@ source_set("types") {
   sources = [
     "node_id.cc",
     "node_id.h",
+    "position.cc",
+    "position.h",
   ]
 
   public_deps = [
@@ -98,9 +108,10 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "node_id_traits_unittest.cc",
     "node_id_unittest.cc",
+    "position_unittest.cc",
     "tab_strip_service_impl_unittest.cc",
+    "tab_strip_service_traits_unittest.cc",
   ]
 
   deps = [

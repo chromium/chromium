@@ -132,12 +132,6 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
     return observation;
   }
 
-  tabs_api::mojom::PositionPtr CreatePosition(int index) {
-    auto position = tabs_api::mojom::Position::New();
-    position->index = index;
-    return position;
-  }
-
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TabStripServiceImpl> tab_strip_service_impl_;
 };
@@ -151,11 +145,10 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CreateTabAt) {
   const GURL url("http://example.com/");
 
   base::RunLoop run_loop;
-  tabs_api::mojom::PositionPtr position = CreatePosition(0);
 
   TabStripService::CreateTabAtResult result;
   remote->CreateTabAt(
-      std::move(position), std::make_optional(url),
+      tabs_api::Position(0), std::make_optional(url),
       base::BindLambdaForTesting([&](TabStripService::CreateTabAtResult in) {
         result = std::move(in);
         run_loop.Quit();
@@ -181,7 +174,6 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
   uint32_t target_index = 0;
 
   base::RunLoop run_loop;
-  tabs_api::mojom::PositionPtr position = CreatePosition(target_index);
 
   base::RunLoop get_tabs_loop;
   remote->GetTabs(
@@ -195,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
 
   TabStripService::CreateTabAtResult result;
   remote->CreateTabAt(
-      std::move(position), std::make_optional(url),
+      tabs_api::Position(target_index), std::make_optional(url),
       base::BindLambdaForTesting([&](TabStripService::CreateTabAtResult in) {
         result = std::move(in);
         run_loop.Quit();
@@ -244,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
   const int starting_num_tabs = GetTabStripModel()->GetTabCount();
 
   base::RunLoop create_loop;
-  remote->CreateTabAt(CreatePosition(0),
+  remote->CreateTabAt(tabs_api::Position(0),
                       std::make_optional(GURL("http://dark.web")),
                       base::BindLambdaForTesting(
                           [&](TabStripService::CreateTabAtResult result) {
@@ -279,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ActivateTab) {
   tabs_api::NodeId created_id;
   base::RunLoop create_loop;
   // Append a new tab to the end, which will also focus it.
-  remote->CreateTabAt(nullptr, std::make_optional(GURL("http://dark.web")),
+  remote->CreateTabAt(std::nullopt, std::make_optional(GURL("http://dark.web")),
                       base::BindLambdaForTesting(
                           [&](TabStripService::CreateTabAtResult result) {
                             ASSERT_TRUE(result.has_value());
@@ -316,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTab) {
 
   // Append a new tab to the end, so we have two tabs to work with.
   base::RunLoop create_loop;
-  remote->CreateTabAt(nullptr,
+  remote->CreateTabAt(std::nullopt,
                       std::make_optional(GURL("http://somwewhere.nowhere")),
                       base::BindLambdaForTesting(
                           [&](TabStripService::CreateTabAtResult result) {
@@ -331,13 +323,9 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTab) {
                       base::NumberToString(handle_to_move.raw_value()));
 
   size_t target_idx = 1;
-
-  auto position = tabs_api::mojom::Position::New();
-  position->index = target_idx;
-
   base::RunLoop move_loop;
   remote->MoveTab(
-      to_move_id, std::move(position),
+      to_move_id, tabs_api::Position(target_idx),
       base::BindLambdaForTesting([&](TabStripService::MoveTabResult result) {
         ASSERT_TRUE(result.has_value());
         move_loop.Quit();
@@ -353,6 +341,6 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTab) {
 
   auto event = observation->client.move_events.at(0).Clone();
   ASSERT_EQ(to_move_id, event->id);
-  ASSERT_EQ(0u, event->from->index);
-  ASSERT_EQ(1u, event->to->index);
+  ASSERT_EQ(0u, event->from.index());
+  ASSERT_EQ(1u, event->to.index());
 }

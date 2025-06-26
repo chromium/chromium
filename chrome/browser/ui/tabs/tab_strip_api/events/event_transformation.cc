@@ -20,8 +20,7 @@ mojom::OnTabsCreatedEventPtr ToEvent(const TabStripModelChange::Insert& insert,
   auto event = mojom::OnTabsCreatedEvent::New();
   for (auto& content : insert.contents) {
     auto tab_created = tabs_api::mojom::TabCreatedContainer::New();
-    auto pos = tabs_api::mojom::Position::New();
-    pos->index = content.index;
+    auto pos = tabs_api::Position(content.index);
     tab_created->position = std::move(pos);
     auto renderer_data =
         TabRendererData::FromTabInModel(tab_strip_model, content.index);
@@ -50,11 +49,9 @@ mojom::OnTabMovedEventPtr ToEvent(const TabStripModelChange::Move& move) {
   NodeId id(NodeId::Type::kContent,
             base::NumberToString(move.tab->GetHandle().raw_value()));
 
-  auto from = mojom::Position::New();
-  from->index = move.from_index;
+  auto from = tabs_api::Position(move.from_index);
 
-  auto to = mojom::Position::New();
-  to->index = move.to_index;
+  auto to = tabs_api::Position(move.to_index);
 
   auto event = mojom::OnTabMovedEvent::New();
   event->id = id;
@@ -88,9 +85,9 @@ mojom::OnTabGroupCreatedEventPtr ToTabGroupCreatedEvent(
   event->group_id = NodeId::FromTabGroupId(tab_group_change.group);
   event->visual_data = tabs_api::converters::BuildMojoTabGroupVisualData(
       *tab_group->visual_data());
-  event->position = mojom::Position::New();
   // TODO(crbug.com/412935315): Set the correct position.
-  event->position->index = 0;
+  event->position =
+      tabs_api::Position(0, NodeId::FromTabGroupId(tab_group_change.group));
   // When TabGroupChange::kCreated is fired, the TabGroupTabCollection is
   // empty. Then, TabGroupedStateChanged() is fired, which adds tabs to the
   // group.
@@ -105,16 +102,17 @@ mojom::OnTabMovedEventPtr FromTabGroupedStateChangedToTabMovedEvent(
     int index) {
   auto event = mojom::OnTabMovedEvent::New();
   event->id = NodeId::FromTabHandle(tab->GetHandle());
-  event->from = mojom::Position::New();
+  std::optional<tabs_api::NodeId> old_parent_id;
   if (old_group.has_value()) {
-    event->from->parent_id = NodeId::FromTabGroupId(*old_group);
+    old_parent_id = tabs_api::NodeId::FromTabGroupId(*old_group);
   }
-  event->from->index = 0;
-  event->to = mojom::Position::New();
+  event->from = tabs_api::Position(0, old_parent_id);
+
+  std::optional<tabs_api::NodeId> new_parent_id;
   if (new_group.has_value()) {
-    event->to->parent_id = NodeId::FromTabGroupId(*new_group);
+    new_parent_id = tabs_api::NodeId::FromTabGroupId(*new_group);
   }
-  event->to->index = index;
+  event->to = tabs_api::Position(index, new_parent_id);
   return event;
 }
 
