@@ -1,4 +1,7 @@
-use crate::api::RegexExt;
+use crate::{
+    api::RegexExt,
+    earley::{ParamCond, ParamExpr},
+};
 
 use super::lexer::Location;
 
@@ -32,6 +35,7 @@ pub struct Rule {
     pub params: Option<RuleParams>,
     pub priority: Option<i32>,
     pub expansions: Expansions,
+    pub is_parametric: bool,
 
     pub stop: Option<Value>,
     pub suffix: Option<Value>,
@@ -86,6 +90,7 @@ pub struct Expansions(pub Location, pub Vec<Alias>);
 impl Expansions {
     pub fn single_atom(&self) -> Option<&Atom> {
         if self.1.len() == 1
+            && self.1[0].param_cond.is_true()
             && self.1[0].conjuncts.len() == 1
             && self.1[0].conjuncts[0].0.len() == 1
         {
@@ -109,6 +114,7 @@ impl Expansions {
 #[derive(Debug)]
 pub struct Alias {
     pub conjuncts: Vec<Expansion>,
+    pub param_cond: ParamCond,
     #[allow(dead_code)]
     pub alias: Option<String>,
 }
@@ -139,6 +145,7 @@ pub enum Atom {
 pub enum Value {
     LiteralRange(String, String),
     Name(String),
+    NameParam(String, ParamExpr),
     LiteralString(String, String),
     LiteralRegex(String, String),
     GrammarRef(String),

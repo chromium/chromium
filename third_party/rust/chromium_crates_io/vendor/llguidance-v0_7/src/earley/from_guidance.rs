@@ -182,9 +182,9 @@ impl GrammarInit {
         extra_lexemes: Vec<String>,
     ) -> Result<Arc<CGrammar>> {
         let t0 = Instant::now();
-        let (grammar, mut lexer_spec) = self.to_internal(tok_env, limits)?;
+        let (grammar, mut lexer_spec) = self.to_internal(tok_env, limits.clone())?;
         lexer_spec.add_extra_lexemes(&extra_lexemes);
-        compile_grammar(t0, grammar, lexer_spec, logger)
+        compile_grammar(t0, grammar, lexer_spec, logger, &limits)
     }
 }
 
@@ -193,6 +193,7 @@ fn compile_grammar(
     mut grammar: Grammar,
     lexer_spec: LexerSpec,
     logger: &mut Logger,
+    limits: &ParserLimits,
 ) -> Result<Arc<CGrammar>> {
     let log_grammar = logger.level_enabled(3) || (logger.level_enabled(2) && grammar.is_small());
     if log_grammar {
@@ -226,7 +227,7 @@ fn compile_grammar(
         writeln!(logger.info_logger(), "  ==> {}", grammar.stats()).unwrap();
     }
 
-    let grammars = Arc::new(grammar.compile(lexer_spec));
+    let grammars = Arc::new(grammar.compile(lexer_spec, limits)?);
 
     loginfo!(
         logger,

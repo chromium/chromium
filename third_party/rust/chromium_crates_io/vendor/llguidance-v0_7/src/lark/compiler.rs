@@ -1,7 +1,8 @@
 use crate::{
+    earley::{ParamCond, ParamExpr},
     grammar_builder::{GrammarResult, RegexId},
     substring::substring,
-    HashMap, HashSet,
+    HashMap,
 };
 use anyhow::{anyhow, bail, ensure, Result};
 use derivre::RegexAst;
@@ -19,6 +20,16 @@ use super::{
     lexer::Location,
     parser::{parse_lark, ParsedLark},
 };
+
+const DEBUG: bool = false;
+macro_rules! debug {
+    ($($arg:tt)*) => {
+        if cfg!(feature = "logging") && DEBUG {
+            eprint!("LRK> ");
+            eprintln!($($arg)*);
+        }
+    };
+}
 
 #[derive(Debug)]
 struct Grammar {
@@ -50,7 +61,7 @@ struct Compiler {
     grammar: Grammar,
     node_ids: HashMap<String, NodeRef>,
     regex_ids: HashMap<String, RegexId>,
-    in_progress: HashSet<String>,
+    in_progress: HashMap<String, bool>,
     pending_grammars: Vec<(NodeRef, Location, PendingGrammar)>,
 }
 
@@ -61,7 +72,7 @@ fn compile_lark(builder: GrammarBuilder, parsed: ParsedLark) -> Result<GrammarRe
         grammar: Grammar::default(),
         node_ids: HashMap::default(),
         regex_ids: HashMap::default(),
-        in_progress: HashSet::default(),
+        in_progress: HashMap::default(),
         pending_grammars: vec![],
     };
     c.execute()
@@ -81,10 +92,10 @@ impl Compiler {
         if let Some(id) = self.regex_ids.get(name) {
             return Ok(*id);
         }
-        if self.in_progress.contains(name) {
+        if self.in_progress.contains_key(name) {
             bail!("circular reference in token {:?} definition", name);
         }
-        self.in_progress.insert(name.to_string());
+        self.in_progress.insert(name.to_string(), false);
         let token = self
             .grammar
             .tokens
@@ -176,6 +187,9 @@ impl Compiler {
                 Value::NestedLark(_) => {
                     bail!("nested %lark {{ ... }} cannot be used in terminals");
                 }
+                Value::NameParam(_, _) => {
+                    bail!("name::param cannot be used in terminals");
+                }
                 Value::TemplateUsage { .. } => bail!("template usage not supported yet"),
             },
         }
@@ -221,6 +235,10 @@ impl Compiler {
             .1
             .into_iter()
             .map(|alias| {
+                ensure!(
+                    alias.param_cond.is_true(),
+                    "'%if' is not supported in terminals"
+                );
                 let args = alias
                     .conjuncts
                     .into_iter()
@@ -284,10 +302,13 @@ impl Compiler {
                 match &value {
                     Value::Name(n) => {
                         if self.is_rule(n) {
-                            return self.do_rule(n);
+                            return self.do_rule(n, None);
                         } else {
                             // OK -> treat as token
                         }
+                    }
+                    Value::NameParam(name, param) => {
+                        return self.do_rule(name, Some(param.clone()));
                     }
                     Value::SpecialToken(s) => {
                         if s.starts_with("<[") && s.ends_with("]>") {
@@ -375,6 +396,8 @@ impl Compiler {
     fn do_expansions(&mut self, expansions: Expansions) -> Result<NodeRef> {
         self.builder.check_limits()?;
         let loc = expansions.0;
+        let mut conds = vec![];
+        let needs_cond = expansions.1.iter().any(|alias| !alias.param_cond.is_true());
         let options = expansions
             .1
             .into_iter()
@@ -391,30 +414,33 @@ impl Compiler {
                     .into_iter()
                     .map(|e| self.do_expr(&loc, e))
                     .collect::<Result<Vec<_>>>()?;
-                Ok(self.builder.join(&args))
+                if needs_cond {
+                    conds.push(alias.param_cond);
+                }
+                Ok(self.builder.join_props(&args, NodeProps::default()))
             })
             .collect::<Result<Vec<_>>>()
             .map_err(|e| loc.augment(e))?;
-        Ok(self.builder.select(&options))
+        Ok(self.builder.select_with_cond(&options, conds))
     }
 
     fn is_rule(&self, name: &str) -> bool {
         self.node_ids.contains_key(name)
-            || self.in_progress.contains(name)
+            || self.in_progress.contains_key(name)
             || self.grammar.rules.contains_key(name)
     }
 
-    fn do_rule(&mut self, name: &str) -> Result<NodeRef> {
+    fn do_rule(&mut self, name: &str, param: Option<ParamExpr>) -> Result<NodeRef> {
         if let Some(id) = self.node_ids.get(name) {
-            return Ok(*id);
+            return self.builder.apply(*id, param);
         }
-        if self.in_progress.contains(name) {
-            let id = self.builder.new_node(name);
+        if let Some(&is_param) = self.in_progress.get(name) {
+            let id = self.builder.new_param_node(&format!("{}_", name), is_param);
             self.node_ids.insert(name.to_string(), id);
-            return Ok(id);
+            return self.builder.apply(id, param);
         }
-        self.in_progress.insert(name.to_string());
 
+        debug!("BEG rule {}", name);
         let id = self.do_rule_core(name)?;
 
         if let Some(placeholder) = self.node_ids.get(name) {
@@ -422,7 +448,9 @@ impl Compiler {
         }
         self.node_ids.insert(name.to_string(), id);
         self.in_progress.remove(name);
-        Ok(id)
+        self.builder.rename(id, name);
+        debug!("END rule {}", name);
+        self.builder.apply(id, param)
     }
 
     fn gen_grammar(
@@ -455,6 +483,9 @@ impl Compiler {
             .remove(name)
             .ok_or_else(|| anyhow!("rule {:?} not found", name))?;
 
+        self.in_progress
+            .insert(name.to_string(), rule.is_parametric);
+
         let props = NodeProps {
             max_tokens: rule.max_tokens,
             capture_name: rule.capture_name.clone(),
@@ -463,6 +494,18 @@ impl Compiler {
 
         if rule.stop.is_some() && rule.suffix.is_some() {
             bail!("stop= and suffix= cannot be used together");
+        }
+
+        if rule.is_parametric && rule.stop_like().is_some() {
+            bail!("stop-like is not supported for parametric rules");
+        }
+
+        if rule.is_parametric && rule.temperature.is_some() {
+            bail!("temperature= is not supported for parametric rules");
+        }
+
+        if rule.is_parametric && rule.max_tokens.is_some() {
+            bail!("max_tokens= is not supported for parametric rules");
         }
 
         let id = if let Some(stop) = rule.stop_like() {
@@ -520,6 +563,24 @@ impl Compiler {
             }
 
             let inner = self.do_expansions(rule.expansions)?;
+
+            let inner_needs_param = self.builder.needs_param(inner);
+
+            if rule.is_parametric && !inner_needs_param {
+                // TODO unclear if this should be an error or not
+                bail!(
+                    "rule {:?} is parametric, but its body doesn't need parameters",
+                    name
+                );
+            }
+            if !rule.is_parametric && inner_needs_param {
+                //println!("inner {} needs parameters", self.builder.node_to_string(inner));
+                bail!(
+                    "rule {:?} is not parametric, but its body requires parameters",
+                    name
+                );
+            }
+
             #[allow(clippy::assertions_on_constants)]
             if let Some(max_tokens) = rule.max_tokens {
                 assert!(false, "max_tokens handled above for now");
@@ -532,7 +593,8 @@ impl Compiler {
                         ..Default::default()
                     },
                 )
-            } else if rule.capture_name.is_some() {
+            } else if rule.capture_name.is_some() || (inner.is_parametric() && !rule.is_parametric)
+            {
                 self.builder.join_props(&[inner], props)
             } else {
                 inner
@@ -566,7 +628,7 @@ impl Compiler {
             .collect::<Result<Vec<_>>>()?;
         let id = self.builder.add_grammar(opts, RegexAst::Or(ignore))?;
 
-        let start = self.do_rule(start_name)?;
+        let start = self.do_rule(start_name, None)?;
         self.builder.set_start_node(start);
 
         let mut builder = self.builder;
@@ -605,6 +667,7 @@ impl Grammar {
                         op: None,
                         range: None,
                     }])],
+                    param_cond: ParamCond::True,
                     alias: None,
                 }],
             ),

@@ -1,4 +1,7 @@
-use std::fmt::Display;
+use std::{
+    fmt::{Debug, Display},
+    rc::Rc,
+};
 
 use crate::{api::RegexExt, HashMap};
 use anyhow::{anyhow, bail, Result};
@@ -26,20 +29,24 @@ pub enum Token {
     KwJson,
     KwRegex,
     KwLLGuidance,
+    KwIf,
     KwLark,
     Colon,
+    DoubleColon, // ::
     Equals,
     Comma,
     Dot,
     DotDot,
     Arrow,
-    LParen,
-    RParen,
-    LBrace,
-    RBrace,
-    LBracket,
-    RBracket,
+    LParen,   // (
+    RParen,   // )
+    LBrace,   // {
+    RBrace,   // }
+    LBracket, // [
+    RBracket, // ]
     Tilde,
+    Hash,
+    Underscore, // _ (is not a rule)
     // regexps
     Op, // + * ?
     String,
@@ -47,6 +54,7 @@ pub enum Token {
     Rule,
     Token,
     Number,
+    HexNumber,
     Newline,
     VBar,
     And,          // &
@@ -55,6 +63,29 @@ pub enum Token {
     // special
     SKIP,
     EOF,
+}
+
+impl Display for Token {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let lst = Self::LITERAL_TOKENS;
+        if let Some((_, literal)) = lst.iter().find(|(t, _)| t == self) {
+            write!(f, "'{literal}'")
+        } else {
+            match self {
+                Token::Op => write!(f, "'+' or '*' or '?'"),
+                Token::Rule => write!(f, "'rule_name'"),
+                Token::Token => write!(f, "'TOKEN_NAME'"),
+                Token::String => write!(f, "\"string...\""),
+                Token::Regexp => write!(f, "/regexp.../"),
+                Token::Number => write!(f, "a number"),
+                Token::HexNumber => write!(f, "a 0x-hex-number"),
+                Token::Newline => write!(f, "'\\n'"),
+                Token::SpecialToken => write!(f, "<special_token>"),
+                Token::GrammarRef => write!(f, "@grammar_name"),
+                _ => write!(f, "{self:?}"),
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default)]
@@ -108,6 +139,27 @@ impl Lexeme {
 pub struct Location {
     pub line: usize,
     pub column: usize,
+    pub src: Rc<String>,
+}
+
+pub(crate) fn highlight_location(src: &str, line_no: usize, col_no: usize) -> String {
+    let lines: Vec<&str> = src.lines().collect();
+    let start = line_no.saturating_sub(3); // 2 lines before
+    let end = (line_no + 2).min(lines.len());
+
+    let mut result = String::new();
+
+    for (i, &line) in lines[start..end].iter().enumerate() {
+        let actual_line = start + i + 1;
+        result.push_str(&format!("{:>4} | {}\n", actual_line, line));
+        if actual_line == line_no {
+            let prefix_len = format!("{:>4} | ", actual_line).len();
+            let marker = " ".repeat(prefix_len + col_no.saturating_sub(1)) + "^";
+            result.push_str(&format!("{}\n", marker));
+        }
+    }
+
+    result
 }
 
 impl Location {
@@ -117,7 +169,13 @@ impl Location {
             // don't add more location info
             anyhow::anyhow!("{err}")
         } else {
-            anyhow::anyhow!("at {}({}): {}", self.line, self.column, err)
+            anyhow::anyhow!(
+                "at {}({}): {}\n{}",
+                self.line,
+                self.column,
+                err,
+                highlight_location(&self.src, self.line, self.column)
+            )
         }
     }
 }
@@ -137,6 +195,7 @@ impl Token {
         (Token::KwJson, "%json"),
         (Token::KwRegex, "%regex"),
         (Token::KwLark, "%lark"),
+        (Token::KwIf, "%if"),
         (Token::LParen, "("),
         (Token::RParen, ")"),
         (Token::LBrace, "{"),
@@ -147,6 +206,9 @@ impl Token {
         (Token::VBar, "|"),
         (Token::And, "&"),
         (Token::Equals, "="),
+        (Token::Hash, "#"),
+        (Token::Underscore, "_"),
+        (Token::DoubleColon, "::"),
     ];
 
     const REGEX_TOKENS: &'static [(Token, &'static str)] = &[
@@ -160,6 +222,7 @@ impl Token {
         ),
         (Token::Regexp, r#"/(\\.|[^/\\])+/[imslux]*"#),
         (Token::Number, r#"[+-]?[0-9]+(\.[0-9]*)?([eE][+-]?[0-9]+)?"#),
+        (Token::HexNumber, r#"0[xX][0-9a-fA-F]+"#),
         (Token::Newline, r"(\r?\n)+[ \t]*"),
         (Token::SpecialToken, r"<[^<>\s]+>"),
         (Token::GrammarRef, r"@[a-zA-Z0-9_\-]+"),
@@ -224,10 +287,20 @@ pub fn lex_lark(input: &str) -> Result<Vec<Lexeme>> {
 
         match res {
             LexerResult::Error => {
-                bail!("{}({}): lexer error", line_no, column_no);
+                bail!(
+                    "{}({}): lexer error\n{}",
+                    line_no,
+                    column_no,
+                    highlight_location(&input, line_no, column_no)
+                );
             }
             LexerResult::SpecialToken(_) => {
-                bail!("{}({}): lexer special token", line_no, column_no);
+                bail!(
+                    "{}({}): lexer special token\n{}",
+                    line_no,
+                    column_no,
+                    highlight_location(&input, line_no, column_no)
+                );
             }
             LexerResult::State(s, _) => {
                 state = s;

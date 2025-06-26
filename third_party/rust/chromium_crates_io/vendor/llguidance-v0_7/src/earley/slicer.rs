@@ -168,7 +168,7 @@ pub struct SlicedBiasComputer {
 const DEBUG: bool = ITEM_TRACE;
 macro_rules! debug {
     ($($arg:tt)*) => {
-        if DEBUG {
+        if cfg!(feature = "logging") && DEBUG {
             eprint!(">>> ");
             eprintln!($($arg)*);
         }

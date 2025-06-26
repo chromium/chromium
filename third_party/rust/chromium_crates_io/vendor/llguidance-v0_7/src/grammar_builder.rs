@@ -2,8 +2,9 @@ use crate::{
     api::{LLGuidanceOptions, ParserLimits},
     earley::{
         lexerspec::{token_ranges_to_string, LexemeClass, LexemeIdx, LexerSpec},
-        Grammar, SymIdx, SymbolProps,
+        Grammar, ParamCond, ParamExpr, SymIdx, SymbolProps,
     },
+    hashcons::{HashCons, HashId},
     HashMap,
 };
 use anyhow::{bail, ensure, Result};
@@ -13,9 +14,20 @@ use toktrie::{bytes::limit_str, TokEnv, INVALID_TOKEN};
 
 use crate::api::{GenGrammarOptions, GenOptions, NodeProps};
 
+const DEBUG: bool = false;
+macro_rules! debug {
+    ($($arg:tt)*) => {
+        if cfg!(feature = "logging") && DEBUG {
+            eprint!("GRM>      ");
+            eprintln!($($arg)*);
+        }
+    };
+}
+
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
 pub struct NodeRef {
     idx: SymIdx,
+    param_id: Option<HashId<ParamExpr>>,
     grammar_id: usize,
 }
 
@@ -23,7 +35,12 @@ impl NodeRef {
     pub const BOGUS: NodeRef = NodeRef {
         idx: SymIdx::BOGUS,
         grammar_id: usize::MAX,
+        param_id: None,
     };
+
+    pub fn is_parametric(&self) -> bool {
+        self.param_id.is_some()
+    }
 }
 
 const K: usize = 4;
@@ -43,6 +60,9 @@ pub struct GrammarBuilder {
     strings: HashMap<String, NodeRef>,
     at_most_cache: HashMap<(NodeRef, usize), NodeRef>,
     repeat_exact_cache: HashMap<(NodeRef, usize), NodeRef>,
+
+    params: HashCons<ParamExpr>,
+    self_ref: HashId<ParamExpr>,
 }
 
 pub struct GrammarResult {
@@ -145,6 +165,8 @@ impl RegexBuilder {
 
 impl GrammarBuilder {
     pub fn new(tok_env: Option<TokEnv>, limits: ParserLimits) -> Self {
+        let mut params = HashCons::default();
+        let self_ref = params.insert(ParamExpr::SelfRef);
         Self {
             grammar: Grammar::new(None),
             curr_grammar_idx: 0,
@@ -157,6 +179,8 @@ impl GrammarBuilder {
             warnings: HashMap::default(),
             limits,
             tok_env,
+            self_ref,
+            params,
         }
     }
 
@@ -379,29 +403,66 @@ impl GrammarBuilder {
         r
     }
 
-    fn child_nodes(&mut self, options: &[NodeRef]) -> Vec<SymIdx> {
-        options
+    pub fn needs_param(&self, node: NodeRef) -> bool {
+        if let Some(param_id) = node.param_id {
+            self.params.get(param_id).needs_param()
+        } else {
+            false
+        }
+    }
+
+    pub fn node_to_string(&self, node: NodeRef) -> String {
+        if node.is_parametric() {
+            let param = self.params.get(node.param_id.unwrap());
+            format!("{}::{}", self.grammar.sym_name(node.idx), param)
+        } else {
+            self.grammar.sym_name(node.idx).to_string()
+        }
+    }
+
+    fn child_nodes(&mut self, nodes: &[NodeRef]) -> (Vec<(SymIdx, ParamExpr)>, bool) {
+        let opts: Vec<_> = nodes
             .iter()
             .map(|e| {
                 assert!(e.grammar_id == self.curr_grammar_idx);
-                e.idx
+                debug!("   node: {}", self.node_to_string(*e));
+                let param = e
+                    .param_id
+                    .map(|id| self.params.get(id).clone())
+                    .unwrap_or(ParamExpr::Null);
+                (e.idx, param)
             })
-            .collect()
+            .collect();
+        let needs_param = opts.iter().any(|(_, p)| p.needs_param());
+        debug!("needs_param: {}", needs_param);
+        (opts, needs_param)
+    }
+
+    pub fn rename(&mut self, node: NodeRef, name: &str) {
+        self.grammar.rename_symbol(node.idx, name);
     }
 
     pub fn select(&mut self, options: &[NodeRef]) -> NodeRef {
-        let ch = self.child_nodes(options);
-        if options.len() == 1 {
+        self.select_with_cond(options, Vec::new())
+    }
+
+    pub fn select_with_cond(&mut self, options: &[NodeRef], mut conds: Vec<ParamCond>) -> NodeRef {
+        let (ch, needs_param) = self.child_nodes(options);
+        if options.len() == 1 && conds.is_empty() {
             return options[0];
         }
-        let r = self.new_node("");
+        let r = self.new_param_node("", needs_param || !conds.is_empty());
         let empty = self.empty().idx;
+        assert!(conds.is_empty() || ch.len() == conds.len());
+        conds.reverse();
         for n in &ch {
-            if n == &empty {
-                self.grammar.add_rule(r.idx, vec![]).unwrap();
+            let cond = conds.pop().unwrap_or(ParamCond::True);
+            let v = if n.0 == empty {
+                vec![]
             } else {
-                self.grammar.add_rule(r.idx, vec![*n]).unwrap();
-            }
+                vec![n.clone()]
+            };
+            self.grammar.add_rule_ext(r.idx, cond, v).unwrap();
         }
         r
     }
@@ -411,21 +472,29 @@ impl GrammarBuilder {
     }
 
     pub fn join_props(&mut self, values: &[NodeRef], props: NodeProps) -> NodeRef {
-        let mut ch = self.child_nodes(values);
+        let (mut ch, needs_param) = self.child_nodes(values);
         let empty = self.empty().idx;
-        ch.retain(|&n| n != empty);
+        ch.retain(|n| n.0 != empty);
         if ch.is_empty() {
             return self.empty();
         }
         if ch.len() == 1 && props == NodeProps::default() {
-            return NodeRef {
-                idx: ch[0],
-                grammar_id: self.curr_grammar_idx,
-            };
+            let param_id = values.iter().find(|v| v.idx == ch[0].0).unwrap().param_id;
+            // if param_id is Some, but needs_param is false,
+            // it means this node doesn't have to be parametric if we wrap it (so we do it)
+            if param_id.is_none() || needs_param {
+                return NodeRef {
+                    idx: ch[0].0,
+                    grammar_id: self.curr_grammar_idx,
+                    param_id,
+                };
+            }
         }
-        let r = self.new_node("");
+        let r = self.new_param_node("", needs_param);
         self.grammar.apply_node_props(r.idx, props);
-        self.grammar.add_rule(r.idx, ch).unwrap();
+        self.grammar
+            .add_rule_ext(r.idx, ParamCond::True, ch)
+            .unwrap();
         r
     }
 
@@ -437,24 +506,32 @@ impl GrammarBuilder {
         self.grammar.num_symbols()
     }
 
+    fn add_rule(&mut self, node: NodeRef, children: &[NodeRef]) {
+        let (ch, needs_param) = self.child_nodes(children);
+        assert!(!needs_param || node.is_parametric());
+        self.grammar
+            .add_rule_ext(node.idx, ParamCond::True, ch)
+            .unwrap();
+    }
+
     pub fn optional(&mut self, value: NodeRef) -> NodeRef {
-        let p = self.new_node("");
-        self.grammar.add_rule(p.idx, vec![]).unwrap();
-        self.grammar.add_rule(p.idx, vec![value.idx]).unwrap();
+        let p = self.new_wrapper_node("", value);
+        self.add_rule(p, &[]);
+        self.add_rule(p, &[value]);
         p
     }
 
     pub fn one_or_more(&mut self, elt: NodeRef) -> NodeRef {
-        let p = self.new_node("plus");
-        self.grammar.add_rule(p.idx, vec![elt.idx]).unwrap();
-        self.grammar.add_rule(p.idx, vec![p.idx, elt.idx]).unwrap();
+        let p = self.new_wrapper_node("plus", elt);
+        self.add_rule(p, &[elt]);
+        self.add_rule(p, &[p, elt]);
         p
     }
 
     pub fn zero_or_more(&mut self, elt: NodeRef) -> NodeRef {
-        let p = self.new_node("star");
-        self.grammar.add_rule(p.idx, vec![]).unwrap();
-        self.grammar.add_rule(p.idx, vec![p.idx, elt.idx]).unwrap();
+        let p = self.new_wrapper_node("star", elt);
+        self.add_rule(p, &[]);
+        self.add_rule(p, &[p, elt]);
         p
     }
 
@@ -635,16 +712,31 @@ impl GrammarBuilder {
         NodeRef {
             idx: id,
             grammar_id: self.curr_grammar_idx,
+            param_id: None,
         }
     }
 
+    pub fn new_param_node(&mut self, name: &str, needs_param: bool) -> NodeRef {
+        let mut r = self.new_node(name);
+        if needs_param {
+            self.grammar.make_parametric(r.idx).unwrap();
+            r.param_id = Some(self.self_ref);
+        }
+        r
+    }
+
+    fn new_wrapper_node(&mut self, name: &str, wrapper_for: NodeRef) -> NodeRef {
+        self.new_param_node(name, self.needs_param(wrapper_for))
+    }
+
     pub fn set_placeholder(&mut self, placeholder: NodeRef, node: NodeRef) {
-        let _ = self.child_nodes(&[placeholder, node]); // validate
+        let (mut ch, _) = self.child_nodes(&[node, placeholder]);
+        ch.pop();
         self.grammar
-            .check_empty_symbol(placeholder.idx)
+            .check_empty_symbol_parametric_ok(placeholder.idx)
             .expect("placeholder already set");
         self.grammar
-            .add_rule(placeholder.idx, vec![node.idx])
+            .add_rule_ext(placeholder.idx, ParamCond::True, ch)
             .unwrap();
     }
 
@@ -661,5 +753,27 @@ impl GrammarBuilder {
             start_node: symidx,
             builder: self,
         }
+    }
+
+    pub fn apply(&mut self, id: NodeRef, param: Option<ParamExpr>) -> Result<NodeRef> {
+        if param.is_none() {
+            ensure!(
+                !id.is_parametric(),
+                "rule '{}' is parametric, but no parameter provided",
+                self.grammar.sym_name(id.idx)
+            );
+            return Ok(id);
+        }
+        ensure!(
+            id.is_parametric(),
+            "rule '{}' is not parametric, but parameter provided",
+            self.grammar.sym_name(id.idx)
+        );
+        let param_id = self.params.insert(param.unwrap());
+        Ok(NodeRef {
+            idx: id.idx,
+            param_id: Some(param_id),
+            grammar_id: id.grammar_id,
+        })
     }
 }

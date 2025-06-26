@@ -1,3 +1,10 @@
+use std::rc::Rc;
+
+use crate::{
+    earley::{BitIdx, ParamCond, ParamExpr, ParamRef, ParamValue},
+    lark::lexer::highlight_location,
+};
+
 use super::{
     ast::*,
     lexer::{lex_lark, Lexeme, LexemeValue, Location, Token},
@@ -9,15 +16,17 @@ const MAX_NESTING: usize = 30;
 /// The parser struct that holds the tokens and current position.
 pub struct Parser {
     tokens: Vec<Lexeme>,
+    src: Rc<String>,
     pos: usize,
     nesting_level: usize,
 }
 
 impl Parser {
     /// Creates a new parser instance.
-    pub fn new(tokens: Vec<Lexeme>, nesting: usize) -> Self {
+    pub fn new(src: Rc<String>, tokens: Vec<Lexeme>, nesting: usize) -> Self {
         Parser {
             tokens,
+            src,
             pos: 0,
             nesting_level: nesting,
         }
@@ -32,12 +41,13 @@ impl Parser {
         self.parse_start_inner().map_err(|e| {
             if let Some(tok) = self.peek_token() {
                 anyhow!(
-                    "{}({}): {} (at {} ({:?}))",
+                    "{}({}): {} (at {} ({}))\n{}",
                     tok.line,
                     tok.column,
                     e,
                     tok.value,
-                    tok.token
+                    tok.token,
+                    highlight_location(&self.src, tok.line, tok.column)
                 )
             } else {
                 anyhow!("at EOF: {}", e)
@@ -76,20 +86,33 @@ impl Parser {
             Location {
                 line: t.line,
                 column: t.column,
+                src: self.src.clone(),
             }
         } else {
-            Location { line: 0, column: 0 }
+            Location {
+                line: 0,
+                column: 0,
+                src: self.src.clone(),
+            }
         }
     }
 
     /// Parses a rule definition.
     fn parse_rule(&mut self) -> Result<Rule> {
         let name = self.expect_token_val(Token::Rule)?;
-        let params = if self.has_token(Token::LBrace) {
+
+        let mut is_parametric = false;
+        if self.match_token(Token::DoubleColon) {
+            self.expect_token(Token::Underscore)?;
+            is_parametric = true;
+        }
+
+        let template_params = if self.has_token(Token::LBrace) {
             Some(self.parse_rule_params()?)
         } else {
             None
         };
+
         let priority = if self.has_token(Token::Dot) {
             Some(self.parse_priority()?)
         } else {
@@ -110,7 +133,8 @@ impl Parser {
             name,
             pin_terminals,
             cond_inline,
-            params,
+            params: template_params,
+            is_parametric,
             priority,
             expansions: Expansions(self.location(), Vec::new()),
             suffix: None,
@@ -211,7 +235,7 @@ impl Parser {
                             rule.suffix = Some(value);
                         }
                         "max_tokens" => {
-                            let value = self.expect_token_val(Token::Number)?.parse::<usize>()?;
+                            let value = self.parse_usize()?;
                             rule.max_tokens = Some(value);
                         }
                         "temperature" => {
@@ -316,7 +340,7 @@ impl Parser {
         if !self.match_token(Token::Dot) {
             bail!("Expected '.' in priority")
         }
-        let number = self.expect_token_val(Token::Number)?.parse::<i32>()?;
+        let number = self.parse_i32()?;
         Ok(number)
     }
 
@@ -370,26 +394,49 @@ impl Parser {
         } else {
             None
         };
-        Ok(Alias { conjuncts, alias })
+        let param_cond = if self.match_token(Token::KwIf) {
+            self.parse_param_cond()?
+        } else {
+            ParamCond::True
+        };
+        Ok(Alias {
+            conjuncts,
+            alias,
+            param_cond,
+        })
     }
 
     /// Parses an expansion.
     fn parse_expansion(&mut self) -> Result<Expansion> {
         let mut exprs = Vec::new();
         loop {
-            if self.has_token(Token::Newline)
-                || self.has_token(Token::VBar)
-                || self.has_token(Token::Arrow)
-                || self.has_token(Token::RBrace)
-                || self.has_token(Token::RParen)
-                || self.has_token(Token::RBracket)
-                || self.has_token(Token::And)
-            {
+            if self.has_any_token(&[
+                Token::Newline,
+                Token::VBar,
+                Token::Arrow,
+                Token::RBrace,
+                Token::RParen,
+                Token::RBracket,
+                Token::And,
+                Token::KwIf,
+            ]) {
                 break;
             }
             exprs.push(self.parse_expr()?);
         }
         Ok(Expansion(exprs))
+    }
+
+    fn parse_i32(&mut self) -> Result<i32> {
+        let val = self.expect_token_val(Token::Number)?;
+        val.parse::<i32>()
+            .map_err(|e| anyhow!("error parsing signed integer: {e}"))
+    }
+
+    fn parse_usize(&mut self) -> Result<usize> {
+        let val = self.expect_token_val(Token::Number)?;
+        val.parse::<usize>()
+            .map_err(|e| anyhow!("error parsing unsigned integer: {e}"))
     }
 
     /// Parses an expression.
@@ -401,9 +448,9 @@ impl Parser {
             op = Some(Op(op_token.clone()));
         } else if self.has_tokens(&[Token::Tilde, Token::Number]) {
             self.expect_token(Token::Tilde)?;
-            let start_num = self.expect_token_val(Token::Number)?.parse::<i32>()?;
+            let start_num = self.parse_i32()?;
             let end_num = if self.match_token(Token::DotDot) {
-                Some(self.expect_token_val(Token::Number)?.parse::<i32>()?)
+                Some(self.parse_i32()?)
             } else {
                 None
             };
@@ -412,14 +459,14 @@ impl Parser {
             let start_num = if self.has_token(Token::Comma) {
                 0
             } else {
-                self.expect_token_val(Token::Number)?.parse::<i32>()?
+                self.parse_i32()?
             };
             let end_num = if self.has_token(Token::Comma) {
                 self.expect_token(Token::Comma)?;
                 if self.has_token(Token::RBrace) {
                     i32::MAX
                 } else {
-                    self.expect_token_val(Token::Number)?.parse::<i32>()?
+                    self.parse_i32()?
                 }
             } else {
                 start_num
@@ -536,7 +583,8 @@ impl Parser {
             }
             self.pos = endp + 1;
 
-            let inner = Parser::new(inner, self.nesting_level + 1).parse_start()?;
+            let inner =
+                Parser::new(self.src.clone(), inner, self.nesting_level + 1).parse_start()?;
             Ok(Value::NestedLark(inner.items))
         } else if let Some(name_token) = self
             .match_token_with_value(Token::Rule)
@@ -548,6 +596,7 @@ impl Parser {
             {
                 Ok(Value::Name(name_token))
             } else if self.match_token(Token::LBrace) {
+                // Lark template usage (not supported outside of parser anyways)
                 let mut values = Vec::new();
                 values.push(self.parse_value()?);
                 while self.match_token(Token::Comma) {
@@ -558,12 +607,207 @@ impl Parser {
                     name: name_token,
                     values,
                 })
+            } else if self.match_token(Token::DoubleColon) {
+                let inner = self.parse_param_expr()?;
+                Ok(Value::NameParam(name_token, inner))
             } else {
                 Ok(Value::Name(name_token))
             }
         } else {
             bail!("Expected value")
         }
+    }
+
+    fn parse_param_expr(&mut self) -> Result<ParamExpr> {
+        if self.has_any_token(&[Token::Number, Token::HexNumber]) {
+            let pv = self.parse_param_value()?;
+            return Ok(ParamExpr::Const(pv));
+        } else if self.match_token(Token::Underscore) {
+            return Ok(ParamExpr::SelfRef);
+        }
+
+        let n = self.expect_token_val(Token::Rule)?;
+        let r = match n.as_str() {
+            "incr" => self.parse_expr_1(ParamExpr::Incr)?,
+            "decr" => self.parse_expr_1(ParamExpr::Decr)?,
+
+            "bit_and" => self.parse_expr_pv(ParamExpr::BitAnd)?,
+            "bit_or" => self.parse_expr_pv(ParamExpr::BitOr)?,
+
+            // make sure to update "impl Display for ParamExpr" when adding new ones
+            "set_bit" => {
+                self.expect_token(Token::LParen)?;
+                let n = self.parse_bit_idx()?;
+                self.expect_token(Token::RParen)?;
+                ParamExpr::BitOr(ParamValue(1u64 << n))
+            }
+            "clear_bit" => {
+                self.expect_token(Token::LParen)?;
+                let n = self.parse_bit_idx()?;
+                self.expect_token(Token::RParen)?;
+                ParamExpr::BitAnd(ParamValue(!(1u64 << n)))
+            }
+
+            _ => bail!("Unexpected expression '{}'", n),
+        };
+
+        Ok(r)
+    }
+
+    fn parse_param_ref(&mut self) -> Result<ParamRef> {
+        if self.match_token(Token::LBracket) {
+            let start_bit = self.parse_bit_idx()?;
+            self.expect_colon()?;
+            let end_bit = self.parse_bit_len()?;
+            self.expect_token(Token::RBracket)?;
+            ensure!(
+                end_bit > start_bit,
+                "end bit index {} must be > start bit index {}",
+                end_bit,
+                start_bit
+            );
+            return Ok(ParamRef::new(start_bit, end_bit));
+        } else if self.match_token(Token::Underscore) {
+            return Ok(ParamRef::full());
+        }
+        bail!("expected '_' or '[start_bit:stop_bit]'");
+    }
+
+    fn parse_param_value(&mut self) -> Result<ParamValue> {
+        if let Some(hex) = self.match_token_with_value(Token::HexNumber) {
+            let val = u64::from_str_radix(&hex[2..], 16)?;
+            Ok(ParamValue(val))
+        } else {
+            let val = self.parse_usize()? as u64;
+            Ok(ParamValue(val))
+        }
+    }
+
+    fn parse_usize_max(&mut self, max_num: usize) -> Result<usize> {
+        let val = self.parse_usize()?;
+        ensure!(
+            val <= max_num,
+            "number {} is too large; must be <= {}",
+            val,
+            max_num
+        );
+        Ok(val)
+    }
+
+    fn parse_bit_idx(&mut self) -> Result<BitIdx> {
+        Ok(self.parse_usize_max(ParamValue::NUM_BITS - 1)? as BitIdx)
+    }
+
+    fn parse_bit_len(&mut self) -> Result<BitIdx> {
+        Ok(self.parse_usize_max(ParamValue::NUM_BITS)? as BitIdx)
+    }
+
+    fn parse_cond_normal(
+        &mut self,
+        ctor: fn(ParamRef, ParamValue) -> ParamCond,
+    ) -> Result<ParamCond> {
+        self.expect_token(Token::LParen)?;
+        let pr = self.parse_param_ref()?;
+        self.expect_token(Token::Comma)?;
+        let pv = self.parse_param_value()?;
+        self.expect_token(Token::RParen)?;
+        Ok(ctor(pr, pv))
+    }
+
+    fn parse_cond_bit_idx(&mut self, ctor: fn(ParamRef, BitIdx) -> ParamCond) -> Result<ParamCond> {
+        self.expect_token(Token::LParen)?;
+        let pr = self.parse_param_ref()?;
+        self.expect_token(Token::Comma)?;
+        let pv = self.parse_bit_idx()?;
+        self.expect_token(Token::RParen)?;
+        Ok(ctor(pr, pv))
+    }
+
+    fn parse_cond_2(
+        &mut self,
+        ctor: fn(Box<ParamCond>, Box<ParamCond>) -> ParamCond,
+    ) -> Result<ParamCond> {
+        self.expect_token(Token::LParen)?;
+        let left = self.parse_param_cond()?;
+        self.expect_token(Token::Comma)?;
+        let right = self.parse_param_cond()?;
+        self.expect_token(Token::RParen)?;
+        Ok(ctor(Box::new(left), Box::new(right)))
+    }
+
+    fn parse_cond_1(&mut self, ctor: fn(Box<ParamCond>) -> ParamCond) -> Result<ParamCond> {
+        self.expect_token(Token::LParen)?;
+        let cond = self.parse_param_cond()?;
+        self.expect_token(Token::RParen)?;
+        Ok(ctor(Box::new(cond)))
+    }
+
+    fn parse_expr_1(&mut self, ctor: fn(ParamRef) -> ParamExpr) -> Result<ParamExpr> {
+        self.expect_token(Token::LParen)?;
+        let pr = self.parse_param_ref()?;
+        self.expect_token(Token::RParen)?;
+        Ok(ctor(pr))
+    }
+
+    fn parse_expr_pv(&mut self, ctor: fn(ParamValue) -> ParamExpr) -> Result<ParamExpr> {
+        self.expect_token(Token::LParen)?;
+        let pv = self.parse_param_value()?;
+        self.expect_token(Token::RParen)?;
+        Ok(ctor(pv))
+    }
+
+    fn parse_param_cond(&mut self) -> Result<ParamCond> {
+        let n = self.expect_token_val(Token::Rule)?;
+        let r = match n.as_str() {
+            "true" => ParamCond::True,
+
+            "ne" => self.parse_cond_normal(ParamCond::NE)?,
+            "eq" => self.parse_cond_normal(ParamCond::EQ)?,
+            "lt" => self.parse_cond_normal(ParamCond::LT)?,
+            "le" => self.parse_cond_normal(ParamCond::LE)?,
+            "gt" => self.parse_cond_normal(ParamCond::GT)?,
+            "ge" => self.parse_cond_normal(ParamCond::GE)?,
+
+            "bit_count_ne" => self.parse_cond_bit_idx(ParamCond::BitCountNE)?,
+            "bit_count_eq" => self.parse_cond_bit_idx(ParamCond::BitCountEQ)?,
+            "bit_count_lt" => self.parse_cond_bit_idx(ParamCond::BitCountLT)?,
+            "bit_count_le" => self.parse_cond_bit_idx(ParamCond::BitCountLE)?,
+            "bit_count_gt" => self.parse_cond_bit_idx(ParamCond::BitCountGT)?,
+            "bit_count_ge" => self.parse_cond_bit_idx(ParamCond::BitCountGE)?,
+
+            "and" => self.parse_cond_2(ParamCond::And)?,
+            "or" => self.parse_cond_2(ParamCond::Or)?,
+            "not" => self.parse_cond_1(ParamCond::Not)?,
+
+            // when adding new ones, also update "impl Display for ParamCond"
+            "bit_clear" => {
+                self.expect_token(Token::LParen)?;
+                let bi = self.parse_bit_idx()?;
+                self.expect_token(Token::RParen)?;
+                ParamCond::EQ(ParamRef::single_bit(bi), ParamValue(0))
+            }
+            "bit_set" => {
+                self.expect_token(Token::LParen)?;
+                let bi = self.parse_bit_idx()?;
+                self.expect_token(Token::RParen)?;
+                ParamCond::EQ(ParamRef::single_bit(bi), ParamValue(1))
+            }
+            "is_zeros" => {
+                self.expect_token(Token::LParen)?;
+                let pr = self.parse_param_ref()?;
+                self.expect_token(Token::RParen)?;
+                ParamCond::EQ(pr, ParamValue(0))
+            }
+            "is_ones" => {
+                self.expect_token(Token::LParen)?;
+                let pr = self.parse_param_ref()?;
+                self.expect_token(Token::RParen)?;
+                ParamCond::EQ(pr, ParamValue(pr.mask() >> pr.start()))
+            }
+
+            _ => bail!("Unexpected condition '{}'", n),
+        };
+        Ok(r)
     }
 
     /// Parses an import path.
@@ -605,6 +849,14 @@ impl Parser {
         Ok(names)
     }
 
+    fn has_any_token(&self, tokens: &[Token]) -> bool {
+        if let Some(lexeme) = self.peek_token() {
+            tokens.contains(&lexeme.token)
+        } else {
+            false
+        }
+    }
+
     fn has_token(&self, token: Token) -> bool {
         if let Some(lexeme) = self.peek_token() {
             lexeme.token == token
@@ -642,10 +894,10 @@ impl Parser {
                 self.advance();
                 Ok(())
             } else {
-                bail!("Expected token {:?}, found {:?}", expected, token.token)
+                bail!("Expected token {}, found {}", expected, token.token)
             }
         } else {
-            bail!("Expected token {:?}, found end of input", expected)
+            bail!("Expected token {}, found end of input", expected)
         }
     }
 
@@ -656,10 +908,10 @@ impl Parser {
                 self.advance();
                 Ok(r)
             } else {
-                bail!("Expected token {:?}, found {:?}", expected, token.token)
+                bail!("Expected token {}, found {}", expected, token.token)
             }
         } else {
-            bail!("Expected token {:?}, found end of input", expected)
+            bail!("Expected token {}, found end of input", expected)
         }
     }
 
@@ -719,5 +971,5 @@ pub struct ParsedLark {
 
 pub fn parse_lark(input: &str) -> Result<ParsedLark> {
     let tokens = lex_lark(input)?;
-    Parser::new(tokens, 0).parse_start()
+    Parser::new(Rc::new(input.to_string()), tokens, 0).parse_start()
 }
