@@ -1076,7 +1076,7 @@ TEST_F(ExtensionServiceTest, LoadAllExtensionsFromDirectorySuccess) {
   EXPECT_EQ(std::string(good1), loaded_extensions()[1]->id());
   EXPECT_EQ(std::string("My extension 2"), loaded_extensions()[1]->name());
   EXPECT_EQ(std::string(), loaded_extensions()[1]->description());
-  EXPECT_EQ(loaded_extensions()[1]->ResolveExtensionURL("background.html"),
+  EXPECT_EQ(loaded_extensions()[1]->GetResourceURL("background.html"),
             BackgroundInfo::GetBackgroundURL(loaded_extensions()[1].get()));
   EXPECT_TRUE(
       ContentScriptsInfo::GetContentScripts(loaded_extensions()[1].get())

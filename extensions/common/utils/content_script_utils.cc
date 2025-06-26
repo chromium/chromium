@@ -350,8 +350,7 @@ bool ParseFileSources(
     result->js_scripts().reserve(js->size());
     for (const auto& source : *js) {
       if (source.file) {
-        GURL url =
-            extension->ResolveExtensionURL(base::EscapePath(*source.file));
+        GURL url = extension->GetResourceURL(base::EscapePath(*source.file));
         ExtensionResource resource = extension->GetResource(*source.file);
         result->js_scripts().push_back(UserScript::Content::CreateFile(
             resource.extension_root(), resource.relative_path(), url));
@@ -364,7 +363,7 @@ bool ParseFileSources(
           return false;
         }
 
-        GURL url = extension->ResolveExtensionURL(
+        GURL url = extension->GetResourceURL(
             base::Uuid::GenerateRandomV4().AsLowercaseString());
         std::unique_ptr<UserScript::Content> content =
             UserScript::Content::CreateInlineCode(url);
@@ -380,8 +379,7 @@ bool ParseFileSources(
     result->css_scripts().reserve(css->size());
     for (const auto& source : *css) {
       if (source.file) {
-        GURL url =
-            extension->ResolveExtensionURL(base::EscapePath(*source.file));
+        GURL url = extension->GetResourceURL(base::EscapePath(*source.file));
         ExtensionResource resource = extension->GetResource(*source.file);
         result->css_scripts().push_back(UserScript::Content::CreateFile(
             resource.extension_root(), resource.relative_path(), url));

@@ -327,7 +327,7 @@ class ExtensionManagementApiTestSupervised
     DCHECK(test_extension) << "Test extension is not enabled";
 
     extensions::ResultCatcher catcher;
-    GURL url = test_extension->ResolveExtensionURL(page_url);
+    GURL url = test_extension->GetResourceURL(page_url);
     DCHECK(url.is_valid());
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     if (catcher.GetNextResult()) {

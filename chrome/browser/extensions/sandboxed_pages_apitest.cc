@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, ManifestV3AllowsWebContent) {
   content::DOMMessageQueue message_queue;
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::NavigateToURL(
-      web_contents, extension->ResolveExtensionURL("sandboxed.html")));
+      web_contents, extension->GetResourceURL("sandboxed.html")));
   content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(frame_host);
 
@@ -289,8 +289,8 @@ IN_PROC_BROWSER_TEST_P(SandboxAPIMetricsTest,
   // successfully.
   content::DOMMessageQueue message_queue;
   content::WebContents* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents, extension->ResolveExtensionURL("main.html")));
+  ASSERT_TRUE(content::NavigateToURL(web_contents,
+                                     extension->GetResourceURL("main.html")));
   content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(frame_host);
 
@@ -364,8 +364,8 @@ IN_PROC_BROWSER_TEST_P(SandboxAPIMetricsTest,
   // successfully.
   content::DOMMessageQueue message_queue;
   content::WebContents* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents, extension->ResolveExtensionURL("main.html")));
+  ASSERT_TRUE(content::NavigateToURL(web_contents,
+                                     extension->GetResourceURL("main.html")));
   content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(frame_host);
 
@@ -437,8 +437,8 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, WebAccessibleResourcesTest) {
                                    std::string expected_frame_origin) {
     // Fetch and test resource.
     content::WebContents* web_contents = GetActiveWebContents();
-    ASSERT_TRUE(content::NavigateToURL(
-        web_contents, extension->ResolveExtensionURL(frame_url)));
+    ASSERT_TRUE(content::NavigateToURL(web_contents,
+                                       extension->GetResourceURL(frame_url)));
     constexpr char kFetchScriptTemplate[] =
         R"(
         fetch($1).then(result => {
@@ -446,10 +446,10 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, WebAccessibleResourcesTest) {
         }).catch(err => {
           return String(err);
         });)";
-    EXPECT_EQ(content::EvalJs(web_contents,
-                              content::JsReplace(
-                                  kFetchScriptTemplate,
-                                  extension->ResolveExtensionURL(fetch_url))),
+    EXPECT_EQ(content::EvalJs(
+                  web_contents,
+                  content::JsReplace(kFetchScriptTemplate,
+                                     extension->GetResourceURL(fetch_url))),
               fetch_url);
     EXPECT_EQ(expected_frame_origin, web_contents->GetPrimaryMainFrame()
                                          ->GetLastCommittedOrigin()

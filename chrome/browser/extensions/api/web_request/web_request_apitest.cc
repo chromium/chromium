@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   {
     ExtensionTestMessageListener listener1("iframe1 ready");
     ExtensionTestMessageListener listener2("iframe2 ready");
-    ASSERT_TRUE(NavigateToURL(extension->ResolveExtensionURL("parent.html")));
+    ASSERT_TRUE(NavigateToURL(extension->GetResourceURL("parent.html")));
     ASSERT_TRUE(listener1.WaitUntilSatisfied());
     ASSERT_TRUE(listener2.WaitUntilSatisfied());
   }
@@ -1649,7 +1649,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
   const Extension* extension =
       registry->enabled_extensions().GetByID(last_loaded_extension_id());
-  GURL url = extension->ResolveExtensionURL("newTab/a.html");
+  GURL url = extension->GetResourceURL("newTab/a.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
@@ -6631,7 +6631,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   ASSERT_TRUE(extension);
 
   // Load the page with the extension listeners.
-  ASSERT_TRUE(NavigateToURL(extension->ResolveExtensionURL("page.html")));
+  ASSERT_TRUE(NavigateToURL(extension->GetResourceURL("page.html")));
   content::RenderFrameHost* page_host =
       GetActiveWebContents()->GetPrimaryMainFrame();
   ASSERT_TRUE(page_host);
@@ -7044,7 +7044,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   ASSERT_TRUE(extension);
 
   // Load the page with the extension listeners.
-  ASSERT_TRUE(NavigateToURL(extension->ResolveExtensionURL("page.html")));
+  ASSERT_TRUE(NavigateToURL(extension->GetResourceURL("page.html")));
   content::RenderFrameHost* page_host =
       GetActiveWebContents()->GetPrimaryMainFrame();
   ASSERT_TRUE(page_host);
@@ -7141,7 +7141,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(extension);
 
   // Load the page with the extension listeners.
-  ASSERT_TRUE(NavigateToURL(extension->ResolveExtensionURL("page.html")));
+  ASSERT_TRUE(NavigateToURL(extension->GetResourceURL("page.html")));
   content::RenderFrameHost* page_host =
       GetActiveWebContents()->GetPrimaryMainFrame();
   ASSERT_TRUE(page_host);

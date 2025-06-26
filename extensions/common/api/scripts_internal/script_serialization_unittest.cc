@@ -141,7 +141,7 @@ TEST(ScriptSerializationUnitTest, SerializeUserScript) {
   script.set_match_all_frames(true);
   script.css_scripts().push_back(UserScript::Content::CreateFile(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("style.css")),
-      stub_extension->ResolveExtensionURL("style.css")));
+      stub_extension->GetResourceURL("style.css")));
   script.add_exclude_url_pattern(
       URLPattern(valid_schemes, "http://exclude.example/*"));
   script.add_exclude_glob("*exclude_glob*");
@@ -149,7 +149,7 @@ TEST(ScriptSerializationUnitTest, SerializeUserScript) {
   script.add_glob("*include_glob*");
   script.js_scripts().push_back(UserScript::Content::CreateFile(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("script.js")),
-      stub_extension->ResolveExtensionURL("script.js")));
+      stub_extension->GetResourceURL("script.js")));
   script.add_url_pattern(URLPattern(valid_schemes, "http://matches.example/*"));
   script.set_match_origin_as_fallback(
       mojom::MatchOriginAsFallbackBehavior::kAlways);

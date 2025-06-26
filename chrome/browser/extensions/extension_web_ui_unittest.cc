@@ -119,7 +119,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   registrar()->AddExtension(ext_unpacked.get());
 
   const GURL kExpectedUnpackedOverrideUrl =
-      ext_unpacked->ResolveExtensionURL(kOverrideResource);
+      ext_unpacked->GetResourceURL(kOverrideResource);
   const GURL kBookmarksUrl(chrome::kChromeUIBookmarksURL);
   GURL changed_url = kBookmarksUrl;
   EXPECT_TRUE(
@@ -166,7 +166,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   EXPECT_EQ(kBookmarksUrl, changed_url);
 
   GURL kExpectedComponentOverrideUrl =
-      ext_component->ResolveExtensionURL(kOverrideResource2);
+      ext_component->GetResourceURL(kOverrideResource2);
 
   // Unregister non-component extension. Only component extension remaining.
   ExtensionWebUI::UnregisterChromeURLOverrides(
@@ -200,7 +200,7 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
           .SetManifestPath("chrome_url_overrides.newtab", "newtab.html")
           .Build();
 
-  const GURL newtab_url = extension->ResolveExtensionURL("newtab.html");
+  const GURL newtab_url = extension->GetResourceURL("newtab.html");
 
   PrefService* prefs = profile_->GetPrefs();
   {
@@ -213,11 +213,10 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
             .Append(base::Value::Dict()
                         .Set("entry", newtab_url.spec())
                         .Set("active", true))
-            .Append(
-                base::Value::Dict()
-                    .Set("entry",
-                         extension->ResolveExtensionURL("oldtab.html").spec())
-                    .Set("active", true));
+            .Append(base::Value::Dict()
+                        .Set("entry",
+                             extension->GetResourceURL("oldtab.html").spec())
+                        .Set("active", true));
 
     all_overrides.Set("newtab", std::move(newtab_list));
   }
@@ -246,8 +245,7 @@ TEST_F(ExtensionWebUITest, TestFaviconAlwaysAvailable) {
   static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()))
       ->SetReady();
 
-  const GURL kExtensionManifestURL =
-      extension->ResolveExtensionURL("manifest.json");
+  const GURL kExtensionManifestURL = extension->GetResourceURL("manifest.json");
 
   std::vector<favicon_base::FaviconRawBitmapResult> favicon_results;
   auto set_favicon_results =

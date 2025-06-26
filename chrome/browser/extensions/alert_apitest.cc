@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
       test_data_path.AppendASCII("extensions").AppendASCII("simple_with_popup");
   const Extension* extension = LoadExtension(extension_path);
   ASSERT_TRUE(extension);
-  const GURL extension_url = extension->ResolveExtensionURL("popup.html");
+  const GURL extension_url = extension->GetResourceURL("popup.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
 
   content::WebContents* tab =

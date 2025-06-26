@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
 
   // Create an offscreen document and wait for it to load.
   std::unique_ptr<OffscreenDocumentHost> offscreen_document;
-  GURL offscreen_url = extension->ResolveExtensionURL("offscreen.html");
+  GURL offscreen_url = extension->GetResourceURL("offscreen.html");
   {
     ExtensionHostTestHelper offscreen_waiter(profile(), extension->id());
     offscreen_waiter.RestrictToType(mojom::ViewType::kOffscreenDocument);

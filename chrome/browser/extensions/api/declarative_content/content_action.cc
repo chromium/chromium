@@ -332,13 +332,13 @@ void RequestContentScript::InitScript(const mojom::HostID& host_id,
                 kMatchForAboutSchemeAndClimbTree
           : mojom::MatchOriginAsFallbackBehavior::kNever);
   for (const auto& css_file_name : script_data.css_file_names) {
-    GURL url = extension->ResolveExtensionURL(base::EscapePath(css_file_name));
+    GURL url = extension->GetResourceURL(base::EscapePath(css_file_name));
     ExtensionResource resource = extension->GetResource(css_file_name);
     script_.css_scripts().push_back(UserScript::Content::CreateFile(
         resource.extension_root(), resource.relative_path(), url));
   }
   for (const auto& js_file_name : script_data.js_file_names) {
-    GURL url = extension->ResolveExtensionURL(base::EscapePath(js_file_name));
+    GURL url = extension->GetResourceURL(base::EscapePath(js_file_name));
     ExtensionResource resource = extension->GetResource(js_file_name);
     script_.js_scripts().push_back(UserScript::Content::CreateFile(
         resource.extension_root(), resource.relative_path(), url));

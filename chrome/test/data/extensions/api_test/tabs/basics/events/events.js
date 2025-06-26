@@ -123,7 +123,7 @@ chrome.test.runTests([
   },
 
   function setupTabsOnAttachDetach() {
-    createWindow([""], {}, pass(function(winId, tabIds) {
+    createWindow([pageUrl("a")], {}, pass(function(winId, tabIds) {
       secondWindowId = winId;
     }));
   },

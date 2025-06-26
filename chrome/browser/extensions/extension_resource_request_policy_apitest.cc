@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
       "web_accessible/accessible_link_resource.html"));
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), accessible_linked_resource, 1);
-  GURL accessible_url = extension->ResolveExtensionURL("test.png");
+  GURL accessible_url = extension->GetResourceURL("test.png");
   EXPECT_EQ(accessible_url, content::EvalJs(web_contents, "document.URL"));
   EXPECT_EQ(content::PAGE_TYPE_NORMAL,
             controller.GetLastCommittedEntry()->GetPageType());
@@ -438,13 +438,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
       browser(), embedded_test_server()->GetURL("/iframe.html")));
 
   // Send it to a web accessible resource of a valid extension.
-  GURL patsy_url = patsy->ResolveExtensionURL("public.html");
+  GURL patsy_url = patsy->GetResourceURL("public.html");
   content::NavigateIframeToURL(web_contents, "test", patsy_url);
 
   // Now send it to a NON-web-accessible resource of any other extension, via
   // http redirect.
-  GURL target_url =
-      target->ResolveExtensionURL("inaccessible-iframe-contents.html");
+  GURL target_url = target->GetResourceURL("inaccessible-iframe-contents.html");
   GURL http_redirect_to_target_url =
       embedded_test_server()->GetURL("/server-redirect?" + target_url.spec());
   content::NavigateIframeToURL(web_contents, "test",
@@ -464,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
           .AppendASCII("inaccessible"));
   ASSERT_TRUE(extension);
   const GURL non_web_accessible_url =
-      extension->ResolveExtensionURL("inaccessible-iframe-contents.html");
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
 
   OpenUrlInLocalFrameAndVerifyNavigationBlocked(non_web_accessible_url);
 }
@@ -489,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
           .AppendASCII("inaccessible"));
   ASSERT_TRUE(extension);
   const GURL non_existent_resource_url =
-      extension->ResolveExtensionURL("no-such-extension-resource.html");
+      extension->GetResourceURL("no-such-extension-resource.html");
 
   OpenUrlInLocalFrameAndVerifyNavigationBlocked(non_existent_resource_url);
 }
@@ -522,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
           .AppendASCII("inaccessible"));
   ASSERT_TRUE(extension);
   const GURL non_web_accessible_url =
-      extension->ResolveExtensionURL("inaccessible-iframe-contents.html");
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
 
   OpenUrlInSubFrameAndVerifyNavigationBlocked(
       non_web_accessible_url, "remote-frame", non_web_accessible_url);
@@ -537,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(
           .AppendASCII("inaccessible"));
   ASSERT_TRUE(extension);
   const GURL non_web_accessible_url =
-      extension->ResolveExtensionURL("inaccessible-iframe-contents.html");
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
 
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
@@ -584,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(
           .AppendASCII("inaccessible"));
   ASSERT_TRUE(extension);
   const GURL non_web_accessible_url =
-      extension->ResolveExtensionURL("inaccessible-iframe-contents.html");
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
 
   // Load a page that registers a service worker.
   GURL web_page_url = embedded_test_server()->GetURL(
@@ -634,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(
           .AppendASCII("inaccessible"));
   ASSERT_TRUE(extension);
   const GURL non_web_accessible_url =
-      extension->ResolveExtensionURL("inaccessible-iframe-contents.html");
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
 
   // Load a page that registers a service worker.
   GURL web_page_url = embedded_test_server()->GetURL(
@@ -684,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
           .AppendASCII("inaccessible"));
   ASSERT_TRUE(extension);
   const GURL non_web_accessible_url =
-      extension->ResolveExtensionURL("inaccessible-iframe-contents.html");
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
 
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
@@ -739,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(extension);
 
   GURL inaccessible_resource =
-      extension->ResolveExtensionURL("inaccessible-iframe-contents.html");
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
 
   OpenUrlInSubFrameAndVerifyBackNavigationBlocked(
       inaccessible_resource, "remote-frame", inaccessible_resource);
@@ -756,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(extension);
 
   GURL inaccessible_resource =
-      extension->ResolveExtensionURL("inaccessible-iframe-contents.html");
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
   GURL url_blocked_by_renderer("chrome-extension://invalid/");
 
   OpenUrlInSubFrameAndVerifyBackNavigationBlocked(

@@ -162,8 +162,17 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
       return nullptr;
     }
 
-    if (!url_str->empty()) {
-      GURL popup_url = extension->ResolveExtensionURL(*url_str);
+    if (*url_str == "index.html/") {
+      // TODO(crbug.com/427225438): Warn and treat as having no popup. This
+      // special case is here for compatibility with existing extensions which
+      // use this invalid entry and then set another popup URL at runtime via
+      // the relevant API. Remove this special case in the future.
+      install_warnings->emplace_back(
+          errors::kActionDefaultPopupInvalidCompatValue,
+          GetManifestKeyForActionType(type), keys::kActionDefaultPopup);
+      DCHECK(result->default_popup_url.is_empty());
+    } else if (!url_str->empty()) {
+      GURL popup_url = extension->GetResourceURL(*url_str);
       if (!popup_url.is_valid()) {
         *error = errors::kInvalidActionDefaultPopup;
         return nullptr;

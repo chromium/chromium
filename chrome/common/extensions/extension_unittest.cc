@@ -192,6 +192,15 @@ TEST(ExtensionTest, GetResourceURLAndPath) {
   EXPECT_EQ(GURL(),
             extension->ResolveExtensionURL("https://example.test/test.html"));
   EXPECT_EQ(GURL(), extension->ResolveExtensionURL("file:///test.html"));
+
+  // Test that invalid relative URLs are not allowed for `GetResourceURL`
+  // (paths that GetResource would reject).
+  EXPECT_EQ(GURL(), extension->GetResourceURL(""));
+  EXPECT_EQ(GURL(), extension->GetResourceURL("/"));
+  EXPECT_EQ(GURL(), extension->GetResourceURL("src/"));
+  EXPECT_EQ(GURL(), extension->GetResourceURL("C:/manifest.json"));
+  EXPECT_EQ(GURL(), extension->GetResourceURL("mani%3Efest.json"));
+  EXPECT_EQ(GURL(), extension->GetResourceURL("com1/manifest.json"));
 }
 
 TEST(ExtensionTest, GetResource) {

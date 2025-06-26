@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_EQ("about:blank", GetActiveUrl(browser()));
 
   // Navigate to an extension page.
-  const GURL extension_page_url = extension->ResolveExtensionURL("page.html");
+  const GURL extension_page_url = extension->GetResourceURL("page.html");
   content::RenderFrameHost* new_host =
       ui_test_utils::NavigateToURL(browser(), extension_page_url);
   ASSERT_TRUE(new_host);
@@ -657,7 +657,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
   const Extension* extension = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL new_tab_url = extension->ResolveExtensionURL("index.htm");
+  GURL new_tab_url = extension->GetResourceURL("index.htm");
   {
     content::TestNavigationObserver nav_observer(new_tab_url);
     nav_observer.StartWatchingNewWebContents();
@@ -872,7 +872,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
                                                              extension().id());
   // In order to be able to call the API, we need to open a new tab to an
   // extension resource.
-  const GURL extension_page_url = extension().ResolveExtensionURL("page.html");
+  const GURL extension_page_url = extension().GetResourceURL("page.html");
   content::RenderFrameHost* new_host =
       ui_test_utils::NavigateToURL(browser(), extension_page_url);
   ASSERT_TRUE(new_host);
@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
 IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, FilterMatching) {
   // Currently, there is only one context: the background service worker. Also
   // open a tab-based context.
-  const GURL extension_page_url = extension().ResolveExtensionURL("page.html");
+  const GURL extension_page_url = extension().GetResourceURL("page.html");
   content::RenderFrameHost* new_host =
       ui_test_utils::NavigateToURL(browser(), extension_page_url);
   ASSERT_TRUE(new_host);
@@ -959,7 +959,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, FilterMatching) {
 // Tests retrieving tab contexts using `chrome.runtime.getContexts()`.
 IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetTabContext) {
   // Open a new extension tab.
-  const GURL frame_url = extension().ResolveExtensionURL("page.html");
+  const GURL frame_url = extension().GetResourceURL("page.html");
   content::RenderFrameHost* new_host =
       ui_test_utils::NavigateToURL(browser(), frame_url);
   ASSERT_TRUE(new_host);
@@ -1034,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetOffscreenDocumentContext) {
   std::string expected_document_id =
       ExtensionApiFrameIdMap::GetDocumentId(offscreen_frame_host).ToString();
   std::string expected_frame_url =
-      extension().ResolveExtensionURL("offscreen.html").spec();
+      extension().GetResourceURL("offscreen.html").spec();
   std::string expected_origin = extension().origin().Serialize();
 
   // Query for offscreen document contexts. There should only be one.
@@ -1135,7 +1135,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsSidePanelTest, GetSidePanelContext) {
   std::string expected_document_id =
       ExtensionApiFrameIdMap::GetDocumentId(panel_frame_host).ToString();
   std::string expected_frame_url =
-      extension().ResolveExtensionURL("side_panel.html").spec();
+      extension().GetResourceURL("side_panel.html").spec();
   std::string expected_origin = extension().origin().Serialize();
 
   base::Value side_panel_contexts =
@@ -1194,7 +1194,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
   // Open a tab on-the-record to one of the extension's pages.
-  GURL regular_url = extension->ResolveExtensionURL("regular.html");
+  GURL regular_url = extension->GetResourceURL("regular.html");
   content::RenderFrameHost* regular_host =
       ui_test_utils::NavigateToURL(browser(), regular_url);
   ASSERT_TRUE(regular_host);
@@ -1202,7 +1202,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
   // Open up an incognito tab to another extension page, and wait for the
   // incognito version of the extension to start up.
   ready_listener.Reset();
-  GURL incognito_url = extension->ResolveExtensionURL("incognito.html");
+  GURL incognito_url = extension->GetResourceURL("incognito.html");
   Browser* incognito_browser = OpenURLOffTheRecord(profile(), incognito_url);
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
@@ -1277,7 +1277,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
   ASSERT_TRUE(extension);
 
   // Open an on-the-record tab to an extension page.
-  GURL regular_url = extension->ResolveExtensionURL("regular.html");
+  GURL regular_url = extension->GetResourceURL("regular.html");
   content::RenderFrameHost* regular_host =
       ui_test_utils::NavigateToURL(browser(), regular_url);
   ASSERT_TRUE(regular_host);
@@ -1286,7 +1286,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
   // to open contexts in an incognito profile (which means all contexts just
   // open in the same profile). There's one exception to this: an embedded web-
   // accessible iframe in an incognito tab. Make it so.
-  GURL incognito_url = extension->ResolveExtensionURL("incognito.html");
+  GURL incognito_url = extension->GetResourceURL("incognito.html");
   Browser* incognito_browser = OpenURLOffTheRecord(
       profile(), embedded_test_server()->GetURL("example.com", "/simple.html"));
   // Inject a script to add an iframe and navigate it to the extension's
@@ -1419,7 +1419,7 @@ IN_PROC_BROWSER_TEST_P(GetContextsWithDeveloperToolsOpened,
   ASSERT_EQ(open_docked, is_docked);
 
   // Extract the extension host from the devtools web contents.
-  GURL expected_frame_url = extension().ResolveExtensionURL("devtools.html");
+  GURL expected_frame_url = extension().GetResourceURL("devtools.html");
   auto is_extension_frame =
       [expected_frame_url](content::RenderFrameHost* rfh) {
         return rfh->GetLastCommittedURL() == expected_frame_url;

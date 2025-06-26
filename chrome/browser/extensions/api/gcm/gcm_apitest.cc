@@ -104,7 +104,7 @@ const Extension* GcmApiTest::LoadTestExtension(
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII(extension_path));
   if (extension) {
-    const GURL extension_url = extension->ResolveExtensionURL(page_name);
+    const GURL extension_url = extension->GetResourceURL(page_name);
     EXPECT_TRUE(extension_url.is_valid());
     EXPECT_TRUE(NavigateToURL(extension_url));
     EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));

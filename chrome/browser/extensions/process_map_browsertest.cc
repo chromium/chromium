@@ -281,7 +281,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
       extension1 = LoadExtension(extension_dir->UnpackedPath());
       extension_dirs_.push_back(std::move(extension_dir));
     }
-    GURL e1_page_url = extension1->ResolveExtensionURL("page.html");
+    GURL e1_page_url = extension1->GetResourceURL("page.html");
 
     const Extension* extension2 = nullptr;
     {
@@ -438,7 +438,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   // Opens a new tab to a page in the given `extension`.
   void OpenExtensionPage(const Extension& extension) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension.ResolveExtensionURL("manifest.json")));
+        browser(), extension.GetResourceURL("manifest.json")));
   }
 
   // Opens a new tab to the given `domain` and waits for a content script to
@@ -453,7 +453,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   // `extension`.
   void OpenExtensionPageWithSandboxedFrame(const Extension& extension) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension.ResolveExtensionURL("parent.html")));
+        browser(), extension.GetResourceURL("parent.html")));
   }
 
   // Determines if a given `frame` is sandboxed. Sandboxed frames don't
@@ -654,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, SandboxedWebPageEmbedsExtension) {
   )");
 
   const Extension* extension = LoadExtension(dir.UnpackedPath());
-  GURL extension_url = extension->ResolveExtensionURL("foo.html");
+  GURL extension_url = extension->GetResourceURL("foo.html");
 
   // Insert an extension subframe into the sandboxed main frame and ensure that
   // the the sendMessage exchange finishes successfully.
@@ -728,14 +728,14 @@ IN_PROC_BROWSER_TEST_F(
 
   // Load E1.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension1->ResolveExtensionURL("main.html")));
+      browser(), extension1->GetResourceURL("main.html")));
   content::WebContents* web_contents = GetActiveTab();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* sandboxed_a_frame =
       content::ChildFrameAt(main_frame, 0);
 
   // Navigate frame in A's subframe to E2.
-  GURL e2_main_url = extension2->ResolveExtensionURL("main.html");
+  GURL e2_main_url = extension2->GetResourceURL("main.html");
   content::TestNavigationObserver observer(web_contents);
   static constexpr char kScriptE2Load[] =
       R"(
@@ -975,7 +975,7 @@ void ProcessMapBrowserTest::VerifyWhetherSubframesAreIsolated(
   ASSERT_TRUE(extension);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->ResolveExtensionURL("parent.html")));
+      browser(), extension->GetResourceURL("parent.html")));
 
   content::WebContents* web_contents = GetActiveTab();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
@@ -1075,7 +1075,7 @@ void ProcessMapBrowserTest::
         const bool is_subframe_data_url,
         const bool expects_api_access) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->ResolveExtensionURL("parent.html")));
+      browser(), extension->GetResourceURL("parent.html")));
 
   content::WebContents* web_contents = GetActiveTab();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
@@ -1170,7 +1170,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   ASSERT_TRUE(extension2);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension2->ResolveExtensionURL("parent.html")));
+      browser(), extension2->GetResourceURL("parent.html")));
 
   content::WebContents* web_contents = GetActiveTab();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
@@ -1198,8 +1198,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   // Attempt to have `extension1` (in `sandboxed_child_frame`) load a
   // non-web-accessible resource from `extension2`. This should fail. The fact
   // that the child is sandboxed doesn't matter.
-  GURL e2_private_page_url =
-      extension2->ResolveExtensionURL("private_page.html");
+  GURL e2_private_page_url = extension2->GetResourceURL("private_page.html");
   const char kJsScript[] =
       R"(
         frm = document.createElement('iframe');
@@ -1287,7 +1286,7 @@ IN_PROC_BROWSER_TEST_P(ProcessMapAboutSrcdocBrowserTest,
   ASSERT_TRUE(extension);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->ResolveExtensionURL("parent.html")));
+      browser(), extension->GetResourceURL("parent.html")));
 
   content::WebContents* web_contents = GetActiveTab();
   content::RenderFrameHost* extension_frame =
@@ -1342,7 +1341,7 @@ IN_PROC_BROWSER_TEST_P(ProcessMapAboutSrcdocBrowserTest,
          return success;
       })();
   )";
-  GURL json_resource_url = extension->ResolveExtensionURL("data.json");
+  GURL json_resource_url = extension->GetResourceURL("data.json");
   EXPECT_TRUE(
       EvalJs(srcdoc_frame, content::JsReplace(jsTemplate, json_resource_url))
           .ExtractBool());

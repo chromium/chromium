@@ -212,7 +212,7 @@ bool ExecuteCodeFunction::LoadFile(const std::string& file,
     return false;
   }
 
-  script_url_ = extension()->ResolveExtensionURL(base::EscapePath(file));
+  script_url_ = extension()->GetResourceURL(base::EscapePath(file));
 
   bool might_require_localization = is_css_injection;
 

@@ -218,7 +218,8 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
     manifest.SetByDottedPath(extensions::manifest_keys::kName, kTestAppName);
     manifest.SetByDottedPath(extensions::manifest_keys::kVersion, "0.0.0.0");
     manifest.SetByDottedPath(
-        extensions::manifest_keys::kPlatformAppBackgroundPage, std::string());
+        extensions::manifest_keys::kPlatformAppBackgroundPage,
+        "background.html");
 
     std::string error;
     scoped_refptr<extensions::Extension> extension =

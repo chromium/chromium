@@ -469,7 +469,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
   }
 
   GURL GetExtensionResource(const std::string& relative_path) {
-    return extension_->ResolveExtensionURL(relative_path);
+    return extension_->GetResourceURL(relative_path);
   }
 
   url::Origin GetExtensionOrigin() { return extension_->origin(); }
@@ -1871,7 +1871,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Open an extension tab both in the regular window and in a new incognito
   // window.
-  GURL extension_page = extension->ResolveExtensionURL("page.html");
+  GURL extension_page = extension->GetResourceURL("page.html");
   content::WebContents* regular_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   Browser* incognito_browser =
@@ -2045,7 +2045,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // Navigate a foreground tab to an extension URL, so that from this tab we can
   // ask the background service worker to initiate test fetches.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->ResolveExtensionURL("page.html")));
+      browser(), extension->GetResourceURL("page.html")));
   const char kFetchTemplate[] = R"(
       chrome.runtime.sendMessage({url: $1}, function(response) {
           domAutomationController.send(response);

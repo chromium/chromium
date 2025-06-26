@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, AddPopup) {
   {
     ResultCatcher catcher;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(extension->ResolveExtensionURL("change_popup.html"))));
+        browser(), GURL(extension->GetResourceURL("change_popup.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -670,7 +670,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, RemovePopup) {
   {
     ResultCatcher catcher;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(extension->ResolveExtensionURL("remove_popup.html"))));
+        browser(), GURL(extension->GetResourceURL("remove_popup.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -889,7 +889,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   // Tell the extension to update the browser action state.
   ResultCatcher catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(extension->ResolveExtensionURL("update.html"))));
+      browser(), GURL(extension->GetResourceURL("update.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Test that CSS values (#0F0) set color correctly.
@@ -897,7 +897,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
             action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(extension->ResolveExtensionURL("update2.html"))));
+      browser(), GURL(extension->GetResourceURL("update2.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Test that array values set color correctly.
@@ -905,7 +905,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
             action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(extension->ResolveExtensionURL("update3.html"))));
+      browser(), GURL(extension->GetResourceURL("update3.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Test that hsl() values 'hsl(120, 100%, 50%)' set color correctly.
@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
 
   // Test basic color keyword set correctly.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(extension->ResolveExtensionURL("update4.html"))));
+      browser(), GURL(extension->GetResourceURL("update4.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   ASSERT_EQ(SkColorSetARGB(255, 0, 0, 255),
@@ -932,12 +932,12 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Getters) {
   // Test the getters for defaults.
   ResultCatcher catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(extension->ResolveExtensionURL("update.html"))));
+      browser(), GURL(extension->GetResourceURL("update.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Test the getters for a specific tab.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(extension->ResolveExtensionURL("update2.html"))));
+      browser(), GURL(extension->GetResourceURL("update2.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 }
 

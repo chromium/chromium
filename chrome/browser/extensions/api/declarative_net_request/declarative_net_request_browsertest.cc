@@ -8657,7 +8657,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
   const Extension* extension_1 = last_loaded_extension();
 
   content::RenderFrameHost* extension_1_sandbox = NavigateToURLInNewTab(
-      extension_1->ResolveExtensionURL(kManifestSandboxPageFilepath));
+      extension_1->GetResourceURL(kManifestSandboxPageFilepath));
 
   // Extension 2 - Doesn't block any requests.
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
@@ -8665,7 +8665,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
   const Extension* extension_2 = last_loaded_extension();
 
   content::RenderFrameHost* extension_2_sandbox = NavigateToURLInNewTab(
-      extension_2->ResolveExtensionURL(kManifestSandboxPageFilepath));
+      extension_2->GetResourceURL(kManifestSandboxPageFilepath));
 
   struct {
     std::string hostname;
@@ -8764,7 +8764,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
 
   // Initiate main_frame and sub_frame requests via an extension page.
   base::Time start_time = base::Time::Now();
-  GURL extension_page_url = extension_2->ResolveExtensionURL("manifest.json");
+  GURL extension_page_url = extension_2->GetResourceURL("manifest.json");
   GURL main_frame_url = embedded_test_server()->GetURL("example.com", "/");
   GURL sub_frame_url =
       embedded_test_server()->GetURL("example.com", "/child_frame.html");

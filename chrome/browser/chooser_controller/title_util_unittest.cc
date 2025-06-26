@@ -76,7 +76,7 @@ TEST_F(CreateChooserTitleTest, ExtensionsFrameTree) {
       base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
   extensions::ExtensionRegistrar::Get(profile())->AddExtension(extension.get());
 
-  NavigateAndCommit(extension->ResolveExtensionURL("index.html"));
+  NavigateAndCommit(extension->GetResourceURL("index.html"));
   content::RenderFrameHost* subframe =
       content::NavigationSimulator::NavigateAndCommitFromDocument(
           GURL("data:text/html,"),

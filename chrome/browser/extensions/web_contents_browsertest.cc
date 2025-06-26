@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, TabNavigationToPlatformApp) {
       test_data_dir_.AppendASCII("platform_apps").AppendASCII("minimal"));
   ASSERT_TRUE(extension);
 
-  const GURL test_cases[] = {extension->ResolveExtensionURL("main.html"),
+  const GURL test_cases[] = {extension->GetResourceURL("main.html"),
                              BackgroundInfo::GetBackgroundURL(extension)};
   for (const GURL& app_url : test_cases) {
     GURL redirect_to_platform_app =
@@ -153,14 +153,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BackgroundPageNavigation) {
         base::StringPrintf(kScript, target_url.spec().c_str())));
     ASSERT_TRUE(navigation_observer.WaitForNavigationFinished());
     EXPECT_FALSE(navigation_observer.was_committed());
-    EXPECT_EQ(extension->ResolveExtensionURL("background.html"),
+    EXPECT_EQ(extension->GetResourceURL("background.html"),
               background_contents->GetLastCommittedURL());
   }
 
   // A same-document navigation is still permitted.
   {
-    GURL target_url =
-        extension->ResolveExtensionURL("background.html#fragment");
+    GURL target_url = extension->GetResourceURL("background.html#fragment");
     content::TestNavigationManager navigation_observer(background_contents,
                                                        target_url);
     constexpr char kScript[] = "window.location.href = '%s'";
@@ -174,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BackgroundPageNavigation) {
 
   // Another same-document navigation case.
   {
-    GURL target_url = extension->ResolveExtensionURL("bar.html");
+    GURL target_url = extension->GetResourceURL("bar.html");
     content::TestNavigationManager navigation_observer(background_contents,
                                                        target_url);
     constexpr char kScript[] = "history.pushState({}, '', '%s')";

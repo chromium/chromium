@@ -1212,7 +1212,7 @@ TEST(SimpleFeatureUnitTest, DisallowForServiceWorkers) {
             feature
                 .IsAvailableToContext(
                     extension.get(), mojom::ContextType::kPrivilegedExtension,
-                    extension->ResolveExtensionURL(
+                    extension->GetResourceURL(
                         ExtensionBuilder::kServiceWorkerScriptFile),
                     Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
                     TestContextData())
@@ -1222,11 +1222,11 @@ TEST(SimpleFeatureUnitTest, DisallowForServiceWorkers) {
   // since it's not a service worker context.
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
-                .IsAvailableToContext(
-                    extension.get(), mojom::ContextType::kPrivilegedExtension,
-                    extension->ResolveExtensionURL("other.js"),
-                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
-                    TestContextData())
+                .IsAvailableToContext(extension.get(),
+                                      mojom::ContextType::kPrivilegedExtension,
+                                      extension->GetResourceURL("other.js"),
+                                      Feature::CHROMEOS_PLATFORM,
+                                      kUnspecifiedContextId, TestContextData())
                 .result());
 
   // Disable the feature for service workers. The feature should be disallowed.
@@ -1235,7 +1235,7 @@ TEST(SimpleFeatureUnitTest, DisallowForServiceWorkers) {
             feature
                 .IsAvailableToContext(
                     extension.get(), mojom::ContextType::kPrivilegedExtension,
-                    extension->ResolveExtensionURL(
+                    extension->GetResourceURL(
                         ExtensionBuilder::kServiceWorkerScriptFile),
                     Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
                     TestContextData())

@@ -738,8 +738,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   // the browsingData API to remove registered service workers for extensions.
   {
     ResultCatcher result_catcher;
-    open_new_tab(
-        browsing_data_extension->ResolveExtensionURL("clear_data.html"));
+    open_new_tab(browsing_data_extension->GetResourceURL("clear_data.html"));
     EXPECT_TRUE(result_catcher.GetNextResult());
   }
 
@@ -829,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   EXPECT_EQ(extension->path(), test_dir.UnpackedPath());
   EXPECT_EQ(mojom::ManifestLocation::kUnpacked, extension->location());
 
-  const GURL page_url = extension->ResolveExtensionURL("page.html");
+  const GURL page_url = extension->GetResourceURL("page.html");
   auto open_tab_and_get_result = [this, page_url]() {
     ScriptResultQueue result_queue;
     // Open the page in a new tab. We use a new tab here since any tabs open to

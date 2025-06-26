@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_WaitForView) {
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(active_tab));
   // The extension should've opened a new tab to an extension page.
-  EXPECT_EQ(extension->ResolveExtensionURL("extension_page.html"),
+  EXPECT_EQ(extension->GetResourceURL("extension_page.html"),
             active_tab->GetLastCommittedURL());
 
   // Lazy Background Page still exists, because the extension created a new tab
@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventDispatchToTab) {
   const Extension* extension = LoadExtensionAndWait("event_dispatch_to_tab");
 
   ExtensionTestMessageListener page_ready("ready", ReplyBehavior::kWillReply);
-  GURL page_url = extension->ResolveExtensionURL("page.html");
+  GURL page_url = extension->GetResourceURL("page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
   EXPECT_TRUE(page_ready.WaitUntilSatisfied());
 

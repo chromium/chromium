@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
       process_manager->GetRenderFrameHostsForExtension(extension->id());
   ASSERT_EQ(1u, frames.size());
   content::RenderFrameHost* render_frame_host = *frames.begin();
-  EXPECT_EQ(extension->ResolveExtensionURL("popup.html"),
+  EXPECT_EQ(extension->GetResourceURL("popup.html"),
             render_frame_host->GetLastCommittedURL());
 
   content::WebContents* popup_contents =
@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest, PRE_ValuesArePersisted) {
   // Verify the values were modified.
   auto* action_manager = ExtensionActionManager::Get(profile());
   ExtensionAction* action = action_manager->GetExtensionAction(*extension);
-  EXPECT_EQ(extension->ResolveExtensionURL("modified_popup.html"),
+  EXPECT_EQ(extension->GetResourceURL("modified_popup.html"),
             action->GetPopupUrl(ExtensionAction::kDefaultTabId));
   EXPECT_EQ("modified title", action->GetTitle(ExtensionAction::kDefaultTabId));
   EXPECT_EQ("custom badge text",
@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest, ValuesArePersisted) {
   // Due to https://crbug.com/1110156, action values with defaults specified in
   // the manifest - like popup and title - aren't persisted, even for browser
   // actions.
-  EXPECT_EQ(extension->ResolveExtensionURL("default_popup.html"),
+  EXPECT_EQ(extension->GetResourceURL("default_popup.html"),
             action->GetPopupUrl(ExtensionAction::kDefaultTabId));
   EXPECT_EQ("default title", action->GetTitle(ExtensionAction::kDefaultTabId));
 }
@@ -838,7 +838,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DISABLED_DynamicSetIcon) {
 
   // Open a tab to run the extension commands in.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), extension->ResolveExtensionURL("page.html"),
+      browser(), extension->GetResourceURL("page.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* web_contents =
@@ -945,8 +945,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconWithJavascriptHooks) {
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
 
-  ASSERT_TRUE(
-      NavigateToURLInNewTab(extension->ResolveExtensionURL("page.html")));
+  ASSERT_TRUE(NavigateToURLInNewTab(extension->GetResourceURL("page.html")));
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 
@@ -1011,8 +1010,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconWithSelfDefined) {
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
 
-  ASSERT_TRUE(
-      NavigateToURLInNewTab(extension->ResolveExtensionURL("page.html")));
+  ASSERT_TRUE(NavigateToURLInNewTab(extension->GetResourceURL("page.html")));
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 
@@ -1072,7 +1070,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconInTabWithInvalidPath) {
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
 
-  ASSERT_TRUE(NavigateToURL(extension->ResolveExtensionURL("page.html")));
+  ASSERT_TRUE(NavigateToURL(extension->GetResourceURL("page.html")));
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 
@@ -1215,7 +1213,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetPopupWithInvalidPath) {
                               manifest_errors::kInvalidExtensionPopupPath);
   };
 
-  ASSERT_TRUE(NavigateToURL(extension->ResolveExtensionURL("page.html")));
+  ASSERT_TRUE(NavigateToURL(extension->GetResourceURL("page.html")));
   content::WebContents* web_contents = GetActiveTab();
   int tab_id = GetActiveTabId();
 
@@ -1245,7 +1243,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetPopupWithInvalidPath) {
         LoadExtension(different_extension_dir.UnpackedPath());
     ASSERT_TRUE(different_extension);
     const std::string different_extension_popup_url =
-        different_extension->ResolveExtensionURL("popup.html").spec();
+        different_extension->GetResourceURL("popup.html").spec();
     RunTestAndWaitForSuccess(
         web_contents,
         get_script(tab_id, different_extension_popup_url.c_str()));
@@ -1288,8 +1286,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, GettersAndSetters) {
   int first_tab_id = GetActiveTabId();
 
   // Open a tab to run the extension commands in.
-  ASSERT_TRUE(
-      NavigateToURLInNewTab(extension->ResolveExtensionURL("page.html")));
+  ASSERT_TRUE(NavigateToURLInNewTab(extension->GetResourceURL("page.html")));
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 
@@ -1377,12 +1374,9 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, GettersAndSetters) {
 
   {
     // setPopup/getPopup.
-    GURL default_popup_url =
-        extension->ResolveExtensionURL("default_popup.html");
-    GURL custom_popup_url1 =
-        extension->ResolveExtensionURL("custom_popup1.html");
-    GURL custom_popup_url2 =
-        extension->ResolveExtensionURL("custom_popup2.html");
+    GURL default_popup_url = extension->GetResourceURL("default_popup.html");
+    GURL custom_popup_url1 = extension->GetResourceURL("custom_popup1.html");
+    GURL custom_popup_url2 = extension->GetResourceURL("custom_popup2.html");
     ValuePair default_popup{default_popup_url.spec(),
                             base::StrCat({"'", default_popup_url.spec(), "'"})};
     ValuePair custom_popup1{custom_popup_url1.spec(),
@@ -1503,8 +1497,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, EnableAndDisable) {
   EnsureActionIsEnabledOnTab(action, tab_id1);
 
   // Open a tab to run the extension commands in.
-  ASSERT_TRUE(
-      NavigateToURLInNewTab(extension->ResolveExtensionURL("page.html")));
+  ASSERT_TRUE(NavigateToURLInNewTab(extension->GetResourceURL("page.html")));
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 

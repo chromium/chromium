@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFetchTest,
   EXPECT_EQ(
       "text content",
       content::EvalJs(empty_tab, GetDOMFetchScript(GetQuotedURL(
-                                     extension->ResolveExtensionURL("text")))));
+                                     extension->GetResourceURL("text")))));
 }
 
 // Calling fetch() from a http(s) service worker context to a
@@ -246,12 +246,11 @@ IN_PROC_BROWSER_TEST_F(
       CreateAndNavigateTab(embedded_test_server()->GetURL(
           "/workers/fetch_from_service_worker.html"));
   EXPECT_EQ("ready", content::EvalJs(tab, "setup();"));
-  EXPECT_EQ(
-      "text content",
-      content::EvalJs(
-          tab, base::StringPrintf(
-                   "fetch_from_service_worker('%s');",
-                   extension->ResolveExtensionURL("text").spec().c_str())));
+  EXPECT_EQ("text content",
+            content::EvalJs(
+                tab, base::StringPrintf(
+                         "fetch_from_service_worker('%s');",
+                         extension->GetResourceURL("text").spec().c_str())));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionFetchTest,
@@ -275,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFetchTest,
   EXPECT_EQ(
       "TypeError: Failed to fetch",
       content::EvalJs(empty_tab, GetDOMFetchScript(GetQuotedURL(
-                                     extension->ResolveExtensionURL("text")))));
+                                     extension->GetResourceURL("text")))));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionFetchTest, FetchResponseType) {

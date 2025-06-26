@@ -155,11 +155,11 @@ TEST_F(ExtensionNavigationThrottleUnitTest, ExternalWebPage) {
       render_frame_host_tester(main_rfh())->AppendChild("child");
 
   // Only resources specified in web_accessible_resources should be allowed.
-  CheckTestCase(child, extension()->ResolveExtensionURL(kPrivate),
+  CheckTestCase(child, extension()->GetResourceURL(kPrivate),
                 NavigationThrottle::BLOCK_REQUEST);
-  CheckTestCase(child, extension()->ResolveExtensionURL(kAccessible),
+  CheckTestCase(child, extension()->GetResourceURL(kAccessible),
                 NavigationThrottle::PROCEED);
-  CheckTestCase(child, extension()->ResolveExtensionURL(kAccessibleDirResource),
+  CheckTestCase(child, extension()->GetResourceURL(kAccessibleDirResource),
                 NavigationThrottle::PROCEED);
 }
 
@@ -168,23 +168,23 @@ TEST_F(ExtensionNavigationThrottleUnitTest, CrossSiteFileSystemUrl) {
 
   GURL access_filesystem(base::StringPrintf(
       "filesystem:%s/",
-      extension()->ResolveExtensionURL(kAccessible).spec().c_str()));
+      extension()->GetResourceURL(kAccessible).spec().c_str()));
   CheckTestCase(main_rfh(), access_filesystem, NavigationThrottle::CANCEL);
 }
 
 // Tests that the owning extension can access any of its resources.
 TEST_F(ExtensionNavigationThrottleUnitTest, SameExtension) {
   web_contents_tester()->NavigateAndCommit(
-      extension()->ResolveExtensionURL("trusted.html"));
+      extension()->GetResourceURL("trusted.html"));
   content::RenderFrameHost* child =
       render_frame_host_tester(main_rfh())->AppendChild("child");
 
   // All resources should be allowed.
-  CheckTestCase(child, extension()->ResolveExtensionURL(kPrivate),
+  CheckTestCase(child, extension()->GetResourceURL(kPrivate),
                 NavigationThrottle::PROCEED);
-  CheckTestCase(child, extension()->ResolveExtensionURL(kAccessible),
+  CheckTestCase(child, extension()->GetResourceURL(kAccessible),
                 NavigationThrottle::PROCEED);
-  CheckTestCase(child, extension()->ResolveExtensionURL(kAccessibleDirResource),
+  CheckTestCase(child, extension()->GetResourceURL(kAccessibleDirResource),
                 NavigationThrottle::PROCEED);
 }
 
@@ -199,11 +199,11 @@ TEST_F(ExtensionNavigationThrottleUnitTest, DisabledExtensionChildFrame) {
   registry->AddDisabled(extension());
 
   // Since the extension is disabled, all requests should be blocked.
-  CheckTestCase(child, extension()->ResolveExtensionURL(kPrivate),
+  CheckTestCase(child, extension()->GetResourceURL(kPrivate),
                 NavigationThrottle::BLOCK_REQUEST);
-  CheckTestCase(child, extension()->ResolveExtensionURL(kAccessible),
+  CheckTestCase(child, extension()->GetResourceURL(kAccessible),
                 NavigationThrottle::BLOCK_REQUEST);
-  CheckTestCase(child, extension()->ResolveExtensionURL(kAccessibleDirResource),
+  CheckTestCase(child, extension()->GetResourceURL(kAccessibleDirResource),
                 NavigationThrottle::BLOCK_REQUEST);
 
   std::string second_id = crx_file::id_util::GenerateId("bar");
@@ -239,12 +239,11 @@ TEST_F(ExtensionNavigationThrottleUnitTest, DisabledExtensionMainFrame) {
   registry->AddDisabled(extension());
 
   // Since the extension is disabled, all requests should be blocked.
-  CheckTestCase(main_rfh(), extension()->ResolveExtensionURL(kPrivate),
+  CheckTestCase(main_rfh(), extension()->GetResourceURL(kPrivate),
                 NavigationThrottle::BLOCK_REQUEST);
-  CheckTestCase(main_rfh(), extension()->ResolveExtensionURL(kAccessible),
+  CheckTestCase(main_rfh(), extension()->GetResourceURL(kAccessible),
                 NavigationThrottle::BLOCK_REQUEST);
-  CheckTestCase(main_rfh(),
-                extension()->ResolveExtensionURL(kAccessibleDirResource),
+  CheckTestCase(main_rfh(), extension()->GetResourceURL(kAccessibleDirResource),
                 NavigationThrottle::BLOCK_REQUEST);
 
   std::string second_id = crx_file::id_util::GenerateId("bar");

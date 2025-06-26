@@ -669,7 +669,7 @@ TEST_F(CreateShortcutBrowserCommandControllerTest,
   const char kResource[] = "resource.html";
   scoped_refptr<const extensions::Extension> extension =
       CreateAndInstallExtension();
-  AddTab(browser(), extension->ResolveExtensionURL(kResource));
+  AddTab(browser(), extension->GetResourceURL(kResource));
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

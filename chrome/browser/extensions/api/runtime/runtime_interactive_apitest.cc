@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsInteractiveApiTest, GetPopupContext) {
   std::string expected_document_id =
       ExtensionApiFrameIdMap::GetDocumentId(popup_frame).ToString();
   std::string expected_frame_url =
-      extension->ResolveExtensionURL("popup.html").spec();
+      extension->GetResourceURL("popup.html").spec();
   std::string expected_origin = extension->origin().Serialize();
 
   // Query for popup-based contexts. There should only be one.

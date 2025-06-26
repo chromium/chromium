@@ -51,7 +51,7 @@ bool ParseOptionsUrl(Extension* extension,
     return true;
   }
 
-  GURL resource_url = extension->ResolveExtensionURL(url_string);
+  GURL resource_url = extension->GetResourceURL(url_string);
   if (!resource_url.is_valid()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidOptionsPage,
                                                  manifest_field_name);

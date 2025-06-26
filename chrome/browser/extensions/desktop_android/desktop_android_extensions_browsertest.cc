@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
       LoadExtensionFromDirectory(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL extension_page = extension->ResolveExtensionURL("page.html");
+  GURL extension_page = extension->GetResourceURL("page.html");
 
   ResultCatcher result_catcher;
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(), extension_page));
@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest, MessagePassing) {
 
   // Open a tab to the listening page, and reply to the extension when it's
   // loaded.
-  GURL extension_page = extension->ResolveExtensionURL("page.html");
+  GURL extension_page = extension->GetResourceURL("page.html");
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(), extension_page));
   EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   EXPECT_EQ(extension_page, GetActiveWebContents()->GetLastCommittedURL());

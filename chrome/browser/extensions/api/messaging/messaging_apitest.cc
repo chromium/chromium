@@ -611,11 +611,11 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessageChannelName) {
   ResultCatcher result_catcher;
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), extension->ResolveExtensionURL("connectee.html"),
+      browser(), extension->GetResourceURL("connectee.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), extension->ResolveExtensionURL("connector.html"),
+      browser(), extension->GetResourceURL("connector.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 

@@ -33,7 +33,7 @@ class PerformanceTimelineBrowserTest : public extensions::ExtensionBrowserTest {
             });
           })();
         )",
-        extension->ResolveExtensionURL("content_script.js").spec());
+        extension->GetResourceURL("content_script.js").spec());
     EXPECT_EQ(content::EvalJs(web_contents(), script_code).error, "");
   }
 

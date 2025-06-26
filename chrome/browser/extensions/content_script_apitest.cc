@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptExtensionAPIs) {
   // Navigate to an extension page that will fire the event events.js is
   // listening for.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), extension->ResolveExtensionURL("fire_event.html"),
+      browser(), extension->GetResourceURL("fire_event.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   EXPECT_TRUE(catcher.GetNextResult());
@@ -982,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  EXPECT_EQ(new_tab_override->ResolveExtensionURL("newtab.html"),
+  EXPECT_EQ(new_tab_override->GetResourceURL("newtab.html"),
             tab_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_FALSE(listener.was_satisfied());
   listener.Reset();
@@ -2362,7 +2362,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiFencedFrameTest,
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  GURL extension_test_url = extension->ResolveExtensionURL("test.html");
+  GURL extension_test_url = extension->GetResourceURL("test.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_test_url));
 
   EXPECT_EQ(extension_test_url,

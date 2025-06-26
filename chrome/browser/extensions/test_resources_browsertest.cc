@@ -86,8 +86,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, TestResourcesLoad) {
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  ASSERT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(), extension->ResolveExtensionURL("page.html")));
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     extension->GetResourceURL("page.html")));
 
   EXPECT_EQ(kSentinelValue, RetrieveSentinelValue(GetActiveWebContents()));
 }
@@ -122,8 +122,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   ASSERT_TRUE(extension);
   EXPECT_EQ(mojom::ManifestLocation::kComponent, extension->location());
 
-  ASSERT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(), extension->ResolveExtensionURL("page.html")));
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     extension->GetResourceURL("page.html")));
 
   EXPECT_EQ(kSentinelValue, RetrieveSentinelValue(GetActiveWebContents()));
 }
@@ -207,8 +207,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTestWithCustomTestResourcesLocation,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  ASSERT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(), extension->ResolveExtensionURL("page.html")));
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     extension->GetResourceURL("page.html")));
 
   EXPECT_EQ(kSentinelValue, RetrieveSentinelValue(GetActiveWebContents()));
 }

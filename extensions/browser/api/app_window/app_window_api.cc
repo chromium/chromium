@@ -347,7 +347,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       // If the URL is not global, check for a valid extension local URL.
       if (!create_params.window_icon_url.is_valid()) {
         create_params.window_icon_url =
-            extension()->ResolveExtensionURL(*options->icon);
+            extension()->GetResourceURL(*options->icon);
         if (!create_params.window_icon_url.is_valid()) {
           return RespondNow(
               Error(app_window_constants::kInvalidIconUrlParameter));

@@ -43,7 +43,7 @@ class DisableExtensionBrowserTest : public ExtensionBrowserTest {
     extension_ = LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
 
     extension_id_ = extension_->id();
-    extension_resource_url_ = extension_->ResolveExtensionURL("file.html");
+    extension_resource_url_ = extension_->GetResourceURL("file.html");
 
     ASSERT_TRUE(extension_);
 
@@ -202,8 +202,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
       ChromeTestExtensionLoader(profile()).LoadExtension(
           test_data_dir_.AppendASCII("web_accessible_resources/subframe"));
   ASSERT_TRUE(extension);
-  GURL extension_url =
-      extension->ResolveExtensionURL("web_accessible_page.html");
+  GURL extension_url = extension->GetResourceURL("web_accessible_page.html");
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", extension_url));
 
   content::RenderFrameHost* subframe =
@@ -281,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, NoExtensionsInRefererHeader) {
       ChromeTestExtensionLoader(profile()).LoadExtension(
           test_data_dir_.AppendASCII("simple_with_file"));
   ASSERT_TRUE(extension);
-  GURL page_url = extension->ResolveExtensionURL("file.html");
+  GURL page_url = extension->GetResourceURL("file.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
   // Click a link in the extension.

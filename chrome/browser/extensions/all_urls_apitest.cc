@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, AllowlistedExtension) {
   const std::string test_urls[] = {
       "data:text/html;charset=utf-8,<html>asdf</html>",
       embedded_test_server()->GetURL(kAllUrlsTarget).spec(),
-      bystander->ResolveExtensionURL("page.html").spec()};
+      bystander->GetResourceURL("page.html").spec()};
   for (const auto& test_url : test_urls)
     NavigateAndWait(test_url);
 }

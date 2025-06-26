@@ -201,7 +201,7 @@ class ChromeUsbTestHelper {
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
     extensions::ExtensionRegistrar::Get(profile_)->AddExtension(extension);
-    return extension->ResolveExtensionURL("index.html");
+    return extension->GetResourceURL("index.html");
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

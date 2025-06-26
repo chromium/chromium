@@ -25,7 +25,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
   ASSERT_TRUE(extension);
-  GURL url = extension->ResolveExtensionURL("file.html");
+  GURL url = extension->GetResourceURL("file.html");
   browser()->OpenURL(
       content::OpenURLParams(url, content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
       LoadExtension(test_data_dir_.AppendASCII("theme"));
   ASSERT_TRUE(extension);
   ASSERT_TRUE(extension->is_theme());
-  GURL url = extension->ResolveExtensionURL("manifest.json");
+  GURL url = extension->GetResourceURL("manifest.json");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

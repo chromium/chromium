@@ -86,7 +86,7 @@ class ExtensionURLLoaderThrottleBrowserTest : public ExtensionBrowserTest {
                const std::string& expected_throttled_request_num) {
     ResultCatcher catcher;
     const GURL unthrottled_test_url = net::AppendQueryParameter(
-        extension_->ResolveExtensionURL(file_path), "url", request_url);
+        extension_->GetResourceURL(file_path), "url", request_url);
     const GURL test_url =
         expected_throttled_request_num.empty()
             ? unthrottled_test_url

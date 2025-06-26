@@ -137,7 +137,7 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
   // RenderFrameHost of the main frame.
   content::RenderFrameHost* NavigateMainFrameToExtensionPage() {
     EXPECT_TRUE(content::NavigateToURL(
-        web_contents(), extension_->ResolveExtensionURL("empty.html")));
+        web_contents(), extension_->GetResourceURL("empty.html")));
     return web_contents()->GetPrimaryMainFrame();
   }
 
@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
     ASSERT_TRUE(content::ExecJs(
         web_contents(),
         content::JsReplace(kSubframeInjectionScriptTemplate,
-                           extension->ResolveExtensionURL("subframe.html"))));
+                           extension->GetResourceURL("subframe.html"))));
     subframe_nav_observer.Wait();
     extension_subframe = ChildFrameAt(web_contents(), 0);
     ASSERT_TRUE(extension_subframe);
@@ -879,7 +879,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
       kActiveTabHost,
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL().host());
   SetCookies(kActiveTabHost);
-  GURL extension_frame_url = extension->ResolveExtensionURL("frame.html");
+  GURL extension_frame_url = extension->GetResourceURL("frame.html");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), extension_frame_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP |

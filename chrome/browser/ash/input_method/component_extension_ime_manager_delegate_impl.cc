@@ -305,7 +305,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   bool is_global_emoji_preferences_enabled = base::FeatureList::IsEnabled(
       features::kVirtualKeyboardGlobalEmojiPreferences);
-  GURL url = extensions::Extension::ResolveExtensionURL(
+  GURL url = extensions::Extension::GetResourceURL(
       extensions::Extension::GetBaseURLFromExtensionId(component_extension.id),
       "inputview.html");
   url = net::AppendOrReplaceQueryParameter(url, "jelly", "true");
@@ -324,7 +324,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
       dict.FindString(extensions::manifest_keys::kInputView);
   if (input_view) {
     url_string = *input_view;
-    GURL url = extensions::Extension::ResolveExtensionURL(
+    GURL url = extensions::Extension::GetResourceURL(
         extensions::Extension::GetBaseURLFromExtensionId(
             component_extension.id),
         url_string);
@@ -344,7 +344,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
 
   if (option_page && flag_allows_settings_page) {
     url_string = *option_page;
-    GURL options_page_url = extensions::Extension::ResolveExtensionURL(
+    GURL options_page_url = extensions::Extension::GetResourceURL(
         extensions::Extension::GetBaseURLFromExtensionId(
             component_extension.id),
         url_string);
@@ -388,7 +388,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadExtensionInfo(
   const std::string* url_string =
       manifest.FindString(extensions::manifest_keys::kOptionsPage);
   if (url_string) {
-    GURL url = extensions::Extension::ResolveExtensionURL(
+    GURL url = extensions::Extension::GetResourceURL(
         extensions::Extension::GetBaseURLFromExtensionId(extension_id),
         *url_string);
     if (!url.is_valid()) {

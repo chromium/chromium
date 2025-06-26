@@ -285,6 +285,9 @@ inline constexpr char kInvalidActionDefaultIconMimeType[] =
     "Invalid mime type for 'default_icon'.";
 inline constexpr char16_t kInvalidActionDefaultPopup[] =
     u"Invalid type for 'default_popup'.";
+inline constexpr char kActionDefaultPopupInvalidCompatValue[] =
+    "Invalid value for 'default_popup'. The value is treated as having no "
+    "popup for compatibility, but it will be rejected in the future.";
 inline constexpr char16_t kInvalidActionDefaultState[] =
     u"Invalid value for 'default_state'.";
 inline constexpr char16_t kInvalidActionDefaultTitle[] =

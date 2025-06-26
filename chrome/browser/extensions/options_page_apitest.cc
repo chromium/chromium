@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OptionsPage) {
   ASSERT_EQ(2, tab_strip->count());
   content::WebContents* tab = tab_strip->GetWebContentsAt(1);
   EXPECT_TRUE(content::WaitForLoadStop(tab));
-  EXPECT_EQ(extension->ResolveExtensionURL("options.html"),
+  EXPECT_EQ(extension->GetResourceURL("options.html"),
             tab->GetLastCommittedURL());
 }
 

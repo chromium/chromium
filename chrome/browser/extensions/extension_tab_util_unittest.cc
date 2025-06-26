@@ -124,8 +124,7 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
     const std::string kTestPath("foo");
     auto url = ExtensionTabUtil::PrepareURLForNavigation(
         kTestPath, extension.get(), browser_context());
-    EXPECT_THAT(url,
-                base::test::ValueIs(extension->ResolveExtensionURL(kTestPath)));
+    EXPECT_THAT(url, base::test::ValueIs(extension->GetResourceURL(kTestPath)));
   }
   // A kill URL should return false and set the error. There are several
   // different potential kill URLs and this just checks one of them.

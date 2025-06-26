@@ -117,7 +117,7 @@ bool InputComponentsHandler::Parse(Extension* extension,
     const std::string* input_view_str =
         module_value->FindString(keys::kInputView);
     if (input_view_str) {
-      input_view_url = extension->ResolveExtensionURL(*input_view_str);
+      input_view_url = extension->GetResourceURL(*input_view_str);
       if (!input_view_url.is_valid()) {
         *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidInputView,
                                                      base::NumberToString(i));
@@ -131,7 +131,7 @@ bool InputComponentsHandler::Parse(Extension* extension,
     const std::string* options_page_str =
         module_value->FindString(keys::kImeOptionsPage);
     if (options_page_str) {
-      options_page_url = extension->ResolveExtensionURL(*options_page_str);
+      options_page_url = extension->GetResourceURL(*options_page_str);
       if (!options_page_url.is_valid()) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
             errors::kInvalidOptionsPage, base::NumberToString(i));

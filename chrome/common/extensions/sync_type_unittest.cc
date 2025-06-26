@@ -149,7 +149,7 @@ TEST_F(ExtensionSyncTypeTest, DisplayInXManifestProperties) {
   auto manifest = base::Value::Dict()
                       .Set(keys::kName, "TestComponentApp")
                       .Set(keys::kVersion, "0.0.0.0");
-  manifest.SetByDottedPath(keys::kPlatformAppBackgroundPage, std::string());
+  manifest.SetByDottedPath(keys::kPlatformAppBackgroundPage, "background.html");
 
   // Default to true.
   std::string error;

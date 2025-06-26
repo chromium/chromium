@@ -45,14 +45,14 @@ TEST(ExtensionUtilTest, MapUrlToLocalFilePath) {
 
   // Valid resources return a valid path.
   base::FilePath valid_path;
-  GURL valid_url = app->ResolveExtensionURL("manifest.json");
+  GURL valid_url = app->GetResourceURL("manifest.json");
   EXPECT_TRUE(util::MapUrlToLocalFilePath(
       &extensions, valid_url, true /* use_blocking_api */, &valid_path));
   EXPECT_FALSE(valid_path.empty());
 
   // A file must exist to be mapped to a path using the blocking API.
   base::FilePath does_not_exist_path;
-  GURL does_not_exist_url = app->ResolveExtensionURL("does-not-exist.html");
+  GURL does_not_exist_url = app->GetResourceURL("does-not-exist.html");
   EXPECT_FALSE(util::MapUrlToLocalFilePath(&extensions, does_not_exist_url,
                                            true /* use_blocking_api */,
                                            &does_not_exist_path));

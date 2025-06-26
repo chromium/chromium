@@ -80,8 +80,8 @@ class BackgroundXhrTest : public ExtensionBrowserTest {
     ASSERT_TRUE(extension);
 
     ResultCatcher catcher;
-    GURL test_url = net::AppendQueryParameter(
-        extension->ResolveExtensionURL(path), "url", url.spec());
+    GURL test_url = net::AppendQueryParameter(extension->GetResourceURL(path),
+                                              "url", url.spec());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
     profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
     static constexpr char kSendXHRScript[] = R"(

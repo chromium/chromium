@@ -812,7 +812,7 @@ IN_PROC_BROWSER_TEST_F(
   ExtensionTestMessageListener page_script_loaded("page script loaded");
   // Navigate to page.html to get the content_script to load.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->ResolveExtensionURL("page.html")));
+      browser(), extension->GetResourceURL("page.html")));
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
   ASSERT_TRUE(page_script_loaded.WaitUntilSatisfied());
 

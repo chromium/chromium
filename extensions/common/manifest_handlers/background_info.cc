@@ -70,7 +70,7 @@ GURL BackgroundInfo::GetBackgroundURL(const Extension* extension) {
   if (info.background_scripts_.empty()) {
     return info.background_url_;
   }
-  return extension->ResolveExtensionURL(kGeneratedBackgroundPageFilename);
+  return extension->GetResourceURL(kGeneratedBackgroundPageFilename);
 }
 
 // static
@@ -236,7 +236,7 @@ bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
       return false;
     }
   } else {
-    background_url_ = extension->ResolveExtensionURL(background_str);
+    background_url_ = extension->GetResourceURL(background_str);
     if (!background_url_.is_valid()) {
       *error = errors::kInvalidBackground;
       return false;
@@ -262,7 +262,7 @@ bool BackgroundInfo::LoadBackgroundServiceWorkerScript(
   }
 
   background_service_worker_script_url_ =
-      extension->ResolveExtensionURL(scripts_value->GetString());
+      extension->GetResourceURL(scripts_value->GetString());
   if (!background_service_worker_script_url_->is_valid()) {
     *error = errors::kInvalidBackgroundServiceWorkerScript;
     return false;

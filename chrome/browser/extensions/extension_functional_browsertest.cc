@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest,
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
   ASSERT_TRUE(extension);
-  GURL extension_url = extension->ResolveExtensionURL("file.html");
+  GURL extension_url = extension->GetResourceURL("file.html");
 
   // Load the extension in two unrelated tabs.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));

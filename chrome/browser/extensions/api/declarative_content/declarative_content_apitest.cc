@@ -554,7 +554,7 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
 
   // Open the tab to invoke the APIs, as well as test the action visibility.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->ResolveExtensionURL("page.html")));
+      browser(), extension->GetResourceURL("page.html")));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 

@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
   // parent).
   ExtensionTestMessageListener listener1("test1 create finished");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(extension->ResolveExtensionURL("test1.html"))));
+      browser(), GURL(extension->GetResourceURL("test1.html"))));
   EXPECT_TRUE(listener1.WaitUntilSatisfied());
 
   GURL url("http://www.google.com/");
@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
   // parent node and populates that with the same items as in test1.
   ExtensionTestMessageListener listener2("test2 create finished");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(extension->ResolveExtensionURL("test2.html"))));
+      browser(), GURL(extension->GetResourceURL("test2.html"))));
   EXPECT_TRUE(listener2.WaitUntilSatisfied());
   menu = TestRenderViewContextMenu::Create(GetWebContents(), url);
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(

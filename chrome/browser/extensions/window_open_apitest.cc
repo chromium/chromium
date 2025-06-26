@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WindowOpenInvalidExtension) {
       test_data_dir_.AppendASCII("uitest").AppendASCII("window_open"));
   ASSERT_TRUE(extension);
 
-  GURL start_url = extension->ResolveExtensionURL("test.html");
+  GURL start_url = extension->GetResourceURL("test.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
   WebContents* newtab = nullptr;
   bool new_page_in_same_process = false;
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,foo")));
 
   // test.html is not web-accessible and should not be loaded.
-  GURL extension_url(extension->ResolveExtensionURL("test.html"));
+  GURL extension_url(extension->GetResourceURL("test.html"));
   content::CreateAndLoadWebContentsObserver windowed_observer;
   ASSERT_TRUE(
       content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   const extensions::Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("uitest").AppendASCII("window_open"));
   ASSERT_TRUE(extension);
-  GURL extension_url(extension->ResolveExtensionURL("test.html"));
+  GURL extension_url(extension->GetResourceURL("test.html"));
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();

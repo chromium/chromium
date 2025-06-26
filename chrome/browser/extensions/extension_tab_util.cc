@@ -1154,8 +1154,9 @@ bool ExtensionTabUtil::IsWebContentsInContext(
 GURL ExtensionTabUtil::ResolvePossiblyRelativeURL(const std::string& url_string,
                                                   const Extension* extension) {
   GURL url = GURL(url_string);
-  if (!url.is_valid() && extension)
+  if (!url.is_valid() && extension) {
     url = extension->ResolveExtensionURL(url_string);
+  }
 
   return url;
 }

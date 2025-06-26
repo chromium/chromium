@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ViewSource) {
   }
   ASSERT_TRUE(options_contents);
   EXPECT_TRUE(content::WaitForLoadStop(options_contents));
-  EXPECT_EQ(extension->ResolveExtensionURL("options.html"),
+  EXPECT_EQ(extension->GetResourceURL("options.html"),
             options_contents->GetLastCommittedURL());
 
   // Open the view-source of the options page.
