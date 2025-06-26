@@ -3128,6 +3128,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_KEEP_RECENT_PASSWORD" desc="Action button which will keep the most recently used password for a given site, and discard any older passwords, when the user is moving a password to their Google Account. [iOS only]">
         Keep recent password
       </message>
+      <message name="IDS_IOS_KEYBOARD_ACCESSORY_RECOVERY_PASSWORD_ACCESSIBILITY_LABEL" desc="Accessibility label for a recovery password suggestion available in the keyboard accessory. Indicates to the user that the recovery password can be used to log in if the main password doesn't work. [iOS only]">
+        Temp recovery in case of trouble
+      </message>
       <message name="IDS_IOS_KEYBOARD_ACCESSORY_VIEW_LENS" desc="Accessibility label for a button that opens Lens [iOS only].">
         Search with Lens
       </message>

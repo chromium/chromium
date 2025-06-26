@@ -278,6 +278,26 @@ NSString* PasswordSuggestionDisplayText(NSString* suggestion_value) {
   return suggestion_value;
 }
 
+// Returns the string to set as the view's accessibility label.
+NSString* AccessibilityLabel(NSString* suggestion_text,
+                             NSString* suggestion_description,
+                             BOOL is_backup_password_suggestion) {
+  std::u16string accessibility_label = l10n_util::GetStringFUTF16(
+      IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
+      base::SysNSStringToUTF16(suggestion_text),
+      base::SysNSStringToUTF16(suggestion_description));
+
+  if (is_backup_password_suggestion) {
+    // Append an additional mention to the accessibility label.
+    accessibility_label = l10n_util::GetStringFUTF16(
+        IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION, accessibility_label,
+        l10n_util::GetStringUTF16(
+            IDS_IOS_KEYBOARD_ACCESSORY_RECOVERY_PASSWORD_ACCESSIBILITY_LABEL));
+  }
+
+  return base::SysUTF16ToNSString(accessibility_label);
+}
+
 }  // namespace
 
 @implementation FormSuggestionLabel {
@@ -374,11 +394,11 @@ NSString* PasswordSuggestionDisplayText(NSString* suggestion_value) {
     [self setClipsToBounds:YES];
     [self setUserInteractionEnabled:YES];
     [self setIsAccessibilityElement:YES];
-    [self setAccessibilityLabel:l10n_util::GetNSStringF(
-                                    IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
-                                    base::SysNSStringToUTF16(suggestionText),
-                                    base::SysNSStringToUTF16(
-                                        suggestion.displayDescription))];
+    [self
+        setAccessibilityLabel:AccessibilityLabel(
+                                  suggestionText, suggestion.displayDescription,
+                                  suggestion.type == autofill::SuggestionType::
+                                                         kBackupPasswordEntry)];
     [self setAccessibilityValue:l10n_util::GetNSStringF(
                                     IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,
                                     base::NumberToString16(index + 1),

@@ -1157,7 +1157,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that backup passwords appear as expected in the bottom sheet and that
+// Tests that a backup password appears as expected in the bottom sheet and that
 // it can be used to fill the form.
 - (void)testUseBackupPassword {
   [self savePasswordWithBackupAndLoadLoginPage];
