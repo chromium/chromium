@@ -121,124 +121,13 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
 
 - (void)updateWithFaces:(NSArray<id<ShareKitAvatarPrimitive>>*)faces
             totalNumber:(NSInteger)totalNumber {
-  // Remove all existing avatar views from the stack.
-  for (UIView* view in _facesStackView.arrangedSubviews) {
-    [view removeFromSuperview];
-  }
-
   _avatars = faces;
   _membersCount = totalNumber;
-  CGFloat containerSize = _avatarSize + kContainerSubstractredStroke * 2;
-  NSInteger avatarsCount = static_cast<NSUInteger>(_avatars.count);
 
-  for (NSInteger index = 0; index < avatarsCount; index++) {
-    id<ShareKitAvatarPrimitive> avatar = _avatars[index];
-    [avatar resolve];
-
-    // Create a container view to act as the border for the avatar.
-    // This is needed to avoid anti-aliasing artifacts around the border itself.
-    UIView* avatarContainerView =
-        [self createCircularContainerWithSize:containerSize];
-    UIView* avatarView = [avatar view];
-    avatarView.translatesAutoresizingMaskIntoConstraints = NO;
-    [avatarContainerView addSubview:avatarView];
-
-    // Apply an overlapping mask to all avatar containers except if it's the
-    // last displayed container.
-    if (index + 1 < totalNumber || totalNumber == 1) {
-      [self applyOverlappingCircleMaskToContainer:avatarContainerView];
-    }
-
-    [NSLayoutConstraint activateConstraints:@[
-      [avatarContainerView.widthAnchor constraintEqualToConstant:containerSize],
-      [avatarContainerView.heightAnchor constraintEqualToConstant:containerSize]
-    ]];
-    AddSameCenterConstraints(avatarView, avatarContainerView);
-
-    [_facesStackView addArrangedSubview:avatarContainerView];
-  }
-
-  // Update the `_emptyFacePileLabel` visibility.
-  _emptyFacePileLabel.hidden = ![self isEmpty];
-
-  if (totalNumber == 1) {
-    // Create a container view to act as the border.
-    // This is needed to avoid anti-aliasing artifacts around the border itself.
-    UIView* containerView =
-        [self createCircularContainerWithSize:containerSize];
-    [_facesStackView addArrangedSubview:containerView];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [containerView.widthAnchor constraintEqualToConstant:containerSize],
-      [containerView.heightAnchor constraintEqualToConstant:containerSize]
-    ]];
-
-    _nonAvatarContainer = [[UIView alloc] init];
-    _nonAvatarContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    _nonAvatarContainer.layer.cornerRadius = _avatarSize / 2.0;
-    _nonAvatarContainer.layer.masksToBounds = YES;
-    [NSLayoutConstraint activateConstraints:@[
-      [_nonAvatarContainer.widthAnchor constraintEqualToConstant:_avatarSize],
-      [_nonAvatarContainer.heightAnchor constraintEqualToConstant:_avatarSize]
-    ]];
-
-    [containerView addSubview:_nonAvatarContainer];
-    AddSameCenterConstraints(_nonAvatarContainer, containerView);
-
-    UIImage* peopleWaitingImage = DefaultSymbolWithPointSize(
-        kPersonClockFillSymbol, _avatarSize * kPersonWaitingProportion);
-    UIImageView* peopleWaitingImageView =
-        [[UIImageView alloc] initWithImage:peopleWaitingImage];
-    peopleWaitingImageView.contentMode = UIViewContentModeCenter;
-    peopleWaitingImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    peopleWaitingImageView.tintColor = UIColor.whiteColor;
-
-    [_nonAvatarContainer addSubview:peopleWaitingImageView];
-    [NSLayoutConstraint activateConstraints:@[
-      [peopleWaitingImageView.centerXAnchor
-          constraintEqualToAnchor:_nonAvatarContainer.centerXAnchor],
-      [peopleWaitingImageView.centerYAnchor
-          constraintEqualToAnchor:_nonAvatarContainer.centerYAnchor
-                         constant:-kPersonWaitingVerticalMargin],
-    ]];
-
-    [self updateColors];
-
-    return;
-  }
-
-  // Display the `plusXLabel` if needed.
-  NSInteger remainingCount = totalNumber - _avatars.count;
-  if (remainingCount > 0) {
-    UIView* plusXLabel =
-        [self createPlusXLabelWithRemainingCount:remainingCount];
-
-    // Create a container view to act as the border for the plusXLabel.
-    // This is needed to avoid anti-aliasing artifacts around the border itself.
-    UIView* plusXContainerView =
-        [self createCircularContainerWithSize:containerSize];
-    [UIView performWithoutAnimation:^{
-      plusXContainerView.layer.cornerRadius = containerSize / 2.0;
-    }];
-    [plusXContainerView addSubview:plusXLabel];
-
-    [_facesStackView addArrangedSubview:plusXContainerView];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [plusXLabel.widthAnchor
-          constraintGreaterThanOrEqualToConstant:_avatarSize],
-      [plusXLabel.heightAnchor constraintEqualToConstant:_avatarSize],
-      [plusXLabel.leadingAnchor
-          constraintEqualToAnchor:plusXContainerView.leadingAnchor
-                         constant:kContainerSubstractredStroke],
-      [plusXLabel.trailingAnchor
-          constraintEqualToAnchor:plusXContainerView.trailingAnchor
-                         constant:-kContainerSubstractredStroke],
-
-      [plusXContainerView.heightAnchor constraintEqualToConstant:containerSize]
-    ]];
-    AddSameCenterConstraints(plusXLabel, plusXContainerView);
-  }
+  __weak __typeof(self) weakSelf = self;
+  [UIView performWithoutAnimation:^{
+    [weakSelf setupStackView];
+  }];
 }
 
 - (void)setAvatarSize:(CGFloat)avatarSize {
@@ -326,9 +215,7 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
   // label.
   UIView* plusXLabelContainer = [[UIView alloc] init];
   plusXLabelContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  [UIView performWithoutAnimation:^{
-    plusXLabelContainer.layer.cornerRadius = _avatarSize / 2.0;
-  }];
+  plusXLabelContainer.layer.cornerRadius = _avatarSize / 2.0;
   plusXLabelContainer.layer.masksToBounds = YES;
   [plusXLabelContainer addSubview:plusXLabel];
 
@@ -360,6 +247,126 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
 // Returns whether this facepile is empty.
 - (BOOL)isEmpty {
   return _facesStackView.arrangedSubviews.count == 0;
+}
+
+// Configures and populates the stack view with avatar representations.
+// Clears any previously subviews, then adds individual avatars, a "plus X"
+// label, or a placeholder as needed.
+- (void)setupStackView {
+  // Remove all existing avatar views from the stack.
+  for (UIView* view in _facesStackView.arrangedSubviews) {
+    [view removeFromSuperview];
+  }
+
+  CGFloat containerSize = _avatarSize + kContainerSubstractredStroke * 2;
+  NSInteger avatarsCount = static_cast<NSUInteger>(_avatars.count);
+
+  for (NSInteger index = 0; index < avatarsCount; index++) {
+    id<ShareKitAvatarPrimitive> avatar = _avatars[index];
+    [avatar resolve];
+
+    // Create a container view to act as the border for the avatar.
+    // This is needed to avoid anti-aliasing artifacts around the border itself.
+    UIView* avatarContainerView =
+        [self createCircularContainerWithSize:containerSize];
+    UIView* avatarView = [avatar view];
+    avatarView.translatesAutoresizingMaskIntoConstraints = NO;
+    [avatarContainerView addSubview:avatarView];
+
+    // Apply an overlapping mask to all avatar containers except if it's the
+    // last displayed container.
+    if (index + 1 < _membersCount || _membersCount == 1) {
+      [self applyOverlappingCircleMaskToContainer:avatarContainerView];
+    }
+
+    [NSLayoutConstraint activateConstraints:@[
+      [avatarContainerView.widthAnchor constraintEqualToConstant:containerSize],
+      [avatarContainerView.heightAnchor constraintEqualToConstant:containerSize]
+    ]];
+    AddSameCenterConstraints(avatarView, avatarContainerView);
+
+    [_facesStackView addArrangedSubview:avatarContainerView];
+  }
+
+  // Update the `_emptyFacePileLabel` visibility.
+  _emptyFacePileLabel.hidden = ![self isEmpty];
+
+  if (_membersCount == 1) {
+    // Create a container view to act as the border.
+    // This is needed to avoid anti-aliasing artifacts around the border itself.
+    UIView* containerView =
+        [self createCircularContainerWithSize:containerSize];
+    [_facesStackView addArrangedSubview:containerView];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [containerView.widthAnchor constraintEqualToConstant:containerSize],
+      [containerView.heightAnchor constraintEqualToConstant:containerSize]
+    ]];
+
+    _nonAvatarContainer = [[UIView alloc] init];
+    _nonAvatarContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    _nonAvatarContainer.layer.cornerRadius = _avatarSize / 2.0;
+    _nonAvatarContainer.layer.masksToBounds = YES;
+    [NSLayoutConstraint activateConstraints:@[
+      [_nonAvatarContainer.widthAnchor constraintEqualToConstant:_avatarSize],
+      [_nonAvatarContainer.heightAnchor constraintEqualToConstant:_avatarSize]
+    ]];
+
+    [containerView addSubview:_nonAvatarContainer];
+    AddSameCenterConstraints(_nonAvatarContainer, containerView);
+
+    UIImage* peopleWaitingImage = DefaultSymbolWithPointSize(
+        kPersonClockFillSymbol, _avatarSize * kPersonWaitingProportion);
+    UIImageView* peopleWaitingImageView =
+        [[UIImageView alloc] initWithImage:peopleWaitingImage];
+    peopleWaitingImageView.contentMode = UIViewContentModeCenter;
+    peopleWaitingImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    peopleWaitingImageView.tintColor = UIColor.whiteColor;
+
+    [_nonAvatarContainer addSubview:peopleWaitingImageView];
+    [NSLayoutConstraint activateConstraints:@[
+      [peopleWaitingImageView.centerXAnchor
+          constraintEqualToAnchor:_nonAvatarContainer.centerXAnchor],
+      [peopleWaitingImageView.centerYAnchor
+          constraintEqualToAnchor:_nonAvatarContainer.centerYAnchor
+                         constant:-kPersonWaitingVerticalMargin],
+    ]];
+
+    [self updateColors];
+
+    return;
+  }
+
+  // Display the `plusXLabel` if needed.
+  NSInteger remainingCount = _membersCount - _avatars.count;
+  if (remainingCount > 0) {
+    UIView* plusXLabel =
+        [self createPlusXLabelWithRemainingCount:remainingCount];
+
+    // Create a container view to act as the border for the plusXLabel.
+    // This is needed to avoid anti-aliasing artifacts around the border itself.
+    UIView* plusXContainerView =
+        [self createCircularContainerWithSize:containerSize];
+    plusXContainerView.layer.cornerRadius = containerSize / 2.0;
+    [plusXContainerView addSubview:plusXLabel];
+
+    [_facesStackView addArrangedSubview:plusXContainerView];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [plusXLabel.widthAnchor
+          constraintGreaterThanOrEqualToConstant:_avatarSize],
+      [plusXLabel.heightAnchor constraintEqualToConstant:_avatarSize],
+      [plusXLabel.leadingAnchor
+          constraintEqualToAnchor:plusXContainerView.leadingAnchor
+                         constant:kContainerSubstractredStroke],
+      [plusXLabel.trailingAnchor
+          constraintEqualToAnchor:plusXContainerView.trailingAnchor
+                         constant:-kContainerSubstractredStroke],
+
+      [plusXContainerView.heightAnchor constraintEqualToConstant:containerSize]
+    ]];
+    AddSameCenterConstraints(plusXLabel, plusXContainerView);
+  }
 }
 
 @end
