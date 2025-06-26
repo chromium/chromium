@@ -4228,7 +4228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PushNotification.ClientManagerAccessFailure"
-    enum="PushNotificationClientManagerFailurePoint" expires_after="2025-07-01">
+    enum="PushNotificationClientManagerFailurePoint" expires_after="2025-09-26">
   <owner>bwwilliams@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <owner>treib@google.com</owner>
@@ -4393,7 +4393,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="IOS.PushNotification.ProfileRequestCreationFailureReason.{ClientId}"
     enum="ProfileNotificationRequestCreationFailureReason"
-    expires_after="2025-07-01">
+    expires_after="2025-09-26">
   <owner>bwwilliams@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <owner>treib@google.com</owner>
