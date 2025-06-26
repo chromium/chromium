@@ -9,8 +9,8 @@
   </div>
   <cr-button @click="${this.onClick_}" id="composeButton"
       class="compose-container"
-      title="$i18n{searchboxComposeButtonText}">
+      title="${this.i18n('searchboxComposeButtonText')}">
     <img slot="prefix-icon" src="${this.composeIcon_}" class="compose-icon">
-    $i18n{searchboxComposeButtonText}
+    ${this.i18n('searchboxComposeButtonText')}
   </cr-button>
 </div>
