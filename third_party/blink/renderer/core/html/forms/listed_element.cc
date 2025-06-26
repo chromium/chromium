@@ -575,9 +575,7 @@ Element& ListedElement::GetHostOrFocusDelegate() const {
   const HTMLElement& host = ToHTMLElement();
   // If host is a shadow host with delegatesFocus, then the element to get
   // focus should be its focusable area.
-  if (RuntimeEnabledFeatures::
-          FormValidationCustomElementsDelegatesFocusFixEnabled() &&
-      host.IsShadowHostWithDelegatesFocus()) {
+  if (host.IsShadowHostWithDelegatesFocus()) {
     if (Element* focusable_area =
             host.GetFocusableArea(/*in_descendant_traversal=*/true)) {
       return *focusable_area;

@@ -2489,13 +2489,6 @@
       status: "stable",
     },
     {
-     // TODO(crbug.com/389587444): Remove this feature after M134 is stable.
-     // Form-associated custom elements should check isFocusable on the
-     // focus delegate if the shadow host has delegatesFocus=true.
-     name: "FormValidationCustomElementsDelegatesFocusFix",
-     status: "stable",
-    },
-    {
       name: "FractionalScrollOffsets",
       base_feature: "none",
       public: true,
