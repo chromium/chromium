@@ -1444,7 +1444,8 @@ static CSSPrimitiveValue* ConsumeMathFunctionAngle(
     double minimum_value,
     double maximum_value) {
   MathFunctionParser math_parser(stream, context,
-                                 CSSPrimitiveValue::ValueRange::kAll);
+                                 CSSPrimitiveValue::ValueRange::kAll,
+                                 CSSMathExpressionNode::Flags());
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (calculation->Category() != kCalcAngle) {
       return nullptr;
@@ -1470,7 +1471,8 @@ static CSSPrimitiveValue* ConsumeMathFunctionAngle(
     CSSParserTokenStream& stream,
     const CSSParserContext& context) {
   MathFunctionParser math_parser(stream, context,
-                                 CSSPrimitiveValue::ValueRange::kAll);
+                                 CSSPrimitiveValue::ValueRange::kAll,
+                                 CSSMathExpressionNode::Flags());
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (calculation->Category() != kCalcAngle) {
       return nullptr;
