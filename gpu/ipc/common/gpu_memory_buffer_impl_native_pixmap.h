@@ -18,6 +18,10 @@ class ClientNativePixmap;
 class ClientNativePixmapFactory;
 }  // namespace gfx
 
+namespace media {
+class VaapiJpegEncodeAccelerator;
+}  // namespace media
+
 namespace gpu {
 
 class GpuMemoryBufferSupport;
@@ -50,6 +54,9 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
  private:
+  // TODO(crbug.com/404905709): Eliminate this class' creation of GMBs and
+  // remove this friending.
+  friend class media::VaapiJpegEncodeAccelerator;
   friend class GpuMemoryBufferSupport;
 
   static std::unique_ptr<GpuMemoryBufferImplNativePixmap> CreateFromHandle(

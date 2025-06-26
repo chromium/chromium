@@ -49,7 +49,6 @@ class GpuArcVideoEncodeAccelerator;
 }
 
 namespace media {
-class VaapiJpegEncodeAccelerator;
 class V4L2JpegEncodeAccelerator;
 }  // namespace media
 
@@ -112,7 +111,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
   // TODO(crbug.com/404905709): Eliminate these class' creation of GMBs and
   // remove this friending.
   friend class arc::GpuArcVideoEncodeAccelerator;
-  friend class media::VaapiJpegEncodeAccelerator;
   friend class media::V4L2JpegEncodeAccelerator;
 
   // ClientSharedImage is the only entity that should be creating GMBs via

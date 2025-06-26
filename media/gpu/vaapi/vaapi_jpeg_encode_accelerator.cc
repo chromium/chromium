@@ -23,7 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -31,6 +31,8 @@
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/parsers/jpeg_parser.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace media {
 
@@ -92,7 +94,7 @@ class VaapiJpegEncodeAccelerator::Encoder {
       GUARDED_BY_CONTEXT(sequence_checker_);
   scoped_refptr<VaapiWrapper> vpp_vaapi_wrapper_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_
+  std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // |cached_output_buffer_| is the last allocated VABuffer during EncodeTask().
@@ -177,7 +179,7 @@ void VaapiJpegEncodeAccelerator::Encoder::Initialize(
   }
 
   jpeg_encoder_ = std::make_unique<VaapiJpegEncoder>(vaapi_wrapper_);
-  gpu_memory_buffer_support_ = std::make_unique<gpu::GpuMemoryBufferSupport>();
+  client_native_pixmap_factory_ = ui::CreateClientNativePixmapFactoryOzone();
   video_frame_ready_cb_ = std::move(video_frame_ready_cb);
   notify_error_cb_ = std::move(notify_error_cb);
 
@@ -300,10 +302,10 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
       base::checked_cast<int32_t>(output_frame->layout().planes()[0].stride),
       1);
   auto output_gmb_buffer =
-      gpu_memory_buffer_support_->CreateGpuMemoryBufferImplFromHandle(
-          std::move(output_gmb_handle), output_gmb_buffer_size,
-          gfx::BufferFormat::R_8, gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
-          base::DoNothing());
+      gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
+          client_native_pixmap_factory_.get(), std::move(output_gmb_handle),
+          output_gmb_buffer_size, gfx::BufferFormat::R_8,
+          gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE, base::DoNothing());
   if (output_gmb_buffer == nullptr) {
     VLOGF(1) << "Failed to create GpuMemoryBufferImpl from handle";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
