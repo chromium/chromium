@@ -296,6 +296,10 @@ crbug.com/1372155 [ android android-sm-a137f ] WebglExtension_OES_texture_half_f
 crbug.com/1372155 [ android android-sm-a137f ] WebglExtension_WEBGL_color_buffer_float [ Skip ]
 crbug.com/1372155 [ android android-sm-a137f arm ] WebglExtension_WEBGL_draw_buffers [ Skip ]
 
+# Extensions not available on brya devices with Android Desktop.
+# Shader compilation fails due to GL_EXT_draw_buffers not being available.
+[ android android-brya intel angle-vulkan ] conformance/extensions/webgl-draw-buffers.html [ Skip ]
+
 # Extensions not available on Corsola devices with Android Desktop.
 [ android android-corsola arm ] WebglExtension_EXT_float_blend [ Skip ]
 
