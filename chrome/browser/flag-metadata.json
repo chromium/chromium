@@ -7372,17 +7372,17 @@
   {
     "name": "omnibox-on-device-head-suggestions",
     "owners": [ "cechen@google.com", "suggest-2g@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "omnibox-on-device-head-suggestions-incognito",
     "owners": [ "cechen@google.com", "suggest-2g@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "omnibox-on-device-tail-suggestions",
     "owners": [ "cechen@google.com", "suggest-2g@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "omnibox-report-assisted-query-stats",
