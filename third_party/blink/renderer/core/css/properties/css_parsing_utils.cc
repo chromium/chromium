@@ -6300,6 +6300,16 @@ bool IsGridTrackFixedSized(const CSSValue& value) {
          IsGridBreadthFixedSized(max_value);
 }
 
+bool IsGridTrackFixedSizedOrAuto(const CSSValue& value) {
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    CSSValueID value_id = identifier_value->GetValueID();
+    if (value_id == CSSValueID::kAuto) {
+      return true;
+    }
+  }
+  return IsGridTrackFixedSized(value);
+}
+
 CSSValue* ConsumeGridTrackSize(CSSParserTokenStream& stream,
                                const CSSParserContext& context) {
   const auto& token_id = stream.Peek().FunctionId();
@@ -6395,12 +6405,13 @@ bool AppendLineNames(CSSParserTokenStream& stream,
   return false;
 }
 
-bool ConsumeGridTrackRepeatFunction(CSSParserTokenStream& stream,
-                                    const CSSParserContext& context,
-                                    bool is_subgrid_track_list,
-                                    CSSValueList& list,
-                                    bool& is_auto_repeat,
-                                    bool& all_tracks_are_fixed_sized) {
+bool ConsumeGridTrackRepeatFunction(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    bool is_subgrid_track_list,
+    CSSValueList& list,
+    bool& is_auto_repeat,
+    bool& all_tracks_are_auto_repeat_or_fixed_sized) {
   DCHECK_EQ(stream.Peek().GetType(), kFunctionToken);
   CSSParserTokenStream::BlockGuard guard(stream);
   stream.ConsumeWhitespace();
@@ -6448,8 +6459,21 @@ bool ConsumeGridTrackRepeatFunction(CSSParserTokenStream& stream,
       if (!track_size) {
         return false;
       }
-      if (all_tracks_are_fixed_sized) {
-        all_tracks_are_fixed_sized = IsGridTrackFixedSized(*track_size);
+      if (all_tracks_are_auto_repeat_or_fixed_sized) {
+        // Whether repeat(auto-fill, auto) should be allowed, and if it should
+        // apply to both grid and masonry is still in discussion in the CSSWG.
+        //
+        // TODO(almaher): Make adjustments once a resolution is made [1].
+        //
+        // [1] https://github.com/w3c/csswg-drafts/issues/10915
+        if (is_auto_repeat &&
+            RuntimeEnabledFeatures::CSSMasonryLayoutEnabled()) {
+          all_tracks_are_auto_repeat_or_fixed_sized =
+              IsGridTrackFixedSizedOrAuto(*track_size);
+        } else {
+          all_tracks_are_auto_repeat_or_fixed_sized =
+              IsGridTrackFixedSized(*track_size);
+        }
       }
       repeated_values->Append(*track_size);
       ++number_of_tracks;
@@ -6657,7 +6681,7 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenStream& stream,
   bool allow_repeat =
       is_subgrid_track_list || track_list_type == TrackListType::kGridTemplate;
   bool seen_auto_repeat = false;
-  bool all_tracks_are_fixed_sized = true;
+  bool all_tracks_are_auto_repeat_or_fixed_sized = true;
   auto IsRangeAtEnd = [](CSSParserTokenStream& stream) -> bool {
     return stream.AtEnd() || stream.Peek().GetType() == kDelimiterToken;
   };
@@ -6670,7 +6694,7 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenStream& stream,
       }
       if (!ConsumeGridTrackRepeatFunction(
               stream, context, is_subgrid_track_list, *values, is_auto_repeat,
-              all_tracks_are_fixed_sized)) {
+              all_tracks_are_auto_repeat_or_fixed_sized)) {
         return nullptr;
       }
       stream.ConsumeWhitespace();
@@ -6685,8 +6709,9 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenStream& stream,
       if (is_subgrid_track_list) {
         return nullptr;
       }
-      if (all_tracks_are_fixed_sized) {
-        all_tracks_are_fixed_sized = IsGridTrackFixedSized(*value);
+      if (all_tracks_are_auto_repeat_or_fixed_sized) {
+        all_tracks_are_auto_repeat_or_fixed_sized =
+            IsGridTrackFixedSized(*value);
       }
 
       values->Append(*value);
@@ -6694,7 +6719,7 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenStream& stream,
       return nullptr;
     }
 
-    if (seen_auto_repeat && !all_tracks_are_fixed_sized) {
+    if (seen_auto_repeat && !all_tracks_are_auto_repeat_or_fixed_sized) {
       return nullptr;
     }
     if (!allow_grid_line_names &&
