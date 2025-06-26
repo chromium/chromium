@@ -5,7 +5,6 @@
 #include "chrome/browser/flag_descriptions.h"
 
 #include "build/build_config.h"
-#include "flag_descriptions.h"
 #include "media/gpu/buildflags.h"
 #include "pdf/buildflags.h"
 #include "skia/buildflags.h"
