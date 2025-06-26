@@ -7,4 +7,7 @@ specific_include_rules = {
     "+third_party/skia/include/gpu/vk/VulkanMemoryAllocator.h",
     "+third_party/skia/include/gpu/vk/VulkanTypes.h",
   ],
+  "vulkan_instance.h": [
+    "+third_party/skia/include/gpu/vk/VulkanPreferredFeatures.h",
+  ],
 }

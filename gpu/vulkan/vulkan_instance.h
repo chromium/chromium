@@ -6,6 +6,7 @@
 #define GPU_VULKAN_VULKAN_INSTANCE_H_
 
 #include <vulkan/vulkan_core.h>
+
 #include <memory>
 
 #include "base/check_op.h"
@@ -13,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/native_library.h"
 #include "gpu/config/vulkan_info.h"
+#include "third_party/skia/include/gpu/vk/VulkanPreferredFeatures.h"
 #include "ui/gfx/extension_set.h"
 
 namespace gpu {
@@ -44,6 +46,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanInstance {
                           const std::vector<const char*>& required_layers);
 
   const VulkanInfo& vulkan_info() const { return vulkan_info_; }
+  skgpu::VulkanPreferredFeatures& skia_features() { return skia_features_; }
 
   VkInstance vk_instance() { return vk_instance_; }
 
@@ -62,6 +65,11 @@ class COMPONENT_EXPORT(VULKAN) VulkanInstance {
   const bool is_from_angle_;
 
   VulkanInfo vulkan_info_;
+  // Additional features desired by Skia. This is owned by the instance and
+  // initialized by it. Later, it is used at device creation too, with
+  // VulkanDeviceQueue::enabled_device_features_2_ ending up referencing its
+  // members in its pNext chain.
+  skgpu::VulkanPreferredFeatures skia_features_;
 
   base::NativeLibrary loader_library_ = nullptr;
 

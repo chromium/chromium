@@ -157,6 +157,12 @@ bool VulkanInstance::CreateInstance(
     }
   }
 
+  skia_features_.init(app_info.apiVersion);
+  skia_features_.addToInstanceExtensions(
+      vulkan_info_.instance_extensions.data(),
+      vulkan_info_.instance_extensions.size(),
+      vulkan_info_.enabled_instance_extensions);
+
 #if DCHECK_IS_ON()
   for (const char* enabled_extension :
        vulkan_info_.enabled_instance_extensions) {
