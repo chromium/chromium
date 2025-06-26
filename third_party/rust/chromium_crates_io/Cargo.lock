@@ -984,7 +984,7 @@ dependencies = [
 
 [[package]]
 name = "temporal_capi"
-version = "0.0.9"
+version = "0.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "diplomat",
@@ -998,7 +998,7 @@ dependencies = [
 
 [[package]]
 name = "temporal_rs"
-version = "0.0.9"
+version = "0.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "combine",
@@ -1024,7 +1024,7 @@ dependencies = [
 
 [[package]]
 name = "timezone_provider"
-version = "0.0.9"
+version = "0.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "zerotrie",
@@ -1054,7 +1054,7 @@ dependencies = [
 
 [[package]]
 name = "tzif"
-version = "0.3.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "combine",

@@ -1,0 +1,11 @@
+Name: tzif
+URL: https://crates.io/crates/tzif
+Version: 0.4.0
+Revision: e9ab7308efb2fdc0fca96f71106c68f9f5840056
+Update Mechanism: Manual
+License: Unicode-3.0
+License File: //third_party/rust/chromium_crates_io/vendor/tzif-v0_4/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: A parser for TZif files
