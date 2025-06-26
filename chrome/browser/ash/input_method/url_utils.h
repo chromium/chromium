@@ -21,6 +21,9 @@ bool IsSubDomainWithPathPrefix(const GURL& url,
                                std::string_view domain,
                                std::string_view path_prefix);
 
+// Checks if url is a file with a matching extension
+bool HasFileExtension(const GURL& url, std::string_view extension);
+
 }  // namespace input_method
 }  // namespace ash
 

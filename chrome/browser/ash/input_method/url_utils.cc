@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/url_util.h"
@@ -36,6 +37,12 @@ bool IsSubDomainWithPathPrefix(const GURL& url,
                                std::string_view path_prefix) {
   return IsSubDomain(url, domain) && url.has_path() &&
          base::StartsWith(url.path(), path_prefix);
+}
+
+// Checks if url is a file with a matching extension
+bool HasFileExtension(const GURL& url, std::string_view extension) {
+  return base::EndsWith(url.path(), base::StrCat({".", extension}),
+                        base::CompareCase::INSENSITIVE_ASCII);
 }
 
 }  // namespace input_method

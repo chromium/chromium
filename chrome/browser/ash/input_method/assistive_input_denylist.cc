@@ -37,6 +37,10 @@ const char* kDefaultDomainDenylist[] = {
 // Exceptions where the features are enabled.
 const char* kAllowedDomainsWithPaths[][2] = {{"mail.google", "/chat"}};
 
+const char* kDefaultFileExtensionDenylist[] = {
+    "pdf",
+};
+
 bool MatchesSubDomainFromDefaultList(const GURL& url) {
   for (const char* domain : kDefaultDomainDenylist) {
     if (IsSubDomain(url, domain)) {
@@ -55,6 +59,15 @@ bool AllowedSubDomainWithPathPrefix(const GURL& url) {
   return false;
 }
 
+bool MatchesFileExtensionFromDefaultList(const GURL& url) {
+  for (const char* extension : kDefaultFileExtensionDenylist) {
+    if (HasFileExtension(url, extension)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 AssistiveInputDenylist::AssistiveInputDenylist() = default;
@@ -65,7 +78,8 @@ bool AssistiveInputDenylist::Contains(const GURL& url) {
   return (MatchesSubDomainFromDefaultList(url) &&
           // Used to allow specific paths on a top level domain that has been
           // denied (for example, "mail.google.com/chat").
-          !AllowedSubDomainWithPathPrefix(url));
+          !AllowedSubDomainWithPathPrefix(url)) ||
+         MatchesFileExtensionFromDefaultList(url);
 }
 
 }  // namespace input_method

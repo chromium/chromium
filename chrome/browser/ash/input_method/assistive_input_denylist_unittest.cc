@@ -37,7 +37,9 @@ INSTANTIATE_TEST_SUITE_P(
         "https://amazon.com.au",
         "https://amazon.com.au/gp/new-releases",
         "http://smile.amazon.com",
-        "http://www.abc.smile.amazon.com.au/abc+com+au/some/other/text"));
+        "http://www.abc.smile.amazon.com.au/abc+com+au/some/other/text",
+        "http://www.irs.gove/file.pdf",
+        "file:///home/chronos/user/file.pdf"));
 
 TEST_P(Contains, Url) {
   EXPECT_TRUE(AssistiveInputDenylist().Contains(GURL(GetParam())));
@@ -60,7 +62,8 @@ INSTANTIATE_TEST_SUITE_P(
                     "http://sites.google.com/view/e14s-test",
                     "http://amazon/com/test",
                     "http://not-amazon.com/test",
-                    "http://.com/test"));
+                    "http://.com/test"
+                    "http://somesite.pdf.specialviewer.com"));
 
 TEST_P(DoesNotContain, Url) {
   EXPECT_FALSE(AssistiveInputDenylist().Contains(GURL(GetParam())));
