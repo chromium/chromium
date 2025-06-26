@@ -1384,7 +1384,7 @@
     },
     {
       name: "CSSMixins",
-      status: "test",
+      status: "experimental",
     },
     {
       // Kill switch for crbug.com/378966977
