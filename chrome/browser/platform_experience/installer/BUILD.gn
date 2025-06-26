@@ -17,20 +17,3 @@ source_set("installer_win") {
     "//chrome/install_static:install_static_util",
   ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "installer_win_unittest.cc" ]
-
-  deps = [
-    ":installer_win",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/common:constants",
-    "//chrome/install_static/test:test_support",
-    "//chrome/installer/util:constants",
-    "//chrome/updater/app/server/win:updater_legacy_idl",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}

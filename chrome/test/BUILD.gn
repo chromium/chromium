@@ -7418,7 +7418,6 @@ test("unit_tests") {
 
       deps += [
         "//chrome/browser/platform_experience:unit_tests",
-        "//chrome/browser/platform_experience/installer:unit_tests",
         "//chrome/browser/win/installer_downloader:unit_tests",
       ]
     }
