@@ -4,6 +4,8 @@
 
 #include "services/device/fingerprint/fingerprint_chromeos.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -41,11 +43,11 @@ class FakeFingerprintObserver : public mojom::FingerprintObserver {
   }
 
   void OnAuthScanDone(
-      const device::mojom::FingerprintMessagePtr msg,
+      device::mojom::FingerprintMessagePtr msg,
       const base::flat_map<std::string, std::vector<std::string>>& matches)
       override {
     auth_scan_dones_++;
-    last_message_ = *msg;
+    last_message_ = std::move(msg);
   }
 
   void OnSessionFailed() override { session_failures_++; }
@@ -57,7 +59,7 @@ class FakeFingerprintObserver : public mojom::FingerprintObserver {
   int session_failures() { return session_failures_; }
 
   const device::mojom::FingerprintMessage& last_message() const {
-    return last_message_;
+    return *last_message_;
   }
 
  private:
@@ -68,8 +70,8 @@ class FakeFingerprintObserver : public mojom::FingerprintObserver {
   int status_changes_ = 0;     // Count of StatusChanged signal received.
   int session_failures_ = 0;   // Count of session failed signal received.
 
-  device::mojom::FingerprintMessage
-      last_message_;  // Last received FingerprintMessage.
+  // Last received FingerprintMessage.
+  device::mojom::FingerprintMessagePtr last_message_;
 };
 
 class FingerprintChromeOSTest : public testing::Test {
