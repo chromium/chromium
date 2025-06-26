@@ -403,7 +403,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   SignOutFromAccountSettings();
   [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
                      IDS_CANCEL)] performAction:grey_tap()];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
@@ -436,7 +436,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   SignOutFromAccountSettings();
   [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
                      IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_AND_DELETE_BUTTON)]
       performAction:grey_tap()];
 
