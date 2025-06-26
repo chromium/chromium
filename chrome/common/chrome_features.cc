@@ -329,6 +329,11 @@ BASE_FEATURE(kGeoLanguage, "GeoLanguage", base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether the actor component of Glic is enabled.
 BASE_FEATURE(kGlicActor, "GlicActor", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the actor ui state manager is enabled.
+BASE_FEATURE(kGlicActorUiStateManager,
+             "GlicActorUiStateManager",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls renderer tool observation timeout when waiting on local
 // (non-network) work.
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityLocalTimeout{
