@@ -308,6 +308,25 @@ std::unique_ptr<views::ScrollView> CreateScrollView(bool audio_requested) {
   return scroll_view;
 }
 
+int getHintId(bool is_system_audio_offered, bool is_window_audio_offered) {
+  // We can never call this function if both screen and window audio are
+  // offered.
+  CHECK(!is_system_audio_offered || !is_window_audio_offered);
+
+  if (is_system_audio_offered && !is_window_audio_offered) {
+    return IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB_OR_SCREEN;
+  }
+  if (!is_system_audio_offered && is_window_audio_offered) {
+    return IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB_OR_WINDOW;
+  }
+  if (!is_system_audio_offered && !is_window_audio_offered) {
+    return IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB;
+  }
+
+  // The check must fail to get here.
+  return IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB;
+}
+
 }  // namespace
 
 bool DesktopMediaPickerDialogView::AudioSupported(
@@ -317,7 +336,8 @@ bool DesktopMediaPickerDialogView::AudioSupported(
       return DesktopMediaPickerController::IsSystemAudioCaptureSupported(
           request_source_);
     case DesktopMediaList::Type::kWindow:
-      return false;
+      return DesktopMediaPickerController::IsSystemAudioCaptureSupported(
+          request_source_);
     case DesktopMediaList::Type::kWebContents:
       return true;
     case DesktopMediaList::Type::kNone:
@@ -334,6 +354,8 @@ bool DesktopMediaPickerDialogView::AudioRequestedForType(
   // return `category.audio_offered`.
   if (type == DesktopMediaList::Type::kScreen) {
     return audio_requested_ && !exclude_system_audio_requested_;
+  } else if (type == DesktopMediaList::Type::kWindow) {
+    return audio_requested_ && !exclude_window_audio_requested_;
   } else {
     return audio_requested_;
   }
@@ -372,9 +394,17 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       app_name_(params.app_name),
       audio_requested_(params.request_audio),
       exclude_system_audio_requested_(params.exclude_system_audio),
+      exclude_window_audio_requested_(
+          params.window_audio_preference ==
+          blink::mojom::WindowAudioPreference::kExclude),
       is_system_audio_offered_(audio_requested_ &&
                                !params.exclude_system_audio &&
                                AudioSupported(DesktopMediaList::Type::kScreen)),
+      is_window_audio_offered_(
+          audio_requested_ &&
+          params.window_audio_preference !=
+              blink::mojom::WindowAudioPreference::kExclude &&
+          AudioSupported(DesktopMediaList::Type::kWindow)),
       suppress_local_audio_playback_(params.suppress_local_audio_playback),
       restrict_own_audio_(params.restrict_own_audio),
       capturer_global_id_(
@@ -503,8 +533,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             views::ScrollView::ScrollBarMode::kDisabled);
         std::unique_ptr<views::View> pane = SetupPane(
             DesktopMediaList::Type::kWindow, std::move(list_controller),
-            /*audio_offered=*/
-            AudioSupported(DesktopMediaList::Type::kWindow),
+            /*audio_offered=*/is_window_audio_offered_,
             /*audio_checked=*/
             params.force_audio_checkboxes_to_default_checked &&
                 !screen_capture_audio_default_unchecked,
@@ -722,9 +751,7 @@ std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
     const DisplaySurfaceCategory& category) const {
   if (!category.audio_offered) {
     return l10n_util::GetStringUTF16(
-        is_system_audio_offered_
-            ? IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB_OR_SCREEN
-            : IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB);
+        getHintId(is_system_audio_offered_, is_window_audio_offered_));
   }
 
   switch (category.type) {
@@ -735,7 +762,10 @@ std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
               : IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_SYSTEM_AUDIO);
     }
     case DesktopMediaList::Type::kWindow:
-      NOTREACHED();
+      return l10n_util::GetStringUTF16(
+          suppress_local_audio_playback_
+              ? IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN_WITH_MUTE_WARNING
+              : IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_SYSTEM_AUDIO);
     case DesktopMediaList::Type::kWebContents:
       return l10n_util::GetStringUTF16(
           IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_TAB_AUDIO);

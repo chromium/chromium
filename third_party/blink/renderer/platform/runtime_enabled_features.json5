@@ -2478,6 +2478,17 @@
       depends_on: ["GetDisplayMedia"],
       status: "experimental",
     },
+    // When a Web application calls getDisplayMedia() and asks for audio,
+    // allow a hint to be provided as to whether the Web application is
+    // interested in audio being among the options offered to the user
+    // on window display surfaces.
+    //
+    // https://www.w3.org/TR/screen-capture/#dom-displaymediastreamoptions-windowaudio
+    {
+      name: "GetDisplayMediaWindowAudioCapture",
+      status: "experimental",
+      browser_process_read_write_access: true,
+    },
     {
       name: "GroupEffect",
       status: "test",

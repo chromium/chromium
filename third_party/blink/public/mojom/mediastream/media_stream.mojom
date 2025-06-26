@@ -157,6 +157,7 @@ struct StreamControls {
   bool suppress_local_audio_playback;
   bool restrict_own_audio;
   bool exclude_system_audio;
+  WindowAudioPreference window_audio_preference;
   bool exclude_self_browser_surface;
   bool request_pan_tilt_zoom_permission;
   bool request_all_screens;
@@ -211,6 +212,15 @@ enum ZoomLevelAction {
   kIncrease,
   kDecrease,
   kReset,
+};
+
+// What kind of audio the caller of the Captured Surface Control prefer to be
+// used when sharing a window surface.
+// https://www.w3.org/TR/screen-capture/#dom-displaymediastreamoptions-windowaudio
+enum WindowAudioPreference {
+  kSystem,
+  kWindow,
+  kExclude,
 };
 
 // Per-frame renderer-side interface that receives device stopped/change

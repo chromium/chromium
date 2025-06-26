@@ -171,12 +171,15 @@ std::u16string GetNotificationText(const std::u16string& application_title,
         return l10n_util::GetStringFUTF16(
             IDS_MEDIA_SCREEN_CAPTURE_WITH_AUDIO_NOTIFICATION_TEXT,
             application_title);
+      case content::DesktopMediaID::TYPE_WINDOW:
+        return l10n_util::GetStringFUTF16(
+            IDS_MEDIA_WINDOW_CAPTURE_WITH_AUDIO_NOTIFICATION_TEXT,
+            application_title);
       case content::DesktopMediaID::TYPE_WEB_CONTENTS:
         return l10n_util::GetStringFUTF16(
             IDS_MEDIA_TAB_CAPTURE_WITH_AUDIO_NOTIFICATION_TEXT,
             application_title);
       case content::DesktopMediaID::TYPE_NONE:
-      case content::DesktopMediaID::TYPE_WINDOW:
         NOTREACHED();
     }
   } else {

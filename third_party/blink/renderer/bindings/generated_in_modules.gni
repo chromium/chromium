@@ -1878,6 +1878,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_summarizer_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_display_media_include_or_exclude.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_display_media_include_or_exclude.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_display_media_system_window_or_exclude.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_display_media_system_window_or_exclude.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_track_default_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_track_default_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_transfer_function.cc",
