@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinator.ArchiveDelegate;
@@ -15,19 +14,20 @@ import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import java.util.List;
 
 /** Set the state of the tab list editor to select tabs {@link TabListEditorMenu}. */
+@NullMarked
 public class TabListEditorSelectArchivedTabsAction extends TabListEditorAction {
-    private final @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate mArchiveDelegate;
+    private final ArchivedTabsDialogCoordinator.ArchiveDelegate mArchiveDelegate;
 
     /**
      * Create an action for starting the selection process for tabs.
      *
      * @param archiveDelegate delegate which supports archive operations.
      */
-    public static TabListEditorAction createAction(@NonNull ArchiveDelegate archiveDelegate) {
+    public static TabListEditorAction createAction(ArchiveDelegate archiveDelegate) {
         return new TabListEditorSelectArchivedTabsAction(archiveDelegate);
     }
 
-    private TabListEditorSelectArchivedTabsAction(@NonNull ArchiveDelegate archiveDelegate) {
+    private TabListEditorSelectArchivedTabsAction(ArchiveDelegate archiveDelegate) {
         super(
                 R.id.tab_list_editor_select_archived_tabs_menu_item,
                 ShowMode.MENU_ONLY,

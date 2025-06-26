@@ -134,8 +134,8 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
                 new HubPaneHostCoordinator(
                         hubPaneHostView, paneManager.getFocusedPaneSupplier(), hubColorMixer);
 
-        TransitiveObservableSupplier<Pane, View> overlayViewSupplier =
-                new TransitiveObservableSupplier<>(
+        ObservableSupplier<@Nullable View> overlayViewSupplier =
+                new TransitiveObservableSupplier<Pane, @Nullable View>(
                         mPaneManager.getFocusedPaneSupplier(),
                         (pane) -> pane.getHubOverlayViewSupplier());
         mOverlayViewManager =

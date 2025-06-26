@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinator.ArchiveDelegate;
@@ -15,15 +14,16 @@ import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import java.util.List;
 
 /** Launches the archive settings activity {@link TabListEditorMenu}. */
+@NullMarked
 public class TabListEditorArchiveSettingsAction extends TabListEditorAction {
-    private final @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate mArchiveDelegate;
+    private final ArchivedTabsDialogCoordinator.ArchiveDelegate mArchiveDelegate;
 
     /** Create an action for closing tabs. */
-    public static TabListEditorAction createAction(@NonNull ArchiveDelegate archiveDelegate) {
+    public static TabListEditorAction createAction(ArchiveDelegate archiveDelegate) {
         return new TabListEditorArchiveSettingsAction(archiveDelegate);
     }
 
-    private TabListEditorArchiveSettingsAction(@NonNull ArchiveDelegate archiveDelegate) {
+    private TabListEditorArchiveSettingsAction(ArchiveDelegate archiveDelegate) {
         super(
                 R.id.tab_list_editor_archive_settings_menu_item,
                 ShowMode.MENU_ONLY,

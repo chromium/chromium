@@ -4,16 +4,16 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DESTROYABLE;
 import static org.chromium.ui.modelutil.ModelListCleaner.destroyAndClearAllRows;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.CallbackController;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -44,6 +44,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 
 /** Populates a {@link ModelList} with an item for each tab group. */
+@NullMarked
 public class TabGroupListMediator {
     private final Context mContext;
     private final ModelList mModelList;
@@ -51,14 +52,14 @@ public class TabGroupListMediator {
     private final TabGroupModelFilter mFilter;
     private final FaviconResolver mFaviconResolver;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
-    private final @NonNull DataSharingService mDataSharingService;
-    private final @NonNull CollaborationService mCollaborationService;
+    private final DataSharingService mDataSharingService;
+    private final CollaborationService mCollaborationService;
     private final PaneManager mPaneManager;
     private final TabGroupUiActionHandler mTabGroupUiActionHandler;
     private final ActionConfirmationManager mActionConfirmationManager;
     private final SyncService mSyncService;
     private final CallbackController mCallbackController = new CallbackController();
-    private final @NonNull MessagingBackendService mMessagingBackendService;
+    private final MessagingBackendService mMessagingBackendService;
     private final PendingRunnable mPendingRefresh =
             new PendingRunnable(
                     TaskTraits.UI_DEFAULT,
@@ -197,15 +198,15 @@ public class TabGroupListMediator {
             TabGroupModelFilter filter,
             FaviconResolver faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            @NonNull DataSharingService dataSharingService,
-            @NonNull CollaborationService collaborationService,
-            @NonNull MessagingBackendService messagingBackendService,
+            DataSharingService dataSharingService,
+            CollaborationService collaborationService,
+            MessagingBackendService messagingBackendService,
             PaneManager paneManager,
             TabGroupUiActionHandler tabGroupUiActionHandler,
             ActionConfirmationManager actionConfirmationManager,
             SyncService syncService,
             boolean enableContainment,
-            @NonNull DataSharingTabManager dataSharingTabManager,
+            DataSharingTabManager dataSharingTabManager,
             TabGroupRemovedMessageMediator tabGroupRemovedMessageMediator) {
         mContext = context;
         mModelList = modelList;
@@ -264,7 +265,7 @@ public class TabGroupListMediator {
                             mContext,
                             savedTabGroup,
                             mFilter,
-                            mTabGroupSyncService,
+                            assumeNonNull(mTabGroupSyncService),
                             mDataSharingService,
                             mCollaborationService,
                             mPaneManager,
@@ -285,3 +286,4 @@ public class TabGroupListMediator {
         return groupWindowState != GroupWindowState.IN_ANOTHER;
     }
 }
+

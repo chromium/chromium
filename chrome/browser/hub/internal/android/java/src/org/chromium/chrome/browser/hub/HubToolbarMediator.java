@@ -112,8 +112,8 @@ public class HubToolbarMediator {
     private final SearchActivityClient mSearchActivityClient;
     // The order of entries in this map are the order the buttons should appear to the user. A null
     // value should not be shown to the user.
-    private final ArrayList<Pair<Integer, DisplayButtonData>> mCachedPaneSwitcherButtonData =
-            new ArrayList<>();
+    private final ArrayList<Pair<Integer, @Nullable DisplayButtonData>>
+            mCachedPaneSwitcherButtonData = new ArrayList<>();
     // Actual observers are curried with PaneId, making it difficult to unsubscribe. These runnables
     // are closures that contain the original lambda object reference. It also protects us from
     // changes in the returned panes or suppliers.
@@ -141,14 +141,16 @@ public class HubToolbarMediator {
             Pane pane = paneManager.getPaneForId(paneId);
             if (pane == null) continue;
 
-            ObservableSupplier<DisplayButtonData> supplier = pane.getReferenceButtonDataSupplier();
-            Callback<DisplayButtonData> observer = (data) -> onReferenceButtonChange(paneId, data);
+            ObservableSupplier<@Nullable DisplayButtonData> supplier =
+                    pane.getReferenceButtonDataSupplier();
+            Callback<@Nullable DisplayButtonData> observer =
+                    (data) -> onReferenceButtonChange(paneId, data);
 
             // If the supplier already has data, this will post a callback to run our observer. But
             // we do not want this. We don't want to rebuild the button data list n times. Instead
             // all of these posted events should have data identical to what we initialize our cache
             // to, and they should all no-op.
-            DisplayButtonData currentButtonData = supplier.addObserver(observer);
+            @Nullable DisplayButtonData currentButtonData = supplier.addObserver(observer);
             mCachedPaneSwitcherButtonData.add(new Pair<>(paneId, currentButtonData));
 
             mRemoveReferenceButtonObservers.add(() -> supplier.removeObserver(observer));
@@ -197,7 +199,7 @@ public class HubToolbarMediator {
         int size = mCachedPaneSwitcherButtonData.size();
         int index = 0;
         for (int i = 0; i < size; ++i) {
-            Pair<Integer, DisplayButtonData> pair = mCachedPaneSwitcherButtonData.get(i);
+            Pair<Integer, @Nullable DisplayButtonData> pair = mCachedPaneSwitcherButtonData.get(i);
             if (Objects.equals(paneId, pair.first)) {
                 return mPaneButtonLookup.get(index);
             } else if (pair.second != null) {
@@ -215,7 +217,7 @@ public class HubToolbarMediator {
     private int findCachedPaneSwitcherIndex(@PaneId int paneId) {
         int size = mCachedPaneSwitcherButtonData.size();
         for (int i = 0; i < size; ++i) {
-            Pair<Integer, DisplayButtonData> pair = mCachedPaneSwitcherButtonData.get(i);
+            Pair<Integer, @Nullable DisplayButtonData> pair = mCachedPaneSwitcherButtonData.get(i);
             if (Objects.equals(paneId, pair.first)) {
                 return i;
             }

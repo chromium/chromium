@@ -212,5 +212,5 @@ public interface TabManagementDelegate {
             Context context,
             ModalDialogManager modalDialogManager,
             OneshotSupplier<HubManager> hubManagerSupplier,
-            Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier);
+            Supplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier);
 }

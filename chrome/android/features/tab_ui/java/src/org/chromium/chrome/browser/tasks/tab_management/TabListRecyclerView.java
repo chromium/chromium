@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 
@@ -18,8 +19,6 @@ import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.animation.RunOnNextLayout;
 import org.chromium.ui.animation.RunOnNextLayoutDelegate;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
@@ -42,18 +44,19 @@ import java.util.Arrays;
 import java.util.List;
 
 /** A custom RecyclerView implementation for the tab grid, to handle show/hide logic in class. */
+@NullMarked
 class TabListRecyclerView extends RecyclerView
         implements TabListMediator.TabGridAccessibilityHelper, RunOnNextLayout {
     private boolean mBlockTouchInput;
     // Null unless item animations are disabled.
-    @Nullable private RecyclerView.ItemAnimator mDisabledAnimatorHolder;
+    private RecyclerView.@Nullable ItemAnimator mDisabledAnimatorHolder;
 
     private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
-    private final @NonNull ObservableSupplierImpl<Boolean> mIsAnimatorRunningSupplier =
+    private final ObservableSupplierImpl<Boolean> mIsAnimatorRunningSupplier =
             new ObservableSupplierImpl<>();
 
-    private TabListItemAnimator mTabListItemAnimator;
-    private Callback<TabKeyEventData> mKeyPageListenerCallback;
+    private @Nullable TabListItemAnimator mTabListItemAnimator;
+    private @Nullable Callback<TabKeyEventData> mKeyPageListenerCallback;
 
     /** Basic constructor to use during inflation from xml. */
     public TabListRecyclerView(Context context, AttributeSet attributeSet) {
@@ -85,7 +88,8 @@ class TabListRecyclerView extends RecyclerView
     }
 
     @Override
-    public boolean dispatchKeyEvent(KeyEvent e) {
+    public boolean dispatchKeyEvent(@Nullable KeyEvent e) {
+        if (e == null) return false;
         int keyCode = e.getKeyCode();
         if (mKeyPageListenerCallback != null
                 && (keyCode == KeyEvent.KEYCODE_PAGE_UP || keyCode == KeyEvent.KEYCODE_PAGE_DOWN)
@@ -153,13 +157,12 @@ class TabListRecyclerView extends RecyclerView
      * @param tabId The tab ID of the tab.
      * @return The {@link Rect} of the thumbnail of the tab in global coordinates.
      */
-    @NonNull
     Rect getRectOfTabThumbnail(int tabIndex, int tabId) {
         SimpleRecyclerViewAdapter.ViewHolder holder =
                 (SimpleRecyclerViewAdapter.ViewHolder) findViewHolderForAdapterPosition(tabIndex);
         Rect rect = new Rect();
         if (holder == null || tabIndex == TabModel.INVALID_TAB_INDEX) return rect;
-        assert holder.model.get(TabProperties.TAB_ID) == tabId;
+        assert assumeNonNull(holder.model).get(TabProperties.TAB_ID) == tabId;
         ViewLookupCachingFrameLayout root = (ViewLookupCachingFrameLayout) holder.itemView;
         View v = root.fastFindViewById(R.id.tab_thumbnail);
         if (v != null) v.getGlobalVisibleRect(rect);
@@ -178,12 +181,12 @@ class TabListRecyclerView extends RecyclerView
                 (SimpleRecyclerViewAdapter.ViewHolder)
                         findViewHolderForAdapterPosition(selectedTabIndex);
         if (holder == null || selectedTabIndex == TabModel.INVALID_TAB_INDEX) return null;
-        assert holder.model.get(TabProperties.TAB_ID) == selectedTabId;
+        assert assumeNonNull(holder.model).get(TabProperties.TAB_ID) == selectedTabId;
         ViewLookupCachingFrameLayout root = (ViewLookupCachingFrameLayout) holder.itemView;
         return getRectOfComponent(root.fastFindViewById(R.id.tab_thumbnail));
     }
 
-    private Rect getRectOfComponent(View v) {
+    private @Nullable Rect getRectOfComponent(View v) {
         // If called before a thumbnail view exists or for list view then exit with null.
         if (v == null) return null;
 
@@ -197,12 +200,10 @@ class TabListRecyclerView extends RecyclerView
         return componentRect;
     }
 
-    /**
-     * @return the position and offset of the first visible element in the list.
-     */
-    @NonNull
+    /** Returns the position and offset of the first visible element in the list. */
     RecyclerViewPosition getRecyclerViewPosition() {
         LinearLayoutManager layoutManager = (LinearLayoutManager) getLayoutManager();
+        assumeNonNull(layoutManager);
         int position = layoutManager.findFirstVisibleItemPosition();
         int offset = 0;
         if (position != RecyclerView.NO_POSITION) {
@@ -217,10 +218,11 @@ class TabListRecyclerView extends RecyclerView
     /**
      * @param recyclerViewPosition the position and offset to scroll the recycler view to.
      */
-    void setRecyclerViewPosition(@NonNull RecyclerViewPosition recyclerViewPosition) {
-        ((LinearLayoutManager) getLayoutManager())
-                .scrollToPositionWithOffset(
-                        recyclerViewPosition.getPosition(), recyclerViewPosition.getOffset());
+    void setRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition) {
+        LinearLayoutManager layoutManager = (LinearLayoutManager) getLayoutManager();
+        assumeNonNull(layoutManager);
+        layoutManager.scrollToPositionWithOffset(
+                recyclerViewPosition.getPosition(), recyclerViewPosition.getOffset());
     }
 
     /**
@@ -236,7 +238,9 @@ class TabListRecyclerView extends RecyclerView
      */
     static int getHoveredCardIndex(
             RecyclerView recyclerView, View view, float dX, float dY, float threshold) {
-        for (int i = 0; i < recyclerView.getAdapter().getItemCount(); i++) {
+        RecyclerView.Adapter adapter = recyclerView.getAdapter();
+        assumeNonNull(adapter);
+        for (int i = 0; i < adapter.getItemCount(); i++) {
             ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(i);
             if (viewHolder == null) continue;
             View child = viewHolder.itemView;
@@ -286,6 +290,7 @@ class TabListRecyclerView extends RecyclerView
             return actions;
         }
         GridLayoutManager layoutManager = (GridLayoutManager) getLayoutManager();
+        assumeNonNull(layoutManager);
         int spanCount = layoutManager.getSpanCount();
         Context context = getContext();
 
@@ -331,8 +336,10 @@ class TabListRecyclerView extends RecyclerView
 
     private int getSwappableItemCount() {
         int count = 0;
-        for (int i = 0; i < getAdapter().getItemCount(); i++) {
-            if (getAdapter().getItemViewType(i) == TabProperties.UiType.TAB) count++;
+        RecyclerView.Adapter adapter = getAdapter();
+        assumeNonNull(adapter);
+        for (int i = 0; i < adapter.getItemCount(); i++) {
+            if (adapter.getItemViewType(i) == TabProperties.UiType.TAB) count++;
         }
         return count;
     }
@@ -341,17 +348,17 @@ class TabListRecyclerView extends RecyclerView
         int tabIndex = getChildAdapterPosition(tabView);
         SimpleRecyclerViewAdapter.ViewHolder holder =
                 (SimpleRecyclerViewAdapter.ViewHolder) findViewHolderForAdapterPosition(tabIndex);
-        return (holder != null
-                        && tabIndex != TabModel.INVALID_TAB_INDEX
-                        && holder.model.get(CARD_TYPE) == TAB)
-                ? holder.model.get(TabProperties.TAB_ID)
-                : Tab.INVALID_TAB_ID;
+        if (holder == null || tabIndex == TabModel.INVALID_TAB_INDEX) return Tab.INVALID_TAB_ID;
+        PropertyModel model = holder.model;
+        assumeNonNull(model);
+        return model.get(CARD_TYPE) == TAB ? model.get(TabProperties.TAB_ID) : Tab.INVALID_TAB_ID;
     }
 
     @Override
     public Pair<Integer, Integer> getPositionsOfReorderAction(View view, int action) {
         int currentPosition = getChildAdapterPosition(view);
         GridLayoutManager layoutManager = (GridLayoutManager) getLayoutManager();
+        assumeNonNull(layoutManager);
         int spanCount = layoutManager.getSpanCount();
         int targetPosition = -1;
 

@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.ArrayList;
@@ -17,9 +17,10 @@ import java.util.List;
 /**
  * This is the coordinator for MessageCardProvider component. This component is used to build a
  * TabGridMessageCardView for each {@link MessageService.MessageType}. This coordinator manages the
- * life-cycle of all shared components and the connection between all subscribed
- * {@link MessageService}.
+ * life-cycle of all shared components and the connection between all subscribed {@link
+ * MessageService}.
  */
+@NullMarked
 public class MessageCardProviderCoordinator {
     private final MessageCardProviderMediator mMediator;
     private final List<MessageService> mMessageServices = new ArrayList<>();
@@ -53,10 +54,9 @@ public class MessageCardProviderCoordinator {
     /**
      * @param messageType The {@link MessageService#mMessageType} associates with the message.
      * @return The next {@link MessageCardProviderMediator.Message} for the given messageType, if
-     *         there is any. Otherwise returns null.
+     *     there is any. Otherwise returns null.
      */
-    @Nullable
-    public MessageCardProviderMediator.Message getNextMessageItemForType(
+    public MessageCardProviderMediator.@Nullable Message getNextMessageItemForType(
             @MessageService.MessageType int messageType) {
         return mMediator.getNextMessageItemForType(messageType);
     }

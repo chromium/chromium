@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
@@ -29,7 +31,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
  */
 @NullMarked
 public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinator {
-    private final Supplier<Token> mTabGroupIdSupplier;
+    private final Supplier<@Nullable Token> mTabGroupIdSupplier;
 
     /**
      * @param onItemClicked A callback for listening to clicks.
@@ -42,7 +44,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
     public TabGridDialogMenuCoordinator(
             OnItemClickedCallback<Token> onItemClicked,
             Supplier<TabModel> tabModelSupplier,
-            Supplier<Token> tabGroupIdSupplier,
+            Supplier<@Nullable Token> tabGroupIdSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService,
             Context context) {
@@ -63,7 +65,10 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
      */
     public View.OnClickListener getOnClickListener() {
         return view ->
-                createAndShowMenu(view, mTabGroupIdSupplier.get(), (Activity) view.getContext());
+                createAndShowMenu(
+                        view,
+                        assumeNonNull(mTabGroupIdSupplier.get()),
+                        (Activity) view.getContext());
     }
 
     @VisibleForTesting

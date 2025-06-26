@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ADD_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ANIMATION_SOURCE_VIEW;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.APP_HEADER_HEIGHT;
@@ -54,11 +55,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -66,17 +67,18 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for TabGridDialog. */
+@NullMarked
 class TabGridDialogViewBinder {
     /** ViewHolder class to get access to all {@link View}s inside the TabGridDialog. */
     public static class ViewHolder {
         public final TabGridDialogToolbarView toolbarView;
         public final TabListRecyclerView contentView;
-        @Nullable public TabGridDialogView dialogView;
+        public final TabGridDialogView dialogView;
 
         ViewHolder(
                 TabGridDialogToolbarView toolbarView,
                 TabListRecyclerView contentView,
-                @Nullable TabGridDialogView dialogView) {
+                TabGridDialogView dialogView) {
             this.toolbarView = toolbarView;
             this.contentView = contentView;
             this.dialogView = dialogView;
@@ -256,6 +258,7 @@ class TabGridDialogViewBinder {
             RecyclerView view,
             int index) {
         LinearLayoutManager layoutManager = (LinearLayoutManager) view.getLayoutManager();
+        assumeNonNull(layoutManager);
         int offset = computeOffset(view, layoutManager, browserControlsStateProvider);
         layoutManager.scrollToPositionWithOffset(index, offset);
     }

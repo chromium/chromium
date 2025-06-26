@@ -141,10 +141,11 @@ public class TabSwitcherGroupSuggestionService {
                 }
             };
     private final @WindowId int mWindowId;
-    private final ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
+    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+            mCurrentTabGroupModelFilterSupplier;
     private final SuggestionLifecycleObserver mSuggestionLifecycleObserver;
     private final GroupSuggestionsService mGroupSuggestionsService;
-    private final ValueChangedCallback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
+    private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private @Nullable SuggestionLifecycleObserverHandler mSuggestionLifecycleObserverHandler;
 
@@ -157,7 +158,7 @@ public class TabSwitcherGroupSuggestionService {
      */
     public TabSwitcherGroupSuggestionService(
             @WindowId int windowId,
-            ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             Profile profile,
             SuggestionLifecycleObserver suggestionLifecycleObserver) {
         mWindowId = windowId;
@@ -232,7 +233,9 @@ public class TabSwitcherGroupSuggestionService {
         assert ChromeFeatureList.sTabSwitcherGroupSuggestionsTestModeAndroid.isEnabled()
                 : "Forcing suggestions is only allowed in test mode.";
 
-        TabModel tabModel = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+        assumeNonNull(filter);
+        TabModel tabModel = filter.getTabModel();
         List<Integer> tabIds = new ArrayList<>();
 
         // Collect the bottom-most tabs that are not already in a group.

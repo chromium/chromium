@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.ARCHIVED_TABS_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.IPH;
@@ -15,6 +16,8 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -30,6 +33,7 @@ import java.util.Map;
  * This is a {@link MessageService.MessageObserver} that creates and owns different {@link
  * PropertyModel} based on the message type.
  */
+@NullMarked
 public class MessageCardProviderMediator implements MessageService.MessageObserver {
     /** A class represents a Message. */
     public static class Message {
@@ -67,6 +71,7 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
 
             List<Message> messages = mMessageItems.get(key);
 
+            assumeNonNull(messages);
             assert messages.size() > 0;
             mShownMessageItems.put(key, messages.remove(0));
 
@@ -83,7 +88,7 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
         return new ArrayList<>(mShownMessageItems.values());
     }
 
-    Message getNextMessageItemForType(@MessageService.MessageType int messageType) {
+    @Nullable Message getNextMessageItemForType(@MessageService.MessageType int messageType) {
         if (!mShownMessageItems.containsKey(messageType)) {
             if (!mMessageItems.containsKey(messageType)) return null;
 

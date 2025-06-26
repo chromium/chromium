@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -38,23 +39,24 @@ import java.util.List;
 /**
  * Manages the {@link TabListEditorCoordinator} and related components for a {@link TabSwitcher}.
  */
+@NullMarked
 public class TabListEditorManager {
-    private final @NonNull Activity mActivity;
-    private final @NonNull ModalDialogManager mModalDialogManager;
-    private final @NonNull ViewGroup mCoordinatorView;
+    private final Activity mActivity;
+    private final ModalDialogManager mModalDialogManager;
+    private final ViewGroup mCoordinatorView;
     private final @Nullable SnackbarManager mSnackbarManager;
     private final @Nullable BottomSheetController mBottomSheetController;
-    private final @NonNull BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final @NonNull ObservableSupplier<TabGroupModelFilter>
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final ObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
-    private final @NonNull TabContentManager mTabContentManager;
-    private final @NonNull TabListCoordinator mTabListCoordinator;
+    private final TabContentManager mTabContentManager;
+    private final TabListCoordinator mTabListCoordinator;
     private final @TabListMode int mMode;
-    private final @NonNull ObservableSupplierImpl<TabListEditorController> mControllerSupplier =
+    private final ObservableSupplierImpl<TabListEditorController> mControllerSupplier =
             new ObservableSupplierImpl<>();
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
-    private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable List<TabListEditorAction> mTabListEditorActions;
@@ -74,19 +76,19 @@ public class TabListEditorManager {
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     public TabListEditorManager(
-            @NonNull Activity activity,
-            @NonNull ModalDialogManager modalDialogManager,
-            @NonNull ViewGroup coordinatorView,
-            @NonNull ViewGroup rootView,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
-            @NonNull TabContentManager tabContentManager,
-            @NonNull TabListCoordinator tabListCoordinator,
+            Activity activity,
+            ModalDialogManager modalDialogManager,
+            ViewGroup coordinatorView,
+            ViewGroup rootView,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            TabContentManager tabContentManager,
+            TabListCoordinator tabListCoordinator,
             BottomSheetController bottomSheetController,
             @TabListMode int mode,
             @Nullable Runnable onTabGroupCreation,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mActivity = activity;
         mModalDialogManager = modalDialogManager;
         mCoordinatorView = coordinatorView;
@@ -206,8 +208,11 @@ public class TabListEditorManager {
         }
 
         var controller = mControllerSupplier.get();
+        assumeNonNull(controller);
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+        assumeNonNull(filter);
         controller.show(
-                mCurrentTabGroupModelFilterSupplier.get().getRepresentativeTabList(),
+                filter.getRepresentativeTabList(),
                 /* tabGroupSyncIds= */ Collections.emptyList(),
                 mTabListCoordinator.getRecyclerViewPosition());
         controller.configureToolbarWithMenuItems(mTabListEditorActions);

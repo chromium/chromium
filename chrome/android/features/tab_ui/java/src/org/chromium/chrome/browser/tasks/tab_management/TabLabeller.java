@@ -42,14 +42,14 @@ import java.util.Optional;
 public class TabLabeller extends TabObjectLabeller {
     private final Context mContext;
     private final DataSharingUIDelegate mDataSharingUiDelegate;
-    private final ObservableSupplier<Token> mTabGroupIdSupplier;
+    private final ObservableSupplier<@Nullable Token> mTabGroupIdSupplier;
 
     public TabLabeller(
             Profile profile,
             Context context,
             DataSharingUIDelegate dataSharingUiDelegate,
             TabListNotificationHandler tabListNotificationHandler,
-            ObservableSupplier<Token> tabGroupIdSupplier) {
+            ObservableSupplier<@Nullable Token> tabGroupIdSupplier) {
         super(profile, tabListNotificationHandler);
         mContext = context;
         mDataSharingUiDelegate = dataSharingUiDelegate;
@@ -80,7 +80,7 @@ public class TabLabeller extends TabObjectLabeller {
 
     @Override
     protected List<PersistentMessage> getAllMessages() {
-        @Nullable Token tabGroupId = mTabGroupIdSupplier.get();
+        Token tabGroupId = mTabGroupIdSupplier.get();
         if (tabGroupId == null) return Collections.emptyList();
         LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
         EitherGroupId eitherGroupId = EitherGroupId.createLocalId(localTabGroupId);

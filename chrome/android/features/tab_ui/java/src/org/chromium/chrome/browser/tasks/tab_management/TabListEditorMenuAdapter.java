@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -12,6 +14,8 @@ import android.widget.TextView;
 
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -22,6 +26,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Binds {@link TabListEditorAction}'s {@link PropertyModel} to an {@link TabListEditorMenu} and
  * {@link TabListEditorMenuItem}'s {@link ListItem} to a menu view.
  */
+@NullMarked
 public class TabListEditorMenuAdapter
         implements ListModelChangeProcessor.ViewBinder<
                 PropertyListModel<PropertyModel, PropertyKey>, TabListEditorMenu, PropertyKey> {
@@ -64,18 +69,18 @@ public class TabListEditorMenuAdapter
             TabListEditorMenu menu,
             int index,
             int count,
-            PropertyKey key) {
+            @Nullable PropertyKey key) {
         for (int i = index; i < index + count; i++) {
-            onItemChanged(
-                    actionModels.get(i),
+            TabListEditorMenuItem menuItem =
                     menu.getMenuItem(
-                            actionModels.get(i).get(TabListEditorActionProperties.MENU_ITEM_ID)),
-                    key);
+                            actionModels.get(i).get(TabListEditorActionProperties.MENU_ITEM_ID));
+            assumeNonNull(menuItem);
+            onItemChanged(actionModels.get(i), menuItem, key);
         }
     }
 
     private void onItemChanged(
-            PropertyModel actionModel, TabListEditorMenuItem menuItem, PropertyKey key) {
+            PropertyModel actionModel, TabListEditorMenuItem menuItem, @Nullable PropertyKey key) {
         if (key == null) {
             bindAllProperties(actionModel, menuItem);
             return;

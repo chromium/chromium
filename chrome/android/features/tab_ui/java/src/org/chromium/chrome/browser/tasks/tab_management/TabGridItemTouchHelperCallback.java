@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
@@ -16,8 +17,6 @@ import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,6 +27,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -54,6 +55,7 @@ import java.util.List;
  * A {@link ItemTouchHelper2.SimpleCallback} implementation to host the logic for swipe and drag
  * related actions in grid related layouts.
  */
+@NullMarked
 public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallback {
     /** An interface to observe drop tab events on top of an archival message card. */
     @FunctionalInterface
@@ -187,7 +189,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
                         | ItemTouchHelper.DOWN;
     }
 
-    boolean isMessageType(@Nullable RecyclerView.ViewHolder viewHolder) {
+    boolean isMessageType(RecyclerView.@Nullable ViewHolder viewHolder) {
         if (viewHolder == null) return false;
 
         @UiType int type = viewHolder.getItemViewType();
@@ -196,9 +198,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
                 || type == UiType.CUSTOM_MESSAGE;
     }
 
-    boolean hasCollaboration(@Nullable RecyclerView.ViewHolder viewHolder) {
+    boolean hasCollaboration(RecyclerView.@Nullable ViewHolder viewHolder) {
         if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
             PropertyModel model = simpleViewHolder.model;
+            assumeNonNull(model);
             if (model.get(CARD_TYPE) == TAB) {
                 @Nullable
                 TabGroupColorViewProvider provider =
@@ -217,7 +220,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         if (viewHolder.getItemViewType() == UiType.CUSTOM_MESSAGE) {
             SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder =
                     (SimpleRecyclerViewAdapter.ViewHolder) viewHolder;
-            if (simpleViewHolder.model.get(MESSAGE_TYPE) == MessageType.ARCHIVED_TABS_MESSAGE) {
+            PropertyModel model = simpleViewHolder.model;
+            assumeNonNull(model);
+            if (model.get(MESSAGE_TYPE) == MessageType.ARCHIVED_TABS_MESSAGE) {
                 swipeFlags = 0;
             }
         }
@@ -228,9 +233,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
 
     @Override
     public boolean canDropOver(
-            @NonNull RecyclerView recyclerView,
-            @NonNull RecyclerView.ViewHolder current,
-            @NonNull RecyclerView.ViewHolder target) {
+            RecyclerView recyclerView,
+            RecyclerView.ViewHolder current,
+            RecyclerView.ViewHolder target) {
         if (isArchivedMessageCard(current)) {
             return canDropOnArchivalMessage((SimpleRecyclerViewAdapter.ViewHolder) target);
         }
@@ -257,16 +262,16 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         }
 
         int currentTabId =
-                ((SimpleRecyclerViewAdapter.ViewHolder) fromViewHolder)
-                        .model.get(TabProperties.TAB_ID);
+                assumeNonNull(((SimpleRecyclerViewAdapter.ViewHolder) fromViewHolder).model)
+                        .get(TabProperties.TAB_ID);
 
         if (isArchivedMessageCard(toViewHolder)) {
             return true;
         }
 
         int destinationTabId =
-                ((SimpleRecyclerViewAdapter.ViewHolder) toViewHolder)
-                        .model.get(TabProperties.TAB_ID);
+                assumeNonNull(((SimpleRecyclerViewAdapter.ViewHolder) toViewHolder).model)
+                        .get(TabProperties.TAB_ID);
         int distance = toViewHolder.getAdapterPosition() - fromViewHolder.getAdapterPosition();
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         TabModel tabModel = filter.getTabModel();
@@ -295,19 +300,21 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder =
                 (SimpleRecyclerViewAdapter.ViewHolder) viewHolder;
 
-        if (simpleViewHolder.model.containsKey(TabProperties.TAB_ID)) {
-            int tabId = simpleViewHolder.model.get(TabProperties.TAB_ID);
+        PropertyModel model = simpleViewHolder.model;
+        assumeNonNull(model);
+        if (model.containsKey(TabProperties.TAB_ID)) {
+            int tabId = model.get(TabProperties.TAB_ID);
             mRecentlySwipedTabIdSupplier.set(tabId);
         }
 
-        if (simpleViewHolder.model.get(CARD_TYPE) == TAB) {
+        if (model.get(CARD_TYPE) == TAB) {
             mTabClosedListener.run(
                     viewHolder.itemView,
-                    simpleViewHolder.model.get(TabProperties.TAB_ID),
+                    model.get(TabProperties.TAB_ID),
                     /* triggeringMotion= */ null);
 
             RecordUserAction.record("MobileStackViewSwipeCloseTab." + mComponentName);
-        } else if (simpleViewHolder.model.get(CARD_TYPE) == MESSAGE) {
+        } else if (model.get(CARD_TYPE) == MESSAGE) {
             // TODO(crbug.com/40099080): Have a caller instead of simulating the close click. And
             // write unit test to verify the caller is called.
             viewHolder.itemView.findViewById(R.id.close_button).performClick();
@@ -317,7 +324,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     }
 
     @Override
-    public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+    public void onSelectedChanged(RecyclerView.@Nullable ViewHolder viewHolder, int actionState) {
         super.onSelectedChanged(viewHolder, actionState);
         @Nullable RecyclerView recyclerView = mRecyclerViewSupplier.get();
         if (isMessageType(viewHolder) || recyclerView == null) {
@@ -330,6 +337,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         }
 
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+            assumeNonNull(viewHolder);
             mSelectedTabIndex = viewHolder.getBindingAdapterPosition();
             mModel.updateSelectedCardForSelection(mSelectedTabIndex, true);
             RecordUserAction.record("TabGrid.Drag.Start." + mComponentName);
@@ -358,7 +366,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
                     onTabMergeToGroup(
                             mModel.getTabCardCountsBefore(mSelectedTabIndex),
                             mModel.getTabCardCountsBefore(mHoveredTabIndex));
-                    recyclerView.getLayoutManager().removeView(selectedItemView);
+                    assumeNonNull(recyclerView.getLayoutManager()).removeView(selectedItemView);
                 }
                 mActionAttempted = true;
             } else {
@@ -389,8 +397,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
                     }
                     // Handle the case where the recyclerView is cleared out after ungrouping the
                     // last tab in group.
-                    if (recyclerView.getAdapter().getItemCount() != 0) {
-                        recyclerView.getLayoutManager().removeView(ungroupItemView);
+                    if (assumeNonNull(recyclerView.getAdapter()).getItemCount() != 0) {
+                        assumeNonNull(recyclerView.getLayoutManager()).removeView(ungroupItemView);
                     }
                     RecordUserAction.record("TabGrid.Drag.RemoveFromGroup." + mComponentName);
                 }
@@ -443,9 +451,13 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         mActionAttempted = false;
     }
 
-    private boolean hasTabPropertiesModel(RecyclerView.ViewHolder viewHolder) {
-        return viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder
-                && ((SimpleRecyclerViewAdapter.ViewHolder) viewHolder).model.get(CARD_TYPE) == TAB;
+    private boolean hasTabPropertiesModel(RecyclerView.@Nullable ViewHolder viewHolder) {
+        if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
+            PropertyModel model = simpleViewHolder.model;
+            assumeNonNull(model);
+            return model.get(CARD_TYPE) == TAB;
+        }
+        return false;
     }
 
     @Override
@@ -471,10 +483,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
                         return;
                     }
 
-                    @Nullable var adapter = recyclerView.getAdapter();
+                    var adapter = recyclerView.getAdapter();
                     if (adapter == null) return;
 
-                    @Nullable var layoutManager = recyclerView.getLayoutManager();
+                    var layoutManager = recyclerView.getLayoutManager();
                     if (layoutManager != null && adapter.getItemCount() == 0) {
                         layoutManager.removeView(viewHolder.itemView);
                     }
@@ -607,10 +619,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     }
 
     private boolean canDropOnArchivalMessage(
-            @Nullable SimpleRecyclerViewAdapter.ViewHolder tabToBeArchived) {
+            SimpleRecyclerViewAdapter.@Nullable ViewHolder tabToBeArchived) {
         if (tabToBeArchived == null) return false;
 
         PropertyModel model = tabToBeArchived.model;
+        assumeNonNull(model);
         if (!model.containsKey(TabProperties.TAB_ID)) return false;
 
         @TabId int tabId = model.get(TabProperties.TAB_ID);
@@ -633,12 +646,14 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
 
     private void onDropOnArchivalMessageCard() {
         RecyclerView recyclerView = mRecyclerViewSupplier.get();
+        assumeNonNull(recyclerView);
         SimpleRecyclerViewAdapter.ViewHolder selectedViewHolder =
                 (SimpleRecyclerViewAdapter.ViewHolder)
                         recyclerView.findViewHolderForAdapterPosition(mSelectedTabIndex);
         if (selectedViewHolder == null) return;
 
         PropertyModel selectedModel = selectedViewHolder.model;
+        assumeNonNull(selectedModel);
         if (selectedModel.containsKey(TabProperties.TAB_ID)
                 && canDropOnArchivalMessage(selectedViewHolder)
                 && mOnDropOnArchivalMessageCardEventListener != null) {
@@ -654,7 +669,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
             mOnDropOnArchivalMessageCardEventListener.onDropTab(tabId);
 
             View selectedItemView = selectedViewHolder.itemView;
-            recyclerView.getLayoutManager().removeView(selectedItemView);
+            assumeNonNull(recyclerView.getLayoutManager()).removeView(selectedItemView);
         }
     }
 
@@ -765,9 +780,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         mTabGridItemLongPressOrchestrator = orchestrator;
     }
 
-    private boolean isArchivedMessageCard(@Nullable RecyclerView.ViewHolder cardViewHolder) {
+    private boolean isArchivedMessageCard(RecyclerView.@Nullable ViewHolder cardViewHolder) {
         if (cardViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
-            return isArchivedMessageCard(simpleViewHolder.model);
+            return isArchivedMessageCard(assumeNonNull(simpleViewHolder.model));
         }
         return false;
     }

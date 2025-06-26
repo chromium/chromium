@@ -26,12 +26,12 @@ import java.util.Set;
 /** Pushes bubble/dot notifications for tabs. */
 @NullMarked
 public class TabBubbler extends TabObjectNotificationUpdater {
-    private final ObservableSupplier<Token> mTabGroupIdSupplier;
+    private final ObservableSupplier<@Nullable Token> mTabGroupIdSupplier;
 
     public TabBubbler(
             Profile profile,
             TabListNotificationHandler tabListNotificationHandler,
-            ObservableSupplier<Token> tabGroupIdSupplier) {
+            ObservableSupplier<@Nullable Token> tabGroupIdSupplier) {
         super(profile, tabListNotificationHandler);
         mTabGroupIdSupplier = tabGroupIdSupplier;
         // Do not observe mTabGroupIdSupplier. We will be told to #showAll() is this changes.
@@ -39,7 +39,7 @@ public class TabBubbler extends TabObjectNotificationUpdater {
 
     @Override
     public void showAll() {
-        @Nullable Token tabGroupId = mTabGroupIdSupplier.get();
+        Token tabGroupId = mTabGroupIdSupplier.get();
         if (tabGroupId == null) return;
         LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
         EitherGroupId eitherGroupId = EitherGroupId.createLocalId(localTabGroupId);

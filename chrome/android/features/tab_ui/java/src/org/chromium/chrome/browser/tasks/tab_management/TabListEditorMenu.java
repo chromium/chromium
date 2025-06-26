@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,8 @@ import android.widget.ListView;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionViewLayout.ActionViewLayoutDelegate;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -36,6 +40,7 @@ import java.util.Set;
  * TabListEditorActionViewLayout} for Action views. The menu contains a list of {@link
  * TabListEditorMenuItem}s which hold optional action views if room is available.
  */
+@NullMarked
 public class TabListEditorMenu
         implements ListMenu,
                 OnItemClickListener,
@@ -127,6 +132,7 @@ public class TabListEditorMenu
      */
     public void menuItemInitialized(int menuItemId) {
         final TabListEditorMenuItem menuItem = mMenuItems.get(menuItemId);
+        assumeNonNull(menuItem);
         if (menuItem.getActionView() == null) {
             mActionViewLayout.setHasMenuOnlyItems(true);
         } else {
@@ -138,7 +144,7 @@ public class TabListEditorMenu
      * @param menuItemId the id of the item to get.
      * @return a {@link} TabListEditorMenuItem or null if the key isn't present.
      */
-    public TabListEditorMenuItem getMenuItem(int menuItemId) {
+    public @Nullable TabListEditorMenuItem getMenuItem(int menuItemId) {
         return mMenuItems.get(menuItemId);
     }
 
@@ -168,6 +174,7 @@ public class TabListEditorMenu
                 mMenuItems.get(
                         ((ListItem) mAdapter.getItem(position))
                                 .model.get(TabListEditorActionProperties.MENU_ITEM_ID));
+        assumeNonNull(item);
 
         // TODO(crbug.com/419085605): Use TouchTrackingListView to pass triggeringMotion.
         if (!item.onClick(/* triggeringMotion= */ null)) return;

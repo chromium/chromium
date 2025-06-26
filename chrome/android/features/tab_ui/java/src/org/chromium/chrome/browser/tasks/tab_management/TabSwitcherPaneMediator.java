@@ -4,15 +4,13 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BLOCK_TOUCH_INPUT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 
 import android.view.View;
 import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ValueChangedCallback;
@@ -22,6 +20,8 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -44,6 +44,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 
 /** Mediator for {@link TabSwitcherPaneCoordinator}. */
+@NullMarked
 public class TabSwitcherPaneMediator
         implements GridCardOnClickListenerProvider,
                 PriceWelcomeMessageReviewActionProvider,
@@ -67,7 +68,7 @@ public class TabSwitcherPaneMediator
                     // Intentional no-op.
                 }
             };
-    private final ValueChangedCallback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
+    private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private final Callback<Boolean> mOnDialogShowingOrAnimatingCallback =
             this::onDialogShowingOrAnimatingChanged;
@@ -141,7 +142,7 @@ public class TabSwitcherPaneMediator
     }
 
     private final TabSwitcherResetHandler mResetHandler;
-    private final ObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final ObservableSupplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private final LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
     private final PropertyModel mContainerViewModel;
     private final ViewGroup mContainerView;
@@ -175,17 +176,17 @@ public class TabSwitcherPaneMediator
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      */
     public TabSwitcherPaneMediator(
-            @NonNull TabSwitcherResetHandler resetHandler,
-            @NonNull ObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
-            @NonNull LazyOneshotSupplier<DialogController> tabGridDialogControllerSupplier,
-            @NonNull PropertyModel containerViewModel,
-            @NonNull ViewGroup containerView,
-            @NonNull Runnable onTabSwitcherShown,
-            @NonNull ObservableSupplier<Boolean> isVisibleSupplier,
-            @NonNull ObservableSupplier<Boolean> isAnimatingSupplier,
-            @NonNull Callback<Integer> onTabClickCallback,
-            @NonNull TabIndexLookup tabIndexLookup,
-            @NonNull BottomSheetController bottomSheetController) {
+            TabSwitcherResetHandler resetHandler,
+            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            LazyOneshotSupplier<DialogController> tabGridDialogControllerSupplier,
+            PropertyModel containerViewModel,
+            ViewGroup containerView,
+            Runnable onTabSwitcherShown,
+            ObservableSupplier<Boolean> isVisibleSupplier,
+            ObservableSupplier<Boolean> isAnimatingSupplier,
+            Callback<Integer> onTabClickCallback,
+            TabIndexLookup tabIndexLookup,
+            BottomSheetController bottomSheetController) {
         mResetHandler = resetHandler;
         mTabIndexLookup = tabIndexLookup;
         mOnTabClickCallback = onTabClickCallback;
@@ -252,16 +253,18 @@ public class TabSwitcherPaneMediator
 
     /** Requests accessibility focus on the currently selected tab. */
     public void requestAccessibilityFocusOnCurrentTab() {
+        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
+        assumeNonNull(filter);
         mContainerViewModel.set(
-                FOCUS_TAB_INDEX_FOR_ACCESSIBILITY,
-                mTabGroupModelFilterSupplier.get().getCurrentRepresentativeTabIndex());
+                FOCUS_TAB_INDEX_FOR_ACCESSIBILITY, filter.getCurrentRepresentativeTabIndex());
     }
 
     /** Scrolls to the currently selected tab. */
     public void setInitialScrollIndexOffset() {
+        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
+        assumeNonNull(filter);
         scrollToTab(
-                mTabIndexLookup.getNthTabIndexInModel(
-                        mTabGroupModelFilterSupplier.get().getCurrentRepresentativeTabIndex()));
+                mTabIndexLookup.getNthTabIndexInModel(filter.getCurrentRepresentativeTabIndex()));
     }
 
     @Override
@@ -328,6 +331,7 @@ public class TabSwitcherPaneMediator
     /** Scroll to a given tab or tab group by id. */
     public void scrollToTabById(int tabId) {
         TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
+        assumeNonNull(filter);
         TabModel tabModel = filter.getTabModel();
         Tab tab = tabModel.getTabById(tabId);
 
@@ -343,7 +347,7 @@ public class TabSwitcherPaneMediator
 
     @Override
     public void addCustomView(
-            @NonNull View customView, @Nullable Runnable backPressRunnable, boolean clearTabList) {
+            View customView, @Nullable Runnable backPressRunnable, boolean clearTabList) {
         assert mCustomView == null : "Only one custom view may be showing at a time.";
 
         hideDialogs();
@@ -359,7 +363,7 @@ public class TabSwitcherPaneMediator
     }
 
     @Override
-    public void removeCustomView(@NonNull View customView) {
+    public void removeCustomView(View customView) {
         assert mCustomView != null : "No custom view client has added a view.";
         mContainerView.removeView(customView);
         mCustomView = null;
@@ -368,7 +372,7 @@ public class TabSwitcherPaneMediator
     }
 
     void setTabListEditorControllerSupplier(
-            @NonNull ObservableSupplier<TabListEditorController> tabListEditorControllerSupplier) {
+            ObservableSupplier<TabListEditorController> tabListEditorControllerSupplier) {
         assert mTabListEditorControllerSupplier == null
                 : "setTabListEditorControllerSupplier should be called only once.";
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
@@ -394,16 +398,18 @@ public class TabSwitcherPaneMediator
 
     private boolean ableToOpenDialog(Tab tab) {
         TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
+        assumeNonNull(filter);
         return filter.getTabModel().isIncognito() == tab.isIncognito()
                 && filter.isTabInTabGroup(tab);
     }
 
     public void openTabGroupDialog(int tabId) {
-        List<Tab> relatedTabs = mTabGroupModelFilterSupplier.get().getRelatedTabList(tabId);
+        List<Tab> relatedTabs =
+                assumeNonNull(mTabGroupModelFilterSupplier.get()).getRelatedTabList(tabId);
         if (relatedTabs.size() == 0) {
             relatedTabs = null;
         }
-        mTabGridDialogControllerSupplier.get().resetWithListOfTabs(relatedTabs);
+        assumeNonNull(mTabGridDialogControllerSupplier.get()).resetWithListOfTabs(relatedTabs);
     }
 
     private void notifyBackPressStateChangedInternal() {
@@ -437,7 +443,7 @@ public class TabSwitcherPaneMediator
         return false;
     }
 
-    TabListEditorController getTabListEditorController() {
+    @Nullable TabListEditorController getTabListEditorController() {
         return mTabListEditorControllerSupplier == null
                 ? null
                 : mTabListEditorControllerSupplier.get();
@@ -512,7 +518,7 @@ public class TabSwitcherPaneMediator
     private void showTabsIfVisible() {
         if (Boolean.TRUE.equals(mIsVisibleSupplier.get())) {
             mResetHandler.resetWithListOfTabs(
-                    mTabGroupModelFilterSupplier.get().getRepresentativeTabList());
+                    assumeNonNull(mTabGroupModelFilterSupplier.get()).getRepresentativeTabList());
             setInitialScrollIndexOffset();
         }
     }

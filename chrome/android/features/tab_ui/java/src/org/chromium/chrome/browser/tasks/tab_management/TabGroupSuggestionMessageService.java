@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
@@ -80,7 +83,8 @@ public class TabGroupSuggestionMessageService extends MessageService
     }
 
     private final Context mContext;
-    private final ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
+    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+            mCurrentTabGroupModelFilterSupplier;
 
     private final Runnable mOnAddMessageListener;
     private boolean mMessageCurrentlyShown;
@@ -93,7 +97,7 @@ public class TabGroupSuggestionMessageService extends MessageService
      */
     public TabGroupSuggestionMessageService(
             Context context,
-            ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             Runnable onAddMessageListener) {
         super(MessageType.TAB_GROUP_SUGGESTION_MESSAGE);
         mContext = context;
@@ -140,6 +144,7 @@ public class TabGroupSuggestionMessageService extends MessageService
 
         onAcceptMessageListener.run();
         TabGroupModelFilter tabGroupModelFilter = mCurrentTabGroupModelFilterSupplier.get();
+        assumeNonNull(tabGroupModelFilter);
         TabModel tabModel = tabGroupModelFilter.getTabModel();
         List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, false);
 

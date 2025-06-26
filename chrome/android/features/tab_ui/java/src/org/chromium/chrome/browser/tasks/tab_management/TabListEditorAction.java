@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionProperties.DESTROYABLE;
 
 import android.content.res.ColorStateList;
@@ -119,14 +120,14 @@ public abstract class TabListEditorAction {
         SnackbarManager getSnackbarManager();
 
         /** Retrieves the BottomSheetController for the selection editor. */
-        BottomSheetController getBottomSheetController();
+        @Nullable BottomSheetController getBottomSheetController();
     }
 
     private static final String EXPECTED_RESOURCE_TYPE_NAME = "plurals";
 
     private final ObserverList<ActionObserver> mObsevers = new ObserverList<>();
     private final PropertyModel mModel;
-    private Supplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
+    private Supplier<@Nullable TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
     private ActionDelegate mActionDelegate;
     private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     private Boolean mEditorSupportsActionOnRelatedTabs;
@@ -308,7 +309,7 @@ public abstract class TabListEditorAction {
      */
     @Initializer
     void configure(
-            Supplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            Supplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate,
             ActionDelegate actionDelegate,
             boolean editorSupportsActionOnRelatedTabs) {
@@ -356,6 +357,7 @@ public abstract class TabListEditorAction {
 
     private List<Tab> getTabsAndRelatedTabsFromSelection() {
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+        assumeNonNull(filter);
 
         List<Tab> tabs = new ArrayList<>();
         for (TabListEditorItemSelectionId itemId : mSelectionDelegate.getSelectedItems()) {

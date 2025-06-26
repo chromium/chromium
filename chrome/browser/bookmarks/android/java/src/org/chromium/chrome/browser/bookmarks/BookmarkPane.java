@@ -45,7 +45,7 @@ public class BookmarkPane implements Pane {
 
     // Below are dependencies of the pane itself.
     private final DoubleConsumer mOnToolbarAlphaChange;
-    private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonSupplier =
+    private final ObservableSupplierImpl<@Nullable DisplayButtonData> mReferenceButtonSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplier<FullButtonData> mEmptyActionButtonSupplier =
             new ObservableSupplierImpl<>();
@@ -156,7 +156,7 @@ public class BookmarkPane implements Pane {
     }
 
     @Override
-    public ObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier() {
+    public ObservableSupplier<@Nullable DisplayButtonData> getReferenceButtonDataSupplier() {
         return mReferenceButtonSupplier;
     }
 

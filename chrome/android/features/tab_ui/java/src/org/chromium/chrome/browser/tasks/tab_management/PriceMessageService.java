@@ -144,7 +144,7 @@ public class PriceMessageService extends MessageService {
 
     private final Profile mProfile;
     private final Supplier<PriceWelcomeMessageProvider> mPriceWelcomeMessageProviderSupplier;
-    private final Supplier<PriceWelcomeMessageReviewActionProvider>
+    private final Supplier<@Nullable PriceWelcomeMessageReviewActionProvider>
             mPriceWelcomeMessageReviewActionProviderSupplier;
 
     private @Nullable PriceTabData mPriceTabData;
@@ -152,7 +152,7 @@ public class PriceMessageService extends MessageService {
     PriceMessageService(
             Profile profile,
             Supplier<PriceWelcomeMessageProvider> priceWelcomeMessageProviderSupplier,
-            Supplier<PriceWelcomeMessageReviewActionProvider>
+            Supplier<@Nullable PriceWelcomeMessageReviewActionProvider>
                     priceWelcomeMessageReviewActionProviderSupplier) {
         super(MessageType.PRICE_MESSAGE);
         mProfile = profile;

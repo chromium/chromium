@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import org.chromium.base.Token;
@@ -28,7 +30,7 @@ public class TabGroupCreationUiDelegate {
     private final Context mContext;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<PaneManager> mPaneManagerSupplier;
-    private final Supplier<TabGroupModelFilter> mFilterSupplier;
+    private final Supplier<@Nullable TabGroupModelFilter> mFilterSupplier;
     private final TabGroupCreationDialogManagerFactory mFactory;
 
     /**
@@ -42,7 +44,7 @@ public class TabGroupCreationUiDelegate {
             Context context,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<PaneManager> paneManagerSupplier,
-            Supplier<TabGroupModelFilter> filterSupplier,
+            Supplier<@Nullable TabGroupModelFilter> filterSupplier,
             TabGroupCreationDialogManagerFactory factory) {
         mContext = context;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -67,6 +69,7 @@ public class TabGroupCreationUiDelegate {
      */
     public void newTabGroupFlow() {
         TabGroupModelFilter filter = mFilterSupplier.get();
+        assumeNonNull(filter);
         TabCreator tabCreator = filter.getTabModel().getTabCreator();
         @Nullable Tab tab =
                 tabCreator.createNewTab(
@@ -88,7 +91,7 @@ public class TabGroupCreationUiDelegate {
         @Nullable PaneManager paneManager = mPaneManagerSupplier.get();
         @Nullable Token groupId = tab.getTabGroupId();
 
-        TabModel tabModel = mFilterSupplier.get().getTabModel();
+        TabModel tabModel = assumeNonNull(mFilterSupplier.get()).getTabModel();
         @PaneId
         int tabSwitcher =
                 tabModel.isIncognitoBranded() ? PaneId.INCOGNITO_TAB_SWITCHER : PaneId.TAB_SWITCHER;

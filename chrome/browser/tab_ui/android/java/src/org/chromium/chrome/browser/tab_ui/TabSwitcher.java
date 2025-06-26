@@ -19,7 +19,7 @@ public interface TabSwitcher {
     void initWithNative();
 
     /** Returns a {@link Supplier} that provides dialog visibility. */
-    Supplier<Boolean> getTabGridDialogVisibilitySupplier();
+    @Nullable Supplier<Boolean> getTabGridDialogVisibilitySupplier();
 
     /**
      * Returns a {@link TabSwitcherCustomViewManager} that allows to pass custom views to {@link

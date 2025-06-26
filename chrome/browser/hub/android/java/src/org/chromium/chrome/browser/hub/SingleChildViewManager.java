@@ -15,16 +15,16 @@ import org.chromium.build.annotations.Nullable;
 /** Manages attaching and detaching a dynamically supplied child view to a parent view. */
 @NullMarked
 public class SingleChildViewManager {
-    private final Callback<View> mOnViewChanged = this::onViewChanged;
+    private final Callback<@Nullable View> mOnViewChanged = this::onViewChanged;
     private final ViewGroup mContainerView;
-    private final ObservableSupplier<View> mChildViewSupplier;
+    private final ObservableSupplier<@Nullable View> mChildViewSupplier;
 
     /**
      * @param containerView The container to attach views to.
      * @param viewSupplier The supplier of the current view.
      */
     public SingleChildViewManager(
-            ViewGroup containerView, ObservableSupplier<View> overlayViewSupplier) {
+            ViewGroup containerView, ObservableSupplier<@Nullable View> overlayViewSupplier) {
         mContainerView = containerView;
         mChildViewSupplier = overlayViewSupplier;
         mChildViewSupplier.addObserver(mOnViewChanged);

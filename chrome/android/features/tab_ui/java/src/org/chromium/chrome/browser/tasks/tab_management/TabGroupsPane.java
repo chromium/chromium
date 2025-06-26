@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS;
 
 import android.content.Context;
@@ -11,14 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
@@ -46,6 +46,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.util.function.DoubleConsumer;
 
 /** A {@link Pane} representing the tab group UI. Contains opened and closed tab groups. */
+@NullMarked
 public class TabGroupsPane implements Pane {
     private final Context mContext;
     private final LazyOneshotSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
@@ -55,19 +56,19 @@ public class TabGroupsPane implements Pane {
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final FrameLayout mRootView;
-    private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonSupplier =
+    private final ObservableSupplierImpl<@Nullable DisplayButtonData> mReferenceButtonSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<FullButtonData> mActionButtonSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<View> mHubOverlayViewSupplier =
+    private final ObservableSupplierImpl<@Nullable View> mHubOverlayViewSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
     private final DataSharingTabManager mDataSharingTabManager;
 
-    private TabGroupListCoordinator mTabGroupListCoordinator;
+    private @Nullable TabGroupListCoordinator mTabGroupListCoordinator;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     /**
@@ -82,15 +83,15 @@ public class TabGroupsPane implements Pane {
      * @param dataSharingTabManager The {@link} DataSharingTabManager to start collaboration flows.
      */
     TabGroupsPane(
-            @NonNull Context context,
-            @NonNull LazyOneshotSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
-            @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
-            @NonNull Supplier<PaneManager> paneManagerSupplier,
-            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            @NonNull DataSharingTabManager dataSharingTabManager) {
+            Context context,
+            LazyOneshotSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
+            DoubleConsumer onToolbarAlphaChange,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            Supplier<PaneManager> paneManagerSupplier,
+            Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            DataSharingTabManager dataSharingTabManager) {
         mContext = context;
         mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
         mOnToolbarAlphaChange = onToolbarAlphaChange;
@@ -130,15 +131,13 @@ public class TabGroupsPane implements Pane {
         return PaneId.TAB_GROUPS;
     }
 
-    @NonNull
     @Override
     public ViewGroup getRootView() {
         return mRootView;
     }
 
-    @Nullable
     @Override
-    public MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler() {
+    public @Nullable MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler() {
         return null;
     }
 
@@ -152,6 +151,7 @@ public class TabGroupsPane implements Pane {
         return HubColorScheme.DEFAULT;
     }
 
+    @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
         if (mTabGroupListCoordinator != null) {
@@ -170,7 +170,7 @@ public class TabGroupsPane implements Pane {
             mTabGroupListCoordinator =
                     new TabGroupListCoordinator(
                             mContext,
-                            mTabGroupModelFilterSupplier.get(),
+                            assumeNonNull(mTabGroupModelFilterSupplier.get()),
                             mProfileProviderSupplier.get(),
                             mPaneManagerSupplier.get(),
                             mTabGroupUiActionHandlerSupplier.get(),
@@ -184,26 +184,23 @@ public class TabGroupsPane implements Pane {
         }
     }
 
-    @NonNull
     @Override
     public ObservableSupplier<FullButtonData> getActionButtonDataSupplier() {
         return mActionButtonSupplier;
     }
 
-    @NonNull
     @Override
-    public ObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier() {
+    public ObservableSupplier<@Nullable DisplayButtonData> getReferenceButtonDataSupplier() {
         return mReferenceButtonSupplier;
     }
 
-    @NonNull
     @Override
     public ObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
         return mHairlineVisibilitySupplier;
     }
 
     @Override
-    public ObservableSupplier<View> getHubOverlayViewSupplier() {
+    public ObservableSupplier<@Nullable View> getHubOverlayViewSupplier() {
         return mHubOverlayViewSupplier;
     }
 
@@ -213,23 +210,20 @@ public class TabGroupsPane implements Pane {
         return null;
     }
 
-    @NonNull
     @Override
     public HubLayoutAnimatorProvider createShowHubLayoutAnimatorProvider(
-            @NonNull HubContainerView hubContainerView) {
+            HubContainerView hubContainerView) {
         return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                 hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
     }
 
-    @NonNull
     @Override
     public HubLayoutAnimatorProvider createHideHubLayoutAnimatorProvider(
-            @NonNull HubContainerView hubContainerView) {
+            HubContainerView hubContainerView) {
         return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                 hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
     }
 
-    @NonNull
     @Override
     public ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier() {
         return mHubSearchEnabledStateSupplier;

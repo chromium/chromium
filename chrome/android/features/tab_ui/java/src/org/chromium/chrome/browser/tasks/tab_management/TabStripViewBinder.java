@@ -14,11 +14,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.tab_ui.R;
@@ -28,6 +29,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** {@link org.chromium.ui.modelutil.SimpleRecyclerViewMcp.ViewBinder} for tab strip. */
+@NullMarked
 class TabStripViewBinder {
     /**
      * Partially or fully update the given ViewHolder based on the given model over propertyKey.
@@ -135,8 +137,10 @@ class TabStripViewBinder {
 
     /** Returns true if the favicon was successfully set. */
     private static boolean setFavicon(
-            ViewLookupCachingFrameLayout view, PropertyModel model, Drawable faviconDrawable) {
-        @Nullable ImageButton button = view.fastFindViewById(R.id.tab_strip_item_button);
+            ViewLookupCachingFrameLayout view,
+            PropertyModel model,
+            @Nullable Drawable faviconDrawable) {
+        ImageButton button = view.fastFindViewById(R.id.tab_strip_item_button);
         if (button == null) return false;
 
         button.setBackgroundResource(R.drawable.tabstrip_favicon_background);

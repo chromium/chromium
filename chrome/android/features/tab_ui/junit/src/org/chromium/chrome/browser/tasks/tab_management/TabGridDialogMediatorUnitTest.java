@@ -71,6 +71,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -312,7 +313,7 @@ public class TabGridDialogMediatorUnitTest {
         mModel = spy(new PropertyModel(TabGridDialogProperties.ALL_KEYS));
         remakeMediator(/* withResetHandler= */ true, /* withAnimSource= */ true);
 
-        mMediator.initWithNative(() -> mTabListEditorController);
+        mMediator.initWithNative(LazyOneshotSupplier.fromValue(mTabListEditorController));
         assertThat(mTabModelObserverCaptor.getAllValues().isEmpty(), equalTo(false));
         assertThat(mTabGroupModelFilterObserverCaptor.getAllValues().isEmpty(), equalTo(false));
     }
@@ -934,7 +935,7 @@ public class TabGridDialogMediatorUnitTest {
     public void tabSelection_stripContext() {
         remakeMediator(/* withResetHandler= */ false, /* withAnimSource= */ true);
 
-        mMediator.initWithNative(() -> mTabListEditorController);
+        mMediator.initWithNative(LazyOneshotSupplier.fromValue(mTabListEditorController));
         // Mock that the animation source view is not null, and the dialog is showing.
         mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mView);
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
@@ -1190,6 +1191,10 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void hideDialog_withTabGroupContinuation() {
+        var tabListEditorControllerSupplier =
+                LazyOneshotSupplier.fromValue(mTabListEditorController);
+        tabListEditorControllerSupplier.get();
+        mMediator.initWithNative(tabListEditorControllerSupplier);
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         mMediator.hideDialog(false);
@@ -1312,7 +1317,7 @@ public class TabGridDialogMediatorUnitTest {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
         remakeMediator(/* withResetHandler= */ true, /* withAnimSource= */ false);
-        mMediator.initWithNative(() -> mTabListEditorController);
+        mMediator.initWithNative(LazyOneshotSupplier.fromValue(mTabListEditorController));
 
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
@@ -1350,7 +1355,7 @@ public class TabGridDialogMediatorUnitTest {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
         remakeMediator(/* withResetHandler= */ true, /* withAnimSource= */ false);
-        mMediator.initWithNative(() -> mTabListEditorController);
+        mMediator.initWithNative(LazyOneshotSupplier.fromValue(mTabListEditorController));
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
@@ -1383,7 +1388,7 @@ public class TabGridDialogMediatorUnitTest {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
         remakeMediator(/* withResetHandler= */ true, /* withAnimSource= */ false);
-        mMediator.initWithNative(() -> mTabListEditorController);
+        mMediator.initWithNative(LazyOneshotSupplier.fromValue(mTabListEditorController));
         // Mock that the dialog is hidden and animation source view is set to some mock view for
         // testing purpose.
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);

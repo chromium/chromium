@@ -54,7 +54,7 @@ public class TabSwitcherCustomViewManager {
      * @param delegate The {@link Delegate} that is responsible for relaying signals from clients to
      *     tab switcher, may be null if reset.
      */
-    public void setDelegate(Delegate delegate) {
+    public void setDelegate(@Nullable Delegate delegate) {
         assert mDelegate == null || delegate == null;
         unbindDelegate(mDelegate);
         bindDelegate(delegate);

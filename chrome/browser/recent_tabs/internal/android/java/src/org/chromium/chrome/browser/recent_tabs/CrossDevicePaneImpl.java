@@ -42,7 +42,7 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
     private final DoubleConsumer mOnToolbarAlphaChange;
     private final FrameLayout mRootView;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeController;
-    private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonSupplier =
+    private final ObservableSupplierImpl<@Nullable DisplayButtonData> mReferenceButtonSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplier<FullButtonData> mEmptyActionButtonSupplier =
             new ObservableSupplierImpl<>();
@@ -136,7 +136,7 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
     }
 
     @Override
-    public ObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier() {
+    public ObservableSupplier<@Nullable DisplayButtonData> getReferenceButtonDataSupplier() {
         return mReferenceButtonSupplier;
     }
 
