@@ -133,6 +133,17 @@ BASE_FEATURE_ENUM_PARAM(MiniToolbarActiveConfiguration,
                         MiniToolbarActiveConfiguration::Hide,
                         &kMiniToolbarActiveConfigurationOptions);
 
+// When enabled along with SideBySide flag, split tabs will be restored on
+// startup.
+BASE_FEATURE(kSideBySideSessionRestore,
+             "SideBySideSessionRestore",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsRestoringSplitViewEnabled() {
+  return base::FeatureList::IsEnabled(features::kSideBySide) &&
+         base::FeatureList::IsEnabled(features::kSideBySideSessionRestore);
+}
+
 BASE_FEATURE(kSideBySideLinkMenuNewBadge,
              "SideBySideLinkMenuNewBadge",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -159,6 +159,10 @@ enum class MiniToolbarActiveConfiguration {
 BASE_DECLARE_FEATURE_PARAM(MiniToolbarActiveConfiguration,
                            kSideBySideMiniToolbarActiveConfiguration);
 
+BASE_DECLARE_FEATURE(kSideBySideSessionRestore);
+
+bool IsRestoringSplitViewEnabled();
+
 BASE_DECLARE_FEATURE(kSideBySideLinkMenuNewBadge);
 
 bool IsNtpFooterEnabledWithoutSideBySide();
