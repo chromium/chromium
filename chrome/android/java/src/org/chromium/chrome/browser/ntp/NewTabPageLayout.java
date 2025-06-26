@@ -501,8 +501,6 @@ public class NewTabPageLayout extends LinearLayout
                 mIsInMultiWindowModeOnTablet ? DoodleSize.TABLET_SPLIT_SCREEN : DoodleSize.REGULAR);
         mLogoCoordinator.initWithNative(mProfile);
         setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);
-        setSearchProviderTopMargin();
-        setSearchProviderBottomMargin();
     }
 
     private void initializeMostVisitedTilesCoordinator(
