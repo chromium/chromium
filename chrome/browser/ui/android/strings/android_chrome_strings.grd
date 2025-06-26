@@ -2602,6 +2602,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_BOOKMARKS" desc="Title for preference which enables sync'ing of bookmarks. [CHAR_LIMIT=32]">
         Bookmarks
       </message>
+      <message name="IDS_SYNC_EXTENSIONS" desc="Title for preference which enables sync'ing of Chrome browser extensions. [CHAR_LIMIT=32]">
+        Extensions
+      </message>
       <message name="IDS_SYNC_HISTORY" desc="Title for preference which enables sync'ing of history data. [CHAR_LIMIT=32]">
         History
       </message>
@@ -2640,6 +2643,9 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_ACCOUNT_SECTION_BOOKMARKS_TOGGLE" desc="Bookmarks, one of the data types that we allow syncing. Shown on next to the toggle that controls whether bookmarks should be saved in the Google Account and synced across devices.">
         Bookmarks
+      </message>
+      <message name="IDS_ACCOUNT_SECTION_EXTENSIONS_TOGGLE" desc="Chrome browser extensions, one of the data types that we allow syncing. Shown on next to the toggle that controls whether extensions should be saved in the Google Account and synced across devices.">
+        Extensions
       </message>
       <message name="IDS_ACCOUNT_SECTION_READING_LIST_TOGGLE" desc="Reading List, one of the data types that we allow syncing. Shown on next to the toggle that controls whether reading list should be saved in the Google Account and synced across devices.">
         Reading list

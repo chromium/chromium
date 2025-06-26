@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsBuildflags;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
@@ -125,6 +126,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @VisibleForTesting public static final String PREF_SYNC_EVERYTHING = "sync_everything";
     @VisibleForTesting public static final String PREF_SYNC_AUTOFILL = "sync_autofill";
     @VisibleForTesting public static final String PREF_SYNC_BOOKMARKS = "sync_bookmarks";
+    @VisibleForTesting public static final String PREF_SYNC_EXTENSIONS = "sync_extensions";
 
     @VisibleForTesting
     public static final String PREF_SYNC_PAYMENTS_INTEGRATION = "sync_payments_integration";
@@ -153,6 +155,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @VisibleForTesting
     public static final String PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE =
             "account_section_bookmarks_toggle";
+
+    @VisibleForTesting
+    public static final String PREF_ACCOUNT_SECTION_EXTENSIONS_TOGGLE =
+            "account_section_extensions_toggle";
 
     @VisibleForTesting
     public static final String PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE =
@@ -488,6 +494,14 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 UserSelectableType.BOOKMARKS,
                 findPreference(PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE));
 
+        if (shouldShowExtensionsItem()) {
+            mSyncTypeSwitchPreferencesMap.put(
+                    UserSelectableType.EXTENSIONS,
+                    findPreference(PREF_ACCOUNT_SECTION_EXTENSIONS_TOGGLE));
+        } else {
+            findPreference(PREF_ACCOUNT_SECTION_EXTENSIONS_TOGGLE).setVisible(false);
+        }
+
         // HISTORY and TABS are bundled in the same switch in the new settings panel.
         ChromeSwitchPreference historyAndTabsToggle =
                 (ChromeSwitchPreference) findPreference(PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
@@ -629,6 +643,12 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 UserSelectableType.AUTOFILL, findPreference(PREF_SYNC_AUTOFILL));
         mSyncTypeCheckBoxPreferencesMap.put(
                 UserSelectableType.BOOKMARKS, findPreference(PREF_SYNC_BOOKMARKS));
+        if (shouldShowExtensionsItem()) {
+            mSyncTypeCheckBoxPreferencesMap.put(
+                    UserSelectableType.EXTENSIONS, findPreference(PREF_SYNC_EXTENSIONS));
+        } else {
+            findPreference(PREF_SYNC_EXTENSIONS).setVisible(false);
+        }
         mSyncTypeCheckBoxPreferencesMap.put(
                 UserSelectableType.HISTORY, findPreference(PREF_SYNC_HISTORY));
         mSyncTypeCheckBoxPreferencesMap.put(
@@ -1245,5 +1265,12 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @Override
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
+    }
+
+    /** Returns whether the extensions sync item should be shown. */
+    private boolean shouldShowExtensionsItem() {
+        return ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS
+                && !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.BLOCK_INSTALLING_EXTENSIONS_ON_DESKTOP_ANDROID);
     }
 }

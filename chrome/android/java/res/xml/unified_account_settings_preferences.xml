@@ -43,6 +43,11 @@ found in the LICENSE file.
         android:persistent="false"/>
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="account_section_extensions_toggle"
+        android:title="@string/account_section_extensions_toggle"
+        android:persistent="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="account_section_reading_list_toggle"
         android:title="@string/account_section_reading_list_toggle"
         android:persistent="false"/>

@@ -34,6 +34,11 @@ found in the LICENSE file.
         android:persistent="false"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
+        android:key="sync_extensions"
+        android:title="@string/sync_extensions"
+        android:persistent="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
         android:key="sync_payments_integration"
         android:title="@string/sync_payments_integration"
         android:persistent="false"/>
