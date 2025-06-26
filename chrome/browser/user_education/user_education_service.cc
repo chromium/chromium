@@ -54,6 +54,13 @@ UserEducationService::UserEducationService(
     // If the feature is disabled, ensure that we clear any old data.
     user_education_storage_service_->ResetRecentSessionData();
   }
+
+  if (user_education::features::NtpBrowserPromosEnabled()) {
+    ntp_promo_registry_ = std::make_unique<user_education::NtpPromoRegistry>();
+    ntp_promo_controller_ =
+        std::make_unique<user_education::NtpPromoController>(
+            *ntp_promo_registry_, *user_education_storage_service_);
+  }
 }
 
 // static

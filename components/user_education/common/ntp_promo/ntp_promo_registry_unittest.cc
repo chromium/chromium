@@ -76,4 +76,10 @@ TEST_F(NtpPromoRegistryTest, DuplicateEntry) {
   EXPECT_CHECK_DEATH(registry_.AddPromo(CreateTestPromoSpec("Promo1")));
 }
 
+TEST_F(NtpPromoRegistryTest, AreAnyPromosRegistered) {
+  EXPECT_FALSE(registry_.AreAnyPromosRegistered());
+  registry_.AddPromo(CreateTestPromoSpec("Promo1"));
+  EXPECT_TRUE(registry_.AreAnyPromosRegistered());
+}
+
 }  // namespace user_education

@@ -17,7 +17,9 @@
 #include "components/feature_engagement/public/feature_configurations.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
+#include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
+#include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_metadata.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -317,6 +319,23 @@ TEST(BrowserUserEducationServiceTest, CheckNewBadgeMetadata) {
       failed = true;
       oss << "\n"
           << feature->name
+          << " is missing metadata: " << base::JoinString(errors, ", ");
+    }
+  }
+  EXPECT_FALSE(failed) << "\"New\" Badges missing metadata:" << oss.str();
+}
+
+TEST(BrowserUserEducationServiceTest, CheckNtpPromoMetadata) {
+  user_education::NtpPromoRegistry registry;
+  MaybeRegisterNtpPromos(registry);
+  std::ostringstream oss;
+  bool failed = false;
+  for (const auto& identifier : registry.GetNtpPromoIdentifiers()) {
+    const auto* spec = registry.GetNtpPromoSpecification(identifier);
+    const auto errors = CheckMetadata(spec->metadata());
+    if (!errors.empty()) {
+      failed = true;
+      oss << "\nPromo " << identifier
           << " is missing metadata: " << base::JoinString(errors, ", ");
     }
   }

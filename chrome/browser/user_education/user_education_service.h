@@ -17,6 +17,8 @@
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
+#include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
+#include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/session/user_education_session_manager.h"
 #include "components/user_education/common/tutorial/tutorial.h"
@@ -72,6 +74,12 @@ class UserEducationService : public KeyedService {
   RecentSessionObserver* recent_session_observer() {
     return recent_session_observer_.get();
   }
+  user_education::NtpPromoRegistry* ntp_promo_registry() {
+    return ntp_promo_registry_.get();
+  }
+  user_education::NtpPromoController* ntp_promo_controller() {
+    return ntp_promo_controller_.get();
+  }
 
   // Utility methods for when a browser [window] isn't available; for example,
   // when only a WebContents is available:
@@ -104,6 +112,8 @@ class UserEducationService : public KeyedService {
   std::unique_ptr<user_education::NewBadgeController> new_badge_controller_;
   std::unique_ptr<RecentSessionTracker> recent_session_tracker_;
   std::unique_ptr<RecentSessionObserver> recent_session_observer_;
+  std::unique_ptr<user_education::NtpPromoRegistry> ntp_promo_registry_;
+  std::unique_ptr<user_education::NtpPromoController> ntp_promo_controller_;
 };
 
 #endif  // CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_SERVICE_H_

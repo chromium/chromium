@@ -28,6 +28,8 @@ class NtpPromoRegistry {
   // Adds an NtpPromoSpecification to the registry.
   void AddPromo(NtpPromoSpecification spec);
 
+  bool AreAnyPromosRegistered() const;
+
  private:
   using Registry = std::map<NtpPromoIdentifier, NtpPromoSpecification>;
 

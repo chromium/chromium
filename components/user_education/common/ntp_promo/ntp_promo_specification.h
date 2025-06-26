@@ -78,6 +78,7 @@ class NtpPromoSpecification {
   const base::flat_set<NtpPromoIdentifier>& show_after() const {
     return show_after_;
   }
+  const user_education::Metadata& metadata() const { return metadata_; }
 
  private:
   NtpPromoIdentifier id_;

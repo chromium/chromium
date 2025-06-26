@@ -40,4 +40,8 @@ void NtpPromoRegistry::AddPromo(NtpPromoSpecification specification) {
   CHECK(inserted);
 }
 
+bool NtpPromoRegistry::AreAnyPromosRegistered() const {
+  return ntp_promo_registry_.size() > 0;
+}
+
 }  // namespace user_education

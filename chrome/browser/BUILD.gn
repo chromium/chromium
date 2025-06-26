@@ -4319,6 +4319,7 @@ static_library("browser") {
       "user_education/browser_tutorial_service.h",
       "user_education/browser_user_education_storage_service.cc",
       "user_education/browser_user_education_storage_service.h",
+      "user_education/ntp_promo_identifiers.h",
       "user_education/recent_session_observer.cc",
       "user_education/recent_session_observer.h",
       "user_education/recent_session_tracker.cc",

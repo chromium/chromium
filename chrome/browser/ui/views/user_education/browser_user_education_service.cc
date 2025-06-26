@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
+#include "chrome/browser/user_education/ntp_promo_identifiers.h"
 #include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -1807,6 +1808,11 @@ CreateUserEducationResources(BrowserView* browser_view) {
   MaybeRegisterChromeNewBadges(*user_education_service->new_badge_registry());
   user_education_service->new_badge_controller()->InitData();
 
+  // Registry is valid if the NTP promo feature is enabled.
+  if (user_education_service->ntp_promo_registry()) {
+    MaybeRegisterNtpPromos(*user_education_service->ntp_promo_registry());
+  }
+
   if (user_education::features::IsUserEducationV25()) {
     auto result = std::make_unique<BrowserFeaturePromoController25>(
         browser_view,
@@ -1830,6 +1836,26 @@ CreateUserEducationResources(BrowserView* browser_view) {
         &user_education_service->tutorial_service(),
         &user_education_service->product_messaging_controller());
   }
+}
+
+void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
+  using user_education::NtpPromoContent;
+  using user_education::NtpPromoSpecification;
+
+  if (registry.AreAnyPromosRegistered()) {
+    return;
+  }
+
+  registry.AddPromo(NtpPromoSpecification(
+      kNtpSignInPromoId, NtpPromoContent("", IDS_NTP_SIGN_IN_PROMO, 0),
+      base::BindRepeating([](Profile* profile) {
+        return NtpPromoSpecification::Eligibility::kEligible;
+      }),
+      base::BindRepeating([](Browser* browser) {}),
+      /*show_after=*/{},
+      user_education::Metadata(
+          141, "cjgrant@google.com",
+          "Promotes sign-in capability on the New Tab Page")));
 }
 
 void QueueLegalAndPrivacyNotices(Profile* profile) {
