@@ -26,6 +26,7 @@
 - (void)dataSharingServiceDidRemoveMember:(const GaiaId&)memberId
                                   toGroup:(const data_sharing::GroupId&)groupId
                                    atTime:(base::Time)eventTime;
+- (void)dataSharingServiceDestroyed;
 @end
 
 // Bridge class to forward events from the DataSharingService to Objective-C
@@ -57,6 +58,7 @@ class DataSharingServiceObserverBridge final
   void OnGroupMemberRemoved(const data_sharing::GroupId& group_id,
                             const GaiaId& member_gaia_id,
                             const base::Time& event_time) override;
+  void OnDataSharingServiceDestroyed() override;
 
  private:
   __weak id<DataSharingServiceObserverDelegate> delegate_ = nil;

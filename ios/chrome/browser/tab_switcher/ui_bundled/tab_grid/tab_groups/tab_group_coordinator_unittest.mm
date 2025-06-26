@@ -8,6 +8,7 @@
 #import "base/test/task_environment.h"
 #import "components/data_sharing/public/features.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
@@ -52,7 +53,9 @@ class TabGroupCoordinatorFakeWebStateListDelegate
 // Creates a FakeTabGroupSyncService.
 std::unique_ptr<KeyedService> CreateFakeTabGroupSyncService(
     web::BrowserState* context) {
-  return std::make_unique<tab_groups::FakeTabGroupSyncService>();
+  //  return std::make_unique<tab_groups::FakeTabGroupSyncService>();
+  return std::make_unique<
+      ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
 }
 
 // Creates a test ShareKitService.

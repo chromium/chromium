@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/share_kit/model/sharing_state.h"
 
+@protocol FacePileProviding;
+
 // Consumer to allow the tab group model to send information to the tab group
 // UI.
 @protocol TabGroupConsumer
@@ -25,8 +27,8 @@
 // Sets the sharing state of a group.
 - (void)setSharingState:(tab_groups::SharingState)state;
 
-// Sets the face pile view to display the share button or the face pile.
-- (void)setFacePileView:(UIView*)facePileView;
+// Sets the face pile provider to display the share button or the face pile.
+- (void)setFacePileProvider:(id<FacePileProviding>)facePileProvider;
 
 // Sets the text to the activity summary cell.
 - (void)setActivitySummaryCellText:(NSString*)text;

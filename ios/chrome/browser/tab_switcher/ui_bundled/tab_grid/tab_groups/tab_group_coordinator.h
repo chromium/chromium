@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_mediator.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_mediator.h"
 
 @protocol TabContextMenuDelegate;
 @protocol TabGridIdleStatusHandler;
@@ -17,7 +18,8 @@ class TabGroup;
 @class TabGroupViewController;
 
 // Coordinator to display the given tab group.
-@interface TabGroupCoordinator : ChromeCoordinator <BaseGridMediatorDelegate>
+@interface TabGroupCoordinator
+    : ChromeCoordinator <BaseGridMediatorDelegate, TabGroupMediatorDelegate>
 
 // View controller for tab groups.
 @property(nonatomic, weak, readonly) TabGroupViewController* viewController;

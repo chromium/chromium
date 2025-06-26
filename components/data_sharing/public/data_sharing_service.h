@@ -107,6 +107,10 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     // to ignore incoming sync events during this duration.
     virtual void OnSyncBridgeUpdateTypeChanged(
         SyncBridgeUpdateType sync_bridge_update_type) {}
+
+    // Invoked when the DataSharingService is being destroyed. Give the subclass
+    // a chance to cleanup.
+    virtual void OnDataSharingServiceDestroyed() {}
   };
 
   using GroupDataOrFailureOutcome =

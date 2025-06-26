@@ -92,6 +92,12 @@ using ScopedDataSharingSyncObservation =
   [self updateConsumer];
 }
 
+- (void)dataSharingServiceDestroyed {
+  _scopedDataSharingServiceObservation.reset();
+  _dataSharingServiceObserver.reset();
+  _dataSharingService = nullptr;
+}
+
 #pragma mark - Private
 
 // Updates the consumer for the current group data.
@@ -106,6 +112,8 @@ using ScopedDataSharingSyncObservation =
     return;
   }
 
+  [self.consumer setSharedButtonWhenEmpty:_configuration.showsEmptyState];
+
   std::optional<data_sharing::GroupData> groupData =
       _dataSharingService->ReadGroup(_configuration.groupID);
   if (!groupData) {
@@ -114,7 +122,6 @@ using ScopedDataSharingSyncObservation =
 
   // Configure the consumer.
   [self.consumer setAvatarSize:_configuration.avatarSize];
-  [self.consumer setShowsTextWhenEmpty:_configuration.showsEmptyState];
   [self.consumer setFacePileBackgroundColor:_configuration.backgroundColor];
 
   ShareKitAvatarConfiguration* ownerConfig;

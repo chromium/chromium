@@ -124,7 +124,8 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
                     consumer:tab_group_consumer_
                 gridConsumer:consumer_
                   modeHolder:mode_holder_
-            messagingService:&messaging_backend_];
+            messagingService:&messaging_backend_
+            tabGroupDelegate:nil];
     mediator_.browser = browser_.get();
   }
 
@@ -332,7 +333,7 @@ TEST_F(TabGroupMediatorTest, CreateAnotherGroupAndCloseTabs) {
 // Tests that CollaborationIDChangedForGroup does not update facePile UI when
 // the group id does not match.
 TEST_F(TabGroupMediatorTest, CollaborationIDChangedForInvalidGroup) {
-  OCMReject([tab_group_consumer_ setFacePileView:OCMOCK_ANY]);
+  OCMReject([tab_group_consumer_ setFacePileProvider:OCMOCK_ANY]);
 
   SavedTabGroup other_saved_group(
       u"other group", tab_groups::TabGroupColorId::kOrange, {},
@@ -350,7 +351,7 @@ TEST_F(TabGroupMediatorTest, CollaborationIDChangedForInvalidGroup) {
 // Tests that CollaborationIDChangedForGroup correctly updates the facePile UI
 // when the group is shared.
 TEST_F(TabGroupMediatorTest, CollaborationIDChangedForGroupShared) {
-  OCMExpect([tab_group_consumer_ setFacePileView:OCMOCK_ANY]);
+  OCMExpect([tab_group_consumer_ setFacePileProvider:OCMOCK_ANY]);
 
   const SavedTabGroup saved_group =
       tab_group_sync_service_->GetGroup(tab_group_->tab_group_id()).value();
