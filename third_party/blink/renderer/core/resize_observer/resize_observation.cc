@@ -50,11 +50,13 @@ constexpr LogicalSize kInitialObservationSize(kIndefiniteSize, kIndefiniteSize);
 
 ResizeObservation::ResizeObservation(Element* target,
                                      ResizeObserver* observer,
-                                     ResizeObserverBoxOptions observed_box)
+                                     ResizeObserverBoxOptions observed_box,
+                                     bool fire_on_every_paint)
     : target_(target),
       observer_(observer),
       observation_size_(kInitialObservationSize),
-      observed_box_(observed_box) {
+      observed_box_(observed_box),
+      fire_on_every_paint_(fire_on_every_paint) {
   DCHECK(target_);
   DCHECK(observer_);
 }

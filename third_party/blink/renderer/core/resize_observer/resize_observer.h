@@ -88,7 +88,9 @@ class CORE_EXPORT ResizeObserver final
   }
 
  private:
-  void observeInternal(Element* target, ResizeObserverBoxOptions box_option);
+  void observeInternal(Element* target,
+                       ResizeObserverBoxOptions box_option,
+                       bool fire_on_every_paint);
 
   using ObservationList = HeapLinkedHashSet<WeakMember<ResizeObservation>>;
 

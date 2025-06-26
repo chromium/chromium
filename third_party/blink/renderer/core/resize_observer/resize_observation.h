@@ -22,7 +22,8 @@ class CORE_EXPORT ResizeObservation final
  public:
   ResizeObservation(Element* target,
                     ResizeObserver*,
-                    ResizeObserverBoxOptions observed_box);
+                    ResizeObserverBoxOptions observed_box,
+                    bool fire_on_every_paint);
 
   Element* Target() const { return target_.Get(); }
   size_t TargetDepth();
@@ -30,6 +31,7 @@ class CORE_EXPORT ResizeObservation final
   bool ObservationSizeOutOfSync();
   void SetObservationSize(const LogicalSize&);
   ResizeObserverBoxOptions ObservedBox() const { return observed_box_; }
+  bool FireOnEveryPaint() const { return fire_on_every_paint_; }
 
   LogicalSize ComputeTargetSize() const;
 
@@ -41,6 +43,7 @@ class CORE_EXPORT ResizeObservation final
   // Target size sent in last observation notification.
   LogicalSize observation_size_;
   ResizeObserverBoxOptions observed_box_;
+  bool fire_on_every_paint_;
 };
 
 }  // namespace blink
