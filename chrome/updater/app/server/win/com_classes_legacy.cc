@@ -1315,17 +1315,18 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
             }));
       },
       scope, app_id, command_id, error_params);
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          [](UpdaterScope scope) { return AnyAppEnablesUsageStats(scope); },
-          scope),
-      base::BindOnce(
-          [](base::OnceCallback<void(bool)> rpc_task, bool enable_usage_stats) {
-            AppServerWin::PostRpcTask(
-                base::BindOnce(std::move(rpc_task), enable_usage_stats));
-          },
-          std::move(rpc_task)));
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](UpdaterScope scope, base::OnceCallback<void(bool)> rpc_task) {
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE, {base::MayBlock()},
+            base::BindOnce(
+                [](UpdaterScope scope) {
+                  return AnyAppEnablesUsageStats(scope);
+                },
+                scope),
+            base::BindOnce(std::move(rpc_task)));
+      },
+      scope, std::move(rpc_task)));
 }
 
 PolicyStatusImpl::PolicyStatusImpl()
