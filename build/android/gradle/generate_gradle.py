@@ -158,9 +158,9 @@ class _ProjectEntry:
     return cls._cached_entries[gn_target]
 
   @classmethod
-  def FromBuildConfigPath(cls, path):
+  def FromParamsJsonPath(cls, path):
     prefix = 'gen/'
-    suffix = '.build_config.json'
+    suffix = '.params.json'
     assert path.startswith(prefix) and path.endswith(suffix), path
     subdir = path[len(prefix):-len(suffix)]
     gn_target = '//%s:%s' % (os.path.split(subdir))
@@ -249,9 +249,12 @@ class _ProjectEntry:
     This includes the entry itself to make iterating simpler."""
     if self._all_entries is None:
       logging.debug('Generating entries for %s', self.GnTarget())
-      deps = [_ProjectEntry.FromBuildConfigPath(p)
-          for p in self.Gradle()['dependent_android_projects']]
-      deps.extend(_ProjectEntry.FromBuildConfigPath(p)
+      deps = [
+          _ProjectEntry.FromParamsJsonPath(p)
+          for p in self.Gradle()['dependent_android_projects']
+      ]
+      deps.extend(
+          _ProjectEntry.FromParamsJsonPath(p)
           for p in self.Gradle()['dependent_java_projects'])
       all_entries = set()
       for dep in deps:
@@ -369,11 +372,15 @@ class _ProjectContextGenerator:
     self.processed_res_dirs.update(res_dirs)
     variables['res_dirs'] = self._Relativize(root_entry, res_dirs)
     if self.split_projects:
-      deps = [_ProjectEntry.FromBuildConfigPath(p)
-              for p in root_entry.Gradle()['dependent_android_projects']]
+      deps = [
+          _ProjectEntry.FromParamsJsonPath(p)
+          for p in root_entry.Gradle()['dependent_android_projects']
+      ]
       variables['android_project_deps'] = [d.ProjectName() for d in deps]
-      deps = [_ProjectEntry.FromBuildConfigPath(p)
-              for p in root_entry.Gradle()['dependent_java_projects']]
+      deps = [
+          _ProjectEntry.FromParamsJsonPath(p)
+          for p in root_entry.Gradle()['dependent_java_projects']
+      ]
       variables['java_project_deps'] = [d.ProjectName() for d in deps]
     return variables
 
@@ -725,7 +732,7 @@ def _FindAllProjectEntries(main_entries):
     found.add(cur_entry)
     sub_config_paths = cur_entry.BuildConfig()['deps_configs']
     to_scan.extend(
-        _ProjectEntry.FromBuildConfigPath(p) for p in sub_config_paths)
+        _ProjectEntry.FromParamsJsonPath(p) for p in sub_config_paths)
   return list(found)
 
 
