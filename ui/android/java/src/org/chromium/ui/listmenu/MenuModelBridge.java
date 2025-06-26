@@ -13,6 +13,7 @@ import org.jni_zero.JniType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -40,6 +41,17 @@ public class MenuModelBridge {
     /** {@return The list of {@link ListItem} held by this {@link MenuModelBridge}} */
     public List<ListItem> getListItems() {
         return mItems;
+    }
+
+    /**
+     * Returns the list of {@link ListItem} held by this {@link MenuModelBridge}, as a {@link
+     * ModelList}.
+     */
+    public ModelList populateModelList() {
+        ModelList result = new ModelList();
+        // addAll asserts that the collection is nonempty, so we MUST perform this check.
+        if (!mItems.isEmpty()) result.addAll(mItems);
+        return result;
     }
 
     /**

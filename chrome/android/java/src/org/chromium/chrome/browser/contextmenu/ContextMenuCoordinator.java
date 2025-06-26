@@ -522,8 +522,9 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 itemList.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
             }
 
-            // Add the items in the group
-            itemList.addAll(group);
+            // Add the items in the group. We must check for emptiness first, because addAll asserts
+            // that its parameter contains at least one item.
+            if (!group.isEmpty()) itemList.addAll(group);
         }
 
         for (ListItem item : itemList) {

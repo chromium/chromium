@@ -51,6 +51,7 @@ public class ContextMenuParams {
     private final int mInterestForNodeID;
 
     private final @Nullable AdditionalNavigationParams mAdditionalNavigationParams;
+    private final MenuModelBridge mMenuModelBridge;
 
     @CalledByNative
     private long getNativePointer() {
@@ -191,6 +192,11 @@ public class ContextMenuParams {
         return mAdditionalNavigationParams;
     }
 
+    /** Returns the {@link MenuModelBridge} associated with this context menu. */
+    public MenuModelBridge getMenuModelBridge() {
+        return mMenuModelBridge;
+    }
+
     @VisibleForTesting
     public ContextMenuParams(
             long nativePtr,
@@ -212,6 +218,7 @@ public class ContextMenuParams {
             int interestForNodeID,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         mNativePtr = nativePtr;
+        mMenuModelBridge = menuModelBridge;
         mPageUrl = pageUrl;
         mLinkUrl = linkUrl;
         mLinkText = linkText;
