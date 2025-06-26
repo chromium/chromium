@@ -306,7 +306,7 @@
   {
     "name": "android-tab-declutter-archive-all-but-active-tab",
     "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 143
   },
   {
     "name": "android-tab-declutter-archive-duplicate-tabs",
@@ -316,7 +316,7 @@
   {
     "name": "android-tab-declutter-archive-tab-groups",
     "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 142
+    "expiry_milestone": 143
   },
   {
     "name": "android-tab-declutter-auto-delete",
