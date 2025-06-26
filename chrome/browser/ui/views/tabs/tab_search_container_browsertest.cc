@@ -275,8 +275,16 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysHide) {
   EXPECT_TRUE(ExpansionAnimationIsClosing());
 }
 
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ImmediatelyHidesWhenOrganizeButtonClicked \
+  DISABLED_ImmediatelyHidesWhenOrganizeButtonClicked
+#else
+#define MAYBE_ImmediatelyHidesWhenOrganizeButtonClicked \
+  ImmediatelyHidesWhenOrganizeButtonClicked
+#endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       ImmediatelyHidesWhenOrganizeButtonClicked) {
+                       MAYBE_ImmediatelyHidesWhenOrganizeButtonClicked) {
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
   ResetAnimation(1);
@@ -291,8 +299,16 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   EXPECT_TRUE(ExpansionAnimationIsClosing());
 }
 
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ImmediatelyHidesWhenOrganizeButtonDismissed \
+  DISABLED_ImmediatelyHidesWhenOrganizeButtonDismissed
+#else
+#define MAYBE_ImmediatelyHidesWhenOrganizeButtonDismissed \
+  ImmediatelyHidesWhenOrganizeButtonDismissed
+#endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       ImmediatelyHidesWhenOrganizeButtonDismissed) {
+                       MAYBE_ImmediatelyHidesWhenOrganizeButtonDismissed) {
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
   ResetAnimation(1);
@@ -464,8 +480,16 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
       "Tab.Organization.Declutter.Trigger.Outcome", 2, 1);
 }
 
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_HidesAutoTabGroupButtonFromHalfway \
+  DISABLED_HidesAutoTabGroupButtonFromHalfway
+#else
+#define MAYBE_HidesAutoTabGroupButtonFromHalfway \
+  HidesAutoTabGroupButtonFromHalfway
+#endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       HidesAutoTabGroupButtonFromHalfway) {
+                       MAYBE_HidesAutoTabGroupButtonFromHalfway) {
   ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 
   tab_search_container()->ShowTabOrganization(
@@ -520,8 +544,14 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                   ->IsShowing());
 }
 
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowsAndHidesDeclutterChip DISABLED_ShowsAndHidesDeclutterChip
+#else
+#define MAYBE_ShowsAndHidesDeclutterChip ShowsAndHidesDeclutterChip
+#endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       ShowsAndHidesDeclutterChip) {
+                       MAYBE_ShowsAndHidesDeclutterChip) {
   ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 
   tab_search_container()->ShowTabOrganization(
@@ -543,8 +573,17 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   EXPECT_TRUE(ExpansionAnimationIsClosing());
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       DoesNotShowDeclutterChipWhenAutoTabGroupChipIsShown) {
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DoesNotShowDeclutterChipWhenAutoTabGroupChipIsShown \
+  DISABLED_DoesNotShowDeclutterChipWhenAutoTabGroupChipIsShown
+#else
+#define MAYBE_DoesNotShowDeclutterChipWhenAutoTabGroupChipIsShown \
+  DoesNotShowDeclutterChipWhenAutoTabGroupChipIsShown
+#endif
+IN_PROC_BROWSER_TEST_F(
+    TabSearchContainerBrowserTest,
+    MAYBE_DoesNotShowDeclutterChipWhenAutoTabGroupChipIsShown) {
   ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 
   // Show the auto-tab group chip.
