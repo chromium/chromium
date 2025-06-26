@@ -3820,8 +3820,10 @@ if (!is_android) {
     }
 
     if (is_win || is_mac || is_linux) {
-      sources +=
-          [ "../browser/supervised_user/kids_profile_interactive_uitest.cc" ]
+      sources += [
+        "../browser/enterprise/profile_management/oidc_auth_response_capture_navigation_throttle_browsertest.cc",
+        "../browser/supervised_user/kids_profile_interactive_uitest.cc",
+      ]
     }
 
     if (is_win || is_mac || is_linux || is_chromeos) {
@@ -9929,7 +9931,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/attestation/browser/profile_attester_unittest.cc",
       "../browser/enterprise/connectors/device_trust/browser/signing_key_policy_observer.cc",
       "../browser/enterprise/core/dependency_factory_impl_unittest.cc",
-      "../browser/enterprise/profile_management/oidc_auth_response_capture_navigation_throttle_unittest.cc",
       "../browser/enterprise/profile_management/profile_management_navigation_throttle_unittest.cc",
       "../browser/enterprise/profile_management/saml_response_parser_unittest.cc",
       "../browser/enterprise/remote_commands/rotate_attestation_credential_job_unittest.cc",
