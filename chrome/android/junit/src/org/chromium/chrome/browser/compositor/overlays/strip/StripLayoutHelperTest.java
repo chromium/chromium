@@ -4200,6 +4200,15 @@ public class StripLayoutHelperTest {
     }
 
     private void initializeTest(boolean rtl, boolean incognito, int tabIndex, int numTabs) {
+        initializeTest(rtl, incognito, tabIndex, numTabs, mTabGroupModelFilter);
+    }
+
+    private void initializeTest(
+            boolean rtl,
+            boolean incognito,
+            int tabIndex,
+            int numTabs,
+            TabGroupModelFilter tabGroupModelFilter) {
         mStripLayoutHelper = createStripLayoutHelper(rtl, incognito);
         mIncognito = incognito;
 
@@ -4237,7 +4246,9 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabStripIphControllerForTesting(mController);
         when(mController.wouldTriggerIph(anyInt())).thenReturn(true);
         mStripLayoutHelper.setLayerTitleCache(mLayerTitleCache);
-        mStripLayoutHelper.setTabGroupModelFilter(mTabGroupModelFilter);
+        if (tabGroupModelFilter != null) {
+            mStripLayoutHelper.setTabGroupModelFilter(tabGroupModelFilter);
+        }
         mStripLayoutHelper.tabSelected(0, tabIndex, 0);
         // Flush UI updated
     }
@@ -5716,6 +5727,14 @@ public class StripLayoutHelperTest {
 
         // Assert: There should only be one set of animations.
         assertFalse(mStripLayoutHelper.getRunningAnimatorForTesting().isRunning());
+    }
+
+    @Test
+    public void testWidthCalculated_withNullTabGroupModelFilter() {
+        initializeTest(false, false, 0, 1, null);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        assertNotEquals(0, mStripLayoutHelper.getCachedTabWidthForTesting(), EPSILON);
     }
 
     /**

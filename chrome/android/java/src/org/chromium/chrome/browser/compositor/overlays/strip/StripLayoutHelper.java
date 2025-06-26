@@ -3732,7 +3732,7 @@ public class StripLayoutHelper
 
     @Override
     public void resizeTabStrip(
-            boolean animate, StripLayoutTab tabToAnimate, boolean tabAddedAnimation) {
+            boolean animate, @Nullable StripLayoutTab tabToAnimate, boolean tabAddedAnimation) {
         finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
         if (tabToAnimate != null) {
             assert animate;
@@ -3865,7 +3865,6 @@ public class StripLayoutHelper
         if (mWidth == 0) {
             return null;
         }
-        if (mTabGroupModelFilter == null) return null;
 
         // Remove any queued resize messages.
         mStripTabEventHandler.removeMessages(MESSAGE_RESIZE);

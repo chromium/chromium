@@ -87,8 +87,11 @@ public class StripLayoutUtils {
      * @return The number of tabs in the group associated with the group title.
      */
     public static int getNumOfTabsInGroup(
-            TabGroupModelFilter modelFilter, StripLayoutGroupTitle stripLayoutGroupTitle) {
-        return modelFilter.getTabCountForGroup(stripLayoutGroupTitle.getTabGroupId());
+            @Nullable TabGroupModelFilter modelFilter,
+            StripLayoutGroupTitle stripLayoutGroupTitle) {
+        return modelFilter == null
+                ? 0
+                : modelFilter.getTabCountForGroup(stripLayoutGroupTitle.getTabGroupId());
     }
 
     /**
