@@ -50,7 +50,7 @@ void TapText(NSString* text) {
 
 // Taps the context menu item with the given label.
 void TapMenuItem(int labelId) {
-  id item = chrome_test_util::ContextMenuItemWithAccessibilityLabelId(labelId);
+  id item = chrome_test_util::ActionSheetItemWithAccessibilityLabelId(labelId);
   [[EarlGrey selectElementWithMatcher:item] performAction:grey_tap()];
 }
 
