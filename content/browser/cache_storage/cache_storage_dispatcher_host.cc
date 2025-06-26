@@ -431,8 +431,7 @@ class CacheStorageDispatcherHost::CacheImpl
                 TRACE_ID_GLOBAL(trace_id),
                 TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "status",
                 CacheStorageTracedValue(error));
-            std::move(callback).Run(
-                blink::mojom::GetAllMatchedEntriesResult::NewStatus(error));
+            std::move(callback).Run(base::unexpected(error));
             return;
           }
 
@@ -444,9 +443,8 @@ class CacheStorageDispatcherHost::CacheImpl
                     entry->response.get(), self->storage_key_.origin(),
                     self->cross_origin_embedder_policy_, self->coep_reporter_,
                     self->document_isolation_policy_, self->dip_reporter_)) {
-              std::move(callback).Run(
-                  blink::mojom::GetAllMatchedEntriesResult::NewStatus(
-                      CacheStorageError::kErrorCrossOriginResourcePolicy));
+              std::move(callback).Run(base::unexpected(
+                  CacheStorageError::kErrorCrossOriginResourcePolicy));
               return;
             }
           }
@@ -458,9 +456,7 @@ class CacheStorageDispatcherHost::CacheImpl
               TRACE_ID_GLOBAL(trace_id),
               TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "entries",
               CacheStorageTracedValue(entries));
-          std::move(callback).Run(
-              blink::mojom::GetAllMatchedEntriesResult::NewEntries(
-                  std::move(entries)));
+          std::move(callback).Run(base::ok(std::move(entries)));
         },
         weak_factory_.GetWeakPtr(), base::TimeTicks::Now(), trace_id,
         std::move(callback));
