@@ -469,7 +469,10 @@ def _merge_perf_results(benchmark_name, results_filename, directories):
     # Ignoring Charts, as uploading mixed results isn't supported.
     merged_results = histograms_results
   else:
-    merged_results = charts_results
+    # Skip uploading Charts due to crbug.com/418674022#comment19
+    logging.warning('Skip uploading Charts results to legacy dashboard: %s.',
+                    benchmark_name)
+    return False, 0, 0
 
   with open(results_filename, 'w') as rf:
     json.dump(merged_results, rf)
