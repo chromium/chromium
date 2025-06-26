@@ -710,8 +710,17 @@ public class NewTabAnimationLayout extends Layout {
 
         // {@link View#INVISIBLE} is needed to generate the geometry information.
         mBackgroundHostView.setVisibility(View.INVISIBLE);
-        mAnimationHostView.addView(mBackgroundHostView);
 
+        // It makes sure to add the view under the message container so the inner container in
+        // NewBackgroundTabFakeTabSwitcherButton does not clash with the message view (Ex:
+        // Translate).
+        ViewGroup messageContainer = mAnimationHostView.findViewById(R.id.message_container);
+        if (messageContainer != null) {
+            int index = mAnimationHostView.indexOfChild(messageContainer);
+            mAnimationHostView.addView(mBackgroundHostView, index);
+        } else {
+            mAnimationHostView.addView(mBackgroundHostView);
+        }
         // This ensures the view to be properly laid out in order to do calculations within the
         // background animation host view. The main reason we need this is to get values from
         // {@link NewBackgroundTabSwitcherButton#getButtonLocation}.
