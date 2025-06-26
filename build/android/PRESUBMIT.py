@@ -98,7 +98,6 @@ def CommonChecks(input_api, output_api, *, is_upload):
       J('gyp', 'java_cpp_features_tests.py'),
       J('gyp', 'java_cpp_strings_tests.py'),
       J('gyp', 'java_google_api_keys_tests.py'),
-      J('gyp', 'util', 'build_utils_test.py'),
       J('gyp', 'util', 'manifest_utils_test.py'),
       J('gyp', 'util', 'md5_check_test.py'),
       J('gyp', 'util', 'resource_utils_test.py'),

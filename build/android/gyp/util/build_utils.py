@@ -5,7 +5,6 @@
 """Contains common helpers for GN action()s."""
 
 import atexit
-import collections
 import contextlib
 import fnmatch
 import json
@@ -325,34 +324,6 @@ def ExtractAll(zip_path, path=None, no_clobber=True, pattern=None,
 def MatchesGlob(path, filters):
   """Returns whether the given path matches any of the given glob patterns."""
   return filters and any(fnmatch.fnmatch(path, f) for f in filters)
-
-
-def GetSortedTransitiveDependencies(top, deps_func):
-  """Gets the list of all transitive dependencies in sorted order.
-
-  There should be no cycles in the dependency graph (crashes if cycles exist).
-
-  Args:
-    top: A list of the top level nodes
-    deps_func: A function that takes a node and returns a list of its direct
-        dependencies.
-  Returns:
-    A list of all transitive dependencies of nodes in top, in order (a node will
-    appear in the list at a higher index than all of its dependencies).
-  """
-  # Find all deps depth-first, maintaining original order in the case of ties.
-  deps_map = collections.OrderedDict()
-
-  def discover(nodes):
-    for node in nodes:
-      if node in deps_map:
-        continue
-      deps = deps_func(node)
-      discover(deps)
-      deps_map[node] = deps
-
-  discover(top)
-  return list(deps_map)
 
 
 def InitLogging(enabling_env):
