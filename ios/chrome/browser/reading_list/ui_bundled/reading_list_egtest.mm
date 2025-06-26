@@ -159,6 +159,13 @@ void TapContextMenuButtonWithA11yLabelID(int a11y_label_id) {
                      a11y_label_id)] performAction:grey_tap()];
 }
 
+// Taps the context menu button with the a11y label of `a11y_label_id`.
+void TapActionSheetButtonWithA11yLabelID(int a11y_label_id) {
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     a11y_label_id)] performAction:grey_tap()];
+}
+
 // Performs `action` on the entry with the title `entryTitle`. The view can be
 // scrolled down to find the entry.
 void PerformActionOnEntry(NSString* entryTitle, id<GREYAction> action) {
@@ -944,7 +951,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapToolbarButtonWithID(kReadingListToolbarMarkButtonID);
 
   // Tap the action sheet.
-  TapContextMenuButtonWithA11yLabelID(
+  TapActionSheetButtonWithA11yLabelID(
       IDS_IOS_READING_LIST_MARK_ALL_READ_ACTION);
 
   AssertHeaderNotVisible(kUnreadHeader);
@@ -964,7 +971,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapToolbarButtonWithID(kReadingListToolbarMarkButtonID);
 
   // Tap the action sheet.
-  TapContextMenuButtonWithA11yLabelID(
+  TapActionSheetButtonWithA11yLabelID(
       IDS_IOS_READING_LIST_MARK_ALL_UNREAD_ACTION);
 
   AssertHeaderNotVisible(kReadHeader);
@@ -985,7 +992,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapToolbarButtonWithID(kReadingListToolbarMarkButtonID);
 
   // Tap the action sheet.
-  TapContextMenuButtonWithA11yLabelID(
+  TapActionSheetButtonWithA11yLabelID(
       IDS_IOS_READING_LIST_MARK_ALL_UNREAD_ACTION);
 
   AssertHeaderNotVisible(kReadHeader);
@@ -1035,7 +1042,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapToolbarButtonWithID(kReadingListToolbarMarkButtonID);
 
   // Tap the action sheet.
-  TapContextMenuButtonWithA11yLabelID(IDS_IOS_READING_LIST_MARK_UNREAD_BUTTON);
+  TapActionSheetButtonWithA11yLabelID(IDS_IOS_READING_LIST_MARK_UNREAD_BUTTON);
 
   AssertAllEntriesVisible();
   GREYAssertEqual(static_cast<long>(kNumberReadEntries - 1),
@@ -1056,7 +1063,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapToolbarButtonWithID(kReadingListToolbarMarkButtonID);
 
   // Tap the action sheet.
-  TapContextMenuButtonWithA11yLabelID(IDS_IOS_READING_LIST_MARK_READ_BUTTON);
+  TapActionSheetButtonWithA11yLabelID(IDS_IOS_READING_LIST_MARK_READ_BUTTON);
 
   AssertAllEntriesVisible();
   GREYAssertEqual(static_cast<long>(kNumberReadEntries + 1),
