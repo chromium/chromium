@@ -1,7 +1,9 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
+//
+// META: --screen-info={label='1st screen'}{600x800 label='2nd screen'}
+//
 (async function(testRunner) {
   const {session, dp} = await testRunner.startBlank(
       'Tests multiple screens details origin and size.');

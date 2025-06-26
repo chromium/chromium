@@ -51,20 +51,13 @@ class HeadlessCompositorBrowserTest : public HeadlessProtocolBrowserTest {
 // TODO(crbug.com/40656275): Suite is flaky on TSan Linux.
 #if BUILDFLAG(IS_MAC) || ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
                           defined(THREAD_SANITIZER))
-#define HEADLESS_COMPOSITOR_TEST(TEST_NAME, SCRIPT_NAME) \
-  IN_PROC_BROWSER_TEST_F(HeadlessCompositorBrowserTest,  \
-                         DISABLED_##TEST_NAME) {         \
-    test_folder_ = "/protocol/";                         \
-    script_name_ = SCRIPT_NAME;                          \
-    RunTest();                                           \
-  }
+#define HEADLESS_COMPOSITOR_TEST(TEST_NAME, SCRIPT_NAME)  \
+  HEADLESS_PROTOCOL_TEST_F(HeadlessCompositorBrowserTest, \
+                           DISABLED_##TEST_NAME, SCRIPT_NAME)
 #else
 #define HEADLESS_COMPOSITOR_TEST(TEST_NAME, SCRIPT_NAME)             \
-  IN_PROC_BROWSER_TEST_F(HeadlessCompositorBrowserTest, TEST_NAME) { \
-    test_folder_ = "/protocol/";                                     \
-    script_name_ = SCRIPT_NAME;                                      \
-    RunTest();                                                       \
-  }
+  HEADLESS_PROTOCOL_TEST_F(HeadlessCompositorBrowserTest, TEST_NAME, \
+                           SCRIPT_NAME)
 #endif
 
 HEADLESS_COMPOSITOR_TEST(CompositorBasicRaf,

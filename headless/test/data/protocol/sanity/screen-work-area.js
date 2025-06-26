@@ -1,7 +1,10 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
+//
+// META: --screen-info={workAreaLeft=100 workAreaRight=100 \
+// META:   workAreaTop=100 workAreaBottom=100}
+//
 (async function(testRunner) {
   const {session, dp} = await testRunner.startBlank('Tests screen work area.');
 

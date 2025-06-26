@@ -1,7 +1,10 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
+//
+// META: --screen-info={800x600 \
+// META:   workAreaLeft=10 workAreaRight=90 workAreaTop=20 workAreaBottom=80}
+//
 (async function(testRunner) {
   const {dp} = await testRunner.startBlank(
       'Tests maximized/fullscreen window matches workarea.');

@@ -709,6 +709,7 @@ test("headless_browsertests") {
     "//components/embedder_support:user_agent",
     "//components/headless/select_file_dialog",
     "//components/headless/test",
+    "//components/headless/test:meta_info",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/policy/core/browser",

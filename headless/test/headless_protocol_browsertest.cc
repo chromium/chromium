@@ -26,7 +26,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
-#include "third_party/blink/public/common/switches.h"
 
 namespace headless {
 
@@ -38,28 +37,8 @@ static const char kDumpTestResult[] = "dump-test-result";
 }  // namespace switches
 
 namespace {
-
-static const base::FilePath kTestsDirectory(
+static const base::FilePath kTestsScriptRoot(
     FILE_PATH_LITERAL("headless/test/data/protocol"));
-
-// This is a very simple command line switches parser intended to process '--'
-// separated switches with or without values. It will not process nested command
-// line switches specifications like --js-flags=--expose-gc. Use with caution!
-void AppendCommandLineExtras(base::CommandLine* command_line,
-                             std::string_view extras) {
-  std::vector<std::string> switches = base::SplitStringUsingSubstr(
-      extras, "--", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  for (const auto& a_switch : switches) {
-    if (size_t pos = a_switch.find('=', 1); pos != std::string::npos) {
-      command_line->AppendSwitchASCII(a_switch.substr(0, pos),
-                                      a_switch.substr(pos + 1));
-    } else {
-      command_line->AppendSwitch(a_switch);
-    }
-  }
-}
-
 }  // namespace
 
 HeadlessProtocolBrowserTest::HeadlessProtocolBrowserTest() {
@@ -70,15 +49,37 @@ HeadlessProtocolBrowserTest::HeadlessProtocolBrowserTest() {
 
 HeadlessProtocolBrowserTest::~HeadlessProtocolBrowserTest() = default;
 
+void HeadlessProtocolBrowserTest::SetUp() {
+  LoadTestMetaInfo();
+  HeadlessDevTooledBrowserTest::SetUp();
+}
+
 void HeadlessProtocolBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(::network::switches::kHostResolverRules,
                                   "MAP *.test 127.0.0.1");
   HeadlessDevTooledBrowserTest::SetUpCommandLine(command_line);
+
+  test_meta_info_.AppendToCommandLine(*command_line);
 }
 
 base::Value::Dict HeadlessProtocolBrowserTest::GetPageUrlExtraParams() {
   return base::Value::Dict();
+}
+
+void HeadlessProtocolBrowserTest::LoadTestMetaInfo() {
+  base::FilePath src_dir;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
+  base::FilePath test_path =
+      src_dir.Append(kTestsScriptRoot).AppendASCII(GetScriptName());
+  std::string script_body;
+  CHECK(base::ReadFileToString(test_path, &script_body))
+      << "test_path=" << test_path;
+
+  auto test_meta_info = TestMetaInfo::FromString(script_body);
+  CHECK(test_meta_info.has_value()) << test_meta_info.error();
+
+  test_meta_info_ = test_meta_info.value();
 }
 
 void HeadlessProtocolBrowserTest::RunDevTooledTest() {
@@ -121,21 +122,11 @@ void HeadlessProtocolBrowserTest::OnLoadEventFired(
     const base::Value::Dict& params) {
   ASSERT_THAT(params, DictHasValue("method", "Page.loadEventFired"));
 
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath src_dir;
-  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
-  base::FilePath test_path =
-      src_dir.Append(kTestsDirectory).AppendASCII(script_name_);
-  std::string script;
-  if (!base::ReadFileToString(test_path, &script)) {
-    ADD_FAILURE() << "Unable to read test at " << test_path;
-    FinishTest();
-    return;
-  }
+  std::string script_name = GetScriptName();
   GURL test_url = embedded_test_server()->GetURL("harness.test",
-                                                 "/protocol/" + script_name_);
+                                                 "/protocol/" + script_name);
   GURL target_url =
-      embedded_test_server()->GetURL("127.0.0.1", "/protocol/" + script_name_);
+      embedded_test_server()->GetURL("127.0.0.1", "/protocol/" + script_name);
 
   base::Value::Dict test_params;
   test_params.Set("test", test_url.spec());
@@ -177,9 +168,10 @@ void HeadlessProtocolBrowserTest::ProcessTestResult(
 
   base::FilePath src_dir;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
+  std::string script_name = GetScriptName();
   base::FilePath expectation_path =
-      src_dir.Append(kTestsDirectory)
-          .AppendASCII(script_name_.substr(0, script_name_.length() - 3) +
+      src_dir.Append(kTestsScriptRoot)
+          .AppendASCII(script_name.substr(0, script_name.length() - 3) +
                        "-expected.txt");
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -224,24 +216,6 @@ void HeadlessProtocolBrowserTest::FinishTest() {
   test_finished_ = true;
   FinishAsynchronousTest();
 }
-
-#define HEADLESS_PROTOCOL_TEST_CLASS(CLASS_NAME, TEST_NAME, SCRIPT_NAME) \
-  IN_PROC_BROWSER_TEST_F(CLASS_NAME, TEST_NAME) {                        \
-    test_folder_ = "/protocol/";                                         \
-    script_name_ = SCRIPT_NAME;                                          \
-    RunTest();                                                           \
-  }
-
-#define HEADLESS_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)                 \
-  HEADLESS_PROTOCOL_TEST_CLASS(HeadlessProtocolBrowserTest, TEST_NAME, \
-                               SCRIPT_NAME)
-
-#define HEADLESS_PROTOCOL_TEST_P(CLASS_NAME, TEST_NAME, SCRIPT_NAME) \
-  IN_PROC_BROWSER_TEST_P(CLASS_NAME, TEST_NAME) {                    \
-    test_folder_ = "/protocol/";                                     \
-    script_name_ = SCRIPT_NAME;                                      \
-    RunTest();                                                       \
-  }
 
 // Headless-specific tests
 HEADLESS_PROTOCOL_TEST(VirtualTimeBasics, "emulation/virtual-time-basics.js")
@@ -456,9 +430,9 @@ class HeadlessProtocolBrowserTestWithKnownPermission
   }
 };
 
-HEADLESS_PROTOCOL_TEST_CLASS(HeadlessProtocolBrowserTestWithKnownPermission,
-                             KnownPermissionTypes,
-                             "sanity/known-permission-types.js")
+HEADLESS_PROTOCOL_TEST_F(HeadlessProtocolBrowserTestWithKnownPermission,
+                         KnownPermissionTypes,
+                         "sanity/known-permission-types.js")
 
 class HeadlessProtocolBrowserTestWithProxy
     : public HeadlessProtocolBrowserTest {
@@ -493,10 +467,11 @@ class HeadlessProtocolBrowserTestWithProxy
   net::EmbeddedTestServer proxy_server_;
 };
 
-HEADLESS_PROTOCOL_TEST_CLASS(HeadlessProtocolBrowserTestWithProxy,
-                             BrowserSetProxyConfig,
-                             "sanity/browser-set-proxy-config.js")
+HEADLESS_PROTOCOL_TEST_F(HeadlessProtocolBrowserTestWithProxy,
+                         BrowserSetProxyConfig,
+                         "sanity/browser-set-proxy-config.js")
 
+// TODO(kvitekp): Move to headless/test/headless_devtooled_browsertest.cc
 class HeadlessAllowedVideoCodecsTest
     : public HeadlessDevTooledBrowserTest,
       public testing::WithParamInterface<
@@ -575,13 +550,13 @@ class PopupWindowOpenTest : public HeadlessProtocolBrowserTest,
   bool ShouldBlockNewWebContents() const { return GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         PopupWindowOpenTest,
-                         ::testing::Bool());
-
 HEADLESS_PROTOCOL_TEST_P(PopupWindowOpenTest,
                          Open,
                          "sanity/popup-window-open.js")
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         PopupWindowOpenTest_Open,
+                         ::testing::Bool());
 
 class HeadlessProtocolBrowserTestWithoutSiteIsolation
     : public HeadlessProtocolBrowserTest {
@@ -592,54 +567,35 @@ class HeadlessProtocolBrowserTestWithoutSiteIsolation
   bool ShouldEnableSitePerProcess() override { return false; }
 };
 
-HEADLESS_PROTOCOL_TEST_CLASS(
+HEADLESS_PROTOCOL_TEST_F(
     HeadlessProtocolBrowserTestWithoutSiteIsolation,
     VirtualTimeLocalStorageDetachedFrame,
     "emulation/virtual-time-local-storage-detached-frame.js")
 
-class HeadlessProtocolBrowserTestWithDataPath
+class HeadlessProtocolBrowserTestWithFileInputDirectoryUpload
     : public HeadlessProtocolBrowserTest {
  protected:
+  static constexpr char kFileInputDirectoryUpload[] =
+      "sanity/resources/file-input-directory-upload";
+
   base::Value::Dict GetPageUrlExtraParams() override {
     base::FilePath src_dir;
     CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
     base::FilePath path =
-        src_dir.Append(kTestsDirectory).AppendASCII(data_path_);
+        src_dir.Append(kTestsScriptRoot).AppendASCII(kFileInputDirectoryUpload);
     base::Value::Dict dict;
     dict.Set("data_path", path.AsUTF8Unsafe());
     return dict;
   }
-
-  std::string data_path_;
 };
 
-#define HEADLESS_PROTOCOL_TEST_WITH_DATA_PATH(TEST_NAME, SCRIPT_NAME, PATH)    \
-  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTestWithDataPath, TEST_NAME) { \
-    test_folder_ = "/protocol/";                                               \
-    script_name_ = SCRIPT_NAME;                                                \
-    data_path_ = PATH;                                                         \
-    RunTest();                                                                 \
-  }
+HEADLESS_PROTOCOL_TEST_F(
+    HeadlessProtocolBrowserTestWithFileInputDirectoryUpload,
+    Upload,
+    "sanity/file-input-directory-upload.js")
 
-// TODO(crbug.com/40883155)  Re-enable after resolving flaky failures.
-HEADLESS_PROTOCOL_TEST_WITH_DATA_PATH(
-    FileInputDirectoryUpload,
-    "sanity/file-input-directory-upload.js",
-    "sanity/resources/file-input-directory-upload")
-
-class HeadlessProtocolBrowserTestWithExposeGC
-    : public HeadlessProtocolBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    HeadlessProtocolBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
-                                    "--expose-gc");
-  }
-};
-
-HEADLESS_PROTOCOL_TEST_CLASS(HeadlessProtocolBrowserTestWithExposeGC,
-                             GetDOMCountersForLeakDetection,
-                             "sanity/get-dom-counters-for-leak-detection.js")
+HEADLESS_PROTOCOL_TEST(GetDOMCountersForLeakDetection,
+                       "sanity/get-dom-counters-for-leak-detection.js")
 
 class HeadlessProtocolBrowserTestSitePerProcess
     : public HeadlessProtocolBrowserTest,
@@ -654,13 +610,14 @@ class HeadlessProtocolBrowserTestSitePerProcess
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         HeadlessProtocolBrowserTestSitePerProcess,
-                         ::testing::Bool());
-
 HEADLESS_PROTOCOL_TEST_P(HeadlessProtocolBrowserTestSitePerProcess,
                          SitePerProcess,
                          "sanity/site-per-process.js")
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    HeadlessProtocolBrowserTestSitePerProcess_SitePerProcess,
+    ::testing::Bool());
 
 HEADLESS_PROTOCOL_TEST(DataURIIframe, "sanity/data-uri-iframe.js")
 
@@ -674,144 +631,68 @@ HEADLESS_PROTOCOL_TEST(DataURIIframe, "sanity/data-uri-iframe.js")
 HEADLESS_PROTOCOL_TEST(MAYBE_IOCommandAfterInput,
                        "input/io-command-after-input.js")
 
-#define HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(              \
-    TEST_NAME, SCRIPT_NAME, COMMAND_LINE_EXTRAS)                      \
-                                                                      \
-  class HeadlessProtocolBrowserTestWithCommandLineExtras_##TEST_NAME  \
-      : public HeadlessProtocolBrowserTest {                          \
-   public:                                                            \
-    void SetUpCommandLine(base::CommandLine* command_line) override { \
-      HeadlessProtocolBrowserTest::SetUpCommandLine(command_line);    \
-      AppendCommandLineExtras(command_line, COMMAND_LINE_EXTRAS);     \
-    }                                                                 \
-  };                                                                  \
-                                                                      \
-  IN_PROC_BROWSER_TEST_F(                                             \
-      HeadlessProtocolBrowserTestWithCommandLineExtras_##TEST_NAME,   \
-      TEST_NAME) {                                                    \
-    test_folder_ = "/protocol/";                                      \
-    script_name_ = SCRIPT_NAME;                                       \
-    RunTest();                                                        \
-  }
+HEADLESS_PROTOCOL_TEST(ScreenScaleFactor, "sanity/screen-scale-factor.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    ScreenScaleFactor,
-    "sanity/screen-scale-factor.js",
-    "--screen-info={devicePixelRatio=3.0}")
+HEADLESS_PROTOCOL_TEST(ScreenWorkArea, "sanity/screen-work-area.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    ScreenWorkArea,
-    "sanity/screen-work-area.js",
-    "--screen-info={ workAreaLeft=100 workAreaRight=100"
-    " workAreaTop=100 workAreaBottom=100 }")
+HEADLESS_PROTOCOL_TEST(ScreenSizeOrientation,
+                       "sanity/screen-size-orientation.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    ScreenSizeOrientation,
-    "sanity/screen-size-orientation.js",
-    "--screen-info={600x800}")
+HEADLESS_PROTOCOL_TEST(ScreenRotationAngle, "sanity/screen-rotation-angle.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    ScreenRotationAngle,
-    "sanity/screen-rotation-angle.js",
-    "--screen-info={rotation=180}")
+HEADLESS_PROTOCOL_TEST(ScreenOrientationLockNaturalLandscape,
+                       "sanity/screen-orientation-lock-natural-landscape.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    ScreenOrientationLockNaturalLandscape,
-    "sanity/screen-orientation-lock-natural-landscape.js",
-    "--screen-info={800x600}")
+HEADLESS_PROTOCOL_TEST(ScreenOrientationLockNaturalPortrait,
+                       "sanity/screen-orientation-lock-natural-portrait.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    ScreenOrientationLockNaturalPortrait,
-    "sanity/screen-orientation-lock-natural-portrait.js",
-    "--screen-info={600x800}")
+HEADLESS_PROTOCOL_TEST(ScreenDetailsMultipleScreens,
+                       "sanity/screen-details-multiple-screens.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    ScreenDetailsMultipleScreens,
-    "sanity/screen-details-multiple-screens.js",
-    "--screen-info={ label='1st screen' }{ 600x800 label='2nd screen' }")
+HEADLESS_PROTOCOL_TEST(ScreenDetailsPixelRatioAndColorDepth,
+                       "sanity/screen-details-pixel-ratio-and-color-depth.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    ScreenDetailsPixelRatioAndColorDepth,
-    "sanity/screen-details-pixel-ratio-and-color-depth.js",
-    "--screen-info={ label='Screen' devicePixelRatio=3.0 colorDepth=32 }")
+HEADLESS_PROTOCOL_TEST(RequestFullscreen, "sanity/request-fullscreen.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    RequestFullscreen,
-    "sanity/request-fullscreen.js",
-    "--screen-info={ 800x600 } --window-size=400,200")
+HEADLESS_PROTOCOL_TEST(WindowOpenOnSecondaryScreen,
+                       "sanity/window-open-on-secondary-screen.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    WindowOpenOnSecondaryScreen,
-    "sanity/window-open-on-secondary-screen.js",
-    "--screen-info={ label='1st screen' }{ label='2nd screen' }")
+HEADLESS_PROTOCOL_TEST(RequestFullscreenOnSecondaryScreen,
+                       "sanity/request-fullscreen-on-secondary-screen.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    RequestFullscreenOnSecondaryScreen,
-    "sanity/request-fullscreen-on-secondary-screen.js",
-    "--screen-info={ label='1st screen' }{ 600x800 label='2nd screen' }")
+HEADLESS_PROTOCOL_TEST(ScreenRotationSecondaryScreen,
+                       "sanity/screen-rotation-secondary-screen.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    ScreenRotationSecondaryScreen,
-    "sanity/screen-rotation-secondary-screen.js",
-    "--screen-info={ label='1st screen' }{ 600x800 label='2nd screen' }")
+HEADLESS_PROTOCOL_TEST(MoveWindowBetweenScreens,
+                       "sanity/move-window-between-screens.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    MoveWindowBetweenScreens,
-    "sanity/move-window-between-screens.js",
-    "--screen-info={label='#1'}{label='#2'}{0,600 label='#3'}{label='#4'}")
+HEADLESS_PROTOCOL_TEST(CreateTargetSecondaryScreen,
+                       "sanity/create-target-secondary-screen.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    CreateTargetSecondaryScreen,
-    "sanity/create-target-secondary-screen.js",
-    "--screen-info={label='#1'}{label='#2'}")
+HEADLESS_PROTOCOL_TEST(CreateTargetWindowState,
+                       "sanity/create-target-window-state.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    CreateTargetWindowState,
-    "sanity/create-target-window-state.js",
-    "--screen-info={1600x1200}")
+HEADLESS_PROTOCOL_TEST(MultipleScreenDetails,
+                       "sanity/multiple-screen-details.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    MultipleScreenDetails,
-    "sanity/multiple-screen-details.js",
-    "--screen-info={label='#1'}{600x800 label='#2'}")
+HEADLESS_PROTOCOL_TEST(WindowOpenPopupPlacement,
+                       "sanity/window-open-popup-placement.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    WindowOpenPopupPlacement,
-    "sanity/window-open-popup-placement.js",
-    "--screen-info={1600x1200}")
+HEADLESS_PROTOCOL_TEST(WindowSizeSwitchHandling,
+                       "sanity/window-size-switch-handling.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    WindowSizeSwitchHandling,
-    "sanity/window-size-switch-handling.js",
-    "--screen-info={1600x1200} --window-size=700,500")
+HEADLESS_PROTOCOL_TEST(WindowSizeSwitchLargerThanScreen,
+                       "sanity/window-size-switch-larger-than-screen.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    WindowSizeSwitchLargerThanScreen,
-    "sanity/window-size-switch-larger-than-screen.js",
-    "--screen-info={800x600} --window-size=1600,1200")
+HEADLESS_PROTOCOL_TEST(WindowScreenAvail, "sanity/window-screen-avail.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    WindowScreenAvail,
-    "sanity/window-screen-avail.js",
-    "--screen-info={800x600"
-    " workAreaLeft=10 workAreaRight=90"
-    " workAreaTop=20 workAreaBottom=80}")
+HEADLESS_PROTOCOL_TEST(WindowStateTransitions,
+                       "sanity/window-state-transitions.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    WindowStateTransitions,
-    "sanity/window-state-transitions.js",
-    "--screen-info={1600x1200}")
+HEADLESS_PROTOCOL_TEST(WindowZoomOnSecondaryScreen,
+                       "sanity/window-zoom-on-secondary-screen.js")
 
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    WindowZoomOnSecondaryScreen,
-    "sanity/window-zoom-on-secondary-screen.js",
-    "--screen-info={1600x1200}{1200x1600}")
-
-HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    WindowZoomSizeMatchesWorkArea,
-    "sanity/window-zoom-size-matches-work-area.js",
-    "--screen-info={800x600 "
-    " workAreaLeft=10 workAreaRight=90"
-    " workAreaTop=20 workAreaBottom=80}")
+HEADLESS_PROTOCOL_TEST(WindowZoomSizeMatchesWorkArea,
+                       "sanity/window-zoom-size-matches-work-area.js")
 
 }  // namespace headless
