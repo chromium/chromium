@@ -597,55 +597,68 @@ export class AudioWaveform extends ReactiveLitElement {
       (_, i) => i + startIdx,
     );
 
-    return repeat(
-      idxRange,
-      (i) => i,
-      (i) => {
-        const ret: RenderResult[] = [];
+    const toRenderBars: Array<{
+      idx: number,
+      rect: Rect,
+      classes: Record<string, boolean>,
+    }> = [];
+    const toRenderSpeakerLabelRanges: SpeakerLabelRange[] = [];
 
-        const val = assertExists(this.values.array[i]);
-        const rect = this.getBarLocation(
-          i,
-          val,
-          BAR_MIN_HEIGHT,
-          Math.min(viewBox.height, BAR_MAX_HEIGHT),
-        );
-        if (rect.x + rect.width < viewBox.x ||
-            rect.x > viewBox.x + viewBox.width) {
-          return nothing;
+    for (const i of idxRange) {
+      const val = assertExists(this.values.array[i]);
+      const rect = this.getBarLocation(
+        i,
+        val,
+        BAR_MIN_HEIGHT,
+        Math.min(viewBox.height, BAR_MAX_HEIGHT),
+      );
+      if (rect.x + rect.width < viewBox.x ||
+          rect.x > viewBox.x + viewBox.width) {
+        continue;
+      }
+      const classes: Record<string, boolean> = {
+        future: this.isAfterCurrentTime(i),
+      };
+      const range = getSpeakerLabelRange(i);
+
+      if (range !== null) {
+        if (!currentSpeakerLabelRangeRendered) {
+          toRenderSpeakerLabelRanges.push(range);
+          currentSpeakerLabelRangeRendered = true;
         }
-        const classes: Record<string, boolean> = {
-          future: this.isAfterCurrentTime(i),
-        };
-        const range = getSpeakerLabelRange(i);
 
-        if (range !== null) {
-          if (!currentSpeakerLabelRangeRendered) {
-            ret.push(
-              this.renderSpeakerRange(
-                this.speakerLabelInfo.value.speakerLabels,
-                range,
-                viewBox,
-              ),
-            );
-            currentSpeakerLabelRangeRendered = true;
-          }
+        classes[getSpeakerLabelClass(range.speakerLabelIndex)] = true;
+      } else {
+        classes['no-speaker'] = true;
+      }
+      toRenderBars.push({idx: i, rect, classes});
+    }
 
-          classes[getSpeakerLabelClass(range.speakerLabelIndex)] = true;
-        } else {
-          classes['no-speaker'] = true;
-        }
-        ret.push(svg`<rect
+    return [
+      repeat(
+        toRenderSpeakerLabelRanges,
+        ({startBarIdx}) => startBarIdx,
+        (range) => this.renderSpeakerRange(
+          this.speakerLabelInfo.value.speakerLabels,
+          range,
+          viewBox,
+        ),
+      ),
+      repeat(
+        toRenderBars,
+        ({idx}) => idx,
+        ({rect, classes}) => {
+          return svg`<rect
           x=${rect.x}
           y=${rect.y}
           width=${rect.width}
           height=${rect.height}
           rx=${rect.width / 2}
           class="bar ${classMap(classes)}"
-        />`);
-        return ret;
-      },
-    );
+        />`;
+        },
+      ),
+    ];
   }
 
   private renderSvgContent(viewBox: Rect|null) {
