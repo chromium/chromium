@@ -5,35 +5,47 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
  * #scheme=relative
+ * #include=cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
 :host {
   color: var(--cr-primary-text-color);
-  padding: 8px 12px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow-y: scroll;
+  padding: 8px 12px;
+}
+
+#control-container {
+  background-color: var(--cr-card-background-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: -8px;
+}
+
+#status-container {
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+  font-weight: bold;
+  color: var(--google-grey-700);
 }
 
 #action-panel {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 16px;
 }
 
 #config-container {
   text-overflow: ellipsis;
   overflow: hidden;
-}
-
-#status-container {
-  display: flex;
-  align-items: center;
-  margin-left: 20px;
-  font-weight: bold;
-  color: var(--google-grey-700);
+  min-height: 1.25em;
 }
 
 .status-circle {
@@ -60,15 +72,23 @@
   background-color: var(--google-orange-700);
 }
 
+.card {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  max-width: var(--card-max-width);
+  margin: 8px 0;
+}
+
 .category-grid {
   display: grid;
   /* Define column templates.
      - 80px for the checkbox
      - 1fr for the name (takes up 1 fraction of the remaining space)
      - 1fr for the tags
-     - 4fr for the description (takes up 2x the space of name/tags)
+     - 4fr for the description (takes up 4x the space of name/tags)
   */
-  grid-template-columns: 80px 1fr 1fr 4fr;
+  grid-template-columns: 40px 1fr 1fr 4fr;
   gap: 8px 16px;
   align-items: start;
 }
@@ -86,4 +106,8 @@
     for their layout instructions.
   */
   display: contents;
+}
+
+#expanded-content {
+  padding: 0 12px 8px;
 }

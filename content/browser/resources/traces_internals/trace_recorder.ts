@@ -4,6 +4,8 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
+import '//resources/cr_elements/cr_collapse/cr_collapse.js';
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from '//resources/js/assert.js';
@@ -51,6 +53,7 @@ export class TraceRecorderElement extends CrLitElement {
       tracingState: {type: String},
       traceCategories: {type: Array},
       trackEventConfig: {type: Object},
+      categoriesExpanded_: {type: Boolean},
     };
   }
 
@@ -69,6 +72,7 @@ export class TraceRecorderElement extends CrLitElement {
   protected accessor tracingState: TracingState = TracingState.IDLE;
   protected accessor traceCategories: TraceCategory[] = [];
   protected accessor trackEventConfig: TrackEventConfig|undefined;
+  protected accessor categoriesExpanded_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -157,6 +161,10 @@ export class TraceRecorderElement extends CrLitElement {
     this.downloadData_(trace);
   }
 
+  protected onCategoriesExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.categoriesExpanded_ = e.detail.value;
+  }
+
   protected isEnabled(categoryName: string): boolean {
     if (!this.trackEventConfig?.enabledCategories) {
       return false;
@@ -210,8 +218,13 @@ export class TraceRecorderElement extends CrLitElement {
   private async loadTraceCategories_(): Promise<void> {
     const {categories} =
         await this.browserProxy_.handler.getTrackEventCategories();
+    const disabledPrefix = 'disabled-by-default-';
     this.traceCategories =
-        categories.filter((category: TraceCategory) => !category.isGroup);
+        categories.filter((category: TraceCategory) => !category.isGroup)
+            .sort(
+                (a, b) =>
+                    a.name.replace(disabledPrefix, '')
+                        .localeCompare(b.name.replace(disabledPrefix, '')));
   }
 
   // Decodes a Base64 string into a Uint8Array.

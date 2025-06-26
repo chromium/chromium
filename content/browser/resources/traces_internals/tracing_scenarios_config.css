@@ -19,14 +19,6 @@
   color: var(--cr-secondary-text-color);
 }
 
-.label {
-  font-size: 1.2em;
-}
-
-.config-row {
-  padding: 4px 0;
-}
-
 .action-panel {
   display: flex;
   justify-content: flex-end;
