@@ -13,6 +13,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/share_extension/account_picker_table.h"
 #import "ios/chrome/share_extension/share_extension_delegate.h"
 
 namespace {
@@ -64,6 +65,7 @@ CGFloat const kAvatarImageDimension = 30.0;
   NSString* _appName;
   SharedItemType _sharedItemType;
   NSArray<AccountInfo*>* _accounts;
+  UISheetPresentationControllerDetent* _customDetent;
 }
 
 - (instancetype)init {
@@ -150,8 +152,16 @@ CGFloat const kAvatarImageDimension = 30.0;
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  // TODO(crbug.com/425589952): Handle account selection and push the accounts
-  // VC.
+  AccountPickerTable* accountPickerView =
+      [[AccountPickerTable alloc] initWithAccounts:_accounts
+                                   selectedAccount:self.selectedAccountInfo];
+  accountPickerView.customDetent = _customDetent;
+  UINavigationController* presentingNavController =
+      [[UINavigationController alloc]
+          initWithRootViewController:accountPickerView];
+  [self presentViewController:presentingNavController
+                     animated:YES
+                   completion:nil];
 }
 
 #pragma mark - Public
@@ -297,11 +307,10 @@ CGFloat const kAvatarImageDimension = 30.0;
       id<UISheetPresentationControllerDetentResolutionContext> context) {
     return bottomSheetHeight;
   };
-  UISheetPresentationControllerDetent* customDetent =
-      [UISheetPresentationControllerDetent
-          customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
-                            resolver:resolver];
-  presentationController.detents = @[ customDetent ];
+  _customDetent = [UISheetPresentationControllerDetent
+      customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
+                        resolver:resolver];
+  presentationController.detents = @[ _customDetent ];
   presentationController.selectedDetentIdentifier =
       kCustomMinimizedDetentIdentifier;
 }
