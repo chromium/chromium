@@ -28,6 +28,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.ChromeImageView;
@@ -41,6 +42,8 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
 public class ProfileDataCacheWithBadgeRenderTest {
+    private static final long NATIVE_IDENTITY_MANAGER = 10002L;
+
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -56,6 +59,7 @@ public class ProfileDataCacheWithBadgeRenderTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
+    private IdentityManager mIdentityManager;
     private FrameLayout mContentView;
     private ImageView mImageView;
     private ProfileDataCache mProfileDataCache;
@@ -71,6 +75,11 @@ public class ProfileDataCacheWithBadgeRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    // TODO(crbug.com/374683682): Use a fake IdentityManager as ProfileDataCache
+                    // will be updated to fetch accounts from IdentityManager
+                    mIdentityManager =
+                            IdentityManager.create(
+                                    NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
                     mContentView = new FrameLayout(sActivity);
                     mImageView = new ChromeImageView(sActivity);
                     mContentView.addView(
@@ -141,7 +150,7 @@ public class ProfileDataCacheWithBadgeRenderTest {
                     mProfileDataCache =
                             badgeResId != 0
                                     ? ProfileDataCache.createWithDefaultImageSize(
-                                            sActivity, badgeResId)
+                                            sActivity, mIdentityManager, badgeResId)
                                     : ProfileDataCache.createWithoutBadge(
                                             sActivity, R.dimen.user_picture_size);
                 });

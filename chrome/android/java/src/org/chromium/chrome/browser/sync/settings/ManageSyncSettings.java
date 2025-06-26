@@ -592,7 +592,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 (SyncErrorCardPreference) findPreference(PREF_SYNC_ERROR_CARD_PREFERENCE);
         mSyncErrorCardPreference.initialize(
                 ProfileDataCache.createWithDefaultImageSize(
-                        getContext(), R.drawable.ic_sync_badge_error_20dp),
+                        getContext(),
+                        IdentityServicesProvider.get().getIdentityManager(getProfile()),
+                        R.drawable.ic_sync_badge_error_20dp),
                 profile,
                 this);
     }

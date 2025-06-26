@@ -38,6 +38,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -131,13 +132,20 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     private final Map<String, DisplayableProfileData> mCachedProfileData = new HashMap<>();
 
     // TODO(crbug.com/342205162): Require native for ProfileDataCache creation.
+    /**
+     * @deprecated Use the constructor below which accepts {@link IdentityManager}
+     */
     @VisibleForTesting
+    @Deprecated
     ProfileDataCache(Context context, @Px int imageSize, @Nullable BadgeConfig badgeConfig) {
+
         mContext = context;
         mImageSize = imageSize;
         mDefaultBadgeConfig = badgeConfig;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
-        // TODO(crbug.com/341948846): Remove AccountInfoService and simplify this.
+        // TODO(crbug.com/341948846): Remove AccountInfoService and update
+        // populateCache/populateCacheForAllAccounts to use identityManager to get the list of
+        // accounts
         Promise<AccountInfoService> accountInfoServicePromise =
                 AccountInfoServiceProvider.getPromise();
         if (accountInfoServicePromise.isFulfilled()) {
@@ -145,6 +153,19 @@ public class ProfileDataCache implements AccountInfoService.Observer {
         } else {
             accountInfoServicePromise.then(this::populateCache);
         }
+    }
+
+    @VisibleForTesting
+    ProfileDataCache(
+            Context context,
+            IdentityManager identityManager,
+            @Px int imageSize,
+            @Nullable BadgeConfig badgeConfig) {
+        this(context, imageSize, badgeConfig);
+        // TODO(crbug.com/341948846): Remove AccountInfoService and update
+        // populateCache/populateCacheForAllAccounts to use identityManager to get the list of
+        // accounts
+        assert identityManager != null;
     }
 
     /**
@@ -168,9 +189,10 @@ public class ProfileDataCache implements AccountInfoService.Observer {
      *     per-account badges?
      */
     public static ProfileDataCache createWithDefaultImageSize(
-            Context context, @DrawableRes int badgeResId) {
+            Context context, IdentityManager identityManager, @DrawableRes int badgeResId) {
         return new ProfileDataCache(
                 context,
+                identityManager,
                 context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
                 createDefaultSizeChildAccountBadgeConfig(context, badgeResId));
     }
