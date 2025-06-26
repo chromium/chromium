@@ -164,6 +164,22 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
   return info;
 }
 
+// Returns the initiator URL to use for the given `initiator_origin`. This
+// depends on whether the origin is present, as well as if it's opaque -- in the
+// case of an opaque origin, this falls back to the precursor origin.
+GURL GetInitiatorUrl(const std::optional<url::Origin>& initiator_origin) {
+  GURL initiator_url;
+  if (initiator_origin) {
+    initiator_url =
+        initiator_origin->opaque()
+            ? initiator_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL()
+            : initiator_origin->GetURL();
+  }
+  return initiator_url;
+}
+
+// Shared implementation for `IsResourceWebAccessible` and
+// `IsResourceWebAccessibleRedirect`.
 bool IsResourceWebAccessibleImpl(
     const Extension& extension,
     const GURL& target_url,
@@ -174,15 +190,7 @@ bool IsResourceWebAccessibleImpl(
     return false;
   }
 
-  // Set the initiator_url.
-  GURL initiator_url;
-  if (initiator_origin) {
-    initiator_url =
-        initiator_origin->opaque()
-            ? initiator_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL()
-            : initiator_origin->GetURL();
-  }
-
+  GURL initiator_url = GetInitiatorUrl(initiator_origin);
   std::string relative_path = target_url.path();
 
   // Look for the first match in the array of web accessible resources.
