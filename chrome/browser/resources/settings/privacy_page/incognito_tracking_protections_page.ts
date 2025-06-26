@@ -46,7 +46,7 @@ export class IncognitoTrackingProtectionsPageElement extends
             loadTimeData.getBoolean('isIpProtectionDisabledForEnterprise'),
       },
 
-      // Mock pref to show disabled toggle with enterprise policy indicator.
+      // Mock pref to show disabled toggle for IPP with enterprise indicator.
       ipProtectionDisabledForEnterprisePref_: {
         type: Object,
         value() {
@@ -58,6 +58,20 @@ export class IncognitoTrackingProtectionsPageElement extends
           };
         },
       },
+
+      // Mock pref for the block 3PCs toggle as all `settings-toggle-button`
+      // elements must have an associated pref. The toggle is disabled through
+      // HTML rather than the pref as there is no `controlledBy` value for
+      // Chrome-based enforcement.
+      block3pcsIncognitoPref_: {
+        type: Object,
+        value() {
+          return {
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: true,
+          };
+        },
+      },
     };
   }
 
@@ -65,6 +79,8 @@ export class IncognitoTrackingProtectionsPageElement extends
   declare private isFingerprintingProtectionAvailable_: boolean;
   declare private isIpProtectionDisabledForEnterprise_: boolean;
   declare private ipProtectionDisabledForEnterprisePref_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare private block3pcsIncognitoPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
