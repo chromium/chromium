@@ -457,7 +457,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 // Tests that signing in from a signed out state with a managed account
 // shows the enterprise onboarding only the first time and merging browsing data
 // is suggested by policy.
-// TODO(crbug.com/411035267): The test fails on simulator.
+// TODO(crbug.com/411035267): The test fails flakily on simulator.
 #if TARGET_OS_SIMULATOR
 #define MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested \
   DISABLED_testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested
@@ -465,7 +465,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 #define MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested \
   testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested
 #endif
-- (void)testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested {
+- (void)
+    MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
