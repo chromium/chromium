@@ -53,7 +53,7 @@ class CONTENT_EXPORT ServiceWorkerCacheStorageMatcher {
 
  private:
   void FailFallback();
-  void DidMatch(blink::mojom::MatchResultPtr result);
+  void DidMatch(blink::mojom::CacheStorage::MatchResult result);
   void RunCallback(blink::ServiceWorkerStatusCode status,
                    ServiceWorkerFetchDispatcher::FetchEventResult fetch_result,
                    blink::mojom::FetchAPIResponsePtr response,

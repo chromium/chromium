@@ -2805,16 +2805,16 @@ class CacheStorageSideDataSizeChecker
   void OnCacheStorageCacheMatchCallback(
       int* result,
       base::OnceClosure continuation,
-      blink::mojom::MatchResultPtr match_result) {
-    if (match_result->is_status()) {
-      ASSERT_EQ(match_result->get_status(), CacheStorageError::kErrorNotFound);
+      blink::mojom::CacheStorage::MatchResult match_result) {
+    if (!match_result.has_value()) {
+      ASSERT_EQ(match_result.error(), CacheStorageError::kErrorNotFound);
       *result = 0;
       std::move(continuation).Run();
       return;
     }
-    ASSERT_TRUE(match_result->is_response());
+    ASSERT_TRUE(match_result.value()->is_response());
 
-    auto& response = match_result->get_response();
+    auto& response = match_result.value()->get_response();
     ASSERT_TRUE(response->side_data_blob);
 
     auto blob_handle = base::MakeRefCounted<storage::BlobHandle>(
@@ -6883,14 +6883,14 @@ class CacheStorageDataChecker
   void OnCacheStorageCacheMatchCallback(
       Status* result,
       base::OnceClosure continuation,
-      blink::mojom::MatchResultPtr match_result) {
-    if (match_result->is_status()) {
-      ASSERT_EQ(match_result->get_status(), CacheStorageError::kErrorNotFound);
+      blink::mojom::CacheStorage::MatchResult match_result) {
+    if (!match_result.has_value()) {
+      ASSERT_EQ(match_result.error(), CacheStorageError::kErrorNotFound);
       *result = Status::kNotExist;
       std::move(continuation).Run();
       return;
     }
-    ASSERT_TRUE(match_result->is_response());
+    ASSERT_TRUE(match_result.value()->is_response());
     *result = Status::kExist;
     std::move(continuation).Run();
   }

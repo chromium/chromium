@@ -192,11 +192,13 @@ TEST_F(CacheStorageContextTest, GetDefaultBucketError) {
       blink::mojom::FetchAPIRequest::New(), std::move(options),
       /*in_related_fetch_event=*/false, /*in_range_fetch_event=*/false,
       /*trace_id=*/0,
-      base::BindLambdaForTesting([&](blink::mojom::MatchResultPtr result) {
-        EXPECT_EQ(result->get_status(),
-                  blink::mojom::CacheStorageError::kErrorStorage);
-        loop_4.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](blink::mojom::CacheStorage::MatchResult result) {
+            EXPECT_FALSE(result.has_value());
+            EXPECT_EQ(result.error(),
+                      blink::mojom::CacheStorageError::kErrorStorage);
+            loop_4.Quit();
+          }));
   loop_4.Run();
 
   // CacheStorage::Open

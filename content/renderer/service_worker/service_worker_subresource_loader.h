@@ -217,7 +217,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   bool MaybeStartAutoPreload();
 
   void DidCacheStorageMatch(base::TimeTicks event_dispatch_time,
-                            blink::mojom::MatchResultPtr result);
+                            blink::mojom::CacheStorage::MatchResult result);
 
   void MaybeDeleteThis();
   bool IsResponseAlreadyCommittedByRaceNetworkRequest();

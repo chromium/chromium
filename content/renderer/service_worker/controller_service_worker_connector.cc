@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "content/common/service_worker/service_worker_router_evaluator.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 
@@ -157,8 +158,8 @@ void ControllerServiceWorkerConnector::CallCacheStorageMatch(
     blink::mojom::FetchAPIRequestPtr request,
     blink::mojom::CacheStorage::MatchCallback callback) {
   if (!cache_storage_ || !cache_storage_.is_bound()) {
-    std::move(callback).Run(blink::mojom::MatchResult::NewStatus(
-        blink::mojom::CacheStorageError::kErrorStorage));
+    std::move(callback).Run(
+        base::unexpected(blink::mojom::CacheStorageError::kErrorStorage));
     return;
   }
   int64_t trace_id = blink::cache_storage::CreateTraceId();

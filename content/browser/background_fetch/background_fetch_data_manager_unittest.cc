@@ -800,17 +800,19 @@ class BackgroundFetchDataManagerTest
 
   void DidMatchCache(base::OnceClosure quit_closure,
                      bool* out_result,
-                     blink::mojom::MatchResultPtr result) {
+                     blink::mojom::CacheStorage::MatchResult result) {
     *out_result = false;
-
-    // This counts as matched if an entry was found in the cache which
-    // also has a non-empty response.
-    if (result->is_eager_response()) {
-      auto& response = result->get_eager_response()->response;
-      *out_result = !response.is_null() && !response->url_list.empty();
-    } else if (result->is_response()) {
-      auto& response = result->get_response();
-      *out_result = !response.is_null() && !response->url_list.empty();
+    if (result.has_value()) {
+      auto& match_response = result.value();
+      // This counts as matched if an entry was found in the cache which
+      // also has a non-empty response.
+      if (match_response->is_eager_response()) {
+        auto& response = match_response->get_eager_response()->response;
+        *out_result = !response.is_null() && !response->url_list.empty();
+      } else {
+        auto& response = match_response->get_response();
+        *out_result = !response.is_null() && !response->url_list.empty();
+      }
     }
     std::move(quit_closure).Run();
   }

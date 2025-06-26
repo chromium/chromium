@@ -89,18 +89,11 @@ struct EagerResponse {
   pending_receiver<BlobReaderClient> client_receiver;
 };
 
-// Result of Match for both interfaces CacheStorage and CacheStorageCache
-// method. |status| is only set if there is a failure.
-union MatchResult {
-  CacheStorageError status;
+// Successful Match for both interfaces CacheStorage and CacheStorageCache
+// method.
+union MatchResponse {
   blink.mojom.FetchAPIResponse response;
   EagerResponse eager_response;
-};
-
-// Result of MatchAll. |status| is only set if there is a failure.
-union MatchAllResult {
-  CacheStorageError status;
-  array<blink.mojom.FetchAPIResponse> responses;
 };
 
 struct CacheEntry {
@@ -132,13 +125,13 @@ interface CacheStorageCache {
   // range header.
   Match(blink.mojom.FetchAPIRequest request, CacheQueryOptions query_options,
         bool in_related_fetch_event, bool in_range_fetch_event, int64 trace_id)
-      => (MatchResult result);
+      => result<MatchResponse, CacheStorageError>;
 
   // Returns all cached responses that match |request| according to options
   // specified on |query_options|.
   MatchAll(blink.mojom.FetchAPIRequest? request,
            CacheQueryOptions query_options, int64 trace_id)
-      => (MatchAllResult result);
+      => result<array<blink.mojom.FetchAPIResponse>, CacheStorageError>;
 
   // Returns all pairs of cached (request, response) entries that match
   // |request| according to options specified on |query_options|.
@@ -186,7 +179,7 @@ interface CacheStorage {
   // FetchEvent handler with a request range header.
   Match(blink.mojom.FetchAPIRequest request, MultiCacheQueryOptions match_options,
         bool in_related_fetch_event, bool in_range_fetch_event, int64 trace_id)
-      => (MatchResult result);
+      => result<MatchResponse, CacheStorageError>;
 
   // Opens and returns a mojo interface to a cache, it creates if doesn't exist.
   Open(mojo_base.mojom.String16 cache_name, int64 trace_id) => (OpenResult result);

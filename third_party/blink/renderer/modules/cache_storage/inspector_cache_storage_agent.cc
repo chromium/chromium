@@ -300,12 +300,12 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
           WTF::BindOnce(
               [](scoped_refptr<ResponsesAccumulator> accumulator,
                  mojom::blink::FetchAPIRequestPtr request,
-                 mojom::blink::MatchResultPtr result) {
-                if (result->is_status()) {
-                  accumulator->SendFailure(result->get_status());
+                 mojom::blink::CacheStorageCache::MatchResult result) {
+                if (!result.has_value()) {
+                  accumulator->SendFailure(result.error());
                 } else {
-                  accumulator->AddRequestResponsePair(request,
-                                                      result->get_response());
+                  accumulator->AddRequestResponsePair(
+                      request, result.value()->get_response());
                 }
               },
               scoped_refptr<ResponsesAccumulator>(this),
@@ -928,16 +928,16 @@ void InspectorCacheStorageAgent::requestCachedResponse(
           [](scoped_refptr<RequestCallbackWrapper<
                  RequestCachedResponseCallback>> callback_wrapper,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-             mojom::blink::MatchResultPtr result) {
-            if (result->is_status()) {
+             mojom::blink::CacheStorage::MatchResult result) {
+            if (!result.has_value()) {
               callback_wrapper->SendFailure(ProtocolResponse::ServerError(
                   String::Format("Unable to read cached response: %s",
-                                 CacheStorageErrorString(result->get_status()))
+                                 CacheStorageErrorString(result.error()))
                       .Utf8()));
             } else {
               std::unique_ptr<protocol::DictionaryValue> headers =
                   protocol::DictionaryValue::create();
-              if (!result->get_response()->blob) {
+              if (!result.value()->get_response()->blob) {
                 callback_wrapper->SendSuccess(CachedResponse::create()
                                                   .setBody(protocol::Binary())
                                                   .build());
@@ -945,7 +945,8 @@ void InspectorCacheStorageAgent::requestCachedResponse(
               }
               CachedResponseFileReaderLoaderClient::Load(
                   std::move(task_runner),
-                  std::move(result->get_response()->blob), callback_wrapper);
+                  std::move(result.value()->get_response()->blob),
+                  callback_wrapper);
             }
           },
           std::move(callback_wrapper), std::move(task_runner)));

@@ -191,41 +191,42 @@ void DeleteComplete(mojom::blink::CacheStorageError result,
 }
 
 void MatchComplete(int64_t trace_id,
-                   mojom::blink::MatchResultPtr result,
+                   mojom::blink::CacheStorage::MatchResult result,
                    CacheStorageBlobClientList* blob_client_list,
                    ScriptPromiseResolver<Response>* resolver) {
-  if (result->is_status()) {
+  if (!result.has_value()) {
     TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::MatchImpl::Callback",
                            TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
-                           "status",
-                           CacheStorageTracedValue(result->get_status()));
-    switch (result->get_status()) {
+                           "status", CacheStorageTracedValue(result.error()));
+    switch (result.error()) {
       case mojom::CacheStorageError::kErrorNotFound:
       case mojom::CacheStorageError::kErrorStorage:
       case mojom::CacheStorageError::kErrorCacheNameNotFound:
         resolver->Resolve();
         break;
       default:
-        RejectCacheStorageWithError(resolver, result->get_status());
+        RejectCacheStorageWithError(resolver, result.error());
         break;
     }
   } else {
     ScriptState::Scope scope(resolver->GetScriptState());
-    if (result->is_eager_response()) {
+    auto& match_response = result.value();
+    if (match_response->is_eager_response()) {
       TRACE_EVENT_WITH_FLOW1(
           "CacheStorage", "CacheStorage::MatchImpl::Callback",
           TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "eager_response",
-          CacheStorageTracedValue(result->get_eager_response()->response));
+          CacheStorageTracedValue(
+              match_response->get_eager_response()->response));
       resolver->Resolve(CreateEagerResponse(
-          resolver->GetScriptState(), std::move(result->get_eager_response()),
-          blob_client_list));
+          resolver->GetScriptState(),
+          std::move(match_response->get_eager_response()), blob_client_list));
     } else {
       TRACE_EVENT_WITH_FLOW1(
           "CacheStorage", "CacheStorage::MatchImpl::Callback",
           TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "response",
-          CacheStorageTracedValue(result->get_response()));
+          CacheStorageTracedValue(match_response->get_response()));
       resolver->Resolve(Response::Create(resolver->GetScriptState(),
-                                         *result->get_response()));
+                                         *match_response->get_response()));
     }
   }
 }
@@ -703,7 +704,7 @@ void CacheStorage::MatchImplHelper(
           [](base::TimeTicks start_time, const MultiCacheQueryOptions* options,
              int64_t trace_id, CacheStorage* self,
              ScriptPromiseResolver<Response>* resolver,
-             mojom::blink::MatchResultPtr result) {
+             mojom::blink::CacheStorage::MatchResult result) {
             base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
             if (!options->hasCacheName() || options->cacheName().empty()) {
               base::UmaHistogramLongTimes(
