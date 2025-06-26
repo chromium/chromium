@@ -25,10 +25,15 @@ using testing::Pointee;
 namespace {
 class AutofillFormDevtoolsProtocolTest : public DevToolsProtocolTestBase {
  public:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
   void NavigateToFormPageAndEnableAudits() {
     Attach();
-    GURL test_url = content::GetTestUrl(
-        "autofill", "autofill_form_devtools_issues_test.html");
+    GURL test_url = embedded_test_server()->GetURL(
+        "/autofill/autofill_form_devtools_issues_test.html");
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
