@@ -320,7 +320,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // Universal Install / Open Web APK
         if (shouldShowHomeScreenMenuItem(
-                isNativePage, isFileScheme, isContentScheme, isIncgnitoShowing(), url)) {
+                isNativePage, isFileScheme, isContentScheme, isIncognitoShowing(), url)) {
             modelList.add(buildAddToHomescreenListItem(currentTab, shouldShowIconBeforeItem()));
         }
 
@@ -469,12 +469,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.ic_add_box_rounded_corner : 0));
     }
 
-    private boolean isIncgnitoShowing() {
+    private boolean isIncognitoShowing() {
         return mTabModelSelector.getCurrentModel().isIncognito();
     }
 
     private boolean isIncognitoReauthShowing() {
-        return isIncgnitoShowing()
+        return isIncognitoShowing()
                 && (mIncognitoReauthController != null)
                 && mIncognitoReauthController.isReauthPageShowing();
     }
@@ -585,7 +585,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private boolean shouldShowRecentTabsItem() {
-        return !isIncgnitoShowing();
+        return !isIncognitoShowing();
     }
 
     private MVCListAdapter.ListItem buildRecentTabsItem() {
@@ -706,21 +706,24 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private MVCListAdapter.ListItem buildCloseAllTabsItem() {
-        if (isIncgnitoShowing()) {
-            return new MVCListAdapter.ListItem(
-                    AppMenuHandler.AppMenuItemType.STANDARD,
+        final PropertyModel model;
+        if (isIncognitoShowing()) {
+            model =
                     buildModelForStandardMenuItem(
                             R.id.close_all_incognito_tabs_menu_id,
                             R.string.menu_close_all_incognito_tabs,
-                            shouldShowIconBeforeItem() ? R.drawable.ic_close_all_tabs : 0));
+                            shouldShowIconBeforeItem() ? R.drawable.ic_close_all_tabs : 0);
+            model.set(
+                    AppMenuItemProperties.ENABLED, mTabModelSelector.getModel(true).getCount() > 0);
         } else {
-            return new MVCListAdapter.ListItem(
-                    AppMenuHandler.AppMenuItemType.STANDARD,
+            model =
                     buildModelForStandardMenuItem(
                             R.id.close_all_tabs_menu_id,
                             R.string.menu_close_all_tabs,
-                            shouldShowIconBeforeItem() ? R.drawable.btn_close_white : 0));
+                            shouldShowIconBeforeItem() ? R.drawable.btn_close_white : 0);
+            model.set(AppMenuItemProperties.ENABLED, mTabModelSelector.getTotalTabCount() > 0);
         }
+        return new MVCListAdapter.ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model);
     }
 
     private boolean shouldShowTinkerTank() {
@@ -769,7 +772,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
      */
     private boolean shouldShowNtpCustomizations(@Nullable Tab currentTab) {
         return ChromeFeatureList.sNewTabPageCustomization.isEnabled()
-                && !isIncgnitoShowing()
+                && !isIncognitoShowing()
                 && currentTab != null
                 && UrlUtilities.isNtpUrl(currentTab.getUrl());
     }
@@ -794,7 +797,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private boolean shouldShowQuickDeleteItem() {
-        return !isIncgnitoShowing();
+        return !isIncognitoShowing();
     }
 
     private MVCListAdapter.ListItem buildQuickDeleteItem() {
@@ -873,7 +876,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return currentTab != null
                 && ChromeFeatureList.sPaintPreviewDemo.isEnabled()
                 && !isNativePage
-                && !isIncgnitoShowing();
+                && !isIncognitoShowing();
     }
 
     private MVCListAdapter.ListItem buildPaintPreviewItem(boolean isNativePage, Tab currentTab) {
