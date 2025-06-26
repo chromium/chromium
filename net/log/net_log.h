@@ -305,7 +305,7 @@ class NET_EXPORT NetLog {
 
   // Same as above but takes a base::Time. Should not be used if precise
   // timestamps are desired, but is suitable for e.g. expiration times.
-  static std::string TimeToString(const base::Time& time);
+  static std::string TimeToString(base::Time time);
 
   // Returns a dictionary that maps event type symbolic names to their enum
   // values.

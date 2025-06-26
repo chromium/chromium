@@ -43,7 +43,7 @@ class NET_EXPORT UploadFileElementReader : public UploadElementReader {
                           const base::FilePath& path,
                           uint64_t range_offset,
                           uint64_t range_length,
-                          const base::Time& expected_modification_time);
+                          base::Time expected_modification_time);
 
   // Same a above, but takes a FilePath instead.
   // TODO(mmenke): Remove if all consumers can be switched to the first
@@ -52,7 +52,7 @@ class NET_EXPORT UploadFileElementReader : public UploadElementReader {
                           const base::FilePath& path,
                           uint64_t range_offset,
                           uint64_t range_length,
-                          const base::Time& expected_modification_time);
+                          base::Time expected_modification_time);
 
   UploadFileElementReader(const UploadFileElementReader&) = delete;
   UploadFileElementReader& operator=(const UploadFileElementReader&) = delete;
@@ -61,7 +61,7 @@ class NET_EXPORT UploadFileElementReader : public UploadElementReader {
   const base::FilePath& path() const { return path_; }
   uint64_t range_offset() const { return range_offset_; }
   uint64_t range_length() const { return range_length_; }
-  const base::Time& expected_modification_time() const {
+  base::Time expected_modification_time() const {
     return expected_modification_time_;
   }
 

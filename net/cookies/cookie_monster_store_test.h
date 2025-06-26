@@ -133,12 +133,12 @@ class MockPersistentCookieStore : public CookieMonster::PersistentCookieStore {
 std::unique_ptr<CanonicalCookie> BuildCanonicalCookie(
     const GURL& url,
     const std::string& cookie_line,
-    const base::Time& creation_time);
+    base::Time creation_time);
 
 // Helper to build a list of CanonicalCookie*s.
 void AddCookieToList(const GURL& url,
                      const std::string& cookie_line,
-                     const base::Time& creation_time,
+                     base::Time creation_time,
                      std::vector<std::unique_ptr<CanonicalCookie>>* out_list);
 
 // Just act like a backing database.  Keep cookie information from

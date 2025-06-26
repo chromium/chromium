@@ -1150,9 +1150,9 @@ bool HttpResponseHeaders::IsRedirectResponseCode(int response_code) {
 //   freshness_lifetime + stale_while_revalidate > current_age
 //
 ValidationType HttpResponseHeaders::RequiresValidation(
-    const Time& request_time,
-    const Time& response_time,
-    const Time& current_time) const {
+    Time request_time,
+    Time response_time,
+    Time current_time) const {
   FreshnessLifetimes lifetimes = GetFreshnessLifetimes(response_time);
   if (lifetimes.freshness.is_zero() && lifetimes.staleness.is_zero())
     return VALIDATION_SYNCHRONOUS;
@@ -1224,7 +1224,7 @@ HttpResponseHeaders::ParseCacheControlDirectivesForFreshness() const {
 // the |staleness| time, unless it overridden by another directive.
 //
 HttpResponseHeaders::FreshnessLifetimes
-HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
+HttpResponseHeaders::GetFreshnessLifetimes(Time response_time) const {
   FreshnessLifetimes lifetimes;
   // Check for headers that force a response to never be fresh.  For backwards
   // compat, we treat "Pragma: no-cache" as a synonym for "Cache-Control:
@@ -1365,10 +1365,9 @@ HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
 //     resident_time = now - response_time;
 //     current_age = corrected_initial_age + resident_time;
 //
-base::TimeDelta HttpResponseHeaders::GetCurrentAge(
-    const Time& request_time,
-    const Time& response_time,
-    const Time& current_time) const {
+base::TimeDelta HttpResponseHeaders::GetCurrentAge(Time request_time,
+                                                   Time response_time,
+                                                   Time current_time) const {
   // If there is no Date header, then assume that the server response was
   // generated at the time when we received the response.
   Time date_value = GetDateValue().value_or(response_time);

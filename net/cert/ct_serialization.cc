@@ -227,7 +227,7 @@ static bool ReadTimeSinceEpoch(CBS* input, base::Time* output) {
   return true;
 }
 
-static bool WriteTimeSinceEpoch(const base::Time& timestamp, CBB* output) {
+static bool WriteTimeSinceEpoch(base::Time timestamp, CBB* output) {
   base::TimeDelta time_since_epoch = timestamp - base::Time::UnixEpoch();
   return CBB_add_u64(output, time_since_epoch.InMilliseconds());
 }
@@ -252,7 +252,7 @@ bool EncodeTreeLeaf(const MerkleTreeLeaf& leaf, std::string* output) {
   return true;
 }
 
-bool EncodeV1SCTSignedData(const base::Time& timestamp,
+bool EncodeV1SCTSignedData(base::Time timestamp,
                            const std::string& serialized_log_entry,
                            const std::string& extensions,
                            std::string* output) {

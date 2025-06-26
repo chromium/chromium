@@ -12,7 +12,7 @@
 
 namespace net {
 
-bool EncodeTimeAsGeneralizedTime(const base::Time& time,
+bool EncodeTimeAsGeneralizedTime(base::Time time,
                                  bssl::der::GeneralizedTime* generalized_time) {
   return bssl::der::EncodePosixTimeAsGeneralizedTime(
       (time - base::Time::UnixEpoch()).InSecondsFloored(), generalized_time);

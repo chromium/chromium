@@ -524,16 +524,14 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // The time at which the returned response was requested.  For cached
   // responses, this is the last time the cache entry was validated.
-  const base::Time& request_time() const { return response_info_.request_time; }
+  base::Time request_time() const { return response_info_.request_time; }
 
   // The time at which the returned response was generated.  For cached
   // responses, this is the last time the cache entry was validated.
-  const base::Time& response_time() const {
-    return response_info_.response_time;
-  }
+  base::Time response_time() const { return response_info_.response_time; }
 
   // Like response_time, but ignoring revalidations.
-  const base::Time& original_response_time() const {
+  base::Time original_response_time() const {
     return response_info_.original_response_time;
   }
 

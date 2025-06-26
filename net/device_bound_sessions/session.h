@@ -73,9 +73,9 @@ class NET_EXPORT Session {
     return cached_challenge_;
   }
 
-  const base::Time& creation_date() const { return creation_date_; }
+  base::Time creation_date() const { return creation_date_; }
 
-  const base::Time& expiry_date() const { return expiry_date_; }
+  base::Time expiry_date() const { return expiry_date_; }
 
   bool should_defer_when_expired() const { return should_defer_when_expired_; }
 

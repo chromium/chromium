@@ -124,9 +124,7 @@ class NET_EXPORT_PRIVATE AlternativeServiceInfo {
 
   void set_port(uint16_t port) { alternative_service_.port = port; }
 
-  void set_expiration(const base::Time& expiration) {
-    expiration_ = expiration;
-  }
+  void set_expiration(base::Time expiration) { expiration_ = expiration; }
 
   // Sets the advertised versions for QUIC alternative services to a sorted copy
   // of `advertised_versions`.

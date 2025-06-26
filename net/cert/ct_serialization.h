@@ -54,7 +54,7 @@ NET_EXPORT bool EncodeTreeLeaf(const MerkleTreeLeaf& leaf, std::string* output);
 // Returns true if the extensions' length does not exceed
 // kMaxExtensionsLength, false otherwise.
 NET_EXPORT_PRIVATE bool EncodeV1SCTSignedData(
-    const base::Time& timestamp,
+    base::Time timestamp,
     const std::string& serialized_log_entry,
     const std::string& extensions,
     std::string* output);

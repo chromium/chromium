@@ -19,7 +19,7 @@ SignedTreeHead::SignedTreeHead() = default;
 
 SignedTreeHead::SignedTreeHead(
     Version version,
-    const base::Time& timestamp,
+    base::Time timestamp,
     uint64_t tree_size,
     base::span<const uint8_t, kSthRootHashLength> sha256_root_hash,
     const DigitallySigned& signature,

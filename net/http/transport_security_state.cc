@@ -396,7 +396,7 @@ void TransportSecurityState::UpdatePinList(
 void TransportSecurityState::AddHSTSInternal(
     std::string_view host,
     TransportSecurityState::STSState::UpgradeMode upgrade_mode,
-    const base::Time& expiry,
+    base::Time expiry,
     bool include_subdomains) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const std::vector<uint8_t> canonicalized_host = CanonicalizeHost(host);
@@ -424,8 +424,8 @@ void TransportSecurityState::AddHSTSInternal(
 }
 
 void TransportSecurityState::AddHPKPInternal(std::string_view host,
-                                             const base::Time& last_observed,
-                                             const base::Time& expiry,
+                                             base::Time last_observed,
+                                             base::Time expiry,
                                              bool include_subdomains,
                                              const HashValueVector& hashes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -577,14 +577,14 @@ bool TransportSecurityState::AddHSTSHeader(std::string_view host,
 }
 
 void TransportSecurityState::AddHSTS(std::string_view host,
-                                     const base::Time& expiry,
+                                     base::Time expiry,
                                      bool include_subdomains) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AddHSTSInternal(host, STSState::MODE_FORCE_HTTPS, expiry, include_subdomains);
 }
 
 void TransportSecurityState::AddHPKP(std::string_view host,
-                                     const base::Time& expiry,
+                                     base::Time expiry,
                                      bool include_subdomains,
                                      const HashValueVector& hashes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

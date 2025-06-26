@@ -102,7 +102,7 @@ MockPersistentCookieStore::~MockPersistentCookieStore() = default;
 std::unique_ptr<CanonicalCookie> BuildCanonicalCookie(
     const GURL& url,
     const std::string& cookie_line,
-    const base::Time& creation_time) {
+    base::Time creation_time) {
   // Parse the cookie line.
   ParsedCookie pc(cookie_line);
   EXPECT_TRUE(pc.IsValid());
@@ -126,7 +126,7 @@ std::unique_ptr<CanonicalCookie> BuildCanonicalCookie(
 
 void AddCookieToList(const GURL& url,
                      const std::string& cookie_line,
-                     const base::Time& creation_time,
+                     base::Time creation_time,
                      std::vector<std::unique_ptr<CanonicalCookie>>* out_list) {
   std::unique_ptr<CanonicalCookie> cookie(
       BuildCanonicalCookie(url, cookie_line, creation_time));

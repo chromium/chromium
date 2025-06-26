@@ -179,8 +179,8 @@ CanonicalCookie::~CanonicalCookie() = default;
 
 // static
 Time CanonicalCookie::ParseExpiration(const ParsedCookie& pc,
-                                      const Time& current,
-                                      const Time& server_time) {
+                                      Time current,
+                                      Time server_time) {
   // First, try the Max-Age attribute.
   if (pc.MaxAge().has_value()) {
     int64_t max_age = 0;
@@ -267,8 +267,8 @@ Time CanonicalCookie::ParseExpiration(const ParsedCookie& pc,
 
 // static
 base::Time CanonicalCookie::ValidateAndAdjustExpiryDate(
-    const base::Time& expiry_date,
-    const base::Time& creation_date,
+    base::Time expiry_date,
+    base::Time creation_date,
     net::CookieSourceScheme scheme) {
   if (expiry_date.is_null())
     return expiry_date;
@@ -301,7 +301,7 @@ base::Time CanonicalCookie::ValidateAndAdjustExpiryDate(
 std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     const GURL& url,
     std::string_view cookie_line,
-    const base::Time& creation_time,
+    base::Time creation_time,
     std::optional<base::Time> server_time,
     std::optional<CookiePartitionKey> cookie_partition_key,
     CookieSourceType source_type,
@@ -764,10 +764,10 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateUnsafeCookieForTesting(
     const std::string& value,
     const std::string& domain,
     const std::string& path,
-    const base::Time& creation,
-    const base::Time& expiration,
-    const base::Time& last_access,
-    const base::Time& last_update,
+    base::Time creation,
+    base::Time expiration,
+    base::Time last_access,
+    base::Time last_update,
     bool secure,
     bool httponly,
     CookieSameSite same_site,
@@ -786,7 +786,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateUnsafeCookieForTesting(
 std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateForTesting(
     const GURL& url,
     const std::string& cookie_line,
-    const base::Time& creation_time,
+    base::Time creation_time,
     std::optional<base::Time> server_time,
     std::optional<CookiePartitionKey> cookie_partition_key,
     CookieSourceType source_type,

@@ -1053,7 +1053,7 @@ class DeferredCookieTaskTest : public CookieMonsterTest {
   // Defines a cookie to be returned from PersistentCookieStore::Load
   void DeclareLoadedCookie(const GURL& url,
                            const std::string& cookie_line,
-                           const base::Time& creation_time) {
+                           base::Time creation_time) {
     AddCookieToList(url, cookie_line, creation_time, &loaded_cookies_);
   }
 

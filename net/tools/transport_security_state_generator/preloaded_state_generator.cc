@@ -135,7 +135,7 @@ std::string PreloadedStateGenerator::Generate(
     const std::string& preload_template,
     const TransportSecurityStateEntries& entries,
     const Pinsets& pinsets,
-    const base::Time& timestamp) {
+    base::Time timestamp) {
   std::string output = preload_template;
 
   ProcessSPKIHashes(pinsets, &output);

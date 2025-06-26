@@ -19,7 +19,7 @@ namespace net {
 
 template <>
 struct PickleTraits<base::Time> {
-  static void Serialize(base::Pickle& pickle, const base::Time& time) {
+  static void Serialize(base::Pickle& pickle, base::Time time) {
     // For compatibility with existing serialization code in //net, use the
     // deprecated `ToInternalValue()` method.
     pickle.WriteInt64(time.ToInternalValue());
@@ -33,7 +33,7 @@ struct PickleTraits<base::Time> {
     return base::Time::FromInternalValue(time_as_int64);
   }
 
-  static size_t PickleSize(const base::Time& time) {
+  static size_t PickleSize(base::Time time) {
     return EstimatePickleSize(int64_t{0});
   }
 };

@@ -55,7 +55,7 @@ class NET_EXPORT_PRIVATE EntryMetadata {
                 base::StrictNumeric<uint64_t> entry_size);
 
   base::Time GetLastUsedTime() const;
-  void SetLastUsedTime(const base::Time& last_used_time);
+  void SetLastUsedTime(base::Time last_used_time);
 
   uint32_t GetTrailerPrefetchSize() const;
   void SetTrailerPrefetchSize(uint32_t size);

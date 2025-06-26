@@ -152,7 +152,7 @@ class ElementsUploadDataStreamTest : public PlatformTest,
   }
 
   void FileChangedHelper(const base::FilePath& file_path,
-                         const base::Time& time,
+                         base::Time time,
                          bool error_expected);
 
   base::ScopedTempDir temp_dir_;
@@ -554,7 +554,7 @@ TEST_F(ElementsUploadDataStreamTest, ReadAsync) {
 
 void ElementsUploadDataStreamTest::FileChangedHelper(
     const base::FilePath& file_path,
-    const base::Time& time,
+    base::Time time,
     bool error_expected) {
   // Don't use element_readers_ here, as this function is called twice, and
   // reusing element_readers_ is wrong.

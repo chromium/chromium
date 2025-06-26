@@ -30,7 +30,7 @@ UploadFileElementReader::UploadFileElementReader(
     const base::FilePath& path,
     uint64_t range_offset,
     uint64_t range_length,
-    const base::Time& expected_modification_time)
+    base::Time expected_modification_time)
     : task_runner_(task_runner),
       path_(path),
       range_offset_(range_offset),
@@ -46,7 +46,7 @@ UploadFileElementReader::UploadFileElementReader(
     const base::FilePath& path,
     uint64_t range_offset,
     uint64_t range_length,
-    const base::Time& expected_modification_time)
+    base::Time expected_modification_time)
     : task_runner_(task_runner),
       path_(path),
       range_offset_(range_offset),

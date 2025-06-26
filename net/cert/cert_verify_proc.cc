@@ -805,8 +805,8 @@ bool CertVerifyProc::HasNameConstraintsViolation(
 
 // static
 bool CertVerifyProc::HasTooLongValidity(const X509Certificate& cert) {
-  const base::Time& start = cert.valid_start();
-  const base::Time& expiry = cert.valid_expiry();
+  base::Time start = cert.valid_start();
+  base::Time expiry = cert.valid_expiry();
   if (start.is_max() || start.is_null() || expiry.is_max() ||
       expiry.is_null() || start > expiry) {
     return true;

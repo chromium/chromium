@@ -261,7 +261,7 @@ class CookieStoreTest : public testing::Test {
   bool SetCookieWithSystemTime(CookieStore* cs,
                                const GURL& url,
                                const std::string& cookie_line,
-                               const base::Time& system_time) {
+                               base::Time system_time) {
     CookieOptions options;
     if (!CookieStoreTestTraits::supports_http_only)
       options.set_include_httponly();
@@ -274,7 +274,7 @@ class CookieStoreTest : public testing::Test {
   bool SetCookieWithServerTime(CookieStore* cs,
                                const GURL& url,
                                const std::string& cookie_line,
-                               const base::Time& server_time) {
+                               base::Time server_time) {
     CookieOptions options;
     if (!CookieStoreTestTraits::supports_http_only)
       options.set_include_httponly();

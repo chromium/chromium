@@ -290,7 +290,7 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
                  const std::string& value,
                  const std::string& domain,
                  const std::string& path,
-                 const base::Time& creation) {
+                 base::Time creation) {
     store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
         name, value, domain, path, creation, /*expiration=*/creation,
         /*last_access=*/base::Time(), /*last_update=*/base::Time(),
@@ -303,8 +303,8 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
                                const std::string& value,
                                const std::string& domain,
                                const std::string& path,
-                               const base::Time& creation,
-                               const base::Time& expiration) {
+                               base::Time creation,
+                               base::Time expiration) {
     store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
         name, value, domain, path, creation, expiration,
         /*last_access=*/base::Time(), /*last_update=*/base::Time(),

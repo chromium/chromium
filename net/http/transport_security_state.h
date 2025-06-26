@@ -383,13 +383,13 @@ class NET_EXPORT TransportSecurityState {
   // Adds explicitly-specified data as if it was processed from an
   // HSTS header (used for net-internals and unit tests).
   void AddHSTS(std::string_view host,
-               const base::Time& expiry,
+               base::Time expiry,
                bool include_subdomains);
 
   // Adds explicitly-specified data as if it was processed from an HPKP header.
   // Note: dynamic PKP data is not persisted.
   void AddHPKP(std::string_view host,
-               const base::Time& expiry,
+               base::Time expiry,
                bool include_subdomains,
                const HashValueVector& hashes);
 
@@ -452,11 +452,11 @@ class NET_EXPORT TransportSecurityState {
   // The new state for |host| is persisted using the Delegate (if any).
   void AddHSTSInternal(std::string_view host,
                        STSState::UpgradeMode upgrade_mode,
-                       const base::Time& expiry,
+                       base::Time expiry,
                        bool include_subdomains);
   void AddHPKPInternal(std::string_view host,
-                       const base::Time& last_observed,
-                       const base::Time& expiry,
+                       base::Time last_observed,
+                       base::Time expiry,
                        bool include_subdomains,
                        const HashValueVector& hashes);
 

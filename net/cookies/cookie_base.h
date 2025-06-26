@@ -87,7 +87,7 @@ class NET_EXPORT CookieBase {
   // DomainWithoutDot().
   const std::string& Domain() const { return domain_; }
   const std::string& Path() const { return path_; }
-  const base::Time& CreationDate() const { return creation_date_; }
+  base::Time CreationDate() const { return creation_date_; }
   bool SecureAttribute() const { return secure_; }
   bool IsHttpOnly() const { return httponly_; }
   CookieSameSite SameSite() const { return same_site_; }
@@ -168,7 +168,7 @@ class NET_EXPORT CookieBase {
   // url::PORT_INVALID if value isn't in [0,65535] or url::PORT_UNSPECIFIED.
   void SetSourcePort(int port);
 
-  void SetCreationDate(const base::Time& date) { creation_date_ = date; }
+  void SetCreationDate(base::Time date) { creation_date_ = date; }
 
  protected:
   CookieBase();

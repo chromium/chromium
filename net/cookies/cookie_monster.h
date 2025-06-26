@@ -623,7 +623,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
   void SetAllCookies(CookieList list, SetCookiesCallback callback);
 
   void InternalUpdateCookieAccessTime(CanonicalCookie& cc,
-                                      const base::Time& current_time);
+                                      base::Time current_time);
 
   // |deletion_cause| argument is used for collecting statistics and choosing
   // the correct CookieChangeCause for OnCookieChange notifications. Guarantee:
@@ -650,7 +650,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // constants for details. Also removes expired cookies.
   //
   // Returns the number of cookies deleted (useful for debugging).
-  size_t GarbageCollect(const base::Time& current, const std::string& key);
+  size_t GarbageCollect(base::Time current, const std::string& key);
 
   // Run garbage collection for PartitionedCookieMap keys |cookie_partition_key|
   // and |key|.
@@ -659,7 +659,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // cookies in order to prevent leaking entropy about user behavior across
   // cookie partitions.
   size_t GarbageCollectPartitionedCookies(
-      const base::Time& current,
+      base::Time current,
       const CookiePartitionKey& cookie_partition_key,
       const std::string& key);
 
@@ -690,7 +690,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // non-expired cookies from |itpair| are appended to |cookie_its|.
   //
   // Returns the number of cookies deleted.
-  size_t GarbageCollectExpired(const base::Time& current,
+  size_t GarbageCollectExpired(base::Time current,
                                const CookieMapItPair& itpair,
                                CookieItVector* cookie_its);
 
@@ -701,18 +701,18 @@ class NET_EXPORT CookieMonster : public CookieStore {
   //
   // Returns the number of cookies deleted.
   size_t GarbageCollectExpiredPartitionedCookies(
-      const base::Time& current,
+      base::Time current,
       const PartitionedCookieMap::iterator& cookie_partition_it,
       const CookieMapItPair& itpair,
       CookieItVector* cookie_its);
 
   // Helper function to garbage collect all expired cookies in
   // PartitionedCookieMap.
-  void GarbageCollectAllExpiredPartitionedCookies(const base::Time& current);
+  void GarbageCollectAllExpiredPartitionedCookies(base::Time current);
 
   // Helper for GarbageCollect(). Deletes all cookies in the range specified by
   // [|it_begin|, |it_end|). Returns the number of cookies deleted.
-  size_t GarbageCollectDeleteRange(const base::Time& current,
+  size_t GarbageCollectDeleteRange(base::Time current,
                                    DeletionCause cause,
                                    CookieItVector::iterator cookie_its_begin,
                                    CookieItVector::iterator cookie_its_end);
@@ -723,8 +723,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
   //
   // Sets |earliest_time| to be the earliest last access time of a cookie that
   // was not deleted, or base::Time() if no such cookie exists.
-  size_t GarbageCollectLeastRecentlyAccessed(const base::Time& current,
-                                             const base::Time& safe_date,
+  size_t GarbageCollectLeastRecentlyAccessed(base::Time current,
+                                             base::Time safe_date,
                                              size_t purge_goal,
                                              CookieItVector cookie_its,
                                              base::Time& earliest_time);
@@ -768,7 +768,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
 
   // This function should be called repeatedly, and will record
   // statistics if a sufficient time period has passed.
-  void RecordPeriodicStats(const base::Time& current_time);
+  void RecordPeriodicStats(base::Time current_time);
 
   // Records the aforementioned stats if we have already finished loading all
   // cookies. Returns whether stats were recorded.

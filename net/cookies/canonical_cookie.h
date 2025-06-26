@@ -157,7 +157,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   static std::unique_ptr<CanonicalCookie> Create(
       const GURL& url,
       std::string_view cookie_line,
-      const base::Time& creation_time,
+      base::Time creation_time,
       std::optional<base::Time> server_time,
       std::optional<CookiePartitionKey> cookie_partition_key,
       CookieSourceType source_type,
@@ -223,10 +223,10 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       const std::string& value,
       const std::string& domain,
       const std::string& path,
-      const base::Time& creation,
-      const base::Time& expiration,
-      const base::Time& last_access,
-      const base::Time& last_update,
+      base::Time creation,
+      base::Time expiration,
+      base::Time last_access,
+      base::Time last_update,
       bool secure,
       bool httponly,
       CookieSameSite same_site,
@@ -240,7 +240,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   static std::unique_ptr<CanonicalCookie> CreateForTesting(
       const GURL& url,
       const std::string& cookie_line,
-      const base::Time& creation_time,
+      base::Time creation_time,
       std::optional<base::Time> server_time = std::nullopt,
       std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt,
       CookieSourceType source_type = CookieSourceType::kUnknown,
@@ -260,14 +260,14 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
 
   // See CookieBase for other accessors.
   std::string Value() const;
-  const base::Time& ExpiryDate() const { return expiry_date_; }
-  const base::Time& LastAccessDate() const { return last_access_date_; }
-  const base::Time& LastUpdateDate() const { return last_update_date_; }
+  base::Time ExpiryDate() const { return expiry_date_; }
+  base::Time LastAccessDate() const { return last_access_date_; }
+  base::Time LastUpdateDate() const { return last_update_date_; }
   bool IsPersistent() const { return !expiry_date_.is_null(); }
   CookiePriority Priority() const { return priority_; }
   CookieSourceType SourceType() const { return source_type_; }
 
-  bool IsExpired(const base::Time& current) const {
+  bool IsExpired(base::Time current) const {
     return !expiry_date_.is_null() && current >= expiry_date_;
   }
 
@@ -344,21 +344,19 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // change subscribers such as the CookieStore API or service workers.
   bool IsWebEquivalentTo(const CanonicalCookie& other) const;
 
-  void SetLastAccessDate(const base::Time& date) {
-    last_access_date_ = date;
-  }
+  void SetLastAccessDate(base::Time date) { last_access_date_ = date; }
 
   std::string DebugString() const;
 
   // Returns a "null" time if expiration was unspecified or invalid.
   static base::Time ParseExpiration(const ParsedCookie& pc,
-                                    const base::Time& current,
-                                    const base::Time& server_time);
+                                    base::Time current,
+                                    base::Time server_time);
 
   // Per rfc6265bis the maximum expiry date is no further than 400 days in the
   // future.
-  static base::Time ValidateAndAdjustExpiryDate(const base::Time& expiry_date,
-                                                const base::Time& creation_date,
+  static base::Time ValidateAndAdjustExpiryDate(base::Time expiry_date,
+                                                base::Time creation_date,
                                                 net::CookieSourceScheme scheme);
 
   // Return whether this object is a valid CanonicalCookie(). If the object is

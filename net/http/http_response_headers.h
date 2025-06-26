@@ -349,9 +349,9 @@ class NET_EXPORT HttpResponseHeaders
   // a parameter to support unit testing.  The request_time parameter indicates
   // the time at which the request was made that resulted in this response,
   // which was received at response_time.
-  ValidationType RequiresValidation(const base::Time& request_time,
-                                    const base::Time& response_time,
-                                    const base::Time& current_time) const;
+  ValidationType RequiresValidation(base::Time request_time,
+                                    base::Time response_time,
+                                    base::Time current_time) const;
 
   // Calculates the amount of time the server claims the response is fresh from
   // the time the response was generated.  See section 13.2.4 of RFC 2616.  See
@@ -359,14 +359,13 @@ class NET_EXPORT HttpResponseHeaders
   // the definition of FreshnessLifetimes above for the meaning of the return
   // value.  See RFC 5861 section 3 for the definition of
   // stale-while-revalidate.
-  FreshnessLifetimes GetFreshnessLifetimes(
-      const base::Time& response_time) const;
+  FreshnessLifetimes GetFreshnessLifetimes(base::Time response_time) const;
 
   // Returns the age of the response.  See section 13.2.3 of RFC 2616.
   // See RequiresValidation for a description of this method's parameters.
-  base::TimeDelta GetCurrentAge(const base::Time& request_time,
-                                const base::Time& response_time,
-                                const base::Time& current_time) const;
+  base::TimeDelta GetCurrentAge(base::Time request_time,
+                                base::Time response_time,
+                                base::Time current_time) const;
 
   // The following methods extract values from the response headers.  If a value
   // is not present, or is invalid, then std::nullopt is returned.  Otherwise,

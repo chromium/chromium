@@ -31,7 +31,7 @@ class PreloadedStateGenerator {
   std::string Generate(const std::string& preload_template,
                        const TransportSecurityStateEntries& entries,
                        const Pinsets& pinsets,
-                       const base::Time& timestamp);
+                       base::Time timestamp);
 
  private:
   void ProcessSPKIHashes(const Pinsets& pinset, std::string* tpl);

@@ -196,7 +196,7 @@ std::string NetLog::TickCountToString(const base::TimeTicks& time) {
 }
 
 // static
-std::string NetLog::TimeToString(const base::Time& time) {
+std::string NetLog::TimeToString(base::Time time) {
   // Convert the base::Time to its (approximate) equivalent in base::TimeTicks.
   base::TimeTicks time_ticks =
       base::TimeTicks::UnixEpoch() + (time - base::Time::UnixEpoch());

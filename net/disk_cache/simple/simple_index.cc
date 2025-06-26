@@ -131,7 +131,7 @@ base::Time EntryMetadata::GetLastUsedTime() const {
          base::Seconds(last_used_time_seconds_since_epoch_);
 }
 
-void EntryMetadata::SetLastUsedTime(const base::Time& last_used_time) {
+void EntryMetadata::SetLastUsedTime(base::Time last_used_time) {
   // Preserve nullity.
   if (last_used_time.is_null()) {
     last_used_time_seconds_since_epoch_ = 0;
