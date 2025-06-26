@@ -44,6 +44,28 @@ float CornerRectIntercept(float y,
          std::pow(1 - std::pow(y / corner_rect.height(), curvature),
                   1 / curvature);
 }
+
+void ApplyOutsetAsTransform(FloatRoundedRect& rect,
+                            const gfx::OutsetsF& outsets) {
+  if (rect.IsEmpty()) {
+    return;
+  }
+
+  // For anything else, keep the same proportions between the original radii and
+  // the original rect.
+  gfx::RectF new_rect = rect.Rect();
+  FloatRoundedRect::Radii radii = rect.GetRadii();
+  new_rect.Outset(outsets);
+
+  float scale_x = new_rect.width() / rect.Rect().width();
+  float scale_y = new_rect.height() / rect.Rect().height();
+  radii.SetTopLeft(gfx::ScaleSize(radii.TopLeft(), scale_x, scale_y));
+  radii.SetTopRight(gfx::ScaleSize(radii.TopRight(), scale_x, scale_y));
+  radii.SetBottomRight(gfx::ScaleSize(radii.BottomRight(), scale_x, scale_y));
+  radii.SetBottomLeft(gfx::ScaleSize(radii.BottomLeft(), scale_x, scale_y));
+  rect.SetRadii(radii);
+  rect.SetRect(new_rect);
+}
 }  // namespace
 
 String ContouredRect::CornerCurvature::ToString() const {
@@ -74,22 +96,10 @@ void ContouredRect::OutsetForMarginOrShadow(const gfx::OutsetsF& outsets) {
     return;
   }
 
-  // For anything else, keep the same proportions between the original radii and
-  // the original rect.
-  gfx::RectF new_rect = rect_.Rect();
-  FloatRoundedRect::Radii radii = rect_.GetRadii();
-  new_rect.Outset(outsets);
-
-  CHECK(!rect_.IsEmpty());
-  float scale_x = new_rect.width() / rect_.Rect().width();
-  float scale_y = new_rect.height() / rect_.Rect().height();
-  radii.SetTopLeft(gfx::ScaleSize(radii.TopLeft(), scale_x, scale_y));
-  radii.SetTopRight(gfx::ScaleSize(radii.TopRight(), scale_x, scale_y));
-  radii.SetBottomRight(gfx::ScaleSize(radii.BottomRight(), scale_x, scale_y));
-  radii.SetBottomLeft(gfx::ScaleSize(radii.BottomLeft(), scale_x, scale_y));
-  rect_.SetRadii(radii);
-  rect_.SetRect(new_rect);
-  SetOriginRect(rect_);
+  ApplyOutsetAsTransform(rect_, outsets);
+  if (origin_rect_) {
+    ApplyOutsetAsTransform(*origin_rect_, outsets);
+  }
 }
 
 bool ContouredRect::XInterceptsAtY(float y,
