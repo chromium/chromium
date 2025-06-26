@@ -9,12 +9,15 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/ozone/platform/wayland/host/wayland_buffer_backing.h"
+#include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
-
+class WaylandConnection;
+class WaylandBufferBacking;
+class WaylandSurface;
 class WaylandSyncobjReleaseTimeline;
 
 // This is a wrapper of a wl_buffer. Instances of this class are managed by the
@@ -52,9 +55,10 @@ class WaylandBufferHandle {
   // becomes invalid to use.
   base::WeakPtr<WaylandBufferHandle> AsWeakPtr();
 
-  uint32_t id() const { return backing_->id(); }
-  gfx::Size size() const { return backing_->size(); }
+  uint32_t id() const { return id_; }
+  gfx::Size size() const { return size_; }
   wl_buffer* buffer() const { return wl_buffer_.get(); }
+  SyncMethod sync_method() const { return sync_method_; }
   WaylandSyncobjReleaseTimeline* release_timeline() const {
     return release_timeline_.get();
   }
@@ -71,11 +75,6 @@ class WaylandBufferHandle {
   // wl_buffer.release events.
   void OnExplicitRelease(WaylandSurface* requestor);
 
-  WaylandBufferBacking::BufferBackingType backing_type() const {
-    return backing_->type();
-  }
-  SyncMethod sync_method() const { return sync_method_; }
-
  private:
   void OnWlBufferCreated(wl::Object<wl_buffer> wl_buffer);
   void OnWlBufferReleased(wl_buffer* wl_buffer);
@@ -83,7 +82,14 @@ class WaylandBufferHandle {
   // wl_buffer_listener:
   static void OnRelease(void* data, wl_buffer* wl_buffer);
 
-  raw_ptr<const WaylandBufferBacking> backing_;
+  // Non-owned pointer to the main connection.
+  raw_ptr<const WaylandConnection> connection_;
+
+  // The id of this buffer.
+  const uint32_t id_;
+
+  // Actual buffer size in pixels.
+  const gfx::Size size_;
 
   // A wl_buffer backed by the dmabuf/shm |backing_| created on the GPU side.
   wl::Object<wl_buffer> wl_buffer_;

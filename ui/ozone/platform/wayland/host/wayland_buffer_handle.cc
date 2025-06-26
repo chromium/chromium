@@ -34,7 +34,9 @@ WaylandBufferHandle::SyncMethod determine_sync_method(
 }  // namespace
 
 WaylandBufferHandle::WaylandBufferHandle(WaylandBufferBacking* backing)
-    : backing_(backing),
+    : connection_(backing->connection()),
+      id_(backing->id()),
+      size_(backing->size()),
       sync_method_(determine_sync_method(backing)),
       weak_factory_(this) {}
 
@@ -53,8 +55,7 @@ void WaylandBufferHandle::OnWlBufferCreated(wl::Object<wl_buffer> wl_buffer) {
       .release = &OnRelease,
   };
   if (sync_method_ == SyncMethod::kSyncobj) {
-    release_timeline_ =
-        WaylandSyncobjReleaseTimeline::Create(backing_->connection());
+    release_timeline_ = WaylandSyncobjReleaseTimeline::Create(connection_);
   } else if (sync_method_ != SyncMethod::kNone) {
     wl_buffer_add_listener(wl_buffer_.get(), &kBufferListener, this);
   }

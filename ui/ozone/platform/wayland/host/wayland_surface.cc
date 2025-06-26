@@ -265,6 +265,7 @@ bool WaylandSurface::AttachBuffer(WaylandBufferHandle* buffer_handle) {
   pending_state_.buffer_size_px = buffer_handle->size();
   pending_state_.buffer = buffer_handle->buffer();
   pending_state_.buffer_id = buffer_handle->id();
+  pending_state_.sync_method = buffer_handle->sync_method();
 
   if (state_.buffer_id == pending_state_.buffer_id &&
       buffer_handle->released(this)) {
@@ -510,17 +511,30 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
   bool needs_commit = false;
 
   if (pending_state_.buffer_id != state_.buffer_id) {
-    std::optional<bool> explicit_sync_success;
     if (pending_state_.buffer) {
-      // We need to try setting explicit sync first so that we don't attach the
-      // buffer if there is a failure when setting explicit sync.
-      explicit_sync_success = SetExplicitSync();
-      if (!explicit_sync_success.has_value()) {
-        // There was a failure while trying to set explicit sync. So we need
-        // to early-out and discard this frame and show the previous frame.
-        AttachBuffer(nullptr);
-        pending_state_.damage_px.clear();
-        return std::nullopt;
+      switch (pending_state_.sync_method) {
+        case WaylandBufferHandle::SyncMethod::kSyncobj:
+          // We need to try setting explicit sync first so that we don't attach
+          // the buffer if there is a failure when setting explicit sync.
+          if (!SetExplicitSync().has_value()) {
+            // There was a failure while trying to set explicit sync. So we need
+            // to early-out and discard this frame and show the previous frame.
+            AttachBuffer(nullptr);
+            pending_state_.damage_px.clear();
+            return std::nullopt;
+          }
+          break;
+        case WaylandBufferHandle::SyncMethod::kDMAFence:
+          if (!pending_state_.acquire_fence.is_null()) {
+            connection_->buffer_manager_host()->InsertAcquireFence(
+                pending_state_.buffer_id, pending_state_.acquire_fence.Peek());
+          }
+          [[fallthrough]];
+        default:
+          // Remove the existing surface sync to avoid compositor throwing
+          // error.
+          surface_sync_.reset();
+          break;
       }
     }
     // The logic in DamageBuffer currently relies on attachment coordinates of
@@ -529,19 +543,6 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
     // Note: should the offset be non-zero, use wl_surface_offset() to set it.
     wl_surface_attach(surface_.get(), pending_state_.buffer, 0, 0);
     needs_commit = true;
-    // Do not call GetOrCreateSurfaceSync() if the buffer management doesn't
-    // happen with WaylandBufferManagerHost. That is, if Wayland EGL
-    // implementation is used, buffers are attached/swapped via eglSwapBuffers,
-    // which may internally (depends on the implementation) also create a
-    // surface sync. Creating a surface sync in this case is not necessary.
-    // Moreover, a Wayland protocol error will be raised as only one surface
-    // sync can exist.
-    if (pending_state_.buffer && !explicit_sync_success.value() &&
-        connection_->UseImplicitSyncInterop() &&
-        !pending_state_.acquire_fence.is_null()) {
-      connection_->buffer_manager_host()->InsertAcquireFence(
-          pending_state_.buffer_id, pending_state_.acquire_fence.Peek());
-    }
   }
   pending_state_.acquire_fence = gfx::GpuFenceHandle();
 

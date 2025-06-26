@@ -24,6 +24,7 @@
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_space.h"
 
 struct wp_content_type_v1;
@@ -257,6 +258,8 @@ class WaylandSurface {
     // The acquire gpu fence to associate with the surface buffer.
     gfx::GpuFenceHandle acquire_fence;
 
+    WaylandBufferHandle::SyncMethod sync_method =
+        WaylandBufferHandle::SyncMethod::kImplicit;
     uint32_t buffer_id = 0;
     // Note that this wl_buffer ptr is never cleared, even when the
     // buffer_handle owning this wl_buffer is destroyed. Accessing this field
