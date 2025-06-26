@@ -475,6 +475,13 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   [self updateAccessibility];
 }
 
+- (void)setReaderModeChipView:(UIView*)readerModeChipView {
+  if (!_badgesContainerView.readerModeChipView && readerModeChipView) {
+    _badgesContainerView.readerModeChipView = readerModeChipView;
+  }
+  [self updateAccessibility];
+}
+
 - (void)setPlaceholderView:(UIView*)placeholderView {
   if (_badgesContainerView.placeholderView != placeholderView) {
     _badgesContainerView.placeholderView = placeholderView;
@@ -555,6 +562,10 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 
 - (id<ContextualPanelEntrypointVisibilityDelegate>)
     contextualEntrypointVisibilityDelegate {
+  return self.badgesContainerView;
+}
+
+- (id<ReaderModeChipVisibilityDelegate>)readerModeChipVisibilityDelegate {
   return self.badgesContainerView;
 }
 

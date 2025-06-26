@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol BadgeViewVisibilityDelegate;
+@protocol ReaderModeChipVisibilityDelegate;
 @protocol ContextualPanelEntrypointVisibilityDelegate;
 @class LocationBarBadgesContainerView;
 
@@ -65,9 +66,15 @@
 // Sets the view displaying the Contextual Panel's entrypoint.
 - (void)setContextualPanelEntrypointView:(UIView*)contextualPanelEntrypointView;
 
+// Sets the view displaying the Reader Mode chip.
+- (void)setReaderModeChipView:(UIView*)readerModeChipView;
+
 // Returns the contextual panel entrypoint visibility delegate;
 - (id<ContextualPanelEntrypointVisibilityDelegate>)
     contextualEntrypointVisibilityDelegate;
+
+// Returns the reader mode chip visibility delegate;
+- (id<ReaderModeChipVisibilityDelegate>)readerModeChipVisibilityDelegate;
 
 // Returns the badge view visibility delegate.
 - (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate;

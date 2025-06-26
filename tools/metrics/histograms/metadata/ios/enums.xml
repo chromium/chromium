@@ -643,6 +643,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Message (e.g. translate)"/>
   <int value="2" label="Price insight"/>
   <int value="3" label="Lens overlay"/>
+  <int value="4" label="Reader mode"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h:IOSLocationBarLeadingIconType) -->

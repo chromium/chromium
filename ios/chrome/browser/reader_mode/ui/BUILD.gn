@@ -16,6 +16,14 @@ source_set("ui") {
   ]
 }
 
+source_set("chip") {
+  sources = [
+    "reader_mode_chip_view_controller.h",
+    "reader_mode_chip_view_controller.mm",
+    "reader_mode_chip_visibility_delegate.h",
+  ]
+}
+
 source_set("options") {
   sources = [
     "reader_mode_options_view_controller.h",

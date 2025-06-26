@@ -16,6 +16,10 @@
   /// view trumps the entrypoint when kLensOverlayPriceInsightsCounterfactual is
   /// enabled.
   BOOL _contextualPanelEntrypointShouldBeVisible;
+  /// Whether the badge view should be visible.
+  BOOL _badgeViewShouldBeVisible;
+  /// Whether the reader mode chip should be visible.
+  BOOL _readerModeChipShouldBeVisible;
 }
 
 - (instancetype)init {
@@ -48,6 +52,10 @@
     [accessibleElements addObject:self.badgeView];
   }
 
+  if (self.readerModeChipView && !self.readerModeChipView.hidden) {
+    [accessibleElements addObject:self.readerModeChipView];
+  }
+
   if (self.placeholderView && !self.placeholderView.hidden) {
     [accessibleElements addObject:self.placeholderView];
   }
@@ -58,16 +66,23 @@
 #pragma mark - BadgeViewVisibilityDelegate
 
 - (void)setBadgeViewHidden:(BOOL)hidden {
-  _badgeView.hidden = hidden;
-  [self updatePlaceholderVisibility];
+  _badgeViewShouldBeVisible = !hidden;
+  [self updateViewsVisibility];
 }
 
 #pragma mark - ContextualPanelEntrypointVisibilityDelegate
 
 - (void)setContextualPanelEntrypointHidden:(BOOL)hidden {
-  _contextualPanelEntrypointView.hidden = hidden;
   _contextualPanelEntrypointShouldBeVisible = !hidden;
-  [self updatePlaceholderVisibility];
+  [self updateViewsVisibility];
+}
+
+#pragma mark - ReaderModeChipVisibilityDelegate
+
+- (void)readerModeChipCoordinator:(ReaderModeChipCoordinator*)coordinator
+       didSetReaderModeChipHidden:(BOOL)hidden {
+  _readerModeChipShouldBeVisible = !hidden;
+  [self updateViewsVisibility];
 }
 
 #pragma mark - Setters
@@ -108,6 +123,22 @@
   ]];
 }
 
+- (void)setReaderModeChipView:(UIView*)readerModeChipView {
+  if (_readerModeChipView) {
+    return;
+  }
+  _readerModeChipView = readerModeChipView;
+  _readerModeChipView.translatesAutoresizingMaskIntoConstraints = NO;
+  _readerModeChipView.isAccessibilityElement = NO;
+  _readerModeChipView.hidden = YES;
+  [_containerStackView insertArrangedSubview:_readerModeChipView atIndex:0];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_readerModeChipView.heightAnchor
+        constraintEqualToAnchor:_containerStackView.heightAnchor],
+  ]];
+}
+
 - (void)setPlaceholderView:(UIView*)placeholderView {
   if (_placeholderView == placeholderView) {
     return;
@@ -127,22 +158,31 @@
           constraintEqualToAnchor:_containerStackView.heightAnchor]
     ]];
   }
-  [self updatePlaceholderVisibility];
+  [self updateViewsVisibility];
 }
 
 #pragma mark - private
 
-// Updates the hidden state of the placeholder view.
-- (void)updatePlaceholderVisibility {
-  BOOL placeholderHidden = (self.contextualPanelEntrypointView &&
-                            !self.contextualPanelEntrypointView.hidden) ||
-                           (self.badgeView && !self.badgeView.hidden);
+// Updates the hidden state of the views.
+- (void)updateViewsVisibility {
+  self.readerModeChipView.hidden = !_readerModeChipShouldBeVisible;
+  self.badgeView.hidden =
+      !_badgeViewShouldBeVisible || _readerModeChipShouldBeVisible;
+  self.contextualPanelEntrypointView.hidden =
+      !_contextualPanelEntrypointShouldBeVisible ||
+      _readerModeChipShouldBeVisible;
+
+  BOOL placeholderHidden =
+      (self.contextualPanelEntrypointView &&
+       !self.contextualPanelEntrypointView.hidden) ||
+      (self.badgeView && !self.badgeView.hidden) ||
+      (self.readerModeChipView && !self.readerModeChipView.hidden);
 
   if (base::FeatureList::IsEnabled(kLensOverlayPriceInsightsCounterfactual)) {
     // Show the lens overlay entrypoint only when the price insights entrypoint
     // should have been shown.
     BOOL placeholderVisible = _contextualPanelEntrypointShouldBeVisible &&
-                              (!self.badgeView || self.badgeView.hidden);
+                              (self.badgeView && self.badgeView.hidden);
     placeholderHidden = !placeholderVisible;
     if (placeholderVisible) {
       self.contextualPanelEntrypointView.hidden = YES;
@@ -163,6 +203,8 @@
       RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kPriceTracking);
     } else if (self.badgeView && !self.badgeView.hidden) {
       RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kMessage);
+    } else if (self.readerModeChipView && !self.readerModeChipView.hidden) {
+      RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kReaderMode);
     }
   }
 }

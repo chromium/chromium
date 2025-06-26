@@ -95,6 +95,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 // The injected Contextual Panel entrypoint view;
 @property(nonatomic, strong) UIView* contextualPanelEntrypointView;
 
+// The injected reader mode chip view.
+@property(nonatomic, strong) UIView* readerModeChipView;
+
 // The injected placeholder view;
 @property(nonatomic, strong) UIView* placeholderView;
 
@@ -177,6 +180,11 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   _contextualPanelEntrypointView = contextualPanelEntrypointView;
 }
 
+- (void)setReaderModeChipView:(UIView*)readerModeChipView {
+  DCHECK(!self.readerModeChipView);
+  _readerModeChipView = readerModeChipView;
+}
+
 - (void)setPlaceholderType:(LocationBarPlaceholderType)placeholderType {
   if (placeholderType == _placeholderType) {
     return;
@@ -233,6 +241,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   return self.locationBarSteadyView.badgeViewVisibilityDelegate;
 }
 
+- (id<ReaderModeChipVisibilityDelegate>)readerModeChipVisibilityDelegate {
+  return self.locationBarSteadyView.readerModeChipVisibilityDelegate;
+}
+
 - (void)setHelpCommandsHandler:(id<HelpCommands>)helpCommandsHandler {
   _helpCommandsHandler = helpCommandsHandler;
 }
@@ -253,6 +265,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
   DCHECK(self.badgeView) << "The badge view must be set at this point";
   [self.locationBarSteadyView setBadgeView:self.badgeView];
+  if (self.readerModeChipView) {
+    [self.locationBarSteadyView setReaderModeChipView:self.readerModeChipView];
+  }
 
   if (IsPageActionMenuEnabled()) {
     _pageActionMenuEntrypointView = [[PageActionMenuEntrypointView alloc] init];

@@ -16,7 +16,8 @@ enum class IOSLocationBarLeadingIconType {
   kMessage = 1,
   kPriceTracking = 2,
   kLensOverlay = 3,
-  kMaxValue = kLensOverlay,
+  kReaderMode = 4,
+  kMaxValue = kReaderMode,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSLocationBarLeadingIconType)
 

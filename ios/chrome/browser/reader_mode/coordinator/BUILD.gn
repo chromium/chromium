@@ -23,6 +23,17 @@ source_set("coordinator") {
   ]
 }
 
+source_set("chip") {
+  sources = [
+    "reader_mode_chip_coordinator.h",
+    "reader_mode_chip_coordinator.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/reader_mode/ui:chip",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  ]
+}
+
 source_set("options") {
   visibility = [ ":coordinator" ]
   sources = [

@@ -26,6 +26,7 @@
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
 @protocol PageActionMenuCommands;
+@protocol ReaderModeChipVisibilityDelegate;
 @protocol TextFieldViewContaining;
 class PrefService;
 namespace feature_engagement {
@@ -141,6 +142,10 @@ class Tracker;
 // controller is initialized.
 - (void)setContextualPanelEntrypointView:(UIView*)contextualPanelEntrypointView;
 
+// Sets the Reader Mode Chip view. This must be called only once and set before
+// the view of this view controller is initialized.
+- (void)setReaderModeChipView:(UIView*)readerModeChipView;
+
 // Switches between the two states of the location bar:
 // - editing state, with the textfield;
 // - non-editing state, with location icon and text.
@@ -176,6 +181,9 @@ class Tracker;
 
 // Returns the badge view visibility delegate.
 - (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate;
+
+// Returns the reader mode chip visibility delegate.
+- (id<ReaderModeChipVisibilityDelegate>)readerModeChipVisibilityDelegate;
 
 // Attempts to show the lens overlay IPH.
 - (void)attemptShowingLensOverlayIPH;
