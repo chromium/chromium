@@ -8,6 +8,9 @@
 
 #include "base/apple/foundation_util.h"
 #include "services/device/public/cpp/nfc/nfc_utils.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+
+namespace blink {
 
 namespace {
 
@@ -131,7 +134,7 @@ device::mojom::blink::NDEFRecordPtr CreateLocalRecord(
     const WTF::Vector<uint8_t>& payload) {
   auto result = device::mojom::blink::NDEFRecord::New();
   result->category = device::mojom::blink::NDEFRecordTypeCategory::kLocal;
-  result->record_type = ":" + type;
+  result->record_type = StrCat({":", type});
   result->data = payload;
   result->payload_message =
       blink::ParseRawNDEFMessage(ConvertNFCDefMessage(payload));
@@ -152,8 +155,6 @@ device::mojom::blink::NDEFRecordPtr CreateWellKnownRecord(
 }
 
 }  // namespace
-
-namespace blink {
 
 device::mojom::blink::NDEFMessagePtr ParseRawNDEFMessage(
     device::mojom::blink::NDEFRawMessagePtr message) {
