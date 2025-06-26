@@ -74,12 +74,17 @@ interface TestWebIdl {
   // Promise returning function, with a comment that provides the name and
   // description of the value the promise resolves to.
   // |arg1|: This is a normal argument comment.
+  // |Returns|: General description for the promise return.
   // |PromiseValue|: returnValueName: A description for the value the promise
   // resolves to: with an extra colon for good measure.
   static Promise<ExampleType> describedPromiseReturn(boolean arg1);
 
   // |PromiseValue|: justAName
   static Promise<boolean> namedPromiseReturn();
+
+  // General function description for the describedReturnFunction.
+  // |Returns|: Description for the returns object itself.
+  static DOMString describedReturnFunction();
 };
 
 // Comment for parameter descriptions on the onTestOne event. The first part of

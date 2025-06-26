@@ -436,6 +436,10 @@ class FunctionReturn(TypedProperty):
   """Handles processing for function return values."""
 
   def Process(self) -> dict:
+    # If the descriptions use the 'Returns' key, we use that to extract a
+    # description to add to the return properties.
+    if self.descriptions and 'Returns' in self.descriptions:
+      self.properties['description'] = self.descriptions['Returns']
     if 'type' in self.properties and self.properties['type'] == 'promise':
       # For legacy reasons, promise returns always get named "callback".
       self.properties['name'] = 'callback'

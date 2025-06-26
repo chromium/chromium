@@ -373,6 +373,8 @@ class WebIdlSchemaTest(unittest.TestCase):
             'callback',
             'optional':
             True,
+            'description':
+            'General description for the promise return.',
             'type':
             'promise',
             'parameters': [{
@@ -400,6 +402,16 @@ class WebIdlSchemaTest(unittest.TestCase):
                 'name': 'justAName'
             }],
         }, named_promise_function_async_return)
+
+
+    return_function = getFunction(schema, 'describedReturnFunction')
+    self.assertEqual(
+        'General function description for the describedReturnFunction.',
+        return_function.get('description'))
+    return_function_returns_value = getFunctionReturn(
+        schema, 'describedReturnFunction')
+    self.assertEqual('Description for the returns object itself.',
+                     return_function_returns_value.get('description'))
 
 
   # Tests that API events are processed as expected.
