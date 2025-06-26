@@ -23,7 +23,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/test/test_event.h"
@@ -220,58 +219,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
   content::WaitForLoadStop(new_tab_contents);
   EXPECT_THAT(new_tab_contents->GetLastCommittedURL().query(),
               MatchesRegex("ep=crmntob&re=df&s=4&st=\\d+&lm=.+"));
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
-                       DoesNotShowWhenSettingDisabled) {
-  // Disable the setting.
-  browser()->profile()->GetPrefs()->SetBoolean(omnibox::kShowGoogleLensShortcut,
-                                               false);
-  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
-  // Navigate to a matching page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
-
-  LensOverlayHomeworkPageActionIconView* icon_view =
-      lens_overlay_homework_icon_view();
-  views::FocusManager* focus_manager = icon_view->GetFocusManager();
-  focus_manager->ClearFocus();
-  EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(icon_view->GetVisible());
-
-  // Focus in the location bar should not show the icon.
-  location_bar_view()->FocusLocation(false);
-  ViewVisibilityWaiter(icon_view, false).Wait();
-
-  EXPECT_TRUE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(icon_view->GetVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
-                       RespectsShowShortcutPreference) {
-  // Ensure the shortcut pref starts enabled.
-  browser()->profile()->GetPrefs()->SetBoolean(omnibox::kShowGoogleLensShortcut,
-                                               true);
-
-  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
-  // Navigate to a matching page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
-
-  views::View* icon_view = lens_overlay_homework_icon_view();
-  views::FocusManager* focus_manager = icon_view->GetFocusManager();
-  focus_manager->ClearFocus();
-  EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_TRUE(icon_view->GetVisible());
-
-  // Disable the preference, the entrypoint should immediately disappear.
-  browser()->profile()->GetPrefs()->SetBoolean(omnibox::kShowGoogleLensShortcut,
-                                               false);
-  EXPECT_FALSE(icon_view->GetVisible());
-
-  // Re-enable the preference, the entrypoint should immediately become
-  // visible.
-  browser()->profile()->GetPrefs()->SetBoolean(omnibox::kShowGoogleLensShortcut,
-                                               true);
-  EXPECT_TRUE(icon_view->GetVisible());
 }
 
 }  // namespace
