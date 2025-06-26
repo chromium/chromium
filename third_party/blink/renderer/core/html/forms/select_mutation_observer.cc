@@ -161,14 +161,11 @@ void SelectMutationObserver::AddDescendantDisallowedErrorToNode(Node& node) {
     if (!IsAllowedInteractiveElement(node)) {
       select_->IncreaseContentModelViolationCount();
     }
-    if (RuntimeEnabledFeatures::
-            CustomizableSelectElementAccessibilityIssuesEnabled()) {
-      Document& document = select_->GetDocument();
-      AuditsIssue::ReportElementAccessibilityIssue(
-          &document, node.GetDomNodeId(), issue_reason,
-          /* has_disallowed_attributes = */ HasTabIndexAttribute(node) ||
-              IsContenteditable(node));
-    }
+    Document& document = select_->GetDocument();
+    AuditsIssue::ReportElementAccessibilityIssue(
+        &document, node.GetDomNodeId(), issue_reason,
+        /* has_disallowed_attributes = */ HasTabIndexAttribute(node) ||
+            IsContenteditable(node));
     node.AddConsoleMessage(mojom::blink::ConsoleMessageSource::kRecommendation,
                            mojom::blink::ConsoleMessageLevel::kError,
                            GetMessageForReason(issue_reason));

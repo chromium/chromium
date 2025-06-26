@@ -869,8 +869,6 @@ void AuditsIssue::ReportElementAccessibilityIssue(
     ElementAccessibilityIssueReason issue_reason,
     bool has_disallowed_attributes) {
   CHECK(HTMLSelectElement::CustomizableSelectEnabled(document));
-  CHECK(RuntimeEnabledFeatures::
-            CustomizableSelectElementAccessibilityIssuesEnabled());
 
   auto select_accessibility_issue_details =
       protocol::Audits::ElementAccessibilityIssueDetails::create()

@@ -1666,15 +1666,6 @@
       depends_on: ["SelectParserRelaxation"],
     },
     {
-      // If a node within a customizable <select> doesn't obey the content
-      // model, an Issue is reported to DevTools so that web authors get more
-      // context on why this can impact the accessibility behavior of the
-      // <select>. Shipped in M138, flag can be removed M140.
-      name: "CustomizableSelectElementAccessibilityIssues",
-      status: "stable",
-      depends_on: ["CustomizableSelect"],
-    },
-    {
       // appearance:base-select for <select multiple> and <select size=n>
       // https://issues.chromium.org/issues/357649033
       name: "CustomizableSelectInPage",
