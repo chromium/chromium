@@ -140,8 +140,6 @@ class BASE_EXPORT PartitionAllocSupport {
 #endif
 };
 
-BASE_EXPORT BASE_DECLARE_FEATURE(kDisableMemoryReclaimerInBackground);
-
 // Visible in header for testing.
 class BASE_EXPORT MemoryReclaimerSupport {
  public:

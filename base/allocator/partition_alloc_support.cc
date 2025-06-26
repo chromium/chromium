@@ -141,17 +141,6 @@ void RunThreadCachePeriodicPurge() {
 
 }  // namespace
 
-// When enabled, disable the memory reclaimer in background.
-BASE_FEATURE(kDisableMemoryReclaimerInBackground,
-             "DisableMemoryReclaimerInBackground",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, limit the time memory reclaimer may take, returning early when
-// exceeded.
-BASE_FEATURE(kPartitionAllocShortMemoryReclaim,
-             "PartitionAllocShortMemoryReclaim",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // static
 MemoryReclaimerSupport& MemoryReclaimerSupport::Instance() {
   static base::NoDestructor<MemoryReclaimerSupport> instance;
@@ -209,16 +198,7 @@ void MemoryReclaimerSupport::Run() {
   TRACE_EVENT0("base", "partition_alloc::MemoryReclaimer::Reclaim()");
   has_pending_task_ = false;
 
-  {
-    // Micros, since memory reclaiming should typically take at most a few ms.
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Memory.PartitionAlloc.MemoryReclaim");
-    if (base::FeatureList::IsEnabled(kPartitionAllocShortMemoryReclaim)) {
-      ::partition_alloc::MemoryReclaimer::Instance()->ReclaimFast();
-    } else {
-      ::partition_alloc::MemoryReclaimer::Instance()->ReclaimNormal();
-    }
-  }
-
+  ::partition_alloc::MemoryReclaimer::Instance()->ReclaimFast();
   MaybeScheduleTask();
 }
 
@@ -234,10 +214,7 @@ TimeDelta MemoryReclaimerSupport::GetInterval() {
 }
 
 void MemoryReclaimerSupport::MaybeScheduleTask(TimeDelta delay) {
-  if (has_pending_task_ ||
-      (base::FeatureList::IsEnabled(kDisableMemoryReclaimerInBackground) &&
-       !in_foreground_) ||
-      !task_runner_) {
+  if (has_pending_task_ || !in_foreground_ || !task_runner_) {
     return;
   }
 

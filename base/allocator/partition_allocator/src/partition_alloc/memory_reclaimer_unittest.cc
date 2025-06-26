@@ -58,7 +58,7 @@ class MemoryReclaimerTest : public ::testing::Test {
     PartitionAllocGlobalUninitForTesting();
   }
 
-  void Reclaim() { MemoryReclaimer::Instance()->ReclaimNormal(); }
+  void Reclaim() { MemoryReclaimer::Instance()->ReclaimForTesting(); }
 
   void AllocateAndFree() {
     void* data = allocator_->root()->Alloc(1);

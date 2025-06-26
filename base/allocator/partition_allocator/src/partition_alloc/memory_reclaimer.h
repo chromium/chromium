@@ -38,12 +38,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MemoryReclaimer {
   // Unregisters a partition to be tracked by the reclaimer.
   void UnregisterPartition(PartitionRoot* partition) PA_LOCKS_EXCLUDED(lock_);
 
-  // Triggers an explicit reclaim now to reclaim as much free memory as
-  // possible. The API callers need to invoke this method periodically
-  // if they want to use memory reclaimer.
-  // See also GetRecommendedReclaimIntervalInMicroseconds()'s comment.
-  void ReclaimNormal() PA_LOCKS_EXCLUDED(lock_);
-
   // Returns a recommended interval to invoke ReclaimNormal.
   int64_t GetRecommendedReclaimIntervalInMicroseconds() {
     return internal::base::Seconds(4).InMicroseconds();
@@ -53,6 +47,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MemoryReclaimer {
   void ReclaimAll() PA_LOCKS_EXCLUDED(lock_);
   // Same as ReclaimNormal(), but return early if reclaim takes too long.
   void ReclaimFast() PA_LOCKS_EXCLUDED(lock_);
+  // Same as above, but does not limit reclaim time to avoid test flakiness.
+  void ReclaimForTesting() PA_LOCKS_EXCLUDED(lock_);
 
  private:
   MemoryReclaimer();

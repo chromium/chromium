@@ -292,10 +292,6 @@ TEST(PartitionAllocSupportTest,
 class MemoryReclaimerSupportTest : public ::testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {base::features::kPartitionAllocMemoryReclaimer,
-         base::allocator::kDisableMemoryReclaimerInBackground},
-        {});
     MemoryReclaimerSupport::Instance().ResetForTesting();
   }
 

@@ -2412,19 +2412,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.PartitionAlloc.MemoryReclaim" units="microseconds"
-    expires_after="2025-11-16">
-  <owner>yukishiino@chromium.org</owner>
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Time it takes for PartitionAlloc's MemoryReclaimer to reclaim once.
-    Collected at each reclaim, for all process types.
-
-    Note that clients without high-resolution clocks will report 0 for very
-    short times.
-  </summary>
-</histogram>
-
 <histogram name="Memory.PartitionAlloc.PartitionRoot.ExtrasSize" units="bytes"
     expires_after="2025-10-12">
   <owner>keishi@chromium.org</owner>
