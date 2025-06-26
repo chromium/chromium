@@ -133,9 +133,10 @@
 #include "net/ssl/ssl_info.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/cert_test_util.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/register_basic_auth_handler.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -2426,10 +2427,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsTokenLoadingLoginTest,
 
 class WebviewProxyAuthLoginTest : public WebviewLoginTest {
  public:
-  WebviewProxyAuthLoginTest()
-      : auth_proxy_server_(std::make_unique<net::SpawnedTestServer>(
-            net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
-            base::FilePath())) {}
+  WebviewProxyAuthLoginTest() = default;
 
   WebviewProxyAuthLoginTest(const WebviewProxyAuthLoginTest&) = delete;
   WebviewProxyAuthLoginTest& operator=(const WebviewProxyAuthLoginTest&) =
@@ -2437,9 +2435,13 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
 
  protected:
   void SetUp() override {
-    // Start proxy server
-    auth_proxy_server_->set_redirect_connect_to_localhost(true);
-    ASSERT_TRUE(auth_proxy_server_->Start());
+    net::test_server::RegisterProxyBasicAuthHandler(auth_proxy_server_, "user",
+                                                    "pass");
+    // Can't actually start accepting connections until after the Gaia server
+    // has started, which happens during the nested FakeGaiaMixin calls, but
+    // still need to open the listen socket here to get a port for the
+    // SetUpCommandLine() call.
+    ASSERT_TRUE(auth_proxy_server_.InitializeAndListen());
 
     WebviewLoginTest::SetUp();
   }
@@ -2447,11 +2449,19 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(
         ::switches::kProxyServer,
-        auth_proxy_server_->host_port_pair().ToString());
+        auth_proxy_server_.host_port_pair().ToString());
     WebviewLoginTest::SetUpCommandLine(command_line);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
+    // Finish setting up the proxy, now that the Gaia server has started. This
+    // test needs the proxy to handle "accounts.google.com" on the fake Gaia
+    // server, so set that up.
+    CHECK(fake_gaia_.gaia_server()->Started());
+    auth_proxy_server_.EnableConnectProxy({net::HostPortPair::FromURL(
+        fake_gaia_.gaia_server()->GetURL("accounts.google.com", "/"))});
+    auth_proxy_server_.StartAcceptingConnections();
+
     WebviewLoginTest::SetUpInProcessBrowserTestFixture();
 
     // Prepare device policy which will be used for two purposes:
@@ -2495,7 +2505,9 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
  private:
   // A proxy server which requires authentication using the 'Basic'
   // authentication method.
-  std::unique_ptr<net::SpawnedTestServer> auth_proxy_server_;
+  net::test_server::EmbeddedTestServer auth_proxy_server_{
+      net::test_server::EmbeddedTestServer::Type::TYPE_HTTP};
+
   EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   policy::DevicePolicyBuilder device_policy_builder_;
 
@@ -2536,7 +2548,7 @@ IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, ProxyAuthTransfer) {
 
   // Now enter auth data, which should trigger a gaia page which should now be
   // successful.
-  auth_dialog->SupplyCredentialsForTest(u"foo", u"bar");
+  auth_dialog->SupplyCredentialsForTest(u"user", u"pass");
   WaitForGaiaPageLoad();
 
   // Wait for the policy-mapped pref to change, because the supplied proxy auth

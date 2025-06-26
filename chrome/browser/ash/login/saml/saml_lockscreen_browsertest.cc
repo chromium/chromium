@@ -74,12 +74,14 @@
 #include "dbus/object_path.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/base/host_port_pair.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/register_basic_auth_handler.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -581,9 +583,7 @@ IN_PROC_BROWSER_TEST_F(AutoReloadLockscreenWebUiTest,
 // Sets up proxy server which requires authentication.
 class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
  public:
-  ProxyAuthLockscreenWebUiTest()
-      : proxy_server_(net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
-                      base::FilePath()) {}
+  ProxyAuthLockscreenWebUiTest() {}
 
   ProxyAuthLockscreenWebUiTest(const ProxyAuthLockscreenWebUiTest&) = delete;
   ProxyAuthLockscreenWebUiTest& operator=(const ProxyAuthLockscreenWebUiTest&) =
@@ -592,6 +592,12 @@ class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
   ~ProxyAuthLockscreenWebUiTest() override = default;
 
   void SetUpOnMainThread() override {
+    // Finish setting up the proxy, now that the EmbeddedTestServer has started.
+    CHECK(embedded_test_server()->Started());
+    proxy_server_.EnableConnectProxy({net::HostPortPair::FromURL(
+        embedded_test_server()->GetURL("accounts.google.com", "/"))});
+    proxy_server_.StartAcceptingConnections();
+
     LockscreenWebUiTest::SetUpOnMainThread();
 
     // Disconnect unneeded wifi network - these tests use only the network which
@@ -601,8 +607,14 @@ class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
   }
 
   void SetUp() override {
-    proxy_server_.set_redirect_connect_to_localhost(true);
-    ASSERT_TRUE(proxy_server_.Start());
+    net::test_server::RegisterProxyBasicAuthHandler(proxy_server_, "user",
+                                                    "pass");
+    // Can't actually start accepting connections until after the main
+    // EmbeddedTestServer server has started, which happens during the nested
+    // mixin SetUp() calls, but still need to open the listen socket here to get
+    // a port for the SetUpCommandLine() call.
+    ASSERT_TRUE(proxy_server_.InitializeAndListen());
+
     LockscreenWebUiTest::SetUp();
   }
 
@@ -623,7 +635,8 @@ class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  net::SpawnedTestServer proxy_server_;
+  net::test_server::EmbeddedTestServer proxy_server_{
+      net::test_server::EmbeddedTestServer::Type::TYPE_HTTP};
 };
 
 // TODO(b/343013116): Flaky on linux-chromeos-rel.
@@ -662,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
   ASSERT_TRUE(base::test::RunUntil(
       []() { return HttpAuthDialog::GetAllDialogsForTest().size() == 1; }));
   HttpAuthDialog::GetAllDialogsForTest().front()->SupplyCredentialsForTest(
-      u"foo", u"bar");
+      u"user", u"pass");
 
   reauth_dialog_helper->WaitForPrimaryGaiaButtonToBeEnabled();
   auto saml_waiter = reauth_dialog_helper->CreateSamlPageLoadWaiter();
