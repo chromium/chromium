@@ -5389,7 +5389,7 @@
       "birnie@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 144
   },
   {
     "name": "glic-actor",
@@ -5405,7 +5405,7 @@
       "perrier@chromium.org",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 144
   },
   {
     "name":"glic-panel-reset-on-start" ,
@@ -5413,7 +5413,7 @@
       "perrier@chromium.org",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 144
   },
   {
     "name":"glic-panel-reset-top-chrome-button" ,
@@ -5421,7 +5421,7 @@
       "perrier@chromium.org",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 144
   },
   {
     "name":"glic-panel-set-position-on-drag" ,
@@ -5429,15 +5429,7 @@
       "perrier@chromium.org",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "glic-user-resize",
-    "owners": [
-      "iwells@chromium.org",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 139
+    "expiry_milestone": 144
   },
   {
     "name": "glic-z-order-changes",
@@ -5445,7 +5437,7 @@
       "andreaxg@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 144
   },
   {
     "name": "global-media-controls-updated-ui",
