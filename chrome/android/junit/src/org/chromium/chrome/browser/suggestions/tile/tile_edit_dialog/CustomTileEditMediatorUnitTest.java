@@ -92,9 +92,18 @@ public class CustomTileEditMediatorUnitTest {
     }
 
     @Test
+    public void testOnUrlTextChangedOmittedScheme() {
+        CustomTileEditMediator mediator = createAndSetupMediator(/* originalTile= */ null);
+        mediator.onUrlTextChanged("omitted_scheme");
+
+        verify(mViewDelegate, never()).setUrlErrorByCode(anyInt());
+        verify(mViewDelegate).toggleSaveButton(true);
+    }
+
+    @Test
     public void testOnUrlTextChangedInvalidUrl() {
         CustomTileEditMediator mediator = createAndSetupMediator(/* originalTile= */ null);
-        mediator.onUrlTextChanged("invalid url");
+        mediator.onUrlTextChanged("bad://invalid_url");
 
         verify(mViewDelegate).setUrlErrorByCode(UrlErrorCode.INVALID_URL);
         verify(mViewDelegate).toggleSaveButton(false);
@@ -132,9 +141,19 @@ public class CustomTileEditMediatorUnitTest {
     }
 
     @Test
+    public void testOnSaveOmittedScheme() {
+        when(mBrowserDelegate.submitChange(any(), any())).thenReturn(true);
+        CustomTileEditMediator mediator = createAndSetupMediator(/* originalTile= */ null);
+        mediator.onSave("Test", "omitted_scheme");
+
+        verify(mBrowserDelegate).closeEditDialog(true);
+        verify(mViewDelegate, never()).setUrlErrorByCode(anyInt());
+    }
+
+    @Test
     public void testOnSaveInvalidUrl() {
         CustomTileEditMediator mediator = createAndSetupMediator(/* originalTile= */ null);
-        mediator.onSave("Test", "invalid url");
+        mediator.onSave("Test", "bad://invalid_url");
 
         verify(mBrowserDelegate, never()).closeEditDialog(anyBoolean());
         verify(mViewDelegate).setUrlErrorByCode(UrlErrorCode.INVALID_URL);

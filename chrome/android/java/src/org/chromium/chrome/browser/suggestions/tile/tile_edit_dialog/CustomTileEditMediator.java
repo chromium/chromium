@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileE
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.MediatorToView;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.UrlErrorCode;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.ViewToMediator;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
 /** The Mediator of the Custom Tile Edit Dialog. */
@@ -53,7 +54,7 @@ class CustomTileEditMediator implements ViewToMediator {
     // ViewToMediator implementation.
     @Override
     public void onUrlTextChanged(String urlText) {
-        GURL url = new GURL(urlText);
+        GURL url = convertUrlTextToGurl(urlText);
         @UrlErrorCode int urlErrorCode = validateUrl(url);
         boolean success = (urlErrorCode == UrlErrorCode.NONE);
         if (!success) {
@@ -65,7 +66,7 @@ class CustomTileEditMediator implements ViewToMediator {
 
     @Override
     public void onSave(String name, String urlText) {
-        GURL url = new GURL(urlText);
+        GURL url = convertUrlTextToGurl(urlText);
         @UrlErrorCode int urlErrorCode = validateUrl(url);
         boolean success = (urlErrorCode == UrlErrorCode.NONE);
         if (success) {
@@ -118,6 +119,15 @@ class CustomTileEditMediator implements ViewToMediator {
             // make overwriting easier, select existing {@link #DEFAULT_URL_TEXT} text.
             mViewDelegate.addOnWindowFocusGainedTask(() -> mViewDelegate.focusOnUrl(true));
         }
+    }
+
+    /**
+     * Converts user input string representing URL to a GURL. If no scheme is provided,
+     * automatically prepend HTTPS scheme.
+     */
+    private GURL convertUrlTextToGurl(String urlText) {
+        GURL url = new GURL(urlText);
+        return url.getScheme().equals("") ? new GURL(UrlConstants.HTTPS_URL_PREFIX + urlText) : url;
     }
 
     private @UrlErrorCode int validateUrl(GURL url) {
