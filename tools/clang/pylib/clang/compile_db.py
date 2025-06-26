@@ -58,6 +58,7 @@ def _FilterFlags(command, additional_filtered_flags):
       # This is used for profiling-guided optimizations. Not necessary by tools,
       # and clangd complains it cannot find the referenced profile file.
       '-fprofile-sample-use': 1,
+      '-fprofile-use': 1,
       # This flag is only usable with -fprofile-sample-use excluded above.
       # Exclude it to avoid having an unused-command-line-argument error.
       '-fsample-profile-use-profi': 1,
