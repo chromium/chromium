@@ -206,7 +206,9 @@ void UngroupGroupAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:UngroupButton()]
       performAction:grey_tap()];
   // Tap a ungroup button again to confirm the deletion.
-  [[EarlGrey selectElementWithMatcher:UngroupConfirmationButton()]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_CONTENT_CONTEXT_UNGROUP)]
       performAction:grey_tap()];
 }
 
