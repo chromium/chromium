@@ -436,12 +436,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
   // This command-line switch takes precedence over
   // params.force_audio_checkboxes_to_default_checked.
-  const bool tab_capture_audio_default_unchecked =
+  const bool screen_capture_audio_default_unchecked =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kTabCaptureAudioDefaultUnchecked);
-  const bool system_audio_capture_default_checked =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSystemAudioCaptureDefaultChecked);
+          switches::kScreenCaptureAudioDefaultUnchecked);
 
   for (auto& source_list : source_lists) {
     switch (source_list->GetMediaListType()) {
@@ -473,8 +470,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             DesktopMediaList::Type::kScreen, std::move(list_controller),
             /*audio_offered=*/is_system_audio_offered_,
             /*audio_checked=*/
-            params.force_audio_checkboxes_to_default_checked ||
-                system_audio_capture_default_checked,
+            params.force_audio_checkboxes_to_default_checked &&
+                !screen_capture_audio_default_unchecked,
             supports_reselect_button, std::move(screen_scroll_view));
         panes.emplace_back(screen_title_text, std::move(pane));
         break;
@@ -509,8 +506,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             /*audio_offered=*/
             AudioSupported(DesktopMediaList::Type::kWindow),
             /*audio_checked=*/
-            params.force_audio_checkboxes_to_default_checked ||
-                system_audio_capture_default_checked,
+            params.force_audio_checkboxes_to_default_checked &&
+                !screen_capture_audio_default_unchecked,
             supports_reselect_button, std::move(window_scroll_view));
         panes.emplace_back(window_title_text, std::move(pane));
         break;
@@ -530,7 +527,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             DesktopMediaList::Type::kWebContents, std::move(list_controller),
             /*audio_offered=*/
             AudioSupported(DesktopMediaList::Type::kWebContents),
-            /*audio_checked=*/!tab_capture_audio_default_unchecked,
+            /*audio_checked=*/!screen_capture_audio_default_unchecked,
             supports_reselect_button, std::move(list_view));
         panes.emplace_back(title, std::move(pane));
         break;

@@ -45,8 +45,6 @@ DesktopMediaListController::DesktopMediaListController(
       auto_select_window_(
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
               switches::kAutoSelectWindowCaptureSourceByTitle)),
-      auto_select_any_screen_(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAutoSelectScreenCaptureSource)),
       auto_select_source_(
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
               switches::kAutoSelectDesktopCaptureSource)),
@@ -319,9 +317,6 @@ bool DesktopMediaListController::ShouldAutoAccept(
              !auto_select_window_.empty() &&
              source.name.find(base::ASCIIToUTF16(auto_select_window_)) !=
                  std::u16string::npos) {
-    return true;
-  } else if (auto_select_any_screen_ && media_list_->GetMediaListType() ==
-                                            DesktopMediaList::Type::kScreen) {
     return true;
   }
 
