@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/disabled_grid_view_controller.h"
@@ -132,6 +133,8 @@ constexpr CGFloat kFacePileAvatarSize = 24;
   _mediator.toolbarsMutator = _toolbarsMutator;
   _mediator.tabGridHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), TabGridCommands);
+  _mediator.applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
   _mediator.consumer = _gridViewController;
   _mediator.delegate = self;
   _gridViewController.mutator = _mediator;

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/disabled_grid_view_controller.h"
@@ -98,6 +99,11 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:tab_grid_handler_mock_
                      forProtocol:@protocol(TabGridCommands)];
 
+    application_handler_mock_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:application_handler_mock_
+                     forProtocol:@protocol(ApplicationCommands)];
+
     base_view_controller_ = [[UIViewController alloc] init];
     toolbars_mutator_ = [[TestToolbarsMutator alloc] init];
     disabled_grid_view_controller_delegate_ =
@@ -119,6 +125,7 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
   TestDisabledGridViewControllerDelegate*
       disabled_grid_view_controller_delegate_;
   id tab_grid_handler_mock_;
+  id application_handler_mock_;
 };
 
 // Tests that the mediator and view controllers are nil before `start`.

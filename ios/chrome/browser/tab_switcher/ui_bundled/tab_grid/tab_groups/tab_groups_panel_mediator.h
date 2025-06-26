@@ -30,6 +30,7 @@ namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
 
+@protocol ApplicationCommands;
 class BrowserList;
 class FaviconLoader;
 @protocol GridToolbarsMutator;
@@ -55,6 +56,9 @@ class WebStateList;
 
 // Tab Grid handler.
 @property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
+
+// Application commands handler.
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
 // - `tabGroupSyncService`: the data source for the Tab Groups panel.
 // - `regularWebStateList`: used to configure the Done button. Must not be null.

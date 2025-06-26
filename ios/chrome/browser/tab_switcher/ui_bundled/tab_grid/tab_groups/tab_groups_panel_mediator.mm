@@ -19,6 +19,7 @@
 #import "components/data_sharing/public/data_sharing_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/string_utils.h"
+#import "components/saved_tab_groups/public/versioning_message_controller.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/share_kit/model/sharing_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
@@ -55,6 +57,7 @@ using ScopedDataSharingSyncObservation =
 
 using collaboration::messaging::TabGroupMessageMetadata;
 using tab_groups::SharingState;
+using tab_groups::VersioningMessageController;
 using tab_groups::utils::GetLocalTabGroupInfo;
 using tab_groups::utils::LocalTabGroupInfo;
 
@@ -109,6 +112,9 @@ NSString* CreationText(base::Time creation_date) {
   raw_ptr<collaboration::messaging::MessagingBackendService> _messagingService;
   // The data sharing service for shared tab groups.
   raw_ptr<data_sharing::DataSharingService> _dataSharingService;
+  // The versioning message controller to know whether to show an out-of-date
+  // message.
+  raw_ptr<tab_groups::VersioningMessageController> _versioningMessageController;
   // The bridge between the service C++ observer and this Objective-C class.
   std::unique_ptr<TabGroupSyncServiceObserverBridge> _syncServiceObserver;
   std::unique_ptr<ScopedTabGroupSyncObservation> _scopedSyncServiceObservation;
@@ -153,6 +159,8 @@ NSString* CreationText(base::Time creation_date) {
   self = [super init];
   if (self) {
     _tabGroupSyncService = tabGroupSyncService;
+    _versioningMessageController =
+        _tabGroupSyncService->GetVersioningMessageController();
     _shareKitService = shareKitService;
     _collaborationService = collaborationService;
     _messagingService = messagingService;
@@ -231,6 +239,7 @@ NSString* CreationText(base::Time creation_date) {
   _shareKitService = nullptr;
   _collaborationService = nullptr;
   _dataSharingService = nullptr;
+  _versioningMessageController = nullptr;
   _regularWebStateList = nullptr;
   _faviconsGridConfigurator = nullptr;
 }
@@ -429,6 +438,17 @@ NSString* CreationText(base::Time creation_date) {
                                    sourceView:sourceView];
 }
 
+- (void)updateAppWithOutOfDateMessageItem:(TabGroupsPanelItem*)item {
+  [_applicationHandler showAppStorePage];
+}
+
+- (void)deleteOutOfDateMessageItem:(TabGroupsPanelItem*)item {
+  _versioningMessageController->OnMessageUiDismissed(
+      VersioningMessageController::MessageType::
+          VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE);
+  [self populateItemsFromServices];
+}
+
 - (void)deleteNotificationItem:(TabGroupsPanelItem*)item {
   // The user has dismissed the summary card displaying all the "group removed"
   // messages. Dismissing it should clear all messages on the backend.
@@ -522,19 +542,37 @@ NSString* CreationText(base::Time creation_date) {
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }
 
-// Reads the TabGroupSyncService data, prepares it, and feeds it to the
-// consumer.
+// Reads the services data, prepares it, and feeds it to the consumer.
 - (void)populateItemsFromServices {
-  if (_tabGroupSyncServiceInitialized) {
-    std::vector<collaboration::messaging::PersistentMessage> messages;
-    if (_messagingService && _messagingService->IsInitialized()) {
-      messages = _messagingService->GetMessages(
-          collaboration::messaging::PersistentNotificationType::TOMBSTONED);
-    }
-    NSArray<TabGroupsPanelItem*>* tabGroupItems = [self createTabGroupItems];
-    [_consumer populateNotificationItem:CreateNotificationItem(messages)
-                          tabGroupItems:tabGroupItems];
+  if (!_tabGroupSyncServiceInitialized) {
+    return;
   }
+
+  // The potential out-of-date message.
+  TabGroupsPanelItem* outOfDateMessageItem;
+  if (_versioningMessageController &&
+      _versioningMessageController->ShouldShowMessageUi(
+          VersioningMessageController::MessageType::
+              VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE)) {
+    outOfDateMessageItem =
+        [[TabGroupsPanelItem alloc] initWithOutOfDateMessage];
+  }
+
+  // The potential notification about closed groups.
+  TabGroupsPanelItem* notificationItem;
+  if (_messagingService && _messagingService->IsInitialized()) {
+    std::vector<collaboration::messaging::PersistentMessage> messages =
+        _messagingService->GetMessages(
+            collaboration::messaging::PersistentNotificationType::TOMBSTONED);
+    notificationItem = CreateNotificationItem(messages);
+  }
+
+  // The groups.
+  NSArray<TabGroupsPanelItem*>* tabGroupItems = [self createTabGroupItems];
+
+  [_consumer populateOutOfDateMessageItem:outOfDateMessageItem
+                         notificationItem:notificationItem
+                            tabGroupItems:tabGroupItems];
 }
 
 // Tells the consumer to reconfigure the group that matches the given `groupId`.
@@ -572,6 +610,9 @@ NSString* CreationText(base::Time creation_date) {
 
 // Returns an array of `TabGroupsPanelItem`.
 - (NSArray<TabGroupsPanelItem*>*)createTabGroupItems {
+  if (!_tabGroupSyncServiceInitialized) {
+    return @[];
+  }
   std::vector<tab_groups::SavedTabGroup> groups =
       _tabGroupSyncService->GetAllGroups();
   // Sort groups by creation date.

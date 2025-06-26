@@ -29,6 +29,13 @@
 - (void)deleteSharedTabGroupsPanelItem:(TabGroupsPanelItem*)item
                             sourceView:(UIView*)sourceView;
 
+// Tells the receiver to show how to update the app, as the user tapped the
+// Update button of the out-of-date message.
+- (void)updateAppWithOutOfDateMessageItem:(TabGroupsPanelItem*)item;
+
+// Tells the receiver to remove the out-of-date message.
+- (void)deleteOutOfDateMessageItem:(TabGroupsPanelItem*)item;
+
 // Tells the receiver to remove the notifications associated with `item`.
 - (void)deleteNotificationItem:(TabGroupsPanelItem*)item;
 
