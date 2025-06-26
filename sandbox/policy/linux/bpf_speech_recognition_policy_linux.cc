@@ -50,6 +50,10 @@ ResultExpr SpeechRecognitionProcessPolicy::EvaluateSyscall(
     case __NR_getdents:
       return Allow();
 #endif
+#if defined(__NR_prlimit64)
+    case __NR_prlimit64:
+      return RestrictPrlimitToGetrlimit(GetPolicyPid());
+#endif
 #if defined(__NR_prctl)
     case __NR_prctl: {
       const Arg<int> option(0);
