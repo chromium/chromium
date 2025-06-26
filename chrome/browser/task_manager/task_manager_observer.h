@@ -36,25 +36,24 @@ enum RefreshType {
   REFRESH_TYPE_SQLITE_MEMORY = 1 << 5,
   REFRESH_TYPE_WEBCACHE_STATS = 1 << 6,
   REFRESH_TYPE_NETWORK_USAGE = 1 << 7,
-  REFRESH_TYPE_NACL = 1 << 8,
-  REFRESH_TYPE_IDLE_WAKEUPS = 1 << 9,
-  REFRESH_TYPE_HANDLES = 1 << 10,
-  REFRESH_TYPE_START_TIME = 1 << 11,
-  REFRESH_TYPE_CPU_TIME = 1 << 12,
+  REFRESH_TYPE_IDLE_WAKEUPS = 1 << 8,
+  REFRESH_TYPE_HANDLES = 1 << 9,
+  REFRESH_TYPE_START_TIME = 1 << 10,
+  REFRESH_TYPE_CPU_TIME = 1 << 11,
 
   // Whether an observer is interested in knowing if a process is foregrounded
   // or backgrounded.
-  REFRESH_TYPE_PRIORITY = 1 << 13,
+  REFRESH_TYPE_PRIORITY = 1 << 12,
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   // For observers interested in getting the number of open file descriptors of
   // processes.
-  REFRESH_TYPE_FD_COUNT = 1 << 14,
+  REFRESH_TYPE_FD_COUNT = 1 << 13,
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
-  REFRESH_TYPE_KEEPALIVE_COUNT = 1 << 15,
-  REFRESH_TYPE_MEMORY_FOOTPRINT = 1 << 16,
-  REFRESH_TYPE_HARD_FAULTS = 1 << 17,
+  REFRESH_TYPE_KEEPALIVE_COUNT = 1 << 14,
+  REFRESH_TYPE_MEMORY_FOOTPRINT = 1 << 15,
+  REFRESH_TYPE_HARD_FAULTS = 1 << 16,
 };
 
 // Defines the interface for observers of the task manager.

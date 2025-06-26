@@ -51,7 +51,6 @@ class Task {
     /* Plugin processes last.*/
     GUEST,            /* A browser plugin guest process. */
     PLUGIN,           /* A plugin process. */
-    NACL,             /* A NativeClient loader or broker process. */
     SANDBOX_HELPER,   /* A sandbox helper process. */
     DEDICATED_WORKER, /* A dedicated worker running on the renderer process. */
     SHARED_WORKER,    /* A shared worker running on the renderer process. */

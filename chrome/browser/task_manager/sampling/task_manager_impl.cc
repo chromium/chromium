@@ -199,11 +199,6 @@ int TaskManagerImpl::GetHardFaultsPerSecond(TaskId task_id) const {
 #endif
 }
 
-int TaskManagerImpl::GetNaClDebugStubPort(TaskId task_id) const {
-  // TODO(crbug.com/423859723): Remove this method.
-  return -2;
-}
-
 void TaskManagerImpl::GetGDIHandles(TaskId task_id,
                                     int64_t* current,
                                     int64_t* peak) const {

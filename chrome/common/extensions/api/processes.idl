@@ -13,7 +13,7 @@ namespace processes {
     notification,
     plugin,
     worker,
-    nacl,
+    nacl,  // Obsolete, will never be returned.
     service_worker,
     utility,
     gpu,

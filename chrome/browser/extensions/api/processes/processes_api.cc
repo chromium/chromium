@@ -46,12 +46,6 @@ namespace {
 base::LazyInstance<BrowserContextKeyedAPIFactory<ProcessesAPI>>::
     DestructorAtExit g_processes_api_factory = LAZY_INSTANCE_INITIALIZER;
 
-int64_t GetRefreshTypesFlagOnlyEssentialData() {
-  // This is the only non-optional data in the Process as defined by the API in
-  // processes.idl.
-  return task_manager::REFRESH_TYPE_NACL;
-}
-
 // This does not include memory. The memory refresh flag will only be added once
 // a listener to OnUpdatedWithMemory event is added.
 int64_t GetRefreshTypesForProcessOptionalData() {
@@ -85,9 +79,6 @@ api::processes::ProcessType GetProcessType(
 
     case task_manager::Task::PLUGIN:
       return api::processes::ProcessType::kPlugin;
-
-    case task_manager::Task::NACL:
-      return api::processes::ProcessType::kNacl;
 
     // TODO(crbug.com/40117341): Assign a different process type for each
     //                                  worker type.
@@ -131,7 +122,6 @@ void FillProcessData(
   out_process->os_process_id = task_manager->GetProcessId(id);
   out_process->type = GetProcessType(task_manager->GetType(id));
   out_process->profile = base::UTF16ToUTF8(task_manager->GetProfileName(id));
-  out_process->nacl_debug_port = task_manager->GetNaClDebugStubPort(id);
 
   // Collect the tab IDs of all the tasks sharing this renderer if any.
   const task_manager::TaskIdList tasks_on_process =
@@ -372,10 +362,6 @@ bool ProcessesEventRouter::ShouldReportOnCreatedOrOnExited(
 
 void ProcessesEventRouter::UpdateRefreshTypesFlagsBasedOnListeners() {
   int64_t refresh_types = task_manager::REFRESH_TYPE_NONE;
-  if (HasEventListeners(api::processes::OnCreated::kEventName) ||
-      HasEventListeners(api::processes::OnUnresponsive::kEventName)) {
-    refresh_types |= GetRefreshTypesFlagOnlyEssentialData();
-  }
 
   const int64_t on_updated_types = GetRefreshTypesForProcessOptionalData();
   if (HasEventListeners(api::processes::OnUpdated::kEventName))
@@ -503,9 +489,8 @@ ExtensionFunction::ResponseAction ProcessesTerminateFunction::Run() {
     return RespondNow(
         TerminateIfAllowed(render_process_host->GetProcess().Handle()));
 
-  // This could be a non-renderer child process like a plugin or a nacl
-  // process. Try to get its handle from the BrowserChildProcessHost on the
-  // IO thread.
+  // This could be a non-renderer child process like a plugin.
+  // Try to get its handle from the BrowserChildProcessHost on the IO thread.
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ProcessesTerminateFunction::GetProcessHandleOnIO, this,
@@ -565,9 +550,8 @@ ProcessesTerminateFunction::TerminateIfAllowed(base::ProcessHandle handle) {
 ////////////////////////////////////////////////////////////////////////////////
 
 ProcessesGetProcessInfoFunction::ProcessesGetProcessInfoFunction()
-    : task_manager::TaskManagerObserver(
-          base::Seconds(1),
-          GetRefreshTypesFlagOnlyEssentialData()) {}
+    : task_manager::TaskManagerObserver(base::Seconds(1),
+                                        task_manager::REFRESH_TYPE_NONE) {}
 
 ExtensionFunction::ResponseAction ProcessesGetProcessInfoFunction::Run() {
   std::optional<api::processes::GetProcessInfo::Params> params =

@@ -335,8 +335,6 @@ SharedSampler::AllSamplingResults SharedSampler::RefreshOnWorkerThread() {
 
 /* static */
 std::vector<base::FilePath> SharedSampler::GetSupportedImageNames() {
-  const wchar_t kNacl64Exe[] = L"nacl64.exe";
-
   std::vector<base::FilePath> supported_names;
 
   base::FilePath current_exe;
@@ -345,7 +343,6 @@ std::vector<base::FilePath> SharedSampler::GetSupportedImageNames() {
 
   supported_names.push_back(
       base::FilePath(chrome::kBrowserProcessExecutableName));
-  supported_names.push_back(base::FilePath(kNacl64Exe));
 
   return supported_names;
 }

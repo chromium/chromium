@@ -79,8 +79,7 @@ class ChildProcessTask : public Task {
   // See |content::ChildProcessData::id|.
   const int unique_child_process_id_;
 
-  // The type of the child process. See |content::ProcessType| and
-  // |NaClTrustedProcessType|.
+  // The type of the child process. See |content::ProcessType|.
   const int process_type_;
 
   // The subtype of the child process.

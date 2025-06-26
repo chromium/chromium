@@ -103,11 +103,6 @@ class TaskManagerInterface {
   // cycle. A value of -1 means no valid value is currently available.
   virtual int GetHardFaultsPerSecond(TaskId task_id) const = 0;
 
-  // Returns the NaCl GDB debug stub port. A value of
-  // |nacl::kGdbDebugStubPortUnknown| means no valid value is currently
-  // available. A value of -2 means NaCl is not enabled for this build.
-  virtual int GetNaClDebugStubPort(TaskId task_id) const = 0;
-
   // On Windows, gets the current and peak number of GDI and USER handles in
   // use. A value of -1 means no valid value is currently available.
   virtual void GetGDIHandles(TaskId task_id,
