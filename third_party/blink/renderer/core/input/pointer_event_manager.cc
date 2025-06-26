@@ -109,7 +109,6 @@ void PointerEventManager::Clear() {
   pointer_capture_target_.clear();
   pending_pointer_capture_target_.clear();
   resize_scrollable_area_.Clear();
-  offset_from_resize_corner_ = {};
   resize_position_to_size_transform_ = {};
   skip_touch_filter_discrete_ = false;
   skip_touch_filter_all_ = false;
@@ -825,8 +824,6 @@ bool PointerEventManager::HandleResizerDrag(
                                                             TouchAction::kNone);
         resize_position_to_size_transform_ =
             resize_scrollable_area_->InitializeResizeTransform(p);
-        offset_from_resize_corner_ =
-            resize_scrollable_area_->OffsetFromResizeCorner(p);
         return true;
       }
       break;
@@ -836,7 +833,7 @@ bool PointerEventManager::HandleResizerDrag(
           resize_scrollable_area_->Layer()->GetLayoutBox() &&
           resize_scrollable_area_->InResizeMode()) {
         gfx::Point pos = gfx::ToRoundedPoint(event.PositionInWidget());
-        resize_scrollable_area_->Resize(pos, offset_from_resize_corner_,
+        resize_scrollable_area_->Resize(pos,
                                         resize_position_to_size_transform_);
         return true;
       }
@@ -846,7 +843,6 @@ bool PointerEventManager::HandleResizerDrag(
       if (resize_scrollable_area_ && resize_scrollable_area_->InResizeMode()) {
         resize_scrollable_area_->SetInResizeMode(false);
         resize_scrollable_area_.Clear();
-        offset_from_resize_corner_ = {};
         resize_position_to_size_transform_ = {};
         return true;
       }

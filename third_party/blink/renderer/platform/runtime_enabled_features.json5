@@ -4841,11 +4841,6 @@
       status: "stable",
     },
     {
-      // killswitch for fix in M137
-      name: "TextareaStableResizing",
-      status: "stable",
-    },
-    {
       name: "TextDetector",
       status: "experimental",
     },

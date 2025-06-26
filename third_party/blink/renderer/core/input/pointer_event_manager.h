@@ -246,7 +246,6 @@ class CORE_EXPORT PointerEventManager final
   const Member<LocalFrame> frame_;
 
   WeakMember<PaintLayerScrollableArea> resize_scrollable_area_;
-  gfx::Vector2d offset_from_resize_corner_;
   gfx::Transform resize_position_to_size_transform_;
 
   // Prevents firing mousedown, mousemove & mouseup in-between a canceled

@@ -97,8 +97,6 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
 
   Member<PaintLayerScrollableArea> resize_scrollable_area_;
 
-  // In the coords of resize_scrollable_area_.
-  gfx::Vector2d offset_from_resize_corner_;
   gfx::Transform resize_position_to_size_transform_;
 };
 
