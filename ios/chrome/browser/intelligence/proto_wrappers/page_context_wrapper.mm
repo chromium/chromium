@@ -317,6 +317,9 @@ constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
   // Create the root node of the APC tree and its first root ContentNode.
   _rootAPCNode =
       std::make_unique<optimization_guide::proto::AnnotatedPageContent>();
+  _rootAPCNode->set_version(
+      optimization_guide::proto::AnnotatedPageContentVersion::
+          ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   _rootAPCNode->mutable_root_node()
       ->mutable_content_attributes()
       ->set_attribute_type(optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
