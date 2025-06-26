@@ -195,7 +195,7 @@ template("cargo_crate") {
     # Proc macros are output to a top level directory (for the host toolchain).
     # Since multiple versions of the same crate may coexist, the output file
     # name must include the epoch to disambiguate.
-    _output_name = "${_crate_name}_${_epochlabel}"
+    _output_name = "${_crate_name}_${_epochlabel}_${_orig_target_name}"
   } else if (_crate_type != "bin") {
     # Note that file names of libraries must start with the crate name in
     # order for the compiler to find transitive dependencies in the
