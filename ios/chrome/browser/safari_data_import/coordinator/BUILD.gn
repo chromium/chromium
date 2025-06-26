@@ -51,6 +51,10 @@ source_set("import_coordinator") {
   deps = [
     ":coordinator_delegate",
     "//base",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/safari_data_import/ui",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/common/ui/promo_style",
   ]
 }
 

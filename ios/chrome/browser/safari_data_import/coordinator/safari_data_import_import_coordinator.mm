@@ -4,12 +4,20 @@
 
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_import_coordinator.h"
 
+#import "base/check.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_coordinator_transitioning_delegate.h"
+#import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_view_controller.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
+
+@interface SafariDataImportImportCoordinator () <
+    PromoStyleViewControllerDelegate>
+@end
 
 @implementation SafariDataImportImportCoordinator {
   /// The view controller pushed onto the base navigation controller; user
   /// interacts with it to present other views.
-  UIViewController* _mainViewController;
+  SafariDataImportImportViewController* _containerViewController;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -26,44 +34,26 @@
 }
 
 - (void)start {
-  [self configureMainViewController];
-  [self.baseNavigationController pushViewController:_mainViewController
+  _containerViewController =
+      [[SafariDataImportImportViewController alloc] init];
+  _containerViewController.delegate = self;
+  self.baseNavigationController.navigationBarHidden = NO;
+  [self.baseNavigationController pushViewController:_containerViewController
                                            animated:YES];
 }
 
 - (void)stop {
   self.transitioningDelegate = nil;
-  _mainViewController = nil;
+  _containerViewController = nil;
 }
 
-#pragma mark - Private
+#pragma mark - PromoStyleViewControllerDelegate
 
-/// Configures the main view controller that will be pushed onto the navigation
-/// stack.
-- (void)configureMainViewController {
-  /// TODO(crbug.com/420703283): Replace with the
-  /// ConfirmationAlertViewController for the import data screen.
-  UIViewController* viewController = [[UIViewController alloc] init];
-  viewController.view.backgroundColor = UIColor.yellowColor;
-  UIButton* primaryButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [primaryButton setTitle:@"Close" forState:UIControlStateNormal];
-  [primaryButton addTarget:self
-                    action:@selector(primaryButtonTapped)
-          forControlEvents:UIControlEventTouchUpInside];
-  primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [viewController.view addSubview:primaryButton];
-  [NSLayoutConstraint activateConstraints:@[
-    [primaryButton.centerXAnchor
-        constraintEqualToAnchor:viewController.view.centerXAnchor],
-    [primaryButton.centerYAnchor
-        constraintEqualToAnchor:viewController.view.centerYAnchor]
-  ]];
-  viewController.navigationItem.hidesBackButton = NO;
-  _mainViewController = viewController;
+- (void)didTapPrimaryActionButton {
+  /// TODO(crbug.com/420703283): Implement.
 }
 
-/// TODO(crbug.com/420703283): Remove.
-- (void)primaryButtonTapped {
+- (void)didTapDismissButton {
   [self.transitioningDelegate
       safariDataImportCoordinatorWillDismissWorkflow:self];
 }
