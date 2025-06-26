@@ -6,6 +6,7 @@ desc: |-
   Setting the policy to Disabled means enrolled devices don't report the list of users.
 
   When <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME">DeviceEphemeralUsersEnabled</ph> is enabled, <ph name="REPORT_DEVICE_USERS_POLICY_NAME">ReportDeviceUsers</ph> is ignored and will always be disabled.
+default: true
 device_only: true
 example_value: false
 features:

@@ -11,6 +11,7 @@ desc: |-
         If this setting is enabled, Restricted Mode on YouTube is always enforced to be at least Moderate.
 
         If this setting is disabled or no value is set, Restricted Mode on YouTube is not enforced by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. External policies such as YouTube policies might still enforce Restricted Mode, though.
+default: false
 example_value: false
 features:
   can_be_recommended: false

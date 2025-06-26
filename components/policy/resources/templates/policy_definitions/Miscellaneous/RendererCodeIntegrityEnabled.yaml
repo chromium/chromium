@@ -8,6 +8,7 @@ desc: |-
         This policy was removed in Chrome 118 and is ignored if set.
 
         Note: Read more about Process mitigation policies ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).
+default: true
 example_value: false
 features:
   dynamic_refresh: false

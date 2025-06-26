@@ -8,6 +8,7 @@ desc: |-
         If you disable this setting, AutoFill will be inaccessible to users.
 
         If you enable this setting or do not set a value, AutoFill will remain under the control of the user. This will allow them to configure AutoFill profiles and to switch AutoFill on or off at their own discretion.
+default: true
 example_value: false
 features:
   can_be_recommended: true

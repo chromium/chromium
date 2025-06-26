@@ -7,6 +7,7 @@ desc: |-
         Setting the policy to Disabled turns off prompts, and audio capture is only available to URLs set in the AudioCaptureAllowedUrls list.
 
         Note: The policy affects all audio input (not just the built-in microphone).
+default: true
 example_value: false
 features:
   dynamic_refresh: true

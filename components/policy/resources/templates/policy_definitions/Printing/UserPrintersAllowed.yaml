@@ -4,6 +4,7 @@ desc: "Allows you to control if users can access non-enterprise printers\n\n    
   \ and print using their own printers.\n\n      If the policy is set to False, users\
   \ will not be able to add and configure their own printers. They will also not be\
   \ able to print using any previously configured printers.\n      "
+default: true
 example_value: false
 features:
   dynamic_refresh: true

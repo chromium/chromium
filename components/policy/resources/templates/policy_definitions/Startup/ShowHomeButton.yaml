@@ -3,6 +3,7 @@ desc: |-
   Setting the policy to Enabled shows the Home button on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s toolbar. Setting the policy to Disabled keeps the Home button from appearing.
 
         If you set the policy, users can't change it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If not set, users chooses whether to show the Home button.
+default: null
 example_value: true
 features:
   can_be_recommended: true
@@ -16,6 +17,8 @@ items:
   value: true
 - caption: Hide the Home button from the toolbar
   value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - file://components/policy/OWNERS
 - poromov@chromium.org

@@ -7,6 +7,7 @@ desc: |-
         If the policy is set to false or left unset, the crash report information
         will not be reported. If set to true, crash report information will be
         reported.
+default: false
 device_only: true
 example_value: false
 features:

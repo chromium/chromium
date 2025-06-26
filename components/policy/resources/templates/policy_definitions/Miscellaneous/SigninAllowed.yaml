@@ -7,6 +7,7 @@ desc: "This policy is deprecated, consider using <ph name=\"BROWSER_SIGNIN_POLIC
   \      Setting this policy to Disabled will prevent sign in. It also blocks apps\
   \ and extensions that use the chrome.identity API from functioning. To avoid that,\
   \ use <ph name=\"SYNC_DISABLED_POLICY_NAME\">SyncDisabled</ph> instead.\n      "
+default: true
 example_value: true
 features:
   dynamic_refresh: true

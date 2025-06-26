@@ -8,6 +8,7 @@ desc: |-
         If this setting is disabled, web pages cannot use JavaScript and the user cannot change that setting.
 
         If this setting is enabled or not set, web pages can use JavaScript but the user can change that setting.
+default: true
 example_value: true
 features:
   dynamic_refresh: true

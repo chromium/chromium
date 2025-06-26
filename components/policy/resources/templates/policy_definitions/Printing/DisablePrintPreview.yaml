@@ -3,6 +3,7 @@ desc: |-
   Setting the policy to Enabled has <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> open the system print dialog instead of the built-in print preview when users request a printout.
 
         Setting the policy to Disabled or leaving it unset has print commands trigger the print preview screen.
+default: false
 example_value: false
 features:
   dynamic_refresh: false

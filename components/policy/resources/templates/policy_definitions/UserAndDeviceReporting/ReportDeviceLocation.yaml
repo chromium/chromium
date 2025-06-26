@@ -7,6 +7,7 @@ desc: |-
         Setting the policy to Enabled has enrolled devices periodically report their location.
 
         Setting the policy to Disabled or leaving it unset means enrolled devices don't report their location.
+default: false
 device_only: true
 example_value: false
 features:

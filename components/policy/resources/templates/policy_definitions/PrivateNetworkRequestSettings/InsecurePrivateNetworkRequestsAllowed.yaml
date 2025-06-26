@@ -16,6 +16,7 @@ desc: |-
             In the future, depending on spec evolution, this policy might apply to all cross-origin requests directed at private IPs or localhost.
 
             When this policy is set to true, websites are allowed to make requests to any network endpoint, subject to other cross-origin checks.
+default: false
 example_value: false
 features:
   dynamic_refresh: true

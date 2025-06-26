@@ -6,6 +6,7 @@ desc: |-
         If the policy is set to false or left unset, the information will not be reported.
         If set to true, the device's VPD information will be reported.
         Vital Product Data (VPD) is a collection of configuration and informational data (such as part and serial numbers) associated with the device.
+default: false
 device_only: true
 example_value: false
 features:
