@@ -1,7 +1,7 @@
 Name: Compose Runtime Annotation
 Short Name: runtime-annotation-android
-URL: https://developer.android.com/jetpack/androidx/releases/compose-runtime#1.9.0-SNAPSHOT
-Version: 1.9.0-SNAPSHOT
+URL: https://developer.android.com/jetpack/androidx/releases/compose-runtime#1.10.0-SNAPSHOT
+Version: 1.10.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
