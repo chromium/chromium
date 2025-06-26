@@ -681,6 +681,10 @@ bool DatabaseConnection::IsZygotic() const {
   return metadata().version == blink::IndexedDBDatabaseMetadata::NO_VERSION;
 }
 
+int64_t DatabaseConnection::GetCommittedVersion() const {
+  return metadata_snapshot_ ? metadata_snapshot_->version : metadata_.version;
+}
+
 std::unique_ptr<BackingStoreTransactionImpl>
 DatabaseConnection::CreateTransaction(
     base::PassKey<BackingStoreDatabaseImpl>,

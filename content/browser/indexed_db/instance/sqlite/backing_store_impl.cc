@@ -57,10 +57,18 @@ int64_t BackingStoreImpl::GetInMemorySize() const {
 }
 
 StatusOr<std::vector<std::u16string>> BackingStoreImpl::GetDatabaseNames() {
+  // TODO(crbug.com/419203257): Remove this method from the BackingStore
+  // interface. This is only used to determine if a database of a given name
+  // already exists. For on-disk databases, it will be much more efficient to
+  // determine if a database with a given name exists than to create a list of
+  // all existing databases.
   std::vector<std::u16string> names;
-  // TODO(crbug.com/40253999): Support on-disk databases.
-  for (const auto& [name, _] : open_connections_) {
-    names.push_back(name);
+  for (const auto& [name, db] : open_connections_) {
+    // Zygotic SQLite databases have already been deleted from the perspective
+    // of the IDB frontend.
+    if (!db->IsZygotic()) {
+      names.push_back(name);
+    }
   }
   return names;
 }
@@ -70,8 +78,15 @@ BackingStoreImpl::GetDatabaseNamesAndVersions() {
   std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
   // TODO(crbug.com/40253999): Support on-disk databases.
   for (const auto& [name, db] : open_connections_) {
+    // indexedDB.databases() is meant to return *committed* database state, i.e.
+    // should not include in-progress VersionChange updates. This is verified by
+    // external/wpt/IndexedDB/get-databases.any.html
+    int64_t version = db->GetCommittedVersion();
+    if (version == blink::IndexedDBDatabaseMetadata::NO_VERSION) {
+      continue;
+    }
     names_and_versions.push_back(
-        blink::mojom::IDBNameAndVersion::New(name, db->metadata().version));
+        blink::mojom::IDBNameAndVersion::New(name, version));
   }
   return names_and_versions;
 }
