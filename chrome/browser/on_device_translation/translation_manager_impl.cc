@@ -141,6 +141,15 @@ TranslationManagerImpl* TranslationManagerImpl::GetOrCreate(
   return manager_ptr;
 }
 
+bool TranslationManagerImpl::AccessedFromValidStoragePartition() {
+  if (process_host()->GetStoragePartition() !=
+      browser_context()->GetDefaultStoragePartition()) {
+    return !origin_.GetURL().SchemeIsHTTPOrHTTPS();
+  }
+
+  return true;
+}
+
 base::Value TranslationManagerImpl::GetInitializedTranslationsValue() {
   return HostContentSettingsMapFactory::GetForProfile(browser_context())
       ->GetWebsiteSetting(origin_.GetURL(), origin_.GetURL(),
@@ -309,6 +318,14 @@ void TranslationManagerImpl::CreateTranslator(
     return;
   }
 
+  if (!AccessedFromValidStoragePartition()) {
+    mojo::Remote(std::move(client))
+        ->OnResult(CreateTranslatorResult::NewError(
+                       CreateTranslatorError::kInvalidStoragePartition),
+                   nullptr, nullptr);
+    return;
+  }
+
   if (options->observer_remote) {
     base::flat_set<std::string> component_ids = {
         component_updater::TranslateKitComponentInstallerPolicy::
@@ -374,6 +391,12 @@ void TranslationManagerImpl::TranslationAvailable(
 
   if (!IsTranslatorAllowed(browser_context())) {
     std::move(callback).Run(CanCreateTranslatorResult::kNoDisallowedByPolicy);
+    return;
+  }
+
+  if (!AccessedFromValidStoragePartition()) {
+    std::move(callback).Run(
+        CanCreateTranslatorResult::kNoInvalidStoragePartition);
     return;
   }
 

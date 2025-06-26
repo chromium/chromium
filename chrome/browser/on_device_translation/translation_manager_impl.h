@@ -95,6 +95,10 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
       const std::string& source_language,
       const std::string& target_language);
 
+  // Determines if the Translator API has been accessed from a valid storage
+  // partition.
+  bool AccessedFromValidStoragePartition();
+
   // Dictionary keys for the `INITIALIZED_TRANSLATIONS` website setting.
   // Schema (per origin):
   // {

@@ -42,6 +42,9 @@ String ConvertCreateTranslatorErrorToDebugString(CreateTranslatorError error) {
       return "Too many Translator API requests are queued.";
     case CreateTranslatorError::kInvalidVersion:
       return "The translation library version is invalid.";
+    case CreateTranslatorError::kInvalidStoragePartition:
+      return "The Translator API is only accessible from a valid storage "
+             "partition.";
   }
 }
 
@@ -67,6 +70,9 @@ String ConvertCanCreateTranslatorResultToDebugString(
     case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
       equivalent_error = CreateTranslatorError::kExceedsServiceCountLimitation;
       break;
+    case CanCreateTranslatorResult::kNoInvalidStoragePartition:
+      equivalent_error = CreateTranslatorError::kInvalidStoragePartition;
+      break;
   }
   return ConvertCreateTranslatorErrorToDebugString(equivalent_error);
 }
@@ -85,6 +91,7 @@ bool RequiresUserActivation(CanCreateTranslatorResult result) {
     case CanCreateTranslatorResult::kNoServiceCrashed:
     case CanCreateTranslatorResult::kNoDisallowedByPolicy:
     case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
+    case CanCreateTranslatorResult::kNoInvalidStoragePartition:
       return false;
   }
 }
@@ -102,6 +109,7 @@ bool TranslatorIsUnavailable(CanCreateTranslatorResult result) {
     case CanCreateTranslatorResult::kNoServiceCrashed:
     case CanCreateTranslatorResult::kNoDisallowedByPolicy:
     case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
+    case CanCreateTranslatorResult::kNoInvalidStoragePartition:
       return true;
   }
 }

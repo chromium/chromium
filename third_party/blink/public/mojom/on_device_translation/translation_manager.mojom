@@ -48,6 +48,10 @@ enum CanCreateTranslatorResult {
   // The translator cannot be created, because the number of services exceeds
   // the limitation.
   kNoExceedsServiceCountLimitation = 8,
+
+  // The translator cannot be created, because the API was accessed from an
+  // invalid storage partition.
+  kNoInvalidStoragePartition = 9,
 };
 
 // The error of TranslationManager's CreateTranslator IPC.
@@ -82,8 +86,12 @@ enum CreateTranslatorError {
   // exceeds the limitation.
   kExceedsPendingTaskCountLimitation =  8,
 
-  // The translator cannot be created because the library version is invalid.
+  // The translator cannot be created, because the library version is invalid.
   kInvalidVersion = 9,
+
+  // The translator cannot be created, because the API was accessed from an invalid
+  // storage partition.
+  kInvalidStoragePartition = 10,
 };
 
 // The result of TranslationManager's CreateTranslator IPC.

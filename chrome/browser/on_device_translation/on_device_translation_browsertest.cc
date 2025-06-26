@@ -173,6 +173,7 @@ std::string_view GetCanCreateTranslatorResultString(
     case CanCreateTranslatorResult::kNoServiceCrashed:
     case CanCreateTranslatorResult::kNoDisallowedByPolicy:
     case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
+    case CanCreateTranslatorResult::kNoInvalidStoragePartition:
       return "unavailable";
   }
 }
@@ -1609,6 +1610,54 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
   TestCanTranslateResult(
       "en", "ja", CanCreateTranslatorResult::kAfterDownloadLibraryNotReady);
+}
+
+// Tests the behavior when the Translator API is accessed from an invalid
+// storage partition.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       CanTranslateInvalidStoragePartition) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
+
+  // Create a guest browser profile in order to access a non-default storage
+  // partition, and navigate to an empty page.
+  Browser* guest_browser = CreateGuestBrowser();
+  ASSERT_TRUE(guest_browser);
+
+  guest_browser->profile()->GetPrefs()->SetString(
+      language::prefs::kSelectedLanguages, "ja");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      guest_browser, embedded_https_test_server().GetURL("/empty.html")));
+
+  mojo::Remote<blink::mojom::TranslationManager> remote;
+  TestSupportsUserData fake_user_data;
+
+  content::RenderProcessHost* process_host = guest_browser->tab_strip_model()
+                                                 ->GetActiveWebContents()
+                                                 ->GetPrimaryMainFrame()
+                                                 ->GetProcess();
+  const url::Origin last_committed_origin = guest_browser->tab_strip_model()
+                                                ->GetActiveWebContents()
+                                                ->GetPrimaryMainFrame()
+                                                ->GetLastCommittedOrigin();
+
+  TranslationManagerImpl::Bind(process_host, GetBrowserContext(),
+                               &fake_user_data, last_committed_origin,
+                               remote.BindNewPipeAndPassReceiver());
+
+  // Check the availability result.
+  base::RunLoop run_loop;
+  remote->TranslationAvailable(
+      TranslatorLanguageCode::New(std::string("en")),
+      TranslatorLanguageCode::New(std::string("ja")),
+      base::BindLambdaForTesting([&](CanCreateTranslatorResult result) {
+        EXPECT_EQ(result,
+                  CanCreateTranslatorResult::kNoInvalidStoragePartition);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 // Test the behavior of availability() when the language is not supported.
