@@ -449,13 +449,14 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Signin.AccountProfileStartupState"
+<histogram name="Signin.AccountProfileStartupState2"
     enum="AccountProfileStartupState" expires_after="2025-11-01">
   <owner>jood@google.com</owner>
   <owner>treib@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Records the account profile mapping state on startup. iOS only.
+    Records the account profile mapping state on startup for the primary account
+    in each profile. iOS only.
   </summary>
 </histogram>
 

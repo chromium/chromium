@@ -116,7 +116,7 @@ void RecordHostedDomainFetchEvent(HostedDomainFetchEvent event) {
   base::UmaHistogramEnumeration("Signin.IOSHostedDomainFetchEvent", event);
 }
 
-// Enum for `Signin.AccountProfileStartupState` histogram.
+// Enum for `Signin.AccountProfileStartupState2` histogram.
 // Entries should not be renumbered and numeric values should never be reused.
 // LINT.IfChange(AccountProfileStartupState)
 enum class AccountProfileStartupState {
@@ -128,8 +128,26 @@ enum class AccountProfileStartupState {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountProfileStartupState)
 
-void RecordAccountProfileStartupState(AccountProfileStartupState state) {
-  base::UmaHistogramEnumeration("Signin.AccountProfileStartupState", state);
+void RecordAccountProfileStartupState(bool is_primary_account,
+                                      bool is_personal_profile,
+                                      bool is_managed_account) {
+  if (!is_primary_account) {
+    return;
+  }
+
+  AccountProfileStartupState state;
+
+  if (is_personal_profile && !is_managed_account) {
+    state = AccountProfileStartupState::kPersonalAccountInPersonalProfile;
+  } else if (!is_personal_profile && is_managed_account) {
+    state = AccountProfileStartupState::kManagedAccountInManagedProfile;
+  } else if (is_personal_profile && is_managed_account) {
+    state = AccountProfileStartupState::kManagedAccountInPersonalProfile;
+  } else {
+    state = AccountProfileStartupState::kPersonalAccountInManagedProfile;
+  }
+
+  base::UmaHistogramEnumeration("Signin.AccountProfileStartupState2", state);
 }
 
 }  // namespace
@@ -244,6 +262,10 @@ class AccountProfileMapper::Assigner
   // assignment may happen asynchronously in some cases.
   void AssignIdentityToProfile(id<SystemIdentity> identity,
                                bool is_managed_account);
+  // Handles recording prefs used to force-migrate pre-multi-profile managed
+  // accounts.
+  void MaybeRecordForceMigrationPref(bool is_personal_profile,
+                                     bool is_managed_account);
 
   // Re-fetches the account<->profile mappings from ProfileAttributesStorageIOS,
   // and if anything changed, notifies AccountProfileMapper via the callback.
@@ -781,21 +803,26 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
 
   const GaiaId gaia_id(identity.gaiaID);
 
-  // Check whether the identity is already assigned to a profile.
-  for (const auto& [profile_name, gaia_ids] : profile_to_gaia_ids_) {
-    if (!gaia_ids.contains(gaia_id)) {
-      continue;
-    }
+  const std::optional<std::string> profile_name =
+      FindProfileNameForGaiaID(gaia_id);
+
+  if (profile_name) {
     // Found the profile! Check if it's the right kind of profile.
-    bool is_personal_profile = (profile_name == GetPersonalProfileName());
+    bool is_personal_profile = (*profile_name == GetPersonalProfileName());
+    bool is_primary_account = false;
+    if (profile_manager_) {
+      is_primary_account =
+          (gaia_id == GetProfileAttributesStorage()
+                          ->GetAttributesForProfileWithName(*profile_name)
+                          .GetGaiaId());
+    } else {
+      CHECK_IS_TEST();
+    }
+
+    RecordAccountProfileStartupState(is_primary_account, is_personal_profile,
+                                     is_managed_account);
+
     if (is_personal_profile == !is_managed_account) {
-      if (is_personal_profile) {
-        RecordAccountProfileStartupState(
-            AccountProfileStartupState::kPersonalAccountInPersonalProfile);
-      } else {
-        RecordAccountProfileStartupState(
-            AccountProfileStartupState::kManagedAccountInManagedProfile);
-      }
       // The account is already assigned to the right profile.
       return;
     }
@@ -806,37 +833,14 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     // 2. (Very rarely) The account's managed-ness status changed.
     // In both cases, leave the account where it is iff it's currently the
     // primary account in its profile.
-    bool is_primary_account = false;
-    if (profile_manager_) {
-      is_primary_account =
-          (gaia_id == GetProfileAttributesStorage()
-                          ->GetAttributesForProfileWithName(profile_name)
-                          .GetGaiaId());
-    } else {
-      CHECK_IS_TEST();
-    }
     if (is_primary_account) {
-      if (is_personal_profile && is_managed_account) {
-        RecordAccountProfileStartupState(
-            AccountProfileStartupState::kManagedAccountInPersonalProfile);
-        // Record force migration pref for managed accounts.
-        if (local_pref_service_->GetTime(
-                prefs::kWaitingForMultiProfileForcedMigrationTimestamp) ==
-            base::Time()) {
-          local_pref_service_->SetTime(
-              prefs::kWaitingForMultiProfileForcedMigrationTimestamp,
-              base::Time::Now());
-        }
-      } else {
-        RecordAccountProfileStartupState(
-            AccountProfileStartupState::kPersonalAccountInManagedProfile);
-      }
+      MaybeRecordForceMigrationPref(is_personal_profile, is_managed_account);
       // TODO(crbug.com/408131474): Trigger forced-migration.
       //  It's the primary account - leave the current assignment in place.
       return;
     }
     // It's not the primary account, so allow re-assignment.
-    DetachGaiaIdFromProfile(profile_name, gaia_id);
+    DetachGaiaIdFromProfile(*profile_name, gaia_id);
   }
 
   // The account needs to be assigned (or re-assigned) to a profile.
@@ -858,6 +862,25 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
   }
 
   AttachGaiaIdToProfile(assigned_profile_name, gaia_id);
+}
+
+void AccountProfileMapper::Assigner::MaybeRecordForceMigrationPref(
+    bool is_personal_profile,
+    bool is_managed_account) {
+  if (!is_personal_profile || !is_managed_account) {
+    return;
+  }
+  // Record force migration pref for managed accounts in personal profile if not
+  // recorded yet.
+  if (local_pref_service_->GetTime(
+          prefs::kWaitingForMultiProfileForcedMigrationTimestamp) !=
+      base::Time()) {
+    // Time pref was recorded already.
+    return;
+  }
+  local_pref_service_->SetTime(
+      prefs::kWaitingForMultiProfileForcedMigrationTimestamp,
+      base::Time::Now());
 }
 
 void AccountProfileMapper::Assigner::MaybeUpdateCachedMappingAndNotify() {
