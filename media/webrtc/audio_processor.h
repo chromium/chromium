@@ -85,7 +85,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
       const media::AudioParameters& input_format,
       const media::AudioParameters& output_format,
       webrtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
-      bool needs_playout_reference);
+      bool needs_playout_reference,
+      base::TimeDelta added_aec_delay);
 
   ~AudioProcessor();
 
@@ -213,6 +214,12 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // any aecdump recording in |webrtc_audio_processing_|.
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter> worker_queue_
       GUARDED_BY_CONTEXT(owning_sequence_);
+
+  // Cached value for an extra delay which is added if system loopback AEC is
+  // utilized. Each audio capture timestamp for processed audio frames is
+  // reduced by this value to ensure that delay stats are correct. Stored on the
+  // owning sequence during construction and read on the capture thread.
+  const base::TimeDelta added_aec_delay_;
 
   // Cached value for the playout delay latency. Updated on the playout thread
   // and read on the capture thread.

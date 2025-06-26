@@ -11,8 +11,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "media/webrtc/audio_processor.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -36,6 +34,8 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
+#include "media/webrtc/audio_processor.h"
 #include "media/webrtc/constants.h"
 #include "media/webrtc/helpers.h"
 #include "media/webrtc/webrtc_features.h"
@@ -246,13 +246,13 @@ std::unique_ptr<AudioProcessor> AudioProcessor::Create(
       "AudioProcessor::Create({multi_channel_capture_processing=%s})",
       base::ToString(settings.multi_channel_capture_processing)));
 
-  webrtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing =
+  auto [webrtc_audio_processing, added_aec_delay] =
       media::CreateWebRtcAudioProcessingModule(settings);
 
   return std::make_unique<AudioProcessor>(
       std::move(deliver_processed_audio_callback), std::move(log_callback),
       input_format, output_format, std::move(webrtc_audio_processing),
-      ApmNeedsPlayoutReference(webrtc_audio_processing.get()));
+      ApmNeedsPlayoutReference(webrtc_audio_processing.get()), added_aec_delay);
 }
 
 AudioProcessor::AudioProcessor(
@@ -261,10 +261,12 @@ AudioProcessor::AudioProcessor(
     const media::AudioParameters& input_format,
     const media::AudioParameters& output_format,
     webrtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
-    bool needs_playout_reference)
+    bool needs_playout_reference,
+    base::TimeDelta added_aec_delay)
     : webrtc_audio_processing_(webrtc_audio_processing),
       needs_playout_reference_(needs_playout_reference),
       log_callback_(std::move(log_callback)),
+      added_aec_delay_(added_aec_delay),
       input_format_(input_format),
       output_format_(output_format),
       deliver_processed_audio_callback_(
@@ -357,8 +359,8 @@ void AudioProcessor::ProcessCapturedAudio(const media::AudioBus& audio_source,
                       output_bus->channel_ptrs());
     }
 
-    deliver_processed_audio_callback_.Run(*output_bus->bus(),
-                                          audio_capture_time, new_volume);
+    deliver_processed_audio_callback_.Run(
+        *output_bus->bus(), audio_capture_time - added_aec_delay_, new_volume);
   }
 }
 

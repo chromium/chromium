@@ -131,10 +131,10 @@ void StopEchoCancellationDump(webrtc::AudioProcessing* audio_processing) {
   audio_processing->DetachAecDump();
 }
 
-webrtc::scoped_refptr<webrtc::AudioProcessing>
+std::pair<webrtc::scoped_refptr<webrtc::AudioProcessing>, base::TimeDelta>
 CreateWebRtcAudioProcessingModule(const AudioProcessingSettings& settings) {
   if (!settings.NeedWebrtcAudioProcessing())
-    return nullptr;
+    return {nullptr, base::TimeDelta()};
 
   webrtc::AudioProcessing::Config apm_config;
   apm_config.pipeline.multi_channel_render = true;
@@ -150,9 +150,10 @@ CreateWebRtcAudioProcessingModule(const AudioProcessingSettings& settings) {
 
   webrtc::BuiltinAudioProcessingBuilder apm_builder(apm_config);
 
+  base::TimeDelta added_delay;
 #if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
   if (settings.needs_loopback_aec_reference) {
-    base::TimeDelta added_delay = media::GetAecAddedDelay();
+    added_delay = media::GetAecAddedDelay();
     int num_filters = media::GetAecDelayNumFilters();
     webrtc::EchoCanceller3Config config;
     webrtc::EchoCanceller3Config multichannel_config =
@@ -173,6 +174,6 @@ CreateWebRtcAudioProcessingModule(const AudioProcessingSettings& settings) {
   }
 #endif  // BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
 
-  return apm_builder.Build(WebRtcEnvironment());
+  return {apm_builder.Build(WebRtcEnvironment()), added_delay};
 }
 }  // namespace media

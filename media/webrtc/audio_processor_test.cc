@@ -505,7 +505,8 @@ class AudioProcessorPlayoutTest : public AudioProcessorTest {
                          params_,
                          params_,
                          mock_webrtc_apm_,
-                         /*needs_playout_reference=*/true) {}
+                         /*needs_playout_reference=*/true,
+                         /*added_aec_delay*/ base::TimeDelta()) {}
 
   webrtc::scoped_refptr<webrtc::test::MockAudioProcessing> mock_webrtc_apm_;
   AudioProcessor audio_processor_;

@@ -18,8 +18,7 @@ constexpr webrtc::AudioProcessing::Config kDefaultApmConfig{};
 
 webrtc::AudioProcessing::Config CreateApmGetConfig(
     const AudioProcessingSettings& settings) {
-  webrtc::scoped_refptr<webrtc::AudioProcessing> apm =
-      CreateWebRtcAudioProcessingModule(settings);
+  auto [apm, added_delay] = CreateWebRtcAudioProcessingModule(settings);
   DCHECK(!!apm);
   return apm->GetConfig();
 }

@@ -6,6 +6,7 @@
 #define MEDIA_WEBRTC_HELPERS_H_
 
 #include <optional>
+#include <utility>
 
 #include "base/component_export.h"
 #include "base/files/file.h"
@@ -28,9 +29,14 @@ webrtc::StreamConfig CreateStreamConfig(const AudioParameters& parameters);
 
 // Creates and configures a `webrtc::AudioProcessing` audio processing module
 // (APM), based on the provided parameters and on features and field trials.
-// Returns nullptr if settings.NeedWebrtcAudioProcessing() is false.
+// Returns a pair consisting of:
+// - A configured `webrtc::AudioProcessing` instance (or nullptr if
+//   `settings.NeedWebrtcAudioProcessing()` is false).
+// - A `base::TimeDelta` representing any additional processing delay introduced
+//   by the configuration if loopback AEC is enabled. This delay will be zero
+//   if loopback AEC is not enabled (default).
 COMPONENT_EXPORT(MEDIA_WEBRTC)
-webrtc::scoped_refptr<webrtc::AudioProcessing>
+std::pair<webrtc::scoped_refptr<webrtc::AudioProcessing>, base::TimeDelta>
 CreateWebRtcAudioProcessingModule(const AudioProcessingSettings& settings);
 
 // Starts the echo cancellation dump in
