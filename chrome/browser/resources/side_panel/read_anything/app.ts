@@ -675,7 +675,7 @@ export class AppElement extends AppElementBase implements
   }
 
   protected updateLinks_() {
-    if (!this.shadowRoot) {
+    if (!this.shadowRoot || !this.hasContent_) {
       return;
     }
 
@@ -697,7 +697,8 @@ export class AppElement extends AppElementBase implements
   }
 
   protected updateImages_() {
-    if (!this.shadowRoot || !chrome.readingMode.imagesFeatureEnabled) {
+    if (!this.shadowRoot || !chrome.readingMode.imagesFeatureEnabled ||
+        !this.hasContent_) {
       return;
     }
 
