@@ -68,8 +68,9 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
         // important or that it only has waived binding.
         public boolean shouldBeInLowRankGroup() {
             boolean inViewport = visible && (frameDepth == 0 || intersectsViewport);
-            return (isSpareRenderer && ChildProcessRanking.isSpareRendererOfLowestRanking())
-                    || (importance <= ChildProcessImportance.PERCEPTIBLE && !inViewport);
+            return !inViewport
+                    && ((isSpareRenderer && ChildProcessRanking.isSpareRendererOfLowestRanking())
+                            || (importance <= ChildProcessImportance.PERCEPTIBLE));
         }
     }
 
