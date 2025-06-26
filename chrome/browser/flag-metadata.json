@@ -8592,7 +8592,7 @@
       "danieldilan@google.com",
       "//third_party/rust/OWNERS"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 143
   },
   {
     "name": "safe-browsing-local-lists-use-sbv5",
