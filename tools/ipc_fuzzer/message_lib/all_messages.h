@@ -15,6 +15,4 @@
 #undef CONTENT_COMMON_FRAME_PARAM_MACROS_H_
 #undef CONTENT_PUBLIC_COMMON_COMMON_PARAM_TRAITS_MACROS_H_
 
-#include "components/nacl/common/buildflags.h"
-
 #include "chrome/common/all_messages.h"

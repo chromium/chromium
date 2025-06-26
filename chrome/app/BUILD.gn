@@ -144,7 +144,6 @@ static_library("test_support") {
     "//components/crash/core/app:test_support",
     "//components/devtools/devtools_pipe",
     "//components/memory_system",
-    "//components/nacl/common:buildflags",
     "//components/startup_metric_utils",
     "//components/webui/about",
     "//content/public/app",

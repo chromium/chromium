@@ -232,7 +232,6 @@ if (!is_android) {
         "//components/browsing_data/content",
         "//components/content_settings/core/browser:cookie_settings",
         "//components/content_settings/core/common",
-        "//components/nacl/common:buildflags",
         "//components/prefs",
         "//pdf:buildflags",
         "//ppapi/buildflags",

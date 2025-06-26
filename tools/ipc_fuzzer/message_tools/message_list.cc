@@ -37,7 +37,7 @@ static msginfo msgtable[] = {
 };
 #define MSGTABLE_SIZE (sizeof(msgtable)/sizeof(msgtable[0]))
 
-#if !BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(ENABLE_PPAPI)
+#if !BUILDFLAG(ENABLE_PPAPI)
 static_assert(MSGTABLE_SIZE == 0, "There should be no messages");
 #else
 static_assert(MSGTABLE_SIZE, "check your headers for an extra semicolon");

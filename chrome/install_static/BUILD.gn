@@ -22,7 +22,6 @@ if (is_win) {
     deps = [
       "//base",
       "//base/version_info:generate_version_info",
-      "//components/nacl/common:buildflags",
     ]
 
     public_deps = [
