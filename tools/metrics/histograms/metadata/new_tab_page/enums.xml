@@ -54,6 +54,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="FooterContextMenuItem">
   <int value="0" label="Hide footer clicked."/>
+  <int value="1" label="Customize chrome clicked."/>
 </enum>
 
 <enum name="FooterCustomizeChromeEntryPoint">
