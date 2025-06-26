@@ -192,9 +192,9 @@ void ChromeMediaAppUIDelegate::EditInPhotosImpl(
 void ChromeMediaAppUIDelegate::SubmitForm(const GURL& url,
                                           const std::vector<int8_t>& payload,
                                           const std::string& header) {
-  user_manager::User& user =
+  const user_manager::User& user =
       CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
           Profile::FromWebUI(web_ui_)));
   ash::BrowserController::GetInstance()->NewTabWithPostData(
-      user, url, base::as_byte_span(payload), header);
+      user.GetAccountId(), url, base::as_byte_span(payload), header);
 }

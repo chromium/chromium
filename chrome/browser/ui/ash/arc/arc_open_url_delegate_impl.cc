@@ -341,7 +341,7 @@ void ArcOpenUrlDelegateImpl::OpenArcCustomTab(
   // because of the CustomTabSessionImpl object getting destroyed.
   ash::BrowserDelegate* custom_tab_browser =
       ash::BrowserController::GetInstance()->CreateCustomTab(
-          user, std::move(web_contents));
+          user.GetAccountId(), std::move(web_contents));
   CHECK(custom_tab_browser);
 
   // TODO(crbug.com/41454219): Remove this temporary conversion to InterfacePtr

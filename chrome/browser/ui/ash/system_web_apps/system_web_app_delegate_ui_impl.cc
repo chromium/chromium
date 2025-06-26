@@ -65,7 +65,8 @@ BrowserDelegate* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
 
     browser = BrowserController::GetInstance()->CreateWebApp(
         CHECK_DEREF(
-            BrowserContextHelper::Get()->GetUserByBrowserContext(profile)),
+            BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
+            .GetAccountId(),
         params.app_id, popup ? BrowserType::kAppPopup : BrowserType::kApp,
         create_params);
     if (!browser) {
