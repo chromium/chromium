@@ -2280,37 +2280,6 @@ const FeatureEntry::FeatureVariation kNtpCalendarModuleVariations[] = {
      std::size(kNtpCalendarModuleFakeData), nullptr},
 };
 
-const FeatureEntry::FeatureParam kNtpChromeCartModuleFakeData[] = {
-    {ntp_features::kNtpChromeCartModuleDataParam, "fake"},
-    {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"}};
-const FeatureEntry::FeatureParam kNtpChromeCartModuleAbandonedCartDiscount[] = {
-    {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"},
-    {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
-     "true"},
-    {"partner-merchant-pattern",
-     "(electronicexpress.com|zazzle.com|wish.com|homesquare.com|iherb.com|"
-     "zappos.com|otterbox.com)"}};
-const FeatureEntry::FeatureParam kNtpChromeCartModuleHeuristicsImprovement[] = {
-    {ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam, "true"}};
-const FeatureEntry::FeatureParam kNtpChromeCartModuleRBDAndCouponDiscount[] = {
-    {ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam, "true"},
-    {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"},
-    {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
-     "true"},
-    {"partner-merchant-pattern",
-     "(electronicexpress.com|zazzle.com|wish.com|homesquare.com)"},
-    {ntp_features::kNtpChromeCartModuleCouponParam, "true"}};
-const FeatureEntry::FeatureVariation kNtpChromeCartModuleVariations[] = {
-    {"- Fake Data And Discount", kNtpChromeCartModuleFakeData,
-     std::size(kNtpChromeCartModuleFakeData), nullptr},
-    {"- Abandoned Cart Discount", kNtpChromeCartModuleAbandonedCartDiscount,
-     std::size(kNtpChromeCartModuleAbandonedCartDiscount), nullptr},
-    {"- Heuristics Improvement", kNtpChromeCartModuleHeuristicsImprovement,
-     std::size(kNtpChromeCartModuleHeuristicsImprovement), nullptr},
-    {"- RBD and Coupons", kNtpChromeCartModuleRBDAndCouponDiscount,
-     std::size(kNtpChromeCartModuleRBDAndCouponDiscount), nullptr},
-};
-
 const FeatureEntry::FeatureParam kNtpDriveModuleFakeData[] = {
     {ntp_features::kNtpDriveModuleDataParam, "fake"}};
 const FeatureEntry::FeatureParam kNtpDriveModuleManagedUsersOnly[] = {
@@ -7378,12 +7347,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid | kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kShoppingAlternateServer)},
 
-    {"local-pdp-detection",
-     commerce::flag_descriptions::kCommerceLocalPDPDetectionName,
-     commerce::flag_descriptions::kCommerceLocalPDPDetectionDescription,
-     kOsAndroid | kOsDesktop,
-     FEATURE_VALUE_TYPE(commerce::kCommerceLocalPDPDetection)},
-
     {"price-tracking-subscription-service-locale-key",
      commerce::flag_descriptions::
          kPriceTrackingSubscriptionServiceLocaleKeyName,
@@ -7402,10 +7365,6 @@ const FeatureEntry kFeatureEntries[] = {
          commerce::kPriceTrackingSubscriptionServiceProductVersion)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"price-change-module", flag_descriptions::kPriceChangeModuleName,
-     flag_descriptions::kPriceChangeModuleDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kPriceChangeModule)},
-
     {"track-by-default-mobile",
      commerce::flag_descriptions::kTrackByDefaultOnMobileName,
      commerce::flag_descriptions::kTrackByDefaultOnMobileDescription,
@@ -7413,10 +7372,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"enable-retail-coupons", flag_descriptions::kRetailCouponsName,
-     flag_descriptions::kRetailCouponsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(commerce::kRetailCoupons)},
-
     {"ntp-alpha-background-collections",
      flag_descriptions::kNtpAlphaBackgroundCollectionsName,
      flag_descriptions::kNtpAlphaBackgroundCollectionsDescription, kOsDesktop,
@@ -7432,12 +7387,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpCalendarModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpCalendarModule,
                                     kNtpCalendarModuleVariations,
-                                    "DesktopNtpModules")},
-
-    {"ntp-chrome-cart-module", flag_descriptions::kNtpChromeCartModuleName,
-     flag_descriptions::kNtpChromeCartModuleDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpChromeCartModule,
-                                    kNtpChromeCartModuleVariations,
                                     "DesktopNtpModules")},
 
     {"ntp-compose-entrypoint",
@@ -7585,10 +7534,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpMicrosoftAuthenticationModuleDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpMicrosoftAuthenticationModule)},
-
-    {"shopping-page-types", commerce::flag_descriptions::kShoppingPageTypesName,
-     commerce::flag_descriptions::kShoppingPageTypesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(commerce::kShoppingPageTypes)},
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -9853,10 +9798,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kAudioDuckingAttenuationVariations,
                                     "AudioDucking")},
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-    {"enable-commerce-developer", flag_descriptions::kCommerceDeveloperName,
-     flag_descriptions::kCommerceDeveloperDescription, kOsAll,
-     FEATURE_VALUE_TYPE(commerce::kCommerceDeveloper)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-libinput-to-handle-touchpad",

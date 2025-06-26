@@ -2939,31 +2939,11 @@
     "expiry_milestone": 135
   },
   {
-    "name": "enable-code-based-rbd",
-    "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "enable-command-line-on-non-rooted-devices",
     "owners": [ "clank-app-team@google.com" ],
     // This flag is used for debugging on Android; it causes Android Chromium
     // builds to read command-line arguments from a writable location on disk.
     "expiry_milestone": -1
-  },
-  {
-    "name": "enable-commerce-developer",
-    "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
-    "name": "enable-commerce-hint-android",
-    "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 108
-  },
-  {
-    "name": "enable-commerce-price-tracking",
-    "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 108
   },
   {
     "name": "enable-component-updater-test-request",
@@ -4148,11 +4128,6 @@
     "name": "enable-resampling-scroll-events-experimental-prediction",
     "owners": [ "input-dev@chromium.org" ],
     "expiry_milestone": 140
-  },
-  {
-    "name": "enable-retail-coupons",
-    "owners": [ "meiliang@chromium.org", "yuezhanggg@chromium.org", "wychen@chromium.org", "dtrainor@chromium.org" ],
-    "expiry_milestone": 100
   },
   {
      "name": "enable-retry-capture-device-enumeration-on-crash",
@@ -6459,11 +6434,6 @@
     "expiry_milestone": 142
   },
   {
-    "name": "local-pdp-detection",
-    "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "login-db-deprecation-android",
     "owners": ["ioanap@chromium.org", "atsvirchkova@google.com"],
     "expiry_milestone": 137
@@ -6911,11 +6881,6 @@
     "name": "ntp-calendar-module",
     "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
     "expiry_milestone": 150
-  },
-  {
-    "name": "ntp-chrome-cart-module",
-    "owners": [ "wychen@chromium.org", "tiborg@chromium.org", "yuezhanggg@chromium.org" ],
-    "expiry_milestone": 122
   },
   {
     "name": "ntp-compose-entrypoint",
@@ -7889,11 +7854,6 @@
     "name": "press-and-hold-esc-to-exit-browser-fullscreen",
     "owners": ["muyaoxu@google.com", "takumif@chromium.org"],
     "expiry_milestone": 134
-  },
-  {
-    "name": "price-change-module",
-    "owners": [ "yuezhanggg@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 125
   },
   {
     "name": "price-insights",
@@ -8963,11 +8923,6 @@
     "name": "shopping-list",
     "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 122
-  },
-  {
-    "name": "shopping-page-types",
-    "owners": [ "yuezhanggg@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 120
   },
   {
     "name": "show-autofill-type-predictions",
