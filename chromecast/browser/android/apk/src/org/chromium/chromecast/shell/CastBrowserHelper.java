@@ -37,6 +37,8 @@ public class CastBrowserHelper {
                         LibraryProcessType.PROCESS_BROWSER,
                         /* startGpuProcess= */ false,
                         /* startMinimalBrowser= */ false,
+                        /* singleProcess= */ false,
+                        /* scheduleFlushStartupTasks= */ false,
                         new BrowserStartupController.StartupCallback() {
                             @Override
                             public void onSuccess() {

@@ -89,6 +89,8 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
                         LibraryProcessType.PROCESS_BROWSER,
                         false,
                         false,
+                        false,
+                        false,
                         new StartupCallback() {
                             @Override
                             public void onSuccess() {

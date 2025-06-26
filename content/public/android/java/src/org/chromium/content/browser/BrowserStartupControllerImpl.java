@@ -6,6 +6,7 @@ package org.chromium.content.browser;
 
 import android.content.Context;
 import android.os.StrictMode;
+import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -128,6 +129,9 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
 
     private @Nullable TracingControllerAndroidImpl mTracingController;
 
+    private long mContentStartDurationMs;
+    private long mFlushStartupTasksDurationMs;
+
     BrowserStartupControllerImpl() {
         mAsyncStartupCallbacks = new ArrayList<>();
         mMinimalBrowserStartedCallbacks = new ArrayList<>();
@@ -186,6 +190,8 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             @LibraryProcessType int libraryProcessType,
             boolean startGpuProcess,
             boolean startMinimalBrowser,
+            boolean singleProcess,
+            boolean scheduleFlushStartupTasks,
             final StartupCallback callback) {
         assert !LibraryLoader.isBrowserProcessStartupBlockedForTesting();
         assertProcessTypeSupported(libraryProcessType);
@@ -228,7 +234,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             // and let prepareToStartBrowserProcess() decide whether to defer it by a frame (in
             // production) or not (overridden in tests). http://b/181151614#comment6
             prepareToStartBrowserProcess(
-                    false,
+                    singleProcess,
                     new Runnable() {
                         @Override
                         public void run() {
@@ -238,7 +244,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
                                     startMinimalBrowser
                                             ? BrowserStartType.MINIMAL_BROWSER
                                             : BrowserStartType.FULL_BROWSER;
-                            if (contentStart() > 0) {
+                            if (contentStart(scheduleFlushStartupTasks) > 0) {
                                 // Failed. The callbacks may not have run, so run them.
                                 enqueueCallbackExecutionOnStartupFailure();
                             }
@@ -249,7 +255,9 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             // If we missed the minimalBrowserStarted() call, launch the full browser now if needed.
             // Otherwise, minimalBrowserStarted() will handle the full browser launch.
             mCurrentBrowserStartType = BrowserStartType.FULL_BROWSER;
-            if (contentStart() > 0) enqueueCallbackExecutionOnStartupFailure();
+            if (contentStart(scheduleFlushStartupTasks) > 0) {
+                enqueueCallbackExecutionOnStartupFailure();
+            }
         }
     }
 
@@ -279,7 +287,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             if (!mHasCalledContentStart
                     || mCurrentBrowserStartType == BrowserStartType.MINIMAL_BROWSER) {
                 mCurrentBrowserStartType = BrowserStartType.FULL_BROWSER;
-                if (contentStart() > 0) {
+                if (contentStart(false) > 0) {
                     // Failed. The callbacks may not have run, so run them.
                     enqueueCallbackExecutionOnStartupFailure();
                     startedSuccessfully = false;
@@ -298,7 +306,8 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     }
 
     /** Start the browser process by calling ContentMain.start(). */
-    int contentStart() {
+    int contentStart(boolean scheduleFlushStartupTasks) {
+        long startTime = SystemClock.uptimeMillis();
         int result = 0;
         if (mContentMainCallbackForTests == null) {
             boolean startMinimalBrowser =
@@ -313,6 +322,10 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             mLaunchFullBrowserAfterMinimalBrowserStart = false;
         }
         mHasCalledContentStart = true;
+        if (result <= 0 && scheduleFlushStartupTasks) {
+            PostTask.postTask(TaskTraits.UI_STARTUP, () -> flushStartupTasks());
+        }
+        recordContentStartDuration(SystemClock.uptimeMillis() - startTime);
         return result;
     }
 
@@ -331,7 +344,9 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     @VisibleForTesting
     void flushStartupTasks() {
         try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped("flushStartupTasks")) {
+            long startTime = SystemClock.uptimeMillis();
             BrowserStartupControllerImplJni.get().flushStartupTasks();
+            recordFlushStartupTasksDuration(SystemClock.uptimeMillis() - startTime);
         }
     }
 
@@ -369,11 +384,21 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
                 mFullBrowserStartupDone, mMinimalBrowserStarted, startMinimalBrowser);
     }
 
+    @Override
+    public long getContentStartDuration() {
+        return mContentStartDurationMs;
+    }
+
+    @Override
+    public long getFlushStartupTasksDuration() {
+        return mFlushStartupTasksDurationMs;
+    }
+
     /**
      * Asserts that library process type is one of the supported types.
+     *
      * @param libraryProcessType the type of process the shared library is loaded. It must be
-     *                           LibraryProcessType.PROCESS_BROWSER or
-     *                           LibraryProcessType.PROCESS_WEBVIEW.
+     *     LibraryProcessType.PROCESS_BROWSER or LibraryProcessType.PROCESS_WEBVIEW.
      */
     private void assertProcessTypeSupported(@LibraryProcessType int libraryProcessType) {
         assert LibraryProcessType.PROCESS_BROWSER == libraryProcessType
@@ -388,7 +413,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             // If startFullBrowser() fails, execute the callbacks right away. Otherwise,
             // callbacks will be deferred until browser startup completes.
             mCurrentBrowserStartType = BrowserStartType.FULL_BROWSER;
-            if (contentStart() > 0) enqueueCallbackExecutionOnStartupFailure();
+            if (contentStart(false) > 0) enqueueCallbackExecutionOnStartupFailure();
             return;
         }
 
@@ -449,6 +474,15 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
                 });
     }
 
+    private void recordContentStartDuration(long contentStartDurationMs) {
+        mContentStartDurationMs = Math.max(mContentStartDurationMs, contentStartDurationMs);
+    }
+
+    private void recordFlushStartupTasksDuration(long flushStartupTasksDurationMs) {
+        mFlushStartupTasksDurationMs =
+                Math.max(mFlushStartupTasksDurationMs, flushStartupTasksDurationMs);
+    }
+
     @VisibleForTesting
     void prepareToStartBrowserProcess(
             final boolean singleProcess, final @Nullable Runnable deferrableTask) {
@@ -480,7 +514,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
         }
 
         if (deferrableTask != null) {
-            PostTask.postTask(TaskTraits.UI_USER_BLOCKING, deferrableTask);
+            PostTask.postTask(TaskTraits.UI_STARTUP, deferrableTask);
         }
     }
 

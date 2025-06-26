@@ -88,6 +88,8 @@ public class ContentShellActivity extends Activity {
                             LibraryProcessType.PROCESS_BROWSER,
                             true,
                             false,
+                            false,
+                            false,
                             new BrowserStartupController.StartupCallback() {
                                 @Override
                                 public void onSuccess() {

@@ -81,6 +81,8 @@ public class NativeBackgroundTaskTest {
                 @LibraryProcessType int libraryProcessType,
                 boolean startGpuProcess,
                 boolean startMinimalBrowser,
+                boolean singleProcess,
+                boolean scheduleFlushStartupTasks,
                 final StartupCallback callback) {}
 
         @Override
@@ -115,6 +117,16 @@ public class NativeBackgroundTaskTest {
         public int getStartupMode(boolean startMinimalBrowser) {
             assertFalse(isNativeStarted());
             return 0 /*ServicificationStartupUma.ServicificationStartup.CHROME_COLD*/;
+        }
+
+        @Override
+        public long getContentStartDuration() {
+            return 0L;
+        }
+
+        @Override
+        public long getFlushStartupTasksDuration() {
+            return 0L;
         }
 
         public void setIsStartupSuccessfullyCompleted(boolean flag) {
