@@ -248,6 +248,28 @@ public class DownloadActivityV2Test {
         mDownloadCoordinator.updateForUrl(UrlConstants.DOWNLOADS_URL);
     }
 
+    // Adds a dangerous item in Download Home. Returns ID of the item.
+    private ContentId setUpDangerousItem() {
+        OfflineItem dangerousItem =
+                StubbedProvider.createOfflineItem(
+                        "offline_guid_5",
+                        JUnitTestGURLs.URL_2,
+                        OfflineItemState.COMPLETE,
+                        1024,
+                        "dangerous",
+                        "/data/fake_path/Downloads/file_5",
+                        System.currentTimeMillis(),
+                        100000,
+                        OfflineItemFilter.OTHER);
+        dangerousItem.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
+        dangerousItem.isDangerous = true;
+        dangerousItem.canRename = false;
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mStubbedOfflineContentProvider.addItem(dangerousItem));
+        return dangerousItem.id;
+    }
+
     @Test
     @MediumTest
     @DisabledTest(message = "crbug.com/372835715")
@@ -408,23 +430,7 @@ public class DownloadActivityV2Test {
 
         // Add a dangerous item. The new item should be visible and the storage text should not
         // include the size of the dangerous item.
-        OfflineItem dangerousItem =
-                StubbedProvider.createOfflineItem(
-                        "offline_guid_5",
-                        JUnitTestGURLs.URL_2,
-                        OfflineItemState.COMPLETE,
-                        1024,
-                        "dangerous",
-                        "/data/fake_path/Downloads/file_5",
-                        System.currentTimeMillis(),
-                        100000,
-                        OfflineItemFilter.OTHER);
-        dangerousItem.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
-        dangerousItem.isDangerous = true;
-        dangerousItem.canRename = false;
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mStubbedOfflineContentProvider.addItem(dangerousItem));
+        ContentId dangerousItemId = setUpDangerousItem();
         onView(withText("dangerous")).check(matches(isDisplayed()));
         onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
         onView(withText(containsString("Dangerous download blocked")))
@@ -442,7 +448,7 @@ public class DownloadActivityV2Test {
 
         // Delete the item. The item should be gone and the storage text should be unchanged.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mStubbedOfflineContentProvider.removeItem(dangerousItem.id));
+                () -> mStubbedOfflineContentProvider.removeItem(dangerousItemId));
         onView(withText("dangerous")).check(doesNotExist());
         onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
         onView(withText(containsString("Dangerous download blocked"))).check(doesNotExist());
@@ -461,33 +467,65 @@ public class DownloadActivityV2Test {
 
         // Attempt to add a dangerous item. The new item should not be visible because the config
         // does not specify showDangerousItems.
-        OfflineItem dangerousItem =
-                StubbedProvider.createOfflineItem(
-                        "offline_guid_5",
-                        JUnitTestGURLs.URL_2,
-                        OfflineItemState.COMPLETE,
-                        1024,
-                        "dangerous",
-                        "/data/fake_path/Downloads/file_5",
-                        System.currentTimeMillis(),
-                        100000,
-                        OfflineItemFilter.OTHER);
-        dangerousItem.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
-        dangerousItem.isDangerous = true;
-        dangerousItem.canRename = false;
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mStubbedOfflineContentProvider.addItem(dangerousItem));
+        ContentId dangerousItemId = setUpDangerousItem();
         onView(withText("dangerous")).check(doesNotExist());
         onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
         onView(withText(containsString("Dangerous download blocked"))).check(doesNotExist());
 
         // Delete the item. Nothing should change because it was never displayed.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mStubbedOfflineContentProvider.removeItem(dangerousItem.id));
+                () -> mStubbedOfflineContentProvider.removeItem(dangerousItemId));
         onView(withText("dangerous")).check(doesNotExist());
         onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
         onView(withText(containsString("Dangerous download blocked"))).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testDeleteDangerousUsingMenu() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi(/* showDangerousItems= */ true, /* autoFocusSearchBox= */ false);
+                });
+
+        // Add a dangerous item.
+        setUpDangerousItem();
+        onView(withText("dangerous")).check(matches(isDisplayed()));
+
+        // Delete a dangerous item using three dot menu. The item should be removed from the list.
+        onView(allOf(withId(R.id.more), hasSibling(withText("dangerous"))))
+                .perform(ViewActions.click());
+        onView(withText("Delete from history"))
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.click());
+        onView(withText("dangerous")).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testDeleteDangerousUsingSelection() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi(/* showDangerousItems= */ true, /* autoFocusSearchBox= */ false);
+                });
+
+        // Add a dangerous item.
+        setUpDangerousItem();
+        // Long-press the dangerous item to select it.
+        onView(withText("dangerous"))
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.longClick());
+
+        // Delete using the icon on the toolbar.
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    DownloadHomeToolbar toolbar = sActivity.findViewById(R.id.download_toolbar);
+                    toolbar.getMenu()
+                            .performIdentifierAction(R.id.selection_mode_delete_menu_id, 0);
+                });
+
+        onView(withText("dangerous")).check(doesNotExist());
     }
 
     @Test
@@ -502,23 +540,7 @@ public class DownloadActivityV2Test {
         onView(withText(containsString(storageHeaderText))).check(matches(isDisplayed()));
 
         // Add a dangerous item.
-        OfflineItem dangerousItem =
-                StubbedProvider.createOfflineItem(
-                        "offline_guid_5",
-                        JUnitTestGURLs.URL_2,
-                        OfflineItemState.COMPLETE,
-                        1024,
-                        "dangerous",
-                        "/data/fake_path/Downloads/file_5",
-                        System.currentTimeMillis(),
-                        100000,
-                        OfflineItemFilter.OTHER);
-        dangerousItem.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
-        dangerousItem.isDangerous = true;
-        dangerousItem.canRename = false;
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mStubbedOfflineContentProvider.addItem(dangerousItem));
+        setUpDangerousItem();
         onView(withText("dangerous")).check(matches(isDisplayed()));
         onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
         // Open bypass dialog by clicking on the item.
@@ -555,23 +577,7 @@ public class DownloadActivityV2Test {
                 });
 
         // Add a dangerous item.
-        OfflineItem dangerousItem =
-                StubbedProvider.createOfflineItem(
-                        "offline_guid_5",
-                        JUnitTestGURLs.URL_2,
-                        OfflineItemState.COMPLETE,
-                        1024,
-                        "dangerous",
-                        "/data/fake_path/Downloads/file_5",
-                        System.currentTimeMillis(),
-                        100000,
-                        OfflineItemFilter.OTHER);
-        dangerousItem.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
-        dangerousItem.isDangerous = true;
-        dangerousItem.canRename = false;
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mStubbedOfflineContentProvider.addItem(dangerousItem));
+        setUpDangerousItem();
         onView(withText("dangerous")).check(matches(isDisplayed()));
         // Open bypass dialog by clicking on the item.
         onView(withText(containsString("Dangerous download blocked")))
