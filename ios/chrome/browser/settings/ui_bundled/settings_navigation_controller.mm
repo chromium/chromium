@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
+#import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/default_browser/default_browser_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_coordinator.h"
@@ -86,6 +87,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 @interface SettingsNavigationController () <
     AutofillProfileEditCoordinatorDelegate,
     ClearBrowsingDataCoordinatorDelegate,
+    ContentSettingsCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
     ManageSyncSettingsCoordinatorDelegate,
     NotificationsCoordinatorDelegate,
@@ -96,6 +98,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     SafetyCheckCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate,
     UINavigationControllerDelegate>
+
+// Content settings coordinator.
+@property(nonatomic, strong)
+    ContentSettingsCoordinator* contentSettingsCoordinator;
 
 // Google services settings coordinator.
 @property(nonatomic, strong)
@@ -560,19 +566,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                delegate:
                                    (id<SettingsNavigationControllerDelegate>)
                                        delegate {
-  ContentSettingsTableViewController* controller =
-      [[ContentSettingsTableViewController alloc] initWithBrowser:browser];
-
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
-          initWithRootViewController:controller
+          initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
 
-  // Make sure the cancel button is always present, as the Contents Settings
-  // screen isn't just shown from Settings.
-  [controller navigationItem].leftBarButtonItem =
-      [navigationController cancelButton];
+  [navigationController showContentSettings];
+
   return navigationController;
 }
 
@@ -684,6 +685,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.manageAccountsCoordinator stop];
   self.manageAccountsCoordinator = nil;
   [self stopSyncSettingsCoordinator];
+  [self stopContentSettingsCoordinator];
   [self stopGoogleServicesSettingsCoordinator];
   [self stopPasswordsCoordinator];
   [self stopSafetyCheckCoordinator];
@@ -726,6 +728,23 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 #pragma mark - Private
+
+// Pushes a ContentSettingsCoordinator on this settings navigation
+// controller. Does nothing id the top view controller is already of type
+// `ContentSettingsCoordinator`.
+- (void)showContentSettings {
+  if ([self.topViewController
+          isKindOfClass:[ContentSettingsTableViewController class]]) {
+    // The top view controller is already the Contents Settings panel.
+    // No need to open it.
+    return;
+  }
+  self.contentSettingsCoordinator = [[ContentSettingsCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  self.contentSettingsCoordinator.delegate = self;
+  [self.contentSettingsCoordinator start];
+}
 
 // Pushes a GoogleServicesSettingsViewController on this settings navigation
 // controller. Does nothing id the top view controller is already of type
@@ -802,6 +821,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                browser:self.browser];
   self.privacySafeBrowsingCoordinator.delegate = self;
   [self.privacySafeBrowsingCoordinator start];
+}
+
+// Stops the content settings coordiantor if it exists.
+- (void)stopContentSettingsCoordinator {
+  [self.contentSettingsCoordinator stop];
+  self.contentSettingsCoordinator = nil;
 }
 
 // Stops the underlying Google services settings coordinator if it exists.
@@ -911,6 +936,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.notificationsCoordinator stop];
   self.notificationsCoordinator.delegate = nil;
   self.notificationsCoordinator = nil;
+}
+
+#pragma mark - ContentSettingsCoordinatorDelegate
+
+- (void)contentSettingsCoordinatorViewControllerWasRemoved:
+    (ContentSettingsCoordinator*)coordinator {
+  DCHECK_EQ(self.contentSettingsCoordinator, coordinator);
+  [self stopContentSettingsCoordinator];
 }
 
 #pragma mark - GoogleServicesSettingsCoordinatorDelegate
@@ -1238,15 +1271,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)showContentsSettingsFromViewController:
     (UIViewController*)baseViewController {
-  if ([self.topViewController
-          isKindOfClass:[ContentSettingsTableViewController class]]) {
-    // The top view controller is already the Contents Settings panel.
-    // No need to open it.
-    return;
-  }
-  ContentSettingsTableViewController* controller =
-      [[ContentSettingsTableViewController alloc] initWithBrowser:self.browser];
-  [self pushViewController:controller animated:YES];
+  [self showContentSettings];
 }
 
 - (void)showNotificationsSettings {

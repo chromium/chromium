@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/cells/enhanced_safe_browsing_inline_promo_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/default_browser/default_browser_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_coordinator.h"
@@ -190,6 +191,7 @@ struct EnhancedSafeBrowsingActivePromoData
 @interface SettingsTableViewController () <
     AddressBarPreferenceCoordinatorDelegate,
     BooleanObserver,
+    ContentSettingsCoordinatorDelegate,
     DiscoverFeedVisibilityObserver,
     DownloadsSettingsCoordinatorDelegate,
     EnhancedSafeBrowsingInlinePromoDelegate,
@@ -234,6 +236,9 @@ struct EnhancedSafeBrowsingActivePromoData
   // The item related to the safety check.
   SettingsCheckItem* _safetyCheckItem;
   SigninCoordinator* _signinAndHistorySyncCoordinator;
+
+  // Content settings coordinator.
+  ContentSettingsCoordinator* _contentSettingsCoordinator;
 
   GoogleServicesSettingsCoordinator* _googleServicesSettingsCoordinator;
   ManageSyncSettingsCoordinator* _manageSyncSettingsCoordinator;
@@ -1328,8 +1333,7 @@ struct EnhancedSafeBrowsingActivePromoData
     }
     case SettingsItemTypeContentSettings:
       base::RecordAction(base::UserMetricsAction("Settings.ContentSettings"));
-      controller =
-          [[ContentSettingsTableViewController alloc] initWithBrowser:_browser];
+      [self showContentSettings];
       break;
     case SettingsItemTypeDownloadsSettings:
       base::RecordAction(base::UserMetricsAction("Settings.DownloadsSettings"));
@@ -1491,6 +1495,19 @@ struct EnhancedSafeBrowsingActivePromoData
   [_tabsCoordinator stop];
   _tabsCoordinator.delegate = nil;
   _tabsCoordinator = nil;
+}
+
+- (void)showContentSettings {
+  if (_contentSettingsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
+  _contentSettingsCoordinator = [[ContentSettingsCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser];
+  _contentSettingsCoordinator.delegate = self;
+  [_contentSettingsCoordinator start];
 }
 
 - (void)showGoogleServices {
@@ -2101,6 +2118,9 @@ struct EnhancedSafeBrowsingActivePromoData
   [self removeEnhancedSafeBrowsingPromoFETDataIfNeeded];
 
   // Stop children coordinators.
+  [_contentSettingsCoordinator stop];
+  _contentSettingsCoordinator = nil;
+
   [_googleServicesSettingsCoordinator stop];
   _googleServicesSettingsCoordinator.delegate = nil;
   _googleServicesSettingsCoordinator = nil;
@@ -2358,6 +2378,15 @@ struct EnhancedSafeBrowsingActivePromoData
     // changing.
     [self reloadData];
   }
+}
+
+#pragma mark - ContentSettingsCoordinatorDelegate
+
+- (void)contentSettingsCoordinatorViewControllerWasRemoved:
+    (ContentSettingsCoordinator*)coordinator {
+  DCHECK_EQ(_contentSettingsCoordinator, coordinator);
+  [_contentSettingsCoordinator stop];
+  _contentSettingsCoordinator = nil;
 }
 
 #pragma mark - GoogleServicesSettingsCoordinatorDelegate

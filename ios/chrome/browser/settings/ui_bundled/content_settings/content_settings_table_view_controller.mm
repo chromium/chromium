@@ -213,6 +213,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                                 object:nil];
 }
 
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent) {
+    [self.presentationDelegate
+        contentSettingsTableViewControllerWasRemoved:self];
+  }
+}
+
 #pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {

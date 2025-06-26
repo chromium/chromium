@@ -6,6 +6,8 @@ source_set("content_settings") {
   sources = [
     "block_popups_table_view_controller.h",
     "block_popups_table_view_controller.mm",
+    "content_settings_coordinator.h",
+    "content_settings_coordinator.mm",
     "content_settings_table_view_controller.h",
     "content_settings_table_view_controller.mm",
     "default_page_mode_coordinator.h",
