@@ -1,3 +1,22 @@
+source_set("ui") {
+  sources = [
+    "actor_ui_state_manager.cc",
+    "actor_ui_state_manager.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/actor:actor",
+    "//content/public/browser",
+  ]
+}
+
+source_set("states") {
+  public = [
+    "states/agent_overlay_state.h",
+    "states/handoff_button_state.h",
+  ]
+}
+
 source_set("event_dispatcher") {
   sources = [
     "event_dispatcher.cc",
@@ -13,8 +32,10 @@ source_set("event_dispatcher") {
   ]
 }
 
-source_set("mock_event_dispatcher") {
+source_set("test_support") {
   sources = [
+    "mock_actor_ui_state_manager.cc",
+    "mock_actor_ui_state_manager.h",
     "mock_event_dispatcher.cc",
     "mock_event_dispatcher.h",
   ]
@@ -22,6 +43,7 @@ source_set("mock_event_dispatcher") {
   public_deps = [ "//base" ]
   deps = [
     ":event_dispatcher",
+    "//chrome/browser/actor:actor",
     "//testing/gmock",
   ]
 }

@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/actor_ui_state_manager.h"
+#include "chrome/browser/actor/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/common/buildflags.h"
@@ -42,7 +42,7 @@ class ActorKeyedService : public KeyedService {
  public:
   explicit ActorKeyedService(
       Profile* profile,
-      std::unique_ptr<ActorUIStateManagerInterface> ui_state_manager);
+      std::unique_ptr<ActorUiStateManagerInterface> ui_state_manager);
   ActorKeyedService(const ActorKeyedService&) = delete;
   ActorKeyedService& operator=(const ActorKeyedService&) = delete;
   ~ActorKeyedService() override;
@@ -89,7 +89,7 @@ class ActorKeyedService : public KeyedService {
   AggregatedJournal& GetJournal() LIFETIME_BOUND { return journal_; }
 
   // The associated ActorUiStateManager for the associated profile.
-  ActorUIStateManagerInterface* GetActorUIStateManager();
+  ActorUiStateManagerInterface* GetActorUiStateManager();
 
   // Called whenever an actor task state changes.
   void OnActorTaskStateChanged(TaskId task_id, ActorTask::State task_state);
@@ -129,7 +129,7 @@ class ActorKeyedService : public KeyedService {
   // In the future we may want to divide this between active and inactive tasks.
   std::map<TaskId, std::unique_ptr<ActorTask>> tasks_;
 
-  std::unique_ptr<ActorUIStateManagerInterface> actor_ui_state_manager_;
+  std::unique_ptr<ActorUiStateManagerInterface> actor_ui_state_manager_;
 
   // Holds subscriptions for ActorTask callbacks.
   std::vector<base::CallbackListSubscription> actor_task_subscriptions_;

@@ -1,8 +1,23 @@
+include_rules = [
+  '-chrome/browser/actor/ui',
+]
+
 specific_include_rules = {
   'aggregated_journal.*_serializer\.cc': [
     "+third_party/perfetto/include/perfetto",
   ],
   'aggregated_journal_serializer\.cc': [
     "+third_party/perfetto/protos/perfetto",
+  ],
+  'actor_keyed_service_factory\.cc': [
+    # This is required to create the ActorUiStateManager when a profile
+    # is created.
+    "+chrome/browser/actor/ui/actor_ui_state_manager.h",
+  ],
+  'execution_engine*': [
+    # This dependency is intentional and required to provide a translation
+    # layer between the service and ui.
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+    "+chrome/browser/actor/ui/mock_event_dispatcher.h",
   ],
 }

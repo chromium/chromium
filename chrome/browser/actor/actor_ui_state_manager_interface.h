@@ -10,9 +10,9 @@
 
 namespace actor {
 
-class ActorUIStateManagerInterface {
+class ActorUiStateManagerInterface {
  public:
-  virtual ~ActorUIStateManagerInterface() = default;
+  virtual ~ActorUiStateManagerInterface() = default;
 
   // Called whenever an actor task state changes.
   virtual void OnActorTaskStateChange(TaskId task_id,

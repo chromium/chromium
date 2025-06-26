@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_MOCK_ACTOR_UI_STATE_MANAGER_H_
-#define CHROME_BROWSER_ACTOR_MOCK_ACTOR_UI_STATE_MANAGER_H_
+#ifndef CHROME_BROWSER_ACTOR_UI_MOCK_ACTOR_UI_STATE_MANAGER_H_
+#define CHROME_BROWSER_ACTOR_UI_MOCK_ACTOR_UI_STATE_MANAGER_H_
 
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_ui_state_manager_interface.h"
@@ -12,10 +12,10 @@
 
 namespace actor {
 
-class MockActorUIStateManager : public ActorUIStateManagerInterface {
+class MockActorUiStateManager : public ActorUiStateManagerInterface {
  public:
-  MockActorUIStateManager();
-  ~MockActorUIStateManager() override;
+  MockActorUiStateManager();
+  ~MockActorUiStateManager() override;
 
   MOCK_METHOD(void,
               OnActorTaskStateChange,
@@ -25,4 +25,4 @@ class MockActorUIStateManager : public ActorUIStateManagerInterface {
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_MOCK_ACTOR_UI_STATE_MANAGER_H_
+#endif  // CHROME_BROWSER_ACTOR_UI_MOCK_ACTOR_UI_STATE_MANAGER_H_

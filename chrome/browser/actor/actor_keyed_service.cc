@@ -52,7 +52,7 @@ namespace actor {
 
 ActorKeyedService::ActorKeyedService(
     Profile* profile,
-    std::unique_ptr<ActorUIStateManagerInterface> ui_state_manager)
+    std::unique_ptr<ActorUiStateManagerInterface> ui_state_manager)
     : actor_ui_state_manager_(std::move(ui_state_manager)), profile_(profile) {}
 
 ActorKeyedService::~ActorKeyedService() = default;
@@ -269,13 +269,13 @@ ActorTask* ActorKeyedService::GetTask(TaskId task_id) {
   return nullptr;
 }
 
-ActorUIStateManagerInterface* ActorKeyedService::GetActorUIStateManager() {
+ActorUiStateManagerInterface* ActorKeyedService::GetActorUiStateManager() {
   return actor_ui_state_manager_.get();
 }
 
 void ActorKeyedService::OnActorTaskStateChanged(TaskId task_id,
                                                 ActorTask::State task_state) {
-  GetActorUIStateManager()->OnActorTaskStateChange(task_id, task_state);
+  GetActorUiStateManager()->OnActorTaskStateChange(task_id, task_state);
 }
 
 }  // namespace actor
