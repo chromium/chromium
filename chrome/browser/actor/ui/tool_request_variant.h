@@ -9,7 +9,7 @@
 
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 
-namespace actor {
+namespace actor::ui {
 
 // Type safe union of ToolRequest types.
 using ToolRequestVariant = std::variant<ActivateTabToolRequest,
@@ -50,6 +50,6 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   std::optional<ToolRequestVariant> var_;
 };
 
-}  // namespace actor
+}  // namespace actor::ui
 
 #endif  // CHROME_BROWSER_ACTOR_UI_TOOL_REQUEST_VARIANT_H_

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/actor/ui/tool_request_variant.h"
 
-namespace actor {
+namespace actor::ui {
 
 ConvertToVariantFn::ConvertToVariantFn() = default;
 ConvertToVariantFn::~ConvertToVariantFn() = default;
@@ -45,4 +45,4 @@ void ConvertToVariantFn::Apply(const TypeToolRequest& tr) {
 void ConvertToVariantFn::Apply(const WaitToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
-}  // namespace actor
+}  // namespace actor::ui

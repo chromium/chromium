@@ -11,6 +11,7 @@
 class Profile;
 namespace actor {
 class ToolRequest;
+namespace ui {
 
 class MockUiEventDispatcher : public UiEventDispatcher {
  public:
@@ -33,6 +34,7 @@ class MockUiEventDispatcher : public UiEventDispatcher {
 
 std::unique_ptr<UiEventDispatcher> NewMockUiEventDispatcher();
 
+}  // namespace ui
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_UI_MOCK_EVENT_DISPATCHER_H_

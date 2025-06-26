@@ -46,7 +46,9 @@ namespace actor {
 
 class ActorTask;
 class ToolRequest;
+namespace ui {
 class UiEventDispatcher;
+}
 
 // Coordinates the execution of a multi-step task.
 class ExecutionEngine {
@@ -86,7 +88,7 @@ class ExecutionEngine {
 
   static std::unique_ptr<ExecutionEngine> CreateForTesting(
       Profile* profile,
-      std::unique_ptr<UiEventDispatcher> ui_event_dispatcher,
+      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
       tabs::TabInterface* tab);
 
   // This cannot be in the constructor as we first construct the
@@ -132,7 +134,7 @@ class ExecutionEngine {
   class NewTabWebContentsObserver;
   // Used by tests only.
   ExecutionEngine(Profile* profile,
-                  std::unique_ptr<UiEventDispatcher> ui_event_dispatcher,
+                  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
                   tabs::TabInterface* tab);
 
   void SetState(State state);
@@ -214,7 +216,7 @@ class ExecutionEngine {
   // Created when task_ is set. Handles execution details for an individual tool
   // request.
   std::unique_ptr<ToolController> tool_controller_;
-  std::unique_ptr<UiEventDispatcher> ui_event_dispatcher_;
+  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
 
   // A sequence of actions that the model has requested. When it is finished
   // being processed it is reset.

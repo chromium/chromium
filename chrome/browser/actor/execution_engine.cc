@@ -170,7 +170,7 @@ void PostTaskForActCallback(ExecutionEngine::ActionResultCallback callback,
 ExecutionEngine::ExecutionEngine(Profile* profile)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
-      ui_event_dispatcher_(NewUiEventDispatcher()) {
+      ui_event_dispatcher_(ui::NewUiEventDispatcher()) {
   CHECK(profile_);
   // Idempotent. Enables the action blocklist if it isn't already enabled.
   InitActionBlocklist(profile_.get());
@@ -181,7 +181,7 @@ ExecutionEngine::ExecutionEngine(Profile* profile, tabs::TabInterface* tab)
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
       tab_scoped_actions_deprecated_(true),
       tab_(tab),
-      ui_event_dispatcher_(NewUiEventDispatcher()) {
+      ui_event_dispatcher_(ui::NewUiEventDispatcher()) {
   CHECK(profile_);
   // Idempotent. Enables the action blocklist if it isn't already enabled.
   InitActionBlocklist(profile_.get());
@@ -193,7 +193,7 @@ ExecutionEngine::ExecutionEngine(Profile* profile, tabs::TabInterface* tab)
 
 ExecutionEngine::ExecutionEngine(
     Profile* profile,
-    std::unique_ptr<UiEventDispatcher> ui_event_dispatcher,
+    std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
     tabs::TabInterface* tab)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
@@ -211,7 +211,7 @@ ExecutionEngine::ExecutionEngine(
 
 std::unique_ptr<ExecutionEngine> ExecutionEngine::CreateForTesting(
     Profile* profile,
-    std::unique_ptr<UiEventDispatcher> ui_event_dispatcher,
+    std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
     tabs::TabInterface* tab) {
   return base::WrapUnique<ExecutionEngine>(
       new ExecutionEngine(profile, std::move(ui_event_dispatcher), tab));

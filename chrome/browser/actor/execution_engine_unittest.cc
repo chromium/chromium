@@ -105,10 +105,10 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     AssociateTabInterface();
 
-    std::unique_ptr<UiEventDispatcher> ui_event_dispatcher =
-        NewMockUiEventDispatcher();
+    std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher =
+        ui::NewMockUiEventDispatcher();
     mock_ui_event_dispatcher_ =
-        static_cast<MockUiEventDispatcher*>(ui_event_dispatcher.get());
+        static_cast<ui::MockUiEventDispatcher*>(ui_event_dispatcher.get());
     auto execution_engine = ExecutionEngine::CreateForTesting(
         profile(), std::move(ui_event_dispatcher), GetTab());
     task_ = std::make_unique<ActorTask>(std::move(execution_engine));
@@ -147,7 +147,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
   auto UiEventDispatcherCallback(mojom::ActionResultPtr result) {
     return [result = std::move(result)](
                Profile*, const ToolRequest&,
-               UiEventDispatcher::UiCompleteCallback callback) mutable {
+               ui::UiEventDispatcher::UiCompleteCallback callback) mutable {
       std::move(callback).Run(std::move(result));
     };
   }
@@ -155,7 +155,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
   base::HistogramTester histograms_;
   FakeChromeRenderFrame fake_chrome_render_frame_;
   std::unique_ptr<ActorTask> task_;
-  raw_ptr<MockUiEventDispatcher> mock_ui_event_dispatcher_;
+  raw_ptr<ui::MockUiEventDispatcher> mock_ui_event_dispatcher_;
 
  private:
   struct TabState {

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/actor/ui/mock_event_dispatcher.h"
 
-namespace actor {
+namespace actor::ui {
 
 MockUiEventDispatcher::MockUiEventDispatcher() = default;
 MockUiEventDispatcher::~MockUiEventDispatcher() = default;
@@ -13,4 +13,4 @@ std::unique_ptr<UiEventDispatcher> NewMockUiEventDispatcher() {
   return std::make_unique<MockUiEventDispatcher>();
 }
 
-}  // namespace actor
+}  // namespace actor::ui

@@ -11,7 +11,7 @@
 #include "chrome/browser/actor/ui/tool_request_variant.h"
 #include "chrome/common/actor/action_result.h"
 
-namespace actor {
+namespace actor::ui {
 
 // ToolRequestVisitor is a functor that must be able to apply to every
 // ToolRequestVariant type.
@@ -81,4 +81,4 @@ std::unique_ptr<UiEventDispatcher> NewUiEventDispatcher() {
   return std::make_unique<UiEventDispatcherImpl>();
 }
 
-}  // namespace actor
+}  // namespace actor::ui
