@@ -3693,12 +3693,6 @@
       name: "PointerEventDeviceId",
       status: "stable",
     },
-    // Coalesced/predicted event targets in untrusted events.
-    // See https://crbug.com/353538500
-    {
-      name: "PointerEventTargetsInEventLists",
-      status: "stable",
-    },
     {
       // Flag for enabling the pointer lock API on Android
       name: "PointerLockOnAndroid",

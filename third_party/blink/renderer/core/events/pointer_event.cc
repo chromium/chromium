@@ -38,8 +38,6 @@ PointerEvent::PointerEvent(const AtomicString& type,
       tangential_pressure_(0),
       twist_(0),
       is_primary_(false),
-      coalesced_events_targets_dirty_(false),
-      predicted_events_targets_dirty_(false),
       persistent_device_id_(0),
       prevent_counting_as_interaction_(prevent_counting_as_interaction) {
   if (initializer->hasPointerId())
@@ -141,10 +139,6 @@ double PointerEvent::offsetY() const {
 }
 
 void PointerEvent::ReceivedTarget() {
-  if (!RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled()) {
-    coalesced_events_targets_dirty_ = true;
-    predicted_events_targets_dirty_ = true;
-  }
   MouseEvent::ReceivedTarget();
 }
 
@@ -165,22 +159,10 @@ HeapVector<Member<PointerEvent>> PointerEvent::getCoalescedEvents() {
     }
   }
 
-  if (coalesced_events_targets_dirty_) {
-    CHECK(!RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled());
-    for (auto coalesced_event : coalesced_events_)
-      coalesced_event->SetTarget(target());
-    coalesced_events_targets_dirty_ = false;
-  }
   return coalesced_events_;
 }
 
 HeapVector<Member<PointerEvent>> PointerEvent::getPredictedEvents() {
-  if (predicted_events_targets_dirty_) {
-    CHECK(!RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled());
-    for (auto predicted_event : predicted_events_)
-      predicted_event->SetTarget(target());
-    predicted_events_targets_dirty_ = false;
-  }
   return predicted_events_;
 }
 
@@ -202,11 +184,7 @@ DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
   if (type().empty())
     return DispatchEventResult::kNotCanceled;  // Shouldn't happen.
 
-  if (isTrusted() &&
-      RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled()) {
-    // TODO(mustaq@chromium.org): When the RTE flag is removed, get rid of
-    // `coalesced_events_targets_dirty_` and `predicted_events_targets_dirty_`.
-
+  if (isTrusted()) {
     for (auto coalesced_event : coalesced_events_) {
       coalesced_event->SetTarget(&dispatcher.GetNode());
     }

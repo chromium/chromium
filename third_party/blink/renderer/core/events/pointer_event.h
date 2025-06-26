@@ -129,9 +129,6 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
   String pointer_type_;
   bool is_primary_;
 
-  bool coalesced_events_targets_dirty_;
-  bool predicted_events_targets_dirty_;
-
   HeapVector<Member<PointerEvent>> coalesced_events_;
 
   HeapVector<Member<PointerEvent>> predicted_events_;
