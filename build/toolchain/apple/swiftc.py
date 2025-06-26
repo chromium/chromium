@@ -633,7 +633,7 @@ def main(args):
                       help='add preprocessor define')
 
   parser.add_argument('-swift-version',
-                      default='5',
+                      default='6',
                       help='version of the Swift language')
 
   parser.add_argument(

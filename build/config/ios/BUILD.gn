@@ -67,7 +67,7 @@ config("compiler") {
 
   swiftflags += [
     "-swift-version",
-    "5",
+    "6",
   ]
 
   cflags_objcc = [
