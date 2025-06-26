@@ -51,16 +51,16 @@ class ComposeboxQueryControllerTest
 
   // ComposeboxQueryController::FileUploadStatusObserver:
   void OnFileUploadStatusChanged(
-      const base::UnguessableToken& client_token,
+      const base::UnguessableToken& file_token,
       FileUploadStatus file_upload_status,
-      const std::optional<std::string>& error_message) override {
+      const std::optional<FileUploadErrorType>& error_type) override {
     num_file_upload_status_changed_calls_++;
-    if (expected_client_token_.has_value() &&
-        expected_client_token_.value() == client_token &&
+    if (expected_file_token_.has_value() &&
+        expected_file_token_.value() == file_token &&
         expected_file_upload_status_.has_value() &&
         expected_file_upload_status_.value() == file_upload_status) {
       file_upload_status_run_loop_.Quit();
-      expected_client_token_.reset();
+      expected_file_token_.reset();
       expected_file_upload_status_.reset();
     }
   }
@@ -89,9 +89,9 @@ class ComposeboxQueryControllerTest
   // WaitForFileExpectedUploadStatus() afterwards to run the run loop.
   // TODO(crbug.com/427759049): Consider using base::TestFuture instead of
   // run loops.
-  void SetExpectedFileUploadStatus(const base::UnguessableToken& client_token,
+  void SetExpectedFileUploadStatus(const base::UnguessableToken& file_token,
                                    FileUploadStatus file_upload_status) {
-    expected_client_token_ = client_token;
+    expected_file_token_ = file_token;
     expected_file_upload_status_ = file_upload_status;
   }
 
@@ -121,7 +121,7 @@ class ComposeboxQueryControllerTest
 
   // The expected client token to watch for file upload status changes for
   // toggling run loops.
-  std::optional<base::UnguessableToken> expected_client_token_;
+  std::optional<base::UnguessableToken> expected_file_token_;
 
   // The expected file upload status to watch for file upload status changes
   // for toggling run loops.
@@ -220,12 +220,11 @@ TEST_F(ComposeboxQueryControllerTest,
   // Add file to cache.
   std::unique_ptr<ComposeboxQueryController::FileInfo> file_info =
       std::make_unique<ComposeboxQueryController::FileInfo>();
-  const base::UnguessableToken client_token = base::UnguessableToken::Create();
-  file_info->client_token_ = client_token;
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  file_info->file_token_ = file_token;
   file_info->mime_type_ = lens::MimeType::kImage;
 
-  SetExpectedFileUploadStatus(client_token,
-                              FileUploadStatus::kClientProcessing);
+  SetExpectedFileUploadStatus(file_token, FileUploadStatus::kProcessing);
 
   controller().StartFileUploadFlow(
       std::move(file_info),
@@ -251,11 +250,11 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileRequestFailure) {
   // Add file to cache.
   std::unique_ptr<ComposeboxQueryController::FileInfo> file_info =
       std::make_unique<ComposeboxQueryController::FileInfo>();
-  const base::UnguessableToken client_token = base::UnguessableToken::Create();
-  file_info->client_token_ = client_token;
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  file_info->file_token_ = file_token;
   file_info->mime_type_ = lens::MimeType::kImage;
 
-  SetExpectedFileUploadStatus(client_token, FileUploadStatus::kUploadFailed);
+  SetExpectedFileUploadStatus(file_token, FileUploadStatus::kUploadFailed);
 
   controller().set_next_file_upload_request_should_return_error(true);
   controller().StartFileUploadFlow(
@@ -291,12 +290,11 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
   // Add file to cache.
   std::unique_ptr<ComposeboxQueryController::FileInfo> file_info =
       std::make_unique<ComposeboxQueryController::FileInfo>();
-  const base::UnguessableToken client_token = base::UnguessableToken::Create();
-  file_info->client_token_ = client_token;
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  file_info->file_token_ = file_token;
   file_info->mime_type_ = lens::MimeType::kImage;
 
-  SetExpectedFileUploadStatus(client_token,
-                              FileUploadStatus::kUploadSuccessful);
+  SetExpectedFileUploadStatus(file_token, FileUploadStatus::kUploadSuccessful);
 
   controller().StartFileUploadFlow(
       std::move(file_info),
@@ -312,17 +310,17 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
   EXPECT_EQ(num_file_upload_status_changed_calls_, 3);
   EXPECT_THAT(GetGsessionIdFromUrl(controller().last_sent_fetch_url()),
               testing::Optional(std::string(kTestServerSessionId)));
-  EXPECT_EQ(controller().GetFileInfo(client_token)->GetFileUploadStatus(),
+  EXPECT_EQ(controller().GetFileInfo(file_token)->GetFileUploadStatus(),
             FileUploadStatus::kUploadSuccessful);
 
   // Check that the vsrid matches that for an image upload.
   EXPECT_EQ(controller()
-                .GetFileInfo(client_token)
+                .GetFileInfo(file_token)
                 ->GetRequestIdForTesting()
                 ->sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(client_token)
+                .GetFileInfo(file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
             1);
@@ -345,12 +343,11 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
   // Add file to cache.
   std::unique_ptr<ComposeboxQueryController::FileInfo> file_info =
       std::make_unique<ComposeboxQueryController::FileInfo>();
-  const base::UnguessableToken client_token = base::UnguessableToken::Create();
-  file_info->client_token_ = client_token;
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  file_info->file_token_ = file_token;
   file_info->mime_type_ = lens::MimeType::kPdf;
 
-  SetExpectedFileUploadStatus(client_token,
-                              FileUploadStatus::kUploadSuccessful);
+  SetExpectedFileUploadStatus(file_token, FileUploadStatus::kUploadSuccessful);
 
   controller().StartFileUploadFlow(
       std::move(file_info),
@@ -366,17 +363,17 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
   EXPECT_EQ(num_file_upload_status_changed_calls_, 3);
   EXPECT_THAT(GetGsessionIdFromUrl(controller().last_sent_fetch_url()),
               testing::Optional(std::string(kTestServerSessionId)));
-  EXPECT_EQ(controller().GetFileInfo(client_token)->GetFileUploadStatus(),
+  EXPECT_EQ(controller().GetFileInfo(file_token)->GetFileUploadStatus(),
             FileUploadStatus::kUploadSuccessful);
 
   // Check that the vsrid matches that for a pdf upload.
   EXPECT_EQ(controller()
-                .GetFileInfo(client_token)
+                .GetFileInfo(file_token)
                 ->GetRequestIdForTesting()
                 ->sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(client_token)
+                .GetFileInfo(file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
             1);
@@ -407,12 +404,11 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileRequestSuccessWithOAuth) {
   // Add file to cache.
   std::unique_ptr<ComposeboxQueryController::FileInfo> file_info =
       std::make_unique<ComposeboxQueryController::FileInfo>();
-  const base::UnguessableToken client_token = base::UnguessableToken::Create();
-  file_info->client_token_ = client_token;
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  file_info->file_token_ = file_token;
   file_info->mime_type_ = lens::MimeType::kImage;
 
-  SetExpectedFileUploadStatus(client_token,
-                              FileUploadStatus::kUploadSuccessful);
+  SetExpectedFileUploadStatus(file_token, FileUploadStatus::kUploadSuccessful);
 
   controller().StartFileUploadFlow(
       std::move(file_info),
@@ -455,8 +451,8 @@ TEST_F(ComposeboxQueryControllerTest,
   // Add file to cache.
   std::unique_ptr<ComposeboxQueryController::FileInfo> file_info =
       std::make_unique<ComposeboxQueryController::FileInfo>();
-  const base::UnguessableToken client_token = base::UnguessableToken::Create();
-  file_info->client_token_ = client_token;
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  file_info->file_token_ = file_token;
   file_info->mime_type_ = lens::MimeType::kImage;
 
   // Start the file upload flow without waiting for the cluster info request to
@@ -468,8 +464,7 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
             controller().query_controller_state());
 
-  SetExpectedFileUploadStatus(client_token,
-                              FileUploadStatus::kUploadSuccessful);
+  SetExpectedFileUploadStatus(file_token, FileUploadStatus::kUploadSuccessful);
 
   // Send the oauth token for the cluster info or file upload request.
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -493,6 +488,6 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(num_file_upload_status_changed_calls_, 3);
   EXPECT_THAT(GetGsessionIdFromUrl(controller().last_sent_fetch_url()),
               testing::Optional(std::string(kTestServerSessionId)));
-  EXPECT_EQ(controller().GetFileInfo(client_token)->GetFileUploadStatus(),
+  EXPECT_EQ(controller().GetFileInfo(file_token)->GetFileUploadStatus(),
             FileUploadStatus::kUploadSuccessful);
 }
