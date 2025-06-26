@@ -4958,42 +4958,42 @@
   {
     "name": "fedcm-alternative-identifiers",
     "owners": [ "cbiesinger@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "fedcm-autofill",
     "owners": [ "yigu@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "fedcm-cooldown-on-ignore",
     "owners": ["yigu@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": -1
   },
   {
     "name": "fedcm-delegation",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "fedcm-idp-registration",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "fedcm-iframe-origin",
     "owners": [ "cbiesinger@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "fedcm-lightweight-mode",
     "owners": ["ekovac@google.com", "web-identity-eng@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "fedcm-metrics-endpoint",
     "owners": ["yigu@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "fedcm-segmentation-platform",
@@ -5003,7 +5003,7 @@
   {
     "name": "fedcm-without-well-known-enforcement",
     "owners": ["yigu@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": -1
   },
   {
     "name": "feed-ablation",

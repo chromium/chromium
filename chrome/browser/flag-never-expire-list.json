@@ -87,6 +87,8 @@
   "extensions-on-chrome-urls",
   "extensions-on-extension-urls",
   "external-navigation-debug-logs",
+  "fedcm-cooldown-on-ignore",
+  "fedcm-without-well-known-enforcement",
   "force-color-profile",
   "force-effective-connection-type",
   "force-show-update-menu-badge",
