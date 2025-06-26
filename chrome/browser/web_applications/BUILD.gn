@@ -194,6 +194,8 @@ source_set("web_applications") {
     "jobs/install_from_info_job.h",
     "jobs/install_placeholder_job.cc",
     "jobs/install_placeholder_job.h",
+    "jobs/manifest_to_web_app_install_info_job.cc",
+    "jobs/manifest_to_web_app_install_info_job.h",
     "jobs/uninstall/remove_install_source_job.cc",
     "jobs/uninstall/remove_install_source_job.h",
     "jobs/uninstall/remove_install_url_job.cc",

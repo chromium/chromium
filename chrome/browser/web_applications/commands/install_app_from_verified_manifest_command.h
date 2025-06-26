@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -87,9 +88,8 @@ class InstallAppFromVerifiedManifestCommand
  private:
   void OnAboutBlankLoaded(webapps::WebAppUrlLoaderResult result);
   void OnManifestParsed(blink::mojom::ManifestPtr manifest);
-  void OnIconsRetrieved(IconsDownloadedResult result,
-                        IconsMap icons_map,
-                        DownloadedIconsHttpResults icons_http_results);
+  void OnInstallInfoParsedFromManifest(
+      std::unique_ptr<WebAppInstallInfo> install_info);
   void OnAppLockAcquired();
   void OnInstallFinalized(const webapps::AppId& app_id,
                           webapps::InstallResultCode code);
@@ -112,8 +112,8 @@ class InstallAppFromVerifiedManifestCommand
 
   std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
-
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
+  std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
 
   mojo::Remote<blink::mojom::ManifestManager> manifest_manager_;
 

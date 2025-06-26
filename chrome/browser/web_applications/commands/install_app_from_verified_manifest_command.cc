@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/web_applications/commands/command_metrics.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
@@ -174,32 +175,44 @@ void InstallAppFromVerifiedManifestCommand::OnManifestParsed(
   }
 
   GetMutableDebugValue().Set("manifest_parsed", true);
-  web_app_info_ =
-      std::make_unique<WebAppInstallInfo>(manifest->id, manifest->start_url);
-  web_app_info_->user_display_mode = mojom::UserDisplayMode::kStandalone;
-  web_app_info_->is_diy_app = is_diy_app_;
 
-  UpdateWebAppInfoFromManifest(*manifest, web_app_info_.get());
-
-  if (install_params_) {
-    // TODO(crbug.com/354981650): Remove this call.
-    ApplyParamsToWebAppInstallInfo(*install_params_, *web_app_info_);
-  }
-
-  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
-  base::EraseIf(icon_urls, [](const IconUrlWithSize& url_with_size) {
-    for (const auto& allowed_host : kHostAllowlist) {
-      const GURL& icon_url = url_with_size.url;
-      if (icon_url.DomainIs(allowed_host)) {
-        // Found a match, don't erase this url!
-        return false;
+  auto icon_url_modifications = [](IconUrlSizeSet& icon_urls) {
+    base::EraseIf(icon_urls, [](const IconUrlWithSize& url_with_size) {
+      for (const auto& allowed_host : kHostAllowlist) {
+        const GURL& icon_url = url_with_size.url;
+        if (icon_url.DomainIs(allowed_host)) {
+          // Found a match, don't erase this url!
+          return false;
+        }
       }
-    }
-    // No matches, erase this url!
-    return true;
-  });
+      // No matches, erase this url!
+      return true;
+    });
+  };
 
-  if (icon_urls.empty()) {
+  // This is needed to differentiate between icons being generated and no icon
+  // urls left to download.
+  WebAppInstallInfoConstructOptions construct_options;
+  construct_options.bypass_icon_generation_if_no_url = true;
+
+  manifest_to_install_info_job_ =
+      ManifestToWebAppInstallInfoJob::CreateAndStart(
+          *manifest, *data_retriever_.get(), /*background_installation=*/true,
+          install_source_,
+          web_contents_lock_->shared_web_contents().GetWeakPtr(),
+          icon_url_modifications,
+          base::BindOnce(&InstallAppFromVerifiedManifestCommand::
+                             OnInstallInfoParsedFromManifest,
+                         weak_ptr_factory_.GetWeakPtr()),
+          construct_options);
+}
+
+void InstallAppFromVerifiedManifestCommand::OnInstallInfoParsedFromManifest(
+    std::unique_ptr<WebAppInstallInfo> install_info) {
+  CHECK(install_info);
+  web_app_info_ = std::move(install_info);
+
+  if (web_app_info_->icon_bitmaps.empty()) {
     // Abort if there are no icons to download, so we can distinguish this case
     // from having icons but failing to download them.
     Abort(CommandResult::kFailure,
@@ -207,31 +220,23 @@ void InstallAppFromVerifiedManifestCommand::OnManifestParsed(
     return;
   }
 
-  data_retriever_->GetIcons(
-      &web_contents_lock_->shared_web_contents(), std::move(icon_urls),
-      /*skip_page_favicons=*/true,
-      /*fail_all_if_any_fail=*/false,
-      base::BindOnce(&InstallAppFromVerifiedManifestCommand::OnIconsRetrieved,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void InstallAppFromVerifiedManifestCommand::OnIconsRetrieved(
-    IconsDownloadedResult result,
-    IconsMap icons_map,
-    DownloadedIconsHttpResults icons_http_results) {
-  DCHECK(web_app_info_);
-
-  PopulateProductIcons(web_app_info_.get(), &icons_map);
   if (web_app_info_->is_generated_icon) {
-    // PopulateProductIcons sets is_generated_icon if it had to generate a
-    // product icon due a lack of successfully downloaded product icons. In
-    // this case, abort the installation and report the error.
+    // PopulateProductIcons() inside the ManifestToWebAppInstallInfoJob sets
+    // `is_generated_icon` if it had to generate a product icon due a lack of
+    // successfully downloaded product icons. In this case, abort the
+    // installation and report the error.
     Abort(CommandResult::kFailure,
           webapps::InstallResultCode::kIconDownloadingFailed);
     return;
   }
 
-  PopulateOtherIcons(web_app_info_.get(), icons_map);
+  web_app_info_->user_display_mode = mojom::UserDisplayMode::kStandalone;
+  web_app_info_->is_diy_app = is_diy_app_;
+
+  if (install_params_) {
+    // TODO(crbug.com/354981650): Remove this call.
+    ApplyParamsToWebAppInstallInfo(*install_params_, *web_app_info_);
+  }
 
   webapps::AppId app_id =
       GenerateAppIdFromManifestId(web_app_info_->manifest_id());
