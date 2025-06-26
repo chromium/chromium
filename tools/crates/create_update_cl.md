@@ -20,11 +20,15 @@ up-to-date Chromium repo.  One way to start a shift is to run `git fetch`,
 `git checkout origin/main`, and `gclient sync` (but other workflows should also
 work - e.g. ones based on `git-new-workdir`).
 
-## Avoiding conflicts
+## Checking the state of the world
 
 Before creating a CL stack, check for open CLs with the [`cratesio-autoupdate`
 tag](https://chromium-review.googlesource.com/q/hashtag:%22cratesio-autoupdate%22+(status:open%20OR%20status:merged)).
 Such CLs tend to conflict, so coordinate with owners of any open CLs.
+
+You may also check a doc with notes from previous rotations, where we may note
+known issues and their workarounds.  See (Google-internal, sorry):
+https://docs.google.com/document/d/1S7gsrJFsgoU5CH0K7-X_gL55zIIgd6UsFpCGrJqjdAg/edit?usp=sharing
 
 ## Automated step: `create_update_cl.py`
 
