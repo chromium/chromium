@@ -8653,12 +8653,6 @@ const char kEnableGenericOidcAuthProfileManagementDescription[] =
     "Enables profile management triggered by generic OIDC authentications.";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_HLS_DEMUXER)
-const char kEnableBuiltinHlsName[] = "Builtin HLS player";
-const char kEnableBuiltinHlsDescription[] =
-    "Enables chrome's builtin HLS player instead of Android's MediaPlayer";
-#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
-
 #if !BUILDFLAG(IS_CHROMEOS)
 const char kProfilesReorderingName[] = "Profiles Reordering";
 const char kProfilesReorderingDescription[] =

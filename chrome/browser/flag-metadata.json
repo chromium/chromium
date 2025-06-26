@@ -2859,11 +2859,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-builtin-hls",
-    "owners": ["tmathmeyer@chromium.org", "videostack-eng@google.com"],
-    "expiry_milestone": 136
-  },
-  {
     "name": "enable-canvas-noise",
     "owners": [
       "tov@chromium.org",

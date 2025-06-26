@@ -17124,7 +17124,6 @@ from previous Chrome versions.
   <int value="1176484713" label="SingleCaCertVerificationPhase0:enabled"/>
   <int value="1177120582" label="InstallableInkDrop:disabled"/>
   <int value="1177174300" label="LayoutNGTable:disabled"/>
-  <int value="1177255376" label="enable-builtin-hls:enabled"/>
   <int value="1177628103" label="GaiaActionButtons:disabled"/>
   <int value="1178640449" label="ProductivityLauncher:disabled"/>
   <int value="1179013979"
@@ -19241,7 +19240,6 @@ from previous Chrome versions.
   <int value="1927374573" label="EnterpriseRealtimeExtensionRequest:enabled"/>
   <int value="1927572319" label="OmniboxShortcutExpanding:enabled"/>
   <int value="1928193837" label="WebNNCoreML:enabled"/>
-  <int value="1928641476" label="enable-builtin-hls:disabled"/>
   <int value="1928643493"
       label="AutofillEnableFlatRateCardBenefitsFromCurinos:disabled"/>
   <int value="1928797262" label="RootScrollbarFollowsBrowserTheme:enabled"/>
