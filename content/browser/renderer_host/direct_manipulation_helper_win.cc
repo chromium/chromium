@@ -22,17 +22,21 @@ namespace content {
 
 // static
 std::unique_ptr<DirectManipulationHelper>
-DirectManipulationHelper::CreateInstance(HWND window,
-                                         ui::Compositor* compositor,
-                                         ui::WindowEventTarget* event_target) {
-  if (!::IsWindow(window) || !compositor || !event_target)
+DirectManipulationHelper::CreateInstance(
+    HWND window,
+    base::WeakPtr<aura::WindowTreeHost> window_tree_host,
+    ui::WindowEventTarget* event_target) {
+  if (!::IsWindow(window) || !window_tree_host ||
+      !window_tree_host->compositor() || !event_target) {
     return nullptr;
+  }
 
-  std::unique_ptr<DirectManipulationHelper> instance =
-      base::WrapUnique(new DirectManipulationHelper(window, compositor));
+  std::unique_ptr<DirectManipulationHelper> instance = base::WrapUnique(
+      new DirectManipulationHelper(window, window_tree_host, event_target));
 
-  if (instance->Initialize(event_target))
+  if (instance->Initialize()) {
     return instance;
+  }
 
   return nullptr;
 }
@@ -43,15 +47,9 @@ DirectManipulationHelper::CreateInstanceForTesting(
     ui::WindowEventTarget* event_target,
     Microsoft::WRL::ComPtr<IDirectManipulationViewport> viewport) {
   std::unique_ptr<DirectManipulationHelper> instance =
-      base::WrapUnique(new DirectManipulationHelper(0, nullptr));
-
-  instance->event_handler_ =
-      Microsoft::WRL::Make<DirectManipulationEventHandler>(event_target);
-
-  instance->event_handler_->SetDirectManipulationHelper(instance.get());
-
+      base::WrapUnique(new DirectManipulationHelper(
+          /*window=*/nullptr, /*window_tree_host=*/nullptr, event_target));
   instance->viewport_ = viewport;
-
   return instance;
 }
 
@@ -59,9 +57,16 @@ DirectManipulationHelper::~DirectManipulationHelper() {
   Destroy();
 }
 
-DirectManipulationHelper::DirectManipulationHelper(HWND window,
-                                                   ui::Compositor* compositor)
-    : window_(window), compositor_(compositor) {}
+DirectManipulationHelper::DirectManipulationHelper(
+    HWND window,
+    base::WeakPtr<aura::WindowTreeHost> window_tree_host,
+    ui::WindowEventTarget* event_target)
+    : window_(window),
+      window_tree_host_(window_tree_host),
+      event_target_(event_target) {
+  event_handler_ = Microsoft::WRL::Make<DirectManipulationEventHandler>(
+      weak_factory_.GetWeakPtr());
+}
 
 void DirectManipulationHelper::OnAnimationStep(base::TimeTicks timestamp) {
   // Simulate 1 frame in update_manager_.
@@ -69,12 +74,15 @@ void DirectManipulationHelper::OnAnimationStep(base::TimeTicks timestamp) {
 }
 
 void DirectManipulationHelper::OnCompositingShuttingDown(
-    ui::Compositor* compositor) {
-  DCHECK_EQ(compositor, compositor_);
+    ui::Compositor* notifying_compositor) {
+  DCHECK_EQ(notifying_compositor, compositor());
   Destroy();
 }
 
-bool DirectManipulationHelper::Initialize(ui::WindowEventTarget* event_target) {
+bool DirectManipulationHelper::Initialize() {
+  // Shouldn't be called again after Destroy().
+  DCHECK(event_handler_);
+
   // IDirectManipulationUpdateManager is the first COM object created by the
   // application to retrieve other objects in the Direct Manipulation API.
   // It also serves to activate and deactivate Direct Manipulation functionality
@@ -82,18 +90,21 @@ bool DirectManipulationHelper::Initialize(ui::WindowEventTarget* event_target) {
   HRESULT hr =
       ::CoCreateInstance(CLSID_DirectManipulationManager, nullptr,
                          CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&manager_));
-  if (!SUCCEEDED(hr))
+  if (!SUCCEEDED(hr)) {
     return false;
+  }
 
   // Since we want to use fake viewport, we need UpdateManager to tell a fake
   // fake render frame.
   hr = manager_->GetUpdateManager(IID_PPV_ARGS(&update_manager_));
-  if (!SUCCEEDED(hr))
+  if (!SUCCEEDED(hr)) {
     return false;
+  }
 
   hr = manager_->CreateViewport(nullptr, window_, IID_PPV_ARGS(&viewport_));
-  if (!SUCCEEDED(hr))
+  if (!SUCCEEDED(hr)) {
     return false;
+  }
 
   DIRECTMANIPULATION_CONFIGURATION configuration =
       DIRECTMANIPULATION_CONFIGURATION_INTERACTION |
@@ -105,53 +116,56 @@ bool DirectManipulationHelper::Initialize(ui::WindowEventTarget* event_target) {
       DIRECTMANIPULATION_CONFIGURATION_SCALING;
 
   hr = viewport_->ActivateConfiguration(configuration);
-  if (!SUCCEEDED(hr))
+  if (!SUCCEEDED(hr)) {
     return false;
+  }
 
   // Since we are using fake viewport and only want to use Direct Manipulation
   // for touchpad, we need to use MANUALUPDATE option.
   hr = viewport_->SetViewportOptions(
       DIRECTMANIPULATION_VIEWPORT_OPTIONS_MANUALUPDATE);
-  if (!SUCCEEDED(hr))
+  if (!SUCCEEDED(hr)) {
     return false;
-
-  event_handler_ =
-      Microsoft::WRL::Make<DirectManipulationEventHandler>(event_target);
-
-  event_handler_->SetDirectManipulationHelper(this);
+  }
 
   // We got Direct Manipulation transform from
   // IDirectManipulationViewportEventHandler.
   hr = viewport_->AddEventHandler(window_, event_handler_.Get(),
                                   &view_port_handler_cookie_);
-  if (!SUCCEEDED(hr))
+  if (!SUCCEEDED(hr)) {
     return false;
+  }
 
   // Set default rect for viewport before activate.
   gfx::Size viewport_size_in_pixels = {1000, 1000};
   event_handler_->SetViewportSizeInPixels(viewport_size_in_pixels);
   RECT rect = gfx::Rect(viewport_size_in_pixels).ToRECT();
   hr = viewport_->SetViewportRect(&rect);
-  if (!SUCCEEDED(hr))
+  if (!SUCCEEDED(hr)) {
     return false;
+  }
 
   hr = manager_->Activate(window_);
-  if (!SUCCEEDED(hr))
+  if (!SUCCEEDED(hr)) {
     return false;
+  }
 
   hr = viewport_->Enable();
-  if (!SUCCEEDED(hr))
+  if (!SUCCEEDED(hr)) {
     return false;
+  }
 
   hr = update_manager_->Update(nullptr);
-  if (!SUCCEEDED(hr))
+  if (!SUCCEEDED(hr)) {
     return false;
+  }
 
   return true;
 }
 
 void DirectManipulationHelper::SetSizeInPixels(
     const gfx::Size& size_in_pixels) {
+  DCHECK(event_handler_);
   if (!event_handler_->SetViewportSizeInPixels(size_in_pixels))
     return;
 
@@ -165,6 +179,7 @@ void DirectManipulationHelper::SetSizeInPixels(
 
 void DirectManipulationHelper::OnPointerHitTest(WPARAM w_param) {
   // Update the device scale factor.
+  DCHECK(event_handler_);
   event_handler_->SetDeviceScaleFactor(
       display::win::GetScreenWin()->GetScaleFactorForHWND(window_));
 
@@ -183,30 +198,31 @@ void DirectManipulationHelper::OnPointerHitTest(WPARAM w_param) {
 }
 
 void DirectManipulationHelper::AddAnimationObserver() {
-  DCHECK(compositor_);
-  compositor_->AddAnimationObserver(this);
+  if (compositor()) {
+    compositor()->AddAnimationObserver(this);
+  }
   has_animation_observer_ = true;
 }
 
 void DirectManipulationHelper::RemoveAnimationObserver() {
-  DCHECK(compositor_);
-  compositor_->RemoveAnimationObserver(this);
+  if (compositor()) {
+    compositor()->RemoveAnimationObserver(this);
+  }
   has_animation_observer_ = false;
 }
 
 void DirectManipulationHelper::SetDeviceScaleFactorForTesting(float factor) {
+  DCHECK(event_handler_);
   event_handler_->SetDeviceScaleFactor(factor);
 }
 
 void DirectManipulationHelper::Destroy() {
-  if (!compositor_)
-    return;
-  if (has_animation_observer_)
+  if (has_animation_observer_) {
     RemoveAnimationObserver();
-  compositor_ = nullptr;
-
-  if (event_handler_)
-    event_handler_->SetDirectManipulationHelper(nullptr);
+  }
+  window_tree_host_.reset();
+  event_target_ = nullptr;
+  event_handler_.Reset();
 
   if (viewport_) {
     viewport_->Stop();

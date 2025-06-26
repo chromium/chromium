@@ -78,7 +78,7 @@ void LegacyRenderWidgetHostHWND::CreateDirectManipulationHelper() {
   // |direct_manipulation_helper_| when parent changed (compositor and window
   // event target updated).
   direct_manipulation_helper_ = DirectManipulationHelper::CreateInstance(
-      hwnd(), host_->GetNativeView()->GetHost()->compositor(),
+      hwnd(), host_->GetNativeView()->GetHost()->GetWeakPtr(),
       GetWindowEventTarget(GetParent()));
 }
 

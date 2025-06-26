@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/direct_manipulation_event_handler_win.h"
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,8 +30,8 @@ bool FloatEquals(float f1, float f2) {
 }  // namespace
 
 DirectManipulationEventHandler::DirectManipulationEventHandler(
-    ui::WindowEventTarget* event_target)
-    : event_target_(event_target) {}
+    base::WeakPtr<DirectManipulationHelper> helper)
+    : helper_(helper) {}
 
 bool DirectManipulationEventHandler::SetViewportSizeInPixels(
     const gfx::Size& viewport_size_in_pixels) {
@@ -45,12 +46,7 @@ void DirectManipulationEventHandler::SetDeviceScaleFactor(
   device_scale_factor_ = device_scale_factor;
 }
 
-void DirectManipulationEventHandler::SetDirectManipulationHelper(
-    DirectManipulationHelper* helper) {
-  helper_ = helper;
-}
-
-DirectManipulationEventHandler::~DirectManipulationEventHandler() {}
+DirectManipulationEventHandler::~DirectManipulationEventHandler() = default;
 
 void DirectManipulationEventHandler::TransitionToState(
     GestureState new_gesture_state) {
@@ -60,25 +56,36 @@ void DirectManipulationEventHandler::TransitionToState(
   GestureState previous_gesture_state = gesture_state_;
   gesture_state_ = new_gesture_state;
 
+  if (new_gesture_state == GestureState::kScroll) {
+    // kFling, kNone -> kScroll, ScrollBegin.
+    // ScrollBegin is different phase event with others. It must send within the
+    // first scroll event.
+    should_send_scroll_begin_ = true;
+  }
+
+  if (!helper_ || !helper_->event_target()) {
+    return;
+  }
+
   // End the previous sequence.
   switch (previous_gesture_state) {
     case GestureState::kScroll: {
       // kScroll -> kNone, kPinch, ScrollEnd.
       // kScroll -> kFling, we don't want to end the current scroll sequence.
       if (new_gesture_state != GestureState::kFling)
-        event_target_->ApplyPanGestureScrollEnd(new_gesture_state ==
-                                                GestureState::kPinch);
+        helper_->event_target()->ApplyPanGestureScrollEnd(new_gesture_state ==
+                                                          GestureState::kPinch);
       break;
     }
     case GestureState::kFling: {
       // kFling -> *, FlingEnd.
-      event_target_->ApplyPanGestureFlingEnd();
+      helper_->event_target()->ApplyPanGestureFlingEnd();
       break;
     }
     case GestureState::kPinch: {
       DCHECK_EQ(new_gesture_state, GestureState::kNone);
       // kPinch -> kNone, PinchEnd. kPinch should only transition to kNone.
-      event_target_->ApplyPinchZoomEnd();
+      helper_->event_target()->ApplyPinchZoomEnd();
       break;
     }
     case GestureState::kNone: {
@@ -92,22 +99,20 @@ void DirectManipulationEventHandler::TransitionToState(
   // Start the new sequence.
   switch (new_gesture_state) {
     case GestureState::kScroll: {
-      // kFling, kNone -> kScroll, ScrollBegin.
-      // ScrollBegin is different phase event with others. It must send within
-      // the first scroll event.
-      should_send_scroll_begin_ = true;
+      // Handled above.
+      DCHECK(should_send_scroll_begin_);
       break;
     }
     case GestureState::kFling: {
       // Only kScroll can transition to kFling.
       DCHECK_EQ(previous_gesture_state, GestureState::kScroll);
-      event_target_->ApplyPanGestureFlingBegin();
+      helper_->event_target()->ApplyPanGestureFlingBegin();
       break;
     }
     case GestureState::kPinch: {
       // * -> kPinch, PinchBegin.
       // Pinch gesture may begin with some scroll events.
-      event_target_->ApplyPinchZoomBegin();
+      helper_->event_target()->ApplyPinchZoomBegin();
       break;
     }
     case GestureState::kNone: {
@@ -133,10 +138,11 @@ HRESULT DirectManipulationEventHandler::OnViewportStatusChanged(
   // - RUNNING: gesture updating
   // - INERTIA: finger leave touchpad content still updating by inertia
 
-  // Windows should not call this when event_target_ is null since we do not
+  // Windows should not call this when event_target() is null since we do not
   // pass the DM_POINTERHITTEST to DirectManipulation.
-  if (!event_target_)
+  if (!helper_ || !helper_->event_target()) {
     return S_OK;
+  }
 
   if (current == previous)
     return S_OK;
@@ -201,15 +207,17 @@ HRESULT DirectManipulationEventHandler::OnContentUpdated(
   DCHECK(viewport);
   DCHECK(content);
 
-  // Windows should not call this when event_target_ is null since we do not
+  // Windows should not call this when event_target() is null since we do not
   // pass the DM_POINTERHITTEST to DirectManipulation.
-  if (!event_target_)
+  if (!helper_ || !helper_->event_target()) {
     return S_OK;
+  }
 
   float xform[6];
   HRESULT hr = content->GetContentTransform(xform, ARRAYSIZE(xform));
-  if (!SUCCEEDED(hr))
+  if (!SUCCEEDED(hr)) {
     return hr;
+  }
 
   float scale = xform[0];
   int x_offset = xform[4] / device_scale_factor_;
@@ -249,20 +257,25 @@ HRESULT DirectManipulationEventHandler::OnContentUpdated(
     TransitionToState(GestureState::kPinch);
   }
 
-  if (gesture_state_ == GestureState::kScroll) {
-    if (should_send_scroll_begin_) {
-      event_target_->ApplyPanGestureScrollBegin(x_offset - last_x_offset_,
-                                                y_offset - last_y_offset_);
-      should_send_scroll_begin_ = false;
+  bool apply_scroll_begin = false;
+  if (gesture_state_ == GestureState::kScroll && should_send_scroll_begin_) {
+    apply_scroll_begin = true;
+    should_send_scroll_begin_ = false;
+  }
+
+  if (helper_ && helper_->event_target()) {
+    if (apply_scroll_begin) {
+      helper_->event_target()->ApplyPanGestureScrollBegin(
+          x_offset - last_x_offset_, y_offset - last_y_offset_);
+    } else if (gesture_state_ == GestureState::kScroll) {
+      helper_->event_target()->ApplyPanGestureScroll(x_offset - last_x_offset_,
+                                                     y_offset - last_y_offset_);
+    } else if (gesture_state_ == GestureState::kFling) {
+      helper_->event_target()->ApplyPanGestureFling(x_offset - last_x_offset_,
+                                                    y_offset - last_y_offset_);
     } else {
-      event_target_->ApplyPanGestureScroll(x_offset - last_x_offset_,
-                                           y_offset - last_y_offset_);
+      helper_->event_target()->ApplyPinchZoomScale(scale / last_scale_);
     }
-  } else if (gesture_state_ == GestureState::kFling) {
-    event_target_->ApplyPanGestureFling(x_offset - last_x_offset_,
-                                        y_offset - last_y_offset_);
-  } else {
-    event_target_->ApplyPinchZoomScale(scale / last_scale_);
   }
 
   last_scale_ = scale;
@@ -275,13 +288,15 @@ HRESULT DirectManipulationEventHandler::OnContentUpdated(
 HRESULT DirectManipulationEventHandler::OnInteraction(
     IDirectManipulationViewport2* viewport,
     DIRECTMANIPULATION_INTERACTION_TYPE interaction) {
-  if (!helper_)
+  if (!helper_) {
     return S_OK;
+  }
 
-  if (interaction == DIRECTMANIPULATION_INTERACTION_BEGIN)
+  if (interaction == DIRECTMANIPULATION_INTERACTION_BEGIN) {
     helper_->AddAnimationObserver();
-  else if (interaction == DIRECTMANIPULATION_INTERACTION_END)
+  } else if (interaction == DIRECTMANIPULATION_INTERACTION_END) {
     helper_->RemoveAnimationObserver();
+  }
 
   return S_OK;
 }

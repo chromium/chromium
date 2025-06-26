@@ -361,7 +361,7 @@ TEST_F(DirectManipulationUnitTest, ReceiveSimplePanTransform) {
   ContentUpdated(1, 10, 0);
 
   std::vector<Event> events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScrollBegin, events[0].gesture_);
   EXPECT_EQ(10, events[0].scroll_x_);
   EXPECT_EQ(0, events[0].scroll_y_);
@@ -370,7 +370,7 @@ TEST_F(DirectManipulationUnitTest, ReceiveSimplePanTransform) {
   ContentUpdated(1, 15, 0);
 
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScroll, events[0].gesture_);
   EXPECT_EQ(5, events[0].scroll_x_);
   EXPECT_EQ(0, events[0].scroll_y_);
@@ -378,7 +378,7 @@ TEST_F(DirectManipulationUnitTest, ReceiveSimplePanTransform) {
   ViewportStatusChanged(DIRECTMANIPULATION_READY, DIRECTMANIPULATION_RUNNING);
 
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScrollEnd, events[0].gesture_);
 }
 
@@ -390,7 +390,7 @@ TEST_F(DirectManipulationUnitTest, ReceivePanFling) {
   ContentUpdated(1, 10, 0);
 
   std::vector<Event> events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScrollBegin, events[0].gesture_);
   EXPECT_EQ(10, events[0].scroll_x_);
   EXPECT_EQ(0, events[0].scroll_y_);
@@ -399,7 +399,7 @@ TEST_F(DirectManipulationUnitTest, ReceivePanFling) {
   ContentUpdated(1, 15, 0);
 
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScroll, events[0].gesture_);
   EXPECT_EQ(5, events[0].scroll_x_);
   EXPECT_EQ(0, events[0].scroll_y_);
@@ -408,20 +408,20 @@ TEST_F(DirectManipulationUnitTest, ReceivePanFling) {
   ViewportStatusChanged(DIRECTMANIPULATION_INERTIA, DIRECTMANIPULATION_RUNNING);
 
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kFlingBegin, events[0].gesture_);
 
   ContentUpdated(1, 20, 0);
 
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kFling, events[0].gesture_);
   EXPECT_EQ(5, events[0].scroll_x_);
   EXPECT_EQ(0, events[0].scroll_y_);
 
   ViewportStatusChanged(DIRECTMANIPULATION_READY, DIRECTMANIPULATION_INERTIA);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kFlingEnd, events[0].gesture_);
 }
 
@@ -432,7 +432,7 @@ TEST_F(DirectManipulationUnitTest, ReceiveSimpleScaleTransform) {
   ViewportStatusChanged(DIRECTMANIPULATION_RUNNING, DIRECTMANIPULATION_READY);
   ContentUpdated(1.1f, 0, 0);
   std::vector<Event> events = GetEvents();
-  EXPECT_EQ(2u, events.size());
+  ASSERT_EQ(2u, events.size());
   EXPECT_EQ(EventGesture::kScaleBegin, events[0].gesture_);
   EXPECT_EQ(EventGesture::kScale, events[1].gesture_);
   EXPECT_EQ(1.1f, events[1].scale_);
@@ -440,13 +440,13 @@ TEST_F(DirectManipulationUnitTest, ReceiveSimpleScaleTransform) {
   // For next update, should only apply the difference.
   ContentUpdated(1.21f, 0, 0);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScale, events[0].gesture_);
   EXPECT_EQ(1.1f, events[0].scale_);
 
   ViewportStatusChanged(DIRECTMANIPULATION_READY, DIRECTMANIPULATION_RUNNING);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScaleEnd, events[0].gesture_);
 }
 
@@ -468,7 +468,7 @@ TEST_F(DirectManipulationUnitTest, ReceiveScrollTransformLessThanOne) {
   // Scroll offset more than 1, should only apply integer part.
   ContentUpdated(1, 1.2f, 0);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScrollBegin, events[0].gesture_);
   EXPECT_EQ(1, events[0].scroll_x_);
   EXPECT_EQ(0, events[0].scroll_y_);
@@ -481,7 +481,7 @@ TEST_F(DirectManipulationUnitTest, ReceiveScrollTransformLessThanOne) {
   // Scroll offset difference more than 1, should only apply integer part.
   ContentUpdated(1, 3.0f, 0);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScroll, events[0].gesture_);
   EXPECT_EQ(2, events[0].scroll_x_);
   EXPECT_EQ(0, events[0].scroll_y_);
@@ -501,7 +501,7 @@ TEST_F(DirectManipulationUnitTest,
   // Scale factor more than float point error, apply.
   ContentUpdated(1.00001f, 0, 0);
   events = GetEvents();
-  EXPECT_EQ(2u, events.size());
+  ASSERT_EQ(2u, events.size());
   EXPECT_EQ(EventGesture::kScaleBegin, events[0].gesture_);
   EXPECT_EQ(EventGesture::kScale, events[1].gesture_);
   EXPECT_EQ(1.00001f, events[1].scale_);
@@ -514,13 +514,13 @@ TEST_F(DirectManipulationUnitTest,
   // Scale factor difference more than float point error, apply.
   ContentUpdated(1.000021f, 0, 0);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScale, events[0].gesture_);
   EXPECT_EQ(1.000021f / 1.00001f, events[0].scale_);
 
   ViewportStatusChanged(DIRECTMANIPULATION_READY, DIRECTMANIPULATION_RUNNING);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScaleEnd, events[0].gesture_);
 }
 
@@ -534,13 +534,13 @@ TEST_F(DirectManipulationUnitTest, InSameSequenceReceiveBothScrollAndScale) {
   // First event is a scroll event.
   ContentUpdated(1.0f, 5, 0);
   std::vector<Event> events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScrollBegin, events[0].gesture_);
 
   // Second event comes with scale factor. Now the scroll offset only noise.
   ContentUpdated(1.00001f, 5, 0);
   events = GetEvents();
-  EXPECT_EQ(3u, events.size());
+  ASSERT_EQ(3u, events.size());
   EXPECT_EQ(EventGesture::kScrollEnd, events[0].gesture_);
   EXPECT_EQ(EventGesture::kScaleBegin, events[1].gesture_);
   EXPECT_EQ(EventGesture::kScale, events[2].gesture_);
@@ -556,29 +556,29 @@ TEST_F(DirectManipulationUnitTest, InSameSequenceReceiveScaleAfterFling) {
   // First event is a scroll event.
   ContentUpdated(1.0f, 5, 0);
   std::vector<Event> events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScrollBegin, events[0].gesture_);
 
   // Fling Begin.
   ViewportStatusChanged(DIRECTMANIPULATION_INERTIA, DIRECTMANIPULATION_RUNNING);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kFlingBegin, events[0].gesture_);
 
   ContentUpdated(1, 10, 0);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kFling, events[0].gesture_);
 
   // Event comes with scale factor. Now the scroll offset only noise.
   ViewportStatusChanged(DIRECTMANIPULATION_RUNNING, DIRECTMANIPULATION_INERTIA);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kFlingEnd, events[0].gesture_);
 
   ContentUpdated(1.00001f, 10, 0);
   events = GetEvents();
-  EXPECT_EQ(2u, events.size());
+  ASSERT_EQ(2u, events.size());
   EXPECT_EQ(EventGesture::kScaleBegin, events[0].gesture_);
   EXPECT_EQ(EventGesture::kScale, events[1].gesture_);
 }
@@ -593,25 +593,25 @@ TEST_F(DirectManipulationUnitTest, InSameSequenceReceiveScrollAfterFling) {
   // First event is a scroll event.
   ContentUpdated(1.0f, 5, 0);
   std::vector<Event> events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScrollBegin, events[0].gesture_);
 
   // Fling Begin.
   ViewportStatusChanged(DIRECTMANIPULATION_INERTIA, DIRECTMANIPULATION_RUNNING);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kFlingBegin, events[0].gesture_);
 
   ContentUpdated(1, 10, 0);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kFling, events[0].gesture_);
 
   // Fling back to Scroll.
   ViewportStatusChanged(DIRECTMANIPULATION_RUNNING, DIRECTMANIPULATION_INERTIA);
   ContentUpdated(1, 15, 0);
   events = GetEvents();
-  EXPECT_EQ(2u, events.size());
+  ASSERT_EQ(2u, events.size());
   EXPECT_EQ(EventGesture::kFlingEnd, events[0].gesture_);
   EXPECT_EQ(EventGesture::kScrollBegin, events[1].gesture_);
 }
@@ -625,24 +625,24 @@ TEST_F(DirectManipulationUnitTest,
 
   ContentUpdated(1.0f, 5, 0);
   std::vector<Event> events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScrollBegin, events[0].gesture_);
 
   // Fling Begin.
   ViewportStatusChanged(DIRECTMANIPULATION_INERTIA, DIRECTMANIPULATION_RUNNING);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kFlingBegin, events[0].gesture_);
 
   ContentUpdated(1, 10, 0);
   events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kFling, events[0].gesture_);
 
   // Event comes with scale factor. But no ViewportStatusChanged.
   ContentUpdated(1.00001f, 10, 0);
   events = GetEvents();
-  EXPECT_EQ(3u, events.size());
+  ASSERT_EQ(3u, events.size());
   EXPECT_EQ(EventGesture::kFlingEnd, events[0].gesture_);
   EXPECT_EQ(EventGesture::kScaleBegin, events[1].gesture_);
   EXPECT_EQ(EventGesture::kScale, events[2].gesture_);
@@ -671,7 +671,7 @@ TEST_F(DirectManipulationUnitTest, HiDPIScroll) {
   SetDeviceScaleFactor(10.0);
   ContentUpdated(1.0f, 50, 0);
   std::vector<Event> events = GetEvents();
-  EXPECT_EQ(1u, events.size());
+  ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScrollBegin, events[0].gesture_);
   EXPECT_EQ(5, events[0].scroll_x_);
 }
