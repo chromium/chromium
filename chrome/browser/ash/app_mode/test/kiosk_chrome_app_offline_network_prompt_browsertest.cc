@@ -135,12 +135,8 @@ IN_PROC_BROWSER_TEST_P(KioskChromeAppOfflineNetworkPromptDisabledTest,
                        NetworkScreenDoesNotAppear) {
   network_state_.SimulateOffline();
 
-  const test::UIPath kConfigNetworkLink = {"app-launch-splash",
-                                           "configNetwork"};
-
   WaitSplashScreen();
   WaitNetworkTimeoutMessage();
-  test::OobeJS().ExpectHiddenPath(kConfigNetworkLink);
 
   network_state_.SimulateOnline();
   ASSERT_TRUE(WaitKioskLaunched());

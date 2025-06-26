@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_APP_LAUNCH_SPLASH_SCREEN_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 
 namespace ash {
 
@@ -34,9 +37,6 @@ class AppLaunchSplashScreenView {
 
   // Sets the current app launch state.
   virtual void UpdateAppLaunchText(AppLaunchState state) = 0;
-
-  // Sets whether configure network control is visible.
-  virtual void ToggleNetworkConfig(bool visible) = 0;
 
   virtual void HideThrobber() = 0;
 
@@ -67,7 +67,6 @@ class AppLaunchSplashScreenHandler : public BaseScreenHandler,
 
   // AppLaunchSplashScreenView implementation:
   void Show(base::Value::Dict data) override;
-  void ToggleNetworkConfig(bool visible) override;
   void UpdateAppLaunchText(AppLaunchState state) override;
   void HideThrobber() override;
   void SetAppData(base::Value::Dict data) override;

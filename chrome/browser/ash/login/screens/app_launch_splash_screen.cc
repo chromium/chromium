@@ -30,8 +30,6 @@ namespace ash {
 
 namespace {
 
-constexpr const char kUserActionConfigureNetwork[] = "configure-network";
-
 std::string NameOrDefault(std::string_view name) {
   return name.empty() ? l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME)
                       : std::string(name);
@@ -91,11 +89,6 @@ void AppLaunchSplashScreen::ShowImpl() {
   UpdateAppLaunchState(state_);
   base::Value::Dict screen_data = GetScreenData(app_data_);
   view_->Show(std::move(screen_data));
-
-  if (toggle_network_config_on_show_.has_value()) {
-    ToggleNetworkConfig(toggle_network_config_on_show_.value());
-    toggle_network_config_on_show_.reset();
-  }
 }
 
 void AppLaunchSplashScreen::HideImpl() {}
@@ -152,14 +145,6 @@ void AppLaunchSplashScreen::ShowNetworkConfigureUI(
   }
 }
 
-void AppLaunchSplashScreen::ToggleNetworkConfig(bool visible) {
-  if (is_hidden()) {
-    toggle_network_config_on_show_ = visible;
-    return;
-  }
-  view_->ToggleNetworkConfig(visible);
-}
-
 void AppLaunchSplashScreen::HideThrobber() {
   if (view_) {
     view_->HideThrobber();
@@ -185,14 +170,7 @@ void AppLaunchSplashScreen::ShowErrorMessage(KioskAppLaunchError::Error error) {
       KioskAppLaunchError::GetErrorMessage(error));
 }
 
-void AppLaunchSplashScreen::HandleConfigureNetwork() {
-  if (delegate_) {
-    delegate_->OnConfigureNetwork();
-  } else {
-    LOG(WARNING) << "No delegate set to handle network configuration.";
-  }
-}
-void AppLaunchSplashScreen::ContinueAppLaunch() {
+void AppLaunchSplashScreen::CloseNetworkConfigureUI() {
   if (!delegate_) {
     return;
   }
@@ -205,15 +183,6 @@ void AppLaunchSplashScreen::ContinueAppLaunch() {
   error_screen_->SetParentScreen(OOBE_SCREEN_UNKNOWN);
   error_screen_->SetIsPersistentError(false);
   error_screen_->Hide();
-}
-
-void AppLaunchSplashScreen::OnUserAction(const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-  if (action_id == kUserActionConfigureNetwork) {
-    HandleConfigureNetwork();
-  } else {
-    BaseScreen::OnUserAction(args);
-  }
 }
 
 }  // namespace ash

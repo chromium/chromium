@@ -10,7 +10,6 @@ import '//resources/js/action_link.js';
 import '../../components/throbber_notice.js';
 
 import {assert} from '//resources/js/assert.js';
-import {ensureTransitionEndEvent} from '//resources/js/util.js';
 import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -31,10 +30,6 @@ interface AppData {
 interface AppLaunchSplashScreenData {
   shortcutEnabled: boolean;
   appInfo: AppData;
-}
-
-enum UserAction {
-  CONFIGURE_NETWORK = 'configure-network',
 }
 
 class AppLaunchSplash extends AppLaunchSplashBase {
@@ -73,43 +68,18 @@ class AppLaunchSplash extends AppLaunchSplashBase {
   private showThrobber: boolean;
 
   override get EXTERNAL_API(): string[] {
-    return [
-      'toggleNetworkConfig', 'setAppData', 'updateMessage', 'hideThrobber'
-    ];
+    return ['setAppData', 'updateMessage', 'hideThrobber'];
   }
 
   override ready(): void {
     super.ready();
     this.initializeLoginScreen('AppLaunchSplashScreen');
-
-    const networkContainer =
-        this.shadowRoot!.getElementById('configNetworkContainer')!;
-    networkContainer.addEventListener(
-        'transitionend', this.onConfigNetworkTransitionend.bind(this));
-
-    // Ensure the transitionend event gets called after a wait time.
-    // The wait time should be inline with the transition duration time
-    // defined in css file. The current value in css is 1000ms. To avoid
-    // the emulated transitionend firing before real one, a 1050ms
-    // delay is used.
-    ensureTransitionEndEvent((networkContainer), 1050);
   }
 
   /** Initial UI State for screen */
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override getOobeUIInitialState(): OobeUiState {
     return OobeUiState.KIOSK;
-  }
-
-  private onConfigNetwork(): void {
-    this.userActed(UserAction.CONFIGURE_NETWORK);
-  }
-
-  private onConfigNetworkTransitionend(): void {
-    if (this.shadowRoot!.getElementById('configNetworkContainer')!.classList
-            .contains('faded')) {
-      this.shadowRoot!.getElementById('configNetwork')!.hidden = true;
-    }
   }
 
   /**
@@ -119,8 +89,6 @@ class AppLaunchSplash extends AppLaunchSplashBase {
   override onBeforeShow(data?: AppLaunchSplashScreenData): void {
     super.onBeforeShow(data);
     assert(this.shadowRoot);
-    this.shadowRoot.getElementById('configNetwork')!.hidden = true;
-    this.toggleNetworkConfig(false);
     // If the screen is reshown from the ErrorScreen using the default callback
     // data might be undefined.
     if (data) {
@@ -140,28 +108,6 @@ class AppLaunchSplash extends AppLaunchSplashBase {
     const shortcutInfo = this.shadowRoot!.getElementById('shortcutInfo');
     assert(shortcutInfo instanceof HTMLElement);
     shortcutInfo.hidden = !data['shortcutEnabled'];
-  }
-
-  /**
-   * Toggles visibility of the network configuration option.
-   * @param visible Whether to show the option.
-   */
-  toggleNetworkConfig(visible: boolean): void {
-    const currVisible =
-        !this.shadowRoot!.getElementById('configNetworkContainer')!.classList
-             .contains('faded');
-    if (currVisible === visible) {
-      return;
-    }
-
-    if (visible) {
-      this.shadowRoot!.getElementById('configNetwork')!.hidden = false;
-      this.shadowRoot!.getElementById(
-                          'configNetworkContainer')!.classList.remove('faded');
-    } else {
-      this.shadowRoot!.getElementById('configNetworkContainer')!.classList.add(
-          'faded');
-    }
   }
 
   /**

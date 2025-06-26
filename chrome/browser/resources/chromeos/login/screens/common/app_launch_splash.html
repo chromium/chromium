@@ -48,29 +48,7 @@ found in the LICENSE file.
     color: #666;
     font-size: 18px;
     padding-top: 50px;
-  }
-
-  #configNetworkContainer {
-    height : 30px;
-    opacity: 1;
-    padding-bottom: 20px;
-    transition: 1s opacity;
-  }
-
-  #configNetworkContainer.faded {
-    opacity: 0;
-  }
-
-  #configNetwork {
-    font-size: 10px;
-    font-weight: bold;
-    margin: 0;
-    padding: 0;
-    text-decoration: none;
-  }
-
-  #configNetwork:hover {
-    color: rgb(202, 67, 100)
+    padding-bottom: 50px;
   }
 
   #shortcutInfo {
@@ -89,13 +67,6 @@ found in the LICENSE file.
     <div id="appUrl">[[appUrl]]</div>
   </div>
   <div id="launchText" role="status" aria-live="polite">[[launchText]]</div>
-  <div id="configNetworkContainer" class="faded">
-    <a id="configNetwork" class="oobe-local-link"
-        is="action-link" on-click="onConfigNetwork"
-        aria-label="[[i18nDynamic(locale, 'configureNetwork')]]">
-      [[i18nDynamic(locale, 'configureNetwork')]]
-    </a>
-  </div>
   <throbber-notice hidden$="[[!showThrobber]]">
   </throbber-notice>
 </div>

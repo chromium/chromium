@@ -83,7 +83,6 @@ class NetworkUiController
   void OnNetworkLostDuringInstallation();
 
   // `AppLaunchSplashScreenView::Delegate`
-  void OnConfigureNetwork() override;
   void OnNetworkConfigFinished() override;
 
   // `KioskAppLauncher::NetworkDelegate`
@@ -108,7 +107,6 @@ class NetworkUiController
   void OnNetworkStateChanged(bool online);
   void MaybeShowNetworkConfigureUI();
   void ShowNetworkConfigureUI();
-  void CloseNetworkConfigureUI();
 
   void OnNetworkWaitTimeout();
   bool CanConfigureNetwork();

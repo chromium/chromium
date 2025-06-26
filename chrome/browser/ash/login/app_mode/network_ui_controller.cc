@@ -13,17 +13,18 @@
 #include "base/check_is_test.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/notreached.h"
 #include "base/syslog_logging.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/browser/network_service_instance.h"
-#include "services/network/public/mojom/network_change_manager.mojom-shared.h"
+#include "services/network/public/mojom/network_change_manager.mojom-data-view.h"
 
 namespace {
 
@@ -33,18 +34,6 @@ constexpr base::TimeDelta kKioskNetworkWaitTime = base::Seconds(10);
 base::TimeDelta g_network_wait_time = kKioskNetworkWaitTime;
 
 std::optional<bool> g_can_configure_network_for_testing;
-
-bool CanConfigureNetworkForEnterpriseKiosk() {
-  bool should_prompt;
-  if (ash::CrosSettings::Get()->GetBoolean(
-          ash::kAccountsPrefDeviceLocalAccountPromptForNetworkWhenOffline,
-          &should_prompt)) {
-    return should_prompt;
-  }
-  // Default to true to allow network configuration if the policy is
-  // missing.
-  return true;
-}
 
 network::mojom::ConnectionType GetCurrentConnectionType() {
   auto connection_type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
@@ -124,12 +113,6 @@ void NetworkUiController::InitializeNetwork() {
   }
 }
 
-void NetworkUiController::OnConfigureNetwork() {
-  // TODO(b/256596599): Remove this consumer-kiosk only method and all its
-  // references.
-  NOTREACHED();
-}
-
 void NetworkUiController::OnNetworkConfigFinished() {
   network_ui_state_ = NetworkUIState::kNotShowing;
 
@@ -169,8 +152,8 @@ void NetworkUiController::OnNetworkOnline() {
   network_ui_state_ = kNotShowing;
 
   if (network_showing_after_timeout) {
-    SYSLOG(INFO) << "We are back online, closing network configure screen.";
-    CloseNetworkConfigureUI();
+    SYSLOG(INFO) << "Network is online, closing network configure screen.";
+    splash_screen_->CloseNetworkConfigureUI();
   } else {
     observer_->OnNetworkReady();
   }
@@ -178,11 +161,6 @@ void NetworkUiController::OnNetworkOnline() {
 
 void NetworkUiController::OnNetworkOffline() {
   observer_->OnNetworkLost();
-}
-
-void NetworkUiController::CloseNetworkConfigureUI() {
-  splash_screen_->ToggleNetworkConfig(false);
-  splash_screen_->ContinueAppLaunch();
 }
 
 bool NetworkUiController::IsNetworkReady() const {
@@ -229,14 +207,23 @@ void NetworkUiController::OnNetworkWaitTimeout() {
 }
 
 bool NetworkUiController::CanConfigureNetwork() {
-  // TODO(b/256596599): Check if this code is still relevant for
-  // enterprise kiosks.
   if (g_can_configure_network_for_testing.has_value()) {
     return g_can_configure_network_for_testing.value();
   }
 
-  return ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
-         CanConfigureNetworkForEnterpriseKiosk();
+  // TODO(crbug.com/407487338): Remove once `KioskLaunchController` upgrades its
+  // call to `IsEnterpriseManaged` to a CHECK.
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    return false;
+  }
+
+  if (bool value; ash::CrosSettings::Get()->GetBoolean(
+          ash::kAccountsPrefDeviceLocalAccountPromptForNetworkWhenOffline,
+          &value)) {
+    return value;
+  }
+  // Default to true when the policy is missing.
+  return true;
 }
 
 // static

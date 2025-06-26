@@ -1719,9 +1719,6 @@
     Use Google Account password
   </message>
 
-  <message name="IDS_APP_START_CONFIGURE_NETWORK" desc="Text displayed for configure network button while installing and/or launching web application in kiosk mode.">
-    Configure network
-  </message>
   <message name="IDS_APP_START_NETWORK_WAIT_TIMEOUT_MESSAGE" desc="Message displayed while the network wait is timed out during app launching.">
     Internet disconnected. Please check your internet connection.
   </message>

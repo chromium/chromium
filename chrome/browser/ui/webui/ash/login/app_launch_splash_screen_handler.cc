@@ -4,26 +4,18 @@
 
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 
-#include <string_view>
+#include <string>
 #include <utility>
 
-#include "ash/public/cpp/login_screen.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/error_screen.h"
-#include "chrome/browser/ash/login/screens/network_error.h"
-#include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
-#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/image/image_skia.h"
-#include "url/gurl.h"
 
 namespace ash {
 
@@ -35,7 +27,6 @@ AppLaunchSplashScreenHandler::~AppLaunchSplashScreenHandler() = default;
 void AppLaunchSplashScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("appStartMessage", IDS_APP_START_NETWORK_WAIT_MESSAGE);
-  builder->Add("configureNetwork", IDS_APP_START_CONFIGURE_NETWORK);
 
   const std::u16string product_os_name =
       l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME);
@@ -50,10 +41,6 @@ void AppLaunchSplashScreenHandler::Show(base::Value::Dict data) {
 
 void AppLaunchSplashScreenHandler::SetAppData(base::Value::Dict data) {
   CallExternalAPI("setAppData", std::move(data));
-}
-
-void AppLaunchSplashScreenHandler::ToggleNetworkConfig(bool visible) {
-  CallExternalAPI("toggleNetworkConfig", visible);
 }
 
 void AppLaunchSplashScreenHandler::UpdateAppLaunchText(AppLaunchState state) {
