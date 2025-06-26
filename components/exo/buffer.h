@@ -98,7 +98,7 @@ class Buffer {
   virtual gfx::Size GetSize() const;
 
   // Returns the format of the buffer.
-  gfx::BufferFormat GetFormat() const;
+  viz::SharedImageFormat GetFormat() const;
 
   // Returns the |gpu_memory_buffer_| pointer to be used as id. It can also be
   // used as a bool to identify if |gpu_memory_buffer_| is null or not.
@@ -139,7 +139,7 @@ class Buffer {
   class Texture;
 
   Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
-         gfx::BufferFormat buffer_format,
+         viz::SharedImageFormat buffer_format,
          gfx::Size size,
          gfx::BufferUsage buffer_usage,
          unsigned query_type,
@@ -208,7 +208,7 @@ class Buffer {
   // Contains the content of this buffer instead of |gpu_memory_buffer_| when
   // MappableSI is enabled.
   gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle_;
-  const gfx::BufferFormat buffer_format_;
+  const viz::SharedImageFormat format_;
   const gfx::Size size_;
   gfx::BufferUsage buffer_usage_;
 

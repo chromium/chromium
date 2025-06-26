@@ -110,13 +110,9 @@ bool ListContainsEntry(T& list, U key) {
   return FindListEntry(list, key) != list.end();
 }
 
-bool FormatHasAlpha(gfx::BufferFormat format) {
-  return gfx::AlphaBitsForBufferFormat(format) != 0;
-}
-
 // TODO(crbug.com/369003507): Remove this check once we found the root
 // cause of crash on specific hatch platform.
-bool ShouldDisableOverlay(gfx::BufferFormat format) {
+bool ShouldDisableOverlay(viz::SharedImageFormat format) {
   static bool is_blocked_device = false;
   static bool is_initialized = false;
   static const base::flat_set<std::string> blocked_devices = {
@@ -130,18 +126,12 @@ bool ShouldDisableOverlay(gfx::BufferFormat format) {
   if (!is_blocked_device) {
     return false;
   }
-  switch (format) {
-    case gfx::BufferFormat::YVU_420:
-      return false;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return false;
-    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
-      return false;
-    case gfx::BufferFormat::P010:
-      return false;
-    default:
-      return true;
+
+  if (format.is_multi_plane()) {
+    return false;
   }
+
+  return true;
 }
 
 Transform InvertY(Transform transform) {
@@ -1563,7 +1553,7 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
 
     if (current_resource_) {
       current_resource_has_alpha_ =
-          FormatHasAlpha(state_.buffer->buffer()->GetFormat());
+          state_.buffer->buffer()->GetFormat().HasAlpha();
       current_resource_->color_space = state_.basic_state.color_space;
     } else {
       SkColor4f color = state_.buffer->buffer()->GetColor();
@@ -2083,10 +2073,9 @@ std::string Surface::DumpDebugInfo() const {
          " " +
          (has_buffer
               ? (std::string("format=") +
-                 gfx::BufferFormatToString(
-                     state_.buffer->buffer()->GetFormat()) +
-                 (FormatHasAlpha(state_.buffer->buffer()->GetFormat()) ? "(a)"
-                                                                       : ""))
+
+                 state_.buffer->buffer()->GetFormat().ToString() +
+                 (state_.buffer->buffer()->GetFormat().HasAlpha() ? "(a)" : ""))
               : "");
 }
 

@@ -64,10 +64,10 @@ const unsigned kDefaultQueryType = GL_COMMANDS_COMPLETED_CHROMIUM;
 const bool kDefaultUseZeroCopy = true;
 const bool kDefaultIsOverlayCandidate = false;
 const bool kDefaultYInvert = false;
-const gfx::BufferFormat kDefaultBufferFormat = gfx::BufferFormat::RGBA_8888;
+const viz::SharedImageFormat kDefaultFormat =
+    viz::SinglePlaneFormat::kRGBA_8888;
 const gfx::Size kDefaultSize = gfx::Size(0, 0);
 const gfx::BufferUsage kDefaultBufferUsage = gfx::BufferUsage::GPU_READ;
-
 // Default usage in order to create a mappable shared image and get a
 // GpuMemoryBufferHandle from it.
 const gpu::SharedImageUsageSet kDefaultMappableSIUsage =
@@ -81,16 +81,13 @@ BASE_FEATURE(kExoDisableRG88Format,
 // Gets the color type of |format| for creating bitmap. If it returns
 // SkColorType::kUnknown_SkColorType, it means with this format, this buffer
 // contents should not be used to create bitmap.
-SkColorType GetColorTypeForBitmapCreation(gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::RGBA_8888:
-      return SkColorType::kRGBA_8888_SkColorType;
-    case gfx::BufferFormat::BGRA_8888:
-      return SkColorType::kBGRA_8888_SkColorType;
-    default:
-      // Don't create bitmap for other formats.
-      return SkColorType::kUnknown_SkColorType;
+SkColorType GetColorTypeForBitmapCreation(viz::SharedImageFormat format) {
+  // Don't create bitmap for other formats.
+  if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
+      format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return ToClosestSkColorType(format);
   }
+  return SkColorType::kUnknown_SkColorType;
 }
 
 // Gets the shared image format equivalent of |buffer_format| used for creating
@@ -177,7 +174,7 @@ class Buffer::Texture : public viz::ContextLostObserver {
           gfx::ColorSpace color_space);
   Texture(scoped_refptr<viz::RasterContextProvider> context_provider,
           gfx::GpuMemoryBufferHandle* gpu_memory_buffer_handle,
-          const gfx::BufferFormat buffer_format,
+          const viz::SharedImageFormat buffer_format,
           const gfx::Size& size,
           gfx::ColorSpace color_space,
           unsigned query_type,
@@ -287,7 +284,7 @@ Buffer::Texture::Texture(
 Buffer::Texture::Texture(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     gfx::GpuMemoryBufferHandle* gpu_memory_buffer_handle,
-    const gfx::BufferFormat buffer_format,
+    const viz::SharedImageFormat format,
     const gfx::Size& size,
     gfx::ColorSpace color_space,
     unsigned query_type,
@@ -315,10 +312,9 @@ Buffer::Texture::Texture(
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  shared_image_ =
-      sii->CreateSharedImage({GetSharedImageFormat(buffer_format), size_,
-                              color_space, usage, gpu::kExoTextureLabelPrefix},
-                             gpu_memory_buffer_handle_->Clone());
+  shared_image_ = sii->CreateSharedImage(
+      {format, size_, color_space, usage, gpu::kExoTextureLabelPrefix},
+      gpu_memory_buffer_handle_->Clone());
   CHECK(shared_image_);
   DCHECK(!shared_image_->mailbox().IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
@@ -541,7 +537,7 @@ Buffer::BufferRelease& Buffer::BufferRelease::operator=(BufferRelease&&) =
 
 Buffer::Buffer()
     : Buffer(gfx::GpuMemoryBufferHandle(),
-             kDefaultBufferFormat,
+             kDefaultFormat,
              kDefaultSize,
              kDefaultBufferUsage,
              kDefaultQueryType,
@@ -550,7 +546,7 @@ Buffer::Buffer()
              kDefaultYInvert) {}
 
 Buffer::Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
-               gfx::BufferFormat buffer_format,
+               viz::SharedImageFormat format,
                gfx::Size size,
                gfx::BufferUsage buffer_usage,
                unsigned query_type,
@@ -558,7 +554,7 @@ Buffer::Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
                bool is_overlay_candidate,
                bool y_invert)
     : gpu_memory_buffer_handle_(std::move(gpu_memory_buffer_handle)),
-      buffer_format_(buffer_format),
+      format_(format),
       size_(size),
       buffer_usage_(buffer_usage),
       query_type_(query_type),
@@ -579,9 +575,10 @@ std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
     bool use_zero_copy,
     bool is_overlay_candidate,
     bool y_invert) {
-  return base::WrapUnique(new Buffer(
-      std::move(buffer_handle), buffer_format, buffer_size, buffer_usage,
-      query_type, use_zero_copy, is_overlay_candidate, y_invert));
+  return base::WrapUnique(
+      new Buffer(std::move(buffer_handle), GetSharedImageFormat(buffer_format),
+                 buffer_size, buffer_usage, query_type, use_zero_copy,
+                 is_overlay_candidate, y_invert));
 }
 
 // static
@@ -595,6 +592,7 @@ std::unique_ptr<Buffer> Buffer::CreateBuffer(
     bool is_overlay_candidate) {
   scoped_refptr<gpu::ClientSharedImage> shared_image;
   auto* sii = GetSharedImageInterface();
+  auto format = GetSharedImageFormat(buffer_format);
   if (sii) {
     // Note that we are creating this mappable shared image only to get a
     // GMBHandle from it and use below to create ::Buffer.
@@ -612,8 +610,8 @@ std::unique_ptr<Buffer> Buffer::CreateBuffer(
     // ::Buffer does implement ContextLostObserver and destroys the MappableSI
     // correctly, it still needs to recreate it when contexts are recreated.
     shared_image = sii->CreateSharedImage(
-        {GetSharedImageFormat(buffer_format), buffer_size, gfx::ColorSpace(),
-         kDefaultMappableSIUsage, "ExoBufferCreateBuffer"},
+        {format, buffer_size, gfx::ColorSpace(), kDefaultMappableSIUsage,
+         "ExoBufferCreateBuffer"},
         surface_handle, buffer_usage);
   }
   if (!shared_image) {
@@ -621,7 +619,7 @@ std::unique_ptr<Buffer> Buffer::CreateBuffer(
     return nullptr;
   }
   std::unique_ptr<Buffer> buffer = base::WrapUnique(
-      new Buffer(shared_image->CloneGpuMemoryBufferHandle(), buffer_format,
+      new Buffer(shared_image->CloneGpuMemoryBufferHandle(), format,
                  buffer_size, buffer_usage, kDefaultQueryType,
                  kDefaultUseZeroCopy, is_overlay_candidate, kDefaultYInvert));
 
@@ -691,7 +689,7 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
   // call to CopyTexImage.
   if (!contents_texture_) {
     contents_texture_ = std::make_unique<Texture>(
-        context_provider, &gpu_memory_buffer_handle_, buffer_format_, size_,
+        context_provider, &gpu_memory_buffer_handle_, format_, size_,
         color_space, query_type_, wait_for_release_delay_,
         is_overlay_candidate_);
     resource.set_sync_token(contents_texture_->sync_token());
@@ -748,7 +746,7 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
     resource.set_mailbox(contents_texture->mailbox());
     resource.set_texture_target(texture_target);
     resource.is_overlay_candidate = is_overlay_candidate_;
-    resource.format = GetSharedImageFormat(buffer_format_);
+    resource.format = format_;
 
     if (context_provider->ContextCapabilities().chromium_gpu_fence &&
         request_release_fence) {
@@ -830,8 +828,8 @@ gfx::Size Buffer::GetSize() const {
   return size_;
 }
 
-gfx::BufferFormat Buffer::GetFormat() const {
-  return buffer_format_;
+viz::SharedImageFormat Buffer::GetFormat() const {
+  return format_;
 }
 
 // TODO(vikassoni): Note that once MappableSI is fully landed, direct use of
@@ -960,11 +958,11 @@ SkBitmap Buffer::CreateBitmap() {
 
   // We only need to create this shared image in order to Map the
   // |gpu_memory_buffer_handle_| to cpu visible memory.
-  auto shared_image = sii->CreateSharedImage(
-      {GetSharedImageFormat(buffer_format_), size_, gfx::ColorSpace(),
-       kDefaultMappableSIUsage, "ExoBufferCreateBitmap"},
-      gpu::kNullSurfaceHandle, buffer_usage_,
-      gpu_memory_buffer_handle_.Clone());
+  auto shared_image =
+      sii->CreateSharedImage({format_, size_, gfx::ColorSpace(),
+                              kDefaultMappableSIUsage, "ExoBufferCreateBitmap"},
+                             gpu::kNullSurfaceHandle, buffer_usage_,
+                             gpu_memory_buffer_handle_.Clone());
 
   auto mapping = shared_image->Map();
   if (!mapping) {
