@@ -9,4 +9,7 @@ found in the LICENSE file.
     <style name="ModernToolbar" parent="Base.ModernToolbar">
         <item name="android:background">@null</item>
     </style>
+
+    <style name="ThemeOverlay.BrowserUI.Fullscreen"
+        parent="Base.ThemeOverlay.BrowserUI.Fullscreen" />
 </resources>
