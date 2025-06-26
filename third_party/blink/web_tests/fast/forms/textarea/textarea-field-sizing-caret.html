@@ -8,9 +8,20 @@ textarea {
   field-sizing: content;
 }
 </style>
+// caret-shape: bar
 <textarea></textarea>
 <textarea style="writing-mode:vertical-rl"></textarea>
+
+// caret-shape: block
+<textarea id="textarea-block" style="caret-shape:block"></textarea>
+<textarea id="textarea-block-vrl" style="writing-mode:vertical-rl; caret-shape:block;"></textarea>
+
+// caret-shape: underscore
+<textarea id="textarea-underscore" style="caret-shape:underscore"></textarea>
+<textarea id="textarea-underscore-vrl" style="writing-mode:vertical-rl; caret-shape:underscore;"></textarea>
+
 <script>
+// caret-shape: bar
 test(() => {
   assert_equals(document.querySelector('textarea').offsetWidth, 1);
 }, 'The width of an empty textarea should be same as the caret width');
@@ -18,4 +29,23 @@ test(() => {
 test(() => {
   assert_equals(document.querySelectorAll('textarea')[1].offsetHeight, 1);
 }, 'The height of an empty textarea should be same as the caret height in a vertical wirting-mode');
+
+// caret-shape: block
+test(() => {
+  assert_approx_equals(document.querySelector('#textarea-block').offsetWidth, 8, 1);
+}, 'The width of an empty textarea should be same as the width of 1ch for care-shape: block');
+
+test(() => {
+  assert_approx_equals(document.querySelector('#textarea-block-vrl').offsetHeight, 8, 1);
+}, 'The height of an empty textarea should be same as the height of 1ch in a vertical wirting-mode for caret-shape: block');
+
+// caret-shape: underscore
+test(() => {
+  assert_approx_equals(document.querySelector('#textarea-underscore').offsetWidth, 8, 1);
+}, 'The width of an empty textarea should be same as the width of 1ch for care-shape: underscore');
+
+test(() => {
+  assert_approx_equals(document.querySelector('#textarea-underscore-vrl').offsetHeight, 8, 1);
+}, 'The height of an empty textarea should be same as the height of 1ch in a vertical wirting-mode for caret-shape: underscore');
+
 </script>

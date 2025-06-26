@@ -17,7 +17,17 @@ input::-webkit-inner-spin-button {
 <input id="text">
 <input id="search" type="search">
 <input id="number" type="number">
+
+<input id="text-block" style="caret-shape: block">
+<input id="search-block" type="search" style="caret-shape: block">
+<input id="number-block" type="number"style="caret-shape: block">
+
+<input id="text-underscore" style="caret-shape: underscore">
+<input id="search-underscore" type="search" style="caret-shape: underscore">
+<input id="number-underscore" type="number" style="caret-shape: underscore">
+
 <script>
+// caret-shape: bar
 test(() => {
   assert_equals(document.querySelector('#text').offsetWidth, 1);
 }, 'The width of an empty text input should be same as the caret width');
@@ -29,4 +39,30 @@ test(() => {
 test(() => {
   assert_equals(document.querySelector('#number').offsetWidth, 1);
 }, 'The width of an empty number input should be same as the caret width');
+
+// caret-shape: block
+test(() => {
+  assert_approx_equals(document.querySelector('#text-block').offsetWidth, 8, 1);
+}, 'The width of an empty text input should be same as the width of 1ch for care-shape: block');
+
+test(() => {
+  assert_approx_equals(document.querySelector('#search-block').offsetWidth, 8, 1);
+}, 'The width of an empty search input should be same as the width of 1ch for care-shape: block');
+
+test(() => {
+  assert_approx_equals(document.querySelector('#number-block').offsetWidth, 8, 1);
+}, 'The width of an empty number input should be same as the width of 1ch for care-shape: block');
+
+// caret-shape: underscore
+test(() => {
+  assert_approx_equals(document.querySelector('#text-underscore').offsetWidth, 8, 1);
+}, 'The width of an empty text input should be same as the width of 1ch for care-shape: underscore');
+
+test(() => {
+  assert_approx_equals(document.querySelector('#search-underscore').offsetWidth, 8, 1);
+}, 'The width of an empty search input should be same as the width of 1ch for care-shape: underscore');
+
+test(() => {
+  assert_approx_equals(document.querySelector('#number-underscore').offsetWidth, 8, 1);
+}, 'The width of an empty number input should be same as the width of 1ch for care-shape: underscore');
 </script>
