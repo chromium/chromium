@@ -232,6 +232,14 @@ ViewAccessibility* AXVirtualView::GetViewAccessibilityParent() const {
   return nullptr;
 }
 
+std::string AXVirtualView::GetDebugString() const {
+  View* owner_view = GetOwnerView();
+  if (!owner_view) {
+    return std::string("Virtual view with no owner view");
+  }
+  return base::StrCat({"Virtual view child of ", owner_view->GetClassName()});
+}
+
 void AXVirtualView::NotifyEvent(ax::mojom::Event event_type,
                                 bool send_native_event) {
   // If `ready_to_notify_events_` is false, it means we are initializing

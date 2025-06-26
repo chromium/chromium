@@ -1539,6 +1539,10 @@ std::vector<raw_ptr<ViewAccessibility>> ViewAccessibility::GetChildren() const {
   return out;
 }
 
+std::string ViewAccessibility::GetDebugString() const {
+  return std::string(view_ ? view_->GetClassName() : "ViewAccessibility");
+}
+
 void ViewAccessibility::FireNativeEvent(ax::mojom::Event event_type) {
   if (accessibility_events_callback_) {
     accessibility_events_callback_.Run(nullptr, event_type);

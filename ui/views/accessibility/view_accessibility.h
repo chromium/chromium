@@ -571,6 +571,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // ViewAccessibility objects associated with the children of the `view_`.
   std::vector<raw_ptr<ViewAccessibility>> GetChildren() const;
 
+  virtual std::string GetDebugString() const;
+
   // If true, moves accessibility focus to an ancestor.
   void set_propagate_focus_to_ancestor(bool value) {
     propagate_focus_to_ancestor_ = value;

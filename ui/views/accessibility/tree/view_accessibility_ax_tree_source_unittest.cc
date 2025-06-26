@@ -307,4 +307,63 @@ TEST_F(ViewAccessibilityAXTreeSourceTest,
   EXPECT_EQ(anchor->last_action_id(), action.target_node_id);
 }
 
+TEST_F(ViewAccessibilityAXTreeSourceTest, IsIgnored) {
+  EXPECT_FALSE(source()->IsIgnored(nullptr));
+
+  auto v = std::make_unique<View>();
+  auto& ax = v->GetViewAccessibility();
+
+  EXPECT_FALSE(source()->IsIgnored(&ax));
+  ax.SetIsIgnored(true);
+  EXPECT_TRUE(source()->IsIgnored(&ax));
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, IsEqual) {
+  auto v1 = std::make_unique<View>();
+  auto v2 = std::make_unique<View>();
+  auto& a1 = v1->GetViewAccessibility();
+  auto& a2 = v2->GetViewAccessibility();
+
+  EXPECT_FALSE(source()->IsEqual(nullptr, &a1));
+  EXPECT_FALSE(source()->IsEqual(&a1, nullptr));
+  EXPECT_FALSE(source()->IsEqual(nullptr, nullptr));
+
+  EXPECT_TRUE(source()->IsEqual(&a1, &a1));
+
+  EXPECT_FALSE(source()->IsEqual(&a1, &a2));
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, GetNull) {
+  EXPECT_EQ(source()->GetNull(), nullptr);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, ToString_SingleNode) {
+  auto v = std::make_unique<View>();
+  auto& ax = v->GetViewAccessibility();
+
+  ui::AXNodeData data;
+  source()->SerializeNode(&ax, &data);
+  std::string prefix = "##";
+  std::string expected = prefix + data.ToString() + "\n";
+
+  EXPECT_EQ(source()->ToString(&ax, prefix), expected);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, ToString_TwoLevelTree) {
+  auto parent = std::make_unique<View>();
+  auto* child = parent->AddChildView(std::make_unique<View>());
+  auto& p_ax = parent->GetViewAccessibility();
+  auto& c_ax = child->GetViewAccessibility();
+
+  ui::AXNodeData p_data, c_data;
+  source()->SerializeNode(&p_ax, &p_data);
+  source()->SerializeNode(&c_ax, &c_data);
+
+  std::string prefix = "*";
+  std::string want = prefix + p_data.ToString() + "\n" +
+                     std::string(2, prefix[0]) + c_data.ToString() + "\n";
+
+  EXPECT_EQ(source()->ToString(&p_ax, prefix), want);
+}
+
 }  // namespace views::test
