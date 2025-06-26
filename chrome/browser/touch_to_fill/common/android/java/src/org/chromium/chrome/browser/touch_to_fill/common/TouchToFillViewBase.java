@@ -25,6 +25,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.bottom_sheet_utils.DetailScreenScrollListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -64,7 +66,8 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
                 }
 
                 @Override
-                public void onSheetStateChanged(int newState, int reason) {
+                public void onSheetStateChanged(
+                        @SheetState int newState, @StateChangeReason int reason) {
                     if (mBottomSheetController.getCurrentSheetContent()
                             != TouchToFillViewBase.this) {
                         return;
@@ -388,6 +391,11 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
     @Override
     public void destroy() {
         mBottomSheetController.removeObserver(mBottomSheetObserver);
+    }
+
+    public void updateScreenHeight() {
+        remeasure();
+        mBottomSheetController.expandSheet();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)

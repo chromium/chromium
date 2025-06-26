@@ -318,16 +318,30 @@ class TouchToFillPaymentMethodMediator {
         mSuggestions = null;
         mIbans = null;
 
-        ModelList sheetItems = mModel.get(SHEET_ITEMS);
-        sheetItems.clear();
+        mModel.set(
+                SHEET_ITEMS,
+                getLoyaltyCardHomeScreenItems(
+                        affiliatedLoyaltyCards, valuableImageFunction, firstTimeUsage));
 
-        for (LoyaltyCard loyaltyCard : mAffiliatedLoyaltyCards) {
+        mBottomSheetFocusHelper.registerForOneTimeUse();
+        mModel.set(VISIBLE, true);
+
+        RecordHistogram.recordCount100Histogram(
+                TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, mAffiliatedLoyaltyCards.size());
+    }
+
+    private ModelList getLoyaltyCardHomeScreenItems(
+            List<LoyaltyCard> affiliatedLoyaltyCards,
+            Function<LoyaltyCard, Drawable> valuableImageFunction,
+            boolean firstTimeUsage) {
+        ModelList sheetItems = new ModelList();
+
+        for (LoyaltyCard loyaltyCard : affiliatedLoyaltyCards) {
             final PropertyModel model = createLoyaltyCardModel(loyaltyCard, valuableImageFunction);
             sheetItems.add(new ListItem(LOYALTY_CARD, model));
         }
 
         if (!firstTimeUsage) {
-            assert !allLoyaltyCards.isEmpty();
             sheetItems.add(new ListItem(ALL_LOYALTY_CARDS, createAllLoyaltyCardsItemModel()));
         }
 
@@ -351,11 +365,7 @@ class TouchToFillPaymentMethodMediator {
         sheetItems.add(0, buildHeaderForLoyaltyCards(firstTimeUsage));
         sheetItems.add(buildFooterForLoyaltyCards());
 
-        mBottomSheetFocusHelper.registerForOneTimeUse();
-        mModel.set(VISIBLE, true);
-
-        RecordHistogram.recordCount100Histogram(
-                TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, mAffiliatedLoyaltyCards.size());
+        return sheetItems;
     }
 
     void hideSheet() {
@@ -391,12 +401,12 @@ class TouchToFillPaymentMethodMediator {
 
     void showHomeScreen() {
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
-        mModel.set(SHEET_ITEMS, new ModelList());
-        showLoyaltyCards(
-                mAffiliatedLoyaltyCards,
-                mAllLoyaltyCards,
-                mValuableImageFunction,
-                /* firstTimeUsage= */ false);
+        mModel.set(
+                SHEET_ITEMS,
+                getLoyaltyCardHomeScreenItems(
+                        mAffiliatedLoyaltyCards,
+                        mValuableImageFunction,
+                        /* firstTimeUsage= */ false));
     }
 
     public void scanCreditCard() {

@@ -104,11 +104,7 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
     void setBackPressHandler(Runnable backPressHandler) {
         getContentView()
                 .findViewById(R.id.all_loyalty_cards_back_image_button)
-                .setOnClickListener(
-                        (unused) -> {
-                            backPressHandler.run();
-                            // TODO: crbug.com/420957826 - Remeasure the bottom sheet.
-                        });
+                .setOnClickListener((unused) -> backPressHandler.run());
     }
 
     @Override

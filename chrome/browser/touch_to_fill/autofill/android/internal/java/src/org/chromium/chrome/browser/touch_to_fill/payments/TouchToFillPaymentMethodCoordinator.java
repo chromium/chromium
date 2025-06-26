@@ -112,6 +112,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
 
     /**
      * Connects the given model with the given view using Model Change Processors.
+     *
      * @param model A {@link PropertyModel} built with {@link TouchToFillPaymentMethodProperties}.
      * @param view A {@link TouchToFillPaymentMethodView}.
      */
