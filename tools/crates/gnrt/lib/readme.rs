@@ -5,7 +5,7 @@
 use crate::config::BuildConfig;
 use crate::group::Group;
 use crate::paths::{self, get_build_dir_for_package, get_vendor_dir_for_package};
-use anyhow::{bail, format_err, Result};
+use anyhow::{bail, format_err, Context, Result};
 use guppy::graph::PackageMetadata;
 use guppy::PackageId;
 use itertools::Itertools;
@@ -58,14 +58,21 @@ pub fn readme_files_from_packages<'a>(
             &mut find_group,
             &mut find_security_critical,
             &mut find_shipped,
-        )?;
+        )
+        .with_context(|| {
+            format!(
+                "Can't generate a `README.chromium` file for `{name}-{version}`.",
+                name = package.name(),
+                version = package.version(),
+            )
+        })?;
         map.insert(dir, readme);
     }
 
     Ok(map)
 }
 
-pub fn readme_file_from_package<'a>(
+fn readme_file_from_package<'a>(
     package: PackageMetadata<'a>,
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
@@ -300,7 +307,16 @@ static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<&'static
 /// Converts a license string from Cargo.toml into a Vec of LicenseKinds.
 fn parse_license_string(pkg_license: &str) -> Result<Vec<LicenseKind>> {
     LICENSE_STRING_TO_LICENSE_KIND.get(pkg_license).cloned().ok_or_else(|| {
-        format_err!("License '{}' not in LICENSE_STRING_TO_LICENSE_KIND", pkg_license)
+        format_err!(
+            "License '{pkg_license}' not found in the `LICENSE_STRING_TO_LICENSE_KIND` \
+             map.  Please consider teaching `gnrt` about this license kind \
+             by editing //tools/crates/gnrt/lib/readme.rs` and adding the \
+             license to `enum LicenseKinds`, `LICENSE_STRING_TO_LICENSE_KIND`, \
+             and `LICENSE_KIND_TO_LICENSE_FILES`.  Note that this will require \
+             an additional review whether the new license kind can be used in \
+             Chromium - for more details see \
+             `//tools/crates/gnrt/lib/readme.rs-third-party-license-review.md`."
+        )
     })
 }
 
