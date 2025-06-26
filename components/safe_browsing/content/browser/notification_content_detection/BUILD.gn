@@ -5,6 +5,18 @@
 import("//build/config/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+source_set("notifications_global_cache_list") {
+  sources = [
+    "notifications_global_cache_list.cc",
+    "notifications_global_cache_list.h",
+  ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
+
 source_set("notification_content_detection") {
   sources = [
     "notification_content_detection_constants.cc",
@@ -16,6 +28,7 @@ source_set("notification_content_detection") {
   ]
 
   deps = [
+    ":notifications_global_cache_list",
     "//components/optimization_guide/core:core",
     "//components/optimization_guide/core:features",
     "//components/permissions:permissions",
@@ -56,6 +69,7 @@ source_set("unittests") {
 
   deps = [
     ":notification_content_detection",
+    ":notifications_global_cache_list",
     ":test_utils",
     "//base:base",
     "//base/test:test_support",

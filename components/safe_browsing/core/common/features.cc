@@ -194,6 +194,10 @@ BASE_FEATURE(kExternalAppRedirectTelemetry,
              "SafeBrowsingExternalAppRedirectTelemetry",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlobalCacheListForGatingNotificationProtections,
+             "GlobalCacheListForGatingNotificationProtections",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGoogleStandardDeviceBoundSessionCredentials,
              "GoogleStandardDeviceBoundSessionCredentials",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -32,6 +32,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/notifications_global_cache_list.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/notification_database_data.h"
@@ -142,6 +143,8 @@ class NotificationContentDetectionBrowserTest
             browser()->profile());
 
     // Set up allowlisted and non-allowlisted URLs.
+    SetNotificationsGlobalCacheListDomainsForTesting(
+        {GURL(kAllowlistedUrl).host()});
     SetURLHighConfidenceAllowlistMatch(GURL(kAllowlistedUrl),
                                        /*match_allowlist=*/true);
     SetURLHighConfidenceAllowlistMatch(GURL(kNonAllowlistedUrl),
@@ -265,7 +268,8 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
 }
 
 class NotificationContentDetectionAllowlistedChecksEnabledBrowserTest
-    : public NotificationContentDetectionBrowserTest {
+    : public NotificationContentDetectionBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   NotificationContentDetectionAllowlistedChecksEnabledBrowserTest() = default;
 
@@ -273,16 +277,33 @@ class NotificationContentDetectionAllowlistedChecksEnabledBrowserTest
     // Disable the `kPreventLongRunningPredictionModels` feature to prevent
     // flaky test failures, since these tests may prompt models and obtaining
     // the result can take a long time.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            optimization_guide::features::kPreventLongRunningPredictionModels,
-            safe_browsing::kShowWarningsForSuspiciousNotifications});
+    if (IsGlobalCacheListFeatureEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {kGlobalCacheListForGatingNotificationProtections},
+          /*disabled_features=*/{
+              optimization_guide::features::kPreventLongRunningPredictionModels,
+              safe_browsing::kShowWarningsForSuspiciousNotifications});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              optimization_guide::features::kPreventLongRunningPredictionModels,
+              safe_browsing::kShowWarningsForSuspiciousNotifications,
+              kGlobalCacheListForGatingNotificationProtections});
+    }
     NotificationContentDetectionBrowserTestBase::SetUp();
   }
+
+  bool IsGlobalCacheListFeatureEnabled() { return GetParam(); }
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    NotificationContentDetectionAllowlistedChecksEnabledBrowserTest,
+    testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
     NotificationContentDetectionAllowlistedChecksEnabledBrowserTest,
     AllowlistedSiteExecutesModel) {
   UpdateNotificationContentDetectionModel();
@@ -323,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(
       IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     NotificationContentDetectionAllowlistedChecksEnabledBrowserTest,
     NotificationDisplayedWhenModelNotAvailable) {
   blink::PlatformNotificationData data =
@@ -345,7 +366,8 @@ IN_PROC_BROWSER_TEST_F(
 
 class NotificationContentDetectionShowWarningsEnabledBrowserTest
     : public NotificationContentDetectionBrowserTest,
-      public testing::WithParamInterface<std::tuple<std::string, std::string>> {
+      public testing::WithParamInterface<
+          std::tuple<std::string, std::string, bool>> {
  public:
   NotificationContentDetectionShowWarningsEnabledBrowserTest() = default;
 
@@ -353,13 +375,26 @@ class NotificationContentDetectionShowWarningsEnabledBrowserTest
     // Disable the `kPreventLongRunningPredictionModels` feature to prevent
     // flaky test failures, since these tests may prompt models and obtaining
     // the result can take a long time.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{safe_browsing::kShowWarningsForSuspiciousNotifications,
-          {{"ShowWarningsForSuspiciousNotificationsScoreThreshold",
-            GetSuspiciousNotificationThreshold()}}}},
-        /*disabled_features=*/{
-            optimization_guide::features::kPreventLongRunningPredictionModels});
+    if (IsGlobalCacheListFeatureEnabled()) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{safe_browsing::kShowWarningsForSuspiciousNotifications,
+            {{"ShowWarningsForSuspiciousNotificationsScoreThreshold",
+              GetSuspiciousNotificationThreshold()}}},
+           {kGlobalCacheListForGatingNotificationProtections, {}}},
+          /*disabled_features=*/{optimization_guide::features::
+                                     kPreventLongRunningPredictionModels});
+    } else {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{safe_browsing::kShowWarningsForSuspiciousNotifications,
+            {{"ShowWarningsForSuspiciousNotificationsScoreThreshold",
+              GetSuspiciousNotificationThreshold()}}}},
+          /*disabled_features=*/{
+              optimization_guide::features::kPreventLongRunningPredictionModels,
+              kGlobalCacheListForGatingNotificationProtections});
+    }
+
     NotificationContentDetectionBrowserTestBase::SetUp();
   }
 
@@ -367,14 +402,18 @@ class NotificationContentDetectionShowWarningsEnabledBrowserTest
   std::string GetSuspiciousNotificationThreshold() {
     return std::get<1>(GetParam());
   }
+  bool IsGlobalCacheListFeatureEnabled() { return std::get<2>(GetParam()); }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     NotificationContentDetectionShowWarningsEnabledBrowserTest,
-    testing::Values(std::make_tuple("0", "0"),
-                    std::make_tuple("100", "0"),
-                    std::make_tuple("100", "100")));
+    testing::Values(std::make_tuple("0", "0", true),
+                    std::make_tuple("0", "0", false),
+                    std::make_tuple("100", "0", true),
+                    std::make_tuple("100", "0", false),
+                    std::make_tuple("100", "100", true),
+                    std::make_tuple("100", "100", false)));
 
 IN_PROC_BROWSER_TEST_P(
     NotificationContentDetectionShowWarningsEnabledBrowserTest,
@@ -611,7 +650,8 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
 }
 
 class NotificationContentDetectionLoggingEnabledBrowserTest
-    : public NotificationContentDetectionBrowserTest {
+    : public NotificationContentDetectionBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   NotificationContentDetectionLoggingEnabledBrowserTest() = default;
 
@@ -619,13 +659,25 @@ class NotificationContentDetectionLoggingEnabledBrowserTest
     // Disable the `kPreventLongRunningPredictionModels` feature to prevent
     // flaky test failures, since these tests may prompt models and obtaining
     // the result can take a long time.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{safe_browsing::kShowWarningsForSuspiciousNotifications,
-          {{"ShowWarningsForSuspiciousNotificationsScoreThreshold", "0"}}},
-         {safe_browsing::kReportNotificationContentDetectionData, {}}},
-        /*disabled_features=*/{
-            optimization_guide::features::kPreventLongRunningPredictionModels});
+    if (IsGlobalCacheListFeatureEnabled()) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{safe_browsing::kShowWarningsForSuspiciousNotifications,
+            {{"ShowWarningsForSuspiciousNotificationsScoreThreshold", "0"}}},
+           {safe_browsing::kReportNotificationContentDetectionData, {}},
+           {kGlobalCacheListForGatingNotificationProtections, {}}},
+          /*disabled_features=*/{optimization_guide::features::
+                                     kPreventLongRunningPredictionModels});
+    } else {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{safe_browsing::kShowWarningsForSuspiciousNotifications,
+            {{"ShowWarningsForSuspiciousNotificationsScoreThreshold", "0"}}},
+           {safe_browsing::kReportNotificationContentDetectionData, {}}},
+          /*disabled_features=*/{
+              optimization_guide::features::kPreventLongRunningPredictionModels,
+              kGlobalCacheListForGatingNotificationProtections});
+    }
 
     NotificationContentDetectionBrowserTestBase::SetUp();
   }
@@ -641,6 +693,8 @@ class NotificationContentDetectionLoggingEnabledBrowserTest
 
     NotificationContentDetectionBrowserTest::SetUpOnMainThread();
   }
+
+  bool IsGlobalCacheListFeatureEnabled() { return GetParam(); }
 
   void DisplayPersistentNotification(bool is_allowlisted) {
     blink::PlatformNotificationData data =
@@ -753,7 +807,12 @@ class NotificationContentDetectionLoggingEnabledBrowserTest
   int notification_id = 1;
 };
 
-IN_PROC_BROWSER_TEST_F(NotificationContentDetectionLoggingEnabledBrowserTest,
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    NotificationContentDetectionLoggingEnabledBrowserTest,
+    testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(NotificationContentDetectionLoggingEnabledBrowserTest,
                        ReportUnwarnedNotificationAsSpam) {
   // Display notification with no warning.
   UpdateNotificationContentDetectionModel();
@@ -781,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionLoggingEnabledBrowserTest,
           SITE_ENGAGEMENT_SCORE_NONE);
 }
 
-IN_PROC_BROWSER_TEST_F(NotificationContentDetectionLoggingEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(NotificationContentDetectionLoggingEnabledBrowserTest,
                        ReportWarnedNotificationAsSpam) {
   // Display notification with warning.
   UpdateNotificationContentDetectionModel();
@@ -809,7 +868,7 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionLoggingEnabledBrowserTest,
           SITE_ENGAGEMENT_SCORE_NONE);
 }
 
-IN_PROC_BROWSER_TEST_F(NotificationContentDetectionLoggingEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(NotificationContentDetectionLoggingEnabledBrowserTest,
                        ReportNotificationAsSafe) {
   // Display notification with warning.
   UpdateNotificationContentDetectionModel();
