@@ -526,13 +526,7 @@ void SetFeatureFlags() {
   SetV8FlagsIfOverridden(features::kJavaScriptPromiseTry, "--js-promise-try",
                          "--no-js-promise-try");
 
-  // WebAssembly features.
-
-  SetV8FlagsIfOverridden(features::kWebAssemblyDeopt, "--wasm-deopt",
-                         "--no-wasm-deopt");
-  SetV8FlagsIfOverridden(features::kWebAssemblyInliningCallIndirect,
-                         "--wasm-inlining-call-indirect",
-                         "--no-wasm-inlining-call-indirect");
+  // WebAssembly features (currently none).
 }
 
 }  // namespace

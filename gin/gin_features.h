@@ -89,8 +89,6 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRegExpModifiers);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptImportAttributes);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRegExpDuplicateNamedGroups);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptPromiseTry);
-GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyDeopt);
-GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyInliningCallIndirect);
 
 }  // namespace features
 
