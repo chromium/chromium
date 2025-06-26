@@ -5,18 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_DECORATION_LINE_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_DECORATION_LINE_PAINTER_H_
 
-#include "cc/paint/paint_flags.h"
-#include "cc/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/rect_f.h"
+
+namespace cc {
+class PaintFlags;
+}  // namespace cc
 
 namespace blink {
 
 struct AutoDarkMode;
 class Color;
 class GraphicsContext;
-class StyledStrokeData;
 
 // Defines a "wave" for painting a kWavyStroke. See the .cc file for a detailed
 // description.
@@ -68,12 +69,6 @@ class DecorationLinePainter final {
              const Color& color,
              const AutoDarkMode& auto_dark_mode,
              const cc::PaintFlags* flags = nullptr);
-
-  static void DrawLineForText(GraphicsContext& context,
-                              const gfx::RectF& line_rect,
-                              const StyledStrokeData& styled_stroke,
-                              const AutoDarkMode& auto_dark_mode,
-                              const cc::PaintFlags* paint_flags = nullptr);
 
  private:
   void PaintWavyTextDecoration(const DecorationGeometry&,

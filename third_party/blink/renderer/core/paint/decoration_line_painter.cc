@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 
+#include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -278,28 +280,6 @@ DecorationGeometry DecorationGeometry::Make(StrokeStyle style,
   return geometry;
 }
 
-void DecorationLinePainter::DrawLineForText(
-    GraphicsContext& context,
-    const gfx::RectF& line_rect,
-    const StyledStrokeData& styled_stroke,
-    const AutoDarkMode& auto_dark_mode,
-    const cc::PaintFlags* paint_flags) {
-  CHECK_GT(line_rect.width(), 0);
-  switch (styled_stroke.Style()) {
-    case kSolidStroke:
-    case kDoubleStroke:
-      DrawLineAsRect(context, line_rect, auto_dark_mode, paint_flags);
-      break;
-    case kDottedStroke:
-    case kDashedStroke:
-      DrawLineAsStroke(context, line_rect, styled_stroke, auto_dark_mode,
-                       paint_flags);
-      break;
-    case kWavyStroke:
-      NOTREACHED();
-  }
-}
-
 gfx::RectF DecorationLinePainter::Bounds(const DecorationGeometry& geometry) {
   switch (geometry.style) {
     case kDottedStroke:
@@ -342,19 +322,23 @@ void DecorationLinePainter::Paint(const DecorationGeometry& geometry,
       PaintWavyTextDecoration(geometry, color, auto_dark_mode);
       break;
     case kDottedStroke:
-    case kDashedStroke:
-      context_.SetShouldAntialias(geometry.antialias);
-      [[fallthrough]];
-    case kSolidStroke:
-    case kDoubleStroke: {
+    case kDashedStroke: {
       StyledStrokeData styled_stroke;
       styled_stroke.SetStyle(geometry.style);
       styled_stroke.SetThickness(geometry.Thickness());
 
+      context_.SetShouldAntialias(geometry.antialias);
       context_.SetStrokeColor(color);
 
-      DrawLineForText(context_, geometry.line, styled_stroke, auto_dark_mode,
-                      flags);
+      DrawLineAsStroke(context_, geometry.line, styled_stroke, auto_dark_mode,
+                       flags);
+      break;
+    }
+    case kSolidStroke:
+    case kDoubleStroke:
+      context_.SetStrokeColor(color);
+
+      DrawLineAsRect(context_, geometry.line, auto_dark_mode, flags);
 
       if (geometry.style == kDoubleStroke) {
         const gfx::RectF second_line_rect =
@@ -362,7 +346,6 @@ void DecorationLinePainter::Paint(const DecorationGeometry& geometry,
         DrawLineAsRect(context_, second_line_rect, auto_dark_mode, flags);
       }
       break;
-    }
   }
 }
 

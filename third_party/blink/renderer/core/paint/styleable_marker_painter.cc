@@ -118,6 +118,23 @@ void DrawDocumentMarker(GraphicsContext& context,
   context.DrawRect(rect, flags, AutoDarkMode::Disabled());
 }
 
+StrokeStyle StyleForMarkerUnderline(
+    ui::mojom::blink::ImeTextSpanUnderlineStyle marker_style) {
+  using UnderlineStyle = ui::mojom::blink::ImeTextSpanUnderlineStyle;
+  switch (marker_style) {
+    case UnderlineStyle::kDash:
+      return kDashedStroke;
+    case UnderlineStyle::kDot:
+      return kDottedStroke;
+    case UnderlineStyle::kSolid:
+      return kSolidStroke;
+    case UnderlineStyle::kSquiggle:
+      return kWavyStroke;
+    case UnderlineStyle::kNone:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 bool StyleableMarkerPainter::ShouldPaintUnderline(
@@ -177,33 +194,15 @@ void StyleableMarkerPainter::PaintUnderline(const StyleableMarker& marker,
       (box_origin.left + start).ToFloat(),
       (box_origin.top + logical_height.ToInt() - line_thickness).ToFloat());
   const gfx::RectF line_rect(start_point, gfx::SizeF(width, line_thickness));
+  const StrokeStyle marker_style =
+      StyleForMarkerUnderline(marker.UnderlineStyle());
 
-  using UnderlineStyle = ui::mojom::blink::ImeTextSpanUnderlineStyle;
-  if (marker.UnderlineStyle() != UnderlineStyle::kSquiggle) {
-    StyledStrokeData styled_stroke;
-    styled_stroke.SetThickness(line_thickness);
-    // Set the style of the underline if there is any.
-    switch (marker.UnderlineStyle()) {
-      case UnderlineStyle::kDash:
-        styled_stroke.SetStyle(StrokeStyle::kDashedStroke);
-        break;
-      case UnderlineStyle::kDot:
-        styled_stroke.SetStyle(StrokeStyle::kDottedStroke);
-        break;
-      case UnderlineStyle::kSolid:
-        styled_stroke.SetStyle(StrokeStyle::kSolidStroke);
-        break;
-      case UnderlineStyle::kSquiggle:
-        // Wavy stroke style is not implemented in DrawLineForText so we handle
-        // it specially in the else condition below only for composition
-        // markers.
-      case UnderlineStyle::kNone:
-        NOTREACHED();
-    }
-    context.SetStrokeColor(marker_color);
-
-    DecorationLinePainter::DrawLineForText(
-        context, line_rect, styled_stroke,
+  if (marker_style != kWavyStroke) {
+    auto marker_geometry =
+        DecorationGeometry::Make(marker_style, line_rect, 0, 0, nullptr);
+    marker_geometry.antialias = true;
+    DecorationLinePainter(context).Paint(
+        marker_geometry, marker_color,
         PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
   } else {
     // For wavy underline format we use this logic that is very similar to
