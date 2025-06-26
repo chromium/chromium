@@ -8,16 +8,17 @@
  * #css_wrapper_metadata_end */
 
 #container {
-  display: flex;
-  justify-content: center;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
   margin: 12px auto;
+  width: 100%;
 }
 
 #infoContainer {
   display: flex;
   justify-content: center;
   min-width: 0;
-  padding: 0 210px;
 }
 
 .notice-item {
@@ -61,15 +62,9 @@
 }
 
 #customizeButtons {
-  position: absolute;
-}
-
-:host-context([dir='ltr']) #customizeButtons {
-  right: 16px;
-}
-
-:host-context([dir='rtl']) #customizeButtons {
-  left: 16px;
+  display: flex;
+  justify-content: flex-end;
+  margin-inline-end: 16px;
 }
 
 #managementNoticeContainer {

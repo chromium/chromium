@@ -111,7 +111,7 @@
   }
 }
 
-@media (max-width: 790px) {
+@media (max-width: 830px) {
   :host([info-shown-to-user]) .customize-button {
     padding-inline-end: 0;
     padding-inline-start: 8px;
