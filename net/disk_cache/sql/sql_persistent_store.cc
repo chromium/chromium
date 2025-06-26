@@ -278,6 +278,11 @@ class Backend {
                                  base::Time end_time,
                                  std::set<CacheEntryKey> excluded_keys);
   Error UpdateEntryLastUsed(const CacheEntryKey& key, base::Time last_used);
+  Error UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
+                                     const base::UnguessableToken& token,
+                                     base::Time last_used,
+                                     scoped_refptr<net::IOBuffer> buffer,
+                                     int64_t header_size_delta);
 
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResId(
       int64_t res_id_cursor);
@@ -304,6 +309,12 @@ class Backend {
                                          bool& corruption_detected);
   Error UpdateEntryLastUsedInternal(const CacheEntryKey& key,
                                     base::Time last_used);
+  Error UpdateEntryHeaderAndLastUsedInternal(
+      const CacheEntryKey& key,
+      const base::UnguessableToken& token,
+      base::Time last_used,
+      scoped_refptr<net::IOBuffer> buffer,
+      int64_t header_size_delta);
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResIdInternal(
       int64_t res_id_cursor,
       Error& error_out);
@@ -1159,6 +1170,96 @@ Error Backend::UpdateEntryLastUsedInternal(const CacheEntryKey& key,
   return change_count == 0 ? Error::kNotFound : Error::kOk;
 }
 
+Error Backend::UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
+                                            const base::UnguessableToken& token,
+                                            base::Time last_used,
+                                            scoped_refptr<net::IOBuffer> buffer,
+                                            int64_t header_size_delta) {
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.UpdateEntryHeaderAndLastUsed",
+                     "data", [&](perfetto::TracedValue trace_context) {
+                       auto dict = std::move(trace_context).WriteDictionary();
+                       dict.Add("key", key.string());
+                       dict.Add("token", token.ToString());
+                       dict.Add("last_used", last_used);
+                       dict.Add("header_size_delta", header_size_delta);
+                       PopulateTraceDetails(store_status_, dict);
+                     });
+  base::ElapsedTimer timer;
+  auto result = UpdateEntryHeaderAndLastUsedInternal(
+      key, token, last_used, std::move(buffer), header_size_delta);
+  RecordTimeAndErrorResultHistogram("UpdateEntryHeaderAndLastUsed",
+                                    timer.Elapsed(), result);
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.UpdateEntryHeaderAndLastUsed",
+                   "result", [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     PopulateTraceDetails(result, store_status_, dict);
+                   });
+  return result;
+}
+
+Error Backend::UpdateEntryHeaderAndLastUsedInternal(
+    const CacheEntryKey& key,
+    const base::UnguessableToken& token,
+    base::Time last_used,
+    scoped_refptr<net::IOBuffer> buffer,
+    int64_t header_size_delta) {
+  CHECK(buffer);
+  CheckDatabaseInitStatus();
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return Error::kFailedToStartTransaction;
+  }
+  {
+    constexpr char kSqlUpdateResourceBodySize[] =
+        // clang-format off
+        "UPDATE resources "
+        "SET "
+          "last_used=?, "                // 0
+          "bytes_usage=bytes_usage+?, "  // 1
+          "head=? "                      // 2
+        "WHERE "
+          "cache_key=? AND "             // 3
+          "token_high=? AND "            // 4
+          "token_low=? AND "             // 5
+          "doomed=? "                    // 6
+        "RETURNING "
+          "bytes_usage";                 // 0
+    // clang-format on
+    // Intentionally DCHECK() for performance
+    DCHECK(db_.IsSQLValid(kSqlUpdateResourceBodySize));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlUpdateResourceBodySize));
+    statement.BindTime(0, last_used);
+    statement.BindInt64(1, header_size_delta);
+    statement.BindBlob(2, buffer->span());
+    statement.BindString(3, key.string());
+    statement.BindInt64(4, TokenHigh(token));
+    statement.BindInt64(5, TokenLow(token));
+    statement.BindBool(6, false);  // doomed
+    if (statement.Step()) {
+      const int64_t bytes_usage = statement.ColumnInt64(0);
+      if (bytes_usage < static_cast<int64_t>(buffer->size()) +
+                            static_cast<int64_t>(key.string().size())) {
+        // This indicates data corruption in the database.
+        // TODO(crbug.com/422065015): If this error is observed in UMA,
+        // implement recovery logic.
+        return Error::kInvalidData;
+      }
+    } else {
+      return Error::kNotFound;
+    }
+  }
+  if (!UpdateStoreStatusAndCommitTransaction(
+          transaction,
+          /*entry_count_delta=*/0,
+          /*total_size_delta=*/header_size_delta)) {
+    return Error::kFailedToCommitTransaction;
+  }
+
+  return Error::kOk;
+}
+
 OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResId(
     int64_t res_id_cursor) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.OpenLatestEntryBeforeResId",
@@ -1417,6 +1518,16 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                            ErrorCallback callback) override {
     backend_.AsyncCall(&Backend::UpdateEntryLastUsed)
         .WithArgs(key, last_used)
+        .Then(WrapCallback(std::move(callback)));
+  }
+  void UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
+                                    const base::UnguessableToken& token,
+                                    base::Time last_used,
+                                    scoped_refptr<net::IOBuffer> buffer,
+                                    int64_t header_size_delta,
+                                    ErrorCallback callback) override {
+    backend_.AsyncCall(&Backend::UpdateEntryHeaderAndLastUsed)
+        .WithArgs(key, token, last_used, std::move(buffer), header_size_delta)
         .Then(WrapCallback(std::move(callback)));
   }
 

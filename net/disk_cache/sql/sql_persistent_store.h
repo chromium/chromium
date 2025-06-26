@@ -28,6 +28,7 @@ class SequencedTaskRunner;
 
 namespace net {
 class GrowableIOBuffer;
+class IOBuffer;
 }  // namespace net
 
 namespace disk_cache {
@@ -58,7 +59,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     kInvalidData = 11,
     kAlreadyExists = 12,
     kNotFound = 13,
-    kMaxValue = kNotFound
+    kInvalidArgument = 14,
+    kMaxValue = kInvalidArgument
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheStoreError)
 
@@ -183,6 +185,20 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   virtual void UpdateEntryLastUsed(const CacheEntryKey& key,
                                    base::Time last_used,
                                    ErrorCallback callback) = 0;
+
+  // Updates the header data (stream 0) and the `last_used` timestamp for a
+  // specific cache entry. The `bytes_usage` for the entry is adjusted based
+  // on `header_size_delta`. `callback` is invoked with `kOk` on success,
+  // `kNotFound` if the entry (matching `key` and `token`) is not found or is
+  // doomed, or `kInvalidData` if internal data consistency checks fail.
+  // `buffer` must not be null. `header_size_delta` is the change in the size
+  // of the header data.
+  virtual void UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
+                                            const base::UnguessableToken& token,
+                                            base::Time last_used,
+                                            scoped_refptr<net::IOBuffer> buffer,
+                                            int64_t header_size_delta,
+                                            ErrorCallback callback) = 0;
 
   // Opens the latest (highest `res_id`) cache entry that has a `res_id` less
   // than `res_id_cursor`. This method is used for iterating through entries
