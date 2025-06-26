@@ -163,7 +163,6 @@ class SandboxedHandler {
     base::android::BuildInfo* build_info =
         base::android::BuildInfo::GetInstance();
     restore_previous_handler_ =
-        build_info->sdk_int() < base::android::SDK_VERSION_JELLY_BEAN_MR2 ||
         build_info->sdk_int() >= base::android::SDK_VERSION_OREO ||
         build_info->build_type() == "eng" ||
         build_info->build_type() == "userdebug";
