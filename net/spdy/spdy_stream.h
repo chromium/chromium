@@ -53,9 +53,9 @@ enum SpdyStreamType {
 
 // Passed to some SpdyStream functions to indicate whether there's
 // more data to send.
-enum SpdySendStatus {
-  MORE_DATA_TO_SEND,
-  NO_MORE_DATA_TO_SEND
+enum SpdySendStatus : int {
+  MORE_DATA_TO_SEND = 0,
+  NO_MORE_DATA_TO_SEND = 1,
 };
 
 // SpdyStream is owned by SpdySession and is used to represent each stream known
@@ -397,6 +397,8 @@ class NET_EXPORT_PRIVATE SpdyStream {
   }
 
   bool detect_broken_connection() const { return detect_broken_connection_; }
+
+  base::Value::Dict GetInfoAsValue() const;
 
  private:
   friend class test::SpdyStreamTest;

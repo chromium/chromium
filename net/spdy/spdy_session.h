@@ -534,7 +534,7 @@ class NET_EXPORT SpdySession
   // Mark this session as unavailable, meaning that it will not be used to
   // service new streams. Unlike when a GOAWAY frame is received, this function
   // will not close any streams.
-  void MakeUnavailable();
+  void MakeUnavailable(Error error);
 
   // Closes all active streams with stream id's greater than
   // |last_good_stream_id|, as well as any created or pending
@@ -1107,6 +1107,11 @@ class NET_EXPORT SpdySession
   // Initialized to OK.
   Error error_on_close_ = OK;
 
+  // If the session is made unavailable (i.e., `availability_state_` is
+  // STATE_GOING_AWAY), then `error_on_unavailable_` holds the error that
+  // caused it to become unavailable. Initialized to OK.
+  Error error_on_unavailable_ = OK;
+
   // Settings that are sent in the initial SETTINGS frame
   // (if |enable_sending_initial_data_| is true),
   // and also control SpdySession parameters like initial receive window size
@@ -1300,6 +1305,7 @@ class NET_EXPORT SpdySession
   std::string drain_description_;
   std::optional<spdy::SpdyErrorCode> go_away_error_;
   std::string go_away_debug_data_;
+  spdy::SpdyStreamId last_good_stream_id_ = 0;
 
   // Represents how this session is created.
   const MultiplexedSessionCreationInitiator session_creation_initiator_;

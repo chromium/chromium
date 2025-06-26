@@ -1153,7 +1153,7 @@ TEST_P(SpdySessionGoAwayOnChangeTest, GoAwayOnChange) {
   base::RunLoop().RunUntilIdle();  // Allow headers to write.
   EXPECT_TRUE(delegateA.send_headers_completed());
 
-  sessionA->MakeUnavailable();
+  sessionA->MakeUnavailable(ERR_NETWORK_CHANGED);
   EXPECT_TRUE(sessionA->IsGoingAway());
   EXPECT_FALSE(delegateA.StreamIsClosed());
 
@@ -1281,7 +1281,7 @@ TEST_F(SpdySessionPoolTest, CloseOnIPAddressChanged) {
   base::RunLoop().RunUntilIdle();  // Allow headers to write.
   EXPECT_TRUE(delegateA.send_headers_completed());
 
-  sessionA->MakeUnavailable();
+  sessionA->MakeUnavailable(ERR_NETWORK_CHANGED);
   EXPECT_TRUE(sessionA->IsGoingAway());
   EXPECT_FALSE(delegateA.StreamIsClosed());
 

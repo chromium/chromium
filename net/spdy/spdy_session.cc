@@ -1323,9 +1323,10 @@ void SpdySession::CloseSessionOnError(Error err,
   DoDrainSession(err, description, force_send_go_away);
 }
 
-void SpdySession::MakeUnavailable() {
+void SpdySession::MakeUnavailable(Error error) {
   if (availability_state_ == STATE_AVAILABLE) {
     availability_state_ = STATE_GOING_AWAY;
+    error_on_unavailable_ = error;
     pool_->MakeSessionUnavailable(GetWeakPtr());
   }
 }
@@ -1335,6 +1336,7 @@ void SpdySession::StartGoingAway(spdy::SpdyStreamId last_good_stream_id,
   DCHECK_GE(availability_state_, STATE_GOING_AWAY);
   DCHECK_NE(OK, status);
   DCHECK_NE(ERR_IO_PENDING, status);
+  last_good_stream_id_ = last_good_stream_id;
 
   // The loops below are carefully written to avoid reentrancy problems.
 
@@ -1407,6 +1409,7 @@ base::Value::Dict SpdySession::GetInfoAsValue() const {
           .Set("negotiated_protocol",
                NextProtoToString(socket_->GetNegotiatedProtocol()))
           .Set("error", error_on_close_)
+          .Set("error_on_unavailable", error_on_unavailable_)
           .Set("max_concurrent_streams",
                static_cast<int>(max_concurrent_streams_))
           .Set("streams_initiated_count", streams_initiated_count_)
@@ -1420,7 +1423,8 @@ base::Value::Dict SpdySession::GetInfoAsValue() const {
           .Set("unacked_recv_window_bytes", session_unacked_recv_window_bytes_)
           .Set("support_websocket", support_websocket_)
           .Set("availability_state",
-               AvailabilityStateToString(availability_state_));
+               AvailabilityStateToString(availability_state_))
+          .Set("last_good_stream_id", static_cast<int>(last_good_stream_id_));
 
   // TODO(crbug.com/405934874): Remove once we identify the cause of the bug.
   {
@@ -1451,6 +1455,13 @@ base::Value::Dict SpdySession::GetInfoAsValue() const {
     }
     dict.Set("aliases", std::move(alias_list));
   }
+
+  base::Value::List active_stream_details;
+  for (const auto& [_, stream] : active_streams_) {
+    active_stream_details.Append(stream->GetInfoAsValue());
+  }
+  dict.Set("active_stream_details", std::move(active_stream_details));
+
   return dict;
 }
 
@@ -2102,7 +2113,7 @@ int SpdySession::DoWrite() {
         CHECK_EQ(stream->stream_id(), kLastStreamId);
         // We've exhausted the stream ID space, and no new streams may be
         // created after this one.
-        MakeUnavailable();
+        MakeUnavailable(ERR_HTTP2_PROTOCOL_ERROR);
         StartGoingAway(kLastStreamId, ERR_HTTP2_PROTOCOL_ERROR);
       }
     }
@@ -2620,7 +2631,7 @@ void SpdySession::DoDrainSession(Error err,
   if (availability_state_ == STATE_DRAINING) {
     return;
   }
-  MakeUnavailable();
+  MakeUnavailable(err);
   drain_error_ = err;
   drain_description_ = description;
 
@@ -2826,14 +2837,22 @@ void SpdySession::OnGoAway(spdy::SpdyStreamId last_accepted_stream_id,
                     });
   go_away_error_ = error_code;
   go_away_debug_data_ = std::string(debug_data);
-  MakeUnavailable();
+
+  Error net_error;
   if (error_code == spdy::ERROR_CODE_HTTP_1_1_REQUIRED) {
-    // TODO(bnc): Record histogram with number of open streams capped at 50.
-    DoDrainSession(ERR_HTTP_1_1_REQUIRED, "HTTP_1_1_REQUIRED for stream.");
+    net_error = ERR_HTTP_1_1_REQUIRED;
   } else if (error_code == spdy::ERROR_CODE_NO_ERROR) {
-    StartGoingAway(last_accepted_stream_id, ERR_HTTP2_SERVER_REFUSED_STREAM);
+    net_error = ERR_HTTP2_SERVER_REFUSED_STREAM;
   } else {
-    StartGoingAway(last_accepted_stream_id, ERR_HTTP2_PROTOCOL_ERROR);
+    net_error = ERR_HTTP2_PROTOCOL_ERROR;
+  }
+  MakeUnavailable(net_error);
+
+  if (net_error == ERR_HTTP_1_1_REQUIRED) {
+    // TODO(bnc): Record histogram with number of open streams capped at 50.
+    DoDrainSession(net_error, "HTTP_1_1_REQUIRED for stream.");
+  } else {
+    StartGoingAway(last_accepted_stream_id, net_error);
   }
   // This is to handle the case when we already don't have any active
   // streams (i.e., StartGoingAway() did nothing). Otherwise, we have

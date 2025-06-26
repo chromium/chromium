@@ -517,7 +517,7 @@ void SpdySessionPool::MakeCurrentSessionsGoingAway(Error error) {
       continue;
     }
 
-    session->MakeUnavailable();
+    session->MakeUnavailable(error);
     session->StartGoingAway(kLastStreamId, error);
     session->MaybeFinishGoingAway();
     DCHECK(!IsSessionAvailable(session));
@@ -584,7 +584,7 @@ void SpdySessionPool::OnSSLConfigForServersChanged(
     }
 
     if (session_matches) {
-      session->MakeUnavailable();
+      session->MakeUnavailable(ERR_NETWORK_CHANGED);
       // Note this call preserves active streams but fails any streams that are
       // waiting on a stream ID.
       // TODO(crbug.com/40768859): This is not ideal, but SpdySession

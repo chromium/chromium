@@ -713,6 +713,15 @@ bool SpdyStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
   return result;
 }
 
+base::Value::Dict SpdyStream::GetInfoAsValue() const {
+  base::Value::Dict dict;
+  dict.Set("stream_id", static_cast<int>(stream_id_));
+  dict.Set("io_state", DescribeState(io_state_));
+  dict.Set("send_stalled_by_flow_control", send_stalled_by_flow_control_);
+  dict.Set("pending_send_status", pending_send_status_);
+  return dict;
+}
+
 void SpdyStream::QueueNextDataFrame() {
   // Until the request has been completely sent, we cannot be sure
   // that our stream_id is correct.
