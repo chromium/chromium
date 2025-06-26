@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.IOS.ChangedAuthorizationState"
-    enum="GeolocationIOSAuthorizationStatus" expires_after="2025-07-27">
+    enum="GeolocationIOSAuthorizationStatus" expires_after="2026-07-27">
   <owner>michaeldo@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.IOS.InitialAuthorizationState"
-    enum="GeolocationIOSAuthorizationStatus" expires_after="2025-07-27">
+    enum="GeolocationIOSAuthorizationStatus" expires_after="2026-07-27">
   <owner>michaeldo@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
