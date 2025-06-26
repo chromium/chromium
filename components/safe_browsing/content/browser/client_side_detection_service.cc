@@ -156,6 +156,7 @@ ClientSideDetectionService::~ClientSideDetectionService() {
 
 void ClientSideDetectionService::Shutdown() {
   url_loader_factory_.reset();
+  // TODO(crbug.com/424104358): Call intelligent scan delegate instead.
   delegate_->StopListeningToOnDeviceModelUpdate();
   delegate_.reset();
   enabled_ = false;
@@ -188,6 +189,7 @@ void ClientSideDetectionService::OnPrefsUpdated() {
               kClientSideDetectionBrandAndIntentForScamDetection) ||
           base::FeatureList::IsEnabled(
               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection)) {
+        // TODO(crbug.com/424104358): Call intelligent scan delegate instead.
         delegate_->StartListeningToOnDeviceModelUpdate();
       }
     } else {
@@ -216,6 +218,7 @@ void ClientSideDetectionService::OnPrefsUpdated() {
 }
 
 void ClientSideDetectionService::UnsubscribeToModelSubscription() {
+  // TODO(crbug.com/424104358): Call intelligent scan delegate instead.
   delegate_->StopListeningToOnDeviceModelUpdate();
   on_device_model_available_ = false;
   // We will check for the model object below because we also call this function

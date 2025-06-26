@@ -273,6 +273,9 @@ class MockIntelligentScanDelegate
               ShouldRequestIntelligentScan,
               (ClientPhishingRequest*),
               (override));
+  MOCK_METHOD(bool, IsOnDeviceModelAvailable, (bool), (override));
+  MOCK_METHOD(void, StartListeningToOnDeviceModelUpdate, (), (override));
+  MOCK_METHOD(void, StopListeningToOnDeviceModelUpdate, (), (override));
 };
 
 }  // namespace

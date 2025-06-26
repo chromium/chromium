@@ -110,6 +110,20 @@ class ClientSideDetectionHost
     // verdict.
     virtual bool ShouldRequestIntelligentScan(
         ClientPhishingRequest* verdict) = 0;
+    // Returns |on_device_model_available_| which indicates the availability of
+    // on-device model session creation. Also logs failed eligibility reason
+    // histograms if |log_failed_eligibility_reason| is true.
+    virtual bool IsOnDeviceModelAvailable(
+        bool log_failed_eligibility_reason) = 0;
+    // Starts listening to the on-device model update through OptimizationGuide.
+    // A check will be made in the delegate to confirm that it's not listening
+    // for availability before subscribing. This will be called when the user
+    // preferences change and the user is subscribed to Enhanced Safe Browsing.
+    virtual void StartListeningToOnDeviceModelUpdate() = 0;
+    // Stops listening to the on-device model update through OptimizationGuide.
+    // A check is handled in the delegate if the user is already stopped
+    // listening for on-device model updates.
+    virtual void StopListeningToOnDeviceModelUpdate() = 0;
   };
 
   // The caller keeps ownership of the tab object and is responsible for

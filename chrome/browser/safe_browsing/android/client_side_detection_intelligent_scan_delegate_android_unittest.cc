@@ -22,4 +22,13 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_FALSE(delegate.ShouldRequestIntelligentScan(&verdict));
 }
 
+TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
+       IsOnDeviceModelAvailable) {
+  ClientSideDetectionIntelligentScanDelegateAndroid delegate;
+  EXPECT_FALSE(delegate.IsOnDeviceModelAvailable(
+      /*log_failed_eligibility_reason=*/true));
+  EXPECT_FALSE(delegate.IsOnDeviceModelAvailable(
+      /*log_failed_eligibility_reason=*/false));
+}
+
 }  // namespace safe_browsing

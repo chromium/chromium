@@ -13,4 +13,19 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
   return false;
 }
 
+bool ClientSideDetectionIntelligentScanDelegateAndroid::
+    IsOnDeviceModelAvailable(bool log_failed_eligibility_reason) {
+  return false;
+}
+
+void ClientSideDetectionIntelligentScanDelegateAndroid::
+    StartListeningToOnDeviceModelUpdate() {
+  return;
+}
+
+void ClientSideDetectionIntelligentScanDelegateAndroid::
+    StopListeningToOnDeviceModelUpdate() {
+  return;
+}
+
 }  // namespace safe_browsing
