@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -17,12 +20,20 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
 
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kTestUser[] = "test_user@gmail.com";
 constexpr char kTestServerSessionId[] = "test_server_session_id";
+constexpr char kLocale[] = "en-US";
+constexpr char kRegion[] = "US";
+constexpr char kTimeZone[] = "America/Los_Angeles";
 
 class ComposeboxQueryControllerTest
     : public testing::Test,
@@ -37,9 +48,15 @@ class ComposeboxQueryControllerTest
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_factory_);
 
+    icu::TimeZone::adoptDefault(
+        icu::TimeZone::createTimeZone(icu::UnicodeString(kTimeZone)));
+    UErrorCode error_code = U_ZERO_ERROR;
+    icu::Locale::setDefault(icu::Locale(kLocale), error_code);
+    ASSERT_TRUE(U_SUCCESS(error_code));
+
     controller_ = std::make_unique<TestComposeboxQueryController>(
         identity_manager(), shared_url_loader_factory_,
-        version_info::Channel::UNKNOWN);
+        version_info::Channel::UNKNOWN, kLocale);
     controller_->AddObserver(this);
 
     lens::LensOverlayServerClusterInfoResponse cluster_info_response;
@@ -523,4 +540,14 @@ TEST_F(ComposeboxQueryControllerTest,
               testing::Optional(std::string(kTestServerSessionId)));
   EXPECT_EQ(controller().GetFileInfo(file_token)->GetFileUploadStatus(),
             FileUploadStatus::kUploadSuccessful);
+}
+
+TEST_F(ComposeboxQueryControllerTest, CreateClientContextHasCorrectValues) {
+  lens::LensOverlayClientContext client_context = controller().client_context();
+
+  EXPECT_EQ(client_context.surface(), lens::SURFACE_CHROME_NTP);
+  EXPECT_EQ(client_context.platform(), lens::PLATFORM_LENS_OVERLAY);
+  EXPECT_EQ(client_context.locale_context().language(), kLocale);
+  EXPECT_EQ(client_context.locale_context().region(), kRegion);
+  EXPECT_EQ(client_context.locale_context().time_zone(), kTimeZone);
 }

@@ -753,8 +753,8 @@ void NewTabPageUI::BindInterface(
       std::move(pending_receiver),
       std::make_unique<ComposeboxQueryController>(
           IdentityManagerFactory::GetForProfile(profile_),
-          g_browser_process->shared_url_loader_factory(),
-          chrome::GetChannel()));
+          g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
+          g_browser_process->GetApplicationLocale()));
 }
 
 void NewTabPageUI::BindInterface(

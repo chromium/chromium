@@ -18,10 +18,12 @@ class MockQueryController : public ComposeboxQueryController {
   explicit MockQueryController(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      version_info::Channel channel)
+      version_info::Channel channel,
+      std::string locale)
       : ComposeboxQueryController(identity_manager,
                                   url_loader_factory,
-                                  channel) {}
+                                  channel,
+                                  locale) {}
   ~MockQueryController() override = default;
 
   MOCK_METHOD(void, NotifySessionStarted, ());
@@ -39,7 +41,7 @@ class ComposeboxHandlerTest : public testing::Test {
             &test_factory_);
     auto query_controller_ptr = std::make_unique<MockQueryController>(
         /*identity_manager=*/nullptr, shared_url_loader_factory_,
-        version_info::Channel::UNKNOWN);
+        version_info::Channel::UNKNOWN, "en-US");
     query_controller_ = query_controller_ptr.get();
     handler_ = std::make_unique<ComposeboxHandler>(
         mojo::PendingReceiver<composebox::mojom::ComposeboxPageHandler>(),

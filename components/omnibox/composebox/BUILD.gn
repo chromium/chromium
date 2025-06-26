@@ -18,6 +18,8 @@ source_set("composebox") {
     "//net",
     "//net/traffic_annotation",
     "//services/network/public/cpp",
+    "//third_party/icu:icui18n",
+    "//third_party/icu:icuuc_public",
     "//third_party/lens_server_proto:lens_overlay_proto",
   ]
 }

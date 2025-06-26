@@ -34,9 +34,12 @@ void FakeEndpointFetcher::PerformRequest(
 TestComposeboxQueryController::TestComposeboxQueryController(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    version_info::Channel channel)
-    : ComposeboxQueryController(identity_manager, url_loader_factory, channel) {
-}
+    version_info::Channel channel,
+    std::string locale)
+    : ComposeboxQueryController(identity_manager,
+                                url_loader_factory,
+                                channel,
+                                locale) {}
 TestComposeboxQueryController::~TestComposeboxQueryController() = default;
 
 std::unique_ptr<EndpointFetcher>
