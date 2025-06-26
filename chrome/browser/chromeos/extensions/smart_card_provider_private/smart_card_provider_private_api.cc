@@ -1103,8 +1103,8 @@ void SmartCardProviderPrivateAPI::DispatchEventWithTimeout(
 
   const std::string provider_extension_id = GetListenerExtensionId(*event);
   if (provider_extension_id.empty()) {
-    ResultPtr error(std::in_place);
-    error->set_error(SmartCardError::kNoService);
+    using Result = typename ResultPtr::element_type;
+    ResultPtr error = Result::NewError(SmartCardError::kNoService);
     std::move(callback).Run(std::move(error));
     return;
   }
