@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 class StringTypeAdapter<String> : public StringTypeAdapter<StringView> {
@@ -182,6 +182,6 @@ StringAppend<StringAppend<U, V>, W> operator+(const StringAppend<U, V>& string1,
   return StringAppend<StringAppend<U, V>, W>(string1, string2);
 }
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_OPERATORS_H_

@@ -7,32 +7,36 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
-void WTF::StringTypeAdapter<const char*>::WriteTo(
+namespace blink {
+
+void StringTypeAdapter<const char*>::WriteTo(
     base::span<LChar> destination) const {
   destination.copy_from(buffer_);
 }
 
-void WTF::StringTypeAdapter<const char*>::WriteTo(
+void StringTypeAdapter<const char*>::WriteTo(
     base::span<UChar> destination) const {
   StringImpl::CopyChars(destination, buffer_);
 }
 
-WTF::StringTypeAdapter<const UChar*>::StringTypeAdapter(const UChar* buffer)
+StringTypeAdapter<const UChar*>::StringTypeAdapter(const UChar* buffer)
     : buffer_(base::span(std::u16string_view(buffer))) {}
 
-void WTF::StringTypeAdapter<const UChar*>::WriteTo(
+void StringTypeAdapter<const UChar*>::WriteTo(
     base::span<UChar> destination) const {
   destination.copy_from(buffer_);
 }
 
-void WTF::StringTypeAdapter<StringView>::WriteTo(
+void StringTypeAdapter<StringView>::WriteTo(
     base::span<LChar> destination) const {
   destination.copy_from(view_.Span8());
 }
 
-void WTF::StringTypeAdapter<StringView>::WriteTo(
+void StringTypeAdapter<StringView>::WriteTo(
     base::span<UChar> destination) const {
   VisitCharacters(view_, [destination](auto chars) {
     StringImpl::CopyChars(destination, chars);
   });
 }
+
+}  // namespace blink

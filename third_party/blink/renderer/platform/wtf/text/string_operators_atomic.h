@@ -25,7 +25,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 class StringTypeAdapter<AtomicString> : public StringTypeAdapter<StringView> {
@@ -52,6 +52,6 @@ StringAppend<AtomicString, T> operator+(const AtomicString& string1,
   return StringAppend<AtomicString, T>(string1, string2);
 }
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_OPERATORS_ATOMIC_H_

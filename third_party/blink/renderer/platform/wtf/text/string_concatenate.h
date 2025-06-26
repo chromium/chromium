@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
-namespace WTF {
+namespace blink {
 
 template <typename StringType>
 class StringTypeAdapter {
@@ -167,6 +167,6 @@ class WTF_EXPORT StringTypeAdapter<StringView> {
   const StringView view_;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_CONCATENATE_H_
