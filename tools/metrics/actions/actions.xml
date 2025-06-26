@@ -7108,6 +7108,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="CloseTab_EndTabInSplit">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User clicked the close tab button; the tab was the last tab in a split.
+  </description>
+</action>
+
 <action name="CloseTab_Mouse">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -7140,6 +7148,14 @@ should be able to be added at any place in this file.
   <description>
     User clicked the close tab button; the recording/capture indicator was
     showing.
+  </description>
+</action>
+
+<action name="CloseTab_StartTabInSplit">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User clicked the close tab button; the tab was the first tab in a split.
   </description>
 </action>
 

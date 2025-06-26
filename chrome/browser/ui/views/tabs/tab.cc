@@ -1235,6 +1235,14 @@ void Tab::CloseButtonPressed(const ui::Event& event) {
     base::RecordAction(UserMetricsAction("CloseTab_RecordingIndicator"));
   }
 
+  const std::vector<Tab*>& tabs_in_split = controller()->GetTabsInSplit(this);
+  if (tabs_in_split.size() > 0) {
+    CHECK(tabs_in_split.size() == 2);
+    base::RecordAction(UserMetricsAction(this == tabs_in_split[0]
+                                             ? "CloseTab_StartTabInSplit"
+                                             : "CloseTab_EndTabInSplit"));
+  }
+
   const bool from_mouse = event.type() == ui::EventType::kMouseReleased &&
                           !(event.flags() & ui::EF_FROM_TOUCH);
   controller_->CloseTab(this, from_mouse ? CloseTabSource::kFromMouse
