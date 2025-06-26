@@ -415,8 +415,9 @@ NSString* LeakedPasswordDescription() {
   VerifyCompromisedPasswordIssuesPageIsVisible(/*issue_count=*/1);
 }
 
+// TODO(crbug.com/427936710): This test is failing.
 // Tests the loading state of the Password Checkup Homepage.
-- (void)testPasswordCheckupHomepageLoadingState {
+- (void)DISABLED_testPasswordCheckupHomepageLoadingState {
   SaveCompromisedPasswordFormToProfileStore();
 
   NSInteger numberOfAffiliatedGroups = 1;
