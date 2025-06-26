@@ -315,8 +315,8 @@ if (is_chromeos) {
   static_library("local_gpu_memory_buffer_manager") {
     testonly = true
     sources = [
-      "local_gpu_memory_buffer_manager.cc",
-      "local_gpu_memory_buffer_manager.h",
+      "test_gbm_buffer_manager.cc",
+      "test_gbm_buffer_manager.h",
     ]
     deps = [
       "//base",

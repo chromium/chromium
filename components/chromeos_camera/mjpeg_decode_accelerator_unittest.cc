@@ -57,7 +57,7 @@
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_util.h"
 #include "media/gpu/buildflags.h"
-#include "media/gpu/test/local_gpu_memory_buffer_manager.h"
+#include "media/gpu/test/test_gbm_buffer_manager.h"
 #include "media/gpu/test/video_frame_helpers.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "media/parsers/jpeg_parser.h"
@@ -262,8 +262,7 @@ class MjpegDecodeAcceleratorTestEnvironment : public ::testing::Environment {
   const base::FilePath::CharType* perf_output_path_;
   base::Value::Dict metrics_;
 
-  std::unique_ptr<media::LocalGpuMemoryBufferManager>
-      gpu_memory_buffer_manager_;
+  std::unique_ptr<media::TestGbmBufferManager> gpu_memory_buffer_manager_;
 };
 
 void MjpegDecodeAcceleratorTestEnvironment::SetUp() {
@@ -291,8 +290,7 @@ void MjpegDecodeAcceleratorTestEnvironment::SetUp() {
     image_data_user_.push_back(std::move(image_data));
   }
 
-  gpu_memory_buffer_manager_ =
-      std::make_unique<media::LocalGpuMemoryBufferManager>();
+  gpu_memory_buffer_manager_ = std::make_unique<media::TestGbmBufferManager>();
 }
 
 void MjpegDecodeAcceleratorTestEnvironment::TearDown() {

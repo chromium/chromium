@@ -20,7 +20,7 @@
 #include "ui/gfx/buffer_format_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "media/gpu/test/local_gpu_memory_buffer_manager.h"
+#include "media/gpu/test/test_gbm_buffer_manager.h"
 #endif
 
 namespace media {
@@ -164,8 +164,8 @@ class GpuMemoryBufferMapping : public NativePixmapMapping {
       gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
       const gfx::BufferFormat& format) {
-    std::unique_ptr<LocalGpuMemoryBufferManager> gbm_buffer_manager =
-        std::make_unique<LocalGpuMemoryBufferManager>();
+    std::unique_ptr<TestGbmBufferManager> gbm_buffer_manager =
+        std::make_unique<TestGbmBufferManager>();
     std::unique_ptr<TestGbmBuffer> gbm_buffer =
         gbm_buffer_manager->ImportDmaBuf(handle, size, format);
 
@@ -179,7 +179,7 @@ class GpuMemoryBufferMapping : public NativePixmapMapping {
   }
 
   GpuMemoryBufferMapping(
-      std::unique_ptr<LocalGpuMemoryBufferManager> gbm_buffer_manager,
+      std::unique_ptr<TestGbmBufferManager> gbm_buffer_manager,
       std::unique_ptr<TestGbmBuffer> gbm_buffer)
       : gbm_buffer_manager_(std::move(gbm_buffer_manager)),
         gbm_buffer_(std::move(gbm_buffer)) {}
@@ -200,9 +200,9 @@ class GpuMemoryBufferMapping : public NativePixmapMapping {
   // It's very important these two objects are initialized in this order,
   // because C++ guarantees they will be destroyed in the reverse order.
   // Unfortunately, the destructor for TestGbmBuffer calls the GBM
-  // device that gets destroyed by the LocalGpuMemoryBufferManager destructor,
+  // device that gets destroyed by the TestGbmBufferManager destructor,
   // so there is an order we need to do this in to prevent a segfault.
-  const std::unique_ptr<LocalGpuMemoryBufferManager> gbm_buffer_manager_;
+  const std::unique_ptr<TestGbmBufferManager> gbm_buffer_manager_;
   const std::unique_ptr<TestGbmBuffer> gbm_buffer_;
 };
 
@@ -235,7 +235,7 @@ class Tile4Mapping : public NativePixmapMapping {
     CHECK_EQ(handle.modifier, I915_FORMAT_MOD_4_TILED);
     handle.modifier = gfx::NativePixmapHandle::kNoModifier;
 
-    LocalGpuMemoryBufferManager gbm_buffer_manager;
+    TestGbmBufferManager gbm_buffer_manager;
     std::unique_ptr<TestGbmBuffer> gbm_buffer =
         gbm_buffer_manager.ImportDmaBuf(handle, size, format);
 

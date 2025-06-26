@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_TEST_LOCAL_GPU_MEMORY_BUFFER_MANAGER_H_
-#define MEDIA_GPU_TEST_LOCAL_GPU_MEMORY_BUFFER_MANAGER_H_
+#ifndef MEDIA_GPU_TEST_TEST_GBM_BUFFER_MANAGER_H_
+#define MEDIA_GPU_TEST_TEST_GBM_BUFFER_MANAGER_H_
 
 #include <memory>
 
@@ -26,17 +26,16 @@ class TestGbmBuffer;
 
 // A local, as opposed to the default IPC-based, implementation of
 // gfx::GpuMemoryBufferManager which interacts with the DRM render node device
-// directly. The LocalGpuMemoryBufferManager is only for testing purposes and
+// directly. The TestGbmBufferManager is only for testing purposes and
 // should not be used in production.
-class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager {
+class MEDIA_GPU_EXPORT TestGbmBufferManager {
  public:
-  LocalGpuMemoryBufferManager();
+  TestGbmBufferManager();
 
-  LocalGpuMemoryBufferManager(const LocalGpuMemoryBufferManager&) = delete;
-  LocalGpuMemoryBufferManager& operator=(const LocalGpuMemoryBufferManager&) =
-      delete;
+  TestGbmBufferManager(const TestGbmBufferManager&) = delete;
+  TestGbmBufferManager& operator=(const TestGbmBufferManager&) = delete;
 
-  ~LocalGpuMemoryBufferManager();
+  ~TestGbmBufferManager();
 
   std::unique_ptr<TestGbmBuffer> CreateGmbBuffer(
       const gfx::Size& size,
@@ -95,4 +94,4 @@ class TestGbmBuffer {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_TEST_LOCAL_GPU_MEMORY_BUFFER_MANAGER_H_
+#endif  // MEDIA_GPU_TEST_TEST_GBM_BUFFER_MANAGER_H_

@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "media/gpu/test/local_gpu_memory_buffer_manager.h"
+#include "media/gpu/test/test_gbm_buffer_manager.h"
 
 #include <drm_fourcc.h>
 #include <gbm.h>
@@ -193,11 +193,10 @@ gfx::GpuMemoryBufferHandle TestGbmBuffer::CloneHandle() const {
   return handle;
 }
 
-LocalGpuMemoryBufferManager::LocalGpuMemoryBufferManager()
-    : gbm_device_(CreateGbmDevice()) {}
-LocalGpuMemoryBufferManager::~LocalGpuMemoryBufferManager() = default;
+TestGbmBufferManager::TestGbmBufferManager() : gbm_device_(CreateGbmDevice()) {}
+TestGbmBufferManager::~TestGbmBufferManager() = default;
 
-std::unique_ptr<TestGbmBuffer> LocalGpuMemoryBufferManager::CreateGmbBuffer(
+std::unique_ptr<TestGbmBuffer> TestGbmBufferManager::CreateGmbBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -236,7 +235,7 @@ std::unique_ptr<TestGbmBuffer> LocalGpuMemoryBufferManager::CreateGmbBuffer(
   return std::make_unique<TestGbmBuffer>(format, buffer_object);
 }
 
-std::unique_ptr<TestGbmBuffer> LocalGpuMemoryBufferManager::ImportDmaBuf(
+std::unique_ptr<TestGbmBuffer> TestGbmBufferManager::ImportDmaBuf(
     const gfx::NativePixmapHandle& handle,
     const gfx::Size& size,
     gfx::BufferFormat format) {
@@ -281,15 +280,16 @@ std::unique_ptr<TestGbmBuffer> LocalGpuMemoryBufferManager::ImportDmaBuf(
   return std::make_unique<TestGbmBuffer>(format, buffer_object);
 }
 
-bool LocalGpuMemoryBufferManager::IsFormatAndUsageSupported(
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
+bool TestGbmBufferManager::IsFormatAndUsageSupported(gfx::BufferFormat format,
+                                                     gfx::BufferUsage usage) {
   const uint32_t drm_format = GetDrmFormat(format);
-  if (!drm_format)
+  if (!drm_format) {
     return false;
+  }
   const uint32_t gbm_usage = GetGbmUsage(usage);
-  if (gbm_usage == 0)
+  if (gbm_usage == 0) {
     return false;
+  }
   return gbm_device_is_format_supported(gbm_device_.get(), drm_format,
                                         gbm_usage);
 }

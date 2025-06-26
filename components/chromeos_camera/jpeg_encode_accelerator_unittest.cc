@@ -35,7 +35,7 @@
 #include "media/base/test_data_util.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/chromeos/generic_dmabuf_video_frame_mapper.h"
-#include "media/gpu/test/local_gpu_memory_buffer_manager.h"
+#include "media/gpu/test/test_gbm_buffer_manager.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "media/parsers/jpeg_parser.h"
 #include "mojo/core/embedder/embedder.h"
@@ -357,8 +357,7 @@ class JpegClient : public JpegEncodeAccelerator::Client {
   scoped_refptr<media::VideoFrame> hw_out_frame_;
 
   // Used to create Gpu memory buffer for DMA-buf encoding tests.
-  std::unique_ptr<media::LocalGpuMemoryBufferManager>
-      gpu_memory_buffer_manager_;
+  std::unique_ptr<media::TestGbmBufferManager> gpu_memory_buffer_manager_;
 
   base::WeakPtrFactory<JpegClient> weak_factory_{this};
 };
@@ -372,7 +371,7 @@ JpegClient::JpegClient(const std::vector<TestImage*>& test_aligned_images,
       state_(ClientState::CREATED),
       note_(note),
       exif_size_(exif_size),
-      gpu_memory_buffer_manager_(new media::LocalGpuMemoryBufferManager()) {}
+      gpu_memory_buffer_manager_(new media::TestGbmBufferManager()) {}
 
 JpegClient::~JpegClient() = default;
 
