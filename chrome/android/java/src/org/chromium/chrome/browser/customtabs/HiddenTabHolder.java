@@ -232,11 +232,8 @@ public class HiddenTabHolder {
         RedirectHandlerTabHelper.getOrCreateHandlerFor(tab).setIsPrefetchLoadForIntent(true);
 
         TabObserverRegistrar registrar = new TabObserverRegistrar();
-        // When available, twaStartupUptimeMillis will be set later when the launch intent is
-        // available, from takeHiddenTab().
         CustomTabObserver customTabObserver =
-                new CustomTabObserver(
-                        /* openedByChrome= */ false, session, /* twaStartupUptimeMillis= */ 0);
+                new CustomTabObserver(/* openedByChrome= */ false, session);
         CustomTabNavigationEventObserver customTabNavigationEventObserver =
                 new CustomTabNavigationEventObserver(session, /* forPrerender= */ true);
         CustomTabActivityTabController.addTabNavigationObservers(
@@ -285,8 +282,6 @@ public class HiddenTabHolder {
             HiddenTab hiddenTab = mSpeculation.hiddenTab;
             String speculatedUrl = hiddenTab.url;
             String speculationReferrer = mSpeculation.referrer;
-            hiddenTab.customTabObserver.setTwaStartupTimestamp(
-                    intentDataProvider.getTwaStartupUptimeMillis());
 
             mSpeculation = null;
 
@@ -405,11 +400,8 @@ public class HiddenTabHolder {
 
         TabObserverRegistrar registrar = new TabObserverRegistrar();
         SessionHolder<?> token = SessionHolder.getSessionHolderFromIntent(intent);
-        long twaStartupUptimeMillis =
-                IntentUtils.safeGetLongExtra(
-                        intent, CustomTabIntentDataProvider.EXTRA_TWA_STARTUP_UPTIME_MS, 0);
         CustomTabObserver customTabObserver =
-                new CustomTabObserver(/* openedByChrome= */ false, token, twaStartupUptimeMillis);
+                new CustomTabObserver(/* openedByChrome= */ false, token);
         CustomTabNavigationEventObserver customTabNavigationEventObserver =
                 new CustomTabNavigationEventObserver(token, /* forPrerender= */ false);
         CustomTabActivityTabController.addTabNavigationObservers(

@@ -1768,10 +1768,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    public @Nullable Integer getAndroidBrowserHelperVersion() {
-        int value =
-                IntentUtils.safeGetIntExtra(getIntent(), EXTRA_ANDROID_BROWSER_HELPER_VERSION, 0);
-        return value != 0 ? Integer.valueOf(value) : null;
+    public int getAndroidBrowserHelperVersion() {
+        return IntentUtils.safeGetIntExtra(getIntent(), EXTRA_ANDROID_BROWSER_HELPER_VERSION, 0);
     }
 
     private boolean isCpaOnlyOpenInBrowserDefault() {

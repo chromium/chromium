@@ -799,9 +799,9 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return the version of android_browser_helper, or null.
+     * @return the version code of android_browser_helper, or zero.
      */
-    public @Nullable Integer getAndroidBrowserHelperVersion() {
-        return null;
+    public int getAndroidBrowserHelperVersion() {
+        return 0;
     }
 }

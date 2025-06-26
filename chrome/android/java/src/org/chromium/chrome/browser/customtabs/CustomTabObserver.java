@@ -63,7 +63,9 @@ public class CustomTabObserver extends EmptyTabObserver {
     private long mFirstCommitRealtimeMillis;
     private long mFirstCommitUptimeMillis;
 
-    // The TWA startup timestamp
+    // Version of android-browser-helper, or zero if not reported
+    private int mBrowserHelperVersion;
+    // System.uptimeMillis() when the TWA wrapper activity has started, or zero if not reported
     private long mTwaStartupUptimeMillis;
     private final List<Runnable> mTwaStartupTimeAvailableCallbacks = new ArrayList<>();
 
@@ -106,12 +108,10 @@ public class CustomTabObserver extends EmptyTabObserver {
         }
     }
 
-    public CustomTabObserver(
-            boolean openedByChrome, SessionHolder<?> token, long twaStartupUptimeMillis) {
+    public CustomTabObserver(boolean openedByChrome, SessionHolder<?> token) {
         mCustomTabsConnection = openedByChrome ? null : CustomTabsConnection.getInstance();
         mSession = token;
         resetPageLoadTracking();
-        setTwaStartupTimestamp(twaStartupUptimeMillis);
     }
 
     private void trackNextLCP() {
@@ -282,6 +282,8 @@ public class CustomTabObserver extends EmptyTabObserver {
                             50,
                             DateUtils.MINUTE_IN_MILLIS,
                             50);
+                    RecordHistogram.recordSparseHistogram(
+                            "CustomTabs.AndroidBrowserHelper.Version", mBrowserHelperVersion);
                 });
     }
 
@@ -390,8 +392,12 @@ public class CustomTabObserver extends EmptyTabObserver {
         }
     }
 
-    public void setTwaStartupTimestamp(long startupUptimeMillis) {
-        if (startupUptimeMillis == 0) return;
+    public void setTwaStartupMetadata(int browserHelperVersion, long startupUptimeMillis) {
+        // Support for both were added in 2.6.1 (android-browser-helper version code 1), so we
+        // either get both or neither.
+        if (browserHelperVersion == 0 || startupUptimeMillis == 0) return;
+        assert mBrowserHelperVersion == 0;
+        mBrowserHelperVersion = browserHelperVersion;
         assert mTwaStartupUptimeMillis == 0;
         mTwaStartupUptimeMillis = startupUptimeMillis;
         for (Runnable callback : mTwaStartupTimeAvailableCallbacks) {

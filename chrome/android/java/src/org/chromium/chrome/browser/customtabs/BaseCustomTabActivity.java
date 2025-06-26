@@ -534,12 +534,16 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             mCustomTabObserver =
                     new CustomTabObserver(
                             mIntentDataProvider.isOpenedByChrome(),
-                            mIntentDataProvider.getSession(),
-                            mIntentDataProvider.getTwaStartupUptimeMillis());
+                            mIntentDataProvider.getSession());
             mCustomTabNavigationEventObserver =
                     new CustomTabNavigationEventObserver(
                             mIntentDataProvider.getSession(), /* forPrerender= */ false);
         }
+        // Some information were not available when creating a hidden tab, now it is the time to
+        // attach them.
+        mCustomTabObserver.setTwaStartupMetadata(
+                mIntentDataProvider.getAndroidBrowserHelperVersion(),
+                mIntentDataProvider.getTwaStartupUptimeMillis());
         mTabObserverRegistrar.associateWithActivity(getLifecycleDispatcher(), mTabProvider);
 
         mCurrentPageVerifier =
@@ -780,13 +784,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         if (minimizationManager != null) {
             getFullscreenManager().addObserver(mFullscreenObserver);
             minimizationManager.addObserver(mMinimizationObserver);
-        }
-
-        Integer androidBrowserHelperVersion = mIntentDataProvider.getAndroidBrowserHelperVersion();
-        if (androidBrowserHelperVersion != null) {
-            RecordHistogram.recordSparseHistogram(
-                    "CustomTabs.AndroidBrowserHelper.Version",
-                    androidBrowserHelperVersion.intValue());
         }
     }
 
