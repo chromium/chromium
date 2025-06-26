@@ -68,9 +68,6 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     if (!client_shared_image) {
       return nullptr;
     }
-#if BUILDFLAG(IS_MAC)
-    client_shared_image->SetColorSpaceOnNativeBuffer(color_space);
-#endif
     sync_token = sii->GenVerifiedSyncToken();
     return client_shared_image;
   }

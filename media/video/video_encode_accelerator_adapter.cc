@@ -1130,10 +1130,6 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
 
   // |mapped_gpu_frame| has the color space respecting the color conversion in
   // ConvertAndScale().
-#if BUILDFLAG(IS_MAC)
-  gpu_frame->shared_image()->SetColorSpaceOnNativeBuffer(
-      mapped_gpu_frame->ColorSpace());
-#endif
   gpu_frame->set_color_space(mapped_gpu_frame->ColorSpace());
 
   return gpu_frame;

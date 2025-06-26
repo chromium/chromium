@@ -147,14 +147,6 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   // GpuMemoryBuffer.
   gfx::GpuMemoryBufferHandle CloneGpuMemoryBufferHandle() const;
 
-#if BUILDFLAG(IS_APPLE)
-  // Sets the color space in which the native buffer backing this SharedImage
-  // should be interpreted when used as an overlay. Note that this will not
-  // impact texturing from the buffer. Used only for SharedImages backed by a
-  // client-accessible IOSurface.
-  void SetColorSpaceOnNativeBuffer(const gfx::ColorSpace& color_space);
-#endif
-
   // Returns the GL texture target to use for this SharedImage.
   uint32_t GetTextureTarget();
 

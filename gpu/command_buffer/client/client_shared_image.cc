@@ -467,14 +467,6 @@ gfx::GpuMemoryBufferHandle ClientSharedImage::CloneGpuMemoryBufferHandle()
   return gpu_memory_buffer_->CloneHandle();
 }
 
-#if BUILDFLAG(IS_APPLE)
-void ClientSharedImage::SetColorSpaceOnNativeBuffer(
-    const gfx::ColorSpace& color_space) {
-  CHECK(gpu_memory_buffer_);
-  gpu_memory_buffer_->SetColorSpace(color_space);
-}
-#endif
-
 uint32_t ClientSharedImage::GetTextureTarget() {
 #if !BUILDFLAG(IS_FUCHSIA)
   // Check that `texture_target_` has been initialized (note that on Fuchsia it

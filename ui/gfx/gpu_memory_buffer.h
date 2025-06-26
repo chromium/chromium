@@ -20,8 +20,6 @@ class MemoryAllocatorDumpGuid;
 
 namespace gfx {
 
-class ColorSpace;
-
 // This interface typically correspond to a type of shared memory that is also
 // shared with the GPU. A GPU memory buffer can be written to directly by
 // regular CPU code, but can also be read by the GPU.
@@ -68,13 +66,6 @@ class COMPONENT_EXPORT(GFX) GpuMemoryBuffer {
   // Fills the stride in bytes for each plane of the buffer. The stride of
   // plane K is stored at index K-1 of the |stride| array.
   virtual int stride(size_t plane) const = 0;
-
-#if BUILDFLAG(IS_APPLE)
-  // Set the color space in which this buffer should be interpreted when used
-  // as an overlay. Note that this will not impact texturing from the buffer.
-  // Used only for GMBs backed by an IOSurface.
-  virtual void SetColorSpace(const ColorSpace& color_space) {}
-#endif
 
   // Returns a unique identifier associated with buffer.
   virtual GpuMemoryBufferId GetId() const = 0;

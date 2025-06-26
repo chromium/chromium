@@ -179,18 +179,6 @@ int GpuMemoryBufferImplIOSurface::stride(size_t plane) const {
 #endif
 }
 
-void GpuMemoryBufferImplIOSurface::SetColorSpace(
-    const gfx::ColorSpace& color_space) {
-  if (color_space == color_space_)
-    return;
-  color_space_ = color_space;
-#if BUILDFLAG(IS_IOS)
-  NOTIMPLEMENTED();
-#else
-  IOSurfaceSetColorSpace(handle_.io_surface.get(), color_space);
-#endif
-}
-
 gfx::GpuMemoryBufferType GpuMemoryBufferImplIOSurface::GetType() const {
   DCHECK_EQ(handle_.type, gfx::IO_SURFACE_BUFFER);
   return handle_.type;

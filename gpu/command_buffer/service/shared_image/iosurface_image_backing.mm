@@ -1067,6 +1067,9 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
   CHECK(!is_thread_safe ||
         base::FeatureList::IsEnabled(features::kIOSurfaceMultiThreading));
 
+  // Set the color space for the underlying IOSurface when it's used as overlay.
+  gfx::IOSurfaceSetColorSpace(io_surface_.get(), color_space);
+
   // If this will be bound to different GL backends, then make RetainGLTexture
   // and ReleaseGLTexture actually create and destroy the texture.
   // https://crbug.com/1251724

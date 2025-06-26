@@ -44,7 +44,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
   void* memory(size_t plane) override;
   void Unmap() override;
   int stride(size_t plane) const override;
-  void SetColorSpace(const gfx::ColorSpace& color_space) override;
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
@@ -67,9 +66,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
 
   gfx::GpuMemoryBufferHandle handle_;
   [[maybe_unused]] const uint32_t lock_flags_;
-
-  // Cache the color space because re-assigning the same value can be expensive.
-  gfx::ColorSpace color_space_;
 
 #if BUILDFLAG(IS_IOS)
   // On iOS, we can't use IOKit to access IOSurfaces in the renderer process, so
