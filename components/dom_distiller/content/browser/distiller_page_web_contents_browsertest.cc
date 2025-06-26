@@ -13,11 +13,13 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
 #include "components/dom_distiller/content/browser/test/test_util.h"
 #include "components/dom_distiller/core/distiller_page.h"
+#include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 #include "components/dom_distiller/core/proto/distilled_page.pb.h"
 #include "components/dom_distiller/core/viewer.h"
@@ -86,6 +88,12 @@ const char* kVideoArticlePath = "/video_article.html";
 
 class DistillerPageWebContentsTest : public ContentBrowserTest {
  public:
+  DistillerPageWebContentsTest() {
+    // TODO(crbug.com/427898374): Add integration tests for readability.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{}, {kReaderModeUseReadability});
+  }
+
   // ContentBrowserTest:
   void SetUpOnMainThread() override {
     if (!DistillerJavaScriptWorldIdIsSet()) {
@@ -117,6 +125,7 @@ class DistillerPageWebContentsTest : public ContentBrowserTest {
   void RunUseCurrentWebContentsTest(const std::string& url,
                                     bool expect_new_web_contents,
                                     bool wait_for_document_loaded);
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   raw_ptr<DistillerPageWebContents, DanglingUntriaged> distiller_page_;
   std::unique_ptr<proto::DomDistillerResult> distiller_result_;

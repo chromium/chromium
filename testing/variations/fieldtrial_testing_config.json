@@ -818,6 +818,25 @@
             ]
         }
     ],
+    "AndroidReaderModeUseReadability": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledDistillerOnly",
+                    "params": {
+                        "use_distiller": "true",
+                        "use_heuristic": "false"
+                    },
+                    "enable_features": [
+                        "ReaderModeUseReadability"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidSandboxRendererProcessPolicy": [
         {
             "platforms": [
