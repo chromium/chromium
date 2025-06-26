@@ -1062,6 +1062,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("PrefetchUseContentRefactor"),
         Flag.baseFeature("LowPriorityAsyncScriptExecution"),
         Flag.baseFeature("WebViewPrefetchHighestPrefetchPriority"),
+        Flag.baseFeature(
+                BlinkFeatures.BLINK_LIFECYCLE_SCRIPT_FORBIDDEN,
+                "Disallow script execution during blink lifecycle update."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
