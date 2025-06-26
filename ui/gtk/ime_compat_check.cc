@@ -35,6 +35,8 @@ struct InputMethod {
 
 std::vector<base::FilePath> GetLibrarySearchPaths() {
   std::vector<base::FilePath> search_path;
+
+#if defined(__GLIBC__)
   void* handle = dlopen("libc.so.6", RTLD_GLOBAL | RTLD_LAZY | RTLD_NOLOAD);
   if (!handle) {
     return search_path;
@@ -60,6 +62,7 @@ std::vector<base::FilePath> GetLibrarySearchPaths() {
     // SAFETY: The range is bound by `serinfo.dls_cnt`.
     search_path.emplace_back(UNSAFE_BUFFERS(sip->dls_serpath[j].dls_name));
   }
+#endif
 
   return search_path;
 }
