@@ -47,6 +47,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/task/task_runner.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
 #include "net/base/url_util.h"
@@ -699,7 +700,7 @@ void URLRequestHttpJob::MaybeStartTransactionInternal(int result) {
     request_->net_log().AddEventWithStringParams(NetLogEventType::CANCELLED,
                                                  "source", "delegate");
     // Don't call back synchronously to the delegate.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    net::GetTaskRunner(priority_)->PostTask(
         FROM_HERE, base::BindOnce(&URLRequestHttpJob::NotifyStartError,
                                   weak_factory_.GetWeakPtr(), result));
   }
@@ -776,7 +777,7 @@ void URLRequestHttpJob::StartTransactionInternal() {
 
   // The transaction started synchronously, but we need to notify the
   // URLRequest delegate via the message loop.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  net::GetTaskRunner(priority_)->PostTask(
       FROM_HERE, base::BindOnce(&URLRequestHttpJob::OnStartCompleted,
                                 weak_factory_.GetWeakPtr(), rv));
 }
@@ -1702,7 +1703,7 @@ void URLRequestHttpJob::CancelAuth() {
   //
   // Have to do this via PostTask to avoid re-entrantly calling into the
   // consumer.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  net::GetTaskRunner(priority_)->PostTask(
       FROM_HERE, base::BindOnce(&URLRequestHttpJob::NotifyFinalHeadersReceived,
                                 weak_factory_.GetWeakPtr()));
 }
@@ -1727,7 +1728,7 @@ void URLRequestHttpJob::ContinueWithCertificate(
 
   // The transaction started synchronously, but we need to notify the
   // URLRequest delegate via the message loop.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  net::GetTaskRunner(priority_)->PostTask(
       FROM_HERE, base::BindOnce(&URLRequestHttpJob::OnStartCompleted,
                                 weak_factory_.GetWeakPtr(), rv));
 }
@@ -1750,7 +1751,7 @@ void URLRequestHttpJob::ContinueDespiteLastError() {
 
   // The transaction started synchronously, but we need to notify the
   // URLRequest delegate via the message loop.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  net::GetTaskRunner(priority_)->PostTask(
       FROM_HERE, base::BindOnce(&URLRequestHttpJob::OnStartCompleted,
                                 weak_factory_.GetWeakPtr(), rv));
 }
