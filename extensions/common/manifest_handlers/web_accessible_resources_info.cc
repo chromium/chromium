@@ -180,7 +180,7 @@ bool IsResourceWebAccessibleImpl(
     initiator_url =
         initiator_origin->opaque()
             ? initiator_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL()
-            : initiator_url = initiator_origin->GetURL();
+            : initiator_origin->GetURL();
   }
 
   std::string relative_path = target_url.path();
