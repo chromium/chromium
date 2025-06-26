@@ -5,12 +5,12 @@
 #ifndef MEDIA_CAPTURE_VIDEO_WIN_GPU_MEMORY_BUFFER_TRACKER_WIN_H_
 #define MEDIA_CAPTURE_VIDEO_WIN_GPU_MEMORY_BUFFER_TRACKER_WIN_H_
 
-#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
-#include "media/base/win/dxgi_device_manager.h"
-#include "media/capture/video/video_capture_buffer_tracker.h"
-
 #include <d3d11.h>
 #include <wrl.h>
+
+#include "media/base/win/dxgi_device_manager.h"
+#include "media/capture/video/video_capture_buffer_tracker.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gfx {
 class Size;
@@ -62,7 +62,10 @@ class CAPTURE_EXPORT GpuMemoryBufferTrackerWin final
                             const gfx::Size& dimensions);
   bool IsD3DDeviceChanged();
 
-  std::unique_ptr<gpu::GpuMemoryBufferImplDXGI> buffer_;
+  gfx::DXGIHandle dxgi_handle_;
+  gfx::Size dimensions_;
+  gfx::GpuMemoryBufferId handle_id_;
+  int stride_;
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d_device_;
   base::UnsafeSharedMemoryRegion region_;
