@@ -4437,20 +4437,6 @@
       status: "stable",
     },
     {
-      // This flag is used to relax the rules used to slot elements into a
-      // select with the multiple attribute or size >1. This could be enabled
-      // in the case that SelectParserRelaxation causes a breaking change for
-      // websites which were relying on the parser throwing away tags which
-      // couldn't be slotted otherwise, like this:
-      // <select multiple>
-      //   <ul>
-      //     <option>hello</option>
-      // When the SelectParserRelaxation flag is removed, then this flag can be
-      // safely removed as well.
-      name: "SelectListBoxSlotAnything",
-      depends_on: ["SelectParserRelaxation"],
-    },
-    {
       // If enabled, the select element will not dispatch a mouseup event when
       // an option is selected using the keyboard.
       // This should ship in M135, and it can be removed after M137.

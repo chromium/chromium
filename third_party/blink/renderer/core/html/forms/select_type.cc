@@ -104,11 +104,6 @@ bool CanAssignToSelectSlot(const Node& node) {
 }
 
 bool CanAssignToCustomizableSelectSlot(const Node& node) {
-  if (RuntimeEnabledFeatures::SelectListBoxSlotAnythingEnabled() &&
-      HTMLSelectElement::SelectParserRelaxationEnabled(&node)) {
-    DCHECK(HTMLSelectElement::SelectParserRelaxationEnabled(&node));
-    return IsA<Element>(node) && !IsA<HTMLFormControlElement>(node);
-  }
   // Elements which are valid in <select>'s new content model as proposed for
   // customizable select.
   return IsA<HTMLOptionElement>(node) || IsA<HTMLOptGroupElement>(node) ||
