@@ -29,11 +29,6 @@ SqlEntryImpl::~SqlEntryImpl() {
     return;
   }
 
-  if (doomed_) {
-    backend_->GetStore().DeleteDoomedEntry(
-        key_, token_, base::BindOnce([](SqlPersistentStore::Error error) {}));
-  }
-
   // TODO(crbug.com/422065015): If `last_used_` was modified, persist it to the
   // storage.
 

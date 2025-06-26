@@ -1721,7 +1721,6 @@ void DiskCacheBackendTest::BackendEnumerations() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, Enumerations) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   BackendEnumerations();
 }
 
@@ -1731,13 +1730,11 @@ TEST_F(DiskCacheBackendTest, NewEvictionEnumerations) {
 }
 
 TEST_P(DiskCacheGenericBackendTest, ShaderCacheEnumerations) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   SetCacheType(net::SHADER_CACHE);
   BackendEnumerations();
 }
 
 TEST_P(DiskCacheGenericBackendTest, AppCacheEnumerations) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   if (backend_to_test() == BackendToTest::kSimple) {
     // No timestamps in simple in APP_CACHE mode, so can't run this test.
     return;
@@ -1845,7 +1842,6 @@ void DiskCacheBackendTest::BackendDoomMidEnumeration() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, DoomEnumerations) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   BackendDoomMidEnumeration();
 }
 
@@ -1855,13 +1851,11 @@ TEST_F(DiskCacheBackendTest, NewEvictionDoomEnumerations) {
 }
 
 TEST_P(DiskCacheGenericBackendTest, ShaderCacheDoomEnumerations) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   SetCacheType(net::SHADER_CACHE);
   BackendDoomMidEnumeration();
 }
 
 TEST_P(DiskCacheGenericBackendTest, AppCacheDoomEnumerations) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   SetCacheType(net::APP_CACHE);
   BackendDoomMidEnumeration();
 }
@@ -2006,7 +2000,6 @@ void DiskCacheBackendTest::BackendFixEnumerators() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, FixEnumerators) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   BackendFixEnumerators();
 }
 
@@ -4057,7 +4050,6 @@ TEST_F(DiskCacheBackendTest, BlockfileCacheOverSimpleCache) {
 
 // Tests basic functionality of the enumeration API.
 TEST_P(DiskCacheGenericBackendTest, EnumerationBasics) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
   std::set<std::string> key_pool;
   ASSERT_TRUE(CreateSetOfRandomEntries(&key_pool));
@@ -4094,7 +4086,6 @@ TEST_P(DiskCacheGenericBackendTest, EnumerationBasics) {
 // Tests that the enumerations are not affected by dooming an entry in the
 // middle.
 TEST_P(DiskCacheGenericBackendTest, EnumerationWhileDoomed) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
   std::set<std::string> key_pool;
   ASSERT_TRUE(CreateSetOfRandomEntries(&key_pool));
@@ -4667,7 +4658,6 @@ void DiskCacheBackendTest::BackendDeadOpenNextEntry() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, BackendDeadOpenNextEntry) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   BackendDeadOpenNextEntry();
 }
 
@@ -4705,7 +4695,6 @@ void DiskCacheBackendTest::BackendIteratorConcurrentDoom() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, IteratorConcurrentDoom) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   if (backend_to_test() == BackendToTest::kBlockfile) {
     // Init in normal mode, bug not reproducible with kNoRandom. Still need to
     // let the test fixture know the new eviction algorithm will be on.

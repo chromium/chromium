@@ -6,6 +6,7 @@
 #define NET_DISK_CACHE_SQL_SQL_BACKEND_IMPL_H_
 
 #include <map>
+#include <queue>
 #include <set>
 #include <vector>
 
@@ -106,6 +107,9 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   SqlPersistentStore& GetStore();
 
  private:
+  class IteratorImpl;
+  class ExclusiveOperationHandle;
+
   // Represents a pending doom operation. This is used when an entry is doomed
   // while another operation (like `Open()` or `Create()`) for the same key is
   // in progress. The doom operation is queued and executed after the initial
@@ -161,10 +165,32 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // Callback for store operations related to dooming an entry.
   void OnDoomEntryFinished(const CacheEntryKey& key,
                            CompletionOnceCallback callback,
+                           std::unique_ptr<ExclusiveOperationHandle> handle,
                            SqlPersistentStore::Error result);
 
   SqlEntryImpl* GetActiveEntry(const CacheEntryKey& key);
   EntryResultCallbackInfo* GetEntryResultCallbackInfo(const CacheEntryKey& key);
+
+  // Runs the next pending exclusive operation if one is not already in flight.
+  void PostOrRunExclusiveOperation(
+      base::OnceCallback<void(std::unique_ptr<ExclusiveOperationHandle>)>
+          operation);
+  void RunNextExclusiveOperation();
+
+  // Internal implementation of `DoomEntry()`. This is scheduled as an exclusive
+  // operation.
+  void DoomEntryInternal(const std::string& key,
+                         net::RequestPriority priority,
+                         CompletionOnceCallback callback,
+                         std::unique_ptr<ExclusiveOperationHandle> handle);
+
+  // Internal implementation of `DoomEntriesBetween()`. This is scheduled as an
+  // exclusive operation.
+  void DoomEntriesBetweenInternal(
+      base::Time initial_time,
+      base::Time end_time,
+      CompletionOnceCallback callback,
+      std::unique_ptr<ExclusiveOperationHandle> handle);
 
   // Task runner for all background SQLite operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
@@ -187,6 +213,22 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // Set of entries that have been marked as doomed but are still active
   // (i.e., have outstanding references).
   std::set<raw_ref<const SqlEntryImpl>> doomed_entries_;
+
+  // Stores tokens of entries that have been marked for dooming and are
+  // currently being processed by the `SqlPersistentStore`. This prevents
+  // these entries from being re-added to `active_entries_` if reopened.
+  std::set<base::UnguessableToken> pending_doomed_entry_tokens_;
+
+  // A flag to serialize exclusive operations like mass-delete and iteration to
+  // prevent data inconsistencies between in-memory entry states and the
+  // persistent storage.
+  bool exclusive_operation_inflight_ = false;
+
+  // Queue of operations to be run when `exclusive_operation_inflight_` is
+  // false.
+  std::queue<
+      base::OnceCallback<void(std::unique_ptr<ExclusiveOperationHandle>)>>
+      pending_exclusive_operations_;
 
   // Weak pointer factory for this class.
   base::WeakPtrFactory<SqlBackendImpl> weak_factory_{this};

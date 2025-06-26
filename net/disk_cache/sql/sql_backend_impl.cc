@@ -4,11 +4,13 @@
 
 #include "net/disk_cache/sql/sql_backend_impl.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
@@ -19,6 +21,163 @@
 #include "net/disk_cache/sql/sql_persistent_store.h"
 
 namespace disk_cache {
+
+// An RAII-style object to manage the lifecycle of an exclusive operation.
+// When an exclusive operation starts, an instance of this class is created.
+// When the operation (and all its asynchronous parts) completes, the handle is
+// destroyed, and its destructor calls `RunNextExclusiveOperation()` to start
+// the next queued operation.
+class SqlBackendImpl::ExclusiveOperationHandle {
+ public:
+  explicit ExclusiveOperationHandle(base::WeakPtr<SqlBackendImpl> backend)
+      : backend_(std::move(backend)) {}
+
+  ~ExclusiveOperationHandle() {
+    if (backend_) {
+      CHECK(backend_->exclusive_operation_inflight_);
+      backend_->exclusive_operation_inflight_ = false;
+      backend_->RunNextExclusiveOperation();
+    }
+  }
+
+ private:
+  base::WeakPtr<SqlBackendImpl> backend_;
+};
+
+// IteratorImpl provides an implementation of Backend::Iterator for the
+// SqlBackendImpl. It allows iterating through cache entries stored in the
+// SQLite database. Iteration is performed in reverse `res_id` order (from
+// newest to oldest entry in the database).
+class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
+ public:
+  explicit IteratorImpl(base::WeakPtr<SqlBackendImpl> backend)
+      : backend_(backend) {}
+  ~IteratorImpl() override = default;
+  EntryResult OpenNextEntry(EntryResultCallback callback) override {
+    CHECK(!callback_);
+    if (!backend_) {
+      return EntryResult::MakeError(net::ERR_FAILED);
+    }
+    callback_ = std::move(callback);
+    // Schedule `DoOpenNextEntry` as an exclusive operation to ensure that
+    // iteration does not conflict with other backend-wide operations (e.g.,
+    // mass deletion).
+    backend_->PostOrRunExclusiveOperation(base::BindOnce(
+        &IteratorImpl::DoOpenNextEntry, weak_factory_.GetWeakPtr()));
+    return EntryResult::MakeError(net::ERR_IO_PENDING);
+  }
+
+ private:
+  // Performs the actual logic for opening the next entry. This method is
+  // executed when it's its turn in the exclusive operation queue.
+  void DoOpenNextEntry(std::unique_ptr<ExclusiveOperationHandle> handle) {
+    if (!backend_) {
+      std::move(callback_).Run(EntryResult::MakeError(net::ERR_FAILED));
+      // `handle` is destroyed here, but `backend_` is null, so it's a no-op.
+      return;
+    }
+    // Request the next entry from the persistent store. `res_id_iterator_`
+    // keeps track of the last `res_id` returned, allowing the store to fetch
+    // entries older than that.
+    backend_->GetStore().OpenLatestEntryBeforeResId(
+        res_id_iterator_,
+        base::BindOnce(&IteratorImpl::OnOpenLatestEntryBeforeResIdFinished,
+                       weak_factory_.GetWeakPtr(), std::move(handle)));
+  }
+
+  // Callback for `SqlPersistentStore::OpenLatestEntryBeforeResId`.
+  void OnOpenLatestEntryBeforeResIdFinished(
+      std::unique_ptr<ExclusiveOperationHandle> handle,
+      SqlPersistentStore::OptionalEntryInfoWithIdAndKey result) {
+    CHECK(callback_);
+    if (!backend_) {
+      std::move(callback_).Run(EntryResult::MakeError(net::ERR_FAILED));
+      // `handle` is destroyed here, but `backend_` is null, so it's a no-op.
+      return;
+    }
+    // If no more entries are found or an error occurred in the store.
+    if (!result.has_value()) {
+      std::move(callback_).Run(EntryResult::MakeError(net::ERR_FAILED));
+      // `handle` is destroyed here, calling `RunNextExclusiveOperation()`.
+      return;
+    }
+    const SqlPersistentStore::EntryInfoWithIdAndKey& entry_info = *result;
+
+    // Update the iterator's cursor to the `res_id` of the current entry,
+    // so the next call to `OpenLatestEntryBeforeResId` starts from here.
+    res_id_iterator_ = entry_info.res_id;
+
+    // Check if the entry is already active in `active_entries_`. If so,
+    // reuse the existing `SqlEntryImpl` instance.
+    if (SqlEntryImpl* entry = backend_->GetActiveEntry(entry_info.key)) {
+      entry->AddRef();
+      std::move(callback_).Run(EntryResult::MakeOpened(entry));
+      // `handle` is destroyed here, calling `RunNextExclusiveOperation()`.
+      return;
+    }
+
+    // An entry might be doomed via `DoomActiveEntry()` while this operation was
+    // in-flight. If so, its token will be in `pending_doomed_entry_tokens_`.
+    // Skip it and try to open the next available entry.
+    if (backend_->pending_doomed_entry_tokens_.find(entry_info.info.token) !=
+        backend_->pending_doomed_entry_tokens_.end()) {
+      backend_->GetStore().OpenLatestEntryBeforeResId(
+          res_id_iterator_,
+          base::BindOnce(&IteratorImpl::OnOpenLatestEntryBeforeResIdFinished,
+                         weak_factory_.GetWeakPtr(), std::move(handle)));
+      return;
+    }
+
+    // This DCHECK ensures that an entry returned by the store for iteration
+    // is not already in the `doomed_entries_` set. This invariant is
+    // maintained by the following synchronization mechanisms:
+    //
+    // 1. Exclusive Operations:
+    //    Mass-doom operations (`DoomEntry()`, `DoomAllEntries()`,
+    //    `DoomEntriesBetween()`) are mutually exclusive with iterator
+    //    operations (`OpenNextEntry()`). The `ExclusiveOperationHandle`
+    //    ensures they are serialized, preventing races where an entry being
+    //    iterated over is doomed by one of these operations.
+    //
+    // 2. Non-Exclusive `DoomActiveEntry()`:
+    //    `DoomActiveEntry()` can race with `OpenNextEntry()`. This race is
+    //    handled by checking for dooming at two levels:
+    //    - At the store level: If `SqlPersistentStore::DoomEntry()` executes
+    //      before `SqlPersistentStore::OpenLatestEntryBeforeResId()`, the entry
+    //      is marked as `doomed` in the database and will not be returned.
+    //    - At the backend level: If `OpenLatestEntryBeforeResId()` reads the
+    //      entry first, a concurrent `DoomActiveEntry()` call adds the entry's
+    //      token to `pending_doomed_entry_tokens_`. This method checks that set
+    //      and will discard the entry if the token is found, preventing an
+    //      entry that is being doomed from being returned by the iterator.
+    DCHECK(std::none_of(
+        backend_->doomed_entries_.begin(), backend_->doomed_entries_.end(),
+        [&](const raw_ref<const SqlEntryImpl>& doomed_entry) {
+          return doomed_entry.get().token() == entry_info.info.token;
+        }));
+
+    // If the entry is not active, create a new `SqlEntryImpl`.
+    scoped_refptr<SqlEntryImpl> new_entry = base::MakeRefCounted<SqlEntryImpl>(
+        backend_, entry_info.key, entry_info.info.token,
+        entry_info.info.last_used, entry_info.info.body_end,
+        entry_info.info.head);
+    new_entry->AddRef();
+    CHECK(backend_->active_entries_
+              .insert(std::make_pair(entry_info.key,
+                                     raw_ref<SqlEntryImpl>(*new_entry.get())))
+              .second);
+    // Return the newly opened entry.
+    std::move(callback_).Run(EntryResult::MakeOpened(new_entry.get()));
+    // `handle` is destroyed here, calling `RunNextExclusiveOperation()`.
+  }
+
+  base::WeakPtr<SqlBackendImpl> backend_;
+  // The `res_id` of the last entry returned by the iterator. Used to fetch
+  // entries with smaller `res_id`s in subsequent calls.
+  int64_t res_id_iterator_ = std::numeric_limits<int64_t>::max();
+  EntryResultCallback callback_;
+  base::WeakPtrFactory<IteratorImpl> weak_factory_{this};
+};
 
 SqlBackendImpl::SqlBackendImpl(const base::FilePath& path,
                                int64_t max_bytes,
@@ -155,11 +314,23 @@ void SqlBackendImpl::DoomActiveEntry(SqlEntryImpl& entry,
   // Move it from the active_entries_ map to the doomed_entries_ set.
   ReleaseActiveEntry(entry);
   doomed_entries_.emplace(entry);
+
+  // Add the entry's token to a set of pending doomed entries. This prevents
+  // the entry from being re-added to `active_entries_` if it's reopened by
+  // IteratorImpl before the doom operation completes in the persistent store.
+  pending_doomed_entry_tokens_.insert(entry.token());
+
   // Ask the store to mark the entry as doomed in the database.
   store_->DoomEntry(
       entry.cache_key(), entry.token(),
       base::BindOnce(
-          [](CompletionOnceCallback callback, SqlPersistentStore::Error error) {
+          [](base::WeakPtr<SqlBackendImpl> weak_ptr,
+             CompletionOnceCallback callback,
+             const base::UnguessableToken& token,
+             SqlPersistentStore::Error error) {
+            if (weak_ptr) {
+              weak_ptr->pending_doomed_entry_tokens_.erase(token);
+            }
             if (callback) {
               // Return net::OK even if the entry is not found. This matches
               // the behavior of SimpleCache. This is tested by
@@ -168,34 +339,46 @@ void SqlBackendImpl::DoomActiveEntry(SqlEntryImpl& entry,
               std::move(callback).Run(net::OK);
             }
           },
-          std::move(callback)));
+          weak_factory_.GetWeakPtr(), std::move(callback), entry.token()));
 }
 
 net::Error SqlBackendImpl::DoomEntry(const std::string& key,
                                      net::RequestPriority priority,
                                      CompletionOnceCallback callback) {
+  PostOrRunExclusiveOperation(base::BindOnce(&SqlBackendImpl::DoomEntryInternal,
+                                             weak_factory_.GetWeakPtr(), key,
+                                             priority, std::move(callback)));
+  return net::ERR_IO_PENDING;
+}
+
+void SqlBackendImpl::DoomEntryInternal(
+    const std::string& key,
+    net::RequestPriority priority,
+    CompletionOnceCallback callback,
+    std::unique_ptr<ExclusiveOperationHandle> handle) {
   CacheEntryKey entry_key(key);
   // If the entry is currently active, doom it directly.
   if (auto* active_entry = GetActiveEntry(entry_key)) {
     DoomActiveEntry(*active_entry, std::move(callback));
-    return net::ERR_IO_PENDING;
+    // `handle` is destroyed here, calling `RunNextExclusiveOperation()`.
+    return;
   }
 
   // If there's a pending Open/Create operation for this key, queue the doom
   // operation to be executed after the initial operation completes.
   if (auto* callback_info = GetEntryResultCallbackInfo(entry_key)) {
     callback_info->pending_doom_operations.emplace_back(std::move(callback));
-    return net::ERR_IO_PENDING;
+    // `handle` is destroyed here, calling `RunNextExclusiveOperation()`.
+    return;
   }
 
   // If the entry is not active and no operation is pending, it means the entry
   // is not currently open. In this case, we can directly ask the store to
   // delete the "live" (not yet doomed) entry from the database.
   store_->DeleteLiveEntry(
-      entry_key,
-      base::BindOnce(&SqlBackendImpl::OnDoomEntryFinished,
-                     base::Unretained(this), entry_key, std::move(callback)));
-  return net::ERR_IO_PENDING;
+      entry_key, base::BindOnce(&SqlBackendImpl::OnDoomEntryFinished,
+                                weak_factory_.GetWeakPtr(), entry_key,
+                                std::move(callback), std::move(handle)));
 }
 
 net::Error SqlBackendImpl::DoomAllEntries(CompletionOnceCallback callback) {
@@ -208,6 +391,17 @@ net::Error SqlBackendImpl::DoomAllEntries(CompletionOnceCallback callback) {
 net::Error SqlBackendImpl::DoomEntriesBetween(base::Time initial_time,
                                               base::Time end_time,
                                               CompletionOnceCallback callback) {
+  PostOrRunExclusiveOperation(base::BindOnce(
+      &SqlBackendImpl::DoomEntriesBetweenInternal, weak_factory_.GetWeakPtr(),
+      initial_time, end_time, std::move(callback)));
+  return net::ERR_IO_PENDING;
+}
+
+void SqlBackendImpl::DoomEntriesBetweenInternal(
+    base::Time initial_time,
+    base::Time end_time,
+    CompletionOnceCallback callback,
+    std::unique_ptr<ExclusiveOperationHandle> handle) {
   if (initial_time.is_null()) {
     // If initial_time is null, use the minimum possible time.
     initial_time = base::Time::Min();
@@ -224,13 +418,16 @@ net::Error SqlBackendImpl::DoomEntriesBetween(base::Time initial_time,
       doomed_entries_.empty() && entry_result_callback_info_map_.empty()) {
     // Ask the store to delete all entries from the database.
     store_->DeleteAllEntries(base::BindOnce(
-        [](CompletionOnceCallback callback, SqlPersistentStore::Error result) {
+        [](CompletionOnceCallback callback,
+           std::unique_ptr<ExclusiveOperationHandle> handle,
+           SqlPersistentStore::Error result) {
           std::move(callback).Run(result == SqlPersistentStore::Error::kOk
                                       ? net::OK
                                       : net::ERR_FAILED);
+          // `handle` is destroyed here, calling `RunNextExclusiveOperation()`.
         },
-        std::move(callback)));
-    return net::ERR_IO_PENDING;
+        std::move(callback), std::move(handle)));
+    return;
   }
 
   // Collect keys of active entries to exclude them from the store's
@@ -255,12 +452,16 @@ net::Error SqlBackendImpl::DoomEntriesBetween(base::Time initial_time,
           // This final callback is run after all individual doom operations
           // complete.
           [](base::WeakPtr<SqlBackendImpl> weak_ptr,
-             CompletionOnceCallback callback, std::vector<int> result) {
+             CompletionOnceCallback callback,
+             std::unique_ptr<ExclusiveOperationHandle> handle,
+             const std::vector<int>& result) {
             if (weak_ptr) {
               std::move(callback).Run(net::OK);
             }
+            // `handle` is destroyed here, calling
+            // `RunNextExclusiveOperation()`.
           },
-          weak_factory_.GetWeakPtr(), std::move(callback)));
+          weak_factory_.GetWeakPtr(), std::move(callback), std::move(handle)));
 
   // Doom active entries that fall within the time range.
   for (auto* entry : active_entries_to_be_doomed) {
@@ -288,7 +489,6 @@ net::Error SqlBackendImpl::DoomEntriesBetween(base::Time initial_time,
                                         : net::ERR_FAILED);
           },
           std::move(barrier_callback)));
-  return net::ERR_IO_PENDING;
 }
 
 net::Error SqlBackendImpl::DoomEntriesSince(base::Time initial_time,
@@ -316,9 +516,7 @@ int64_t SqlBackendImpl::CalculateSizeOfEntriesBetween(
 }
 
 std::unique_ptr<Backend::Iterator> SqlBackendImpl::CreateIterator() {
-  // TODO(crbug.com/422065015): Implement this method.
-  NOTIMPLEMENTED();
-  return nullptr;
+  return std::make_unique<IteratorImpl>(weak_factory_.GetWeakPtr());
 }
 
 void SqlBackendImpl::GetStats(base::StringPairs* stats) {
@@ -419,15 +617,18 @@ void SqlBackendImpl::OnEntryOperationFinished(
   }
 }
 
-void SqlBackendImpl::OnDoomEntryFinished(const CacheEntryKey& key,
-                                         CompletionOnceCallback callback,
-                                         SqlPersistentStore::Error result) {
+void SqlBackendImpl::OnDoomEntryFinished(
+    const CacheEntryKey& key,
+    CompletionOnceCallback callback,
+    std::unique_ptr<ExclusiveOperationHandle> handle,
+    SqlPersistentStore::Error result) {
   // Convert store error to net error. kNotFound is considered a success for
   // dooming (idempotency).
   std::move(callback).Run((result == SqlPersistentStore::Error::kOk ||
                            result == SqlPersistentStore::Error::kNotFound)
                               ? net::OK
                               : net::ERR_FAILED);
+  // `handle` is destroyed here, calling `RunNextExclusiveOperation()`.
 }
 
 void SqlBackendImpl::ReleaseActiveEntry(SqlEntryImpl& entry) {
@@ -443,6 +644,8 @@ void SqlBackendImpl::ReleaseDoomedEntry(SqlEntryImpl& entry) {
   // The entry must exist in the doomed_entries_ set.
   CHECK(it != doomed_entries_.end());
   doomed_entries_.erase(it);
+  store_->DeleteDoomedEntry(entry.cache_key(), entry.token(),
+                            base::DoNothing());
 }
 
 int SqlBackendImpl::FlushQueueForTest(CompletionOnceCallback callback) {
@@ -451,6 +654,29 @@ int SqlBackendImpl::FlushQueueForTest(CompletionOnceCallback callback) {
       FROM_HERE, base::BindOnce([]() {}),
       base::BindOnce(std::move(callback), net::OK));
   return net::ERR_IO_PENDING;
+}
+
+void SqlBackendImpl::PostOrRunExclusiveOperation(
+    base::OnceCallback<void(std::unique_ptr<ExclusiveOperationHandle>)>
+        operation) {
+  pending_exclusive_operations_.push(std::move(operation));
+  // If no exclusive operation is currently running, start this one.
+  if (!exclusive_operation_inflight_) {
+    RunNextExclusiveOperation();
+  }
+}
+
+void SqlBackendImpl::RunNextExclusiveOperation() {
+  CHECK(!exclusive_operation_inflight_);
+  if (pending_exclusive_operations_.empty()) {
+    return;
+  }
+
+  exclusive_operation_inflight_ = true;
+  auto operation = std::move(pending_exclusive_operations_.front());
+  pending_exclusive_operations_.pop();
+  std::move(operation).Run(
+      std::make_unique<ExclusiveOperationHandle>(weak_factory_.GetWeakPtr()));
 }
 
 SqlPersistentStore& SqlBackendImpl::GetStore() {

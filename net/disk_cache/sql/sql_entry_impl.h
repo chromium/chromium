@@ -89,6 +89,8 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   // active entry is doomed.
   void MarkAsDoomed();
 
+  bool doomed() const { return doomed_; }
+
  private:
   friend class base::RefCounted<SqlEntryImpl>;
   ~SqlEntryImpl() override;
