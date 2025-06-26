@@ -9,10 +9,15 @@
 
 #import "ios/chrome/share_extension/account_info.h"
 
+@protocol AccountPickerDelegate;
+
 // A view controller when the account are displayed and can be selected.
 @interface AccountPickerTable : UIViewController
 
 @property(nonatomic, strong) UISheetPresentationControllerDetent* customDetent;
+
+// The delegate for interactions in `AccountPickerTable`.
+@property(nonatomic, weak) id<AccountPickerDelegate> delegate;
 
 - (instancetype)initWithAccounts:(NSArray<AccountInfo*>*)accounts
                  selectedAccount:(AccountInfo*)selectedAccount

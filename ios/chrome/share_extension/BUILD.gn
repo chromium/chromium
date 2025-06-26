@@ -50,6 +50,7 @@ source_set("share") {
     sources += [
       "account_info.h",
       "account_info.mm",
+      "account_picker_delegate.h",
       "account_picker_table.h",
       "account_picker_table.mm",
       "extended_share_view_controller.h",

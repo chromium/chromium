@@ -5,6 +5,7 @@
 #import "ios/chrome/share_extension/account_picker_table.h"
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/share_extension/account_picker_delegate.h"
 
 namespace {
 
@@ -14,11 +15,11 @@ CGFloat const kAvatarImageDimension = 30.0;
 }  // namespace
 
 @interface AccountPickerTable () <UITableViewDelegate>
+@property(nonatomic, strong) AccountInfo* selectedAccount;
 @end
 
 @implementation AccountPickerTable {
   NSArray<AccountInfo*>* _accounts;
-  AccountInfo* _selectedAccount;
   UITableView* _accountsTable;
   UITableViewDiffableDataSource<NSString*, AccountInfo*>* _diffableDataSource;
 }
@@ -70,10 +71,17 @@ CGFloat const kAvatarImageDimension = 30.0;
 }
 
 #pragma mark - UITableViewDelegate
+- (void)setSelectedAccount:(AccountInfo*)selectedAccount {
+  if ([selectedAccount.gaiaID isEqual:_selectedAccount.gaiaID]) {
+    return;
+  }
+  _selectedAccount = selectedAccount;
+  [_accountsTable reloadData];
+}
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  // TODO(crbug.com/425571657): Add account selection.
+  self.selectedAccount = _accounts[indexPath.row];
 }
 
 #pragma mark - UITableViewDataSource
@@ -117,8 +125,7 @@ CGFloat const kAvatarImageDimension = 30.0;
 }
 
 - (void)doneButtonTapped {
-  // TODO(crbug.com/425571657): Pass the new selected account to the parent view
-  // controller.
+  [self.delegate didSelectAccountInTable:self selectedAccount:_selectedAccount];
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 

@@ -931,20 +931,18 @@ void OnListFamilyMembersResponse(
   return accountChanges > 1 ? YES : NO;
 }
 
-- (BOOL)URLEligibleForAccountChange:(NSURL*)URL {
-  if (IsWidgetsForMultiprofileEnabled()) {
-    return [URL.scheme isEqualToString:@"chromewidgetkit"];
-  }
+- (BOOL)widgetURLEligibleForAccountChange:(NSURL*)URL {
+  return (IsWidgetsForMultiprofileEnabled() &&
+          [URL.scheme isEqualToString:@"chromewidgetkit"]);
+}
 
-  if (IsShareExtensionForMultiprofileEnabled()) {
-    return [URL.path
-        isEqualToString:
-            [NSString
-                stringWithFormat:@"/%s",
-                                 app_group::kChromeAppGroupXCallbackCommand]];
-  }
-
-  return NO;
+- (BOOL)shareExtensionURLEligibleForAccountChange:(NSURL*)URL {
+  return IsShareExtensionForMultiprofileEnabled() &&
+         [URL.path
+             isEqualToString:
+                 [NSString
+                     stringWithFormat:
+                         @"/%s", app_group::kChromeAppGroupXCallbackCommand]];
 }
 
 - (WidgetContext*)findContextRequiringAccountChange:
@@ -953,7 +951,8 @@ void OnListFamilyMembersResponse(
 
   for (UIOpenURLContext* context : URLContexts) {
     // Check that this URL is coming from a widget.
-    if (![self URLEligibleForAccountChange:context.URL]) {
+    if (!([self widgetURLEligibleForAccountChange:context.URL] ||
+          [self shareExtensionURLEligibleForAccountChange:context.URL])) {
       continue;
     }
     std::string newGaia;
