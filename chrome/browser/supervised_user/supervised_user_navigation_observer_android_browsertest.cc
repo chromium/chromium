@@ -5,6 +5,7 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/tab_android.h"
@@ -238,6 +239,17 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 // is enabled.
 class SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest
     : public SupervisedUserNavigationObserverAndroidBrowserTest {
+ protected:
+  void EnableBrowserFilteringAndClassifyCurrentTab(
+      safe_search_api::ClientClassification classification) {
+    content::TestNavigationObserver navigation_observer(web_contents());
+    // Turn the filtering on. That will trigger a url check which is resolved to
+    // restricted.
+    browser_content_filters_observer()->SetEnabled(true);
+    url_checker_client()->RunCallback(classification);
+    navigation_observer.Wait();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       kSupervisedUserInterstitialWithoutApprovals};
@@ -262,19 +274,59 @@ IN_PROC_BROWSER_TEST_F(
       embedded_test_server()->GetURL("/supervised_user/simple.html")));
   ASSERT_EQ(web_contents()->GetTitle(), u"Supervised User test: simple page");
 
-  content::TestNavigationObserver navigation_observer(web_contents());
-  // Turn the filtering on. That will trigger a url check which is resolved to
-  // restricted.
-  browser_content_filters_observer()->SetEnabled(true);
-  url_checker_client()->RunCallback(
+  EnableBrowserFilteringAndClassifyCurrentTab(
       safe_search_api::ClientClassification::kRestricted);
-  navigation_observer.Wait();
 
   EXPECT_EQ(web_contents()->GetTitle(), u"Site blocked");
   // Learn more button is specific to this interstitial.
   EXPECT_EQ(content::ExecJs(web_contents(),
                             "document.getElementById('learn-more-button');"),
             true);
+}
+
+// Clicks the learn more button on the interstitial page and verifies that the
+// help center page about to be loaded.
+IN_PROC_BROWSER_TEST_F(
+    SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest,
+    GoToHelpCenterPage) {
+  // Creating new tab will bootstrap it with the navigation observer with a
+  // supervised user service from the replaced factory. It becomes the current
+  // tab and web contents.
+  AddTab();
+
+  // Verify that the observer is attached.
+  ASSERT_NE(SupervisedUserNavigationObserver::FromWebContents(web_contents()),
+            nullptr);
+
+  // Navigate to a simple page and verify the title. The page is not filtered.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_test_server()->GetURL("/supervised_user/simple.html")));
+  ASSERT_EQ(web_contents()->GetTitle(), u"Supervised User test: simple page");
+
+  EnableBrowserFilteringAndClassifyCurrentTab(
+      safe_search_api::ClientClassification::kRestricted);
+
+  // Navigation to google.com pages is expected to be always allowed.
+  GURL help_center_url = GURL(kDeviceFiltersHelpCenterUrl);
+  ASSERT_TRUE(SupervisedUserServiceFactory::GetInstance()
+                  ->GetForBrowserContext(web_contents()->GetBrowserContext())
+                  ->GetURLFilter()
+                  ->GetFilteringBehavior(help_center_url)
+                  .IsAllowed());
+
+  // So click the learn more button.
+  content::TestNavigationObserver navigation_observer(web_contents());
+  EXPECT_EQ(
+      content::ExecJs(web_contents(),
+                      "document.getElementById('learn-more-button').click();"),
+      true);
+  navigation_observer.Wait();
+
+  // This expectation verifies that the help center page was attempted to be
+  // loaded (test don't have internet)
+  EXPECT_EQ(web_contents()->GetTitle(),
+            base::UTF8ToUTF16(help_center_url.host()));
 }
 
 }  // namespace
