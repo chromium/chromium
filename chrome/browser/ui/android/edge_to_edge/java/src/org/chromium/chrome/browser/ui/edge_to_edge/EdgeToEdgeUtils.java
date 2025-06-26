@@ -251,7 +251,7 @@ public class EdgeToEdgeUtils {
             return false;
         }
 
-        if (BuildInfo.getInstance().isAutomotive || BuildInfo.getInstance().isDesktop) {
+        if (BuildInfo.getInstance().isAutomotive) {
             return false;
         }
 
