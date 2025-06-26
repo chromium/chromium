@@ -28,7 +28,7 @@ ALIGNMENT_ORDER = [
     'ScaleTransformOperation',
     'RotateTransformOperation',
     'TranslateTransformOperation',
-    'NGGridTrackList',
+    'GridTrackList',
     'StyleHighlightData',
     'FilterOperations',
     'DynamicRangeLimit',

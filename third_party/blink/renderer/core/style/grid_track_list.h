@@ -17,21 +17,21 @@ enum class AutoRepeatType : uint8_t { kNoAutoRepeat, kAutoFill, kAutoFit };
 enum class GridAxisType : uint8_t { kStandaloneAxis, kSubgriddedAxis };
 
 // Stores tracks related data by compressing repeated tracks into a single node.
-struct NGGridTrackRepeater {
+struct GridTrackRepeater {
   enum RepeatType {
     kNoRepeat,
     kAutoFill,
     kAutoFit,
     kInteger,
   };
-  NGGridTrackRepeater(wtf_size_t repeat_index,
-                      wtf_size_t repeat_size,
-                      wtf_size_t repeat_count,
-                      RepeatType repeat_type);
+  GridTrackRepeater(wtf_size_t repeat_index,
+                    wtf_size_t repeat_size,
+                    wtf_size_t repeat_count,
+                    RepeatType repeat_type);
   String ToString() const;
-  bool operator==(const NGGridTrackRepeater& o) const;
+  bool operator==(const GridTrackRepeater& o) const;
 
-  // `NGGridTrackList` will store the sizes for each track in this repeater
+  // `GridTrackList` will store the sizes for each track in this repeater
   // consecutively in a single vector for all repeaters; this index specifies
   // the position of the first track size that belongs to this repeater.
   wtf_size_t repeat_index;
@@ -45,11 +45,11 @@ struct NGGridTrackRepeater {
   RepeatType repeat_type;
 };
 
-class CORE_EXPORT NGGridTrackList {
+class CORE_EXPORT GridTrackList {
  public:
-  NGGridTrackList() = default;
-  NGGridTrackList(const NGGridTrackList& other) = default;
-  explicit NGGridTrackList(const GridTrackSize& default_track_size) {
+  GridTrackList() = default;
+  GridTrackList(const GridTrackList& other) = default;
+  explicit GridTrackList(const GridTrackSize& default_track_size) {
     AddRepeater({default_track_size});
   }
 
@@ -61,7 +61,7 @@ class CORE_EXPORT NGGridTrackList {
   // Returns the number of tracks in the repeater at `index`.
   wtf_size_t RepeatSize(wtf_size_t index) const;
   // Returns the repeat type of the repeater at `index`.
-  NGGridTrackRepeater::RepeatType RepeatType(wtf_size_t index) const;
+  GridTrackRepeater::RepeatType RepeatType(wtf_size_t index) const;
   // Returns the size of the `n`-th specified track of the repeater at `index`.
   const GridTrackSize& RepeatTrackSize(wtf_size_t index, wtf_size_t n) const;
 
@@ -79,8 +79,8 @@ class CORE_EXPORT NGGridTrackList {
   void IncrementNonAutoRepeatLineCount();
   // Adds a repeater.
   bool AddRepeater(const Vector<GridTrackSize, 1>& repeater_track_sizes,
-                   NGGridTrackRepeater::RepeatType repeat_type =
-                       NGGridTrackRepeater::RepeatType::kNoRepeat,
+                   GridTrackRepeater::RepeatType repeat_type =
+                       GridTrackRepeater::RepeatType::kNoRepeat,
                    wtf_size_t repeat_count = 1u,
                    wtf_size_t repeat_number_of_lines = 1u);
   // Returns true if this list contains an auto repeater.
@@ -95,15 +95,15 @@ class CORE_EXPORT NGGridTrackList {
 
   String ToString() const;
 
-  void operator=(const NGGridTrackList& o);
-  bool operator==(const NGGridTrackList& o) const;
-  bool operator!=(const NGGridTrackList& o) const { return !(*this == o); }
+  void operator=(const GridTrackList& o);
+  bool operator==(const GridTrackList& o) const;
+  bool operator!=(const GridTrackList& o) const { return !(*this == o); }
 
  private:
   // Returns the amount of tracks available before overflow.
   wtf_size_t AvailableTrackCount() const;
 
-  Vector<NGGridTrackRepeater, 1> repeaters_;
+  Vector<GridTrackRepeater, 1> repeaters_;
 
   // Stores the track sizes of every repeater added to this list; tracks from
   // the same repeater group are stored consecutively.
@@ -127,6 +127,6 @@ class CORE_EXPORT NGGridTrackList {
 
 }  // namespace blink
 
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NGGridTrackRepeater)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::GridTrackRepeater)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GRID_TRACK_LIST_H_

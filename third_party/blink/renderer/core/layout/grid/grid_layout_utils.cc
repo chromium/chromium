@@ -62,7 +62,7 @@ void ComputeAvailableSizes(const BoxStrut& border_scrollbar_padding,
   }
 }
 
-wtf_size_t CalculateAutomaticRepetitions(const NGGridTrackList& track_list,
+wtf_size_t CalculateAutomaticRepetitions(const GridTrackList& track_list,
                                          const LayoutUnit gutter_size,
                                          LayoutUnit available_size,
                                          LayoutUnit min_available_size,
@@ -79,11 +79,10 @@ wtf_size_t CalculateAutomaticRepetitions(const NGGridTrackList& track_list,
   LayoutUnit non_auto_specified_size;
   for (wtf_size_t repeater_index = 0;
        repeater_index < track_list.RepeaterCount(); ++repeater_index) {
-    const NGGridTrackRepeater::RepeatType repeat_type =
+    const GridTrackRepeater::RepeatType repeat_type =
         track_list.RepeatType(repeater_index);
-    const bool is_auto_repeater =
-        repeat_type == NGGridTrackRepeater::kAutoFill ||
-        repeat_type == NGGridTrackRepeater::kAutoFit;
+    const bool is_auto_repeater = repeat_type == GridTrackRepeater::kAutoFill ||
+                                  repeat_type == GridTrackRepeater::kAutoFit;
 
     LayoutUnit repeater_size;
     const wtf_size_t repeater_track_count =

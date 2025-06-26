@@ -62,8 +62,8 @@ class GridTrackCollectionBaseTest : public GridTrackCollectionBase {
 
 class GridTrackCollectionTest : public RenderingTest {
  protected:
-  GridRangeBuilder CreateRangeBuilder(const NGGridTrackList& explicit_tracks,
-                                      const NGGridTrackList& implicit_tracks,
+  GridRangeBuilder CreateRangeBuilder(const GridTrackList& explicit_tracks,
+                                      const GridTrackList& implicit_tracks,
                                       wtf_size_t auto_repetitions) {
     return GridRangeBuilder(explicit_tracks, implicit_tracks, auto_repetitions);
   }
@@ -73,8 +73,8 @@ class GridTrackCollectionTest : public RenderingTest {
   }
 
   void InitializeSetsForSizingCollection(
-      const NGGridTrackList& explicit_tracks,
-      const NGGridTrackList& implicit_tracks,
+      const GridTrackList& explicit_tracks,
+      const GridTrackList& implicit_tracks,
       GridSizingTrackCollection* sizing_collection) {
     sizing_collection->BuildSets(explicit_tracks, implicit_tracks);
     sizing_collection->InitializeSets();
@@ -128,13 +128,13 @@ TEST_F(GridTrackCollectionTest, TestRangeIndexFromGridLine) {
   EXPECT_EQ(7u, track_collection.RangeIndexFromGridLine(105u));
 }
 
-TEST_F(GridTrackCollectionTest, TestNGGridTrackList) {
-  NGGridTrackList track_list;
+TEST_F(GridTrackCollectionTest, TestGridTrackList) {
+  GridTrackList track_list;
   ASSERT_EQ(0u, track_list.RepeaterCount());
   EXPECT_FALSE(track_list.HasAutoRepeater());
 
   EXPECT_TRUE(track_list.AddRepeater(
-      CreateTrackSizes(2), NGGridTrackRepeater::RepeatType::kInteger, 4));
+      CreateTrackSizes(2), GridTrackRepeater::RepeatType::kInteger, 4));
   ASSERT_EQ(1u, track_list.RepeaterCount());
   EXPECT_EQ(8u, track_list.TrackCountWithoutAutoRepeat());
   EXPECT_EQ(4u, track_list.RepeatCount(0, 4));
@@ -142,14 +142,14 @@ TEST_F(GridTrackCollectionTest, TestNGGridTrackList) {
   EXPECT_FALSE(track_list.HasAutoRepeater());
 
   // Can't add an empty repeater to a list.
+  EXPECT_FALSE(track_list.AddRepeater(CreateTrackSizes(0),
+                                      GridTrackRepeater::RepeatType::kAutoFit));
   EXPECT_FALSE(track_list.AddRepeater(
-      CreateTrackSizes(0), NGGridTrackRepeater::RepeatType::kAutoFit));
-  EXPECT_FALSE(track_list.AddRepeater(
-      CreateTrackSizes(3), NGGridTrackRepeater::RepeatType::kNoRepeat, 0));
+      CreateTrackSizes(3), GridTrackRepeater::RepeatType::kNoRepeat, 0));
   ASSERT_EQ(1u, track_list.RepeaterCount());
 
   EXPECT_TRUE(track_list.AddRepeater(CreateTrackSizes(1),
-                                     NGGridTrackRepeater::RepeatType::kInteger,
+                                     GridTrackRepeater::RepeatType::kInteger,
                                      kNotFound - 20));
   ASSERT_EQ(2u, track_list.RepeaterCount());
   EXPECT_EQ(kNotFound - 12u, track_list.TrackCountWithoutAutoRepeat());
@@ -159,15 +159,15 @@ TEST_F(GridTrackCollectionTest, TestNGGridTrackList) {
 
   // Try to add a repeater that would overflow the total track count.
   EXPECT_FALSE(track_list.AddRepeater(
-      CreateTrackSizes(5), NGGridTrackRepeater::RepeatType::kInteger, 7));
+      CreateTrackSizes(5), GridTrackRepeater::RepeatType::kInteger, 7));
   EXPECT_FALSE(track_list.AddRepeater(
-      CreateTrackSizes(7), NGGridTrackRepeater::RepeatType::kInteger, 5));
+      CreateTrackSizes(7), GridTrackRepeater::RepeatType::kInteger, 5));
   EXPECT_FALSE(track_list.AddRepeater(
-      CreateTrackSizes(31), NGGridTrackRepeater::RepeatType::kAutoFill));
+      CreateTrackSizes(31), GridTrackRepeater::RepeatType::kAutoFill));
   ASSERT_EQ(2u, track_list.RepeaterCount());
 
-  EXPECT_TRUE(track_list.AddRepeater(
-      CreateTrackSizes(3), NGGridTrackRepeater::RepeatType::kAutoFit));
+  EXPECT_TRUE(track_list.AddRepeater(CreateTrackSizes(3),
+                                     GridTrackRepeater::RepeatType::kAutoFit));
   ASSERT_EQ(3u, track_list.RepeaterCount());
   EXPECT_EQ(kNotFound - 12u, track_list.TrackCountWithoutAutoRepeat());
   EXPECT_EQ(4u, track_list.RepeatCount(2, 4));
@@ -176,16 +176,16 @@ TEST_F(GridTrackCollectionTest, TestNGGridTrackList) {
 
   // Can't add more than one auto repeater to a list.
   EXPECT_FALSE(track_list.AddRepeater(
-      CreateTrackSizes(3), NGGridTrackRepeater::RepeatType::kAutoFill));
+      CreateTrackSizes(3), GridTrackRepeater::RepeatType::kAutoFill));
   ASSERT_EQ(3u, track_list.RepeaterCount());
 }
 
 TEST_F(GridTrackCollectionTest, TestGridRangeBuilder) {
-  NGGridTrackList explicit_tracks, implicit_tracks;
+  GridTrackList explicit_tracks, implicit_tracks;
   ASSERT_TRUE(explicit_tracks.AddRepeater(
-      CreateTrackSizes(2), NGGridTrackRepeater::RepeatType::kInteger, 4));
+      CreateTrackSizes(2), GridTrackRepeater::RepeatType::kInteger, 4));
   ASSERT_TRUE(explicit_tracks.AddRepeater(
-      CreateTrackSizes(3), NGGridTrackRepeater::RepeatType::kAutoFill));
+      CreateTrackSizes(3), GridTrackRepeater::RepeatType::kAutoFill));
   ASSERT_EQ(2u, explicit_tracks.RepeaterCount());
 
   auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,
@@ -198,13 +198,13 @@ TEST_F(GridTrackCollectionTest, TestGridRangeBuilder) {
 }
 
 TEST_F(GridTrackCollectionTest, TestGridRangeBuilderCollapsed) {
-  NGGridTrackList explicit_tracks, implicit_tracks;
+  GridTrackList explicit_tracks, implicit_tracks;
   ASSERT_TRUE(explicit_tracks.AddRepeater(
-      CreateTrackSizes(2), NGGridTrackRepeater::RepeatType::kInteger, 4));
+      CreateTrackSizes(2), GridTrackRepeater::RepeatType::kInteger, 4));
   ASSERT_TRUE(explicit_tracks.AddRepeater(
-      CreateTrackSizes(3), NGGridTrackRepeater::RepeatType::kAutoFit));
+      CreateTrackSizes(3), GridTrackRepeater::RepeatType::kAutoFit));
   ASSERT_TRUE(explicit_tracks.AddRepeater(
-      CreateTrackSizes(3), NGGridTrackRepeater::RepeatType::kInteger, 7));
+      CreateTrackSizes(3), GridTrackRepeater::RepeatType::kInteger, 7));
   ASSERT_EQ(3u, explicit_tracks.RepeaterCount());
 
   auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,
@@ -218,18 +218,18 @@ TEST_F(GridTrackCollectionTest, TestGridRangeBuilderCollapsed) {
 }
 
 TEST_F(GridTrackCollectionTest, TestGridRangeBuilderImplicit) {
-  NGGridTrackList explicit_tracks;
+  GridTrackList explicit_tracks;
   ASSERT_TRUE(explicit_tracks.AddRepeater(
-      CreateTrackSizes(2), NGGridTrackRepeater::RepeatType::kInteger, 4));
+      CreateTrackSizes(2), GridTrackRepeater::RepeatType::kInteger, 4));
   ASSERT_TRUE(explicit_tracks.AddRepeater(
-      CreateTrackSizes(3), NGGridTrackRepeater::RepeatType::kInteger, 3));
+      CreateTrackSizes(3), GridTrackRepeater::RepeatType::kInteger, 3));
   ASSERT_TRUE(explicit_tracks.AddRepeater(
-      CreateTrackSizes(3), NGGridTrackRepeater::RepeatType::kInteger, 7));
+      CreateTrackSizes(3), GridTrackRepeater::RepeatType::kInteger, 7));
   ASSERT_EQ(3u, explicit_tracks.RepeaterCount());
 
-  NGGridTrackList implicit_tracks;
+  GridTrackList implicit_tracks;
   ASSERT_TRUE(implicit_tracks.AddRepeater(
-      CreateTrackSizes(8), NGGridTrackRepeater::RepeatType::kInteger, 2));
+      CreateTrackSizes(8), GridTrackRepeater::RepeatType::kInteger, 2));
 
   auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,
                                           /* auto_repetitions */ 3);
@@ -313,13 +313,13 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionSetIterator) {
   Vector<wtf_size_t> set_counts = {2, 5, 3, 11, 13, 7};
 
   wtf_size_t expected_set_count = 0;
-  NGGridTrackList explicit_tracks, implicit_tracks;
+  GridTrackList explicit_tracks, implicit_tracks;
   for (wtf_size_t set_count : set_counts) {
     Vector<GridTrackSize, 1> track_sizes;
     for (wtf_size_t i = 0; i < set_count; ++i)
       track_sizes.emplace_back(Length::Flex(expected_set_count++));
     ASSERT_TRUE(explicit_tracks.AddRepeater(
-        track_sizes, NGGridTrackRepeater::RepeatType::kNoRepeat, 1));
+        track_sizes, GridTrackRepeater::RepeatType::kNoRepeat, 1));
   }
   ASSERT_EQ(set_counts.size(), explicit_tracks.RepeaterCount());
 
@@ -360,20 +360,20 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionSetIterator) {
 
 TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionExplicitTracks) {
   // We'll use fixed size tracks to differentiate between them by int value.
-  NGGridTrackList explicit_tracks, implicit_tracks;
+  GridTrackList explicit_tracks, implicit_tracks;
 
   // repeat(3, 1px 2px 3px)
   Vector<GridTrackSize, 1> track_sizes = {GridTrackSize(Length::Fixed(1)),
                                           GridTrackSize(Length::Fixed(2)),
                                           GridTrackSize(Length::Fixed(3))};
   ASSERT_TRUE(explicit_tracks.AddRepeater(
-      track_sizes, NGGridTrackRepeater::RepeatType::kInteger, 3));
+      track_sizes, GridTrackRepeater::RepeatType::kInteger, 3));
 
   // repeat(auto-fit, 4px 5px)
   track_sizes = {GridTrackSize(Length::Fixed(4)),
                  GridTrackSize(Length::Fixed(5))};
   ASSERT_TRUE(explicit_tracks.AddRepeater(
-      track_sizes, NGGridTrackRepeater::RepeatType::kAutoFit));
+      track_sizes, GridTrackRepeater::RepeatType::kAutoFit));
   ASSERT_EQ(2u, explicit_tracks.RepeaterCount());
 
   auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,
@@ -466,14 +466,14 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionExplicitTracks) {
 
 TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionImplicitTracks) {
   // We'll use fixed size tracks to differentiate between them by int value.
-  NGGridTrackList explicit_tracks, implicit_tracks;
+  GridTrackList explicit_tracks, implicit_tracks;
 
   // Explicit grid: 1px 2px 3px 4px
   Vector<GridTrackSize, 1> track_sizes = {
       GridTrackSize(Length::Fixed(1)), GridTrackSize(Length::Fixed(2)),
       GridTrackSize(Length::Fixed(3)), GridTrackSize(Length::Fixed(4))};
   ASSERT_TRUE(explicit_tracks.AddRepeater(
-      track_sizes, NGGridTrackRepeater::RepeatType::kNoRepeat, 1));
+      track_sizes, GridTrackRepeater::RepeatType::kNoRepeat, 1));
   ASSERT_EQ(1u, explicit_tracks.RepeaterCount());
 
   // Implicit grid: 5px 6px 7px
@@ -481,7 +481,7 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionImplicitTracks) {
                  GridTrackSize(Length::Fixed(6)),
                  GridTrackSize(Length::Fixed(7))};
   ASSERT_TRUE(implicit_tracks.AddRepeater(
-      track_sizes, NGGridTrackRepeater::RepeatType::kNoRepeat, 1));
+      track_sizes, GridTrackRepeater::RepeatType::kNoRepeat, 1));
   ASSERT_EQ(1u, implicit_tracks.RepeaterCount());
 
   auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,
@@ -546,14 +546,14 @@ TEST_F(GridTrackCollectionTest,
        TestGridSizingTrackCollectionIntrinsicAndFlexTracks) {
   // Test that the ranges of a |GridSizingTrackCollection| correctly
   // cache if they contain intrinsic or flexible tracks.
-  NGGridTrackList explicit_tracks, implicit_tracks;
+  GridTrackList explicit_tracks, implicit_tracks;
 
   // repeat(2, min-content 1fr 2px 3px)
   Vector<GridTrackSize, 1> track_sizes = {
       GridTrackSize(Length::MinContent()), GridTrackSize(Length::Flex(1.0)),
       GridTrackSize(Length::Fixed(2)), GridTrackSize(Length::Fixed(3))};
   ASSERT_TRUE(explicit_tracks.AddRepeater(
-      track_sizes, NGGridTrackRepeater::RepeatType::kInteger, 2));
+      track_sizes, GridTrackRepeater::RepeatType::kInteger, 2));
   ASSERT_EQ(1u, explicit_tracks.RepeaterCount());
 
   auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,

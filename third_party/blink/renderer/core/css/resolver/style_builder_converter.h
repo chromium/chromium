@@ -209,8 +209,8 @@ class StyleBuilderConverter {
       const CSSValue&);
   static GridTrackSize ConvertGridTrackSize(StyleResolverState&,
                                             const CSSValue&);
-  static NGGridTrackList ConvertGridTrackSizeList(StyleResolverState&,
-                                                  const CSSValue&);
+  static GridTrackList ConvertGridTrackSizeList(StyleResolverState&,
+                                                const CSSValue&);
   static std::optional<Length> ConvertItemTolerance(const StyleResolverState&,
                                                     const CSSValue&);
   static StyleHyphenateLimitChars ConvertHyphenateLimitChars(

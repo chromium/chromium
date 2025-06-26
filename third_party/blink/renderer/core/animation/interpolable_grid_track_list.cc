@@ -17,7 +17,7 @@ InterpolableGridTrackList::InterpolableGridTrackList(InterpolableList* values,
 
 // static
 InterpolableGridTrackList* InterpolableGridTrackList::MaybeCreate(
-    const NGGridTrackList& track_list,
+    const GridTrackList& track_list,
     const CSSProperty& property,
     float zoom) {
   // Subgrids do not have sizes stored on their track list to interpolate.
@@ -34,7 +34,7 @@ InterpolableGridTrackList* InterpolableGridTrackList::MaybeCreate(
     for (wtf_size_t j = 0; j < track_list.RepeatSize(i); ++j)
       repeater_track_sizes.push_back(track_list.RepeatTrackSize(i, j));
 
-    const NGGridTrackRepeater repeater(
+    const GridTrackRepeater repeater(
         track_list.RepeatIndex(i), track_list.RepeatSize(i),
         track_list.RepeatCount(i, 0), track_list.RepeatType(i));
     InterpolableGridTrackRepeater* result =
@@ -46,9 +46,9 @@ InterpolableGridTrackList* InterpolableGridTrackList::MaybeCreate(
   return MakeGarbageCollected<InterpolableGridTrackList>(values, 0);
 }
 
-NGGridTrackList InterpolableGridTrackList::CreateNGGridTrackList(
+GridTrackList InterpolableGridTrackList::CreateGridTrackList(
     const CSSToLengthConversionData& conversion_data) const {
-  NGGridTrackList new_track_list;
+  GridTrackList new_track_list;
   for (wtf_size_t i = 0; i < values_->length(); ++i) {
     const InterpolableGridTrackRepeater& repeater =
         To<InterpolableGridTrackRepeater>(*values_->Get(i));

@@ -123,7 +123,7 @@ class UnderlyingGridTrackListChecker final
 class InheritedGridTrackListChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
-  explicit InheritedGridTrackListChecker(const NGGridTrackList& track_list,
+  explicit InheritedGridTrackListChecker(const GridTrackList& track_list,
                                          const CSSPropertyID& property_id)
       : track_list_(track_list), property_id_(property_id) {}
 
@@ -131,7 +131,7 @@ class InheritedGridTrackListChecker
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue&) const final {
     const ComputedStyle& style = *state.ParentStyle();
-    const NGGridTrackList& state_track_list =
+    const GridTrackList& state_track_list =
         (property_id_ == CSSPropertyID::kGridTemplateColumns)
             ? style.GridTemplateColumns().track_list
             : style.GridTemplateRows().track_list;
@@ -154,14 +154,14 @@ class InheritedGridTrackListChecker
     return true;
   }
 
-  const NGGridTrackList track_list_;
+  const GridTrackList track_list_;
   const CSSPropertyID property_id_;
 };
 
 // static
 InterpolableValue*
 CSSGridTemplatePropertyInterpolationType::CreateInterpolableGridTrackList(
-    const NGGridTrackList& track_list,
+    const GridTrackList& track_list,
     const CSSProperty& property,
     float zoom) {
   return InterpolableGridTrackList::MaybeCreate(track_list, property, zoom);
@@ -215,7 +215,7 @@ CSSGridTemplatePropertyInterpolationType::MaybeConvertInherit(
       (property_id_ == CSSPropertyID::kGridTemplateColumns)
           ? parent_style->GridTemplateColumns()
           : parent_style->GridTemplateRows();
-  const NGGridTrackList& parent_track_list =
+  const GridTrackList& parent_track_list =
       parent_computed_grid_track_list.track_list;
 
   conversion_checkers.push_back(
@@ -283,7 +283,7 @@ void CSSGridTemplatePropertyInterpolationType::ApplyStandardPropertyValue(
                      : builder.GridTemplateRows());
 
   computed_grid_track_list.track_list =
-      interpolable_grid_track_list.CreateNGGridTrackList(conversion_data);
+      interpolable_grid_track_list.CreateGridTrackList(conversion_data);
   computed_grid_track_list.named_grid_lines =
       non_interoplable_grid_track_list->GetCurrentNamedGridLines(progress);
   computed_grid_track_list.ordered_named_grid_lines =

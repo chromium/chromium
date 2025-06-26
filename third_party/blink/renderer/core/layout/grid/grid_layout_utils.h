@@ -13,7 +13,7 @@ namespace blink {
 class BlockNode;
 class BoxFragmentBuilder;
 class ConstraintSpace;
-class NGGridTrackList;
+class GridTrackList;
 
 struct BoxStrut;
 struct LogicalSize;
@@ -31,7 +31,7 @@ void ComputeAvailableSizes(const BoxStrut& border_scrollbar_padding,
 // https://drafts.csswg.org/css-grid-2/#auto-repeat
 //
 // This method assumes that the track list provided has an auto repeater.
-wtf_size_t CalculateAutomaticRepetitions(const NGGridTrackList& track_list,
+wtf_size_t CalculateAutomaticRepetitions(const GridTrackList& track_list,
                                          const LayoutUnit gutter_size,
                                          LayoutUnit available_size,
                                          LayoutUnit min_available_size,

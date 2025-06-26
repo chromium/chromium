@@ -1566,14 +1566,14 @@ static void ConvertGridLineNamesList(
   }
 }
 
-NGGridTrackList StyleBuilderConverter::ConvertGridTrackSizeList(
+GridTrackList StyleBuilderConverter::ConvertGridTrackSizeList(
     StyleResolverState& state,
     const CSSValue& value) {
   const CSSValueList* list = DynamicTo<CSSValueList>(value);
   if (!list) {
     const auto& ident = To<CSSIdentifierValue>(value);
     DCHECK_EQ(ident.GetValueID(), CSSValueID::kAuto);
-    return NGGridTrackList(GridTrackSize(Length::Auto()));
+    return GridTrackList(GridTrackSize(Length::Auto()));
   }
 
   Vector<GridTrackSize, 1> track_sizes;
@@ -1583,7 +1583,7 @@ NGGridTrackList StyleBuilderConverter::ConvertGridTrackSizeList(
     track_sizes.push_back(ConvertGridTrackSize(state, *curr_value));
   }
 
-  NGGridTrackList track_list;
+  GridTrackList track_list;
   track_list.AddRepeater(track_sizes);
   return track_list;
 }
@@ -1597,7 +1597,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
     return;
   }
 
-  NGGridTrackList& track_list = computed_grid_track_list.track_list;
+  GridTrackList& track_list = computed_grid_track_list.track_list;
 
   wtf_size_t current_named_grid_line = 0;
   auto ConvertLineNameOrTrackSize =
@@ -1665,7 +1665,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
       }
       // `repeat_count` is always 1 for auto-repeaters.
       track_list.AddRepeater(repeated_track_sizes,
-                             static_cast<NGGridTrackRepeater::RepeatType>(
+                             static_cast<GridTrackRepeater::RepeatType>(
                                  computed_grid_track_list.auto_repeat_type),
                              /*repeat_count=*/1u, auto_repeat_index);
       computed_grid_track_list.auto_repeat_insertion_point =
@@ -1714,7 +1714,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
       const wtf_size_t repeat_number_of_lines =
           is_subgrid ? line_name_indices_count : 1u;
       track_list.AddRepeater(repeater_track_sizes,
-                             NGGridTrackRepeater::RepeatType::kInteger,
+                             GridTrackRepeater::RepeatType::kInteger,
                              repetitions, repeat_number_of_lines);
       continue;
     }

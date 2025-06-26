@@ -38,7 +38,7 @@ struct CORE_EXPORT ComputedGridTrackList {
     return axis_type == GridAxisType::kSubgriddedAxis;
   }
 
-  NGGridTrackList track_list;
+  GridTrackList track_list;
 
   NamedGridLinesMap named_grid_lines;
   NamedGridLinesMap auto_repeat_named_grid_lines;

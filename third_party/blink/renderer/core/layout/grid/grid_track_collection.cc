@@ -186,7 +186,7 @@ GridRangeVector GridRangeBuilder::FinalizeRanges() {
 
       is_in_auto_fit_range =
           explicit_tracks_.RepeatType(current_explicit_repeater_index) ==
-          NGGridTrackRepeater::RepeatType::kAutoFit;
+          GridTrackRepeater::RepeatType::kAutoFit;
       next_explicit_repeater_start +=
           explicit_tracks_.RepeatSize(current_explicit_repeater_index) *
           explicit_tracks_.RepeatCount(current_explicit_repeater_index,
@@ -322,8 +322,8 @@ GridRangeVector GridRangeBuilder::FinalizeRanges() {
   return ranges;
 }
 
-GridRangeBuilder::GridRangeBuilder(const NGGridTrackList& explicit_tracks,
-                                   const NGGridTrackList& implicit_tracks,
+GridRangeBuilder::GridRangeBuilder(const GridTrackList& explicit_tracks,
+                                   const GridTrackList& implicit_tracks,
                                    wtf_size_t auto_repetitions,
                                    wtf_size_t start_offset)
     : auto_repetitions_(auto_repetitions),
@@ -1001,8 +1001,8 @@ void GridSizingTrackCollection::BuildSets(
 }
 
 void GridSizingTrackCollection::BuildSets(
-    const NGGridTrackList& explicit_track_list,
-    const NGGridTrackList& implicit_track_list,
+    const GridTrackList& explicit_track_list,
+    const GridTrackList& implicit_track_list,
     bool is_available_size_indefinite) {
   properties_.Reset();
   sets_.Shrink(0);

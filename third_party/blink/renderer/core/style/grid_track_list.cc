@@ -6,16 +6,16 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 namespace blink {
 
-NGGridTrackRepeater::NGGridTrackRepeater(wtf_size_t repeat_index,
-                                         wtf_size_t repeat_size,
-                                         wtf_size_t repeat_count,
-                                         RepeatType repeat_type)
+GridTrackRepeater::GridTrackRepeater(wtf_size_t repeat_index,
+                                     wtf_size_t repeat_size,
+                                     wtf_size_t repeat_count,
+                                     RepeatType repeat_type)
     : repeat_index(repeat_index),
       repeat_size(repeat_size),
       repeat_count(repeat_count),
       repeat_type(repeat_type) {}
 
-String NGGridTrackRepeater::ToString() const {
+String GridTrackRepeater::ToString() const {
   StringBuilder builder;
   builder.Append("Repeater: [Index: ");
   builder.AppendNumber<wtf_size_t>(repeat_index);
@@ -38,14 +38,14 @@ String NGGridTrackRepeater::ToString() const {
   return builder.ToString();
 }
 
-bool NGGridTrackRepeater::operator==(const NGGridTrackRepeater& other) const {
+bool GridTrackRepeater::operator==(const GridTrackRepeater& other) const {
   return repeat_index == other.repeat_index &&
          repeat_size == other.repeat_size &&
          repeat_count == other.repeat_count && repeat_type == other.repeat_type;
 }
 
-wtf_size_t NGGridTrackList::RepeatCount(wtf_size_t index,
-                                        wtf_size_t auto_value) const {
+wtf_size_t GridTrackList::RepeatCount(wtf_size_t index,
+                                      wtf_size_t auto_value) const {
   DCHECK_LT(index, RepeaterCount());
   if (index == auto_repeater_index_) {
     return auto_value;
@@ -53,26 +53,26 @@ wtf_size_t NGGridTrackList::RepeatCount(wtf_size_t index,
   return repeaters_[index].repeat_count;
 }
 
-wtf_size_t NGGridTrackList::RepeatIndex(wtf_size_t index) const {
+wtf_size_t GridTrackList::RepeatIndex(wtf_size_t index) const {
   // `repeat_index` is used for sizes, which subgrids don't have.
   DCHECK(!IsSubgriddedAxis());
   DCHECK_LT(index, RepeaterCount());
   return repeaters_[index].repeat_index;
 }
 
-wtf_size_t NGGridTrackList::RepeatSize(wtf_size_t index) const {
+wtf_size_t GridTrackList::RepeatSize(wtf_size_t index) const {
   DCHECK_LT(index, RepeaterCount());
   return repeaters_[index].repeat_size;
 }
 
-NGGridTrackRepeater::RepeatType NGGridTrackList::RepeatType(
+GridTrackRepeater::RepeatType GridTrackList::RepeatType(
     wtf_size_t index) const {
   DCHECK_LT(index, RepeaterCount());
   return repeaters_[index].repeat_type;
 }
 
-const GridTrackSize& NGGridTrackList::RepeatTrackSize(wtf_size_t index,
-                                                      wtf_size_t n) const {
+const GridTrackSize& GridTrackList::RepeatTrackSize(wtf_size_t index,
+                                                    wtf_size_t n) const {
   // Subgrids don't have track sizes associated with them.
   DCHECK(!IsSubgriddedAxis());
   DCHECK_LT(index, RepeaterCount());
@@ -83,31 +83,31 @@ const GridTrackSize& NGGridTrackList::RepeatTrackSize(wtf_size_t index,
   return repeater_track_sizes_[repeat_index + n];
 }
 
-wtf_size_t NGGridTrackList::RepeaterCount() const {
+wtf_size_t GridTrackList::RepeaterCount() const {
   return repeaters_.size();
 }
 
-wtf_size_t NGGridTrackList::TrackCountWithoutAutoRepeat() const {
+wtf_size_t GridTrackList::TrackCountWithoutAutoRepeat() const {
   return track_count_without_auto_repeat_;
 }
 
-wtf_size_t NGGridTrackList::AutoRepeatTrackCount() const {
+wtf_size_t GridTrackList::AutoRepeatTrackCount() const {
   return HasAutoRepeater() ? repeaters_[auto_repeater_index_].repeat_size : 0;
 }
 
-wtf_size_t NGGridTrackList::NonAutoRepeatLineCount() const {
+wtf_size_t GridTrackList::NonAutoRepeatLineCount() const {
   DCHECK(IsSubgriddedAxis());
   return non_auto_repeat_line_count_;
 }
 
-void NGGridTrackList::IncrementNonAutoRepeatLineCount() {
+void GridTrackList::IncrementNonAutoRepeatLineCount() {
   DCHECK(IsSubgriddedAxis());
   ++non_auto_repeat_line_count_;
 }
 
-bool NGGridTrackList::AddRepeater(
+bool GridTrackList::AddRepeater(
     const Vector<GridTrackSize, 1>& repeater_track_sizes,
-    NGGridTrackRepeater::RepeatType repeat_type,
+    GridTrackRepeater::RepeatType repeat_type,
     wtf_size_t repeat_count,
     wtf_size_t repeat_number_of_lines) {
   // Non-subgrid repeaters always have sizes associated with them, while
@@ -120,7 +120,7 @@ bool NGGridTrackList::AddRepeater(
 
   // If the repeater is auto or there isn't a repeater, the repeat_count should
   // be 1.
-  DCHECK(repeat_type == NGGridTrackRepeater::RepeatType::kInteger ||
+  DCHECK(repeat_type == GridTrackRepeater::RepeatType::kInteger ||
          repeat_count == 1u);
 
   // Ensure adding tracks will not overflow the total in this track list and
@@ -129,8 +129,8 @@ bool NGGridTrackList::AddRepeater(
   wtf_size_t repeat_size =
       IsSubgriddedAxis() ? repeat_number_of_lines : repeater_track_sizes.size();
   switch (repeat_type) {
-    case NGGridTrackRepeater::RepeatType::kNoRepeat:
-    case NGGridTrackRepeater::RepeatType::kInteger:
+    case GridTrackRepeater::RepeatType::kNoRepeat:
+    case GridTrackRepeater::RepeatType::kInteger:
       if (repeat_size > AvailableTrackCount() / repeat_count) {
         return false;
       }
@@ -142,8 +142,8 @@ bool NGGridTrackList::AddRepeater(
         track_count_without_auto_repeat_ += repeat_size * repeat_count;
       }
       break;
-    case NGGridTrackRepeater::RepeatType::kAutoFill:
-    case NGGridTrackRepeater::RepeatType::kAutoFit:  // Intentional Fallthrough.
+    case GridTrackRepeater::RepeatType::kAutoFill:
+    case GridTrackRepeater::RepeatType::kAutoFit:  // Intentional Fallthrough.
       if (HasAutoRepeater() || repeat_size > AvailableTrackCount()) {
         return false;
       }
@@ -160,7 +160,7 @@ bool NGGridTrackList::AddRepeater(
   return true;
 }
 
-String NGGridTrackList::ToString() const {
+String GridTrackList::ToString() const {
   StringBuilder builder;
   builder.Append("TrackList: {");
   for (wtf_size_t i = 0; i < repeaters_.size(); ++i) {
@@ -174,23 +174,23 @@ String NGGridTrackList::ToString() const {
   return builder.ToString();
 }
 
-bool NGGridTrackList::HasAutoRepeater() const {
+bool GridTrackList::HasAutoRepeater() const {
   return auto_repeater_index_ != kNotFound;
 }
 
-bool NGGridTrackList::IsSubgriddedAxis() const {
+bool GridTrackList::IsSubgriddedAxis() const {
   return axis_type_ == GridAxisType::kSubgriddedAxis;
 }
 
-void NGGridTrackList::SetAxisType(GridAxisType axis_type) {
+void GridTrackList::SetAxisType(GridAxisType axis_type) {
   axis_type_ = axis_type;
 }
 
-wtf_size_t NGGridTrackList::AvailableTrackCount() const {
+wtf_size_t GridTrackList::AvailableTrackCount() const {
   return kNotFound - 1 - track_count_without_auto_repeat_;
 }
 
-void NGGridTrackList::operator=(const NGGridTrackList& other) {
+void GridTrackList::operator=(const GridTrackList& other) {
   repeaters_ = other.repeaters_;
   repeater_track_sizes_ = other.repeater_track_sizes_;
   auto_repeater_index_ = other.auto_repeater_index_;
@@ -199,7 +199,7 @@ void NGGridTrackList::operator=(const NGGridTrackList& other) {
   axis_type_ = other.axis_type_;
 }
 
-bool NGGridTrackList::operator==(const NGGridTrackList& other) const {
+bool GridTrackList::operator==(const GridTrackList& other) const {
   return TrackCountWithoutAutoRepeat() == other.TrackCountWithoutAutoRepeat() &&
          RepeaterCount() == other.RepeaterCount() &&
          auto_repeater_index_ == other.auto_repeater_index_ &&

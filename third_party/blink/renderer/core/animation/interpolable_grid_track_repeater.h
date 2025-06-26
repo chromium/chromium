@@ -14,15 +14,15 @@ namespace blink {
 
 class CSSProperty;
 
-// Represents a blink::NGGridTrackRepeater, converted into a form that can be
+// Represents a blink::GridTrackRepeater, converted into a form that can be
 // interpolated from/to.
 class CORE_EXPORT InterpolableGridTrackRepeater final
     : public InterpolableValue {
  public:
   InterpolableGridTrackRepeater(InterpolableList* values,
-                                const NGGridTrackRepeater& repeater);
+                                const GridTrackRepeater& repeater);
   static InterpolableGridTrackRepeater* Create(
-      const NGGridTrackRepeater& repeater,
+      const GridTrackRepeater& repeater,
       const Vector<GridTrackSize, 1>& repeater_track_sizes,
       const CSSProperty& property,
       float zoom);
@@ -32,7 +32,7 @@ class CORE_EXPORT InterpolableGridTrackRepeater final
 
   wtf_size_t RepeatSize() const { return repeater_.repeat_size; }
   wtf_size_t RepeatCount() const { return repeater_.repeat_count; }
-  NGGridTrackRepeater::RepeatType RepeatType() const {
+  GridTrackRepeater::RepeatType RepeatType() const {
     return repeater_.repeat_type;
   }
 
@@ -47,8 +47,8 @@ class CORE_EXPORT InterpolableGridTrackRepeater final
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
   // Interpolable grid track repeaters are compatible when the lengths of the
-  // values and their |NGGridTrackRepeater| variable are equal. Two
-  // |NGGridTrackRepeater| variables are equal when their index, size, count and
+  // values and their |GridTrackRepeater| variable are equal. Two
+  // |GridTrackRepeater| variables are equal when their index, size, count and
   // type are the same. If two grid track repeaters are not compatible, then
   // they combine discretely.
   bool IsCompatibleWith(const InterpolableValue& other) const;
@@ -64,7 +64,7 @@ class CORE_EXPORT InterpolableGridTrackRepeater final
 
   // Stores the track sizes of a repeater.
   Member<InterpolableList> values_;
-  NGGridTrackRepeater repeater_;
+  GridTrackRepeater repeater_;
 };
 
 template <>

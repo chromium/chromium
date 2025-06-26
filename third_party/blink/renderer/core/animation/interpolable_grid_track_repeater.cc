@@ -11,14 +11,14 @@ namespace blink {
 
 InterpolableGridTrackRepeater::InterpolableGridTrackRepeater(
     InterpolableList* values,
-    const NGGridTrackRepeater& repeater)
+    const GridTrackRepeater& repeater)
     : values_(std::move(values)), repeater_(repeater) {
   DCHECK(values_);
 }
 
 // static
 InterpolableGridTrackRepeater* InterpolableGridTrackRepeater::Create(
-    const NGGridTrackRepeater& repeater,
+    const GridTrackRepeater& repeater,
     const Vector<GridTrackSize, 1>& repeater_track_sizes,
     const CSSProperty& property,
     float zoom) {

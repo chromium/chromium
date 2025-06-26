@@ -1127,7 +1127,7 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // Grid axis utility functions, usable in Grid and Masonry.
-  const NGGridTrackList& AutoTracks(
+  const GridTrackList& AutoTracks(
       GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? GridAutoColumns()
                                             : GridAutoRows();
