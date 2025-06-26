@@ -142,5 +142,11 @@
     ]
   },
   "builder_group": "chromium.gpu",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "chromium.gpu"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium.gpu"
+  ]
 }
