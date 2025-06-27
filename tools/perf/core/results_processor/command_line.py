@@ -130,7 +130,8 @@ def ArgumentParser(standalone=False):
       '--fetch-data-path-device',
       dest='device_data_path',
       help=('Use this to specify the path on device to pull data from. Should '
-            'be used with --fetch-device-data.'))
+            'be used with --fetch-device-data. Use "auto" for dynamic '
+            'detection on Android.'))
   device_group.add_argument(
       '--fetch-data-path-local',
       dest='local_data_path',

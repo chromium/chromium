@@ -503,6 +503,17 @@ def PullDeviceArtifacts(options):
     # Each docker host in chrome-swarming has one device attached, so we'll use
     # the first AdbWrapper instance as the assumed attached device in question
     utils = device_utils.DeviceUtils(devices[0])
+    if device_path == 'auto':
+      cmd = ('find /data_mirror/data_ce/null -type f -name "*.profraw" '
+             '-print -quit | xargs dirname')
+      output = utils.RunShellCommand(cmd, shell=True)
+      if output:
+        device_path = output[0]
+        logging.info('Dynamically detected device path: %s', device_path)
+      else:
+        logging.warning('Could not dynamically detect device path.')
+        return
+
     logging.info('Pulling files from %s to %s', device_path, local_path)
     utils.PullFile(device_path, local_path)
     local_profile_dir = os.path.join(local_path, os.path.basename(device_path))
