@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_SUPPLEMENTAL_DEVICE_PICKER_ITEM_H_
-#define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_SUPPLEMENTAL_DEVICE_PICKER_ITEM_H_
+#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_SUPPLEMENTAL_DEVICE_PICKER_ITEM_H_
+#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_SUPPLEMENTAL_DEVICE_PICKER_ITEM_H_
 
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "components/media_message_center/media_notification_item.h"
-#include "components/media_router/browser/presentation/start_presentation_context.h"
-#include "content/public/browser/presentation_request.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/gfx/image/image_skia.h"
@@ -24,7 +23,7 @@ class MediaItemManager;
 
 // See the class comment for SupplementalDevicePickerProducer for more
 // information.
-class SupplementalDevicePickerItem final
+class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) SupplementalDevicePickerItem final
     : public media_message_center::MediaNotificationItem {
  public:
   SupplementalDevicePickerItem(
@@ -84,4 +83,4 @@ class SupplementalDevicePickerItem final
   base::WeakPtrFactory<SupplementalDevicePickerItem> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_SUPPLEMENTAL_DEVICE_PICKER_ITEM_H_
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_SUPPLEMENTAL_DEVICE_PICKER_ITEM_H_

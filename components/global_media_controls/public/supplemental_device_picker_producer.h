@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_SUPPLEMENTAL_DEVICE_PICKER_PRODUCER_H_
-#define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_SUPPLEMENTAL_DEVICE_PICKER_PRODUCER_H_
+#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_SUPPLEMENTAL_DEVICE_PICKER_PRODUCER_H_
+#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_SUPPLEMENTAL_DEVICE_PICKER_PRODUCER_H_
 
 #include <memory>
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/global_media_controls/supplemental_device_picker_item.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/media_item_producer.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/global_media_controls/public/media_item_ui_observer_set.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
+#include "components/global_media_controls/supplemental_device_picker_item.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -34,7 +35,8 @@ class MediaItemManager;
 //
 // This object is not the only producer of items containing device pickers.
 // MediaSessionItemProducer produces items containing pickers for active media.
-class SupplementalDevicePickerProducer final
+class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS)
+    SupplementalDevicePickerProducer final
     : public global_media_controls::MediaItemProducer,
       public global_media_controls::MediaItemManagerObserver,
       public global_media_controls::MediaItemUIObserver,
@@ -110,4 +112,4 @@ class SupplementalDevicePickerProducer final
   base::WeakPtrFactory<SupplementalDevicePickerProducer> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_SUPPLEMENTAL_DEVICE_PICKER_PRODUCER_H_
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_SUPPLEMENTAL_DEVICE_PICKER_PRODUCER_H_

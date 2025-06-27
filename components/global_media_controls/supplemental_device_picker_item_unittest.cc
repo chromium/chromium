@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/global_media_controls/supplemental_device_picker_item.h"
+#include "components/global_media_controls/supplemental_device_picker_item.h"
 
 #include "base/unguessable_token.h"
 #include "components/global_media_controls/public/test/mock_media_item_manager.h"

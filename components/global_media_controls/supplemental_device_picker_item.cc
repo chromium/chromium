@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/global_media_controls/supplemental_device_picker_item.h"
+#include "components/global_media_controls/supplemental_device_picker_item.h"
 
 #include "base/unguessable_token.h"
-#include "components/favicon/content/content_favicon_driver.h"
-#include "components/favicon/core/favicon_driver.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/media_message_center/media_notification_util.h"
 #include "components/media_message_center/media_notification_view.h"
-#include "content/public/browser/media_session.h"
 #include "services/media_session/public/cpp/media_image_manager.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "ui/gfx/image/image_skia.h"

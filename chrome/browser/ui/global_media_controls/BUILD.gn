@@ -23,8 +23,6 @@ source_set("global_media_controls") {
     "media_toolbar_button_observer.h",
     "presentation_request_notification_item.h",
     "presentation_request_notification_producer.h",
-    "supplemental_device_picker_item.h",
-    "supplemental_device_picker_producer.h",
   ]
   public_deps = [
     "//base",
@@ -68,8 +66,6 @@ source_set("impl") {
     "media_toolbar_button_controller_delegate.cc",
     "presentation_request_notification_item.cc",
     "presentation_request_notification_producer.cc",
-    "supplemental_device_picker_item.cc",
-    "supplemental_device_picker_producer.cc",
   ]
   deps = [
     ":global_media_controls",
@@ -111,8 +107,6 @@ source_set("unit_tests") {
     "media_toolbar_button_controller_unittest.cc",
     "presentation_request_notification_item_unittest.cc",
     "presentation_request_notification_producer_unittest.cc",
-    "supplemental_device_picker_item_unittest.cc",
-    "supplemental_device_picker_producer_unittest.cc",
   ]
 
   if (is_linux) {
