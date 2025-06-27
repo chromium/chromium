@@ -50,7 +50,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -64,10 +66,12 @@ public class TabbedRootUiCoordinatorTest {
     @Rule public ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public MockitoRule mockito = MockitoJUnit.rule();
 
+    private WebPageStation mPage;
     private TabbedRootUiCoordinator mTabbedRootUiCoordinator;
 
     @Mock private PrivacySandboxBridgeJni mPrivacySandboxBridgeJni;
@@ -85,10 +89,9 @@ public class TabbedRootUiCoordinatorTest {
 
         BookmarkBarUtils.setFeatureVisibleForTesting(true);
         TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =
-                (TabbedRootUiCoordinator)
-                        mActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
     }
 
     // TODO(crbug.com/40112282): Enable for tablets once we support them.
