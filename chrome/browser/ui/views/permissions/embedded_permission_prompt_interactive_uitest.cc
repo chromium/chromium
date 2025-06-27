@@ -316,6 +316,46 @@ class EmbeddedPermissionPromptInteractiveTest
                                                CONTENT_SETTING_ASK)));
   }
 
+  void TestAllowThisTimeFlow(
+      const std::string& element_id,
+      const std::vector<ContentSettingsType>& content_settings_types) {
+    RunTestSequence(
+        InstrumentTab(kWebContentsElementId),
+        NavigateWebContents(kWebContentsElementId, GetURL()),
+
+        // Initially the Ask view is displayed.
+        ClickOnPEPCElement(element_id),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+
+        // After allowing this time, the content setting is updated accordingly.
+        PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowThisTimeId),
+        CheckContentSettingsValue(content_settings_types,
+                                  CONTENT_SETTING_ALLOW),
+
+        // The PreviouslyGranted view is displayed since the permission is
+        // granted.
+        ClickOnPEPCElement(element_id),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+
+        // Click on "Continue Allowing" and observe the content setting remains
+        // the same.
+        PushPEPCPromptButton(
+            EmbeddedPermissionPromptPreviouslyGrantedView::kContinueAllowingId),
+        CheckContentSettingsValue(content_settings_types,
+                                  CONTENT_SETTING_ALLOW),
+        // After the last tab is closed, since the last grant was one-time,
+        // ensure the content setting is reset.
+        Do([this]() {
+          browser()->tab_strip_model()->GetActiveWebContents()->Close();
+        }),
+        // This has to be immediate, because otherwise closing the browser will
+        // detach the profile.
+        WithoutDelay(CheckContentSettingsValue(content_settings_types,
+                                               CONTENT_SETTING_ASK)));
+  }
+
   void TestPromptElementText(
       ContentSetting camera_setting,
       ContentSetting mic_setting,
@@ -464,6 +504,28 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
            u"You previously didn't allow camera and microphone for this site"}),
       std::vector<std::u16string>({u"Use your cameras"}),
       std::vector<std::u16string>({u"Use your microphones"}));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestAllowThisTimeFlowMicrophone) {
+  TestAllowThisTimeFlow("microphone", {ContentSettingsType::MEDIASTREAM_MIC});
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestAllowThisTimeFlowCamera) {
+  TestAllowThisTimeFlow("camera", {ContentSettingsType::MEDIASTREAM_CAMERA});
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestAllowThisTimeFlowGeolocation) {
+  TestAllowThisTimeFlow("geolocation", {ContentSettingsType::GEOLOCATION});
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestAllowThisTimeFlowCameraMicrophone) {
+  TestAllowThisTimeFlow("camera-microphone",
+                        {ContentSettingsType::MEDIASTREAM_CAMERA,
+                         ContentSettingsType::MEDIASTREAM_MIC});
 }
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
