@@ -1826,8 +1826,7 @@ config("libcxx_module") {
     ]
 
     if (is_linux || is_chromeos) {
-      sysroot_modulemap =
-          rebase_path(SYSROOT_MODULEMAP, root_build_dir)
+      sysroot_modulemap = rebase_path(SYSROOT_MODULEMAP, root_build_dir)
 
       cflags_cc += [ "-fmodule-map-file=" + sysroot_modulemap ]
     }
@@ -1924,9 +1923,6 @@ config("treat_warnings_as_errors") {
   # Note we apply the actual lint flags in config("compiler"). All warnings
   # are suppressed in third-party crates.
   rustflags = [ "-Dwarnings" ]
-
-  # TODO(crbug.com/424424323): Clean up and enable.
-  rustflags += [ "-Amismatched_lifetime_syntaxes" ]
 }
 
 # tot_warnings ----------------------------------------------------------------
@@ -2168,6 +2164,9 @@ config("default_warnings") {
   # an error by default eventually; see
   # https://github.com/rust-lang/rust/issues/71668
   rustflags = [ "-Dunsafe_op_in_unsafe_fn" ]
+
+  # TODO(crbug.com/424424323): Clean up and enable.
+  rustflags += [ "-Amismatched_lifetime_syntaxes" ]
 }
 
 # prevent_unsafe_narrowing ----------------------------------------------------
