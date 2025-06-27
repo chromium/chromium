@@ -12,6 +12,7 @@
 class TrustSafetySentimentServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static TrustSafetySentimentServiceFactory* GetInstance();
+  static void ShutDownForTesting(content::BrowserContext* context);
   static TrustSafetySentimentService* GetForProfile(Profile* profile);
 
  private:

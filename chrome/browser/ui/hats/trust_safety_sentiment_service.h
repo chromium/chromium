@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
@@ -298,6 +299,9 @@ class TrustSafetySentimentService
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
   bool performed_control_group_dice_roll_;
+  base::ScopedObservation<metrics::DesktopSessionDurationTracker,
+                          metrics::DesktopSessionDurationTracker::Observer>
+      session_duration_observation_{this};
   base::WeakPtrFactory<TrustSafetySentimentService> weak_ptr_factory_{this};
 };
 

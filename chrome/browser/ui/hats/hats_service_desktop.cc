@@ -533,7 +533,8 @@ bool HatsServiceDesktop::CanShowSurvey(const std::string& trigger) const {
 bool HatsServiceDesktop::CanShowAnySurvey(bool user_prompted) const {
   // HaTS requires metrics consent to run. This is also how HaTS can be
   // disabled by policy.
-  if (!g_browser_process->GetMetricsServicesManager()
+  if (!g_browser_process->GetMetricsServicesManager() ||
+      !g_browser_process->GetMetricsServicesManager()
            ->IsMetricsConsentGiven()) {
     return false;
   }

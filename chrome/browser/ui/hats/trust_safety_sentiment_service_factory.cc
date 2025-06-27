@@ -37,6 +37,13 @@ TrustSafetySentimentService* TrustSafetySentimentServiceFactory::GetForProfile(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
+void TrustSafetySentimentServiceFactory::ShutDownForTesting(
+    content::BrowserContext* context) {
+  auto* factory = GetInstance();
+  factory->BrowserContextShutdown(context);
+  factory->BrowserContextDestroyed(context);
+}
+
 std::unique_ptr<KeyedService>
 TrustSafetySentimentServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {

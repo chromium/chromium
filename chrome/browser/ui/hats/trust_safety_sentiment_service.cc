@@ -232,16 +232,17 @@ TrustSafetySentimentService::TrustSafetySentimentService(Profile* profile)
   }
 
   if (base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2)) {
-    metrics::DesktopSessionDurationTracker::Get()->AddObserver(this);
+    if (metrics::DesktopSessionDurationTracker::IsInitialized()) {
+      session_duration_observation_.Observe(
+          metrics::DesktopSessionDurationTracker::Get());
+    } else {
+      CHECK_IS_TEST();
+    }
     performed_control_group_dice_roll_ = false;
   }
 }
 
-TrustSafetySentimentService::~TrustSafetySentimentService() {
-  if (base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2)) {
-    metrics::DesktopSessionDurationTracker::Get()->RemoveObserver(this);
-  }
-}
+TrustSafetySentimentService::~TrustSafetySentimentService() = default;
 
 void TrustSafetySentimentService::OpenedNewTabPage() {
   // Explicit early exit for the common path, where the user has not performed

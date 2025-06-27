@@ -45,6 +45,8 @@ class TrustSafetySentimentServiceTest : public testing::Test {
   }
 
   void TearDown() override {
+    TrustSafetySentimentServiceFactory::GetInstance()->ShutDownForTesting(
+        profile());
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
   }
 
@@ -75,24 +77,31 @@ class TrustSafetySentimentServiceTest : public testing::Test {
   }
 
   void SetupFeatureParameters(FeatureParams params) {
-    feature_list()->InitAndEnableFeatureWithParameters(
-        features::kTrustSafetySentimentSurvey,
-        {
-            {"privacy-settings-time", params.privacy_settings_time},
-            {"min-time-to-prompt", params.min_time_to_prompt},
-            {"max-time-to-prompt", params.max_time_to_prompt},
-            {"ntp-visits-min-range", params.ntp_visits_min_range},
-            {"ntp-visits-max-range", params.ntp_visits_max_range},
-            {"privacy-settings-probability",
-             params.privacy_settings_probability},
-            {"trusted-surface-probability", params.trusted_surface_probability},
-            {"transactions-probability", params.transactions_probability},
-            {"privacy-settings-trigger-id", params.privacy_settings_trigger_id},
-            {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
-            {"transactions-trigger-id", params.transactions_trigger_id},
-            {"transactions-password-manager-time",
-             params.transactions_password_manager_time},
-        });
+    feature_list()->InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {base::test::FeatureRefAndParams(
+            features::kTrustSafetySentimentSurvey,
+            {
+                {"privacy-settings-time", params.privacy_settings_time},
+                {"min-time-to-prompt", params.min_time_to_prompt},
+                {"max-time-to-prompt", params.max_time_to_prompt},
+                {"ntp-visits-min-range", params.ntp_visits_min_range},
+                {"ntp-visits-max-range", params.ntp_visits_max_range},
+                {"privacy-settings-probability",
+                 params.privacy_settings_probability},
+                {"trusted-surface-probability",
+                 params.trusted_surface_probability},
+                {"transactions-probability", params.transactions_probability},
+                {"privacy-settings-trigger-id",
+                 params.privacy_settings_trigger_id},
+                {"trusted-surface-trigger-id",
+                 params.trusted_surface_trigger_id},
+                {"transactions-trigger-id", params.transactions_trigger_id},
+                {"transactions-password-manager-time",
+                 params.transactions_password_manager_time},
+            })},
+        /*disabled_features=*/
+        {features::kTrustSafetySentimentSurveyV2});
   }
 
   struct FeatureParamsV2 {
