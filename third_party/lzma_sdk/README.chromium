@@ -44,4 +44,4 @@ The purposes of the patch in chromium.patch are:
 4. Remove files irrelevant to Chromium use.
 5. Remove AVX and SSE41 code in LzFind.
 6. Fix compilation when <asm/hwcap.h> is unavailable (on Fuchsia).
-
+7. Add the ability to suppress CRC hardware acceleration for fuzzing.

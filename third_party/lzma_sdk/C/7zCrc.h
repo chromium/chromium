@@ -9,6 +9,7 @@
 EXTERN_C_BEGIN
 
 extern UInt32 g_CrcTable[];
+extern unsigned g_Crc_Algo;
 
 /* Call CrcGenerateTable one time before other CRC functions */
 void Z7_FASTCALL CrcGenerateTable(void);

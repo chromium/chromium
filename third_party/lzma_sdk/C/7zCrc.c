@@ -9,7 +9,7 @@
 // for debug:
 // #define __ARM_FEATURE_CRC32 1
 
-#ifdef __ARM_FEATURE_CRC32
+#if defined(__ARM_FEATURE_CRC32) && !defined(Z7_NO_CRC_HW_FORCE)
 // #pragma message("__ARM_FEATURE_CRC32")
 #define Z7_CRC_HW_FORCE
 #endif
@@ -237,13 +237,14 @@ Z7_DIAGNOSTIC_IGNORE_END_RESERVED_MACRO_IDENTIFIER
 
 #ifndef Z7_CRC_HW_FORCE
 
+unsigned g_Crc_Algo;
+
 #if defined(Z7_CRC_HW_USE) || defined(Z7_CRC_UPDATE_T1_FUNC_NAME)
 /*
 typedef UInt32 (Z7_FASTCALL *Z7_CRC_UPDATE_WITH_TABLE_FUNC)
     (UInt32 v, const void *data, size_t size, const UInt32 *table);
 Z7_CRC_UPDATE_WITH_TABLE_FUNC g_CrcUpdate;
 */
-static unsigned g_Crc_Algo;
 #if (!defined(MY_CPU_LE) && !defined(MY_CPU_BE))
 static unsigned g_Crc_Be;
 #endif

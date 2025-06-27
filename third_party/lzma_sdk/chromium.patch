@@ -48,4 +48,16 @@ diff '--color=auto' -r --strip-trailing-cr /usr/local/google/home/waffles/Downlo
 < #define kSignatureSearchLimit (1 << 22)
 ---
 > #define kSignatureSearchLimit (1 << 26)
-
+diff '--color=auto' -r --strip-trailing-cr third_party/lzma_sdk/C/7zCrc.h ~/chrome/7zip/C/7zCrc.h
+12d11
+< extern unsigned g_Crc_Algo;
+diff '--color=auto' -r --strip-trailing-cr third_party/lzma_sdk/C/7zCrc.c ~/chrome/7zip/C/7zCrc.c
+12c12
+< #if defined(__ARM_FEATURE_CRC32) && !defined(Z7_NO_CRC_HW_FORCE)
+---
+> #ifdef __ARM_FEATURE_CRC32
+240,241d239
+< unsigned g_Crc_Algo;
+< 
+247a246
+> static unsigned g_Crc_Algo;
