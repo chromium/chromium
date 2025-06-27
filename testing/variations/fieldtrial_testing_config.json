@@ -13661,33 +13661,6 @@
             ]
         }
     ],
-    "KeyboardFocusableScrollers": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "KeyboardFocusableScrollers"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "KeyboardFocusableScrollers"
-                    ]
-                }
-            ]
-        }
-    ],
     "KeyboardLockPrompt": [
         {
             "platforms": [

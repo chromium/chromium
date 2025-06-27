@@ -24,10 +24,6 @@ A scroll container should be scrollable even when it contains no focusables.
 <script src="../../resources/testharnessreport.js"></script>
 <script src="resources/snav-testharness.js"></script>
 <script>
-  test(function(t) {
-      assert_true(internals.runtimeFlags.keyboardFocusableScrollersEnabled);
-  }, "Make sure KeyboardFocusableScrollers is set.");
-
   // We want spatnav to focus the scroller before scrolling
   // or searching inside of it, just like seqnav does.
   var resultMap = [

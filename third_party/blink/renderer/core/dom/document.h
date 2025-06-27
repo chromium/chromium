@@ -542,7 +542,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // [1] https://drafts.csswg.org/scroll-animations-1/#avoiding-cycles
   Element* ScrollingElementNoLayout();
 
-  bool KeyboardFocusableScrollersEnabled();
   bool StandardizedBrowserZoomEnabled() const;
 
   V8DocumentReadyState readyState() const;

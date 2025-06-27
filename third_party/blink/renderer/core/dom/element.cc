@@ -7483,9 +7483,6 @@ bool Element::HasSpatialNavigationFocusHeuristics() const {
 
 bool Element::CanBeKeyboardFocusableScroller(
     UpdateBehavior update_behavior) const {
-  if (!GetDocument().KeyboardFocusableScrollersEnabled()) {
-    return false;
-  }
   // A node is scrollable depending on its layout size. As such, it is important
   // to have up to date style and layout before calling IsScrollableNode.
   // However, some lifecycle stages don't allow update here so we use

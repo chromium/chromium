@@ -6092,11 +6092,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "keyboard-focusable-scrollers",
-    "owners": ["dizhangg@chromium.org"],
-    "expiry_milestone": 138
-  },
-  {
     "name": "keyboard-lock-prompt",
     "owners": ["muyaoxu@google.com", "liberato@chromium.org", "openscreen-eng@google.com"],
     "expiry_milestone": 140

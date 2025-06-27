@@ -28,9 +28,6 @@
 <script src="../resources/run-after-layout-and-paint.js"></script>
 <script src="../fast/spatial-navigation/resources/snav-testharness.js"></script>
 <script>
-  test(function(t) {
-      assert_true(internals.runtimeFlags.keyboardFocusableScrollersEnabled);
-  }, "Make sure KeyboardFocusableScrollers is set.");
 
   let scroller = document.getElementById('scroller')
   test(() => {

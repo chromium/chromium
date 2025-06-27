@@ -82,9 +82,6 @@ DumpAccessibilityTreeTest::~DumpAccessibilityTreeTest() {}
 void DumpAccessibilityTreeTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   DumpAccessibilityTestBase::SetUpCommandLine(command_line);
-  // Enable KeyboardFocusableScrollers, used by AccessibilityScrollableOverflow.
-  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                  "KeyboardFocusableScrollers");
   // Enable AccessibilityAriaVirtualContent.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "AccessibilityAriaVirtualContent");
@@ -3401,8 +3398,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMinRole) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityMinRoleTabbableGroup) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "KeyboardFocusableScrollers");
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "AccessibilityMinRoleTabbable");
   RunHtmlTest(FILE_PATH_LITERAL("min-role-tabbable-group.html"));

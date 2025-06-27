@@ -6352,10 +6352,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowReadyToPayDebugInfoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(payments::android::kShowReadyToPayDebugInfo)},
 #endif  // BUILDFLAG(IS_ANDROID)
-    {"keyboard-focusable-scrollers",
-     flag_descriptions::kKeyboardFocusableScrollersName,
-     flag_descriptions::kKeyboardFocusableScrollersDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kKeyboardFocusableScrollers)},
     {"fill-on-account-select", flag_descriptions::kFillOnAccountSelectName,
      flag_descriptions::kFillOnAccountSelectDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kFillOnAccountSelect)},

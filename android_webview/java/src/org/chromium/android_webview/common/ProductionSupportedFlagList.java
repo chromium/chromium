@@ -504,9 +504,6 @@ public final class ProductionSupportedFlagList {
                         + "subresource notifications only if the user has allowed"
                         + "HTTPS-related exceptions."),
         Flag.baseFeature("CanvasColorCache"),
-        Flag.baseFeature(
-                BlinkFeatures.KEYBOARD_FOCUSABLE_SCROLLERS,
-                "When enabled, can focus on a scroller element using the keyboard."),
         Flag.commandLine(
                 AwSwitches.WEBVIEW_ENABLE_TRUST_TOKENS_COMPONENT,
                 "Enables downloading TrustTokenKeyCommitmentsComponent by the component"

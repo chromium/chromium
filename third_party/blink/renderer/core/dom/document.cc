@@ -1933,12 +1933,6 @@ Element* Document::ScrollingElementNoLayout() {
   return body();
 }
 
-bool Document::KeyboardFocusableScrollersEnabled() {
-  return RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
-         !RuntimeEnabledFeatures::KeyboardFocusableScrollersOptOutEnabled(
-             GetExecutionContext());
-}
-
 bool Document::StandardizedBrowserZoomEnabled() const {
   return RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled() &&
          !RuntimeEnabledFeatures::StandardizedBrowserZoomOptOutEnabled(

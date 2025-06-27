@@ -78,8 +78,6 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "KeyboardFocusableScrollers");
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "ShadowRootReferenceTarget");
     // Enable AOMAriaRelationshipProperties
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,

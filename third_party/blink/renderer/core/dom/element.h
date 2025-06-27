@@ -2267,9 +2267,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const ComputedStyle& new_style,
       const ComputedStyle* parent_style) const;
 
-  // This checks that the feature KeyboardFocusableScrollers is enabled and
-  // element is a scroller. This will call IsScrollableNode, which might update
-  // layout.
+  // This checks that the element is a scroller by calling IsScrollableNode,
+  // which might update layout.
   // If UpdateBehavior::kNoneForAccessibility argument is passed, which should
   // only be used by a11y code, layout updates will never be performed.
   bool CanBeKeyboardFocusableScroller(

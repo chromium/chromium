@@ -2270,11 +2270,6 @@ const char kFluentScrollbarsName[] = "Fluent scrollbars.";
 const char kFluentScrollbarsDescription[] =
     "Stylizes scrollbars with Microsoft Fluent design.";
 
-const char kKeyboardFocusableScrollersName[] =
-    "Enables keyboard focusable scrollers";
-const char kKeyboardFocusableScrollersDescription[] =
-    "Scrollers without focusable children are keyboard-focusable by default.";
-
 const char kFillOnAccountSelectName[] = "Fill passwords on account selection";
 const char kFillOnAccountSelectDescription[] =
     "Filling of passwords when an account is explicitly selected by the user "
