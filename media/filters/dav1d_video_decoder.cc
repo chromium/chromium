@@ -534,15 +534,30 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
     return nullptr;
 
   auto uv_plane_stride = pic->stride[1];
-  const auto* u_plane = static_cast<const uint8_t*>(pic->data[1]);
-  const auto* v_plane = static_cast<const uint8_t*>(pic->data[2]);
+  const size_t y_plane_height = pic->p.h;
+  const size_t uv_plane_height =
+      media::VideoFrame::PlaneSizeInSamples(
+          pixel_format, media::VideoFrame::Plane::kU, visible_size)
+          .height();
+
+  // SAFETY: Dav1d doesn't give us the size of the planes directly, that's
+  // why we assume it to be equal to stride * rows,
+  // as we do in many other places.
+  auto y_plane =
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(pic->data[0]),
+                                y_plane_height * pic->stride[0]));
+  auto u_plane =
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(pic->data[1]),
+                                uv_plane_height * uv_plane_stride));
+  auto v_plane =
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(pic->data[2]),
+                                uv_plane_height * uv_plane_stride));
 
   const bool needs_fake_uv_planes = pic->p.layout == DAV1D_PIXEL_LAYOUT_I400;
   if (needs_fake_uv_planes) {
     // UV planes are half the size of the Y plane.
     uv_plane_stride =
         base::bits::AlignUpDeprecatedDoNotUse(pic->stride[0] / 2, ptrdiff_t{2});
-    const auto uv_plane_height = (pic->p.h + 1) / 2;
     const size_t size_needed = uv_plane_stride * uv_plane_height;
 
     if (!fake_uv_data_ || fake_uv_data_->size() != size_needed) {
@@ -561,15 +576,14 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
       }
     }
 
-    u_plane = v_plane = fake_uv_data_->data();
+    u_plane = v_plane = base::span<const uint8_t>(*fake_uv_data_);
   }
 
   auto frame = VideoFrame::WrapExternalYuvData(
       pixel_format, visible_size, gfx::Rect(visible_size),
       config_.aspect_ratio().GetNaturalSize(gfx::Rect(visible_size)),
-      pic->stride[0], uv_plane_stride, uv_plane_stride,
-      static_cast<uint8_t*>(pic->data[0]), u_plane, v_plane,
-      base::Microseconds(pic->m.timestamp));
+      pic->stride[0], uv_plane_stride, uv_plane_stride, y_plane, u_plane,
+      v_plane, base::Microseconds(pic->m.timestamp));
   if (!frame)
     return nullptr;
 
