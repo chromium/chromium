@@ -26,6 +26,13 @@ class SaveAndFillDialogController {
   virtual std::u16string GetInvalidCardNumberErrorMessage() const = 0;
   virtual std::u16string GetInvalidCvcErrorMessage() const = 0;
   virtual std::u16string GetInvalidNameOnCardErrorMessage() const = 0;
+  // Format the expiration date input into `MM/YY`. A slash is added
+  // automatically after the user inputs the month digits and removed if the
+  // user deletes the year digits.
+  virtual std::u16string FormatExpirationDateInput(
+      std::u16string_view input,
+      size_t old_cursor_position,
+      size_t& new_cursor_position) const = 0;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   virtual bool IsUploadSaveAndFill() const = 0;
   virtual bool IsValidCreditCardNumber(

@@ -80,6 +80,33 @@ TEST_F(SaveAndFillDialogControllerImplTest, CorrectStringsAreReturned) {
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD));
 }
+
+TEST_F(SaveAndFillDialogControllerImplTest, FormatExpirationDateInput) {
+  size_t new_cursor_position;
+
+  // `old_cursor_position = 2` simulates cursor being after '2' when '3' is
+  // typed.
+  EXPECT_EQ(controller()->FormatExpirationDateInput(
+                /*input=*/u"123", /*old_cursor_position=*/2,
+                /*new_cursor_position=*/new_cursor_position),
+            u"12/3");
+  EXPECT_EQ(new_cursor_position, 3U);
+
+  EXPECT_EQ(controller()->FormatExpirationDateInput(
+                /*input=*/u"12/34", /*old_cursor_position=*/5,
+                /*new_cursor_position=*/new_cursor_position),
+            u"12/34");
+  EXPECT_EQ(new_cursor_position, 5U);
+
+  // Input is too long and contains non-digits. It should be cleaned and
+  // truncated.
+  EXPECT_EQ(controller()->FormatExpirationDateInput(
+                /*input=*/u"1a23b45", /*old_cursor_position=*/7,
+                /*new_cursor_position=*/new_cursor_position),
+            u"12/34");
+  EXPECT_EQ(new_cursor_position, 5U);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(SaveAndFillDialogControllerImplTest, IsValidCvc) {

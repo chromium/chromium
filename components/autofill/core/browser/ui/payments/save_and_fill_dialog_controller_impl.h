@@ -38,6 +38,10 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
   std::u16string GetInvalidCardNumberErrorMessage() const override;
   std::u16string GetInvalidCvcErrorMessage() const override;
   std::u16string GetInvalidNameOnCardErrorMessage() const override;
+  std::u16string FormatExpirationDateInput(
+      std::u16string_view input,
+      size_t old_cursor_position,
+      size_t& new_cursor_position) const override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   bool IsUploadSaveAndFill() const override;
   bool IsValidCreditCardNumber(std::u16string_view input_text) const override;

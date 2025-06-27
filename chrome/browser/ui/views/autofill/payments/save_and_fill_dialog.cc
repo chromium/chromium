@@ -84,6 +84,21 @@ void SaveAndFillDialog::ContentsChanged(views::Textfield* sender,
     name_on_card_data_.SetErrorState(
         /*is_valid_input=*/controller_->IsValidNameOnCard(new_contents),
         /*error_message=*/controller_->GetInvalidNameOnCardErrorMessage());
+  } else if (sender == &expiration_date_data_.GetInputTextField()) {
+    size_t new_cursor_position;
+
+    std::u16string formatted_input = controller_->FormatExpirationDateInput(
+        /*input=*/new_contents,
+        /*old_cursor_position=*/sender->GetCursorPosition(),
+        /*new_cursor_position=*/new_cursor_position);
+
+    // Only update the textfield and cursor if the formatting resulted in a
+    // change.
+    if (new_contents != formatted_input) {
+      sender->SetText(formatted_input);
+      sender->SelectSelectionModel(
+          gfx::SelectionModel(new_cursor_position, gfx::CURSOR_FORWARD));
+    }
   }
 }
 

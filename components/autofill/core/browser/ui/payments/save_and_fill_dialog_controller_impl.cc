@@ -76,6 +76,51 @@ SaveAndFillDialogControllerImpl::GetInvalidNameOnCardErrorMessage() const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_NAME_ON_CARD);
 }
+
+std::u16string SaveAndFillDialogControllerImpl::FormatExpirationDateInput(
+    std::u16string_view input,
+    size_t old_cursor_position,
+    size_t& new_cursor_position) const {
+  std::u16string cleaned_input;
+  for (char16_t c : input) {
+    if (base::IsAsciiDigit(c)) {
+      cleaned_input += c;
+    }
+  }
+
+  // Format input into `MM/YY` and restrict input to 5 characters.
+  std::u16string formatted_input =
+      cleaned_input.length() > 2
+          ? cleaned_input.substr(0, 2) + u"/" + cleaned_input.substr(2, 2)
+          : cleaned_input;
+
+  new_cursor_position = old_cursor_position;
+
+  if (input != formatted_input) {
+    // Scenario A: A slash was just inserted.
+    // This happens when the input has 2 characters (e.g.,`12`) and
+    // `formatted_input` becomes 4 characters (e.g., `12/3`) because the user
+    // typed a third digit.
+    if (formatted_input.length() == input.length() + 2 &&
+        old_cursor_position == 2) {
+      new_cursor_position = old_cursor_position + 1;
+    } else if (formatted_input.length() > input.length()) {
+      // Scenario B: Text length grew due to adding more digits.
+      new_cursor_position =
+          old_cursor_position + (formatted_input.length() - input.length());
+    } else {
+      // Scenario C: Text length shrank due to deletion or remained the same.
+      new_cursor_position = old_cursor_position;
+    }
+    // Ensure the calculated cursor position does not exceed the actual length
+    // of the new `formatted_input`. This is crucial for handling deletions or
+    // truncation, preventing out-of-bounds cursor placement.
+    new_cursor_position =
+        std::min(new_cursor_position, formatted_input.length());
+  }
+
+  return formatted_input;
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 bool SaveAndFillDialogControllerImpl::IsUploadSaveAndFill() const {
