@@ -3,7 +3,6 @@
     "dcheck_always_on": true,
     "enable_rust_mojo": true,
     "enable_rust_mojom_bindings": true,
-    "enable_rust_png": true,
     "is_component_build": false,
     "is_debug": false,
     "symbol_level": 1,

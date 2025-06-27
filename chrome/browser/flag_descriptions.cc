@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "media/gpu/buildflags.h"
 #include "pdf/buildflags.h"
-#include "skia/buildflags.h"
 
 // Keep in identical order as the header file, see the comment at the top
 // for formatting rules.
@@ -3631,11 +3630,9 @@ const char kRunningCompactDescription[] =
     "is running.";
 #endif
 
-#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 const char kRustyPngName[] = "Rust-based PNG image handling";
 const char kRustyPngDescription[] =
     "When enabled, uses Rust `png` crate to decode and encode PNG images.";
-#endif
 
 const char kQuicName[] = "Experimental QUIC protocol";
 const char kQuicDescription[] = "Enable experimental QUIC protocol support.";

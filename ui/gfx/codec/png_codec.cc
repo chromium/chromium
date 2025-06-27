@@ -12,8 +12,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "skia/buildflags.h"
 #include "skia/rusty_png_feature.h"
+#include "third_party/skia/experimental/rust_png/decoder/SkPngRustDecoder.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -23,10 +23,6 @@
 #include "third_party/zlib/zlib.h"
 #include "ui/gfx/codec/vector_wstream.h"
 #include "ui/gfx/geometry/size.h"
-
-#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
-#include "third_party/skia/experimental/rust_png/decoder/SkPngRustDecoder.h"
-#endif
 
 namespace gfx {
 
@@ -43,12 +39,7 @@ namespace {
 std::unique_ptr<SkCodec> CreatePngDecoder(std::unique_ptr<SkStream> stream,
                                           SkCodec::Result* result) {
   if (skia::IsRustyPngEnabled()) {
-#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
     return SkPngRustDecoder::Decode(std::move(stream), result);
-#else
-    // The `if` condition guarantees `SKIA_BUILD_RUST_PNG`.
-    NOTREACHED();
-#endif
   }
 
   return SkPngDecoder::Decode(std::move(stream), result);

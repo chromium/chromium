@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "png.h"
-#include "skia/buildflags.h"
 #include "skia/rusty_png_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
@@ -1998,7 +1997,6 @@ TEST_P(PNGTests, RecoveringToReadFirstFrameAfterSecondFrameFailure) {
   }
 }
 
-#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 INSTANTIATE_TEST_SUITE_P(RustEnabled,
                          AnimatedPNGTests,
                          ::testing::Values(RustFeatureState::kRustEnabled));
@@ -2008,7 +2006,6 @@ INSTANTIATE_TEST_SUITE_P(RustEnabled,
 INSTANTIATE_TEST_SUITE_P(RustEnabled,
                          StaticPNGTests,
                          ::testing::Values(RustFeatureState::kRustEnabled));
-#endif
 
 INSTANTIATE_TEST_SUITE_P(RustDisabled,
                          AnimatedPNGTests,

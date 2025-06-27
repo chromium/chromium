@@ -23,7 +23,6 @@
 #include "net/net_buildflags.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
-#include "skia/buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
 
 // This file declares strings used in chrome://flags. These messages are not
@@ -2083,10 +2082,8 @@ extern const char kRendererSideContentDecodingDescription[];
 extern const char kDeviceBoundSessionAccessObserverSharedRemoteName[];
 extern const char kDeviceBoundSessionAccessObserverSharedRemoteDescription[];
 
-#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 extern const char kRustyPngName[];
 extern const char kRustyPngDescription[];
-#endif
 
 extern const char kQuicName[];
 extern const char kQuicDescription[];

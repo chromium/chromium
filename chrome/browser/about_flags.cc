@@ -231,7 +231,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
-#include "skia/buildflags.h"
+#include "skia/rusty_png_feature.h"
 #include "storage/browser/blob/features.h"
 #include "storage/browser/quota/quota_features.h"
 #include "third_party/blink/public/common/features.h"
@@ -366,10 +366,6 @@
 #include "ui/views/views_features.h"
 #include "ui/views/views_switches.h"
 #endif  // defined(TOOLKIT_VIEWS)
-
-#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
-#include "skia/rusty_png_feature.h"
-#endif
 
 using flags_ui::FeatureEntry;
 using flags_ui::kDeprecated;
@@ -11734,11 +11730,9 @@ const FeatureEntry kFeatureEntries[] = {
          payments::facilitated::kSupportMultipleServerRequestsForPixPayments)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
     {"rusty-png", flag_descriptions::kRustyPngName,
      flag_descriptions::kRustyPngDescription, kOsAll,
      FEATURE_VALUE_TYPE(skia::kRustyPngFeature)},
-#endif
 
     {"autofill-enable-card-info-runtime-retrieval",
      flag_descriptions::kAutofillEnableCardInfoRuntimeRetrievalName,

@@ -43,7 +43,6 @@ def rust_fyi_configs(*args):
     return list(args) + [
         "enable_rust_mojo",
         "enable_rust_mojom_bindings",
-        "enable_rust_png",
     ]
 
 ci.builder(

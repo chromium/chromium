@@ -26,7 +26,6 @@
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "skia/buildflags.h"
 #include "skia/rusty_png_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libpng/png.h"
@@ -1135,12 +1134,9 @@ TEST_P(PNGCodecTest, DecodingTruncatedEXIFChunkIsSafe) {
   EXPECT_TRUE(bitmap.isNull());
 }
 
-#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 INSTANTIATE_TEST_SUITE_P(RustEnabled,
                          PNGCodecTest,
                          ::testing::Values(RustFeatureState::kRustEnabled));
-#endif
-
 INSTANTIATE_TEST_SUITE_P(RustDisabled,
                          PNGCodecTest,
                          ::testing::Values(RustFeatureState::kRustDisabled));

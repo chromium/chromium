@@ -31,7 +31,6 @@ import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//remoting/remoting_enable.gni")
 import("//services/on_device_model/on_device_model.gni")
-import("//skia/skia.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 import("//ui/base/ui_features.gni")
@@ -866,7 +865,7 @@ group("all_rust") {
       "//mojo/public/rust:mojo_rust_unittests",
     ]
   }
-  if (enable_rust_png && !is_cronet_build) {
+  if (!is_cronet_build) {
     deps += [ "//skia" ]
   }
 }

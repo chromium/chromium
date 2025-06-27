@@ -10,7 +10,6 @@ import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/rust/rust_static_library.gni")
 import("//gpu/vulkan/features.gni")
-import("//skia/skia.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/skia/gn/shared_sources.gni")
@@ -24,14 +23,10 @@ if (current_cpu == "arm") {
 if (current_cpu == "mipsel" || current_cpu == "mips64el") {
   import("//build/config/mips.gni")
 }
-if (enable_rust_png) {
-  import("//build/rust/rust_static_library.gni")
-}
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
-    "SKIA_BUILD_RUST_PNG=$enable_rust_png",
     "SKIA_SUPPORT_SKOTTIE=$skia_support_skottie",
     "SKIA_USE_DAWN=$skia_use_dawn",
     "SKIA_USE_METAL=$skia_use_metal",
@@ -352,8 +347,10 @@ component("skia") {
   public += skia_utils_chromium
   public += skia_discardable_memory_chromium
   public += skia_codec_public
+  public += skia_codec_rust_png_public
   public += skia_encode_public
   public += skia_encode_png_public
+  public += skia_encode_rust_png_public
   public += skia_encode_webp_public
 
   # The imported Skia gni source paths are made absolute by gn.
@@ -364,12 +361,15 @@ component("skia") {
   sources += skia_codec_shared
   sources += skia_codec_png_base
   sources += skia_codec_libpng_srcs
+  sources += skia_codec_rust_png
   sources += skia_utils_private
   sources += skia_xps_sources
   sources += skia_encode_srcs
   sources += skia_encode_png_base
   sources += skia_encode_libpng_srcs
+  sources += skia_encode_rust_png_srcs
   sources += skia_encode_webp_srcs
+
   sources += [
     "//third_party/skia/src/sfnt/SkOTTable_name.cpp",
     "//third_party/skia/src/sfnt/SkOTUtils.cpp",
@@ -492,6 +492,7 @@ component("skia") {
   all_dependent_configs = [ ":skia_config" ]
 
   deps += [
+    ":rust_png_ffi",
     ":skcms",
     ":skia_opts",
     ":skia_switches",
@@ -619,14 +620,6 @@ component("skia") {
       "SKOTTIE_TRIVIAL_FONTRUN_ITER",
     ]
   }
-
-  if (enable_rust_png) {
-    deps += [ ":rust_png_ffi" ]
-    public += skia_codec_rust_png_public
-    sources += skia_codec_rust_png
-    public += skia_encode_rust_png_public
-    sources += skia_encode_rust_png_srcs
-  }
 }
 
 component("skia_switches") {
@@ -641,31 +634,29 @@ component("skia_switches") {
   deps = [ "//base" ]
 }
 
-if (enable_rust_png) {
-  rust_static_library("rust_png_ffi") {
-    visibility = [ ":*" ]
-    allow_unsafe = true  # For FFI
-    crate_root = skia_codec_rust_png_ffi_crate_root
-    sources = skia_codec_rust_png_ffi_rs_srcs
-    cxx_bindings = skia_codec_rust_png_ffi_cxx_bridge_srcs
-    public_deps = [ ":rust_png_ffi_cpp" ]
-    deps = [ "//third_party/rust/png/v0_18:lib" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      ":skia_config",
-      "//build/config/compiler:no_chromium_code",
-    ]
-  }
+rust_static_library("rust_png_ffi") {
+  visibility = [ ":*" ]
+  allow_unsafe = true  # For FFI
+  crate_root = skia_codec_rust_png_ffi_crate_root
+  sources = skia_codec_rust_png_ffi_rs_srcs
+  cxx_bindings = skia_codec_rust_png_ffi_cxx_bridge_srcs
+  public_deps = [ ":rust_png_ffi_cpp" ]
+  deps = [ "//third_party/rust/png/v0_18:lib" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":skia_config",
+    "//build/config/compiler:no_chromium_code",
+  ]
+}
 
-  source_set("rust_png_ffi_cpp") {
-    visibility = [ ":*" ]
-    public = skia_codec_rust_png_ffi_cpp_hdrs
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      ":skia_config",
-      "//build/config/compiler:no_chromium_code",
-    ]
-  }
+source_set("rust_png_ffi_cpp") {
+  visibility = [ ":*" ]
+  public = skia_codec_rust_png_ffi_cpp_hdrs
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":skia_config",
+    "//build/config/compiler:no_chromium_code",
+  ]
 }
 
 # Template for things that are logically part of :skia, but need to be split out

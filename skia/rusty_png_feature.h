@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
-#include "skia/buildflags.h"
 #include "third_party/skia/include/encode/SkEncoder.h"
 
 class SkPixmap;
@@ -25,19 +24,12 @@ namespace skia {
 // it on/off, but product code should instead just call `IsRustyPngEnabled`.
 SK_API BASE_DECLARE_FEATURE(kRustyPngFeature);
 
-// Returns true if Rust should be used for PNG decoding:
-// 1) the GN-level `enable_rust_png` is true.
-// *and*
-// 2) the `"RustyPng"` base::Feature has been enabled.
+// Returns true if Rust should be used for PNG decoding.
 //
 // See also  https://crbug.com/40278281 and the "Rollout plan" in
 // https://docs.google.com/document/d/1glx5ue5JDlCld5WzWgTOGK3wsMErQFnkY5N5Dsbi91Y
 inline bool IsRustyPngEnabled() {
-#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
   return base::FeatureList::IsEnabled(kRustyPngFeature);
-#else
-  return false;
-#endif
 }
 
 // A helper that will encode a PNG image using either the `libpng`-based
