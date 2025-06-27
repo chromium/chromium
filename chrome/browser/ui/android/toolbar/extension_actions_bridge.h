@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_action_icon_factory.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace extensions {
 
@@ -48,7 +49,9 @@ class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
       const ToolbarActionsModel::ActionId& action_id,
       content::WebContents* web_contents);
   bool ExtensionsEnabled(JNIEnv* env);
-  bool HandleKeyDownEvent(JNIEnv* env, const ui::KeyEventAndroid& key_event);
+  jni_zero::ScopedJavaLocalRef<jobject> HandleKeyDownEvent(
+      JNIEnv* env,
+      const ui::KeyEventAndroid& key_event);
 
   // ToolbarActionsModel::Observer:
   void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& id) override;

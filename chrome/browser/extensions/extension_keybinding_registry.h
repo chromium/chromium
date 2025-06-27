@@ -90,7 +90,9 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   // Overridden by platform specific implementations to provide additional
   // registration (which varies between platforms). Returns whether the
   // accelerator was registered.
-  virtual bool RegisterAccelerator(const ui::Accelerator& accelerator) = 0;
+  virtual bool RegisterAccelerator(const ui::Accelerator& accelerator,
+                                   const ExtensionId& extension_id,
+                                   const std::string& command_name) = 0;
   // Overridden by platform specific implementations to provide additional
   // unregistration (which varies between platforms).
   virtual void UnregisterAccelerator(const ui::Accelerator& accelerator) {}
@@ -98,12 +100,13 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   // Called when shortcut handling is suspended or resumed.
   virtual void OnShortcutHandlingSuspended(bool suspended) {}
 
+  // Whether to ignore this command. Action related commands are currently
+  // ignored by default assuming they are handled elsewhere, but it is
+  // overridable.
+  virtual bool ShouldIgnoreCommand(const std::string& command) const;
+
   // Make sure all extensions registered have keybindings added.
   void Init();
-
-  // Whether to ignore this command. Only browserAction commands and pageAction
-  // commands are currently ignored, since they are handled elsewhere.
-  bool ShouldIgnoreCommand(const std::string& command) const;
 
   // Fire event targets which the specified `accelerator` is binding with.
   // Returns true if we can find the appropriate event targets.

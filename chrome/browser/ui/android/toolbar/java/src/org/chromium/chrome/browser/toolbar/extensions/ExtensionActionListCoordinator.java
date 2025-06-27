@@ -28,6 +28,8 @@ import org.chromium.ui.modelutil.ViewGroupAdapter;
  */
 @NullMarked
 public class ExtensionActionListCoordinator implements Destroyable {
+    private final LinearLayout mContainer;
+    private final ModelList mModels;
     private final ExtensionActionListMediator mMediator;
     private final ViewGroupAdapter mAdapter;
     @Nullable private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
@@ -38,12 +40,14 @@ public class ExtensionActionListCoordinator implements Destroyable {
             WindowAndroid windowAndroid,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<Tab> currentTabSupplier) {
-        ModelList models = new ModelList();
+        mContainer = container;
+
+        mModels = new ModelList();
         mMediator =
                 new ExtensionActionListMediator(
-                        context, windowAndroid, models, profileSupplier, currentTabSupplier);
+                        context, windowAndroid, mModels, profileSupplier, currentTabSupplier);
         mAdapter =
-                new ViewGroupAdapter.Builder(container, models)
+                new ViewGroupAdapter.Builder(mContainer, mModels)
                         .registerType(
                                 ListItemType.EXTENSION_ACTION,
                                 parent ->
@@ -62,5 +66,15 @@ public class ExtensionActionListCoordinator implements Destroyable {
         mAdapter.destroy();
         mMediator.destroy();
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+    }
+
+    /** Performs a click on the button for the given action. */
+    public void click(String actionId) {
+        for (int i = 0; i < mModels.size(); i++) {
+            if (mModels.get(i).model.get(ExtensionActionButtonProperties.ID).equals(actionId)) {
+                mContainer.getChildAt(i).performClick();
+                return;
+            }
+        }
     }
 }

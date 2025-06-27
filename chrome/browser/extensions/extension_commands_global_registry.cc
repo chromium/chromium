@@ -107,7 +107,9 @@ bool ExtensionCommandsGlobalRegistry::PopulateCommands(
 }
 
 bool ExtensionCommandsGlobalRegistry::RegisterAccelerator(
-    const ui::Accelerator& accelerator) {
+    const ui::Accelerator& accelerator,
+    const ExtensionId& extension_id,
+    const std::string& command_name) {
   auto* instance = ui::GlobalAcceleratorListener::GetInstance();
   if (!instance) {
     return false;

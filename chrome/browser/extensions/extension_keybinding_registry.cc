@@ -80,7 +80,8 @@ void ExtensionKeybindingRegistry::AddExtensionKeybindings(
     const ui::Accelerator& accelerator = command.second.accelerator();
 
     if (!IsAcceleratorRegistered(accelerator)) {
-      if (!RegisterAccelerator(accelerator)) {
+      if (!RegisterAccelerator(accelerator, extension->id(),
+                               command.second.command_name())) {
         continue;
       }
     }
@@ -144,6 +145,11 @@ void ExtensionKeybindingRegistry::RemoveExtensionKeybinding(
   }
 }
 
+bool ExtensionKeybindingRegistry::ShouldIgnoreCommand(
+    const std::string& command) const {
+  return Command::IsActionRelatedCommand(command);
+}
+
 void ExtensionKeybindingRegistry::Init() {
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   if (!registry)
@@ -156,10 +162,6 @@ void ExtensionKeybindingRegistry::Init() {
   }
 }
 
-bool ExtensionKeybindingRegistry::ShouldIgnoreCommand(
-    const std::string& command) const {
-  return Command::IsActionRelatedCommand(command);
-}
 
 bool ExtensionKeybindingRegistry::NotifyEventTargets(
     const ui::Accelerator& accelerator) {

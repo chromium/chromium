@@ -41,7 +41,9 @@ bool ExtensionKeybindingRegistryViews::PopulateCommands(
 }
 
 bool ExtensionKeybindingRegistryViews::RegisterAccelerator(
-    const ui::Accelerator& accelerator) {
+    const ui::Accelerator& accelerator,
+    const extensions::ExtensionId& extension_id,
+    const std::string& command_name) {
   focus_manager_->RegisterAccelerator(accelerator,
                                       kExtensionAcceleratorPriority, this);
   return true;

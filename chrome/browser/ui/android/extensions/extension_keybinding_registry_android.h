@@ -19,8 +19,9 @@ class KeyEventAndroid;
 namespace extensions {
 
 // This class handles keyboard accelerators for extensions on Android.
-class ExtensionKeybindingRegistryAndroid
-    : public extensions::ExtensionKeybindingRegistry {
+// Unlike other subclasses, it manages all the command types including action
+// related commands.
+class ExtensionKeybindingRegistryAndroid : public ExtensionKeybindingRegistry {
  public:
   explicit ExtensionKeybindingRegistryAndroid(content::BrowserContext* context);
 
@@ -31,19 +32,26 @@ class ExtensionKeybindingRegistryAndroid
 
   ~ExtensionKeybindingRegistryAndroid() override;
 
-  // Handles the key down event. It returns whether the key event was handled.
-  // It immediately returns false if the given key event should not intercept.
-  bool HandleKeyDownEvent(const ui::KeyEventAndroid& key_event);
+  // Handles the key down event. If the corresponding command is a regular
+  // command (not extension action), it handles the command and returns true. If
+  // the command is an extension action command, it returns the extension id. If
+  // no command matches, it returns false.
+  std::variant<bool, std::string> HandleKeyDownEvent(
+      const ui::KeyEventAndroid& key_event);
 
  private:
   // Overridden from ExtensionKeybindingRegistry:
-  bool PopulateCommands(const extensions::Extension* extension,
+  bool PopulateCommands(const Extension* extension,
                         ui::CommandMap* commands) override;
-  bool RegisterAccelerator(const ui::Accelerator& accelerator) override;
+  bool RegisterAccelerator(const ui::Accelerator& accelerator,
+                           const ExtensionId& extension_id,
+                           const std::string& command_name) override;
   void UnregisterAccelerator(const ui::Accelerator& accelerator) override;
   void OnShortcutHandlingSuspended(bool suspended) override;
+  bool ShouldIgnoreCommand(const std::string& command) const override;
 
   std::set<ui::Accelerator> active_accelerators_;
+  std::map<ui::Accelerator, ExtensionId> active_action_accelerators_;
   bool is_shortcut_handling_suspended_ = false;
 };
 

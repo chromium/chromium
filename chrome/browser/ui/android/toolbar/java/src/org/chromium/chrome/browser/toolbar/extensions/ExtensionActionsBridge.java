@@ -39,6 +39,21 @@ public class ExtensionActionsBridge {
         return ExtensionActionsBridgeJni.get().get(profile);
     }
 
+    /** Represents the result of handling a key event. */
+    public static class HandleKeyEventResult {
+        /** Whether the key event has been handled in C++. */
+        public final boolean handled;
+
+        /** The action to trigger, or empty if no action should be triggered. */
+        public final String actionId;
+
+        @CalledByNative("HandleKeyEventResult")
+        private HandleKeyEventResult(boolean handled, @JniType("std::string") String actionId) {
+            this.handled = handled;
+            this.actionId = actionId;
+        }
+    }
+
     @CalledByNative
     private void destroy() {
         assert mNativeExtensionActionsBridge != 0;
@@ -104,12 +119,8 @@ public class ExtensionActionsBridge {
         return ExtensionActionsBridgeJni.get().extensionsEnabled(mNativeExtensionActionsBridge);
     }
 
-    /**
-     * Handles the key down event.
-     *
-     * @return Whether the event has been consumed.
-     */
-    public boolean handleKeyDownEvent(KeyEvent event) {
+    /** Handles the key down event and returns the result. */
+    public HandleKeyEventResult handleKeyDownEvent(KeyEvent event) {
         return ExtensionActionsBridgeJni.get()
                 .handleKeyDownEvent(mNativeExtensionActionsBridge, event);
     }
@@ -220,7 +231,7 @@ public class ExtensionActionsBridge {
 
         boolean extensionsEnabled(long nativeExtensionActionsBridge);
 
-        boolean handleKeyDownEvent(
+        HandleKeyEventResult handleKeyDownEvent(
                 long nativeExtensionActionsBridge,
                 @JniType("ui::KeyEventAndroid") KeyEvent keyEvent);
     }

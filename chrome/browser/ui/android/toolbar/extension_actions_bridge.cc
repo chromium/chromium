@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/android/toolbar/extension_actions_bridge.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/android/jni_string.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -15,6 +16,8 @@
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "ui/events/android/key_event_android.h"
+#include "ui/events/event.h"
+#include "ui/events/platform_event.h"
 #include "ui/gfx/android/java_bitmap.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -146,10 +149,18 @@ bool ExtensionActionsBridge::ExtensionsEnabled(JNIEnv* env) {
   return extension_management->ExtensionsEnabledForDesktopAndroid();
 }
 
-bool ExtensionActionsBridge::HandleKeyDownEvent(
+jni_zero::ScopedJavaLocalRef<jobject>
+ExtensionActionsBridge::HandleKeyDownEvent(
     JNIEnv* env,
     const ui::KeyEventAndroid& key_event) {
-  return keybinding_registry_->HandleKeyDownEvent(key_event);
+  std::variant<bool, ToolbarActionsModel::ActionId> result =
+      keybinding_registry_->HandleKeyDownEvent(key_event);
+  if (result.index() == 0) {
+    return Java_HandleKeyEventResult_Constructor(env, std::get<bool>(result),
+                                                 "");
+  }
+  return Java_HandleKeyEventResult_Constructor(
+      env, false, std::get<ToolbarActionsModel::ActionId>(result));
 }
 
 void ExtensionActionsBridge::OnToolbarActionAdded(

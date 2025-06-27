@@ -75,7 +75,9 @@ class ExtensionCommandsGlobalRegistry
   // Overridden from ExtensionKeybindingRegistry:
   bool PopulateCommands(const Extension* extension,
                         ui::CommandMap* commands) override;
-  bool RegisterAccelerator(const ui::Accelerator& accelerator) override;
+  bool RegisterAccelerator(const ui::Accelerator& accelerator,
+                           const ExtensionId& extension_id,
+                           const std::string& command_name) override;
   void UnregisterAccelerator(const ui::Accelerator& accelerator) override;
   void OnShortcutHandlingSuspended(bool suspended) override;
 
