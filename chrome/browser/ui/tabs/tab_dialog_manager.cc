@@ -103,7 +103,7 @@ gfx::Rect GetModalDialogBounds(views::Widget* widget,
     // Align the first row of pixels inside the border. This is the apparent top
     // of the dialog.
     position.set_y(position.y() -
-                  widget->non_client_view()->frame_view()->GetInsets().top());
+                   widget->non_client_view()->frame_view()->GetInsets().top());
   }
 
   gfx::Rect dialog_bounds(position, size);
@@ -145,9 +145,10 @@ gfx::Rect GetModalDialogBounds(views::Widget* widget,
   return dialog_bounds;
 }
 
-void UpdateModalDialogPosition(views::Widget* widget,
-                               BrowserWindowInterface* host_browser_window,
-                               const gfx::Size& size) {
+void UpdateModalDialogBoundsInternal(
+    views::Widget* widget,
+    BrowserWindowInterface* host_browser_window,
+    const gfx::Size& size) {
   // Do not forcibly update the dialog widget position if it is being dragged.
   if (widget->HasCapture()) {
     return;
@@ -176,9 +177,10 @@ void ConfigureDesiredBoundsDelegate(
     views::Widget* widget,
     BrowserWindowInterface* host_browser_window) {
   views::WidgetDelegate* delegate = widget->widget_delegate();
-  // TODO(kylixrd): Audit other usages of this API and determine whether to make
-  // it exclusive for use here. Currently used in BubbleDialogDelegate and
-  // shouldn't ever be used for a tab-modal dialog.
+  // This callback is invoked in two cases:
+  // 1. by auto-resizing (Widget::is_autosized()) widgets when the layout is
+  // invalidated.
+  // 2. by BubbleDialogDelegate::SizeToContents().
   delegate->set_desired_bounds_delegate(base::BindRepeating(
       [](views::Widget* widget,
          BrowserWindowInterface* host_browser_window) -> gfx::Rect {
@@ -203,12 +205,15 @@ bool GetDialogWidgetVisibility(bool activated, bool minimized) {
 // before the tab moves between browser windows.
 class BrowserWindowWidgetObserver : public views::WidgetObserver {
  public:
-  BrowserWindowWidgetObserver(TabInterface* tab_interface,
+  BrowserWindowWidgetObserver(TabDialogManager* tab_dialog_manager,
+                              TabInterface* tab_interface,
                               views::Widget* dialog_widget)
-      : tab_(tab_interface), dialog_widget_(dialog_widget) {
+      : tab_dialog_manager_(tab_dialog_manager),
+        tab_(tab_interface),
+        dialog_widget_(dialog_widget) {
     CHECK(dialog_widget_);
     browser_window_widget_observation_.Observe(
-        tab_->GetBrowserWindowInterface()->TopContainer()->GetWidget());
+        tab_dialog_manager_->GetHostWidget());
   }
   BrowserWindowWidgetObserver(const BrowserWindowWidgetObserver&) = delete;
   BrowserWindowWidgetObserver& operator=(const BrowserWindowWidgetObserver&) =
@@ -219,9 +224,7 @@ class BrowserWindowWidgetObserver : public views::WidgetObserver {
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override {
     if (dialog_widget_->IsVisible()) {
-      UpdateModalDialogPosition(
-          dialog_widget_, tab_->GetBrowserWindowInterface(),
-          dialog_widget_->GetRootView()->GetPreferredSize({}));
+      tab_dialog_manager_->UpdateModalDialogBounds();
     }
   }
 
@@ -232,6 +235,8 @@ class BrowserWindowWidgetObserver : public views::WidgetObserver {
   }
 
  private:
+  const raw_ptr<TabDialogManager> tab_dialog_manager_;
+
   // The tab that owns this dialog manager.
   raw_ptr<TabInterface> tab_;
 
@@ -273,8 +278,7 @@ void TabDialogManager::ShowDialog(views::Widget* widget,
   params_ = std::move(params);
   auto* browser_window_interface = tab_interface_->GetBrowserWindowInterface();
   ConfigureDesiredBoundsDelegate(widget_.get(), browser_window_interface);
-  UpdateModalDialogPosition(widget_.get(), browser_window_interface,
-                            widget_->GetRootView()->GetPreferredSize({}));
+  UpdateModalDialogBounds();
   widget_->SetNativeWindowProperty(
       views::kWidgetIdentifierKey,
       const_cast<void*>(
@@ -291,7 +295,7 @@ void TabDialogManager::ShowDialog(views::Widget* widget,
       std::make_unique<TabDialogWidgetObserver>(this, widget_.get());
   showing_modal_ui_ = tab_interface_->ShowModalUI();
   browser_window_widget_observer_ =
-      std::make_unique<BrowserWindowWidgetObserver>(tab_interface_,
+      std::make_unique<BrowserWindowWidgetObserver>(this, tab_interface_,
                                                     widget_.get());
   bool minimized = browser_window_interface->GetWindow()->IsMinimized();
   bool activated = tab_interface_->IsActivated();
@@ -339,6 +343,16 @@ views::Widget* TabDialogManager::GetHostWidget() const {
       ->GetWidget();
 }
 
+void TabDialogManager::UpdateModalDialogBounds() {
+  if (!widget_) {
+    return;
+  }
+
+  UpdateModalDialogBoundsInternal(widget_.get(),
+                                  tab_interface_->GetBrowserWindowInterface(),
+                                  widget_->GetRootView()->GetPreferredSize({}));
+}
+
 void TabDialogManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!widget_) {
@@ -373,11 +387,9 @@ void TabDialogManager::DidFinishNavigation(
 
 void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
   if (widget_) {
-    UpdateModalDialogPosition(widget_.get(),
-                              tab_interface_->GetBrowserWindowInterface(),
-                              widget_->GetRootView()->GetPreferredSize({}));
+    UpdateModalDialogBounds();
     browser_window_widget_observer_ =
-        std::make_unique<BrowserWindowWidgetObserver>(tab_interface_,
+        std::make_unique<BrowserWindowWidgetObserver>(this, tab_interface_,
                                                       widget_.get());
     // Check if the tab was detached and dragged to a new browser window. This
     // ensures the widget is properly reparented.

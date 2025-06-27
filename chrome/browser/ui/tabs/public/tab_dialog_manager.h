@@ -86,6 +86,9 @@ class TabDialogManager : public content::WebContentsObserver {
   // as the parent for tab-scoped widgets.
   views::Widget* GetHostWidget() const;
 
+  // Updates the bounds of the modal dialog.
+  void UpdateModalDialogBounds();
+
  private:
   // Overridden from content::WebContentObserver:
   void DidFinishNavigation(

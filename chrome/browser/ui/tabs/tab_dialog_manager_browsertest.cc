@@ -55,6 +55,27 @@ std::unique_ptr<views::Widget> CreateWidgetWithNoNonClientView() {
   return widget;
 }
 
+std::unique_ptr<views::Widget> CreateAutoresizeWidget() {
+  auto content_view = std::make_unique<views::View>();
+  content_view->SetPreferredSize(gfx::Size(500, 500));
+  content_view->SetBackground(views::CreateSolidBackground(SK_ColorBLUE));
+
+  views::Widget::InitParams widget_params(
+      views::Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS);
+  widget_params.bounds = gfx::Rect({0, 0}, content_view->GetPreferredSize());
+  widget_params.autosize = true;
+
+  auto widget = std::make_unique<views::Widget>();
+  widget->Init(std::move(widget_params));
+  CHECK_EQ(widget->non_client_view(), nullptr);
+
+  content_view->SetProperty(views::kElementIdentifierKey,
+                            kWidgetContentsViewElementId);
+  widget->SetContentsView(std::move(content_view));
+  return widget;
+}
+
 std::unique_ptr<views::Widget> CreateWidgetWithDialogModel() {
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetTitle(u"Test Dialog Model")
@@ -229,6 +250,42 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
         ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kDifferentSiteUrl));
       }),
       InAnyContext(EnsurePresent(kWidgetContentsViewElementId)));
+}
+
+// Tests that the widget is repositioned after its preferred size is changed.
+IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
+                       ChangePreferredSizeAfterShow) {
+  std::unique_ptr<views::Widget> widget;
+  // `kInitialSize` is the same as the size defined in CreateAutoresizeWidget().
+  const gfx::Size kInitialSize(500, 500);
+  const gfx::Size kNewSize(200, 200);
+  gfx::Point initial_origin;
+
+  RunTestSequence(
+      Do([&, this]() {
+        widget = CreateAutoresizeWidget();
+        GetTabDialogManager()->ShowDialog(
+            widget.get(), std::make_unique<tabs::TabDialogManager::Params>());
+      }),
+      InAnyContext(WaitForShow(kWidgetContentsViewElementId)),
+      CheckResult([&]() { return widget && widget->IsVisible(); }, true,
+                  "Verify widget is visible"),
+      CheckResult(
+          [&]() { return widget->GetClientAreaBoundsInScreen().size(); },
+          kInitialSize, "Verify initial size"),
+      Do([&]() {
+        initial_origin = widget->GetClientAreaBoundsInScreen().origin();
+        widget->GetContentsView()->SetPreferredSize(kNewSize);
+      }),
+      CheckResult(
+          [&]() { return widget->GetClientAreaBoundsInScreen().size(); },
+          kNewSize, "Verify new size"),
+      Check(
+          [&]() {
+            return widget->GetClientAreaBoundsInScreen().origin() !=
+                   initial_origin;
+          },
+          "Verify origin is updated"));
 }
 
 class TabDialogManagerPixelTest : public DialogBrowserTest {
