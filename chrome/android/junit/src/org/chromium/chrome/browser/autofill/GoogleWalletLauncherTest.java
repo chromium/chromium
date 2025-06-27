@@ -56,7 +56,7 @@ public class GoogleWalletLauncherTest {
                 new ComponentName(
                         GoogleWalletLauncher.GOOGLE_WALLET_PACKAGE_NAME,
                         GoogleWalletLauncher.GOOGLE_WALLET_ACTIVITY_NAME);
-        List<ResolveInfo> resolveInfos = createResolvedInfoForWallet(walletActivityComponent);
+        List<ResolveInfo> resolveInfos = createResolvedInfo(walletActivityComponent);
         when(mPackageManager.queryIntentActivities(any(Intent.class), anyInt()))
                 .thenReturn(resolveInfos);
 
@@ -78,11 +78,40 @@ public class GoogleWalletLauncherTest {
         assertEquals(GoogleWalletLauncher.GOOGLE_WALLET_PASSES_URL, cctIntent.getDataString());
     }
 
-    private static List<ResolveInfo> createResolvedInfoForWallet(
-            ComponentName walletActivityComponent) {
+    @Test
+    public void testOpenGoogleWalletPassesSettings_walletAppInstalled_opensApp() {
+        ComponentName component =
+                new ComponentName(
+                        GoogleWalletLauncher.GMS_CORE_PACKAGE_NAME,
+                        GoogleWalletLauncher.GOOGLE_PAY_ACTIVITY_NAME);
+        List<ResolveInfo> resolveInfos = createResolvedInfo(component);
+        when(mPackageManager.queryIntentActivities(any(Intent.class), anyInt()))
+                .thenReturn(resolveInfos);
+
+        GoogleWalletLauncher.openGoogleWalletPassesSettings(mActivity, mPackageManager);
+
+        ShadowActivity shadowActivity = Shadows.shadowOf(mActivity);
+        Intent walletAppIntent = shadowActivity.getNextStartedActivity();
+        assertNotNull(walletAppIntent);
+        assertEquals(component, walletAppIntent.getComponent());
+    }
+
+    @Test
+    public void testOpenGoogleWalletPassesSettings_walletAppNotInstalled_opensCct() {
+        GoogleWalletLauncher.openGoogleWalletPassesSettings(mActivity, mPackageManager);
+
+        ShadowActivity shadowActivity = Shadows.shadowOf(mActivity);
+        Intent cctIntent = shadowActivity.getNextStartedActivity();
+        assertNotNull(cctIntent);
+        assertEquals(
+                GoogleWalletLauncher.GOOGLE_WALLET_MANAGE_PASSES_DATA_URL,
+                cctIntent.getDataString());
+    }
+
+    private static List<ResolveInfo> createResolvedInfo(ComponentName componentName) {
         ActivityInfo activityInfo = new ActivityInfo();
-        activityInfo.packageName = walletActivityComponent.getPackageName();
-        activityInfo.name = walletActivityComponent.getClassName();
+        activityInfo.packageName = componentName.getPackageName();
+        activityInfo.name = componentName.getClassName();
         ResolveInfo resolveInfo = new ResolveInfo();
         resolveInfo.activityInfo = activityInfo;
         List<ResolveInfo> resolveInfos = new ArrayList();

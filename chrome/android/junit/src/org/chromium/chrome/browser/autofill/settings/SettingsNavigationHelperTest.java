@@ -5,9 +5,7 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -64,23 +62,6 @@ public class SettingsNavigationHelperTest {
         assertTrue(SettingsNavigationHelper.showAutofillCreditCardSettings(mMockContext));
         assertTrue(mActionTester.getActions().contains("AutofillCreditCardsViewed"));
         verify(mMockLauncher).startSettings(mMockContext, AutofillPaymentMethodsFragment.class);
-    }
-
-    @Test
-    @SmallTest
-    public void testLaunchesGoogleWalletSettings() {
-        SettingsNavigationHelper.showGoogleWalletSettings(mMockContext);
-        verify(mMockLauncher)
-                .startSettings(
-                        eq(mMockContext),
-                        eq(AutofillPaymentMethodsFragment.class),
-                        mBundleCaptor.capture());
-
-        Bundle bundle = mBundleCaptor.getValue();
-        assertNotNull(bundle);
-        assertTrue(
-                bundle.keySet()
-                        .contains(AutofillPaymentMethodsFragment.EXTRA_FOCUS_LOYALTY_CARD_PREF));
     }
 
     @Test

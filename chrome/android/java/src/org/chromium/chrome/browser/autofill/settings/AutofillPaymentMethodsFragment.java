@@ -82,8 +82,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     static final String PREF_CARD_BENEFITS = "card_benefits";
     private static final String PREF_PAYMENT_APPS = "payment_apps";
     static final String PREF_LOYALTY_CARDS = "loyalty_cards";
-    // The constant used to optionally scroll to the loyalty card management pref.
-    static final String EXTRA_FOCUS_LOYALTY_CARD_PREF = "focus_loyalty_card_pref";
 
     @VisibleForTesting
     static final String PREF_FINANCIAL_ACCOUNTS_MANAGEMENT = "financial_accounts_management";
@@ -113,11 +111,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         screen.setShouldUseGeneratedIds(false);
 
         setPreferenceScreen(screen);
-
-        Bundle arguments = getArguments();
-        if (arguments != null && arguments.keySet().contains(EXTRA_FOCUS_LOYALTY_CARD_PREF)) {
-            scrollToPreference(PREF_LOYALTY_CARDS);
-        }
     }
 
     @Override

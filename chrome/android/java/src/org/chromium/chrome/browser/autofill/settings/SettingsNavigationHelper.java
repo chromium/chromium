@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import org.jni_zero.CalledByNative;
 
@@ -49,19 +48,6 @@ public class SettingsNavigationHelper {
         SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(context, AutofillPaymentMethodsFragment.class);
         return true;
-    }
-
-    /**
-     * Shows the loyalty card management pref in the payments settings fragment.
-     *
-     * @param context The {@link Context} required to start the settings page.
-     */
-    public static void showGoogleWalletSettings(Context context) {
-        // TODO: crbug.com/421839554 - Record user action for this scenario.
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(AutofillPaymentMethodsFragment.EXTRA_FOCUS_LOYALTY_CARD_PREF, true);
-        SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(context, AutofillPaymentMethodsFragment.class, bundle);
     }
 
     @CalledByNative
