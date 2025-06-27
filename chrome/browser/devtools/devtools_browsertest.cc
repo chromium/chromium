@@ -1060,25 +1060,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestShowScriptsTab) {
 }
 
 // Tests recorder panel showing.
-// TODO(crbug.com/331650494): Test is flaky on Linux debug build.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_TestShowRecorderTab DISABLED_TestShowRecorderTab
-#else
-#define MAYBE_TestShowRecorderTab TestShowRecorderTab
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestShowRecorderTab) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestShowRecorderTab) {
   RunTest("testShowRecorderTab", kDebuggerTestPage);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/331650494): Flaky on Linux debug build.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_TestDevToolsExtensionAPI DISABLED_TestDevToolsExtensionAPI
-#else
-#define MAYBE_TestDevToolsExtensionAPI TestDevToolsExtensionAPI
-#endif
 // Tests that chrome.devtools extension is correctly exposed.
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, MAYBE_TestDevToolsExtensionAPI) {
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestDevToolsExtensionAPI) {
   LoadExtension("devtools_extension");
   RunTest("waitForTestResultsInConsole", kArbitraryPage);
 }
@@ -1177,9 +1165,8 @@ INSTANTIATE_TEST_SUITE_P(ForceUpdateOn,
 // navigated back to a devtools extension page, it gets put back in the devtools
 // process.
 // http://crbug.com/570483
-// TODO(crbug.com/331650494): Enable once the test is fixed.
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       DISABLED_HttpIframeInDevToolsExtensionPanel) {
+                       HttpIframeInDevToolsExtensionPanel) {
   // Install the dynamically-generated extension.
   const Extension* extension =
       LoadExtensionForTest("Devtools Extension", "panel_devtools_page.html",
@@ -1537,16 +1524,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 // Tests that if a devtools extension's devtools panel page has a subframe to a
 // page for another devtools extension, the subframe is rendered in the devtools
 // process as well.  http://crbug.com/570483
-// TODO(crbug.com/331650494): Flaky on Linux debug build.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_DevToolsExtensionInDevToolsExtension \
-  DISABLED_DevToolsExtensionInDevToolsExtension
-#else
-#define MAYBE_DevToolsExtensionInDevToolsExtension \
-  DevToolsExtensionInDevToolsExtension
-#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       MAYBE_DevToolsExtensionInDevToolsExtension) {
+                       DevToolsExtensionInDevToolsExtension) {
   // Install the dynamically-generated extension.
   const Extension* devtools_b_extension =
       LoadExtensionForTest("Devtools Extension B", "simple_devtools_page.html",
@@ -1949,14 +1928,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                         "/simple_test_page.html"}));
 }
 
-// TODO(crbug.com/331650494): Flaky on Linux debug build.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_CantInspectRemoteNewTabPage DISABLED_CantInspectRemoteNewTabPage
-#else
-#define MAYBE_CantInspectRemoteNewTabPage CantInspectRemoteNewTabPage
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       MAYBE_CantInspectRemoteNewTabPage) {
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectRemoteNewTabPage) {
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(
@@ -1981,16 +1953,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
           base::StrCat({kArbitraryPage, "#", data.new_tab_url}));
 }
 
-// TODO(crbug.com/331650494): Flaky on linux
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_CantInspectViewSourceComponentExtension \
-  DISABLED_CantInspectViewSourceComponentExtension
-#else
-#define MAYBE_CantInspectViewSourceComponentExtension \
-  CantInspectViewSourceComponentExtension
-#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       MAYBE_CantInspectViewSourceComponentExtension) {
+                       CantInspectViewSourceComponentExtension) {
   std::string extension_id = BuildComponentExtension();
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",
@@ -2212,16 +2176,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
   Run(false, "file:");
 }
 
-// TODO(crbug.com/331650494): Flaky on Linux debug build.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_CantGetFileResourceWithoutFileAccessMixedCase \
-  DISABLED_CantGetFileResourceWithoutFileAccessMixedCase
-#else
-#define MAYBE_CantGetFileResourceWithoutFileAccessMixedCase \
-  CantGetFileResourceWithoutFileAccessMixedCase
-#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
-                       MAYBE_CantGetFileResourceWithoutFileAccessMixedCase) {
+                       CantGetFileResourceWithoutFileAccessMixedCase) {
   Run(false, "fILe:");
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -3285,13 +3241,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest, InspectElement) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
 
-// TODO(crbug.com/331650494): Test is flaky on Linux debug build.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_InspectElement DISABLED_InspectElement
-#else
-#define MAYBE_InspectElement InspectElement
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_InspectElement) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, InspectElement) {
   GURL url(
       embedded_test_server()->GetURL("a.com", "/devtools/oopif_frame.html"));
 
@@ -3491,21 +3441,15 @@ class DevToolsExtensionHostsPolicyTest : public DevToolsExtensionTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/331650494): Flakily times out on slow builders like debug.
-#if defined(MEMORY_SANITIZER) || !defined(NDEBUG)
-#define MAYBE_CantInspectBlockedHost DISABLED_CantInspectBlockedHost
-#else
-#define MAYBE_CantInspectBlockedHost CantInspectBlockedHost
-#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionHostsPolicyTest,
-                       MAYBE_CantInspectBlockedHost) {
+                       CantInspectBlockedHost) {
   GURL url(embedded_test_server()->GetURL("example.com", kArbitraryPage));
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",
           base::StrCat({kArbitraryPage, "#", url.spec()}));
 }
 
-// TODO(crbug.com/331650494): Very flaky on slower builds like memory sanitizer.
+// Too slow on MSAN builds
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
 #define MAYBE_CantInspectBlockedSubdomainHost \
   DISABLED_CantInspectBlockedSubdomainHost
@@ -3613,29 +3557,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, SourceMapsFromExtension) {
   CloseDevToolsWindow();
 }
 
-// TODO(crbug.com/331650494): Flaky on Linux debug build.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_SourceMapsFromDevtools DISABLED_SourceMapsFromDevTools
-#else
-#define MAYBE_SourceMapsFromDevtools SourceMapsFromDevTools
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_SourceMapsFromDevtools) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, SourceMapsFromDevtools) {
   OpenDevToolsWindow(kEmptyTestPage, /* is_docked */ false);
   DispatchOnTestSuite(window_, "testSourceMapsFromDevtools");
   CloseDevToolsWindow();
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// TODO(crbug.com/331650494): Test is flaky on Linux debug build.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_DoesNotCrashOnSourceMapsFromUnknownScheme \
-  DISABLED_DoesNotCrashOnSourceMapsFromUnknownScheme
-#else
-#define MAYBE_DoesNotCrashOnSourceMapsFromUnknownScheme \
-  DoesNotCrashOnSourceMapsFromUnknownScheme
-#endif
 IN_PROC_BROWSER_TEST_F(DevToolsTest,
-                       MAYBE_DoesNotCrashOnSourceMapsFromUnknownScheme) {
+                       DoesNotCrashOnSourceMapsFromUnknownScheme) {
   OpenDevToolsWindow(kEmptyTestPage, /* is_docked */ false);
   DispatchOnTestSuite(window_, "testDoesNotCrashOnSourceMapsFromUnknownScheme");
   CloseDevToolsWindow();
@@ -3665,14 +3595,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   CloseDevToolsWindow();
 }
 
-// TODO(crbug.com/331650494): Flaky on Linux debug build.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_IsDeveloperModeTrueHistogram DISABLED_IsDeveloperModeTrueHistogram
-#else
-#define MAYBE_IsDeveloperModeTrueHistogram IsDeveloperModeTrueHistogram
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       MAYBE_IsDeveloperModeTrueHistogram) {
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, IsDeveloperModeTrueHistogram) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kExtensionsUIDeveloperMode, true);
   base::HistogramTester histograms;
