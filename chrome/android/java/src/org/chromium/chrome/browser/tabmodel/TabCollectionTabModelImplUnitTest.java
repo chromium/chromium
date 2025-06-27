@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 
 /** Unit tests for {@link TabCollectionTabModelImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -49,6 +50,7 @@ public class TabCollectionTabModelImplUnitTest {
     @Mock private TabCreator mIncognitoTabCreator;
     @Mock private TabModelOrderController mOrderController;
     @Mock private TabModelDelegate mTabModelDelegate;
+    @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
     @Mock private AsyncTabParamsManager mAsyncTabParamsManager;
     @Mock private TabRemover mTabRemover;
     @Mock private TabModelObserver mTabModelObserver;
@@ -86,6 +88,7 @@ public class TabCollectionTabModelImplUnitTest {
                         mRegularTabCreator,
                         mIncognitoTabCreator,
                         mOrderController,
+                        mNextTabPolicySupplier,
                         mTabModelDelegate,
                         mAsyncTabParamsManager,
                         mTabRemover);

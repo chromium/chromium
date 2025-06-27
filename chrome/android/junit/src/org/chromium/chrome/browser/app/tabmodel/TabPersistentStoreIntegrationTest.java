@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
+import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -128,6 +129,7 @@ public class TabPersistentStoreIntegrationTest {
         when(mResources.getInteger(org.chromium.ui.R.integer.min_screen_width_bucket))
                 .thenReturn(1);
         when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mChromeTabCreator);
+        when(mNextTabPolicySupplier.get()).thenReturn(NextTabPolicy.LOCATIONAL);
 
         // Pretend native was loaded, creating TabModelImpls.
         OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();

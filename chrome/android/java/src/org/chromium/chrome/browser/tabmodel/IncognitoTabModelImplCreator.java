@@ -80,6 +80,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
                     mRegularTabCreator,
                     mIncognitoTabCreator,
                     mOrderController,
+                    mNextTabPolicySupplier,
                     mModelDelegate,
                     mAsyncTabParamsManager,
                     mTabRemover);

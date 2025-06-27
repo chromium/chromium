@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     private final TabCreator mRegularTabCreator;
     private final TabCreator mIncognitoTabCreator;
     private final TabModelOrderController mOrderController;
+    private final NextTabPolicySupplier mNextTabPolicySupplier;
     private final TabModelDelegate mModelDelegate;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final TabRemover mTabRemover;
@@ -82,6 +84,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
      * @param regularTabCreator The tab creator for regular tabs.
      * @param incognitoTabCreator The tab creator for incognito tabs.
      * @param orderController Controls logic for selecting and positioning tabs.
+     * @param nextTabPolicySupplier Supplies the next tab policy.
      * @param modelDelegate The {@link TabModelDelegate} for interacting outside the tab model.
      * @param asyncTabParamsManager To detect if an async tab operation is in progress.
      * @param tabRemover For removing tabs.
@@ -93,6 +96,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             TabCreator regularTabCreator,
             TabCreator incognitoTabCreator,
             TabModelOrderController orderController,
+            NextTabPolicySupplier nextTabPolicySupplier,
             TabModelDelegate modelDelegate,
             AsyncTabParamsManager asyncTabParamsManager,
             TabRemover tabRemover) {
@@ -102,6 +106,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
         mOrderController = orderController;
+        mNextTabPolicySupplier = nextTabPolicySupplier;
         mModelDelegate = modelDelegate;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mTabRemover = tabRemover;
@@ -206,7 +211,18 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public @Nullable Tab getNextTabIfClosed(@TabId int id, boolean uponExit) {
-        return null;
+        if (mIsArchivedTabModel) return null;
+        assertOnUiThread();
+        Tab tab = getTabById(id);
+        if (tab == null) return mCurrentTabSupplier.get();
+        return TabModelImplUtil.getNextTabIfClosed(
+                this,
+                mModelDelegate,
+                mCurrentTabSupplier,
+                mNextTabPolicySupplier,
+                Collections.singletonList(tab),
+                uponExit,
+                TabCloseType.SINGLE);
     }
 
     @Override

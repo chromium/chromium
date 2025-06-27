@@ -44,6 +44,7 @@ public class TabModelHolderFactory {
                     regularTabCreator,
                     incognitoTabCreator,
                     orderController,
+                    nextTabPolicySupplier,
                     modelDelegate,
                     asyncTabParamsManager,
                     tabRemover);
@@ -120,6 +121,7 @@ public class TabModelHolderFactory {
             TabCreator regularTabCreator,
             TabCreator incognitoTabCreator,
             TabModelOrderController orderController,
+            NextTabPolicySupplier nextTabPolicySupplier,
             TabModelDelegate modelDelegate,
             AsyncTabParamsManager asyncTabParamsManager,
             TabRemover tabRemover) {
@@ -131,6 +133,7 @@ public class TabModelHolderFactory {
                         regularTabCreator,
                         incognitoTabCreator,
                         orderController,
+                        nextTabPolicySupplier,
                         modelDelegate,
                         asyncTabParamsManager,
                         tabRemover);
