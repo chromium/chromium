@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
 
 #include "base/functional/bind.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_permission_manager.h"

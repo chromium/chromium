@@ -6,15 +6,9 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/fullscreen_control/fullscreen_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/constants.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/extension_set.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace exclusive_access_bubble {
