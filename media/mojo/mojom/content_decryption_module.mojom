@@ -37,8 +37,12 @@ enum CdmKeyStatus {
 enum HdcpVersion;
 
 // See media::CdmConfig
-[Native]
-struct CdmConfig;
+struct CdmConfig {
+  string key_system;
+  bool allow_distinctive_identifier;
+  bool allow_persistent_state;
+  bool use_hw_secure_codecs;
+};
 
 // Transport layer of media::CdmPromise (see media/base/cdm_promise.h).
 // - When |success| is true, the promise is resolved and all other fields should

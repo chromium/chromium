@@ -305,6 +305,11 @@ mojom("mojom") {
           mojom = "media.mojom.CdmConfig"
           cpp = "::media::CdmConfig"
         },
+      ]
+      traits_headers = [ "cdm_config_mojom_traits.h" ]
+    },
+    {
+      types = [
         {
           mojom = "media.mojom.CdmPromiseResult.Exception"
           cpp = "::media::CdmPromise::Exception"

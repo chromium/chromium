@@ -126,7 +126,6 @@ _NATIVE_ALLOWLIST = {
     'media.mojom.AudioParameters',
     'media.mojom.BufferingState',
     'media.mojom.BufferingStateChangeReason',
-    'media.mojom.CdmConfig',
     'media.mojom.CdmMessageType',
     'media.mojom.CdmSessionType',
     'media.mojom.ChannelLayout',
