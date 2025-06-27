@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ACTOR_UI_MOCK_ACTOR_UI_STATE_MANAGER_H_
 
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/task_id.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace actor {

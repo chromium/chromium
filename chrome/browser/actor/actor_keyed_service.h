@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/common/buildflags.h"
@@ -35,6 +34,7 @@ class BrowserContext;
 }  // namespace content
 
 namespace actor {
+class ActorUiStateManagerInterface;
 
 // This class owns all ActorTasks for a given profile. ActorTasks are kept in
 // memory until the process is destroyed.

@@ -13,6 +13,11 @@ specific_include_rules = {
     # This is required to create the ActorUiStateManager when a profile
     # is created.
     "+chrome/browser/actor/ui/actor_ui_state_manager.h",
+    "+chrome/browser/actor/ui/actor_ui_state_manager_interface.h",
+  ],
+  'actor_keyed_service\.cc': [
+    # This is required to manage the ActorUiStateManager pointer.
+    "+chrome/browser/actor/ui/actor_ui_state_manager_interface.h",
   ],
   'execution_engine*': [
     # This dependency is intentional and required to provide a translation

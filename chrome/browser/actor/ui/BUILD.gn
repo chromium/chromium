@@ -2,6 +2,7 @@ source_set("ui") {
   sources = [
     "actor_ui_state_manager.cc",
     "actor_ui_state_manager.h",
+    "actor_ui_state_manager_interface.h",
     "actor_ui_tab_controller.cc",
     "actor_ui_tab_controller.h",
   ]
@@ -46,6 +47,7 @@ source_set("test_support") {
   public_deps = [ "//base" ]
   deps = [
     ":event_dispatcher",
+    ":ui",
     "//chrome/browser/actor:actor",
     "//testing/gmock",
   ]
