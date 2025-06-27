@@ -360,7 +360,13 @@ void WidgetInputHandlerManager::SetHost(
 
 void WidgetInputHandlerManager::SetVizHost(
     mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> viz_host) {
-  CHECK(viz_host && !viz_host_);
+  if (viz_host_) {
+    DLOG(WARNING) << "Resetting an existing viz_host. This may indicate a "
+                  << "missed disconnect notification during GPU restart.";
+    viz_host_.reset();
+  }
+
+  CHECK(viz_host);
   if (compositor_thread_default_task_runner_) {
     viz_host_ = mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost>(
         std::move(viz_host), compositor_thread_default_task_runner_);
