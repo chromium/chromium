@@ -32,7 +32,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.hats.TestSurveyUtils;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -41,7 +43,6 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
-import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -54,11 +55,8 @@ import java.util.List;
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class PrivacySandboxSurveyControllerIntegrationTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule
-    public ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public AutomotiveContextWrapperTestRule mAutomotiveRule =
@@ -70,9 +68,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
 
     private MessageDispatcher mMessageDispatcher;
     private PropertyModel mSurveyMessage;
-    private String mTestPage;
-    private EmbeddedTestServer mTestServer;
-    private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
+    private RegularNewTabPageStation mNtp;
 
     public static ViewAction repeatedlyUntil(
             final ViewAction action, final Matcher<View> condition, final int maxAttempts) {
@@ -108,7 +104,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @Before
     public void setup() {
         PrivacySandboxSurveyController.setEnableForTesting();
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        mNtp = mActivityTestRule.startOnNtp();
 
         // Explicitly remove the `DISABLE_FIRST_RUN_EXPERIENCE` (set via `TestSurveyComponentRule`)
         // commandline switch which prevents us from receiving a valid prompt type via
