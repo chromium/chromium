@@ -13,6 +13,8 @@
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "ui/gfx/image/image_skia.h"
 
+namespace global_media_controls {
+
 SupplementalDevicePickerItem::SupplementalDevicePickerItem(
     global_media_controls::MediaItemManager* item_manager,
     const base::UnguessableToken& source_id)
@@ -95,3 +97,5 @@ void SupplementalDevicePickerItem::UpdateViewWithImages() {
   }
   view_->UpdateWithFavicon(gfx::ImageSkia());
 }
+
+}  // namespace global_media_controls

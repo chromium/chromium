@@ -20,6 +20,8 @@
 
 using global_media_controls::test::MockDevicePickerObserver;
 
+namespace global_media_controls {
+
 class SupplementalDevicePickerProducerTest : public testing::Test {
  public:
   // Returns the ID of the item.
@@ -112,3 +114,5 @@ TEST_F(SupplementalDevicePickerProducerTest, OnMediaItemUIDismissed) {
   notification_producer_.OnMediaItemUIDismissed(ShowItem());
   observer->FlushForTesting();
 }
+
+}  // namespace global_media_controls

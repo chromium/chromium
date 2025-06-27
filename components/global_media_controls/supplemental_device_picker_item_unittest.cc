@@ -14,6 +14,8 @@ using testing::_;
 using testing::Mock;
 using testing::WithArg;
 
+namespace global_media_controls {
+
 class SupplementalDevicePickerItemTest : public testing::Test {
  public:
   void SetUp() override {
@@ -61,3 +63,5 @@ TEST_F(SupplementalDevicePickerItemTest, UpdateViewWithFaviconImage) {
   EXPECT_CALL(view_, UpdateWithFavicon(_));
   item_.UpdateViewWithFaviconImage(image);
 }
+
+}  // namespace global_media_controls

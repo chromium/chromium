@@ -18,8 +18,8 @@
 #include "ui/gfx/image/image_skia.h"
 
 namespace global_media_controls {
+
 class MediaItemManager;
-}  // namespace global_media_controls
 
 // See the class comment for SupplementalDevicePickerProducer for more
 // information.
@@ -82,5 +82,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) SupplementalDevicePickerItem final
 
   base::WeakPtrFactory<SupplementalDevicePickerItem> weak_ptr_factory_{this};
 };
+
+}  // namespace global_media_controls
 
 #endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_SUPPLEMENTAL_DEVICE_PICKER_ITEM_H_

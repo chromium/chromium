@@ -208,8 +208,8 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
 
   auto* item_manager = GetMediaItemManagerForSupplementalDevicePickerProducer();
   if (item_manager) {
-    supplemental_device_picker_producer_ =
-        std::make_unique<SupplementalDevicePickerProducer>(item_manager);
+    supplemental_device_picker_producer_ = std::make_unique<
+        global_media_controls::SupplementalDevicePickerProducer>(item_manager);
     item_manager->AddItemProducer(supplemental_device_picker_producer_.get());
     SetDevicePickerProvider(supplemental_device_picker_producer_->PassRemote());
   }
@@ -422,9 +422,10 @@ void MediaNotificationService::SetDialogDelegateForWebContents(
   } else if (HasActiveControllableSessionForWebContents(contents)) {
     item_id = GetActiveControllableSessionForWebContents(contents);
   } else {
-    const SupplementalDevicePickerItem& supplemental_item =
-        supplemental_device_picker_producer_->GetOrCreateNotificationItem(
-            content::MediaSession::GetSourceId(profile_));
+    const global_media_controls::SupplementalDevicePickerItem&
+        supplemental_item =
+            supplemental_device_picker_producer_->GetOrCreateNotificationItem(
+                content::MediaSession::GetSourceId(profile_));
     item_id = supplemental_item.id();
     DCHECK(presentation_request_notification_producer_->GetWebContents() ==
            contents);

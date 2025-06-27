@@ -26,7 +26,6 @@
 
 namespace global_media_controls {
 class MediaItemManager;
-}  // namespace global_media_controls
 
 // This object creates and manages media dialog items (represented by
 // SupplementalDevicePicker) that contain device pickers not associated with any
@@ -111,5 +110,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS)
 
   base::WeakPtrFactory<SupplementalDevicePickerProducer> weak_factory_{this};
 };
+
+}  // namespace global_media_controls
 
 #endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_SUPPLEMENTAL_DEVICE_PICKER_PRODUCER_H_

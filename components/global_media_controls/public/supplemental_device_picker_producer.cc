@@ -8,6 +8,8 @@
 
 #include "components/global_media_controls/public/media_item_manager.h"
 
+namespace global_media_controls {
+
 SupplementalDevicePickerProducer::SupplementalDevicePickerProducer(
     global_media_controls::MediaItemManager* item_manager)
     : item_manager_(item_manager), item_ui_observer_set_(this) {
@@ -164,3 +166,5 @@ void SupplementalDevicePickerProducer::OnMediaDialogClosed() {
     observer->OnMediaUIClosed();
   }
 }
+
+}  //  namespace global_media_controls

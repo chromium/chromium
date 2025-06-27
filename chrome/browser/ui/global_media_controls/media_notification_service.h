@@ -203,7 +203,7 @@ class MediaNotificationService
   std::unique_ptr<global_media_controls::MediaSessionItemProducer>
       media_session_item_producer_;
   std::unique_ptr<CastMediaNotificationProducer> cast_notification_producer_;
-  std::unique_ptr<SupplementalDevicePickerProducer>
+  std::unique_ptr<global_media_controls::SupplementalDevicePickerProducer>
       supplemental_device_picker_producer_;
   std::unique_ptr<PresentationRequestNotificationProducer>
       presentation_request_notification_producer_;
