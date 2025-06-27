@@ -57,6 +57,7 @@ polymorphic.launcher(
         "ci/android-12-x64-rel",
         "ci/android-13-x64-rel",
         "ci/android-15-x64-rel",
+        "ci/android-16-x64-rel",
     ],
 )
 
