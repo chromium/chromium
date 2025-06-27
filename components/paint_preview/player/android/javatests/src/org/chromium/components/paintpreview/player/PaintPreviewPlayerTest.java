@@ -40,7 +40,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -187,9 +187,7 @@ public class PaintPreviewPlayerTest {
     /** Tests that link clicks in the player work correctly. */
     @Test
     @MediumTest
-    @DisableIf.Build(
-            message = "Test is failing on Android P+, see crbug.com/1110939.",
-            sdk_is_greater_than = VERSION_CODES.O_MR1)
+    @DisabledTest(message = "Test is failing on Android P+, see crbug.com/1110939.")
     public void linkClickTest() {
         initPlayerManager(false);
         final View playerHostView = mPlayerManager.getView();
