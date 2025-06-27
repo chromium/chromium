@@ -16,7 +16,6 @@
 
 namespace autofill {
 
-class AutofillManager;
 class FormStructure;
 
 // An interface for interaction with the bottom sheet UI controller, which is
@@ -25,8 +24,6 @@ class FormStructure;
 class TouchToFillDelegate {
  public:
   virtual ~TouchToFillDelegate() = default;
-
-  virtual AutofillManager* GetManager() = 0;
 
   virtual bool IntendsToShowTouchToFill(FormGlobalId form_id,
                                         FieldGlobalId field_id) = 0;

@@ -854,7 +854,6 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
   static std::unique_ptr<MockTouchToFillDelegate> Create(
       BrowserAutofillManager* manager) {
     auto delegate = std::make_unique<NiceMock<MockTouchToFillDelegate>>();
-    ON_CALL(*delegate, GetManager()).WillByDefault(Return(manager));
     ON_CALL(*delegate, IsShowingTouchToFill()).WillByDefault(Return(false));
     return delegate;
   }
@@ -864,7 +863,6 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
   MockTouchToFillDelegate& operator=(const MockTouchToFillDelegate&) = delete;
   ~MockTouchToFillDelegate() override = default;
 
-  MOCK_METHOD(BrowserAutofillManager*, GetManager, (), (override));
   MOCK_METHOD(bool,
               IntendsToShowTouchToFill,
               (FormGlobalId, FieldGlobalId),

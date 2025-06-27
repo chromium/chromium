@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "base/check_deref.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -46,16 +47,38 @@ bool IsFieldFocusableAndEmpty(const AutofillField& field) {
   return field.IsFocusable() && SanitizedFieldIsEmpty(field.value());
 }
 
-bool IsTriggeredOnFieldWithGroup(const FormStructure* form_field,
-                                 const FormFieldData& field,
-                                 FieldTypeGroup field_type_group) {
-  if (!form_field) {
-    return false;
-  }
+// The form is considered correctly filled if all autofilled fields were not
+// edited by user afterwards.
+bool IsFillingCorrect(const FormStructure& form) {
+  return !std::ranges::any_of(form.fields(), [](const auto& field) {
+    return field->previously_autofilled();
+  });
+}
 
-  const autofill::AutofillField* autofill_field =
-      form_field->GetFieldById(field.global_id());
-  return autofill_field && autofill_field->Type().group() == field_type_group;
+// The form is considered perfectly filled if all non-empty fields are
+// autofilled without further edits.
+bool IsFillingPerfect(const FormStructure& form) {
+  return std::ranges::all_of(form.fields(), [](const auto& field) {
+    return field->value().empty() || field->is_autofilled();
+  });
+}
+
+// Checks if the credit card form is already filled with values. The form is
+// considered to be filled if the credit card number field is non-empty. The
+// expiration date fields are not checked because they might have arbitrary
+// placeholders.
+bool IsFormPrefilled(const FormStructure& form) {
+  return std::ranges::any_of(form.fields(),
+                             [](const std::unique_ptr<AutofillField>& field) {
+                               return field->Type().GetStorableType() ==
+                                          FieldType::CREDIT_CARD_NUMBER &&
+                                      !SanitizedFieldIsEmpty(field->value());
+                             });
+}
+
+bool HasAnyAutofilledFields(const FormStructure& form) {
+  return std::ranges::any_of(
+      form.fields(), [](const auto& field) { return field->is_autofilled(); });
 }
 
 }  // namespace
@@ -78,9 +101,7 @@ TouchToFillDelegateAndroidImpl::DryRunResult::~DryRunResult() = default;
 
 TouchToFillDelegateAndroidImpl::TouchToFillDelegateAndroidImpl(
     BrowserAutofillManager* manager)
-    : manager_(manager) {
-  DCHECK(manager);
-}
+    : manager_(CHECK_DEREF(manager)) {}
 
 TouchToFillDelegateAndroidImpl::~TouchToFillDelegateAndroidImpl() {
   // Invalidate pointers to avoid post hide callbacks.
@@ -246,28 +267,15 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
     }
   }
 
-  if (dry_run.outcome != TriggerOutcome::kUnsupportedFieldType) {
-    if (IsTriggeredOnFieldWithGroup(
-            manager_->FindCachedFormById(form.global_id()), field,
-            FieldTypeGroup::kIban)) {
-      base::UmaHistogramEnumeration(kUmaTouchToFillIbanTriggerOutcome,
-                                    dry_run.outcome);
-    } else if (IsTriggeredOnFieldWithGroup(
-                   manager_->FindCachedFormById(form.global_id()), field,
-                   FieldTypeGroup::kLoyaltyCard)) {
-      base::UmaHistogramEnumeration(kUmaTouchToFillLoyaltyCardTriggerOutcome,
-                                    dry_run.outcome);
-    } else {
-      base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
-                                    dry_run.outcome);
-    }
-  }
+  LogTriggerOutcomeMetrics(form.global_id(), field.global_id(),
+                           dry_run.outcome);
   LOG_AF(manager_->client().GetCurrentLogManager())
       << LoggingScope::kTouchToFill << LogMessage::kTouchToFill
       << "dry run after parsing for form " << form.global_id() << " and field "
       << field.global_id() << " was "
       << (dry_run.outcome == TriggerOutcome::kShown ? "" : "un")
       << "successful (" << base::to_underlying(dry_run.outcome) << ")";
+
   if (dry_run.outcome != TriggerOutcome::kShown) {
     return false;
   }
@@ -308,10 +316,6 @@ void TouchToFillDelegateAndroidImpl::HideTouchToFill() {
 void TouchToFillDelegateAndroidImpl::Reset() {
   HideTouchToFill();
   ttf_payment_method_state_ = TouchToFillState::kShouldShow;
-}
-
-AutofillManager* TouchToFillDelegateAndroidImpl::GetManager() {
-  return manager_;
 }
 
 bool TouchToFillDelegateAndroidImpl::ShouldShowScanCreditCard() {
@@ -404,6 +408,28 @@ void TouchToFillDelegateAndroidImpl::OnDismissed(bool dismissed_by_user) {
   }
 }
 
+void TouchToFillDelegateAndroidImpl::LogTriggerOutcomeMetrics(
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
+    TriggerOutcome outcome) {
+  if (outcome == TriggerOutcome::kUnsupportedFieldType) {
+    return;
+  }
+  const FormStructure* form = manager_->FindCachedFormById(form_id);
+  const AutofillField* field = form ? form->GetFieldById(field_id) : nullptr;
+  FieldTypeGroup group =
+      field ? field->Type().group() : FieldTypeGroup::kNoGroup;
+  if (group == FieldTypeGroup::kIban) {
+    base::UmaHistogramEnumeration(kUmaTouchToFillIbanTriggerOutcome, outcome);
+  } else if (group == FieldTypeGroup::kLoyaltyCard) {
+    base::UmaHistogramEnumeration(kUmaTouchToFillLoyaltyCardTriggerOutcome,
+                                  outcome);
+  } else {
+    base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
+                                  outcome);
+  }
+}
+
 void TouchToFillDelegateAndroidImpl::LogMetricsAfterSubmission(
     const FormStructure& submitted_form) {
   // Log whether autofill was used after dismissing the touch to fill (without
@@ -423,36 +449,6 @@ void TouchToFillDelegateAndroidImpl::LogMetricsAfterSubmission(
           IsFillingCorrect(submitted_form));
     }
   }
-}
-
-bool TouchToFillDelegateAndroidImpl::HasAnyAutofilledFields(
-    const FormStructure& submitted_form) const {
-  return std::ranges::any_of(
-      submitted_form, [](const auto& field) { return field->is_autofilled(); });
-}
-
-bool TouchToFillDelegateAndroidImpl::IsFillingPerfect(
-    const FormStructure& submitted_form) const {
-  return std::ranges::all_of(submitted_form, [](const auto& field) {
-    return field->value().empty() || field->is_autofilled();
-  });
-}
-
-bool TouchToFillDelegateAndroidImpl::IsFillingCorrect(
-    const FormStructure& submitted_form) const {
-  return !std::ranges::any_of(submitted_form, [](const auto& field) {
-    return field->previously_autofilled();
-  });
-}
-
-bool TouchToFillDelegateAndroidImpl::IsFormPrefilled(
-    const FormStructure& form) {
-  return std::ranges::any_of(form.fields(),
-                             [](const std::unique_ptr<AutofillField>& field) {
-                               return field->Type().GetStorableType() ==
-                                          FieldType::CREDIT_CARD_NUMBER &&
-                                      !SanitizedFieldIsEmpty(field->value());
-                             });
 }
 
 base::WeakPtr<TouchToFillDelegateAndroidImpl>

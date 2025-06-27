@@ -8,7 +8,7 @@
 #include <variant>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
@@ -125,7 +125,6 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   void Reset() override;
 
   // TouchToFillDelegate:
-  AutofillManager* GetManager() override;
   bool ShouldShowScanCreditCard() override;
   void ScanCreditCard() override;
   void OnCreditCardScanned(const CreditCard& card) override;
@@ -187,34 +186,20 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   // an error reason if TTF should not be triggered.
   DryRunResult DryRunForLoyaltyCard();
 
-  bool HasAnyAutofilledFields(const FormStructure& submitted_form) const;
-
-  // The form is considered perfectly filled if all non-empty fields are
-  // autofilled without further edits.
-  bool IsFillingPerfect(const FormStructure& submitted_form) const;
-
-  // The form is considered correctly filled if all autofilled fields were not
-  // edited by user afterwards.
-  bool IsFillingCorrect(const FormStructure& submitted_form) const;
-
-  // Checks if the credit card form is already filled with values. The form is
-  // considered to be filled if the credit card number field is non-empty. The
-  // expiration date fields are not checked because they might have arbitrary
-  // placeholders.
-  // TODO(crbug.com/40227496): FormData is used here to ensure that we check the
-  // most recent form values. FormStructure knows only about the initial values.
-  bool IsFormPrefilled(const FormStructure& form);
-
   // Creates a list of booleans which denotes if credit cards are acceptable by
-  // the merchant. The list will be the same size as `credit_cards`, and the
-  // indices will match (the acceptability of credit_cards[i] ==
+  // the merchant. The returned list has the same size as `credit_cards`, and
+  // the indices match (the acceptability of credit_cards[i] ==
   // card_acceptability[i]).
   std::vector<bool> GetCardAcceptabilities(
       base::span<const CreditCard> credit_cards);
 
+  void LogTriggerOutcomeMetrics(const FormGlobalId& form_id,
+                                const FieldGlobalId& field_id,
+                                TriggerOutcome outcome);
+
   TouchToFillState ttf_payment_method_state_ = TouchToFillState::kShouldShow;
 
-  const raw_ptr<BrowserAutofillManager> manager_;
+  const raw_ref<BrowserAutofillManager> manager_;
   FormData query_form_;
   FormFieldData query_field_;
   bool dismissed_by_user_ = false;
