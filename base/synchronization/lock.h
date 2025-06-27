@@ -35,6 +35,12 @@ class LOCKABLE BASE_EXPORT Lock {
   Lock(const Lock&) = delete;
   Lock& operator=(const Lock&) = delete;
 
+#if defined(__clang__)
+  // We use this only for clang's thread annotation "Negative Capabilities". It
+  // should never be called. We intentionally leave it undefined.
+  Lock& operator!();
+#endif
+
 #if !DCHECK_IS_ON()
   // Optimized wrapper implementation
 
