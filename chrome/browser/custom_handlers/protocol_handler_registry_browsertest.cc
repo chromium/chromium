@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/time/time.h"
@@ -46,13 +47,6 @@ using custom_handlers::ProtocolHandler;
 using custom_handlers::ProtocolHandlerRegistry;
 
 namespace {
-
-std::string EncodeUrl(const std::string& not_encoded) {
-  url::RawCanonOutputT<char> encoded;
-  url::EncodeURIComponent(not_encoded, &encoded);
-
-  return {encoded.data(), encoded.length()};
-}
 
 class ProtocolHandlerChangeWaiter : public ProtocolHandlerRegistry::Observer {
  public:
@@ -131,8 +125,7 @@ class ChromeRegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(registry->IsHandledProtocol(protocol));
   }
 
-  void RemoveProtocolHandler(const std::string& protocol,
-                             const GURL& url) {
+  void RemoveProtocolHandler(const std::string& protocol, const GURL& url) {
     ProtocolHandler handler =
         ProtocolHandler::CreateProtocolHandler(protocol, url);
     ProtocolHandlerRegistry* registry =
@@ -378,7 +371,7 @@ using ChromeRegisterProtocolHandlerIsolatedWebAppsTest =
     web_app::IsolatedWebAppBrowserTestHarness;
 
 IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerIsolatedWebAppsTest,
-                       Basic) {
+                       NotAllowedFromIWA) {
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
@@ -388,91 +381,23 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerIsolatedWebAppsTest,
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
-  permissions::PermissionRequestManager::FromWebContents(web_contents)
-      ->set_auto_response_for_test(
-          permissions::PermissionRequestManager::ACCEPT_ALL);
+  GURL protocol_url =
+      url_info.origin().GetURL().Resolve("/index.html?params=%s");
+  static constexpr std::string_view kRegisterProtocolScript = R"(
+    navigator.registerProtocolHandler("web+meow", "%s");
+  )";
+  ASSERT_THAT(EvalJs(web_contents, base::StringPrintf(kRegisterProtocolScript,
+                                                      protocol_url.spec()))
+                  .error,
+              testing::HasSubstr("Isolated Web Apps do not support "
+                                 "registering/unregistering protocol"));
 
-  GURL app_url = url_info.origin().GetURL();
-
-  struct TestCase {
-    std::string scheme;
-    std::string url;
-    bool result;
-  };
-
-  std::vector<TestCase> test_cases = {
-      // non-custom scheme, relative URL (same origin)
-      {"geo", "/protocol_handler=", true},
-      // non-custom scheme, full URL (same origin)
-      {"geo", app_url.spec() + "protocol_handler=", true},
-      // non-custom scheme, IWA URL (cross origin)
-      {"geo",
-       "isolated-app://"
-       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"
-       "protocol_handler=",
-       false},
-      // non-custom scheme, HTTPS URL (cross origin)
-      {"geo", "https://www.google.com/search?q=", false},
-      //
-      // custom scheme (web+), relative URL (same origin)
-      {"web+foo", "/protocol_handler=", true},
-      // custom scheme (web+), full URL (same origin)
-      {"web+foo", app_url.spec() + "protocol_handler=", true},
-      // custom scheme (web+), IWA URL (cross origin)
-      {"web+foo",
-       "isolated-app://"
-       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"
-       "protocol_handler=",
-       false},
-      // custom scheme (web+), HTTPS URL (cross origin)
-      {"web+foo", "https://www.google.com/search?q=", false},
-      //
-      // custom scheme (ext+), relative URL (same origin)
-      {"ext+foo", "/protocol_handler=", false},
-      // custom scheme (ext+), full URL (same origin)
-      {"ext+foo", app_url.spec() + "protocol_handler=", false},
-      // custom scheme (ext+), IWA URL (cross origin)
-      {"ext+foo",
-       "isolated-app://"
-       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"
-       "protocol_handler=",
-       false},
-      // custom scheme (ext+), HTTPS URL (cross origin)
-      {"ext+foo3", "https://www.google.com/search?q=", false},
-  };
-
-  ProtocolHandlerRegistry* registry =
-      ProtocolHandlerRegistryFactory::GetForBrowserContext(profile());
-
-  for (const auto& test_case : test_cases) {
-    auto js = content::JsReplace("navigator.registerProtocolHandler($1, $2);",
-                                 test_case.scheme, test_case.url + "%s");
-    SCOPED_TRACE(testing::Message()
-                 << "Registering protocol handler w/ " << js);
-    registry->ClearUserDefinedHandlers(base::Time(), base::Time::Max());
-    ProtocolHandlerChangeWaiter waiter(registry);
-
-    auto result = content::ExecJs(web_contents->GetPrimaryMainFrame(), js);
-    EXPECT_EQ(result, test_case.result);
-
-    if (result) {
-      // Wait for the registration to complete and test the handler.
-      waiter.Wait();
-
-      EXPECT_TRUE(ui_test_utils::NavigateToURL(
-          this->browser(), GURL(test_case.scheme + ":test")));
-
-      std::string expected_url_string =
-          test_case.url + EncodeUrl(test_case.scheme + ":test");
-      GURL expected_url(expected_url_string);
-      // If `expected_url_string` is a relative URL, it will be resolved with
-      // `app_url` as the base URL. If `expected_url_string` is an absolute URL,
-      // it'll be returned as is.
-      expected_url = app_url.Resolve(expected_url_string);
-      EXPECT_EQ(expected_url, this->browser()
-                                  ->tab_strip_model()
-                                  ->GetActiveWebContents()
-                                  ->GetLastCommittedURL());
-    }
-  }
+  static constexpr std::string_view kUnegisterProtocolScript = R"(
+    navigator.unregisterProtocolHandler("web+meow", "%s");
+  )";
+  ASSERT_THAT(EvalJs(web_contents, base::StringPrintf(kUnegisterProtocolScript,
+                                                      protocol_url.spec()))
+                  .error,
+              testing::HasSubstr("Isolated Web Apps do not support "
+                                 "registering/unregistering protocol"));
 }

@@ -50,6 +50,11 @@ const char NavigatorContentUtils::kSupplementName[] = "NavigatorContentUtils";
 
 namespace {
 
+constexpr char kIsolatedAppError[] =
+    "Isolated Web Apps do not support registering/unregistering protocol "
+    "handlers via the navigator API; use the `protocol_handlers` field in the "
+    "web app manifest instead.";
+
 // Verify custom handler URL security as described in steps 6 and 7
 // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
 static bool VerifyCustomHandlerURLSecurity(
@@ -176,10 +181,16 @@ void NavigatorContentUtils::registerProtocolHandler(
     const String& url,
     ExceptionState& exception_state) {
   LocalDOMWindow* window = navigator.DomWindow();
-  if (!window)
+  if (!window) {
     return;
+  }
 
   WebSecurityOrigin origin(window->GetSecurityOrigin());
+  if (CommonSchemeRegistry::IsIsolatedAppScheme(origin.Protocol().Ascii())) {
+    exception_state.ThrowSecurityError(kIsolatedAppError);
+    return;
+  }
+
   ProtocolHandlerSecurityLevel security_level =
       Platform::Current()->GetProtocolHandlerSecurityLevel(origin);
 
@@ -191,8 +202,9 @@ void NavigatorContentUtils::registerProtocolHandler(
     return;
   }
 
-  if (!VerifyCustomHandlerURL(*window, url, exception_state, security_level))
+  if (!VerifyCustomHandlerURL(*window, url, exception_state, security_level)) {
     return;
+  }
 
   // Count usage; perhaps we can forbid this from cross-origin subframes as
   // proposed in https://crbug.com/977083.
@@ -226,10 +238,16 @@ void NavigatorContentUtils::unregisterProtocolHandler(
     const String& url,
     ExceptionState& exception_state) {
   LocalDOMWindow* window = navigator.DomWindow();
-  if (!window)
+  if (!window) {
     return;
+  }
 
   WebSecurityOrigin origin(window->GetSecurityOrigin());
+  if (CommonSchemeRegistry::IsIsolatedAppScheme(origin.Protocol().Ascii())) {
+    exception_state.ThrowSecurityError(kIsolatedAppError);
+    return;
+  }
+
   ProtocolHandlerSecurityLevel security_level =
       Platform::Current()->GetProtocolHandlerSecurityLevel(origin);
 
@@ -239,8 +257,9 @@ void NavigatorContentUtils::unregisterProtocolHandler(
     return;
   }
 
-  if (!VerifyCustomHandlerURL(*window, url, exception_state, security_level))
+  if (!VerifyCustomHandlerURL(*window, url, exception_state, security_level)) {
     return;
+  }
 
   Document* document = window->document();
   auto* client =

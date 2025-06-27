@@ -1228,9 +1228,6 @@ bool ChromeContentRendererClient::ShouldNotifyServiceWorkerOnWebSocketActivity(
 blink::ProtocolHandlerSecurityLevel
 ChromeContentRendererClient::GetProtocolHandlerSecurityLevel(
     const url::Origin& origin) {
-  if (origin.scheme() == chrome::kIsolatedAppScheme) {
-    return blink::ProtocolHandlerSecurityLevel::kSameOrigin;
-  }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return extensions::ExtensionsRendererClient::Get()
       ->GetProtocolHandlerSecurityLevel();
