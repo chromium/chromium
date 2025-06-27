@@ -201,9 +201,6 @@ const char kDisableDomainReliability[] = "disable-domain-reliability";
 // Disables lazy loading of images and frames.
 const char kDisableLazyLoading[] = "disable-lazy-loading";
 
-// Disables NaCl. If kEnableNaCl is also set, this switch takes precedence.
-const char kDisableNaCl[] = "disable-nacl";
-
 // Disables print preview (For testing, and for users who don't like us. :[ )
 const char kDisablePrintPreview[] = "disable-print-preview";
 
@@ -269,10 +266,6 @@ const char kEnableUnsafeExtensionDebugging[] =
 // Force enabling HangoutServicesExtension.
 const char kEnableHangoutServicesExtensionForTesting[] =
     "enable-hangout-services-extension-for-testing";
-
-// Allows NaCl to run in all contexts (such as open web). Note that
-// kDisableNaCl disables NaCl in all contexts and takes precedence.
-const char kEnableNaCl[] = "enable-nacl";
 
 // Enables the network-related benchmarking extensions.
 const char kEnableNetBenchmarking[] = "enable-net-benchmarking";

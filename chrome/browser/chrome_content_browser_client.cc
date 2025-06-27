@@ -197,7 +197,6 @@
 #include "chrome/common/env_vars.h"
 #include "chrome/common/google_url_loader_throttle.h"
 #include "chrome/common/logging_chrome.h"
-#include "chrome/common/ppapi_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/common/profiler/process_type.h"
@@ -2917,7 +2916,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         variations::switches::kEnableBenchmarking,
         variations::switches::kEnableBenchmarkingApi,
         switches::kEnableDistillabilityService,
-        switches::kEnableNaCl,
         switches::kEnableNetBenchmarking,
         switches::kExtensionAiDataCollection,
         switches::kExtensionExperimentalActor,

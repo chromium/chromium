@@ -388,12 +388,6 @@ static_library("common_lib") {
     frameworks = [ "ServiceManagement.framework" ]
   }
 
-  if (enable_plugins) {
-    sources += [
-      "ppapi_utils.cc",
-      "ppapi_utils.h",
-    ]
-  }
   if (enable_plugins && enable_extensions) {
     sources += [
       "pepper_permission_util.cc",
