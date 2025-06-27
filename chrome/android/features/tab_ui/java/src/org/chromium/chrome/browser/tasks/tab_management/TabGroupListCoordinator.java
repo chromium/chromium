@@ -66,10 +66,11 @@ public class TabGroupListCoordinator {
         int MESSAGE_CARD = 1;
     }
 
-    @IntDef({MessageCardType.TAB_GROUP_REMOVED})
+    @IntDef({MessageCardType.TAB_GROUP_REMOVED, MessageCardType.VERSION_OUT_OF_DATE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface MessageCardType {
         int TAB_GROUP_REMOVED = 0;
+        int VERSION_OUT_OF_DATE = 1;
     }
 
     private final TabGroupListView mView;
@@ -175,6 +176,10 @@ public class TabGroupListCoordinator {
         TabGroupRemovedMessageMediator tabGroupRemovedMessageMediator =
                 new TabGroupRemovedMessageMediator(context, messagingBackendService, modelList);
 
+        @Nullable PersistentVersioningMessageMediator persistentVersioningMessageMediator =
+                PersistentVersioningMessageMediator.build(
+                        context, profile, modelList, modalDialogManager);
+
         mTabGroupListMediator =
                 new TabGroupListMediator(
                         context,
@@ -192,7 +197,8 @@ public class TabGroupListCoordinator {
                         syncService,
                         enableContainment(),
                         dataSharingTabManager,
-                        tabGroupRemovedMessageMediator);
+                        tabGroupRemovedMessageMediator,
+                        persistentVersioningMessageMediator);
 
         if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
             mEdgeToEdgePadAdjuster =
