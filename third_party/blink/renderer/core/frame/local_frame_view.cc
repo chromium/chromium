@@ -2999,28 +2999,15 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   }
 
   StackScrollTranslationVector scroll_translation_nodes;
-  ForAllNonThrottledLocalFrameViews(
-      [&scroll_translation_nodes](LocalFrameView& frame_view) {
-        if (RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled()) {
-          for (const auto& area :
-               frame_view.scrollable_areas_with_scroll_node_) {
-            const auto* paint_properties =
-                area->GetLayoutBox()->FirstFragment().PaintProperties();
-            CHECK(paint_properties && paint_properties->Scroll());
-            scroll_translation_nodes.push_back(
-                paint_properties->ScrollTranslation());
-          }
-        } else {
-          for (const auto& area : frame_view.ScrollableAreas().Values()) {
-            const auto* paint_properties =
-                area->GetLayoutBox()->FirstFragment().PaintProperties();
-            if (paint_properties && paint_properties->Scroll()) {
-              scroll_translation_nodes.push_back(
-                  paint_properties->ScrollTranslation());
-            }
-          }
-        }
-      });
+  ForAllNonThrottledLocalFrameViews([&scroll_translation_nodes](
+                                        LocalFrameView& frame_view) {
+    for (const auto& area : frame_view.scrollable_areas_with_scroll_node_) {
+      const auto* paint_properties =
+          area->GetLayoutBox()->FirstFragment().PaintProperties();
+      CHECK(paint_properties && paint_properties->Scroll());
+      scroll_translation_nodes.push_back(paint_properties->ScrollTranslation());
+    }
+  });
 
   WTF::Vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests;
   AppendViewTransitionRequests(view_transition_requests);
@@ -3599,7 +3586,6 @@ void LocalFrameView::RemoveAnimatingScrollableArea(
 
 void LocalFrameView::AddScrollableArea(
     PaintLayerScrollableArea& scrollable_area) {
-  CHECK(RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled());
   scrollable_areas_.insert(scrollable_area.GetScrollElementId(),
                            scrollable_area);
 }
@@ -3610,20 +3596,6 @@ void LocalFrameView::RemoveScrollableArea(
   RemoveScrollAnchoringScrollableArea(&scrollable_area);
   RemoveAnimatingScrollableArea(&scrollable_area);
   RemovePendingSnapUpdate(&scrollable_area);
-  RemoveScrollableAreaWithScrollNode(scrollable_area);
-}
-
-void LocalFrameView::AddUserScrollableArea(
-    PaintLayerScrollableArea& scrollable_area) {
-  CHECK(!RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled());
-  scrollable_areas_.insert(scrollable_area.GetScrollElementId(),
-                           &scrollable_area);
-}
-
-void LocalFrameView::RemoveUserScrollableArea(
-    PaintLayerScrollableArea& scrollable_area) {
-  CHECK(!RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled());
-  scrollable_areas_.erase(scrollable_area.GetScrollElementId());
   RemoveScrollableAreaWithScrollNode(scrollable_area);
 }
 
@@ -3778,17 +3750,6 @@ void LocalFrameView::DidChangeScrollOffset() {
 
 ScrollableArea* LocalFrameView::ScrollableAreaWithElementId(
     const CompositorElementId& id) {
-  if (!RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled()) {
-    // Check for the layout viewport, which may not be in scrollable_areas_
-    // if it is styled overflow: hidden.  (Other overflow: hidden elements won't
-    // have composited scrolling layers per crbug.com/784053, so we don't have
-    // to worry about them.)
-    ScrollableArea* viewport = LayoutViewport();
-    if (id == viewport->GetScrollElementId()) {
-      return viewport;
-    }
-  }
-
   // We cannot use `scrollable_areas_with_scroll_node_` because the scroll node
   // may have been removed, but we still need to look up the scrollable area.
   auto it = scrollable_areas_.find(id);

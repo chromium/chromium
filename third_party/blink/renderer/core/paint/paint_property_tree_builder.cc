@@ -2861,17 +2861,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       UpdateScrollNode();
       UpdateOverflowControlEffects();
       UpdateScrollTranslation();
-      if (RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled()) {
-        object_.GetFrameView()->AddScrollableAreaWithScrollNode(
-            *To<LayoutBox>(object_).GetScrollableArea());
-      }
+      object_.GetFrameView()->AddScrollableAreaWithScrollNode(
+          *To<LayoutBox>(object_).GetScrollableArea());
     } else {
-      if (RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled()) {
-        if (properties_->Scroll() &&
-            To<LayoutBox>(object_).GetScrollableArea()) {
-          object_.GetFrameView()->RemoveScrollableAreaWithScrollNode(
-              *To<LayoutBox>(object_).GetScrollableArea());
-        }
+      if (properties_->Scroll() && To<LayoutBox>(object_).GetScrollableArea()) {
+        object_.GetFrameView()->RemoveScrollableAreaWithScrollNode(
+            *To<LayoutBox>(object_).GetScrollableArea());
       }
       OnClearScroll(properties_->ClearScroll());
       OnClearEffect(properties_->ClearVerticalScrollbarEffect());
@@ -2916,14 +2911,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollNode() {
       scrollable_area->UserInputScrollable(kHorizontalScrollbar);
   state.user_scrollable_vertical =
       scrollable_area->UserInputScrollable(kVerticalScrollbar);
-
-  if (!RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled()) {
-    if (state.user_scrollable_horizontal || state.user_scrollable_vertical) {
-      object_.GetFrameView()->AddUserScrollableArea(*scrollable_area);
-    } else {
-      object_.GetFrameView()->RemoveUserScrollableArea(*scrollable_area);
-    }
-  }
 
   state.composited_scrolling_preference =
       static_cast<CompositedScrollingPreference>(

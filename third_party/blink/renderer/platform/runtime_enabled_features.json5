@@ -4178,14 +4178,6 @@
       name: "ScriptRunIteratorCombiningMarks",
       status: "stable",
     },
-    // Killswitch added in M134, as two flags
-    // ScrollableAreasWithScrollNodeOptimization and UnifiedScrollableArea
-    // before M137. We are keeping this flag for new optimizations and as a
-    // finch holdback experiment feature.
-    {
-      name: "ScrollableAreaOptimization",
-      status: "stable",
-    },
     {
       name: "ScrollAnchorPriorityCandidateSubtree",
       status: "stable",
