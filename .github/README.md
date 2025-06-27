@@ -45,7 +45,7 @@ Users can create their own prompts or instructions that match the regex
 Use `/git_commit_ghc`
 
 - [.github/instructions](./instructions/): Instructions that are automatically
-  picked up using `applyTo` syntax will have a much higher review bar then those
+  picked up using `applyTo` syntax will have a much higher review bar than those
   without it.
 - [.github/prompts](./prompts/): All prompts should specify a `mode` and
   `description`.
