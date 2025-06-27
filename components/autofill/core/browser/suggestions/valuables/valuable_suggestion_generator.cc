@@ -35,8 +35,6 @@ void SetLoyaltyCardIconURL(Suggestion& suggestion,
   if constexpr (BUILDFLAG(IS_ANDROID)) {
     suggestion.custom_icon = Suggestion::CustomIconUrl(icon_url);
   } else {
-    // TODO(crbug.com/404437008): Check that the pointer is always valid once a
-    // default icon is available.
     if (const gfx::Image* image =
             valuables_manager.GetCachedValuableImageForUrl(icon_url)) {
       suggestion.custom_icon = *image;
