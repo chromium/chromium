@@ -54,9 +54,8 @@ Suggestion CreateManageAddressesSuggestion();
 // Exposes `GetProfilesToSuggest` in tests.
 std::vector<AutofillProfile> GetProfilesToSuggestForTest(
     const AddressDataManager& address_data,
+    const FormFieldData& trigger_field,
     FieldType trigger_field_type,
-    const std::u16string& field_contents,
-    bool field_is_autofilled,
     const FieldTypeSet& field_types);
 
 // Exposes `CreateSuggestionsFromProfiles` in tests.
