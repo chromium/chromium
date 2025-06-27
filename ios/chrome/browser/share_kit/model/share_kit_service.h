@@ -53,7 +53,7 @@ class ShareKitService : public KeyedService {
   virtual NSString* JoinTabGroup(ShareKitJoinConfiguration* config) = 0;
 
   // Returns a new FacePile view for the given `config`.
-  virtual UIView* FacePileView(ShareKitFacePileConfiguration* config) = 0;
+  virtual UIView* FacePileView(ShareKitFacePileConfiguration* config);
 
   // Reads the info for the groups passed in `config` and returns the result
   // through the config callback.

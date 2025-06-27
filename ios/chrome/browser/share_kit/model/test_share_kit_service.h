@@ -45,7 +45,6 @@ class TestShareKitService : public ShareKitService {
   NSString* ShareTabGroup(ShareKitShareGroupConfiguration* config) override;
   NSString* ManageTabGroup(ShareKitManageConfiguration* config) override;
   NSString* JoinTabGroup(ShareKitJoinConfiguration* config) override;
-  UIView* FacePileView(ShareKitFacePileConfiguration* config) override;
   void ReadGroups(ShareKitReadGroupsConfiguration* config) override;
   void ReadGroupWithToken(
       ShareKitReadGroupWithTokenConfiguration* config) override;

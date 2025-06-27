@@ -27,9 +27,6 @@ class ChromiumShareKitService final : public ShareKitService {
   NSString* JoinTabGroup(ShareKitJoinConfiguration* config) override {
     return nil;
   }
-  UIView* FacePileView(ShareKitFacePileConfiguration* config) override {
-    return nil;
-  }
   void ReadGroups(ShareKitReadGroupsConfiguration* config) override {}
   void ReadGroupWithToken(
       ShareKitReadGroupWithTokenConfiguration* config) override {}
