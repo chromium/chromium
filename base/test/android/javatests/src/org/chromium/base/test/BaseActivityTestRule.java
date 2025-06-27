@@ -31,6 +31,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.ApplicationTestUtils;
 
+import java.util.EnumSet;
+
 /**
  * A replacement for ActivityTestRule, designed for use in Chromium. This implementation supports
  * launching the target activity through a launcher or redirect from another Activity.
@@ -155,16 +157,14 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
         final Intent intent = startIntent;
         // Android system pauses the activity on delivering an intent to an existing activity.
         // https://developer.android.com/reference/android/app/Activity#onNewIntent(android.content.Intent)
-        Stage targetStage =
-                ((startIntent.getFlags() & Intent.FLAG_ACTIVITY_SINGLE_TOP) != 0
-                                && mActivity != null
-                                && !mActivity.isFinishing())
-                        ? Stage.PAUSED
-                        : Stage.CREATED;
+        EnumSet<Stage> targetStages =
+                (startIntent.getFlags() & Intent.FLAG_ACTIVITY_SINGLE_TOP) != 0
+                        ? EnumSet.of(Stage.PAUSED, Stage.CREATED)
+                        : EnumSet.of(Stage.CREATED);
         mActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         mActivityClass,
-                        targetStage,
+                        targetStages,
                         () -> ContextUtils.getApplicationContext().startActivity(intent));
         return mActivity;
     }
