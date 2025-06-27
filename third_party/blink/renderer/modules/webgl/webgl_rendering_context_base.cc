@@ -230,57 +230,6 @@ enum class WebGLANGLEImplementation {
 constexpr base::TimeDelta kDurationBetweenRestoreAttempts = base::Seconds(1);
 const int kMaxGLErrorsAllowedToConsole = 256;
 
-// This ResourceProvider is used for low-latency WebGL to pass the drawing
-// buffer's SharedImage directly through to the canvas via
-// ExternalCanvasResource for use cases such as compositing and snapshotting.
-class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
- public:
-  CanvasResourceProviderPassThrough(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-          context_provider_wrapper,
-      CanvasResourceHost* resource_host)
-      : CanvasResourceProvider(kPassThrough,
-                               size,
-                               format,
-                               alpha_type,
-                               color_space,
-                               std::move(context_provider_wrapper),
-                               resource_host) {}
-
-  ~CanvasResourceProviderPassThrough() override = default;
-  bool IsValid() const final { return true; }
-  bool IsAccelerated() const final { return true; }
-  bool SupportsDirectCompositing() const override { return true; }
-  bool IsSingleBuffered() const override { return true; }
-
- private:
-  void ImportResource(
-      scoped_refptr<ExternalCanvasResource>&& resource) override {
-    resource_ = resource;
-  }
-
-  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) final {
-    return resource_;
-  }
-
-  sk_sp<SkSurface> CreateSkSurface() const override { NOTREACHED(); }
-
-  scoped_refptr<StaticBitmapImage> Snapshot(FlushReason,
-                                            ImageOrientation) override {
-    if (IsGpuContextLost() || !resource_) {
-      return nullptr;
-    }
-    return resource_->Bitmap();
-  }
-
- private:
-  scoped_refptr<ExternalCanvasResource> resource_;
-};
-
 base::Lock& WebGLContextLimitLock() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
   return lock;
@@ -1743,16 +1692,29 @@ bool WebGLRenderingContextBase::PushFrameWithCopy(
     bool for_commit_api /*=false*/) {
   bool submitted_frame = false;
 
-  // Note: we push a frame only if (a) the paint operation succeeded and (b) it
-  // actually updated the resource provider.
-  bool resource_provider_was_updated = false;
-  auto* resource_provider = PaintRenderingResultsToCanvas(
-      kBackBuffer, &resource_provider_was_updated);
-  if (resource_provider && resource_provider_was_updated) {
+  // Note: we push a frame only if (a) there is fresh content to produce and (b)
+  // we successfully produced that content.
+  scoped_refptr<CanvasResource> resource = nullptr;
+  bool produced_frame = false;
+
+  if (CanUseDrawingBufferSIWithoutCopyForLowLatency()) {
+    resource = ExportLowLatencyCanvasResource(kBackBuffer,
+                                              /*export_only_if_update=*/true);
+    produced_frame = !!resource;
+  } else {
+    bool resource_provider_was_updated = false;
+    auto* resource_provider = PaintRenderingResultsToCanvas(
+        kBackBuffer, &resource_provider_was_updated);
+    produced_frame = resource_provider && resource_provider_was_updated;
+    if (produced_frame) {
+      resource =
+          resource_provider->ProduceCanvasResource(FlushReason::kNon2DCanvas);
+    }
+  }
+
+  if (produced_frame) {
     const int width = GetDrawingBuffer()->Size().width();
     const int height = GetDrawingBuffer()->Size().height();
-    auto resource =
-        resource_provider->ProduceCanvasResource(FlushReason::kNon2DCanvas);
     auto size = SkIRect::MakeWH(width, height);
     submitted_frame = for_commit_api
                           ? Host()->Commit(std::move(resource), size)
@@ -1992,10 +1954,37 @@ void WebGLRenderingContextBase::SizeChanged() {
   resource_provider_.reset();
 }
 
+scoped_refptr<ExternalCanvasResource>
+WebGLRenderingContextBase::ExportLowLatencyCanvasResource(
+    SourceDrawingBuffer source_buffer,
+    bool export_only_if_update) {
+  CHECK(Host()->LowLatencyEnabled());
+
+  if (isContextLost() || !GetDrawingBuffer()) {
+    return nullptr;
+  }
+
+  bool must_clear_now = ClearIfComposited(kClearCallerOther) != kSkipped;
+
+  if (!must_paint_to_canvas_ && !must_clear_now && export_only_if_update) {
+    return nullptr;
+  }
+
+  must_paint_to_canvas_ = false;
+
+  return GetDrawingBuffer()->ExportLowLatencyCanvasResource();
+}
+
 scoped_refptr<StaticBitmapImage>
 WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
+  if (CanUseDrawingBufferSIWithoutCopyForLowLatency()) {
+    auto resource = ExportLowLatencyCanvasResource(
+        source_buffer, /*export_only_if_update=*/false);
+    return resource ? resource->Bitmap() : nullptr;
+  }
+
   CanvasResourceProvider* provider =
       PaintRenderingResultsToCanvas(source_buffer);
 
@@ -2008,6 +1997,11 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     bool has_dispatcher,
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
+  if (CanUseDrawingBufferSIWithoutCopyForLowLatency()) {
+    return ExportLowLatencyCanvasResource(source_buffer,
+                                          /*export_only_if_update=*/false);
+  }
+
   if (was_dirty) {
     GetOrCreateCanvasResourceProvider();
   }
@@ -2035,22 +2029,11 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
   // rect tracking in the shared image system to enforce this.
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
-  if (CanUseDrawingBufferSIWithoutCopyForLowLatency()) {
-    // Note: Unlike other CanvasResourceProvider subclasses, a
-    // CanvasResourceProviderPassThrough instance is always valid and does
-    // not require clearing as part of initialization (both of these being
-    // due to the fact that it simply delegates the internal parts of the
-    // resource to the drawing buffer).
-    provider = std::make_unique<CanvasResourceProviderPassThrough>(
-        Host()->Size(), format, alpha_type, color_space,
-        SharedGpuContext::ContextProviderWrapper(), Host());
-    CHECK(provider->IsValid());
-  }
+  CHECK(!CanUseDrawingBufferSIWithoutCopyForLowLatency());
   if (SharedGpuContext::IsGpuCompositingEnabled() &&
       Host()->LowLatencyEnabled()) {
     // If LowLatency is enabled, we need a resource that is able to perform
-    // well in such mode. If a PassThrough provider was not possible, try a
-    // SharedImage with the appropriate flags.
+    // well in such mode. Try a SharedImage with the appropriate flags.
     if (!provider) {
       gpu::SharedImageUsageSet shared_image_usage_flags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
@@ -2118,6 +2101,8 @@ CanvasResourceProvider*
 WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer,
     bool* resource_provider_was_updated /*=nullptr*/) {
+  CHECK(!CanUseDrawingBufferSIWithoutCopyForLowLatency());
+
   TRACE_EVENT0("blink",
                "WebGLRenderingContextBase::PaintRenderingResultsToCanvas");
   if (resource_provider_was_updated != nullptr) {
@@ -2149,29 +2134,6 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
       GetOrCreateCanvasResourceProvider();
   if (!resource_provider)
     return nullptr;
-
-  if (resource_provider->GetType() ==
-      CanvasResourceProvider::ResourceProviderType::kPassThrough) {
-    // The passthrough provider should be created only in low-latency mode.
-    CHECK(Host()->LowLatencyEnabled());
-
-    // Single buffered passthrough resource provider doesn't have backing
-    // texture. We need to export the backbuffer mailbox directly without
-    // copying.
-    auto resource = GetDrawingBuffer()->ExportLowLatencyCanvasResource();
-
-    // The drawing buffer's context might have been lost, in which case the
-    // creation of the external resource will have failed.
-    if (!resource) {
-      return resource_provider;
-    }
-
-    resource_provider->ImportResource(std::move(resource));
-    if (resource_provider_was_updated != nullptr) {
-      *resource_provider_was_updated = true;
-    }
-    return resource_provider;
-  }
 
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   // TODO(sunnyps): Why is a texture restorer needed? See if it can be removed.
