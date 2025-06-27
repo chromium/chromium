@@ -233,7 +233,6 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
     if (media_feature == media_feature_names::kScrollDirectionMediaFeature) {
       switch (ident) {
         case CSSValueID::kNone:
-        case CSSValueID::kAny:
         case CSSValueID::kTop:
         case CSSValueID::kLeft:
         case CSSValueID::kBottom:

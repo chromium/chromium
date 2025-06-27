@@ -7,7 +7,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
 <style id="testSheet">
-  @container scroll-state(   scroll-direction:any   ) { }
+  @container scroll-state(   scroll-direction:top   ) { }
   @container scroll-STate(scroll-direction:    ) { }
   @container scroll-STate(scroll-direction) { }
   @container  scroll-state(  ( scroll-Direction: LEFT) OR ( Scroll-direction: BOTTOM  ) ) { }
@@ -20,7 +20,7 @@
   });
 
   const tests = [
-      ["scroll-state(scroll-direction: any)", "Normalize spaces"],
+      ["scroll-state(scroll-direction: top)", "Normalize spaces"],
       ["scroll-STate(scroll-direction:    )", "No value - invalid, serializes as <general-enclosed>"],
       ["scroll-state(scroll-direction)", "Boolean context"],
       ["scroll-state((scroll-direction: left) or (scroll-direction: bottom))", "Logical with 'or'"],
