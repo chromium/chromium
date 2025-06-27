@@ -6060,14 +6060,6 @@ const char kTranslateOpenSettingsDescription[] =
     "Add an option to the translate bubble menu to open language settings.";
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-const char kWasmTtsComponentUpdaterEnabledName[] =
-    "Enable Wasm TTS Extension Component";
-const char kWasmTtsComponentUpdaterEnabledDescription[] =
-    "Enable updating the wasm TTS extension resource files through the "
-    "Component Updater.";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-
 const char kWebAuthenticationPermitEnterpriseAttestationName[] =
     "Web Authentication Enterprise Attestation";
 const char kWebAuthenticationPermitEnterpriseAttestationDescription[] =

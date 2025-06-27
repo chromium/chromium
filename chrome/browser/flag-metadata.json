@@ -10164,15 +10164,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "wasm-tts-component-updater-enabled",
-    "owners": [
-      "xiangxiao@google.com",
-      "lwinston@google.com",
-      "//ui/accessibility/OWNERS"
-    ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "wayland-linux-drm-syncobj",
     "owners": [
       "orko@igalia.com",
