@@ -17,6 +17,7 @@ component("fake") {
     "//services/on_device_model/ml:api",
     "//services/on_device_model/ml:ml_no_internal",
     "//services/on_device_model/public/mojom",
+    "//skia:skia_core_public_headers",
   ]
   defines = [ "IS_ON_DEVICE_MODEL_FAKE_IMPL" ]
 }

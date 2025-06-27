@@ -40,7 +40,7 @@ component("types") {
     "//base",
     "//mojo/public/cpp/base:shared_typemap_traits",
     "//services/on_device_model/public/mojom:mojom_shared",
-    "//skia",
+    "//skia:skia_core_public_headers"
   ]
   defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]
 }
