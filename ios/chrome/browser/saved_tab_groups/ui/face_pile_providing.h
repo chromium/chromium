@@ -12,8 +12,14 @@
 // object is alive.
 @protocol FacePileProviding
 
+// Returns the FacePile computed width.
+- (CGFloat)facePileWdith;
+
 // Returns the FacePile associated with this object.
 - (UIView*)facePileView;
+
+// Returns YES if the providers are considered equal, NO otherwise.
+- (BOOL)isEqualFacePileProviding:(id<FacePileProviding>)otherProvider;
 
 @end
 

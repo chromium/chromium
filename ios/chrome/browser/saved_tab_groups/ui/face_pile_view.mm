@@ -54,6 +54,8 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
   UIView* _nonAvatarContainer;
   // Label to display the "+X" person in the group.
   UILabel* _plusXLabel;
+  // The number of members in the shared group.
+  CGFloat _membersCount;
 }
 
 - (instancetype)init {
@@ -70,6 +72,31 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
                        withAction:@selector(updateColors)];
   }
   return self;
+}
+
+#pragma mark - Getters
+
+- (CGFloat)optimalWidth {
+  NSInteger containerCount = _membersCount < 3 ? 2 : 3;
+  CGFloat containerSize = _avatarSize + kContainerSubstractredStroke * 2;
+
+  CGFloat width = (containerCount - 1) * kAvatarSpacing;
+  width += containerCount * containerSize;
+
+  if (_membersCount > 3) {
+    // Subtract the width of the last avatar, as it's replaced by the "+X"
+    // container.
+    width -= _avatarSize;
+    width +=
+        [_plusXLabel.text sizeWithAttributes:@{
+          NSFontAttributeName : [UIFont systemFontOfSize:kPlusXlabelFontSize
+                                                  weight:UIFontWeightMedium]
+        }]
+            .width;
+    width += 2 * kPlusXlabelContainerHorizontalInnerMargin;
+  }
+
+  return width;
 }
 
 #pragma mark - FacePileConsumer
@@ -100,6 +127,7 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
   }
 
   _avatars = faces;
+  _membersCount = totalNumber;
   CGFloat containerSize = _avatarSize + kContainerSubstractredStroke * 2;
   NSInteger avatarsCount = static_cast<NSUInteger>(_avatars.count);
 

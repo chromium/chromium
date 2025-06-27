@@ -740,19 +740,14 @@ class TabStripLayout: UICollectionViewFlowLayout {
   }
 
   public func calculateCellSizeForTabGroupItem(_ tabGroupItem: TabGroupItem) -> CGSize {
-    var width =
-      tabGroupItem.title?.size(withAttributes: [
-        .font: UIFont.systemFont(ofSize: TabStripConstants.GroupItem.fontSize, weight: .medium)
-      ]).width.rounded(.up) ?? 0
-    width += TabStripConstants.GroupItem.minCellWidth
+    var width = 2 * TabStripConstants.GroupItem.contentContainerHorizontalMargin
     if let groupItemIdentifier = TabStripItemIdentifier.groupIdentifier(tabGroupItem),
       let indexPath = dataSource?.indexPath(for: groupItemIdentifier),
       let groupCell = collectionView?.cellForItem(at: indexPath) as? TabStripGroupCell
     {
-      width += groupCell.hasNotificationDot ? TabStripConstants.GroupItem.notificationDotSize : 0
-      width +=
-        groupCell.hasNotificationDot
-        ? TabStripConstants.GroupItem.titleContainerHorizontalMargin : 0
+      width += groupCell.optimalWidth
+    } else {
+      width += TabStripGroupCell.approximativeNonSharedWidth(withTitle: tabGroupItem.title)
     }
     width = min(width, TabStripConstants.GroupItem.maxCellWidth)
     return CGSize(width: width, height: TabStripConstants.GroupItem.height)

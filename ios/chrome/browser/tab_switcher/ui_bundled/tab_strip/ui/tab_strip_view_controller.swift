@@ -83,6 +83,8 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
   public weak var contextMenuProvider: TabStripContextMenuProvider?
   /// Handles snapshots and favicons fetches.
   public weak var snapshotAndfaviconDataSource: TabSwitcherItemSnapShotAndFaviconDataSource?
+  /// Data source for fetching `TabStripTabGroupCell` properties.
+  public weak var tabGroupCellDataSource: TabStripTabGroupCellDataSource?
   /// Handler for tab group confirmation commands.
   public weak var tabGroupConfirmationHandler: TabGroupConfirmationCommands?
 
@@ -619,9 +621,10 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
       guard let item = itemIdentifier.tabGroupItem else { return }
       let itemData = self.itemData[itemIdentifier] as? TabStripItemData
       cell.title = item.title
-      cell.titleContainerBackgroundColor = item.groupColor
+      cell.contentContainerBackgroundColor = item.groupColor
       cell.titleTextColor = item.foregroundColor
       cell.collapsed = item.collapsed
+      cell.facePileProvider = self.tabGroupCellDataSource?.facePileProvider(forItem: itemIdentifier)
       cell.delegate = self
       cell.groupStrokeColor = itemData?.groupStrokeColor
       cell.hasNotificationDot = itemData?.hasNotificationDot == true && item.collapsed
@@ -905,6 +908,21 @@ extension TabStripViewController: UICollectionViewDelegateFlowLayout {
     }
   }
 
+  func collectionView(
+    _ collectionView: UICollectionView,
+    willDisplay cell: UICollectionViewCell,
+    forItemAt indexPath: IndexPath
+  ) {
+    guard let tabStripGroupCell = cell as? TabStripGroupCell else {
+      return
+    }
+    // Tab group cells that include a face pile must recalculate their size when they appear.
+    // This ensures their width properly accounts for the face pile, preventing them from using
+    // the approximate nonSharedWidth.
+    if tabStripGroupCell.facePileProvider != nil {
+      layout.invalidateLayout()
+    }
+  }
 }
 
 extension TabStripViewController: UICollectionViewDragDelegate, UICollectionViewDropDelegate {

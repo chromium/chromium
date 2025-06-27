@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_handler.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_group_cell_data_source.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item_snapshot_and_favicon_data_source.h"
 
@@ -15,9 +16,11 @@ class Browser;
 class BrowserList;
 class FaviconLoader;
 class ProfileIOS;
+class ShareKitService;
 enum class TabGroupActionType;
 @protocol TabStripCommands;
 @protocol TabStripConsumer;
+@protocol TabStripMediatorDelegate;
 class UrlLoadingBrowserAgent;
 class WebStateList;
 
@@ -46,7 +49,8 @@ class WebStateID;
 @interface TabStripMediator
     : NSObject <TabCollectionDragDropHandler,
                 TabSwitcherItemSnapShotAndFaviconDataSource,
-                TabStripMutator>
+                TabStripMutator,
+                TabStripTabGroupCellDataSource>
 
 // The WebStateList that this mediator listens for any changes on the total
 // number of Webstates.
@@ -64,6 +68,9 @@ class WebStateID;
 // URL loader to open tabs when needed.
 @property(nonatomic, assign) UrlLoadingBrowserAgent* URLLoader;
 
+// Delegate.
+@property(nonatomic, weak) id<TabStripMediatorDelegate> delegate;
+
 // Designated initializer. Initializer with a TabStripConsumer, a
 // `tabGroupSyncService` and the `browserList`.
 - (instancetype)
@@ -72,6 +79,7 @@ class WebStateID;
              browserList:(BrowserList*)browserList
         messagingService:
             (collaboration::messaging::MessagingBackendService*)messagingService
+         shareKitService:(ShareKitService*)shareKitService
     collaborationService:
         (collaboration::CollaborationService*)collaborationService
            faviconLoader:(FaviconLoader*)faviconLoader

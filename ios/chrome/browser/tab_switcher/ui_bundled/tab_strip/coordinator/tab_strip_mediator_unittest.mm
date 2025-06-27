@@ -163,6 +163,7 @@ class TabStripMediatorTest : public PlatformTest {
                                tabGroupSyncService:tab_group_sync_service_.get()
                                        browserList:browser_list
                                   messagingService:&messaging_backend_
+                                   shareKitService:nil
                               collaborationService:nil
                                      faviconLoader:nil];
 

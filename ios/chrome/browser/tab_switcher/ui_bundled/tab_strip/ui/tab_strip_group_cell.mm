@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_group_cell.h"
 
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/face_pile_providing.h"
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_group_stroke_view.h"
@@ -15,31 +16,73 @@
 
 namespace {
 
-constexpr CGFloat kTitleContainerVerticalPadding = 4;
-constexpr CGFloat kTitleContainerCenterYOffset = -2;
+// Content container constraints.
+constexpr CGFloat kcontentContainerVerticalPadding = 4;
+constexpr CGFloat kcontentContainerCenterYOffset = -2;
+constexpr CGFloat kcontentContainerTransitionThreshold = 70;
+
+// Title label constraints.
+constexpr CGFloat kTitleLabelCompressionResistance = 998;
+
+// Face pile constraints.
+constexpr CGFloat kFacePileLeadingPadding = 4;
+constexpr CGFloat kFacePileTrailingPadding = 2;
+
+// Group stroke constraints.
 constexpr CGFloat kGroupStrokeViewMinimumWidth = 14;
+
+// Notification dot constraints.
+constexpr CGFloat kNotificationDotSize = 6;
+constexpr CGFloat kNotificationDotTrailingPadding = 10;
+
+// Animation delays.
 constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
-constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
+constexpr double kcontentContainerFadeAnimationSeconds = 0.25;
+
+// Returns the font used by the title.
+UIFont* TitleFont() {
+  return [UIFont systemFontOfSize:TabStripTabItemConstants.fontSize
+                           weight:UIFontWeightMedium];
+}
+
+// Calculates the approximative length of the given title. An additional point
+// is added to prevent text fading when the title is fully displayed.
+CGFloat CalculateTitleLength(NSString* title) {
+  // Add an extra point to avoid having the fading when the text is fully
+  // displayed.
+  return 1 +
+         [title sizeWithAttributes:@{NSFontAttributeName : TitleFont()}].width;
+}
 
 }  // namespace
 
+@interface TabStripGroupCell ()
+
+// The face pile view.
+@property(nonatomic, strong) UIView* facePile;
+
+@end
+
 @implementation TabStripGroupCell {
   FadeTruncatingLabel* _titleLabel;
-  UIView* _titleContainer;
+  UIView* _contentContainer;
   TabStripGroupStrokeView* _groupStrokeView;
   UIView* _notificationDotView;
-  NSLayoutConstraint* _titleContainerHeightConstraint;
+  NSLayoutConstraint* _contentContainerHeightConstraint;
   NSLayoutConstraint* _titleLabelTrailingConstraint;
+  NSLayoutConstraint* _titleLabelLeadingConstraint;
   NSLayoutConstraint* _notificationDotViewTrailingConstraint;
+  NSLayoutConstraint* _groupStrokeViewTitleLabelConstraint;
   // `_collapsed` state of the cell before starting a drag action.
   BOOL _collapsedBeforeDrag;
+  CGFloat _titleLength;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    _titleContainer = [self createTitleContainer];
-    [self.contentView addSubview:_titleContainer];
+    _contentContainer = [self createContentContainer];
+    [self.contentView addSubview:_contentContainer];
     _groupStrokeView = [[TabStripGroupStrokeView alloc] init];
     [self addSubview:_groupStrokeView];
     [self setupConstraints];
@@ -49,12 +92,19 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   return self;
 }
 
+#pragma mark - Public
+
++ (CGFloat)approximativeNonSharedWidthWithTitle:(NSString*)title {
+  return CalculateTitleLength(title) +
+         2 * TabStripGroupItemConstants.contentContainerHorizontalPadding;
+}
+
 #pragma mark - TabStripCell
 
 - (UIDragPreviewParameters*)dragPreviewParameters {
   UIBezierPath* visiblePath = [UIBezierPath
-      bezierPathWithRoundedRect:_titleContainer.frame
-                   cornerRadius:_titleContainer.layer.cornerRadius];
+      bezierPathWithRoundedRect:_contentContainer.frame
+                   cornerRadius:_contentContainer.layer.cornerRadius];
   UIDragPreviewParameters* params = [[UIDragPreviewParameters alloc] init];
   params.visiblePath = visiblePath;
   return params;
@@ -64,11 +114,12 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  _titleContainer.accessibilityValue = nil;
-  _titleContainer.accessibilityLabel = nil;
+  _contentContainer.accessibilityValue = nil;
+  _contentContainer.accessibilityLabel = nil;
+  _facePileProvider = nil;
   _titleLabel.text = nil;
   self.delegate = nil;
-  self.titleContainerBackgroundColor = nil;
+  self.contentContainerBackgroundColor = nil;
   self.collapsed = NO;
   self.hasNotificationDot = NO;
 }
@@ -105,17 +156,24 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   }
 }
 
+#pragma mark - Getters
+
+- (CGFloat)optimalWidth {
+  return _titleLength + [self widthOfNonTitleElementsIncludingPadding];
+}
+
 #pragma mark - Setters
 
 - (void)setTitle:(NSString*)title {
   [super setTitle:title];
-  _titleContainer.accessibilityLabel = title;
+  _contentContainer.accessibilityLabel = title;
   _titleLabel.text = [title copy];
+  _titleLength = CalculateTitleLength(title);
 }
 
-- (void)setTitleContainerBackgroundColor:(UIColor*)color {
-  _titleContainerBackgroundColor = color;
-  _titleContainer.backgroundColor = color;
+- (void)setContentContainerBackgroundColor:(UIColor*)color {
+  _contentContainerBackgroundColor = color;
+  _contentContainer.backgroundColor = color;
 }
 
 - (void)setTitleTextColor:(UIColor*)titleTextColor {
@@ -179,33 +237,74 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   }
 }
 
+- (void)setFacePileProvider:(id<FacePileProviding>)facePileProvider {
+  if ([_facePileProvider isEqualFacePileProviding:facePileProvider]) {
+    return;
+  }
+  _facePileProvider = facePileProvider;
+
+  self.facePile = [_facePileProvider facePileView];
+}
+
+- (void)setFacePile:(UIView*)facePile {
+  if ([_facePile isDescendantOfView:self]) {
+    [_facePile removeFromSuperview];
+  }
+
+  _facePile = facePile;
+  _titleLabelLeadingConstraint.active = !_facePile;
+
+  if (!_facePile) {
+    _groupStrokeViewTitleLabelConstraint.constant = 0;
+    return;
+  }
+
+  _groupStrokeViewTitleLabelConstraint.constant =
+      [_facePileProvider facePileWdith];
+  facePile.translatesAutoresizingMaskIntoConstraints = NO;
+  [facePile setContentHuggingPriority:UILayoutPriorityRequired
+                              forAxis:UILayoutConstraintAxisHorizontal];
+  [facePile
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+  [_contentContainer addSubview:facePile];
+  [NSLayoutConstraint activateConstraints:@[
+    [facePile.leadingAnchor
+        constraintEqualToAnchor:_contentContainer.leadingAnchor
+                       constant:kFacePileLeadingPadding],
+    [facePile.centerYAnchor
+        constraintEqualToAnchor:_contentContainer.centerYAnchor],
+    [_titleLabel.leadingAnchor constraintEqualToAnchor:facePile.trailingAnchor
+                                              constant:kFacePileTrailingPadding]
+  ]];
+}
+
 #pragma mark - View creation helpers
 
 // Returns a new title label.
 - (FadeTruncatingLabel*)createTitleLabel {
   FadeTruncatingLabel* titleLabel = [[FadeTruncatingLabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  titleLabel.font = [UIFont systemFontOfSize:TabStripTabItemConstants.fontSize
-                                      weight:UIFontWeightMedium];
+  titleLabel.font = TitleFont();
   titleLabel.textColor = [UIColor colorNamed:kSolidWhiteColor];
   titleLabel.textAlignment = NSTextAlignmentCenter;
   [titleLabel
-      setContentCompressionResistancePriority:UILayoutPriorityRequired - 1
+      setContentCompressionResistancePriority:kTitleLabelCompressionResistance
                                       forAxis:UILayoutConstraintAxisHorizontal];
   return titleLabel;
 }
 
-// Returns a new title container view.
-- (UIView*)createTitleContainer {
-  UIView* titleContainer = [[UIView alloc] init];
-  titleContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  titleContainer.layer.masksToBounds = YES;
-  titleContainer.isAccessibilityElement = YES;
-  titleContainer.layer.cornerRadius =
-      TabStripGroupItemConstants.titleContainerHorizontalPadding;
+// Returns a new content container view.
+- (UIView*)createContentContainer {
+  UIView* contentContainer = [[UIView alloc] init];
+  contentContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  contentContainer.layer.masksToBounds = YES;
+  contentContainer.isAccessibilityElement = YES;
+  contentContainer.layer.cornerRadius =
+      TabStripGroupItemConstants.contentContainerHorizontalPadding;
   _titleLabel = [self createTitleLabel];
-  [titleContainer addSubview:_titleLabel];
-  return titleContainer;
+  [contentContainer addSubview:_titleLabel];
+  return contentContainer;
 }
 
 #pragma mark - UIAccessibilityAction
@@ -230,57 +329,59 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
 - (void)setupConstraints {
   UIView* contentView = self.contentView;
   AddSameConstraintsToSidesWithInsets(
-      _titleContainer, contentView,
+      _contentContainer, contentView,
       LayoutSides::kLeading | LayoutSides::kTrailing,
       NSDirectionalEdgeInsetsMake(
-          0, TabStripGroupItemConstants.titleContainerHorizontalMargin, 0,
-          TabStripGroupItemConstants.titleContainerHorizontalMargin));
+          0, TabStripGroupItemConstants.contentContainerHorizontalMargin, 0,
+          TabStripGroupItemConstants.contentContainerHorizontalMargin));
 
   // The width of each cell is calculated in TabStripLayout.
   // The margin and padding at both edges and the title of a group is taken
   // account into the width of each cell.
+  _titleLabelLeadingConstraint = [_titleLabel.leadingAnchor
+      constraintEqualToAnchor:_contentContainer.leadingAnchor
+                     constant:TabStripGroupItemConstants
+                                  .contentContainerHorizontalPadding];
   _titleLabelTrailingConstraint = [_titleLabel.trailingAnchor
-      constraintEqualToAnchor:_titleContainer.trailingAnchor
+      constraintEqualToAnchor:_contentContainer.trailingAnchor
                      constant:-TabStripGroupItemConstants
-                                   .titleContainerHorizontalPadding];
+                                   .contentContainerHorizontalPadding];
+  _titleLabelTrailingConstraint.priority = kTitleLabelCompressionResistance + 1;
 
   NSLayoutConstraint* titleLabelMaxWidthConstraint = [_titleLabel.widthAnchor
       constraintLessThanOrEqualToConstant:TabStripGroupItemConstants
                                               .maxTitleWidth];
   titleLabelMaxWidthConstraint.priority = UILayoutPriorityRequired;
   titleLabelMaxWidthConstraint.active = YES;
-  _titleContainerHeightConstraint =
-      [_titleContainer.heightAnchor constraintEqualToConstant:0];
-  _titleContainerHeightConstraint.active = YES;
-  NSLayoutConstraint* groupStrokeViewTitleLabelConstraint =
+  _contentContainerHeightConstraint =
+      [_contentContainer.heightAnchor constraintEqualToConstant:0];
+  _contentContainerHeightConstraint.active = YES;
+  _groupStrokeViewTitleLabelConstraint = [_groupStrokeView.widthAnchor
+      constraintEqualToAnchor:_titleLabel.widthAnchor];
+  _groupStrokeViewTitleLabelConstraint.priority =
+      kTitleLabelCompressionResistance - 2;
+  NSLayoutConstraint* groupStrokeViewcontentContainerConstraint =
       [_groupStrokeView.widthAnchor
-          constraintEqualToAnchor:_titleLabel.widthAnchor];
-  groupStrokeViewTitleLabelConstraint.priority = UILayoutPriorityRequired - 3;
-  NSLayoutConstraint* groupStrokeViewTitleContainerConstraint =
-      [_groupStrokeView.widthAnchor
-          constraintLessThanOrEqualToAnchor:_titleContainer.widthAnchor
+          constraintLessThanOrEqualToAnchor:_contentContainer.widthAnchor
                                    constant:
                                        -2 *
                                            TabStripGroupItemConstants
-                                               .titleContainerHorizontalPadding -
+                                               .contentContainerHorizontalPadding -
                                        kGroupStrokeViewMinimumWidth];
-  groupStrokeViewTitleContainerConstraint.priority =
-      UILayoutPriorityRequired - 2;
+  groupStrokeViewcontentContainerConstraint.priority =
+      kTitleLabelCompressionResistance - 1;
   [NSLayoutConstraint activateConstraints:@[
-    groupStrokeViewTitleLabelConstraint,
-    groupStrokeViewTitleContainerConstraint,
+    _groupStrokeViewTitleLabelConstraint,
+    groupStrokeViewcontentContainerConstraint,
     [_groupStrokeView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
     [_groupStrokeView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
 
-    [_titleContainer.centerYAnchor
+    [_contentContainer.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor
-                       constant:kTitleContainerCenterYOffset],
+                       constant:kcontentContainerCenterYOffset],
     [_titleLabel.centerYAnchor
-        constraintEqualToAnchor:_titleContainer.centerYAnchor],
-    [_titleLabel.leadingAnchor
-        constraintEqualToAnchor:_titleContainer.leadingAnchor
-                       constant:TabStripGroupItemConstants
-                                    .titleContainerHorizontalPadding],
+        constraintEqualToAnchor:_contentContainer.centerYAnchor],
+    _titleLabelLeadingConstraint,
     _titleLabelTrailingConstraint,
   ]];
 }
@@ -318,7 +419,7 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   if (!self.collapsed) {
     // If the group is not collapse, the right end of the stroke should extend
     // to reach the left end of the next tab.
-    rightPoint.x += TabStripGroupItemConstants.titleContainerHorizontalMargin;
+    rightPoint.x += TabStripGroupItemConstants.contentContainerHorizontalMargin;
     rightPoint.x += TabStripTabItemConstants.horizontalSpacing;
     rightPoint.x += lineWidth;
     rightPoint.x += TabStripCollectionViewConstants.groupStrokeExtension;
@@ -333,45 +434,77 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   [_groupStrokeView setTrailingPath:rightPath.CGPath];
 }
 
-// Updates the title alpha value and title container height according to the
-// difference between the size of the title and the size of its container.
-- (void)updateTransitionState {
-  CGFloat horizontalTitlePadding =
-      TabStripGroupItemConstants.titleContainerHorizontalPadding;
-  CGFloat verticalTitlePadding = kTitleContainerVerticalPadding;
-  CGFloat titleContainerWidth = _titleContainer.bounds.size.width;
-  CGFloat maxTitleContainerWidth =
-      _titleLabel.frame.size.width + 2 * horizontalTitlePadding;
-  CGFloat minTitleContainerHeight = 2 * _titleContainer.layer.cornerRadius;
-  CGFloat maxTitleContainerHeight =
-      _titleLabel.frame.size.height + 2 * verticalTitlePadding;
-  CGFloat factor = 0;
-  if (maxTitleContainerWidth - 2 * horizontalTitlePadding > 0) {
-    factor = (titleContainerWidth - 2 * horizontalTitlePadding) /
-             (maxTitleContainerWidth - 2 * horizontalTitlePadding);
+// Returns the combined width of all cell elements, excluding the title.
+- (CGFloat)widthOfNonTitleElementsIncludingPadding {
+  CGFloat width =
+      2 * TabStripGroupItemConstants.contentContainerHorizontalPadding;
+  if (_facePile) {
+    width += [_facePileProvider facePileWdith];
+    width += kFacePileLeadingPadding + kFacePileTrailingPadding;
+    width -= TabStripGroupItemConstants.contentContainerHorizontalPadding;
   }
+  if (_hasNotificationDot) {
+    width += kNotificationDotSize;
+    width += kNotificationDotTrailingPadding;
+  }
+  return width;
+}
+
+// Updates the alpha of the title and face pile, and adjusts the content
+// container's height, based on its current width relative to its min/max
+// dimensions.
+- (void)updateTransitionState {
+  CGFloat verticalTitlePadding = kcontentContainerVerticalPadding;
+
+  CGFloat threshold =
+      kcontentContainerTransitionThreshold + _facePile.bounds.size.width;
+
+  CGFloat contentContainerMargin =
+      2 * TabStripGroupItemConstants.contentContainerHorizontalMargin;
+  CGFloat maxContentContainerWidth =
+      fmin(fmin(self.optimalWidth, TabStripGroupItemConstants.maxCellWidth -
+                                       contentContainerMargin),
+           threshold);
+
+  CGFloat currentcontentContainerWidth = _contentContainer.bounds.size.width;
+
+  CGFloat mincontentContainerDimension =
+      2 * _contentContainer.layer.cornerRadius;
+
+  CGFloat factor = 0;
+  if (maxContentContainerWidth - mincontentContainerDimension != 0) {
+    factor = (currentcontentContainerWidth - mincontentContainerDimension) /
+             (maxContentContainerWidth - mincontentContainerDimension);
+  }
+  factor = fmax(fmin(factor, 1), 0);
+
+  _facePile.alpha = factor;
+
+  CGFloat maxcontentContainerHeight =
+      _titleLabel.frame.size.height + 2 * verticalTitlePadding;
   _titleLabel.alpha = factor;
-  _titleContainerHeightConstraint.constant =
-      (1 - factor) * minTitleContainerHeight + factor * maxTitleContainerHeight;
+  _contentContainerHeightConstraint.constant =
+      (1 - factor) * mincontentContainerDimension +
+      factor * maxcontentContainerHeight;
 
   // At the end of the group shrinking animation (factor is 0), if the group
   // intersects with the leading or trailing edge, then animate the title
   // container alpha to 0.
-  CGFloat titleContainerAlpha = 1;
+  CGFloat contentContainerAlpha = 1;
   if (factor == 0 && (self.intersectsLeftEdge || self.intersectsRightEdge)) {
-    titleContainerAlpha = 0;
+    contentContainerAlpha = 0;
   }
-  UIView* titleContainer = _titleContainer;
-  [UIView animateWithDuration:kTitleContainerFadeAnimationSeconds
+  UIView* contentContainer = _contentContainer;
+  [UIView animateWithDuration:kcontentContainerFadeAnimationSeconds
                    animations:^{
-                     titleContainer.alpha = titleContainerAlpha;
+                     contentContainer.alpha = contentContainerAlpha;
                    }];
 }
 
 - (void)updateAccessibilityValue {
   // Use the accessibility Value as there is a pause when using the
   // accessibility hint.
-  _titleContainer.accessibilityValue = l10n_util::GetNSString(
+  _contentContainer.accessibilityValue = l10n_util::GetNSString(
       self.collapsed ? IDS_IOS_TAB_STRIP_GROUP_CELL_COLLAPSED_VOICE_OVER_VALUE
                      : IDS_IOS_TAB_STRIP_GROUP_CELL_EXPANDED_VOICE_OVER_VALUE);
 }
@@ -395,30 +528,29 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   _notificationDotView = [[UIView alloc] init];
   _notificationDotView.backgroundColor = _titleTextColor;
   _notificationDotView.translatesAutoresizingMaskIntoConstraints = NO;
-  _notificationDotView.layer.cornerRadius =
-      TabStripGroupItemConstants.notificationDotSize / 2;
+  _notificationDotView.layer.cornerRadius = kNotificationDotSize / 2;
   _notificationDotView.accessibilityIdentifier =
       TabStripGroupItemConstants.notificationDotAccessibilityIdentifier;
-  [_titleContainer addSubview:_notificationDotView];
+  [_contentContainer addSubview:_notificationDotView];
 
   _notificationDotViewTrailingConstraint = [_notificationDotView.trailingAnchor
-      constraintEqualToAnchor:_titleContainer.trailingAnchor
-                     constant:-TabStripGroupItemConstants
-                                   .titleContainerHorizontalPadding];
+      constraintEqualToAnchor:_contentContainer.trailingAnchor
+                     constant:-kNotificationDotTrailingPadding];
+  _notificationDotViewTrailingConstraint.priority =
+      kTitleLabelCompressionResistance + 1;
 
   [NSLayoutConstraint activateConstraints:@[
     [_notificationDotView.widthAnchor
-        constraintEqualToConstant:TabStripGroupItemConstants
-                                      .notificationDotSize],
+        constraintEqualToConstant:kNotificationDotSize],
     [_notificationDotView.heightAnchor
         constraintEqualToAnchor:_notificationDotView.widthAnchor],
     // Position the notification dot at right end of the cell.
     [_notificationDotView.centerYAnchor
-        constraintEqualToAnchor:_titleContainer.centerYAnchor],
+        constraintEqualToAnchor:_contentContainer.centerYAnchor],
     [_notificationDotView.leadingAnchor
         constraintEqualToAnchor:_titleLabel.trailingAnchor
                        constant:TabStripGroupItemConstants
-                                    .titleContainerHorizontalMargin],
+                                    .contentContainerHorizontalMargin],
     _notificationDotViewTrailingConstraint,
   ]];
 }
