@@ -2107,12 +2107,6 @@ config("default_warnings") {
       ]
     }
 
-    if (default_toolchain != "//build/toolchain/cros:target" &&
-        !llvm_android_mainline) {
-      # TODO(crbug.com/417996267): Fix and re-enable
-      cflags += [ "-Wno-character-conversion" ]
-    }
-
     if (is_component_build && use_clang_warning_suppression_file && !is_win) {
       # Warn for globally unique objects which might get duplicated if built
       # into different components, due to hidden visibility. Only applicable
