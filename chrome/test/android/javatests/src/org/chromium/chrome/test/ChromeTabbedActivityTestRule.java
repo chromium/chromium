@@ -44,6 +44,10 @@ import java.util.concurrent.TimeoutException;
 public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeTabbedActivity> {
     private static final String TAG = "ChromeTabbedATR";
 
+    /**
+     * @deprecated use ChromeTransitTestRules instead.
+     */
+    @Deprecated
     public ChromeTabbedActivityTestRule() {
         super(ChromeTabbedActivity.class);
     }
