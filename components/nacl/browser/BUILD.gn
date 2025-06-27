@@ -29,7 +29,6 @@ static_library("browser") {
   deps = [
     "//base",
     "//components/nacl/common",
-    "//components/nacl/common:buildflags",
     "//components/url_formatter",
     "//content/public/browser",
     "//content/public/common",

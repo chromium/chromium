@@ -1,7 +1,6 @@
 include_rules = [
   "+ui/latency",
   "+cc/paint",
-  "+components/nacl/common/buildflags.h",
   "+mojo/public",
   "+third_party/skia",
   "+components/miracle_parameter",

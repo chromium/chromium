@@ -17,7 +17,6 @@
 #include "components/nacl/browser/nacl_file_host.h"
 #include "components/nacl/browser/nacl_process_host.h"
 #include "components/nacl/browser/pnacl_host.h"
-#include "components/nacl/common/buildflags.h"
 #include "components/nacl/common/nacl_host_messages.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -96,40 +95,11 @@ void NaClHostMessageFilter::OnChannelClosing() {
 void NaClHostMessageFilter::OverrideThreadForMessage(
     const IPC::Message& message,
     content::BrowserThread::ID* thread) {
-#if BUILDFLAG(ENABLE_NACL)
-  if (message.type() == NaClHostMsg_LaunchNaCl::ID) {
-    *thread = content::BrowserThread::UI;
-  } else if (message.type() == NaClHostMsg_GetReadonlyPnaclFD::ID ||
-             message.type() == NaClHostMsg_NaClCreateTemporaryFile::ID ||
-             message.type() == NaClHostMsg_NexeTempFileRequest::ID ||
-             message.type() == NaClHostMsg_ReportTranslationFinished::ID) {
-    *thread = content::BrowserThread::UI;
-  }
-#endif
 }
 
 bool NaClHostMessageFilter::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(NaClHostMessageFilter, message)
-#if BUILDFLAG(ENABLE_NACL)
-    IPC_MESSAGE_HANDLER_DELAY_REPLY(NaClHostMsg_LaunchNaCl, OnLaunchNaCl)
-    IPC_MESSAGE_HANDLER_DELAY_REPLY(NaClHostMsg_GetReadonlyPnaclFD,
-                                    OnGetReadonlyPnaclFd)
-    IPC_MESSAGE_HANDLER_DELAY_REPLY(NaClHostMsg_NaClCreateTemporaryFile,
-                                    OnNaClCreateTemporaryFile)
-    IPC_MESSAGE_HANDLER(NaClHostMsg_NexeTempFileRequest,
-                        OnGetNexeFd)
-    IPC_MESSAGE_HANDLER(NaClHostMsg_ReportTranslationFinished,
-                        OnTranslationFinished)
-    IPC_MESSAGE_HANDLER(NaClHostMsg_MissingArchError,
-                        OnMissingArchError)
-    IPC_MESSAGE_HANDLER_DELAY_REPLY(NaClHostMsg_OpenNaClExecutable,
-                                    OnOpenNaClExecutable)
-    IPC_MESSAGE_HANDLER(NaClHostMsg_NaClGetNumProcessors,
-                        OnNaClGetNumProcessors)
-    IPC_MESSAGE_HANDLER(NaClHostMsg_NaClDebugEnabledForURL,
-                        OnNaClDebugEnabledForURL)
-#endif
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 

@@ -229,7 +229,6 @@ component("proxy") {
   deps = [
     ":common",
     "//base",
-    "//components/nacl/common:buildflags",
     "//device/base/synchronization",
     "//device/gamepad/public/cpp:shared_with_blink",
     "//gpu/command_buffer/client:client",

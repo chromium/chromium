@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//components/nacl/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
@@ -132,9 +131,4 @@ static_library("switches") {
     "nacl_switches.cc",
     "nacl_switches.h",
   ]
-}
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "ENABLE_NACL=$enable_nacl" ]
 }
