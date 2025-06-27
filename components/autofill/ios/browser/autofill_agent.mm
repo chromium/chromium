@@ -1108,6 +1108,13 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 // Sends the the |data| to |frame| to actually fill the data.
 - (void)sendData:(AutofillData)data toFrame:(web::WebFrame*)frame {
   DCHECK(_webState->IsVisible());
+
+  // `frame` may come from a frame ID that was previously cached; the frame
+  // could have been destroyed since then. See crbug.com/425991572.
+  if (!frame) {
+    return;
+  }
+
   __weak __typeof(self) weakSelf = self;
   const auto callback =
       [](__weak AutofillAgent* agent, base::WeakPtr<web::WebFrame> frame,
