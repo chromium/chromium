@@ -48,6 +48,11 @@ std::optional<UserSelectableType> GetUserSelectableTypeFromString(
 std::string UserSelectableTypeSetToString(UserSelectableTypeSet types);
 DataTypeSet UserSelectableTypeToAllDataTypes(UserSelectableType type);
 
+base::Value::List UserSelectableTypeSetToValueList(
+    syncer::UserSelectableTypeSet user_selected_types);
+syncer::UserSelectableTypeSet ValueListToUserSelectableTypeSet(
+    const base::Value::List& value_list);
+
 DataType UserSelectableTypeToCanonicalDataType(UserSelectableType type);
 
 // Do not use this function for data types which have multiple corresponding

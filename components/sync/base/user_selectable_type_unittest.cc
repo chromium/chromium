@@ -86,6 +86,28 @@ TEST_F(UserSelectableTypeTest, GetUserSelectableTypeFromDataType) {
   }
 }
 
+TEST_F(UserSelectableTypeTest, UserSelectableTypeSetToValueList) {
+  UserSelectableTypeSet types = {UserSelectableType::kBookmarks,
+                                 UserSelectableType::kPasswords,
+                                 UserSelectableType::kPreferences};
+  base::Value::List value_list = UserSelectableTypeSetToValueList(types);
+  EXPECT_EQ(value_list, base::Value::List()
+                            .Append("bookmarks")
+                            .Append("preferences")
+                            .Append("passwords"));
+}
+
+TEST_F(UserSelectableTypeTest, ValueListToUserSelectableTypeSet) {
+  base::Value::List value_list = base::Value::List()
+                                     .Append("bookmarks")
+                                     .Append("passwords")
+                                     .Append("preferences");
+  UserSelectableTypeSet types = ValueListToUserSelectableTypeSet(value_list);
+  EXPECT_EQ(types, UserSelectableTypeSet({UserSelectableType::kBookmarks,
+                                          UserSelectableType::kPreferences,
+                                          UserSelectableType::kPasswords}));
+}
+
 }  // namespace
 
 }  // namespace syncer

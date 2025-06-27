@@ -226,6 +226,32 @@ DataTypeSet UserSelectableTypeToAllDataTypes(UserSelectableType type) {
   return GetUserSelectableTypeInfo(type).data_type_group;
 }
 
+base::Value::List UserSelectableTypeSetToValueList(
+    syncer::UserSelectableTypeSet user_selected_types) {
+  base::Value::List value_list;
+  for (syncer::UserSelectableType type : user_selected_types) {
+    if (const char* name = syncer::GetUserSelectableTypeName(type)) {
+      value_list.Append(name);
+    }
+  }
+  return value_list;
+}
+
+syncer::UserSelectableTypeSet ValueListToUserSelectableTypeSet(
+    const base::Value::List& value_list) {
+  syncer::UserSelectableTypeSet user_selected_types;
+  for (const base::Value& value : value_list) {
+    if (!value.is_string()) {
+      continue;
+    }
+    if (std::optional<syncer::UserSelectableType> type =
+            syncer::GetUserSelectableTypeFromString(value.GetString())) {
+      user_selected_types.Put(type.value());
+    }
+  }
+  return user_selected_types;
+}
+
 DataType UserSelectableTypeToCanonicalDataType(UserSelectableType type) {
   return GetUserSelectableTypeInfo(type).canonical_data_type;
 }
