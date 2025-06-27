@@ -31,6 +31,8 @@ source_set("chip") {
   deps = [
     "//ios/chrome/browser/reader_mode/ui:chip",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
   ]
 }
 

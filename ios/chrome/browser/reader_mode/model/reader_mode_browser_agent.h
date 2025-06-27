@@ -12,6 +12,7 @@
 #import "ios/web/public/web_state_observer.h"
 
 @protocol ReaderModeCommands;
+@protocol ReaderModeChipCommands;
 class ReaderModeTabHelper;
 class WebStateList;
 
@@ -30,12 +31,18 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
 
   // Sets the Reader mode UI handler.
   void SetReaderModeHandler(id<ReaderModeCommands> reader_mode_handler);
+  void SetReaderModeChipHandler(
+      id<ReaderModeChipCommands> reader_mode_chip_handler);
 
  private:
   friend class BrowserUserData<ReaderModeBrowserAgent>;
 
   explicit ReaderModeBrowserAgent(Browser* browser,
                                   WebStateList* web_state_list);
+
+  // Show/hide the Reader mode UI.
+  void ShowReaderModeUI(bool animated);
+  void HideReaderModeUI();
 
   // WebStateListObserver methods.
   void WebStateListDidChange(WebStateList* web_state_list,
@@ -54,6 +61,7 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
       web_state_list_scoped_observation_{this};
 
   __weak id<ReaderModeCommands> reader_mode_handler_ = nil;
+  __weak id<ReaderModeChipCommands> reader_mode_chip_handler_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_BROWSER_AGENT_H_

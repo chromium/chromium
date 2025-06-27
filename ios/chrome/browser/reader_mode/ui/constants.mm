@@ -6,3 +6,6 @@
 
 NSString* const kReaderModeViewAccessibilityIdentifier =
     @"ReaderModeViewAccessibilityIdentifier";
+
+NSString* const kReaderModeChipViewAccessibilityIdentifier =
+    @"ReaderModeChipViewAccessibilityIdentifier";

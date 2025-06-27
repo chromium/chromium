@@ -246,6 +246,7 @@
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
@@ -3307,6 +3308,8 @@ enum class ToolbarKind {
   if (readerModeBrowserAgent) {
     readerModeBrowserAgent->SetReaderModeHandler(HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ReaderModeCommands));
+    readerModeBrowserAgent->SetReaderModeChipHandler(HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ReaderModeChipCommands));
   }
 }
 
@@ -3348,6 +3351,7 @@ enum class ToolbarKind {
       ReaderModeBrowserAgent::FromBrowser(self.browser);
   if (readerModeBrowserAgent) {
     readerModeBrowserAgent->SetReaderModeHandler(nil);
+    readerModeBrowserAgent->SetReaderModeChipHandler(nil);
   }
 }
 

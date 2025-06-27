@@ -4,7 +4,21 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
 
+#import "base/task/single_thread_task_runner.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
+
+namespace {
+
+// Delay for the Reader mode chip presentation. This makes the transition
+// between the "contextual" Reader mode chip (presented while Reader mode is
+// inactive) and this Reader mode chip (presented while Reader mode is active)
+// smoother. This is the amount of time it takes for the Reader mode contextual
+// chip to contract when it is tapped.
+constexpr base::TimeDelta kShowReaderModeChipAnimatedDelay =
+    base::Milliseconds(300);
+
+}  // namespace
 
 #pragma mark - Public
 
@@ -15,12 +29,40 @@ void ReaderModeBrowserAgent::SetReaderModeHandler(
   reader_mode_handler_ = reader_mode_handler;
 }
 
+void ReaderModeBrowserAgent::SetReaderModeChipHandler(
+    id<ReaderModeChipCommands> reader_mode_chip_handler) {
+  reader_mode_chip_handler_ = reader_mode_chip_handler;
+}
+
 #pragma mark - Private
 
 ReaderModeBrowserAgent::ReaderModeBrowserAgent(Browser* browser,
                                                WebStateList* web_state_list)
     : BrowserUserData(browser) {
   web_state_list_scoped_observation_.Observe(web_state_list);
+}
+
+void ReaderModeBrowserAgent::ShowReaderModeUI(bool animated) {
+  [reader_mode_handler_ showReaderMode];
+
+  __weak __typeof(reader_mode_chip_handler_) weak_reader_mode_chip_handler =
+      reader_mode_chip_handler_;
+  auto show_reader_mode_chip = base::BindOnce(^{
+    [weak_reader_mode_chip_handler showReaderModeChip];
+  });
+
+  if (animated) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, std::move(show_reader_mode_chip),
+        kShowReaderModeChipAnimatedDelay);
+  } else {
+    std::move(show_reader_mode_chip).Run();
+  }
+}
+
+void ReaderModeBrowserAgent::HideReaderModeUI() {
+  [reader_mode_chip_handler_ hideReaderModeChip];
+  [reader_mode_handler_ hideReaderMode];
 }
 
 #pragma mark - WebStateListObserver
@@ -59,10 +101,10 @@ void ReaderModeBrowserAgent::WebStateListDidChange(
       new_tab_helper && new_tab_helper->IsReaderModeWebStateAvailable();
   if (!old_reader_mode_web_state_available &&
       new_reader_mode_web_state_available) {
-    [reader_mode_handler_ showReaderMode];
+    ShowReaderModeUI(/* animated= */ false);
   } else if (old_reader_mode_web_state_available &&
              !new_reader_mode_web_state_available) {
-    [reader_mode_handler_ hideReaderMode];
+    HideReaderModeUI();
   }
 }
 
@@ -78,14 +120,14 @@ void ReaderModeBrowserAgent::ReaderModeWebStateDidBecomeAvailable(
     ReaderModeTabHelper* tab_helper) {
   // If Reader mode becomes active in the active WebState, show the Reader mode
   // UI.
-  [reader_mode_handler_ showReaderMode];
+  ShowReaderModeUI(/* animated= */ true);
 }
 
 void ReaderModeBrowserAgent::ReaderModeWebStateWillBecomeUnavailable(
     ReaderModeTabHelper* tab_helper) {
   // If Reader mode becomes inactive in the active WebState, hide the Reader
   // mode UI.
-  [reader_mode_handler_ hideReaderMode];
+  HideReaderModeUI();
 }
 
 void ReaderModeBrowserAgent::ReaderModeTabHelperDestroyed(

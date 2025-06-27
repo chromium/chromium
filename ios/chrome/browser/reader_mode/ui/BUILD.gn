@@ -4,15 +4,21 @@
 
 source_set("ui") {
   sources = [
-    "constants.h",
-    "constants.mm",
     "reader_mode_consumer.h",
     "reader_mode_view_controller.h",
     "reader_mode_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
   ]
 }
 
@@ -21,6 +27,16 @@ source_set("chip") {
     "reader_mode_chip_view_controller.h",
     "reader_mode_chip_view_controller.mm",
     "reader_mode_chip_visibility_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/browser/reader_mode/model:constants",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
   ]
 }
 
@@ -41,6 +57,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "reader_mode_egtest.mm" ]
   deps = [
+    ":constants",
     ":ui",
     "//components/dom_distiller/core",
     "//components/dom_distiller/core/mojom",

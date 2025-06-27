@@ -99,6 +99,9 @@ void ExpectBodyHasThemeAndFont(const std::string& theme,
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
 
   // Close Reader Mode UI.
   [ChromeEarlGreyUI openToolsMenu];
@@ -109,6 +112,10 @@ void ExpectBodyHasThemeAndFont(const std::string& theme,
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_hidden(YES)];
 }
 
 // Test that a page that is not eligible for Reader Mode shows as a disabled
@@ -145,6 +152,9 @@ void ExpectBodyHasThemeAndFont(const std::string& theme,
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
 
   // Open a new Tab with an article to have a tab to switch to.
   [ChromeEarlGreyUI openNewTab];
@@ -161,6 +171,9 @@ void ExpectBodyHasThemeAndFont(const std::string& theme,
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
   // Verifies that the navigation to the destination page happened.
   GREYAssertEqual(readerModeURL, [ChromeEarlGrey webStateVisibleURL],
                   @"Did not navigate to Reader Mode url.");
@@ -175,6 +188,10 @@ void ExpectBodyHasThemeAndFont(const std::string& theme,
       selectElementWithMatcher:grey_accessibilityID(
                                    kReaderModeViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_hidden(YES)];
   // Verifies that the navigation to the destination page happened.
   GREYAssertEqual(nonReaderModeURL, [ChromeEarlGrey webStateVisibleURL],
                   @"Did not navigate to non-Reader Mode url.");
@@ -198,6 +215,9 @@ void ExpectBodyHasThemeAndFont(const std::string& theme,
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
 }
 
 // Tests that theme change is applied to the Reading Mode web page.
