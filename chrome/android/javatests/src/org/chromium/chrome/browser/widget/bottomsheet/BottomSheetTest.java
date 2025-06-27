@@ -34,7 +34,9 @@ import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
@@ -56,7 +58,11 @@ public class BottomSheetTest {
     private static final float VELOCITY_WHEN_MOVING_UP = 1.0f;
     private static final float VELOCITY_WHEN_MOVING_DOWN = -1.0f;
 
-    @Rule public ChromeTabbedActivityTestRule mTestRule = new ChromeTabbedActivityTestRule();
+    @Rule
+    public FreshCtaTransitTestRule mTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    private WebPageStation mPage;
     private TestBottomSheetContent mLowPriorityContent;
     private TestBottomSheetContent mHighPriorityContent;
     private BottomSheetController mSheetController;
@@ -66,9 +72,9 @@ public class BottomSheetTest {
     @Before
     public void setUp() throws Exception {
         BottomSheetTestSupport.setSmallScreen(false);
-        mTestRule.startMainActivityOnBlankPage();
+        mPage = mTestRule.startOnBlankPage();
         mSheetController =
-                mTestRule.getActivity().getRootUiCoordinatorForTesting().getBottomSheetController();
+                mPage.getActivity().getRootUiCoordinatorForTesting().getBottomSheetController();
         mTestSupport = new BottomSheetTestSupport(mSheetController);
 
         runOnUiThreadBlocking(

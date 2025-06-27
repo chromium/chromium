@@ -31,7 +31,9 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -49,7 +51,8 @@ public class DigitalCredentialProviderTest {
     private static final String EXPECTED_CREATION_RESPONSE = "test-response";
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private ActivityMonitor mActivityMonitor;
     private EmbeddedTestServer mTestServer;
@@ -57,11 +60,12 @@ public class DigitalCredentialProviderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock public IdentityCredentialsDelegate mDelegate;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mTestServer = mActivityTestRule.getTestServer();
         DigitalIdentityProvider.setDelegateForTesting(mDelegate);
     }

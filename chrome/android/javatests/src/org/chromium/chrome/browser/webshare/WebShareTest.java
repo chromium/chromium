@@ -6,13 +6,11 @@ package org.chromium.chrome.browser.webshare;
 
 import android.content.Intent;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,9 +25,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -40,13 +38,9 @@ import org.chromium.ui.base.DeviceFormFactor;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41486142
 public class WebShareTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private static final String TEST_FILE = "/content/test/data/android/webshare.html";
     private static final String TEST_FILE_APK = "/content/test/data/android/webshare-apk.html";
@@ -63,9 +57,10 @@ public class WebShareTest {
     private WebShareUpdateWaiter mUpdateWaiter;
 
     private Intent mReceivedIntent;
+    private WebPageStation mPage;
 
     /** Waits until the JavaScript code supplies a result. */
-    private static class WebShareUpdateWaiter extends EmptyTabObserver {
+    private class WebShareUpdateWaiter extends EmptyTabObserver {
         private final CallbackHelper mCallbackHelper;
         private String mStatus;
 
@@ -75,7 +70,7 @@ public class WebShareTest {
 
         @Override
         public void onTitleUpdated(Tab tab) {
-            String title = sActivityTestRule.getActivity().getActivityTab().getTitle();
+            String title = mActivityTestRule.getActivity().getActivityTab().getTitle();
             // Wait until the title indicates either success or failure.
             if (!title.equals("Success") && !title.startsWith("Fail:")) return;
             mStatus = title;
@@ -90,13 +85,11 @@ public class WebShareTest {
 
     @Before
     public void setUp() throws Exception {
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        mPage = mActivityTestRule.startOnBlankPage();
 
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
+        mTestServer = mActivityTestRule.getTestServer();
 
-        mTab = sActivityTestRule.getActivity().getActivityTab();
+        mTab = mPage.getTab();
         mUpdateWaiter = new WebShareUpdateWaiter();
         ThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
 
@@ -115,8 +108,8 @@ public class WebShareTest {
     @MediumTest
     @Feature({"WebShare"})
     public void testWebShareNoUserGesture() throws Exception {
-        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
-        sActivityTestRule.runJavaScriptCodeInCurrentTab("initiate_share()");
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("initiate_share()");
         Assert.assertEquals(
                 "Fail: NotAllowedError: Failed to execute 'share' on 'Navigator': "
                         + "Must be handling a user gesture to perform a share request.",
@@ -128,7 +121,7 @@ public class WebShareTest {
     @MediumTest
     @Feature({"WebShare"})
     public void testWebShareApk() throws Exception {
-        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_APK));
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_APK));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
         TouchCommon.singleClickView(mTab.getView());
         Assert.assertEquals(
@@ -140,7 +133,7 @@ public class WebShareTest {
     @MediumTest
     @Feature({"WebShare"})
     public void testWebShareDex() throws Exception {
-        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_DEX));
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_DEX));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
         TouchCommon.singleClickView(mTab.getView());
         Assert.assertEquals(
@@ -152,7 +145,7 @@ public class WebShareTest {
     @MediumTest
     @Feature({"WebShare"})
     public void testWebShareMany() throws Exception {
-        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_MANY));
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_MANY));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
         TouchCommon.singleClickView(mTab.getView());
         Assert.assertEquals(
@@ -166,7 +159,7 @@ public class WebShareTest {
     @MediumTest
     @Feature({"WebShare"})
     public void testWebShareLarge() throws Exception {
-        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_LARGE));
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_LARGE));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
         TouchCommon.singleClickView(mTab.getView());
         Assert.assertEquals(
@@ -180,7 +173,7 @@ public class WebShareTest {
     @MediumTest
     @Feature({"WebShare"})
     public void testWebShareLongText() throws Exception {
-        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_LONG_TEXT));
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_LONG_TEXT));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
         TouchCommon.singleClickView(mTab.getView());
         Assert.assertEquals(
@@ -194,7 +187,7 @@ public class WebShareTest {
     @MediumTest
     @Feature({"WebShare"})
     public void testWebShareSeparator() throws Exception {
-        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_SEPARATOR));
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_SEPARATOR));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
         TouchCommon.singleClickView(mTab.getView());
         Assert.assertEquals(

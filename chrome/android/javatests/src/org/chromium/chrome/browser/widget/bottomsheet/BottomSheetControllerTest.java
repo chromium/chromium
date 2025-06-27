@@ -21,7 +21,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,9 +49,10 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -83,15 +83,12 @@ import java.util.concurrent.TimeoutException;
 @Restriction(DeviceFormFactor.PHONE) // TODO(mdjones): Remove this (crbug.com/837838).
 @Batch(Batch.PER_CLASS)
 public class BottomSheetControllerTest {
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private ChromeTabbedActivity mActivity;
+    private WebPageStation mPage;
 
     private BottomSheetController mSheetController;
     private BottomSheetTestSupport mTestSupport;
@@ -106,7 +103,8 @@ public class BottomSheetControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivity = sActivityTestRule.getActivity();
+        mPage = mActivityTestRule.startOnBlankPage();
+        mActivity = mPage.getActivity();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
