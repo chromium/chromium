@@ -462,9 +462,7 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     // and `HasVisibleSelfPaintingDescendant()`), so these must be updated prior
     // to `UpdateStackingNode()`.
     SetHasVisibleSelfPaintingDescendant(has_visible_self_painting_descendant);
-    if (RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled()) {
-      UpdateHasVisibleContent();
-    }
+    UpdateHasVisibleContent();
 
     UpdateStackingNode();
 
@@ -480,9 +478,7 @@ void PaintLayer::UpdateDescendantDependentFlags() {
       GetLayoutObject().SetNeedsPaintPropertyUpdate();
     }
 
-    if (RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled()) {
-      Update3DTransformedDescendantStatus();
-    }
+    Update3DTransformedDescendantStatus();
 
     needs_descendant_dependent_flags_update_ = false;
 
@@ -495,11 +491,6 @@ void PaintLayer::UpdateDescendantDependentFlags() {
       }
     }
     needs_visual_overflow_recalc_ = false;
-  }
-
-  if (!RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled()) {
-    UpdateHasVisibleContent();
-    Update3DTransformedDescendantStatus();
   }
 }
 
@@ -535,11 +526,9 @@ void PaintLayer::UpdateHasVisibleContent() {
     layout_object_->SetShouldCheckForPaintInvalidation();
 
     // If `IsZOrderListVisible()` changes, invalidate z-order lists.
-    if (RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled()) {
-      if (auto* stacking_context = AncestorStackingContext()) {
-        if (stacking_context->StackingNode()) {
-          stacking_context->StackingNode()->DirtyZOrderLists();
-        }
+    if (auto* stacking_context = AncestorStackingContext()) {
+      if (stacking_context->StackingNode()) {
+        stacking_context->StackingNode()->DirtyZOrderLists();
       }
     }
   }
@@ -547,12 +536,10 @@ void PaintLayer::UpdateHasVisibleContent() {
 
 void PaintLayer::SetHasVisibleSelfPaintingDescendant(bool has_visible) {
   // If `IsZOrderListVisible()` changes, invalidate z-order lists.
-  if (RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled()) {
-    if (has_visible != has_visible_self_painting_descendant_) {
-      if (auto* stacking_context = AncestorStackingContext()) {
-        if (stacking_context->StackingNode()) {
-          stacking_context->StackingNode()->DirtyZOrderLists();
-        }
+  if (has_visible != has_visible_self_painting_descendant_) {
+    if (auto* stacking_context = AncestorStackingContext()) {
+      if (stacking_context->StackingNode()) {
+        stacking_context->StackingNode()->DirtyZOrderLists();
       }
     }
   }
@@ -560,8 +547,7 @@ void PaintLayer::SetHasVisibleSelfPaintingDescendant(bool has_visible) {
 }
 
 bool PaintLayer::IsZOrderListVisible() const {
-  return !RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled() ||
-         HasVisibleContent() || HasVisibleSelfPaintingDescendant() ||
+  return HasVisibleContent() || HasVisibleSelfPaintingDescendant() ||
          HasViewTransitionName();
 }
 
@@ -2333,9 +2319,7 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   has_view_transition_name_ = !!new_style.ViewTransitionName();
   if (had_view_transition_name != has_view_transition_name_) {
     // If `IsZOrderListVisible()` changes, invalidate z-order lists.
-    if (RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled()) {
-      DirtyStackingContextZOrderLists();
-    }
+    DirtyStackingContextZOrderLists();
   }
 
   if (diff.ZIndexChanged()) {

@@ -3484,11 +3484,6 @@
       name: "PaintHoldingForLocalIframes",
       status: "stable",
     },
-    // Kill switch.
-    {
-      name: "PaintLayerUpdateOptimizations",
-      status: "stable",
-    },
     {
       name: "PaintTimingMixin",
       status: "experimental",

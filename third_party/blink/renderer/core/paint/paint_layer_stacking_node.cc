@@ -155,8 +155,7 @@ struct PaintLayerStackingNode::HighestLayers {
     }
 
     // We should not consider layers that have been omitted from z-order lists.
-    if (RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled() &&
-        !layer.IsZOrderListVisible()) {
+    if (!layer.IsZOrderListVisible()) {
       return;
     }
 
@@ -260,8 +259,7 @@ static void ForAllChildrenSortedByOrder(
     base::FunctionRef<void(PaintLayer&)> function) {
   // Optimization: `order` is relatively rare and we can avoid needing to
   // create and sort the vector of children in most cases.
-  if (RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled() &&
-      !ChildrenMayBeAffectedByOrder(layer)) {
+  if (!ChildrenMayBeAffectedByOrder(layer)) {
     for (auto* child = layer.FirstChild(); child;
          child = child->NextSibling()) {
       function(*child);
@@ -328,8 +326,7 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
   const auto& style = object.StyleRef();
 
   if (object.IsStacked()) {
-    if (!RuntimeEnabledFeatures::PaintLayerUpdateOptimizationsEnabled() ||
-        paint_layer.IsZOrderListVisible()) {
+    if (paint_layer.IsZOrderListVisible()) {
       auto& list =
           style.EffectiveZIndex() >= 0 ? pos_z_order_list_ : neg_z_order_list_;
       list.push_back(paint_layer);
