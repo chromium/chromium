@@ -26,11 +26,6 @@ interface ImageReleaseCallback {
   Release(gpu.mojom.SyncToken token);
 };
 
-// Isolate unsafe conversion to/from uint32.
-struct SharedImageUsageSet {
-  uint32 usage;
-};
-
 // Holds all information, necessary to recreate the accelerated image.
 struct AcceleratedStaticBitmapImage {
   // ExportedSharedImage contains SharedImage reference:

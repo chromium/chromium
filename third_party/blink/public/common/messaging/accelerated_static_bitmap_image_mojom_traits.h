@@ -16,18 +16,6 @@ namespace mojo {
 
 template <>
 struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::SharedImageUsageSet::DataView,
-                 gpu::SharedImageUsageSet> {
-  static uint32_t usage(const gpu::SharedImageUsageSet& input) {
-    return uint32_t(input);
-  }
-
-  static bool Read(blink::mojom::SharedImageUsageSet::DataView data,
-                   gpu::SharedImageUsageSet* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
                  blink::AcceleratedImageInfo> {
   static gpu::ExportedSharedImage& shared_image(
