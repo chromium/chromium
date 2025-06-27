@@ -548,7 +548,9 @@ void LoginOnUff() {
 }
 
 // Tests that password generation is offered for signed in users.
-- (void)testPasswordGenerationForSignedInAccount {
+// TODO(crbug.com/428190053): Re-enable after the test is fixed for
+// ios-fieldtrial-rel.
+- (void)DISABLED_testPasswordGenerationForSignedInAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];
