@@ -91,6 +91,27 @@ const char* LocationToString(ManifestLocation loc) {
   NOTREACHED();
 }
 
+const char* RegistryStatusToString(
+    extensions::ExtensionRegistry::IncludeFlag status) {
+  switch (status) {
+    case extensions::ExtensionRegistry::NONE:
+      return "NONE";
+    case extensions::ExtensionRegistry::ENABLED:
+      return "ENABLED";
+    case extensions::ExtensionRegistry::DISABLED:
+      return "DISABLED";
+    case extensions::ExtensionRegistry::TERMINATED:
+      return "TERMINATED";
+    case extensions::ExtensionRegistry::BLOCKLISTED:
+      return "BLOCKLISTED";
+    case extensions::ExtensionRegistry::BLOCKED:
+      return "BLOCKED";
+    case extensions::ExtensionRegistry::EVERYTHING:
+      return "EVERYTHING";
+  }
+  NOTREACHED();
+}
+
 base::Value::List CreationFlagsToList(int creation_flags) {
   base::Value::List flags_value;
   if (creation_flags == extensions::Extension::NO_FLAGS) {
@@ -403,6 +424,7 @@ constexpr std::string_view kServiceWorkerKeepalivesKey =
     "service_worker_keepalives";
 constexpr std::string_view kTimeoutTypeKey = "timeout_type";
 constexpr std::string_view kTypeKey = "type";
+constexpr std::string_view kRegistryStatus = "registry_status";
 
 base::Value::Dict FormatBackgroundPageKeepaliveData(
     extensions::ProcessManager* process_manager,
@@ -595,35 +617,54 @@ void ExtensionsInternalsSource::StartDataRequest(
 
 std::string ExtensionsInternalsSource::WriteToString() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const auto extensions = extensions::ExtensionRegistry::Get(profile_)
-                              ->GenerateInstalledExtensionsSet();
+  using ExtensionStatusMap =
+      std::map<extensions::ExtensionRegistry::IncludeFlag,
+               extensions::ExtensionSet>;
+  const extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile_);
+  // We fetch each status separately so that we can annotate them below when
+  // building the extension_data.
+  const auto extension_statuses = {extensions::ExtensionRegistry::ENABLED,
+                                   extensions::ExtensionRegistry::DISABLED,
+                                   extensions::ExtensionRegistry::TERMINATED,
+                                   extensions::ExtensionRegistry::BLOCKLISTED,
+                                   extensions::ExtensionRegistry::BLOCKED};
+  ExtensionStatusMap status_map;
+  for (const auto status : extension_statuses) {
+    status_map.emplace(status,
+                       registry->GenerateInstalledExtensionsSet(status));
+  }
   extensions::ProcessManager* process_manager =
       extensions::ProcessManager::Get(profile_);
   extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
   base::Value::List data;
-  for (const auto& extension : extensions) {
-    base::Value::Dict extension_data;
-    extension_data.Set(kInternalsIdKey, extension->id());
-    extension_data.Set(kInternalsGuidKey, extension->guid());
-    extension_data.Set(kInternalsCreationFlagsKey,
-                       CreationFlagsToList(extension->creation_flags()));
-    extension_data.Set(
-        kInternalsDisableReasonsKey,
-        DisableReasonsToList(prefs->GetDisableReasons(extension->id())));
-    extension_data.Set(
-        kBackgroundPageKeepalivesKey,
-        FormatBackgroundPageKeepaliveData(process_manager, extension.get()));
-    extension_data.Set(
-        kServiceWorkerKeepalivesKey,
-        FormatServiceWorkerKeepaliveData(*process_manager, extension->id()));
-    extension_data.Set(kLocationKey, LocationToString(extension->location()));
-    extension_data.Set(kManifestVersionKey, extension->manifest_version());
-    extension_data.Set(kInternalsNameKey, extension->name());
-    extension_data.Set(kPathKey, extension->path().LossyDisplayName());
-    extension_data.Set(kTypeKey, TypeToString(extension->GetType()));
-    extension_data.Set(kInternalsVersionKey, extension->GetVersionForDisplay());
-    extension_data.Set(kPermissionsKey, FormatPermissionsData(*extension));
-    data.Append(std::move(extension_data));
+  for (const auto& [status, extensions] : status_map) {
+    for (const auto& extension : extensions) {
+      base::Value::Dict extension_data;
+      extension_data.Set(kInternalsIdKey, extension->id());
+      extension_data.Set(kInternalsGuidKey, extension->guid());
+      extension_data.Set(kInternalsCreationFlagsKey,
+                         CreationFlagsToList(extension->creation_flags()));
+      extension_data.Set(
+          kInternalsDisableReasonsKey,
+          DisableReasonsToList(prefs->GetDisableReasons(extension->id())));
+      extension_data.Set(
+          kBackgroundPageKeepalivesKey,
+          FormatBackgroundPageKeepaliveData(process_manager, extension.get()));
+      extension_data.Set(
+          kServiceWorkerKeepalivesKey,
+          FormatServiceWorkerKeepaliveData(*process_manager, extension->id()));
+      extension_data.Set(kLocationKey, LocationToString(extension->location()));
+      extension_data.Set(kManifestVersionKey, extension->manifest_version());
+      extension_data.Set(kInternalsNameKey, extension->name());
+      extension_data.Set(kPathKey, extension->path().LossyDisplayName());
+      extension_data.Set(kTypeKey, TypeToString(extension->GetType()));
+      extension_data.Set(kRegistryStatus, RegistryStatusToString(status));
+      extension_data.Set(kInternalsVersionKey,
+                         extension->GetVersionForDisplay());
+      extension_data.Set(kPermissionsKey, FormatPermissionsData(*extension));
+      data.Append(std::move(extension_data));
+    }
   }
 
   // Aggregate and add the data for the registered event listeners.
