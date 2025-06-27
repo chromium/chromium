@@ -170,13 +170,14 @@ void DoLookup(safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
   DCHECK(!callback.is_null());
   DCHECK(IsEnterpriseLookupEnabled(web_contents->GetBrowserContext()));
   // The referring_app_info parameter to StartLookup is Android-specific.
-  lookup_service->StartLookup(
+  lookup_service->StartMaybeCachedLookup(
       url,
       base::BindOnce(&OnRealTimeLookupComplete, std::move(callback),
                      identifier),
       base::SequencedTaskRunner::GetCurrentDefault(),
       sessions::SessionTabHelper::IdForTab(web_contents),
-      /*referring_app_info=*/std::nullopt);
+      /*referring_app_info=*/std::nullopt, /*use_cache=*/
+      !base::FeatureList::IsEnabled(kEnableSinglePageAppDataProtection));
 }
 
 std::string GetIdentifier(content::BrowserContext* browser_context) {

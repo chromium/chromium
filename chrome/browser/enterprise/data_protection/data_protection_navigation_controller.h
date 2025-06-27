@@ -46,6 +46,7 @@ class DataProtectionNavigationController
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
+
   // Applies data protection settings if there are any to apply, otherwise
   // delay clearing the data protection settings until the page loads.
   //
@@ -54,10 +55,14 @@ class DataProtectionNavigationController
   // without.  At the end of the navigation, the existing page is still visible
   // to the user since the UI has not yet refreshed.  In this case the
   // protections should remain in place.  Once the document finishes loading,
-  // `ApplyDataProtectionSettings()` will be called.  See
+  // `ApplyDataProtectionSettings()` will be called. The observer passes
+  // `is_same_document` to this callback because, since there is no document
+  // onload event for that case, the original document is preserved, and
+  // the watermark is therefore cleared when the navigation finishes. See
   // `DocumentOnLoadCompletedInPrimaryMainFrame()`.
   void ApplyDataProtectionSettingsOrDelayIfEmpty(
       base::WeakPtr<content::WebContents> expected_web_contents,
+      bool is_same_document,
       const enterprise_data_protection::UrlSettings& settings);
 
   // Applies data protection settings based on the verdict received by
