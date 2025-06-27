@@ -48,18 +48,6 @@ if (target_cpu == "arm64") {
   }
 }
 
-# The nacl_win64 toolchain is nearly identical to the plain x64 toolchain.
-# It's used solely for building nacl64.exe (//components/nacl/broker:nacl64).
-# The only reason it's a separate toolchain is so that it can force
-# is_component_build to false in the toolchain_args() block, because
-# building nacl64.exe in component style does not work.
-win_toolchains("nacl_win64") {
-  toolchain_arch = "x64"
-  toolchain_args = {
-    is_component_build = false
-  }
-}
-
 # WinUWP toolchains. Only define these when targeting them.
 
 if (target_os == "winuwp") {

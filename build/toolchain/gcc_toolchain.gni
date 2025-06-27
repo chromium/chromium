@@ -13,13 +13,6 @@ import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 
-if (is_nacl) {
-  # To keep NaCl variables out of builds that don't include NaCl, all
-  # variables defined in nacl/config.gni referenced here should be protected by
-  # is_nacl conditions.
-  import("//build/config/nacl/config.gni")
-}
-
 declare_args() {
   # Enables allowlist generation for IDR_ grit defines seen by the compiler.
   # Currently works only on some platforms and enabled by default for official
