@@ -223,24 +223,6 @@ config("absl_default_cflags_cc") {
   }
 }
 
-config("absl_test_cflags_cc") {
-  cflags_cc = []
-  if (is_clang || !is_win) {
-    cflags_cc += [
-      "-Wno-conversion-null",
-      "-Wno-missing-declarations",
-      "-Wno-unused-function",
-      "-Wno-unused-parameter",
-      "-Wno-unused-private-field",
-    ]
-  }
-  if (is_win) {
-    cflags_cc += [
-      "/wd4101",  # unreferenced local variable
-    ]
-  }
-}
-
 config("absl_test_config") {
   cflags_cc = []
   if (is_win && !is_clang) {
