@@ -122,7 +122,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 model, view, TouchToFillPaymentMethodViewBinder::bindTouchToFillPaymentMethodView);
     }
 
-    static void setUpCardItems(PropertyModel model, TouchToFillPaymentMethodView view) {
+    static void setUpSheetItems(PropertyModel model, TouchToFillPaymentMethodView view) {
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(model.get(SHEET_ITEMS));
         adapter.registerType(
                 CREDIT_CARD,

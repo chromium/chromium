@@ -117,7 +117,7 @@ class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == SHEET_ITEMS) {
             // SHEET_ITEMS and CURRENT_SCREEN properties are always updated together.
             view.setCurrentScreen(model.get(CURRENT_SCREEN));
-            TouchToFillPaymentMethodCoordinator.setUpCardItems(model, view);
+            TouchToFillPaymentMethodCoordinator.setUpSheetItems(model, view);
             view.updateScreenHeight();
         } else if (propertyKey == CURRENT_SCREEN) {
             // Intentionally ignored.
