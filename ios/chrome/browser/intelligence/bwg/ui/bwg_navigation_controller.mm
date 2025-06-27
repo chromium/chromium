@@ -66,17 +66,17 @@ const CGFloat kLogoStackViewHeight = 62.0;
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.delegate = self;
-  if (!_showPromo) {
     [self createConsentView];
-    [self pushViewController:_consentViewController animated:NO];
-  } else {
-    _promoViewController = [[BWGPromoViewController alloc] init];
-    _promoViewController.BWGPromoDelegate = self;
-    _promoViewController.mutator = self.mutator;
-    _promoViewController.navigationItem.largeTitleDisplayMode =
-        UINavigationItemLargeTitleDisplayModeAlways;
-    [self pushViewController:_promoViewController animated:NO];
-  }
+    if (!_showPromo) {
+      [self pushViewController:_consentViewController animated:NO];
+    } else {
+      _promoViewController = [[BWGPromoViewController alloc] init];
+      _promoViewController.BWGPromoDelegate = self;
+      _promoViewController.mutator = self.mutator;
+      _promoViewController.navigationItem.largeTitleDisplayMode =
+          UINavigationItemLargeTitleDisplayModeAlways;
+      [self pushViewController:_promoViewController animated:NO];
+    }
   [self createLogos];
   [self configureNavigationController];
 }
@@ -190,7 +190,6 @@ const CGFloat kLogoStackViewHeight = 62.0;
 #pragma mark - BWGPromoViewControllerDelegate
 
 - (void)didAcceptPromo {
-  [self createConsentView];
   [self pushViewController:_consentViewController animated:YES];
   __weak BWGNavigationController* weakSelf = self;
   [self.sheetPresentationController animateChanges:^{

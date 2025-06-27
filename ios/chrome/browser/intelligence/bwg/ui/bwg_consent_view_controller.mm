@@ -37,28 +37,6 @@ const CGFloat kInnerStackViewPadding = 12.0;
 
 // TODO(crbug.com/414778685): Add strings.
 // String constants for UI elements.
-NSString* const kBWGConsentFirstBoxTitleText =
-    @"Lorem ipsum dolor sit amet, consecte tur adipiscing elit.";
-NSString* const kBWGConsentFirstBoxBodyTextNonManagedAccount =
-    @"Sed do eiusmod tempor incididunt. Sed do eiusmod tempor incididunt. Sed "
-    @"do eiusmod tempor incididunt";
-NSString* const kBWGConsentFirstBoxBodyTextManagedAccount =
-    @"Sed do eiusmod tempor incididunt. Sed do eiusmod tempor incididunt. Sed "
-    @"do eiusmod tempor incididunt. Do eiusmod tempor incididun.";
-NSString* const kBWGConsentSecondBoxTitleTextNonManagedAccount =
-    @"Lorem ipsum dolor sit amet";
-NSString* const kBWGConsentSecondBoxTitleTextManagedAccount =
-    @"Lorem ipsum dolor sit amet sit amet";
-NSString* const kBWGConsentSecondBoxBodyTextNonManagedAccount =
-    @"Lorem ipsum dolor sit amet, consecte tur adipiscing purposes. Sed do "
-    @"eiusmod tempor incididunt ut labore et dolore magna ali. Eiusmod tempor";
-NSString* const kBWGConsentSecondBoxBodyTextManagedAccount =
-    @"Eiusmod tempor incididunt ut labore et dolore magna ali. eiusmod tempor.";
-NSString* const kBWGConsentFootnoteTextNonManagedAccount =
-    @"Google terms dolor sit amet, Apps Privacy Notice tur adipiscing "
-    @"purposes.";
-NSString* const kBWGConsentFootnoteTextManagedAccount =
-    @"Your Privacy dolor sit amet.";
 
 // Action identifier on a tap on links in the footnote.
 NSString* const kFirstFootnoteLinkAction = @"firstFootnoteLinkAction";
@@ -111,10 +89,12 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
 
 #pragma mark - Private
 
+// TODO(crbug.com/423816346): Manage links for attributes strings.
 // Creates an attributed string for the footnote with hyperlinks.
 - (NSAttributedString*)createFootnoteAttributedText {
-  NSString* text = _isAccountManaged ? kBWGConsentFootnoteTextManagedAccount
-                                     : kBWGConsentFootnoteTextNonManagedAccount;
+  NSString* text = l10n_util::GetNSString(
+      _isAccountManaged ? IDS_IOS_BWG_CONSENT_MANAGED_FOOTNOTE
+                        : IDS_IOS_BWG_CONSENT_NON_MANAGED_FOOTNOTE);
 
   NSMutableParagraphStyle* centeredTextStyle =
       [[NSMutableParagraphStyle alloc] init];
@@ -141,15 +121,15 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
     NSLinkAttributeName : kFootnoteLinkActionManagedAccount,
   };
 
-  // TODO(crbug.com/414778685): Add strings.
   if (_isAccountManaged) {
-    NSRange linkRange = [text rangeOfString:@"Your Privacy"];
+    NSRange linkRange = [text rangeOfString:@"TESTING - Your privacy & Gemini"];
     [attributedText addAttributes:linkAttributesManagedAccount range:linkRange];
   } else {
-    NSRange firstLinkRange = [text rangeOfString:@"Google terms"];
+    NSRange firstLinkRange = [text rangeOfString:@"TESTING - Google Terms"];
     [attributedText addAttributes:firstLinkAttributes range:firstLinkRange];
 
-    NSRange secondLinkRange = [text rangeOfString:@"Apps Privacy Notice"];
+    NSRange secondLinkRange =
+        [text rangeOfString:@"TESTING - Gemini Apps Privacy Notice"];
     [attributedText addAttributes:secondLinkAttributes range:secondLinkRange];
   }
 
@@ -187,11 +167,9 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
   boxesStackView.clipsToBounds = YES;
   boxesStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  NSString* firstTitle = kBWGConsentFirstBoxTitleText;
-
-  NSString* firstBody = _isAccountManaged
-                            ? kBWGConsentFirstBoxBodyTextManagedAccount
-                            : kBWGConsentFirstBoxBodyTextNonManagedAccount;
+  NSString* firstBody = l10n_util::GetNSString(
+      _isAccountManaged ? IDS_IOS_BWG_CONSENT_MANAGED_FIRST_BOX_BODY
+                        : IDS_IOS_BWG_CONSENT_NON_MANAGED_FIRST_BOX_BODY);
 
   UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
       configurationWithPointSize:kIconSize
@@ -201,22 +179,31 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
       initWithImage:CustomSymbolWithConfiguration(kPhoneSparkleSymbol, config)];
   firstIconImageView.contentMode = UIViewContentModeScaleAspectFit;
 
-  UIView* firstBox =
-      [self createHorizontalBoxWithIcon:firstIconImageView
-                                boxView:[self createBoxWithTitle:firstTitle
-                                                        bodyText:firstBody]];
+  UIView* firstBox = [self
+      createHorizontalBoxWithIcon:firstIconImageView
+                          boxView:
+                              [self createBoxWithTitle:
+                                        l10n_util::GetNSString(
+                                            IDS_IOS_BWG_CONSENT_FIRST_BOX_TITLE)
+                                              bodyText:firstBody]];
   [boxesStackView addArrangedSubview:firstBox];
 
-  NSString* secondTitle = _isAccountManaged
-                              ? kBWGConsentSecondBoxTitleTextManagedAccount
-                              : kBWGConsentSecondBoxTitleTextNonManagedAccount;
-  NSString* secondBody = _isAccountManaged
-                             ? kBWGConsentSecondBoxBodyTextManagedAccount
-                             : kBWGConsentSecondBoxBodyTextNonManagedAccount;
+  NSString* secondTitle = l10n_util::GetNSString(
+      _isAccountManaged ? IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_TITLE
+                        : IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_TITLE);
+
+  NSString* secondBody = l10n_util::GetNSString(
+      _isAccountManaged ? IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_BODY
+                        : IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY);
 
   UIImageView* secondIconImageView =
-      [[UIImageView alloc] initWithImage:DefaultSymbolWithConfiguration(
-                                             kCounterClockWiseSymbol, config)];
+      _isAccountManaged
+          ? [[UIImageView alloc] initWithImage:DefaultSymbolWithConfiguration(
+                                                   kBuilding2Symbol, config)]
+          : [[UIImageView alloc]
+                initWithImage:DefaultSymbolWithConfiguration(
+                                  kCounterClockWiseSymbol, config)];
+
   secondIconImageView.contentMode = UIViewContentModeScaleAspectFit;
 
   UIView* secondBox =
@@ -331,7 +318,7 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
 - (UIButton*)createSecondaryButton {
   UIButton* secondaryButton = [BWGUIUtils
       createSecondaryButtonWithTitle:l10n_util::GetNSString(
-                                         IDS_IOS_BWG_PROMO_SECONDARY_BUTTON)];
+                                         IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON)];
   [secondaryButton addTarget:self
                       action:@selector(didTapSecondaryButton:)
             forControlEvents:UIControlEventTouchUpInside];

@@ -306,6 +306,7 @@ NSString* const kCircleBadgeFill = @"circlebadge.fill";
 NSString* const kCounterClockWiseSymbol =
     @"clock.arrow.trianglehead.counterclockwise.rotate.90";
 NSString* const kTextSparkSymbol = @"text_spark";
+NSString* const kBuilding2Symbol = @"building.2";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

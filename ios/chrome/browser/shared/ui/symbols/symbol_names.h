@@ -270,6 +270,7 @@ extern NSString* const kMagicStackSymbol;
 extern NSString* const kDiscoverFeedSymbol;
 extern NSString* const kFilterSymbol;
 extern NSString* const kCounterClockWiseSymbol;
+extern NSString* const kBuilding2Symbol;
 extern NSString* const kSelectedFilterSymbol;
 extern NSString* const kPersonTwoSymbol;
 extern NSString* const kSquareFilledOnSquareSymbol;
