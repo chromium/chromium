@@ -1604,6 +1604,10 @@ public class FeedSurfaceMediator
         return getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
     }
 
+    public boolean isFeedEnabled() {
+        return mFeedEnabled;
+    }
+
     OnSectionHeaderSelectedListener getOrCreateSectionHeaderListenerForTesting() {
         OnSectionHeaderSelectedListener listener =
                 mSectionHeaderModel.get(SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY);

@@ -1153,12 +1153,15 @@ public class FeedSurfaceCoordinator
             headers.add(mNtpHeader);
         }
 
-        headers.add(mHeaderView);
+        if (mMediator.isFeedEnabled()) {
+            headers.add(mHeaderView);
 
-        if (signinPromoView != null) {
-            mSigninPromoView = signinPromoView;
-            headers.add(signinPromoView);
+            if (signinPromoView != null) {
+                mSigninPromoView = signinPromoView;
+                headers.add(signinPromoView);
+            }
         }
+
         setHeaders(headers);
     }
 
