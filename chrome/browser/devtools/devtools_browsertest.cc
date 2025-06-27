@@ -117,6 +117,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -3588,12 +3589,11 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest,
 // See https://crbug.com/971241
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                        DISABLED_ExtensionWebSocketUserAgentOverride) {
-  net::SpawnedTestServer websocket_server(
-      net::SpawnedTestServer::TYPE_WS,
-      base::FilePath(FILE_PATH_LITERAL("net/data/websocket")));
-  websocket_server.set_websocket_basic_auth(false);
+  net::test_server::EmbeddedTestServer websocket_server(
+      net::test_server::EmbeddedTestServer::Type::TYPE_HTTP);
+  net::test_server::InstallDefaultWebSocketHandlers(&websocket_server);
   ASSERT_TRUE(websocket_server.Start());
-  uint16_t websocket_port = websocket_server.host_port_pair().port();
+  uint16_t websocket_port = websocket_server.port();
 
   LoadExtension("web_request");
   OpenDevToolsWindow(kEmptyTestPage, /* is_docked */ false);
@@ -3652,12 +3652,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
 #endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                        MAYBE_ExtensionWebSocketOfflineNetworkConditions) {
-  net::SpawnedTestServer websocket_server(
-      net::SpawnedTestServer::TYPE_WS,
-      base::FilePath(FILE_PATH_LITERAL("net/data/websocket")));
-  websocket_server.set_websocket_basic_auth(false);
+  net::test_server::EmbeddedTestServer websocket_server(
+      net::test_server::EmbeddedTestServer::Type::TYPE_HTTP);
+  net::test_server::InstallDefaultWebSocketHandlers(&websocket_server);
   ASSERT_TRUE(websocket_server.Start());
-  uint16_t websocket_port = websocket_server.host_port_pair().port();
+  uint16_t websocket_port = websocket_server.port();
 
   LoadExtension("web_request");
   OpenDevToolsWindow(kEmptyTestPage, /* is_docked */ false);
