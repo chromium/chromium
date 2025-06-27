@@ -75,6 +75,8 @@ ts_modules = [
   "facegaze/macros/mouse_scroll_macro.ts",
   "facegaze/macros/reset_cursor_macro.ts",
   "magnifier/magnifier.ts",
+  "messenger.ts",
+  "offscreen.ts",
   "offscreen_command_type.ts",
 ]
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Messenger} from '../messenger.js';
 import {OffscreenCommandType} from '../offscreen_command_type.js';
 
 import * as PumpkinConstants from './parse/pumpkin/pumpkin_constants.js';
@@ -15,38 +16,24 @@ const SANDBOXED_PUMPKIN_TAGGER_JS_FILE =
 class OffscreenPumpkinWorker {
   private worker_: Worker|null = null;
 
-  static instance?: OffscreenPumpkinWorker;
-
-  static init(): void {
-    if (OffscreenPumpkinWorker.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'OffscreenPumpkinWorker.';
-    }
-    OffscreenPumpkinWorker.instance = new OffscreenPumpkinWorker();
-  }
-
   constructor() {
-    chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: chrome.runtime.MessageSender) =>
-            this.handleMessageFromServiceWorker_(message));
+    Messenger.registerHandler(
+        OffscreenCommandType.DICTATION_PUMPKIN_INSTALL,
+        () => this.createSandboxedPumpkinTagger_());
+    Messenger.registerHandler(
+        OffscreenCommandType.DICTATION_PUMPKIN_SEND,
+        (message: any|undefined) =>
+            this.sendToSandboxedPumpkinTagger_(message['toPumpkinTagger']));
   }
 
-  private handleMessageFromServiceWorker_(message: any|undefined): boolean {
-    switch (message['command']) {
-      case OffscreenCommandType.DICTATION_PUMPKIN_INSTALL:
-        this.worker_ =
-            new Worker(SANDBOXED_PUMPKIN_TAGGER_JS_FILE, {type: 'module'});
-        this.worker_.onmessage = (message) =>
-            chrome.runtime.sendMessage(undefined, {
-              command: OffscreenCommandType.DICTATION_PUMPKIN_RECEIVE,
-              fromPumpkinTagger: message.data
-            });
-        break;
-      case OffscreenCommandType.DICTATION_PUMPKIN_SEND:
-        this.sendToSandboxedPumpkinTagger_(message['toPumpkinTagger'])
-        break;
-    }
-    return false;
+  private createSandboxedPumpkinTagger_() {
+    this.worker_ =
+        new Worker(SANDBOXED_PUMPKIN_TAGGER_JS_FILE, {type: 'module'});
+    this.worker_.onmessage = (message) =>
+        chrome.runtime.sendMessage(undefined, {
+          command: OffscreenCommandType.DICTATION_PUMPKIN_RECEIVE,
+          fromPumpkinTagger: message.data
+        });
   }
 
   private sendToSandboxedPumpkinTagger_(
@@ -75,4 +62,4 @@ class OffscreenPumpkinWorker {
   }
 }
 
-OffscreenPumpkinWorker.init();
+export {OffscreenPumpkinWorker};
