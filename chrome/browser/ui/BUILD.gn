@@ -959,6 +959,7 @@ static_library("ui") {
         "android/toolbar/extension_actions_bridge.h",
         "android/toolbar/extension_actions_bridge_factory.cc",
         "android/toolbar/extension_actions_bridge_factory.h",
+        "extensions/extension_dialog_utils_android.cc",
       ]
 
       deps += [ "//extensions/browser:extension_action_enums" ]

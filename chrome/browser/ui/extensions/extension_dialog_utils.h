@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "build/build_config.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -26,6 +28,7 @@ void ShowDialog(gfx::NativeWindow parent,
                 const extensions::ExtensionId& extension_id,
                 std::unique_ptr<ui::DialogModel> dialog_model);
 
+#if defined(TOOLKIT_VIEWS)
 // Shows the dialog constructed from `dialog_model` for `extension_ids` and
 // is anchored to `container`.
 void ShowDialog(ExtensionsToolbarContainer* container,
@@ -35,5 +38,6 @@ void ShowDialog(ExtensionsToolbarContainer* container,
 // Shows the dialog constructed from `dialog_model` in `browser`.
 void ShowDialog(Browser* browser,
                 std::unique_ptr<ui::DialogModel> dialog_model);
+#endif  // defined(TOOLKIT_VIEWS)
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_DIALOG_UTILS_H_
