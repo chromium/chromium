@@ -115,5 +115,9 @@ BASE_FEATURE(kRestoreWKWebViewEditMenuHandler,
              "RestoreWKWebViewEditMenuHandler",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLogCrWebJavaScriptErrors,
+             "LogCrWebJavaScriptErrors",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace web

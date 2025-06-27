@@ -98,6 +98,9 @@ BASE_DECLARE_FEATURE(kWebKitHandlesMarketplaceKitLinks);
 // Feature flag to restore the WKWebView edit menu customization.
 BASE_DECLARE_FEATURE(kRestoreWKWebViewEditMenuHandler);
 
+// Enables logging CrWeb Javascript errors.
+BASE_DECLARE_FEATURE(kLogCrWebJavaScriptErrors);
+
 }  // namespace features
 }  // namespace web
 

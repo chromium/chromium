@@ -261,7 +261,8 @@ void WebFrameImpl::LogScriptWarning(NSString* script, NSError* error) {
 
   UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.ScriptExecutionFailed", true);
 
-  if (!base::FeatureList::IsEnabled(features::kLogJavaScriptErrors)) {
+  if (!base::FeatureList::IsEnabled(features::kLogJavaScriptErrors) ||
+      !base::FeatureList::IsEnabled(features::kLogCrWebJavaScriptErrors)) {
     return;
   }
 
