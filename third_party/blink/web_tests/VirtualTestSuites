@@ -1878,6 +1878,26 @@
     ]
   },
   {
+    "prefix": "lna-webrtc",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "fast/peerconnection"
+    ],
+    "args": [
+      "--enable-features=LocalNetworkAccessChecks,LocalNetworkAccessChecksWebRTC"
+    ],
+    "owners": [
+      "cthomp@chromium.org",
+      "hchao@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"
+    ],
+    "expires": "Dec 2, 2025"
+  },
+  {
     "prefix": "log-dns-prefetch-and-preconnect",
     "owners": [
       "leimy@google.com"
