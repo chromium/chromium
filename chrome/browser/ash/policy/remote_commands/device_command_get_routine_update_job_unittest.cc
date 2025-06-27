@@ -271,8 +271,9 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
   ash::cros_healthd::mojom::InteractiveRoutineUpdate interactive_update(
       kUserMessage);
 
-  ash::cros_healthd::mojom::RoutineUpdateUnion update_union;
-  update_union.set_interactive_update(interactive_update.Clone());
+  ash::cros_healthd::mojom::RoutineUpdateUnionPtr update_union =
+      ash::cros_healthd::mojom::RoutineUpdateUnion::NewInteractiveUpdate(
+          interactive_update.Clone());
 
   auto response = ash::cros_healthd::mojom::RoutineUpdate::New(
       kProgressPercent,
@@ -304,8 +305,9 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
   ash::cros_healthd::mojom::NonInteractiveRoutineUpdate noninteractive_update(
       kStatus, kStatusMessage);
 
-  ash::cros_healthd::mojom::RoutineUpdateUnion update_union;
-  update_union.set_noninteractive_update(noninteractive_update.Clone());
+  ash::cros_healthd::mojom::RoutineUpdateUnionPtr update_union =
+      ash::cros_healthd::mojom::RoutineUpdateUnion::NewNoninteractiveUpdate(
+          noninteractive_update.Clone());
 
   auto response = ash::cros_healthd::mojom::RoutineUpdate::New(
       kProgressPercent,
