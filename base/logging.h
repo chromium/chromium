@@ -198,7 +198,7 @@ enum : uint32_t {
 // On POSIX platforms, where it may not even be possible to locate the
 // executable on disk, use stderr.
 // On Fuchsia, use the Fuchsia logging service.
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_FUCHSIA)
   LOG_DEFAULT = LOG_TO_SYSTEM_DEBUG_LOG,
 #elif BUILDFLAG(IS_WIN)
   LOG_DEFAULT = LOG_TO_FILE,

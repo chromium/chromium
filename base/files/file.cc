@@ -28,11 +28,9 @@ File::Info::~Info() = default;
 
 File::File() = default;
 
-#if !BUILDFLAG(IS_NACL)
 File::File(const FilePath& path, uint32_t flags) : error_details_(FILE_OK) {
   Initialize(path, flags);
 }
-#endif
 
 File::File(ScopedPlatformFile platform_file)
     : File(std::move(platform_file), false) {}
@@ -85,7 +83,6 @@ File& File::operator=(File&& other) {
   return *this;
 }
 
-#if !BUILDFLAG(IS_NACL)
 void File::Initialize(const FilePath& path, uint32_t flags) {
   if (path.ReferencesParent()) {
 #if BUILDFLAG(IS_WIN)
@@ -108,7 +105,6 @@ void File::Initialize(const FilePath& path, uint32_t flags) {
   SCOPED_FILE_TRACE("Initialize");
   DoInitialize(path, flags);
 }
-#endif
 
 std::optional<size_t> File::Read(int64_t offset, span<uint8_t> data) {
   span<char> chars = base::as_writable_chars(data);

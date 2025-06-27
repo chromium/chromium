@@ -1074,7 +1074,6 @@ FILE* OpenFile(const FilePath& filename, const char* mode) {
 }
 
 // NaCl doesn't implement system calls to open files directly.
-#if !BUILDFLAG(IS_NACL)
 FILE* FileToFILE(File file, const char* mode) {
   PlatformFile unowned = file.GetPlatformFile();
   FILE* stream = fdopen(file.TakePlatformFile(), mode);
@@ -1097,7 +1096,6 @@ File FILEToFile(FILE* file_stream) {
   }
   return File(std::move(other_fd));
 }
-#endif  // !BUILDFLAG(IS_NACL)
 
 std::optional<uint64_t> ReadFile(const FilePath& filename, span<char> buffer) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);

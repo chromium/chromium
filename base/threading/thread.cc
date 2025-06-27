@@ -28,7 +28,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
-#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <optional>
 
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -392,14 +392,14 @@ void Thread::ThreadMain() {
   delegate_->BindToCurrentThread();
   DCHECK(CurrentThread::Get());
   DCHECK(SingleThreadTaskRunner::HasCurrentDefault());
-#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Allow threads running a MessageLoopForIO to use FileDescriptorWatcher API.
   std::unique_ptr<FileDescriptorWatcher> file_descriptor_watcher;
   if (CurrentIOThread::IsSet()) {
     file_descriptor_watcher = std::make_unique<FileDescriptorWatcher>(
         delegate_->GetDefaultTaskRunner());
   }
-#endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<win::ScopedCOMInitializer> com_initializer;

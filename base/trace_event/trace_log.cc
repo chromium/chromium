@@ -363,11 +363,7 @@ void TraceLog::ResetForTesting() {
 }
 
 TraceLog::TraceLog() : process_id_(base::kNullProcessId) {
-#if BUILDFLAG(IS_NACL)  // NaCl shouldn't expose the process id.
-  SetProcessID(0);
-#else
   SetProcessID(GetCurrentProcId());
-#endif
   TrackEvent::AddSessionObserver(this);
   g_trace_log_for_testing = this;
 }

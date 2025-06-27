@@ -63,7 +63,6 @@ bool DumpWithoutCrashing(const base::Location& location,
   TRACE_EVENT0("base", "DumpWithoutCrashing");
   if (dump_without_crashing_function_ &&
       ShouldDumpWithoutCrashWithLocation(location, time_between_dumps)) {
-#if !BUILDFLAG(IS_NACL)
     // Record the location file and line so that in the case of corrupt stacks
     // we're still getting accurate file/line information. See
     // crbug.com/324771555.
@@ -71,7 +70,7 @@ bool DumpWithoutCrashing(const base::Location& location,
                                location.file_name());
     SCOPED_CRASH_KEY_NUMBER("DumpWithoutCrashing", "line",
                             location.line_number());
-#endif
+
     (*dump_without_crashing_function_)();
     base::UmaHistogramEnumeration("Stability.DumpWithoutCrashingStatus",
                                   DumpWithoutCrashingStatus::kUploaded);

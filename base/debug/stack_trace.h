@@ -19,9 +19,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX)
-#if !BUILDFLAG(IS_NACL)
 #include <signal.h>
-#endif
 #include <unistd.h>
 #endif
 
@@ -43,7 +41,7 @@ namespace base::debug {
 // done in official builds because it has security implications).
 BASE_EXPORT bool EnableInProcessStackDumping();
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_POSIX)
 // Sets a first-chance callback for the stack dump signal handler. This callback
 // is called at the beginning of the signal handler to handle special kinds of
 // signals, like out-of-bounds memory accesses in WebAssembly (WebAssembly Trap

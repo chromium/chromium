@@ -21,12 +21,6 @@
 #include "base/trace_event/memory_dump_request_args.h"
 #include "build/build_config.h"
 
-// Define COUNT_RESIDENT_BYTES_SUPPORTED if platform supports counting of the
-// resident memory.
-#if !BUILDFLAG(IS_NACL)
-#define COUNT_RESIDENT_BYTES_SUPPORTED
-#endif
-
 namespace perfetto {
 namespace protos {
 namespace pbzero {
@@ -66,7 +60,6 @@ class BASE_EXPORT ProcessMemoryDump {
   using AllocatorDumpEdgesMap =
       std::map<MemoryAllocatorDumpGuid, MemoryAllocatorDumpEdge>;
 
-#if defined(COUNT_RESIDENT_BYTES_SUPPORTED)
   // Returns the number of bytes in a kernel memory page. Some platforms may
   // have a different value for kernel page sizes from user page sizes. It is
   // important to use kernel memory page sizes for resident bytes calculation.
@@ -85,7 +78,6 @@ class BASE_EXPORT ProcessMemoryDump {
   static std::optional<size_t> CountResidentBytesInSharedMemory(
       void* start_address,
       size_t mapped_size);
-#endif
 
   explicit ProcessMemoryDump(const MemoryDumpArgs& dump_args);
   ProcessMemoryDump(ProcessMemoryDump&&);

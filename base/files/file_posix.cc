@@ -75,9 +75,9 @@ std::atomic<MacFileFlushMechanism> g_mac_file_flush_mechanism{
     MacFileFlushMechanism::kFullFsync};
 #endif  // BUILDFLAG(IS_APPLE)
 
-// NaCl doesn't provide the following system calls, so either simulate them or
+// AIX doesn't provide the following system calls, so either simulate them or
 // wrap them in order to minimize the number of #ifdef's in this file.
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
+#if !BUILDFLAG(IS_AIX)
 bool IsOpenAppend(PlatformFile file) {
   return (fcntl(file, F_GETFL) & O_APPEND) != 0;
 }
@@ -140,31 +140,31 @@ File::Error CallFcntlFlock(PlatformFile file,
 }
 #endif
 
-#else   // BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
+#else   // !BUILDFLAG(IS_AIX)
 
 bool IsOpenAppend(PlatformFile file) {
-  // NaCl doesn't implement fcntl. Since NaCl's write conforms to the POSIX
+  // AI doesn't implement fcntl. Since AIX's write conforms to the POSIX
   // standard and always appends if the file is opened with O_APPEND, just
   // return false here.
   return false;
 }
 
 int CallFtruncate(PlatformFile file, int64_t length) {
-  NOTIMPLEMENTED();  // NaCl doesn't implement ftruncate.
+  NOTIMPLEMENTED();  // AIX doesn't implement ftruncate.
   return 0;
 }
 
 int CallFutimes(PlatformFile file, const struct timeval times[2]) {
-  NOTIMPLEMENTED();  // NaCl doesn't implement futimes.
+  NOTIMPLEMENTED();  // AIX doesn't implement futimes.
   return 0;
 }
 
 File::Error CallFcntlFlock(PlatformFile file,
                            std::optional<File::LockMode> mode) {
-  NOTIMPLEMENTED();  // NaCl doesn't implement flock struct.
+  NOTIMPLEMENTED();  // AIX doesn't implement flock struct.
   return File::FILE_ERROR_INVALID_OPERATION;
 }
-#endif  // BUILDFLAG(IS_NACL)
+#endif  // BUILDFLAG(IS_AIX)
 
 #if BUILDFLAG(IS_ANDROID)
 bool GetContentUriInfo(const base::FilePath& path, File::Info* info) {
@@ -553,9 +553,7 @@ File::Error File::OSErrorToFileError(int saved_errno) {
     case EPERM:
       return FILE_ERROR_ACCESS_DENIED;
     case EBUSY:
-#if !BUILDFLAG(IS_NACL)  // ETXTBSY not defined by NaCl.
     case ETXTBSY:
-#endif
       return FILE_ERROR_IN_USE;
     case EEXIST:
       return FILE_ERROR_EXISTS;
@@ -579,8 +577,6 @@ File::Error File::OSErrorToFileError(int saved_errno) {
   }
 }
 
-// NaCl doesn't implement system calls to open files directly.
-#if !BUILDFLAG(IS_NACL)
 // TODO(erikkay): does it make sense to support FLAG_EXCLUSIVE_* here?
 void File::DoInitialize(const FilePath& path, uint32_t flags) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -686,17 +682,13 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   error_details_ = FILE_OK;
   file_.reset(descriptor);
 }
-#endif  // !BUILDFLAG(IS_NACL)
 
 bool File::Flush() {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   SCOPED_FILE_TRACE("Flush");
 
-#if BUILDFLAG(IS_NACL)
-  NOTIMPLEMENTED();  // NaCl doesn't implement fsync.
-  return true;
-#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
   return !HANDLE_EINTR(fdatasync(file_.get()));
 #elif BUILDFLAG(IS_APPLE)

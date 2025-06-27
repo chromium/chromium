@@ -91,15 +91,10 @@ Location::Location(const char* function_name,
       file_name_(file_name),
       line_number_(line_number),
       program_counter_(program_counter) {
-#if !BUILDFLAG(IS_NACL)
   // The program counter should not be null except in a default constructed
   // (empty) Location object. This value is used for identity, so if it doesn't
   // uniquely identify a location, things will break.
-  //
-  // The program counter isn't supported in NaCl so location objects won't work
-  // properly in that context.
   DCHECK(program_counter);
-#endif
 }
 
 std::string Location::ToString() const {
@@ -119,7 +114,7 @@ void Location::WriteIntoTrace(perfetto::TracedValue context) const {
 
 #if defined(COMPILER_MSVC)
 #define RETURN_ADDRESS() _ReturnAddress()
-#elif defined(COMPILER_GCC) && !BUILDFLAG(IS_NACL)
+#elif defined(COMPILER_GCC)
 #define RETURN_ADDRESS() \
   __builtin_extract_return_addr(__builtin_return_address(0))
 #else

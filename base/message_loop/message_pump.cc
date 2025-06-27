@@ -42,7 +42,7 @@ std::atomic<uint64_t> g_align_wake_ups_and_leeway =
 
 MessagePump::MessagePumpFactory* message_pump_for_ui_factory_ = nullptr;
 
-#if !BUILDFLAG(IS_NACL) && BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 class MessagePumpForIOFdWatchImpl : public IOWatcher::FdWatch,
                                     public MessagePumpForIO::FdWatcher {
  public:
@@ -76,7 +76,6 @@ class IOWatcherForCurrentIOThread : public IOWatcher {
   IOWatcherForCurrentIOThread() : thread_(CurrentIOThread::Get()) {}
 
   // IOWatcher:
-#if !BUILDFLAG(IS_NACL)
 #if BUILDFLAG(IS_WIN)
   bool RegisterIOHandlerImpl(HANDLE file,
                              MessagePumpForIO::IOHandler* handler) override {
@@ -134,7 +133,6 @@ class IOWatcherForCurrentIOThread : public IOWatcher {
                                  delegate);
   }
 #endif  // BUILDFLAG(IS_FUCHSIA)
-#endif  // !BUILDFLAG(IS_NACL)
 
  private:
   CurrentIOThread thread_;
@@ -171,9 +169,8 @@ std::unique_ptr<MessagePump> MessagePump::Create(MessagePumpType type) {
       }
 #if BUILDFLAG(IS_APPLE)
       return message_pump_apple::Create();
-#elif BUILDFLAG(IS_NACL) || BUILDFLAG(IS_AIX)
-      // Currently NaCl and AIX don't have a UI MessagePump.
-      // TODO(abarth): Figure out if we need this.
+#elif BUILDFLAG(IS_AIX)
+      // Currently AIX doesn't have a UI MessagePump.
       NOTREACHED();
 #elif BUILDFLAG(IS_ANDROID)
       {

@@ -31,11 +31,6 @@ ThreadPriorityForTest NiceValueToThreadPriorityForTest(int nice_value) {
 }
 
 int GetCurrentThreadNiceValue() {
-#if BUILDFLAG(IS_NACL)
-  NOTIMPLEMENTED();
-  return 0;
-#else
-
   // Need to clear errno before calling getpriority():
   // http://man7.org/linux/man-pages/man2/getpriority.2.html
   errno = 0;
@@ -47,7 +42,6 @@ int GetCurrentThreadNiceValue() {
   }
 
   return nice_value;
-#endif
 }
 
 }  // namespace base::internal

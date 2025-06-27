@@ -36,7 +36,6 @@ class BASE_EXPORT IOWatcher {
   // Returns null otherwise.
   static IOWatcher* Get();
 
-#if !BUILDFLAG(IS_NACL)
 #if BUILDFLAG(IS_WIN)
   // Please see MessagePumpWin for definitions of these methods.
   [[nodiscard]] bool RegisterIOHandler(HANDLE file,
@@ -101,14 +100,12 @@ class BASE_EXPORT IOWatcher {
                      MessagePumpForIO::ZxHandleWatchController* controller,
                      MessagePumpForIO::ZxHandleWatcher* delegate);
 #endif  // BUILDFLAG(IS_FUCHSIA)
-#endif  // !BUILDFLAG(IS_NACL)
 
  protected:
   IOWatcher();
 
   // IOWatcher implementations must implement these methods for any applicable
   // platform(s).
-#if !BUILDFLAG(IS_NACL)
 #if BUILDFLAG(IS_WIN)
   virtual bool RegisterIOHandlerImpl(HANDLE file,
                                      MessagePumpForIO::IOHandler* handler) = 0;
@@ -136,7 +133,6 @@ class BASE_EXPORT IOWatcher {
       MessagePumpForIO::ZxHandleWatchController* controller,
       MessagePumpForIO::ZxHandleWatcher* delegate) = 0;
 #endif  // BUILDFLAG(IS_FUCHSIA)
-#endif  // !BUILDFLAG(IS_NACL)
 };
 
 }  // namespace base

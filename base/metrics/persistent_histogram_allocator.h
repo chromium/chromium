@@ -394,7 +394,6 @@ class BASE_EXPORT GlobalHistogramAllocator
                                     uint64_t id,
                                     std::string_view name);
 
-#if !BUILDFLAG(IS_NACL)
   // Create a global allocator by memory-mapping a `file`. If the file does
   // not exist, it will be created with the specified `size`. If the file does
   // exist, the allocator will use and add to its contents, ignoring the passed
@@ -454,7 +453,6 @@ class BASE_EXPORT GlobalHistogramAllocator
   // Create a "spare" file that can later be made the "active" file. This
   // should be done on a background thread if possible.
   static bool CreateSpareFile(const FilePath& spare_path, size_t size);
-#endif
 
   // Create a global allocator using a block of shared memory accessed
   // through the given `region`. The allocator maps the shared memory into

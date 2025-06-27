@@ -278,11 +278,6 @@ void VerifyDebugger() {}
 
 #if defined(NDEBUG) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 #define DEBUG_BREAK() abort()
-#elif BUILDFLAG(IS_NACL)
-// The NaCl verifier doesn't let use use int3.  For now, we call abort().  We
-// should ask for advice from some NaCl experts about the optimum thing here.
-// http://code.google.com/p/nativeclient/issues/detail?id=645
-#define DEBUG_BREAK() abort()
 #elif !BUILDFLAG(IS_APPLE)
 // Though Android has a "helpful" process called debuggerd to catch native
 // signals on the general assumption that they are fatal errors. If no debugger

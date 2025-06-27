@@ -67,11 +67,9 @@ std::string GetSharedGlobalAllocatorDumpName(
   return "global/" + guid.ToString();
 }
 
-#if defined(COUNT_RESIDENT_BYTES_SUPPORTED)
 size_t GetSystemPageCount(size_t mapped_size, size_t page_size) {
   return (mapped_size + page_size - 1) / page_size;
 }
-#endif
 
 UnguessableToken GetTokenForCurrentProcess() {
   static UnguessableToken instance = UnguessableToken::Create();
@@ -83,7 +81,6 @@ UnguessableToken GetTokenForCurrentProcess() {
 // static
 bool ProcessMemoryDump::is_black_hole_non_fatal_for_testing_ = false;
 
-#if defined(COUNT_RESIDENT_BYTES_SUPPORTED)
 // static
 size_t ProcessMemoryDump::GetSystemPageSize() {
 #if BUILDFLAG(IS_IOS)
@@ -270,8 +267,6 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
   return CountResidentBytes(aligned_start_address, adjusted_size);
 #endif  // BUILDFLAG(IS_MAC)
 }
-
-#endif  // defined(COUNT_RESIDENT_BYTES_SUPPORTED)
 
 ProcessMemoryDump::ProcessMemoryDump(const MemoryDumpArgs& dump_args)
     : process_token_(GetTokenForCurrentProcess()), dump_args_(dump_args) {}

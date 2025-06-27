@@ -430,7 +430,6 @@ TEST(ProcessMemoryDumpTest, GuidsTest) {
   ASSERT_EQ(mad1->guid(), pmd1.GetDumpId("foo"));
 }
 
-#if defined(COUNT_RESIDENT_BYTES_SUPPORTED)
 #if BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/42050620): Counting resident bytes is not supported on
 // Fuchsia.
@@ -524,6 +523,5 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
     ASSERT_EQ(res3.value(), kTouchedMemorySize);
   }
 }
-#endif  // defined(COUNT_RESIDENT_BYTES_SUPPORTED)
 
 }  // namespace base::trace_event
