@@ -251,7 +251,13 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysShow) {
                   ->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysHide) {
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DelaysHide DISABLED_DelaysHide
+#else
+#define MAYBE_DelaysHide DelaysHide
+#endif
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, MAYBE_DelaysHide) {
   ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 
   tab_search_container()->ShowTabOrganization(
