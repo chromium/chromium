@@ -72,7 +72,6 @@ Suggestion CreateLoyaltyCardSuggestion(
   suggestion.payload = Suggestion::Guid(loyalty_card.id().value());
   SetLoyaltyCardIconURL(suggestion, loyalty_card.program_logo(),
                         valuables_manager, loyalty_card.merchant_name());
-  // The IPH is only available on Desktop.
   suggestion.iph_metadata = Suggestion::IPHMetadata(
       &feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature);
   return suggestion;
