@@ -99,6 +99,9 @@ void SaveAndFillDialog::ContentsChanged(views::Textfield* sender,
       sender->SelectSelectionModel(
           gfx::SelectionModel(new_cursor_position, gfx::CURSOR_FORWARD));
     }
+    expiration_date_data_.SetErrorState(
+        /*is_valid_input=*/controller_->IsValidExpirationDate(formatted_input),
+        /*error_message=*/controller_->GetInvalidExpirationDateErrorMessage());
   }
 }
 

@@ -4,8 +4,12 @@
 
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller_impl.h"
 
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_view.h"
+#include "components/autofill/core/common/autofill_clock.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -39,6 +43,32 @@ class SaveAndFillDialogControllerImplTest : public testing::Test {
       base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
       create_and_show_view_callback;
 };
+
+namespace {
+
+std::u16string GenerateExpirationDateString(
+    const base::Time::Exploded& base_time_exploded,
+    int month_offset,
+    int year_offset) {
+  int target_month = base_time_exploded.month + month_offset;
+  int target_year = base_time_exploded.year + year_offset;
+
+  while (target_month <= 0) {
+    target_month += 12;
+    target_year--;
+  }
+  while (target_month > 12) {
+    target_month -= 12;
+    target_year++;
+  }
+
+  std::string month_str = base::StringPrintf("%02d", target_month);
+  std::string year_str = base::StringPrintf("%02d", target_year % 100);
+
+  return base::UTF8ToUTF16(month_str + "/" + year_str);
+}
+
+}  // namespace
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(SaveAndFillDialogControllerImplTest, CorrectStringsAreReturned) {
@@ -130,6 +160,33 @@ TEST_F(SaveAndFillDialogControllerImplTest, IsValidCvc) {
   EXPECT_FALSE(controller()->IsValidCvc(u"12A"));
   EXPECT_FALSE(controller()->IsValidCvc(u"ABC"));
   EXPECT_FALSE(controller()->IsValidCvc(u"1 3"));
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest, IsValidExpirationDate) {
+  base::Time::Exploded now_exploded;
+  AutofillClock::Now().LocalExplode(&now_exploded);
+
+  // Expiration date is required.
+  EXPECT_FALSE(controller()->IsValidExpirationDate(u""));
+
+  // Invalid cases due to month value.
+  EXPECT_FALSE(controller()->IsValidExpirationDate(u"00/26"));
+  EXPECT_FALSE(controller()->IsValidExpirationDate(u"13/26"));
+  EXPECT_FALSE(controller()->IsValidExpirationDate(u"88/26"));
+
+  // Expired a year ago.
+  EXPECT_FALSE(controller()->IsValidExpirationDate(GenerateExpirationDateString(
+      now_exploded, /*month_offset=*/0, /*year_offset=*/-1)));
+  // Expired a month ago.
+  EXPECT_FALSE(controller()->IsValidExpirationDate(GenerateExpirationDateString(
+      now_exploded, /*month_offset=*/-1, /*year_offset=*/0)));
+
+  // One month from now.
+  EXPECT_TRUE(controller()->IsValidExpirationDate(GenerateExpirationDateString(
+      now_exploded, /*month_offset=*/1, /*year_offset=*/0)));
+  // Five years from now.
+  EXPECT_TRUE(controller()->IsValidExpirationDate(GenerateExpirationDateString(
+      now_exploded, /*month_offset=*/0, /*year_offset=*/5)));
 }
 
 TEST_F(SaveAndFillDialogControllerImplTest, IsValidNameOnCard) {

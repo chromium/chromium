@@ -5,9 +5,12 @@
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller_impl.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
+#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -69,6 +72,12 @@ std::u16string SaveAndFillDialogControllerImpl::GetInvalidCvcErrorMessage()
     const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_CVC);
+}
+
+std::u16string
+SaveAndFillDialogControllerImpl::GetInvalidExpirationDateErrorMessage() const {
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_EXPIRATION_DATE);
 }
 
 std::u16string
@@ -151,6 +160,34 @@ bool SaveAndFillDialogControllerImpl::IsValidCvc(
     }
   }
   return true;
+}
+
+bool SaveAndFillDialogControllerImpl::IsValidExpirationDate(
+    std::u16string_view expiration_date) const {
+  if (expiration_date.empty() || expiration_date.length() < 5) {
+    return false;
+  }
+
+  size_t slash_pos = expiration_date.find(u'/');
+  if (slash_pos == std::u16string::npos) {
+    return false;
+  }
+
+  std::u16string_view month = expiration_date.substr(0, slash_pos);
+  std::u16string_view year = expiration_date.substr(slash_pos + 1);
+
+  if (month.size() != 2U || year.size() != 2U) {
+    return false;
+  }
+
+  int month_value, year_value = 0;
+  if (!base::StringToInt(month, &month_value) ||
+      !base::StringToInt(year, &year_value)) {
+    return false;
+  }
+
+  return IsValidCreditCardExpirationDate(year_value, month_value,
+                                         AutofillClock::Now());
 }
 
 bool SaveAndFillDialogControllerImpl::IsValidNameOnCard(

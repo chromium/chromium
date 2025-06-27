@@ -292,6 +292,9 @@
     <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_CVC" desc="Error message to show when a user has input an invalid security code.">
       Code is invalid
     </message>
+    <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_EXPIRATION_DATE" desc="Error message to show when a user has input an invalid expiration date.">
+      Date is invalid
+    </message>
     <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_NAME_ON_CARD" desc="Error message to show when a user has input an invalid name on card.">
       Name on card is invalid
     </message>
