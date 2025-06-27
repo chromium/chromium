@@ -92,6 +92,19 @@ const char kAutoOpenDevToolsForTabs[] = "auto-open-devtools-for-tabs";
 const char kAutoSelectDesktopCaptureSource[] =
     "auto-select-desktop-capture-source";
 
+// This flag makes Chrome auto-select any screen when an extension asks
+// permission to start desktop capture. Should only be used for tests.
+// kAutoSelectDesktopCaptureSource (see above) can be also be used to
+// auto-select screens. But it have the problem that you need to know the name
+// of a screen to auto-select it. The name of screens can't be set, are
+// different for different platforms, and are different if you have one or
+// several screens. So it's hard to use for auto-selecting screens.
+// This flag does not care what the screen name is, but it also gives no
+// control. Any screen could be chosen. It is useful in tests where we don't
+// care which screen is auto-selected.
+const char kAutoSelectScreenCaptureSource[] =
+    "auto-select-screen-capture-source";
+
 // This flag makes Chrome auto-select a tab with the provided title when
 // the media-picker should otherwise be displayed to the user. This switch
 // is very similar to kAutoSelectDesktopCaptureSource, but limits selection
@@ -553,11 +566,6 @@ const char kRestoreLastSession[] = "restore-last-session";
 // first one will replace the active tab.
 const char kSameTab[] = "same-tab";
 
-// This flag sets the checkboxes for sharing audio during screen capture to off
-// by default. It is primarily intended to be used for tests.
-const char kScreenCaptureAudioDefaultUnchecked[] =
-    "screen-capture-audio-default-unchecked";
-
 // Does not show an infobar when an extension attaches to a page using
 // chrome.debugger page. Required to attach to extension background pages.
 const char kSilentDebuggerExtensionAPI[] = "silent-debugger-extension-api";
@@ -618,9 +626,20 @@ const char kStartStackProfilerBrowserTest[] = "browser-test";
 const char kStoragePressureNotificationInterval[] =
     "storage-pressure-notification-interval";
 
+// This flag sets the checkboxes for sharing system audio during window or
+// screen capture to on by default. It is primarily intended to be used for
+// tests.
+const char kSystemAudioCaptureDefaultChecked[] =
+    "system-audio-capture-default_checked";
+
 // Frequency in Milliseconds for system log uploads. Should only be used for
 // testing purposes.
 const char kSystemLogUploadFrequency[] = "system-log-upload-frequency";
+
+// This flag sets the checkboxes for sharing audio during tab capture to off
+// by default. It is primarily intended to be used for tests.
+const char kTabCaptureAudioDefaultUnchecked[] =
+    "tab-capture-audio-default-unchecked";
 
 // These flags make Chrome auto-accept/reject requests to capture the current
 // tab. It should only be used for tests.
