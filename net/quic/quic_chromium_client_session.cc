@@ -33,6 +33,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/values.h"
 #include "net/base/connection_endpoint_metadata.h"
@@ -234,6 +235,34 @@ void RecordConnectionCloseErrorCode(const quic::QuicConnectionCloseFrame& frame,
       RecordConnectionCloseErrorCodeImpl(histogram, frame.wire_error_code,
                                          is_google_host, handshake_confirmed,
                                          has_ech_config_list);
+    }
+  }
+}
+
+void LogConnectionDurationMetrics(
+    base::TimeDelta duration,
+    bool is_google_with_alpn_h3,
+    const MultiplexedSessionCreationInitiator session_creation_initiator) {
+  std::string_view base_name = "Net.QuicSession.ConnectionDuration";
+  std::string total_suffix = "";
+
+  base::UmaHistogramLongTimes100(base_name, duration);
+
+  if (is_google_with_alpn_h3) {
+    std::string_view host_suffix = ".GoogleWithAlpnH3";
+    base::UmaHistogramLongTimes100(base::StrCat({base_name, host_suffix}),
+                                   duration);
+    total_suffix += host_suffix;
+  }
+
+  if (session_creation_initiator ==
+      MultiplexedSessionCreationInitiator::kPreconnect) {
+    std::string_view initiator_suffix = ".Preconnect";
+    base::UmaHistogramLongTimes100(base::StrCat({base_name, initiator_suffix}),
+                                   duration);
+    if (!total_suffix.empty()) {
+      base::UmaHistogramLongTimes100(
+          base::StrCat({base_name, total_suffix, initiator_suffix}), duration);
     }
   }
 }
@@ -2090,17 +2119,17 @@ void QuicChromiumClientSession::OnConnectionClosed(
         connection()->GetStats().max_consecutive_rto_with_forward_progress);
     UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.NumPingsSent",
                               connection()->GetStats().ping_frames_sent);
-    UMA_HISTOGRAM_LONG_TIMES_100(
-        "Net.QuicSession.ConnectionDuration",
-        tick_clock_->NowTicks() - connect_timing_.connect_end);
+
     UMA_HISTOGRAM_COUNTS_100("Net.QuicSession.NumMigrations", num_migrations_);
     if (IsGoogleHostWithAlpnH3(session_key_.host())) {
       UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.NumPingsSent.GoogleWithAlpnH3",
                                 connection()->GetStats().ping_frames_sent);
-      UMA_HISTOGRAM_LONG_TIMES_100(
-          "Net.QuicSession.ConnectionDuration.GoogleWithAlpnH3",
-          tick_clock_->NowTicks() - connect_timing_.connect_end);
     }
+
+    LogConnectionDurationMetrics(
+        tick_clock_->NowTicks() - connect_timing_.connect_end,
+        IsGoogleHostWithAlpnH3(session_key_.host()),
+        session_creation_initiator_);
 
     // KeyUpdates are used in TLS, but we no longer support pre-TLS QUIC.
     DCHECK(connection()->version().UsesTls());
