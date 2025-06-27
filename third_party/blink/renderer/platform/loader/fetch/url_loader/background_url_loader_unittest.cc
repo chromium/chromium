@@ -524,7 +524,10 @@ class BackgroundResourceFecherTest : public testing::Test {
  private:
   class TestPlatformForRedirects final : public TestingPlatformSupport {
    public:
-    bool IsRedirectSafe(const GURL& from_url, const GURL& to_url) override {
+    bool IsRedirectSafe(
+        const GURL& from_url,
+        const GURL& to_url,
+        const std::optional<url::Origin>& request_initiator) override {
       return true;
     }
   };

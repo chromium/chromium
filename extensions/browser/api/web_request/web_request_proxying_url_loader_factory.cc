@@ -122,7 +122,8 @@ net::RedirectInfo CreateRedirectInfo(
           ? net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT
           : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL,
       original_request.referrer_policy, original_request.referrer.spec(),
-      response_code, new_url, referrer_policy_header,
+      original_request.request_initiator, response_code, new_url,
+      referrer_policy_header,
       /*insecure_scheme_was_upgraded=*/false, /*copy_fragment=*/false,
       /*is_signed_exchange_fallback_redirect=*/false);
 }
@@ -690,11 +691,14 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
       kInternalRedirectStatusCode, redirect_url_.spec().c_str());
 
   // Cross-origin requests need to modify the Origin header to 'null'. Since
-  // CorsURLLoader sets |request_initiator| to the Origin request header in
-  // NetworkService, we need to modify |request_initiator| here to craft the
+  // CorsURLLoader sets `request_initiator` to the Origin request header in
+  // NetworkService, we need to modify `request_initiator` here to craft the
   // Origin header indirectly.
   // Following checks implement the step 10 of "4.4. HTTP-redirect fetch",
   // https://fetch.spec.whatwg.org/#http-redirect-fetch
+  // Note: The original initiator is still recorded in `redirect_info`. This is
+  // intentional as it may be used inside the renderer to check if a redirect to
+  // an extension's Web Accessible Resource is safe.
   if (request_.request_initiator &&
       (!url::IsSameOriginWith(redirect_url_, request_.url) &&
        !request_.request_initiator->IsSameOriginWith(request_.url))) {

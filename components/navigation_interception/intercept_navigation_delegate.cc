@@ -84,7 +84,8 @@ class RedirectURLLoader : public network::mojom::URLLoader {
         net::RedirectInfo::ComputeRedirectInfo(
             request_.method, request_.url, request_.site_for_cookies,
             first_party_url_policy, request_.referrer_policy,
-            request_.referrer.spec(), response_code, *url, std::nullopt,
+            request_.referrer.spec(), request_.request_initiator, response_code,
+            *url, std::nullopt,
             /*insecure_scheme_was_upgraded=*/false,
             /*copy_fragment=*/false),
         std::move(response_head));

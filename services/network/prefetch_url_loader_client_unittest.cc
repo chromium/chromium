@@ -160,7 +160,8 @@ net::RedirectInfo TestRedirectInfo() {
       "GET", TestURL(), TestIsolationInfo().site_for_cookies(),
       RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL,
       net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      TestOrigin().Serialize(), 301, GURL(kRedirectTo), std::nullopt, false);
+      TestOrigin().Serialize(), /*original_initiator=*/std::nullopt, 301,
+      GURL(kRedirectTo), std::nullopt, false);
 }
 
 // Returns true if two SiteForCookies objects match.

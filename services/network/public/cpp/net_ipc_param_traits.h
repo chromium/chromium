@@ -268,6 +268,7 @@ IPC_STRUCT_TRAITS_BEGIN(net::SignedCertificateTimestampAndStatus)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(net::RedirectInfo)
+  IPC_STRUCT_TRAITS_MEMBER(original_initiator)
   IPC_STRUCT_TRAITS_MEMBER(status_code)
   IPC_STRUCT_TRAITS_MEMBER(new_method)
   IPC_STRUCT_TRAITS_MEMBER(new_url)

@@ -1,0 +1,17 @@
+[
+  {
+    "action": {
+      "redirect": {
+        "extensionPath": "/war.js"
+      },
+      "type": "redirect"
+    },
+    "condition": {
+      "regexFilter": ".*/english_page.html",
+      "initiatorDomains": [
+        "example.com"
+      ]
+    },
+    "id": 1
+  }
+]

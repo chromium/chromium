@@ -52,8 +52,9 @@ TEST(RedirectInfoTest, MethodForRedirect) {
     RedirectInfo redirect_info = RedirectInfo::ComputeRedirectInfo(
         test.original_method, kOriginalUrl, kOriginalSiteForCookies,
         kOriginalFirstPartyUrlPolicy, kOriginalReferrerPolicy,
-        kOriginalReferrer, test.http_status_code, kNewLocation,
-        std::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
+        kOriginalReferrer, /*original_initiator=*/std::nullopt,
+        test.http_status_code, kNewLocation,
+        /*referrer_policy_header=*/std::nullopt, kInsecureSchemeWasUpgraded,
         kCopyFragment);
 
     EXPECT_EQ(test.expected_new_method, redirect_info.new_method);
@@ -103,8 +104,9 @@ TEST(RedirectInfoTest, CopyFragment) {
     RedirectInfo redirect_info = RedirectInfo::ComputeRedirectInfo(
         kOriginalMethod, GURL(test.original_url), kOriginalSiteForCookies,
         kOriginalFirstPartyUrlPolicy, kOriginalReferrerPolicy,
-        kOriginalReferrer, kHttpStatusCode, GURL(test.new_location),
-        std::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
+        kOriginalReferrer, /*original_initiator=*/std::nullopt, kHttpStatusCode,
+        GURL(test.new_location),
+        /*referrer_policy_header=*/std::nullopt, kInsecureSchemeWasUpgraded,
         test.copy_fragment);
 
     EXPECT_EQ(GURL(test.expected_new_url), redirect_info.new_url);
@@ -142,8 +144,9 @@ TEST(RedirectInfoTest, FirstPartyURLPolicy) {
     RedirectInfo redirect_info = RedirectInfo::ComputeRedirectInfo(
         kOriginalMethod, kOriginalUrl, kOriginalSiteForCookies,
         test.original_first_party_url_policy, kOriginalReferrerPolicy,
-        kOriginalReferrer, kHttpStatusCode, kNewLocation,
-        std::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
+        kOriginalReferrer, /*original_initiator=*/std::nullopt, kHttpStatusCode,
+        kNewLocation,
+        /*referrer_policy_header=*/std::nullopt, kInsecureSchemeWasUpgraded,
         kCopyFragment);
 
     EXPECT_TRUE(redirect_info.new_site_for_cookies.IsEquivalent(
@@ -462,7 +465,8 @@ TEST(RedirectInfoTest, ReferrerPolicy) {
     RedirectInfo redirect_info = RedirectInfo::ComputeRedirectInfo(
         kOriginalMethod, original_url, kOriginalSiteForCookies,
         kOriginalFirstPartyUrlPolicy, test.original_referrer_policy,
-        test.original_referrer, response_headers->response_code(), new_location,
+        test.original_referrer, /*original_initiator=*/std::nullopt,
+        response_headers->response_code(), new_location,
         RedirectUtil::GetReferrerPolicyHeader(response_headers.get()),
         kInsecureSchemeWasUpgraded, kCopyFragment);
 

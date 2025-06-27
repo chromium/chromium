@@ -429,8 +429,12 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual blink::WebFrame* FindFrame(blink::WebLocalFrame* relative_to_frame,
                                      const std::string& name);
 
-  // Returns true only if it's safe to redirect `from_url` to `to_url`.
-  virtual bool IsSafeRedirectTarget(const GURL& from_url, const GURL& to_url);
+  // Returns true only if it's safe to redirect `from_url` to `to_url`. May also
+  // check `request_initiator` depending on `to_url`.
+  virtual bool IsSafeRedirectTarget(
+      const GURL& from_url,
+      const GURL& to_url,
+      const std::optional<url::Origin>& request_initiator);
 
   // The user agent string is given from the browser process. This is called at
   // most once.

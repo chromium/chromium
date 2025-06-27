@@ -390,9 +390,11 @@ void MojoURLLoaderClient::OnReceiveRedirect(
     OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
     return;
   }
+
   if (!bypass_redirect_checks_ &&
       !Platform::Current()->IsRedirectSafe(GURL(last_loaded_url_),
-                                           redirect_info.new_url)) {
+                                           redirect_info.new_url,
+                                           redirect_info.original_initiator)) {
     OnComplete(network::URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT));
     return;
   }

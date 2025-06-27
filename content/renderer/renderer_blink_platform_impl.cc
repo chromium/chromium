@@ -355,12 +355,14 @@ blink::UserAgentMetadata RendererBlinkPlatformImpl::UserAgentMetadata() {
   return render_thread->GetUserAgentMetadata();
 }
 
-bool RendererBlinkPlatformImpl::IsRedirectSafe(const GURL& from_url,
-                                               const GURL& to_url) {
+bool RendererBlinkPlatformImpl::IsRedirectSafe(
+    const GURL& from_url,
+    const GURL& to_url,
+    const std::optional<url::Origin>& request_initiator) {
   return IsSafeRedirectTarget(from_url, to_url) &&
          (!GetContentClient()->renderer() ||  // null in unit tests.
-          GetContentClient()->renderer()->IsSafeRedirectTarget(from_url,
-                                                               to_url));
+          GetContentClient()->renderer()->IsSafeRedirectTarget(
+              from_url, to_url, request_initiator));
 }
 
 void RendererBlinkPlatformImpl::AppendVariationsThrottles(

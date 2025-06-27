@@ -208,8 +208,8 @@ net::RedirectInfo CreateRedirectInfo(
       outer_request.update_first_party_url_on_redirect
           ? net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT
           : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL,
-      outer_request.referrer_policy, outer_request.referrer.spec(), 303,
-      new_url,
+      outer_request.referrer_policy, outer_request.referrer.spec(),
+      outer_request.request_initiator, 303, new_url,
       net::RedirectUtil::GetReferrerPolicyHeader(outer_response.headers.get()),
       false /* insecure_scheme_was_upgraded */, true /* copy_fragment */,
       is_fallback_redirect);

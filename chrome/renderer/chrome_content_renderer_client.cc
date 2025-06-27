@@ -1584,8 +1584,10 @@ blink::WebFrame* ChromeContentRendererClient::FindFrame(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
-bool ChromeContentRendererClient::IsSafeRedirectTarget(const GURL& upstream_url,
-                                                       const GURL& target_url) {
+bool ChromeContentRendererClient::IsSafeRedirectTarget(
+    const GURL& upstream_url,
+    const GURL& target_url,
+    const std::optional<url::Origin>& request_initiator) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (target_url.SchemeIs(extensions::kExtensionScheme)) {
     const extensions::Extension* extension =
@@ -1594,10 +1596,8 @@ bool ChromeContentRendererClient::IsSafeRedirectTarget(const GURL& upstream_url,
     if (!extension) {
       return false;
     }
-    // TODO(solomonkinard): Use initiator_origin and add tests.
     if (extensions::WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
-            extension, target_url, /*initiator_origin=*/std::nullopt,
-            upstream_url)) {
+            extension, target_url, request_initiator, upstream_url)) {
       return true;
     }
     return extension->guid() == upstream_url.host();

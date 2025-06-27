@@ -295,8 +295,10 @@ blink::WebFrame* ContentRendererClient::FindFrame(
   return nullptr;
 }
 
-bool ContentRendererClient::IsSafeRedirectTarget(const GURL& from_url,
-                                                 const GURL& to_url) {
+bool ContentRendererClient::IsSafeRedirectTarget(
+    const GURL& from_url,
+    const GURL& to_url,
+    const std::optional<url::Origin>& request_initiator) {
   return true;
 }
 

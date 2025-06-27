@@ -595,6 +595,70 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest, DNRRedirect) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+
+// TODO(crbug.com/425708956): Enable this test for desktop Android.
+class WebAccessibleResourcesServiceWorkerBrowserTest
+    : public WebAccessibleResourcesBrowserTest {
+ public:
+  WebAccessibleResourcesServiceWorkerBrowserTest() {
+    UseHttpsTestServer();
+
+    // Add any host names used by tests from this class to the test server's SSL
+    // config since tests will navigate there.
+    net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+    cert_config.dns_names = {"example.com"};
+    embedded_test_server()->SetSSLConfig(cert_config);
+  }
+
+  ~WebAccessibleResourcesServiceWorkerBrowserTest() override = default;
+  WebAccessibleResourcesServiceWorkerBrowserTest(
+      const WebAccessibleResourcesServiceWorkerBrowserTest&) = delete;
+  WebAccessibleResourcesServiceWorkerBrowserTest& operator=(
+      const WebAccessibleResourcesServiceWorkerBrowserTest&) = delete;
+
+ protected:
+  void RegisterServiceWorker(const std::string& host_name,
+                             const std::string& worker_path,
+                             const std::optional<std::string>& scope) {
+    GURL url = embedded_test_server()->GetURL(
+        host_name, "/service_worker/create_service_worker.html");
+    EXPECT_TRUE(NavigateToURL(url));
+    std::string script = content::JsReplace("register($1, $2);", worker_path,
+                                            scope ? *scope : std::string());
+    EXPECT_EQ("DONE", EvalJs(GetActiveWebContents(), script));
+  }
+};
+
+// Test that DNR redirects to the extension's web accessible resource work when
+// the page has a service worker. Unlike the WebAccessibleResourcesBrowserTest
+// version, the service worker causes a renderer level redirect check for the
+// web accessible resource.
+// Regression test for crbug.com/375395102.
+IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesServiceWorkerBrowserTest,
+                       DNRRedirect) {
+  // Register a service worker and navigate to a page it controls.
+  RegisterServiceWorker("example.com", "fetch_event_pass_through.js",
+                        std::nullopt);
+  EXPECT_TRUE(NavigateToURL(embedded_test_server()->GetURL(
+      "example.com", "/service_worker/fetch_from_page.html")));
+
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "web_accessible_resources/dnr/redirect_with_initiator"));
+  ASSERT_TRUE(extension);
+
+  // Fetch the english page. It should be redirected to the extension's web
+  // accessible resource. Note: we "lose" the service worker if we attempt to
+  // navigate to the page instead, so a fetch is used here.
+  auto result =
+      EvalJs(GetActiveWebContents(), "fetch_from_page('/english_page.html');");
+
+  std::string expected_content =
+      "// Redirect with initiator's web accessible resource!";
+  EXPECT_TRUE(result.ExtractString().find(expected_content) !=
+              std::string::npos)
+      << expected_content << " not found in " << result.ExtractString();
+}
+
 // TODO(crbug.com/390687767): Port to desktop Android. Currently the redirect
 // doesn't happen.
 

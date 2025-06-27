@@ -290,7 +290,10 @@ class BLINK_PLATFORM_EXPORT Platform {
   }
 
   // Determines whether it is safe to redirect from |from_url| to |to_url|.
-  virtual bool IsRedirectSafe(const GURL& from_url, const GURL& to_url) {
+  virtual bool IsRedirectSafe(
+      const GURL& from_url,
+      const GURL& to_url,
+      const std::optional<url::Origin>& request_initiator) {
     return false;
   }
 

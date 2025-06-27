@@ -502,6 +502,7 @@ void ThrottlingURLLoader::StartNow() {
         start_info_->url_request.site_for_cookies, first_party_url_policy,
         start_info_->url_request.referrer_policy,
         start_info_->url_request.referrer.spec(),
+        start_info_->url_request.request_initiator,
         // Use status code 307 to preserve the method, so POST requests work.
         net::HTTP_TEMPORARY_REDIRECT, throttle_will_start_redirect_url_,
         std::nullopt, false, false, false);
