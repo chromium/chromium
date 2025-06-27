@@ -27,7 +27,9 @@ config("libdrm_config") {
     "src/include",
     "src/include/drm",
   ]
+}
 
+config("libdrm_private_config") {
   # libdrm uses macros defined by <sys/types.h> which are being moved to
   # <sys/sysmacros.h>.  GLIBC headers give a pragma warning in this case.
   # Suppress this warning for now.  This may be removed once
@@ -36,9 +38,6 @@ config("libdrm_config") {
 
   # glibc version >= 2.25 explicitly include <sys/sysmacros.h>
   cflags += [ "-DMAJOR_IN_SYSMACROS=1" ]
-
-  # TODO(b/357680612): unused function 'swap32'.
-  cflags += [ "-Wno-unused-function" ]
 
   if (is_clang) {
     cflags += [
@@ -51,6 +50,11 @@ config("libdrm_config") {
       "-Wno-format",
     ]
   }
+}
+
+config("libdrm_private_test_config") {
+  # Unused function 'swap32' in test-only code.
+  cflags = [ "-Wno-unused-function" ]
 }
 
 static_library("libdrm") {
@@ -70,6 +74,7 @@ static_library("libdrm") {
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ ":libdrm_private_config" ]
   cflags = [
     # xf86drm.c uses readdir_r, which has been deprecated as of
     # glibc-2.24.  This causes a build error when using the Debian
@@ -103,7 +108,11 @@ executable("modetest") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs += [ ":libdrm_config" ]
+  configs += [
+    ":libdrm_config",
+    ":libdrm_private_config",
+    ":libdrm_private_test_config",
+  ]
 
   deps = [ ":libdrm" ]
 }
