@@ -594,7 +594,7 @@ void LensSearchController::OnOverlayHidden(
 
   // Since the side panel is open and the overlay has smoothly faded out, hide
   // the overlay to restore state to the live page.
-  lens_overlay_controller_->HideOverlay();
+  lens_overlay_controller_->HideOverlayAndMaybeSetLivePageState();
 }
 
 void LensSearchController::OnSidePanelWillHide(

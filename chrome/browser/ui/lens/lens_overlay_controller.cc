@@ -2573,6 +2573,10 @@ void LensOverlayController::HideOverlay() {
   auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
   CHECK(contents_web_view);
   contents_web_view->SetEnabled(true);
+}
+
+void LensOverlayController::HideOverlayAndMaybeSetLivePageState() {
+  HideOverlay();
 
   // If the side panel is open, set the overlay state to kLivePageAndResults.
   if (results_side_panel_coordinator_->IsSidePanelBound()) {
