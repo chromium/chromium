@@ -221,7 +221,6 @@
 #include "net/websockets/websocket_basic_handshake_stream.h"
 #include "partition_alloc/buildflags.h"
 #include "pdf/buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/switches.h"

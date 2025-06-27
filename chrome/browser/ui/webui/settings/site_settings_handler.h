@@ -27,7 +27,6 @@
 #include "components/permissions/object_permission_context_base.h"
 #include "components/prefs/pref_store.h"
 #include "content/public/browser/host_zoom_map.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "url/origin.h"
 
 class BrowsingDataModel;

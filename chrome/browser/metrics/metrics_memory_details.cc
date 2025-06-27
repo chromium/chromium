@@ -22,7 +22,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/process_type.h"
-#include "ppapi/buildflags/buildflags.h"
 
 namespace {
 

@@ -11,7 +11,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
-#include "ppapi/buildflags/buildflags.h"
 
 namespace features {
 

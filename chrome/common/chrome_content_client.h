@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/common/content_client.h"
-#include "ppapi/buildflags/buildflags.h"
 
 namespace embedder_support {
 class OriginTrialPolicyImpl;

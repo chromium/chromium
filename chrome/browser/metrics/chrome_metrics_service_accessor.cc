@@ -11,7 +11,6 @@
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
-#include "ppapi/buildflags/buildflags.h"
 
 namespace {
 
