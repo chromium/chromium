@@ -7,7 +7,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
+#include "chrome/browser/ui/extensions/extension_dialog_utils.h"
+#include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -15,6 +16,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 
 namespace extensions {
 

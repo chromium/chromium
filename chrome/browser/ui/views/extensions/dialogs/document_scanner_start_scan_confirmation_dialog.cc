@@ -4,10 +4,11 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
+#include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 namespace {

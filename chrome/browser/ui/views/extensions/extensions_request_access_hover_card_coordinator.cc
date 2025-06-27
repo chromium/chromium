@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
-#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
+#include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"

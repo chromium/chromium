@@ -4,7 +4,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
+#include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/extension.h"

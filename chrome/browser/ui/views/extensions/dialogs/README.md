@@ -9,7 +9,7 @@
 - Method should receive all the information to display in the UI, and should not compute any extensions logic (e.g pass `extension_site_access` value instead of computing the site access here).
 - Use `ui::DialogModel::Builder` to create the dialog. See more information on
  `ui/base/models/dialog_model.h`
-- Show the dialog using a util method from `chrome/browser/ui/views/extensions/extensions_dialogs_utils.h`
+- Show the dialog using a util method from `chrome/browser/ui/extensions/extension_dialog_utils.h`
 
 ```
 namespace extensions {

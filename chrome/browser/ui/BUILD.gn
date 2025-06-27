@@ -3902,8 +3902,8 @@ static_library("ui") {
       "views/extensions/extension_permissions_view.cc",
       "views/extensions/extension_permissions_view.h",
       "views/extensions/extension_uninstall_dialog_view.cc",
-      "views/extensions/extensions_dialogs_utils.cc",
-      "views/extensions/extensions_dialogs_utils.h",
+      "views/extensions/extension_view_utils.cc",
+      "views/extensions/extension_view_utils.h",
       "views/extensions/extensions_menu_button.cc",
       "views/extensions/extensions_menu_button.h",
       "views/extensions/extensions_menu_coordinator.cc",
@@ -5154,6 +5154,10 @@ static_library("ui") {
         "views/autofill/address_sign_in_promo_view.h",
       ]
     }
+
+    if (enable_extensions_core) {
+      sources += [ "extensions/extension_dialog_utils_views.cc" ]
+    }
   }
 
   # TODO(https://crbug.com/330808104): Delete this code.
@@ -5214,6 +5218,7 @@ static_library("ui") {
 
   if (enable_extensions_core) {
     sources += [
+      "extensions/extension_dialog_utils.h",
       "webui/extensions/extension_icon_source.cc",
       "webui/extensions/extension_icon_source.h",
       "webui/extensions/extensions_internals_source.cc",
@@ -5233,6 +5238,7 @@ static_library("ui") {
       "//chrome/browser/extensions",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:impl",
+      "//extensions/common",
     ]
 
     # TODO(crbug.com/420905611): Verify whether this circular dependency declaration can
