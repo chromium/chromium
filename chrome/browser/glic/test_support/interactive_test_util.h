@@ -56,6 +56,17 @@ class GlicWindowControllerStateObserver
 DECLARE_STATE_IDENTIFIER_VALUE(GlicWindowControllerStateObserver,
                                kGlicWindowControllerState);
 
+// Observes `controller` for changes to animation state.
+class GlicWindowContorllerResizeObserver
+    : public ui::test::PollingStateObserver<bool> {
+ public:
+  explicit GlicWindowContorllerResizeObserver(GlicWindowController& controller);
+  ~GlicWindowContorllerResizeObserver() override;
+};
+
+DECLARE_STATE_IDENTIFIER_VALUE(GlicWindowContorllerResizeObserver,
+                               kGlicWindowControllerResizeState);
+
 // Observers the glic app internal state.
 class GlicAppStateObserver
     : public ui::test::

@@ -364,17 +364,6 @@ class InteractiveGlicTestT : public T {
         expected_size, "CheckWidgetMinimumSize");
   }
 
-  auto ExpectUserCanResize(bool expect_resize) {
-    return Api::CheckResult(
-        [this]() {
-          return window_controller()
-              .GetGlicWidget()
-              ->widget_delegate()
-              ->CanResize();
-        },
-        expect_resize, "ExpectUserCanResize");
-  }
-
   auto CheckTabCount(int expected_count) {
     return Api::CheckResult(
         [this] { return browser()->tab_strip_model()->GetTabCount(); },
@@ -403,6 +392,15 @@ class InteractiveGlicTestT : public T {
         Api::ObserveState(glic::test::internal::kDelayState,
                           std::move(observer)),
         Api::WaitForState(glic::test::internal::kDelayState, true));
+  }
+
+  auto WaitForCanResizeEnabled(bool enabled) {
+    return Api::Steps(
+        Api::ObserveState(internal::kGlicWindowControllerResizeState,
+                          std::ref(window_controller())),
+        Api::Log("WaitForCanResize: ", enabled ? "true" : "false"),
+        Api::WaitForState(internal::kGlicWindowControllerResizeState, enabled),
+        Api::StopObservingState(internal::kGlicWindowControllerResizeState));
   }
 
   content::RenderFrameHost* FindGlicGuestMainFrame() {

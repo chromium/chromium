@@ -57,6 +57,8 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   // If there's a saved target size, start the resize animation for it.
   void MaybeAnimateToTargetSize();
 
+  bool IsAnimating() const;
+
  private:
   // Sets target bounds for the widget (must exist) and creates a
   // GlicWindowResizeAnimation instance to begin a new animation. If a bounds
