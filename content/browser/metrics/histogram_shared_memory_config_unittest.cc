@@ -52,14 +52,8 @@ TEST(HistogramSharedMemoryConfigTest, PassOnCommandLineIsEnabled) {
 
   EXPECT_TRUE(
       HistogramSharedMemory::PassOnCommandLineIsEnabled(PROCESS_TYPE_RENDERER));
-
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_FALSE(
-      HistogramSharedMemory::PassOnCommandLineIsEnabled(PROCESS_TYPE_GPU));
-#else   // !BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(
       HistogramSharedMemory::PassOnCommandLineIsEnabled(PROCESS_TYPE_GPU));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(
