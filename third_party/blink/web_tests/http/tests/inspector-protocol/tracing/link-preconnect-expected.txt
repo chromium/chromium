@@ -1,0 +1,24 @@
+Tests the "LinkPreconnect" trace event
+Recording started
+Tracing complete
+Count of LinkPreconnect events found: 1
+
+Event shape:
+Object: {
+	args: {
+		data: {
+			frame: string
+			node_id: number
+			url: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Preconnect URL: https://example.com/
+
