@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
 
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,6 +32,11 @@ std::optional<base::TimeTicks> g_zero_state_promo_next_show_time_opt =
 constexpr base::TimeDelta kZeroStatePromoIntervalBetweenLaunchAttempt =
     base::Minutes(2);
 }  // namespace
+
+bool ArePromotionsEnabled() {
+  PrefService* local_state = g_browser_process->local_state();
+  return local_state && local_state->GetBoolean(prefs::kPromotionsEnabled);
+}
 
 // static
 void ExtensionsToolbarContainerViewController::WakeZeroStatePromoForTesting() {
@@ -107,6 +113,7 @@ void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
         base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
   } else if (base::TimeTicks::Now() >=
                  g_zero_state_promo_next_show_time_opt.value() &&
+             ArePromotionsEnabled() &&
              !extensions::util::AnyCurrentlyInstalledExtensionIsFromWebstore(
                  browser_->profile())) {
     g_zero_state_promo_next_show_time_opt =
