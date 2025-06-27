@@ -76,7 +76,7 @@ void ChromeSupervisedUserServicePlatformDelegateBase::
         kSupervisionEnabledByFamilyLinkUser:
     case supervised_user::FamilyLinkUserLogRecord::Segment::
         kSupervisionEnabledLocally:
-      if (!supervised_user_service->IsLocalContentFilteringEnabled()) {
+      if (!supervised_user_service->IsLocalBrowserFilteringEnabled()) {
         CHECK(supervised_user_service->IsSupervisedLocally());
         // This sub-state is exceptionally allowed: user is attributed to local
         // supervision, but that supervision is enabled due to other reasons

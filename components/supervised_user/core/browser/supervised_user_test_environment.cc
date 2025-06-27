@@ -149,7 +149,13 @@ PrefService* SupervisedUserPrefStoreTestEnvironment::pref_service() {
   return syncable_pref_service_.get();
 }
 
-SupervisedUserTestEnvironment::SupervisedUserTestEnvironment() {
+SupervisedUserTestEnvironment::SupervisedUserTestEnvironment()
+    : SupervisedUserTestEnvironment(
+          std::make_unique<MetricsServiceAccessorDelegateMock>()) {}
+
+SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
+    std::unique_ptr<MetricsServiceAccessorDelegateMock>
+        metrics_service_accessor_delegate) {
   std::unique_ptr<safe_search_api::FakeURLCheckerClient> client =
       std::make_unique<safe_search_api::FakeURLCheckerClient>();
   url_checker_client_ = client.get();
@@ -171,7 +177,8 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment() {
   );
   metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
       pref_store_environment_.pref_service(), *service_.get(),
-      std::make_unique<SupervisedUserMetricsServiceExtensionDelegateFake>());
+      std::make_unique<SupervisedUserMetricsServiceExtensionDelegateFake>(),
+      std::move(metrics_service_accessor_delegate));
 }
 
 SupervisedUserTestEnvironment::~SupervisedUserTestEnvironment() = default;
@@ -312,7 +319,8 @@ FakeContentFiltersObserverBridge::FakeContentFiltersObserverBridge(
 FakeContentFiltersObserverBridge::~FakeContentFiltersObserverBridge() = default;
 
 void FakeContentFiltersObserverBridge::Init() {
-  // Do nothing, specifically do not initialize the java bridge from super.
+  // Java class would call "onChange" in the constructor with the initial value.
+  OnChange(/*env=*/nullptr, enabled_);
 }
 void FakeContentFiltersObserverBridge::Shutdown() {
   // Do nothing, specifically do not destroy the java bridge from super.
@@ -328,5 +336,10 @@ void FakeContentFiltersObserverBridge::SetEnabled(bool enabled) {
   OnChange(/*env=*/nullptr, enabled);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+MetricsServiceAccessorDelegateMock::MetricsServiceAccessorDelegateMock() =
+    default;
+MetricsServiceAccessorDelegateMock::~MetricsServiceAccessorDelegateMock() =
+    default;
 
 }  // namespace supervised_user

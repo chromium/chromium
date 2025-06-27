@@ -7,17 +7,23 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
 
 namespace {
+
+using ::testing::_;
+using ::testing::Eq;
+
 constexpr char kWebFilterTypeHistogramName[] = "FamilyUser.WebFilterType";
 constexpr char kManagedSiteListHistogramName[] = "FamilyUser.ManagedSiteList";
 constexpr char kApprovedSitesCountHistogramName[] =
@@ -110,6 +116,81 @@ TEST_F(SupervisedUserMetricsServiceTest, RecordDefaultMetrics) {
                                        /*sample=*/0,
                                        /*expected_bucket_count=*/1);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+
+using FieldTrialName = std::string;
+
+class SupervisedUserMetricsServiceFieldTrialTest
+    : public testing::TestWithParam<FieldTrialName> {
+ protected:
+  ~SupervisedUserMetricsServiceFieldTrialTest() override {
+    test_environment_->Shutdown();
+  }
+
+  void ToggleContentFilter(bool enabled) {
+    CHECK(test_environment_)
+        << "Create test environment first with CreateTestEnvironment().";
+
+    if (GetFieldTrialName() == "AndroidDeviceSearchContentFilters") {
+      test_environment_->search_content_filters_observer()->SetEnabled(enabled);
+      return;
+    } else if (GetFieldTrialName() == "AndroidDeviceBrowserContentFilters") {
+      test_environment_->browser_content_filters_observer()->SetEnabled(
+          enabled);
+      return;
+    }
+
+    NOTREACHED() << "Unsupported field trial name: " << GetFieldTrialName();
+  }
+
+  void CreateTestEnvironment(std::unique_ptr<MetricsServiceAccessorDelegateMock>
+                                 metrics_service_accessor_delegate) {
+    test_environment_ = std::make_unique<SupervisedUserTestEnvironment>(
+        std::move(metrics_service_accessor_delegate));
+  }
+
+  static FieldTrialName GetFieldTrialName() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list{
+      kPropagateDeviceContentFiltersToSupervisedUser};
+  base::test::TaskEnvironment task_environment;
+  std::unique_ptr<SupervisedUserTestEnvironment> test_environment_;
+};
+
+TEST_P(SupervisedUserMetricsServiceFieldTrialTest,
+       SyntheticFieldTrialRegistered) {
+  // Register calls before environment's created, because the metrics service
+  // calls field trial registration on creation.
+  auto mock = std::make_unique<MetricsServiceAccessorDelegateMock>();
+  EXPECT_CALL(*mock, RegisterSyntheticFieldTrial(_, "Disabled"))
+      .Times(1);
+  EXPECT_CALL(*mock, RegisterSyntheticFieldTrial(Eq(GetParam()), "Disabled"))
+      .Times(2);
+  EXPECT_CALL(*mock, RegisterSyntheticFieldTrial(Eq(GetParam()), "Enabled"))
+      .Times(1);
+
+  CreateTestEnvironment(std::move(mock));
+
+  // This cycles all possible combinations of states for each filter:
+  // off -> on -> off.
+  // There should be a all-disabled initial registration when the metrics
+  // service is created.
+  ToggleContentFilter(/*enabled=*/true);
+  ToggleContentFilter(/*enabled=*/false);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SupervisedUserMetricsServiceFieldTrialTest,
+    testing::Values("AndroidDeviceSearchContentFilters",
+                    "AndroidDeviceBrowserContentFilters"),
+    [](const testing::TestParamInfo<FieldTrialName>& info) {
+      return info.param;
+    });
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace supervised_user

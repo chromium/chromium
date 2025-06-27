@@ -75,6 +75,17 @@ class SupervisedUserMetricsServiceExtensionDelegateFake
   bool RecordExtensionsMetrics() override;
 };
 
+class MetricsServiceAccessorDelegateMock
+    : public SupervisedUserMetricsService::MetricsServiceAccessorDelegate {
+ public:
+  MetricsServiceAccessorDelegateMock();
+  ~MetricsServiceAccessorDelegateMock() override;
+  MOCK_METHOD(void,
+              RegisterSyntheticFieldTrial,
+              (std::string_view trial_name, std::string_view group_name),
+              (override));
+};
+
 #if BUILDFLAG(IS_ANDROID)
 // Fake implementation of ContentFiltersObserverBridge for testing. Imitates
 // events that would normally be produced by the Android's secure settings
@@ -117,6 +128,9 @@ class FakeContentFiltersObserverBridge final
 class SupervisedUserTestEnvironment {
  public:
   SupervisedUserTestEnvironment();
+  explicit SupervisedUserTestEnvironment(
+      std::unique_ptr<MetricsServiceAccessorDelegateMock>
+          metrics_service_accessor_delegate);
   SupervisedUserTestEnvironment(const SupervisedUserTestEnvironment&) = delete;
   SupervisedUserTestEnvironment& operator=(
       const SupervisedUserTestEnvironment&) = delete;

@@ -78,7 +78,7 @@ class SupervisedUserNavigationObserver
 
   // SupervisedUserServiceObserver:
   void OnURLFilterChanged() override;
-  void OnSearchContentFiltersEnabled() override;
+  void OnSearchContentFiltersChanged() override;
 
   // Called when interstitial error page is no longer being shown in the main
   // frame.

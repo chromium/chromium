@@ -39,6 +39,18 @@ class SupervisedUserMetricsService : public KeyedService,
     virtual bool RecordExtensionsMetrics() = 0;
   };
 
+  // Delegate for registering synthetic field trials for supervised users.
+  class MetricsServiceAccessorDelegate {
+   public:
+    virtual ~MetricsServiceAccessorDelegate() = default;
+    // Registers a synthetic field trial for the given trial and group in
+    // "current" annotation mode.
+    // Note: all new calls to this method should get a review from
+    // chromium-metrics-reviews@google.com
+    virtual void RegisterSyntheticFieldTrial(std::string_view trial_name,
+                                             std::string_view group_name) = 0;
+  };
+
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   // Returns the day id for a given time for testing.
   static int GetDayIdForTesting(base::Time time);
@@ -47,7 +59,9 @@ class SupervisedUserMetricsService : public KeyedService,
       PrefService* pref_service,
       SupervisedUserService& supervised_user_service,
       std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
-          extensions_metrics_delegate);
+          extensions_metrics_delegate,
+      std::unique_ptr<MetricsServiceAccessorDelegate>
+          metrics_service_accessor_delegate);
   SupervisedUserMetricsService(const SupervisedUserMetricsService&) = delete;
   SupervisedUserMetricsService& operator=(const SupervisedUserMetricsService&) =
       delete;
@@ -56,10 +70,12 @@ class SupervisedUserMetricsService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
+ private:
   // SupervisedUserServiceObserver:
   void OnURLFilterChanged() override;
+  void OnSearchContentFiltersChanged() override;
+  void OnBrowserContentFiltersChanged() override;
 
- private:
   // Helper function to check if a new day has arrived.
   void CheckForNewDay();
 
@@ -72,6 +88,9 @@ class SupervisedUserMetricsService : public KeyedService,
   raw_ref<SupervisedUserService> supervised_user_service_;
   std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
       extensions_metrics_delegate_;
+  std::unique_ptr<MetricsServiceAccessorDelegate>
+      metrics_service_accessor_delegate_;
+
   // A periodic timer that checks if a new day has arrived.
   base::RepeatingTimer timer_;
 

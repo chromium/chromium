@@ -17,6 +17,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/variations/synthetic_trials.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
@@ -200,6 +201,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class Browser;
   friend class BrowserProcessImpl;
   friend class GlobalFeatures;
+  friend class supervised_user::MetricsServiceAccessorDelegateImpl;
 #if BUILDFLAG(ENABLE_GLIC)
   friend class glic::GlicSyntheticTrialManager;
 #endif
