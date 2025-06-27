@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -30,10 +32,10 @@ namespace chrome {
 
 namespace {
 
-std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameView(
+#if BUILDFLAG(IS_LINUX)
+std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameViewLinux(
     BrowserFrame* frame,
     BrowserView* browser_view) {
-#if BUILDFLAG(IS_LINUX)
   auto* profile = browser_view->browser()->profile();
   auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
   auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
@@ -71,35 +73,55 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameView(
   }
   return std::make_unique<BrowserFrameViewLinux>(
       frame, browser_view, new BrowserFrameViewLayoutLinux());
-#else
-  return std::make_unique<OpaqueBrowserFrameView>(
-      frame, browser_view, new OpaqueBrowserFrameViewLayout());
-#endif
 }
 
-}  // namespace
+std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameViewLinux(
+    BrowserFrame* frame,
+    BrowserView* browser_view) {
+  if (browser_view->browser()->is_type_picture_in_picture()) {
+    return std::make_unique<PictureInPictureBrowserFrameViewLinux>(
+        frame, browser_view);
+  }
+
+  auto opaque_browser_view =
+      CreateOpaqueBrowserFrameViewLinux(frame, browser_view);
+  opaque_browser_view->InitViews();
+
+  return opaque_browser_view;
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN)
+std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameViewWin(
+    BrowserFrame* frame,
+    BrowserView* browser_view) {
+  if (browser_view->browser()->is_type_picture_in_picture()) {
+    return std::make_unique<PictureInPictureBrowserFrameView>(frame,
+                                                              browser_view);
+  }
+
+  if (frame->ShouldUseNativeFrame()) {
+    return std::make_unique<BrowserFrameViewWin>(frame, browser_view);
+  }
+
+  auto opaque_browser_view = std::make_unique<OpaqueBrowserFrameView>(
+      frame, browser_view, new OpaqueBrowserFrameViewLayout());
+  opaque_browser_view->InitViews();
+
+  return opaque_browser_view;
+}
+#endif
+
+}  // anonymous namespace
 
 std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
     BrowserFrame* frame,
     BrowserView* browser_view) {
-  if (browser_view->browser()->is_type_picture_in_picture()) {
-#if BUILDFLAG(IS_LINUX)
-    return std::make_unique<PictureInPictureBrowserFrameViewLinux>(
-        frame, browser_view);
-#else
-    return std::make_unique<PictureInPictureBrowserFrameView>(frame,
-                                                              browser_view);
-#endif
-  }
-
 #if BUILDFLAG(IS_WIN)
-  if (frame->ShouldUseNativeFrame()) {
-    return std::make_unique<BrowserFrameViewWin>(frame, browser_view);
-  }
+  return CreateBrowserNonClientFrameViewWin(frame, browser_view);
+#else
+  return CreateBrowserNonClientFrameViewLinux(frame, browser_view);
 #endif
-  auto view = CreateOpaqueBrowserFrameView(frame, browser_view);
-  view->InitViews();
-  return view;
 }
 
 }  // namespace chrome
