@@ -54,6 +54,10 @@ class NewTabFooterWebView : public views::WebView,
                            const input::NativeWebKeyboardEvent& event) override;
 
  private:
+  // The URL of tab that the footer is attached to.
+  // This URL is updated on navigation or tab change when the footer needs to be
+  // shown.
+  GURL attached_tab_url_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
   std::unique_ptr<ui::MenuModel> context_menu_model_;
   // Processes keyboard events not handled by the renderer.
