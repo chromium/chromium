@@ -101,6 +101,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @NullMarked
@@ -979,14 +980,24 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         }
 
         List<String> tabGroupSyncIds = new ArrayList<>();
+        List<SavedTabGroup> tabGroups = new ArrayList<>();
         for (String syncGroupId : mTabGroupSyncService.getAllGroupIds()) {
             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncGroupId);
 
             if (savedTabGroup != null) {
                 if (savedTabGroup.archivalTimeMs != null) {
-                    tabGroupSyncIds.add(syncGroupId);
+                    tabGroups.add(savedTabGroup);
                 }
             }
+        }
+
+        // Sort the tab groups by archival time, with the most recent being first.
+        Comparator<SavedTabGroup> comparator =
+                (a, b) -> Long.compare(b.archivalTimeMs, a.archivalTimeMs);
+        tabGroups.sort(comparator);
+
+        for (SavedTabGroup tabGroup : tabGroups) {
+            tabGroupSyncIds.add(tabGroup.syncId);
         }
 
         return tabGroupSyncIds;

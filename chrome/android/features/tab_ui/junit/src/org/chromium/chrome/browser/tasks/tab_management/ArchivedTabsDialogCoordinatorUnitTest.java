@@ -93,6 +93,7 @@ import java.util.List;
 public class ArchivedTabsDialogCoordinatorUnitTest {
     private static final Token TAB_GROUP_ID = Token.createRandom();
     private static final String TAB_GROUP_ID_STRING = TAB_GROUP_ID.toString();
+    private static final String CUSTOM_TAB_GROUP_ID_STRING = "customGroup1";
     private static final int TAB1_ID = 456;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
@@ -237,6 +238,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         List<String> tabGroupSyncIds = new ArrayList<>(List.of(TAB_GROUP_ID_STRING));
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         SavedTabGroupTab savedTabGroupTab = new SavedTabGroupTab();
+        savedTabGroup.syncId = TAB_GROUP_ID_STRING;
         savedTabGroup.savedTabs = new ArrayList<>(List.of(savedTabGroupTab));
         savedTabGroup.archivalTimeMs = System.currentTimeMillis();
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {TAB_GROUP_ID_STRING});
@@ -388,5 +390,32 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         assertEquals(
                 SemanticColorUtils.getColorSurfaceContainerHigh(mActivity),
                 ((ColorDrawable) buttonContainer.getBackground()).getColor());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
+    public void testShowWithSyncedTabGroups_sortedOrder() {
+        List<String> tabGroupSyncIds =
+                new ArrayList<>(List.of(CUSTOM_TAB_GROUP_ID_STRING, TAB_GROUP_ID_STRING));
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        SavedTabGroupTab savedTabGroupTab = new SavedTabGroupTab();
+        savedTabGroup.syncId = TAB_GROUP_ID_STRING;
+        savedTabGroup.savedTabs = new ArrayList<>(List.of(savedTabGroupTab));
+        savedTabGroup.archivalTimeMs = System.currentTimeMillis();
+        // Custom saved tab group has a later (and more recent) archival time.
+        SavedTabGroup customSavedTabGroup = new SavedTabGroup();
+        customSavedTabGroup.syncId = CUSTOM_TAB_GROUP_ID_STRING;
+        customSavedTabGroup.savedTabs = new ArrayList<>(List.of(savedTabGroupTab));
+        customSavedTabGroup.archivalTimeMs = System.currentTimeMillis() + 1;
+        // The returned list has the unsorted order of sync ids.
+        when(mTabGroupSyncService.getAllGroupIds())
+                .thenReturn(new String[] {TAB_GROUP_ID_STRING, CUSTOM_TAB_GROUP_ID_STRING});
+        when(mTabGroupSyncService.getGroup(TAB_GROUP_ID_STRING)).thenReturn(savedTabGroup);
+        when(mTabGroupSyncService.getGroup(CUSTOM_TAB_GROUP_ID_STRING))
+                .thenReturn(customSavedTabGroup);
+
+        // Expect the sorted list of sync ids to be shown (reverse of the mocked return).
+        mCoordinator.show(mOnTabSelectingListener);
+        verify(mTabListEditorController).show(any(), eq(tabGroupSyncIds), eq(null));
     }
 }
