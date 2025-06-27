@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowHeuristicResult;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.WindowingMode;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
@@ -392,6 +393,11 @@ public class AppHeaderCoordinator
     @Override
     public WindowInsetsCompat onApplyWindowInsets(
             View view, WindowInsetsCompat windowInsetsCompat) {
+        if (EdgeToEdgeUtils.isEdgeToEdgeTabletEnabled()
+                && mActivity != null
+                && EdgeToEdgeUtils.isSupportedTablet(mActivity)) {
+            return windowInsetsCompat;
+        }
         mKeyboardInset = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;
         mNavBarInset =
                 windowInsetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
