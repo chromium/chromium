@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.interstitials;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -21,7 +20,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.common.ContentSwitches;
@@ -46,20 +47,21 @@ public class LookalikeInterstitialTest {
     private EmbeddedTestServer mServer;
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    private RegularNewTabPageStation mPage;
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityFromLauncher();
-        mServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
+        mPage = mActivityTestRule.startFromLauncherAtNtp();
+        mServer = mActivityTestRule.getTestServer();
     }
 
     @Test
     @Ignore("crbug/941488")
     public void testBasicInterstitialShown() throws Exception {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         ChromeTabUtils.loadUrlOnUiThread(
                 tab,
                 mServer.getURLWithHostName(

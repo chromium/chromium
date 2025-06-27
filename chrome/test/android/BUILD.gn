@@ -334,6 +334,7 @@ android_library("chrome_java_transit") {
     "//components/browsing_data/core:java",
     "//components/collaboration/public:core_java",
     "//components/embedder_support/android:util_java",
+    "//components/infobars/android:java",
     "//components/messages/android:java",
     "//components/messages/android/internal:java",
     "//components/messages/android/test:test_support_java",
