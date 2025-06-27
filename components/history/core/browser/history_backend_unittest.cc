@@ -2491,6 +2491,51 @@ TEST_F(HistoryBackendTest, RemoveVisitsSource) {
     EXPECT_EQ(SOURCE_SYNCED, visit_sources[visits[i].visit_id]);
 }
 
+// Test for migration of adding visit_source table.
+TEST_F(HistoryBackendTest, MigrationVisitSource) {
+  ASSERT_TRUE(backend_.get());
+  backend_->Closing();
+  backend_ = nullptr;
+
+  base::FilePath old_history_path;
+  ASSERT_TRUE(GetTestDataHistoryDir(&old_history_path));
+  old_history_path = old_history_path.AppendASCII("HistoryNoSource");
+
+  // Copy history database file to current directory so that it will be deleted
+  // in Teardown.
+  base::FilePath new_history_path(test_dir());
+  base::DeletePathRecursively(new_history_path);
+  base::CreateDirectory(new_history_path);
+  base::FilePath new_history_file = new_history_path.Append(kHistoryFilename);
+  ASSERT_TRUE(base::CopyFile(old_history_path, new_history_file));
+
+  backend_ = base::MakeRefCounted<TestHistoryBackend>(
+      std::make_unique<HistoryBackendTestDelegate>(this),
+      history_client_.CreateBackendClient(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  backend_->Init(false, TestHistoryDatabaseParamsForPath(new_history_path));
+  backend_->Closing();
+  backend_ = nullptr;
+
+  // Now the database should already be migrated.
+  // Check version first.
+  int cur_version = HistoryDatabase::GetCurrentVersion();
+  sql::Database db(sql::test::kTestTag);
+  ASSERT_TRUE(db.Open(new_history_file));
+  sql::Statement s(
+      db.GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
+  ASSERT_TRUE(s.Step());
+  int file_version = s.ColumnInt(0);
+  EXPECT_EQ(cur_version, file_version);
+
+  // Check visit_source table is created and empty.
+  s.Assign(db.GetUniqueStatement(
+      "SELECT name FROM sqlite_schema WHERE name='visit_source'"));
+  ASSERT_TRUE(s.Step());
+  s.Assign(db.GetUniqueStatement("SELECT * FROM visit_source LIMIT 10"));
+  EXPECT_FALSE(s.Step());
+}
+
 // Test that `recent_redirects_` stores the full redirect chain in case of
 // client redirects. In this case, a server-side redirect is followed by a
 // client-side one.
@@ -3015,6 +3060,51 @@ TEST_F(HistoryBackendTest, MarkVisitAsKnownToSync) {
   ASSERT_TRUE(backend_->db()->GetVisitsForURL(url_id1, &visits1));
   ASSERT_EQ(1U, visits1.size());
   EXPECT_TRUE(visits1[0].is_known_to_sync);
+}
+
+// Test for migration of adding visit_duration column.
+TEST_F(HistoryBackendTest, MigrationVisitDuration) {
+  ASSERT_TRUE(backend_.get());
+  backend_->Closing();
+  backend_ = nullptr;
+
+  base::FilePath old_history_path, old_history;
+  ASSERT_TRUE(GetTestDataHistoryDir(&old_history_path));
+  old_history = old_history_path.AppendASCII("HistoryNoDuration");
+
+  // Copy history database file to current directory so that it will be deleted
+  // in Teardown.
+  base::FilePath new_history_path(test_dir());
+  base::DeletePathRecursively(new_history_path);
+  base::CreateDirectory(new_history_path);
+  base::FilePath new_history_file = new_history_path.Append(kHistoryFilename);
+  ASSERT_TRUE(base::CopyFile(old_history, new_history_file));
+
+  backend_ = base::MakeRefCounted<TestHistoryBackend>(
+      std::make_unique<HistoryBackendTestDelegate>(this),
+      history_client_.CreateBackendClient(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  backend_->Init(false, TestHistoryDatabaseParamsForPath(new_history_path));
+  backend_->Closing();
+  backend_ = nullptr;
+
+  // Now the history database should already be migrated.
+
+  // Check version in history database first.
+  int cur_version = HistoryDatabase::GetCurrentVersion();
+  sql::Database db(sql::test::kTestTag);
+  ASSERT_TRUE(db.Open(new_history_file));
+  sql::Statement s(db.GetUniqueStatement(
+      "SELECT value FROM meta WHERE key = 'version'"));
+  ASSERT_TRUE(s.Step());
+  int file_version = s.ColumnInt(0);
+  EXPECT_EQ(cur_version, file_version);
+
+  // Check visit_duration column in visits table is created and set to 0.
+  s.Assign(db.GetUniqueStatement(
+      "SELECT visit_duration FROM visits LIMIT 1"));
+  ASSERT_TRUE(s.Step());
+  EXPECT_EQ(0, s.ColumnInt(0));
 }
 
 TEST_F(HistoryBackendTest, AddPageNoVisitForBookmark) {
