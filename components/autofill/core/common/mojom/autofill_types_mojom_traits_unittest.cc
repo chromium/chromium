@@ -28,14 +28,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
-bool operator==(const PasswordAndMetadata& lhs,
-                const PasswordAndMetadata& rhs) {
-  return lhs.username_value == rhs.username_value &&
-         lhs.password_value == rhs.password_value && lhs.realm == rhs.realm &&
-         lhs.uses_account_store == rhs.uses_account_store;
-}
-
 namespace {
 
 const std::vector<const char*> kOptions = {"Option1", "Option2", "Option3",

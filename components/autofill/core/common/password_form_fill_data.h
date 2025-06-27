@@ -32,6 +32,9 @@ struct PasswordAndMetadata {
   PasswordAndMetadata& operator=(PasswordAndMetadata&&);
   ~PasswordAndMetadata();
 
+  friend bool operator==(const PasswordAndMetadata& lhs,
+                         const PasswordAndMetadata& rhs) = default;
+
   std::u16string username_value;
   std::u16string password_value;
   std::optional<std::u16string> backup_password_value;
