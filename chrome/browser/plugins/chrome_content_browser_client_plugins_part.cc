@@ -37,12 +37,6 @@
 #include "extensions/common/permissions/socket_permission.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "chrome/browser/renderer_host/pepper/chrome_browser_pepper_host_factory.h"
-#include "ppapi/host/ppapi_host.h"
-#include "ppapi/shared_impl/ppapi_switches.h"
-#endif  // BUILDFLAG(ENABLE_PPAPI)
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -252,14 +246,6 @@ bool ChromeContentBrowserClientPluginsPart::IsPepperVpnProviderAPIAllowed(
 bool ChromeContentBrowserClientPluginsPart::IsPluginAllowedToUseDevChannelAPIs(
     content::BrowserContext* browser_context,
     const GURL& url) {
-#if BUILDFLAG(ENABLE_PPAPI)
-  // Allow access for tests.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnablePepperTesting)) {
-    return true;
-  }
-#endif  // BUILDFLAG(ENABLE_PPAPI)
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   Profile* profile = Profile::FromBrowserContext(browser_context);
   const extensions::ExtensionSet* extension_set = nullptr;
