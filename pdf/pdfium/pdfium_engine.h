@@ -32,6 +32,7 @@
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
 #include "pdf/loader/document_loader.h"
+#include "pdf/pdf_caret_client.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/pdfium/pdfium_page.h"
@@ -142,7 +143,9 @@ using AddSearchResultCallback = base::RepeatingCallback<void(PDFiumRange)>;
 // This class implements a PDF rendering engine using the PDFium library.
 //
 // Many methods in this class are virtual to facilitate testing.
-class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
+class PDFiumEngine : public DocumentLoader::Client,
+                     public IFSDK_PAUSE,
+                     public PdfCaretClient {
  public:
   // Maximum number of parameters a nameddest view can contain.
   static constexpr size_t kMaxViewParams = 4;
@@ -492,6 +495,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   void OnNewDataReceived() override;
   void OnDocumentComplete() override;
   void OnDocumentCanceled() override;
+
+  // PdfCaretClient:
+  int GetCharCount(int page_index) const override;
+  std::vector<gfx::Rect> GetScreenRectsForChar(int page_index,
+                                               int char_index) const override;
+  void InvalidateRect(const gfx::Rect& rect) override;
 
 #if defined(PDF_ENABLE_XFA)
   void UpdatePageCount();

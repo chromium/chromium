@@ -123,6 +123,7 @@ class MockTestClient : public TestClient {
   }
 
   MOCK_METHOD(void, ProposeDocumentLayout, (const DocumentLayout&), (override));
+  MOCK_METHOD(void, Invalidate, (const gfx::Rect&), (override));
   MOCK_METHOD(void, ScrollToPage, (int), (override));
   MOCK_METHOD(void,
               NavigateTo,
@@ -1237,6 +1238,39 @@ TEST_P(PDFiumEngineTest, ClearTextSelection) {
   // Clear selected text.
   engine->ClearTextSelection();
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+}
+
+TEST_P(PDFiumEngineTest, GetScreenRectsForChar) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(2, engine->GetNumberOfPages());
+  ASSERT_EQ(30, engine->GetCharCount(0));
+  ASSERT_EQ(30, engine->GetCharCount(1));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  constexpr gfx::Rect kExpectedRect1{32, 186, 12, 22};
+  constexpr gfx::Rect kExpectedRect2{67, 186, 5, 22};
+  constexpr gfx::Rect kExpectedRect3{43, 466, 8, 22};
+#else
+  constexpr gfx::Rect kExpectedRect1{32, 188, 12, 19};
+  constexpr gfx::Rect kExpectedRect2{67, 188, 5, 19};
+  constexpr gfx::Rect kExpectedRect3{43, 468, 8, 19};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  EXPECT_THAT(engine->GetScreenRectsForChar(0, 0), ElementsAre(kExpectedRect1));
+  EXPECT_THAT(engine->GetScreenRectsForChar(0, 5), ElementsAre(kExpectedRect2));
+  EXPECT_THAT(engine->GetScreenRectsForChar(1, 1), ElementsAre(kExpectedRect3));
+}
+
+TEST_P(PDFiumEngineTest, InvalidateRect) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  EXPECT_CALL(client, Invalidate(gfx::Rect(1, 2, 3, 4)));
+  engine->InvalidateRect(gfx::Rect(1, 2, 3, 4));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTest, testing::Bool());

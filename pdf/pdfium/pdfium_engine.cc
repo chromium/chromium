@@ -927,6 +927,27 @@ void PDFiumEngine::OnDocumentCanceled() {
     OnDocumentComplete();
 }
 
+int PDFiumEngine::GetCharCount(int page_index) const {
+  CHECK(PageIndexInBounds(page_index));
+  return pages_[page_index]->GetCharCount();
+}
+
+std::vector<gfx::Rect> PDFiumEngine::GetScreenRectsForChar(
+    int page_index,
+    int char_index) const {
+  CHECK(PageIndexInBounds(page_index));
+  PDFiumPage* page = pages_[page_index].get();
+  CHECK(page->IsCharIndexInBounds(char_index));
+
+  PDFiumRange range(page, char_index, 1);
+  return range.GetScreenRects(GetVisibleRect().origin(), current_zoom_,
+                              GetCurrentOrientation());
+}
+
+void PDFiumEngine::InvalidateRect(const gfx::Rect& rect) {
+  client_->Invalidate(rect);
+}
+
 void PDFiumEngine::FinishLoadingDocument() {
   // Note that doc_loader_->IsDocumentComplete() may not be true here if
   // called via `OnDocumentCanceled()`.
