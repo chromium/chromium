@@ -19,7 +19,10 @@ build_webui("build") {
     "internals_page.ts",
   ]
 
-  ts_files = [ "privacy_sandbox_internals_browser_proxy.ts" ]
+  ts_files = [
+    "privacy_sandbox_internals_browser_proxy.ts",
+    "router.ts",
+  ]
 
   mojo_files_deps = [
     "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings_ts__generator",

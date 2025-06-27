@@ -12,6 +12,7 @@ import 'chrome://privacy-sandbox-internals/internals_page.js';
 import type {ExpandableJsonViewerElement} from 'chrome://privacy-sandbox-internals/expandable_json_viewer.js';
 import type {InternalsPage} from 'chrome://privacy-sandbox-internals/internals_page.js';
 import type {PrefDisplayElement} from 'chrome://privacy-sandbox-internals/pref_display.js';
+import {Router} from 'chrome://privacy-sandbox-internals/router.js';
 import type {ValueDisplayElement} from 'chrome://privacy-sandbox-internals/value_display.js';
 import {defaultLogicalFn, timestampLogicalFn} from 'chrome://privacy-sandbox-internals/value_display.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -34,6 +35,161 @@ function waitForElement(
   });
 }
 
+async function waitForCondition(checkFn: () => boolean): Promise<void> {
+  return new Promise(resolve => {
+    const check = () => {
+      if (checkFn()) {
+        resolve();
+      } else {
+        setTimeout(check, 0);
+      }
+    };
+    check();
+  });
+}
+
+// Test suite for routing within the Privacy Sandbox Internals page.
+suite('PrivacySandboxInternalsRoutingTest', function() {
+  let page: InternalsPage;
+  let shadowRoot: ShadowRoot;
+  let tabContainer: HTMLElement;
+
+  enum Page {
+    TRACKING_PROTECTION = 'tracking-protection',
+    ADVERTISING = 'advertising',
+    CAPTURED_SURFACE_CONTROL = 'captured_surface_control',
+    COOKIES = 'cookies',
+    POPUPS = 'popups',
+    TPCD_METADATA_GRANTS = 'tpcd_metadata_grants',
+  }
+
+  setup(async function() {
+    Router.resetInstanceForTesting();
+    window.history.replaceState({}, '', window.location.pathname);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('internals-page');
+    document.body.appendChild(page);
+    shadowRoot = page.shadowRoot!;
+    tabContainer = await waitForElement(shadowRoot, '#ps-page');
+  });
+
+  test('defaultsToFirstTabOnLoad', async function() {
+    await waitForCondition(
+        () => tabContainer.getAttribute('selected-index') === '0');
+    const params = new URLSearchParams(window.location.search);
+    assertEquals(Page.TRACKING_PROTECTION, params.get('page'));
+  });
+
+  test('switchesTabOnClickAndUpdateUrl', async () => {
+    const cookiesTab = await waitForElement(
+        shadowRoot, `div[slot="tab"][data-page-name="${Page.COOKIES}"]`);
+    cookiesTab.click();
+
+    const allTabs = Array.from(shadowRoot.querySelectorAll('[slot="tab"]'));
+    const expectedIndex = allTabs.indexOf(cookiesTab).toString();
+
+    await waitForCondition(
+        () => tabContainer.getAttribute('selected-index') === expectedIndex);
+    const params = new URLSearchParams(window.location.search);
+    assertEquals(Page.COOKIES, params.get('page'));
+  });
+
+  test('navigatingToSpecificUrl', async () => {
+    const targetPage = Page.TPCD_METADATA_GRANTS;
+    Router.getInstance().navigateTo(targetPage);
+
+    const tpcdmetadatagrantsTab = await waitForElement(
+        shadowRoot, `div[slot="tab"][data-page-name="${targetPage}"]`);
+    const allTabs = Array.from(shadowRoot.querySelectorAll('[slot="tab"]'));
+    const expectedIndex = allTabs.indexOf(tpcdmetadatagrantsTab).toString();
+
+    await waitForCondition(
+        () => tabContainer.getAttribute('selected-index') === expectedIndex);
+    const params = new URLSearchParams(window.location.search);
+    assertEquals(
+        targetPage, params.get('page'),
+        'URL should be updated to the new page');
+  });
+
+  test('navigatesToDefaultOnInvalidUrl', async () => {
+    window.history.replaceState({}, '', '?page=invalid-page');
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('internals-page');
+    document.body.appendChild(page);
+    shadowRoot = page.shadowRoot!;
+    tabContainer = await waitForElement(shadowRoot, '#ps-page');
+
+    await waitForCondition(
+        () => tabContainer.getAttribute('selected-index') === '0');
+    const params = new URLSearchParams(window.location.search);
+    assertEquals(
+        Page.TRACKING_PROTECTION, params.get('page'),
+        'URL should be updated to the default page');
+  });
+
+  test('defaultsToFirstTabWhenNoPageInUrl', async function() {
+    await waitForCondition(
+        () => tabContainer.getAttribute('selected-index') === '0');
+    const params = new URLSearchParams(window.location.search);
+    assertEquals(
+        Page.TRACKING_PROTECTION, params.get('page'),
+        'URL should be updated to show the default page parameter.');
+  });
+
+  test('updatesTabWhenBackButtonIsUsed', async () => {
+    Router.getInstance().navigateTo(Page.ADVERTISING);
+    await waitForCondition(
+        () => new URLSearchParams(window.location.search).get('page') ===
+            Page.ADVERTISING);
+
+    Router.getInstance().navigateTo(Page.POPUPS);
+    await waitForCondition(
+        () => new URLSearchParams(window.location.search).get('page') ===
+            Page.POPUPS);
+
+    history.back();
+
+    await waitForCondition(
+        () => new URLSearchParams(window.location.search).get('page') ===
+            Page.ADVERTISING);
+
+    const advertisingTab = await waitForElement(
+        shadowRoot, `[data-page-name="${Page.ADVERTISING}"]`);
+    const allTabs = Array.from(shadowRoot.querySelectorAll('[slot="tab"]'));
+    const expectedIndex = allTabs.indexOf(advertisingTab).toString();
+    assertEquals(expectedIndex, tabContainer.getAttribute('selected-index'));
+  });
+
+  test('updatesTabWhenForwardButtonIsUsed', async () => {
+    Router.getInstance().navigateTo(Page.ADVERTISING);
+    await waitForCondition(
+        () => new URLSearchParams(window.location.search).get('page') ===
+            Page.ADVERTISING);
+    Router.getInstance().navigateTo(Page.POPUPS);
+    await waitForCondition(
+        () => new URLSearchParams(window.location.search).get('page') ===
+            Page.POPUPS);
+
+    history.back();
+    await waitForCondition(
+        () => new URLSearchParams(window.location.search).get('page') ===
+            Page.ADVERTISING);
+
+    history.forward();
+
+    await waitForCondition(
+        () => new URLSearchParams(window.location.search).get('page') ===
+            Page.POPUPS);
+
+    const popupsTab =
+        await waitForElement(shadowRoot, `[data-page-name="${Page.POPUPS}"]`);
+    const allTabs = Array.from(shadowRoot.querySelectorAll('[slot="tab"]'));
+    const expectedIndex = allTabs.indexOf(popupsTab).toString();
+    assertEquals(expectedIndex, tabContainer.getAttribute('selected-index'));
+  });
+});
+
 // Test the <internals-page> element with the real PageHandler.
 suite('InternalsPageTest', function() {
   let internalsPage: InternalsPage;
@@ -46,7 +202,7 @@ suite('InternalsPageTest', function() {
 
   test('rendersAdvertisingPrefs', async () => {
     const firstPrefElement = await waitForElement(
-        internalsPage.shadowRoot!, '#advertising-prefs > pref-display');
+        internalsPage.shadowRoot!, '#advertising-prefs-panel > pref-display');
     assertTrue(
         !!firstPrefElement,
         'A <pref-display> element should be displayed for Advertising Prefs.');
@@ -54,7 +210,8 @@ suite('InternalsPageTest', function() {
 
   test('rendersTrackingProtectionPrefs', async () => {
     const firstPrefElement = await waitForElement(
-        internalsPage.shadowRoot!, '#tracking-protection-prefs > pref-display');
+        internalsPage.shadowRoot!,
+        '#tracking-protection-prefs-panel > pref-display');
     assertTrue(
         !!firstPrefElement,
         'A <pref-display> element should be displayed for Tracking Protection Prefs.');
@@ -62,7 +219,8 @@ suite('InternalsPageTest', function() {
 
   test('rendersTpcdExperimentPrefs', async () => {
     const firstPrefElement = await waitForElement(
-        internalsPage.shadowRoot!, '#tpcd-experiment-prefs > pref-display');
+        internalsPage.shadowRoot!,
+        '#tpcd-experiment-prefs-panel > pref-display');
     assertTrue(
         !!firstPrefElement,
         'A <pref-display> element should be displayed for TPCD Experiment Prefs.');

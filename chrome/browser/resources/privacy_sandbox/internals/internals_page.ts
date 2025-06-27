@@ -12,8 +12,11 @@ import './privacy_sandbox_internals.mojom-webui.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {ContentSettingsType} from './content_settings_types.mojom-webui.js';
+import type {CrFrameListElement} from './cr_frame_list.js';
 import {getTemplate} from './internals_page.html.js';
 import {PrivacySandboxInternalsBrowserProxy} from './privacy_sandbox_internals_browser_proxy.js';
+import {Router} from './router.js';
+import type {RouteObserver} from './router.js';
 import type {LogicalFn} from './value_display.js';
 import {defaultLogicalFn, timestampLogicalFn} from './value_display.js';
 
@@ -125,7 +128,7 @@ function getPrefLogicalFn(prefName: string) {
   return defaultLogicalFn;
 }
 
-export class InternalsPage extends CustomElement {
+export class InternalsPage extends CustomElement implements RouteObserver {
   private browserProxy_: PrivacySandboxInternalsBrowserProxy =
       PrivacySandboxInternalsBrowserProxy.getInstance();
   whenLoaded: Promise<void>|null = null;
@@ -134,12 +137,25 @@ export class InternalsPage extends CustomElement {
     return 'internals-page';
   }
 
-  static override get template() {
-    return getTemplate();
+  constructor() {
+    super();
+    Router.getInstance().addObserver(this);
   }
 
   connectedCallback() {
     this.whenLoaded = this.load();
+    const defaultPage =
+        this.shadowRoot!.querySelector<HTMLElement>('[slot="tab"][selected]')
+            ?.dataset['pageName']!;
+    Router.getInstance().processInitialRoute(defaultPage);
+  }
+
+  static override get template() {
+    return getTemplate();
+  }
+
+  disconnectedCallback() {
+    Router.getInstance().removeObserver(this);
   }
 
   maybeAddPrefsToDom(parentElement: HTMLElement|null, prefNameList: string[]) {
@@ -161,20 +177,42 @@ export class InternalsPage extends CustomElement {
     });
   }
 
+  // Called when the route changes, this method updates the selected tab in the
+  // UI to match the current page in the URL.
+  onRouteChanged(pageName: string): void {
+    const frameList =
+        this.shadowRoot!.querySelector<CrFrameListElement>('#ps-page');
+    if (!frameList) {
+      return;
+    }
+
+    const allTabsInDom =
+        Array.from(frameList.querySelectorAll<HTMLElement>('[slot="tab"]'));
+    const index = allTabsInDom.findIndex(
+        (tab: HTMLElement) => tab.dataset['pageName'] === pageName);
+
+    if (index !== -1) {
+      frameList.setAttribute('selected-index', index.toString());
+    } else {
+      frameList.setAttribute('selected-index', '0');
+    }
+  }
+
   async load() {
     this.maybeAddPrefsToDom(
-        this.shadowRoot!.querySelector<HTMLElement>('#advertising-prefs'),
+        this.shadowRoot!.querySelector<HTMLElement>('#advertising-prefs-panel'),
         [...advertisingPrefNames.keys()]);
     this.maybeAddPrefsToDom(
         this.shadowRoot!.querySelector<HTMLElement>(
-            '#tracking-protection-prefs'),
+            '#tracking-protection-prefs-panel'),
         [...trackingProtectionPrefNames.keys()]);
     this.maybeAddPrefsToDom(
-        this.shadowRoot!.querySelector<HTMLElement>('#tpcd-experiment-prefs'),
+        this.shadowRoot!.querySelector<HTMLElement>(
+            '#tpcd-experiment-prefs-panel'),
         [...tpcdExperimentPrefs.keys()]);
 
     const tabBox =
-        this.shadowRoot!.querySelector<HTMLSelectElement>('#ps-page')!;
+        this.shadowRoot!.querySelector<CrFrameListElement>('#ps-page')!;
     const csPanels = new Map<string, HTMLElement>();
     const handler = this.browserProxy_.handler;
     const shouldShowTpcdMetadataGrants =
@@ -190,6 +228,7 @@ export class InternalsPage extends CustomElement {
       const tab = document.createElement('div');
       tab.innerText = ContentSettingsType[i];
       tab.setAttribute('slot', 'tab');
+      tab.dataset['pageName'] = ContentSettingsType[i].toLowerCase();
       tabBox.appendChild(tab);
 
       const panel = document.createElement('div');
@@ -203,6 +242,14 @@ export class InternalsPage extends CustomElement {
 
       csPanels.set(ContentSettingsType[i], panel);
     }
+
+    tabBox.addEventListener('selected-index-change', () => {
+      const selectedTab =
+          tabBox.querySelector<HTMLElement>('[slot="tab"][selected]');
+      if (selectedTab?.dataset['pageName']) {
+        Router.getInstance().navigateTo(selectedTab.dataset['pageName']);
+      }
+    });
 
     for (let i = ContentSettingsType.MIN_VALUE;
          i <= ContentSettingsType.MAX_VALUE; i++) {

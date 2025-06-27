@@ -28,12 +28,24 @@ class PrivacySandboxInternalsTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsTest, PageLoadsWhenFeatureOn) {
-  GURL kUrl(content::GetWebUIURL(chrome::kChromeUIPrivacySandboxInternalsHost));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+  GURL initial_url(content::GetWebUIURL(chrome::kChromeUIPrivacySandboxInternalsHost));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  EXPECT_THAT(web_contents->GetLastCommittedURL(), Eq(kUrl));
+
+  const std::string default_page_name =
+      content::EvalJs(web_contents, R"(
+        (function() {
+          const internalsPage = document.querySelector('internals-page');
+          const selectedTab = internalsPage.shadowRoot.querySelector('[slot="tab"][selected]');
+          return selectedTab.dataset.pageName;
+        })();
+      )").ExtractString();
+
+  ASSERT_FALSE(default_page_name.empty());
+  GURL final_url(initial_url.spec() + "?page=" + default_page_name);
+  EXPECT_THAT(web_contents->GetLastCommittedURL(), Eq(final_url));
   EXPECT_FALSE(web_contents->IsCrashed());
   EXPECT_THAT(web_contents->GetTitle(), Eq(u"Privacy Sandbox Internals"));
 }
