@@ -87,3 +87,15 @@ TEST_F(ReaderModeDistillerPageTest, DistillPageValid) {
   EXPECT_EQ(1u, web_frame()->GetJavaScriptCallHistory().size());
   EXPECT_EQ(dom_distiller_script_utf16(), web_frame()->GetLastJavaScriptCall());
 }
+
+// Tests that a main frame with a different origin than the original URL is not
+// processed.
+TEST_F(ReaderModeDistillerPageTest, DifferentOriginIgnored) {
+  base::Value empty_value;
+  web_frame()->AddResultForExecutedJs(&empty_value,
+                                      dom_distiller_script_utf16());
+
+  GURL different_origin("https://notthesame.url");
+  distiller_page()->DistillPageImpl(different_origin, dom_distiller_script());
+  EXPECT_EQ(0u, web_frame()->GetJavaScriptCallHistory().size());
+}

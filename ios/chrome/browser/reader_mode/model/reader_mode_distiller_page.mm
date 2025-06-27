@@ -31,6 +31,11 @@ void ReaderModeDistillerPage::DistillPageImpl(const GURL& url,
   if (!main_frame) {
     return;
   }
+  if (!main_frame->GetSecurityOrigin().IsSameOriginWith(
+          url::Origin::Create(url))) {
+    return;
+  }
+
   main_frame->ExecuteJavaScript(
       base::UTF8ToUTF16(script),
       base::BindOnce(&ReaderModeDistillerPage::HandleJavaScriptResult,
