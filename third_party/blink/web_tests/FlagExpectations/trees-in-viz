@@ -65,6 +65,3 @@ crbug.com/401453196 compositing/perpendicular-layer-sorting.html [ Failure ]
 crbug.com/401453196 virtual/fluent-overlay-scrollbar/virtual/overlay-scrollbar/overlay-scrollbar-smoke-test.html [ Failure ]
 crbug.com/401453196 virtual/fluent-overlay-scrollbar/visual/hover-over-scrollbar-thumb.html [ Failure ]
 crbug.com/401453196 virtual/fluent-overlay-scrollbar/visual/scrollbar-show-tickmarks.html [ Failure ]
-
-crbug.com/401453196 virtual/android/url-bar/bottom-and-top-fixed-sticks-to-top.html [ Pass Timeout ]
-crbug.com/401453196 virtual/android/url-bar/bottom-fixed-adjusted-when-showing-url-bar.html [ Pass Timeout ]
