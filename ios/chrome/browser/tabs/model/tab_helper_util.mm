@@ -64,6 +64,8 @@
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/overlays/translate_overlay_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -378,5 +380,9 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   if (!is_off_the_record &&
       base::FeatureList::IsEnabled(kIOSMiniMapUniversalLink)) {
     MiniMapTabHelper::CreateForWebState(web_state);
+  }
+
+  if (!is_off_the_record && !for_prerender && IsPageActionMenuEnabled()) {
+    BwgTabHelper::CreateForWebState(web_state);
   }
 }

@@ -10,6 +10,8 @@ source_set("model") {
     "bwg_service.h",
     "bwg_service.mm",
     "bwg_session_delegate.h",
+    "bwg_tab_helper.h",
+    "bwg_tab_helper.mm",
   ]
   deps = [
     "//components/keyed_service/core",
@@ -20,9 +22,11 @@ source_set("model") {
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/web/public",
   ]
   public_deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]

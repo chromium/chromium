@@ -1,0 +1,49 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_TAB_HELPER_H_
+
+#import "base/scoped_observation.h"
+#import "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
+
+@protocol BWGCommands;
+
+// Tab helper controlling the BWG feature and its current state for a given tab.
+class BwgTabHelper : public web::WebStateObserver,
+                     public web::WebStateUserData<BwgTabHelper> {
+ public:
+  BwgTabHelper(const BwgTabHelper&) = delete;
+  BwgTabHelper& operator=(const BwgTabHelper&) = delete;
+
+  ~BwgTabHelper() override;
+
+  // Sets the state of `is_bwg_session_active_`.
+  void SetBwgSessionActive(bool active);
+
+  // Set the BWG commands handler, used to show/hide the BWG UI.
+  void SetBwgCommandsHandler(id<BWGCommands> handler);
+
+  // WebStateObserver:
+  void WasShown(web::WebState* web_state) override;
+  void WasHidden(web::WebState* web_state) override;
+
+ private:
+  explicit BwgTabHelper(web::WebState* web_state);
+
+  friend class web::WebStateUserData<BwgTabHelper>;
+
+  // Whether the BWG session is currently active.
+  bool is_bwg_session_active_ = false;
+
+  // Commands handler for BWG commands.
+  __weak id<BWGCommands> bwg_commands_handler_ = nil;
+
+  // The observation of the Web State.
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
+};
+
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_TAB_HELPER_H_

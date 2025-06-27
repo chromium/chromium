@@ -27,6 +27,7 @@ include_rules = [
   "+ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h",
   "+ios/chrome/browser/download/coordinator",
   "+ios/chrome/browser/download/model",
+  "+ios/chrome/browser/intelligence/bwg/model",
   "+ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h",
   "+ios/chrome/browser/reader_mode/model",
   "+ios/chrome/browser/download/ui",

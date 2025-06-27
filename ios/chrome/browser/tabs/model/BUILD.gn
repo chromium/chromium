@@ -83,6 +83,8 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:badge",
     "//ios/chrome/browser/infobars/model/overlays",
+    "//ios/chrome/browser/intelligence/bwg/model",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/itunes_urls/model",
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/lens/model",
