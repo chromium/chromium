@@ -84,8 +84,11 @@ found in the LICENSE file.
         </ph> - [Placeholder String]
       </message>
 
-      <message name="IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP" translateable="false" desc="This is the tooltip shown when hovering over the glic entry button in the tab strip.">
+      <message name="IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP" translateable="false" desc="This is the tooltip shown when hovering over the glic entry button in the tab strip while the Glic window is closed.">
         Open glic
+      </message>
+      <message name="IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE" translateable="false" desc="This is the tooltip shown when hovering over the glic entry button in the tab strip while the Glic window is open.">
+        Close glic
       </message>
 
       <message name="IDS_GLIC_THREE_DOT_MENU_ITEM" desc="Glic three dot menu item entry point." translateable="false">
@@ -93,17 +96,29 @@ found in the LICENSE file.
       </message>
 
       <!-- Glic status tray icon strings -->
-      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered.">
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is closed.">
         Open
       </message>
-      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CANARY" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered. It indicates that this is the Canary version of the browser.">
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CANARY" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is closed. It indicates that this is the Canary version of the browser.">
         Open (Canary)
       </message>
-      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_DEV" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered. It indicates that this is the Dev version of the browser.">
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_DEV" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is closed. It indicates that this is the Dev version of the browser.">
         Open (Dev)
       </message>
-      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_BETA" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered. It indicates that this is the Beta version of the browser.">
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_BETA" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is closed. It indicates that this is the Beta version of the browser.">
         Open (Beta)
+      </message>
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is open.">
+        Close
+      </message>
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_CANARY" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is open. It indicates that this is the Canary version of the browser.">
+        Close (Canary)
+      </message>
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_DEV" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is open. It indicates that this is the Dev version of the browser.">
+        Close (Dev)
+      </message>
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_BETA" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is open. It indicates that this is the Beta version of the browser.">
+        Close (Beta)
       </message>
       <message name="IDS_GLIC_STATUS_ICON_MENU_SHOW" translateable="false" desc="This is the menu item for showing the glic UI.">
         Open glic
