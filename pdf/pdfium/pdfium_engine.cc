@@ -17,6 +17,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -3816,12 +3817,15 @@ std::optional<RegionData> PDFiumEngine::GetRegion(const gfx::Point& location,
   }
 
   size_t stride = image_data.rowBytes();
-  UNSAFE_TODO({
-    base::span<uint8_t> buffer_span(buffer, image_data.height() * stride);
-    size_t x_offset = location.x() + page_offset_.x();
-    size_t offset = location.y() * stride + x_offset * 4;
-    return RegionData(buffer_span.subspan(offset), stride);
-  });
+  size_t x_offset = location.x() + page_offset_.x();
+  size_t offset = location.y() * stride + x_offset * 4;
+  // SAFETY: Skia guarantees image_data.height() * image_data.rowBytes() is the
+  // exact size of the allocated pixel buffer, including row padding. However,
+  // Skia does not have a span-based API for this.
+  // TODO(crbug.com/357905831): Switch to SkSpan when possible.
+  UNSAFE_BUFFERS(
+      base::span<uint8_t> buffer_span(buffer, image_data.height() * stride));
+  return RegionData(buffer_span.subspan(offset), stride);
 }
 
 void PDFiumEngine::OnSelectionTextChanged() {
