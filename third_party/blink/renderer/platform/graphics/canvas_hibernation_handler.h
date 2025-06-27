@@ -19,13 +19,30 @@
 
 namespace blink {
 
-class CanvasResourceHost;
+class CanvasResourceProvider;
 
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasHibernationSnapshotZstd);
 
 // All the fields are main-thread only. See DCheckInvariant() for invariants.
 class PLATFORM_EXPORT CanvasHibernationHandler {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    virtual CanvasResourceProvider* GetResourceProviderForCanvas2D() const = 0;
+    virtual bool IsPageVisible() const = 0;
+    virtual bool IsContextLost() const = 0;
+    virtual void ResetResourceProviderForCanvas2D() = 0;
+    virtual void SetNeedsCompositingUpdate() = 0;
+
+    // Called when the CC texture layer that this instance is holding (if any)
+    // should be cleared. Subclasses that can hold a CC texture layer should
+    // override this method. Should only be called if the context is
+    // CanvasRenderingContext2D.
+    virtual void ClearCanvas2DLayerTexture() {}
+  };
+
   // The values of the enum entries must not change because they are used for
   // usage metrics histograms. New values can be added to the end.
   enum HibernationEvent {
@@ -50,7 +67,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
     UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.HibernationEvents", event);
   }
 
-  explicit CanvasHibernationHandler(CanvasResourceHost& resource_host);
+  explicit CanvasHibernationHandler(Delegate& delegate);
   CanvasHibernationHandler(const CanvasHibernationHandler&) = delete;
   CanvasHibernationHandler& operator=(const CanvasHibernationHandler&) = delete;
 
@@ -169,7 +186,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
   int bytes_per_pixel_;
 
   bool hibernation_scheduled_ = false;
-  const base::raw_ref<CanvasResourceHost> resource_host_;
+  const base::raw_ref<Delegate> delegate_;
   base::WeakPtrFactory<CanvasHibernationHandler> weak_ptr_factory_{this};
 };
 

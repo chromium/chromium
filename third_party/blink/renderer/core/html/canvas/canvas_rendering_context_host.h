@@ -21,6 +21,10 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace cc {
+class Layer;
+}
+
 namespace blink {
 
 class CanvasRenderingContext;
