@@ -6,18 +6,21 @@
 #include "components/proto_extras/test_proto/test_proto.equal.h"
 #include "components/proto_extras/test_proto/test_proto.ostream.h"
 #include "components/proto_extras/test_proto/test_proto.pb.h"
-#include "components/proto_extras/test_proto/test_proto.test.h"
 #include "components/proto_extras/test_proto/test_proto.to_value.h"
 #include "components/proto_extras/test_proto/test_proto_dependency.pb.h"
 #include "components/proto_extras/test_proto/test_proto_dependency.to_value.h"
 #include "components/proto_extras/test_proto2/test_proto2.equal.h"
 #include "components/proto_extras/test_proto2/test_proto2.ostream.h"
 #include "components/proto_extras/test_proto2/test_proto2.pb.h"
-#include "components/proto_extras/test_proto2/test_proto2.test.h"
 #include "components/proto_extras/test_proto2/test_proto2.to_value.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace proto_extras {
+
+void PrintTo(const TestMessage& msg, std::ostream* os) {
+  *os << msg;
+}
+
 namespace {
 
 TEST(ProtoExtrasToValueTest, BasicField) {

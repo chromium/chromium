@@ -21,11 +21,3 @@ proto_extras("test_proto_extras") {
 
   deps = [ ":test_proto" ]
 }
-
-proto_test_extras("test_proto_test_extras") {
-  sources = [
-    "test_proto.proto",
-    "test_proto_dependency.proto",
-  ]
-  deps = [ ":test_proto" ]
-}
