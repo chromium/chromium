@@ -79,6 +79,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":model",
+    "//base/test:test_support",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/sessions/model:fake",
     "//ios/chrome/browser/shared/coordinator/scene/test",
@@ -89,6 +90,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:model_common",
+    "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

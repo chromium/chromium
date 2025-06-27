@@ -2,6 +2,7 @@ include_rules = [
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/snapshots/model",
+  "+ios/chrome/browser/tabs/model/features.h",
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",
   "+ios/chrome/browser/omnibox",
 ]
