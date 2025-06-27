@@ -246,14 +246,6 @@ class ChoiceScreenData {
   const ChoiceScreenDisplayState display_state_;
 };
 
-// Records the specified choice screen condition at profile initialization.
-void RecordChoiceScreenProfileInitCondition(
-    SearchEngineChoiceScreenConditions event);
-
-// Records the specified choice screen condition for relevant navigations.
-void RecordChoiceScreenNavigationCondition(
-    SearchEngineChoiceScreenConditions condition);
-
 // Records the specified choice screen event.
 void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);
 

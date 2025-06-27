@@ -111,6 +111,12 @@ class SearchEngineChoiceService : public KeyedService {
       bool is_regular_profile,
       const TemplateURLService& template_url_service);
 
+  // Records the specified choice screen condition at profile initialization.
+  void RecordStaticEligibility(SearchEngineChoiceScreenConditions condition);
+
+  // Records the specified choice screen condition for relevant navigations.
+  void RecordDynamicEligibility(SearchEngineChoiceScreenConditions condition);
+
   // Returns key information needed to show a search engine choice screen, like
   // the template URLs for the engines to show. See
   // `search_engines::ChoiceScreenData` for more details.

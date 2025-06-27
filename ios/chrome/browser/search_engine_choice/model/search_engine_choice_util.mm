@@ -89,7 +89,10 @@ bool ShouldDisplaySearchEngineChoiceScreen(
     }
   }
 
-  RecordChoiceScreenProfileInitCondition(condition);
+  // This is today recording a combination of the static & dynamic
+  // eligibilities.
+  // TODO(crbug.com/426533078): Split this.
+  search_engine_choice_service->RecordStaticEligibility(condition);
   return condition ==
          search_engines::SearchEngineChoiceScreenConditions::kEligible;
 }

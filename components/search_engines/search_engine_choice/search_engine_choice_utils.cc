@@ -141,18 +141,6 @@ ChoiceScreenData::ChoiceScreenData(
 
 ChoiceScreenData::~ChoiceScreenData() = default;
 
-void RecordChoiceScreenProfileInitCondition(
-    SearchEngineChoiceScreenConditions condition) {
-  base::UmaHistogramEnumeration(
-      kSearchEngineChoiceScreenProfileInitConditionsHistogram, condition);
-}
-
-void RecordChoiceScreenNavigationCondition(
-    SearchEngineChoiceScreenConditions condition) {
-  base::UmaHistogramEnumeration(
-      kSearchEngineChoiceScreenNavigationConditionsHistogram, condition);
-}
-
 void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event) {
   base::UmaHistogramEnumeration(kSearchEngineChoiceScreenEventsHistogram,
                                 event);

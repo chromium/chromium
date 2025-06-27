@@ -1066,6 +1066,14 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
       .choice_predates_restore = GetParam().choice_predates_restore,
   });
 
+  search_engine_choice_service().RecordStaticEligibility(
+      search_engine_choice_service().GetStaticChoiceScreenConditions(
+          policy_service(), /*is_regular_profile=*/true,
+          template_url_service()));
+  search_engine_choice_service().RecordDynamicEligibility(
+      search_engine_choice_service().GetDynamicChoiceScreenConditions(
+          template_url_service()));
+
   if (GetParam().expect_choice_info_wipe) {
     EXPECT_FALSE(pref_service()->HasPrefPath(
         prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
@@ -1083,6 +1091,22 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
         search_engines::kSearchEngineChoiceRepromptHistogram,
         RepromptResult::kNoReprompt, 1);
   }
+
+  SearchEngineChoiceScreenConditions expected_eligibility_condition =
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+      SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
+#else
+      GetParam().expect_choice_info_wipe
+          ? SearchEngineChoiceScreenConditions::kEligible
+          : SearchEngineChoiceScreenConditions::kAlreadyCompleted;
+#endif
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      expected_eligibility_condition, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
+      expected_eligibility_condition, 1);
 
   histogram_tester_.ExpectTotalCount(
       search_engines::kSearchEngineChoiceRepromptSpecificCountryHistogram, 0);

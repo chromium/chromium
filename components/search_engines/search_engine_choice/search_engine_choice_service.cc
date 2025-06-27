@@ -412,6 +412,18 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
 #endif
 }
 
+void SearchEngineChoiceService::RecordStaticEligibility(
+    SearchEngineChoiceScreenConditions condition) {
+  base::UmaHistogramEnumeration(
+      kSearchEngineChoiceScreenProfileInitConditionsHistogram, condition);
+}
+
+void SearchEngineChoiceService::RecordDynamicEligibility(
+    SearchEngineChoiceScreenConditions condition) {
+  base::UmaHistogramEnumeration(
+      kSearchEngineChoiceScreenNavigationConditionsHistogram, condition);
+}
+
 std::unique_ptr<search_engines::ChoiceScreenData>
 SearchEngineChoiceService::GetChoiceScreenData(
     const SearchTermsData& search_terms_data) {

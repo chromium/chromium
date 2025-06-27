@@ -147,7 +147,7 @@ SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext(
 
   search_engines::SearchEngineChoiceScreenConditions eligibility_conditions =
       ComputeProfileEligibility(profile);
-  RecordChoiceScreenProfileInitCondition(eligibility_conditions);
+  search_engine_choice_service.RecordStaticEligibility(eligibility_conditions);
 
   if (!IsProfileEligibleForChoiceScreen(profile, eligibility_conditions)) {
     return nullptr;
