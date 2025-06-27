@@ -13,12 +13,10 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/webplugininfo.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -33,9 +31,6 @@
 #include "extensions/common/manifest_constants.h"
 #endif
 
-using content::WebPluginInfo;
-using content::WebPluginMimeType;
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 using extensions::mojom::ManifestLocation;
 #endif
@@ -46,16 +41,6 @@ namespace {
 const bool kNotHostedApp = false;
 const bool kHostedApp = true;
 #endif
-
-void AddContentTypeHandler(content::WebPluginInfo* info,
-                           const char* mime_type,
-                           const char* manifest_url) {
-  content::WebPluginMimeType mime_type_info;
-  mime_type_info.mime_type = mime_type;
-  mime_type_info.additional_params.emplace_back(
-      u"nacl", base::UTF8ToUTF16(manifest_url));
-  info->mime_types.push_back(mime_type_info);
-}
 
 }  // namespace
 
@@ -128,21 +113,3 @@ TEST_F(ChromeContentRendererClientTest, ExtensionsClientInitialized) {
   }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-TEST_F(ChromeContentRendererClientTest, NaClRestriction) {
-  // Unknown content types have no NaCl module.
-  {
-    WebPluginInfo info;
-    EXPECT_EQ(GURL(),
-              ChromeContentRendererClient::GetNaClContentHandlerURL(
-                  "application/x-foo", info));
-  }
-  // Known content types have a NaCl module.
-  {
-    WebPluginInfo info;
-    AddContentTypeHandler(&info, "application/x-foo", "www.foo.com");
-    EXPECT_EQ(GURL("www.foo.com"),
-              ChromeContentRendererClient::GetNaClContentHandlerURL(
-                  "application/x-foo", info));
-  }
-}

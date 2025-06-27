@@ -1090,25 +1090,6 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
-// For NaCl content handling plugins, the NaCl manifest is stored in an
-// additonal 'nacl' param associated with the MIME type.
-//  static
-GURL ChromeContentRendererClient::GetNaClContentHandlerURL(
-    const std::string& actual_mime_type,
-    const content::WebPluginInfo& plugin) {
-  // Look for the manifest URL among the MIME type's additonal parameters.
-  for (const auto& mime_type : plugin.mime_types) {
-    if (mime_type.mime_type == actual_mime_type) {
-      for (const auto& p : mime_type.additional_params) {
-        if (p.name == u"nacl")
-          return GURL(p.value);
-      }
-      break;
-    }
-  }
-  return GURL();
-}
-
 void ChromeContentRendererClient::GetInterface(
     const std::string& interface_name,
     mojo::ScopedMessagePipeHandle interface_pipe) {

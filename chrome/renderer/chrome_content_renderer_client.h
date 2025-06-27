@@ -67,10 +67,6 @@ namespace chrome {
 class WebRtcLoggingAgentImpl;
 }  // namespace chrome
 
-namespace content {
-struct WebPluginInfo;
-}  // namespace content
-
 namespace fingerprinting_protection_filter {
 class UnverifiedRulesetDealer;
 }  // namespace fingerprinting_protection_filter
@@ -253,9 +249,6 @@ class ChromeContentRendererClient
   FRIEND_TEST_ALL_PREFIXES(ChromeContentRendererClientTest, NaClRestriction);
   FRIEND_TEST_ALL_PREFIXES(ChromeContentRendererClientTest,
                            ShouldSuppressErrorPage);
-
-  static GURL GetNaClContentHandlerURL(const std::string& actual_mime_type,
-                                       const content::WebPluginInfo& plugin);
 
   // service_manager::LocalInterfaceProvider:
   void GetInterface(const std::string& name,
