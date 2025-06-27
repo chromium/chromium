@@ -217,7 +217,9 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 
 // Tests that the bottom sheet does not show after it has been
 // dismissed three consecutive times.
-- (void)testSilenceProactiveBottomSheet {
+// TODO(crbug.com/428191407): Re-enable after the test is fixed for
+// ios-fieldtrial-rel.
+- (void)DISABLED_testSilenceProactiveBottomSheet {
   // Dismiss #1
   [self loadSignupPage];
   [self openAndDismissBottomSheet];
@@ -322,7 +324,9 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
-- (void)testProactiveBottomSheetNotShownWhenCredentialsAvailable {
+// TODO(crbug.com/428191407): Re-enable after the test is fixed for
+// ios-fieldtrial-rel.
+- (void)DISABLED_testProactiveBottomSheetNotShownWhenCredentialsAvailable {
   [self loadSignupPage];
 
   // Fill new password with bottom sheet.
