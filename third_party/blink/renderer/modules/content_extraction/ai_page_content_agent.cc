@@ -220,7 +220,7 @@ void AddClickabilityReasons(Element& element,
 
   using Reason = mojom::blink::AIPageContentClickabilityReason;
 
-  if (element.IsClickableControl()) {
+  if (element.IsClickableFormControlNode()) {
     interaction_info.debug_clickability_reasons.push_back(
         Reason::kClickableControl);
   }

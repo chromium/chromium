@@ -1756,7 +1756,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   GCedHeapVector<Member<Element>>* ElementsFromAttributeOrInternals(
       const QualifiedName& attribute) const;
 
-  bool IsClickableControl() { return IsClickableControl(this); }
+  bool IsClickableFormControlNode();
 
  protected:
   bool HasElementData() const { return static_cast<bool>(element_data_); }

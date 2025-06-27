@@ -7649,8 +7649,17 @@ bool Element::IsMouseFocusable(UpdateBehavior update_behavior) const {
   return true;
 }
 
+bool Element::IsClickableFormControlNode() {
+  auto* form_control_element = DynamicTo<HTMLFormControlElement>(this);
+  if (form_control_element && form_control_element->FormControlType() !=
+                                  mojom::blink::FormControlType::kFieldset) {
+    return true;
+  }
+  return false;
+}
+
 bool Element::IsMaybeClickable() {
-  if (IsClickableControl(this)) {
+  if (IsClickableFormControlNode()) {
     return true;
   }
 
