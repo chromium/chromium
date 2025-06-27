@@ -16,7 +16,6 @@
   --zero-state-promo-background-color: var(--color-button-foreground);
   --zero-state-promo-foreground-color: var(--color-button-background);
   --container-gap: 8px;
-  --top-container-padding: 20px;
 
   border-radius: 12px;
   display: flex;
@@ -41,7 +40,7 @@
   font-weight: 500;
   line-height: 24px;
   margin: 0px;
-  width: calc(100% - var(--top-container-padding) * 2);
+  width: 260px;
 }
 
 #dismissButton {
@@ -76,7 +75,7 @@
   font-size: 14px;
   line-height: 20px;
   padding-top: 4px;
-  width: calc(100% - var(--top-container-padding) * 2);
+  width: 267px;
 }
 
 #anchorContainer a {
