@@ -155,6 +155,10 @@ bool PageActionModel::GetActionItemIsShowingBubble() const {
   return action_item_is_showing_bubble_;
 }
 
+bool PageActionModel::GetActionActive() const {
+  return action_active_;
+}
+
 void PageActionModel::SetOverrideText(
     base::PassKey<PageActionController>,
     const std::optional<std::u16string>& override_text) {
@@ -213,6 +217,16 @@ void PageActionModel::SetIsChipShowing(base::PassKey<PageActionController>,
   }
 
   is_chip_showing_ = is_chip_showing;
+  NotifyChange();
+}
+
+void PageActionModel::SetActionActive(base::PassKey<PageActionController>,
+                                      bool is_active) {
+  if (action_active_ == is_active) {
+    return;
+  }
+
+  action_active_ = is_active;
   NotifyChange();
 }
 

@@ -60,6 +60,8 @@ class PageActionModelInterface {
   virtual void SetOverrideTooltip(
       base::PassKey<PageActionController>,
       const std::optional<std::u16string>& override_tooltip) = 0;
+  virtual void SetActionActive(base::PassKey<PageActionController>,
+                               bool is_active) = 0;
   virtual void SetShouldHidePageAction(base::PassKey<PageActionController>,
                                        bool should_hide) = 0;
   virtual void SetIsChipShowing(base::PassKey<PageActionController>,
@@ -75,6 +77,7 @@ class PageActionModelInterface {
   virtual const std::u16string& GetTooltipText() const = 0;
   virtual const std::u16string& GetAccessibleName() const = 0;
   virtual bool GetActionItemIsShowingBubble() const = 0;
+  virtual bool GetActionActive() const = 0;
 
   virtual bool IsEphemeral() const = 0;
 };
@@ -121,6 +124,9 @@ class PageActionModel : public PageActionModelInterface {
       base::PassKey<PageActionController>,
       const std::optional<std::u16string>& override_tooltip) override;
 
+  void SetActionActive(base::PassKey<PageActionController>,
+                       bool is_active) override;
+
   void SetShouldHidePageAction(base::PassKey<PageActionController>,
                                bool should_hide) override;
 
@@ -139,6 +145,7 @@ class PageActionModel : public PageActionModelInterface {
   const std::u16string& GetAccessibleName() const override;
   const std::u16string& GetTooltipText() const override;
   bool GetActionItemIsShowingBubble() const override;
+  bool GetActionActive() const override;
 
   bool IsEphemeral() const override;
 
@@ -192,6 +199,9 @@ class PageActionModel : public PageActionModelInterface {
   // When set, it will always take precedence over `text_` because by default
   // `text_` will be used.
   std::optional<std::u16string> override_accessible_name_;
+
+  // Represents whether the action is currently active (e.g. showing dialog).
+  bool action_active_ = false;
 
   // Tracks whether we should forcibly hide the page action (e.g., Omnibox is
   // getting updated).

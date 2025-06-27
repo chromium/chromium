@@ -22,6 +22,35 @@ namespace page_actions {
 
 using PassKey = base::PassKey<PageActionController>;
 
+ScopedPageActionActivity::ScopedPageActionActivity(
+    PageActionController* controller,
+    actions::ActionId action_id)
+    : controller_(controller), action_id_(action_id) {}
+
+ScopedPageActionActivity::ScopedPageActionActivity(
+    ScopedPageActionActivity&& other) noexcept
+    : controller_(other.controller_), action_id_(other.action_id_) {
+  other.controller_ = nullptr;
+}
+
+ScopedPageActionActivity& ScopedPageActionActivity::operator=(
+    ScopedPageActionActivity&& other) noexcept {
+  if (controller_) {
+    controller_->DecrementActivityCounter(action_id_);
+  }
+
+  action_id_ = other.action_id_;
+  controller_ = other.controller_;
+  other.controller_ = nullptr;
+  return *this;
+}
+
+ScopedPageActionActivity::~ScopedPageActionActivity() {
+  if (controller_) {
+    controller_->DecrementActivityCounter(action_id_);
+  }
+}
+
 PageActionControllerImpl::PageActionControllerImpl(
     PinnedToolbarActionsModel* pinned_actions_model,
     PageActionModelFactory* page_action_model_factory,
@@ -84,6 +113,8 @@ void PageActionControllerImpl::Register(actions::ActionId action_id,
       CreateModel(action_id, is_ephemeral);
   model->SetTabActive(PassKey(), is_tab_active);
   page_actions_.emplace(action_id, std::move(model));
+  // Initialize counter to 0
+  activity_counters_[action_id] = 0;
 }
 
 void PageActionControllerImpl::Show(actions::ActionId action_id) {
@@ -110,6 +141,25 @@ void PageActionControllerImpl::ShowSuggestionChip(actions::ActionId action_id,
 void PageActionControllerImpl::HideSuggestionChip(actions::ActionId action_id) {
   FindPageActionModel(action_id).SetShouldShowSuggestionChip(PassKey(),
                                                              /*show=*/false);
+}
+
+ScopedPageActionActivity PageActionControllerImpl::AddActivity(
+    actions::ActionId action_id) {
+  auto& counter = activity_counters_[action_id];
+  ++counter;
+  FindPageActionModel(action_id).SetActionActive(PassKey(), true);
+  return ScopedPageActionActivity(this, action_id);
+}
+
+void PageActionControllerImpl::DecrementActivityCounter(
+    actions::ActionId action_id) {
+  auto it = activity_counters_.find(action_id);
+  CHECK(it != activity_counters_.end());
+  --it->second;
+  CHECK_GE(it->second, 0);
+  if (it->second == 0) {
+    FindPageActionModel(action_id).SetActionActive(PassKey(), false);
+  }
 }
 
 void PageActionControllerImpl::ActionItemChanged(

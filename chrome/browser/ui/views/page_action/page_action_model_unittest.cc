@@ -204,5 +204,34 @@ TEST_F(PageActionModelTest, OverrideAccessibleName) {
   EXPECT_EQ(model_.GetAccessibleName(), kDefaultText);
 }
 
+TEST_F(PageActionModelTest, ActionActive) {
+  // Default state should be inactive.
+  EXPECT_FALSE(model_.GetActionActive());
+
+  // Setting active should notify and update the state.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetActionActive(PassKey(), true);
+  EXPECT_TRUE(model_.GetActionActive());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  // Setting active again should not notify or change the state.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(0);
+  model_.SetActionActive(PassKey(), true);
+  EXPECT_TRUE(model_.GetActionActive());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  // Setting inactive should notify and update the state.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetActionActive(PassKey(), false);
+  EXPECT_FALSE(model_.GetActionActive());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  // Setting inactive again should not notify or change the state.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(0);
+  model_.SetActionActive(PassKey(), false);
+  EXPECT_FALSE(model_.GetActionActive());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+}
+
 }  // namespace
 }  // namespace page_actions

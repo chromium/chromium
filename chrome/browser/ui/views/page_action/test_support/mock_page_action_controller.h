@@ -55,6 +55,10 @@ class MockPageActionController : public PageActionController {
                (base::ScopedObservation<PageActionModelInterface,
                                         PageActionModelObserver>&)),
               (override));
+  MOCK_METHOD(ScopedPageActionActivity,
+              AddActivity,
+              (actions::ActionId),
+              (override));
   MOCK_METHOD(base::CallbackListSubscription,
               CreateActionItemSubscription,
               (actions::ActionItem*),
@@ -70,6 +74,7 @@ class MockPageActionController : public PageActionController {
                actions::ActionId,
                PageActionView*),
               (override));
+  MOCK_METHOD(void, DecrementActivityCounter, (actions::ActionId), (override));
 };
 
 }  // namespace page_actions
