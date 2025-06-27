@@ -100,7 +100,7 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
            feature == media_feature_names::kScrollableMediaFeature ||
            (RuntimeEnabledFeatures::
                 CSSScrollDirectionContainerQueriesEnabled() &&
-            feature == media_feature_names::kScrollDirectionMediaFeature);
+            feature == media_feature_names::kDirectionMediaFeature);
   }
   bool IsAllowedWithoutValue(const AtomicString& feature,
                              const ExecutionContext*) const override {
@@ -219,7 +219,7 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
     // scroll-state(scrollable: [ none | top | right | bottom | left |
     // block-start | inline-start | block-end | inline-end | x | y | block |
     // inline ] )
-    // scroll-state(scroll-direction: [ none | top | right | bottom | left
+    // scroll-state(direction: [ none | top | right | bottom | left
     // | block-start | inline-start | block-end | inline-end | x | y | block |
     // inline ] )
     CSSParserTokenStream::RestoringBlockGuard guard(stream);

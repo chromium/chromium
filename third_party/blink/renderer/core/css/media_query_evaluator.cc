@@ -1574,9 +1574,9 @@ static bool ScrollableMediaFeatureEval(const MediaQueryExpValue& value,
   }
 }
 
-static bool ScrollDirectionMediaFeatureEval(const MediaQueryExpValue& value,
-                                            MediaQueryOperator op,
-                                            const MediaValues& media_values) {
+static bool DirectionMediaFeatureEval(const MediaQueryExpValue& value,
+                                      MediaQueryOperator op,
+                                      const MediaValues& media_values) {
   if (!value.IsValid()) {
     return media_values.ScrollDirection();
   }

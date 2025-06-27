@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>CSS Container Queries: scroll-state(scroll-direction) conditionText serialization</title>
+<title>CSS Container Queries: scroll-state(direction) conditionText serialization</title>
 <link rel="help" href="https://drafts.csswg.org/css-conditional-5/#container-queries">
 <link rel="help" href="https://drafts.csswg.org/cssom/#serialize-a-css-rule">
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/6400">
@@ -7,11 +7,11 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
 <style id="testSheet">
-  @container scroll-state(   scroll-direction:top   ) { }
-  @container scroll-STate(scroll-direction:    ) { }
-  @container scroll-STate(scroll-direction) { }
-  @container  scroll-state(  ( scroll-Direction: LEFT) OR ( Scroll-direction: BOTTOM  ) ) { }
-  @container scroll-state (scroll-direction: right) { }
+  @container scroll-state(   direction:top   ) { }
+  @container scroll-STate(direction:    ) { }
+  @container scroll-STate(direction) { }
+  @container  scroll-state(  ( direction: LEFT) OR ( direction: BOTTOM  ) ) { }
+  @container scroll-state (direction: right) { }
 </style>
 <script>
   setup(() => {
@@ -20,11 +20,11 @@
   });
 
   const tests = [
-      ["scroll-state(scroll-direction: top)", "Normalize spaces"],
-      ["scroll-STate(scroll-direction:    )", "No value - invalid, serializes as <general-enclosed>"],
-      ["scroll-state(scroll-direction)", "Boolean context"],
-      ["scroll-state((scroll-direction: left) or (scroll-direction: bottom))", "Logical with 'or'"],
-      ["scroll-state (scroll-direction: right)", "Not a scroll-state function with space before '('"]
+      ["scroll-state(direction: top)", "Normalize spaces"],
+      ["scroll-STate(direction:    )", "No value - invalid, serializes as <general-enclosed>"],
+      ["scroll-state(direction)", "Boolean context"],
+      ["scroll-state((direction: left) or (direction: bottom))", "Logical with 'or'"],
+      ["scroll-state (direction: right)", "Not a scroll-state function with space before '('"]
   ].map((e, i) => [testSheet.sheet.cssRules[i], ...e]);
 
   tests.forEach((t) => {
