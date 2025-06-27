@@ -153,6 +153,8 @@ struct OptChangeRequestDetails {
 
   std::string app_locale;
 
+  // TODO(crbug.com/428228981): Update to use enum class, kCamelCase, and add
+  // kMaxValue.
   // The reason for making the request.
   enum Reason {
     // Unknown default.
@@ -300,6 +302,8 @@ struct GetDetailsForEnrollmentResponseDetails {
   LegalMessageLines issuer_legal_message;
 };
 
+// TODO(crbug.com/428228981): Update to use enum class, kCamelCase, and add
+// kMaxValue.
 // An enum set in the GetCardUploadDetailsRequest indicating the source of the
 // request when uploading a card to Google Payments. It should stay consistent
 // with the same enum in Google Payments server code.
@@ -536,6 +540,40 @@ struct BnplFetchUrlResponseDetails {
   // An opaque token used to chain consecutive payments requests together.
   // Client should not update or modify this token.
   std::string context_token;
+};
+
+// A collection of information required to fetch details for creating an update
+// payment instrument request.
+struct GetDetailsForUpdateBnplPaymentInstrumentRequestDetails {
+  GetDetailsForUpdateBnplPaymentInstrumentRequestDetails();
+  GetDetailsForUpdateBnplPaymentInstrumentRequestDetails(
+      const GetDetailsForUpdateBnplPaymentInstrumentRequestDetails& other);
+  GetDetailsForUpdateBnplPaymentInstrumentRequestDetails& operator=(
+      const GetDetailsForUpdateBnplPaymentInstrumentRequestDetails& other);
+  GetDetailsForUpdateBnplPaymentInstrumentRequestDetails(
+      GetDetailsForUpdateBnplPaymentInstrumentRequestDetails&&);
+  GetDetailsForUpdateBnplPaymentInstrumentRequestDetails& operator=(
+      GetDetailsForUpdateBnplPaymentInstrumentRequestDetails&&);
+  ~GetDetailsForUpdateBnplPaymentInstrumentRequestDetails();
+
+  enum class GetDetailsForUpdateBnplPaymentInstrumentType {
+    // Type unknown.
+    kUnknown = 0,
+
+    // The user needs to accept the ToS for this instrument.
+    kGetDetailsForAcceptTos = 1,
+
+    kMaxValue = kGetDetailsForAcceptTos
+  };
+
+  // `app_locale` is the Chrome locale.
+  std::string app_locale;
+  // The billing customer number for the account this request is sent to.
+  int64_t billing_customer_number;
+  // The platform identifier for the instrument being updated.
+  int64_t instrument_id;
+  // The type of the GetDetailsForUpdateBnplPaymentInstrument request.
+  GetDetailsForUpdateBnplPaymentInstrumentType type;
 };
 
 }  // namespace autofill::payments

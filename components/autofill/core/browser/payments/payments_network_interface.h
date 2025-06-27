@@ -225,6 +225,20 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const BnplFetchUrlResponseDetails&)> callback);
 
+  // Determine if the user meets the conditions to initiate ToS acceptance flow
+  // for a linked BNPL partner, such as Klarna. The `request_details` contains
+  // all necessary information to build a
+  // `GetDetailsForUpdateBnplPaymentInstrumentRequest`. The callback function is
+  // triggered when the server responds. This function receives the result of
+  // the response. Both the context token and legal message are always returned
+  // in the callback upon a successful response.
+  virtual void GetDetailsForUpdateBnplPaymentInstrument(
+      const GetDetailsForUpdateBnplPaymentInstrumentRequestDetails&
+          request_details,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult result,
+                              std::string context_token,
+                              LegalMessageLines legal_message)> callback);
+
  private:
   friend class PaymentsNetworkInterfaceTest;
 };

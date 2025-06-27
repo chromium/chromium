@@ -288,4 +288,23 @@ BnplFetchUrlResponseDetails& BnplFetchUrlResponseDetails::operator=(
     BnplFetchUrlResponseDetails&&) = default;
 BnplFetchUrlResponseDetails::~BnplFetchUrlResponseDetails() = default;
 
+GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::
+    GetDetailsForUpdateBnplPaymentInstrumentRequestDetails() = default;
+GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::
+    GetDetailsForUpdateBnplPaymentInstrumentRequestDetails(
+        const GetDetailsForUpdateBnplPaymentInstrumentRequestDetails&) =
+        default;
+GetDetailsForUpdateBnplPaymentInstrumentRequestDetails&
+GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::operator=(
+    const GetDetailsForUpdateBnplPaymentInstrumentRequestDetails& other) =
+    default;
+GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::
+    GetDetailsForUpdateBnplPaymentInstrumentRequestDetails(
+        GetDetailsForUpdateBnplPaymentInstrumentRequestDetails&&) = default;
+GetDetailsForUpdateBnplPaymentInstrumentRequestDetails&
+GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::operator=(
+    GetDetailsForUpdateBnplPaymentInstrumentRequestDetails&&) = default;
+GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::
+    ~GetDetailsForUpdateBnplPaymentInstrumentRequestDetails() = default;
+
 }  // namespace autofill::payments

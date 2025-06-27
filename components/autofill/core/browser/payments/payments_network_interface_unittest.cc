@@ -223,6 +223,15 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     parsed_legal_message_ = std::move(legal_message);
   }
 
+  void OnDidGetDetailsForUpdateBnplPaymentInstrument(
+      PaymentsRpcResult result,
+      std::string context_token,
+      LegalMessageLines legal_message) {
+    result_ = result;
+    context_token_ = std::move(context_token);
+    parsed_legal_message_ = std::move(legal_message);
+  }
+
   void OnDidCreateBnplPaymentInstrument(PaymentsRpcResult result,
                                         std::string instrument_id) {
     result_ = result;
@@ -1800,6 +1809,69 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
                      "      {\"template\": \"terms of service\"}]"
                      "}, "
                      "\"context_token\": \"" +
+                         context_token + "\" }");
+      break;
+    case PaymentsRpcResult::kTryAgainFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"INTERNAL\", "
+                     "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+      break;
+    case PaymentsRpcResult::kPermanentFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
+      break;
+    case PaymentsRpcResult::kNetworkError:
+      ReturnResponse(payments_network_interface_.get(),
+                     net::HTTP_REQUEST_TIMEOUT, "");
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
+      break;
+    case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+    case PaymentsRpcResult::kNone:
+      NOTREACHED();
+  }
+  EXPECT_EQ(result, result_);
+  if (result == PaymentsRpcResult::kSuccess) {
+    EXPECT_EQ(context_token, context_token_);
+    EXPECT_FALSE(parsed_legal_message_.empty());
+  }
+}
+
+// Test GetDetailsForUpdateBnplPaymentInstrument() with all the different
+// PaymentsRpcResults.
+TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
+       GetDetailsForUpdateBnplPaymentInstrument) {
+  GetDetailsForUpdateBnplPaymentInstrumentRequestDetails request_details;
+  request_details.app_locale = "en-US";
+  request_details.billing_customer_number = 555666777888;
+  request_details.type =
+      GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::
+          GetDetailsForUpdateBnplPaymentInstrumentType::kGetDetailsForAcceptTos;
+  request_details.instrument_id = 111222333444;
+  std::string context_token = "some_token";
+
+  payments_network_interface_->GetDetailsForUpdateBnplPaymentInstrument(
+      request_details,
+      base::BindOnce(&PaymentsNetworkInterfaceTest::
+                         OnDidGetDetailsForUpdateBnplPaymentInstrument,
+                     GetWeakPtr()));
+  IssueOAuthToken();
+
+  // Ensures the PaymentsRpcResult is set correctly.
+  PaymentsRpcResult result = GetParam();
+  switch (result) {
+    case PaymentsRpcResult::kSuccess:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"buy_now_pay_later_details\": {"
+                     "    \"legal_message\": {"
+                     "      \"line\": ["
+                     "        {\"template\": \"terms of service\"}"
+                     "      ]"
+                     "    }"
+                     "  },"
+                     "  \"context_token\": \"" +
                          context_token + "\" }");
       break;
     case PaymentsRpcResult::kTryAgainFailure:

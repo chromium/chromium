@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/get_card_upload_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_bnpl_payment_instrument_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_details_for_update_bnpl_payment_instrument_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_iban_upload_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_unmask_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/opt_change_request.h"
@@ -233,6 +234,20 @@ void PaymentsNetworkInterface::GetBnplPaymentInstrumentForFetchingUrl(
       /*full_sync_enabled=*/
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
       std::move(callback)));
+}
+
+void PaymentsNetworkInterface::GetDetailsForUpdateBnplPaymentInstrument(
+    const GetDetailsForUpdateBnplPaymentInstrumentRequestDetails&
+        request_details,
+    base::OnceCallback<void(PaymentsRpcResult,
+                            std::string context_token,
+                            LegalMessageLines)> callback) {
+  IssueRequest(
+      std::make_unique<GetDetailsForUpdateBnplPaymentInstrumentRequest>(
+          request_details,
+          /*full_sync_enabled=*/
+          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+          std::move(callback)));
 }
 
 }  // namespace autofill::payments
