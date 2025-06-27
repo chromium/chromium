@@ -9,14 +9,27 @@ build_webui("build") {
 
   static_files = [ "tab_group_home.html" ]
 
-  css_files = [ "tab_group_home_app.css" ]
+  css_files = [
+    "tab_group_home_app.css",
+    "url_item_grid/url_item_grid.css",
+  ]
 
   ts_files = [
     "tab_group_home_app.html.ts",
     "tab_group_home_app.ts",
+    "url_item_grid/url_item_delegate.ts",
+    "url_item_grid/url_item_grid.html.ts",
+    "url_item_grid/url_item_grid.ts",
   ]
 
-  ts_deps = [ "//third_party/lit/v3_0:build_ts" ]
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  ts_composite = true
 
   webui_context_type = "trusted"
 }
