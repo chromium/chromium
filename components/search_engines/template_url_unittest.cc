@@ -2496,13 +2496,6 @@ TEST_F(TemplateURLTest, GenerateSearchURL) {
 }
 
 TEST_F(TemplateURLTest, GenerateURL_NoRegulatoryExtensions) {
-#if BUILDFLAG(IS_ANDROID)
-  // Disable the chrome_dse_attribution parameter from being added on Android.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      switches::kRemoveSearchEngineChoiceAttribution);
-#endif
-
   TemplateURLData data;
   data.SetURL("https://search?q={searchTerms}");
   data.suggestions_url = "https://suggest?q={searchTerms}";
@@ -2532,13 +2525,6 @@ TEST_F(TemplateURLTest, GenerateURL_NoRegulatoryExtensions) {
 }
 
 TEST_F(TemplateURLTest, GenerateURL_WithEmptyRegulatoryExtensions) {
-#if BUILDFLAG(IS_ANDROID)
-  // Disable the chrome_dse_attribution parameter from being added on Android.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      switches::kRemoveSearchEngineChoiceAttribution);
-#endif
-
   TemplateURLData::RegulatoryExtension default_ext{
       .variant = RegulatoryExtensionType::kDefault,
   };
@@ -2578,13 +2564,6 @@ TEST_F(TemplateURLTest, GenerateURL_WithEmptyRegulatoryExtensions) {
 }
 
 TEST_F(TemplateURLTest, GenerateURL_WithFullRegulatoryExtensions) {
-#if BUILDFLAG(IS_ANDROID)
-  // Disable the chrome_dse_attribution parameter from being added on Android.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      switches::kRemoveSearchEngineChoiceAttribution);
-#endif
-
   TemplateURLData::RegulatoryExtension default_ext{
       .variant = RegulatoryExtensionType::kDefault,
       .search_params = "default_search_param=123",
@@ -2655,13 +2634,6 @@ TEST_F(TemplateURLTest, GenerateURL_WithFullRegulatoryExtensions) {
 
 TEST_F(TemplateURLTest,
        ReplaceSearchTerms_NoRegulatoryExpansionForUnsupportedUrls) {
-#if BUILDFLAG(IS_ANDROID)
-  // Disable the chrome_dse_attribution parameter from being added on Android.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      switches::kRemoveSearchEngineChoiceAttribution);
-#endif
-
   TemplateURLData::RegulatoryExtension default_ext{
       .variant = RegulatoryExtensionType::kDefault,
       .search_params = "default_search_param=123",

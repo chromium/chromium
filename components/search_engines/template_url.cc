@@ -495,17 +495,6 @@ std::string TemplateURLRef::ReplaceSearchTerms(
     }
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          switches::kRemoveSearchEngineChoiceAttribution) &&
-      owner_->GetRegulatoryExtensionType() ==
-          RegulatoryExtensionType::kAndroidEEA) {
-    // Append attribution parameter to query originating from Play API search
-    // engine.
-    query_params.push_back("chrome_dse_attribution=1");
-  }
-#endif
-
   if (query_params.empty())
     return url;
 

@@ -35,11 +35,6 @@ extern const base::FeatureParam<bool> kInvalidateChoiceOnRestoreIsRetroactive;
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEngineChoiceTrigger);
 
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_DECLARE_FEATURE(kRemoveSearchEngineChoiceAttribution);
-#endif
-
 // The string that's passed to
 // `switches::kSearchEngineChoiceTriggerRepromptParams` so that we don't
 // reprompt users with the choice screen.
