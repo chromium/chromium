@@ -117,6 +117,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">На сайце, які вы наведваеце, можа быць убудаванае змесціва з іншых сайтаў (напрыклад, відарысы, рэклама або тэкст). Файлы cookie, зададзеныя такімі сайтамі, называюцца староннімі файламі cookie.</translation>
+<translation id="2433507940547922241">Выгляд</translation>
 <translation id="2434158240863470628">Спампоўванне завершана <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Вы часова дазволілі гэтаму сайту выкарыстоўваць староннія файлы cookie. Гэта знізіць вашу абароненасць падчас прагляду вэб-старонак, але функцыі сайта з большай імавернасцю будуць працаваць правільна. <ph name="BEGIN_LINK" />Адправіць водгук<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">На некаторых сайтах у рэжыме інкогніта можа не працаваць частка функцый</translation>
@@ -152,6 +153,7 @@
 <translation id="2789132527330338807">Сайты могуць запытваць дазвол на стварэнне 3D-карты вашага асяроддзя або на адсочванне становішча камеры</translation>
 <translation id="2790501146643349491">Калі гэты параметр уключаны, нядаўна закрытыя сайты могуць завяршаць адпраўку і атрыманне даных. Калі параметр выключаны, нядаўна закрытыя сайты не могуць завяршаць вышэйназваныя дзеянні.</translation>
 <translation id="2795716239552913152">Сайты звычайна выкарыстоўваюць ваша месцазнаходжанне для работы адпаведных функцый або паведамлення інфармацыі (напрыклад, мясцовых навін або звестак пра крамы паблізу)</translation>
+<translation id="2800760947029405028">Запампаваць відарыс</translation>
 <translation id="2802908157808345702">Не дазваляць сайтам паказваць усплывальныя вокны або выконваць перанакіраванне</translation>
 <translation id="2814830417943086299">Цяпер Chrome паказвае апошнія ўкладкі ў спісе праграм прылады і ў выніках пошуку. Гэту функцыю можна ў любы момант выключыць у наладах Chrome.</translation>
 <translation id="2822354292072154809">Сапраўды скінуць усе дазволы сайта для <ph name="CHOSEN_OBJECT_NAME" />?</translation>
@@ -237,6 +239,7 @@
 <translation id="3779154269823594982">Змяніць паролі</translation>
 <translation id="3797520601150691162">Не прымяняць цёмную тэму да канкрэтнага сайта</translation>
 <translation id="3803367742635802571">Сайты, якія вы наведваеце, могуць перастаць працаваць належным чынам</translation>
+<translation id="3816118180265633665">Колеры Chrome</translation>
 <translation id="381841723434055211">Нумары тэлефонаў</translation>
 <translation id="3826050100957962900">Уваход праз староннія сэрвісы</translation>
 <translation id="3835233591525155343">Выкарыстанне вамі прылады</translation>
@@ -424,6 +427,7 @@
 <translation id="5968921426641056619">Увядзіце вэб-адрас</translation>
 <translation id="5975083100439434680">Паменшыць</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Уключыць стужку рэкамендацый</translation>
 <translation id="6015775454662021376">Кіруйце доступам гэтага сайта да вашай прылады</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6042308850641462728">Яшчэ</translation>

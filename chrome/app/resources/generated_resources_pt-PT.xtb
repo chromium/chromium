@@ -1209,7 +1209,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1826657447823925402">Deslocamento inverso desativado</translation>
 <translation id="1827416268933303617">Cor: <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Nome da zona Wi-Fi</translation>
-<translation id="1828378091493947763">Este plugin não é compatível com este dispositivo</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Abrir todos}=1{&amp;Abrir marcador}other{&amp;Abrir todos ({COUNT})}}</translation>
 <translation id="1828901632669367785">Imprimir Utilizando a Caixa de Diálogo do Sistema...</translation>
 <translation id="1829129547161959350">Pinguim</translation>
@@ -1395,7 +1394,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 extensão revista}other{{NUM_EXTENSIONS} extensões revistas}}</translation>
 <translation id="1959421829481337178">Introduza o código de ativação fornecido pelo seu operador.</translation>
 <translation id="1960211333621141174">Penhasco</translation>
-<translation id="1962233722219655970">Esta página utiliza uma aplicação Native Client que não funciona no computador.</translation>
 <translation id="1963976881984600709">Proteção padrão</translation>
 <translation id="1964009877615282740">Veja mais</translation>
 <translation id="1965578266762387357">Quando obtém ajuda para escrever, o URL, o conteúdo e o texto da página são enviados para a Google. Não introduza informações pessoais (como detalhes médicos ou financeiros)</translation>
@@ -1724,7 +1722,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2188881192257509750">Abrir <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Eliminar o grupo de separadores?</translation>
 <translation id="2190069059097339078">Obtenção de credenciais de Wi-Fi</translation>
-<translation id="219008588003277019">Módulo Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(vazio)</translation>
 <translation id="2190967441465539539">Não é possível aceder à câmara nem ao microfone</translation>
 <translation id="2191754378957563929">Ativado</translation>
@@ -1901,7 +1898,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" solicitou permissões adicionais.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2306794767168143227">Guardar no <ph name="BRAND" /> neste dispositivo</translation>
-<translation id="2307462900900812319">Configurar rede</translation>
 <translation id="2307553512430195144">Se concordar, o Assistente Google aguarda em modo de espera para detetar o comando "OK Google" e pode reconhecer que <ph name="SUPERVISED_USER_NAME" /> está a falar através do Voice Match.
     <ph name="BR" />
     O Voice Match ajuda o Assistente Google a identificar a voz de <ph name="SUPERVISED_USER_NAME" /> no <ph name="DEVICE_TYPE" /> e a distingui-la da de outras pessoas.
@@ -2721,7 +2717,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2860710618359053450">Mover o maxilar para a direita</translation>
 <translation id="2861301611394761800">Actualização do sistema concluída. Reinicie o sistema.</translation>
 <translation id="2861402191395139055">Subscrições do Passpoint</translation>
-<translation id="2861941300086904918">Gestor de segurança Native Client</translation>
 <translation id="2862815659905780618">Remover ambiente de programação do Linux</translation>
 <translation id="2862986593239703553">este cartão</translation>
 <translation id="2864601841139725659">Definir a sua imagem do perfil</translation>
@@ -6062,7 +6057,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5230190638672215545">Escrever "uow" para obter "ươ"</translation>
 <translation id="5230516054153933099">Janela</translation>
 <translation id="5232714764496316200">Obtenha ajuda nos trabalhos de casa com o Google Lens</translation>
-<translation id="5233019165164992427">Porta de depuração de NaCl</translation>
 <translation id="5233231016133573565">ID do processo</translation>
 <translation id="5233638681132016545">Novo separador</translation>
 <translation id="5233736638227740678">C&amp;olar</translation>
@@ -10564,7 +10558,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8431977087510901105">Definições do cursor repostas</translation>
 <translation id="8433186206711564395">Definições de rede</translation>
 <translation id="8434109185104929038">Canto de leitura</translation>
-<translation id="8434480141477525001">Porta de depuração de NaCl</translation>
 <translation id="8434837876193928924">Detalhes do grupo de separadores</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Corrigir este separador}other{Corrigir estes separadores}}</translation>
 <translation id="8436800506934625875">Crie um PIN de recuperação alfanumérico para o Gestor de Palavras-passe da Google</translation>

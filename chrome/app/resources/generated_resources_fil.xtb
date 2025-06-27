@@ -1218,7 +1218,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1826657447823925402">Na-disable ang reverse na pag-scroll</translation>
 <translation id="1827416268933303617">Kulay <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Pangalan ng hotspot</translation>
-<translation id="1828378091493947763">Hindi sinusuportahan ang plugin na ito para sa device na ito</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Buksan Lahat}=1{&amp;Buksan ang Bookmark}one{&amp;Buksan Lahat ({COUNT})}other{&amp;Buksan Lahat ({COUNT})}}</translation>
 <translation id="1828901632669367785">I-print Gamit ang Dialog ng System...</translation>
 <translation id="1829129547161959350">Penguin</translation>
@@ -1405,7 +1404,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 extension ang nasuri}one{{NUM_EXTENSIONS} extension ang nasuri}other{{NUM_EXTENSIONS} na extension ang nasuri}}</translation>
 <translation id="1959421829481337178">Pakilagay ang code sa pag-activate na ibinigay ng iyong carrier.</translation>
 <translation id="1960211333621141174">Bangin</translation>
-<translation id="1962233722219655970">Gumagamit ang pahinang ito ng Native Client app na hindi gumagana sa iyong computer.</translation>
 <translation id="1963976881984600709">Standard protection</translation>
 <translation id="1964009877615282740">Tumingin pa</translation>
 <translation id="1965578266762387357">Kapag humingi ka ng tulong sa pagsusulat, ipapadala sa Google ang URL ng page, content, at iyong text. Huwag maglagay ng personal na impormasyon (tulad ng mga medikal o pinansyal na detalye)</translation>
@@ -1734,7 +1732,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2188881192257509750">Buksan ang <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">I-delete ang Grupo ng Tab?</translation>
 <translation id="2190069059097339078">Pangkuha ng mga Kredensyal ng WiFi</translation>
-<translation id="219008588003277019">Module ng Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(walang laman)</translation>
 <translation id="2190967441465539539">Hindi ma-access ang camera at mikropono</translation>
 <translation id="2191754378957563929">Naka-on</translation>
@@ -1914,7 +1911,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="23030561267973084">Humiling ng karagdagang mga pahintulot ang "<ph name="EXTENSION_NAME" />."</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2306794767168143227">I-save sa <ph name="BRAND" /> sa device na ito</translation>
-<translation id="2307462900900812319">I-configure ang network</translation>
 <translation id="2307553512430195144">Kung sumasang-ayon ka, maghihintay ang Google Assistant sa standby mode para ma-detect ang “Hey Google” at makikilala nitong si <ph name="SUPERVISED_USER_NAME" /> ang nagsasalita gamit ang Voice Match.
     <ph name="BR" />
     Nakakatulong sa Google Assistant ang Voice Match na makilala ang boses ni <ph name="SUPERVISED_USER_NAME" /> sa iyong <ph name="DEVICE_TYPE" /> at matukoy siya sa iba pang tao.
@@ -2734,7 +2730,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2860710618359053450">Ipaling pakanan ang panga</translation>
 <translation id="2861301611394761800">Kumpleto na ang pag-update ng system. Paki-restart ang system.</translation>
 <translation id="2861402191395139055">Mga subscription sa Passpoint</translation>
-<translation id="2861941300086904918">Tagapamahala ng seguridad ng Native Client</translation>
 <translation id="2862815659905780618">Alisin ang environment sa pag-develop ng Linux</translation>
 <translation id="2862986593239703553">ang card na ito</translation>
 <translation id="2864601841139725659">Itakda ang iyong larawan sa profile</translation>
@@ -6073,7 +6068,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5230190638672215545">I-type ang "uow" para makuha ang "ươ"</translation>
 <translation id="5230516054153933099">Window</translation>
 <translation id="5232714764496316200">Humingi ng tulong sa homework gamit ang Google Lens</translation>
-<translation id="5233019165164992427">NaCl debug port</translation>
 <translation id="5233231016133573565">ID ng proseso</translation>
 <translation id="5233638681132016545">Bagong tab</translation>
 <translation id="5233736638227740678">I-&amp;paste</translation>
@@ -10574,7 +10568,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8431977087510901105">Na-reset ang mga setting ng cursor</translation>
 <translation id="8433186206711564395">Mga setting ng network</translation>
 <translation id="8434109185104929038">Nook sa pagbabasa</translation>
-<translation id="8434480141477525001">NaCl Debug Port</translation>
 <translation id="8434837876193928924">Mga detalye ng grupo ng tab</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Ayusin ang tab na ito}one{Ayusin ang mga tab na ito}other{Ayusin ang mga tab na ito}}</translation>
 <translation id="8436800506934625875">Gumawa ng alphanumeric na PIN sa pag-recover para sa Google Password Manager</translation>

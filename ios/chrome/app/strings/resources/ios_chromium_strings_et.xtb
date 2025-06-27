@@ -174,6 +174,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="5203244847421322551">Salvestage paroolid ja täitke need automaatselt Chromiumis</translation>
 <translation id="5224391634244552924">Salvestatud paroole ei ole. Chromium saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="5259423875997548710">Otsige Chromiumis visuaale.</translation>
+<translation id="5284913972719948193">Importige andmed, et kasutada Chromiumis oma paroole, ajalugu, järjehoidjaid ja krediitkaarte</translation>
 <translation id="5308226104666789935">Chromium ei saa värskendusi otsida</translation>
 <translation id="5311557153294205270">Lisab sisestatud URL-id Chromiumis teie järjehoidjatesse.</translation>
 <translation id="5383251701169024761">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, valige automaattäite jaoks Chromium.</translation>
@@ -307,6 +308,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="865600487977764604">Kaitseb teid Chromiumis ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud.</translation>
 <translation id="8663480472502753423">Hoidke Chromium ajakohasena</translation>
 <translation id="8685813584220679697">Logige sellele saidile ja Chromiumisse sisse.</translation>
+<translation id="8698780336333802489">Impordi Chromiumisse</translation>
 <translation id="8730503818204408000">Avab Chromiumi seaded, et Chromium vaikebrauseriks määrata.</translation>
 <translation id="8754966941001340678">Chromium soovitab täiustatud kaitset</translation>
 <translation id="8759037115129007407">Teie pereliige ei saa praegu paroole vastu võtta. Paluge tal Chromiumi värskendada ja oma paroolid sünkroonida. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>

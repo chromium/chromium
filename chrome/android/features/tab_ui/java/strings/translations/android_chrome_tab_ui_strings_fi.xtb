@@ -6,10 +6,12 @@
 <translation id="1063300264396686489">Avaa välilehtiryhmät automaattisesti muilta laitteilta</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Luotu <ph name="NUM_YEARS_ONE" /> vuosi sitten}other{Luotu <ph name="NUM_YEARS_MANY" /> vuotta sitten}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Ei-aktiiviset välilehdet ja ryhmät suljetaan 1 kuukauden kuluttua}other{Ei-aktiiviset välilehdet ja ryhmät suljetaan <ph name="MONTH_COUNT_MANY" /> kuukauden kuluttua}}</translation>
 <translation id="1173894706177603556">Muuta nimeä</translation>
 <translation id="1197088940767939838">Oranssi</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Avaa <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TAB_COUNT2" /> välilehti}other{Avaa <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TAB_COUNT2" /> välilehteä}}</translation>
 <translation id="1273910660700874265">Välilehtiryhmän (<ph name="TITLE_OF_GROUP" />) vaihtoehdot</translation>
+<translation id="1300188005269437765">Valitse, milloin välilehdet ja välilehtiryhmät siirretään automaattisesti ei-aktiivisten osioon.</translation>
 <translation id="1329584516321524826">Päivitetty juuri nyt</translation>
 <translation id="1340839264183302272">Poistu ryhmästä</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Laajenna jaettu välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_ONE" /> välilehti, jonka väri on <ph name="COLOR_NAME" /> ja tunniste <ph name="CARD_LABEL" />.}other{Laajenna jaettu välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, jonka väri on <ph name="COLOR_NAME" /> ja tunniste <ph name="CARD_LABEL" />.}}</translation>
@@ -29,8 +31,10 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> välilehti lisätty ryhmään</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> välilehti}other{<ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
 <translation id="1909810060368225529">Huom. Tähän jaettuun välilehtiryhmään tehdyt muutokset näkyvät kaikille. Kaikki voivat tehdä muutoksia jaettuihin välilehtiryhmiin</translation>
+<translation id="1982637982196732906">Siirrä ei-aktiivisten osioon</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Aseta <ph name="TABS_COUNT_ONE" /> valittu välilehti kirjanmerkiksi}other{Aseta <ph name="TABS_COUNT_MANY" /> valittua välilehteä kirjanmerkeiksi}}</translation>
 <translation id="2055057176188061528">Valitse välilehtiryhmä tai luo uusi</translation>
+<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome sulkee automaattisesti ei-aktiivisen osion kohteet, joita et ole käyttänyt <ph name="AUTO_DELETE_DELAY_ONE" /> kuukauteen. Voit laittaa tämän pois päältä nyt tai milloin tahansa asetuksista.}other{Chrome sulkee automaattisesti ei-aktiivisen osion kohteet, joita et ole käyttänyt <ph name="AUTO_DELETE_DELAY_MANY" /> kuukauteen. Voit laittaa tämän pois päältä nyt tai milloin tahansa asetuksista.}}</translation>
 <translation id="2118649612461486615">Kaupan tiedot</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista. Incognito-välilehti ei ole käytettävissä.}other{Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista. # incognito-välilehteä ei ole käytettävissä.}}</translation>
 <translation id="2162620598375156287">Nyt <ph name="CURRENT_PRICE" /> osoitteessa <ph name="SOURCE_WEBSITE" /></translation>
@@ -39,12 +43,14 @@
 <translation id="2277224997687551299">Muokkaa ryhmän nimeä</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Aseta välilehti kirjanmerkiksi}other{Aseta välilehdet kirjanmerkeiksi}}</translation>
 <translation id="2359808026110333948">Jatka</translation>
+<translation id="2371084566192454134">Välilehdet ja välilehtiryhmät</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Tiivistä välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Tiivistä välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="2498435670446402865">Nimeä välilehtiryhmä</translation>
 <translation id="2536366509642644298">Välilehtiryhmät "<ph name="TAB_GROUP_NAME_1" />" ja "<ph name="TAB_GROUP_NAME_2" />" eivät ole enää saatavilla</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Tiivistä <ph name="TABS_COUNT_ONE" /> välilehti.}other{Tiivistä välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="2569352796411618312">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>
 <translation id="257674075312929031">Ryhmä</translation>
+<translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Palauta ja avaa välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Palauta ja avaa välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Arvio: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Siirry sivustolle</translation>
 <translation id="2671423594960767771">Jaa ryhmä</translation>
@@ -65,6 +71,7 @@
 <translation id="3194464645767632461">arvio</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Lisää ryhmään <ph name="TABS_COUNT_ONE" /> välilehti}other{Lisää ryhmään <ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
 <translation id="3328308545011660196">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
+<translation id="3330595302841061275">{DAY_COUNT,plural, =1{Kun välilehti on ollut ei-aktiivinen 1 päivän}other{Kun välilehti on ollut ei-aktiivinen <ph name="DAY_COUNT_MANY" /> päivää}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> uusi välilehti}other{<ph name="MANY_ADDED" /> uutta välilehteä}}</translation>
 <translation id="3613492231657284463">Piilota ei-aktiiviset välilehdet ‐valintaikkuna</translation>
 <translation id="3619255692378312441">Ylläpidä pääsyoikeuksia</translation>
@@ -93,6 +100,7 @@
 <translation id="4861953997778766866">Kaikki voivat tehdä muutoksia jaettuihin välilehtiryhmiin</translation>
 <translation id="4870911314065352661">Suljetaanko kaikki välilehdet?</translation>
 <translation id="4871719318659334896">Sulje ryhmä</translation>
+<translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Palauta ja avaa välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Palauta ja avaa välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Avaa</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Sulje välilehti}other{Sulje välilehdet}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> ryhmää tallennettu (sulkee välilehdet ja poistaa ryhmät)</translation>
@@ -113,6 +121,7 @@
 <translation id="5627941783489838464">Ei välilehtipäivityksiä</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> linkki Chromesta}other{<ph name="TABS_COUNT_MANY" /> linkkiä Chromesta}}</translation>
 <translation id="5746204836956568669">Ryhmitetäänkö <ph name="NUMBER_OF_TABS" /> välilehteä, jotta työskentely nopeutuu?</translation>
+<translation id="5773295109010386583">Sulje ei-aktiiviset kohteet automaattisesti</translation>
 <translation id="58326064309361797">Ryhmittele välilehtiä vetämällä niitä</translation>
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5972844218283131174">Poista valinta kaikista</translation>

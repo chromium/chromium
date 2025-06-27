@@ -1217,7 +1217,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1826657447823925402">Đã tắt chế độ cuộn ngược</translation>
 <translation id="1827416268933303617">Màu <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Tên điểm phát sóng</translation>
-<translation id="1828378091493947763">Thiết bị này không hỗ trợ plugin này</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Mở tất cả}=1{&amp;Mở dấu trang}other{&amp;Mở tất cả ({COUNT})}}</translation>
 <translation id="1828901632669367785">In bằng hộp thoại hệ thống...</translation>
 <translation id="1829129547161959350">Chim cánh cụt</translation>
@@ -1404,7 +1403,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{Đã xem xét 1 tiện ích}other{Đã xem xét {NUM_EXTENSIONS} tiện ích}}</translation>
 <translation id="1959421829481337178">Vui lòng nhập mã kích hoạt do nhà mạng cung cấp.</translation>
 <translation id="1960211333621141174">Vách đá</translation>
-<translation id="1962233722219655970">Trang này sử dụng ứng dụng Native Client không hoạt động trên máy tính của bạn.</translation>
 <translation id="1963976881984600709">Bảo vệ tiêu chuẩn</translation>
 <translation id="1964009877615282740">Xem thêm</translation>
 <translation id="1965578266762387357">Khi bạn được trợ giúp viết thì URL, nội dung của trang và văn bản của bạn sẽ được gửi đến Google. Đừng nhập thông tin cá nhân (chẳng hạn như thông tin y tế hoặc tài chính)</translation>
@@ -1733,7 +1731,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2188881192257509750">Mở <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Bạn muốn xoá Nhóm thẻ?</translation>
 <translation id="2190069059097339078">Trình nhận thông tin đăng nhập WiFi</translation>
-<translation id="219008588003277019">Mô-đun Ứng dụng khách Gốc: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(trống)</translation>
 <translation id="2190967441465539539">Không truy cập được vào camera và micrô</translation>
 <translation id="2191754378957563929">Đang bật</translation>
@@ -1913,7 +1910,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" đã yêu cầu thêm quyền.</translation>
 <translation id="2304820083631266885">Hành tinh</translation>
 <translation id="2306794767168143227">Lưu vào <ph name="BRAND" /> trên thiết bị này</translation>
-<translation id="2307462900900812319">Định cấu hình mạng</translation>
 <translation id="2307553512430195144">Nếu bạn đồng ý, thì Trợ lý Google sẽ đợi ở chế độ chờ để phát hiện câu lệnh “Ok Google” và có thể nhận ra đó là giọng nói của <ph name="SUPERVISED_USER_NAME" /> bằng tính năng Voice Match.
     <ph name="BR" />
     Tính năng Voice Match giúp Trợ lý Google xác định giọng nói của <ph name="SUPERVISED_USER_NAME" /> trên <ph name="DEVICE_TYPE" /> của bạn và phân biệt những giọng nói đó với giọng nói của những người khác.
@@ -2733,7 +2729,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2860710618359053450">Di chuyển hàm sang phải</translation>
 <translation id="2861301611394761800">Đã cập nhật xong. Vui lòng khởi động lại hệ thống.</translation>
 <translation id="2861402191395139055">Gói thuê bao Passpoint</translation>
-<translation id="2861941300086904918">Trình quản lý bảo mật Native Client</translation>
 <translation id="2862815659905780618">Xóa môi trường phát triển Linux</translation>
 <translation id="2862986593239703553">thẻ này</translation>
 <translation id="2864601841139725659">Đặt ảnh hồ sơ của bạn</translation>
@@ -6072,7 +6067,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5230190638672215545">Nhập "uow" để gõ "ươ"</translation>
 <translation id="5230516054153933099">Cửa sổ</translation>
 <translation id="5232714764496316200">Nhận trợ giúp làm bài tập về nhà bằng Google Ống kính</translation>
-<translation id="5233019165164992427">Cổng gỡ lỗi NaCl</translation>
 <translation id="5233231016133573565">ID Tiến trình</translation>
 <translation id="5233638681132016545">Thẻ mới</translation>
 <translation id="5233736638227740678">&amp;Dán</translation>
@@ -7889,6 +7883,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6560151649238390891">Đã chèn nội dung đề xuất</translation>
 <translation id="656065428026159829">Xem thêm</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">Tệp này thuộc loại này (<ph name="TYPE" />) có thể nguy hiểm. Chỉ lưu tệp này nếu bạn tin tưởng <ph name="ORIGIN" /></translation>
 <translation id="6562117348069327379">Lưu trữ nhật ký hệ thống vào thư mục Tệp đã tải xuống.</translation>
 <translation id="656293578423618167">Tên hoặc đường dẫn của tệp quá dài.  Hãy lưu với tên ngắn hơn hoặc lưu vào một vị trí khác.</translation>
 <translation id="6563002009564846727">Xem các chứng chỉ được nhập từ Windows</translation>
@@ -10573,7 +10568,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8431977087510901105">Đã đặt lại chế độ cài đặt con trỏ</translation>
 <translation id="8433186206711564395">Cài đặt mạng</translation>
 <translation id="8434109185104929038">Góc đọc sách</translation>
-<translation id="8434480141477525001">Cổng gỡ lỗi NaCl</translation>
 <translation id="8434837876193928924">Thông tin về nhóm thẻ</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Khắc phục thẻ này}other{Khắc phục các thẻ này}}</translation>
 <translation id="8436800506934625875">Tạo mã PIN khôi phục gồm chữ và số để truy cập vào Trình quản lý mật khẩu của Google</translation>

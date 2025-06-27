@@ -1208,7 +1208,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1826657447823925402">Desgaituta dago gora edo behera alderantziz egiteko aukera</translation>
 <translation id="1827416268933303617">Kolore <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Wifi-gunearen izena</translation>
-<translation id="1828378091493947763">Plugina ez da gailu honekin bateragarria</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Ireki guztiak}=1{&amp;Ireki laster-marka}other{&amp;Ireki guztiak ({COUNT})}}</translation>
 <translation id="1828901632669367785">Inprimatu sistemaren leihoa erabilita…</translation>
 <translation id="1829129547161959350">Pinguinoa</translation>
@@ -1394,7 +1393,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 luzapen berrikusi da}other{{NUM_EXTENSIONS} luzapen berrikusi dira}}</translation>
 <translation id="1959421829481337178">Idatzi operadoreak emandako aktibazio-kodea.</translation>
 <translation id="1960211333621141174">Labarra</translation>
-<translation id="1962233722219655970">Orri honek ordenagailu honetan funtzionatzen ez duen bezero natiboaren aplikazio bat erabiltzen du.</translation>
 <translation id="1963976881984600709">Babes estandarra</translation>
 <translation id="1964009877615282740">Ikusi gehiago</translation>
 <translation id="1965578266762387357">Idazteko laguntza jasotzen duzunean, orriaren URLa, edukia eta zure testuak Google-ri bidaltzen zaizkio. Ez idatzi informazio pertsonala (adibidez, osasunari edo finantzei buruzko xehetasunak).</translation>
@@ -1724,7 +1722,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2188881192257509750">Ireki <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Fitxa taldea ezabatu nahi duzu?</translation>
 <translation id="2190069059097339078">Wi-Fi kredentzialen lortzailea</translation>
-<translation id="219008588003277019">Bezero natiboaren modulua: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(hutsik)</translation>
 <translation id="2190967441465539539">Ezin dira erabili kamera eta mikrofonoa</translation>
 <translation id="2191754378957563929">Aktibatuta</translation>
@@ -1901,7 +1898,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" luzapenak baimen gehigarriak eskatu ditu.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2306794767168143227">Gorde <ph name="BRAND" /> zerbitzuan gailu honetarako</translation>
-<translation id="2307462900900812319">Konfiguratu sarea</translation>
 <translation id="2307553512430195144">Ados bazaude, Google-ren Laguntzailea zerbitzuak egonean moduan itxarongo du "Hey Google" hauteman arte. <ph name="SUPERVISED_USER_NAME" /> dela jakingo du haurrak Voice Match-ekin hitz egiten duenean.
     <ph name="BR" />
 Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_NAME" /> erabiltzailearen ahotsa identifikatzen du <ph name="DEVICE_TYPE" /> gailuan, eta gainerakoetatik bereizi.
@@ -2723,7 +2719,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2860710618359053450">Masailezurra eskuinerantz mugitzea</translation>
 <translation id="2861301611394761800">Sistema eguneratu da. Berrabiarazi sistema.</translation>
 <translation id="2861402191395139055">Passpoint-eko harpidetzak</translation>
-<translation id="2861941300086904918">Bezero natiboaren segurtasun-kudeatzailea</translation>
 <translation id="2862815659905780618">Kendu Linux-eko garapen-ingurunea</translation>
 <translation id="2862986593239703553">txartel hau</translation>
 <translation id="2864601841139725659">Ezarri profileko argazkia</translation>
@@ -6061,7 +6056,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5230190638672215545">"ươ" lortzeko, idatzi "uow"</translation>
 <translation id="5230516054153933099">Leihoa</translation>
 <translation id="5232714764496316200">Lortu etxeko lanak egiteko laguntza Google Lens-ekin</translation>
-<translation id="5233019165164992427">NaCl arazketa-ataka</translation>
 <translation id="5233231016133573565">Prozesu-identifikatzailea</translation>
 <translation id="5233638681132016545">Fitxa berria</translation>
 <translation id="5233736638227740678">&amp;Itsatsi</translation>
@@ -10558,7 +10552,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8431977087510901105">Kurtsorearen ezarpenak berrezarri dira</translation>
 <translation id="8433186206711564395">Sarearen ezarpenak</translation>
 <translation id="8434109185104929038">Irakurtzeko txokoa</translation>
-<translation id="8434480141477525001">NaCl arazketa-ataka</translation>
 <translation id="8434837876193928924">Fitxa taldearen xehetasunak</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Konpondu fitxa hori}other{Konpondu fitxa horiek}}</translation>
 <translation id="8436800506934625875">Sortu kontua berreskuratzeko PIN alfanumeriko bat Google-ren Pasahitz-kudeatzailea zerbitzurako</translation>

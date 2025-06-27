@@ -1209,7 +1209,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1826657447823925402">Derularea inversă este dezactivată</translation>
 <translation id="1827416268933303617">Culoarea <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Nume hotspot</translation>
-<translation id="1828378091493947763">Acest plugin nu este acceptat pe dispozitiv</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Deschide-le pe toate}=1{&amp;Deschide marcajul}few{&amp;Deschide-le pe toate ({COUNT})}other{&amp;Deschide-le pe toate ({COUNT})}}</translation>
 <translation id="1828901632669367785">Printați utilizând caseta de dialog a sistemului...</translation>
 <translation id="1829129547161959350">Pinguin</translation>
@@ -1395,7 +1394,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{O extensie examinată}few{{NUM_EXTENSIONS} extensii examinate}other{{NUM_EXTENSIONS} de extensii examinate}}</translation>
 <translation id="1959421829481337178">Introdu codul de activare oferit de operatorul tău.</translation>
 <translation id="1960211333621141174">Stâncă</translation>
-<translation id="1962233722219655970">Această pagină utilizează o aplicație Client nativ care nu funcționează pe computerul dvs.</translation>
 <translation id="1963976881984600709">Protecție standard</translation>
 <translation id="1964009877615282740">Vezi mai multe</translation>
 <translation id="1965578266762387357">Când soliciți ajutor pentru scriere, adresa URL a paginii, conținutul și textul sunt trimise la Google. Nu introdu informații cu caracter personal (cum ar fi detalii medicale sau financiare)</translation>
@@ -1724,7 +1722,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2188881192257509750">Deschide <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Ștergi grupul de file?</translation>
 <translation id="2190069059097339078">Instrument de obținere a datelor de conectare WiFi</translation>
-<translation id="219008588003277019">Modul Client nativ: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(gol)</translation>
 <translation id="2190967441465539539">Nu se pot accesa camera și microfonul</translation>
 <translation id="2191754378957563929">Activat</translation>
@@ -1901,7 +1898,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />” a solicitat permisiuni suplimentare.</translation>
 <translation id="2304820083631266885">Planetă</translation>
 <translation id="2306794767168143227">Salvează în <ph name="BRAND" /> pe acest dispozitiv</translation>
-<translation id="2307462900900812319">Configurați rețeaua</translation>
 <translation id="2307553512430195144">Dacă ești de acord, Asistentul Google va aștepta în modul standby să detecteze expresia „Ok Google” și poate să recunoască dacă <ph name="SUPERVISED_USER_NAME" /> vorbește, folosind Voice Match.
     <ph name="BR" />
     Voice Match ajută Asistentul Google să identifice vocea lui <ph name="SUPERVISED_USER_NAME" /> pe <ph name="DEVICE_TYPE" /> și să o distingă de vocea altor persoane.
@@ -2721,7 +2717,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2860710618359053450">Mișcă maxilarul spre dreapta</translation>
 <translation id="2861301611394761800">Sistemul a fost actualizat. Repornește-l.</translation>
 <translation id="2861402191395139055">Abonamente Passpoint</translation>
-<translation id="2861941300086904918">Manager de securitate Client nativ</translation>
 <translation id="2862815659905780618">Elimină mediul de dezvoltare Linux</translation>
 <translation id="2862986593239703553">acest card</translation>
 <translation id="2864601841139725659">Setează fotografia de profil</translation>
@@ -6058,7 +6053,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5230190638672215545">Introdu „uow” pentru a obține „ươ”</translation>
 <translation id="5230516054153933099">Fereastră</translation>
 <translation id="5232714764496316200">Primește ajutor la teme folosind Google Lens</translation>
-<translation id="5233019165164992427">Port remediere NaCl</translation>
 <translation id="5233231016133573565">ID proces</translation>
 <translation id="5233638681132016545">Filă nouă</translation>
 <translation id="5233736638227740678">&amp;Inserați</translation>
@@ -10558,7 +10552,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8431977087510901105">Setările cursorului au fost resetate</translation>
 <translation id="8433186206711564395">Setări de rețea</translation>
 <translation id="8434109185104929038">Colț de lectură</translation>
-<translation id="8434480141477525001">Port remediere NaCl</translation>
 <translation id="8434837876193928924">Detaliile grupului de file</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Remediază problemele acestei file}few{Remediază problemele acestor file}other{Remediază problemele acestor file}}</translation>
 <translation id="8436800506934625875">Creează un cod PIN de recuperare alfanumeric pentru Managerul de parole Google</translation>

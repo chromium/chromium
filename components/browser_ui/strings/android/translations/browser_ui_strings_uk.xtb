@@ -117,6 +117,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Сайт, який ви відвідали, може включати контент з інших сайтів, наприклад зображення, оголошення й текст. Файли cookie, створені іншими сайтами, називаються сторонніми.</translation>
+<translation id="2433507940547922241">Стиль і тема</translation>
 <translation id="2434158240863470628">Завантажено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Ви тимчасово дозволили цьому сайту використовувати сторонні файли cookie. Це зменшить рівень захисту під час перегляду, але функції сайту з більшою імовірністю працюватимуть належним чином. <ph name="BEGIN_LINK" />Надіслати відгук<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Функції на деяких сайтах можуть не працювати в режимі анонімного перегляду</translation>
@@ -152,6 +153,7 @@
 <translation id="2789132527330338807">Сайти можуть запитувати дозвіл на створення 3D-карти вашого оточення або відстеження положення камери</translation>
 <translation id="2790501146643349491">Якщо цей параметр увімкнено, нещодавно закриті сайти можуть завершувати надсилання й отримання даних. Якщо його вимкнено, нещодавно закриті сайти не можуть завершувати надсилання або отримання даних.</translation>
 <translation id="2795716239552913152">Сайти зазвичай використовують геодані для роботи пов'язаних функцій чи показу відомостей, як-от місцеві новини або дані про магазини поблизу</translation>
+<translation id="2800760947029405028">Завантажити зображення</translation>
 <translation id="2802908157808345702">Заборонити сайтам надсилати спливаючі вікна й використовувати переспрямування</translation>
 <translation id="2814830417943086299">Тепер у Chrome нещодавно відкриті вкладки можуть відображатися в списку додатків і результатів пошуку на пристрої. Цю функцію можна будь-коли вимкнути в налаштуваннях Chrome.</translation>
 <translation id="2822354292072154809">Скинути всі дозволи сайту <ph name="CHOSEN_OBJECT_NAME" />?</translation>
@@ -237,6 +239,7 @@
 <translation id="3779154269823594982">Змінити паролі</translation>
 <translation id="3797520601150691162">Не використовувати темну тему для певного сайту</translation>
 <translation id="3803367742635802571">Сайти, які ви відвідуєте, можуть перестати працювати належним чином</translation>
+<translation id="3816118180265633665">Кольори Chrome</translation>
 <translation id="381841723434055211">Номери телефонів</translation>
 <translation id="3826050100957962900">Вхід через сторонні сервіси</translation>
 <translation id="3835233591525155343">Дані про активний стан пристрою</translation>

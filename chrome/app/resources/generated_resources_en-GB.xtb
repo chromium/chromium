@@ -1217,7 +1217,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1826657447823925402">Reverse scrolling disabled</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> colour</translation>
 <translation id="1827504459960247692">Hotspot name</translation>
-<translation id="1828378091493947763">This plug-in is not supported on this device</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Open All}=1{&amp;Open Bookmark}other{&amp;Open All ({COUNT})}}</translation>
 <translation id="1828901632669367785">Print Using System Dialogue...</translation>
 <translation id="1829129547161959350">Penguin</translation>
@@ -1404,7 +1403,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 extension reviewed}other{{NUM_EXTENSIONS} extensions reviewed}}</translation>
 <translation id="1959421829481337178">Please enter the activation code provided by your operator.</translation>
 <translation id="1960211333621141174">Cliff</translation>
-<translation id="1962233722219655970">This page uses a Native Client app that doesn't work on your computer.</translation>
 <translation id="1963976881984600709">Standard protection</translation>
 <translation id="1964009877615282740">See more</translation>
 <translation id="1965578266762387357">When you get writing help, the page's URL, content and your text are sent to Google. Don't enter personal info (like medical or financial details)</translation>
@@ -1733,7 +1731,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2188881192257509750">Open <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Delete tab group?</translation>
 <translation id="2190069059097339078">Wi-Fi Credentials Getter</translation>
-<translation id="219008588003277019">Native Client module: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(empty)</translation>
 <translation id="2190967441465539539">Can't access camera and microphone</translation>
 <translation id="2191754378957563929">On</translation>
@@ -1913,7 +1910,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" has requested additional permissions.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2306794767168143227">Save to <ph name="BRAND" /> on this device</translation>
-<translation id="2307462900900812319">Configure network</translation>
 <translation id="2307553512430195144">If you agree, Google Assistant will wait in standby mode to detect ‘Hey Google’ and can recognise it is <ph name="SUPERVISED_USER_NAME" /> speaking with Voice Match.
     <ph name="BR" />
     Voice Match helps Google Assistant identify <ph name="SUPERVISED_USER_NAME" />’s voice on your <ph name="DEVICE_TYPE" /> and tell them apart from others.
@@ -2733,7 +2729,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2860710618359053450">Shift jaw right</translation>
 <translation id="2861301611394761800">System update complete. Please restart the system.</translation>
 <translation id="2861402191395139055">Passpoint subscriptions</translation>
-<translation id="2861941300086904918">Native Client security manager</translation>
 <translation id="2862815659905780618">Remove Linux development environment</translation>
 <translation id="2862986593239703553">this card</translation>
 <translation id="2864601841139725659">Set your profile picture</translation>
@@ -6072,7 +6067,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5230190638672215545">Type 'uow' to get 'ươ'</translation>
 <translation id="5230516054153933099">Window</translation>
 <translation id="5232714764496316200">Get homework help with Google Lens</translation>
-<translation id="5233019165164992427">NaCl debug port</translation>
 <translation id="5233231016133573565">Process ID</translation>
 <translation id="5233638681132016545">New tab</translation>
 <translation id="5233736638227740678">&amp;Paste</translation>
@@ -10571,7 +10565,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8431977087510901105">Cursor settings reset</translation>
 <translation id="8433186206711564395">Network settings</translation>
 <translation id="8434109185104929038">Reading nook</translation>
-<translation id="8434480141477525001">NaCl Debug Port</translation>
 <translation id="8434837876193928924">Tab group details</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Fix this tab}other{Fix these tabs}}</translation>
 <translation id="8436800506934625875">Create an alphanumeric recovery PIN for Google Password Manager</translation>

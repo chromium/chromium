@@ -1206,7 +1206,6 @@
 <translation id="1826657447823925402">Кері айналдыру өшірулі</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> түс</translation>
 <translation id="1827504459960247692">Хотспот атауы</translation>
-<translation id="1828378091493947763">Плагинге бұл құрылғыда қолдау көрсетілмейді</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Барлығын ашу}=1{&amp;Бетбелгіні ашу}other{&amp;Барлығын ({COUNT}) ашу}}</translation>
 <translation id="1828901632669367785">Жүйелік диалогтік терезесі арқылы басып шығару…</translation>
 <translation id="1829129547161959350">Пингвин</translation>
@@ -1392,7 +1391,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 кеңейтім тексерілді}other{{NUM_EXTENSIONS} кеңейтім тексерілді}}</translation>
 <translation id="1959421829481337178">Оператор қамтамасыз еткен белсендіру кодын енгізіңіз.</translation>
 <translation id="1960211333621141174">Жартас</translation>
-<translation id="1962233722219655970">Бұл бет компьютеріңізде жұмыс істемейтін Native Client қолданбасын пайдаланады.</translation>
 <translation id="1963976881984600709">Стандартты қорғау</translation>
 <translation id="1964009877615282740">Тағы көру</translation>
 <translation id="1965578266762387357">Жазу бойынша көмек алсаңыз, беттің URL мекенжайы, контенті мен мәтіні Google-ға жіберіледі. Жеке ақпарат (мысалы, денсаулық туралы не қаржылық мәліметтер) енгізбеңіз.</translation>
@@ -1722,7 +1720,6 @@
 <translation id="2188881192257509750"><ph name="APPLICATION" /> ашыңыз</translation>
 <translation id="2188919919468240749">Қойындылар тобын жою қажет пе?</translation>
 <translation id="2190069059097339078">WiFi Credentials Getter</translation>
-<translation id="219008588003277019">Native Client модулі: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(бос)</translation>
 <translation id="2190967441465539539">Камера мен микрофонды пайдалану мүмкін емес</translation>
 <translation id="2191754378957563929">Қосулы</translation>
@@ -1899,7 +1896,6 @@
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" қосымша рұқсат сұрады.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2306794767168143227">Бұл құрылғыда <ph name="BRAND" /> ішіне сақтау</translation>
-<translation id="2307462900900812319">Желіні реттеу</translation>
 <translation id="2307553512430195144">Келіссеңіз, Google Assistant күту режимінде "Ok Google" пәрменін күтеді және баланың (<ph name="SUPERVISED_USER_NAME" />) сөйлегенін Voice Match арқылы тани алады.
     <ph name="BR" />
     Voice Match функциясы Google Assistant-ке <ph name="DEVICE_TYPE" /> құрылғыңызда баланың (<ph name="SUPERVISED_USER_NAME" />) дауысын анықтауға және басқалардікінен ажыратуға көмектеседі.
@@ -2721,7 +2717,6 @@
 <translation id="2860710618359053450">Иегіңізді оңға қисайтыңыз.</translation>
 <translation id="2861301611394761800">Жүйе жаңартылып болды. Жүйені қайта іске қосыңыз.</translation>
 <translation id="2861402191395139055">Passpoint жазылымдары</translation>
-<translation id="2861941300086904918">Native Client қауіпсіздік басқарушысы</translation>
 <translation id="2862815659905780618">Linux әзірлеуші ортасын өшіру</translation>
 <translation id="2862986593239703553">бұл карта</translation>
 <translation id="2864601841139725659">Профиль суретін реттеу</translation>
@@ -6060,7 +6055,6 @@
 <translation id="5230190638672215545">"ươ" алу үшін "uow" деп теріңіз</translation>
 <translation id="5230516054153933099">Терезе</translation>
 <translation id="5232714764496316200">Google Lens арқылы үй тапсырмасы бойынша көмек алыңыз.</translation>
-<translation id="5233019165164992427">NaCl түзету порты</translation>
 <translation id="5233231016133573565">Процесс идентификаторы</translation>
 <translation id="5233638681132016545">Жаңа қойынды</translation>
 <translation id="5233736638227740678">&amp;Қою</translation>
@@ -10559,7 +10553,6 @@
 <translation id="8431977087510901105">Курсор параметрлерін бастапқы қалпына келтіру</translation>
 <translation id="8433186206711564395">Желі параметрлері</translation>
 <translation id="8434109185104929038">Оқуға арналған оңаша орын</translation>
-<translation id="8434480141477525001">NaCl түзету ұяшығы</translation>
 <translation id="8434837876193928924">Қойындылар тобының мәліметтері</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Осы қойындыға қатысты ақауларды түзету}other{Осы қойындыларға қатысты ақауларды түзету}}</translation>
 <translation id="8436800506934625875">Google Password Manager-ге арналған қалпына келтірудің әріптік-цифрлық PIN кодын жасаңыз.</translation>

@@ -117,6 +117,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">На сайте, который вы просматриваете, может быть встроенный контент с других сайтов, например изображения, реклама и текст. Файлы cookie с таких сайтов называются сторонними файлами cookie.</translation>
+<translation id="2433507940547922241">Внешний вид</translation>
 <translation id="2434158240863470628">Скачивание завершено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Вы временно разрешили этому сайту использовать сторонние файлы cookie. Браузер станет хуже защищен, но функции сайта могут начать работать правильно. <ph name="BEGIN_LINK" />Отправить отзыв<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">В режиме инкогнито некоторые функции сайтов могут быть отключены</translation>
@@ -152,6 +153,7 @@
 <translation id="2789132527330338807">Сайты могут запрашивать разрешение на создание 3D-карты места, в котором вы находитесь, или отслеживание положения камеры</translation>
 <translation id="2790501146643349491">Когда этот параметр включен, недавно закрытые сайты могут завершать отправку и получение данных. Когда параметр отключен, недавно закрытым сайтам запрещено это делать.</translation>
 <translation id="2795716239552913152">Обычно сайты используют данные о местоположении, чтобы применять подходящие функции и показывать актуальную информацию, например местные новости или магазины поблизости.</translation>
+<translation id="2800760947029405028">Загрузить изображение</translation>
 <translation id="2802908157808345702">Не разрешать сайтам показывать всплывающие окна и использовать переадресацию</translation>
 <translation id="2814830417943086299">Chrome теперь показывает в списке приложений и результатах поиска ваши недавние вкладки. Вы можете в любой момент отключить эту функцию в настройках Chrome.</translation>
 <translation id="2822354292072154809">Сбросить разрешения для сайта <ph name="CHOSEN_OBJECT_NAME" />?</translation>
@@ -237,6 +239,7 @@
 <translation id="3779154269823594982">Сменить пароли</translation>
 <translation id="3797520601150691162">Не использовать тёмную тему для конкретного сайта</translation>
 <translation id="3803367742635802571">Посещаемые сайты могут перестать работать должным образом</translation>
+<translation id="3816118180265633665">Цвета Chrome</translation>
 <translation id="381841723434055211">Номера телефонов</translation>
 <translation id="3826050100957962900">Вход через сторонние сервисы</translation>
 <translation id="3835233591525155343">Использование устройства</translation>

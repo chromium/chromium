@@ -1203,7 +1203,6 @@
 <translation id="1826657447823925402">已停用反向滚动</translation>
 <translation id="1827416268933303617">颜色：<ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">热点名称</translation>
-<translation id="1828378091493947763">该插件在此设备上不受支持</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{打开全部书签(&amp;O)}=1{打开书签(&amp;O)}other{打开全部（{COUNT} 个）书签(&amp;O)}}</translation>
 <translation id="1828901632669367785">使用系统对话框进行打印...</translation>
 <translation id="1829129547161959350">企鹅</translation>
@@ -1387,7 +1386,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{已审核 1 个扩展程序}other{已审核 {NUM_EXTENSIONS} 个扩展程序}}</translation>
 <translation id="1959421829481337178">请输入您的运营商提供的激活码。</translation>
 <translation id="1960211333621141174">悬崖</translation>
-<translation id="1962233722219655970">此页使用了您的计算机不支持的 Native Client 应用。</translation>
 <translation id="1963976881984600709">标准保护</translation>
 <translation id="1964009877615282740">查看更多</translation>
 <translation id="1965578266762387357">当您获取写作帮助时，系统会将网页的网址、内容和您的文字发送给 Google。请勿输入个人信息（如医疗或财务详细信息）</translation>
@@ -1717,7 +1715,6 @@
 <translation id="2188881192257509750">打开<ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">要删除标签页分组吗？</translation>
 <translation id="2190069059097339078">WiFi 凭据获取工具</translation>
-<translation id="219008588003277019">Native Client 模块：<ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">（空）</translation>
 <translation id="2190967441465539539">无法使用摄像头和麦克风</translation>
 <translation id="2191754378957563929">已开启</translation>
@@ -1894,7 +1891,6 @@
 <translation id="23030561267973084">“<ph name="EXTENSION_NAME" />”请求获得更多权限。</translation>
 <translation id="2304820083631266885">行星</translation>
 <translation id="2306794767168143227">保存到此设备上的 <ph name="BRAND" /></translation>
-<translation id="2307462900900812319">配置网络</translation>
 <translation id="2307553512430195144">如果您同意，Google 助理将会在待机模式下等待检测“Hey Google”，并可以通过 Voice Match 识别出是<ph name="SUPERVISED_USER_NAME" />在说话。
     <ph name="BR" />
     借助 Voice Match，Google 助理可在您的 <ph name="DEVICE_TYPE" /> 上识别出<ph name="SUPERVISED_USER_NAME" />的语音，从而将其与他人区分开。
@@ -2715,7 +2711,6 @@
 <translation id="2860710618359053450">将下巴向右移动</translation>
 <translation id="2861301611394761800">系统更新已完成。请重新启动系统。</translation>
 <translation id="2861402191395139055">Passpoint 订阅</translation>
-<translation id="2861941300086904918">Native Client 安全管理器</translation>
 <translation id="2862815659905780618">移除 Linux 开发环境</translation>
 <translation id="2862986593239703553">此卡片</translation>
 <translation id="2864601841139725659">设置您的个人资料照片</translation>
@@ -6052,7 +6047,6 @@
 <translation id="5230190638672215545">输入“uow”即可显示“ươ”</translation>
 <translation id="5230516054153933099">窗口</translation>
 <translation id="5232714764496316200">借助 Google 智能镜头获取作业辅导</translation>
-<translation id="5233019165164992427">NaCl调试端口</translation>
 <translation id="5233231016133573565">进程 ID</translation>
 <translation id="5233638681132016545">打开新的标签页</translation>
 <translation id="5233736638227740678">粘贴(&amp;P)</translation>
@@ -10552,7 +10546,6 @@
 <translation id="8431977087510901105">光标设置已重置</translation>
 <translation id="8433186206711564395">网络设置</translation>
 <translation id="8434109185104929038">阅读角</translation>
-<translation id="8434480141477525001">NaCl调试端口</translation>
 <translation id="8434837876193928924">标签页分组详情</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{修复此标签页}other{修复这些标签页}}</translation>
 <translation id="8436800506934625875">请为 Google 密码管理工具创建字母数字恢复 PIN 码</translation>

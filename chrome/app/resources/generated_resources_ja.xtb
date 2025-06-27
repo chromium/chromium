@@ -1207,7 +1207,6 @@
 <translation id="1826657447823925402">逆スクロールは無効です</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> 色</translation>
 <translation id="1827504459960247692">アクセス ポイント名</translation>
-<translation id="1828378091493947763">このプラグインはこのデバイスではサポートされていません</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{すべてを開く(&amp;O)}=1{ブックマークを開く(&amp;O)}other{すべて（{COUNT} 個）を開く(&amp;O)}}</translation>
 <translation id="1828901632669367785">システム ダイアログを使用して印刷...</translation>
 <translation id="1829129547161959350">ペンギン</translation>
@@ -1391,7 +1390,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 件の拡張機能が審査されました}other{{NUM_EXTENSIONS} 件の拡張機能が審査されました}}</translation>
 <translation id="1959421829481337178">携帯通信会社から提供されたアクティベーション コードを入力してください。</translation>
 <translation id="1960211333621141174">崖</translation>
-<translation id="1962233722219655970">このページは、お使いのパソコンでは動作しないネイティブ クライアント アプリを使用しています。</translation>
 <translation id="1963976881984600709">標準保護機能</translation>
 <translation id="1964009877615282740">もっと見る</translation>
 <translation id="1965578266762387357">文書作成サポートを使用すると、ページの URL、コンテンツ、テキストが Google に送信されます。個人情報（医療情報や財務情報など）は入力しないでください</translation>
@@ -1721,7 +1719,6 @@
 <translation id="2188881192257509750"><ph name="APPLICATION" /> を開く</translation>
 <translation id="2188919919468240749">タブグループを削除しますか？</translation>
 <translation id="2190069059097339078">WiFi 認証情報の取得機能</translation>
-<translation id="219008588003277019">ネイティブ クライアント モジュール: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(なし)</translation>
 <translation id="2190967441465539539">カメラとマイクにアクセスできません</translation>
 <translation id="2191754378957563929">オン</translation>
@@ -1897,7 +1894,6 @@
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」が追加の許可をリクエストしています。</translation>
 <translation id="2304820083631266885">惑星</translation>
 <translation id="2306794767168143227">このデバイスの <ph name="BRAND" /> に保存する</translation>
-<translation id="2307462900900812319">ネットワークを設定</translation>
 <translation id="2307553512430195144">同意すると、Google アシスタントはスタンバイ モードで待機して「OK Google」を検出します。Google アシスタントは Voice Match で <ph name="SUPERVISED_USER_NAME" /> さんが話していることを認識できます。<ph name="BR" />
     Voice Match を使用すると、お使いの <ph name="DEVICE_TYPE" /> で Google アシスタントが <ph name="SUPERVISED_USER_NAME" /> さんの声を認識できるようになります。
     <ph name="BR" />
@@ -2717,7 +2713,6 @@
 <translation id="2860710618359053450">あごを右に動かす</translation>
 <translation id="2861301611394761800">システムの更新が完了しました。システムを再起動してください。</translation>
 <translation id="2861402191395139055">Passpoint の登録</translation>
-<translation id="2861941300086904918">ネイティブ クライアント セキュリティ マネージャ</translation>
 <translation id="2862815659905780618">Linux 開発環境を削除</translation>
 <translation id="2862986593239703553">このカード</translation>
 <translation id="2864601841139725659">プロフィール画像の設定</translation>
@@ -6050,7 +6045,6 @@
 <translation id="5230190638672215545">「ươ」を入力するには「uow」と入力します。</translation>
 <translation id="5230516054153933099">ウィンドウ</translation>
 <translation id="5232714764496316200">Google レンズで宿題サポート</translation>
-<translation id="5233019165164992427">NaCl デバッグ ポート</translation>
 <translation id="5233231016133573565">プロセス ID</translation>
 <translation id="5233638681132016545">新しいタブ</translation>
 <translation id="5233736638227740678">貼り付け(&amp;P)</translation>
@@ -10549,7 +10543,6 @@
 <translation id="8431977087510901105">カーソルの設定がリセットされました</translation>
 <translation id="8433186206711564395">ネットワーク設定</translation>
 <translation id="8434109185104929038">読書コーナー</translation>
-<translation id="8434480141477525001">NaCl デバッグ ポート</translation>
 <translation id="8434837876193928924">タブグループの詳細</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{このタブを修正}other{これらのタブを修正}}</translation>
 <translation id="8436800506934625875">Google パスワード マネージャーの英数字のリカバリ PIN を作成</translation>

@@ -1215,7 +1215,6 @@
 <translation id="1826657447823925402">ပြောင်းပြန်လှိမ့်ခြင်း ပိတ်ထားသည်</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> ရောင်</translation>
 <translation id="1827504459960247692">ဟော့စပေါ့အမည်</translation>
-<translation id="1828378091493947763">ဤကိရိယာတွင် ၎င်းပလတ်အင်ကို မပံ့ပိုးပါ</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{အားလုံးကို &amp;ဖွင့်ရန်}=1{လိပ်စာကို &amp;ဖွင့်ရန်}other{({COUNT}) ခုလုံးကို &amp;ဖွင့်ရန်}}</translation>
 <translation id="1828901632669367785">System Dialog ကို သုံးပြီး ပရင့်ထုတ်ရန်...</translation>
 <translation id="1829129547161959350">ပင်ဂွင်</translation>
@@ -1401,7 +1400,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{နောက်ဆက်တွဲ ၁ ခုကို စိစစ်ပြီးပြီ}other{နောက်ဆက်တွဲ {NUM_EXTENSIONS} ခုကို စိစစ်ပြီးပြီ}}</translation>
 <translation id="1959421829481337178">သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီက ပို့ထားသည့် စသုံးရန်ကုဒ်ကိုထည့်ပါ။</translation>
 <translation id="1960211333621141174">ချောက်ကမ်းပါး</translation>
-<translation id="1962233722219655970">ဒီစာမျက်နှာက Native Client အက်ပ်ကို အသုံးပြုရာ သင်၏ ကွန်ပျူတာမှာ အလုပ် မလုပ်ပါ။</translation>
 <translation id="1963976881984600709">ပုံမှန်ကာကွယ်မှု</translation>
 <translation id="1964009877615282740">ပိုမြင်ရရန်</translation>
 <translation id="1965578266762387357">စာရေးရာတွင် အကူအညီရသောအခါ စာမျက်နှာ၏ URL၊ အကြောင်းအရာနှင့် သင့်စာသားတို့ကို Google သို့ ပို့သည်။ (ဆေးကုသမှုဆိုင်ရာ သို့မဟုတ် ငွေကြေးဆိုင်ရာ အသေးစိတ်အချက်များကဲ့သို့သော) ကိုယ်ရေးအချက်အလက်များကို မထည့်ပါနှင့်</translation>
@@ -1730,7 +1728,6 @@
 <translation id="2188881192257509750"><ph name="APPLICATION" /> ကို ဖွင့်ရန်</translation>
 <translation id="2188919919468240749">တဘ်အုပ်စုကို ဖျက်မလား။</translation>
 <translation id="2190069059097339078">WiFi Credentials Getter</translation>
-<translation id="219008588003277019">ဇာတိဖောက်သည် သင်ရိုး: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(ဗလာ)</translation>
 <translation id="2190967441465539539">ကင်မရာနှင့် မိုက်ခရိုဖုန်းကို သုံး၍မရပါ</translation>
 <translation id="2191754378957563929">ဖွင့်</translation>
@@ -1910,7 +1907,6 @@
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" သည်နောက်ထပ် ခွင့်ပြုချက်များကို တောင်းဆိုခဲ့သည်။</translation>
 <translation id="2304820083631266885">ဂြိုဟ်</translation>
 <translation id="2306794767168143227">ဤစက်ပေါ်ရှိ <ph name="BRAND" /> တွင် သိမ်းရန်</translation>
-<translation id="2307462900900812319">ကွန်ရက် ပြုပြင်ရန်</translation>
 <translation id="2307553512430195144">သဘောတူပါက “Ok Google” ကို သိရှိနိုင်ရန် Google Assistant က အရန်သင့်မုဒ်ဖြင့် စောင့်နေမည်ဖြစ်ပြီး Voice Match ဖြင့် စကားပြောနေသော <ph name="SUPERVISED_USER_NAME" /> ကို မှတ်မိနိုင်ပါသည်။
     <ph name="BR" />
     Voice Match သည် သင်၏ <ph name="DEVICE_TYPE" /> တွင် Google Assistant က <ph name="SUPERVISED_USER_NAME" /> ၏ အသံကို ခွဲခြားဖော်ထုတ်နိုင်ရန်၊ သူတို့အား အခြားသူများနှင့် ခွဲခြားနိုင်ရန် ကူညီသည်။
@@ -2731,7 +2727,6 @@
 <translation id="2860710618359053450">မေးရိုးကို ညာဘက်သို့ ရွဲ့ပါ</translation>
 <translation id="2861301611394761800">စနစ် မွမ်းမံမှု ပြီးဆုံးသွားပြီ။ ကျေးဇူးပြုပြီး စနစ်ကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="2861402191395139055">ဖြတ်သန်းခွင့်ပြုမှတ် စာရင်းသွင်းမှုများ</translation>
-<translation id="2861941300086904918">ဒေသခံ ဖောက်သည်လုံခြုံရေး မန်နေဂျာ</translation>
 <translation id="2862815659905780618">Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင်ကို ဖယ်ရှားရန်</translation>
 <translation id="2862986593239703553">ဤကတ်</translation>
 <translation id="2864601841139725659">သင်၏ပရိုဖိုင်ပုံ သတ်မှတ်ပါ</translation>
@@ -6069,7 +6064,6 @@
 <translation id="5230190638672215545">“ươ” ရရှိရန် “uow” ဟုရိုက်ပါ</translation>
 <translation id="5230516054153933099">ဝင်းဒိုး</translation>
 <translation id="5232714764496316200">Google Lens ဖြင့် အိမ်စာအကူအညီ ရယူပါ</translation>
-<translation id="5233019165164992427">NaCl အမှားရှာပြင်ခြင်း ပို့တ်</translation>
 <translation id="5233231016133573565">လုပ်ငန်းစဉ် ID</translation>
 <translation id="5233638681132016545">တဘ် အသစ်</translation>
 <translation id="5233736638227740678">&amp;ကပ်ပေးရန်</translation>
@@ -10564,7 +10558,6 @@
 <translation id="8431977087510901105">ကာဆာဆက်တင်များ ပြင်ဆင်သတ်မှတ်လိုက်ပါပြီ</translation>
 <translation id="8433186206711564395">ကွန်ရက် ဆက်တင်များ</translation>
 <translation id="8434109185104929038">စာဖတ်ရန် ချောင်</translation>
-<translation id="8434480141477525001">NaCl အမှားရှာပြင်ခြင်း ပို့တ်</translation>
 <translation id="8434837876193928924">တဘ်အုပ်စု အသေးစိတ်</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{ဤတဘ်ကို ပြင်ရန်}other{ဤတဘ်များကို ပြင်ရန်}}</translation>
 <translation id="8436800506934625875">Google Password Manager အတွက် အက္ခရာနှင့် ကိန်းဂဏန်းအရော ပြန်လည်ရယူရေးပင်နံပါတ် ပြုလုပ်ပါ</translation>

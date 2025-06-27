@@ -1065,6 +1065,17 @@ Diese Richtlinie ist eine vorübergehende Problemumgehung für den Fall, dass di
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="1755310913456007816">Vorhandene Einstellungen zur Onlinewiderrufsprüfung verwenden</translation>
 <translation id="1760951637494635692">Serial API auf diesen Seiten erlauben</translation>
+<translation id="1764415246330773476">Mit dieser Richtlinie wird die Sichtbarkeit des Verwaltungshinweises in der Fußzeile der Seite „Neuer Tab“ festgelegt. Standardmäßig werden in dieser Fußzeile Informationen angezeigt, wenn der Browser von einer Organisation verwaltet wird (angegeben durch ein Gebäudesymbol und „Verwaltet von [Domainname]“). Dies kann mithilfe der Richtlinien „<ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" />“ und „<ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />“ angepasst werden.
+
+Wenn diese Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, werden in verwalteten Browsern der Hinweis „Verwaltet von…“ und ein Symbol angezeigt.
+
+Ist sie auf „false“ gesetzt, wird der Verwaltungshinweis ausgeblendet.
+
+Diese Richtlinie wird nur auf verwaltete Browser angewendet. Sie hat also keine Auswirkungen auf verwaltete Nutzer von nicht verwalteten Browsern.
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="1765503534110351026">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“.
 
        Wenn diese Richtlinie festgelegt ist, umgeht <ph name="PRODUCT_NAME" /> alle Proxys für die hier angegebenen Hosts. Diese Richtlinie ist nur dann wirksam, wenn die Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ nicht konfiguriert ist und du „<ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />“ oder „<ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />“ für „<ph name="PROXY_MODE_POLICY_NAME" />“ angegeben hast.
@@ -1101,15 +1112,6 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
       Die Reihenfolge der Liste entspricht derjenigen im Bereich „Ordne Sprachen in der gewünschten Reihenfolge an“ unter chrome://settings/languages. Nutzer können Sprachen, die durch die Richtlinie festgelegt sind, nicht entfernen oder neu anordnen, sie haben aber die Möglichkeit, unter den durch diese Richtlinie vorgegebenen Sprachen weitere Sprachen hinzuzufügen. Darüber hinaus haben Nutzer die volle Kontrolle über die Sprache der Benutzeroberfläche und die Übersetzungs- und Rechtschreibprüfungseinstellungen des Browsers, sofern diese nicht durch andere Richtlinien zwingend vorgegeben sind.
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die gesamte Liste bevorzugter Sprachen beliebig anpassen.</translation>
-<translation id="180243155313050440">Über diese Richtlinie wird ein benutzerdefiniertes Label gesteuert, mit dem ein verwalteter Browser gekennzeichnet werden kann. Bei verwalteten Browsern wird dieses Label in einem Haftungsausschluss für die Verwaltung in der Fußzeile der Seite „Neuer Tab“ angezeigt. Das benutzerdefinierte Label wird nicht übersetzt.
-
-Wenn diese Richtlinie angewendet wird, werden alle Zeichenfolgen, die länger als 16 Zeichen sind, mit „…“ abgeschnitten. Verwende daher keine langen Namen.
-
-Diese Richtlinie wird nur auf verwaltete Browser angewendet. Sie hat also keine Auswirkungen auf verwaltete Nutzer von nicht verwalteten Browsern.
-
-Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
-
-Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="1803646570632580723">Liste der im Launcher angezeigten Apps ansehen</translation>
 <translation id="1808715480127969042">Cookies auf diesen Websites blockieren</translation>
 <translation id="1810261428246410396">Verwendung von Instant Tethering erlauben.</translation>
@@ -1922,6 +1924,15 @@ Ist die Richtlinie deaktiviert, können Nutzer von <ph name="PRODUCT_NAME" />-Va
 <translation id="2377059627106831967">Fenstergruppierung für „Generative AI – Übersicht“ ohne die Verbesserung von KI-Modellen zulassen.</translation>
 <translation id="2377109572344699022">Verwendung der Direct Sockets API festlegen</translation>
 <translation id="2382672620906337383">Die JavaScript-Funktion „setTimeout()“ wird nach Überschreiten eines höheren Verschachtelungsgrenzwerts verzögert.</translation>
+<translation id="2383521405943565490">Mit dieser Richtlinie wird festgelegt, ob die Drittanbieter-Speicherpartitionierung standardmäßig zulässig ist.
+
+Wenn diese Richtlinie auf „1 – AllowPartitioning“ gesetzt oder nicht konfiguriert ist, ist die Drittanbieter-Speicherpartitionierung standardmäßig zulässig. Dieser Standardwert kann für bestimmte Ursprünge der obersten Ebene auf andere Weise überschrieben werden.
+
+Ist diese Richtlinie auf „2 – BlockPartitioning“ gesetzt, wird die Drittanbieter-Speicherpartitionierung für alle Kontexte deaktiviert.
+
+Mit „<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />“ kannst du die Drittanbieter-Speicherpartitionierung für bestimmte Ursprünge der obersten Ebene deaktivieren. Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Diese Richtlinie wird in Chrome-Version 145 entfernt. Es wird empfohlen, stattdessen die Methode „requestStorageAccess“ zu verwenden: https://developer.mozilla.org/de/docs/Web/API/Document/requestStorageAccess. Unter https://crbug.com/425248669 kannst du Feedback geben.</translation>
 <translation id="2386362615870139244">Bildschirm-Wakelocks zulassen</translation>
 <translation id="2387469539700985783">Diese Richtlinie hat keine Auswirkung auf die Berichterstellung durch Android.</translation>
 <translation id="2388701318721126001">Wenn diese Richtlinie deaktiviert ist, kann das <ph name="PRODUCT_OS_NAME" />-Hintergrundbild des Nutzers nicht aus einem Google Fotos-Album ausgewählt werden.
@@ -4068,7 +4079,6 @@ Hinweis: Wenn in den Einstellungen keine gegenseitig unterstützten Authentifizi
 <translation id="3982849521386211220">Damit lässt sich die Liste der Reporting API‑Endpunkte konfigurieren[1], an die Unternehmensberichte gesendet werden kann.
 
 [1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
-<translation id="398294729592983401">Nutzern erlauben, die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung „Fingerprinting-Schutz“ auf ihrem Gerät zu aktivieren oder deaktivieren.</translation>
 <translation id="3983162212222338509">Die DNS-Auflösung des Systems kann je nach Systemkonfiguration und Funktions-Flags innerhalb, außerhalb oder teils innerhalb, teils außerhalb des Netzwerkprozesses ausgeführt werden.</translation>
 <translation id="3986700049001404598">Nutzern erlauben, Prozesse mit dem Task-Manager von Chrome zu beenden</translation>
 <translation id="398884292557092447">Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, können Nutzer die Vorschläge zum automatischen Ausfüllen von Kreditkartendaten in der UI steuern.
@@ -6571,7 +6581,6 @@ Weitere Informationen findest du unter „<ph name="DEFAULT_DIRECT_SOCKETS_SETTI
 <translation id="5670249935663090320">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird <ph name="PRODUCT_NAME" /> aktiviert und kann von Nutzern über das App-Menü, Kontextmenüs von Seiten, Mediensteuerelemente auf für Google Cast optimierten Websites und das Symbol von Cast in der Symbolleiste (falls angezeigt) gestartet werden.
 
 Ist die Richtlinie deaktiviert, wird <ph name="PRODUCT_NAME" /> deaktiviert.</translation>
-<translation id="5673254755365419402"><ph name="PRIVACY_SANDBOX_NAME" />-Funktion „Fingerprinting-Schutz“ aktivieren.</translation>
 <translation id="567377007899266033">Wenn die Richtlinie auf "True" gesetzt ist, werden Berichte über wichtige richtlinienbasierte Erweiterungsinstallationen an Google gesendet. Wenn die Richtlinie auf "False" gesetzt ist, werden keine diesbezüglichen Ereignisse erfasst. Ist die Richtlinie nicht konfiguriert, ist der Standardwert "True".</translation>
 <translation id="5673780539191375049">Mit dieser Richtlinie wird das Zeitintervall (in Minuten) festgelegt, gemäß dem der Authentifizierungsvorgang des Nutzers auf seinem <ph name="PRODUCT_OS_NAME" />-Gerät automatisch aktualisiert wird. Die Richtlinie wird eingeführt, um das Beenden einiger Dienste zu verhindern, die bei Authentifizierungsabläufen verwendet werden, nachdem das Gerät eine Weile inaktiv war.
 
@@ -6990,7 +6999,6 @@ Diese Richtlinie gilt nur, wenn der Ursprung die Direct Sockets API verwenden da
 Weitere Informationen findest du unter „<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />“, „<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />“ und „<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />“.
 
 Diese Richtlinie gilt nur für neue Verbindungsversuche und macht vorhandene Verbindungen nicht ungültig.</translation>
-<translation id="5981932073854958705">Festlegen, ob die Funktion „<ph name="PRIVACY_SANDBOX_NAME" />-Fingerprinting-Schutz“ aktiviert werden soll.</translation>
 <translation id="5983274643567559194">Festlegen einer Tastenkombination für die Aktion „Löschen“ ist deaktiviert.</translation>
 <translation id="5984099692320899605">Keine NTLM-Authentifizierung verwenden</translation>
 <translation id="5984237109586500246">Webinhalte akzeptieren, die als Signed HTTP Exchanges implementiert sind</translation>
@@ -7709,11 +7717,6 @@ Weitere Informationen findest du in der Richtlinie <ph name="HTTPS_ONLY_MODE_POL
 <translation id="6440051664870270040">Websites erlauben, gleichzeitig auf andere Websites weiterzuleiten und Pop-ups zu öffnen</translation>
 <translation id="6441781723322254041">Abgeschnittene Cookies zulassen</translation>
 <translation id="6446366416439249472">Google Drive-Synchronisierung über Mobilfunkverbindungen deaktivieren</translation>
-<translation id="6447628816682315403">Eine Richtlinie, mit der festgelegt wird, ob die Funktion „<ph name="PRIVACY_SANDBOX_NAME" />-Fingerprinting-Schutz“ für deine Nutzer aktiviert oder deaktiviert werden soll.
-
-Ist die Richtlinie deaktiviert, wird der Fingerprinting-Schutz für deine Nutzer deaktiviert.
-Wenn diese Richtlinie aktiviert ist, wird der Fingerprinting-Schutz für deine Nutzer aktiviert.
-Ist die Richtlinie nicht konfiguriert, können Nutzer den Fingerprinting-Schutz in ihren Einstellungen der Benutzeroberfläche aktivieren oder deaktivieren. Die Standardeinstellung ist „false“ oder „disabled“, wodurch der Fingerprinting-Schutz deaktiviert ist.</translation>
 <translation id="6447948611083700881">"Sicherung und Wiederherstellung" deaktiviert</translation>
 <translation id="6449476513004303784">Nutzern nicht erlauben, Zertifikate zu verwalten</translation>
 <translation id="6449541189334851559">Aktiviere die <ph name="GOOGLE_CALENDAR_NAME" />-Integration, damit <ph name="PRODUCT_OS_NAME" />-Nutzer Termine aus <ph name="GOOGLE_CALENDAR_NAME" /> abrufen und im <ph name="PRODUCT_OS_NAME" />-Kalenderwidget in der Systemstatusleiste anzeigen lassen können.
@@ -8096,6 +8099,15 @@ Wenn diese Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, könne
 
 Wenn sie auf „False“ gesetzt ist, ist die Portweiterleitung zu Crostini-Containern deaktiviert.</translation>
 <translation id="6677291257287862684">„Einfingerbedienung“ auf dem Anmeldebildschirm aktivieren</translation>
+<translation id="6677886356657067286">Mit dieser Richtlinie kannst du eine Liste von URL-Mustern festlegen, durch die Ursprünge der obersten Ebene angegeben werden, für die die Drittanbieter-Speicherpartitionierung (Partitionierung des ursprungsübergreifenden iFrame-Speichers) deaktiviert werden soll.
+
+Wenn diese Richtlinie nicht konfiguriert ist oder der Ursprung der obersten Ebene nicht mit einem der URL-Muster übereinstimmt, wird „<ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />“ angewendet.
+
+Ausführliche Informationen zu gültigen Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Beachte, dass die Muster, die du hier aufführst, als Ursprünge und nicht als URLs behandelt werden. Gib deshalb keinen Pfad an.
+
+Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Diese Richtlinie wird in Chrome-Version 145 entfernt. Es wird empfohlen, stattdessen die Methode „requestStorageAccess“ zu verwenden: https://developer.mozilla.org/de/docs/Web/API/Document/requestStorageAccess. Unter https://crbug.com/425248669 kannst du Feedback geben.</translation>
 <translation id="668153983584136017">Diese Richtlinie wurde eingestellt, da der aktualisierte GREASE-Algorithmus seit M103 standardmäßig aktiviert ist.
 Wenn die Richtlinie aktiviert ist, aktualisiert die Funktion zur Aktualisierung des GREASE‑Algorithmus für User-Agent-Client-Hints (UA‑CH) den GREASE‑Algorithmus für User-Agents auf die neueste Spezifikation.
      Ein solches Spezifikationsupdate kann Probleme verursachen, wenn eine Website einschränkt, welche Zeichen in Anfragen zulässig sind. Weitere Informationen findest du in der Spezifikation unter https://wicg.github.io/ua-client-hints/#grease.
@@ -10585,7 +10597,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="8544465954173828789">Zulassen, dass SMS zwischen Smartphone mit Chromebook synchronisiert werden.</translation>
 <translation id="8549906780629620346">Kontowiederherstellung aktivieren</translation>
 <translation id="855182606166519378">Nutzer dürfen keine Firmware-Updates starten</translation>
-<translation id="855291439519960768"><ph name="PRIVACY_SANDBOX_NAME" />-Funktion „Fingerprinting-Schutz“ deaktivieren.</translation>
 <translation id="8553491595730354263">Ermöglicht dem Host für den Remote-Zugriff, eine PIN- und Kopplungsauthentifizierung beim Akzeptieren von Clientverbindungen zu verwenden</translation>
 <translation id="8553955290407912156">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht bitten dürfen, ihnen Zugriff auf ein HID-Gerät zu gewähren.
 

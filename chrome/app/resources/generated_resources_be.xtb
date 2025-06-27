@@ -638,6 +638,7 @@
 <translation id="1438630805136563416">Выдалена дзеянне "<ph name="REMOVED_ACTION" />"</translation>
 <translation id="1439671507542716852">доўгатэрміновая падтрымка</translation>
 <translation id="1440090277117135316">Рэгістрацыя ў навучальнай установе выканана</translation>
+<translation id="1442054921249164535">Іншыя даныя</translation>
 <translation id="144283815522798837">Выбрана: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Задаць актыўны білет Kerberos</translation>
 <translation id="1444389367706681769">Касмічная прастора</translation>
@@ -1210,7 +1211,6 @@
 <translation id="1826657447823925402">Прагортка ў адваротным кірунку адключана</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> колер</translation>
 <translation id="1827504459960247692">Назва хот-спота</translation>
-<translation id="1828378091493947763">Прылада не падтрымлівае гэту ўбудову</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Адкрыць усе}=1{&amp;Адкрыць закладку}one{&amp;Адкрыць усе ({COUNT})}few{&amp;Адкрыць усе ({COUNT})}many{&amp;Адкрыць усе ({COUNT})}other{&amp;Адкрыць усе ({COUNT})}}</translation>
 <translation id="1828901632669367785">Друк з выкарыстаннем сістэмнага дыялогавага акна...</translation>
 <translation id="1829129547161959350">Пінгвін</translation>
@@ -1396,7 +1396,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{Праверана 1 пашырэнне}one{Праверана {NUM_EXTENSIONS} пашырэнне}few{Праверана {NUM_EXTENSIONS} пашырэнні}many{Праверана {NUM_EXTENSIONS} пашырэнняў}other{Праверана {NUM_EXTENSIONS} пашырэння}}</translation>
 <translation id="1959421829481337178">Увядзіце код актывацыі, атрыманы ад аператара.</translation>
 <translation id="1960211333621141174">Уцёс</translation>
-<translation id="1962233722219655970">Гэта старонка выкарыстоўвае праграму Native Client, якая не працуе на вашым камп’ютары.</translation>
 <translation id="1963976881984600709">Стандартная абарона</translation>
 <translation id="1964009877615282740">Паглядзець больш</translation>
 <translation id="1965578266762387357">Калі вы атрымліваеце дапамогу ў напісанні тэкстаў, URL-адрас старонкі, змесціва і ваш тэкст адпраўляюцца ў Google, таму не ўказвайце асабістую інфармацыю (напрыклад, медыцынскія або фінансавыя звесткі)</translation>
@@ -1603,6 +1602,7 @@
 <translation id="2096716221239095980">Выдаліць усе даныя</translation>
 <translation id="2097950021134740304">Скасаваць выдаленне падпіскі</translation>
 <translation id="2098805196501063469">Праверыць астатнія паролі</translation>
+<translation id="2099883893520019102">Апошнія 15 хв</translation>
 <translation id="2101225219012730419">Версія:</translation>
 <translation id="2102396546234652240">Не дазваляць сайтам выкарыстоўваць мікрафон</translation>
 <translation id="2102495993840063010">Праграмы для Android</translation>
@@ -1723,7 +1723,6 @@
 <translation id="2188881192257509750">Адкрыць <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Выдаліць групу ўкладак?</translation>
 <translation id="2190069059097339078">Сродак атрымання ўліковых даных Wi-Fi</translation>
-<translation id="219008588003277019">Модуль Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(пуста)</translation>
 <translation id="2190967441465539539">Не ўдалося атрымаць доступ да камеры і мікрафона</translation>
 <translation id="2191754378957563929">Уключана</translation>
@@ -1900,7 +1899,6 @@
 <translation id="23030561267973084">Праграма "<ph name="EXTENSION_NAME" />" запатрабавала дадатковыя дазволы.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2306794767168143227">Захаваць у сэрвісе "<ph name="BRAND" />" на гэтай прыладзе</translation>
-<translation id="2307462900900812319">Наладзіць сетку</translation>
 <translation id="2307553512430195144">Калі вы дасце на гэта згоду, Памочнік Google будзе ў рэжыме чакання выяўляць фразу "Ok Google". З дапамогай функцыі Voice Match ён зможа распазнаць, што гаворыць іменна <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
     Voice Match дапамагае Памочніку Google пазнаваць голас карыстальніка <ph name="SUPERVISED_USER_NAME" /> на прыладзе <ph name="DEVICE_TYPE" /> і адрозніваць яго ад іншых людзей.
@@ -2162,6 +2160,7 @@
 <translation id="2476901513051581836">Ачысціць пазасеткавае сховішча нельга, пакуль не стане вядомы яго памер.</translation>
 <translation id="2476974672882258506">Каб выдаліць <ph name="PARALLELS_DESKTOP" />, завяршыце працу Windows.</translation>
 <translation id="2477065602824695373">Аўтаматычнае сканіраванне было выключана, бо вы наладзілі некалькі пераключальнікаў.</translation>
+<translation id="2477607419416067650">Іншыя даныя Google</translation>
 <translation id="2478176599153288112">Дазволы выкарыстання мультымедыйных файлаў для пашырэння "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Уключыце сэрвіс аднаўлення даных.</translation>
 <translation id="2479541499757560845">Налады экраннай клавіятуры</translation>
@@ -2280,6 +2279,7 @@
 <translation id="2552966063069741410">Часавы пояс</translation>
 <translation id="2553290675914258594">Спраўджаны доступ</translation>
 <translation id="2553340429761841190">Браўзеру <ph name="PRODUCT_NAME" /> не ўдалося падключыцца да сеткі <ph name="NETWORK_ID" />. Выберыце іншую сетку і паўтарыце спробу.</translation>
+<translation id="2553352788023127673">Гісторыю пошуку і паролі можна выдаліць у наладах кіравання імі</translation>
 <translation id="2553440850688409052">Схаваць гэту ўбудову</translation>
 <translation id="2554553592469060349">Выбраны файл занадта вялікі (максімальны памер: 3 МБ).</translation>
 <translation id="2555802059188792472">Колькі праграм могуць адпраўляць апавяшчэнні: <ph name="NUM_ALLOWED_APPS" /> з <ph name="TOTAL_NUM_APPS" /></translation>
@@ -2720,7 +2720,6 @@
 <translation id="2860710618359053450">Змясціце сківіцу ўправа</translation>
 <translation id="2861301611394761800">Абнаўленне сістэмы завершана. Перазапусціце сістэму.</translation>
 <translation id="2861402191395139055">Падпіскі Passpoint</translation>
-<translation id="2861941300086904918">Менеджар бяспекі Native Client</translation>
 <translation id="2862815659905780618">Выдаліць асяроддзе распрацоўкі Linux</translation>
 <translation id="2862986593239703553">гэта картка</translation>
 <translation id="2864601841139725659">Задайце сваё фота профілю</translation>
@@ -3457,6 +3456,7 @@
 <translation id="3408555740610481810">Выкарыстоўваюцца камера і мікрафон</translation>
 <translation id="3409157109901479672">Левы бок</translation>
 <translation id="3409513286451883969">&amp;Перакласці вылучаны тэкст на наступную мову: <ph name="LANGUAGE" /></translation>
+<translation id="3410151451624226773">Кіраваць у Менеджары пароляў Google</translation>
 <translation id="3412265149091626468">Перайсці да вылучэння</translation>
 <translation id="3413122095806433232">Выдаўцы ЦС: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Памер:</translation>
@@ -5880,6 +5880,7 @@
 <translation id="5102244391872941183">Геаданыя могуць выкарыстоўвацца праграмамі і вэб-сайтамі, якія маюць на гэта дазвол, а таксама сістэмнымі службамі</translation>
 <translation id="5103311607312269661">павялічыць яркасць дысплэя</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Выдаліць групу}one{Выдаліць групы}few{Выдаліць групы}many{Выдаліць групы}other{Выдаліць групы}}</translation>
+<translation id="5105442806410269908">Кіраваць іншымі данымі Google</translation>
 <translation id="5106350808162641062">Выдаліць</translation>
 <translation id="510695978163689362">Уліковы запіс <ph name="USER_EMAIL" /> кантралюецца праз Family Link. Каб пад бацькоўскім кантролем атрымліваць доступ да навучальных матэрыялаў, вы можаце дадаваць навучальныя ўліковыя запісы.</translation>
 <translation id="5107093668001980925">Ніколі не паказваць: <ph name="MODULE_NAME" /></translation>
@@ -6057,7 +6058,6 @@
 <translation id="5230190638672215545">Для атрымання "ươ" уводзіць "uow"</translation>
 <translation id="5230516054153933099">Акно</translation>
 <translation id="5232714764496316200">Выконвайце дамашнія заданні з дапамогай Google Аб’ектыва</translation>
-<translation id="5233019165164992427">Порт адладкі NaCl</translation>
 <translation id="5233231016133573565">Ідэнтыфікатар працэсу</translation>
 <translation id="5233638681132016545">Новая ўкладка</translation>
 <translation id="5233736638227740678">&amp;Уставіць</translation>
@@ -6183,6 +6183,7 @@
 <translation id="5320135788267874712">Новая назва прылады</translation>
 <translation id="532247166573571973">Сервер можа быць недаступны. Паўтарыце спробу пазней.</translation>
 <translation id="5323328004379641163">Наладзьце выгляд Chrome і гэтай старонкі</translation>
+<translation id="5323501626199324454">Кіраваць ва Уліковым запісе Google</translation>
 <translation id="5324300749339591280">Спіс праграм</translation>
 <translation id="5324780743567488672">Задаваць часавы пояс аўтаматычна – з дапамогай даных пра месцазнаходжанне</translation>
 <translation id="5327248766486351172">Імя</translation>
@@ -6530,6 +6531,7 @@
 <translation id="557722062034137776">Скід прылады не закране ўліковыя запісы Google і даныя, сінхранізаваныя з імі. Аднак усе файлы, захаваныя на прыладзе, будуць выдалены.</translation>
 <translation id="5578059481725149024">Аўтаматычны ўваход</translation>
 <translation id="5578387000057347457">Увядзіце свой запыт або вылучыце тэкст, каб стварыць відарыс</translation>
+<translation id="5579225964082017560">Выдаліць сайт <ph name="SITE" /> са спіса "<ph name="SECTION_HEADER" />"</translation>
 <translation id="5581134892342029705">Пераклад завершаны (мова перакладу: <ph name="LANGUAGE" />)</translation>
 <translation id="558170650521898289">Спраўджанне драйвера абсталявання Microsoft Windows</translation>
 <translation id="5581972110672966454">Не ўдалося далучыць прыладу да дамена. Паўтарыце спробу або звярніцеся да адміністратара ці ўладальніка прылады. Код памылкі: <ph name="ERROR_CODE" />.</translation>
@@ -8836,6 +8838,7 @@
 <translation id="7250616558727237648">Прылада, з якою вы спрабуеце абагуліць файл, не адказала. Паўтарыце спробу.</translation>
 <translation id="725109152065019550">На жаль, адміністратар выключыў знешняе сховішча ў вашым уліковым запісе.</translation>
 <translation id="7251635775446614726">Паведамленне ад адміністратара: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7252424535852086046">Каб выдаліць гэтыя даныя, перайдзіце ў налады кіравання імі</translation>
 <translation id="7253521419891527137">&amp;Даведацца больш</translation>
 <translation id="7254951428499890870">Сапраўды запусціць у рэжыме дыягностыкі праграму "<ph name="APP_NAME" />"?</translation>
 <translation id="725497546968438223">Кнопка папкі з закладкамі</translation>
@@ -9122,6 +9125,7 @@
 <translation id="7450761244949417357">Зараз адкрываецца ў браўзеры <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7450926666485653189">Адпраўляе ў Google абфускаваную частку URL-адраса праз сервер прыватнасці, які хавае ваш IP-адрас</translation>
 <translation id="7453008956351770337">Выбіраючы гэты прынтар, вы дазваляеце доступ да вашага прынтара наступнаму пашырэнню:</translation>
+<translation id="7453032093368223821">Кіраваць іншымі данымі</translation>
 <translation id="7454548535253569100">Партал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Ваша арганізацыя адключыла захаванне пароляў</translation>
 <translation id="7455730275746867420">Кіраванне дадатковымі кантэйнерамі</translation>
@@ -9522,6 +9526,7 @@
 <translation id="7722040605881499779">Для пераносу неабходна <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Скінуць да стандартнай тэмы Chrome</translation>
 <translation id="7724603315864178912">Выразаць</translation>
+<translation id="7726288096350730168">Выдаліць з гэтай прылады</translation>
 <translation id="7726391492136714301">Прагляд апавяшчэнняў і праграм з тэлефона на прыладзе</translation>
 <translation id="7727898923446098954">Укладка схавана</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{Прыпыніць гэту ўкладку}one{Прыпыніць гэтыя ўкладкі}few{Прыпыніць гэтыя ўкладкі}many{Прыпыніць гэтыя ўкладкі}other{Прыпыніць гэтыя ўкладкі}}</translation>
@@ -10559,7 +10564,6 @@
 <translation id="8431977087510901105">Налады курсора скінуты</translation>
 <translation id="8433186206711564395">Налады сеткі</translation>
 <translation id="8434109185104929038">Куток для чытання</translation>
-<translation id="8434480141477525001">Порт адладкі NaCl</translation>
 <translation id="8434837876193928924">Падрабязныя звесткі пра групу ўкладак</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Адключыць гэту ўкладку}one{Адключыць гэтыя ўкладкі}few{Адключыць гэтыя ўкладкі}many{Адключыць гэтыя ўкладкі}other{Адключыць гэтыя ўкладкі}}</translation>
 <translation id="8436800506934625875">Стварыце літарна-лічбавы рэзервовы PIN-код для Менеджара пароляў Google</translation>
@@ -11079,6 +11083,7 @@
 <translation id="8791157330927639737">Даведацца больш пра абнаўленне</translation>
 <translation id="8791534160414513928">Адпраўляць запыт Do Not Track пры праглядзе старонак у інтэрнэце</translation>
 <translation id="8793390639824829328">Гэта функцыя ўплывае на тое, ці могуць сайты змяняць маштаб і прагортваць змесціва абагуленых укладак</translation>
+<translation id="8793895150509408038">Праглядзець падрабязныя звесткі пра сайт <ph name="SITE" /> са спіса "<ph name="SECTION_HEADER" />"</translation>
 <translation id="879413103056696865">Калі хот-спот уключаны, прылада <ph name="PHONE_NAME" /> будзе:</translation>
 <translation id="8794548468611058947">Стварыце PIN-код для гэтай прылады (<ph name="DEVICE_TYPE" />) і выкарыстоўвайце яго для ўваходу замест пароля Уліковага запісу Google</translation>
 <translation id="8795916974678578410">Новае акно</translation>

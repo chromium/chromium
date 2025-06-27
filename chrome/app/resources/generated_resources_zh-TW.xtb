@@ -1208,7 +1208,6 @@
 <translation id="1826657447823925402">已停用反向捲動功能</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" />色</translation>
 <translation id="1827504459960247692">無線基地台名稱</translation>
-<translation id="1828378091493947763">這部裝置不支援這個外掛程式</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{開啟所有網址(&amp;O)}=1{開啟書籤(&amp;O)}other{開啟所有 ({COUNT} 個) 網址(&amp;O)}}</translation>
 <translation id="1828901632669367785">使用系統對話方塊進行列印...</translation>
 <translation id="1829129547161959350">企鵝</translation>
@@ -1394,7 +1393,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{已檢查 1 個擴充功能}other{已檢查 {NUM_EXTENSIONS} 個擴充功能}}</translation>
 <translation id="1959421829481337178">請輸入電信業者提供的啟用代碼。</translation>
 <translation id="1960211333621141174">懸崖</translation>
-<translation id="1962233722219655970">這個網頁使用無法在你電腦上運行的 Native Client 應用程式。</translation>
 <translation id="1963976881984600709">標準防護</translation>
 <translation id="1964009877615282740">顯示更多</translation>
 <translation id="1965578266762387357">取得寫作輔助時，網頁的網址、內容和你輸入的文字都會傳送給 Google。請勿輸入醫療或財務資料等個人資訊</translation>
@@ -1724,7 +1722,6 @@
 <translation id="2188881192257509750">開啟「<ph name="APPLICATION" />」</translation>
 <translation id="2188919919468240749">要刪除分頁群組嗎？</translation>
 <translation id="2190069059097339078">WiFi 憑證擷取工具</translation>
-<translation id="219008588003277019">Native Client 模組：<ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(空白)</translation>
 <translation id="2190967441465539539">無法存取攝影機和麥克風</translation>
 <translation id="2191754378957563929">開啟</translation>
@@ -1901,7 +1898,6 @@
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」要求其他權限。</translation>
 <translation id="2304820083631266885">行星</translation>
 <translation id="2306794767168143227">儲存至這部裝置的 <ph name="BRAND" /></translation>
-<translation id="2307462900900812319">設定網路</translation>
 <translation id="2307553512430195144">如果你同意，Google 助理會處於待機模式，以便偵測「Ok Google」指令，並透過 Voice Match 功能辨識<ph name="SUPERVISED_USER_NAME" />是否正在說話。
     <ph name="BR" />
     Voice Match 可協助 Google 助理在 <ph name="DEVICE_TYPE" /> 上辨識<ph name="SUPERVISED_USER_NAME" />的聲音，區分孩子和其他人。
@@ -2723,7 +2719,6 @@
 <translation id="2860710618359053450">將下巴往右移動</translation>
 <translation id="2861301611394761800">系統更新完成，請重新啟動系統。</translation>
 <translation id="2861402191395139055">Passpoint 訂閱</translation>
-<translation id="2861941300086904918">Native Client 安全性管理員</translation>
 <translation id="2862815659905780618">移除 Linux 開發環境</translation>
 <translation id="2862986593239703553">這張資訊卡</translation>
 <translation id="2864601841139725659">設定你的個人資料圖片</translation>
@@ -6059,7 +6054,6 @@
 <translation id="5230190638672215545">輸入「uow」會得到「ươ」</translation>
 <translation id="5230516054153933099">視窗</translation>
 <translation id="5232714764496316200">讓 Google 智慧鏡頭成為家庭作業好幫手</translation>
-<translation id="5233019165164992427">NaCl 偵錯連接埠</translation>
 <translation id="5233231016133573565">程序 ID</translation>
 <translation id="5233638681132016545">新增分頁</translation>
 <translation id="5233736638227740678">貼上(&amp;P)</translation>
@@ -10557,7 +10551,6 @@
 <translation id="8431977087510901105">游標設定已重設</translation>
 <translation id="8433186206711564395">網路設定</translation>
 <translation id="8434109185104929038">閱讀角落</translation>
-<translation id="8434480141477525001">NaCl 偵錯連接埠</translation>
 <translation id="8434837876193928924">分頁群組詳細資料</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{修正這個分頁}other{修正這些分頁}}</translation>
 <translation id="8436800506934625875">設定 Google 密碼管理工具的英數字元復原 PIN 碼</translation>

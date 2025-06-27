@@ -389,6 +389,7 @@
 <translation id="251837347827266434">سيتم تسجيل خروجك من الحساب وإغلاق علامات التبويب وحذف بيانات التصفُّح</translation>
 <translation id="2520787026086861736">‏لإيقاف الميزة، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />الملء التلقائي وكلمات المرور<ph name="END_LINK" /> (AutoFill &amp; Passwords)</translation>
 <translation id="2523295204312809179">عند إغلاق مجموعة علامات تبويب، يتم حفظها تلقائيًا هنا</translation>
+<translation id="2524699375503213836">‏نقل بياناتك من Safari</translation>
 <translation id="2529021024822217800">فتح الكل</translation>
 <translation id="2536991091671391962">‏يمكنك استخدام كلمات المرور المحفوظة على أي جهاز. تُحفظ كلمات المرور في "مدير كلمات المرور في Google" لدى <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">كلمة المرور مخفية</translation>
@@ -1864,6 +1865,7 @@
 <translation id="8524799873541103884">علامات تبويب <ph name="INCOGNITO" /><ph name="FIRST_VISIBLE_TAB" /> عبر <ph name="LAST_VISIBLE_TAB" /> من <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">فتح الروابط من التطبيقات الأخرى في "وضع التصفّح المتخفي"</translation>
 <translation id="8529767659511976195">جديد</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">التصفُّح الآمن مفعّل</translation>
 <translation id="8534481786647257214">‏اكتمل النشر على Google+‎.</translation>
 <translation id="8535368836838588657">الكشف عن كلمة المرور</translation>

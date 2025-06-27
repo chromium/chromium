@@ -1209,7 +1209,6 @@
 <translation id="1826657447823925402">Հետադարձ ոլորումն անջատված է</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> գույն</translation>
 <translation id="1827504459960247692">Թեժ կետի անվանումը</translation>
-<translation id="1828378091493947763">Փլագինը չի աջակցվում այս սարքում</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Բացել բոլորը}=1{&amp;Բացել էջանիշը}one{&amp;Բացել բոլորը ({COUNT})}other{&amp;Բացել բոլորը ({COUNT})}}</translation>
 <translation id="1828901632669367785">Print Using System Dialog...</translation>
 <translation id="1829129547161959350">Պինգվին</translation>
@@ -1395,7 +1394,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 ընդլայնում ստուգված է}one{{NUM_EXTENSIONS} ընդլայնում ստուգված է}other{{NUM_EXTENSIONS} ընդլայնում ստուգված է}}</translation>
 <translation id="1959421829481337178">Մուտքագրեք օպերատորի տրամադրած ակտիվացման կոդը։</translation>
 <translation id="1960211333621141174">Քարափ</translation>
-<translation id="1962233722219655970">Այս էջն օգտագործում է Native Client հավելված, որը ձեր համակարգիչը չի աջակցում:</translation>
 <translation id="1963976881984600709">Սովորական պաշտպանություն</translation>
 <translation id="1964009877615282740">Տեսնել ավելին</translation>
 <translation id="1965578266762387357">Երբ գրելու հետ կապված օգնություն եք ստանում, էջի URL-ը, բովանդակությունը և ձեր տեքստը ուղարկվում են Google-ին։ Մի մուտքագրեք անձնական տեղեկություններ (օրինակ՝ բժշկական կամ ֆինանսական տվյալներ)</translation>
@@ -1724,7 +1722,6 @@
 <translation id="2188881192257509750">Բացել <ph name="APPLICATION" /> հավելվածը</translation>
 <translation id="2188919919468240749">Ջնջե՞լ ներդիրների խումբը</translation>
 <translation id="2190069059097339078">WiFi հավատարմագրերի կորզիչ</translation>
-<translation id="219008588003277019">Native Client մոդուլ` <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(դատարկ)</translation>
 <translation id="2190967441465539539">Տեսախցիկը և խոսափողը հասանելի չեն</translation>
 <translation id="2191754378957563929">Միաց</translation>
@@ -1901,7 +1898,6 @@
 <translation id="23030561267973084">«<ph name="EXTENSION_NAME" />»-ը լրացուցիչ թույլտվություններ է խնդրել:</translation>
 <translation id="2304820083631266885">Մոլորակ</translation>
 <translation id="2306794767168143227">Պահել այս սարքում՝ <ph name="BRAND" />ում</translation>
-<translation id="2307462900900812319">Կազմաձևել ցանցը</translation>
 <translation id="2307553512430195144">Եթե համաձայն եք, Google Օգնականը կսպասի «Ok Google» հրահանգին և Voice Match գործառույթի միջոցով կկարողանա որոշել, որ խոսում է <ph name="SUPERVISED_USER_NAME" /> օգտատերը։
     <ph name="BR" />
     Voice Match-ն օգնում է Google Օգնականին տարբերել <ph name="SUPERVISED_USER_NAME" />-ի ձայնը մյուս օգտատերերի ձայներից ձեր <ph name="DEVICE_TYPE" /> սարքում։
@@ -2719,7 +2715,6 @@
 <translation id="2860710618359053450">Ծնոտն աջ տարեք</translation>
 <translation id="2861301611394761800">Համակարգի թարմացումն ավարտված է: Վերագործարկեք համակարգը:</translation>
 <translation id="2861402191395139055">Passpoint-ի բաժանորդագրություններ</translation>
-<translation id="2861941300086904918">Անվտանգության կառավարիչ - Native Client</translation>
 <translation id="2862815659905780618">Հեռացնել Լինուքսի մշակման միջավայրը</translation>
 <translation id="2862986593239703553">այս քարտը</translation>
 <translation id="2864601841139725659">Ընտրեք պրոֆիլի լուսանկար</translation>
@@ -6056,7 +6051,6 @@
 <translation id="5230190638672215545">Մուտքագրեք «uow»՝ «ươ» ստանալու համար</translation>
 <translation id="5230516054153933099">Պատուհան</translation>
 <translation id="5232714764496316200">Արեք տնային աշխատանքը Google Տեսապակու միջոցով</translation>
-<translation id="5233019165164992427">NaCl-ի վրիպազերծման միացք</translation>
 <translation id="5233231016133573565">Գործընթացի ID</translation>
 <translation id="5233638681132016545">Նոր ներդիր</translation>
 <translation id="5233736638227740678">&amp;Տեղադրել</translation>
@@ -10550,7 +10544,6 @@
 <translation id="8431977087510901105">Նշորդի կարգավորումները զրոյացվել են</translation>
 <translation id="8433186206711564395">Ցանցային կարգավորումներ</translation>
 <translation id="8434109185104929038">Ընթերցանության անկյուն</translation>
-<translation id="8434480141477525001">NaCl-ի վրիպազերծման միացք</translation>
 <translation id="8434837876193928924">Ներդիրների խմբի մասին</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Ուղղել այս ներդիրը}one{Ուղղել այս ներդիրները}other{Ուղղել այս ներդիրները}}</translation>
 <translation id="8436800506934625875">Ստեղծեք վերականգնման տառաթվային PIN կոդ Google գաղտնաբառերի կառավարչի համար</translation>

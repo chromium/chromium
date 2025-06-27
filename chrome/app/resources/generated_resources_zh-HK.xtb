@@ -1216,7 +1216,6 @@
 <translation id="1826657447823925402">已停用反向捲動功能</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">熱點名稱</translation>
-<translation id="1828378091493947763">此裝置不支援此外掛程式</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{開啟所有書籤(&amp;O)}=1{開啟書籤(&amp;O)}other{開啟全部 {COUNT} 個書籤(&amp;O)}}</translation>
 <translation id="1828901632669367785">使用系統對話方塊進行列印…</translation>
 <translation id="1829129547161959350">企鵝</translation>
@@ -1404,7 +1403,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{已審核 1 個擴充程式}other{已審核 {NUM_EXTENSIONS} 個擴充程式}}</translation>
 <translation id="1959421829481337178">請輸入流動網絡供應商提供的啟動碼。</translation>
 <translation id="1960211333621141174">懸崖</translation>
-<translation id="1962233722219655970">這個網頁使用無法在您電腦上運行的 Native Client 應用程式。</translation>
 <translation id="1963976881984600709">標準保護功能</translation>
 <translation id="1964009877615282740">查看更多</translation>
 <translation id="1965578266762387357">當你尋求寫作輔助時，網頁的網址、內容和你輸入的文字都會傳送至 Google，請勿輸入醫療或財務資料等個人資料</translation>
@@ -1734,7 +1732,6 @@
 <translation id="2188881192257509750">開啟 <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">要刪除分頁群組嗎？</translation>
 <translation id="2190069059097339078">WiFi 憑證取得工具</translation>
-<translation id="219008588003277019">Native Client 模組：<ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(空白)</translation>
 <translation id="2190967441465539539">無法使用攝錄機和麥克風</translation>
 <translation id="2191754378957563929">開啟</translation>
@@ -1914,7 +1911,6 @@
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」要求其他權限。</translation>
 <translation id="2304820083631266885">行星</translation>
 <translation id="2306794767168143227">儲存至此裝置上的 <ph name="BRAND" /></translation>
-<translation id="2307462900900812319">設定網絡</translation>
 <translation id="2307553512430195144">如果您同意，「Google 助理」會處於待機模式，以便偵測「Ok Google」指令，並透過 Voice Match 功能識別<ph name="SUPERVISED_USER_NAME" />是否正在說話。
     <ph name="BR" />
     「Google 助理」可透過 Voice Match 在 <ph name="DEVICE_TYPE" /> 上辨認<ph name="SUPERVISED_USER_NAME" />的聲音，以分辨使用者和其他人。
@@ -2295,7 +2291,7 @@
 <translation id="2552966063069741410">時區</translation>
 <translation id="2553290675914258594">已驗證存取權</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> 無法連線至<ph name="NETWORK_ID" />，請選取其他網絡，或再試一次。</translation>
-<translation id="2553352788023127673">搜尋記錄和密碼可以在相關管理設定中刪除</translation>
+<translation id="2553352788023127673">搜尋記錄和密碼可以在相應的管理設定中刪除</translation>
 <translation id="2553440850688409052">隱藏此外掛程式</translation>
 <translation id="2554553592469060349">選取的檔案過大 (大小上限：3 MB)。</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> 個應用程式 (共 <ph name="TOTAL_NUM_APPS" /> 個) 可傳送通知</translation>
@@ -2735,7 +2731,6 @@
 <translation id="2860710618359053450">下巴向右郁</translation>
 <translation id="2861301611394761800">系統更新完成，請重新啟動系統。</translation>
 <translation id="2861402191395139055">Passpoint 訂閱</translation>
-<translation id="2861941300086904918">Native Client 安全性管理員</translation>
 <translation id="2862815659905780618">移除 Linux 開發環境</translation>
 <translation id="2862986593239703553">這張資訊卡</translation>
 <translation id="2864601841139725659">設定您的個人檔案相片</translation>
@@ -3470,7 +3465,7 @@
 <translation id="3408555740610481810">正在使用攝錄機和麥克風</translation>
 <translation id="3409157109901479672">左邊</translation>
 <translation id="3409513286451883969">將所選內容翻譯為<ph name="LANGUAGE" /> (&amp;T)</translation>
-<translation id="3410151451624226773">在 Google 密碼管理工具中控管</translation>
+<translation id="3410151451624226773">在「Google 密碼管理工具」中管理</translation>
 <translation id="3412265149091626468">跳至所選範圍</translation>
 <translation id="3413122095806433232">CA 發行者：<ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">大小：</translation>
@@ -6070,7 +6065,6 @@
 <translation id="5230190638672215545">輸入「uow」會得到「ươ」</translation>
 <translation id="5230516054153933099">視窗</translation>
 <translation id="5232714764496316200">讓「Google 智能鏡頭」協助你完成功課</translation>
-<translation id="5233019165164992427">NaCl 偵錯連接埠</translation>
 <translation id="5233231016133573565">程序 ID</translation>
 <translation id="5233638681132016545">新分頁</translation>
 <translation id="5233736638227740678">貼上(&amp;P)</translation>
@@ -6196,7 +6190,7 @@
 <translation id="5320135788267874712">新的裝置名稱</translation>
 <translation id="532247166573571973">可能無法連接伺服器，請稍後再試。</translation>
 <translation id="5323328004379641163">自訂 Chrome 和此網頁的外觀</translation>
-<translation id="5323501626199324454">在 Google 帳戶中管理</translation>
+<translation id="5323501626199324454">在 Google 帳戶管理</translation>
 <translation id="5324300749339591280">應用程式清單</translation>
 <translation id="5324780743567488672">自動使用您的位置設定時區</translation>
 <translation id="5327248766486351172">名稱</translation>
@@ -6544,7 +6538,7 @@
 <translation id="557722062034137776">重設裝置並不會影響您的 Google 帳戶，以及任何與這些帳戶同步處理的數據。不過，裝置中所有本機儲存檔案將被刪除。</translation>
 <translation id="5578059481725149024">自動登入</translation>
 <translation id="5578387000057347457">輸入自訂提示或醒目顯示文字，即可製作圖像</translation>
-<translation id="5579225964082017560">從「<ph name="SECTION_HEADER" />」清單中移除 <ph name="SITE" /></translation>
+<translation id="5579225964082017560">從「<ph name="SECTION_HEADER" />」清單移除 <ph name="SITE" /></translation>
 <translation id="5581134892342029705">已經完成翻譯去<ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Microsoft Windows 硬件驅動程式驗證</translation>
 <translation id="5581972110672966454">無法將裝置加入網域。請再試一次，或聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -10567,7 +10561,6 @@
 <translation id="8431977087510901105">重設咗游標設定</translation>
 <translation id="8433186206711564395">網絡設定</translation>
 <translation id="8434109185104929038">閱讀角</translation>
-<translation id="8434480141477525001">NaCl 偵錯連接埠</translation>
 <translation id="8434837876193928924">分頁群組詳情</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{修正此分頁}other{修正這些分頁}}</translation>
 <translation id="8436800506934625875">建立由英數字元組成的「Google 密碼管理工具」復原 PIN</translation>
@@ -11082,7 +11075,7 @@
 <translation id="8791157330927639737">進一步了解點樣更新</translation>
 <translation id="8791534160414513928">與瀏覽流量一併傳送「Do Not Track」要求</translation>
 <translation id="8793390639824829328">網站會使用此功能捲動及縮放已分享的分頁</translation>
-<translation id="8793895150509408038">查看「<ph name="SECTION_HEADER" />」清單中的 <ph name="SITE" /> 網站詳細資料</translation>
+<translation id="8793895150509408038">睇下「<ph name="SECTION_HEADER" />」清單入面嘅 <ph name="SITE" /> 網站詳情</translation>
 <translation id="879413103056696865">開啟熱點時，您的 <ph name="PHONE_NAME" /> 將會：</translation>
 <translation id="8794548468611058947">你可為此 <ph name="DEVICE_TYPE" /> 建立 PIN，不必輸入 Google 帳戶密碼登入</translation>
 <translation id="8795916974678578410">開啟新視窗</translation>

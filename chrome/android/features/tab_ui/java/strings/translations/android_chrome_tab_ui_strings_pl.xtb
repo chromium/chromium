@@ -6,10 +6,12 @@
 <translation id="1063300264396686489">Automatycznie otwieraj grupy kart z innych urządzeń</translation>
 <translation id="1075622780330595106">Karty, które ostatnio nie były używane: <ph name="NUMBER_OF_TABS" />. Zamknąć je?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Utworzono <ph name="NUM_YEARS_ONE" /> rok temu}few{Utworzono <ph name="NUM_YEARS_MANY" /> lata temu}many{Utworzono <ph name="NUM_YEARS_MANY" /> lat temu}other{Utworzono <ph name="NUM_YEARS_MANY" /> roku temu}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Nieaktywne karty i grupy zostaną zamknięte po miesiącu}few{Nieaktywne karty i grupy zostaną zamknięte po <ph name="MONTH_COUNT_MANY" /> miesiącach}many{Nieaktywne karty i grupy zostaną zamknięte po <ph name="MONTH_COUNT_MANY" /> miesiącach}other{Nieaktywne karty i grupy zostaną zamknięte po <ph name="MONTH_COUNT_MANY" /> miesiąca}}</translation>
 <translation id="1173894706177603556">Zmień nazwę</translation>
 <translation id="1197088940767939838">Pomarańczowy</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Otwórz grupę <ph name="TITLE_OF_GROUP" /> z <ph name="TAB_COUNT2" /> kartą}few{Otwórz grupę <ph name="TITLE_OF_GROUP" /> z <ph name="TAB_COUNT2" /> kartami}many{Otwórz grupę <ph name="TITLE_OF_GROUP" /> z <ph name="TAB_COUNT2" /> kartami}other{Otwórz grupę <ph name="TITLE_OF_GROUP" /> z <ph name="TAB_COUNT2" /> karty}}</translation>
 <translation id="1273910660700874265">Opcje grupy kart <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1300188005269437765">Wybierz, kiedy karty i grupy kart mają być automatycznie przenoszone do sekcji nieaktywnych.</translation>
 <translation id="1329584516321524826">Właśnie zaktualizowano</translation>
 <translation id="1340839264183302272">Opuść grupę</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Rozwiń udostępnioną grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />, z etykietą <ph name="CARD_LABEL" />.}few{Rozwiń udostępnioną grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />, z etykietą <ph name="CARD_LABEL" />.}many{Rozwiń udostępnioną grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />, z etykietą <ph name="CARD_LABEL" />.}other{Rozwiń udostępnioną grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />, z etykietą <ph name="CARD_LABEL" />.}}</translation>
@@ -29,8 +31,10 @@
 <translation id="1828808367831369073">Utworzono grupę, w której znajduje się <ph name="TABS_COUNT_ONE" /> karta</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> kart}other{<ph name="TABS_COUNT_MANY" /> karty}}</translation>
 <translation id="1909810060368225529">Uwaga: zmiany w tej udostępnionej grupie kart są widoczne dla wszystkich. Każdy może wprowadzać zmiany w udostępnionych grupach kart</translation>
+<translation id="1982637982196732906">Przenieś do sekcji nieaktywnych</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Dodaj do zakładek <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
 <translation id="2055057176188061528">Wybierz grupę kart lub utwórz nową</translation>
+<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome automatycznie zamyka w sekcji nieaktywnych elementy, których nie używasz od <ph name="AUTO_DELETE_DELAY_ONE" /> miesiąca. Możesz wyłączyć tę funkcję teraz lub w dowolnym momencie w Ustawieniach.}few{Chrome automatycznie zamyka w sekcji nieaktywnych elementy, których nie używasz od <ph name="AUTO_DELETE_DELAY_MANY" /> miesięcy. Możesz wyłączyć tę funkcję teraz lub w dowolnym momencie w Ustawieniach.}many{Chrome automatycznie zamyka w sekcji nieaktywnych elementy, których nie używasz od <ph name="AUTO_DELETE_DELAY_MANY" /> miesięcy. Możesz wyłączyć tę funkcję teraz lub w dowolnym momencie w Ustawieniach.}other{Chrome automatycznie zamyka w sekcji nieaktywnych elementy, których nie używasz od <ph name="AUTO_DELETE_DELAY_MANY" /> miesiąca. Możesz wyłączyć tę funkcję teraz lub w dowolnym momencie w Ustawieniach.}}</translation>
 <translation id="2118649612461486615">Informacje o sklepie</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. Karta incognito nie będzie dostępna.}few{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # karty incognito nie będą dostępne.}many{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # kart incognito nie będzie dostępnych.}other{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # karty incognito nie będzie dostępne.}}</translation>
 <translation id="2162620598375156287">Teraz za <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
@@ -39,12 +43,14 @@
 <translation id="2277224997687551299">Edytuj nazwę grupy</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Dodaj kartę do zakładek}few{Dodaj karty do zakładek}many{Dodaj karty do zakładek}other{Dodaj karty do zakładek}}</translation>
 <translation id="2359808026110333948">Dalej</translation>
+<translation id="2371084566192454134">Karty i grupy kart</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą.}few{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}many{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}other{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
 <translation id="2498435670446402865">Zmień nazwę grupy kart</translation>
 <translation id="2536366509642644298">Grupy kart „<ph name="TAB_GROUP_NAME_1" />” i „<ph name="TAB_GROUP_NAME_2" />” nie są już dostępne</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Zwiń <ph name="TABS_COUNT_ONE" /> kartę.}few{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}many{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}other{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
 <translation id="2569352796411618312">Sugestia: od jakiegoś czasu nie używasz <ph name="NUMBER_OF_TABS" /> kart. Zamknąć je?</translation>
 <translation id="257674075312929031">Grupa</translation>
+<translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Przywróć i otwórz grupę kart z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Przywróć i otwórz grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Przywróć i otwórz grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Przywróć i otwórz grupę kart z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Otwórz stronę</translation>
 <translation id="2671423594960767771">Udostępnij grupę</translation>
@@ -65,6 +71,7 @@
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Dodaj <ph name="TABS_COUNT_ONE" /> kartę do grupy}few{Dodaj <ph name="TABS_COUNT_MANY" /> karty do grupy}many{Dodaj <ph name="TABS_COUNT_MANY" /> kart do grupy}other{Dodaj <ph name="TABS_COUNT_MANY" /> karty do grupy}}</translation>
 <translation id="3328308545011660196">Sugestia: liczba prawdopodobnie powiązanych kart wynosi <ph name="NUMBER_OF_TABS" />. Czy chcesz je pogrupować?</translation>
+<translation id="3330595302841061275">{DAY_COUNT,plural, =1{Po 1 dniu braku aktywności}few{Po <ph name="DAY_COUNT_MANY" /> dniach braku aktywności}many{Po <ph name="DAY_COUNT_MANY" /> dniach braku aktywności}other{Po <ph name="DAY_COUNT_MANY" /> dnia braku aktywności}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nowa karta}few{<ph name="MANY_ADDED" /> nowe karty}many{<ph name="MANY_ADDED" /> nowych kart}other{<ph name="MANY_ADDED" /> nowej karty}}</translation>
 <translation id="3613492231657284463">Ukryj okno Nieaktywne karty</translation>
 <translation id="3619255692378312441">Zarządzaj dostępem</translation>
@@ -94,6 +101,7 @@
 <translation id="4861953997778766866">Każdy może wprowadzać zmiany w udostępnionych grupach kart</translation>
 <translation id="4870911314065352661">Zamknąć wszystkie karty?</translation>
 <translation id="4871719318659334896">Zamknij grupę</translation>
+<translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Przywróć i otwórz grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Przywróć i otwórz grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Przywróć i otwórz grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Przywróć i otwórz grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Zamknij kartę}few{Zamknij karty}many{Zamknij karty}other{Zamknij karty}}</translation>
 <translation id="4908147833782857886">Zapisane grupy (<ph name="USER_EMAIL" />) (spowoduje to zamknięcie kart i usunięcie grup)</translation>
@@ -114,6 +122,7 @@
 <translation id="5627941783489838464">Brak aktualizacji kart</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link z Chrome}few{<ph name="TABS_COUNT_MANY" /> linki z Chrome}many{<ph name="TABS_COUNT_MANY" /> linków z Chrome}other{<ph name="TABS_COUNT_MANY" /> linku z Chrome}}</translation>
 <translation id="5746204836956568669">Chcesz zgrupować karty (<ph name="NUMBER_OF_TABS" />), aby pracować szybciej?</translation>
+<translation id="5773295109010386583">Automatycznie zamykaj nieaktywne elementy</translation>
 <translation id="58326064309361797">Przeciągaj karty, by je grupować</translation>
 <translation id="5901630391730855834">Żółty</translation>
 <translation id="5972844218283131174">Odznacz wszystko</translation>
@@ -156,6 +165,7 @@
 <translation id="7369451074646620503">Grupa kart „<ph name="TAB_GROUP_NAME" />” nie jest już dostępna</translation>
 <translation id="7452985128687107478">Grupy kart są automatycznie zapisywane i aktualizowane na wszystkich Twoich urządzeniach</translation>
 <translation id="747459581954555080">Przywróć wszystkie</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> element}few{<ph name="TABS_COUNT_MANY" /> elementy}many{<ph name="TABS_COUNT_MANY" /> elementów}other{<ph name="TABS_COUNT_MANY" /> elementu}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Przywróć <ph name="TABS_COUNT_ONE" /> wybrany element}few{Przywróć <ph name="TABS_COUNT_MANY" /> wybrane elementy}many{Przywróć <ph name="TABS_COUNT_MANY" /> wybranych elementów}other{Przywróć <ph name="TABS_COUNT_MANY" /> wybranego elementu}}</translation>
 <translation id="753732157349120914">Przełącznik kart</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> opinia z Google}few{<ph name="REVIEWS_COUNT_MANY" /> opinie z Google}many{<ph name="REVIEWS_COUNT_MANY" /> opinii z Google}other{<ph name="REVIEWS_COUNT_MANY" /> opinii z Google}}</translation>

@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Nieprawidłowy lub uszkodzony plik</translation>
 <translation id="1040761927998636252">Zakładka bez nazwy dla: <ph name="URL" /></translation>
 <translation id="1041175011127912238">Ta strona nie odpowiada</translation>
+<translation id="1041181446722933623">Zakładka „<ph name="LOCAL_BOOKMARK" />” została zapisana tylko na tym urządzeniu. Aby używać jej na innych urządzeniach, zapisz ją w folderze „<ph name="ACCOUNT_FOLDER" />” na swoim koncie.</translation>
 <translation id="1041263367839475438">Dostępne urządzenia</translation>
 <translation id="1041607257468256895">Zarządzaj dostępem witryn do lokalizacji w Chrome</translation>
 <translation id="1042174272890264476">Twój komputer zawiera również wbudowaną bibliotekę RLZ <ph name="SHORT_PRODUCT_NAME" />. Przypisuje ona powtarzalny, nieumożliwiający identyfikacji użytkownika tag służący do monitorowania wyszukiwań i używania <ph name="SHORT_PRODUCT_NAME" /> w ramach określonej kampanii promocyjnej. Etykiety te czasami pojawiają się w zapytaniach wyszukiwarki Google w <ph name="PRODUCT_NAME" />.</translation>
@@ -610,6 +611,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1418559532423038045">Usuwa maszynę wirtualną <ph name="VM_NAME" /> z urządzenia <ph name="DEVICE_TYPE" />. Spowoduje to usunięcie wszystkich aplikacji i danych z maszyny wirtualnej.</translation>
 <translation id="1418882096915998312">Rejestracja Enterprise w toku</translation>
 <translation id="1418954524306642206">Przeglądaj, by określić plik PPD dla drukarki</translation>
+<translation id="1419086691207546433">Dodaj rozszerzenia, aby utrzymać porządek, uprościć zadania i ulepszyć przeglądanie</translation>
 <translation id="1421334842435688311">Informacje o lokalizacji sieci komórkowej</translation>
 <translation id="1421514190500081936">Wpisz przyczynę pobrania tych danych:</translation>
 <translation id="1422159345171879700">Wczytaj niezabezpieczone skrypty</translation>
@@ -1211,7 +1213,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1826657447823925402">Odwrotne przewijanie wyłączone</translation>
 <translation id="1827416268933303617">Kolor <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Nazwa hotspota</translation>
-<translation id="1828378091493947763">To urządzenie nie obsługuje tej wtyczki</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Otwórz wszystkie}=1{&amp;Otwórz zakładkę}few{&amp;Otwórz wszystkie ({COUNT})}many{&amp;Otwórz wszystkie ({COUNT})}other{&amp;Otwórz wszystkie ({COUNT})}}</translation>
 <translation id="1828901632669367785">Drukuj w oknie systemowym</translation>
 <translation id="1829129547161959350">Pingwin</translation>
@@ -1397,7 +1398,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{Sprawdzono 1 rozszerzenie}few{Sprawdzono {NUM_EXTENSIONS} rozszerzenia}many{Sprawdzono {NUM_EXTENSIONS} rozszerzeń}other{Sprawdzono {NUM_EXTENSIONS} rozszerzenia}}</translation>
 <translation id="1959421829481337178">Wpisz kod aktywacyjny podany przez operatora.</translation>
 <translation id="1960211333621141174">Klif</translation>
-<translation id="1962233722219655970">Ta strona używa aplikacji klienta natywnego, która nie działa na Twoim komputerze.</translation>
 <translation id="1963976881984600709">Standardowa ochrona</translation>
 <translation id="1964009877615282740">Zobacz więcej</translation>
 <translation id="1965578266762387357">Gdy korzystasz z pomocy przy pisaniu, adres URL strony, jej zawartość i Twój tekst są wysyłane do Google. Nie podawaj danych osobowych ani informacji osobistych (np. medycznych lub finansowych)</translation>
@@ -1726,7 +1726,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2188881192257509750">Otwórz <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Usunąć grupę kart?</translation>
 <translation id="2190069059097339078">Program do pobierania danych logowania do Wi-Fi</translation>
-<translation id="219008588003277019">Moduł klienta natywnego: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(puste)</translation>
 <translation id="2190967441465539539">Brak dostępu do kamery i mikrofonu</translation>
 <translation id="2191754378957563929">Włączono</translation>
@@ -1892,7 +1891,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />” prosi o dodatkowe uprawnienia.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2306794767168143227">Zapisz w usłudze <ph name="BRAND" /> na tym urządzeniu</translation>
-<translation id="2307462900900812319">Skonfiguruj sieć</translation>
 <translation id="2307553512430195144">Jeśli wyrazisz zgodę, Asystent Google będzie czekać w trybie gotowości na wykrycie „OK Google” i za pomocą funkcji Voice Match rozpozna, że mówi <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
     Funkcja Voice Match pomaga Asystentowi Google rozpoznawać głos użytkownika <ph name="SUPERVISED_USER_NAME" /> na Twoim urządzeniu typu <ph name="DEVICE_TYPE" /> i odróżniać go od innych osób.
@@ -2710,7 +2708,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2860710618359053450">Przesunięcie żuchwy w prawo</translation>
 <translation id="2861301611394761800">Aktualizacja systemu zakończona. Uruchom system ponownie.</translation>
 <translation id="2861402191395139055">Subskrypcje Passpoint</translation>
-<translation id="2861941300086904918">Menedżer zabezpieczeń klienta rodzimego</translation>
 <translation id="2862815659905780618">Usuń środowisko programistyczne Linuksa</translation>
 <translation id="2862986593239703553">ta karta</translation>
 <translation id="2864601841139725659">Ustawianie zdjęcia profilowego</translation>
@@ -3314,6 +3311,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3309330461362844500">Identyfikator certyfikowanego profilu</translation>
 <translation id="3310379801837527592">Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i <ph name="NUM_OTHER_MEMBERS" /> inna osoba</translation>
 <translation id="331080746368555063">Witryny prywatne mogą obejmować np. intranet Twojej firmy</translation>
+<translation id="3311007761540106761">Ustawienie domyślne systemu</translation>
 <translation id="3311445899360743395">Dane powiązane z tą aplikacją mogą zostać usunięte z urządzenia.</translation>
 <translation id="3312470654018965389">Konfiguruję kontener Linuksa</translation>
 <translation id="3312883087018430408">Aby wyszukać coś w określonej witrynie lub w określonej części Chrome, wpisz odpowiedni skrót na pasku adresu i dodaj wybrany skrót klawiszowy. Na przykład żeby wyszukać coś w zakładkach, wpisz „@bookmarks”, a następnie naciśnij klawisz Tab lub spację.</translation>
@@ -6047,7 +6045,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5230190638672215545">Wpisz „uow”, aby otrzymać „ươ”</translation>
 <translation id="5230516054153933099">Okno</translation>
 <translation id="5232714764496316200">Użyj Obiektywu Google, aby uzyskać pomoc w zadaniu domowym</translation>
-<translation id="5233019165164992427">Port debugowania NaCl</translation>
 <translation id="5233231016133573565">ID procesu</translation>
 <translation id="5233638681132016545">Nowa karta</translation>
 <translation id="5233736638227740678">&amp;Wklej</translation>
@@ -7865,6 +7862,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6560151649238390891">Sugestia została wstawiona</translation>
 <translation id="656065428026159829">Pokaż więcej</translation>
 <translation id="6561726789132298588">wpisz</translation>
+<translation id="6561877237303825108">Ten plik typu (<ph name="TYPE" />) może być niebezpieczny. Zapisz go tylko wtedy, gdy ufasz stronie <ph name="ORIGIN" /></translation>
 <translation id="6562117348069327379">Przechowywanie dzienników systemowych w katalogu Pobrane.</translation>
 <translation id="656293578423618167">Ścieżka do pliku lub jego nazwa jest zbyt długa. Zapisz pod krótszą nazwą lub w innej lokalizacji.</translation>
 <translation id="6563002009564846727">Wyświetl certyfikaty zaimportowane z systemu Windows</translation>
@@ -10540,6 +10538,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8425213833346101688">Zmień</translation>
 <translation id="8425492902634685834">Przypnij na pasku zadań</translation>
 <translation id="8425768983279799676">Kodu PIN możesz używać do odblokowywania urządzenia.</translation>
+<translation id="8426697201161711396">Zaloguj się w Chrome, aby mieć dostęp do haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
 <translation id="8427213022735114808">Dyktowanie wysyła Twój głos do Google, by umożliwić pisanie głosowe w dowolnym polu tekstowym.</translation>
 <translation id="8427292751741042100">umieszczone na dowolnym hoście</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
@@ -10552,7 +10551,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8431977087510901105">Ustawienia kursora zostały zresetowane</translation>
 <translation id="8433186206711564395">Ustawienia sieci</translation>
 <translation id="8434109185104929038">Kącik do czytania</translation>
-<translation id="8434480141477525001">Port debugowania NaCl</translation>
 <translation id="8434837876193928924">Szczegóły grupy kart</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Napraw kartę}few{Napraw karty}many{Napraw karty}other{Napraw karty}}</translation>
 <translation id="8436800506934625875">Utwórz alfanumeryczny kod PIN przywracania do Menedżera haseł Google</translation>

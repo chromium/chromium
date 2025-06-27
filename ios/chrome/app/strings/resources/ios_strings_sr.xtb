@@ -1237,12 +1237,14 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6074656473835429958">Добијајте обавештења</translation>
 <translation id="607620096698446287">Отпремање фајла <ph name="FILENAME" /> (<ph name="FILESIZE" />) није успело</translation>
 <translation id="6077126322656614846">Приступ камери је дозвољен</translation>
+<translation id="607730456154980869">Брже добијајте одговоре помоћу Gemini-ја у Chrome-у</translation>
 <translation id="6078236141387574983">Поново прилагодите висину листа</translation>
 <translation id="6084848228346514841">Изаберите картице</translation>
 <translation id="6089212833343035912">PIN за Google менаџер лозинки</translation>
 <translation id="6090760257419195752">Одбачена упозорења</translation>
 <translation id="6096965253650248286">Пронађених: <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Пријављени сте као <ph name="USER_EMAIL" />. Отвара подешавања.</translation>
+<translation id="610083648014322104">Добијајте релевантне одговоре на основу садржаја странице на којој се налазите</translation>
 <translation id="6103540626693881831">Шифровање на уређају</translation>
 <translation id="611361228753138223">Сајтови које сте недавно посетили на овом уређају</translation>
 <translation id="611705554202268369">Дуго притисните да бисте додали у групу картица</translation>
@@ -1495,6 +1497,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6979737339423435258">Одувек</translation>
 <translation id="6983306615164277634">Можете и да додирнете и задржите траку за адресу да бисте променили позицију.</translation>
 <translation id="6987201788018524855">Истражите корисне функције које сте пропустили</translation>
+<translation id="6989636517316575338">Питајте о било којој страници</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">Пратите цене производа и добијајте обавештења када цена падне на било ком сајту</translation>
 <translation id="7004032350256606903">Организација захтева да прегледате приватно.
@@ -1752,6 +1755,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8058655154417507695">Година истека</translation>
 <translation id="8059533439631660104">Скупља одељак.</translation>
 <translation id="8061584726507121204">Историја</translation>
+<translation id="8069168488983557089">Добијајте кључне закључке и увиде који ће вам помоћи да разумете било коју тему</translation>
 <translation id="8069394452933076548">Одаберите када се картице које нису скоро коришћене премештају у одељак са неактивним картицама.</translation>
 <translation id="8073670137947914548">Преузимање је завршено</translation>
 <translation id="8076492880354921740">Картице</translation>
@@ -1866,6 +1870,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8524799873541103884">Картице <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> до <ph name="LAST_VISIBLE_TAB" /> од <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Отварајте линкове из других апликација у режиму без архивирања</translation>
 <translation id="8529767659511976195">Ново</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Безбедно прегледање је укључено</translation>
 <translation id="8534481786647257214">Google+ пост је довршен.</translation>
 <translation id="8535368836838588657">Прикажите лозинку</translation>

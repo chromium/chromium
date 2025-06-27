@@ -1216,7 +1216,6 @@
 <translation id="1826657447823925402">Артка сыдыруу өчүрүлдү</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> түс</translation>
 <translation id="1827504459960247692">Байланыш түйүнүнүн аталышы</translation>
-<translation id="1828378091493947763">Бул плагин бул түзмөктө колдоого алынбайт</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Баарын ачуу}=1{&amp;Кыстарманы ачуу}other{&amp;Баарын ачуу ({COUNT})}}</translation>
 <translation id="1828901632669367785">Система диалогу аркылуу басып чыгаруу…</translation>
 <translation id="1829129547161959350">Пингвин</translation>
@@ -1403,7 +1402,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 кеңейтүү каралып чыкты}other{{NUM_EXTENSIONS} кеңейтүү каралып чыкты}}</translation>
 <translation id="1959421829481337178">Байланыш операторуңуз берген жандандыруу кодун киргизиңиз.</translation>
 <translation id="1960211333621141174">Зоо</translation>
-<translation id="1962233722219655970">Бул баракча компьютериңизде иштебей турган Native Client колдонмосун пайдаланат.</translation>
 <translation id="1963976881984600709">Стандарттуу коргоо</translation>
 <translation id="1964009877615282740">Дагы көрүү</translation>
 <translation id="1965578266762387357">Текст жазуу боюнча жардам алганыңызда беттин URL дареги, андагы нерселер жана текстиңиз Google'га жөнөтүлөт. Медициналык же каржы жаатындагы жеке маалыматыңызды киргизбеңиз.</translation>
@@ -1732,7 +1730,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2188881192257509750"><ph name="APPLICATION" /> колдонмосун ачуу</translation>
 <translation id="2188919919468240749">Өтмөктөр тобу өчүрүлсүнбү?</translation>
 <translation id="2190069059097339078">WiFi Credentials Getter</translation>
-<translation id="219008588003277019">Native Client модулу: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(бош)</translation>
 <translation id="2190967441465539539">Камера менен микрофонго кирүү мүмкүн эмес</translation>
 <translation id="2191754378957563929">Күйүк</translation>
@@ -1912,7 +1909,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" кошумча уруксат сурады.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2306794767168143227">Бул түзмөктөгү <ph name="BRAND" /> кызматына сактоо</translation>
-<translation id="2307462900900812319">Тармакты конфигурациялоо</translation>
 <translation id="2307553512430195144">Эгер макул болсоңуз, Google Жардамчы "Oкей, Google" буйругу аныкталып, Voice Match аркылуу сүйлөп жаткан <ph name="SUPERVISED_USER_NAME" /> экенин таанымайынча көшүү режиминде күтүп турат.
     <ph name="BR" />
     Voice Match Google Жардамчыга <ph name="DEVICE_TYPE" /> түзмөгүндө балаңыздын (<ph name="SUPERVISED_USER_NAME" />) үнүн таанууга жана башкалардан айырмалоого жардам берет.
@@ -2732,7 +2728,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2860710618359053450">Жаакты оңго жылдыруу</translation>
 <translation id="2861301611394761800">Система жаңырды. Системаны өчүрүп күйгүзүңүз.</translation>
 <translation id="2861402191395139055">Passpoint жазылуулары</translation>
-<translation id="2861941300086904918">Түпнуска Кардардын коопсуздугун башкаргыч</translation>
 <translation id="2862815659905780618">Linux'ту өнүктүрүү чөйрөсүн өчүрүү</translation>
 <translation id="2862986593239703553">ушул карта</translation>
 <translation id="2864601841139725659">Профилиңиздин сүрөтүн коюп алыңыз</translation>
@@ -6071,7 +6066,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5230190638672215545">"uow" дегенди терип, "ươ" алуу</translation>
 <translation id="5230516054153933099">Терезе</translation>
 <translation id="5232714764496316200">Google Lens менен үй ишин аткарууда жардам алыңыз</translation>
-<translation id="5233019165164992427">NaCl мүчүлүштүктөрдү оңдоо порту</translation>
 <translation id="5233231016133573565">Процесстин далдаштырма коду</translation>
 <translation id="5233638681132016545">Жаңы өтмөк</translation>
 <translation id="5233736638227740678">&amp;Чаптоо</translation>
@@ -10568,7 +10562,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8431977087510901105">Курсордун параметрлери баштапкы абалга келтирилди</translation>
 <translation id="8433186206711564395">Тармак параметрлери</translation>
 <translation id="8434109185104929038">Окуу бурчу</translation>
-<translation id="8434480141477525001">NaCl мүчүлүштүктөрдү оңдоо порту</translation>
 <translation id="8434837876193928924">Өтмөк тобунун чоо-жайы</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Бул өтмөктү жигерсиз кылуу}other{Бул өтмөктөрдү жигерсиз кылуу}}</translation>
 <translation id="8436800506934625875">Сырсөздөрдү башкаргыч үчүн калыбына келтирүүчү тамга менен сандардан турган PIN кодду түзүңүз</translation>

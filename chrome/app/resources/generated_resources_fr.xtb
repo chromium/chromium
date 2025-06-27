@@ -1209,7 +1209,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1826657447823925402">Défilement inverse désactivé</translation>
 <translation id="1827416268933303617">Couleur : <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Nom du point d'accès</translation>
-<translation id="1828378091493947763">Ce plug-in n'est pas compatible avec cet appareil.</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{Tout &amp;ouvrir}=1{&amp;Ouvrir le favori}one{Tout &amp;ouvrir ({COUNT})}other{Tout &amp;ouvrir ({COUNT})}}</translation>
 <translation id="1828901632669367785">Imprimer via la boîte de dialogue système...</translation>
 <translation id="1829129547161959350">Pingouin</translation>
@@ -1395,7 +1394,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 extension examinée}one{{NUM_EXTENSIONS} extension examinée}other{{NUM_EXTENSIONS} extensions examinées}}</translation>
 <translation id="1959421829481337178">Veuillez saisir le code d'activation fourni par votre opérateur.</translation>
 <translation id="1960211333621141174">Falaise</translation>
-<translation id="1962233722219655970">Cette page utilise une application cliente native qui ne fonctionne pas sur votre ordinateur.</translation>
 <translation id="1963976881984600709">Protection standard</translation>
 <translation id="1964009877615282740">Voir plus</translation>
 <translation id="1965578266762387357">Lorsque vous obtenez de l'aide pour écrire, l'URL de la page, son contenu et votre texte sont envoyés à Google. Ne saisissez pas d'informations personnelles (comme des données médicales ou financières)</translation>
@@ -1724,7 +1722,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2188881192257509750">Ouvrir <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Supprimer le groupe d'onglets ?</translation>
 <translation id="2190069059097339078">Obtention des identifiants Wi-Fi</translation>
-<translation id="219008588003277019">Module Native Client : <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(vide)</translation>
 <translation id="2190967441465539539">Impossible d'accéder à l'appareil photo et au micro</translation>
 <translation id="2191754378957563929">Activé</translation>
@@ -1901,7 +1898,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" a demandé des autorisations supplémentaires.</translation>
 <translation id="2304820083631266885">Planète</translation>
 <translation id="2306794767168143227">Enregistrer dans le <ph name="BRAND" /> sur cet appareil</translation>
-<translation id="2307462900900812319">Configurer le réseau</translation>
 <translation id="2307553512430195144">Si vous êtes d'accord, l'Assistant Google attendra le mot clé "Hey Google" en mode veille et utilisera Voice Match pourra vérifier que c'est bien <ph name="SUPERVISED_USER_NAME" /> qui parle.
     <ph name="BR" />
     Avec l'aide de Voice Match, l'Assistant Google identifie la voix de <ph name="SUPERVISED_USER_NAME" /> sur votre <ph name="DEVICE_TYPE" /> et la distingue des autres.
@@ -2721,7 +2717,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2860710618359053450">Se tordre la mâchoire à droite</translation>
 <translation id="2861301611394761800">Mise à jour terminée. Veuillez redémarrer le système.</translation>
 <translation id="2861402191395139055">Abonnements Passpoint</translation>
-<translation id="2861941300086904918">Gestionnaire de sécurité Native Client</translation>
 <translation id="2862815659905780618">Supprimer l'environnement de développement Linux</translation>
 <translation id="2862986593239703553">cette fiche</translation>
 <translation id="2864601841139725659">Définir votre photo de profil</translation>
@@ -6057,7 +6052,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5230190638672215545">Saisissez "uow" pour obtenir "ươ"</translation>
 <translation id="5230516054153933099">Fenêtre</translation>
 <translation id="5232714764496316200">Obtenez de l'aide pour vos devoirs avec Google Lens</translation>
-<translation id="5233019165164992427">Port de débogage de Native Client</translation>
 <translation id="5233231016133573565">ID du processus</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
 <translation id="5233736638227740678">&amp;Coller</translation>
@@ -10558,7 +10552,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8431977087510901105">Paramètres du curseur réinitialisés</translation>
 <translation id="8433186206711564395">Paramètres réseau</translation>
 <translation id="8434109185104929038">Coin lecture</translation>
-<translation id="8434480141477525001">Port de débogage de Native Client</translation>
 <translation id="8434837876193928924">Détails du groupe d'onglets</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Corriger cet onglet}one{Corriger cet onglet}other{Corriger ces onglets}}</translation>
 <translation id="8436800506934625875">Créer un code de récupération alphanumérique pour le Gestionnaire de mots de passe de Google</translation>

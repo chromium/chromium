@@ -1217,7 +1217,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1826657447823925402">Käänteinen vieritys pois käytöstä</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> väri</translation>
 <translation id="1827504459960247692">Hotspotin nimi</translation>
-<translation id="1828378091493947763">Laite ei tue tätä laajennusta.</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{Avaa (&amp;O) kaikki}=1{Avaa (&amp;O) kirjanmerkki}other{Avaa (&amp;O) kaikki ({COUNT})}}</translation>
 <translation id="1828901632669367785">Tulosta järjestelmän tulostusikkunalla...</translation>
 <translation id="1829129547161959350">Pingviini</translation>
@@ -1404,7 +1403,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 laajennus tarkastettu}other{{NUM_EXTENSIONS} laajennusta tarkastettu}}</translation>
 <translation id="1959421829481337178">Lisää operaattorilta saamasi aktivointikoodi.</translation>
 <translation id="1960211333621141174">Kallio</translation>
-<translation id="1962233722219655970">Tämä sivu käyttää Native Client -sovellusta, joka ei toimi tietokoneellasi.</translation>
 <translation id="1963976881984600709">Perustason suojaus</translation>
 <translation id="1964009877615282740">Näytä lisää</translation>
 <translation id="1965578266762387357">Kun saat kirjoitusohjeita, sivun URL-osoite, sisältö ja tekstisi lähetetään Googlelle. Älä lisää henkilökohtaisia tietoja (esim. terveys‑ tai taloustietoja)</translation>
@@ -1733,7 +1731,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2188881192257509750">Avaa <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Poistetaanko välilehtiryhmä?</translation>
 <translation id="2190069059097339078">Wi-Fi-tunnuksien hakija</translation>
-<translation id="219008588003277019">Asiakasmoduuli: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(tyhjä)</translation>
 <translation id="2190967441465539539">Kameran ja mikrofonin käyttö ei onnistu</translation>
 <translation id="2191754378957563929">Päällä</translation>
@@ -1913,7 +1910,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> on pyytänyt lisäoikeuksia.</translation>
 <translation id="2304820083631266885">Planeetta</translation>
 <translation id="2306794767168143227">Tallenna tälle laitteelle (<ph name="BRAND" />)</translation>
-<translation id="2307462900900812319">Määritä verkko</translation>
 <translation id="2307553512430195144">Jos hyväksyt tämän, Google Assistant odottaa lepotilassa, kunnes se kuulee sanat "Hey Google" ja tunnistaa Voice Matchilla puhujaksi käyttäjän <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
     Voice Matchin avulla Google Assistant voi tunnistaa käyttäjän (<ph name="SUPERVISED_USER_NAME" />) äänen laitteellasi (<ph name="DEVICE_TYPE" />) ja erottaa hänet muista.
@@ -2733,7 +2729,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2860710618359053450">Käännä leukaa oikealle</translation>
 <translation id="2861301611394761800">Järjestelmän päivitys valmis. Käynnistä järjestelmä uudelleen.</translation>
 <translation id="2861402191395139055">Passpoint-tilaukset</translation>
-<translation id="2861941300086904918">Asiakkaan tietosuojahallinnoija</translation>
 <translation id="2862815659905780618">Poista Linux-kehitysympäristö</translation>
 <translation id="2862986593239703553">tämä kortti</translation>
 <translation id="2864601841139725659">Määritä profiilikuvasi</translation>
@@ -6070,7 +6065,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5230190638672215545">Saat kirjainyhdistelmän "uow" kirjoittamalla "uo7".</translation>
 <translation id="5230516054153933099">Ikkuna</translation>
 <translation id="5232714764496316200">Apua kotitehtäviin Google Lensilla</translation>
-<translation id="5233019165164992427">NaCl-vianetsintäportti</translation>
 <translation id="5233231016133573565">Prosessin tunnus</translation>
 <translation id="5233638681132016545">Uusi välilehti</translation>
 <translation id="5233736638227740678">&amp;Liitä</translation>
@@ -7888,6 +7882,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6560151649238390891">Ehdotus lisättiin</translation>
 <translation id="656065428026159829">Katso lisää</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">Tämäntyyppinen tiedosto (<ph name="TYPE" />) voi olla vaarallinen. Tallenna tiedosto vain, jos <ph name="ORIGIN" /> on luotettava</translation>
 <translation id="6562117348069327379">Tallenna järjestelmälokit Lataukset-hakemistoon.</translation>
 <translation id="656293578423618167">Tiedostonimi tai -polku on liian pitkä. Lyhennä nimeä tai tallenna muuhun sijaintiin.</translation>
 <translation id="6563002009564846727">Näytä Windowsista tuodut varmenteet</translation>
@@ -10570,7 +10565,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8431977087510901105">Kohdistinasetukset nollattu</translation>
 <translation id="8433186206711564395">Verkkoasetukset</translation>
 <translation id="8434109185104929038">Lukunurkka</translation>
-<translation id="8434480141477525001">NaCl-vianetsintäportti</translation>
 <translation id="8434837876193928924">Välilehtiryhmän tiedot</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Korjaa välilehti}other{Korjaa välilehdet}}</translation>
 <translation id="8436800506934625875">Luo Google Salasanoille aakkosnumeerinen palautuksen PIN-koodi</translation>

@@ -1219,7 +1219,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1826657447823925402">Omvendt rulning er deaktiveret</translation>
 <translation id="1827416268933303617">Farven <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Navn på hotspot</translation>
-<translation id="1828378091493947763">Dette plugin understøttes ikke på denne enhed</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Åbn alle}=1{&amp;Åbn bogmærke}one{&amp;Åbn ({COUNT})}other{&amp;Åbn alle ({COUNT})}}</translation>
 <translation id="1828901632669367785">Dialogboks til Udskriv via system...</translation>
 <translation id="1829129547161959350">Pingvin</translation>
@@ -1406,7 +1405,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 udvidelse er gennemgået}one{{NUM_EXTENSIONS} udvidelse er gennemgået}other{{NUM_EXTENSIONS} udvidelser er gennemgået}}</translation>
 <translation id="1959421829481337178">Angiv den aktiveringskode, du har fået af dit mobilselskab.</translation>
 <translation id="1960211333621141174">Klippe</translation>
-<translation id="1962233722219655970">Denne side bruger en Native Client-app, der ikke virker på din computer.</translation>
 <translation id="1963976881984600709">Standardbeskyttelse</translation>
 <translation id="1964009877615282740">Se flere</translation>
 <translation id="1965578266762387357">Når du får hjælp til at skrive, sendes sidens webadresse, indhold og din tekst til Google. Angiv ikke personlige oplysninger (f.eks. helbredsrelaterede eller økonomiske oplysninger)</translation>
@@ -1735,7 +1733,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2188881192257509750">Åbn <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Vil du slette fanegruppen?</translation>
 <translation id="2190069059097339078">Hentning af Wi-Fi-loginoplysninger</translation>
-<translation id="219008588003277019">Native Client-modul: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(tom)</translation>
 <translation id="2190967441465539539">Der er ikke adgang til kameraet og mikrofonen</translation>
 <translation id="2191754378957563929">Til</translation>
@@ -1915,7 +1912,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" har anmodet om yderligere tilladelser.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2306794767168143227">Gem i <ph name="BRAND" /> på denne enhed</translation>
-<translation id="2307462900900812319">Konfigurer netværk</translation>
 <translation id="2307553512430195144">Hvis du accepterer, venter Google Assistent i standbytilstand på at registrere "Hey Google", og den anvender Voice Match til at genkende stemmen, der tilhører <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
     Voice Match hjælper Google Assistent med at identificere stemmen, der tilhører <ph name="SUPERVISED_USER_NAME" />, på din <ph name="DEVICE_TYPE" /> og skelne mellem den og andre stemmer.
@@ -2735,7 +2731,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2860710618359053450">Drej kæben til venstre</translation>
 <translation id="2861301611394761800">Opdateringen af systemet er fuldført. Genstart systemet.</translation>
 <translation id="2861402191395139055">Passpoint-abonnementer</translation>
-<translation id="2861941300086904918">Sikkerhedsadministrator for Native Client</translation>
 <translation id="2862815659905780618">Fjern Linux-udviklingsmiljø</translation>
 <translation id="2862986593239703553">dette kort</translation>
 <translation id="2864601841139725659">Vælg profilbillede</translation>
@@ -6074,7 +6069,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5230190638672215545">Skriv "uow" for "ươ"</translation>
 <translation id="5230516054153933099">Vindue</translation>
 <translation id="5232714764496316200">Få hjælp til lektierne med Google Lens</translation>
-<translation id="5233019165164992427">NaCl-fejlretningsport</translation>
 <translation id="5233231016133573565">Proces-id</translation>
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5233736638227740678">&amp;Indsæt</translation>
@@ -10574,7 +10568,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8431977087510901105">Indstillingerne for markøren er nulstillet</translation>
 <translation id="8433186206711564395">Netværksindstillinger</translation>
 <translation id="8434109185104929038">Læsekrog</translation>
-<translation id="8434480141477525001">NaCl-fejlretningsport</translation>
 <translation id="8434837876193928924">Oplysninger om fanegruppen</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Løs problemet med denne fane}one{Løs problemet med denne fane}other{Løs problemet med disse faner}}</translation>
 <translation id="8436800506934625875">Opret en alfanumerisk pinkode til gendannelse for Google Adgangskodeadministrator</translation>

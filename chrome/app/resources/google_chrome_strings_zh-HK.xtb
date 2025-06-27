@@ -124,7 +124,7 @@
 <translation id="2569974318947988067">Chrome 會在導覽網站時，嘗試升級至 HTTPS</translation>
 <translation id="2571392474191184472">Chrome 由你的機構管理</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> 已登入此 Chrome 設定檔。Chrome 可為您建立您的設定檔，以分開您的瀏覽區。</translation>
-<translation id="2579190314336775785">密碼只能在 Chrome 以外的環境刪除</translation>
+<translation id="2579190314336775785">密碼只可以在 Chrome 以外刪除</translation>
 <translation id="2580411288591421699">您無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome，然後再試一次。</translation>
 <translation id="2586406160782125153">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
 <translation id="259935314519650377">無法快取已下載的安裝程式。錯誤代碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>

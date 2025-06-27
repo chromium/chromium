@@ -1208,7 +1208,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1826657447823925402">Scorrimento invertito disattivato</translation>
 <translation id="1827416268933303617">Colore <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Nome hotspot</translation>
-<translation id="1828378091493947763">Questo plug-in non è supportato sul dispositivo in uso</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Apri tutti}=1{&amp;Apri preferito}other{&amp;Apri tutti ({COUNT})}}</translation>
 <translation id="1828901632669367785">Stampa utilizzando la finestra di dialogo di sistema...</translation>
 <translation id="1829129547161959350">Pinguino</translation>
@@ -1394,7 +1393,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 estensione esaminata}other{{NUM_EXTENSIONS} estensioni esaminate}}</translation>
 <translation id="1959421829481337178">Inserisci il codice di attivazione fornito dall'operatore.</translation>
 <translation id="1960211333621141174">Scogliera</translation>
-<translation id="1962233722219655970">Questa pagina utilizza un'app Native Client che non funziona sul tuo computer.</translation>
 <translation id="1963976881984600709">Protezione standard</translation>
 <translation id="1964009877615282740">Vedi altro</translation>
 <translation id="1965578266762387357">Quando ricevi aiuto per la scrittura, l'URL della pagina, i contenuti e il tuo testo vengono inviati a Google. Non inserire informazioni personali (come dettagli medici o finanziari)</translation>
@@ -1723,7 +1721,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2188881192257509750">Apri <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Eliminare il gruppo di schede?</translation>
 <translation id="2190069059097339078">WiFi Credentials Getter</translation>
-<translation id="219008588003277019">Modulo Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(vuoto)</translation>
 <translation id="2190967441465539539">Impossibile accedere alla fotocamera e al microfono</translation>
 <translation id="2191754378957563929">On</translation>
@@ -1900,7 +1897,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ha richiesto altre autorizzazioni.</translation>
 <translation id="2304820083631266885">Pianeta</translation>
 <translation id="2306794767168143227">Salva su <ph name="BRAND" /> su questo dispositivo</translation>
-<translation id="2307462900900812319">Configura rete</translation>
 <translation id="2307553512430195144">Se accetti, l'Assistente Google attenderà in modalità standby per individuare il comando "Hey Google" e potrà riconoscere la voce di <ph name="SUPERVISED_USER_NAME" /> con Voice Match.
     <ph name="BR" />
     Voice Match aiuta l'Assistente Google a identificare la voce di <ph name="SUPERVISED_USER_NAME" /> su <ph name="DEVICE_TYPE" /> e distinguerla dalle altre.
@@ -2720,7 +2716,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2860710618359053450">Sposta la mascella a destra</translation>
 <translation id="2861301611394761800">Aggiornamento del sistema completato. Riavvia il sistema.</translation>
 <translation id="2861402191395139055">Abbonamenti a Passpoint</translation>
-<translation id="2861941300086904918">Gestione sicurezza Native Client</translation>
 <translation id="2862815659905780618">Rimuovi ambiente di sviluppo Linux</translation>
 <translation id="2862986593239703553">questa scheda</translation>
 <translation id="2864601841139725659">Imposta l'immagine del profilo</translation>
@@ -6058,7 +6053,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5230190638672215545">Digita "uow" per ottenere "ươ"</translation>
 <translation id="5230516054153933099">Finestra</translation>
 <translation id="5232714764496316200">Ricevi aiuto per i compiti con Google Lens</translation>
-<translation id="5233019165164992427">Porta di debug NaCl</translation>
 <translation id="5233231016133573565">ID processo</translation>
 <translation id="5233638681132016545">Nuova scheda</translation>
 <translation id="5233736638227740678">&amp;Incolla</translation>
@@ -10554,7 +10548,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8431977087510901105">Impostazioni del cursore reimpostate</translation>
 <translation id="8433186206711564395">Impostazioni di rete</translation>
 <translation id="8434109185104929038">Angolo lettura</translation>
-<translation id="8434480141477525001">Porta di debug NaCl</translation>
 <translation id="8434837876193928924">Dettagli gruppo di schede</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Risolvi il problema di questa scheda}other{Risolvi il problema di queste schede}}</translation>
 <translation id="8436800506934625875">Crea un PIN di recupero alfanumerico per il Gestore delle password di Google</translation>

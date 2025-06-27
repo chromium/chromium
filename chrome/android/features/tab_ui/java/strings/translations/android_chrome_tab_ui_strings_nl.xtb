@@ -156,6 +156,7 @@
 <translation id="7369451074646620503">Tabbladgroep <ph name="TAB_GROUP_NAME" /> is niet meer beschikbaar</translation>
 <translation id="7452985128687107478">Tabbladgroepen worden automatisch opgeslagen en geüpdatet op al je apparaten</translation>
 <translation id="747459581954555080">Alles herstellen</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> item}other{<ph name="TABS_COUNT_MANY" /> items}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd item herstellen}other{<ph name="TABS_COUNT_MANY" /> geselecteerde items herstellen}}</translation>
 <translation id="753732157349120914">Tabbladschakelaar</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> review van Google}other{<ph name="REVIEWS_COUNT_MANY" /> reviews van Google}}</translation>

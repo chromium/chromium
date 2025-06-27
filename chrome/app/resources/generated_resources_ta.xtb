@@ -1217,7 +1217,6 @@
 <translation id="1826657447823925402">தலைகீழாக நகர்த்துதல் முடக்கப்பட்டது</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> வண்ணம்</translation>
 <translation id="1827504459960247692">ஹாட்ஸ்பாட் பெயர்</translation>
-<translation id="1828378091493947763">சாதனத்தில் இந்தச் செருகுநிரல் ஆதரிக்கப்படவில்லை</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;எல்லாவற்றையும் திற}=1{&amp;புக்மார்க்கைத் திற}other{&amp;எல்லாவற்றையும் ({COUNT}) திற}}</translation>
 <translation id="1828901632669367785">கம்ப்யூட்டர் உரையாடலைப் பயன்படுத்தி அச்சிடுக…</translation>
 <translation id="1829129547161959350">பென்குயின்</translation>
@@ -1404,7 +1403,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 நீட்டிப்பு சரிபார்க்கப்பட்டது}other{{NUM_EXTENSIONS} நீட்டிப்புகள் சரிபார்க்கப்பட்டன}}</translation>
 <translation id="1959421829481337178">உங்கள் மொபைல் நிறுவனம் வழங்கிய செயல்படுத்தல் குறியீட்டை டைப் செய்யவும்.</translation>
 <translation id="1960211333621141174">செங்குத்தான பாறை</translation>
-<translation id="1962233722219655970">உங்கள் கம்ப்யூட்டரில் இயங்காத நேட்டிவ் கிளையண்ட் ஆப்ஸை இந்தப் பக்கம் பயன்படுத்துகிறது.</translation>
 <translation id="1963976881984600709">நிலையான பாதுகாப்பு</translation>
 <translation id="1964009877615282740">மேலும் காட்டு</translation>
 <translation id="1965578266762387357">எழுதுவதற்கான உதவியை நீங்கள் பெறும்போது பக்கத்தின் URL, உள்ளடக்கம், எழுதிய வார்த்தைகள் ஆகியவை Googleளுக்கு அனுப்பப்படும். மருத்துவ விவரங்கள், நிதி விவரங்கள் போன்ற தனிப்பட்ட தகவல்களை வழங்க வேண்டாம்.</translation>
@@ -1733,7 +1731,6 @@
 <translation id="2188881192257509750"><ph name="APPLICATION" />ஐத் திற</translation>
 <translation id="2188919919468240749">பக்கக் குழுவை நீக்க வேண்டுமா?</translation>
 <translation id="2190069059097339078">வைஃபை கிரெடென்ஷியல் கெட்டர்</translation>
-<translation id="219008588003277019">நேட்டிவ் கிளையன்ட் மாடியூல்: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(காலி)</translation>
 <translation id="2190967441465539539">கேமராவையும் மைக்ரோஃபோனையும் அணுக முடியவில்லை</translation>
 <translation id="2191754378957563929">இயக்கப்பட்டுள்ளது</translation>
@@ -1913,7 +1910,6 @@
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ஆனது கூடுதல் அனுமதிகளைக் கோரியுள்ளது.</translation>
 <translation id="2304820083631266885">கோள்</translation>
 <translation id="2306794767168143227">இந்தச் சாதனத்தில் <ph name="BRAND" /> இல் சேமி</translation>
-<translation id="2307462900900812319">நெட்வொர்க்கை உள்ளமை</translation>
 <translation id="2307553512430195144">நீங்கள் அனுமதித்தால் “Ok Google” என்பதைப் புரிந்துகொள்ள Google Assistant காத்திருப்புப் பயன்முறையில் இருக்கும். அத்துடன் பேசுவது <ph name="SUPERVISED_USER_NAME" /> என்பதை Voice Match உதவியுடன் அடையாளம் காணவும் முடியும்.
     <ph name="BR" />
     <ph name="DEVICE_TYPE" /> சாதனத்தில் <ph name="SUPERVISED_USER_NAME" /> இன் குரலை அடையாளம் காணவும் பிறர் குரலுக்கும் அவருடைய குரலுக்கும் உள்ள வேறுபாட்டை அறியவும் Google Assistantடிற்கு Voice Match உதவுகிறது.
@@ -2733,7 +2729,6 @@
 <translation id="2860710618359053450">தாடையை வலதுபுறம் நகர்த்துதல்</translation>
 <translation id="2861301611394761800">கணினிப் புதுப்பிப்பு முடிந்தது. கணினியை மறுதொடக்கம் செய்க.</translation>
 <translation id="2861402191395139055">Passpoint சந்தாக்கள்</translation>
-<translation id="2861941300086904918">Native Client பாதுகாப்பு நிர்வாகி</translation>
 <translation id="2862815659905780618">Linux டெவெலப்மெண்ட் சூழலை அகற்றுதல்</translation>
 <translation id="2862986593239703553">இந்தக் கார்டு</translation>
 <translation id="2864601841139725659">சுயவிவரப் படத்தை அமைக்கவும்</translation>
@@ -6072,7 +6067,6 @@
 <translation id="5230190638672215545">"ươ" என்பதைப் பெற "uow" என்று டைப் செய்யுங்கள்</translation>
 <translation id="5230516054153933099">விண்டோ</translation>
 <translation id="5232714764496316200">Google Lens மூலம் வீட்டுப்பாடங்களைச் செய்வதற்கான உதவியைப் பெறுங்கள்</translation>
-<translation id="5233019165164992427">NaCl பிழைத்திருத்தப் போர்ட்</translation>
 <translation id="5233231016133573565">செயலாக்க ID</translation>
 <translation id="5233638681132016545">புதிய தாவல்</translation>
 <translation id="5233736638227740678">&amp;ஒட்டு</translation>
@@ -10572,7 +10566,6 @@
 <translation id="8431977087510901105">கர்சர் அமைப்புகள் மீட்டமைக்கப்பட்டன</translation>
 <translation id="8433186206711564395">நெட்வொர்க் அமைப்புகள்</translation>
 <translation id="8434109185104929038">வாசிப்பு அறை</translation>
-<translation id="8434480141477525001">NaCl பிழைத்திருத்தப் போர்ட்</translation>
 <translation id="8434837876193928924">பக்கக் குழு விவரங்கள்</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{இந்தப் பக்கத்தைச் சரிசெய்}other{இந்தப் பக்கங்களைச் சரிசெய்}}</translation>
 <translation id="8436800506934625875">Google Password Managerருக்கான எண்ணெழுத்து மீட்டெடுப்புப் பின்னை (PIN) உருவாக்கவும்</translation>

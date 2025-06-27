@@ -1217,7 +1217,6 @@
 <translation id="1826657447823925402">역방향 스크롤 사용 중지됨</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> 색상</translation>
 <translation id="1827504459960247692">핫스팟 이름</translation>
-<translation id="1828378091493947763">이 기기에서 지원되지 않는 플러그인입니다.</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{모두 열기(&amp;O)}=1{북마크 열기(&amp;O)}other{{COUNT}개 모두 열기(&amp;O)}}</translation>
 <translation id="1828901632669367785">시스템 대화상자를 사용하여 인쇄...</translation>
 <translation id="1829129547161959350">펭귄</translation>
@@ -1404,7 +1403,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{확장 프로그램 1개 검토됨}other{확장 프로그램 {NUM_EXTENSIONS}개 검토됨}}</translation>
 <translation id="1959421829481337178">이동통신사에서 제공한 활성화 코드를 입력하세요</translation>
 <translation id="1960211333621141174">절벽</translation>
-<translation id="1962233722219655970">이 페이지에서 사용자 컴퓨터에서 작동하지 않는 Native Client 앱을 사용합니다.</translation>
 <translation id="1963976881984600709">표준 보호 모드</translation>
 <translation id="1964009877615282740">더보기</translation>
 <translation id="1965578266762387357">글쓰기 도우미를 사용하면 페이지의 URL, 콘텐츠, 텍스트가 Google로 전송됩니다. 개인 정보(의료 또는 금융 정보 등)를 입력하지 마세요.</translation>
@@ -1734,7 +1732,6 @@
 <translation id="2188881192257509750"><ph name="APPLICATION" /> 열기</translation>
 <translation id="2188919919468240749">탭 그룹을 삭제하시겠습니까?</translation>
 <translation id="2190069059097339078">WiFi 사용자 인증 정보 Getter</translation>
-<translation id="219008588003277019">네이티브 클라이언트 모듈: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(비어있음)</translation>
 <translation id="2190967441465539539">카메라 및 마이크에 액세스할 수 없음</translation>
 <translation id="2191754378957563929">사용</translation>
@@ -1915,7 +1912,6 @@
 <translation id="23030561267973084">'<ph name="EXTENSION_NAME" />'이(가) 추가 승인을 요청했습니다.</translation>
 <translation id="2304820083631266885">행성</translation>
 <translation id="2306794767168143227">이 기기의 <ph name="BRAND" />에 저장</translation>
-<translation id="2307462900900812319">네트워크 설정</translation>
 <translation id="2307553512430195144">동의하는 경우 Google 어시스턴트가 대기 모드로 기다리다가 'Hey Google'을 감지하며 Voice Match를 사용해 말하는 사람이 <ph name="SUPERVISED_USER_NAME" />님임을 인식할 수 있습니다.
     <ph name="BR" />
     Voice Match를 사용하면 Google 어시스턴트가 <ph name="DEVICE_TYPE" />에서 <ph name="SUPERVISED_USER_NAME" />님의 음성을 인식하여 다른 사람과 구분할 수 있습니다.
@@ -2735,7 +2731,6 @@
 <translation id="2860710618359053450">턱을 오른쪽으로 움직이기</translation>
 <translation id="2861301611394761800">시스템 업데이트가 완료되었습니다. 시스템을 다시 시작하세요.</translation>
 <translation id="2861402191395139055">Passpoint 구독</translation>
-<translation id="2861941300086904918">네이티브 클라이언트 보안 관리자</translation>
 <translation id="2862815659905780618">Linux 개발 환경 삭제</translation>
 <translation id="2862986593239703553">이 카드</translation>
 <translation id="2864601841139725659">프로필 사진 설정</translation>
@@ -6073,7 +6068,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5230190638672215545">'uow'를 입력하면 'ươ'가 표시됩니다</translation>
 <translation id="5230516054153933099">창</translation>
 <translation id="5232714764496316200">숙제할 때 Google 렌즈로 도움을 받으세요</translation>
-<translation id="5233019165164992427">NaCl 디버그 포트</translation>
 <translation id="5233231016133573565">프로세스 ID</translation>
 <translation id="5233638681132016545">새 탭</translation>
 <translation id="5233736638227740678">붙여넣기(&amp;P)</translation>
@@ -10572,7 +10566,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8431977087510901105">커서 설정 재설정</translation>
 <translation id="8433186206711564395">네트워크 설정</translation>
 <translation id="8434109185104929038">독서 공간</translation>
-<translation id="8434480141477525001">NaCl 디버그 포트</translation>
 <translation id="8434837876193928924">탭 그룹 세부정보</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{이 탭 수정}other{이 탭 수정}}</translation>
 <translation id="8436800506934625875">Google 비밀번호 관리자에 사용할 영숫자 복구 PIN을 만드세요</translation>

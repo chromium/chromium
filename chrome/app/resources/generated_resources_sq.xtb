@@ -1204,7 +1204,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1826657447823925402">Lëvizja në të kundërt u çaktivizua</translation>
 <translation id="1827416268933303617">Ngjyra <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Emri i zonës së qasjes për internet</translation>
-<translation id="1828378091493947763">Ky përbërës shtesë nuk mbështetet në këtë pajisje</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Hapi të gjitha}=1{&amp;Hap faqeshënuesin}other{&amp;Hapi të gjitha ({COUNT})}}</translation>
 <translation id="1828901632669367785">Printo duke përdorur dialogun e sistemit...</translation>
 <translation id="1829129547161959350">Pinguini</translation>
@@ -1390,7 +1389,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{U shqyrtua 1 shtesë}other{U shqyrtuan {NUM_EXTENSIONS} shtesa}}</translation>
 <translation id="1959421829481337178">Fut kodin e aktivizimit që është dhënë nga operatori celular.</translation>
 <translation id="1960211333621141174">Shkëmb</translation>
-<translation id="1962233722219655970">Kjo faqe përdor një version të aplikacionit "Klient origjinal" që nuk punon në kompjuterin tënd.</translation>
 <translation id="1963976881984600709">Mbrojtja standarde</translation>
 <translation id="1964009877615282740">Shiko më shumë</translation>
 <translation id="1965578266762387357">Kur merr ndihmë për të shkruar, URL-ja e faqes, përmbajtja dhe teksti yt dërgohen te Google. Mos fut informacione personale (si p.sh. detaje mjekësore ose financiare)</translation>
@@ -1719,7 +1717,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2188881192257509750">Hap <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Të fshihet grupi i skedave?</translation>
 <translation id="2190069059097339078">Marrësi i kredencialeve Wi-Fi</translation>
-<translation id="219008588003277019">Moduli i klientit origjinal: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(bosh)</translation>
 <translation id="2190967441465539539">Nuk mund të qaset te kamera dhe mikrofoni</translation>
 <translation id="2191754378957563929">Aktiv</translation>
@@ -1897,7 +1894,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ka kërkuar leje shtesë.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2306794767168143227">Ruaj te "<ph name="BRAND" />" në këtë pajisje</translation>
-<translation id="2307462900900812319">Konfiguro rrjetin</translation>
 <translation id="2307553512430195144">Nëse je dakord, "Asistenti i Google" do të presë në modalitetin e gatishmërisë për të zbuluar “Ok Google” dhe mund të dallojë që është <ph name="SUPERVISED_USER_NAME" /> duke folur me Voice Match.
     <ph name="BR" />
     Voice Match e ndihmon "Asistentin e Google" të identifikojë zërin e <ph name="SUPERVISED_USER_NAME" /> në pajisjen tënde <ph name="DEVICE_TYPE" /> dhe ta dallojë atë nga të tjerët.
@@ -2717,7 +2713,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2860710618359053450">Zhvendose nofullën në të djathtë</translation>
 <translation id="2861301611394761800">Përditësimi i sistemit përfundoi. Rinis sistemin.</translation>
 <translation id="2861402191395139055">Abonimet e Passpoint</translation>
-<translation id="2861941300086904918">Menaxheri i sigurisë së Klientit origjinal</translation>
 <translation id="2862815659905780618">Hiqe mjedisin e zhvillimit të Linux</translation>
 <translation id="2862986593239703553">kjo kartë</translation>
 <translation id="2864601841139725659">Vendos fotografinë e profilit</translation>
@@ -6053,7 +6048,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5230190638672215545">Shkruaj "uow" për të marrë "ươ"</translation>
 <translation id="5230516054153933099">Dritare</translation>
 <translation id="5232714764496316200">Merr ndihmë për detyrat e shtëpisë me "Lenten e Google"</translation>
-<translation id="5233019165164992427">Porta e korrigjimit NaCl</translation>
 <translation id="5233231016133573565">ID-ja e procesit</translation>
 <translation id="5233638681132016545">Skedë e re</translation>
 <translation id="5233736638227740678">&amp;Ngjit</translation>
@@ -10548,7 +10542,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8431977087510901105">Rivendosja e cilësimeve të kursorit</translation>
 <translation id="8433186206711564395">Cilësimet e rrjetit</translation>
 <translation id="8434109185104929038">Kënd leximi</translation>
-<translation id="8434480141477525001">Porta e korrigjimit NaCl</translation>
 <translation id="8434837876193928924">Detajet e grupit të skedave</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Rregullo këtë skedë}other{Rregullo këto skeda}}</translation>
 <translation id="8436800506934625875">Krijo një kod alfanumerik PIN rikuperimi për "Menaxherin e fjalëkalimeve të Google"</translation>

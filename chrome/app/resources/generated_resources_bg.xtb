@@ -1213,7 +1213,6 @@
 <translation id="1826657447823925402">Обратното превъртане е деактивирано</translation>
 <translation id="1827416268933303617">Цвят: <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Име на точката за достъп</translation>
-<translation id="1828378091493947763">Тази приставка не се поддържа на устройството</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Отваряне на всички}=1{&amp;Отваряне на отметката}other{&amp;Отваряне на всички ({COUNT})}}</translation>
 <translation id="1828901632669367785">Печат чрез системния диалогов прозорец...</translation>
 <translation id="1829129547161959350">Пингвин</translation>
@@ -1400,7 +1399,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{Прегледано е 1 разширение}other{Прегледани са {NUM_EXTENSIONS} разширения}}</translation>
 <translation id="1959421829481337178">Въведете кода за активиране, предоставен от оператора ви.</translation>
 <translation id="1960211333621141174">Скала</translation>
-<translation id="1962233722219655970">Тази страница използва приложение за клиент с директно изпълнение, което не работи на компютъра ви.</translation>
 <translation id="1963976881984600709">Стандартна защита</translation>
 <translation id="1964009877615282740">Преглед на още</translation>
 <translation id="1965578266762387357">Когато получавате помощ при писане, URL адресът на страницата, съдържанието ѝ и текстът ви се изпращат до Google. Не въвеждайте лична информация (например медицински или финансови данни)</translation>
@@ -1729,7 +1727,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2188881192257509750">Отваряне на <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Искате ли да изтриете групата раздели?</translation>
 <translation id="2190069059097339078">Получаване на идентификационни данни за Wi-Fi</translation>
-<translation id="219008588003277019">Модул в клиента за директно изпълнение: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(празно)</translation>
 <translation id="2190967441465539539">Няма достъп до камерата и микрофона</translation>
 <translation id="2191754378957563929">Включено</translation>
@@ -1909,7 +1906,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> поиска допълнителни разрешения.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2306794767168143227">Запазване в(ъв) <ph name="BRAND" /> на това устройство</translation>
-<translation id="2307462900900812319">Конфигуриране на мрежата</translation>
 <translation id="2307553512430195144">Ако приемете, Google Асистент ще бъде в режим на готовност, за да разпознава активиращата фраза „Ok Google“. Услугата може да познава гласа на <ph name="SUPERVISED_USER_NAME" /> с помощта на Voice Match.
     <ph name="BR" />
     Voice Match помага на Google Асистент да идентифицира гласа на <ph name="SUPERVISED_USER_NAME" /> на вашия <ph name="DEVICE_TYPE" /> и да го отличава от другите хора.
@@ -2729,7 +2725,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2860710618359053450">Преместване на челюстта надясно</translation>
 <translation id="2861301611394761800">Системната актуализация е завършена. Моля, рестартирайте системата.</translation>
 <translation id="2861402191395139055">Абонаменти за Passpoint</translation>
-<translation id="2861941300086904918">Диспечер на сигурността за клиенти с директно изпълнение</translation>
 <translation id="2862815659905780618">Премахване на Linux средата на програмиране</translation>
 <translation id="2862986593239703553">тази карта</translation>
 <translation id="2864601841139725659">Задаване на снимката на потребителския ви профил</translation>
@@ -6069,7 +6064,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5230190638672215545">Въведете uow, за да изпишете ươ</translation>
 <translation id="5230516054153933099">Window</translation>
 <translation id="5232714764496316200">Получете помощ за домашната работа с Google Обектив</translation>
-<translation id="5233019165164992427">Порт за отстраняване на грешки в клиента с директно изпълнение</translation>
 <translation id="5233231016133573565">Номер на процеса</translation>
 <translation id="5233638681132016545">Нов раздел</translation>
 <translation id="5233736638227740678">&amp;Поставяне</translation>
@@ -7953,7 +7947,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6607831829715835317">Още инструме&amp;нти</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> вече се управлява от <ph name="DOMAIN" />. За да използвате родителски контроли с друг профил в Google, излезте от този след настройването и изберете „Добавяне на човек“ на екрана за вход.</translation>
 <translation id="6608166463665411119">Нулиране на електронната SIM карта</translation>
-<translation id="660846213831377756">Бутони на мишката</translation>
+<translation id="660846213831377756">Клавиши за мишката</translation>
 <translation id="6608773371844092260">За да настрои отпечатък, детето ви трябва да докосне сензора за отпечатъци от дясната страна на устройството <ph name="DEVICE_TYPE" />. Данните за отпечатъка му се съхраняват надеждно и никога не напускат устройството <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Данните за вход в профила ще бъдат съхранени на това устройство, след като излезете от режим „инкогнито“. По-късно ще можете отново да влезете в профила си в този уебсайт от устройството си.</translation>
 <translation id="6610002944194042868">Опции за превод</translation>
@@ -10569,7 +10563,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8431977087510901105">Фабричните настройки за курсора са възстановени</translation>
 <translation id="8433186206711564395">Настройки на мрежата</translation>
 <translation id="8434109185104929038">Кът за четене</translation>
-<translation id="8434480141477525001">Порт за отстраняване на грешки в клиента с директно изпълнение</translation>
 <translation id="8434837876193928924">Подробности за групата раздели</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Коригиране на този раздел}other{Коригиране на тези раздели}}</translation>
 <translation id="8436800506934625875">Създайте буквено-цифрен ПИН код за възстановяване за Google Мениджър на пароли</translation>

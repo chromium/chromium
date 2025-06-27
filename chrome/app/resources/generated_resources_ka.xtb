@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">ფაილი არასწორი ან დაზიანებულია</translation>
 <translation id="1040761927998636252">უსახელო სანიშნე <ph name="URL" />-ისთვის</translation>
 <translation id="1041175011127912238">ეს გვერდი არ რეაგირებს</translation>
+<translation id="1041181446722933623">„<ph name="LOCAL_BOOKMARK" />“ ინახება მხოლოდ ამ მოწყობილობაში. თქვენს სხვა მოწყობილობებში მის გამოსაყენებლად შეინახეთ ის თქვენს ანგარიშში აქ: „<ph name="ACCOUNT_FOLDER" />“.</translation>
 <translation id="1041263367839475438">ხელმისაწვდომი მოწყობილობები</translation>
 <translation id="1041607257468256895">ვებსაიტებისთვის მდებარეობის გამოსაყენებლად მინიჭებული ნებართვების მართვა Chrome-ში</translation>
 <translation id="1042174272890264476">თქვენს კომპიუტერში ასევე ჩაშენებულია <ph name="SHORT_PRODUCT_NAME" />-ის RLZ ბიბლიოთეკა. RLZ მიამაგრებს არაუნიკალურ, არაპერსონალურ ტეგს, რომელიც გაზომავს ძიებებს და <ph name="SHORT_PRODUCT_NAME" />-ის გამოყენებას, რომლებიც აქტიურდება გარკვეული სარეკლამო კამპანიის მიერ. ეს წარწერები ზოგჯერ გამოჩნდება Google-ის ძიების მოთხოვნებში <ph name="PRODUCT_NAME" />-ში.</translation>
@@ -607,6 +608,7 @@
 <translation id="1418559532423038045">ამოშლის <ph name="VM_NAME" />-ს თქვენი <ph name="DEVICE_TYPE" />-დან. ეს მოქმედება წაშლის ვირტუალურ მოწყობილობაზე არსებულ ყველა აპსა და მონაცემს.</translation>
 <translation id="1418882096915998312">მიმდინარეობს Enterprise რეგისტრაცია</translation>
 <translation id="1418954524306642206">დათვალიერება პრინტერის PPD-ის მისათითებლად</translation>
+<translation id="1419086691207546433">დაამატეთ გაფართოებები, რომ იყოთ ორგანიზებული, გაიმარტივოთ ამოცანები და გააუმჯობესოთ დათვალიერების გამოცდილება</translation>
 <translation id="1421334842435688311">მდებარეობის ფიჭური ინფორმაცია</translation>
 <translation id="1421514190500081936">შეიყვანეთ ამ მონაცემების ჩამოტვირთვის მიზეზი:</translation>
 <translation id="1422159345171879700">არაუსაფრთხო სკრიპტების ჩატვირთვა</translation>
@@ -1208,7 +1210,6 @@
 <translation id="1826657447823925402">უკუგადაადგილება გათიშულია</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> ფერი</translation>
 <translation id="1827504459960247692">უსადენო ქსელის სახელი</translation>
-<translation id="1828378091493947763">ეს დანამატი ამ მოწყობილობაზე მხარდაუჭერელია</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{ყველას &amp;გახსნა}=1{სანიშნეს &amp;გახსნა}other{{COUNT}-ვეს &amp;გახსნა}}</translation>
 <translation id="1828901632669367785">ბეჭდვა სისტემის დიალოგის გამოყენებით…</translation>
 <translation id="1829129547161959350">პინგვინი</translation>
@@ -1394,7 +1395,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 გაფართოება შემოწმდა}other{{NUM_EXTENSIONS} გაფართოება შემოწმდა}}</translation>
 <translation id="1959421829481337178">შეიყვანეთ თქვენი ოპერატორის მიერ მოწოდებული აქტივაციის კოდი.</translation>
 <translation id="1960211333621141174">კლდე</translation>
-<translation id="1962233722219655970">ეს გვერდი იყენებს ორიგინალური კლიენტის პროგრამას, რომელიც არ მუშაობს თქვენს კომპიუტერში.</translation>
 <translation id="1963976881984600709">სტანდარტული დაცვა</translation>
 <translation id="1964009877615282740">მეტის ნახვა</translation>
 <translation id="1965578266762387357">როცა წერაში დახმარებას იღებთ, გვერდის URL, კონტენტი და თქვენი ტექსტი ეგზავნება Google-ს. არ შეიტანოთ პერსონალური ინფორმაცია (მაგალითად, სამედიცინო თუ ფინანსური მონაცემები)</translation>
@@ -1724,7 +1724,6 @@
 <translation id="2188881192257509750"><ph name="APPLICATION" />-ის გახსნა</translation>
 <translation id="2188919919468240749">გსურთ ჩანართების ჯგუფის წაშლა?</translation>
 <translation id="2190069059097339078">WiFi-ს ავტორიზაციის მონაცემების მიმღები</translation>
-<translation id="219008588003277019">საკუთარი კლიენტის მოდული: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(ცარიელი)</translation>
 <translation id="2190967441465539539">კამერასა და მიკროფონზე წვდომა ვერ ხერხდება</translation>
 <translation id="2191754378957563929">ჩართული</translation>
@@ -1901,7 +1900,6 @@
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />“-მა მოითხოვა დამატებითი ნებართვები.</translation>
 <translation id="2304820083631266885">პლანეტა</translation>
 <translation id="2306794767168143227">შეინახოს <ph name="BRAND" />-ში ამ მოწყობილობაზე</translation>
-<translation id="2307462900900812319">ქსელის კონფიგურაცია</translation>
 <translation id="2307553512430195144">თანხმობის შემთხვევაში, Google ასისტენტი მოლოდინის რეჟიმში დალოდება როგორც „Ok Google“-ის, ისე <ph name="SUPERVISED_USER_NAME" />-ის საუბრის ამოცნობას Voice Match-ის მეშვეობით.
     <ph name="BR" />
     Voice Match საშუალებას აძლევს Google ასისტენტს, ამოიცნოს <ph name="SUPERVISED_USER_NAME" />-ის ხმა თქვენს <ph name="DEVICE_TYPE" />-ზე და ის სხვებისგან გაარჩიოს.
@@ -2723,7 +2721,6 @@
 <translation id="2860710618359053450">ყბა მოაქციეთ მარჯვნივ</translation>
 <translation id="2861301611394761800">სისტემის განახლება დასრულებულია. გთხოვთ გადატვირთეთ სისტემა.</translation>
 <translation id="2861402191395139055">Passpoint გამოწერები</translation>
-<translation id="2861941300086904918">ადგილობრივი კლიენტის უსაფრთხოების მენეჯერი</translation>
 <translation id="2862815659905780618">Linux-ის შემუშავების გარემოს ამოშლა</translation>
 <translation id="2862986593239703553">ეს ბარათი</translation>
 <translation id="2864601841139725659">თქვენი პროფილის სურათის დაყენება</translation>
@@ -3331,6 +3328,7 @@
 <translation id="3309330461362844500">სერტიფიკატის პროფილის ID</translation>
 <translation id="3310379801837527592">შეუერთდით ჩანართების ჯგუფს, რომელშიც არის <ph name="OWNER_FIRST_NAME" /> და <ph name="NUM_OTHER_MEMBERS" /> სხვა</translation>
 <translation id="331080746368555063">პირადი საიტები შეიძლება შეიცავდეს თქვენი კომპანიის ინტრანეტის მსგავს სისტემებს</translation>
+<translation id="3311007761540106761">სისტემის ნაგულისხმევი</translation>
 <translation id="3311445899360743395">ამ მოწყობილობიდან შეიძლება ამოიშალოს ამ აპთან დაკავშირებული მონაცემები.</translation>
 <translation id="3312470654018965389">მიმდინარეობს Linux-ის კონტეინერის კონფიგურაცია</translation>
 <translation id="3312883087018430408">კონკრეტულ საიტში ან Chrome-ის ნაწილში რაიმე რომ მოიძიოთ, მისამართთა ზოლში აკრიფეთ მისი მალსახმობი კლავიატურის სასურველ მალსახმობთან ერთად. მაგალითად, მხოლოდ სანიშნეებში ძიებისთვის აკრიფეთ „@სანიშნეები“, შემდეგ კი დააჭირეთ კლავიშს Tab ან შორისს.</translation>
@@ -6064,7 +6062,6 @@
 <translation id="5230190638672215545">„uow“-ის აკრეფით „ươ“-ს მიღება</translation>
 <translation id="5230516054153933099">ფანჯარა</translation>
 <translation id="5232714764496316200">დაიხმარეთ Google Lens საშინაო დავალების შესრულებაში</translation>
-<translation id="5233019165164992427">NaCl გამართვის პორტი</translation>
 <translation id="5233231016133573565">პროცესის ID</translation>
 <translation id="5233638681132016545">ახალი ჩანართი</translation>
 <translation id="5233736638227740678">ჩ&amp;ასმა</translation>
@@ -7883,6 +7880,7 @@
 <translation id="6560151649238390891">შემოთავაზება ჩასმულია</translation>
 <translation id="656065428026159829">მეტის ნახვა</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">ამ ტიპის (<ph name="TYPE" />) ფაილი შეიძლება სახიფათო იყოს. შეინახეთ ეს ფაილი მხოლოდ იმ შემთხვევაში, თუ <ph name="ORIGIN" /> სანდოდ მიგაჩნიათ</translation>
 <translation id="6562117348069327379">სისტემის ჟურნალების „ჩამოტვირთვების“ კატალოგში შენახვა.</translation>
 <translation id="656293578423618167">ფაილის მდებარეობა ან სახელი ძალიან გრძელია. გთხოვთ, შეინახოთ იგი უფრო მოკლე სახელით ან სხვა ადგილას.</translation>
 <translation id="6563002009564846727">Windows-იდან დაიმპორტებული სერტიფიკატების ნახვა</translation>
@@ -10553,6 +10551,7 @@
 <translation id="8425213833346101688">შეცვლა</translation>
 <translation id="8425492902634685834">ამოცანათა ზოლზე დამაგრება</translation>
 <translation id="8425768983279799676">PIN-კოდის მეშვეობით შეგიძლიათ თქვენი მოწყობილობის განბლოკვა.</translation>
+<translation id="8426697201161711396">შედით Chrome-ში თქვენი პაროლებისა და სხვა მონაცემების მისაღებად თქვენს ყველა მოწყობილობაში</translation>
 <translation id="8427213022735114808">ნებისმიერი ტექსტური ველის ხმით შესავსებად თქვენი ხმა კარნახის ფუნქციის მიერ გაიგზავნება Google-ში.</translation>
 <translation id="8427292751741042100">ჩაშენებული ნებისმიერ ჰოსტზე</translation>
 <translation id="8428213095426709021">პარამეტრები</translation>
@@ -10565,7 +10564,6 @@
 <translation id="8431977087510901105">კურსორის პარამეტრების გადაყენება</translation>
 <translation id="8433186206711564395">ქსელის პარამეტრები</translation>
 <translation id="8434109185104929038">საკითხავი კუთხე</translation>
-<translation id="8434480141477525001">NaCl გამართვის პორტი</translation>
 <translation id="8434837876193928924">ჩანართების ჯგუფის დეტალები</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{ამ ჩანართის გასწორება}other{ამ ჩანართების გასწორება}}</translation>
 <translation id="8436800506934625875">შექმენით აღდგენის ანბანურ-ციფრული PIN-კოდი Google პაროლების მმართველისთვის</translation>

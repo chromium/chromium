@@ -122,6 +122,7 @@
 <translation id="6051432659151380973">તમારા ટૅબના ગ્રૂપ ઑટોમૅટિક રીતે સાચવવામાં આવશે</translation>
 <translation id="6054741997831917303">આ આઇટમની કિંમત તાજેતરમાં <ph name="PREVIOUS_PRICE" />થી ઘટીને <ph name="NEW_PRICE" /> થઈ ગઈ છે</translation>
 <translation id="6109251075362363230">તાજેતરમાં ઉપયોગમાં લેવાયેલી કૉપિના અપવાદ સાથે તમામ ડુપ્લિકેટ ટૅબ પણ હવે આર્કાઇવ કરવામાં આવશે.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{પસંદ કરેલી <ph name="TABS_COUNT_ONE" /> આઇટમ બંધ કરો}one{પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> આઇટમ બંધ કરો}other{પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> આઇટમ બંધ કરો}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ગ્રૂપને નવી વિન્ડોમાં ખસેડો}one{ગ્રૂપને અન્ય વિન્ડોમાં ખસેડો}other{ગ્રૂપને અન્ય વિન્ડોમાં ખસેડો}}</translation>
 <translation id="6220820548421939212">હા. હું સંમત છું</translation>
 <translation id="6228793724645064692">(સ્ટોરનું રેટિંગ)</translation>
@@ -155,6 +156,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" ટૅબનું ગ્રૂપ હવે ઉપલબ્ધ નથી</translation>
 <translation id="7452985128687107478">ટૅબના ગ્રૂપ તમારા બધા ડિવાઇસ પર ઑટોમૅટિક રીતે સાચવવામાં અને અપડેટ કરવામાં આવે છે</translation>
 <translation id="747459581954555080">બધુ પુનર્પ્રાપ્ત કરો</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{પસંદ કરેલી <ph name="TABS_COUNT_ONE" /> આઇટમ રિસ્ટોર કરો}one{પસંદ કરેલ <ph name="TABS_COUNT_MANY" /> આઇટમ રિસ્ટોર કરો}other{પસંદ કરેલ <ph name="TABS_COUNT_MANY" /> આઇટમ રિસ્ટોર કરો}}</translation>
 <translation id="753732157349120914">ટૅબ સ્વિચર</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google તરફથી <ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ}one{Google તરફથી <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}other{Google તરફથી <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}}</translation>
 <translation id="7559245342362162951">ગ્રુપના ટૅબને પૂર્ણસ્ક્રીન ગ્રિડમાં બતાવો</translation>

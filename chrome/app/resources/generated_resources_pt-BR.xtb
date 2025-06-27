@@ -1218,7 +1218,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1826657447823925402">Rolagem reversa desativada</translation>
 <translation id="1827416268933303617">Cor: <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Nome do ponto de acesso</translation>
-<translation id="1828378091493947763">Este plug-in não é compatível com este dispositivo</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Abrir tudo}=1{&amp;Abrir favorito}one{&amp;Abrir tudo ({COUNT})}other{&amp;Abrir tudo ({COUNT})}}</translation>
 <translation id="1828901632669367785">Imprimir utilizando caixa de diálogo de sistema...</translation>
 <translation id="1829129547161959350">Pinguim</translation>
@@ -1405,7 +1404,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 extensão revisada}one{{NUM_EXTENSIONS} extensão revisada}other{{NUM_EXTENSIONS} extensões revisadas}}</translation>
 <translation id="1959421829481337178">Insira o código de ativação fornecido pela sua operadora.</translation>
 <translation id="1960211333621141174">Penhasco</translation>
-<translation id="1962233722219655970">Esta página usa um aplicativo de cliente nativo que não funciona em seu computador.</translation>
 <translation id="1963976881984600709">Proteção padrão</translation>
 <translation id="1964009877615282740">Mostrar mais</translation>
 <translation id="1965578266762387357">Quando você recebe ajuda para escrever, o URL da página, o conteúdo dela e seu texto são enviados ao Google. Não forneça informações pessoais, como dados médicos ou financeiros.</translation>
@@ -1614,6 +1612,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2096716221239095980">Excluir todos os dados</translation>
 <translation id="2097950021134740304">Cancelar o esquecimento da assinatura</translation>
 <translation id="2098805196501063469">Verificar senhas restantes</translation>
+<translation id="2099883893520019102">Últimos 15 minutos</translation>
 <translation id="2101225219012730419">Versão:</translation>
 <translation id="2102396546234652240">Não permitir que os sites usem seu microfone</translation>
 <translation id="2102495993840063010">Apps Android</translation>
@@ -1734,7 +1733,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2188881192257509750">Abrir <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Excluir grupo de guias?</translation>
 <translation id="2190069059097339078">Getter de credenciais de Wi-Fi</translation>
-<translation id="219008588003277019">Módulo do cliente nativo: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(vazio)</translation>
 <translation id="2190967441465539539">Não é possível acessar a câmera e o microfone</translation>
 <translation id="2191754378957563929">Ativado</translation>
@@ -1914,7 +1912,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="23030561267973084">A extensão "<ph name="EXTENSION_NAME" />" solicitou permissões adicionais.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2306794767168143227">Salvar no <ph name="BRAND" /> deste dispositivo</translation>
-<translation id="2307462900900812319">Configurar rede</translation>
 <translation id="2307553512430195144">Se você permitir, o Google Assistente entrará no modo de espera para detectar o "Ok Google" e poderá usar o Voice Match para reconhecer a voz de <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
     O Voice Match ajuda o Google Assistente a identificar a voz de <ph name="SUPERVISED_USER_NAME" /> no seu <ph name="DEVICE_TYPE" /> e diferenciá-la de outras.
@@ -2176,6 +2173,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2476901513051581836">Não é possível limpar o armazenamento até que se saiba o tamanho do espaço off-line.</translation>
 <translation id="2476974672882258506">Desligue o Windows para desinstalar o <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">A leitura automática foi desativada porque você configurou vários interruptores.</translation>
+<translation id="2477607419416067650">Outros dados do Google</translation>
 <translation id="2478176599153288112">Permissões de arquivos de mídia para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Ativar o serviço de recuperação de dados.</translation>
 <translation id="2479541499757560845">Configurações de teclado de acessibilidade</translation>
@@ -2294,6 +2292,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2552966063069741410">Fuso horário</translation>
 <translation id="2553290675914258594">Acesso verificado</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> não pôde se conectar a <ph name="NETWORK_ID" />. Selecione outra rede ou tente novamente.</translation>
+<translation id="2553352788023127673">O histórico de pesquisa e as senhas podem ser excluídos nas configurações de gerenciamento</translation>
 <translation id="2553440850688409052">Ocultar este plug-in</translation>
 <translation id="2554553592469060349">O arquivo selecionado é muito grande (tamanho máximo: 3 MB).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> de <ph name="TOTAL_NUM_APPS" /> apps podem enviar notificações</translation>
@@ -2733,7 +2732,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2860710618359053450">Mover a mandíbula para a direita</translation>
 <translation id="2861301611394761800">A atualização do sistema foi concluída. Reinicie o sistema.</translation>
 <translation id="2861402191395139055">Assinaturas de Passpoint</translation>
-<translation id="2861941300086904918">Gerenciador de segurança do Cliente nativo</translation>
 <translation id="2862815659905780618">Remover o ambiente de desenvolvimento do Linux</translation>
 <translation id="2862986593239703553">este card</translation>
 <translation id="2864601841139725659">Definir a foto do seu perfil</translation>
@@ -3471,6 +3469,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3408555740610481810">Câmera e microfone em uso</translation>
 <translation id="3409157109901479672">Lado esquerdo</translation>
 <translation id="3409513286451883969">&amp;Traduzir seleção para o <ph name="LANGUAGE" /></translation>
+<translation id="3410151451624226773">Gerencie no Gerenciador de senhas do Google</translation>
 <translation id="3412265149091626468">Ir para a seleção</translation>
 <translation id="3413122095806433232">Emissores de autoridades de certificação: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Tamanho:</translation>
@@ -5896,6 +5895,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5102244391872941183">Apps e sites com a permissão de localização e serviços do sistema podem usar seu local</translation>
 <translation id="5103311607312269661">aumentar o brilho da tela</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Excluir grupo}one{Excluir grupo}other{Excluir grupos}}</translation>
+<translation id="5105442806410269908">Gerencie outros dados do Google</translation>
 <translation id="5106350808162641062">Remover</translation>
 <translation id="510695978163689362">A conta <ph name="USER_EMAIL" /> é supervisionada pelo Family Link. Você pode adicionar contas escolares para acessar os recursos da escola com supervisão da família.</translation>
 <translation id="5107093668001980925">Nunca mostrar <ph name="MODULE_NAME" /></translation>
@@ -6073,7 +6073,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5230190638672215545">Digite "uow" para inserir "ươ"</translation>
 <translation id="5230516054153933099">Janela</translation>
 <translation id="5232714764496316200">Receba ajuda com o dever de casa usando o Google Lens</translation>
-<translation id="5233019165164992427">Porta de depuração de Cliente nativo</translation>
 <translation id="5233231016133573565">ID de processo</translation>
 <translation id="5233638681132016545">Nova guia</translation>
 <translation id="5233736638227740678">&amp;Colar</translation>
@@ -6200,6 +6199,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5320135788267874712">Novo nome do dispositivo</translation>
 <translation id="532247166573571973">É possível que o servidor esteja inacessível. Tente novamente mais tarde.</translation>
 <translation id="5323328004379641163">Personalizar a aparência do Chrome e desta página</translation>
+<translation id="5323501626199324454">Gerencie na sua Conta do Google</translation>
 <translation id="5324300749339591280">Lista de apps</translation>
 <translation id="5324780743567488672">Define o fuso horário automaticamente utilizando seu local</translation>
 <translation id="5327248766486351172">Nome</translation>
@@ -6547,6 +6547,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="557722062034137776">Redefinir o dispositivo não afetará suas Contas do Google ou quaisquer dados sincronizados com essas contas. No entanto, todos os arquivos salvos localmente em seu dispositivo serão excluídos.</translation>
 <translation id="5578059481725149024">Login automático</translation>
 <translation id="5578387000057347457">Insira um comando personalizado ou destaque o texto para criar uma imagem</translation>
+<translation id="5579225964082017560">Remover <ph name="SITE" /> da lista <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">A tradução para o <ph name="LANGUAGE" /> foi concluída</translation>
 <translation id="558170650521898289">Verificação de driver de hardware do Windows da Microsoft</translation>
 <translation id="5581972110672966454">Não é possível vincular o dispositivo ao domínio. Tente novamente ou entre em contato com o proprietário ou administrador do dispositivo. Código do erro: <ph name="ERROR_CODE" />.</translation>
@@ -8851,6 +8852,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7250616558727237648">O dispositivo com que você está compartilhando não respondeu. Tente novamente.</translation>
 <translation id="725109152065019550">Seu administrador desabilitou o armazenamento externo em sua conta.</translation>
 <translation id="7251635775446614726">Mensagem do administrador: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7252424535852086046">Para excluir esses dados, acesse as configurações de gerenciamento</translation>
 <translation id="7253521419891527137">&amp;Saiba mais</translation>
 <translation id="7254951428499890870">Você quer mesmo iniciar o aplicativo "<ph name="APP_NAME" />" no modo de diagnóstico?</translation>
 <translation id="725497546968438223">Botão da pasta de favoritos</translation>
@@ -9137,6 +9139,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7450761244949417357">Abrindo no <ph name="ALTERNATIVE_BROWSER_NAME" /> agora</translation>
 <translation id="7450926666485653189">Envia apenas uma parte ofuscada do URL ao Google por um servidor de privacidade que oculta seu endereço IP</translation>
 <translation id="7453008956351770337">Ao selecionar esta impressora, você concede permissão para acessar sua impressora à seguinte extensão:</translation>
+<translation id="7453032093368223821">Gerencie outros dados</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Sua organização desativou o salvamento de senhas</translation>
 <translation id="7455730275746867420">Gerenciar contêineres extras</translation>
@@ -9537,6 +9540,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="7722040605881499779">Atualização necessária: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Redefinir para o Chrome padrão</translation>
 <translation id="7724603315864178912">Recortar</translation>
+<translation id="7726288096350730168">Excluir deste dispositivo</translation>
 <translation id="7726391492136714301">Veja notificações e apps do smartphone</translation>
 <translation id="7727898923446098954">Guia oculta</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{Pausar guia}one{Pausar guia}other{Pausar guias}}</translation>
@@ -10575,7 +10579,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8431977087510901105">As configurações do cursor foram redefinidas</translation>
 <translation id="8433186206711564395">Configurações de rede</translation>
 <translation id="8434109185104929038">Cantinho de leitura</translation>
-<translation id="8434480141477525001">Porta de depuração de Cliente nativo</translation>
 <translation id="8434837876193928924">Detalhes do grupo de guias</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Corrigir guia}one{Corrigir guia}other{Corrigir guias}}</translation>
 <translation id="8436800506934625875">Crie um PIN de recuperação alfanumérico para o Gerenciador de senhas do Google</translation>
@@ -11093,6 +11096,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8791157330927639737">Saiba mais sobre como atualizar</translation>
 <translation id="8791534160414513928">Enviar a observação "Do Not Track" em seu tráfego de navegação</translation>
 <translation id="8793390639824829328">Os sites usam esse recurso para rolar a tela e aplicar zoom nas guias compartilhadas</translation>
+<translation id="8793895150509408038">Ver detalhes do site <ph name="SITE" /> na lista <ph name="SECTION_HEADER" /></translation>
 <translation id="879413103056696865">Enquanto o ponto de acesso estiver ativado, seu <ph name="PHONE_NAME" /> vai:</translation>
 <translation id="8794548468611058947">Em vez de digitar a senha da sua Conta do Google para fazer login, você pode criar um PIN para este <ph name="DEVICE_TYPE" /></translation>
 <translation id="8795916974678578410">Nova janela</translation>

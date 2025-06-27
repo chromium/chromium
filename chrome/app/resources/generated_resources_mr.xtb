@@ -1217,7 +1217,6 @@
 <translation id="1826657447823925402">रिव्हर्स स्क्रोलिंग बंद केले आहे</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> रंग</translation>
 <translation id="1827504459960247692">हॉटस्पॉटचे नाव</translation>
-<translation id="1828378091493947763">हे प्लग-इन या डिव्हाइसवर सपोर्टेड नाही</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{Open All}=1{बुकमार्क उघडा}other{सर्व ({COUNT}) उघडा}}</translation>
 <translation id="1828901632669367785">सिस्टीम डायलॉग वापरून प्रिंट करा…</translation>
 <translation id="1829129547161959350">पेंग्विन</translation>
@@ -1404,7 +1403,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{१ एक्स्टेंशनचे पुनरावलोकन केले आहे}other{{NUM_EXTENSIONS} एक्स्टेंशनचे पुनरावलोकन केले आहे}}</translation>
 <translation id="1959421829481337178">कृपया तुमच्या वाहकाने दिलेला अ‍ॅक्टिव्हेशन कोड एंटर करा.</translation>
 <translation id="1960211333621141174">डोंगराचा कडा</translation>
-<translation id="1962233722219655970">हे पेज एक मूळ क्लायंट अ‍ॅप वापरते जो तुमच्या कॉंप्युटरवर काम करत नाही.</translation>
 <translation id="1963976881984600709">साधारण संरक्षण</translation>
 <translation id="1964009877615282740">आणखी पहा</translation>
 <translation id="1965578266762387357">तुम्ही लिहिण्याबाबत मदत मिळवता, तेव्हा पेजची URL, आशय आणि तुमचा मजकूर Google ला पाठवला जातो. वैयक्तिक माहिती (जसे की वैद्यकीय किंवा आर्थिक तपशील) एंटर करू नका</translation>
@@ -1733,7 +1731,6 @@
 <translation id="2188881192257509750"><ph name="APPLICATION" /> उघडा</translation>
 <translation id="2188919919468240749">टॅब गट हटवायचा आहे का?</translation>
 <translation id="2190069059097339078">WiFi क्रेडेंशियल मिळविणारा</translation>
-<translation id="219008588003277019">नेटिव्ह क्लायंट मॉड्युल: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(रिक्त)</translation>
 <translation id="2190967441465539539">कॅमेरा आणि मायक्रोफोनचा अ‍ॅक्सेस नाही</translation>
 <translation id="2191754378957563929">सुरू करा</translation>
@@ -1913,7 +1910,6 @@
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" नी अतिरिक्त परवानग्यांची विनंती केली आहे.</translation>
 <translation id="2304820083631266885">ग्रह</translation>
 <translation id="2306794767168143227">या डिव्हाइसवर <ph name="BRAND" /> मध्ये सेव्ह करा</translation>
-<translation id="2307462900900812319">नेटवर्क कॉन्फिगर करा</translation>
 <translation id="2307553512430195144">तुम्ही सहमती दर्शवल्यास, Google Assistant हे “Ok Google” डिटेक्ट करण्यासाठी स्टँडबाय मोडमध्ये प्रतीक्षा करेल आणि <ph name="SUPERVISED_USER_NAME" /> बोलत असल्याचे Voice Match वापरून ओळखू शकेल.
     <ph name="BR" />
     Voice Match हे Google Assistant ला तुमच्या <ph name="DEVICE_TYPE" /> वर <ph name="SUPERVISED_USER_NAME" /> चा आवाज ओळखण्यात आणि त्यांच्यात व इतरांमध्ये फरक ओळखण्यात मदत करते.
@@ -2733,7 +2729,6 @@
 <translation id="2860710618359053450">जबडा उजवीकडे हलवा</translation>
 <translation id="2861301611394761800">सिस्टीम अपडेट पूर्ण झाले. कृपया सिस्टीम रीस्टार्ट करा.</translation>
 <translation id="2861402191395139055">पासपॉइंट सदस्यत्वे</translation>
-<translation id="2861941300086904918">नेटिव्ह क्लायंट सुरक्षा व्यवस्थापक</translation>
 <translation id="2862815659905780618">Linux डेव्हलपमेंट पद्धत काढून टाका</translation>
 <translation id="2862986593239703553">हे कार्ड</translation>
 <translation id="2864601841139725659">तुमचे प्रोफाइल चित्र सेट करा</translation>
@@ -6071,7 +6066,6 @@
 <translation id="5230190638672215545">"ươ" मिळवण्यासाठी "uow" टाइप करा</translation>
 <translation id="5230516054153933099">विंडो</translation>
 <translation id="5232714764496316200">Google Lens वापरून गृहपाठासंबंधित मदत मिळवा</translation>
-<translation id="5233019165164992427">NaCl डीबग पोर्ट</translation>
 <translation id="5233231016133573565">प्रक्रिया आयडी</translation>
 <translation id="5233638681132016545">नवीन टॅब</translation>
 <translation id="5233736638227740678">&amp;पेस्ट करा</translation>
@@ -10573,7 +10567,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8431977087510901105">कर्सर सेटिंग्‍ज रीसेट</translation>
 <translation id="8433186206711564395">नेटवर्क सेटिंग्ज</translation>
 <translation id="8434109185104929038">वाचनाचा कोपरा</translation>
-<translation id="8434480141477525001">NaCl डीबग पोर्ट</translation>
 <translation id="8434837876193928924">टॅब गटाचे तपशील</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{या टॅबचे निराकरण करा}other{या टॅबचे निराकरण करा}}</translation>
 <translation id="8436800506934625875">Google Password Manager साठी वर्णांक असलेला रिकव्‍हरी पिन तयार करा</translation>

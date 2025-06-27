@@ -389,6 +389,7 @@
 <translation id="251837347827266434">Будзе выкананы выхад з уліковага запісу, укладкі будуць закрыты, а даныя пра работу ў браўзеры – выдалены</translation>
 <translation id="2520787026086861736">Каб выключыць гэту функцыю, перайдзіце ў раздзел <ph name="BEGIN_LINK" />Аўтазапаўненне і паролі<ph name="END_LINK" /></translation>
 <translation id="2523295204312809179">Закрытая група ўкладак будзе аўтаматычна захоўвацца тут</translation>
+<translation id="2524699375503213836">Перанос даных з Safari</translation>
 <translation id="2529021024822217800">Адкрыць усе</translation>
 <translation id="2536991091671391962">Вы можаце выкарыстоўваць захаваныя паролі на любой прыладзе. Яны захоўваюцца ў Менеджары пароляў Google для ўліковага запісу <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Схаваны, пароль</translation>
@@ -1865,6 +1866,7 @@
 <translation id="8524799873541103884">Укладкі <ph name="INCOGNITO" /> ад <ph name="FIRST_VISIBLE_TAB" /> да <ph name="LAST_VISIBLE_TAB" /> з <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Адкрыццё спасылак, размешчаных у іншых праграмах, у рэжыме інкогніта</translation>
 <translation id="8529767659511976195">Новае</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">"Бяспечны прагляд" уключаны</translation>
 <translation id="8534481786647257214">Публікацыя ў Google+ выканана.</translation>
 <translation id="8535368836838588657">Паказаць пароль</translation>

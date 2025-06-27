@@ -389,6 +389,7 @@
 <translation id="251837347827266434">നിങ്ങൾ സൈൻ ഔട്ട് ആകും, ടാബുകൾ അടയ്ക്കും, ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കും</translation>
 <translation id="2520787026086861736">ഓഫാക്കാൻ, <ph name="BEGIN_LINK" />സ്വയമേവ പൂരിപ്പിക്കലും പാസ്‌വേഡുകളും<ph name="END_LINK" /> എന്നതിലേക്ക് പോകുക</translation>
 <translation id="2523295204312809179">നിങ്ങൾ ഒരു ടാബ് ഗ്രൂപ്പ് അടയ്ക്കുമ്പോൾ അത് സ്വയമേവ ഇവിടെ സംരക്ഷിക്കും</translation>
+<translation id="2524699375503213836">Safari-യിൽ നിന്നുള്ള ഡാറ്റ ഇമ്പോർട്ട് ചെയ്യൂ</translation>
 <translation id="2529021024822217800">എല്ലാം തുറക്കുക</translation>
 <translation id="2536991091671391962">സംരക്ഷിച്ച പാസ്‌വേഡുകൾ നിങ്ങൾക്ക് ഏത് ഉപകരണത്തിൽ വേണമെങ്കിലും ഉപയോഗിക്കാം. <ph name="EMAIL" /> എന്ന അക്കൗണ്ടിനുള്ള Google Password Manager-ൽ അവ സംരക്ഷിക്കുന്നു.</translation>
 <translation id="2538103551183528357">മറച്ചിരിക്കുന്നു, പാസ്‌വേഡ്</translation>
@@ -1236,12 +1237,14 @@
 <translation id="6074656473835429958">അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) അപ്‌ലോഡ് ചെയ്യാനായില്ല</translation>
 <translation id="6077126322656614846">ക്യാമറ ആക്‌സസ് അനുവദിച്ചിരിക്കുന്നു</translation>
+<translation id="607730456154980869">Chrome-ൽ Gemini ഉപയോഗിച്ച് ഉത്തരങ്ങൾ വേഗത്തിൽ നേടുക</translation>
 <translation id="6078236141387574983">ഷീറ്റിന്റെ ഉയരം പുനഃക്രമീകരിക്കുക</translation>
 <translation id="6084848228346514841">ടാബുകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6089212833343035912">Google Password Manager പിൻ</translation>
 <translation id="6090760257419195752">ഡിസ്‌മിസ് ചെയ്‌ത മുന്നറിയിപ്പുകൾ</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> കണ്ടു</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. ക്രമീകരണം തുറക്കുന്നു.</translation>
+<translation id="610083648014322104">നിങ്ങൾ ഇപ്പോഴുള്ള പേജിന്റെ ഉള്ളടക്കം അടിസ്ഥാനമാക്കി പ്രസക്തമായ ഉത്തരങ്ങൾ നേടുക</translation>
 <translation id="6103540626693881831">ഉപകരണത്തിലെ എൻക്രിപ്ഷൻ</translation>
 <translation id="611361228753138223">ഈ ഉപകരണത്തിൽ നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ച സൈറ്റുകൾ</translation>
 <translation id="611705554202268369">ഒരു ടാബ് ഗ്രൂപ്പിലേക്ക് ചേർക്കാൻ ദീർഘനേരം അമർത്തുക</translation>
@@ -1494,6 +1497,7 @@
 <translation id="6979737339423435258">എല്ലാ സമയത്തും</translation>
 <translation id="6983306615164277634">വിലാസ ബാറിൽ സ്‌പർശിച്ചുപിടിച്ചും നിങ്ങൾക്കതിന്റെ സ്ഥാനം മാറ്റാം.</translation>
 <translation id="6987201788018524855">നിങ്ങൾ കാണാതെപോയ, സഹായകരമായ ഫീച്ചറുകൾ അടുത്തറിയുക</translation>
+<translation id="6989636517316575338">ഏതെങ്കിലും പേജിനെ കുറിച്ച് ചോദിക്കുക</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">ഉൽപ്പന്നങ്ങളുടെ നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക, ഏതെങ്കിലും സൈറ്റിൽ നിരക്ക് കുറയുമ്പോൾ നിങ്ങൾക്ക് മുന്നറിയിപ്പുകൾ ലഭിക്കും</translation>
 <translation id="7004032350256606903">സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ നിങ്ങളുടെ സ്ഥാപനം ആവശ്യപ്പെടുന്നു.
@@ -1751,6 +1755,7 @@
 <translation id="8058655154417507695">കാലാവധി കഴിയുന്ന വർഷം</translation>
 <translation id="8059533439631660104">വിഭാഗത്തെ ചുരുക്കുന്നു.</translation>
 <translation id="8061584726507121204">ചരിത്രം</translation>
+<translation id="8069168488983557089">ഏത് വിഷയവും മനസ്സിലാക്കാൻ നിങ്ങളെ സഹായിക്കുന്ന പ്രധാന ടേക്ക്എവേകളും സ്ഥിതിവിവരക്കണക്കുകളും നേടുക</translation>
 <translation id="8069394452933076548">അടുത്തിടെ ഉപയോഗിക്കാത്ത ടാബുകൾ നിഷ്‌ക്രിയമായ ടാബ് വിഭാഗത്തിലേക്ക് എപ്പോഴാണ് നീക്കേണ്ടതെന്ന് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="8073670137947914548">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
@@ -1865,6 +1870,7 @@
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" />-ൽ <ph name="FIRST_VISIBLE_TAB" /> മുതൽ <ph name="LAST_VISIBLE_TAB" /> വരെയുള്ള <ph name="INCOGNITO" /> ആൾമാറാട്ട ടാബുകൾ</translation>
 <translation id="8528009254289981965">മറ്റൊരു ആപ്പിൽ നിന്നുള്ള ലിങ്കുകൾ അദൃശ്യ മോഡിൽ തുറക്കുക</translation>
 <translation id="8529767659511976195">പുതിയത്</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">സുരക്ഷിത ബ്രൗസിംഗ് ഓണാണ്</translation>
 <translation id="8534481786647257214">Google+ പങ്കിടൽ പൂർത്തിയായി.</translation>
 <translation id="8535368836838588657">പാസ്‌വേഡ് വെളിപ്പെടുത്തുക</translation>

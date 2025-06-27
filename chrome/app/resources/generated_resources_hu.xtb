@@ -1217,7 +1217,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1826657447823925402">Fordított görgetés kikapcsolva</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> szín</translation>
 <translation id="1827504459960247692">Hotspot neve</translation>
-<translation id="1828378091493947763">Ez a beépülő modul nem támogatott ezen az eszközön</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Összes megnyitása}=1{&amp;Könyvjelző megnyitása}other{&amp;Összes ({COUNT}) megnyitása}}</translation>
 <translation id="1828901632669367785">Nyomtatás a rendszer párbeszédpanelének segítségével...</translation>
 <translation id="1829129547161959350">Pingvin</translation>
@@ -1403,7 +1402,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 bővítmény ellenőrizve}other{{NUM_EXTENSIONS} bővítmény ellenőrizve}}</translation>
 <translation id="1959421829481337178">Adja meg a szolgáltató által adott aktiválási kódot.</translation>
 <translation id="1960211333621141174">Szirt</translation>
-<translation id="1962233722219655970">Az oldal olyan Natív kliensalkalmazást használ, amely nem működik a számítógépén.</translation>
 <translation id="1963976881984600709">Normál védelem</translation>
 <translation id="1964009877615282740">Továbbiak megjelenítése</translation>
 <translation id="1965578266762387357">Amikor írási segítséget kap, a rendszer elküldi az oldal URL-jét, tartalmát és a szövegét a Google-nak. Ne adjon meg személyes adatokat (például egészségügyi vagy pénzügyi adatokat)</translation>
@@ -1732,7 +1730,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2188881192257509750">A(z) <ph name="APPLICATION" /> megnyitása</translation>
 <translation id="2188919919468240749">Törli a lapcsoportot?</translation>
 <translation id="2190069059097339078">Wi-Fi hitelesítési adatok lekérője</translation>
-<translation id="219008588003277019">Natív kliensmodul: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(üres)</translation>
 <translation id="2190967441465539539">Nem lehet hozzáférni a kamerához és a mikrofonhoz</translation>
 <translation id="2191754378957563929">Be</translation>
@@ -1912,7 +1909,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="23030561267973084">A(z) „<ph name="EXTENSION_NAME" />” további engedélyeket kért.</translation>
 <translation id="2304820083631266885">Bolygó</translation>
 <translation id="2306794767168143227">Mentés a <ph name="BRAND" /> alkalmazásba ezen az eszközön</translation>
-<translation id="2307462900900812319">Hálózat beállítása</translation>
 <translation id="2307553512430195144">Ha Ön beleegyezik, a Google Segéd készenléti módban várakozik, amíg nem észleli az „Ok Google” parancsszót, és fel nem ismeri a Voice Match segítségével, hogy <ph name="SUPERVISED_USER_NAME" /> beszél.
     <ph name="BR" />
     A Voice Match segítségével a Google Segéd felismeri <ph name="SUPERVISED_USER_NAME" /> hangját az Ön <ph name="DEVICE_TYPE" /> eszközén, és meg tudja különböztetni másoktól.
@@ -2732,7 +2728,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2860710618359053450">Állkapocs jobbra mozgatása</translation>
 <translation id="2861301611394761800">A rendszerfrissítés befejeződött. Kérjük, indítsa újra a rendszert.</translation>
 <translation id="2861402191395139055">Passpoint-előfizetések</translation>
-<translation id="2861941300086904918">Natív kliens biztonságkezelő</translation>
 <translation id="2862815659905780618">Linux fejlesztői környezet eltávolítása</translation>
 <translation id="2862986593239703553">ez a kártya</translation>
 <translation id="2864601841139725659">Profilkép beállítása</translation>
@@ -6070,7 +6065,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5230190638672215545">Az „uow” karakterlánc beírása a „ươ” karakter megjelenítéséhez</translation>
 <translation id="5230516054153933099">Ablak</translation>
 <translation id="5232714764496316200">Kérjen segítséget a házi feladathoz a Google Lens segítségével</translation>
-<translation id="5233019165164992427">NaCl hibakeresési port</translation>
 <translation id="5233231016133573565">Folyamat azonosítója</translation>
 <translation id="5233638681132016545">Új lap</translation>
 <translation id="5233736638227740678">&amp;Beillesztés</translation>
@@ -10569,7 +10563,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8431977087510901105">Kurzorbeállítások visszaállítva</translation>
 <translation id="8433186206711564395">Hálózati beállítások</translation>
 <translation id="8434109185104929038">Olvasósarok</translation>
-<translation id="8434480141477525001">NaCl hibakeresési port</translation>
 <translation id="8434837876193928924">Lapcsoport részletei</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{A lap kijavítása}other{A lapok kijavítása}}</translation>
 <translation id="8436800506934625875">Alfanumerikus helyreállítási PIN-kód létrehozésa a Google Jelszókezelőhöz</translation>

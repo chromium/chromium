@@ -357,6 +357,7 @@
 <translation id="1232569758102978740">শিরোনামহীন</translation>
 <translation id="1233497634904001272">অনুরোধটি সম্পূর্ণ করার জন্য নিরাপত্তা কী আবার স্পর্শ করুন।</translation>
 <translation id="1233721473400465416">স্থানীয়</translation>
+<translation id="1233835246554936745">{0,plural, =1{অ্য়াকাউন্টে ১টি আইটেম সেভ করুন}one{অ্যাকাউন্টে #টি আইটেম সেভ করুন}other{অ্যাকাউন্টে #টি আইটেম সেভ করুন}}</translation>
 <translation id="1234736487471201993">এই ছবির QR কোড তৈরি করুন</translation>
 <translation id="1234808891666923653">সার্ভিস ওয়ার্কার্স</translation>
 <translation id="1235458158152011030">পরিচিত নেটওয়ার্কগুলি</translation>
@@ -1218,7 +1219,6 @@
 <translation id="1826657447823925402">রিভার্স স্ক্রলিং বন্ধ করা হয়েছে</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> রঙ</translation>
 <translation id="1827504459960247692">হটস্পটের নাম</translation>
-<translation id="1828378091493947763">এই ডিভাইসে এই প্লাগ-ইন সমর্থিত নয়</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{সবকটি &amp;খুলুন}=1{বুকমার্ক &amp;খুলুন}one{সবকটি ({COUNT}টি) &amp;খুলুন}other{সবকটি ({COUNT}টি) &amp;খুলুন}}</translation>
 <translation id="1828901632669367785">সিস্টেম ডায়ালগ ব্যবহার করে প্রিন্ট করুন...</translation>
 <translation id="1829129547161959350">পেঙ্গুইন</translation>
@@ -1405,7 +1405,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{১টি এক্সটেনশন পর্যালোচনা করা হয়েছে}one{{NUM_EXTENSIONS}টি এক্সটেনশন পর্যালোচনা করা হয়েছে}other{{NUM_EXTENSIONS}টি এক্সটেনশন পর্যালোচনা করা হয়েছে}}</translation>
 <translation id="1959421829481337178">আপনার পরিষেবা প্রদানকারীর দেওয়া অ্যাক্টিভেশন কোড লিখুন।</translation>
 <translation id="1960211333621141174">ক্লিফ</translation>
-<translation id="1962233722219655970">এই পৃষ্ঠাটি একটি নেটিভ ক্লায়েন্ট অ্যাপ্লিকেশন ব্যবহার করে যা আপনার কম্পিউটারে কাজ করে না৷</translation>
 <translation id="1963976881984600709">স্ট্যান্ডার্ড সুরক্ষা</translation>
 <translation id="1964009877615282740">আরও দেখুন</translation>
 <translation id="1965578266762387357">লেখার ব্যাপারে সাহায্য নিলে এই পৃষ্ঠার URL, কন্টেন্ট ও টেক্সট Google-কে পাঠানো হয়। ব্যক্তিগত তথ্য (চিকিৎসা সংক্রান্ত বা অর্থনৈতিক তথ্য) লিখবেন না</translation>
@@ -1734,7 +1733,6 @@
 <translation id="2188881192257509750"><ph name="APPLICATION" /> খুলুন</translation>
 <translation id="2188919919468240749">ট্যাব গ্রুপ মুছবেন?</translation>
 <translation id="2190069059097339078">ওয়াই-ফাই সার্টিফিকেট সংগ্রহকারী</translation>
-<translation id="219008588003277019">স্থানীয় গ্রাহক মডিউল: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(খালি)</translation>
 <translation id="2190967441465539539">ক্যামেরা ও মাইক্রোফোন অ্যাক্সেস করা যাবে না</translation>
 <translation id="2191754378957563929">চালু করা আছে</translation>
@@ -1914,7 +1912,6 @@
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" অতিরিক্ত অনুমতির অনুরোধ জানিয়েছে৷</translation>
 <translation id="2304820083631266885">গ্রহ</translation>
 <translation id="2306794767168143227">এই ডিভাইসের <ph name="BRAND" />-এ সেভ করুন</translation>
-<translation id="2307462900900812319">নেটওয়ার্ক কনফিগার করুন</translation>
 <translation id="2307553512430195144">আপনি রাজি থাকলে, Google Assistant স্ট্যান্ডবাই মোডে অপেক্ষা করবে “Ok Google” শনাক্ত করার জন্য এবং <ph name="SUPERVISED_USER_NAME" /> কথা বলেছে কিনা তা Voice Match-এর সাহায্যে শনাক্ত করতে পারবে।
     <ph name="BR" />
     Voice Match-এর মাধ্যমে Google Assistant আপনার <ph name="DEVICE_TYPE" />-এ <ph name="SUPERVISED_USER_NAME" />-এর ভয়েস শনাক্ত করতে পারে এবং তাকে অন্যদের থেকে আলাদা করতে পারে।
@@ -2734,7 +2731,6 @@
 <translation id="2860710618359053450">চোয়াল ডানদিকে নিয়ে যান</translation>
 <translation id="2861301611394761800">সিস্টেম আপডেট সম্পূর্ণ৷ দয়া করে সিস্টেমটি পুনরায় শুরু করুন৷</translation>
 <translation id="2861402191395139055">পাসপয়েন্ট সাবস্ক্রিপশন</translation>
-<translation id="2861941300086904918">নেটিভ ক্লায়েন্ট সুরক্ষা পরিচালক</translation>
 <translation id="2862815659905780618">Linux ডেভেলপ করার বিকল্প সরান</translation>
 <translation id="2862986593239703553">এই কার্ড</translation>
 <translation id="2864601841139725659">আপনার প্রোফাইল ফটো সেট করুন</translation>
@@ -5657,6 +5653,7 @@
 <translation id="4918844574251943176">ছবি কপি করা হয়েছে</translation>
 <translation id="4921348630401250116">টেক্সট-টু-স্পিচ</translation>
 <translation id="4922104989726031751">আপনার অপারেটিং সিস্টেমের সাথে Password Manager ব্যবহার করতে, Chromium আবার চালু করুন এবং নিজের কম্পিউটারের Password Manager অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
+<translation id="4923561999941435531">{0,plural, =1{অ্য়াকাউন্টে ১টি আইটেম সেভ করুন}one{অ্যাকাউন্টে #টি আইটেম সেভ করুন}other{অ্যাকাউন্টে #টি আইটেম সেভ করুন}}</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> আনইনস্টল করা হচ্ছে...</translation>
 <translation id="4923977675318667854">ট্যাব গ্রুপ দেখুন</translation>
 <translation id="4924002401726507608">মতামত জানান</translation>
@@ -6073,7 +6070,6 @@
 <translation id="5230190638672215545">"ươ" পেতে "uow" টাইপ করুন</translation>
 <translation id="5230516054153933099">উইন্ডো</translation>
 <translation id="5232714764496316200">Google Lens-এর মাধ্যমে হোমওয়ার্কের ব্যাপারে সাহায্য পান</translation>
-<translation id="5233019165164992427">NaCl ডিবাগ পোর্ট</translation>
 <translation id="5233231016133573565">প্রক্রিয়া ID</translation>
 <translation id="5233638681132016545">নতুন ট্যাব</translation>
 <translation id="5233736638227740678">&amp;প্রতিলেপন</translation>
@@ -7073,6 +7069,7 @@
 <translation id="5965607173855879702">ডেটা মুছে দেওয়া হচ্ছে...</translation>
 <translation id="5966511985653515929">সব উইন্ডো বন্ধ করলে আপনার ডিভাইস থেকে সাইট ডেটা মুছে যায়</translation>
 <translation id="5968022600320704045">কোনও সার্চ ফলাফল নেই</translation>
+<translation id="5968400720580217226">AI মোড</translation>
 <translation id="5969364029958154283">সেটিংস রিসেট করা সম্পর্কে আরও জানুন</translation>
 <translation id="5969419185858894314"><ph name="FOLDERNAME" />-এর ফাইল <ph name="ORIGIN" />-এর দেখার অ্যাক্সেস আছে</translation>
 <translation id="5969728632630673489">কীবোর্ড শর্ককার্টের বিজ্ঞপ্তি বাতিল করা হয়েছে</translation>
@@ -9537,6 +9534,7 @@
 <translation id="7722040605881499779">আপডেটের জন্য প্রয়োজন: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">ডিফল্ট Chrome-এ রিসেট করুন</translation>
 <translation id="7724603315864178912">কাটুন</translation>
+<translation id="7724711098786238351">ডেমো মোড এমন ব্যবহারকারীদের জন্য উপলভ্য যাদের বয়স ১৮ বছরের বেশি এবং এটি Google-এর পরিষেবার শর্তাবলী এবং গোপনীয়তা নীতি দ্বারা পরিচালিত। এই ডিভাইসে লেখা ডেটা নির্দিষ্ট সময় অন্তর অন্যরা দেখতে পেতে পারেন।</translation>
 <translation id="7726391492136714301">আপনার ফোনের বিজ্ঞপ্তি ও অ্যাপ দেখুন</translation>
 <translation id="7727898923446098954">ট্যাব লুকানো আছে</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{এই ট্যাব পজ করুন}one{এই ট্যাব পজ করুন}other{এই ট্যাবগুলি পজ করুন}}</translation>
@@ -10574,7 +10572,6 @@
 <translation id="8431977087510901105">কার্সর সেটিংস রিসেট করা হয়েছে</translation>
 <translation id="8433186206711564395">নেটওয়ার্ক সেটিংস</translation>
 <translation id="8434109185104929038">রিডিং নুক</translation>
-<translation id="8434480141477525001">NaCl ডিবাগ পোর্ট</translation>
 <translation id="8434837876193928924">ট্যাব গ্রুপ সম্পর্কিত বিবরণ</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{এই ট্যাব সম্পর্কিত সমস্যার সমাধান করুন}one{এই ট্যাব সম্পর্কিত সমস্যার সমাধান করুন}other{এই ট্যাবগুলি সম্পর্কিত সমস্যার সমাধান করুন}}</translation>
 <translation id="8436800506934625875">Google Password Manager-এর জন্য একটি আলফানিউমেরিক, ফিরিয়ে আনার পিন তৈরি করুন</translation>
@@ -11030,6 +11027,7 @@
 <translation id="8749805710397399240">আপনার স্ক্রিন কাস্ট করা যাচ্ছে না। 'সিস্টেম অভিরুচি' বিকল্পে 'স্ক্রিন রেকর্ডিং' অনুমতি চেক করুন।</translation>
 <translation id="8749826920799243530">ডিভাইসটি তালিকাভুক্ত নয়</translation>
 <translation id="8749863574775030885">একটি অজানা বিক্রেতা থেকে USB ডিভাইস অ্যাক্সেস করুন</translation>
+<translation id="8749865622265861882">আপনি একটি ডেমো ডিভাইস ব্যবহার করছেন</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> সিরিয়াল পোর্টে কানেক্ট করতে চাইছে</translation>
 <translation id="8750346984209549530">মোবাইল APN</translation>
 <translation id="8750786237117206586">ChromeOS Flex অডিও সেটিংস ম্যানেজ করুন</translation>

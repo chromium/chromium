@@ -356,6 +356,7 @@
 <translation id="1232569758102978740">శీర్షికలేనిది</translation>
 <translation id="1233497634904001272">రిక్వెస్ట్‌ను పూర్తి చేయడానికి మీ సెక్యూరిటీ కీని మళ్లీ తాకండి.</translation>
 <translation id="1233721473400465416">లొకేల్</translation>
+<translation id="1233835246554936745">{0,plural, =1{ఖాతాలో 1 ఐటెమ్‌ను సేవ్ చేయండి}other{ఖాతాలో # ఐటెమ్‌లను సేవ్ చేయండి}}</translation>
 <translation id="1234736487471201993">ఈ ఇమేజ్ కోసం QR కోడ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="1234808891666923653">సర్వీస్ వర్కర్‌లు</translation>
 <translation id="1235458158152011030">తెలిసిన నెట్‌వర్క్‌లు</translation>
@@ -1215,7 +1216,6 @@
 <translation id="1826657447823925402">రివర్స్ స్క్రోలింగ్ డిజేబుల్ చేయబడింది</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> రంగు</translation>
 <translation id="1827504459960247692">హాట్‌స్పాట్ పేరు</translation>
-<translation id="1828378091493947763">ఈ పరికరంలో ఈ ప్లగిన్‌కు మద్దతు లేదు</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{అన్నింటినీ &amp;తెరువు}=1{బుక్‌మార్క్‌ను &amp;తెరువు}other{అన్నింటినీ ({COUNT}) &amp;తెరువు}}</translation>
 <translation id="1828901632669367785">సిస్టమ్ డైలాగ్‌ను ఉపయోగించి ప్రింట్ చేయండి...</translation>
 <translation id="1829129547161959350">పెంగ్విన్</translation>
@@ -1402,7 +1402,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 ఎక్స్‌టెన్షన్ రివ్యూ చేయబడింది}other{{NUM_EXTENSIONS} ఎక్స్‌టెన్షన్ లు రివ్యూ చేయబడ్డాయి}}</translation>
 <translation id="1959421829481337178">దయచేసి మీ క్యారియర్ అందించిన యాక్టివేషన్ కోడ్‌ను ఎంటర్ చేయండి.</translation>
 <translation id="1960211333621141174">శిఖరం</translation>
-<translation id="1962233722219655970">ఈ పేజీ మీ కంప్యూటర్‌లో పని చేయని స్థానిక క్లయింట్ యాప్‌ను ఉపయోగిస్తుంది.</translation>
 <translation id="1963976881984600709">స్టాండర్డ్ రక్షణ</translation>
 <translation id="1964009877615282740">మరిన్ని చూడండి</translation>
 <translation id="1965578266762387357">మీరు రాయడంలో సహాయాన్ని పొందినప్పుడు, ఈ పేజీ URL, కంటెంట్, ఇంకా మీ టెక్స్ట్ Googleకు పంపబడతాయి. వ్యక్తిగత సమాచారాన్ని (ఉదాహరణకు, మెడికల్ లేదా ఆర్థికపరమైన వివరాలు వంటివి) ఎంటర్ చేయకండి</translation>
@@ -1732,7 +1731,6 @@
 <translation id="2188881192257509750"><ph name="APPLICATION" />ని తెరువు</translation>
 <translation id="2188919919468240749">ట్యాబ్ గ్రూప్‌ను తొలగించాలా?</translation>
 <translation id="2190069059097339078">WiFi క్రెడెన్షియల్స్ గెట్టర్</translation>
-<translation id="219008588003277019">స్థానిక క్లయింట్ మాడ్యూల్: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(ఖాళీ)</translation>
 <translation id="2190967441465539539">కెమెరా, మైక్రోఫోన్‌లను యాక్సెస్ చేయడం సాధ్యపడదు</translation>
 <translation id="2191754378957563929">ఆన్ చేయబడ్డాయి</translation>
@@ -1912,7 +1910,6 @@
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" అదనపు అనుమతులను అభ్యర్థించింది.</translation>
 <translation id="2304820083631266885">గ్రహం</translation>
 <translation id="2306794767168143227">ఈ పరికరంలో <ph name="BRAND" />కు సేవ్ చేయండి</translation>
-<translation id="2307462900900812319">నెట్‌వర్క్‌ను కాన్ఫిగర్ చేయి</translation>
 <translation id="2307553512430195144">మీరు అంగీకరిస్తే, Google Assistant "Ok Google"ను గుర్తించడానికి స్టాండ్‌బై మోడ్‌లో ఉండి, వాయిస్ మ్యాచ్ సహాయంతో మాట్లాడేది <ph name="SUPERVISED_USER_NAME" /> అని గుర్తుపట్టగలదు.
     <ph name="BR" />
     మీ <ph name="DEVICE_TYPE" />లో <ph name="SUPERVISED_USER_NAME" /> వాయిస్‌ను గుర్తించడానికి, అలాగే ఇతరులకూ వారికి మధ్య తేడాను గుర్తుపట్టడానికి మీ Google Assistantకు వాయిస్ మ్యాచ్ సహాయపడుతుంది.
@@ -2734,7 +2731,6 @@
 <translation id="2860710618359053450">దవడను కుడివైపుకి కదల్చడం</translation>
 <translation id="2861301611394761800">సిస్టమ్ అప్‌డేట్ పూర్తయ్యింది. దయచేసి సిస్టమ్‌ని పునఃప్రారంభించండి.</translation>
 <translation id="2861402191395139055">Passpoint సబ్‌స్క్రిప్షన్‌లు</translation>
-<translation id="2861941300086904918">స్థానిక‌ క్లయింట్ భద్రతా మేనేజ‌ర్‌</translation>
 <translation id="2862815659905780618">Linux డెవలప్‌మెంట్ ఎన్విరాన్మెంట్‌ను తీసివేయండి</translation>
 <translation id="2862986593239703553">ఈ కార్డ్</translation>
 <translation id="2864601841139725659">మీ ప్రొఫైల్ చిత్రాన్ని సెట్ చేయండి</translation>
@@ -5658,6 +5654,7 @@
 <translation id="4918844574251943176">ఇమేజ్ కాపీ చేయబడింది</translation>
 <translation id="4921348630401250116">టెక్స్ట్-టు-స్పీచ్</translation>
 <translation id="4922104989726031751">మీ ఆపరేటింగ్ సిస్టమ్‌తో Password Managerను ఉపయోగించడానికి, Chromiumను రీ-లాంచ్ చేసి, మీ కంప్యూటర్ పాస్‌వర్డ్ మేనేజర్‌కు యాక్సెస్‌ను అనుమతించండి. మీ ట్యాబ్‌లు రీ-లాంచ్ చేసిన తర్వాత మళ్లీ తెరవబడతాయి.</translation>
+<translation id="4923561999941435531">{0,plural, =1{ఖాతాలో 1 ఐటెమ్‌ను సేవ్ చేయండి}other{ఖాతాలో # ఐటెమ్‌లను సేవ్ చేయండి}}</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" />ను అన్ఇన్‌స్టాల్ చేస్తోంది...</translation>
 <translation id="4923977675318667854">ట్యాబ్ గ్రూప్‌లను చూడండి</translation>
 <translation id="4924002401726507608">ఫీడ్‌బ్యాక్‌ను సమర్పించండి</translation>
@@ -6075,7 +6072,6 @@
 <translation id="5230190638672215545">"ươ"ను పొందడానికి "uow"ను టైప్ చేయండి</translation>
 <translation id="5230516054153933099">విండో</translation>
 <translation id="5232714764496316200">Google Lensతో హోమ్‌వర్క్‌లో సహాయం పొందండి</translation>
-<translation id="5233019165164992427">NaCl డీబగ్ పోర్ట్</translation>
 <translation id="5233231016133573565">ప్రాసెస్ ID</translation>
 <translation id="5233638681132016545">కొత్త‌ ట్యాబ్</translation>
 <translation id="5233736638227740678">&amp;అతికించు</translation>
@@ -7075,6 +7071,7 @@
 <translation id="5965607173855879702">డేటాను తొలగిస్తోంది...</translation>
 <translation id="5966511985653515929">మీరు విండోలన్నింటినీ మూసివేసినప్పుడు మీ పరికరం నుండి సైట్ డేటా తొలగించబడుతుంది</translation>
 <translation id="5968022600320704045">సెర్చ్ ఫలితాలు ఏవీ లేవు</translation>
+<translation id="5968400720580217226">AI మోడ్</translation>
 <translation id="5969364029958154283">సెట్టింగ్‌లను రీసెట్ చేయడం గురించి మరింత తెలుసుకోండి</translation>
 <translation id="5969419185858894314"><ph name="FOLDERNAME" />లో ఫైళ్లను <ph name="ORIGIN" /> చూడగలదు</translation>
 <translation id="5969728632630673489">కీబోర్డ్ షార్ట్‌కట్ నోటిస్‌ను విస్మరించారు</translation>
@@ -9539,6 +9536,7 @@
 <translation id="7722040605881499779">అప్‌డేట్ చేయడానికి కావాల్సిన స్థలం: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">ఆటోమేటిక్‌గా ఉండే Chrome రూపానికి రీసెట్ చేయండి</translation>
 <translation id="7724603315864178912">కత్తిరించండి</translation>
+<translation id="7724711098786238351">డెమో మోడ్ 18+ సంవత్సరాల యూజర్‌లను దృష్టిలో ఉంచుకొని రూపొందించినది, ఇది Google సర్వీస్ నియమాలకు, గోప్యతా పాలసీకి కట్టుబడి ఉంటుంది. ఈ డివైజ్‌లో ఎంటర్ చేసిన డేటాను కాలానుగుణంగా తొలగించేటప్పుడు ఇతరులు చూడవచ్చు.</translation>
 <translation id="7726288096350730168">ఈ డివైజ్ నుండి తొలగించండి</translation>
 <translation id="7726391492136714301">మీ ఫోన్‌లోని నోటిఫికేషన్‌లు, యాప్‌లను చూడండి</translation>
 <translation id="7727898923446098954">ట్యాబ్ దాచబడింది</translation>
@@ -10574,7 +10572,6 @@
 <translation id="8431977087510901105">కర్సర్ సెట్టింగ్‌లు రీసెట్ అయ్యాయి</translation>
 <translation id="8433186206711564395">నెట్‌వర్క్ సెట్టింగ్‌లు</translation>
 <translation id="8434109185104929038">చదివే ప్రాంతం</translation>
-<translation id="8434480141477525001">NaCl డీబగ్ పోర్ట్</translation>
 <translation id="8434837876193928924">ట్యాబ్ గ్రూప్ వివరాలు</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{ఈ ట్యాబ్‌ను పరిష్కరించండి}other{ఈ ట్యాబ్‌లను పరిష్కరించండి}}</translation>
 <translation id="8436800506934625875">Google Password Managerకు సంబంధించిన ఆల్ఫాన్యూమరిక్ రికవరీ PINను క్రియేట్ చేయండి</translation>
@@ -11030,6 +11027,7 @@
 <translation id="8749805710397399240">మీ స్క్రీన్‌ను ప్రసారం చేయడం సాధ్యపడలేదు. సిస్టమ్ ప్రాధాన్యతలలో ఉన్న 'స్క్రీన్ రికార్డింగ్' అనుమతిని చెక్ చేయండి.</translation>
 <translation id="8749826920799243530">పరికరం ఎన్‌రోల్ చేయబడలేదు</translation>
 <translation id="8749863574775030885">తెలియని విక్రేత అందించిన USB పరికరాలకు యాక్సెస్</translation>
+<translation id="8749865622265861882">మీరు డెమో డివైజ్‌ను ఉపయోగిస్తున్నారు</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> ఈ సీరియల్ పోర్ట్‌లలో ఒకదానితో కనెక్ట్ (అనుసంధానం) కావాలని కోరుకుంటుంది</translation>
 <translation id="8750346984209549530">సెల్యూలార్ APN</translation>
 <translation id="8750786237117206586">ChromeOS Flex ఆడియో సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>

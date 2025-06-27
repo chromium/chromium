@@ -174,6 +174,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="5203244847421322551">Salvar e preencher automaticamente senhas no Chromium</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="5259423875997548710">Pesquise recursos visuais no Chromium.</translation>
+<translation id="5284913972719948193">Importe seus dados para usar senhas, histórico, favoritos e cartões de crédito no Chromium</translation>
 <translation id="5308226104666789935">Não é possível verificar se há atualizações</translation>
 <translation id="5311557153294205270">Adiciona os URLs inseridos aos seus favoritos no Chromium.</translation>
 <translation id="5383251701169024761">Para ter acesso fácil às suas senhas salvas em outros apps, use o preenchimento automático do Chromium.</translation>
@@ -307,6 +308,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="865600487977764604">Protege você no Chromium e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada.</translation>
 <translation id="8663480472502753423">Manter o Chromium atualizado</translation>
 <translation id="8685813584220679697">Faça login neste site e no Chromium.</translation>
+<translation id="8698780336333802489">Importar para o Chromium</translation>
 <translation id="8730503818204408000">Abre as configurações do Chromium para defini-lo como o navegador padrão.</translation>
 <translation id="8754966941001340678">O Chromium recomenda a proteção reforçada</translation>
 <translation id="8759037115129007407">O membro da sua família não pode receber senhas no momento. Peça para essa pessoa atualizar o Chromium e sincronizar as senhas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

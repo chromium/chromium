@@ -1217,7 +1217,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1826657447823925402">Omvänd scrollning har inaktiverats</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> färg</translation>
 <translation id="1827504459960247692">Namn på surfzon</translation>
-<translation id="1828378091493947763">Enheten har inte stöd för det här pluginprogrammet</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Öppna alla}=1{&amp;Öppna bokmärke}other{&amp;Öppna alla ({COUNT})}}</translation>
 <translation id="1828901632669367785">Skriv ut via systemets dialogruta ...</translation>
 <translation id="1829129547161959350">Pingvin</translation>
@@ -1404,7 +1403,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 tillägg har granskats}other{{NUM_EXTENSIONS} tillägg har granskats}}</translation>
 <translation id="1959421829481337178">Ange aktiveringskoden från operatören.</translation>
 <translation id="1960211333621141174">Klippa</translation>
-<translation id="1962233722219655970">Denna sida använder en Native Client-app som inte fungerar på din dator.</translation>
 <translation id="1963976881984600709">Standardskydd</translation>
 <translation id="1964009877615282740">Se fler</translation>
 <translation id="1965578266762387357">När du får skrivhjälp skickas sidans webbadress, innehåll och din text till Google. Ange inte personliga uppgifter (t.ex. medicinska eller ekonomiska uppgifter)</translation>
@@ -1733,7 +1731,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2188881192257509750">Öppna <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Vill du radera flikgruppen?</translation>
 <translation id="2190069059097339078">Hämtningsfunktion för wifi-användaruppgifter</translation>
-<translation id="219008588003277019">Native Client-modul: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(tom)</translation>
 <translation id="2190967441465539539">Ingen kamera- eller mikrofonåtkomst</translation>
 <translation id="2191754378957563929">På</translation>
@@ -1913,7 +1910,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> har begärt ytterligare behörigheter.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2306794767168143227">Spara i <ph name="BRAND" /> på den här enheten</translation>
-<translation id="2307462900900812319">Konfigurera nätverk</translation>
 <translation id="2307553512430195144">Om du godkänner väntar Google Assistent i viloläge tills den registrerar ”Hey Google” och identifierar att det är <ph name="SUPERVISED_USER_NAME" /> som talar med Voice Match.
     <ph name="BR" />
     Med hjälp av Voice Match kan Google Assistent identifiera rösten för <ph name="SUPERVISED_USER_NAME" /> på <ph name="DEVICE_TYPE" /> och skilja den från andras.
@@ -2733,7 +2729,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2860710618359053450">Flytta käken åt höger</translation>
 <translation id="2861301611394761800">Systemuppdateringen har slutförts. Starta om systemet.</translation>
 <translation id="2861402191395139055">Passpoint-prenumerationer</translation>
-<translation id="2861941300086904918">Native Client säkerhetshanterare</translation>
 <translation id="2862815659905780618">Ta bort utvecklingsmiljön för Linux</translation>
 <translation id="2862986593239703553">det här kortet</translation>
 <translation id="2864601841139725659">Ange profilbild</translation>
@@ -6072,7 +6067,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5230190638672215545">Skriv ”uow” för att få ”ươ”</translation>
 <translation id="5230516054153933099">Fönster</translation>
 <translation id="5232714764496316200">Få hjälp med läxorna med Google Lens</translation>
-<translation id="5233019165164992427">Felsökningsport för Native Client</translation>
 <translation id="5233231016133573565">Process-ID</translation>
 <translation id="5233638681132016545">Ny flik</translation>
 <translation id="5233736638227740678">K&amp;listra in</translation>
@@ -10571,7 +10565,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8431977087510901105">Markörinställningarna har återställts</translation>
 <translation id="8433186206711564395">Nätverksinställningar</translation>
 <translation id="8434109185104929038">Läshörna</translation>
-<translation id="8434480141477525001">Felsökningsport för Native Client</translation>
 <translation id="8434837876193928924">Information om flikgruppen</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Åtgärda den här fliken}other{Åtgärda de här flikarna}}</translation>
 <translation id="8436800506934625875">Skapa en alfanumerisk pinkod för återställning för Google Lösenordshantering</translation>

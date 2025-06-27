@@ -1216,7 +1216,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1826657447823925402">Omgekeerde rollees is gedeaktiveer</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> kleur</translation>
 <translation id="1827504459960247692">Warmkolnaam</translation>
-<translation id="1828378091493947763">Hierdie inprop word nie op hierdie toestel gesteun nie</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{Maak almal &amp;oop}=1{Maak boekmerk &amp;oop}other{Maak almal ({COUNT}) &amp;oop}}</translation>
 <translation id="1828901632669367785">Druk deur stelseldialoog te gebruik …</translation>
 <translation id="1829129547161959350">Pikkewyn</translation>
@@ -1403,7 +1402,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 uitbreiding gekontroleer}other{{NUM_EXTENSIONS} uitbreidings gekontroleer}}</translation>
 <translation id="1959421829481337178">Voer die aktiveringkode in wat jou diensverskaffer verskaf het.</translation>
 <translation id="1960211333621141174">Krans</translation>
-<translation id="1962233722219655970">Hierdie bladsy gebruik 'n plaaslike kliëntprogram wat nie op jou rekenaar werk nie.</translation>
 <translation id="1963976881984600709">Standaardbeskerming</translation>
 <translation id="1964009877615282740">Sien meer</translation>
 <translation id="1965578266762387357">Wanneer jy hulp met skryf kry, word die bladsy se URL, inhoud en jou teks na Google toe gestuur. Moenie persoonlike inligting (soos mediese of finansiële besonderhede) invul nie</translation>
@@ -1732,7 +1730,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2188881192257509750">Maak <ph name="APPLICATION" /> oop</translation>
 <translation id="2188919919468240749">Vee oortjiegroep uit?</translation>
 <translation id="2190069059097339078">Wi-Fi-eiebewyshaler</translation>
-<translation id="219008588003277019">Plaaslike kliënt-module: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(leeg)</translation>
 <translation id="2190967441465539539">Kan nie toegang tot kamera en mikrofoon verkry nie</translation>
 <translation id="2191754378957563929">Aan</translation>
@@ -1912,7 +1909,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" het bykomende toestemmings versoek.</translation>
 <translation id="2304820083631266885">Planeet</translation>
 <translation id="2306794767168143227">Stoor na <ph name="BRAND" /> op hierdie toestel</translation>
-<translation id="2307462900900812319">Stel netwerk op</translation>
 <translation id="2307553512430195144">As jy instem, sal Google Assistent in bystandmodus wag om "Ok Google" te bespeur en kan dit met Voice Match herken dat dit <ph name="SUPERVISED_USER_NAME" /> is wat praat.
     <ph name="BR" />
     Voice Match help Google Assistent om <ph name="SUPERVISED_USER_NAME" /> se stem op jou <ph name="DEVICE_TYPE" /> te identifiseer en dit van ander te onderskei.
@@ -2732,7 +2728,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2860710618359053450">Beweeg kakebeen regs</translation>
 <translation id="2861301611394761800">Stelselopdatering voltooi. Herbegin asseblief die stelsel.</translation>
 <translation id="2861402191395139055">Passpoint-intekeninge</translation>
-<translation id="2861941300086904918">Toestelspesifieke kliënt se sekuriteitsbestuurder</translation>
 <translation id="2862815659905780618">Verwyder Linux-ontwikkelingomgewing</translation>
 <translation id="2862986593239703553">hierdie kaart</translation>
 <translation id="2864601841139725659">Stel jou profielfoto</translation>
@@ -6071,7 +6066,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5230190638672215545">Tik “uow” om “ươ” te kry</translation>
 <translation id="5230516054153933099">Venster</translation>
 <translation id="5232714764496316200">Kry huiswerkhulp met Google Lens</translation>
-<translation id="5233019165164992427">NaCl-ontfoutpoort</translation>
 <translation id="5233231016133573565">Proses-ID</translation>
 <translation id="5233638681132016545">Nuwe oortjie</translation>
 <translation id="5233736638227740678">Plak</translation>
@@ -10569,7 +10563,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8431977087510901105">Terugstelling van skermpyltjie-instellings</translation>
 <translation id="8433186206711564395">Netwerkinstellings</translation>
 <translation id="8434109185104929038">Leeshoekie</translation>
-<translation id="8434480141477525001">NaCl-ontfoutpoort</translation>
 <translation id="8434837876193928924">Besonderhede van oortjiegroep</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Stel hierdie oortjie reg}other{Stel hierdie oortjies reg}}</translation>
 <translation id="8436800506934625875">Skep ’n alfanumeriese terugstel-PIN vir Google Wagwoordbestuurder</translation>

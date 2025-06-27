@@ -1206,7 +1206,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1826657447823925402">Desactivouse o desprazamento inverso</translation>
 <translation id="1827416268933303617">Cor: <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Nome da zona wifi</translation>
-<translation id="1828378091493947763">Este plugin non é compatible con este dispositivo</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Abrir todos}=1{&amp;Abrir marcador}other{&amp;Abrir todos ({COUNT})}}</translation>
 <translation id="1828901632669367785">Imprimir usando a caixa de diálogo do sistema...</translation>
 <translation id="1829129547161959350">Pingüín</translation>
@@ -1392,7 +1391,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 extensión revisada}other{{NUM_EXTENSIONS} extensións revisadas}}</translation>
 <translation id="1959421829481337178">Escribe o código de activación que che proporcionou o teu operador.</translation>
 <translation id="1960211333621141174">Cantil</translation>
-<translation id="1962233722219655970">Esta páxina utiliza unha aplicación de cliente nativo que non funciona no teu ordenador.</translation>
 <translation id="1963976881984600709">Protección estándar</translation>
 <translation id="1964009877615282740">Ver máis</translation>
 <translation id="1965578266762387357">Cando recibes axuda para escribir, envíanse a Google o contido e o URL da páxina, ademais do teu texto. Non inclúas información persoal (como detalles médicos ou financeiros)</translation>
@@ -1721,7 +1719,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2188881192257509750">Abrir <ph name="APPLICATION" /></translation>
 <translation id="2188919919468240749">Queres eliminar o grupo de pestanas?</translation>
 <translation id="2190069059097339078">Método de obtención de credenciais de wifi</translation>
-<translation id="219008588003277019">Módulo de cliente nativo: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(baleiro)</translation>
 <translation id="2190967441465539539">Non se pode acceder á cámara nin ao micrófono</translation>
 <translation id="2191754378957563929">Activado</translation>
@@ -1898,7 +1895,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" solicitou permisos adicionais.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2306794767168143227">Gardar no <ph name="BRAND" /> deste dispositivo</translation>
-<translation id="2307462900900812319">Configurar rede</translation>
 <translation id="2307553512430195144">Se aceptas, o Asistente de Google agardará en modo de espera para detectar o comando “Hey Google” e poder recoñecer que <ph name="SUPERVISED_USER_NAME" /> é a persoa que está falando grazas a Voice Match.
     <ph name="BR" />
 Voice Match axúdalle ao Asistente de Google a identificar a voz de <ph name="SUPERVISED_USER_NAME" /> no teu dispositivo (<ph name="DEVICE_TYPE" />) e a distinguila doutras.
@@ -2718,7 +2714,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2860710618359053450">Mover a mandíbula cara á dereita</translation>
 <translation id="2861301611394761800">Actualización do sistema completada. Reinicia o sistema.</translation>
 <translation id="2861402191395139055">Subscricións a Passpoint</translation>
-<translation id="2861941300086904918">Xestor de seguranza de cliente nativo</translation>
 <translation id="2862815659905780618">Quitar o contorno de programación de Linux</translation>
 <translation id="2862986593239703553">esta tarxeta</translation>
 <translation id="2864601841139725659">Definir a túa foto do perfil</translation>
@@ -6060,7 +6055,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5230190638672215545">Escribir "uow" para obter "ươ"</translation>
 <translation id="5230516054153933099">Ventá</translation>
 <translation id="5232714764496316200">Recibe axuda para facer os deberes con Google Lens</translation>
-<translation id="5233019165164992427">Porto de depuración NaCl</translation>
 <translation id="5233231016133573565">ID do proceso</translation>
 <translation id="5233638681132016545">Nova pestana</translation>
 <translation id="5233736638227740678">&amp;Pegar</translation>
@@ -10554,7 +10548,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8431977087510901105">Configuración do cursor restablecida</translation>
 <translation id="8433186206711564395">Configuración de rede</translation>
 <translation id="8434109185104929038">Recuncho de lectura</translation>
-<translation id="8434480141477525001">Porto de depuración NaCl</translation>
 <translation id="8434837876193928924">Detalles do grupo de pestanas</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Corrixir esta pestana}other{Corrixir estas pestanas}}</translation>
 <translation id="8436800506934625875">Crear un PIN de recuperación alfanumérico para o xestor de contrasinais de Google</translation>

@@ -1237,12 +1237,14 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6074656473835429958">Dapatkan pemberitahuan</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) tidak dapat dimuat naik</translation>
 <translation id="6077126322656614846">Akses Kamera dibenarkan</translation>
+<translation id="607730456154980869">Dapatkan jawapan dengan lebih cepat menggunakan Gemini dalam Chrome</translation>
 <translation id="6078236141387574983">Laraskan semula ketinggian helaian</translation>
 <translation id="6084848228346514841">Pilih Tab</translation>
 <translation id="6089212833343035912">PIN Google Password Manager</translation>
 <translation id="6090760257419195752">Amaran yang diketepikan</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> ditemukan</translation>
 <translation id="6100617279104942061">Log masuk sebagai <ph name="USER_EMAIL" />. Membuka tetapan.</translation>
+<translation id="610083648014322104">Dapatkan jawapan yang berkaitan berdasarkan kandungan halaman yang anda lihat</translation>
 <translation id="6103540626693881831">Penyulitan pada Peranti</translation>
 <translation id="611361228753138223">Laman yang telah anda lawati pada peranti ini baru-baru ini</translation>
 <translation id="611705554202268369">Tekan lama untuk ditambahkan pada kumpulan tab</translation>
@@ -1495,6 +1497,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6979737339423435258">Sepanjang masa</translation>
 <translation id="6983306615164277634">Anda juga boleh sentuh dan tahan bar alamat untuk menukar kedudukan.</translation>
 <translation id="6987201788018524855">Terokai ciri berguna yang telah anda terlepas</translation>
+<translation id="6989636517316575338">Tanya tentang mana-mana halaman</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Jejaki harga produk dan dapatkan makluman apabila terdapat penurunan harga pada mana-mana laman</translation>
 <translation id="7004032350256606903">Organisasi anda menghendaki anda menyemak imbas secara peribadi.
@@ -1752,6 +1755,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8058655154417507695">Tahun tamat tempoh</translation>
 <translation id="8059533439631660104">Meruntuhkan bahagian.</translation>
 <translation id="8061584726507121204">Sejarah</translation>
+<translation id="8069168488983557089">Dapatkan kesimpulan utama dan cerapan yang membantu anda memahami sebarang topik</translation>
 <translation id="8069394452933076548">Pilih waktu untuk mengalihkan tab yang tidak digunakan baru-baru ini kepada bahagian tab tidak aktif.</translation>
 <translation id="8073670137947914548">Muat turun selesai</translation>
 <translation id="8076492880354921740">Tab</translation>
@@ -1866,6 +1870,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Tab <ph name="FIRST_VISIBLE_TAB" /> melalui <ph name="LAST_VISIBLE_TAB" /> daripada <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Buka pautan daripada apl lain dalam Inkognito</translation>
 <translation id="8529767659511976195">Baharu</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Penyemakan Imbas Selamat dihidupkan</translation>
 <translation id="8534481786647257214">Catatan Google+ selesai.</translation>
 <translation id="8535368836838588657">Dedahkan kata laluan</translation>

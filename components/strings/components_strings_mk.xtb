@@ -3317,6 +3317,7 @@
 <translation id="6587893660316489419">Плик B5</translation>
 <translation id="6587923378399804057">Линкот што го копиравте</translation>
 <translation id="6591833882275308647">Вашиот <ph name="DEVICE_TYPE" /> не е управуван</translation>
+<translation id="6595495738567740002">За да ги избришете колачињата на Google од уредов, <ph name="BEGIN_LINK" />одјавете се од Chrome<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Опции за шифрирање</translation>
 <translation id="6596573334527383067">Прикажи резултати од вчера</translation>
 <translation id="6597665340361269064">90 степени</translation>
@@ -4707,6 +4708,7 @@
 <translation id="9004367719664099443">Во тек е сесија за VR</translation>
 <translation id="9005998258318286617">Не успеа да се вчита PDF-документот.</translation>
 <translation id="9008201768610948239">Игнорирај</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Нема}=1{Од 1 сајт}one{Од # сајт}other{Од # сајта}}</translation>
 <translation id="9012194306129927220">Отсега може да плаќате на рати со Affirm или Zip</translation>
 <translation id="9014705027639070815">Сајтовите што ги посетувате може да побараат податоци од Chrome за да им помогнат при мерењето на изведбата на нивните реклами. Chrome им дозволува на сајтовите да прибираат ограничени типови податоци, на пр., дали сте купиле нешто по посетата на одреден сајт.</translation>
 <translation id="9018120810758822233">Внесете го вашиот безбедносен код за <ph name="CREDIT_CARD" /></translation>

@@ -1953,6 +1953,7 @@
 <translation id="425582637250725228">თქვენ მიერ განხორციელებული ცვლილებები შეიძლება არ შეინახოს.</translation>
 <translation id="4258748452823770588">ცუდი ხელმოწერა</translation>
 <translation id="4261046003697461417">დაცული დოკუმენტების ანოტირება ვერ მოხერხდება</translation>
+<translation id="4265635050210404830">თქვენი ერთგული კლიენტის ბარათები</translation>
 <translation id="4265872034478892965">დაშვებულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="4269029136757623689">ვენტილატორები</translation>
 <translation id="4269264543938335308">საცურაო ტანსაცმელი</translation>
@@ -2227,6 +2228,7 @@
 <translation id="4754461935447132332">დაუშვებელია დაუცველი საიტებისთვის</translation>
 <translation id="4756388243121344051">&amp;ისტორია</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">კოდი არასწორია</translation>
 <translation id="4757993714154412917">თქვენ ეს-ესაა შეიყვანეთ პაროლი შეცდომაში შემყვან საიტზე. თქვენი ანგარიშების დაცვის მიზნით, Chromium გირჩევთ, შეამოწმოთ თქვენი შენახული პაროლები.</translation>
 <translation id="4758311279753947758">საკონტაქტო ინფორმაციის დამატება</translation>
 <translation id="4761326898079498987">შეამოწმეთ დეტალური ინფორმაციისთვის</translation>
@@ -2292,6 +2294,7 @@
 <translation id="486459320933704969">მშობელმა ან მეურვემ უნდა დაადასტუროს, რომ ამ ვებსაიტის მონახულება შეგიძლიათ</translation>
 <translation id="4864801646102013152">რემონტი</translation>
 <translation id="4866506163384898554">კურსორის საჩვენებლად დააჭირეთ კლავიშებზე |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
+<translation id="4868277513442568587">გაზიარებული ჩანართების ჯგუფების გამოსაყენებლად განაახლეთ Chrome</translation>
 <translation id="4873616204573862158">სათვალეები</translation>
 <translation id="4873807733347502026">თქვენი მაუსის დაბლოკვა და გამოყენება</translation>
 <translation id="4876305945144899064">მომხმარებლის სახელის გარეშე</translation>
@@ -3742,6 +3745,7 @@
 <translation id="7346048084945669753">აფილირებულობა:</translation>
 <translation id="7346062987309535530">სასადილო ჭურჭელი</translation>
 <translation id="7346081071264046066">„დადებითი პასუხის გაცემა ამ საქორწინო მოსაწვევზე სიხარულით“</translation>
+<translation id="7347640536700429009">ბარათზე დატანილი სახელი არასწორია</translation>
 <translation id="7352651011704765696">რაღაც არასწორად წარიმართა</translation>
 <translation id="7353601530677266744">ბრძანების სტრიქონი</translation>
 <translation id="7359588939039777303">რეკლამა დაიბლოკა.</translation>

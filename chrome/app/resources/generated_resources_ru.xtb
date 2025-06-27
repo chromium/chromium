@@ -1210,7 +1210,6 @@
 <translation id="1826657447823925402">Прокрутка в обратную сторону отключена</translation>
 <translation id="1827416268933303617">Цвет: <ph name="COLOR_NAME" />.</translation>
 <translation id="1827504459960247692">Название точки доступа</translation>
-<translation id="1828378091493947763">Плагин не поддерживается на этом устройстве</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Открыть все}=1{&amp;Открыть закладку}one{&amp;Открыть все ({COUNT})}few{&amp;Открыть все ({COUNT})}many{&amp;Открыть все ({COUNT})}other{&amp;Открыть все ({COUNT})}}</translation>
 <translation id="1828901632669367785">Печатать с помощью системного диалогового окна</translation>
 <translation id="1829129547161959350">Пингвин</translation>
@@ -1396,7 +1395,6 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 расширение проверено}one{{NUM_EXTENSIONS} расширение проверено}few{{NUM_EXTENSIONS} расширения проверено}many{{NUM_EXTENSIONS} расширений проверено}other{{NUM_EXTENSIONS} расширения проверено}}</translation>
 <translation id="1959421829481337178">Введите код активации, предоставленный вашим оператором связи.</translation>
 <translation id="1960211333621141174">Утес</translation>
-<translation id="1962233722219655970">На этой странице используется приложение Native Client, не поддерживаемое вашим компьютером.</translation>
 <translation id="1963976881984600709">Стандартная защита</translation>
 <translation id="1964009877615282740">Ещё</translation>
 <translation id="1965578266762387357">Когда вам предоставляется помощь в написании текстов, URL и контент страницы, а также ваш текст отправляются в Google. Не указывайте личную информацию, например медицинские или финансовые данные.</translation>
@@ -1726,7 +1724,6 @@
 <translation id="2188881192257509750">Открыть приложение "<ph name="APPLICATION" />"</translation>
 <translation id="2188919919468240749">Удалить группу вкладок?</translation>
 <translation id="2190069059097339078">Получение параметров доступа по Wi-Fi</translation>
-<translation id="219008588003277019">Модуль Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(пусто)</translation>
 <translation id="2190967441465539539">Камера и микрофон недоступны</translation>
 <translation id="2191754378957563929">Включено</translation>
@@ -1903,7 +1900,6 @@
 <translation id="23030561267973084">Приложение "<ph name="EXTENSION_NAME" />" запросило дополнительные разрешения.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2306794767168143227">Сохранить в сервисе "<ph name="BRAND" />" на этом устройстве</translation>
-<translation id="2307462900900812319">Настройка сети</translation>
 <translation id="2307553512430195144">Если вы согласитесь, Google Ассистент будет ждать команды "Окей, Google" и с помощью функции Voice Match сможет определять, что говорит пользователь <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
     Функция Voice Match помогает Google Ассистенту отличать голос пользователя <ph name="SUPERVISED_USER_NAME" /> от других на устройстве <ph name="DEVICE_TYPE" />.
@@ -2725,7 +2721,6 @@
 <translation id="2860710618359053450">Сместить губы вправо</translation>
 <translation id="2861301611394761800">Обновление системы завершено. Перезапустите компьютер.</translation>
 <translation id="2861402191395139055">Подписки Passpoint</translation>
-<translation id="2861941300086904918">Менеджер безопасности – Native Client</translation>
 <translation id="2862815659905780618">Удалить среду разработки Linux</translation>
 <translation id="2862986593239703553">Эта карточка</translation>
 <translation id="2864601841139725659">Выберите фото профиля</translation>
@@ -6065,7 +6060,6 @@
 <translation id="5230190638672215545">Ввод "ươ" с помощью "uow"</translation>
 <translation id="5230516054153933099">Окно</translation>
 <translation id="5232714764496316200">Делайте домашнее задание с помощью Google Объектива</translation>
-<translation id="5233019165164992427">Порт отладки NaCl</translation>
 <translation id="5233231016133573565">Идентификатор процесса</translation>
 <translation id="5233638681132016545">Новая вкладка</translation>
 <translation id="5233736638227740678">&amp;Вставить</translation>
@@ -10574,7 +10568,6 @@
 <translation id="8431977087510901105">Настройки курсора сброшены</translation>
 <translation id="8433186206711564395">Настройки сети</translation>
 <translation id="8434109185104929038">Уголок для чтения</translation>
-<translation id="8434480141477525001">Порт отладки NaCl</translation>
 <translation id="8434837876193928924">Сведения о группе вкладок</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Устранить проблемы в работе вкладки}one{Устранить проблемы в работе вкладок}few{Устранить проблемы в работе вкладок}many{Устранить проблемы в работе вкладок}other{Устранить проблемы в работе вкладок}}</translation>
 <translation id="8436800506934625875">Создайте буквенно-цифровой резервный PIN-код для Google Менеджера паролей</translation>

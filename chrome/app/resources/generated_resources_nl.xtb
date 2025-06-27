@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Ongeldig of beschadigd bestand</translation>
 <translation id="1040761927998636252">Naamloze bookmark voor <ph name="URL" /></translation>
 <translation id="1041175011127912238">Deze pagina reageert niet</translation>
+<translation id="1041181446722933623"><ph name="LOCAL_BOOKMARK" /> is alleen opgeslagen op dit apparaat. Als je de bookmark wilt gebruiken op je andere apparaten, sla je deze op in <ph name="ACCOUNT_FOLDER" /> in je account.</translation>
 <translation id="1041263367839475438">Beschikbare apparaten</translation>
 <translation id="1041607257468256895">Locatierechten voor websites beheren in Chrome</translation>
 <translation id="1042174272890264476">Je computer is ook uitgerust met de RLZ-bibliotheek van <ph name="SHORT_PRODUCT_NAME" />. RLZ wijst een niet-unieke, niet-persoonlijke tag toe om de zoekopdrachten en het gebruik van <ph name="SHORT_PRODUCT_NAME" /> te meten als gevolg van een bepaalde promotiecampagne. Deze labels worden soms weergegeven in Google-zoekopdrachten in <ph name="PRODUCT_NAME" />.</translation>
@@ -608,6 +609,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1418559532423038045">Verwijdert <ph name="VM_NAME" /> van je <ph name="DEVICE_TYPE" />. Hierdoor worden alle apps en gegevens in de virtuele machine verwijderd.</translation>
 <translation id="1418882096915998312">Enterprise-inschrijving in behandeling</translation>
 <translation id="1418954524306642206">Browsen om de PPD van je printer op te geven</translation>
+<translation id="1419086691207546433">Voeg extensies toe om georganiseerd te blijven, taken te vereenvoudigen en beter te browsen</translation>
 <translation id="1421334842435688311">Informatie over mobiele locatie</translation>
 <translation id="1421514190500081936">Voer een reden in waarom je deze gegevens downloadt:</translation>
 <translation id="1422159345171879700">Onveilige scripts laden</translation>
@@ -1209,7 +1211,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1826657447823925402">Omgekeerd scrollen staat uit</translation>
 <translation id="1827416268933303617">Kleur <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Naam hotspot</translation>
-<translation id="1828378091493947763">Deze plug-in wordt niet ondersteund op dit apparaat</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{Alles &amp;openen}=1{Bookmark &amp;openen}other{Alles &amp;openen ({COUNT})}}</translation>
 <translation id="1828901632669367785">Afdrukken met systeemdialoogvenster...</translation>
 <translation id="1829129547161959350">Pinguïn</translation>
@@ -1395,7 +1396,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 extensie beoordeeld}other{{NUM_EXTENSIONS} extensies beoordeeld}}</translation>
 <translation id="1959421829481337178">Voer de activatiecode in die je van je provider hebt gekregen.</translation>
 <translation id="1960211333621141174">Klif</translation>
-<translation id="1962233722219655970">Deze pagina gebruikt een Native Client-app die niet werkt op je computer.</translation>
 <translation id="1963976881984600709">Standaardbeveiliging</translation>
 <translation id="1964009877615282740">Meer tonen</translation>
 <translation id="1965578266762387357">Als je hulp krijgt bij het schrijven, worden de URL en content van de pagina en je tekst naar Google gestuurd. Voer geen persoonlijke informatie in (zoals medische of financiële gegevens)</translation>
@@ -1725,7 +1725,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2188881192257509750"><ph name="APPLICATION" /> openen</translation>
 <translation id="2188919919468240749">Tabbladgroep verwijderen?</translation>
 <translation id="2190069059097339078">WiFi Credentials Getter</translation>
-<translation id="219008588003277019">Native Client-module: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(leeg)</translation>
 <translation id="2190967441465539539">Geen toegang tot camera en microfoon</translation>
 <translation id="2191754378957563929">Aan</translation>
@@ -1902,7 +1901,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="23030561267973084">De extensie '<ph name="EXTENSION_NAME" />' heeft gevraagd om extra rechten.</translation>
 <translation id="2304820083631266885">Planeet</translation>
 <translation id="2306794767168143227">Opslaan in <ph name="BRAND" /> op dit apparaat</translation>
-<translation id="2307462900900812319">Netwerk configureren</translation>
 <translation id="2307553512430195144">Als je akkoord gaat, wacht de Google Assistent in stand-bymodus om te luisteren of er 'Hey Google' wordt gezegd en kan deze met Voice Match de stem van <ph name="SUPERVISED_USER_NAME" /> herkennen.
     <ph name="BR" />
 Via Voice Match kan de Google Assistent de stem van <ph name="SUPERVISED_USER_NAME" /> herkennen op je <ph name="DEVICE_TYPE" /> en onderscheiden van anderen.
@@ -2724,7 +2722,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2860710618359053450">Je kaak naar rechts bewegen</translation>
 <translation id="2861301611394761800">Het systeem is geüpdatet. Start het systeem opnieuw op.</translation>
 <translation id="2861402191395139055">Passpoint-abonnementen</translation>
-<translation id="2861941300086904918">Beveiligingsbeheerder voor Native Client</translation>
 <translation id="2862815659905780618">Linux-ontwikkelomgeving verwijderen</translation>
 <translation id="2862986593239703553">deze kaart</translation>
 <translation id="2864601841139725659">Je profielfoto instellen</translation>
@@ -3330,6 +3327,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3309330461362844500">ID van certificaatprofiel</translation>
 <translation id="3310379801837527592">Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /> en <ph name="NUM_OTHER_MEMBERS" /> andere persoon</translation>
 <translation id="331080746368555063">Privésites kunnen bijvoorbeeld het intranet van je bedrijf zijn</translation>
+<translation id="3311007761540106761">Systeemstandaard</translation>
 <translation id="3311445899360743395">Gegevens die zijn gekoppeld aan deze app, worden mogelijk verwijderd van dit apparaat.</translation>
 <translation id="3312470654018965389">De Linux-container instellen</translation>
 <translation id="3312883087018430408">Als je een specifieke site of een deel van Chrome wilt doorzoeken, typ je de bijbehorende snelkoppeling in de adresbalk gevolgd door de gewenste sneltoets. Als je bijvoorbeeld alleen Bookmarks wilt doorzoeken, typ je '@bookmarks' en druk je op Tab of de spatiebalk.</translation>
@@ -6062,7 +6060,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5230190638672215545">Typ 'uow' om 'ươ' te krijgen</translation>
 <translation id="5230516054153933099">Venster</translation>
 <translation id="5232714764496316200">Krijg hulp bij je huiswerk met Google Lens</translation>
-<translation id="5233019165164992427">Foutopsporingspoort voor Native Client</translation>
 <translation id="5233231016133573565">Proces-ID</translation>
 <translation id="5233638681132016545">Nieuw tabblad</translation>
 <translation id="5233736638227740678">&amp;Plakken</translation>
@@ -10550,6 +10547,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8425213833346101688">Wijzigen</translation>
 <translation id="8425492902634685834">Vastzetten op taakbalk</translation>
 <translation id="8425768983279799676">Je kunt je pincode gebruiken om je apparaat te ontgrendelen.</translation>
+<translation id="8426697201161711396">Log in bij Chrome om onder andere je wachtwoorden op al je apparaten te gebruiken</translation>
 <translation id="8427213022735114808">Bij dicteren wordt je stem verzonden naar Google, waardoor spraakgestuurd typen in tekstvelden mogelijk wordt.</translation>
 <translation id="8427292751741042100">ingesloten in een host</translation>
 <translation id="8428213095426709021">Instellingen</translation>
@@ -10562,7 +10560,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8431977087510901105">Cursorinstellingen gereset</translation>
 <translation id="8433186206711564395">Netwerkinstellingen</translation>
 <translation id="8434109185104929038">Leeshoek</translation>
-<translation id="8434480141477525001">Foutopsporingspoort voor systeemeigen client</translation>
 <translation id="8434837876193928924">Tabbladgroepgegevens</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Dit tabblad corrigeren}other{Deze tabbladen corrigeren}}</translation>
 <translation id="8436800506934625875">Stel een alfanumerieke herstelpincode in voor Google Wachtwoordmanager</translation>
