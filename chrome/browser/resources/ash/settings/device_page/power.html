@@ -39,6 +39,35 @@
   </div>
 </div>
 
+<!-- optimizedCharging -->
+<template is="dom-if" if="[[!optimizedChargingHidden_]]" restamp>
+  <div id="optimizedChargingSettingsRow"
+      class$="[[getClassForRow_(batteryStatus_.present, 'optimizedCharging')]]">
+    <div class="flex layout horizontal center">
+      <div class="flex settings-box-text">
+        <div id="optimizedChargingLabel">
+          $i18n{powerOptimizedChargingLabel}
+        </div>
+        <div id="optimizedChargingSublabel" class="cr-secondary-text sub-label">
+          <span class="sub-label-text">[[optimizedChargingSublabel_]]</span>
+        </div>
+      </div>
+    </div>
+    <cr-button id="optimizedChargingChangeButton"
+        deep-link-focus-id$="[[Setting.kAdaptiveCharging]]
+            [[Setting.kChargeLimit]]">
+      $i18n{powerOptimizedChargingChangeLabel}
+    </cr-button>
+    <div class="separator"></div>
+    <settings-toggle-v2 id="optimizedChargingToggle"
+        on-change="onOptimizedChargingToggleChange_"
+        deep-link-focus-id$="[[Setting.kOptimizedCharging]]">
+    </settings-toggle-v2>
+  </div>
+</template>
+
+
+<!-- batterySaver -->
 <settings-toggle-button id="batterySaverToggle"
     class$="[[getClassForRow_(batteryStatus_.present, 'batterySaver')]]"
     hidden$="[[batterySaverHidden_]]"
@@ -50,20 +79,22 @@
     deep-link-focus-id$="[[Setting.kBatterySaver]]">
 </settings-toggle-button>
 
-<template is="dom-if" if="[[batteryChargeLimitAvailable_]]" restamp></template>
+<!-- adaptiveCharging -->
+<template is="dom-if" if="[[!batteryChargeLimitAvailable_]]" restamp>
+  <settings-toggle-button id="adaptiveChargingToggle"
+      class$="[[getClassForRow_(batteryStatus_.present, 'adaptiveCharging')]]"
+      hidden$="[[!adaptiveChargingSupported_]]"
+      pref="[[adaptiveChargingPref_]]"
+      label="$i18n{powerAdaptiveChargingLabel}"
+      sub-label="$i18n{powerAdaptiveChargingSubtext}"
+      learn-more-url="$i18n{powerAdaptiveChargingLearnMoreUrl}"
+      on-settings-boolean-control-change="onAdaptiveChargingToggleChange_"
+      deep-link-focus-id$="[[Setting.kAdaptiveCharging]]"
+      no-set-pref>
+  </settings-toggle-button>
+</template>
 
-<settings-toggle-button id="adaptiveChargingToggle"
-    class$="[[getClassForRow_(batteryStatus_.present, 'adaptiveCharging')]]"
-    hidden$="[[!adaptiveChargingSupported_]]"
-    pref="[[adaptiveChargingPref_]]"
-    label="$i18n{powerAdaptiveChargingLabel}"
-    sub-label="$i18n{powerAdaptiveChargingSubtext}"
-    learn-more-url="$i18n{powerAdaptiveChargingLearnMoreUrl}"
-    on-settings-boolean-control-change="onAdaptiveChargingToggleChange_"
-    deep-link-focus-id$="[[Setting.kAdaptiveCharging]]"
-    no-set-pref>
-</settings-toggle-button>
-
+<!-- idle -->
 <template is="dom-if" if="[[!batteryStatus_.present]]" restamp>
   <div class$="[[getClassForRow_(batteryStatus_.present, 'idle')]]">
     <div id="powerIdleLabel" class="flex" aria-label="true">
@@ -91,6 +122,7 @@
   </div>
 </template>
 
+<!-- acIdle -->
 <template is="dom-if" if="[[batteryStatus_.present]]" restamp>
   <div id="acIdleSettingBox"
       class$="[[getClassForRow_(batteryStatus_.present, 'acIdle')]]">

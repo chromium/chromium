@@ -217,6 +217,8 @@ chromium-metrics-reviews@google.com.
   <int value="444" label="Low battery sound: On/Off"/>
   <int value="445" label="Battery Saver: On/Off"/>
   <int value="446" label="Touchpad: Simulate Right Click"/>
+  <int value="447" label="Optimized Charging: On/Off"/>
+  <int value="448" label="Power: Charge Limit"/>
   <int value="500" label="Open Wallpaper"/>
   <int value="501" label="Ambient Mode On/Off"/>
   <int value="502" label="Ambient Mode Source"/>

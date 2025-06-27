@@ -5,8 +5,9 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import type {SettingsPowerElement} from 'chrome://os-settings/lazy_load.js';
-import type {PowerSource, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {BatteryStatus, PowerSource, SettingsToggleButtonElement, SettingsToggleV2Element} from 'chrome://os-settings/os_settings.js';
 import {DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -120,6 +121,7 @@ suite('<settings-power>', () => {
     // Adaptive charging setting should be shown.
     loadTimeData.overrideValues({
       isAdaptiveChargingSupported: true,
+      isBatteryChargeLimitAvailable: false,
     });
 
     browserProxy = new TestDevicePageBrowserProxy();
@@ -592,5 +594,221 @@ suite('<settings-power>', () => {
       const lidClosedToggle = queryLidClosedToggle();
       assertFalse(isVisible(lidClosedToggle));
     });
+  });
+
+  suite('Optimized Charging', () => {
+    function queryOptimizedChargingRow(): HTMLElement|null {
+      return powerSubpage.shadowRoot!.querySelector<HTMLElement>(
+          '#optimizedChargingSettingsRow');
+    }
+
+    function queryOptimizedChargingChangeButton(): CrButtonElement|null {
+      return powerSubpage.shadowRoot!.querySelector<CrButtonElement>(
+          '#optimizedChargingChangeButton');
+    }
+
+    function queryOptimizedChargingToggle(): SettingsToggleV2Element|null {
+      return powerSubpage.shadowRoot!.querySelector<SettingsToggleV2Element>(
+          '#optimizedChargingToggle');
+    }
+
+    function queryOptimizedChargingSublabelSpan(): HTMLElement|null {
+      return powerSubpage.shadowRoot!.querySelector<HTMLElement>(
+          '#optimizedChargingSublabel .sub-label-text');
+    }
+
+    async function initTestState(
+        batteryStatus: BatteryStatus|undefined,
+        featureEnabled: boolean): Promise<void> {
+      loadTimeData.overrideValues({
+        isBatteryChargeLimitAvailable: featureEnabled,
+      });
+      // Re-initialize the subpage with the new loadTimeData.
+      await initSubpage();
+
+      webUIListenerCallback('battery-status-changed', batteryStatus);
+      await flushTasks();
+    }
+
+    setup(async () => {
+      // Simulate battery presence for relevant tests.
+      const batteryStatus: BatteryStatus = {
+        present: true,
+        charging: false,
+        calculating: false,
+        percent: 50,
+        statusText: '5 hours left',
+      };
+      webUIListenerCallback('battery-status-changed', batteryStatus);
+      await flushTasks();
+    });
+
+    test(
+        'Optimized Charging has correct sublabel for enabled adaptive charging',
+        async () => {
+          // Setup test with adaptive charging being supported.
+          loadTimeData.overrideValues({
+            isAdaptiveChargingEnabled: true,
+            isBatteryChargeLimitAvailable: true,
+          });
+          await initSubpage();
+
+          // Case 1: Adaptive Charging is enabled.
+          sendPowerManagementSettings({
+            adaptiveCharging: true,
+          });
+
+          const sublabelSpan = queryOptimizedChargingSublabelSpan();
+          assertTrue(!!sublabelSpan);
+
+          assertEquals(
+              powerSubpage.i18n('powerAdaptiveChargingLabel'),
+              sublabelSpan.textContent!.trim());
+        });
+
+    test(
+        'Optimized Charging has correct sublabel for disabled adaptive charging',
+        async () => {
+          // Setup test with adaptive charging being supported.
+          loadTimeData.overrideValues({
+            isAdaptiveChargingEnabled: true,
+            isBatteryChargeLimitAvailable: true,
+          });
+          await initSubpage();
+
+          // Case 2: Adaptive Charging is not enabled.
+          sendPowerManagementSettings({
+            adaptiveCharging: false,
+          });
+
+          const sublabelSpan = queryOptimizedChargingSublabelSpan();
+          assertTrue(!!sublabelSpan);
+
+          assertEquals('', sublabelSpan.textContent!.trim());
+        });
+
+    test(
+        'Optimized Charging is visible with undefined battery status, and feature enabled.',
+        async () => {
+          // Case 1: batteryStatus is undefined
+          await initTestState(undefined, /*featureEnabled=*/ true);
+          assertTrue(isVisible(queryOptimizedChargingRow()));
+        });
+
+    test(
+        'Optimized Charging is hidden with undefined battery status, and feature disabled.',
+        async () => {
+          await initTestState(undefined, /*featureEnabled=*/ false);
+          assertFalse(isVisible(queryOptimizedChargingRow()));
+        });
+
+    test(
+        'Optimized Charging is visible with a battery present, and feature enabled.',
+        async () => {
+          // Case 2: batteryStatus.present = true
+          const mockBatteryStatus: BatteryStatus = {
+            present: true,
+            charging: false,
+            calculating: false,
+            percent: 50,
+            statusText: 'stub',
+          };
+
+          await initTestState(mockBatteryStatus, /*featureEnabled=*/ true);
+          assertTrue(isVisible(queryOptimizedChargingRow()));
+        });
+
+    test(
+        'Optimized Charging is hidden with a battery present, and feature disabled.',
+        async () => {
+          // Case 2: batteryStatus.present = true
+          const mockBatteryStatus: BatteryStatus = {
+            present: true,
+            charging: false,
+            calculating: false,
+            percent: 50,
+            statusText: 'stub',
+          };
+
+          await initTestState(mockBatteryStatus, /*featureEnabled=*/ false);
+          assertFalse(isVisible(queryOptimizedChargingRow()));
+        });
+
+    test(
+        'Optimized Charging is visible without a battery present, and feature enabled.',
+        async () => {
+          // Case 3: batteryStatus.present = false
+          // (This can happen when there is no battery, and a low power adapter
+          // is plugged in, and it is discharging).
+          const mockBatteryStatus: BatteryStatus = {
+            present: false,
+            charging: false,
+            calculating: false,
+            percent: 50,
+            statusText: 'stub',
+          };
+
+          await initTestState(mockBatteryStatus, /*featureEnabled=*/ true);
+          assertTrue(isVisible(queryOptimizedChargingRow()));
+        });
+
+    test(
+        'Optimized Charging is hidden without a battery present, and feature disabled.',
+        async () => {
+          // Case 3: batteryStatus.present = false
+          const mockBatteryStatus = {
+            present: false,
+            charging: false,
+            calculating: false,
+            percent: 50,
+            statusText: 'stub',
+          };
+
+          await initTestState(mockBatteryStatus, /*featureEnabled=*/ false);
+          assertFalse(isVisible(queryOptimizedChargingRow()));
+        });
+
+    test('Optimized charging is deep-linkable.', async () => {
+      loadTimeData.overrideValues({
+        isAdaptiveChargingEnabled: true,
+        isBatteryChargeLimitAvailable: true,
+      });
+      await initSubpage();
+
+      await deepLinkToSetting(settingMojom.Setting.kOptimizedCharging);
+      const optimizedChargingToggle = queryOptimizedChargingToggle();
+      assertTrue(!!optimizedChargingToggle);
+      await assertElementIsDeepLinked(optimizedChargingToggle);
+    });
+
+    test('Charge limit is deep-linkable.', async () => {
+      loadTimeData.overrideValues({
+        isAdaptiveChargingEnabled: true,
+        isBatteryChargeLimitAvailable: true,
+      });
+      await initSubpage();
+
+      await deepLinkToSetting(settingMojom.Setting.kChargeLimit);
+      const optimizedChargingChangeButton =
+          queryOptimizedChargingChangeButton();
+      assertTrue(!!optimizedChargingChangeButton);
+      await assertElementIsDeepLinked(optimizedChargingChangeButton);
+    });
+
+    test(
+        'Adaptive charging is deep-linkable in optimized charging row.',
+        async () => {
+          loadTimeData.overrideValues({
+            isAdaptiveChargingEnabled: true,
+            isBatteryChargeLimitAvailable: true,
+          });
+          await initSubpage();
+
+          await deepLinkToSetting(settingMojom.Setting.kAdaptiveCharging);
+          const optimizedChargingChangeButton =
+              queryOptimizedChargingChangeButton();
+          assertTrue(!!optimizedChargingChangeButton);
+          await assertElementIsDeepLinked(optimizedChargingChangeButton);
+        });
   });
 });

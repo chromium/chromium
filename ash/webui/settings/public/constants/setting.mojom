@@ -153,6 +153,8 @@ enum Setting {
   kLowBatterySound = 444,
   kBatterySaver = 445,
   kTouchpadSimulateRightClick = 446,
+  kOptimizedCharging = 447,
+  kChargeLimit = 448,
 
   // Personalization section.
   kOpenWallpaper = 500,
