@@ -54,7 +54,8 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
     kGetProcessAudioDeviceIdsReturnedEmpty = 6,
     kErrorConfiguringSampleRate = 7,
     kErrorConfiguringFramesPerBuffer = 8,
-    kMaxValue = kErrorConfiguringFramesPerBuffer
+    kErrorCreatingTapDescription = 9,
+    kMaxValue = kErrorCreatingTapDescription
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
