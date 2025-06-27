@@ -24,7 +24,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/safety_checks.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -1231,13 +1230,6 @@ const std::set<AXTreeID> AXTree::GetAllChildTreeIds() const {
 }
 
 bool AXTree::Unserialize(const AXTreeUpdate& update) {
-  // This function is known to be heap allocation heavy and performance
-  // critical. Extra memory safety checks can introduce regression
-  // (https://crbug.com/388873485) and these are disabled here.
-  // TODO(https://crbug.com/391797366): Optimize memory allocation patterns and
-  // remove this exclusion.
-  base::ScopedSafetyChecksExclusion scoped_unsafe;
-
 #if AX_FAIL_FAST_BUILD() && !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   for (const auto& new_data : update.nodes)
     CHECK(new_data.id != kInvalidAXNodeID)
