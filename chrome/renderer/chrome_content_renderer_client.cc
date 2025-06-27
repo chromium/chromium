@@ -293,13 +293,6 @@ using UsesKeyboardAccessoryForSuggestions =
 
 namespace {
 
-// Allow PPAPI for Android Runtime for Chromium. (See crbug.com/383937)
-#if BUILDFLAG(ENABLE_PLUGINS)
-const char* const kPredefinedAllowedCameraDeviceOrigins[] = {
-    "6EAED1924DB611B6EEF2A664BD077BE7EAD33B8F",
-    "4EB74897CB187C7633357C2FE832E0AD6A44883A"};
-#endif
-
 #if BUILDFLAG(ENABLE_PDF)
 std::vector<url::Origin> GetAdditionalPdfInternalPluginAllowedOrigins() {
   return {url::Origin::Create(GURL(chrome::kChromeUIPrintURL))};
@@ -369,10 +362,6 @@ ChromeContentRendererClient::ChromeContentRendererClient()
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EnsureExtensionsClientInitialized();
   ChromeExtensionsRendererClient::Create();
-#endif
-#if BUILDFLAG(ENABLE_PLUGINS)
-  for (const char* origin : kPredefinedAllowedCameraDeviceOrigins)
-    allowed_camera_device_origins_.insert(origin);
 #endif
 }
 
@@ -1306,16 +1295,6 @@ ChromeContentRendererClient::CreatePrescientNetworking(
   return std::make_unique<network_hints::WebPrescientNetworkingImpl>(
       render_frame);
 }
-
-#if BUILDFLAG(ENABLE_PLUGINS) && BUILDFLAG(ENABLE_EXTENSIONS)
-bool ChromeContentRendererClient::IsExtensionOrSharedModuleAllowed(
-    const GURL& url,
-    const std::set<std::string>& allowlist) {
-  const extensions::ExtensionSet* extension_set =
-      extensions::RendererExtensionRegistry::Get()->GetMainThreadExtensionSet();
-  return ::IsExtensionOrSharedModuleAllowed(url, extension_set, allowlist);
-}
-#endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 void ChromeContentRendererClient::InitSpellCheck() {

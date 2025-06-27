@@ -9,7 +9,6 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -238,12 +237,6 @@ class ChromeContentRendererClient
       const chrome::mojom::PluginInfo& plugin_info);
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS) && BUILDFLAG(ENABLE_EXTENSIONS)
-  static bool IsExtensionOrSharedModuleAllowed(
-      const GURL& url,
-      const std::set<std::string>& allowlist);
-#endif
-
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   void InitSpellCheck();
 #endif
@@ -292,9 +285,6 @@ class ChromeContentRendererClient
       subresource_filter_ruleset_dealer_;
   std::unique_ptr<fingerprinting_protection_filter::UnverifiedRulesetDealer>
       fingerprinting_protection_ruleset_dealer_;
-#if BUILDFLAG(ENABLE_PLUGINS)
-  std::set<std::string> allowed_camera_device_origins_;
-#endif
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   std::unique_ptr<safe_browsing::PhishingModelSetterImpl>
       phishing_model_setter_;
