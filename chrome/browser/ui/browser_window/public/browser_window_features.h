@@ -32,6 +32,7 @@ class DownloadToolbarUIController;
 class ExclusiveAccessManager;
 class FindBarController;
 class HistorySidePanelCoordinator;
+class IncognitoClearBrowsingDataDialogCoordinator;
 class LocationBarModel;
 class MemorySaverOptInIPHController;
 class ProfileMenuCoordinator;
@@ -302,6 +303,11 @@ class BrowserWindowFeatures {
     return profile_menu_coordinator_.get();
   }
 
+  IncognitoClearBrowsingDataDialogCoordinator*
+  incognito_clear_browsing_data_dialog_coordinator() {
+    return incognito_clear_browsing_data_dialog_coordinator_.get();
+  }
+
   // Get the FindBarController for this browser window, creating it if it does
   // not yet exist.
   FindBarController* GetFindBarController();
@@ -429,6 +435,9 @@ class BrowserWindowFeatures {
       extension_window_controller_;
 
   std::unique_ptr<ProfileMenuCoordinator> profile_menu_coordinator_;
+
+  std::unique_ptr<IncognitoClearBrowsingDataDialogCoordinator>
+      incognito_clear_browsing_data_dialog_coordinator_;
 
   // This is an experimental API that interacts with the TabStripModel.
   std::unique_ptr<TabStripServiceRegister> tab_strip_service_;

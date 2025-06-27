@@ -10,6 +10,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -48,8 +50,8 @@ class IncognitoClearBrowsingDataDialogTest : public InProcessBrowserTest {
   }
 
   IncognitoClearBrowsingDataDialogCoordinator* GetCoordinator() {
-    return IncognitoClearBrowsingDataDialogCoordinator::GetOrCreateForBrowser(
-        incognito_browser_);
+    return incognito_browser_->GetFeatures()
+        .incognito_clear_browsing_data_dialog_coordinator();
   }
 
  private:
@@ -155,8 +157,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
   std::u16string current_tab_title;
   ui_test_utils::GetCurrentTabTitle(incognito_browser, &current_tab_title);
   EXPECT_EQ(u"about:blank", current_tab_title);
-  auto* coordinator = IncognitoClearBrowsingDataDialogCoordinator::FromBrowser(
-      incognito_browser);
+  auto* coordinator = incognito_browser->GetFeatures()
+                          .incognito_clear_browsing_data_dialog_coordinator();
   ASSERT_TRUE(coordinator->IsShowing());
 }
 

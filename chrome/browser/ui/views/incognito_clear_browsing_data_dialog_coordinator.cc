@@ -4,6 +4,12 @@
 
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
 
+#include <memory>
+#include <utility>
+
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
@@ -22,13 +28,13 @@ IncognitoClearBrowsingDataDialogCoordinator::
 
 void IncognitoClearBrowsingDataDialogCoordinator::Show(
     IncognitoClearBrowsingDataDialogInterface::Type type) {
-  auto* avatar_toolbar_button =
-      BrowserView::GetBrowserViewForBrowser(&GetBrowser())
-          ->toolbar_button_provider()
-          ->GetAvatarToolbarButton();
+  Browser* const browser = browser_->GetBrowserForMigrationOnly();
+  auto* avatar_toolbar_button = BrowserView::GetBrowserViewForBrowser(browser)
+                                    ->toolbar_button_provider()
+                                    ->GetAvatarToolbarButton();
 
   auto bubble = std::make_unique<IncognitoClearBrowsingDataDialog>(
-      avatar_toolbar_button, GetBrowser().profile(), type);
+      avatar_toolbar_button, profile_, type);
   DCHECK_EQ(nullptr, bubble_tracker_.view());
   bubble_tracker_.SetView(bubble.get());
 
@@ -49,7 +55,7 @@ IncognitoClearBrowsingDataDialog* IncognitoClearBrowsingDataDialogCoordinator::
 }
 
 IncognitoClearBrowsingDataDialogCoordinator::
-    IncognitoClearBrowsingDataDialogCoordinator(Browser* browser)
-    : BrowserUserData<IncognitoClearBrowsingDataDialogCoordinator>(*browser) {}
-
-BROWSER_USER_DATA_KEY_IMPL(IncognitoClearBrowsingDataDialogCoordinator);
+    IncognitoClearBrowsingDataDialogCoordinator(BrowserWindowInterface* browser)
+    : browser_(browser),
+      profile_(browser->GetProfile()),
+      user_education_(browser->GetUserEducationInterface()) {}

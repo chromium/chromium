@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
@@ -337,6 +338,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       std::make_unique<extensions::BrowserExtensionWindowController>(browser);
 
   profile_menu_coordinator_ = std::make_unique<ProfileMenuCoordinator>(browser);
+
+  incognito_clear_browsing_data_dialog_coordinator_ =
+      std::make_unique<IncognitoClearBrowsingDataDialogCoordinator>(browser);
 
   if (browser->is_type_normal() || browser->is_type_app()) {
     toast_service_ = std::make_unique<ToastService>(browser);

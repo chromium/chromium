@@ -6054,12 +6054,16 @@ void BrowserView::ShowHatsDialog(
 }
 
 void BrowserView::ShowIncognitoClearBrowsingDataDialog() {
-  IncognitoClearBrowsingDataDialogCoordinator::GetOrCreateForBrowser(browser())
+  browser()
+      ->GetFeatures()
+      .incognito_clear_browsing_data_dialog_coordinator()
       ->Show(IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble);
 }
 
 void BrowserView::ShowIncognitoHistoryDisclaimerDialog() {
-  IncognitoClearBrowsingDataDialogCoordinator::GetOrCreateForBrowser(browser())
+  browser()
+      ->GetFeatures()
+      .incognito_clear_browsing_data_dialog_coordinator()
       ->Show(IncognitoClearBrowsingDataDialogInterface::Type::
                  kHistoryDisclaimerBubble);
 }
