@@ -661,6 +661,10 @@ export class CdpTarget {
       );
     }
 
+    if (this.#userContextConfig.locale !== undefined) {
+      promises.push(this.setLocaleOverride(this.#userContextConfig.locale));
+    }
+
     if (this.#userContextConfig.acceptInsecureCerts !== undefined) {
       promises.push(
         this.cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
@@ -814,5 +818,15 @@ export class CdpTarget {
     throw new UnknownErrorException(
       `Unexpected orientation natural ${orientation.natural}`,
     );
+  }
+
+  async setLocaleOverride(locale: string | null): Promise<void> {
+    if (locale === null) {
+      await this.cdpClient.sendCommand('Emulation.setLocaleOverride', {});
+    } else {
+      await this.cdpClient.sendCommand('Emulation.setLocaleOverride', {
+        locale,
+      });
+    }
   }
 }

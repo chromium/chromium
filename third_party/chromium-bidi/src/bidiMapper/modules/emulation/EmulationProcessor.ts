@@ -95,6 +95,34 @@ export class EmulationProcessor {
     return {};
   }
 
+  async setLocaleOverride(
+    params: Emulation.SetLocaleOverrideParameters,
+  ): Promise<EmptyResult> {
+    const locale = params.locale ?? null;
+
+    if (locale !== null && !isValidLocale(locale)) {
+      throw new InvalidArgumentException(`Invalid locale "${locale}"`);
+    }
+
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const userContextId of params.userContexts ?? []) {
+      const userContextConfig =
+        this.#userContextStorage.getConfig(userContextId);
+      userContextConfig.locale = locale;
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) => await context.cdpTarget.setLocaleOverride(locale),
+      ),
+    );
+    return {};
+  }
+
   async setScreenOrientationOverride(
     params: Emulation.SetScreenOrientationOverrideParameters,
   ): Promise<EmptyResult> {
@@ -178,5 +206,19 @@ export class EmulationProcessor {
     // Remove duplicates. Compare `BrowsingContextImpl` by reference is correct here, as
     // `browsingContextStorage` returns the same instance for the same id.
     return [...new Set(result).values()];
+  }
+}
+
+// Export for testing.
+export function isValidLocale(locale: string): boolean {
+  try {
+    new Intl.Locale(locale);
+    return true;
+  } catch (e) {
+    if (e instanceof RangeError) {
+      return false;
+    }
+    // Re-throw other errors
+    throw e;
   }
 }
