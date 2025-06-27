@@ -32,6 +32,12 @@ bool IsValidCreditCardExpirationDate(int year, int month, base::Time now) {
 
   base::Time::Exploded now_exploded;
   now.LocalExplode(&now_exploded);
+
+  // Convert 2-digit year to 4-digit year.
+  if (year < 100) {
+    year += (now_exploded.year / 100) * 100;
+  }
+
   return year > now_exploded.year ||
          (year == now_exploded.year && month >= now_exploded.month);
 }

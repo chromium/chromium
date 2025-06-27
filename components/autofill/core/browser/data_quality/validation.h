@@ -29,7 +29,7 @@ enum class CvcType {
 };
 
 // Returns true if `year` and `month` describe a date later than `now`.
-// `year` must have 4 digits.
+// `year` can be 2 digits or 4 digits.
 bool IsValidCreditCardExpirationDate(int year, int month, base::Time now);
 
 // Returns true if `year` describes a year later than or equal to `now`'s year.
