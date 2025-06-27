@@ -735,14 +735,13 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     viz::TransferableResource::ResourceSource resource_source,
     gfx::HDRMetadata hdr_metadata,
     viz::ReleaseCallback release_callback,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceProvider> provider) {
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+        context_provider_wrapper) {
   TRACE_EVENT0("blink", "ExternalCanvasResource::Create");
   CHECK(client_si);
   auto resource = AdoptRef(new ExternalCanvasResource(
       std::move(client_si), sync_token, resource_source, hdr_metadata,
-      std::move(release_callback), std::move(context_provider_wrapper),
-      std::move(provider)));
+      std::move(release_callback), std::move(context_provider_wrapper)));
   return resource->IsValid() ? resource : nullptr;
 }
 
@@ -753,10 +752,6 @@ ExternalCanvasResource::~ExternalCanvasResource() {
     // no longer exists and it is not possible to do cleanup of any GPU
     // context-associated state.
     return;
-  }
-
-  if (Provider()) {
-    Provider()->OnDestroyResource();
   }
 
   if (release_callback_) {
@@ -832,9 +827,8 @@ ExternalCanvasResource::ExternalCanvasResource(
     viz::TransferableResource::ResourceSource resource_source,
     gfx::HDRMetadata hdr_metadata,
     viz::ReleaseCallback out_callback,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceProvider> provider)
-    : CanvasResource(std::move(provider)),
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
+    : CanvasResource(/*provider=*/nullptr),
       client_si_(std::move(client_si)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       sync_token_(sync_token),

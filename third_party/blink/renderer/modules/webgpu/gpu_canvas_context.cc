@@ -329,8 +329,7 @@ bool GPUCanvasContext::PushFrame() {
       std::move(client_si), sync_token,
       viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer,
       swap_buffers_->GetHDRMetadata(), std::move(release_callback),
-      GetContextProviderWeakPtr(),
-      /*resource_provider=*/nullptr);
+      GetContextProviderWeakPtr());
   if (!canvas_resource)
     return false;
 

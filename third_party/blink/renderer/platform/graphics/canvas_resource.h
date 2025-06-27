@@ -334,8 +334,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       viz::TransferableResource::ResourceSource resource_source,
       gfx::HDRMetadata hdr_metadata,
       viz::ReleaseCallback release_callback,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceProvider>);
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 
   ~ExternalCanvasResource() override;
   bool IsValid() const override;
@@ -366,8 +365,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       viz::TransferableResource::ResourceSource resource_source,
       gfx::HDRMetadata hdr_metadata,
       viz::ReleaseCallback out_callback,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceProvider>);
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 
   SkAlphaType GetAlphaType() const { return alpha_type_; }
 

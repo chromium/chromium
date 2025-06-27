@@ -2158,8 +2158,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     // Single buffered passthrough resource provider doesn't have backing
     // texture. We need to export the backbuffer mailbox directly without
     // copying.
-    auto resource = GetDrawingBuffer()->ExportLowLatencyCanvasResource(
-        resource_provider->CreateWeakPtr());
+    auto resource = GetDrawingBuffer()->ExportLowLatencyCanvasResource();
 
     // The drawing buffer's context might have been lost, in which case the
     // creation of the external resource will have failed.

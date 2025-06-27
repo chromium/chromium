@@ -772,8 +772,7 @@ DrawingBuffer::CreateOrRecycleColorBuffer() {
 }
 
 scoped_refptr<ExternalCanvasResource>
-DrawingBuffer::ExportLowLatencyCanvasResource(
-    base::WeakPtr<CanvasResourceProvider> resource_provider) {
+DrawingBuffer::ExportLowLatencyCanvasResource() {
   // Swap chain must be presented before resource is exported.
   ResolveAndPresentSwapChainIfNeeded();
 
@@ -792,8 +791,7 @@ DrawingBuffer::ExportLowLatencyCanvasResource(
   return ExternalCanvasResource::Create(
       color_buffer->shared_image, gpu::SyncToken(),
       viz::TransferableResource::ResourceSource::kDrawingBuffer, hdr_metadata_,
-      viz::ReleaseCallback(), context_provider_->GetWeakPtr(),
-      resource_provider);
+      viz::ReleaseCallback(), context_provider_->GetWeakPtr());
 }
 
 scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
@@ -817,8 +815,7 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   return ExternalCanvasResource::Create(
       client_si, sync_token,
       viz::TransferableResource::ResourceSource::kDrawingBuffer, hdr_metadata_,
-      std::move(out_release_callback), context_provider_->GetWeakPtr(),
-      /*resource_provider=*/nullptr);
+      std::move(out_release_callback), context_provider_->GetWeakPtr());
 }
 
 DrawingBuffer::ColorBuffer::ColorBuffer(
