@@ -1,24 +1,12 @@
-<!doctype html>
-<meta charset=utf-8>
-<title>IndexedDB: Detached buffers supplied as binary keys</title>
-<meta name="help" href="http://w3c.github.io/IndexedDB/#convert-a-value-to-a-key">
-<meta name="help" href="https://webidl.spec.whatwg.org/#dfn-get-buffer-source-copy">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/support.js"></script>
-<script>
+// META: title= IndexedDB: Detached buffers supplied as binary keys
+// META: global=window,worker
+// META: script=resources/support.js
 
-function createDetachedArrayBuffer() {
-  const array = new Uint8Array([1,2,3,4]);
-  const buffer = array.buffer;
-  assert_equals(array.byteLength, 4);
+// Specs:
+//   http://w3c.github.io/IndexedDB/#convert-a-value-to-a-key
+//   https://webidl.spec.whatwg.org/#dfn-get-buffer-source-copy
 
-  // Detach the ArrayBuffer by transferring it to a worker.
-  const worker = new Worker(URL.createObjectURL(new Blob([])));
-  worker.postMessage('', [buffer]);
-  assert_equals(array.byteLength, 0);
-  return array;
-}
+"use strict";
 
 indexeddb_test(
   (t, db) => { db.createObjectStore('store'); },
@@ -48,5 +36,3 @@ indexeddb_test(
   },
   'Detached TypedArrays must throw DataError when used as a key'
 );
-
-</script>
