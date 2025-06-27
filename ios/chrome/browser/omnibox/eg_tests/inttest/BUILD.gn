@@ -32,7 +32,7 @@ source_set("inttest") {
     "//ios/chrome/browser/omnibox/coordinator",
     "//ios/chrome/browser/omnibox/model",
     "//ios/chrome/browser/omnibox/model:test_support",
-    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/model/suggestions",
     "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/omnibox/public:features",

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/model/pedal_section_extractor.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/pedal_section_extractor.h"
 
 #import "base/test/ios/wait_util.h"
 #import "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #import "components/omnibox/browser/autocomplete_match_test_util.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion_group_impl.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_pedal.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_pedal_swift.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion_group_impl.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_swift.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"

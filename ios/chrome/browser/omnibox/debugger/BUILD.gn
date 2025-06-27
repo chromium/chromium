@@ -25,7 +25,7 @@ source_set("debugger") {
     "//components/omnibox/browser",
     "//components/variations",
     "//ios/chrome/browser/omnibox/model",
-    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/model/suggestions",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/common:string_conversions",
   ]
@@ -48,7 +48,7 @@ source_set("ui") {
     "//components/omnibox/browser",
     "//components/variations",
     "//ios/chrome/browser/omnibox/model",
-    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/model/suggestions",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/util",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
 
 #import <UIKit/UIKit.h>
 
@@ -20,9 +20,9 @@
 #import "components/omnibox/browser/suggestion_answer.h"
 #import "components/omnibox/common/omnibox_feature_configs.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_icon_formatter.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_pedal_swift.h"
-#import "ios/chrome/browser/omnibox/model/suggest_action.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/omnibox_icon_formatter.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_swift.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/suggest_action.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

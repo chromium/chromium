@@ -15,7 +15,7 @@ source_set("actions") {
   deps = [
     "//components/omnibox/browser",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/model/suggestions:ui_interface",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui:omnibox_popup_shared",
     "//ios/chrome/browser/omnibox/ui:omnibox_util",

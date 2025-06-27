@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_SIMPLE_OMNIBOX_ICON_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_SIMPLE_OMNIBOX_ICON_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_SUGGESTIONS_SIMPLE_OMNIBOX_ICON_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_SUGGESTIONS_SIMPLE_OMNIBOX_ICON_H_
 
-#import "ios/chrome/browser/omnibox/model/omnibox_icon.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/omnibox_icon.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_suggestion_icon_util.h"
 
 @class CrURL;
@@ -23,4 +23,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_SIMPLE_OMNIBOX_ICON_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_SUGGESTIONS_SIMPLE_OMNIBOX_ICON_H_

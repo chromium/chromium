@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -11,13 +11,13 @@
 #import "components/omnibox/browser/autocomplete_match_classification.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/omnibox_client.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion_group_impl.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_pedal_annotator.h"
-#import "ios/chrome/browser/omnibox/model/pedal_section_extractor.h"
-#import "ios/chrome/browser/omnibox/model/suggest_action.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper_delegate.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion_group_impl.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_annotator.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/pedal_section_extractor.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/suggest_action.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 

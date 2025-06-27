@@ -7,7 +7,7 @@
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
-#import "ios/chrome/browser/omnibox/model/suggest_action.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/suggest_action.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_icon_view.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/actions/actions_view.h"

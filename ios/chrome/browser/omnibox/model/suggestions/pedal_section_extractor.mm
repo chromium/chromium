@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/model/pedal_section_extractor.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/pedal_section_extractor.h"
 
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion_group_impl.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_pedal.h"
-#import "ios/chrome/browser/omnibox/model/pedal_suggestion_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion_group_impl.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/pedal_suggestion_wrapper.h"
 
 namespace {
 

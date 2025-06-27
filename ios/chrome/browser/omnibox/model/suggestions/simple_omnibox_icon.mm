@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/model/simple_omnibox_icon.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/simple_omnibox_icon.h"
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/net/model/crurl.h"

@@ -7,7 +7,7 @@
 #import "base/check.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_content_view.h"

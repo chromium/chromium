@@ -8,7 +8,7 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
 #import "ios/chrome/browser/omnibox/debugger/omnibox_event.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
 
 namespace {
 

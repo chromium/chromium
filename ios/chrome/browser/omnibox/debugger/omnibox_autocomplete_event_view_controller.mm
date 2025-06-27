@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/omnibox/debugger/autocomplete_match_cell.h"
 #import "ios/chrome/browser/omnibox/debugger/omnibox_autocomplete_event.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
 
 @implementation OmniboxAutocompleteEventViewController
 

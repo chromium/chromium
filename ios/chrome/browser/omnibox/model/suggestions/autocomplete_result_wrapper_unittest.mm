@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper.h"
 
 #import "components/omnibox/browser/actions/omnibox_pedal.h"
 #import "components/omnibox/browser/autocomplete_match.h"
@@ -12,11 +12,11 @@
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_pedal_annotator.h"
-#import "ios/chrome/browser/omnibox/model/pedal_suggestion_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper_delegate.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_annotator.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"

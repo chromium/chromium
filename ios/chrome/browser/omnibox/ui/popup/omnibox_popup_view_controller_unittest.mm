@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_view_controller.h"
 
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion_group_impl.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_consumer.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_mutator.h"
 #import "testing/gtest_mac.h"

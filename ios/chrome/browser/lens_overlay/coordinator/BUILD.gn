@@ -64,7 +64,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/omnibox/coordinator",
     "//ios/chrome/browser/omnibox/model",
-    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/omnibox/ui",
     "//ios/chrome/browser/omnibox/ui:omnibox_internal",

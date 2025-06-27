@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/model/omnibox_pedal_annotator.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_annotator.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/browser/actions/omnibox_action.h"
@@ -11,7 +11,7 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_pedal_swift.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_swift.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"

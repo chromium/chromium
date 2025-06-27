@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_ICON_FORMATTER_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_ICON_FORMATTER_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_SUGGESTIONS_OMNIBOX_ICON_FORMATTER_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_SUGGESTIONS_OMNIBOX_ICON_FORMATTER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/omnibox/model/simple_omnibox_icon.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/simple_omnibox_icon.h"
 
 struct AutocompleteMatch;
 
@@ -17,4 +17,4 @@ struct AutocompleteMatch;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_ICON_FORMATTER_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_SUGGESTIONS_OMNIBOX_ICON_FORMATTER_H_

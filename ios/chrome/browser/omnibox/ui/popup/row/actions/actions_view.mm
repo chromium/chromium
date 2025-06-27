@@ -4,7 +4,7 @@
 // found in the LICENSE file.
 #import "ios/chrome/browser/omnibox/ui/popup/row/actions/actions_view.h"
 
-#import "ios/chrome/browser/omnibox/model/suggest_action.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/suggest_action.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/actions/omnibox_popup_actions_row_content_configuration.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/actions/omnibox_popup_actions_row_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

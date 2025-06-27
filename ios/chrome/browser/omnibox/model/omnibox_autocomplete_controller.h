@@ -11,7 +11,7 @@
 
 #import "base/time/time.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
+#import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper_delegate.h"
 #import "ui/base/window_open_disposition.h"
 
 @protocol AutocompleteSuggestion;
