@@ -34,7 +34,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,8 +78,9 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
@@ -133,19 +133,16 @@ import java.util.stream.Collectors;
 public class Fido2CredentialRequestTest {
     private static final String TAG = "Fido2CredentialRequestTest";
 
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Mock ClientDataJsonImpl.Natives mClientDataJsonImplMock;
     @Mock UkmRecorder.Natives mUkmRecorderJniMock;
 
+    private WebPageStation mPage;
     private Context mContext;
     private MockIntentSender mIntentSender;
     private EmbeddedTestServer mTestServer;
@@ -502,6 +499,7 @@ public class Fido2CredentialRequestTest {
 
     @Before
     public void setUp() throws Exception {
+        mPage = mActivityTestRule.startOnBlankPage();
         mContext = ContextUtils.getApplicationContext();
 
         String fingerprints =
@@ -517,7 +515,7 @@ public class Fido2CredentialRequestTest {
                 TAG,
                 "Executing command: '" + String.format(FIDO_OVERRIDE_COMMAND, fingerprints) + "'");
         mIntentSender = new MockIntentSender();
-        mTestServer = sActivityTestRule.getTestServer();
+        mTestServer = mActivityTestRule.getTestServer();
         mCallback = Fido2ApiTestHelper.getAuthenticatorCallback();
         String url =
                 mTestServer.getURLWithHostName(
@@ -526,7 +524,7 @@ public class Fido2CredentialRequestTest {
         mOrigin = Origin.create(gurl);
         mBrowserOptions = GpmBrowserOptionsHelper.createDefaultBrowserOptions();
         GpmBrowserOptionsHelper.setIsIncognitoExtraUntilTearDown(false);
-        sActivityTestRule.loadUrl(url);
+        mActivityTestRule.loadUrl(url);
         mFrameHost = new MockAuthenticatorRenderFrameHost();
         mFrameHost.setLastCommittedUrl(gurl);
         mWebContents = new MockWebContents();
