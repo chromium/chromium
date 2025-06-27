@@ -207,6 +207,18 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Address is not validated by NSDataDetector"/>
 </enum>
 
+<!-- LINT.IfChange(IOSAIHubAction) -->
+
+<enum name="IOSAIHubAction">
+  <summary>The set of actions that can be performed on the AI Hub.</summary>
+  <int value="0" label="Lens"/>
+  <int value="1" label="ReaderMode"/>
+  <int value="2" label="Gemini"/>
+  <int value="3" label="Dismiss"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h:IOSAIHubAction) -->
+
 <enum name="IOSAnnotationType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Date"/>

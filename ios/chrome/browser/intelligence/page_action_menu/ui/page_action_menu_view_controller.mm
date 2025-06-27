@@ -6,6 +6,7 @@
 
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -148,7 +149,7 @@ const CGFloat kMenuHeaderHeight = 58;
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
+  [self dismissPageActionMenu];
 }
 
 #pragma mark - Private
@@ -165,6 +166,7 @@ const CGFloat kMenuHeaderHeight = 58;
 
 // Dismisses the page action menu.
 - (void)dismissPageActionMenu {
+  RecordAIHubAction(IOSAIHubAction::kDismiss);
   [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
 }
 
@@ -345,6 +347,7 @@ const CGFloat kMenuHeaderHeight = 58;
 
 // Dismisses this view controller and starts the BWG overlay.
 - (void)handleBWGTapped:(UIButton*)button {
+  RecordAIHubAction(IOSAIHubAction::kGemini);
   PageActionMenuViewController* __weak weakSelf = self;
   [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
     [weakSelf.BWGHandler startBWGFlow];
@@ -352,6 +355,7 @@ const CGFloat kMenuHeaderHeight = 58;
 }
 
 - (void)handleLensEntryPointTapped:(UIButton*)button {
+  RecordAIHubAction(IOSAIHubAction::kLens);
   PageActionMenuViewController* __weak weakSelf = self;
   [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
     [weakSelf.lensOverlayHandler
@@ -362,6 +366,7 @@ const CGFloat kMenuHeaderHeight = 58;
 }
 
 - (void)handleReaderModeTapped:(UIButton*)button {
+  RecordAIHubAction(IOSAIHubAction::kReaderMode);
   PageActionMenuViewController* __weak weakSelf = self;
   [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
     weakSelf.readerModeActive ? [weakSelf.readerModeHandler hideReaderMode]

@@ -6,7 +6,11 @@ source_set("utils") {
   sources = [
     "ai_hub_constants.h",
     "ai_hub_constants.mm",
+    "ai_hub_metrics.h",
+    "ai_hub_metrics.mm",
   ]
-  deps = [ "//ui/base" ]
-  frameworks = [ "UIKit.framework" ]
+  deps = [
+    "//base",
+    "//ui/base",
+  ]
 }

@@ -141,6 +141,16 @@ chromium-metrics-reviews@google.com.
                version number."/>
 </variants>
 
+<histogram name="IOS.AIHub.Action" enum="IOSAIHubAction"
+    expires_after="2026-06-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>
+    Records the user's selection of an item in the AI Hub. Recorded each time an
+    item is selected.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Allocator.ShimInstalled" enum="Boolean"
     expires_after="2026-02-16">
   <owner>rohitrao@chromium.org</owner>
