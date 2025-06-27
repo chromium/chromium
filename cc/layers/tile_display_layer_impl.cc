@@ -308,9 +308,10 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
         if (alpha >= std::numeric_limits<float>::epsilon()) {
           auto* quad =
               render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-          quad->SetNew(shared_quad_state, offset_geometry_rect,
-                       offset_visible_geometry_rect, *color,
-                       /*enable_edge_aa=*/false);
+          quad->SetNew(
+              shared_quad_state, offset_geometry_rect,
+              offset_visible_geometry_rect, *color,
+              !layer_tree_impl()->settings().enable_edge_anti_aliasing);
         }
       }
     }
