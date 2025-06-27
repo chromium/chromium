@@ -86,10 +86,6 @@ bool ValidateWithRuntimeFeature_{{class_name}}_{{method.name}}(
 
 {#--- Begin #}
 // The declaration includes the definition on other builds.
-#if defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
-{#- Name includes namespace to prevent collision. #}
-const char {{class_name}}::Name_[] = "{{module_namespace}}.{{class_name}}";
-#endif // defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
 {%-  if interface.uuid %}
 constexpr base::Token {{class_name}}::Uuid_;
 {%-  endif %}
