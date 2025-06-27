@@ -37,6 +37,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
 
@@ -237,32 +238,27 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
   query_field_ = field;
   DryRunResult dry_run = DryRun(form.global_id(), field.global_id());
   if (dry_run.outcome == TriggerOutcome::kShown) {
-    if (std::vector<CreditCard>* cards_to_suggest =
-            std::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest);
-        cards_to_suggest &&
-        !manager_->client()
-             .GetPaymentsAutofillClient()
-             ->ShowTouchToFillCreditCard(
-                 GetWeakPtr(), GetCreditCardSuggestionsForTouchToFill(
-                                   *cards_to_suggest, manager_->client(),
-                                   manager_->GetCreditCardFormEventLogger()))) {
-      dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
-    } else if (std::vector<Iban>* ibans_to_suggest =
-                   std::get_if<std::vector<Iban>>(&dry_run.items_to_suggest);
-               ibans_to_suggest &&
-               !manager_->client()
-                    .GetPaymentsAutofillClient()
-                    ->ShowTouchToFillIban(GetWeakPtr(),
-                                          std::move(*ibans_to_suggest))) {
-      dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
-    } else if (std::vector<LoyaltyCard>* loyalty_cards_to_suggest =
-                   std::get_if<std::vector<LoyaltyCard>>(
-                       &dry_run.items_to_suggest);
-               loyalty_cards_to_suggest &&
-               !manager_->client()
-                    .GetPaymentsAutofillClient()
-                    ->ShowTouchToFillLoyaltyCard(
-                        GetWeakPtr(), std::move(*loyalty_cards_to_suggest))) {
+    payments::PaymentsAutofillClient& payments_client =
+        *manager_->client().GetPaymentsAutofillClient();
+    const bool shown = std::visit(
+        absl::Overload{[&](std::vector<CreditCard> items_to_suggest) {
+                         return payments_client.ShowTouchToFillCreditCard(
+                             GetWeakPtr(),
+                             GetCreditCardSuggestionsForTouchToFill(
+                                 std::move(items_to_suggest),
+                                 manager_->client(),
+                                 manager_->GetCreditCardFormEventLogger()));
+                       },
+                       [&](std::vector<Iban> items_to_suggest) {
+                         return payments_client.ShowTouchToFillIban(
+                             GetWeakPtr(), std::move(items_to_suggest));
+                       },
+                       [&](std::vector<LoyaltyCard> items_to_suggest) {
+                         return payments_client.ShowTouchToFillLoyaltyCard(
+                             GetWeakPtr(), std::move(items_to_suggest));
+                       }},
+        std::move(dry_run.items_to_suggest));
+    if (!shown) {
       dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
     }
   }
