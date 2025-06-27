@@ -12,5 +12,10 @@ UIFont* GetBrandedProductRegularFont(CGFloat size) {
   return [UIFont systemFontOfSize:size];
 }
 
+UIFont* GetBrandedProductMediumFont(CGFloat size) {
+  // Tests do not have branded fonts, so return system default instead.
+  return [UIFont systemFontOfSize:size];
+}
+
 }  // namespace provider
 }  // namespace ios

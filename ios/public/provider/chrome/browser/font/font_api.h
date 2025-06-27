@@ -14,6 +14,10 @@ namespace provider {
 // or a system default where these fonts aren't bundled.
 UIFont* GetBrandedProductRegularFont(CGFloat size);
 
+// Returns a medium-weight font for use when displaying branded product names,
+// or a system default where these fonts aren't bundled.
+UIFont* GetBrandedProductMediumFont(CGFloat size);
+
 }  // namespace provider
 }  // namespace ios
 
