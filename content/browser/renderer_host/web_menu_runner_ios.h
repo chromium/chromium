@@ -25,6 +25,8 @@
 // menu was triggered.
 - (void)showMenuInView:(UIView*)view withBounds:(CGRect)bounds;
 
+// Dismisses the popup menu.
+- (void)dismissMenu;
 @end  // @interface WebMenuRunner
 
 #endif  // CONTENT_BROWSER_RENDERER_HOST_WEB_MENU_RUNNER_IOS_H_

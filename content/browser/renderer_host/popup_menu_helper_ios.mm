@@ -35,7 +35,7 @@ PopupMenuHelper::PopupMenuHelper(
 }
 
 PopupMenuHelper::~PopupMenuHelper() {
-  CloseMenu();
+  ReleaseMenu();
 }
 
 void PopupMenuHelper::ShowPopupMenu(
@@ -70,9 +70,15 @@ void PopupMenuHelper::OnMenuCanceled() {
   delegate_->OnMenuClosed();
 }
 
-void PopupMenuHelper::CloseMenu() {
+void PopupMenuHelper::ReleaseMenu() {
   menu_runner_ = nil;
   popup_client_.reset();
+}
+
+void PopupMenuHelper::CloseMenu() {
+  // Dismiss the popup. It triggers `OnMenuCanceled` and
+  // destroys this PopupMenuHelper.
+  [menu_runner_ dismissMenu];
 }
 
 RenderWidgetHostViewIOS* PopupMenuHelper::GetRenderWidgetHostView() const {

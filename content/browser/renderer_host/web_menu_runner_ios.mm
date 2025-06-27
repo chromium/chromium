@@ -69,6 +69,10 @@
   [_selectContextMenuInteraction _presentMenuAtLocation:_elementBounds.origin];
 }
 
+- (void)dismissMenu {
+  [_selectContextMenuInteraction dismissMenu];
+}
+
 - (void)dealloc {
   [_view removeInteraction:_selectContextMenuInteraction];
 }

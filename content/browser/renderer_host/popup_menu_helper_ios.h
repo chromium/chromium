@@ -41,6 +41,8 @@ class PopupMenuHelper : public RenderWidgetHostObserver,
   PopupMenuHelper& operator=(const PopupMenuHelper&) = delete;
 
   ~PopupMenuHelper() override;
+
+  // Closes the popup menu.
   void CloseMenu();
 
   // Shows the popup menu and notifies the RenderFrameHost of the selection/
@@ -63,6 +65,9 @@ class PopupMenuHelper : public RenderWidgetHostObserver,
   void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) override;
 
   RenderWidgetHostViewIOS* GetRenderWidgetHostView() const;
+
+  // Destroys `menu_runner_` and resets `popup_client_`.
+  void ReleaseMenu();
 
   raw_ptr<Delegate> delegate_;  // Weak. Owns |this|.
 
