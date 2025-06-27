@@ -622,7 +622,7 @@ TEST_F(SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest,
                         Pointer(Field(
                             "details",
                             &blink::mojom::PaymentCredentialInstrument::details,
-                            ""))))));
+                            std::cref(std::nullopt)))))));
 }
 
 // Test that OnInstrumentDetailsError is called when the authenticator returns

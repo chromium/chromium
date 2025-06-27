@@ -281,6 +281,9 @@ extern const char kInvalidIcon[];
 // "secure-payment-confirmation" method.
 extern const char kNonUtf8InstrumentDetailsString[];
 
+// Used when the instrument details string is present but is empty.
+extern const char kEmptyInstrumentDetailsString[];
+
 // Used when the instrument details string is too long for the
 // "secure-payment-confirmation" method.
 extern const char kTooLongInstrumentDetailsString[];

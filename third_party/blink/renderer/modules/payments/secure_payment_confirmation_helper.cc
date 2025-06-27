@@ -106,6 +106,13 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
     return nullptr;
   }
   if (request->instrument()->hasDetails() &&
+      request->instrument()->details().empty()) {
+    exception_state.ThrowTypeError(
+        "The \"secure-payment-confirmation\" method requires the "
+        "\"instrument.details\" field, if present, to be non-empty.");
+    return nullptr;
+  }
+  if (request->instrument()->hasDetails() &&
       request->instrument()->details().length() > kMaxInstrumentDetailsLength) {
     exception_state.ThrowTypeError(
         "The \"secure-payment-confirmation\" method requires the string "

@@ -116,14 +116,21 @@ bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,
     return false;
   }
 
-  if (!base::IsStringUTF8(request->instrument->details)) {
-    *error_message = errors::kNonUtf8InstrumentDetailsString;
-    return false;
-  }
+  if (request->instrument->details.has_value()) {
+    if (!base::IsStringUTF8(*request->instrument->details)) {
+      *error_message = errors::kNonUtf8InstrumentDetailsString;
+      return false;
+    }
 
-  if (request->instrument->details.size() > kMaxInstrumentDetailsSize) {
-    *error_message = errors::kTooLongInstrumentDetailsString;
-    return false;
+    if (request->instrument->details->empty()) {
+      *error_message = errors::kEmptyInstrumentDetailsString;
+      return false;
+    }
+
+    if (request->instrument->details->size() > kMaxInstrumentDetailsSize) {
+      *error_message = errors::kTooLongInstrumentDetailsString;
+      return false;
+    }
   }
 
   if (!IsValidDomain(request->rp_id)) {
@@ -593,8 +600,8 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
 
   std::u16string payment_instrument_label =
       base::UTF8ToUTF16(request->mojo_request->instrument->display_name);
-  std::u16string payment_instrument_details =
-      base::UTF8ToUTF16(request->mojo_request->instrument->details);
+  std::u16string payment_instrument_details = base::UTF8ToUTF16(
+      request->mojo_request->instrument->details.value_or(""));
 
   CHECK_EQ(request->mojo_request->payment_entities_logos.size(),
            request->payment_entities_logos_infos.size());

@@ -258,8 +258,8 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
-// Test that parsing a SecurePaymentConfirmationRequest with an invalid
-// (not UTF8) encoding fails.
+// Test that parsing a SecurePaymentConfirmationRequest with an invalid (not
+// UTF8) instrument details encoding fails.
 TEST_F(SecurePaymentConfirmationAppFactoryTest,
        SecureConfirmationPaymentRequest_NonUtf8InstrumentDetails) {
   auto method_data = mojom::PaymentMethodData::New();
@@ -274,6 +274,23 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(
                                   errors::kNonUtf8InstrumentDetailsString, _));
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+}
+
+// Test that parsing a SecurePaymentConfirmationRequest with a present but empty
+// instrument details fails.
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
+       SecureConfirmationPaymentRequest_EmptyInstrumentDetails) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+  method_data->secure_payment_confirmation->instrument->details = "";
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
+
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(
+                                  errors::kEmptyInstrumentDetailsString, _));
   secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 

@@ -242,6 +242,10 @@ const char kNonUtf8InstrumentDetailsString[] =
     "The \"secure-payment-confirmation\" method requires the "
     "\"instrument.details\" field to be UTF8.";
 
+const char kEmptyInstrumentDetailsString[] =
+    "The \"secure-payment-confirmation\" method requires the "
+    "\"instrument.details\" field, if present, to be non-empty.";
+
 const char kTooLongInstrumentDetailsString[] =
     "The \"secure-payment-confirmation\" method requires the "
     "\"instrument.details\" field to be at most 4096 characters long.";

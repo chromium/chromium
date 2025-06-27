@@ -116,9 +116,9 @@ public class ClientDataJsonTest {
 
     @Test
     @SmallTest
-    public void testBuildClientDataJsonWithEmptyDetails() {
+    public void testBuildClientDataJsonWithoutDetails() {
         PaymentOptions payment = createSamplePaymentOptions();
-        payment.instrument.details = "";
+        payment.instrument.details = null;
         String output =
                 ClientDataJson.buildClientDataJson(
                         ClientDataRequestType.PAYMENT_GET,

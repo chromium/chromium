@@ -310,8 +310,28 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidInstrumentIcon) {
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with a detail string
+// that is present but empty throws.
+TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyInstrumentDetails) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  SecurePaymentConfirmationRequest* request =
+      CreateSecurePaymentConfirmationRequest(scope);
+
+  request->instrument()->setDetails("");
+
+  ScriptValue script_value(scope.GetIsolate(),
+                           ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
+                               scope.GetScriptState(), request));
+  SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
+      script_value, *scope.GetExecutionContext(), scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(ESErrorType::kTypeError,
+            scope.GetExceptionState().CodeAs<ESErrorType>());
+}
+
+// Test that parsing a SecurePaymentConfirmationRequest with a detail string
 // that is longer than 4K throws.
-TEST(SecurePaymentConfirmationHelperTest, Parse_TooLargeInstrumentDtails) {
+TEST(SecurePaymentConfirmationHelperTest, Parse_TooLargeInstrumentDetails) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =

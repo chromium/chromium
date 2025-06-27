@@ -163,9 +163,13 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
     ret.append(R"(,"displayName":)");
     ret.append(ToJSONString(params.payment_options->instrument->display_name));
 
-    if (!params.payment_options->instrument->details.empty()) {
+    if (params.payment_options->instrument->details.has_value()) {
+      // SPC calls should have been rejected if the details field was present
+      // but empty.
+      CHECK(!params.payment_options->instrument->details->empty());
+
       ret.append(R"(,"details":)");
-      ret.append(ToJSONString(params.payment_options->instrument->details));
+      ret.append(ToJSONString(*params.payment_options->instrument->details));
     }
 
     ret.append("}");

@@ -398,11 +398,11 @@ void SecurePaymentConfirmationApp::OnGetBrowserBoundKey(
   } else {
     // If kSecurePaymentConfirmationUxRefresh is not enabled, then we did not
     // show the instrument details in the UI, and therefore we do not include
-    // them in the clientData by setting an empty string. Details should be an
-    // empty string here because the dictionary field is already flag protected
+    // them in the clientData by setting to std::nullopt. Details should be
+    // std::nullopt here because the dictionary field is already flag protected
     // on the render side; however, we also set it empty here on the
     // browser-side as well.
-    instrument->details = "";
+    instrument->details = std::nullopt;
   }
   authenticator_->SetPaymentOptions(blink::mojom::PaymentOptions::New(
       spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
