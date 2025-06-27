@@ -98,8 +98,14 @@ class FakeWebContentsObserver : public content::WebContentsObserver {
   int num_reloads_ = 0;
 };
 
+// TODO(crbug.com/428088800): Test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DefaultSearchProviderChanged DISABLED_DefaultSearchProviderChanged
+#else
+#define MAYBE_DefaultSearchProviderChanged DefaultSearchProviderChanged
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserInstantControllerTest,
-                       DefaultSearchProviderChanged) {
+                       MAYBE_DefaultSearchProviderChanged) {
   size_t num_tests = std::size(kTabReloadTestCasesFinalProviderNotGoogle);
   std::vector<std::unique_ptr<FakeWebContentsObserver>> observers;
   for (size_t i = 0; i < num_tests; ++i) {
