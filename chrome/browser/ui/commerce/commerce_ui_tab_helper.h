@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_COMMERCE_COMMERCE_UI_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_COMMERCE_COMMERCE_UI_TAB_HELPER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -27,6 +29,8 @@ class GURL;
 class SidePanelEntryScope;
 class SidePanelRegistry;
 class SidePanelUI;
+class DiscountsBubbleCoordinator;
+
 namespace bookmarks {
 class BookmarkModel;
 }
@@ -154,6 +158,12 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
                                              bool is_merchant_wide);
   void DiscountsBubbleShown(uint64_t discount_id);
 
+  // Trigger the discount bubble show for the provided `discount` data.
+  void ShowDiscountBubble(const DiscountInfo& discount,
+                          base::OnceClosure one_bubble_closing_callback);
+
+  const DiscountsBubbleCoordinator& GetDiscountsBubbleCoordinator() const;
+
   PriceTrackingPageActionController* GetPriceTrackingControllerForTesting();
 
   void SetPriceTrackingControllerForTesting(
@@ -180,6 +190,10 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
       const std::optional<PriceInsightsInfo>& info);
 
   void UpdateDiscountsIconView();
+
+  // Returns the discounts page action view. It's used by the discount bubble
+  // coordinator.
+  views::View* GetDiscountsIconView();
 
   void UpdatePriceTrackingIconView();
 
@@ -284,6 +298,9 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
 
   // The price insights icon label type for the current page load.
   PriceInsightsIconLabelType price_insights_label_type_;
+
+  // Coordinates the creation and the display of the discounts bubble view.
+  std::unique_ptr<DiscountsBubbleCoordinator> discounts_bubble_coordinator_;
 
   base::WeakPtrFactory<CommerceUiTabHelper> weak_ptr_factory_{this};
 };
