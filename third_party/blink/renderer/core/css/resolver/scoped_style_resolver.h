@@ -31,7 +31,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
-#include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_utils.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
@@ -75,7 +74,7 @@ class CORE_EXPORT ScopedStyleResolver final
   const FontFeatureValuesStorage* FontFeatureValuesForFamily(
       AtomicString font_family);
 
-  void RebuildCascadeLayerMap(const ActiveStyleSheetVector& sheets);
+  void RebuildCascadeLayerMap(const ActiveStyleSheetVector&);
   bool HasCascadeLayerMap() const { return cascade_layer_map_.Get(); }
   const CascadeLayerMap* GetCascadeLayerMap() const {
     return cascade_layer_map_.Get();
