@@ -8917,8 +8917,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
+                    "name": "Control",
+                    "disable_features": [
                         "EdgeToEdgeDebugging"
                     ]
                 }
