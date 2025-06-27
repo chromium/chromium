@@ -56,6 +56,12 @@ export const CURSOR_SIZE_PIXEL = 32;
 // The cursor image url css variable name.
 export const CURSOR_IMG_URL = '--cursor-img-url';
 
+// Returns true if the event is a keystroke that should not activate a control.
+function shouldIgnoreKeyboardEvent(event: Event|undefined): boolean {
+  return event instanceof KeyboardEvent &&
+      !(event.key === 'Enter' || event.key === ' ');
+}
+
 export interface CursorData {
   cursor: CursorType;
 }
@@ -102,6 +108,7 @@ export interface SelectionOverlayElement {
     selectedRegionContextMenu: HTMLElement,
     selectedTextContextMenu: HTMLElement,
     selectionOverlay: HTMLElement,
+    selectTextContextMenuItem: HTMLElement,
   };
 }
 
@@ -1121,7 +1128,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // This handles the copying of currently selected text on the overlay. This
   // differs from handleCopyDetectedText() since text must be selected in order
   // to copy.
-  private handleCopy() {
+  private handleCopy(event?: Event) {
+    if (shouldIgnoreKeyboardEvent(event)) {
+      return;
+    }
     this.copyText(
         this.textSelectionStartIndex, this.textSelectionEndIndex,
         this.highlightedText);
@@ -1130,7 +1140,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // This handles the copying of detected text on the overlay within a selected
   // region. This differs from handleCopy() since text does not need to be
   // selected to support this copy.
-  private handleCopyDetectedText() {
+  private handleCopyDetectedText(event?: Event) {
+    if (shouldIgnoreKeyboardEvent(event)) {
+      return;
+    }
     if (this.simplifiedSelectionEnabled) {
       this.setShowSelectedRegionContextMenu(false);
     }
@@ -1154,13 +1167,19 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.setShowSelectedRegionContextMenu(false);
   }
 
-  private handleSelectText() {
+  private handleSelectText(event?: Event) {
+    if (shouldIgnoreKeyboardEvent(event)) {
+      return;
+    }
     this.getTextSelectionLayer().selectAndSendWords(
         this.detectedTextStartIndex, this.detectedTextEndIndex);
     this.$.postSelectionRenderer.clearSelection();
   }
 
-  private handleTranslateDetectedText() {
+  private handleTranslateDetectedText(event?: Event) {
+    if (shouldIgnoreKeyboardEvent(event)) {
+      return;
+    }
     this.getTextSelectionLayer().selectAndTranslateWords(
         this.detectedTextStartIndex, this.detectedTextEndIndex);
 
@@ -1173,7 +1192,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.$.postSelectionRenderer.clearSelection();
   }
 
-  private handleTranslate() {
+  private handleTranslate(event?: Event) {
+    if (shouldIgnoreKeyboardEvent(event)) {
+      return;
+    }
     BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
         this.highlightedText.replaceAll('\r\n', ' '), this.contentLanguage,
         this.textSelectionStartIndex, this.textSelectionEndIndex);
@@ -1181,7 +1203,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kTranslateText);
   }
 
-  private handleCopyAsImage() {
+  private handleCopyAsImage(event?: Event) {
+    if (shouldIgnoreKeyboardEvent(event)) {
+      return;
+    }
     BrowserProxyImpl.getInstance().handler.copyImage(
         this.selectedRegionContextMenuBox);
     this.setShowSelectedRegionContextMenu(false);
@@ -1192,7 +1217,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     }));
   }
 
-  private handleSaveAsImage() {
+  private handleSaveAsImage(event?: Event) {
+    if (shouldIgnoreKeyboardEvent(event)) {
+      return;
+    }
     BrowserProxyImpl.getInstance().handler.saveAsImage(
         this.selectedRegionContextMenuBox);
     this.setShowSelectedRegionContextMenu(false);
