@@ -101,7 +101,7 @@ class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
       // `handle` is destroyed here, calling `RunNextExclusiveOperation()`.
       return;
     }
-    const SqlPersistentStore::EntryInfoWithIdAndKey& entry_info = *result;
+    SqlPersistentStore::EntryInfoWithIdAndKey& entry_info = *result;
 
     // Update the iterator's cursor to the `res_id` of the current entry,
     // so the next call to `OpenLatestEntryBeforeResId` starts from here.
@@ -155,6 +155,10 @@ class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
         [&](const raw_ref<const SqlEntryImpl>& doomed_entry) {
           return doomed_entry.get().token() == entry_info.info.token;
         }));
+
+    // Apply any in-flight modifications (e.g., last_used time updates, header
+    // changes) that were queued for this entry while it was not active.
+    backend_->ApplyInFlightEntryModifications(entry_info.info);
 
     // If the entry is not active, create a new `SqlEntryImpl`.
     scoped_refptr<SqlEntryImpl> new_entry = base::MakeRefCounted<SqlEntryImpl>(
@@ -648,6 +652,66 @@ void SqlBackendImpl::ReleaseDoomedEntry(SqlEntryImpl& entry) {
                             base::DoNothing());
 }
 
+void SqlBackendImpl::UpdateEntryLastUsed(
+    const CacheEntryKey& key,
+    const base::UnguessableToken& token,
+    base::Time last_used,
+    SqlPersistentStore::ErrorCallback callback) {
+  in_flight_entry_modifications_.emplace_back(token, last_used);
+  store_->UpdateEntryLastUsed(
+      key, last_used,
+      WrapErrorCallbackToPopInFlightEntryModification(std::move(callback)));
+}
+
+void SqlBackendImpl::UpdateEntryHeaderAndLastUsed(
+    const CacheEntryKey& key,
+    const base::UnguessableToken& token,
+    base::Time last_used,
+    scoped_refptr<net::GrowableIOBuffer> buffer,
+    int64_t header_size_delta,
+    SqlPersistentStore::ErrorCallback callback) {
+  in_flight_entry_modifications_.emplace_back(token, last_used, buffer);
+  store_->UpdateEntryHeaderAndLastUsed(
+      key, token, last_used, std::move(buffer), header_size_delta,
+      WrapErrorCallbackToPopInFlightEntryModification(std::move(callback)));
+}
+
+void SqlBackendImpl::ApplyInFlightEntryModifications(
+    SqlPersistentStore::EntryInfo& entry_info) {
+  for (const auto& modification : in_flight_entry_modifications_) {
+    if (modification.token == entry_info.token) {
+      if (modification.last_used.has_value()) {
+        entry_info.last_used = *modification.last_used;
+      }
+      if (modification.head.has_value()) {
+        entry_info.head = *modification.head;
+      }
+    }
+  }
+}
+
+SqlPersistentStore::ErrorCallback
+SqlBackendImpl::WrapErrorCallbackToPopInFlightEntryModification(
+    SqlPersistentStore::ErrorCallback callback) {
+  return base::BindOnce(
+      [](base::WeakPtr<SqlBackendImpl> weak_ptr,
+         SqlPersistentStore::ErrorCallback callback,
+         SqlPersistentStore::Error result) {
+        if (weak_ptr) {
+          // Here, we simply pop from the front. This is because all
+          // asynchronous methods of `SqlPersistentStore` are implemented to
+          // invoke their result callbacks in the same order the methods were
+          // called. If this assumption changes, a mechanism to properly remove
+          // the corresponding `InFlightEntryModification` object from
+          // `in_flight_entry_modifications_` will be needed, rather than just
+          // using a simple FIFO queue.
+          weak_ptr->in_flight_entry_modifications_.pop_front();
+        }
+        std::move(callback).Run(result);
+      },
+      weak_factory_.GetWeakPtr(), std::move(callback));
+}
+
 int SqlBackendImpl::FlushQueueForTest(CompletionOnceCallback callback) {
   background_task_runner_->PostTaskAndReply(
       // Post a no-op task to the background runner.
@@ -704,5 +768,19 @@ SqlBackendImpl::EntryResultCallbackInfo::EntryResultCallbackInfo(
 SqlBackendImpl::EntryResultCallbackInfo::~EntryResultCallbackInfo() = default;
 SqlBackendImpl::EntryResultCallbackInfo::EntryResultCallbackInfo(
     EntryResultCallbackInfo&&) = default;
+
+SqlBackendImpl::InFlightEntryModification::InFlightEntryModification(
+    const base::UnguessableToken& token,
+    base::Time last_used)
+    : token(token), last_used(last_used) {}
+SqlBackendImpl::InFlightEntryModification::InFlightEntryModification(
+    const base::UnguessableToken& token,
+    base::Time last_used,
+    scoped_refptr<net::GrowableIOBuffer> head)
+    : token(token), last_used(last_used), head(std::move(head)) {}
+SqlBackendImpl::InFlightEntryModification::~InFlightEntryModification() =
+    default;
+SqlBackendImpl::InFlightEntryModification::InFlightEntryModification(
+    InFlightEntryModification&&) = default;
 
 }  // namespace disk_cache

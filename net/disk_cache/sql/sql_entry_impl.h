@@ -95,6 +95,9 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   friend class base::RefCounted<SqlEntryImpl>;
   ~SqlEntryImpl() override;
 
+  // Updates the `last_used_` timestamp to the current time.
+  void UpdateLastUsed();
+
   base::WeakPtr<SqlBackendImpl> backend_;
 
   // The key for this cache entry.
@@ -108,11 +111,21 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   // The last time this entry was accessed.
   base::Time last_used_;
 
+  // Flag indicating if `last_used_` has been modified since the entry was
+  // opened.
+  bool last_used_modified_ = false;
+
   // The end offset of the entry's body data (stream 1).
   int64_t body_end_;
 
   // The entry's header data (stream 0).
   scoped_refptr<net::GrowableIOBuffer> head_;
+
+  // Stores the original size of the header (stream 0) before it was first
+  // modified. `std::nullopt` indicates that the header has not been written to
+  // since the entry was opened. This is used in the destructor to determine if
+  // the header needs to be persisted to storage.
+  std::optional<int64_t> previous_header_size_in_storage_;
 
   // True if this entry has been marked for deletion.
   bool doomed_ = false;

@@ -7,6 +7,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/disk_cache_test_util.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
@@ -46,10 +47,11 @@ class SqlBackendImplTest : public testing::Test {
     return backend;
   }
 
- private:
-  base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+ private:
+  base::ScopedTempDir temp_dir_;
 };
 
 TEST_F(SqlBackendImplTest, MaxFileSizeSmallMax) {
@@ -235,6 +237,94 @@ TEST_F(SqlBackendImplTest, IteratorParallelDoomAll) {
   EXPECT_TRUE((static_cast<SqlEntryImpl*>(entry))->doomed());
   // TODO(crbug.com/422065015): Check that the `entry` data can be read from the
   // storage after implementing the entry data read/write operations.
+  entry->Close();
+}
+
+// Tests that an entry's `last_used` time is updated correctly when data is
+// written and the entry is closed, even if an iterator is concurrently active.
+// Also verifies the written data can be read back.
+TEST_F(SqlBackendImplTest, IteratorParallelWriteDataAndClose) {
+  auto backend = CreateBackendAndInit();
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry("key", net::HIGHEST, cb_create.callback()));
+  auto* entry = create_result.ReleaseEntry();
+
+  // Advance clock to ensure `last_used` time is distinct from creation.
+  task_environment_.AdvanceClock(base::Minutes(1));
+
+  // Create an iterator and attempt to open the entry concurrently.
+  auto iter = backend->CreateIterator();
+  TestEntryResultCompletionCallback cb;
+  EntryResult result_iter = iter->OpenNextEntry(cb.callback());
+
+  // Record the time when data is written. This should be the new `last_used`
+  // time.
+  const base::Time kWriteTime = base::Time::Now();
+
+  // Write data to stream 0 and close the entry.
+  const std::string kHeadData = "header_data";
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>(kHeadData);
+  net::TestCompletionCallback cb_write;
+  int rv_write = entry->WriteData(0, 0, buffer.get(), buffer->size(),
+                                  cb_write.callback(), false);
+  entry->Close();
+  EXPECT_EQ(cb_write.GetResult(rv_write), buffer->size());
+
+  // Get the result from the iterator's open operation.
+  result_iter = cb.GetResult(std::move(result_iter));
+  ASSERT_THAT(result_iter.net_error(), IsOk());
+  entry = result_iter.ReleaseEntry();
+  // Verify that the `last_used` time of the opened entry reflects the write
+  // time.
+  EXPECT_THAT(entry->GetLastUsed(), kWriteTime);
+
+  // Read the data back from the entry opened via the iterator.
+  auto read_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(kHeadData.size() * 2);
+  net::TestCompletionCallback cb_read;
+  int rv_read = entry->ReadData(0, 0, read_buffer.get(), read_buffer->size(),
+                                cb_read.callback());
+  EXPECT_EQ(cb_read.GetResult(rv_read), kHeadData.size());
+  entry->Close();
+}
+
+// Tests that an entry's `last_used` time is updated correctly when data is read
+// and the entry is closed, even if an iterator is concurrently active.
+TEST_F(SqlBackendImplTest, IteratorParallelReadDataAndClose) {
+  auto backend = CreateBackendAndInit();
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry("key", net::HIGHEST, cb_create.callback()));
+  auto* entry = create_result.ReleaseEntry();
+
+  // Advance clock to ensure `last_used` time is distinct from creation.
+  task_environment_.AdvanceClock(base::Minutes(1));
+
+  // Create an iterator and attempt to open the entry concurrently.
+  auto iter = backend->CreateIterator();
+  TestEntryResultCompletionCallback cb;
+  EntryResult result_iter = iter->OpenNextEntry(cb.callback());
+
+  // Record the time when data is read. This should be the new `last_used` time.
+  const base::Time kReadTime = base::Time::Now();
+
+  // Read data from stream 0 and close the entry.
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(1);
+  net::TestCompletionCallback cb_read;
+  int rv_read = entry->ReadData(0, 0, read_buffer.get(), read_buffer->size(),
+                                cb_read.callback());
+  EXPECT_EQ(cb_read.GetResult(rv_read), 0);
+  entry->Close();
+
+  // Get the result from the iterator's open operation.
+  result_iter = cb.GetResult(std::move(result_iter));
+  ASSERT_THAT(result_iter.net_error(), IsOk());
+  entry = result_iter.ReleaseEntry();
+
+  // Verify that the `last_used` time of the opened entry reflects the read
+  // time.
+  EXPECT_THAT(entry->GetLastUsed(), kReadTime);
   entry->Close();
 }
 
