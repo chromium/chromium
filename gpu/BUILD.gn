@@ -50,7 +50,6 @@ component("gpu") {
     "//gpu/command_buffer/common:common_sources",
     "//gpu/command_buffer/service:service_sources",
     "//gpu/config:config_sources",
-    "//gpu/ipc/client:ipc_client_sources",
     "//gpu/ipc/common:ipc_common_sources",
   ]
 }
@@ -126,6 +125,7 @@ static_library("test_support") {
     "//gpu/command_buffer/client:raster",
     "//gpu/command_buffer/common",
     "//gpu/ipc:gl_in_process_context",
+    "//gpu/ipc/client",
     "//gpu/ipc/common",
     "//gpu/ipc/service",
     "//gpu/skia_bindings:skia_bindings",

@@ -4,15 +4,14 @@
 
 import("//build/config/ui.gni")
 
-group("client") {
-  if (is_component_build) {
-    public_deps = [ "//gpu" ]
-  } else {
-    public_deps = [ ":ipc_client_sources" ]
-  }
+config("gpu_ipc_client_implementation") {
+  defines = [ "GPU_IPC_CLIENT_IMPLEMENTATION" ]
+  configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-source_set("ipc_client_sources") {
+component("client") {
+  configs += [ ":gpu_ipc_client_implementation" ]
+
   sources = [
     "client_shared_image_interface.cc",
     "client_shared_image_interface.h",
@@ -27,14 +26,13 @@ source_set("ipc_client_sources") {
     "shared_image_interface_proxy.cc",
     "shared_image_interface_proxy.h",
   ]
-  configs += [ "//gpu:gpu_implementation" ]
   deps = [
     "//base",
     "//cc/paint",
     "//components/viz/common:shared_image_format",
-    "//gpu/command_buffer/client:client_sources",
-    "//gpu/command_buffer/common:common_sources",
-    "//gpu/config:config_sources",
+    "//gpu/command_buffer/client",
+    "//gpu/command_buffer/common",
+    "//gpu/config",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//ui/gfx:color_space",
@@ -42,7 +40,7 @@ source_set("ipc_client_sources") {
     "//ui/gl",
   ]
   public_deps = [
-    "//gpu/ipc/common:ipc_common_sources",
+    "//gpu/ipc/common",
     "//ipc",
   ]
 }

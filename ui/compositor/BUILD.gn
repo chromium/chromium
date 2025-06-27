@@ -192,6 +192,7 @@ static_library("test_support") {
     "//gpu/command_buffer/client:raster",
     "//gpu/command_buffer/common",
     "//gpu/ipc:gl_in_process_context",
+    "//gpu/ipc/client",
     "//gpu/skia_bindings",
     "//skia",
     "//testing/gtest",
