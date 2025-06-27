@@ -303,10 +303,9 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   replacements["hideTooltipIcon"] = "hidden";
   replacements["hideUserBypassIcon"] = "hidden";
 
-  if ((base::FeatureList::IsEnabled(
-           privacy_sandbox::kFingerprintingProtectionUx) ||
-       base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx)) &&
-      chrome::GetChannel() == version_info::Channel::CANARY) {
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kFingerprintingProtectionUx) ||
+      base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx)) {
     replacements["cookieControlsTitle"] = l10n_util::GetStringUTF8(
         IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_HEADER);
     localized_strings.Set(
