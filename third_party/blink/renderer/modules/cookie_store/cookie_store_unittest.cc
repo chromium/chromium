@@ -265,7 +265,7 @@ TEST_F(CookieStoreTest, SetWithHostPrefixAndDomain) {
 
   ScriptState* script_state = v8_testing_scope.GetScriptState();
   ASSERT_TRUE(script_state);
-  ExceptionState exception_state(v8_testing_scope.GetIsolate());
+  DummyExceptionStateForTesting exception_state;
 
   std::vector<net::CanonicalCookie> got = GetAllCookies();
   EXPECT_TRUE(got.empty());
@@ -280,6 +280,8 @@ TEST_F(CookieStoreTest, SetWithHostPrefixAndDomain) {
   ScriptPromiseTester promise_tester(script_state, promise, &exception_state);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ("Cookies with \"__Host-\" prefix cannot have a domain",
+            exception_state.Message());
   EXPECT_TRUE(promise_tester.IsRejected());
   got = GetAllCookies();
   EXPECT_EQ(0u, got.size());

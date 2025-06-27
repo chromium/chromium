@@ -104,7 +104,8 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
     exception_state.ThrowTypeError(builder.ToString());
     return nullptr;
   }
-  const bool is_host_prefixed_cookie = name.StartsWith("__Host-");
+  const bool is_host_prefixed_cookie =
+      name.StartsWithIgnoringASCIICase("__host-");
   if (!options->domain().IsNull()) {
     if (is_host_prefixed_cookie) {
       exception_state.ThrowTypeError(
