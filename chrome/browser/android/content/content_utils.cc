@@ -21,6 +21,8 @@ static void JNI_ContentUtils_SetUserAgentOverride(
     jboolean j_override_in_new_tabs) {
   constexpr char kLinuxInfoStr[] = "X11; Linux x86_64";
 
+  // Note: Any updates to desktop overrides here should also be applied to
+  // DESKTOP form factor defaults in embedder_support::GetUserAgentMetadata.
   const blink::UserAgentMetadata metadata =
       embedder_support::GetUserAgentMetadata();
 

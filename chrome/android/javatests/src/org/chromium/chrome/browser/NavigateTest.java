@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
@@ -71,7 +72,9 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -252,23 +255,11 @@ public class NavigateTest {
     @CommandLineFlags.Add({"enable-features=UserAgentClientHint"})
     // TODO(crbug.com/40612550) Remove switch when UA-CH-* launched.
     public void testRequestDesktopSiteClientHints() throws Exception {
-        String url1 =
-                mTestServer.getURL(
-                        "/set-header?Accept-CH: sec-ch-ua-arch,sec-ch-ua-platform,sec-ch-ua-model");
-        String url2 =
-                mTestServer.getURL(
-                        "/echoheader?sec-ch-ua-arch&sec-ch-ua-mobile&sec-ch-ua-model&sec-ch-ua-platform");
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
-
-        navigateAndObserve(url1);
-        ChromeTabUtils.waitForTabPageLoaded(tab, url1);
-
-        navigateAndObserve(url2);
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        TabUtils.switchUserAgent(
-                                tab, /* switchToDesktop= */ true, UseDesktopUserAgentCaller.OTHER));
-        ChromeTabUtils.waitForTabPageLoaded(tab, url2);
+        final Tab tab =
+                navigateUrlToEchoClientHintHeaders(
+                        "/set-header?Accept-CH: sec-ch-ua-arch,sec-ch-ua-platform,sec-ch-ua-model",
+                        "/echoheader?sec-ch-ua-arch&sec-ch-ua-mobile&sec-ch-ua-model&sec-ch-ua-platform",
+                        /* overrideUserAgent= */ true);
         String content =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.body.textContent");
@@ -277,6 +268,78 @@ public class NavigateTest {
                 "Proper headers",
                 "\"\\\"x86\\\"\\n" + "?0\\n" + "\\\"\\\"\\n" + "\\\"Linux\\\"\"",
                 content);
+    }
+
+    /** Test 'Request Desktop Site' option properly affects UA client hints */
+    @Test
+    @MediumTest
+    @Feature({"Navigation"})
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint"})
+    @Restriction(DeviceFormFactor.DESKTOP)
+    // TODO(crbug.com/40612550) Remove switch when UA-CH-* launched.
+    public void testRequestDesktopSiteClientHintsForDesktopAndroidFormFactor() throws Exception {
+        Map<String, String> clientHints = new HashMap<>();
+        String packageVersionName = ApkInfo.getPackageVersionName();
+        String[] versionNameParts = packageVersionName.split("\\.");
+        Assert.assertTrue(versionNameParts.length > 0);
+        String packageMajorVersionName = versionNameParts[0];
+        clientHints.put("sec-ch-ua-arch", "\\\"x86\\\"");
+        clientHints.put("sec-ch-ua-platform", "\\\"Linux\\\"");
+        clientHints.put("sec-ch-ua-platform-version", "\\\"\\\"");
+        clientHints.put("sec-ch-ua-model", "\\\"\\\"");
+        clientHints.put("sec-ch-ua-mobile", "?0");
+        clientHints.put("sec-ch-ua-bitness", "\\\"64\\\"");
+        clientHints.put("sec-ch-ua-wow64", "?0");
+        clientHints.put("sec-ch-ua-form-factors", "\\\"Desktop\\\"");
+        clientHints.put("sec-ch-ua-full-version", "\\\"" + packageVersionName + "\\\"");
+
+        // Testing one at a time since navigateAndObserve fails for long URLs (truncates)
+        for (String header : clientHints.keySet()) {
+            String response = "\"" + clientHints.get(header) + "\"";
+            final Tab tab =
+                    navigateUrlToEchoClientHintHeaders(
+                            "/set-header?Accept-CH: " + header,
+                            "/echoheader?" + header,
+                            /* overrideUserAgent= */ false);
+            String content =
+                    JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                            tab.getWebContents(), "document.body.textContent");
+            Assert.assertEquals("Proper headers for echoString: " + header, response, content);
+        }
+
+        String userAgentString =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        mActivityTestRule.getWebContents(), "window.navigator.userAgent");
+        Assert.assertEquals(
+                "Proper user agent: ",
+                String.format(
+                        "\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)"
+                                + " Chrome/%s.0.0.0 Safari/537.36\"",
+                        packageMajorVersionName),
+                userAgentString);
+    }
+
+    private Tab navigateUrlToEchoClientHintHeaders(
+            String setHeaderString, String echoHeaderString, boolean overrideUserAgent)
+            throws Exception {
+        String url1 = mTestServer.getURL(setHeaderString);
+        String url2 = mTestServer.getURL(echoHeaderString);
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+
+        navigateAndObserve(url1);
+        ChromeTabUtils.waitForTabPageLoaded(tab, url1);
+
+        navigateAndObserve(url2);
+        if (overrideUserAgent) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            TabUtils.switchUserAgent(
+                                    tab,
+                                    /* switchToDesktop= */ true,
+                                    UseDesktopUserAgentCaller.OTHER));
+        }
+        ChromeTabUtils.waitForTabPageLoaded(tab, url2);
+        return tab;
     }
 
     /** Test 'Request Desktop Site' option properly affects UA client hints with Critical-CH */
