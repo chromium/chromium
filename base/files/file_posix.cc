@@ -143,7 +143,7 @@ File::Error CallFcntlFlock(PlatformFile file,
 #else   // !BUILDFLAG(IS_AIX)
 
 bool IsOpenAppend(PlatformFile file) {
-  // AI doesn't implement fcntl. Since AIX's write conforms to the POSIX
+  // AIX doesn't implement fcntl. Since AIX's write conforms to the POSIX
   // standard and always appends if the file is opened with O_APPEND, just
   // return false here.
   return false;
