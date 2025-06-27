@@ -1739,33 +1739,6 @@ function testRemoveSrcAttribute() {
   document.body.appendChild(webview);
 }
 
-function testPluginLoadPermission() {
-  var pluginIdentifier = 'unknown platform';
-  if (navigator.platform.match(/linux/i))
-    pluginIdentifier = 'libppapi_tests.so';
-  else if (navigator.platform.match(/win32/i))
-    pluginIdentifier = 'ppapi_tests.dll';
-  else if (navigator.platform.match(/win64/i))
-    pluginIdentifier = 'ppapi_tests.dll';
-  else if (navigator.platform.match(/mac/i))
-    pluginIdentifier = 'ppapi_tests.plugin';
-
-  var webview = document.createElement('webview');
-  webview.addEventListener('permissionrequest', function(e) {
-    e.preventDefault();
-    embedder.test.assertEq('loadplugin', e.permission);
-    embedder.test.assertEq(pluginIdentifier, e.name);
-    embedder.test.assertEq(pluginIdentifier, e.identifier);
-    embedder.test.assertEq('function', typeof e.request.allow);
-    embedder.test.assertEq('function', typeof e.request.deny);
-    embedder.test.succeed();
-  });
-  webview.setAttribute('src', 'data:text/html,<body>' +
-                              '<embed type="application/x-ppapi-tests">' +
-                              '</embed></body>');
-  document.body.appendChild(webview);
-}
-
 // This test verifies that new window attachment functions as expected.
 function testNewWindow() {
   var webview = document.createElement('webview');
@@ -3182,16 +3155,6 @@ function testZoomBeforeNavigation() {
   document.body.appendChild(webview);
 }
 
-function testPlugin() {
-  var webview = document.createElement('webview');
-  webview.setAttribute('src', embedder.pluginURL);
-  webview.addEventListener('loadstop', function(e) {
-    // Not crashing means success.
-    embedder.test.succeed();
-  });
-  document.body.appendChild(webview);
-}
-
 function testGarbageCollect() {
   let webview = new WebView();
   webview = null;
@@ -4042,7 +4005,6 @@ embedder.test.testList = {
   'testNestedSubframes': testNestedSubframes,
   'testReassignSrcAttribute': testReassignSrcAttribute,
   'testRemoveSrcAttribute': testRemoveSrcAttribute,
-  'testPluginLoadPermission': testPluginLoadPermission,
   'testNewWindow': testNewWindow,
   'testNewWindowTwoListeners': testNewWindowTwoListeners,
   'testNewWindowNoPreventDefault': testNewWindowNoPreventDefault,
@@ -4098,7 +4060,6 @@ embedder.test.testList = {
   'testPerViewZoomMode': testPerViewZoomMode,
   'testDisabledZoomMode': testDisabledZoomMode,
   'testZoomBeforeNavigation': testZoomBeforeNavigation,
-  'testPlugin': testPlugin,
   'testGarbageCollect': testGarbageCollect,
   'testCloseNewWindowCleanup': testCloseNewWindowCleanup,
   'testFocusWhileFocused': testFocusWhileFocused,

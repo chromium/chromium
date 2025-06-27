@@ -151,7 +151,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/test_data_directory.h"
 #include "pdf/buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
@@ -183,10 +182,6 @@
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "content/public/test/ppapi_test_utils.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -6428,29 +6423,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, PreserveNameAcrossNavigationsAndCrashes) {
   load_observer.Wait();
   EXPECT_EQ("foo", content::EvalJs(GetGuestRenderFrameHost(), "window.name"));
 }
-
-#if BUILDFLAG(ENABLE_PPAPI)
-class WebViewPPAPITest : public WebViewTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WebViewTest::SetUpCommandLine(command_line);
-    ASSERT_TRUE(ppapi::RegisterTestPlugin(command_line));
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         WebViewPPAPITest,
-                         testing::Bool(),
-                         WebViewPPAPITest::DescribeParams);
-
-IN_PROC_BROWSER_TEST_P(WebViewPPAPITest, Shim_TestPlugin) {
-  TestHelper("testPlugin", "web_view/shim", NO_TEST_SERVER);
-}
-
-IN_PROC_BROWSER_TEST_P(WebViewPPAPITest, Shim_TestPluginLoadPermission) {
-  TestHelper("testPluginLoadPermission", "web_view/shim", NO_TEST_SERVER);
-}
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 // Domain which the Webstore hosted app is associated with in production.
 constexpr char kWebstoreURL[] = "https://chrome.google.com/";

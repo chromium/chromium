@@ -45,6 +45,8 @@ enum {
                                // "Downloads". (Linux)
   DIR_DEFAULT_DOWNLOADS,       // Directory for a user's downloads.
   DIR_INTERNAL_PLUGINS,        // Directory where internal plugins reside.
+                               // TODO(thestig): Consider removing this, since
+                               // this directory does not exist anymore.
   DIR_COMPONENTS,              // Directory where built-in implementations of
                                // component-updated libraries or data reside.
 #if BUILDFLAG(IS_MAC)
