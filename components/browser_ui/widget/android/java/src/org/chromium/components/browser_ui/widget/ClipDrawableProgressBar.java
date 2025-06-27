@@ -58,11 +58,6 @@ public class ClipDrawableProgressBar extends ImageView {
     // http://developer.android.com/reference/android/graphics/drawable/ClipDrawable.html
     // http://developer.android.com/reference/android/graphics/drawable/ScaleDrawable.html
     private static final int DRAWABLE_MAX_LEVEL = 10000;
-    /**
-     * Defines a small transparent gap between the foreground and background drawables when using
-     * gradient drawables. The gap is a percentage of the max progress level 1.0f.
-     */
-    private static final float GAP_SIZE = 0.01f;
 
     @Nullable private ColorDrawable mForegroundColorDrawable;
     @Nullable private GradientDrawable mForegroundGradientDrawable;
@@ -81,6 +76,7 @@ public class ClipDrawableProgressBar extends ImageView {
      * gap between the two drawables.
      */
     private int mScaledBackgroundWidth;
+    private int mViewWidth;
 
     /** An observer of updates to the progress bar. */
     private @Nullable ProgressBarObserver mProgressBarObserver;
@@ -186,6 +182,15 @@ public class ClipDrawableProgressBar extends ImageView {
     }
 
     /**
+     * Override onSizeChanged to get the width of the view.
+     */
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        mViewWidth = w;
+    }
+
+    /**
      * Get the progress bar's current level of progress.
      *
      * @return The current progress, between 0.0 and 1.0.
@@ -227,11 +232,17 @@ public class ClipDrawableProgressBar extends ImageView {
         if (layerDrawable.getNumberOfLayers() >= 2) {
             ScaleDrawable backgroundScale = (ScaleDrawable) layerDrawable.getDrawable(1);
             if (progress > 0.0f) {
-                float backgroundProgressLevel = (1.0f - progress - GAP_SIZE);
-                mScaledBackgroundWidth = (int) (getWidth() * backgroundProgressLevel);
+                // Adjust background level to create a fixed size gap between loaded and unloaded
+                // portions.
+                float backgroundProgressLevel = (1.0f - progress);
+                if (mViewWidth > 0) {
+                    backgroundProgressLevel -= (float) mProgressBarHeight / mViewWidth;
+                }
+                backgroundProgressLevel =  Math.max(0, backgroundProgressLevel);
+                mScaledBackgroundWidth = (int) (mViewWidth * backgroundProgressLevel);
                 backgroundScale.setLevel(Math.round(backgroundProgressLevel * DRAWABLE_MAX_LEVEL));
             } else {
-                mScaledBackgroundWidth = getWidth();
+                mScaledBackgroundWidth = mViewWidth;
                 backgroundScale.setLevel(DRAWABLE_MAX_LEVEL);
             }
         }
