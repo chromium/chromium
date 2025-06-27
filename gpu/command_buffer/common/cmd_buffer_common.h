@@ -198,7 +198,7 @@ enum CommandId {
 
 static_assert(kNumCommands - 1 <= kLastCommonId, "too many commands");
 
-const char* GetCommandName(CommandId id);
+GPU_COMMAND_BUFFER_COMMON_EXPORT const char* GetCommandName(CommandId id);
 
 // A Noop command.
 struct Noop {

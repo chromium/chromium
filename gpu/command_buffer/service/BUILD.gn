@@ -9,12 +9,13 @@ import("//third_party/dawn/scripts/dawn_features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//ui/gl/features.gni")
 
-group("service") {
-  if (is_component_build) {
-    public_deps = [ "//gpu" ]
-  } else {
-    public_deps = [ ":service_sources" ]
-  }
+config("implementation") {
+  defines = [ "GPU_COMMAND_BUFFER_SERVICE_IMPLEMENTATION" ]
+  configs = [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+component("service") {
+  public_deps = [ ":service_sources" ]
 }
 
 group("gles2") {
@@ -30,10 +31,10 @@ if (is_component_build) {
 } else {
   link_target_type = "static_library"
 }
-target(link_target_type, "service_sources") {
+source_set("service_sources") {
   # External code should depend on this via //gpu/command_buffer/service above
   # rather than depending on this directly or the component build will break.
-  visibility = [ "//gpu/*" ]
+  visibility = [ ":service" ]
 
   sources = [
     "async_api_interface.h",
@@ -70,21 +71,20 @@ target(link_target_type, "service_sources") {
 
   configs += [
     "//build/config:precompiled_headers",
-    "//gpu:gpu_implementation",
+    ":implementation",
     "//third_party/khronos:khronos_headers",
   ]
 
   public_deps = [
     "//base",
-    "//gpu/command_buffer/common:common_sources",
+    "//gpu/command_buffer/common",
     "//url:url",
   ]
   deps = [
     "//base",
-    "//gpu/command_buffer/client:client_sources",
-    "//gpu/config:config_sources",
-    "//gpu/ipc/common:ipc_common_sources",
-    "//gpu/ipc/common:surface_handle_type",
+    "//gpu/command_buffer/client",
+    "//gpu/config",
+    "//gpu/ipc/common",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc/color",

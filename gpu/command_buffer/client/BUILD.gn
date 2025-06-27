@@ -2,23 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ui/gl/features.gni")
 import("//skia/features.gni")
+import("//ui/gl/features.gni")
 
 declare_args() {
   # Enable GPU client logging without DCHECK being on.
   enable_gpu_client_logging = false
 }
 
+config("implementation") {
+  defines = [ "GPU_COMMAND_BUFFER_CLIENT_IMPLEMENTATION" ]
+  configs = [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
 # The files here go into the "gpu" component in a component build (with
 # "command_buffer_client" and "gles2_cmd_helper" just forwarding) and goes into
 # separate static libraries in non-component build.
-group("client") {
-  if (is_component_build) {
-    public_deps = [ "//gpu" ]
-  } else {
-    public_deps = [ ":client_sources" ]
-  }
+component("client") {
+  public_deps = [ ":client_sources" ]
 }
 
 group("gles2_cmd_helper") {
@@ -45,14 +46,10 @@ group("webgpu") {
   }
 }
 
-source_set("export") {
-  sources = [ "gpu_command_buffer_client_export.h" ]
-}
-
 source_set("client_sources") {
   # External code should depend on this via //gpu/client above rather than
   # depending on this directly or the component build will break.
-  visibility = [ "//gpu/*" ]
+  visibility = [ ":client" ]
 
   sources = [
     "client_discardable_manager.cc",
@@ -69,6 +66,7 @@ source_set("client_sources") {
     "gl_helper.h",
     "gl_helper_scaling.cc",
     "gl_helper_scaling.h",
+    "gpu_command_buffer_client_export.h",
     "gpu_control.h",
     "image_decode_accelerator_interface.h",
     "mapped_memory.cc",
@@ -83,20 +81,19 @@ source_set("client_sources") {
     "transfer_buffer.h",
     "transfer_buffer_cmd_copy_helpers.h",
   ]
-  configs += [ "//gpu:gpu_implementation" ]
+  configs += [ ":implementation" ]
 
   all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
 
   public_deps = [
-    ":export",
     "//base",
     "//components/viz/common:shared_image_format",
     "//skia",
   ]
   deps = [
     ":gles2_interface",
-    "//gpu/command_buffer/common:common_sources",
-    "//gpu/ipc/common:ipc_common_sources",
+    "//gpu/command_buffer/common",
+    "//gpu/ipc/common",
     "//gpu/ipc/common:surface_handle_type",
     "//skia:buildflags",
     "//ui/gfx:memory_buffer",
@@ -242,8 +239,8 @@ component("gles2_implementation") {
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
     "//ui/gfx:color_space",
-    "//ui/gfx/ipc/color",
     "//ui/gfx/geometry",
+    "//ui/gfx/ipc/color",
   ]
 }
 
@@ -329,18 +326,18 @@ component("gles2_implementation_no_check") {
   }
 
   deps = [
-    "//cc/paint",
     ":client",
     ":gles2_cmd_helper",
     ":gles2_interface",
     "//base",
+    "//cc/paint",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
     "//ui/gfx",
     "//ui/gfx:color_space",
-    "//ui/gfx/ipc/color",
     "//ui/gfx/geometry",
+    "//ui/gfx/ipc/color",
   ]
 }
 

@@ -46,9 +46,7 @@ component("gpu") {
   # Do not depend on this component directly, depend on relevant gpu/{config,ipc,command_buffer}/{client,common,service} targets.
   visibility = [ "//gpu/*" ]
   public_deps = [
-    "//gpu/command_buffer/client:client_sources",
     "//gpu/command_buffer/common:common_sources",
-    "//gpu/command_buffer/service:service_sources",
     "//gpu/config:config_sources",
     "//gpu/ipc/common:ipc_common_sources",
   ]
@@ -116,6 +114,7 @@ static_library("test_support") {
     ":webgpu",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/client:webgpu_interface",
+    "//gpu/command_buffer/service",
     "//gpu/ipc:gpu_thread_holder",
     "//third_party/dawn/include/dawn:cpp_headers",
     "//third_party/dawn/src/dawn:proc",
@@ -692,6 +691,7 @@ test("gpu_perftests") {
     "//base",
     "//base/test:test_support",
     "//gpu/command_buffer/client:gles2_implementation",
+    "//gpu/command_buffer/service",
     "//testing/gmock",
     "//testing/gtest",
     "//testing/perf",
@@ -727,8 +727,10 @@ test("command_buffer_perftests") {
     ":gpu",
     "//base",
     "//base/test:test_support",
+    "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_cmd_helper",
     "//gpu/command_buffer/client:gles2_implementation",
+    "//gpu/command_buffer/service",
     "//gpu/command_buffer/service:gles2",
     "//testing/gtest",
     "//testing/perf",

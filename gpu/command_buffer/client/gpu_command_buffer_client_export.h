@@ -8,7 +8,7 @@
 #if defined(COMPONENT_BUILD)
 #if defined(WIN32)
 
-#if defined(GPU_IMPLEMENTATION)
+#if defined(GPU_COMMAND_BUFFER_CLIENT_IMPLEMENTATION)
 #define GPU_COMMAND_BUFFER_CLIENT_EXPORT __declspec(dllexport)
 #else
 #define GPU_COMMAND_BUFFER_CLIENT_EXPORT __declspec(dllimport)

@@ -386,6 +386,7 @@ source_set("base") {
   defines = []
   public_deps = [
     ":video_facing",
+    "//gpu/command_buffer/client:client",
     "//media:media_buildflags",
     "//media:shared_memory_support",
     "//media/gpu:buildflags",
@@ -397,7 +398,6 @@ source_set("base") {
     "//base",
     "//base/allocator:buildflags",
     "//components/system_media_controls/linux/buildflags",
-    "//gpu/command_buffer/client:client",
     "//gpu/command_buffer/client:interface_base",
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
