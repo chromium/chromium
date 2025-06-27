@@ -77,8 +77,10 @@ enum class CardBenefitFormEvent {
   // when the user had two or more server cards.
   kSuggestionWithBenefitSelectedWithMultipleServerCards = 4,
 
-  // TODO(crbug.com/417323667): "5" is reserved for
-  // `kSuggestionWithoutBenefitSelectedWithMultipleServerCards`.
+  // A suggestion of a masked server card without a benefit available was
+  // selected when the user had two or more server cards, and at least one had a
+  // benefit available.
+  kSuggestionWithoutBenefitSelectedWithMultipleServerCards = 5,
 
   // TODO(crbug.com/417323667): "6" is reserved for
   // `kSuggestionWithBenefitFilled`.
@@ -201,9 +203,8 @@ void LogCardWithMetadataFormEventMetric(
 
 // Log the suggestion event for card benefits on a credit card level and benefit
 // or issuer level. Metrics are only logged once per page load.
-void LogCardWithBenefitFormEventMetric(
-    CardMetadataLoggingEvent event,
-    const CardMetadataLoggingContext& context);
+void LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent event,
+                                    const CardMetadataLoggingContext& context);
 
 // Log the latency between suggestions being shown and a suggestion was
 // selected, in milliseconds, and it is broken down by metadata availability

@@ -131,8 +131,8 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
     if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
       Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
           form);
-      LogCardWithBenefitFormEventMetric(CardMetadataLoggingEvent::kShown,
-                                        metadata_logging_context_);
+      LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent::kShown,
+                                     metadata_logging_context_);
     }
     has_logged_suggestion_shown_for_benefits_ = true;
   }
@@ -213,8 +213,8 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
         if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
           Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
               form);
-          LogCardWithBenefitFormEventMetric(CardMetadataLoggingEvent::kSelected,
-                                            metadata_logging_context_);
+          LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent::kSelected,
+                                         metadata_logging_context_);
         }
       }
 
@@ -444,8 +444,8 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
       if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
         Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
             form);
-        LogCardWithBenefitFormEventMetric(CardMetadataLoggingEvent::kFilled,
-                                          metadata_logging_context_);
+        LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent::kFilled,
+                                       metadata_logging_context_);
       }
     }
   }
@@ -736,8 +736,8 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
       Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
           form);
-      LogCardWithBenefitFormEventMetric(CardMetadataLoggingEvent::kSubmitted,
-                                        metadata_logging_context_);
+      LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent::kSubmitted,
+                                     metadata_logging_context_);
     }
   }
 

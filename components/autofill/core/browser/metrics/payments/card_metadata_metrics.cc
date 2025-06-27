@@ -267,9 +267,8 @@ void LogCardWithMetadataFormEventMetric(
   }
 }
 
-void LogCardWithBenefitFormEventMetric(
-    CardMetadataLoggingEvent event,
-    const CardMetadataLoggingContext& context) {
+void LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent event,
+                                    const CardMetadataLoggingContext& context) {
   switch (event) {
     case CardMetadataLoggingEvent::kShown: {
       if (context.masked_server_card_count >= 2) {
@@ -294,6 +293,12 @@ void LogCardWithBenefitFormEventMetric(
         LogBenefitFormEventToBenefitSourceHistogramDeprecated(
             context.selected_benefit_source,
             FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE);
+      } else {
+        if (context.masked_server_card_count >= 2) {
+          LogBenefitFormEventToMainBenefitHistogram(
+              CardBenefitFormEvent::
+                  kSuggestionWithoutBenefitSelectedWithMultipleServerCards);
+        }
       }
       LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailableDeprecated(
           context.instrument_ids_to_available_benefit_sources,
