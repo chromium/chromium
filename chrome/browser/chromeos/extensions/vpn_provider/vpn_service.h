@@ -107,7 +107,6 @@ class VpnService : public extensions::api::VpnServiceInterface,
                                     bool connection_success,
                                     SuccessCallback,
                                     FailureCallback) override;
-  std::unique_ptr<content::VpnServiceProxy> GetVpnServiceProxy() override;
   void Shutdown() override;
 
   // ExtensionRegistryObserver:

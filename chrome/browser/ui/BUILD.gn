@@ -5386,13 +5386,6 @@ static_library("ui") {
     ]
   }
 
-  if (enable_plugins) {
-    sources += [
-      "hung_plugin_tab_helper.cc",
-      "hung_plugin_tab_helper.h",
-    ]
-  }
-
   if (enable_printing) {
     deps += [
       "//components/printing/browser",

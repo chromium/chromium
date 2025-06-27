@@ -608,25 +608,6 @@ AwContentBrowserClient::GetLocalTracesDirectory() {
   return user_data_dir;
 }
 
-void AwContentBrowserClient::DidCreatePpapiPlugin(
-    content::BrowserPpapiHost* browser_host) {
-  NOTREACHED() << "Android WebView does not support plugins";
-}
-
-bool AwContentBrowserClient::AllowPepperSocketAPI(
-    content::BrowserContext* browser_context,
-    const GURL& url,
-    bool private_api,
-    const content::SocketPermissionRequest* params) {
-  NOTREACHED() << "Android WebView does not support plugins";
-}
-
-bool AwContentBrowserClient::IsPepperVpnProviderAPIAllowed(
-    content::BrowserContext* browser_context,
-    const GURL& url) {
-  NOTREACHED() << "Android WebView does not support plugins";
-}
-
 std::unique_ptr<content::TracingDelegate>
 AwContentBrowserClient::CreateTracingDelegate() {
   return std::make_unique<AwTracingDelegate>();

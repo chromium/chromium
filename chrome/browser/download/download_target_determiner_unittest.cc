@@ -1129,7 +1129,8 @@ TEST_F(DownloadTargetDeterminerTest,
   const char kPdfMimeType[] = "application/pdf";
   const char kPdfFileType[] = "pdf";
   content::WebPluginInfo plugin_info;
-  plugin_info.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS;
+  plugin_info.type =
+      content::WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
   plugin_info.name = kPluginName;
   plugin_info.mime_types.emplace_back(kPdfMimeType, kPdfFileType,
                                       std::string());
@@ -2844,10 +2845,8 @@ TEST_F(DownloadTargetDeterminerTestWithPlugin, CheckForSecureHandling_PPAPI) {
   // securely.
   ScopedRegisterInternalPlugin ppapi_plugin(
       plugin_service,
-      content::WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS,
-      test_download_dir().AppendASCII("ppapi"),
-      kTestMIMEType,
-      "fakeext");
+      content::WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN,
+      test_download_dir().AppendASCII("ppapi"), kTestMIMEType, "fakeext");
   EXPECT_CALL(mock_plugin_filter_, MockPluginAvailable(ppapi_plugin.path()))
       .WillRepeatedly(Return(true));
 

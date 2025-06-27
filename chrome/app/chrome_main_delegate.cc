@@ -266,10 +266,8 @@ bool IsSandboxedProcess() {
 void AdjustLinuxOOMScore(const std::string& process_type) {
   int score = -1;
 
-  if (process_type == switches::kPpapiPluginProcess) {
-    score = content::kPluginOomScore;
-  } else if (process_type == switches::kUtilityProcess ||
-             process_type == switches::kGpuProcess) {
+  if (process_type == switches::kUtilityProcess ||
+      process_type == switches::kGpuProcess) {
     score = content::kMiscOomScore;
   } else if (process_type == switches::kZygoteProcess || process_type.empty()) {
     // For zygotes and unlabeled process types, we want to still make
@@ -306,7 +304,6 @@ bool SubprocessNeedsResourceBundle(const std::string& process_type) {
   // profiles.
       process_type == switches::kGpuProcess ||
 #endif
-      process_type == switches::kPpapiPluginProcess ||
       process_type == switches::kRendererProcess ||
       process_type == switches::kUtilityProcess;
 }
@@ -1340,8 +1337,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
     // browser process as a command line flag.
     DUMP_WILL_BE_CHECK(command_line.HasSwitch(switches::kLang) ||
                        process_type == switches::kZygoteProcess ||
-                       process_type == switches::kGpuProcess ||
-                       process_type == switches::kPpapiPluginProcess);
+                       process_type == switches::kGpuProcess);
 
     // TODO(markusheintz): The command line flag --lang is actually processed
     // by the CommandLinePrefStore, and made available through the PrefService

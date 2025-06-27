@@ -51,7 +51,6 @@
 #include "content/public/browser/speculation_host_delegate.h"
 #include "content/public/browser/tracing_delegate.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
-#include "content/public/browser/vpn_service_proxy.h"
 #include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -919,33 +918,6 @@ std::optional<base::FilePath> ContentBrowserClient::GetLocalTracesDirectory() {
   return std::nullopt;
 }
 
-BrowserPpapiHost* ContentBrowserClient::GetExternalBrowserPpapiHost(
-    int plugin_process_id) {
-  return nullptr;
-}
-
-bool ContentBrowserClient::AllowPepperSocketAPI(
-    BrowserContext* browser_context,
-    const GURL& url,
-    bool private_api,
-    const SocketPermissionRequest* params) {
-  DCHECK(browser_context);
-  return false;
-}
-
-bool ContentBrowserClient::IsPepperVpnProviderAPIAllowed(
-    BrowserContext* browser_context,
-    const GURL& url) {
-  DCHECK(browser_context);
-  return false;
-}
-
-std::unique_ptr<VpnServiceProxy> ContentBrowserClient::GetVpnServiceProxy(
-    BrowserContext* browser_context) {
-  DCHECK(browser_context);
-  return nullptr;
-}
-
 std::unique_ptr<ui::SelectFilePolicy>
 ContentBrowserClient::CreateSelectFilePolicy(WebContents* web_contents) {
   return nullptr;
@@ -972,22 +944,6 @@ std::unique_ptr<TracingDelegate> ContentBrowserClient::CreateTracingDelegate() {
 }
 
 bool ContentBrowserClient::IsSystemWideTracingEnabled() {
-  return false;
-}
-
-bool ContentBrowserClient::IsPluginAllowedToCallRequestOSFileHandle(
-    BrowserContext* browser_context,
-    const GURL& url) {
-  DCHECK(browser_context);
-  return false;
-}
-
-bool ContentBrowserClient::IsPluginAllowedToUseDevChannelAPIs(
-    BrowserContext* browser_context,
-    const GURL& url) {
-  // |browser_context| may be null (e.g. when called from
-  // PpapiPluginProcessHost::PpapiPluginProcessHost).
-
   return false;
 }
 

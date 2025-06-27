@@ -211,7 +211,6 @@ IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
   EXPECT_EQ(u"", plugin_info->plugin.desc);
   EXPECT_EQ(WebPluginInfo::PLUGIN_TYPE_BROWSER_PLUGIN,
             plugin_info->plugin.type);
-  EXPECT_EQ(0, plugin_info->plugin.pepper_permissions);
 
   // Background color hard-coded in `GetPdfBackgroundColor()`.
   EXPECT_EQ(SkColorSetRGB(40, 40, 40), plugin_info->plugin.background_color);
@@ -266,9 +265,8 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
             plugin_info->plugin.path);
   EXPECT_EQ(u"", plugin_info->plugin.version);
   EXPECT_EQ(u"Portable Document Format", plugin_info->plugin.desc);
-  EXPECT_EQ(WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS,
+  EXPECT_EQ(WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN,
             plugin_info->plugin.type);
-  EXPECT_EQ(0, plugin_info->plugin.pepper_permissions);
   EXPECT_EQ(WebPluginInfo::kDefaultBackgroundColor,
             plugin_info->plugin.background_color);
 

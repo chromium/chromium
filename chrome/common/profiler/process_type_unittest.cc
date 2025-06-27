@@ -80,10 +80,3 @@ TEST_F(ThreadProfilerProcessTypeTest, GetProfilerProcessType_Zygote) {
   EXPECT_EQ(sampling_profiler::ProfilerProcessType::kZygote,
             GetProfilerProcessType(command_line()));
 }
-
-TEST_F(ThreadProfilerProcessTypeTest, GetProfilerProcessType_PpapiPlugin) {
-  command_line().AppendSwitchASCII(switches::kProcessType,
-                                   switches::kPpapiPluginProcess);
-  EXPECT_EQ(sampling_profiler::ProfilerProcessType::kPpapiPlugin,
-            GetProfilerProcessType(command_line()));
-}

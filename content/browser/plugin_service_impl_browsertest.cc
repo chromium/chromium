@@ -36,7 +36,6 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
     WebPluginInfo fake_info;
     fake_info.name = u"fake_plugin";
     fake_info.path = plugin_path_;
-    fake_info.type = WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS;
 
     PluginServiceImpl* service = PluginServiceImpl::GetInstance();
     service->RegisterInternalPlugin(fake_info, true);

@@ -544,8 +544,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   base::FilePath GetNetLogDefaultDirectory() override;
   base::FilePath GetFirstPartySetsDirectory() override;
   std::optional<base::FilePath> GetLocalTracesDirectory() override;
-  std::unique_ptr<content::VpnServiceProxy> GetVpnServiceProxy(
-      content::BrowserContext* browser_context) override;
   std::unique_ptr<ui::SelectFilePolicy> CreateSelectFilePolicy(
       content::WebContents* web_contents) override;
   void GetAdditionalAllowedSchemesForFileSystem(
@@ -571,12 +569,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& site_url) override;
   std::unique_ptr<content::TracingDelegate> CreateTracingDelegate() override;
   bool IsSystemWideTracingEnabled() override;
-  bool IsPluginAllowedToCallRequestOSFileHandle(
-      content::BrowserContext* browser_context,
-      const GURL& url) override;
-  bool IsPluginAllowedToUseDevChannelAPIs(
-      content::BrowserContext* browser_context,
-      const GURL& url) override;
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,

@@ -182,8 +182,6 @@ class WebTestControlHost : public WebContentsObserver,
   class WebTestWindowObserver;
 
   // WebContentsObserver implementation.
-  void PluginCrashed(const base::FilePath& plugin_path,
-                     base::ProcessId plugin_pid) override;
   void TitleWasSet(NavigationEntry* entry) override;
   void DidFailLoad(RenderFrameHost* render_frame_host,
                    const GURL& validated_url,

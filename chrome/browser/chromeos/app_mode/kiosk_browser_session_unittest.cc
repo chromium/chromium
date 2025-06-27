@@ -90,13 +90,7 @@ constexpr char kTestUrl[] = "www.test.com";
 constexpr base::TimeDelta kCloseBrowserTimeout = base::Seconds(2);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-constexpr char16_t kPepperPluginName1[] = u"pepper_plugin_name1";
-constexpr char16_t kPepperPluginName2[] = u"pepper_plugin_name2";
-constexpr char16_t kBrowserPluginName[] = u"browser_plugin_name";
-constexpr char kPepperPluginFilePath1[] = "/path/to/pepper_plugin1";
-constexpr char kPepperPluginFilePath2[] = "/path/to/pepper_plugin2";
 constexpr char kBrowserPluginFilePath[] = "/path/to/browser_plugin";
-constexpr char kUnregisteredPluginFilePath[] = "/path/to/unregistered_plugin";
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 // This class constructs and owns the `Browser` object. It assumes that the
@@ -1292,91 +1286,6 @@ INSTANTIATE_TEST_SUITE_P(KioskBrowserSessionTroubleshootingShortcuts,
                          ::testing::Values(KioskType::kChromeApp,
                                            KioskType::kWebApp,
                                            KioskType::kIwa));
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-TEST_F(KioskBrowserSessionTest, ShouldHandlePlugin) {
-  // Create an out-of-process pepper plugin.
-  content::WebPluginInfo info1;
-  info1.name = kPepperPluginName1;
-  info1.path = base::FilePath(kPepperPluginFilePath1);
-  info1.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS;
-
-  // Create an in-of-process pepper plugin.
-  content::WebPluginInfo info2;
-  info2.name = kPepperPluginName2;
-  info2.path = base::FilePath(kPepperPluginFilePath2);
-  info2.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_IN_PROCESS;
-
-  // Create an in-of-process browser (non-pepper) plugin.
-  content::WebPluginInfo info3;
-  info3.name = kBrowserPluginName;
-  info3.path = base::FilePath(kBrowserPluginFilePath);
-  info3.type = content::WebPluginInfo::PLUGIN_TYPE_BROWSER_PLUGIN;
-
-  // Register two pepper plugins.
-  content::PluginService* service = content::PluginService::GetInstance();
-  service->RegisterInternalPlugin(info1, true);
-  service->RegisterInternalPlugin(info2, true);
-  service->RegisterInternalPlugin(info3, true);
-  service->Init();
-  service->RefreshPlugins();
-
-  // Force plugins to load and wait for completion.
-  base::RunLoop run_loop;
-  service->GetPlugins(base::BindOnce(
-      [](base::OnceClosure callback,
-         const std::vector<content::WebPluginInfo>& ignore) {
-        std::move(callback).Run();
-      },
-      run_loop.QuitClosure()));
-  run_loop.Run();
-
-  KioskBrowserSession session(profile());
-  KioskSessionPluginHandlerDelegate* delegate =
-      session.GetPluginHandlerDelegateForTesting();
-
-  // The app session should handle two pepper plugins.
-  EXPECT_TRUE(
-      delegate->ShouldHandlePlugin(base::FilePath(kPepperPluginFilePath1)));
-  EXPECT_TRUE(
-      delegate->ShouldHandlePlugin(base::FilePath(kPepperPluginFilePath2)));
-
-  // The app session should not handle the browser plugin.
-  EXPECT_FALSE(
-      delegate->ShouldHandlePlugin(base::FilePath(kBrowserPluginFilePath)));
-
-  // The app session should not handle the unregistered plugin.
-  EXPECT_FALSE(delegate->ShouldHandlePlugin(
-      base::FilePath(kUnregisteredPluginFilePath)));
-}
-
-TEST_F(KioskBrowserSessionTest, OnPluginCrashed) {
-  StartWebKioskSession();
-  KioskSessionPluginHandlerDelegate* delegate = GetPluginHandlerDelegate();
-
-  // Verified the number of restart calls.
-  EXPECT_EQ(
-      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
-  delegate->OnPluginCrashed(base::FilePath(kBrowserPluginFilePath));
-  EXPECT_EQ(
-      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
-
-  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
-                                 KioskSessionState::kPluginCrashed, 1);
-  EXPECT_EQ(2u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
-}
-
-TEST_F(KioskBrowserSessionTest, OnPluginHung) {
-  StartWebKioskSession();
-  KioskSessionPluginHandlerDelegate* delegate = GetPluginHandlerDelegate();
-
-  // Only verify if this method can be called without error.
-  delegate->OnPluginHung(std::set<int>());
-  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
-                                 KioskSessionState::kPluginHung, 1);
-  EXPECT_EQ(2u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
-}
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 // TODO(b/325648738): add KioskBrowserSessionDeathTest to check kiosk session
 // crash when unexpected browser is not closed.

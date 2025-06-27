@@ -682,11 +682,6 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // (a primary main frame of a WebContents, a fenced frame or a MPArch guest).
   virtual void TitleWasSetForMainFrame(RenderFrameHost* render_frame_host) {}
 
-  // These methods are invoked when a Pepper plugin instance is created/deleted
-  // in the DOM.
-  virtual void PepperInstanceCreated() {}
-  virtual void PepperInstanceDeleted() {}
-
   // This method is called when the viewport fit of a WebContents changes.
   virtual void ViewportFitChanged(blink::mojom::ViewportFit value) {}
 
@@ -699,25 +694,6 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // in the viewport meta tag.
   virtual void VirtualKeyboardModeChanged(ui::mojom::VirtualKeyboardMode mode) {
   }
-
-  // Notification that a plugin has crashed.
-  // |plugin_pid| is the process ID identifying the plugin process. Note that
-  // this ID is supplied by the renderer process, so should not be trusted.
-  // Besides, the corresponding process has probably died at this point. The ID
-  // may even have been reused by a new process.
-  virtual void PluginCrashed(const base::FilePath& plugin_path,
-                             base::ProcessId plugin_pid) {}
-
-  // Notification that the given plugin has hung or become unhung. This
-  // notification is only for Pepper plugins.
-  //
-  // The plugin_child_id is the unique child process ID from the plugin. Note
-  // that this ID is supplied by the renderer process, so should be validated
-  // before it's used for anything in case there's an exploited renderer
-  // process.
-  virtual void PluginHungStatusChanged(int plugin_child_id,
-                                       const base::FilePath& plugin_path,
-                                       bool is_hung) {}
 
   // Notifies that an inner WebContents instance has been created with the
   // observed WebContents as its container. |inner_web_contents| has not been

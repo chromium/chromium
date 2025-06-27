@@ -232,17 +232,11 @@ class PluginFaviconMessageObserver : public WebContentsObserver {
  public:
   explicit PluginFaviconMessageObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents),
-        plugin_crashed_(false),
         favicon_received_(false) {}
 
   PluginFaviconMessageObserver(const PluginFaviconMessageObserver&) = delete;
   PluginFaviconMessageObserver& operator=(const PluginFaviconMessageObserver&) =
       delete;
-
-  void PluginCrashed(const base::FilePath& plugin_path,
-                     base::ProcessId plugin_pid) override {
-    plugin_crashed_ = true;
-  }
 
   void DidUpdateFaviconURL(
       RenderFrameHost* render_frame_host,
@@ -250,11 +244,9 @@ class PluginFaviconMessageObserver : public WebContentsObserver {
     favicon_received_ = true;
   }
 
-  bool plugin_crashed() { return plugin_crashed_; }
   bool favicon_received() { return favicon_received_; }
 
  private:
-  bool plugin_crashed_;
   bool favicon_received_;
 };
 

@@ -1151,8 +1151,7 @@ class CONTENT_EXPORT WebContentsImpl
   void RendererResponsive(RenderWidgetHostImpl* render_widget_host) override;
   void RequestToLockPointer(RenderWidgetHostImpl* render_widget_host,
                             bool user_gesture,
-                            bool last_unlocked_by_target,
-                            bool privileged) override;
+                            bool last_unlocked_by_target) override;
   bool IsWaitingForPointerLockPrompt(
       RenderWidgetHostImpl* render_widget_host) override;
   bool RequestKeyboardLock(RenderWidgetHostImpl* render_widget_host,

@@ -447,8 +447,7 @@ void AgentSchedulingGroupHost::SetUpIPC() {
     // TODO(crbug.com/40142495): Add necessary filters.
     // Most of the filters currently installed on the process-wide channel are:
     // 1. "Process-bound", that is, they do not handle messages sent using ASG,
-    // 2. Pepper/NaCl-related, that are going away, and are not supported, or
-    // 3. Related to Android WebViews, which are not currently supported.
+    // 2. Related to Android WebViews, which are not currently supported.
 
     channel_->GetRemoteAssociatedInterface(&mojo_remote_);
   }

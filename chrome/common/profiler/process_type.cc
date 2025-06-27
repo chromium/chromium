@@ -54,8 +54,5 @@ sampling_profiler::ProfilerProcessType GetProfilerProcessType(
   if (process_type == switches::kZygoteProcess)
     return sampling_profiler::ProfilerProcessType::kZygote;
 
-  if (process_type == switches::kPpapiPluginProcess)
-    return sampling_profiler::ProfilerProcessType::kPpapiPlugin;
-
   return sampling_profiler::ProfilerProcessType::kUnknown;
 }

@@ -488,7 +488,6 @@ source_set("browser_sources") {
     "video_capture_service.h",
     "video_picture_in_picture_window_controller.h",
     "visibility.h",
-    "vpn_service_proxy.h",
     "weak_document_ptr.cc",
     "weak_document_ptr.h",
     "web_authentication_delegate.cc",

@@ -14,10 +14,6 @@
 #include "content/common/content_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-namespace base {
-class Version;
-}
-
 namespace content {
 
 struct CONTENT_EXPORT WebPluginMimeType {
@@ -53,8 +49,7 @@ struct CONTENT_EXPORT WebPluginMimeType {
 // Describes an available Pepper plugin.
 struct CONTENT_EXPORT WebPluginInfo {
   enum PluginType {
-    PLUGIN_TYPE_PEPPER_IN_PROCESS,
-    PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS,
+    PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN,
     PLUGIN_TYPE_BROWSER_PLUGIN
   };
 
@@ -70,16 +65,6 @@ struct CONTENT_EXPORT WebPluginInfo {
                 const base::FilePath& fake_path,
                 const std::u16string& fake_version,
                 const std::u16string& fake_desc);
-
-  bool is_pepper_plugin() const {
-    return ((type == PLUGIN_TYPE_PEPPER_IN_PROCESS ) ||
-          (type == PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS));
-  }
-
-  // Parse a version string as used by a plugin. This method is more lenient
-  // in accepting weird version strings than base::Version::GetFromString()
-  static void CreateVersionFromString(const std::u16string& version_string,
-                                      base::Version* parsed_version);
 
   // The name of the plugin (i.e. Flash).
   std::u16string name;
@@ -97,10 +82,7 @@ struct CONTENT_EXPORT WebPluginInfo {
   std::vector<WebPluginMimeType> mime_types;
 
   // Plugin type. See the PluginType enum.
-  int type;
-
-  // When type is PLUGIN_TYPE_PEPPER_* this indicates the permission bits.
-  int32_t pepper_permissions;
+  int type = PLUGIN_TYPE_BROWSER_PLUGIN;
 
   // The color to use as the background before the plugin loads.
   SkColor background_color = kDefaultBackgroundColor;

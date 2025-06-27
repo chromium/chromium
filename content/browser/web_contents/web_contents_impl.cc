@@ -3621,8 +3621,6 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
                          !command_line.HasSwitch(switches::kDisableWebGL) &&
                          !command_line.HasSwitch(switches::kDisableWebGL2);
 
-  prefs.pepper_3d_enabled = !command_line.HasSwitch(switches::kDisablePepper3d);
-
   prefs.allow_file_access_from_file_urls =
       command_line.HasSwitch(switches::kAllowFileAccessFromFiles);
 
@@ -4957,11 +4955,9 @@ blink::mojom::DisplayMode WebContentsImpl::GetDisplayMode() const {
 void WebContentsImpl::RequestToLockPointer(
     RenderWidgetHostImpl* render_widget_host,
     bool user_gesture,
-    bool last_unlocked_by_target,
-    bool privileged) {
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RequestPointerLock",
-                        "render_widget_host", render_widget_host, "privileged",
-                        privileged);
+    bool last_unlocked_by_target) {
+  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RequestPointerLock",
+                        "render_widget_host", render_widget_host);
   if (render_widget_host->frame_tree()->is_fenced_frame()) {
     // The renderer should have checked and disallowed the request for fenced
     // frames in PointerLockController and dispatched pointerlockerror. Ignore
@@ -4977,14 +4973,6 @@ void WebContentsImpl::RequestToLockPointer(
           blink::mojom::PointerLockResult::kAlreadyLocked);
       return;
     }
-  }
-
-  if (privileged) {
-    DCHECK(!GetOuterWebContents());
-    pointer_lock_widget_ = render_widget_host;
-    render_widget_host->GotResponseToPointerLockRequest(
-        blink::mojom::PointerLockResult::kSuccess);
-    return;
   }
 
   bool widget_in_frame_tree = false;

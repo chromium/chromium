@@ -215,12 +215,10 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
 
   // Requests to lock the mouse. Once the request is approved or rejected,
   // GotResponseToLockPointerRequest() will be called on the requesting render
-  // widget host. |privileged| means that the request is always granted, used
-  // for Pepper Flash.
+  // widget host.
   virtual void RequestToLockPointer(RenderWidgetHostImpl* render_widget_host,
                                     bool user_gesture,
-                                    bool last_unlocked_by_target,
-                                    bool privileged) {}
+                                    bool last_unlocked_by_target) {}
 
   virtual void UnlockPointer(RenderWidgetHostImpl* render_widget_host) {}
 

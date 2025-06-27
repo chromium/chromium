@@ -3520,7 +3520,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kProfilingAtStart,
       switches::kProfilingFile,
       switches::kProfilingFlush,
-      switches::kRegisterPepperPlugins,
       switches::kRemoteDebuggingPipe,
       switches::kRemoteDebuggingPort,
       switches::kRendererStartupDialog,

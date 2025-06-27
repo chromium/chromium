@@ -261,11 +261,6 @@ ContentRendererClient::CreateSpeechRecognitionClient(
 }
 #endif
 
-bool ContentRendererClient::IsPluginAllowedToUseCameraDeviceAPI(
-    const GURL& url) {
-  return false;
-}
-
 bool ContentRendererClient::AllowScriptExtensionForServiceWorker(
     const url::Origin& script_origin) {
   return false;

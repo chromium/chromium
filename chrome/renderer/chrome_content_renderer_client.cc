@@ -1397,22 +1397,6 @@ ChromeContentRendererClient::CreateSpeechRecognitionClient(
 }
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
-bool ChromeContentRendererClient::IsPluginAllowedToUseCameraDeviceAPI(
-    const GURL& url) {
-#if BUILDFLAG(ENABLE_PLUGINS) && BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(ENABLE_PPAPI)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnablePepperTesting))
-    return true;
-#endif  // BUILDFLAG(ENABLE_PPAPI)
-
-  if (IsExtensionOrSharedModuleAllowed(url, allowed_camera_device_origins_))
-    return true;
-#endif
-
-  return false;
-}
-
 void ChromeContentRendererClient::RunScriptsAtDocumentStart(
     content::RenderFrame* render_frame) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

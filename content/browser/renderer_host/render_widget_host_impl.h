@@ -143,7 +143,6 @@ class VisibleTimeRequestTrigger;
 //   * Main frame for webpage (root is `blink::WebView`)
 //   * Child frame for webpage (root is RenderFrame)
 //   * Popups (root is RenderWidget)
-//   * Pepper Fullscreen (root is RenderWidget)
 //
 // Destruction of the RenderWidgetHost will trigger destruction of the
 // RenderWidget iff RenderWidget is the root of the renderer object graph.

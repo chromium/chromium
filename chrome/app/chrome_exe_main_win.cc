@@ -355,8 +355,7 @@ int main() {
 
   // Process shutdown is hard and some process types have been crashing during
   // shutdown. TerminateCurrentProcessImmediately is safer and faster.
-  if (process_type == switches::kUtilityProcess ||
-      process_type == switches::kPpapiPluginProcess) {
+  if (process_type == switches::kUtilityProcess) {
     base::Process::TerminateCurrentProcessImmediately(rc);
   }
   return rc;

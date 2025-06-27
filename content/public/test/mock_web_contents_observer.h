@@ -187,21 +187,9 @@ class MockWebContentsObserver : public WebContentsObserver {
                const gfx::Size& frame_size),
               (override));
   MOCK_METHOD(void, TitleWasSet, (NavigationEntry * entry), (override));
-  MOCK_METHOD(void, PepperInstanceCreated, (), (override));
-  MOCK_METHOD(void, PepperInstanceDeleted, (), (override));
   MOCK_METHOD(void,
               ViewportFitChanged,
               (blink::mojom::ViewportFit value),
-              (override));
-  MOCK_METHOD(void,
-              PluginCrashed,
-              (const base::FilePath& plugin_path, base::ProcessId plugin_pid),
-              (override));
-  MOCK_METHOD(void,
-              PluginHungStatusChanged,
-              (int plugin_child_id,
-               const base::FilePath& plugin_path,
-               bool is_hung),
               (override));
   MOCK_METHOD(void,
               InnerWebContentsCreated,

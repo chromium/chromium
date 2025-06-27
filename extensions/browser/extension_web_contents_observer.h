@@ -140,11 +140,6 @@ class ExtensionWebContentsObserver
       content::NavigationHandle* navigation_handle) override;
   void MediaPictureInPictureChanged(bool is_picture_in_picture) override;
 
-  // Per the documentation in WebContentsObserver, these two methods are invoked
-  // when a Pepper plugin instance is attached/detached in the page DOM.
-  void PepperInstanceCreated() override;
-  void PepperInstanceDeleted() override;
-
   // Temporarily needed to host common code between RenderFrameCreated and
   // ReadyToCommitNavigation.
   virtual void SetUpRenderFrameHost(

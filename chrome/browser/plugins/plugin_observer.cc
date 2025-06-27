@@ -61,52 +61,6 @@ PluginObserver::PluginObserver(content::WebContents* web_contents)
 
 PluginObserver::~PluginObserver() = default;
 
-void PluginObserver::PluginCrashed(const base::FilePath& plugin_path,
-                                   base::ProcessId plugin_pid) {
-  DCHECK(!plugin_path.value().empty());
-
-  std::u16string plugin_name =
-      PluginService::GetInstance()->GetPluginDisplayNameByPath(plugin_path);
-  std::u16string infobar_text;
-#if BUILDFLAG(IS_WIN)
-  // Find out whether the plugin process is still alive.
-  // Note: Although the chances are slim, it is possible that after the plugin
-  // process died, |plugin_pid| has been reused by a new process. The
-  // consequence is that we will display |IDS_PLUGIN_DISCONNECTED_PROMPT| rather
-  // than |IDS_PLUGIN_CRASHED_PROMPT| to the user, which seems acceptable.
-  base::Process plugin_process =
-      base::Process::OpenWithAccess(plugin_pid,
-                                    PROCESS_QUERY_INFORMATION | SYNCHRONIZE);
-  bool is_running = false;
-  if (plugin_process.IsValid()) {
-    int unused_exit_code = 0;
-    is_running = base::GetTerminationStatus(plugin_process.Handle(),
-                                            &unused_exit_code) ==
-                 base::TERMINATION_STATUS_STILL_RUNNING;
-    plugin_process.Close();
-  }
-
-  if (is_running) {
-    infobar_text = l10n_util::GetStringFUTF16(IDS_PLUGIN_DISCONNECTED_PROMPT,
-                                              plugin_name);
-  } else {
-    infobar_text = l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
-                                              plugin_name);
-  }
-#else
-  // Calling the POSIX version of base::GetTerminationStatus() may affect other
-  // code which is interested in the process termination status. (Please see the
-  // comment of the function.) Therefore, a better way is needed to distinguish
-  // disconnections from crashes.
-  infobar_text = l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
-                                            plugin_name);
-#endif
-
-  ReloadPluginInfoBarDelegate::Create(
-      infobars::ContentInfoBarManager::FromWebContents(web_contents()),
-      &web_contents()->GetController(), infobar_text);
-}
-
 // static
 void PluginObserver::CreatePluginObserverInfoBar(
     infobars::ContentInfoBarManager* infobar_manager,

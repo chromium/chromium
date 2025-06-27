@@ -103,14 +103,16 @@ class PluginInfoHostImplTest : public ::testing::Test {
     content::WebPluginMimeType mime_type;
     mime_type.mime_type = "foo/bar";
     foo_plugin.mime_types.push_back(mime_type);
-    foo_plugin.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_IN_PROCESS;
+    foo_plugin.type =
+        content::WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
     PluginService::GetInstance()->RegisterInternalPlugin(foo_plugin, false);
 
     content::WebPluginInfo bar_plugin(u"Bar Plugin", bar_plugin_path_, u"1",
                                       u"The Bar plugin.");
     mime_type.mime_type = "foo/bar";
     bar_plugin.mime_types.push_back(mime_type);
-    bar_plugin.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_IN_PROCESS;
+    bar_plugin.type =
+        content::WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
     PluginService::GetInstance()->RegisterInternalPlugin(bar_plugin, false);
 
     RefreshPlugins();

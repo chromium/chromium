@@ -326,36 +326,6 @@ void ExtensionWebContentsObserver::MediaPictureInPictureChanged(
   }
 }
 
-void ExtensionWebContentsObserver::PepperInstanceCreated() {
-  DCHECK(initialized_);
-  if (GetViewType(web_contents()) ==
-      mojom::ViewType::kExtensionBackgroundPage) {
-    ProcessManager* const process_manager =
-        ProcessManager::Get(browser_context_);
-    const Extension* const extension =
-        process_manager->GetExtensionForWebContents(web_contents());
-    if (extension) {
-      process_manager->IncrementLazyKeepaliveCount(
-          extension, Activity::PEPPER_API, std::string());
-    }
-  }
-}
-
-void ExtensionWebContentsObserver::PepperInstanceDeleted() {
-  DCHECK(initialized_);
-  if (GetViewType(web_contents()) ==
-      mojom::ViewType::kExtensionBackgroundPage) {
-    ProcessManager* const process_manager =
-        ProcessManager::Get(browser_context_);
-    const Extension* const extension =
-        process_manager->GetExtensionForWebContents(web_contents());
-    if (extension) {
-      process_manager->DecrementLazyKeepaliveCount(
-          extension, Activity::PEPPER_API, std::string());
-    }
-  }
-}
-
 const Extension* ExtensionWebContentsObserver::GetExtensionFromFrame(
     content::RenderFrameHost* render_frame_host,
     bool verify_url) const {

@@ -332,9 +332,6 @@ class CONTENT_EXPORT ContentRendererClient {
   CreateSpeechRecognitionClient(RenderFrame* render_frame);
 #endif
 
-  // Returns true if the page at |url| can use Pepper CameraDevice APIs.
-  virtual bool IsPluginAllowedToUseCameraDeviceAPI(const GURL& url);
-
   // Notifies that a document element has been inserted in the frame's document.
   // This may be called multiple times for the same document. This method may
   // invalidate the frame.

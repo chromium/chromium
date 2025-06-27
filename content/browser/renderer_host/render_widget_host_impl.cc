@@ -3227,7 +3227,7 @@ void RenderWidgetHostImpl::RequestMouseLock(
   }
 
   delegate_->RequestToLockPointer(this, from_user_gesture,
-                                  is_last_unlocked_by_target_, false);
+                                  is_last_unlocked_by_target_);
   // We need to reset |is_last_unlocked_by_target_| here as we don't know
   // request source in |LostPointerLock()|.
   is_last_unlocked_by_target_ = false;

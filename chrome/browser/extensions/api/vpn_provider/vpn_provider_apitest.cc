@@ -37,7 +37,6 @@
 #include "chromeos/ash/components/network/shill_property_handler.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/vpn_service_proxy.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"

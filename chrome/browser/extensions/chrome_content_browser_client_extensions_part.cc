@@ -40,7 +40,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/browser/vpn_service_proxy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -685,21 +684,6 @@ std::vector<url::Origin> ChromeContentBrowserClientExtensionsPart::
       url::Origin::Create(extension_urls::GetNewWebstoreLaunchURL()));
 
   return list;
-}
-
-// static
-std::unique_ptr<content::VpnServiceProxy>
-ChromeContentBrowserClientExtensionsPart::GetVpnServiceProxy(
-    content::BrowserContext* browser_context) {
-#if BUILDFLAG(IS_CHROMEOS)
-  chromeos::VpnServiceInterface* vpn_service =
-      chromeos::VpnServiceFactory::GetForBrowserContext(browser_context);
-  if (!vpn_service)
-    return nullptr;
-  return vpn_service->GetVpnServiceProxy();
-#else
-  return nullptr;
-#endif
 }
 
 // static

@@ -41,10 +41,6 @@ class PluginObserver : public content::WebContentsObserver,
 
   ~PluginObserver() override;
 
-  // content::WebContentsObserver implementation.
-  void PluginCrashed(const base::FilePath& plugin_path,
-                     base::ProcessId plugin_pid) override;
-
   // Public for tests only.
   static void CreatePluginObserverInfoBar(
       infobars::ContentInfoBarManager* infobar_manager,

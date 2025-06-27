@@ -10394,9 +10394,6 @@ test("unit_tests") {
       ]
       deps += [ "//ui/linux:linux_ui" ]
     }
-    if (enable_plugins) {
-      sources += [ "../browser/ui/views/hung_plugin_tab_helper_unittest.cc" ]
-    }
     if (is_win) {
       sources +=
           [ "../browser/ui/views/status_icons/status_tray_win_unittest.cc" ]

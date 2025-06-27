@@ -70,7 +70,6 @@ void ShellCrashReporterClient::GetProductInfo(ProductInfo* product_info) {
 bool ShellCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {
   return process_type == switches::kRendererProcess ||
-         process_type == switches::kPpapiPluginProcess ||
          process_type == switches::kZygoteProcess ||
          process_type == switches::kGpuProcess;
 }

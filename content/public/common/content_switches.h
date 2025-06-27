@@ -72,7 +72,6 @@ CONTENT_EXPORT extern const char kDisableNewContentRenderingTimeout[];
 CONTENT_EXPORT extern const char kDisableNotifications[];
 CONTENT_EXPORT extern const char kDisableNv12DxgiVideo[];
 CONTENT_EXPORT extern const char kDisableOriginTrialControlledBlinkFeatures[];
-extern const char kDisablePepper3d[];
 CONTENT_EXPORT extern const char kDisablePlatformAccessibilityIntegration[];
 CONTENT_EXPORT extern const char kDisablePresentationAPI[];
 CONTENT_EXPORT extern const char kDisablePushStateThrottle[];
@@ -162,10 +161,6 @@ CONTENT_EXPORT extern const char kNoUnsandboxedZygote[];
 CONTENT_EXPORT extern const char kNoZygote[];
 CONTENT_EXPORT extern const char kOverrideLanguageDetection[];
 CONTENT_EXPORT extern const char kPdfRenderer[];
-CONTENT_EXPORT extern const char kPpapiInProcess[];
-extern const char kPpapiPluginLauncher[];
-CONTENT_EXPORT extern const char kPpapiPluginProcess[];
-extern const char kPpapiStartupDialog[];
 CONTENT_EXPORT extern const char kPrivateAggregationDeveloperMode[];
 CONTENT_EXPORT extern const char kProcessPerSite[];
 CONTENT_EXPORT extern const char kProcessPerTab[];
@@ -176,7 +171,6 @@ CONTENT_EXPORT extern const char kReduceAcceptLanguage[];
 CONTENT_EXPORT extern const char kReduceAcceptLanguageHTTP[];
 CONTENT_EXPORT extern const char kReduceUserAgentMinorVersion[];
 CONTENT_EXPORT extern const char kReduceUserAgentPlatformOsCpu[];
-CONTENT_EXPORT extern const char kRegisterPepperPlugins[];
 CONTENT_EXPORT extern const char kRemoteDebuggingPipe[];
 CONTENT_EXPORT extern const char kRemoteDebuggingPort[];
 CONTENT_EXPORT extern const char kRemoteAllowOrigins[];
@@ -268,8 +262,6 @@ CONTENT_EXPORT extern const char kEnableSpeechDispatcher[];
 #if BUILDFLAG(IS_WIN)
 CONTENT_EXPORT extern const char kPrefetchArgumentRenderer[];
 CONTENT_EXPORT extern const char kPrefetchArgumentGpu[];
-CONTENT_EXPORT extern const char kPrefetchArgumentPpapi[];
-CONTENT_EXPORT extern const char kPrefetchArgumentPpapiBroker[];
 CONTENT_EXPORT extern const char kPrefetchArgumentOther[];
 // This switch contains the device scale factor passed to certain processes
 // like renderers, etc.
@@ -277,8 +269,6 @@ CONTENT_EXPORT extern const char kDeviceScaleFactor[];
 CONTENT_EXPORT extern const char kDisableLegacyIntermediateWindow[];
 // Switch to pass the font cache shared memory handle to the renderer.
 CONTENT_EXPORT extern const char kFontCacheSharedHandle[];
-CONTENT_EXPORT extern const char kPpapiAntialiasedTextEnabled[];
-CONTENT_EXPORT extern const char kPpapiSubpixelRenderingSetting[];
 CONTENT_EXPORT extern const char kRaiseTimerFrequency[];
 CONTENT_EXPORT extern const char kGpu2StartupDialog[];
 CONTENT_EXPORT extern const char kAudioProcessHighPriority[];

@@ -68,7 +68,7 @@ const char kDisable2dCanvasAntialiasing[]   = "disable-canvas-aa";
 // Disables Canvas2D rendering into a scanout buffer for overlay support.
 const char kDisable2dCanvasImageChromium[] = "disable-2d-canvas-image-chromium";
 
-// Disables client-visible 3D APIs, in particular WebGL and Pepper 3D.
+// Disables client-visible 3D APIs, in particular WebGL.
 // This is controlled by policy and is kept separate from the other
 // enable/disable switches to avoid accidentally regressing the policy
 // support for controlling access to these APIs.
@@ -201,9 +201,6 @@ const char kDisableNewContentRenderingTimeout[] =
 
 // Disables the Web Notification and the Push APIs.
 const char kDisableNotifications[]          = "disable-notifications";
-
-// Disable Pepper3D.
-const char kDisablePepper3d[]               = "disable-pepper-3d";
 
 // Disables the activation of browser and web accessibility via interactions
 // with the platform's accessibility integration (i.e., a screenreader will not
@@ -549,21 +546,6 @@ const char kOverrideLanguageDetection[] = "override-language-detection";
 // Renderer process that runs the non-PPAPI PDF plugin.
 const char kPdfRenderer[] = "pdf-renderer";
 
-// Runs PPAPI (Pepper) plugins in-process.
-const char kPpapiInProcess[]                = "ppapi-in-process";
-
-// Specifies a command that should be used to launch the ppapi plugin process.
-// Useful for running the plugin process through purify or quantify.  Ex:
-//   --ppapi-plugin-launcher="path\to\purify /Run=yes"
-const char kPpapiPluginLauncher[]           = "ppapi-plugin-launcher";
-
-// Argument to the process type that indicates a PPAPI plugin process type.
-const char kPpapiPluginProcess[]            = "ppapi";
-
-// Causes the PPAPI sub process to display a dialog on launch. Be sure to use
-// --no-sandbox as well or the sandbox won't allow the dialog to display.
-const char kPpapiStartupDialog[]            = "ppapi-startup-dialog";
-
 // Causes the Private Aggregation API to run without reporting delays.
 const char kPrivateAggregationDeveloperMode[] =
     "private-aggregation-developer-mode";
@@ -622,9 +604,6 @@ const char kReduceUserAgentMinorVersion[] = "reduce-user-agent-minor-version";
 // implements phase 5 of User-Agent reduction:
 // https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html.
 const char kReduceUserAgentPlatformOsCpu[] = "reduce-user-agent-platform-oscpu";
-
-// Register Pepper plugins (see pepper_plugin_list.cc for its format).
-const char kRegisterPepperPlugins[]         = "register-pepper-plugins";
 
 // Enables remote debug over stdio pipes [in=3, out=4] or over the remote pipes
 // specified in the 'remote-debugging-io-pipes' switch.
@@ -975,15 +954,6 @@ const char kDisableLegacyIntermediateWindow[] = "disable-legacy-window";
 // DirectWrite FontCache is shared by browser to renderers using shared memory.
 // This switch allows us to pass the shared memory handle to the renderer.
 const char kFontCacheSharedHandle[] = "font-cache-shared-handle";
-
-// The boolean value (0/1) of FontRenderParams::antialiasing to be passed to
-// Ppapi processes.
-const char kPpapiAntialiasedTextEnabled[] = "ppapi-antialiased-text-enabled";
-
-// The enum value of FontRenderParams::subpixel_rendering to be passed to Ppapi
-// processes.
-const char kPpapiSubpixelRenderingSetting[] =
-    "ppapi-subpixel-rendering-setting";
 
 // Raise the timer interrupt frequency in all Chrome processes, for experimental
 // purposes. This feature is needed because as of Windows 10 2004 the scheduling

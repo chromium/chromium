@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/common/extensions/api/vpn_provider.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/vpn_service_proxy.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
@@ -230,10 +229,6 @@ void VpnService::NotifyConnectionStateChanged(const std::string& extension_id,
       ->NotifyConnectionStateChanged(
           connection_success,
           AdaptCallback(std::move(success), std::move(failure)));
-}
-
-std::unique_ptr<content::VpnServiceProxy> VpnService::GetVpnServiceProxy() {
-  return nullptr;
 }
 
 void VpnService::Shutdown() {

@@ -331,7 +331,6 @@
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_platform.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
-#include "content/public/browser/vpn_service_proxy.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -4908,17 +4907,6 @@ ChromeContentBrowserClient::GetLocalTracesDirectory() {
   return user_data_dir;
 }
 
-std::unique_ptr<content::VpnServiceProxy>
-ChromeContentBrowserClient::GetVpnServiceProxy(
-    content::BrowserContext* browser_context) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  return ChromeContentBrowserClientExtensionsPart::GetVpnServiceProxy(
-      browser_context);
-#else
-  return nullptr;
-#endif
-}
-
 std::unique_ptr<ui::SelectFilePolicy>
 ChromeContentBrowserClient::CreateSelectFilePolicy(WebContents* web_contents) {
   return std::make_unique<ChromeSelectFilePolicy>(web_contents);
@@ -5438,28 +5426,6 @@ ChromeContentBrowserClient::CreateTracingDelegate() {
 
 bool ChromeContentBrowserClient::IsSystemWideTracingEnabled() {
   return ChromeTracingDelegate::IsSystemWideTracingEnabled();
-}
-
-bool ChromeContentBrowserClient::IsPluginAllowedToCallRequestOSFileHandle(
-    content::BrowserContext* browser_context,
-    const GURL& url) {
-#if BUILDFLAG(ENABLE_PLUGINS) && BUILDFLAG(ENABLE_EXTENSIONS)
-  return ChromeContentBrowserClientPluginsPart::
-      IsPluginAllowedToCallRequestOSFileHandle(browser_context, url);
-#else
-  return false;
-#endif
-}
-
-bool ChromeContentBrowserClient::IsPluginAllowedToUseDevChannelAPIs(
-    content::BrowserContext* browser_context,
-    const GURL& url) {
-#if BUILDFLAG(ENABLE_PLUGINS) && BUILDFLAG(ENABLE_EXTENSIONS)
-  return ChromeContentBrowserClientPluginsPart::
-      IsPluginAllowedToUseDevChannelAPIs(browser_context, url);
-#else
-  return false;
-#endif
 }
 
 void ChromeContentBrowserClient::InitOnUIThread() {

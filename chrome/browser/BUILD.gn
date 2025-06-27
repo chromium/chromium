@@ -8073,8 +8073,6 @@ static_library("browser") {
       "plugins/chrome_content_browser_client_plugins_part.h",
       "plugins/chrome_plugin_service_filter.cc",
       "plugins/chrome_plugin_service_filter.h",
-      "plugins/hung_plugin_infobar_delegate.cc",
-      "plugins/hung_plugin_infobar_delegate.h",
       "plugins/plugin_info_host_impl.cc",
       "plugins/plugin_info_host_impl.h",
       "plugins/plugin_metadata.cc",

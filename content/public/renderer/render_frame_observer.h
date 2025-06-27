@@ -63,7 +63,6 @@ class SchemeHostPort;
 
 namespace content {
 
-class RendererPpapiHost;
 class RenderFrame;
 
 // Base class for objects that want to filter incoming IPCs, and also get
@@ -82,9 +81,6 @@ class CONTENT_EXPORT RenderFrameObserver
   // always null-check each call to render_frame() because the RenderFrame can
   // go away at any time.
   virtual void OnDestruct() = 0;
-
-  // Called when a Pepper plugin is created.
-  virtual void DidCreatePepperPlugin(RendererPpapiHost* host) {}
 
   // Called when a load is explicitly stopped by the user or browser.
   virtual void OnStop() {}

@@ -19,9 +19,8 @@ ContentPluginInfo::~ContentPluginInfo() = default;
 WebPluginInfo ContentPluginInfo::ToWebPluginInfo() const {
   WebPluginInfo info;
 
-  info.type = is_out_of_process
-                  ? WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS
-                  : WebPluginInfo::PLUGIN_TYPE_PEPPER_IN_PROCESS;
+  info.type = is_internal ? WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN
+                          : WebPluginInfo::PLUGIN_TYPE_BROWSER_PLUGIN;
 
   info.name = name.empty() ? path.BaseName().LossyDisplayName()
                            : base::UTF8ToUTF16(name);
@@ -29,7 +28,6 @@ WebPluginInfo ContentPluginInfo::ToWebPluginInfo() const {
   info.version = base::ASCIIToUTF16(version);
   info.desc = base::ASCIIToUTF16(description);
   info.mime_types = mime_types;
-  info.pepper_permissions = permissions;
 
   return info;
 }

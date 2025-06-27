@@ -177,12 +177,11 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   void HandleGpuSwitch();
 
   // Maintenance of domains requiring explicit user permission before
-  // using client-facing 3D APIs (WebGL, Pepper 3D), either because
-  // the domain has caused the GPU to reset, or because too many GPU
-  // resets have been observed globally recently, and system stability
-  // might be compromised. A set of URLs is passed because in the
-  // situation where the GPU process crashes, the implementation needs
-  // to know that these URLs all came from the same crash.
+  // using client-facing 3D APIs (WebGL), either because the domain has caused
+  // the GPU to reset, or because too many GPU resets have been observed
+  // globally recently, and system stability might be compromised. A set of URLs
+  // is passed because in the situation where the GPU process crashes, the
+  // implementation needs to know that these URLs all came from the same crash.
   //
   // In the set, each URL may be a partial URL (including at least the
   // host) or a full URL to a page.

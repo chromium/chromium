@@ -129,7 +129,6 @@ void ChromeContentClient::AddPlugins(
 
   content::ContentPluginInfo pdf_info;
   pdf_info.is_internal = true;
-  pdf_info.is_out_of_process = true;
   pdf_info.name = kPDFPluginName;
   pdf_info.description = kPDFPluginDescription;
   pdf_info.path = base::FilePath(ChromeContentClient::kPDFInternalPluginPath);

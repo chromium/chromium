@@ -129,7 +129,6 @@ bool IsBoringSwitch(const std::string& flag) {
       // crash_reporter separately informs the crash server if it is doing
       // crash-loop handling.
       crash_reporter::switches::kCrashLoopBefore,
-      switches::kRegisterPepperPlugins,
       switches::kUseGL,
       switches::kUserDataDir,
       // Cros/CC flags are specified as raw strings to avoid dependency.

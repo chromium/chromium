@@ -91,7 +91,6 @@ bool ChromeCrashReporterClient::ShouldPassCrashLoopBefore(
     const std::string& process_type) {
   if (process_type == ::switches::kRendererProcess ||
       process_type == ::switches::kUtilityProcess ||
-      process_type == ::switches::kPpapiPluginProcess ||
       process_type == ::switches::kZygoteProcess) {
     // These process types never cause a log-out, even if they crash. So the
     // normal crash handling process should work fine; we shouldn't need to
@@ -220,7 +219,6 @@ bool ChromeCrashReporterClient::ShouldMonitorCrashHandlerExpensively() {
 bool ChromeCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {
   return process_type == switches::kRendererProcess ||
-         process_type == switches::kPpapiPluginProcess ||
          process_type == switches::kZygoteProcess ||
          process_type == switches::kGpuProcess ||
          process_type == switches::kUtilityProcess;
