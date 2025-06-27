@@ -10749,6 +10749,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kPlatformKeysChangesWave1)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+    {"autofill-enable-email-or-loyalty-cards-filling",
+     flag_descriptions::kAutofillEnableEmailOrLoyaltyCardsFillingName,
+     flag_descriptions::kAutofillEnableEmailOrLoyaltyCardsFillingDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableEmailOrLoyaltyCardsFilling)},
+
     {"autofill-enable-loyalty-cards-filling",
      flag_descriptions::kAutofillEnableLoyaltyCardsFillingName,
      flag_descriptions::kAutofillEnableLoyaltyCardsFillingDescription, kOsAll,

@@ -754,6 +754,11 @@
     "expiry_milestone": 131
   },
   {
+    "name": "autofill-enable-email-or-loyalty-cards-filling",
+    "owners": [ "vizcay@google.com", "tchudakov@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "autofill-enable-flat-rate-card-benefits-from-curinos",
     "owners": [ "ferny@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145

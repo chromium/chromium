@@ -8373,6 +8373,8 @@ from previous Chrome versions.
       label="SeparateLocalAndAccountSearchEngines:disabled"/>
   <int value="-2084849051" label="TabGroupsCollapseFreezing:disabled"/>
   <int value="-2083998415" label="VrLaunchIntent:enabled"/>
+  <int value="-2083610793"
+      label="AutofillEnableEmailOrLoyaltyCardsFilling:enabled"/>
   <int value="-2083195884" label="enable-firewall-hole-punching"/>
   <int value="-2082462043" label="ViewPasswords:disabled"/>
   <int value="-2082411152" label="PasswordsGrouping:disabled"/>
@@ -8931,6 +8933,8 @@ from previous Chrome versions.
   <int value="-1887053262"
       label="enable-zero-suggest-most-visited-without-serp"/>
   <int value="-1886997564" label="EnableSwitchAccessPointScanning:enabled"/>
+  <int value="-1886813894"
+      label="AutofillEnableEmailOrLoyaltyCardsFilling:disabled"/>
   <int value="-1886760950" label="ImprovedScreenCaptureSettings:enabled"/>
   <int value="-1886713568"
       label="AutofillGetPaymentsIdentityFromSync:disabled"/>

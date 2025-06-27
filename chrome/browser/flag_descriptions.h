@@ -502,6 +502,9 @@ extern const char kAutofillEnableCardInfoRuntimeRetrievalDescription[];
 extern const char kAutofillEnableDownstreamCardAwarenessIphName[];
 extern const char kAutofillEnableDownstreamCardAwarenessIphDescription[];
 
+extern const char kAutofillEnableEmailOrLoyaltyCardsFillingName[];
+extern const char kAutofillEnableEmailOrLoyaltyCardsFillingDescription[];
+
 extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosName[];
 extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[];
 

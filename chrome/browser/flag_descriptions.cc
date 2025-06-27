@@ -815,6 +815,12 @@ const char kAutofillEnableDownstreamCardAwarenessIphDescription[] =
     "When enabled, in-product help UI will be shown the first time a card "
     "added outside of Chrome appears in Autofill card suggestions.";
 
+const char kAutofillEnableEmailOrLoyaltyCardsFillingName[] =
+    "Enable Autofill support for filling email or loyalty card fields";
+const char kAutofillEnableEmailOrLoyaltyCardsFillingDescription[] =
+    "When enabled, Autofill will offer support for filling the user's loyalty "
+    "cards on email or loyalty card fields.";
+
 const char kAutofillEnableFlatRateCardBenefitsFromCurinosName[] =
     "Enable showing flat rate card benefits sourced from Curinos";
 const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[] =
