@@ -9,8 +9,8 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,7 +23,9 @@ import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.policy.test.annotations.Policies;
 
 import java.util.concurrent.ExecutionException;
@@ -33,21 +35,22 @@ import java.util.concurrent.ExecutionException;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LocaleManagerTest {
-    public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    @Rule
+    public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
+            ChromeTransitTestRules.blankPageStartReusedActivityRule();
 
-    @BeforeClass
-    public static void setUpClass() throws ExecutionException {
+    @Before
+    public void setUp() throws ExecutionException {
         // Launch any activity as an Activity ref is required to attempt to show the activity.
-        sActivityTestRule.startMainActivityOnBlankPage();
-        sActivityTestRule.waitForActivityNativeInitializationComplete();
-        sActivityTestRule.waitForDeferredStartup();
+        mActivityTestRule.start();
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mActivityTestRule.getActivityTestRule().waitForDeferredStartup();
     }
 
     @After
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
-                sActivityTestRule.getActivity().getSnackbarManager()::dismissAllSnackbars);
+                mActivityTestRule.getActivity().getSnackbarManager()::dismissAllSnackbars);
     }
 
     @Policies.Add({@Policies.Item(key = "DefaultSearchProviderEnabled", string = "false")})
@@ -72,7 +75,7 @@ public class LocaleManagerTest {
                 () ->
                         LocaleManager.getInstance()
                                 .showSearchEnginePromoIfNeeded(
-                                        sActivityTestRule.getActivity(),
+                                        mActivityTestRule.getActivity(),
                                         result -> {
                                             Assert.assertTrue(result);
                                             searchEnginesFinalizedCallback.notifyCalled();
@@ -88,7 +91,7 @@ public class LocaleManagerTest {
                 () -> {
                     LocaleManager localeManager = LocaleManager.getInstance();
                     SnackbarManager snackbarManager =
-                            sActivityTestRule.getActivity().getSnackbarManager();
+                            mActivityTestRule.getActivity().getSnackbarManager();
                     localeManager.setSnackbarManager(snackbarManager);
 
                     localeManager.showSnackbarForDeviceSearchEngineUpdate();
@@ -108,7 +111,7 @@ public class LocaleManagerTest {
                 () -> {
                     LocaleManager localeManager = LocaleManager.getInstance();
                     SnackbarManager snackbarManager =
-                            sActivityTestRule.getActivity().getSnackbarManager();
+                            mActivityTestRule.getActivity().getSnackbarManager();
                     // Simulate the case when snackbar manager is not set.
                     localeManager.setSnackbarManager(null);
                     localeManager.showSnackbarForDeviceSearchEngineUpdate();

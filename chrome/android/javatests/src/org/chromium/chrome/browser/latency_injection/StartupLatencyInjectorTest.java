@@ -17,7 +17,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -26,8 +27,8 @@ import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 @DoNotBatch(reason = "Tests require cold browser start.")
 public class StartupLatencyInjectorTest {
     @Rule
-    public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mTabbedActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String HISTOGRAM_TOTAL_WAIT_TIME =
             "Startup.Android.MainIconLaunchTotalWaitTime";
@@ -40,7 +41,7 @@ public class StartupLatencyInjectorTest {
                         .expectAnyRecordTimes(HISTOGRAM_TOTAL_WAIT_TIME, 2)
                         .build();
         ChromeFeatureList.sClankStartupLatencyInjectionAmountMs.setForTesting(100);
-        mTabbedActivityTestRule.startMainActivityFromLauncher();
+        mTabbedActivityTestRule.startFromLauncherAtNtp();
         mTabbedActivityTestRule.waitForActivityNativeInitializationComplete();
         ChromeApplicationTestUtils.fireHomeScreenIntent(mTabbedActivityTestRule.getActivity());
         mTabbedActivityTestRule.resumeMainActivityFromLauncher();
