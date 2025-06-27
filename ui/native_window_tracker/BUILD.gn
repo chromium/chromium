@@ -4,6 +4,9 @@
 
 import("//build/config/ui.gni")
 
+# Assert that one of the implementation would be used.
+assert(use_aura || is_mac || is_android)
+
 component("native_window_tracker") {
   sources = [ "native_window_tracker.h" ]
   deps = [
@@ -27,5 +30,13 @@ component("native_window_tracker") {
       "native_window_tracker_cocoa.mm",
     ]
     frameworks = [ "AppKit.framework" ]
+  }
+
+  if (is_android) {
+    sources += [
+      "native_window_tracker_android.cc",
+      "native_window_tracker_android.h",
+    ]
+    deps += [ "//ui/android" ]
   }
 }
