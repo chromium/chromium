@@ -5505,6 +5505,7 @@ targets.bundle(
 targets.bundle(
     name = "ios_failing_screen_size_dependent_tests",
     targets = [
+        "ios_chrome_unittests",
         "ios_web_inttests",
         "ios_web_unittests",
     ],
@@ -5573,7 +5574,6 @@ targets.bundle(
         "base_unittests",
         "components_unittests",
         "gfx_unittests",
-        "ios_chrome_unittests",
         "ios_web_view_inttests",
         "ios_web_view_unittests",
         "skia_unittests",
