@@ -717,8 +717,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
       gfx::Size size,
       viz::SharedImageFormat format,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-          context_provider_wrapper,
-      bool using_swapchain);
+          context_provider_wrapper);
   void PageVisibilityChanged() override;
   void SizeChanged() override;
   std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider()

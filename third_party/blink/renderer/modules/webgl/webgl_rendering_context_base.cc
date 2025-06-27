@@ -1923,13 +1923,13 @@ bool WebGLRenderingContextBase::IsAccelerated() const {
 bool WebGLRenderingContextBase::CanCreatePassThroughProvider(
     gfx::Size size,
     viz::SharedImageFormat format,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    bool using_swapchain) {
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+        context_provider_wrapper) {
   bool using_webgl_image_chromium =
       SharedGpuContext::MaySupportImageChromium() &&
       (RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
        base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium));
-  if (!using_swapchain && !using_webgl_image_chromium) {
+  if (!UsingSwapChain() && !using_webgl_image_chromium) {
     return false;
   }
 
@@ -2032,9 +2032,9 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
     // If LowLatency is enabled, we need a resource that is able to perform well
     // in such mode. It will first try a PassThrough provider and, if that is
     // not possible, it will try a SharedImage with the appropriate flags.
-    if (CanCreatePassThroughProvider(Host()->Size(), format,
-                                     SharedGpuContext::ContextProviderWrapper(),
-                                     UsingSwapChain())) {
+    if (CanCreatePassThroughProvider(
+            Host()->Size(), format,
+            SharedGpuContext::ContextProviderWrapper())) {
       // Note: Unlike other CanvasResourceProvider subclasses, a
       // CanvasResourceProviderPassThrough instance is always valid and does
       // not require clearing as part of initialization (both of these being
