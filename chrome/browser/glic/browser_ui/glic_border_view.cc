@@ -94,7 +94,9 @@ std::vector<SkColor> GetParameterizedColors() {
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     for (const auto& unparsed : unparsed_colors) {
       SkColor result;
-      CHECK(content::ParseHexColorString("#" + unparsed, &result));
+      if (!content::ParseHexColorString("#" + unparsed, &result)) {
+        return std::vector<SkColor>();
+      }
       colors.push_back(result);
     }
   }
@@ -109,7 +111,9 @@ std::vector<float> GetParameterizedFloats() {
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     for (const auto& unparsed : unparsed_floats) {
       double result;
-      CHECK(base::StringToDouble(unparsed, &result));
+      if (!base::StringToDouble(unparsed, &result)) {
+        return std::vector<float>();
+      }
       floats.push_back(static_cast<float>(result));
     }
   }
@@ -778,7 +782,8 @@ GlicKeyedService* GlicBorderView::GetGlicService() const {
 }
 
 void GlicBorderView::UpdateShader() {
-  if (base::FeatureList::IsEnabled(features::kGlicParameterizedShader)) {
+  if (base::FeatureList::IsEnabled(features::kGlicParameterizedShader) &&
+      !colors_.empty() && !floats_.empty()) {
     shader_ =
         ForceSimplifiedShader()
             ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
