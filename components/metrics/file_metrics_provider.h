@@ -162,7 +162,11 @@ class FileMetricsProvider : public MetricsProvider,
     size_t max_dir_files = 100;  // Maximum files in a directory (0=inf).
   };
 
-  explicit FileMetricsProvider(PrefService* local_state);
+  // `is_fre` is true if the current run is in the First Run Experience (FRE).
+  // If true, the provider may not delete the sources of type
+  // SOURCE_HISTOGRAMS_ATOMIC_DIR and SOURCE_HISTOGRAMS_ATOMIC_FILE. See
+  // fre_source_trial.h for more details.
+  explicit FileMetricsProvider(PrefService* local_state, bool is_fre);
 
   FileMetricsProvider(const FileMetricsProvider&) = delete;
   FileMetricsProvider& operator=(const FileMetricsProvider&) = delete;
@@ -189,7 +193,7 @@ class FileMetricsProvider : public MetricsProvider,
   static void RegisterPrefs(PrefRegistrySimple* prefs);
 
  private:
-  friend class FileMetricsProviderTest;
+  friend class FileMetricsProviderTestBase;
   friend class TestFileMetricsProvider;
 
   // The different results that can occur accessing a file.
@@ -361,6 +365,9 @@ class FileMetricsProvider : public MetricsProvider,
 
   // The preferences-service used to store persistent state about sources.
   raw_ptr<PrefService> pref_service_;
+
+  // Whether the current run is in the First Run Experience (FRE).
+  const bool is_fre_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FileMetricsProvider> weak_factory_{this};

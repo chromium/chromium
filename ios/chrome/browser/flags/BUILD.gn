@@ -140,8 +140,11 @@ source_set("client_side") {
     "//components/variations",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/first_run/ui_bundled:field_trial",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/variations/model:store",
+    "//ios/chrome/common",
   ]
 }
 

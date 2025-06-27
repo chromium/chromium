@@ -123,8 +123,11 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
   using metrics::FileMetricsProvider;
 
   // Create an object to monitor files of metrics and include them in reports.
+  // `is_fre` will always be false for Android WV because the concept of First
+  // Run Experience is not applicable.
   std::unique_ptr<FileMetricsProvider> file_metrics_provider =
-      std::make_unique<FileMetricsProvider>(pref_service);
+      std::make_unique<FileMetricsProvider>(pref_service,
+                                            /*is_fre=*/false);
 
   base::FilePath user_data_dir;
   base::PathService::Get(base::DIR_ANDROID_APP_DATA, &user_data_dir);
