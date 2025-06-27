@@ -5,6 +5,7 @@
 #include "components/collaboration/internal/collaboration_service_impl.h"
 
 #include "base/functional/callback_forward.h"
+#include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/collaboration/internal/collaboration_controller.h"
 #include "components/collaboration/internal/metrics.h"
@@ -437,6 +438,12 @@ SigninStatus CollaborationServiceImpl::GetSigninStatus() {
 
 CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingFeature) &&
+      !base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingJoinOnly)) {
+    return CollaborationStatus::kDisabled;
+  }
   // Check if device policy allow signin.
 #if BUILDFLAG(IS_IOS)
   BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
