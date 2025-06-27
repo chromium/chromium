@@ -3130,7 +3130,8 @@
   },
   "Cast Android (dbg)": {
     "additional_compile_targets": [
-      "cast_browser_apk"
+      "cast_browser_apk",
+      "cast_browser_dist_aar"
     ]
   },
   "Cast Audio Linux": {

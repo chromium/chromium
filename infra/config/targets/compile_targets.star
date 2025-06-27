@@ -73,6 +73,13 @@ targets.compile_target(
 )
 
 targets.compile_target(
+    name = "cast_browser_dist_aar",
+    label = "//chromecast:cast_browser_dist_aar",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+)
+
+targets.compile_target(
     name = "cast_test_lists",
     label = "//chromecast:cast_test_lists",
     # All references have been moved to starlark

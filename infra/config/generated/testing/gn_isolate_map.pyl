@@ -291,6 +291,11 @@
     "type": "additional_compile_target",
     "skip_usage_check": True,
   },
+  "cast_browser_dist_aar": {
+    "label": "//chromecast:cast_browser_dist_aar",
+    "type": "additional_compile_target",
+    "skip_usage_check": True,
+  },
   "cast_cast_core_unittests": {
     "label": "//chromecast/cast_core:cast_cast_core_unittests",
     "type": "console_test_launcher",
