@@ -18,7 +18,9 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.policy.PolicyProvider;
 
@@ -27,13 +29,15 @@ import org.chromium.components.policy.PolicyProvider;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CombinedPolicyProviderTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String DATA_URI = "data:text/plain;charset=utf-8;base64,dGVzdA==";
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
     }
 
     /**

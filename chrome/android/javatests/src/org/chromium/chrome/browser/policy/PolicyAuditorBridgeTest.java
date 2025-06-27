@@ -21,8 +21,9 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
@@ -68,11 +69,8 @@ public class PolicyAuditorBridgeTest {
     private static final FakePolicyAuditor sFakePolicyAuditor = new FakePolicyAuditor();
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(mActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @BeforeClass
     public static void setUpClass() {
@@ -87,7 +85,7 @@ public class PolicyAuditorBridgeTest {
     @Test
     @SmallTest
     public void testSuccessfulNavigation() {
-        mActivityTestRule.loadUrl(UrlConstants.VERSION_URL);
+        mActivityTestRule.startOnWebPage(UrlConstants.VERSION_URL);
 
         FakePolicyAuditor fakePolicyAuditor = sFakePolicyAuditor;
         Assert.assertEquals(1, fakePolicyAuditor.getEntriesSize());
@@ -99,12 +97,14 @@ public class PolicyAuditorBridgeTest {
     @Test
     @SmallTest
     public void testUnsuccessfulNavigation() throws Exception {
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
+
         String invalidUrl = "https://invalid/";
 
         // Can't use the activity test rule to navigate to invalid urls, the rule has an assert that
         // fails the testcase upon unsuccessful navigations. So, use the tab directly to navigate to
         // the invalid url.
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = page.getTab();
         final CallbackHelper loadFinishCallback = new CallbackHelper();
         WebContentsObserver observer =
                 new WebContentsObserver() {

@@ -25,7 +25,9 @@ import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 
 import java.util.concurrent.ExecutionException;
 
@@ -37,7 +39,8 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class StartupPaintPreviewHelperTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TEST_URL = "/chrome/test/data/android/about.html";
 
@@ -48,9 +51,8 @@ public class StartupPaintPreviewHelperTest {
     @Test
     @MediumTest
     public void testCaptureOnBackgrounded() throws ExecutionException {
-        mActivityTestRule.startMainActivityWithURL(
-                mActivityTestRule.getTestServer().getURL(TEST_URL));
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        WebPageStation page = mActivityTestRule.startOnTestServerUrl(TEST_URL);
+        Tab tab = page.getTab();
         CriteriaHelper.pollUiThread(
                 () ->
                         PaintPreviewTabServiceFactory.getServiceInstance()
@@ -96,13 +98,12 @@ public class StartupPaintPreviewHelperTest {
     @MediumTest
     @DisabledTest(message = "Pending revival. See crbug.com/333779543.")
     public void testDisplayOnStartup() throws ExecutionException {
-        mActivityTestRule.startMainActivityWithURL(
-                mActivityTestRule.getTestServer().getURL(TEST_URL));
-        final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        WebPageStation page = mActivityTestRule.startOnTestServerUrl(TEST_URL);
+        ChromeTabbedActivity activity = page.getActivity();
         CriteriaHelper.pollUiThread(
                 () -> activity.getTabModelSelector().isTabStateInitialized(),
                 "Tab state never initialized.");
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = page.getTab();
         CriteriaHelper.pollUiThread(
                 () ->
                         PaintPreviewTabServiceFactory.getServiceInstance()
@@ -128,7 +129,7 @@ public class StartupPaintPreviewHelperTest {
         ThreadUtils.runOnUiThreadBlocking(activity::finish);
         CriteriaHelper.pollUiThread(activity::isDestroyed, "Activity didn't get destroyed.");
 
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.getActivityTestRule().startMainActivityFromLauncher();
         final ChromeTabbedActivity newActivity = mActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(
                 () -> newActivity.getTabModelSelector().isTabStateInitialized(),

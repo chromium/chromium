@@ -31,9 +31,10 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.browser.ui.appmenu.TestAppMenuObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -44,13 +45,15 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable_update_menu_item"})
 public class UpdateMenuItemHelperTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TEST_MARKET_URL =
             "https://play.google.com/store/apps/details?id=com.android.chrome";
 
     private static final long MS_TIMEOUT = 2000;
     private static final long MS_INTERVAL = 500;
+    private RegularNewTabPageStation mNtp;
 
     /** Reports versions that we want back to OmahaClient. */
     private static class MockVersionNumberGetter extends VersionNumberGetter {
@@ -130,7 +133,7 @@ public class UpdateMenuItemHelperTest {
         MarketURLGetter.setInstanceForTests(mMockMarketURLGetter);
 
         // Start up main.
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        mNtp = mActivityTestRule.startOnNtp();
         mMenuObserver = new TestAppMenuObserver();
         mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler().addObserver(mMenuObserver);
 
