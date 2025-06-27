@@ -405,6 +405,20 @@ void RecordProvisionalSaveFailure(
   }
 }
 
+void HandleFailedLoginDetectionForPasswordChange(
+    PasswordFormManager* submitted_manager,
+    ukm::SourceId ukm_id) {
+  CHECK(submitted_manager);
+
+  if (DidLoginWithChangedPassword(submitted_manager)) {
+    base::UmaHistogramBoolean(kLogInWithPasswordChangeSubmissionHistogram,
+                              false);
+    ukm::builders::PasswordManager_ChangeSubmission(ukm_id)
+        .SetLogInWithPasswordChangeSubmission(false)
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
 }  // namespace
 
 // static
@@ -828,10 +842,8 @@ void PasswordManager::OnPasswordFormCleared(
   // If it's neither change or reset form it must be a sign-in or a sign-up
   // form. Check if login should be considered failed in this case.
   if (relevant_field_cleared(
-          manager->GetSubmittedForm()->password_element_renderer_id) &&
-      base::FeatureList::IsEnabled(
-          features::kFailedLoginDetectionBasedOnFormClearEvent)) {
-    OnLoginFailed(logger.get());
+          manager->GetSubmittedForm()->password_element_renderer_id)) {
+    OnLoginPotentiallyFailed(logger.get());
   }
 }
 
@@ -956,10 +968,7 @@ void PasswordManager::OnResourceLoadingFailed(PasswordManagerDriver* driver,
     logger->LogMessage(Logger::STRING_RESOURCE_FAILED_LOADING_LOGIN_FAILED);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kFailedLoginDetectionBasedOnResourceLoadingErrors)) {
-    OnLoginFailed(logger.get());
-  }
+  OnLoginPotentiallyFailed(logger.get());
 }
 
 void PasswordManager::OnPasswordFormsParsed(
@@ -1571,22 +1580,30 @@ void PasswordManager::OnLoginFailed(BrowserSavePasswordProgressLogger* logger) {
   }
 
   PasswordFormManager* submitted_manager = GetSubmittedManager();
-  DCHECK(submitted_manager);
+  CHECK(submitted_manager);
   submitted_manager->GetMetricsRecorder()->LogSubmitFailed();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MaybeTriggerHatsSurvey(*submitted_manager);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-  if (DidLoginWithChangedPassword(submitted_manager)) {
-    base::UmaHistogramBoolean(kLogInWithPasswordChangeSubmissionHistogram,
-                              false);
-    ukm::builders::PasswordManager_ChangeSubmission(client_->GetUkmSourceId())
-        .SetLogInWithPasswordChangeSubmission(false)
-        .Record(ukm::UkmRecorder::Get());
-  }
+  HandleFailedLoginDetectionForPasswordChange(submitted_manager,
+                                              client_->GetUkmSourceId());
 
   ResetSubmittedManager();
+  base::UmaHistogramBoolean("PasswordManager.FailedLoginDetected", false);
+}
+
+void PasswordManager::OnLoginPotentiallyFailed(
+    BrowserSavePasswordProgressLogger* logger) {
+  if (logger) {
+    logger->LogMessage(Logger::STRING_PASSWORD_POTENTIALLY_FAILED_LOGIN);
+  }
+
+  HandleFailedLoginDetectionForPasswordChange(GetSubmittedManager(),
+                                              client_->GetUkmSourceId());
+
+  base::UmaHistogramBoolean("PasswordManager.FailedLoginDetected", true);
 }
 
 void PasswordManager::ProcessAutofillPredictions(

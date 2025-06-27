@@ -479,6 +479,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Result of password change form submission with Enter";
     case STRING_PASSWORD_CHANGE_SUBMIT_WITH_MODEL_RESULT:
       return "Result of password change form submission with model";
+    case STRING_PASSWORD_POTENTIALLY_FAILED_LOGIN:
+      return "Potentially failed login attempt detected";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.

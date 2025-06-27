@@ -308,6 +308,10 @@ class PasswordManager : public PasswordManagerInterface {
   // and reporting metrics and resets the submitted manager data.
   void OnLoginFailed(BrowserSavePasswordProgressLogger* logger);
 
+  // Similar to OnLoginFailed() but doesn't report metrics and doesn't reset the
+  // submitted manager data.
+  void OnLoginPotentiallyFailed(BrowserSavePasswordProgressLogger* logger);
+
   // Checks for every form in |forms_data| whether |pending_login_managers_|
   // already contain a manager for that form. If not, adds a manager for each
   // such form.

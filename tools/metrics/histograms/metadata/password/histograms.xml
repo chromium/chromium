@@ -1585,6 +1585,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.FailedLoginDetected" enum="BooleanIgnored"
+    expires_after="M150">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Recorded when the failed login signal is detected. The recorded value
+    represents whether Password Manager ignored the signal or not. When Password
+    Manager takes the signal into account the Save/Update bubbles won't show up.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.FieldNameCollisionInVotes" enum="Boolean"
     expires_after="2025-12-14">
   <owner>kazinova@google.com</owner>
