@@ -634,8 +634,16 @@ TEST(PrivateNetworkAccessCheckerTest,
       1);
 }
 
-TEST(PrivateNetworkAccessCheckerTest,
-     CheckBlockedByUnmatchedRequiredAddressSpaceAndResourceAddressSpace) {
+// Disabled because this relies on
+// network::features::kPrivateNetworkAccessPermissionPrompt being enabled; not
+// deleted because we want to keep this test when
+// features::kLocalNetworkAccessChecks is enabled.
+//
+// TODO(crbug.com/394636065): re-enable test when cleaning up PNA and porting
+// over to LNA
+TEST(
+    PrivateNetworkAccessCheckerTest,
+    DISABLED_CheckBlockedByUnmatchedRequiredAddressSpaceAndResourceAddressSpace) {
   mojom::ClientSecurityState client_security_state;
   client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
   client_security_state.private_network_request_policy =

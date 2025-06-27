@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 // space loads a resource from the private network, the correct WebFeature is
 // use-counted.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       PrivateNetworkAccessFetchWithPreflight) {
+                       PrivateNetworkAccessFetch) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       https_server().GetURL(
@@ -273,35 +273,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   CheckCounter(WebFeature::kAddressSpacePublicSecureContextEmbeddedLoopbackV2,
                1);
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightSuccess, 1);
-}
-
-// This test verifies that when a preflight request is sent ahead of a private
-// network request, the server replies with Access-Control-Allow-Origin but
-// without Access-Control-Allow-Private-Network, and enforcement is not enabled,
-// the correct WebFeature is use-counted to reflect the suppressed error.
-IN_PROC_BROWSER_TEST_F(
-    ChromeWebPlatformSecurityMetricsBrowserTest,
-    PrivateNetworkAccessFetchWithPreflightRepliedWithoutPNAHeaders) {
-  ASSERT_EQ(true, content::NavigateToURL(
-                      web_contents(),
-                      https_server().GetURL(
-                          "a.com",
-                          "/private_network_access/"
-                          "no-favicon-treat-as-public-address.html")));
-
-  // The server does not reply with valid CORS headers, so the preflight fails.
-  // The enforcement feature is not enabled however, so the error is suppressed.
-  // Instead, a warning is shown in DevTools and a WebFeature use-counted.
-  ASSERT_EQ(true, content::EvalJs(
-                      web_contents(),
-                      content::JsReplace(
-                          "fetch($1).then(response => response.ok)",
-                          https_server().GetURL("b.com", "/cors-ok.txt"))));
-
-  CheckCounter(WebFeature::kAddressSpacePublicSecureContextEmbeddedLoopbackV2,
-               1);
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
 }
 
 // This test verifies that the PNA 2.0 breakage UseCounter
@@ -435,7 +406,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                                                    "b.com", "/cors-ok.txt"))));
 
   CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
 }
 
 // When WebSocket is connected to a more-private ip address space, log a use
@@ -533,7 +503,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                                                    "b.com", "/cors-ok.txt"))));
 
   CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
 }
 
 // Check the kCrossOriginOpenerPolicyReporting feature usage. COOP-Report-Only +
