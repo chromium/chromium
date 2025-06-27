@@ -147,6 +147,7 @@ SplitTabButtonInteractiveTest.ButtonUpdatesOnSplit
 SyncConfirmationUIDialogPixelTest.*
 SyncConfirmationUIWindowPixelTest.*
 SyncPassphraseDialogBrowserTest.*
+TabDialogManagerPixelTest.*
 TabGroupEditorBubbleViewDialogBrowserTest.*
 TabGroupShortcutsInteractiveTest.Screenshot*
 TabHoverCardBubbleViewDialogBrowserTest.*

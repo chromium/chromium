@@ -24,7 +24,10 @@ AXPlatform* g_instance = nullptr;
 
 // static
 AXPlatform& AXPlatform::GetInstance() {
-  CHECK_NE(g_instance, nullptr);
+  CHECK_NE(g_instance, nullptr)
+      << "AXPlatform::GetInstance() called before AXPlatform was initialized "
+         "or destroyed. If you are in a browser test, you may need cleanup in "
+         "TearDownOnMainThread().";
   DCHECK_CALLED_ON_VALID_THREAD(g_instance->thread_checker_);
   return *g_instance;
 }

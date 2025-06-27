@@ -9,9 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -75,6 +75,9 @@ std::unique_ptr<views::Widget> CreateWidgetWithDialogModel() {
   auto widget = std::make_unique<views::Widget>();
   // BubbleDialogModelHost is owned by the widget.
   widget_params.delegate = bubble_delegate.release();
+  // Views-drawn shadows needs a translucent widget background.
+  widget_params.opacity =
+      views::Widget::InitParams::WindowOpacity::kTranslucent;
   widget->Init(std::move(widget_params));
 
   return widget;
@@ -226,6 +229,39 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
         ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kDifferentSiteUrl));
       }),
       InAnyContext(EnsurePresent(kWidgetContentsViewElementId)));
+}
+
+class TabDialogManagerPixelTest : public DialogBrowserTest {
+ public:
+  TabDialogManagerPixelTest() = default;
+  ~TabDialogManagerPixelTest() override = default;
+
+  TabDialogManagerPixelTest(const TabDialogManagerPixelTest&) = delete;
+  TabDialogManagerPixelTest& operator=(const TabDialogManagerPixelTest&) =
+      delete;
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    TabInterface* tab_interface = browser()->GetActiveTabInterface();
+    CHECK(tab_interface);
+    TabDialogManager* manager =
+        tab_interface->GetTabFeatures()->tab_dialog_manager();
+
+    widget_ = CreateWidgetWithDialogModel();
+    manager->ShowDialog(widget_.get(),
+                        std::make_unique<tabs::TabDialogManager::Params>());
+  }
+  void TearDownOnMainThread() override {
+    widget_.reset();
+    DialogBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  std::unique_ptr<views::Widget> widget_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabDialogManagerPixelTest, InvokeUi_default) {
+  ShowAndVerifyUi();
 }
 
 }  // namespace tabs
