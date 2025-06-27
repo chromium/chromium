@@ -78,6 +78,88 @@ void WidgetAXManager::OnAXModeAdded(ui::AXMode mode) {
   }
 }
 
+void WidgetAXManager::AccessibilityPerformAction(const ui::AXActionData& data) {
+  tree_source_->HandleAccessibleAction(data);
+}
+
+bool WidgetAXManager::AccessibilityViewHasFocus() {
+  // TODO(accessibility): Implement.
+  return false;
+}
+
+void WidgetAXManager::AccessibilityViewSetFocus() {
+  // TODO(accessibility): Implement.
+}
+
+gfx::Rect WidgetAXManager::AccessibilityGetViewBounds() {
+  // TODO(accessibility): Implement.
+  return gfx::Rect();
+}
+
+float WidgetAXManager::AccessibilityGetDeviceScaleFactor() {
+  // TODO(accessibility): Implement.
+  return 1.0f;
+}
+
+void WidgetAXManager::UnrecoverableAccessibilityError() {
+  // TODO(accessibility): Implement.
+}
+
+gfx::AcceleratedWidget WidgetAXManager::AccessibilityGetAcceleratedWidget() {
+  // TODO(accessibility): Implement.
+  return gfx::kNullAcceleratedWidget;
+}
+
+gfx::NativeViewAccessible
+WidgetAXManager::AccessibilityGetNativeViewAccessible() {
+  // TODO(accessibility): Implement.
+  return gfx::NativeViewAccessible();
+}
+
+gfx::NativeViewAccessible
+WidgetAXManager::AccessibilityGetNativeViewAccessibleForWindow() {
+  // TODO(accessibility): Implement.
+  return gfx::NativeViewAccessible();
+}
+
+void WidgetAXManager::AccessibilityHitTest(
+    const gfx::Point& point_in_view_pixels,
+    const ax::mojom::Event& opt_event_to_fire,
+    int opt_request_id,
+    base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
+                            ui::AXNodeID hit_node_id)> opt_callback) {
+  // TODO(accessibility): Implement.
+}
+
+gfx::NativeWindow WidgetAXManager::GetTopLevelNativeWindow() {
+  // TODO(accessibility): Implement.
+  return gfx::NativeWindow();
+}
+
+bool WidgetAXManager::CanFireAccessibilityEvents() const {
+  // TODO(accessibility): Implement.
+  return false;
+}
+
+bool WidgetAXManager::AccessibilityIsRootFrame() const {
+  // TODO(accessibility): Implement.
+  return false;
+}
+
+bool WidgetAXManager::ShouldSuppressAXLoadComplete() {
+  // TODO(accessibility): Implement.
+  return false;
+}
+
+content::WebContentsAccessibility*
+WidgetAXManager::AccessibilityGetWebContentsAccessibility() {
+  return nullptr;
+}
+
+bool WidgetAXManager::AccessibilityIsWebContentSource() {
+  return false;
+}
+
 void WidgetAXManager::SchedulePendingUpdate() {
   if (processing_update_posted_ || !is_enabled_) {
     return;
