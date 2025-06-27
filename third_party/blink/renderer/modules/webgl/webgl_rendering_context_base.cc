@@ -284,8 +284,16 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
 bool CanCreatePassThroughProvider(
     gfx::Size size,
     viz::SharedImageFormat format,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-        context_provider_wrapper) {
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    bool using_swapchain) {
+  bool using_webgl_image_chromium =
+      SharedGpuContext::MaySupportImageChromium() &&
+      (RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
+       base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium));
+  if (!using_swapchain && !using_webgl_image_chromium) {
+    return false;
+  }
+
   // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
   // context_provider_wrapper, so it's important to call that first as it can
   // invalidate the weak pointer.
@@ -2024,28 +2032,18 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
     // If LowLatency is enabled, we need a resource that is able to perform well
     // in such mode. It will first try a PassThrough provider and, if that is
     // not possible, it will try a SharedImage with the appropriate flags.
-    bool using_swapchain = UsingSwapChain();
-    bool using_webgl_image_chromium =
-        SharedGpuContext::MaySupportImageChromium() &&
-        (RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
-         base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium));
-    if (using_swapchain || using_webgl_image_chromium) {
-      // If either SwapChain is enabled or WebGLImage mode is enabled, we can
-      // try a passthrough provider.
-      DCHECK(Host()->LowLatencyEnabled());
-      if (CanCreatePassThroughProvider(
-              Host()->Size(), format,
-              SharedGpuContext::ContextProviderWrapper())) {
-        // Note: Unlike other CanvasResourceProvider subclasses, a
-        // CanvasResourceProviderPassThrough instance is always valid and does
-        // not require clearing as part of initialization (both of these being
-        // due to the fact that it simply delegates the internal parts of the
-        // resource to the drawing buffer).
-        provider = std::make_unique<CanvasResourceProviderPassThrough>(
-            Host()->Size(), format, alpha_type, color_space,
-            SharedGpuContext::ContextProviderWrapper(), Host());
-        CHECK(provider->IsValid());
-      }
+    if (CanCreatePassThroughProvider(Host()->Size(), format,
+                                     SharedGpuContext::ContextProviderWrapper(),
+                                     UsingSwapChain())) {
+      // Note: Unlike other CanvasResourceProvider subclasses, a
+      // CanvasResourceProviderPassThrough instance is always valid and does
+      // not require clearing as part of initialization (both of these being
+      // due to the fact that it simply delegates the internal parts of the
+      // resource to the drawing buffer).
+      provider = std::make_unique<CanvasResourceProviderPassThrough>(
+          Host()->Size(), format, alpha_type, color_space,
+          SharedGpuContext::ContextProviderWrapper(), Host());
+      CHECK(provider->IsValid());
     }
     if (!provider) {
       // If PassThrough failed, try a SharedImage with usage display enabled.
