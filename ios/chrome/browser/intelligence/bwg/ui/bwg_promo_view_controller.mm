@@ -24,7 +24,7 @@ const CGFloat kMainStackHorizontalInset = 20.0;
 const CGFloat kMainStackSpacing = 8.0;
 
 // Icons size.
-const CGFloat kIconSize = 24.0;
+const CGFloat kIconSize = 20.0;
 const CGFloat kWhiteInnerSize = 32.0;
 
 // Corner radius of icons.
