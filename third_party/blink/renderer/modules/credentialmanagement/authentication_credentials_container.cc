@@ -1531,7 +1531,8 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
         EmitImmediateMediationUseCounters(context, options);
       } else {
         resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError, "Not implemented"));
+            DOMExceptionCode::kNotSupportedError,
+            "Immediate mediation not implemented"));
         return promise;
       }
     }
@@ -1629,6 +1630,26 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
         "Conditional mediation is not supported for this credential type"));
+    return promise;
+  }
+  if (options->mediation() == "immediate") {
+    if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(context)) {
+      if (options->password()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotSupportedError,
+            "Immediate mediation is not yet implemented for requests that do "
+            "not accept PublicKeyCredential. An Immediate request for "
+            "passwords must also include a request for passkeys."));
+      } else {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotSupportedError,
+            "Immediate mediation is not supported for this credential type"));
+      }
+    } else {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Immediate mediation not implemented"));
+    }
     return promise;
   }
   if (options->mediation() == "silent") {
