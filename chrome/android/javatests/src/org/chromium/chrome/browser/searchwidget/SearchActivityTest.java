@@ -71,8 +71,9 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.I
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
@@ -177,8 +178,8 @@ public class SearchActivityTest {
         }
     }
 
-    public @Rule ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public @Rule FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
     // Needed for CT connection cleanup.
     public @Rule CustomTabActivityTestRule mCustomTabActivityTestRule =
             new CustomTabActivityTestRule();
@@ -482,7 +483,7 @@ public class SearchActivityTest {
     @Test
     @MediumTest
     public void testLaunchIncognitoSearchActivity() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         SearchActivity searchActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
@@ -524,7 +525,7 @@ public class SearchActivityTest {
     @Test
     @SmallTest
     public void statusAndNavigationBarColor_incognito() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         SearchActivity searchActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
@@ -631,6 +632,6 @@ public class SearchActivityTest {
                     Criteria.checkThat(tab, Matchers.notNullValue());
                     Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(expectedUrl));
                 });
-        mActivityTestRule.setActivity(cta);
+        mActivityTestRule.getActivityTestRule().setActivity(cta);
     }
 }
