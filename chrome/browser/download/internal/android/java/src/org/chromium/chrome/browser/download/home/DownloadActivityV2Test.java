@@ -39,8 +39,6 @@ import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.MediumTest;
 
-import org.chromium.base.test.util.Restriction;
-import org.chromium.ui.test.util.DeviceRestriction;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
@@ -484,7 +482,6 @@ public class DownloadActivityV2Test {
 
     @Test
     @MediumTest
-    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/428127167
     public void testDeleteDangerousUsingMenu() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -501,12 +498,15 @@ public class DownloadActivityV2Test {
         onView(withText("Delete from history"))
                 .check(matches(isDisplayed()))
                 .perform(ViewActions.click());
-        onView(withText("dangerous")).check(doesNotExist());
+
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    onView(withText("dangerous")).check(doesNotExist());
+                });
     }
 
     @Test
     @MediumTest
-    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/428127167
     public void testDeleteDangerousUsingSelection() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -529,7 +529,10 @@ public class DownloadActivityV2Test {
                             .performIdentifierAction(R.id.selection_mode_delete_menu_id, 0);
                 });
 
-        onView(withText("dangerous")).check(doesNotExist());
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    onView(withText("dangerous")).check(doesNotExist());
+                });
     }
 
     @Test
