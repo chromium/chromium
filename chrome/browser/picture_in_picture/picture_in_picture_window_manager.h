@@ -20,7 +20,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/types/pass_key.h"
-#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager_uma_helper.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -35,6 +34,7 @@ class Display;
 }  // namespace display
 
 #if !BUILDFLAG(IS_ANDROID)
+class AutoPipSettingOverlayView;
 class PictureInPictureOcclusionTracker;
 class PictureInPictureWindow;
 class ScopedDisallowPictureInPicture;

@@ -17,6 +17,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "media/base/media_switches.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/test/test_event.h"
 
 namespace {
