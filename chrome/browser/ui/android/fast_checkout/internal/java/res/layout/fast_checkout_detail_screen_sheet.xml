@@ -31,6 +31,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:singleLine="true"
+        android:textAlignment="viewStart"
         app:layout_constrainedWidth="true"
         app:layout_constraintTop_toTopOf="@+id/fast_checkout_toolbar_back_image_button"
         app:layout_constraintBottom_toBottomOf="@+id/fast_checkout_toolbar_back_image_button"
