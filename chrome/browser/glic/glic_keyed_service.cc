@@ -442,7 +442,7 @@ void GlicKeyedService::OnResponseStarted() {
 }
 
 void GlicKeyedService::OnResponseStopped() {
-  metrics_->OnResponseStarted();
+  metrics_->OnResponseStopped();
   if (actor_controller_) {
     actor_controller_->OnResponseStopped();
   }
