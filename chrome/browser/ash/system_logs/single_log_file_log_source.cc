@@ -34,10 +34,6 @@ constexpr int kMaxNumAllowedLogRotationsDuringFileRead = 3;
 //    lines.
 constexpr size_t kMaxReadSize = 5 * 1024 * 1024;
 
-// A custom timestamp for when the current Chrome session started. Used during
-// testing to override the actual time.
-const base::Time* g_chrome_start_time_for_test = nullptr;
-
 // Converts a logs source type to the corresponding file path, relative to the
 // base system log directory path. In the future, if non-file source types are
 // added, this function should return an empty file path.
@@ -97,12 +93,6 @@ SingleLogFileLogSource::SingleLogFileLogSource(SupportedSource source_type)
       file_inode_(0) {}
 
 SingleLogFileLogSource::~SingleLogFileLogSource() = default;
-
-// static
-void SingleLogFileLogSource::SetChromeStartTimeForTesting(
-    const base::Time* start_time) {
-  g_chrome_start_time_for_test = start_time;
-}
 
 void SingleLogFileLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
