@@ -63,37 +63,3 @@ bool IsExtensionOrSharedModuleAllowed(
 
   return false;
 }
-
-bool IsHostAllowedByCommandLine(const GURL& url,
-                                const extensions::ExtensionSet* extension_set,
-                                const char* command_line_switch) {
-  if (!url.is_valid())
-    return false;
-
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  const std::string allowed_list =
-      command_line.GetSwitchValueASCII(command_line_switch);
-  if (allowed_list.empty())
-    return false;
-
-  const std::string host = url.host();
-  if (allowed_list == "*") {
-    // For now, we only allow packaged and platform apps in this wildcard.
-    if (!extension_set || !url.SchemeIs(extensions::kExtensionScheme))
-      return false;
-
-    const Extension* extension = extension_set->GetByID(host);
-    return extension &&
-        (extension->GetType() == Manifest::TYPE_LEGACY_PACKAGED_APP ||
-         extension->GetType() == Manifest::TYPE_PLATFORM_APP);
-  }
-
-  base::StringTokenizer t(allowed_list, ",");
-  while (t.GetNext()) {
-    if (t.token_piece() == host)
-      return true;
-  }
-
-  return false;
-}

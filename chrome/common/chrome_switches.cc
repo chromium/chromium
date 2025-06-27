@@ -900,10 +900,6 @@ const char kAllowNaClCrxFsAPI[] = "allow-nacl-crxfs-api";
 // Specifies comma-separated list of extension ids or hosts to grant
 // access to file handle APIs.
 const char kAllowNaClFileHandleAPI[] = "allow-nacl-file-handle-api";
-
-// Specifies comma-separated list of extension ids or hosts to grant
-// access to TCP/UDP socket APIs.
-const char kAllowNaClSocketAPI[] = "allow-nacl-socket-api";
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \

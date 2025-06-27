@@ -25,13 +25,4 @@ bool IsExtensionOrSharedModuleAllowed(
     const extensions::ExtensionSet* extension_set,
     const std::set<std::string>& allowlist);
 
-// Checks whether the host of |url| is allowed by |command_line_switch|.
-//
-// If the value of |command_line_switch| is:
-// (1) '*': returns true for any packaged or platform apps;
-// (2) a list of host names separated by ',': returns true if |host| is in the
-//     list. (NOTE: In this case, |url| doesn't have to belong to an extension.)
-bool IsHostAllowedByCommandLine(const GURL& url,
-                                const extensions::ExtensionSet* extension_set,
-                                const char* command_line_switch);
 #endif  // CHROME_COMMON_PEPPER_PERMISSION_UTIL_H_
