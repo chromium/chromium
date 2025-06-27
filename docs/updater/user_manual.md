@@ -280,3 +280,21 @@ installed. Note that there are two possible product directories (one for
 system scope and one for user scope), and so there are often two log files.
 
 See [the functional spec](functional_spec.md#logging) for more details.
+
+## Force triggering an update check
+
+Update checks can be force-triggered on Windows by doing the following:
+* Edit (from an elevated editor for `system` installs)
+`{%LocalAppData%|%programfiles(x86)%}\{Company}\{Company}Updater\prefs.json`.
+* Change the value of "last_checked" to "0".
+* Save the file.
+* Run the task starting with `{Company}UpdaterTask{User|System}` in the
+Task Scheduler.
+
+The same steps apply for macOS except:
+* the path to `prefs.js` is
+`/Library/Application Support/{Company}/{Company}Updater/prefs.json`
+or, `~/Library/Application Support/{Company}/{Company}Updater/prefs.json`.
+* And to run the wake task a user should run
+`sudo launchctl start com.{Company}.{Company}Updater.wake.system` or
+`launchctl start com.{Company}.{Company}Updater.wake`.
