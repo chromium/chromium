@@ -8,8 +8,8 @@
 
 #include "base/logging.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "chrome/browser/actor/ui/helpers.h"
 #include "chrome/browser/actor/ui/tool_request_variant.h"
+#include "chrome/browser/actor/ui/variant_visitor.h"
 #include "chrome/common/actor/action_result.h"
 
 namespace actor::ui {

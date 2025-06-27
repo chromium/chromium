@@ -30,10 +30,10 @@ source_set("event_dispatcher") {
     "//chrome/browser/actor:types",
   ]
   deps = [
-    ":helpers",
     ":tool_request_variant",
     ":ui_event_types",
     ":ui_event_utils",
+    ":variant_visitor",
     "//chrome/browser/actor:actor",
   ]
 }
@@ -87,15 +87,15 @@ source_set("ui_event_utils") {
     "ui_event_debugstring.h",
   ]
   deps = [
-    ":helpers",
     ":ui_event_types",
+    ":variant_visitor",
     "//base",
     "//third_party/abseil-cpp:absl",
   ]
 }
 
-source_set("helpers") {
-  sources = [ "helpers.h" ]
+source_set("variant_visitor") {
+  sources = [ "variant_visitor.h" ]
 }
 
 source_set("unit_tests") {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_UI_HELPERS_H_
-#define CHROME_BROWSER_ACTOR_UI_HELPERS_H_
+#ifndef CHROME_BROWSER_ACTOR_UI_VARIANT_VISITOR_H_
+#define CHROME_BROWSER_ACTOR_UI_VARIANT_VISITOR_H_
 
 namespace actor::ui {
 
@@ -28,4 +28,4 @@ Visitor(T...) -> Visitor<T...>;
 
 }  // namespace actor::ui
 
-#endif  // CHROME_BROWSER_ACTOR_UI_HELPERS_H_
+#endif  // CHROME_BROWSER_ACTOR_UI_VARIANT_VISITOR_H_
