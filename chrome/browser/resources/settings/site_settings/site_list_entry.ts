@@ -223,9 +223,22 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
    */
   private computeRemoveButtonAriaLabel_(): string {
     return this.i18n(
-        'siteSettingsActionResetFromList', this.computeDisplayName_(),
+        'siteSettingsActionResetFromListA11y', this.computeDisplayName_(),
         this.sectionHeader);
   }
+
+  /**
+   * Returns an appropriate aria-label for the view button. This aria-label
+   * clearly indicates a site name and section header. It should help the
+   * screenreader user understand that this button will open a subpage for the
+   * site from the list. There are two lists, one for allowed sites and one for
+   * blocked sites.
+   */
+    private computeViewButtonAriaLabel_(): string {
+      return this.i18n(
+          'siteSettingsActionViewFromListA11y', this.computeDisplayName_(),
+          this.sectionHeader);
+   }
 
   /**
    * Returns the appropriate origin that a favicon will be fetched for.
