@@ -2962,6 +2962,13 @@
       // crbug.com/394009026).
     },
     {
+      name: "LocalNetworkAccessWebRTC",
+      base_feature: "none",
+      // No status because this feature is controlled by
+      // network::features::kLocalNetworkAccessChecks and
+      // network::features::kLocalNetworkAccessChecksWebRTC.
+    },
+    {
       name: "LockedMode",
       status: "test",
       // Enabled by features::kLockedMode.

@@ -16432,6 +16432,7 @@ from previous Chrome versions.
       label="UnifiedPasswordManagerLocalPasswordsAndroidWithMigration:disabled"/>
   <int value="904159815" label="VideoPlayerAppHidden:disabled"/>
   <int value="904437796" label="OmniboxBlurWithEscape:disabled"/>
+  <int value="904441371" label="LocalNetworkAccessChecksWebRTC:disabled"/>
   <int value="904811479" label="query-tiles-enable-trending"/>
   <int value="905739808" label="GlobalMediaControlsUpdatedUI:disabled"/>
   <int value="907051864" label="UseMultiPlaneFormatForHardwareVideo:disabled"/>
@@ -18168,6 +18169,7 @@ from previous Chrome versions.
   <int value="1541723759" label="ServiceWorkerNavigationPreload:disabled"/>
   <int value="1541729827" label="NtpBackgroundImageErrorDetection:enabled"/>
   <int value="1542266641" label="CrosSeparateGeoApiKey:disabled"/>
+  <int value="1542773166" label="LocalNetworkAccessChecksWebRTC:enabled"/>
   <int value="1543027970" label="EnableDisplayZoomSetting:disabled"/>
   <int value="1543349770" label="CastUseBlocklistForRemotingQuery:disabled"/>
   <int value="1543448038" label="LaunchedTabSearchToolbarButton:disabled"/>

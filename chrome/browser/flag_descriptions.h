@@ -4909,6 +4909,9 @@ extern const char kFollowingFeedSidepanelDescription[];
 extern const char kLocalNetworkAccessChecksName[];
 extern const char kLocalNetworkAccessChecksDescription[];
 
+extern const char kLocalNetworkAccessChecksWebRTCName[];
+extern const char kLocalNetworkAccessChecksWebRTCDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kTaskManagerClankName[];
 extern const char kTaskManagerClankDescription[];

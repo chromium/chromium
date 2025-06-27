@@ -6435,6 +6435,15 @@
     "expiry_milestone": 142
   },
   {
+    "name": "local-network-access-check-webrtc",
+    "owners": [
+      "cthomp@chromium.org",
+      "ortuno@chromium.org",
+      "chrome-security-web-and-net@chromium.org"
+    ],
+    "expiry_milestone": 144
+  },
+  {
     "name": "login-db-deprecation-android",
     "owners": ["ioanap@chromium.org", "atsvirchkova@google.com"],
     "expiry_milestone": 137
