@@ -26,6 +26,8 @@
   self.topAlignedLayout = YES;
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemClose;
   [super viewDidLoad];
+  /// Hide the image on compact height.
+  self.alwaysShowImage = NO;
 }
 
 @end

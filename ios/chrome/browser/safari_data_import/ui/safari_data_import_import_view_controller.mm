@@ -10,6 +10,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -22,6 +23,7 @@
   /// TODO(crbug.com/420703283): Replace `SafariDataImportStage::kNotStarted`
   /// with dynamically set value once stage transition technique is implemented.
   self.bannerName = @"safari_data_import";
+  self.shouldHideBanner = IsCompactHeight(self.traitCollection);
   self.titleText = l10n_util::GetNSString(IDS_IOS_SAFARI_IMPORT_IMPORT_TITLE);
   self.subtitleText =
       l10n_util::GetNSString(IDS_IOS_SAFARI_IMPORT_IMPORT_SUBTITLE);
@@ -32,10 +34,24 @@
                            target:self
                            action:@selector(cancelButtonTapped)];
   [super viewDidLoad];
+  [self makeBannerImageVisibilityAdaptive];
   [self showInstructionView];
 }
 
 #pragma mark - Private
+
+/// The banner image should be hidden on iPhone landscape mode. This method
+/// makes sure of that when the user rotates the device.
+- (void)makeBannerImageVisibilityAdaptive {
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+  __weak __typeof(self) weakSelf = self;
+  UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                   UITraitCollection* previousCollection) {
+    weakSelf.shouldHideBanner = IsCompactHeight(traitEnvironment);
+  };
+  [self registerForTraitChanges:traits withHandler:handler];
+}
 
 /// Returns the action button string for the given `stage`.
 - (NSString*)actionButtonStringForStage:(SafariDataImportStage)stage {
