@@ -36,6 +36,7 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Bridges between the C++ and Java {@link TabModel} interfaces. */
@@ -337,7 +338,19 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      * Tab#getLastNavigationCommittedTimestampMillis()} within the time range [beginTimeMs,
      * endTimeMs).
      */
-    protected abstract List<Tab> getTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
+    @VisibleForTesting
+    public List<Tab> getTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
+        List<Tab> tabList = new ArrayList<>();
+        for (Tab tab : this) {
+            if (tab.isCustomTab()) continue;
+
+            final long recentNavigationTime = tab.getLastNavigationCommittedTimestampMillis();
+            if (recentNavigationTime >= beginTimeMs && recentNavigationTime < endTimeMs) {
+                tabList.add(tab);
+            }
+        }
+        return tabList;
+    }
 
     /**
      * Returns the count of non-custom tabs that have a {@link

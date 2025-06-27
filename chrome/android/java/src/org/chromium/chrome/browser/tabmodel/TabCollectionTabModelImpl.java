@@ -438,11 +438,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    protected List<Tab> getTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
-        return Collections.emptyList();
-    }
-
-    @Override
     protected boolean isSessionRestoreInProgress() {
         assertOnUiThread();
         return !mModelDelegate.isTabModelRestored();

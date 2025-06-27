@@ -1016,21 +1016,6 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public List<Tab> getTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
-        List<Tab> tabList = new ArrayList<>();
-        for (Tab tab : mTabs) {
-            if (tab.isCustomTab()) continue;
-
-            final long recentNavigationTime = tab.getLastNavigationCommittedTimestampMillis();
-            if (recentNavigationTime >= beginTimeMs && recentNavigationTime < endTimeMs) {
-                tabList.add(tab);
-            }
-        }
-
-        return tabList;
-    }
-
-    @Override
     public List<Tab> getAllTabs() {
         return mTabs;
     }
