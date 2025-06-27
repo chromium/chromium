@@ -38,8 +38,7 @@ int GetMilestone() {
 
 void MaybeShowBorealisMOTDDialog(base::OnceCallback<void()> cb,
                                  content::BrowserContext* context) {
-  if (!base::FeatureList::IsEnabled(features::kBorealis) ||
-      !base::FeatureList::IsEnabled(features::kShowBorealisMotd)) {
+  if (!base::FeatureList::IsEnabled(features::kShowBorealisMotd)) {
     std::move(cb).Run();
     return;
   }
