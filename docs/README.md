@@ -174,7 +174,8 @@ used when committed.
     build, fork, integration of stock Chromium, or are building ChromiumOS (for
     login).
 *   [User Education](../components/user_education/README.md) - Create
-    in-product help (IPH) and tutorials to call out Chromium features
+    in-product help (IPH) and tutorials to call out Chromium features.
+*   [User-Agent](./user_agent/README.md) - User-Agent and User-Agent Client Hints.
 
 ### Testing
 *   [Running and Debugging Web Tests](testing/web_tests.md)
