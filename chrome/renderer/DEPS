@@ -99,7 +99,6 @@ include_rules = [
   "+google_apis",
   "+media/base",
   "+media/mojo",
-  "+ppapi/shared_impl",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/screen_ai",

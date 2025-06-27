@@ -7,7 +7,6 @@ include_rules = [
   "+extensions/grit",
   "+extensions/strings/grit",
   "+extensions/test",
-  "+ppapi/c",  # For various types.
   "+skia",
 ]
 
