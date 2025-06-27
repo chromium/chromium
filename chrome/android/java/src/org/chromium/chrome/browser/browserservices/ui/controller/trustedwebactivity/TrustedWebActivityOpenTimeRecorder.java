@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebacti
 
 import android.os.SystemClock;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Records how long Trusted Web Activities are used for. */
+@NullMarked
 public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNativeObserver {
     private final CurrentPageVerifier mCurrentPageVerifier;
     private final ActivityTabProvider mTabProvider;

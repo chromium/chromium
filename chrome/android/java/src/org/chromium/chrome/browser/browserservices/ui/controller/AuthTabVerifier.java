@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -25,6 +28,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
@@ -46,6 +52,7 @@ import java.util.Map;
  * Runs Digital Asset Link verification for AuthTab, returns as Activity result for the matching
  * redirect URL when navigated to it.
  */
+@NullMarked
 public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
     private static boolean sDelayVerificationForTesting;
 
@@ -53,10 +60,10 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabActivityTabProvider mTabProvider;
-    private final String mRedirectHost;
-    private final String mRedirectPath;
+    private final @Nullable String mRedirectHost;
+    private final @Nullable String mRedirectPath;
 
-    private ChromeOriginVerifier mOriginVerifier;
+    private @Nullable ChromeOriginVerifier mOriginVerifier;
 
     /** Verification status. Updated for Android Asset Link API or Chrome verification process */
     private @VerificationStatus int mStatus;
@@ -64,12 +71,12 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
     /** {@code True} if Android Asset Link API verification succeeded. */
     private boolean mVerifiedByAndroid;
 
-    private GURL mReturnUrl;
+    private @Nullable GURL mReturnUrl;
     private boolean mDestroyed;
     private int mActivityResult;
-    private Long mVerificationStartTime;
-    private Long mHttpsReturnAttemptTime;
-    private CallbackController mCallbackController;
+    private @Nullable Long mVerificationStartTime;
+    private @Nullable Long mHttpsReturnAttemptTime;
+    private @Nullable CallbackController mCallbackController;
 
     public AuthTabVerifier(
             Activity activity,
@@ -104,6 +111,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
         maybeInitOriginVerifier();
     }
 
+    @EnsuresNonNullIf("mOriginVerifier")
     private boolean maybeInitOriginVerifier() {
         if (!shouldRunOriginVerifier()) return false;
 
@@ -153,7 +161,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
                         returnAsActivityResultInternal(mReturnUrl, /* customScheme= */ false);
                     }
                 },
-                Origin.create(redirectUri));
+                assertNonNull(Origin.create(redirectUri)));
     }
 
     /**
@@ -174,12 +182,12 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
 
     private boolean isRedirectUrl(GURL url) {
         return UrlConstants.HTTPS_SCHEME.equals(url.getScheme())
-                && mRedirectHost.equals(url.getHost())
+                && assumeNonNull(mRedirectHost).equals(url.getHost())
                 && TextUtils.equals(mRedirectPath, url.getPath());
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
-    private boolean isApprovedDomain(String host) {
+    private boolean isApprovedDomain(@Nullable String host) {
         DomainVerificationManager manager =
                 ContextUtils.getApplicationContext()
                         .getSystemService(DomainVerificationManager.class);
@@ -187,6 +195,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
         DomainVerificationUserState userState = null;
         try {
             String packageName = mIntentDataProvider.getClientPackageName();
+            assert packageName != null;
             userState = manager.getDomainVerificationUserState(packageName);
         } catch (PackageManager.NameNotFoundException e) {
             // fall through
