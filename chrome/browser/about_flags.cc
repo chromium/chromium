@@ -5599,12 +5599,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      STRING_VALUE_TYPE(component_updater::kIwaKeyDistributionComponentExpCohort,
                        "")},
-#if BUILDFLAG(IS_CHROMEOS)
-    {"install-isolated-web-app-from-url",
-     flag_descriptions::kInstallIsolatedWebAppFromUrl,
-     flag_descriptions::kInstallIsolatedWebAppFromUrlDescription, kOsAll,
-     ORIGIN_LIST_VALUE_TYPE(switches::kInstallIsolatedWebAppFromUrl, "")},
-#endif
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -2604,12 +2604,6 @@ const char kUserEducationExperienceVersion2Description[] =
     "such as startup grace period, more sophisticated rate limiting, etc.";
 #endif
 
-const char kInstallIsolatedWebAppFromUrl[] =
-    "Install Isolated Web App from Proxy URL";
-const char kInstallIsolatedWebAppFromUrlDescription[] =
-    "Installs a new developer mode Isolated Web App whose contents are hosted "
-    "at the provided HTTP(S) URL.";
-
 const char kInstantHotspotRebrandName[] = "Instant Hotspot Improvements";
 
 const char kInstantHotspotRebrandDescription[] =

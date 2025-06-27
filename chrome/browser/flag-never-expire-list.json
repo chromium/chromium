@@ -55,6 +55,7 @@
   "enable-gpu-service-logging",
   "enable-hardware-secure-decryption",
   "enable-input-event-logging",
+  "enable-isolated-web-app-dev-mode",
   "enable-javascript-harmony",
   "enable-libinput-to-handle-touchpad",
   "enable-lite-video",

@@ -3627,32 +3627,33 @@
   {
     "name": "enable-isolated-web-app-allowlist",
     "owners": [ "rferens@google.com", "iwa-team@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-isolated-web-app-dev-mode",
-    "owners": [ "rmcelrath@chromium.org", "reillyg@chromium.org", "iwa-team@google.com" ],
-    "expiry_milestone": 140
+    "owners": [ "greengrape@google.com", "simonha@google.com", "iwa-team@google.com" ],
+    // This flag is used by web developers to test their Isolated Web Apps.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-isolated-web-app-managed-guest-session-install",
-    "owners": [ "rmcelrath@chromium.org", "reillyg@chromium.org", "simonha@google.com", "iwa-team@google.com" ],
-    "expiry_milestone": 140
+    "owners": [ "simonha@google.com", "iwa-team@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-isolated-web-app-unmanaged-install",
-    "owners": [ "rmcelrath@chromium.org", "reillyg@chromium.org", "iwa-team@google.com" ],
-    "expiry_milestone": 140
+    "owners": [ "simonha@google.com", "iwa-team@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-isolated-web-apps",
-    "owners": [ "rmcelrath@chromium.org", "reillyg@chromium.org", "iwa-team@google.com" ],
-    "expiry_milestone": 140
+    "owners": [ "greengrape@google.com", "simonha@google.com", "iwa-team@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-iwa-key-distribution-component",
     "owners": [ "greengrape@google.com", "iwa-team@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-javascript-experimental-shared-memory",
@@ -4263,7 +4264,7 @@
   {
     "name": "enable-smart-card-web-api",
     "owners": ["zgroza@chromium.org", "iwa-team@google.com"],
-    "expiry_milestone": 142
+    "expiry_milestone": 150
   },
   {
     "name": "enable-smart-zoom",
@@ -5757,11 +5758,6 @@
     "name": "insecure-download-warnings",
     "owners": [ "jdeblasio@chromium.org", "trusty-transport@chromium.org" ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "install-isolated-web-app-from-url",
-    "owners": [ "kuragin@chromium.org", "reillyg@chromium.org", "rmcelrath@chromium.org" ],
-    "expiry_milestone": 140
   },
   {
     "name": "instance-switcher-v2",

@@ -1495,9 +1495,6 @@ extern const char kUserEducationExperienceVersion2Name[];
 extern const char kUserEducationExperienceVersion2Description[];
 #endif
 
-extern const char kInstallIsolatedWebAppFromUrl[];
-extern const char kInstallIsolatedWebAppFromUrlDescription[];
-
 extern const char kInstantHotspotRebrandName[];
 extern const char kInstantHotspotRebrandDescription[];
 
