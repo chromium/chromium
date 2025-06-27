@@ -20,6 +20,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Dialog for confirming that user want to download a dangerous file, using the default model dialog
  * from ModalDialogManager. This dialog applies only to dangerous file types, i.e. dangerType is
@@ -29,9 +32,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 public class DangerousDownloadDialog {
     /**
-     * Events related to the dangerous download dialog, used for UMA reporting.
-     * These values are persisted to logs. Entries should not be renumbered and
-     * numeric values should never be reused.
+     * Events related to the dangerous download dialog, used for UMA reporting. These values are
+     * persisted to logs. Entries should not be renumbered and numeric values should never be
+     * reused.
      */
     @IntDef({
         DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_SHOW,
@@ -75,6 +78,7 @@ public class DangerousDownloadDialog {
                                 R.string.dangerous_download_dialog_text_with_size,
                                 fileName,
                                 DownloadUtils.getStringForBytes(context, totalBytes));
+        ArrayList<CharSequence> message_paragraphs = new ArrayList<>(List.of(message));
 
         var controller =
                 new ModalDialogProperties.Controller() {
@@ -114,7 +118,7 @@ public class DangerousDownloadDialog {
                         .with(
                                 ModalDialogProperties.TITLE,
                                 resources.getString(R.string.dangerous_download_dialog_title))
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, message)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPHS, message_paragraphs)
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 resources.getString(

@@ -20,6 +20,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+
 /**
  * Dialog for confirming that user want to download a file that already exists on disk, using the
  * default model dialog from ModalDialogManager.
@@ -52,6 +54,14 @@ public class DuplicateDownloadDialog {
             Callback<Boolean> callback) {
         var resources = context.getResources();
         mModalDialogManager = modalDialogManager;
+        ArrayList<CharSequence> message = new ArrayList<>();
+        message.add(
+                getClickableSpan(
+                        context, filePath, pageUrl, totalBytes, duplicateExists, otrProfileId));
+        if (OtrProfileId.isOffTheRecord(otrProfileId)) {
+            message.add(resources.getString(R.string.download_location_incognito_warning));
+        }
+
         mPropertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(
@@ -66,15 +76,7 @@ public class DuplicateDownloadDialog {
                                 pageUrl.isEmpty()
                                         ? R.string.duplicate_download_dialog_title
                                         : R.string.duplicate_page_download_dialog_title)
-                        .with(
-                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                getClickableSpan(
-                                        context,
-                                        filePath,
-                                        pageUrl,
-                                        totalBytes,
-                                        duplicateExists,
-                                        otrProfileId))
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPHS, message)
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 resources,
@@ -84,12 +86,6 @@ public class DuplicateDownloadDialog {
                                 resources,
                                 R.string.cancel)
                         .build();
-
-        if (OtrProfileId.isOffTheRecord(otrProfileId)) {
-            mPropertyModel.set(
-                    ModalDialogProperties.MESSAGE_PARAGRAPH_2,
-                    resources.getString(R.string.download_location_incognito_warning));
-        }
 
         modalDialogManager.showDialog(mPropertyModel, ModalDialogManager.ModalDialogType.TAB);
     }

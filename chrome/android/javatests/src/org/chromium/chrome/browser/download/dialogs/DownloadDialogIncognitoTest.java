@@ -5,23 +5,14 @@
 package org.chromium.chrome.browser.download.dialogs;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
-import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
-import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
-import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
-import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
-
 import android.content.Context;
 
-import androidx.test.espresso.NoMatchingViewException;
-import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.LargeTest;
 
 import org.junit.Before;
@@ -33,8 +24,6 @@ import org.mockito.Mockito;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.chrome.browser.download.DuplicateDownloadDialog;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
@@ -43,6 +32,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -73,12 +63,8 @@ public class DownloadDialogIncognitoTest {
                     AppModalPresenter mAppModalPresenter =
                             new AppModalPresenter(mActivityTestRule.getActivity());
                     mModalDialogManager =
-                            ThreadUtils.runOnUiThreadBlocking(
-                                    () -> {
-                                        return new ModalDialogManager(
-                                                mAppModalPresenter,
-                                                ModalDialogManager.ModalDialogType.APP);
-                                    });
+                            new ModalDialogManager(
+                                    mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
                 });
         ModalDialogView.disableButtonTapProtectionForTesting();
     }
@@ -90,11 +76,11 @@ public class DownloadDialogIncognitoTest {
         OtrProfileId primaryProfileId = OtrProfileId.getPrimaryOtrProfileId();
         showDuplicateDialog(primaryProfileId);
 
-        // Verify the Incognito warning message is shown.
-        waitForWarningVisibilityToBe(VISIBLE);
+        // Verify the Incognito warning message is shown (2 paragraphs).
+        ModalDialogTestUtils.assertMessageParagraphCount(2);
 
         // Dismiss the dialog and verify the callback is called with false.
-        onView(withId(R.id.negative_button)).inRoot(isDialog()).perform(ViewActions.click());
+        onView(withId(R.id.negative_button)).inRoot(isDialog()).perform(click());
         verify(mResultCallback).onResult(false);
     }
 
@@ -105,8 +91,8 @@ public class DownloadDialogIncognitoTest {
         OtrProfileId regularProfileId = null;
         showDuplicateDialog(regularProfileId);
 
-        // Verify the Incognito warning message is NOT shown.
-        waitForWarningVisibilityToBe(GONE);
+        // Verify the Incognito warning message is NOT shown (1 paragraph).
+        ModalDialogTestUtils.assertMessageParagraphCount(1);
     }
 
     @Test
@@ -116,11 +102,11 @@ public class DownloadDialogIncognitoTest {
         OtrProfileId nonPrimaryOtrId = OtrProfileId.createUnique("CCT:Incognito");
         showDuplicateDialog(nonPrimaryOtrId);
 
-        // Verify the Incognito warning message is shown.
-        waitForWarningVisibilityToBe(VISIBLE);
+        // Verify the Incognito warning message is shown (2 paragraphs).
+        ModalDialogTestUtils.assertMessageParagraphCount(2);
 
         // Accept the dialog and verify the callback is called with true.
-        onView(withId(R.id.positive_button)).inRoot(isDialog()).perform(ViewActions.click());
+        onView(withId(R.id.positive_button)).inRoot(isDialog()).perform(click());
         verify(mResultCallback).onResult(true);
     }
 
@@ -130,25 +116,25 @@ public class DownloadDialogIncognitoTest {
         // Showing an insecure download dialog with a regular profile.
         showInsecureDownloadDialog();
 
-        // Verify the Incognito warning message is NOT shown.
-        waitForWarningVisibilityToBe(GONE);
+        // Verify the Incognito warning message is NOT shown (1 paragraph).
+        ModalDialogTestUtils.assertMessageParagraphCount(1);
 
         // Dismiss the dialog and verify the callback is called with false.
-        onView(withId(R.id.negative_button)).inRoot(isDialog()).perform(ViewActions.click());
+        onView(withId(R.id.negative_button)).inRoot(isDialog()).perform(click());
         verify(mResultCallback).onResult(false);
     }
 
     @Test
     @LargeTest
     public void testDangerousContentDownloadDoNotShowIncognitoWarning() throws Exception {
-        // Showing a dengarious content download dialog with a regular profile.
+        // Showing a dangerous content download dialog with a regular profile.
         showDangerousContentDialog();
 
-        // Verify the Incognito warning message is NOT shown.
-        waitForWarningVisibilityToBe(GONE);
+        // Verify the Incognito warning message is NOT shown (1 paragraph).
+        ModalDialogTestUtils.assertMessageParagraphCount(1);
 
         // Dismiss the dialog and verify the callback is called with false.
-        onView(withId(R.id.negative_button)).inRoot(isDialog()).perform(ViewActions.click());
+        onView(withId(R.id.negative_button)).inRoot(isDialog()).perform(click());
         verify(mResultCallback).onResult(false);
     }
 
@@ -196,21 +182,5 @@ public class DownloadDialogIncognitoTest {
                                     ICON_ID,
                                     mResultCallback);
                 });
-    }
-
-    private void waitForWarningVisibilityToBe(Visibility visibility) {
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        onView(withId(R.id.message_paragraph_2)).inRoot(isDialog())
-                                .check(matches(withEffectiveVisibility(visibility)));
-                    } catch (NoMatchingViewException | AssertionError e) {
-                        throw new CriteriaNotSatisfiedException(
-                                "Timeout while waiting for warning to have visibility: "
-                                        + (visibility == VISIBLE ? "VISIBLE" : "GONE"));
-                    }
-                },
-                DEFAULT_MAX_TIME_TO_POLL * 10,
-                DEFAULT_POLLING_INTERVAL);
     }
 }
