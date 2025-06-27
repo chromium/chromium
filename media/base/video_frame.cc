@@ -617,30 +617,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDataWithLayout(
 }
 
 // static
-scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
-    VideoPixelFormat format,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    size_t y_stride,
-    size_t u_stride,
-    size_t v_stride,
-    const uint8_t* y_data,
-    const uint8_t* u_data,
-    const uint8_t* v_data,
-    base::TimeDelta timestamp) {
-  auto layout = VideoFrameLayout::CreateWithStrides(
-      format, coded_size, {y_stride, u_stride, v_stride});
-  if (!layout) {
-    DLOG(ERROR) << "Invalid layout.";
-    return nullptr;
-  }
-
-  return WrapExternalYuvDataWithLayout(*layout, visible_rect, natural_size,
-                                       y_data, u_data, v_data, timestamp);
-}
-
-// static
 scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvDataWithLayout(
     const VideoFrameLayout& layout,
     const gfx::Rect& visible_rect,
