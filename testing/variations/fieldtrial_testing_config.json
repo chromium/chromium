@@ -12800,6 +12800,21 @@
             ]
         }
     ],
+    "IOSPasskeyShim": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSPasskeyShim"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPasskeysM2": [
         {
             "platforms": [
