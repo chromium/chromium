@@ -766,17 +766,18 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Scroll to the bottom so that Bottom 1 is visible.
   [BookmarkEarlGreyUI scrollToBottom];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Bottom 1")]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(@"Bottom 1, google.com")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Close bookmarks
+  // Close bookmarks.
   [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];
 
   // Reopen bookmarks.
   [BookmarkEarlGreyUI openBookmarks];
 
-  // Ensure the Bottom 1 of Folder 1 is visible.  That means both folder and
+  // Ensure the Bottom 1 of Folder 1 is visible. That means both folder and
   // scroll position are restored successfully.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(@"Bottom 1, google.com")]
