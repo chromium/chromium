@@ -241,9 +241,15 @@ message ActivateWindowAction {
 message YieldToUserAction {
 }
 
+// Attempts to log in to the website.
+// Next ID: 2
+message AttemptLoginAction {
+  int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
+}
+
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
-// Next ID: 18
+// Next ID: 19
 message Action {
   oneof action {
     ClickAction click = 1;
@@ -279,6 +285,8 @@ message Action {
     ActivateWindowAction activate_window = 16;
 
     YieldToUserAction yield_to_user = 17;
+
+    AttemptLoginAction attempt_login = 18;
   }
 }
 
