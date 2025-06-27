@@ -307,9 +307,9 @@ TEST_F(ValuableSuggestionGeneratorTest,
                  SuggestionType::kManageAddress)};
 
   ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
-      email_suggestions, valuables_data_manager(),
+      valuables_data_manager(),
       GURL("https://common-matching-domain.example/test"),
-      /*trigger_field_is_autofilled=*/false);
+      /*trigger_field_is_autofilled=*/false, email_suggestions);
 
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(email_suggestions,
@@ -389,9 +389,8 @@ TEST_F(ValuableSuggestionGeneratorTest,
                  SuggestionType::kManageAddress)};
 
   ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
-      email_suggestions, valuables_data_manager(),
-      GURL("https://common-domain.example/test"),
-      /*trigger_field_is_autofilled=*/false);
+      valuables_data_manager(), GURL("https://common-domain.example/test"),
+      /*trigger_field_is_autofilled=*/false, email_suggestions);
 
   EXPECT_THAT(email_suggestions,
               testing::ElementsAre(
@@ -435,9 +434,8 @@ TEST_F(ValuableSuggestionGeneratorTest,
                  SuggestionType::kManageAddress)};
 
   ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
-      email_suggestions, valuables_data_manager(),
-      GURL("https://common-domain.example/test"),
-      /*trigger_field_is_autofilled=*/true);
+      valuables_data_manager(), GURL("https://common-domain.example/test"),
+      /*trigger_field_is_autofilled=*/true, email_suggestions);
 
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(email_suggestions,

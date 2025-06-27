@@ -22,9 +22,9 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
 
 // Extends `email_suggestions` with loyalty cards suggestions.
 void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
-    std::vector<Suggestion>& email_suggestions,
     const ValuablesDataManager& valuables_manager,
     const GURL& url,
-    bool trigger_field_is_autofilled);
+    bool trigger_field_is_autofilled,
+    std::vector<Suggestion>& email_suggestions);
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_VALUABLES_VALUABLE_SUGGESTION_GENERATOR_H_

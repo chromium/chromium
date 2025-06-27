@@ -137,10 +137,10 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
 }
 
 void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
-    std::vector<Suggestion>& email_suggestions,
     const ValuablesDataManager& valuables_manager,
     const GURL& url,
-    bool trigger_field_is_autofilled) {
+    bool trigger_field_is_autofilled,
+    std::vector<Suggestion>& email_suggestions) {
   std::vector<LoyaltyCard> all_loyalty_cards =
       valuables_manager.GetLoyaltyCardsToSuggest();
   CHECK(!email_suggestions.empty());
@@ -176,7 +176,7 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
   submenu_suggestion.children.emplace_back(
       CreateManageLoyaltyCardsSuggestion());
   // There is at least one email, separator and manage addresses suggestion.
-  CHECK_GE(int(email_suggestions.size()), 3);
+  CHECK_GE(email_suggestions.size(), 3u);
   if (trigger_field_is_autofilled) {
     CHECK_EQ(email_suggestions[email_suggestions.size() - 2].type,
              SuggestionType::kUndoOrClear);
