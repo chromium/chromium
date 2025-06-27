@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_ORT_CONTEXT_PROVIDER_ORT_H_
 
 #include "base/types/expected.h"
+#include "gpu/config/gpu_info.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 
@@ -21,6 +22,7 @@ namespace ort {
 // ML.createContext(MLContextOptions) overload in the WebNN API.
 base::expected<std::unique_ptr<WebNNContextImpl>, mojom::ErrorPtr>
 CreateContextFromOptions(mojom::CreateContextOptionsPtr options,
+                         const gpu::GPUInfo& gpu_info,
                          mojo::PendingReceiver<mojom::WebNNContext> receiver,
                          WebNNContextProviderImpl* context_provider);
 
