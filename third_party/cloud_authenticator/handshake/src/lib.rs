@@ -30,6 +30,10 @@ use crypto::{P256Scalar, NONCE_LEN, P256_X962_LENGTH};
 
 // This is assumed to be vastly larger than any connection will ever reach.
 const MAX_SEQUENCE: u32 = 1u32 << 24;
+// This is the expected handshake response size.  The host appends a CBOR
+// attestation blob to this response.  Clients should split the response into
+// the handshake response followed by CBOR attestation.
+pub const HANDSHAKE_RESPONSE_LEN: usize = 65 + 16;
 
 #[derive(Debug)]
 pub struct Crypter {

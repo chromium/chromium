@@ -30,9 +30,6 @@ pub(crate) struct Data {
     /// deals with hashes and so isn't affected by the choice of algorithm so
     /// long as the output is 256 bits long.
     pub pin_hash: [u8; 32],
-    /// The generation number. Starts at zero and is incremented for each
-    /// PIN change.
-    pub generation: i64,
     /// An AES-256-GCM key used to encrypt claimed PIN hashes.
     pub claim_key: [u8; 32],
     /// The recovery key store counter ID. Used when refreshing the recovery
@@ -55,9 +52,7 @@ impl TryFrom<Vec<u8>> for Data {
         let Some(Value::Bytestring(pin_hash)) = map.get(&MapKey::Int(1)) else {
             return Err(());
         };
-        let Some(Value::Int(generation)) = map.get(&MapKey::Int(2)) else {
-            return Err(());
-        };
+        // 2 corresponded to the generation, which was removed. Do not reuse.
         let Some(Value::Bytestring(claim_key)) = map.get(&MapKey::Int(3)) else {
             return Err(());
         };
@@ -69,7 +64,6 @@ impl TryFrom<Vec<u8>> for Data {
         };
         Ok(Data {
             pin_hash: pin_hash.as_ref().try_into().map_err(|_| ())?,
-            generation: *generation,
             claim_key: claim_key.as_ref().try_into().map_err(|_| ())?,
             counter_id: counter_id.as_ref().try_into().map_err(|_| ())?,
             vault_handle_without_type: vault_handle.as_ref().try_into().map_err(|_| ())?,
@@ -82,7 +76,7 @@ impl Data {
     pub fn to_bytes(&self) -> Vec<u8> {
         cbor!({
             1: (&self.pin_hash),
-            2: (self.generation),
+            // 2 corresponded to the generation, which was removed. Do not reuse.
             3: (&self.claim_key),
             4: (&self.counter_id),
             5: (&self.vault_handle_without_type),

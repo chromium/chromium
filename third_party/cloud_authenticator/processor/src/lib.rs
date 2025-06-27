@@ -628,6 +628,18 @@ pub fn process_client_msg(
         let Some(Value::Map(pub_keys)) = client.get(PUB_KEYS_KEY) else {
             return Err(Error::Str("client is missing pub_keys"));
         };
+        // Chrome erroneously registered software-backed Microsoft keys as
+        // hardware-backed. If the client claims a software key and we don't
+        // find one, try looking for a hardware key that had been misregistered.
+        let auth_level = if pub_keys.get(
+            &MapKeyRef::Str(auth_level.as_str()) as &dyn MapLookupKey).is_some() {
+            auth_level
+        } else {
+            match auth_level {
+                AuthLevel::Software => AuthLevel::Hardware,
+                _ => auth_level
+            }
+        };
         let Some(Value::Bytestring(pub_key)) =
             pub_keys.get(&MapKeyRef::Str(auth_level.as_str()) as &dyn MapLookupKey)
         else {
@@ -1002,7 +1014,7 @@ fn do_device_add_uv_key(
         }
         None => (),
     }
-    // Check that  `uv_key_pending` is set.
+    // Check that `uv_key_pending` is set.
     match device.get(UV_KEY_PENDING_KEY) {
         Some(Value::Boolean(uv_key_pending)) if *uv_key_pending => (),
         _ => return debug("uv_key_pending is missing"),
@@ -1125,7 +1137,7 @@ mod tests {
     use cbor::cbor;
     use crypto::EcdsaKeyPair;
     use passkeys::{
-        CLAIMED_PIN, CLIENT_DATA_JSON, COSE_ALGORITHM, PIN_CLAIM_KEY, PIN_GENERATION, PIN_HASH,
+        CLAIMED_PIN, CLIENT_DATA_JSON, COSE_ALGORITHM, PIN_CLAIM_KEY, PIN_HASH,
         PROTOBUF, PUB_KEY_CRED_PARAMS, RP_ID, WEBAUTHN_REQUEST,
     };
     use prost::Message;
@@ -1787,6 +1799,31 @@ mod tests {
     }
 
     #[test]
+    fn test_claim_sw_key_for_hw_key() {
+        // Tests that a client is allowed to claim a software authentication
+        // level for a key previously registered as a hardware key.
+        let mut metrics = MetricsUpdate::default();
+        let Value::Map(msg) = cbor!({
+            CMD: "debug/success"
+        }) else {
+            panic!("Not a CBOR map");
+        };
+        // REGISTERED_STATE contains a hardware key. Try claiming a software key.
+        let request = sign_authenticated_request(msg, "sw", |to_be_signed| {
+            KEYPAIR.sign(to_be_signed).unwrap().as_ref().to_vec()
+        });
+        let (output, _state) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            request.clone(),
+        )
+        .unwrap();
+        assert!(is_ok(&output));
+    }
+
+    #[test]
     fn test_passkeys_assert() {
         let msg = sign_request(cbor!({
             CMD: "passkeys/assert",
@@ -1927,7 +1964,6 @@ mod tests {
     fn test_use_pin() {
         let pin_data = pin::Data {
             pin_hash: [1u8; 32],
-            generation: 1,
             claim_key: [2u8; 32],
             counter_id: [3u8; recovery_key_store::COUNTER_ID_LEN],
             vault_handle_without_type: [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1],
@@ -1990,7 +2026,6 @@ mod tests {
         let msg = sign_request(cbor!({
             CMD: "passkeys/wrap_pin",
             PIN_HASH: (&pin_hash),
-            PIN_GENERATION: 1,
             PIN_CLAIM_KEY: (&claim_key),
             COUNTER_ID: (&counter_id),
             VAULT_HANDLE_WITHOUT_TYPE: (&vault_handle_without_type),
@@ -2373,7 +2408,6 @@ mod tests {
         let request = cbor!({
             CMD: "passkeys/wrap_pin",
             PIN_HASH: (&pin_hash),
-            PIN_GENERATION: 1,
             PIN_CLAIM_KEY: (&claim_key),
             COUNTER_ID: (&counter_id),
             VAULT_HANDLE_WITHOUT_TYPE: (&vault_handle_without_type),
@@ -2434,7 +2468,6 @@ mod tests {
     fn test_invalid_recovery_key_store_rewrap() {
         let pin_data = pin::Data {
             pin_hash: [1u8; 32],
-            generation: 1,
             claim_key: [2u8; 32],
             counter_id: [3u8; recovery_key_store::COUNTER_ID_LEN],
             vault_handle_without_type: [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1],
