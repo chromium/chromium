@@ -568,11 +568,9 @@ WebState* WebStateImpl::ForceRealized() {
     // RealizedWebState in WebStateImpl destructor.
     saved.reset();
 
-    // Notify all observers that the WebState has become realized.
-    for (auto& observer : observers_) {
-      observer.WebStateRealized(this);
-    }
-
+    // Notify all observers that the WebState has become realized but take
+    // care to not notify any observer that is registered while iterating.
+    NotifyWebStateRealized(observers_);
     CheckForOverRealization();
   }
 

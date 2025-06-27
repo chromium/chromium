@@ -17,8 +17,9 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/blink_buildflags.h"
@@ -540,6 +541,15 @@ class WebState : public base::SupportsUserData {
 
  protected:
   friend class WebStatePolicyDecider;
+
+  // A list of WebStateObservers.
+  using WebStateObserverList = base::ObserverList<WebStateObserver, true>;
+
+  // Helper function that call WebStateRealized(this) for pre-registered
+  // observers but not for any observers that are added while iterating.
+  // Those observers will already have observed the current WebState in
+  // the realized state and could be confused by the notification.
+  void NotifyWebStateRealized(WebStateObserverList& observers);
 
   // Adds and removes policy deciders for navigation actions. The order in which
   // deciders are called is undefined, and will stop on the first decider that
