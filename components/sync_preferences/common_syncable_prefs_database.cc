@@ -26,7 +26,6 @@
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/public/pref_names.h"
-#include "components/search_engines/search_engines_pref_names.h"
 #include "components/sharing_message/pref_names.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -96,7 +95,7 @@ enum {
   kAccountTailoredSecurityUpdateTimestamp = 46,
   kCookieControlsMode = 47,
   kSafeBrowsingEnabled = 48,
-  kSyncedDefaultSearchProviderGUID = 49,
+  // kSyncedDefaultSearchProviderGUID = 49, (deprecated)
   kPrefForceTriggerTranslateCount = 50,
   // kPrefNeverPromptSitesDeprecated = 51, (deprecated)
   kPrefTranslateAcceptedCount = 52,
@@ -245,13 +244,6 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {prefs::kSafeBrowsingEnabled,
          {syncable_prefs_ids::kSafeBrowsingEnabled, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
-// TODO(crbug.com/40904479): Maybe move to chrome_syncable_prefs_database.cc,
-// see bug.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-        {prefs::kSyncedDefaultSearchProviderGUID,
-         {syncable_prefs_ids::kSyncedDefaultSearchProviderGUID,
-          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
         {tab_groups::prefs::kAutoPinNewTabGroups,
          {syncable_prefs_ids::kAutoPinNewTabGroups, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},

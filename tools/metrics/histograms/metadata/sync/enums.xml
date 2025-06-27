@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="AccountTailoredSecurityUpdateTimestamp"/>
   <int value="47" label="CookieControlsMode"/>
   <int value="48" label="SafeBrowsingEnabled"/>
-  <int value="49" label="SyncedDefaultSearchProviderGUID"/>
+  <int value="49" label="(obsolete) SyncedDefaultSearchProviderGUID"/>
   <int value="50" label="PrefForceTriggerTranslateCount"/>
   <int value="51" label="(obsolete) PrefNeverPromptSitesDeprecated"/>
   <int value="52" label="PrefTranslateAcceptedCount"/>

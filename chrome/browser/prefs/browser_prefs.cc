@@ -1018,6 +1018,8 @@ inline constexpr char kLastUsedPairingFromSyncPublicKey[] =
     "webauthn.last_used_pairing_from_sync_public_key";
 inline constexpr char kWebAuthnCablePairingsPrefName[] =
     "webauthn.cablev2_pairings";
+inline constexpr char kSyncedDefaultSearchProviderGUID[] =
+    "default_search_provider.synced_guid";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1417,6 +1419,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDoublePref(kGaiaCookiePeriodicReportTimeDeprecated, 0);
   registry->RegisterListPref(kWebAuthnCablePairingsPrefName);
   registry->RegisterStringPref(kLastUsedPairingFromSyncPublicKey, "");
+  registry->RegisterStringPref(kSyncedDefaultSearchProviderGUID, std::string());
 }
 
 }  // namespace
@@ -2654,6 +2657,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kGaiaCookiePeriodicReportTimeDeprecated);
   profile_prefs->ClearPref(kWebAuthnCablePairingsPrefName);
   profile_prefs->ClearPref(kLastUsedPairingFromSyncPublicKey);
+  profile_prefs->ClearPref(kSyncedDefaultSearchProviderGUID);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

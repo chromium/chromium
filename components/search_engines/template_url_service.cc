@@ -594,13 +594,6 @@ TemplateURLService::~TemplateURLService() {
 // static
 void TemplateURLService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  uint32_t flags = PrefRegistry::NO_REGISTRATION_FLAGS;
-#else
-  uint32_t flags = user_prefs::PrefRegistrySyncable::SYNCABLE_PREF;
-#endif
-  registry->RegisterStringPref(prefs::kSyncedDefaultSearchProviderGUID,
-                               std::string(), flags);
   registry->RegisterStringPref(prefs::kDefaultSearchProviderGUID,
                                std::string());
   registry->RegisterBooleanPref(prefs::kDefaultSearchProviderEnabled, true);
@@ -2478,28 +2471,11 @@ void TemplateURLService::Init() {
   }
 
   pref_change_registrar_.Init(&prefs_.get());
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)) {
-    // We migrate `kSyncedDefaultSearchProviderGUID` to
-    // `kDefaultSearchProviderGUID` if the latter was never set.
-    if (!prefs_->HasPrefPath(prefs::kDefaultSearchProviderGUID)) {
-      prefs_->SetString(
-          prefs::kDefaultSearchProviderGUID,
-          prefs_->GetString(prefs::kSyncedDefaultSearchProviderGUID));
-    }
-
     pref_change_registrar_.Add(
         prefs::kDefaultSearchProviderGUID,
         base::BindRepeating(
             &TemplateURLService::OnDefaultSearchProviderGUIDChanged,
             base::Unretained(this)));
-  } else {
-    // TODO(b/364828491): Deprecate `kSyncedDefaultSearchProviderGUID`.
-    pref_change_registrar_.Add(
-        prefs::kSyncedDefaultSearchProviderGUID,
-        base::BindRepeating(
-            &TemplateURLService::OnDefaultSearchProviderGUIDChanged,
-            base::Unretained(this)));
-  }
 
   DefaultSearchManager::Source source = DefaultSearchManager::FROM_USER;
   const TemplateURLData* dse =

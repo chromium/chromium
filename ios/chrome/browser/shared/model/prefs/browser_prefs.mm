@@ -206,6 +206,8 @@ inline constexpr char kVariationsLimitedEntropySyntheticTrialSeedV2[] =
     "variations_limited_entropy_synthetic_trial_seed_v2";
 inline constexpr char kGaiaCookiePeriodicReportTimeDeprecated[] =
     "gaia_cookie.periodic_report_time";
+inline constexpr char kSyncedDefaultSearchProviderGUID[] =
+    "default_search_provider.synced_guid";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -1098,6 +1100,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 06/2025.
   registry->RegisterDoublePref(kGaiaCookiePeriodicReportTimeDeprecated, 0);
+  registry->RegisterStringPref(kSyncedDefaultSearchProviderGUID, std::string());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1304,6 +1307,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 06/2025.
   prefs->ClearPref(safety_check_prefs::kSafetyCheckInMagicStackDisabledPref);
   prefs->ClearPref(tab_resumption_prefs::kTabResumptionDisabledPref);
+  prefs->ClearPref(kSyncedDefaultSearchProviderGUID);
 }
 
 void MigrateObsoleteUserDefault() {
