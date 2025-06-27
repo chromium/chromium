@@ -12,4 +12,10 @@ void CheckHeapIntegrity(const void* ptr) {
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
+void SetDoubleFreeOrCorruptionDetectedFn(void (*fn)(uintptr_t)) {
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  base::allocator::SetDoubleFreeOrCorruptionDetectedFn(fn);
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+}
+
 }  // namespace base
