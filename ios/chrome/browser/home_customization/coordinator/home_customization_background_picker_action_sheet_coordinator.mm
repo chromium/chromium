@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_mediator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_preset_gallery_picker_mediator.h"
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_mutator.h"
@@ -82,9 +84,12 @@ CGFloat const kSheetCornerRadius = 30;
       ImageFetcherServiceFactory::GetForProfile(self.profile);
   HomeBackgroundImageService* homeBackgroundImageService =
       HomeBackgroundImageServiceFactory::GetForProfile(self.profile);
+  HomeBackgroundCustomizationService* homeBackgroundCustomizationService =
+      HomeBackgroundCustomizationServiceFactory::GetForProfile(self.profile);
 
-  _mediator =
-      [[HomeCustomizationBackgroundPickerActionSheetMediator alloc] init];
+  _mediator = [[HomeCustomizationBackgroundPickerActionSheetMediator alloc]
+      initWithHomeBackgroundCustomizationService:
+          homeBackgroundCustomizationService];
   _backgroundColorPickerMediator =
       [[HomeCustomizationBackgroundColorPickerMediator alloc] init];
   _backgroundPresetGalleryPickerMediator =

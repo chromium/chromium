@@ -9,10 +9,20 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_mutator.h"
 
+class HomeBackgroundCustomizationService;
+
 // Mediator responsible for managing the background customization action sheet,
 // which allows the user to pick a background option.
 @interface HomeCustomizationBackgroundPickerActionSheetMediator
     : NSObject <HomeCustomizationBackgroundPickerActionSheetMutator>
+
+// Initializes the mediator with the provided home background customization
+// service.
+- (instancetype)initWithHomeBackgroundCustomizationService:
+    (HomeBackgroundCustomizationService*)homeBackgroundCustomizationService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_HOME_CUSTOMIZATION_BACKGROUND_PICKER_ACTION_SHEET_MEDIATOR_H_
