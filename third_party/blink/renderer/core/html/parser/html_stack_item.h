@@ -117,6 +117,15 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
     DCHECK(LocalName());
     return UNSAFE_TODO({TokenAttributesData(), num_token_attributes_});
   }
+  Vector<Attribute> TakeAttributes() {
+    Vector<Attribute> attributes;
+    attributes.ReserveInitialCapacity(num_token_attributes_);
+    for (Attribute& attr : Attributes()) {
+      attributes.push_back(std::move(attr));
+    }
+    num_token_attributes_ = 0;
+    return attributes;
+  }
   Attribute* GetAttributeItem(const QualifiedName& attribute_name) {
     DCHECK(LocalName());
     return FindAttributeInVector(Attributes(), attribute_name);

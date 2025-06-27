@@ -1279,14 +1279,8 @@ HTMLStackItem* HTMLConstructionSite::CreateElementFromSavedToken(
     HTMLStackItem* item) {
   Element* element;
   // NOTE: Moving from item -> token -> item copies the Attribute vector twice!
-  Vector<Attribute> attributes;
-  attributes.ReserveInitialCapacity(
-      static_cast<wtf_size_t>(item->Attributes().size()));
-  for (Attribute& attr : item->Attributes()) {
-    attributes.push_back(std::move(attr));
-  }
   AtomicHTMLToken fake_token(HTMLToken::kStartTag, item->GetTokenName(),
-                             std::move(attributes));
+                             item->TakeAttributes());
   element = CreateElement(&fake_token, item->NamespaceURI());
   return HTMLStackItem::Create(element, &fake_token, item->NamespaceURI());
 }
