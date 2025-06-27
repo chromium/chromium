@@ -16,15 +16,10 @@
 #include "components/metrics/metrics_service_accessor.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/variations/synthetic_trials.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "chrome/common/ppapi_metrics.mojom.h"
 #endif
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -284,12 +279,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   // Cover for function of same name in MetricsServiceAccessor. See
   // ChromeMetricsServiceAccessor for details.
   static void SetForceIsMetricsReportingEnabledPrefLookup(bool value);
-
-#if BUILDFLAG(ENABLE_PPAPI)
-  // Provides an implementation of chrome::mojom::PpapiMetricsService.
-  static void BindPpapiMetricsServiceReceiver(
-      mojo::PendingReceiver<chrome::mojom::PpapiMetricsService> receiver);
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_METRICS_SERVICE_ACCESSOR_H_
