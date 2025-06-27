@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 
 @implementation ReaderModeChipCoordinator
 
@@ -33,9 +34,12 @@
 - (void)showReaderModeChip {
   [self.visibilityDelegate readerModeChipCoordinator:self
                           didSetReaderModeChipHidden:NO];
+  _viewController.readerModeOptionsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ReaderModeOptionsCommands);
 }
 
 - (void)hideReaderModeChip {
+  _viewController.readerModeOptionsHandler = nil;
   [self.visibilityDelegate readerModeChipCoordinator:self
                           didSetReaderModeChipHidden:YES];
 }

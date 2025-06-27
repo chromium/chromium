@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -56,7 +57,13 @@ const CGFloat kChipSymbolPointSize = 15;
 #pragma mark - Private
 
 - (UIButton*)configuredButton {
-  UIButton* button = [[ExtendedTouchTargetButton alloc] init];
+  __weak __typeof(self) weakSelf = self;
+  UIAction* buttonAction = [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf showReaderModeOptions];
+  }];
+  UIButton* button =
+      [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero
+                                         primaryAction:buttonAction];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.backgroundColor = [UIColor colorNamed:kBlue600Color];
   button.clipsToBounds = YES;
@@ -73,6 +80,12 @@ const CGFloat kChipSymbolPointSize = 15;
   button.tintColor = [UIColor colorNamed:kInvertedTextPrimaryColor];
 
   return button;
+}
+
+#pragma mark - UI actions
+
+- (void)showReaderModeOptions {
+  [self.readerModeOptionsHandler showReaderModeOptions];
 }
 
 @end

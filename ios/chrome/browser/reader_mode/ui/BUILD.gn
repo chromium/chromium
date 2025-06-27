@@ -32,6 +32,7 @@ source_set("chip") {
     ":constants",
     "//base",
     "//ios/chrome/browser/reader_mode/model:constants",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
@@ -46,6 +47,7 @@ source_set("options") {
     "reader_mode_options_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

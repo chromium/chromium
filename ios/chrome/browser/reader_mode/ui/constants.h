@@ -13,4 +13,7 @@ extern NSString* const kReaderModeViewAccessibilityIdentifier;
 // The accessibility identifier of the Reader Mode chip view.
 extern NSString* const kReaderModeChipViewAccessibilityIdentifier;
 
+// The accessibility identifier of the Reader Mode options view.
+extern NSString* const kReaderModeOptionsViewAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_READER_MODE_UI_CONSTANTS_H_

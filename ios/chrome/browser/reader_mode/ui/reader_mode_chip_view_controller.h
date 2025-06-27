@@ -7,8 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol ReaderModeOptionsCommands;
+
 // View controller for the reader mode chip.
 @interface ReaderModeChipViewController : UIViewController
+
+@property(nonatomic, weak) id<ReaderModeOptionsCommands>
+    readerModeOptionsHandler;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_UI_READER_MODE_CHIP_VIEW_CONTROLLER_H_

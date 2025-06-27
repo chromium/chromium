@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_view_controller.h"
 
+#import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 @implementation ReaderModeOptionsViewController
@@ -24,6 +25,8 @@
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  self.view.accessibilityIdentifier =
+      kReaderModeOptionsViewAccessibilityIdentifier;
   self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 }
 

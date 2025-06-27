@@ -26,12 +26,7 @@ void PerformReaderModeCustomEntrypointAction(
   if (!reader_mode_tab_helper) {
     return;
   }
-  if (reader_mode_tab_helper->IsReaderModeWebStateAvailable()) {
-    // TODO(crbug.com/409941529): Show options instead when the UI is ready.
-    reader_mode_tab_helper->SetActive(false);
-  } else {
-    reader_mode_tab_helper->SetActive(true);
-  }
+  reader_mode_tab_helper->SetActive(true);
 }
 
 // Calls `callback` with the appropriate ContextualPanelItemConfiguration object

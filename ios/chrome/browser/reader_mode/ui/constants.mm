@@ -9,3 +9,6 @@ NSString* const kReaderModeViewAccessibilityIdentifier =
 
 NSString* const kReaderModeChipViewAccessibilityIdentifier =
     @"ReaderModeChipViewAccessibilityIdentifier";
+
+NSString* const kReaderModeOptionsViewAccessibilityIdentifier =
+    @"ReaderModeOptionsViewAccessibilityIdentifier";

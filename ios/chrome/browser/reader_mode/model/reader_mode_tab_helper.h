@@ -68,9 +68,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // method is for `IsReaderModeContentAvailable()` to be true.
   web::WebState* GetReaderModeWebState();
 
-  // Shows the Reader mode options UI.
-  void ShowReaderModeOptions();
-
   // Returns whether the current page supports Reading mode.
   bool CurrentPageSupportsReaderMode() const;
   // - If the eligibility of the last committed URL is already known, calls
