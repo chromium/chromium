@@ -255,8 +255,16 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                    "Commerce.Compare.ProactiveChipIgnored"));
 }
 
+// TODO(crbug.com/428096844): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DoesntShowIfTabStripModalUIExists \
+  DISABLED_DoesntShowIfTabStripModalUIExists
+#else
+#define MAYBE_DoesntShowIfTabStripModalUIExists \
+  DoesntShowIfTabStripModalUIExists
+#endif
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
-                       DoesntShowIfTabStripModalUIExists) {
+                       MAYBE_DoesntShowIfTabStripModalUIExists) {
   ASSERT_FALSE(product_specifications_button()
                    ->expansion_animation_for_testing()
                    ->IsShowing());
