@@ -16,7 +16,6 @@ import androidx.annotation.StyleRes;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
@@ -218,9 +217,6 @@ public class SharedImageTilesConfig {
          * @return This builder instance for chaining.
          */
         public Builder setTabGroupColor(Context context, @TabGroupColorId int tabGroupColorId) {
-            if (SurfaceColorUpdateUtils.useNewGm3GtsTabGroupColors()) {
-                return setTabGroupColorGm3(context, tabGroupColorId);
-            }
             @ColorInt
             int tabGroupColor =
                     TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
@@ -243,28 +239,6 @@ public class SharedImageTilesConfig {
          */
         public SharedImageTilesConfig build() {
             return new SharedImageTilesConfig(this);
-        }
-
-        /**
-         * Sets the a new tab group color and updates all relevant colors to match.
-         *
-         * @param context The Android context.
-         * @param tabGroupColorId The color associated with the tab group.
-         * @return This builder instance for chaining.
-         */
-        private Builder setTabGroupColorGm3(Context context, @TabGroupColorId int tabGroupColorId) {
-            @ColorInt
-            int tabGroupColor =
-                    SurfaceColorUpdateUtils.getCardViewBackgroundColor(
-                            context, /* isIncognito= */ false, tabGroupColorId);
-            setBorderColor(tabGroupColor);
-            setBackgroundColor(tabGroupColor);
-            @ColorInt
-            int textColor =
-                    SurfaceColorUpdateUtils.getCardViewTextColor(
-                            context, /* isIncognito= */ false, tabGroupColorId);
-            setTextColor(textColor);
-            return this;
         }
     }
 }
