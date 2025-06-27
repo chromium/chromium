@@ -802,7 +802,7 @@ export class SpeechController {
     this.model_.setSavedWordBoundaryState({...this.wordBoundaries_.state});
   }
 
-  setPreviousReadingPositionIfExists() {
+  setPreviousReadingPositionIfExists(): boolean {
     const savedSpeechPlayingState = this.model_.getSavedSpeechPlayingState();
     const savedWordBoundaryState = this.model_.getSavedWordBoundaryState();
     const lastPosition = this.model_.getLastPosition();
@@ -810,7 +810,7 @@ export class SpeechController {
     this.model_.setSavedWordBoundaryState(null);
     if (!savedWordBoundaryState || !savedSpeechPlayingState ||
         !savedSpeechPlayingState.hasSpeechBeenTriggered || !lastPosition) {
-      return;
+      return false;
     }
 
     if (this.nodeStore_.getDomNode(lastPosition.nodeId)) {
@@ -821,8 +821,10 @@ export class SpeechController {
       // we're paused, redraw the highlight after moving the traversal state to
       // the right spot above.
       this.highlightCurrentGranularity_(chrome.readingMode.getCurrentText());
+      return true;
     } else {
       this.model_.setLastPosition(null);
+      return false;
     }
   }
 
