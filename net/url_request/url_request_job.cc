@@ -24,6 +24,7 @@
 #include "net/base/network_delegate.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/task/task_runner.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -592,9 +593,9 @@ void URLRequestJob::OnDone(int net_error, bool notify_done) {
   if (notify_done) {
     // Complete this notification later.  This prevents us from re-entering the
     // delegate if we're done because of a synchronous call.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&URLRequestJob::NotifyDone, weak_factory_.GetWeakPtr()));
+    net::GetTaskRunner(request_->priority())
+        ->PostTask(FROM_HERE, base::BindOnce(&URLRequestJob::NotifyDone,
+                                             weak_factory_.GetWeakPtr()));
   }
 }
 

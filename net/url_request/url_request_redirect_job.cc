@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
+#include "net/base/task/task_runner.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -66,9 +67,9 @@ void URLRequestRedirectJob::GetLoadTimingInfo(
 void URLRequestRedirectJob::Start() {
   request()->net_log().AddEventWithStringParams(
       NetLogEventType::URL_REQUEST_REDIRECT_JOB, "reason", redirect_reason_);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&URLRequestRedirectJob::StartAsync,
-                                weak_factory_.GetWeakPtr()));
+  net::GetTaskRunner(request_->priority())
+      ->PostTask(FROM_HERE, base::BindOnce(&URLRequestRedirectJob::StartAsync,
+                                           weak_factory_.GetWeakPtr()));
 }
 
 void URLRequestRedirectJob::Kill() {
