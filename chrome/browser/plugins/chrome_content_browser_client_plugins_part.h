@@ -22,11 +22,6 @@ class ChromeContentBrowserClientPluginsPart
 
   ~ChromeContentBrowserClientPluginsPart() override;
 
-  // Corresponding to the ChromeContentBrowserClient function of the same name.
-  static bool IsPluginAllowedToUseDevChannelAPIs(
-      content::BrowserContext* browser_context,
-      const GURL& url);
-
  private:
   void ExposeInterfacesToRendererForRenderFrameHost(
       content::RenderFrameHost& frame_host,

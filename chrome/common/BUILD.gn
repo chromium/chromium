@@ -386,13 +386,6 @@ static_library("common_lib") {
     frameworks = [ "ServiceManagement.framework" ]
   }
 
-  if (enable_plugins && enable_extensions) {
-    sources += [
-      "pepper_permission_util.cc",
-      "pepper_permission_util.h",
-    ]
-  }
-
   if (enable_library_cdms) {
     deps += [ "//media/cdm:cdm_paths" ]  # Needed by chrome_content_client.cc
 
