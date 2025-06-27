@@ -304,8 +304,6 @@ class WebIdlSchemaTest(unittest.TestCase):
     }], getFunctionParameters(schema, 'takesOptionalCustomType'))
 
   # Tests function descriptions are processed as expected.
-  # TODO(crbug.com/379052294): Add testcases for function return descriptions
-  # once support for those are added to the processor.
   def testFunctionDescriptions(self):
     schema = self.idl_basics
     # A function without a preceding comment has no 'description' key.
@@ -403,7 +401,7 @@ class WebIdlSchemaTest(unittest.TestCase):
             }],
         }, named_promise_function_async_return)
 
-
+    # Function with a return and simple comment describing it.
     return_function = getFunction(schema, 'describedReturnFunction')
     self.assertEqual(
         'General function description for the describedReturnFunction.',
