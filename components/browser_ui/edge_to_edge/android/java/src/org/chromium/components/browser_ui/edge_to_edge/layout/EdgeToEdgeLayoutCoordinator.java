@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.RectF;
-import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -189,7 +188,7 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     // to keep the behavior for Android 15-.
     // Ref: https://developer.android.com/develop/ui/views/layout/display-cutout
     private static boolean shouldPadDisplayCutout(WindowInsetsCompat insets, Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P || insets == null) return true;
+        if (insets == null) return true;
 
         Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null) {

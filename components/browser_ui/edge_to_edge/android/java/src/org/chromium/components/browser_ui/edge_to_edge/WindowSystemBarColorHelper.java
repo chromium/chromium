@@ -5,8 +5,6 @@
 package org.chromium.components.browser_ui.edge_to_edge;
 
 import android.app.Activity;
-import android.graphics.Color;
-import android.os.Build;
 import android.view.Window;
 
 import org.chromium.build.annotations.NullMarked;
@@ -24,9 +22,7 @@ public class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
 
         mStatusBarColor = mWindow.getStatusBarColor();
         mNavBarColor = mWindow.getNavigationBarColor();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            mNavBarDividerColor = mWindow.getNavigationBarDividerColor();
-        }
+        mNavBarDividerColor = mWindow.getNavigationBarDividerColor();
     }
 
     @Override
@@ -51,27 +47,15 @@ public class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
         mWindow.setNavigationBarColor(mNavBarColor);
     }
 
-    @Override
-    public void setNavigationBarDividerColor(int dividerColor) {
-        // Ignore the call on unsupported SDK.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            super.setNavigationBarDividerColor(dividerColor);
-        }
-    }
-
     /** Wrapper call to {@link Window#setNavigationBarDividerColor(int)}} */
     @Override
     protected void applyNavigationBarDividerColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            mWindow.setNavigationBarDividerColor(mNavBarDividerColor);
-        }
+        mWindow.setNavigationBarDividerColor(mNavBarDividerColor);
     }
 
     @Override
     public int getNavigationBarDividerColor() {
-        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-                ? mWindow.getNavigationBarDividerColor()
-                : Color.TRANSPARENT;
+        return mWindow.getNavigationBarDividerColor();
     }
 
     @Override
@@ -79,15 +63,11 @@ public class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
 
     /** Wrapper call to {@link Window#setNavigationBarContrastEnforced(boolean)}. */
     public void setNavigationBarContrastEnforced(boolean enforced) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            mWindow.setNavigationBarContrastEnforced(enforced);
-        }
+        mWindow.setNavigationBarContrastEnforced(enforced);
     }
 
     /** Wrapper call to {@link Window#setStatusBarContrastEnforced(boolean)}. */
     public void setStatusBarContrastEnforced(boolean enforced) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            mWindow.setStatusBarContrastEnforced(enforced);
-        }
+        mWindow.setStatusBarContrastEnforced(enforced);
     }
 }
