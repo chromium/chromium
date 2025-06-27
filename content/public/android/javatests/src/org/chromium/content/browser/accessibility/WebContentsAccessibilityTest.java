@@ -90,7 +90,6 @@ import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierFo
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -100,6 +99,7 @@ import android.text.InputType;
 import android.text.ParcelableSpan;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.LocaleSpan;
@@ -108,7 +108,6 @@ import android.text.style.StyleSpan;
 import android.text.style.SubscriptSpan;
 import android.text.style.SuggestionSpan;
 import android.text.style.SuperscriptSpan;
-import android.text.style.TextAppearanceSpan;
 import android.text.style.TypefaceSpan;
 import android.text.style.UnderlineSpan;
 import android.view.View;
@@ -2891,10 +2890,10 @@ public class WebContentsAccessibilityTest {
             BackgroundColorSpan expectedSpan = (BackgroundColorSpan) expected;
             return actualSpan.getBackgroundColor() == expectedSpan.getBackgroundColor();
         }
-        if (expected instanceof TextAppearanceSpan) {
-            TextAppearanceSpan actualSpan = (TextAppearanceSpan) actual;
-            TextAppearanceSpan expectedSpan = (TextAppearanceSpan) expected;
-            return actualSpan.getTextSize() == expectedSpan.getTextSize();
+        if (expected instanceof AbsoluteSizeSpan) {
+            AbsoluteSizeSpan actualSpan = (AbsoluteSizeSpan) actual;
+            AbsoluteSizeSpan expectedSpan = (AbsoluteSizeSpan) expected;
+            return actualSpan.getSize() == expectedSpan.getSize();
         }
         if (expected instanceof LocaleSpan) {
             LocaleSpan actualSpan = (LocaleSpan) actual;
@@ -2916,11 +2915,6 @@ public class WebContentsAccessibilityTest {
                                             spannableString.getSpanStart(span),
                                             spannableString.getSpanEnd(span)));
                         });
-    }
-
-    private static TextAppearanceSpan createTextAppearanceSpanWithSize(int size) {
-        return new TextAppearanceSpan(
-                null, 0, size, ColorStateList.valueOf(0), ColorStateList.valueOf(0));
     }
 
     @Test
@@ -2946,14 +2940,12 @@ public class WebContentsAccessibilityTest {
                 List.of(new SpanRange(new TypefaceSpan(monospaceFont))));
 
         testCases.put(
-                "Example Text - Small Font Size",
-                List.of(new SpanRange(createTextAppearanceSpanWithSize(13))));
+                "Example Text - Small Font Size", List.of(new SpanRange(new AbsoluteSizeSpan(13))));
         testCases.put(
-                "Example Text - Large Font Size",
-                List.of(new SpanRange(createTextAppearanceSpanWithSize(24))));
+                "Example Text - Large Font Size", List.of(new SpanRange(new AbsoluteSizeSpan(24))));
         testCases.put(
                 "Example Text - Font Size in Pixels",
-                List.of(new SpanRange(createTextAppearanceSpanWithSize(20))));
+                List.of(new SpanRange(new AbsoluteSizeSpan(20))));
 
         testCases.put(
                 "Example Text - Red Text Color",
@@ -3065,7 +3057,7 @@ public class WebContentsAccessibilityTest {
                 List.of(new SpanRange(new TypefaceSpan(monospaceFont), 22, 36)));
         testCases.put(
                 "Example Text - Nested pixel font size text",
-                List.of(new SpanRange(createTextAppearanceSpanWithSize(20), 22, 37)));
+                List.of(new SpanRange(new AbsoluteSizeSpan(20), 22, 37)));
         testCases.put(
                 "Example Text - Nested red color text",
                 List.of(new SpanRange(new ForegroundColorSpan(0xFFFF0000), 22, 31)));
@@ -3099,15 +3091,15 @@ public class WebContentsAccessibilityTest {
                         new SpanRange(new BackgroundColorSpan(0xFFFFFFFF), 64, 65),
                         new SpanRange(new BackgroundColorSpan(0xFFFFFFFF), 65, 70),
                         new SpanRange(new BackgroundColorSpan(0xFFFFFFFF), 70, 81),
-                        new SpanRange(createTextAppearanceSpanWithSize(16), 0, 22),
-                        new SpanRange(createTextAppearanceSpanWithSize(16), 22, 37),
-                        new SpanRange(createTextAppearanceSpanWithSize(16), 37, 48),
-                        new SpanRange(createTextAppearanceSpanWithSize(16), 48, 55),
-                        new SpanRange(createTextAppearanceSpanWithSize(20), 55, 59),
-                        new SpanRange(createTextAppearanceSpanWithSize(16), 59, 64),
-                        new SpanRange(createTextAppearanceSpanWithSize(16), 64, 65),
-                        new SpanRange(createTextAppearanceSpanWithSize(16), 65, 70),
-                        new SpanRange(createTextAppearanceSpanWithSize(16), 70, 81),
+                        new SpanRange(new AbsoluteSizeSpan(16), 0, 22),
+                        new SpanRange(new AbsoluteSizeSpan(16), 22, 37),
+                        new SpanRange(new AbsoluteSizeSpan(16), 37, 48),
+                        new SpanRange(new AbsoluteSizeSpan(16), 48, 55),
+                        new SpanRange(new AbsoluteSizeSpan(20), 55, 59),
+                        new SpanRange(new AbsoluteSizeSpan(16), 59, 64),
+                        new SpanRange(new AbsoluteSizeSpan(16), 64, 65),
+                        new SpanRange(new AbsoluteSizeSpan(16), 65, 70),
+                        new SpanRange(new AbsoluteSizeSpan(16), 70, 81),
                         new SpanRange(new StyleSpan(Typeface.ITALIC), 48, 55),
                         new SpanRange(new StyleSpan(Typeface.ITALIC), 55, 59),
                         new SpanRange(new StyleSpan(Typeface.BOLD), 65, 70)));
@@ -3126,9 +3118,9 @@ public class WebContentsAccessibilityTest {
         testCases.put(
                 "Example Text - Nested invisible text",
                 List.of(
-                        new SpanRange(createTextAppearanceSpanWithSize(16), 0, 22),
-                        // new SpanRange(createTextAppearanceSpanWithSize(0), 22, 31),
-                        new SpanRange(createTextAppearanceSpanWithSize(16), 31, 36)));
+                        new SpanRange(new AbsoluteSizeSpan(16), 0, 22),
+                        // new SpanRange(new AbsoluteSizeSpan(0), 22, 31),
+                        new SpanRange(new AbsoluteSizeSpan(16), 31, 36)));
 
         // TODO: crbug.com/399652531 - Add contenteditable test cases.
 
@@ -3173,7 +3165,7 @@ public class WebContentsAccessibilityTest {
             addSpansToList(actualSpans, spannableUnderTest, TypefaceSpan.class);
             addSpansToList(actualSpans, spannableUnderTest, ForegroundColorSpan.class);
             addSpansToList(actualSpans, spannableUnderTest, BackgroundColorSpan.class);
-            addSpansToList(actualSpans, spannableUnderTest, TextAppearanceSpan.class);
+            addSpansToList(actualSpans, spannableUnderTest, AbsoluteSizeSpan.class);
             addSpansToList(actualSpans, spannableUnderTest, LocaleSpan.class);
 
             expect.withMessage("Verify spans on text: " + testString)
