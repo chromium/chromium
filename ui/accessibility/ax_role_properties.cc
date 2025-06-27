@@ -178,6 +178,7 @@ bool IsComboBoxContainer(const ax::mojom::Role role) {
     case ax::mojom::Role::kDialog:
     case ax::mojom::Role::kGrid:
     case ax::mojom::Role::kListBox:
+    case ax::mojom::Role::kMenu:
     case ax::mojom::Role::kTree:
     case ax::mojom::Role::kTreeGrid:
       return true;

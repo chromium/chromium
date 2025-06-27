@@ -2345,7 +2345,8 @@ bool AXNode::IsLikelyARIAActiveDescendant() const {
                                       ancestor_node->id());
       for (AXNodeID id : nodes_that_control_this_list) {
         if (AXNode* node = tree()->GetFromId(id)) {
-          if (ui::IsTextField(node->GetRole())) {
+          if (ui::IsTextField(node->GetRole()) ||
+              ui::IsComboBox(node->GetRole())) {
             return node->HasIntAttribute(
                 ax::mojom::IntAttribute::kActivedescendantId);
           }
