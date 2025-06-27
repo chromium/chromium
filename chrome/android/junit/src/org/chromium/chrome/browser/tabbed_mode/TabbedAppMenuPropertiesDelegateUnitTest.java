@@ -132,6 +132,7 @@ import org.chromium.net.ConnectionType;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -821,6 +822,62 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             R.id.preferences_id
         };
         assertMenuItemsAreEqual(modelList, expectedItems);
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testOverviewMenuItems_Phone_NoTabs() {
+        setUpMocksForOverviewMenu();
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(0);
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+        Assert.assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowPageMenu());
+        assertEquals(MenuGroup.OVERVIEW_MODE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        Integer[] expectedItems = {
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.close_all_tabs_menu_id,
+            R.id.menu_select_tabs,
+            R.id.quick_delete_menu_id,
+            R.id.preferences_id
+        };
+        assertMenuItemsAreEqual(modelList, expectedItems);
+        PropertyModel closeAllTabsModel = modelList.get(2).model;
+        assertEquals(
+                R.id.close_all_tabs_menu_id,
+                closeAllTabsModel.get(AppMenuItemProperties.MENU_ITEM_ID));
+        assertFalse(closeAllTabsModel.get(AppMenuItemProperties.ENABLED));
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testOverviewMenuItems_Phone_NoIncognitoTabs() {
+        setUpMocksForOverviewMenu();
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
+        when(mIncognitoTabModel.isIncognito()).thenReturn(true);
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+        Assert.assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowPageMenu());
+        assertEquals(MenuGroup.OVERVIEW_MODE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        Integer[] expectedItems = {
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.close_all_incognito_tabs_menu_id,
+            R.id.menu_select_tabs,
+            R.id.preferences_id
+        };
+        assertMenuItemsAreEqual(modelList, expectedItems);
+        PropertyModel closeAllTabsModel = modelList.get(2).model;
+        assertEquals(
+                R.id.close_all_incognito_tabs_menu_id,
+                closeAllTabsModel.get(AppMenuItemProperties.MENU_ITEM_ID));
+        assertFalse(closeAllTabsModel.get(AppMenuItemProperties.ENABLED));
     }
 
     @Test
