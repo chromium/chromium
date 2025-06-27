@@ -13,8 +13,11 @@
 
 #include <wtsapi32.h>
 
+#include <string>
+
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace remoting {
 
@@ -23,12 +26,12 @@ const uint32_t kInvalidSessionId = 0xffffffffu;
 
 const char WtsTerminalMonitor::kConsole[] = "console";
 
-WtsTerminalMonitor::~WtsTerminalMonitor() {}
+WtsTerminalMonitor::~WtsTerminalMonitor() = default;
 
 // static
 bool WtsTerminalMonitor::LookupTerminalId(uint32_t session_id,
                                           std::string* terminal_id) {
-  // Fast path for the case when |session_id| is currently attached to
+  // Fast path for the case when `session_id` is currently attached to
   // the physical console.
   if (session_id == WTSGetActiveConsoleSessionId()) {
     *terminal_id = kConsole;
@@ -44,10 +47,11 @@ bool WtsTerminalMonitor::LookupTerminalId(uint32_t session_id,
     return false;
   }
 
-  bool result = base::WideToUTF8(working_directory,
-                                 (bytes / sizeof(wchar_t)) - 1, terminal_id);
-  WTSFreeMemory(working_directory);
-  return result;
+  absl::Cleanup wts_deleter = [working_directory] {
+    ::WTSFreeMemory(working_directory);
+  };
+  return base::WideToUTF8(working_directory, (bytes / sizeof(wchar_t)) - 1,
+                          terminal_id);
 }
 
 // static
@@ -66,21 +70,21 @@ uint32_t WtsTerminalMonitor::LookupSessionId(const std::string& terminal_id) {
     PLOG(ERROR) << "Failed to enumerate all sessions";
     return kInvalidSessionId;
   }
+
+  absl::Cleanup wts_deleter = [session_info] { ::WTSFreeMemory(session_info); };
   for (DWORD i = 0; i < session_info_count; ++i) {
     uint32_t session_id = session_info[i].SessionId;
 
     std::string id;
     if (LookupTerminalId(session_id, &id) && terminal_id == id) {
-      WTSFreeMemory(session_info);
       return session_id;
     }
   }
 
-  // |terminal_id| is not associated with any session.
-  WTSFreeMemory(session_info);
+  // `terminal_id` is not associated with any session.
   return kInvalidSessionId;
 }
 
-WtsTerminalMonitor::WtsTerminalMonitor() {}
+WtsTerminalMonitor::WtsTerminalMonitor() = default;
 
 }  // namespace remoting

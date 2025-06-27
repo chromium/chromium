@@ -27,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace {
 
@@ -108,7 +109,7 @@ void NetworkProfileBubble::CheckNetworkProfile(
     return;
   }
 
-  LPWSTR buffer = NULL;
+  LPWSTR buffer = nullptr;
   DWORD buffer_length = 0;
   // Checking for RDP is cheaper than checking for a network drive so do this
   // one first.
@@ -119,33 +120,32 @@ void NetworkProfileBubble::CheckNetworkProfile(
     return;
   }
 
-  unsigned short* type = reinterpret_cast<unsigned short*>(buffer);
-  // We should warn the users if they have their profile on a network share only
-  // if running on a local session.
-  if (*type == WTS_PROTOCOL_TYPE_CONSOLE) {
-    bool profile_on_network = false;
-    if (!profile_folder.empty()) {
-      base::FilePath normalized_profile_folder;
-      if (base::NormalizeFilePath(profile_folder, &normalized_profile_folder)) {
-        if (normalized_profile_folder.IsNetwork()) {
-          profile_on_network = true;
-        }
-      } else {
-        RecordUmaEvent(METRIC_CHECK_IO_FAILED);
-      }
-    }
-    if (profile_on_network) {
-      RecordUmaEvent(METRIC_PROFILE_ON_NETWORK);
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&NotifyNetworkProfileDetected));
-    } else {
-      RecordUmaEvent(METRIC_PROFILE_NOT_ON_NETWORK);
-    }
-  } else {
+  absl::Cleanup wts_deleter = [buffer] { ::WTSFreeMemory(buffer); };
+  auto* type = reinterpret_cast<unsigned short*>(buffer);
+  if (*type != WTS_PROTOCOL_TYPE_CONSOLE) {
     RecordUmaEvent(METRIC_REMOTE_SESSION);
+    return;
   }
 
-  ::WTSFreeMemory(buffer);
+  // We should warn the users if they have their profile on a network share only
+  // if running on a local session.
+  bool profile_on_network = false;
+  if (!profile_folder.empty()) {
+    base::FilePath normalized_profile_folder;
+    if (!base::NormalizeFilePath(profile_folder, &normalized_profile_folder)) {
+      RecordUmaEvent(METRIC_CHECK_IO_FAILED);
+      return;
+    }
+    profile_on_network = normalized_profile_folder.IsNetwork();
+  }
+  if (!profile_on_network) {
+    RecordUmaEvent(METRIC_PROFILE_NOT_ON_NETWORK);
+    return;
+  }
+
+  RecordUmaEvent(METRIC_PROFILE_ON_NETWORK);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&NotifyNetworkProfileDetected));
 }
 
 // static
@@ -174,6 +174,7 @@ void NetworkProfileBubble::NotifyNetworkProfileDetected() {
   if (browser) {
     ShowNotification(browser);
   } else {
+    // Won't leak because the observer is self-deleting.
     BrowserList::AddObserver(new NetworkProfileBubbleBrowserListObserver());
   }
 }
