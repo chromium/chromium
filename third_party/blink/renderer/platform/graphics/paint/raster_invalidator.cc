@@ -250,7 +250,7 @@ void RasterInvalidator::GenerateRasterInvalidations(
         reason == PaintInvalidationReason::kNone &&
         new_chunk.is_moved_from_cached_subsequence &&
         !new_chunk.properties.Changed(
-            PaintPropertyChangeType::kChangedOnlySimpleValues,
+            PaintPropertyChangeType::kChangedOnlyCompositedValues,
             PropertyTreeState(layer_state_))) {
       new_chunks_info.emplace_back(old_chunk_info, it);
     } else {
