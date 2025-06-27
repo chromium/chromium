@@ -250,8 +250,10 @@ void ReportWasmEvalViolation(
       nullptr, nullptr, nullptr, content);
 }
 
-bool CheckEval(const network::mojom::blink::CSPSourceList* directive) {
-  return !directive || directive->allow_eval;
+bool CheckAllowEval(const network::mojom::blink::CSPSourceList* directive) {
+  // unsafe-eval is ignored if eval hashes are present.
+  return !directive ||
+         (!CSPSourceListIsEvalHashPresent(*directive) && directive->allow_eval);
 }
 
 bool SupportsWasmEval(const network::mojom::blink::ContentSecurityPolicy& csp,
@@ -272,6 +274,11 @@ bool CheckWasmEval(const network::mojom::blink::ContentSecurityPolicy& csp,
 bool CheckHash(const network::mojom::blink::CSPSourceList* directive,
                const network::mojom::blink::CSPHashSource& hash_value) {
   return !directive || CSPSourceListAllowHash(*directive, hash_value);
+}
+
+bool CheckEvalHash(const network::mojom::blink::CSPSourceList* directive,
+                   const network::mojom::blink::CSPHashSource& hash_value) {
+  return !directive || CSPSourceListAllowEvalHash(*directive, hash_value);
 }
 
 bool CheckUnsafeHashesAllowed(
@@ -361,12 +368,16 @@ bool CheckEvalAndReportViolation(
     ContentSecurityPolicy* policy,
     const String& console_message,
     ContentSecurityPolicy::ExceptionStatus exception_status,
-    const String& content) {
+    const String& content,
+    const Vector<network::mojom::blink::CSPHashSourcePtr>& script_hash_values) {
   CSPOperativeDirective directive =
       OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
-  if (CheckEval(directive.source_list))
+  if (CheckAllowEval(directive.source_list)) {
     return true;
-
+  }
+  if (CSPDirectiveListAllowEvalHash(script_hash_values, directive)) {
+    return true;
+  }
   String suffix = String();
   if (directive.type == CSPDirectiveName::DefaultSrc) {
     suffix =
@@ -748,7 +759,7 @@ bool CSPDirectiveListAllowInline(
 
 bool CSPDirectiveListShouldCheckEval(
     const network::mojom::blink::ContentSecurityPolicy& csp) {
-  return !CheckEval(
+  return !CheckAllowEval(
       OperativeDirective(csp, CSPDirectiveName::ScriptSrc).source_list);
 }
 
@@ -757,18 +768,27 @@ bool CSPDirectiveListAllowEval(
     ContentSecurityPolicy* policy,
     ReportingDisposition reporting_disposition,
     ContentSecurityPolicy::ExceptionStatus exception_status,
-    const String& content) {
+    const String& content,
+    const Vector<network::mojom::blink::CSPHashSourcePtr>& script_hash_values) {
+  // TODO(crbug.com/392657736): This message should be updated to recommend
+  // hashes when kCSPScriptSrcHashesInV1 is enabled.
   if (reporting_disposition == ReportingDisposition::kReport) {
     return CheckEvalAndReportViolation(
         csp, policy,
         "Refused to evaluate a string as JavaScript because 'unsafe-eval' is "
         "not an allowed source of script in the following Content Security "
         "Policy directive: ",
-        exception_status, content);
+        exception_status, content, script_hash_values);
   }
-  return CSPDirectiveListIsReportOnly(csp) ||
-         CheckEval(
-             OperativeDirective(csp, CSPDirectiveName::ScriptSrc).source_list);
+  if (CSPDirectiveListIsReportOnly(csp)) {
+    return true;
+  }
+  CSPOperativeDirective directive =
+      OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
+  if (CSPDirectiveListAllowEvalHash(script_hash_values, directive)) {
+    return true;
+  }
+  return CheckAllowEval(directive.source_list);
 }
 
 // Complex conditional around infix is temp, until SupportsWasmEval goes away.
@@ -798,13 +818,15 @@ bool CSPDirectiveListShouldDisableEval(
     String& error_message) {
   CSPOperativeDirective directive =
       OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
-  if (!CheckEval(directive.source_list)) {
-    error_message =
-        StrCat({"Refused to evaluate a string as JavaScript because "
-                "'unsafe-eval' is not an allowed source of script in the "
-                "following Content Security Policy directive: \"",
-                GetRawDirectiveForMessage(csp.raw_directives, directive.type),
-                "\".\n"});
+  // TODO(crbug.com/392657736): This message should be updated to recommend
+  // hashes when kCSPScriptSrcHashesInV1 is enabled.
+  if (!CheckAllowEval(directive.source_list)) {
+    error_message = StrCat(
+        {"Refused to evaluate a string as JavaScript because 'unsafe-eval' is "
+         "not an allowed source of script in the following Content Security "
+         "Policy directive: \"",
+         GetRawDirectiveForMessage(csp.raw_directives, directive.type),
+         "\".\n"});
     return true;
   } else if (CSPDirectiveListRequiresTrustedTypes(csp)) {
     error_message =
@@ -981,6 +1003,17 @@ bool CSPDirectiveListAllowHash(
          CheckHash(operative_directive, hash_value);
 }
 
+bool CSPDirectiveListAllowEvalHash(
+    const Vector<network::mojom::blink::CSPHashSourcePtr>& script_hash_values,
+    CSPOperativeDirective directive) {
+  for (const auto& csp_hash_value : script_hash_values) {
+    if (CheckEvalHash(directive.source_list, *csp_hash_value)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool CSPDirectiveListAllowDynamic(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     CSPDirectiveName directive_type) {
@@ -1017,8 +1050,9 @@ bool CSPDirectiveListIsScriptRestrictionReasonable(
     return false;
   }
 
-  if (CSPSourceListIsNone(*script_src.source_list))
+  if (CSPSourceListIsNone(*script_src.source_list)) {
     return true;
+  }
 
   // Policies containing `'strict-dynamic'` are reasonable, as that keyword
   // ensures that host-based expressions and `'unsafe-inline'` are ignored.

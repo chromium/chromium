@@ -74,7 +74,7 @@ struct CSPSourceList {
   // Not all directives support all of the sources in this struct.
   array<CSPHashSource> url_hashes;
   // Hashes of scripts allowed to be loaded via eval. Only valid for
-  // script-src-v2 directive.
+  // script-src-v2 directive, or if ScriptSrcHashesV1 is enabled.
   array<CSPHashSource> eval_hashes;
 
   // Wildcard hosts and 'self' aren't stored in |sources|, but as attributes

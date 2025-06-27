@@ -90,7 +90,8 @@ bool CSPDirectiveListAllowEval(
     ContentSecurityPolicy* policy,
     ReportingDisposition reporting_disposition,
     ContentSecurityPolicy::ExceptionStatus exception_status,
-    const String& content);
+    const String& content,
+    const Vector<network::mojom::blink::CSPHashSourcePtr>& script_hash_values);
 
 CORE_EXPORT
 bool CSPDirectiveListAllowWasmCodeGeneration(
@@ -125,6 +126,11 @@ bool CSPDirectiveListAllowHash(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     const network::mojom::blink::CSPHashSource& hash_value,
     const ContentSecurityPolicy::InlineType inline_type);
+
+CORE_EXPORT
+bool CSPDirectiveListAllowEvalHash(
+    const Vector<network::mojom::blink::CSPHashSourcePtr>& script_hash_values,
+    CSPOperativeDirective directive);
 
 // We consider `object-src` restrictions to be reasonable iff they're
 // equivalent to `object-src 'none'`.
