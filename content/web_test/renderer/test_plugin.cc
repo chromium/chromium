@@ -371,14 +371,15 @@ bool TestPlugin::PrepareTransferableResource(
   if (!content_changed_)
     return false;
 
-  *resource = viz::TransferableResource::Make(
-      shared_image_, viz::TransferableResource::ResourceSource::kCanvas,
-      sync_token_);
-  // We pass ownership of the shared image to the callback.
-  *release_callback = base::BindOnce(&ReleaseSharedImage,
-                                     std::exchange(shared_image_, nullptr));
-
-  sync_token_ = gpu::SyncToken();
+  if (shared_image_) {
+    *resource = viz::TransferableResource::Make(
+        shared_image_, viz::TransferableResource::ResourceSource::kCanvas,
+        sync_token_);
+    // We pass ownership of the shared image to the callback.
+    *release_callback = base::BindOnce(&ReleaseSharedImage,
+                                       std::exchange(shared_image_, nullptr));
+    sync_token_ = gpu::SyncToken();
+  }
 
   content_changed_ = false;
   return true;
