@@ -371,12 +371,14 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   }
 
   if (!params.in_background()) {
-    LoadUrlInNewTabImpl(params, std::nullopt);
+    LoadUrlInNewTabImpl(params, web::WebStateID());
   } else {
-    void* hint = nullptr;
-
+    web::WebStateID active_tab_id;
     if (params.append_to == OpenPosition::kCurrentTab) {
-      hint = browser_->GetWebStateList()->GetActiveWebState();
+      if (web::WebState* active_web_state =
+              browser_->GetWebStateList()->GetActiveWebState()) {
+        active_tab_id = active_web_state->GetUniqueIdentifier();
+      }
     }
 
     // If the tab should open in background in a different mode, dispatch the
@@ -386,7 +388,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
         params.in_incognito != active_profile->IsOffTheRecord();
     base::OnceClosure load_url_closure =
         base::BindOnce(&UrlLoadingBrowserAgent::LoadUrlInNewTabImpl,
-                       weak_ptr_factory_.GetWeakPtr(), params, hint);
+                       weak_ptr_factory_.GetWeakPtr(), params, active_tab_id);
     if (should_dispatch_load) {
       load_url_closure =
           base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
@@ -399,24 +401,19 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   }
 }
 
-void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
-                                                 std::optional<void*> hint) {
+void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(
+    const UrlLoadParams& params,
+    web::WebStateID active_tab_id) {
   web::WebState* parent_web_state = nullptr;
   if (params.append_to == OpenPosition::kCurrentTab) {
     parent_web_state = browser_->GetWebStateList()->GetActiveWebState();
 
-    // Detect whether the active tab changed during the animation of opening
-    // a tab in the background. This is only needed when opening in background
-    // (thus the use of optional).
-    //
-    // This compare the value read before vs after the animation (as `void*`
-    // to prevent trying to dereference a potentially dangling pointer). This
-    // is not 100% fool proof as the WebState could have been destroyed, then
-    // a new one allocated at the same address and inserted as the active tab.
-    // However, this is highly likely to happen. Even if it were to happen, it
-    // would be benign as the only drawback is that the wrong tab would be
-    // selected upon closing the newly opened tab.
-    if (hint && hint.value() != parent_web_state) {
+    // Detecting whether the active tab change is done by comparing the
+    // WebStateID. This is cheap, does not require passing a pointer that could
+    // become dangling, nor creating a WeakPtr which is expensive, when the only
+    // thing we are interested is detecting a change.
+    if (parent_web_state &&
+        parent_web_state->GetUniqueIdentifier() != active_tab_id) {
       parent_web_state = nullptr;
     }
   }
