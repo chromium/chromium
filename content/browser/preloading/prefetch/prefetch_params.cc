@@ -216,12 +216,15 @@ base::TimeDelta PrefetchBlockUntilHeadTimeout(
   int timeout_in_milliseconds = 0;
   if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
     switch (prefetch_type.GetEagerness()) {
-      // TODO(crbug.com/40287486): Create a specific param for `kEager`.
       case blink::mojom::SpeculationEagerness::kImmediate:
-      case blink::mojom::SpeculationEagerness::kEager:
         timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
             features::kPrefetchUseContentRefactor,
             "block_until_head_timeout_immediate_prefetch", 1000);
+        break;
+      case blink::mojom::SpeculationEagerness::kEager:
+        timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
+            features::kPrefetchUseContentRefactor,
+            "block_until_head_timeout_eager_prefetch", 1000);
         break;
       case blink::mojom::SpeculationEagerness::kModerate:
         timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
