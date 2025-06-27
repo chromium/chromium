@@ -14507,6 +14507,24 @@
             ]
         }
     ],
+    "MacCriticalDiskSpacePressure": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "MacCriticalDiskSpacePressureThresholdMB": "250"
+                    },
+                    "enable_features": [
+                        "MacCriticalDiskSpacePressure"
+                    ]
+                }
+            ]
+        }
+    ],
     "MacICloudKeychainRecoveryFactor": [
         {
             "platforms": [
