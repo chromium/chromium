@@ -103,6 +103,10 @@ SkColor GetOutlineColor(const PrefService* prefs) {
 // Returns the font size for the watermark.
 // This function always returns a positive integer (>= 1).
 int GetFontSize(const PrefService* prefs) {
+  if (!base::FeatureList::IsEnabled(
+          enterprise_watermark::kEnableWatermarkCustomization)) {
+    return GetDefaultFontSize();
+  }
   int font_size_from_pref =
       prefs->GetInteger(enterprise_connectors::kWatermarkStyleFontSizePref);
   return std::max(font_size_from_pref, kMinFontSize);

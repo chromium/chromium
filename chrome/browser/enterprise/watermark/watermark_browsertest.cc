@@ -133,30 +133,35 @@ class WatermarkSettingsBrowserTest : public InProcessBrowserTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(WatermarkSettingsBrowserTest, GetColors) {
+IN_PROC_BROWSER_TEST_P(WatermarkSettingsBrowserTest, GetStyleSettings) {
   PrefService* prefs = browser()->profile()->GetPrefs();
 
   // Test with default pref values.
   SkColor expected_fill_color = GetDefaultFillColor();
   SkColor expected_outline_color = GetDefaultOutlineColor();
+  int expected_font_size = GetDefaultFontSize();
 
   EXPECT_EQ(GetFillColor(prefs), expected_fill_color);
   EXPECT_EQ(GetOutlineColor(prefs), expected_outline_color);
+  EXPECT_EQ(GetFontSize(prefs), expected_font_size);
 
   // Test with custom pref values.
   prefs->SetInteger(enterprise_connectors::kWatermarkStyleFillOpacityPref, 30);
   prefs->SetInteger(enterprise_connectors::kWatermarkStyleOutlineOpacityPref,
                     40);
+  prefs->SetInteger(enterprise_connectors::kWatermarkStyleFontSizePref, 50);
 
   if (IsCustomizationEnabled()) {
     expected_fill_color =
         SkColorSetA(SkColorSetRGB(0x00, 0x00, 0x00), PercentageToSkAlpha(30));
     expected_outline_color =
         SkColorSetA(SkColorSetRGB(0xff, 0xff, 0xff), PercentageToSkAlpha(40));
+    expected_font_size = 50;
   }
 
   EXPECT_EQ(GetFillColor(prefs), expected_fill_color);
   EXPECT_EQ(GetOutlineColor(prefs), expected_outline_color);
+  EXPECT_EQ(GetFontSize(prefs), expected_font_size);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, WatermarkSettingsBrowserTest, testing::Bool());
