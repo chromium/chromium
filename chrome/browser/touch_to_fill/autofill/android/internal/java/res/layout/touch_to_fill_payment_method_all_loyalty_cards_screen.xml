@@ -22,9 +22,10 @@ found in the LICENSE file.
             android:id="@+id/all_loyalty_cards_back_image_button"
             android:layout_width="wrap_content"
             android:layout_height="?attr/actionBarSize"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:layout_gravity="center_vertical"
+            android:layout_weight="0"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_gravity="start|center_vertical"
             android:src="@drawable/ic_arrow_back_24dp"
             app:tint="@macro/default_icon_color"
             android:background="?attr/actionBarItemBackground"
@@ -36,9 +37,11 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
+            android:gravity="start"
             android:ellipsize="end"
             android:singleLine="true"
             android:text="@string/autofill_bottom_sheet_all_loyalty_cards_screen_title"
+            android:textAlignment="viewStart"
             style="@style/TextAppearance.Headline"/>
 
     </LinearLayout>

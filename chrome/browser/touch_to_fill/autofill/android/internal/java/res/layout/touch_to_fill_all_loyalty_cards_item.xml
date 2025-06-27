@@ -22,10 +22,12 @@ found in the LICENSE file.
         android:id="@+id/all_loyalty_cards_item_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
+        android:layout_gravity="start|center_vertical"
+        android:gravity="start"
         android:layout_weight="1"
         android:maxLines="1"
         android:text="@string/autofill_bottom_sheet_all_your_loyalty_cards"
+        android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
         android:ellipsize="middle" />
 
@@ -33,7 +35,7 @@ found in the LICENSE file.
         android:id="@+id/loyalty_card_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
+        android:layout_gravity="end|center_vertical"
         android:contentDescription="@string/autofill_bottom_sheet_expand_all_loyalty_cards_description"
         app:tint="@color/default_icon_color_secondary_tint_list"
         app:srcCompat="@drawable/ic_expand_more_horizontal_black_24dp" />
