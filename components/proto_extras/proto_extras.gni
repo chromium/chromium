@@ -116,11 +116,11 @@ template("proto_extras") {
     _all_targets += [ _to_value_target_name ]
     proto_library(_to_value_target_name) {
       proto_in_dir = "//"
-      sources = invoker.sources
       forward_variables_from(invoker,
                              [
                                "deps",
                                "defines",
+                               "sources",
                                "visibility",
                              ])
       link_deps = [ "//components/proto_extras:proto_extras_lib" ]
@@ -153,10 +153,10 @@ template("proto_extras") {
     _all_targets += [ _ostream_target_name ]
     proto_library(_ostream_target_name) {
       proto_in_dir = "//"
-      sources = invoker.sources
       forward_variables_from(invoker,
                              [
                                "defines",
+                               "sources",
                                "visibility",
                              ])
 
@@ -179,11 +179,11 @@ template("proto_extras") {
     _all_targets += [ _equality_target_name ]
     proto_library(_equality_target_name) {
       proto_in_dir = "//"
-      sources = invoker.sources
       forward_variables_from(invoker,
                              [
                                "deps",
                                "defines",
+                               "sources",
                                "visibility",
                              ])
 
@@ -222,5 +222,86 @@ template("proto_extras") {
     foreach(_target, _all_targets) {
       public_deps += [ ":$_target" ]
     }
+  }
+}
+
+# Generate extra test functionality for protobuf messages. Similar to
+# proto_extras, this does not generate protobuf bindings, but instead generates
+# gtest matchers for the generated protobuf bindings.
+#
+# Features:
+# - Gmock matchers for all messages, for verbose equality checking in tests
+# - PrintTo implementations for gtest output.
+#
+# The functionality is output to a file named <name>.test.h.
+#
+# The proto_test_extras template supports the following other properties:
+# - test_extras_deps: These are the proto_test_extras targets for any proto
+#   dependencies.
+# - extras_deps: These are the proto_extras targets for any proto dependencies.
+# - sources: The .proto files to generate from.
+# - deps: These should be proto_library targets.
+# - defines: This is forwarded to all generated targets.
+# - visibility: This is forwarded to all generated targets.
+#
+# The reason this target needs the proto_extras target is that the generated
+# code uses the generated `Serialize` <name>.to_value.h serialization.
+#
+# Example usage:
+# proto_test_extras("foo_test_extras") {
+#   sources = [
+#     "foo.proto",
+#   ]
+#   deps = [
+#     ":foo",
+#     ":foo_dependency",         # The target generating foo_dependency.pb.h
+#   ]
+#   test_extras_deps = [
+#     ":foo_dependency_test_extras",
+#   ]
+#   extras_deps = [
+#     ":foo_dependency_extras",
+#   ]
+# }
+template("proto_test_extras") {
+  testonly = true
+  _test_extras_deps = []
+  if (defined(invoker.test_extras_deps)) {
+    _test_extras_deps += invoker.test_extras_deps
+  }
+  _extras_deps = []
+  if (defined(invoker.extras_deps)) {
+    _extras_deps += invoker.extras_deps
+  }
+  proto_library("${target_name}") {
+    testonly = true
+    proto_in_dir = "//"
+    forward_variables_from(invoker,
+                           [
+                             "defines",
+                             "visibility",
+                             "deps",
+                             "sources",
+                           ])
+    generator_plugin_label =
+        "//components/proto_extras:proto_test_extras_plugin"
+    generator_plugin_suffix = ".test"
+    generate_cc = false
+    generate_python = false
+
+    link_deps = []
+    foreach(_dep, _extras_deps) {
+      link_deps += [ "${_dep}_to_value" ]
+    }
+
+    # Due to gmock/gtest being an entirely header-based library, all
+    # dependencies need to be publicly linked as there is no private
+    # implementation.
+    link_public_deps = [
+      "//base",
+      "//components/proto_extras:proto_matchers",
+      "//testing/gmock",
+    ]
+    link_public_deps += _test_extras_deps
   }
 }
