@@ -3204,7 +3204,7 @@ const char kOmniboxDynamicMaxAutocompleteDescription[] =
 const char kOmniboxRestoreInvisibleFocusOnlyName[] =
     "Omnibox Restore Invisible Focus Only";
 const char kOmniboxRestoreInvisibleFocusOnlyDescription[] =
-    "Only restore omnibox ofucs if invisible focus is used. Implemented for "
+    "Only restore omnibox focus if invisible focus is used. Implemented for "
     "Split View (#side-by-side).";
 
 const char kOptimizationGuideDebugLogsName[] =
