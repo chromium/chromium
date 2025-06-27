@@ -103,6 +103,10 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // is enabled.
   static bool IsProcessIsolationForFencedFramesEnabled();
 
+  // Returns true if site isolation is enabled and is at least as strict as
+  // site-per-process.
+  static bool IsSitePerProcessOrStricter();
+
  private:
   SiteIsolationPolicy();  // Not instantiable.
 

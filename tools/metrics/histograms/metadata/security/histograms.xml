@@ -1010,6 +1010,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.IsSitePerProcessOrMoreStrict" enum="Boolean"
+    expires_after="2026-06-23">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>wenz@chromium.org</owner>
+  <summary>
+    Whether the site isolation mode is site-per-process or more strict. Recorded
+    once shortly after browser startup, because the value does not change at
+    runtime.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.OutOfProcessIframes" units="oopifs"
     expires_after="2026-02-10">
   <owner>alexmos@chromium.org</owner>
