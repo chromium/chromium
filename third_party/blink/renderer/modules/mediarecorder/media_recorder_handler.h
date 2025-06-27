@@ -163,8 +163,6 @@ class MODULES_EXPORT MediaRecorderHandler final
   void UpdateTrackLiveAndEnabled(const MediaStreamComponent& track,
                                  bool is_video);
 
-  void OnStarted();
-
   // Variant holding configured keyframe intervals.
   const KeyFrameRequestProcessor::Configuration key_frame_config_;
 
