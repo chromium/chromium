@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -87,7 +88,7 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
       canvasWidth: Number,
       canvasPhysicalHeight: Number,
       canvasPhysicalWidth: Number,
-      enableKeyboardSelection: {
+      displayKeyboardSelection: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableKeyboardSelection'),
         reflectToAttribute: true,
@@ -115,6 +116,7 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
     };
   }
 
+  private eventTracker_: EventTracker = new EventTracker();
   // Whether the border glow is enabled. This is a replacement for the shimmer.
   declare private borderGlowEnabled: boolean;
   declare private canvasHeight: number;
@@ -135,8 +137,8 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
   // The bounds of the parent element. This is updated by the parent to avoid
   // this class needing to call getBoundingClientRect()
   declare private selectionOverlayRect: DOMRect;
-  // Whether keyboard selection is enabled.
-  declare private enableKeyboardSelection: boolean;
+  // Whether keyboard selection should be displayed.
+  declare private displayKeyboardSelection: boolean;
 
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
@@ -150,6 +152,8 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
       loadTimeData.getInteger('tapRegionHeight');
   private readonly tapRegionWidth: number =
       loadTimeData.getInteger('tapRegionWidth');
+  private readonly enableKeyboardSelection: boolean =
+      loadTimeData.getBoolean('enableKeyboardSelection');
 
   override ready() {
     super.ready();
@@ -164,6 +168,18 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
         (screenshot: ImageBitmap) => {
           renderScreenshot(this.$.highlightImgCanvas, screenshot);
         });
+    if (this.enableKeyboardSelection) {
+      this.eventTracker_.add(
+          document, 'post-selection-updated', (e: CustomEvent) => {
+            this.displayKeyboardSelection =
+                e.detail.height === 0 && e.detail.width === 0;
+          });
+    }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
   }
 
   private computeShaderLayerColorHexes_() {
