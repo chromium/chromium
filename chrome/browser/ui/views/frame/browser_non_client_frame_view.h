@@ -169,10 +169,8 @@ class BrowserNonClientFrameView : public views::NonClientFrameView {
   // 0 if the frame is opaque (not transparent) or in fullscreen.
   virtual int GetTranslucentTopAreaHeight() const;
 
-#if BUILDFLAG(IS_MAC)
   // Used by TabContainerOverlayView to paint tab strip background.
   virtual void PaintThemedFrame(gfx::Canvas* canvas) {}
-#endif
 
   // Sets the bounds of `frame_`.
   virtual void SetFrameBounds(const gfx::Rect& bounds);
