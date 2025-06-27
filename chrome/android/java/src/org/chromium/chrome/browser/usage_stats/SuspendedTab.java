@@ -102,8 +102,7 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
         WebContents webContents = mTab.getWebContents();
         if (webContents != null) {
             webContents.updateWebContentsVisibility(Visibility.HIDDEN);
-            webContents.suspendAllMediaPlayers();
-            webContents.setAudioMuted(true);
+            TabUtils.pauseMedia(mTab);
             if (TabUtils.isCapturingForMedia(mTab)) {
                 MediaCaptureDevicesDispatcherAndroid.notifyStopped(webContents);
             }

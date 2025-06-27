@@ -830,11 +830,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
         // Cancel or mute any media currently playing.
         if (pauseMedia) {
-            WebContents webContents = tab.getWebContents();
-            if (webContents != null) {
-                webContents.suspendAllMediaPlayers();
-                webContents.setAudioMuted(true);
-            }
+            TabUtils.pauseMedia(tab);
         }
 
         mTabs.remove(tab);

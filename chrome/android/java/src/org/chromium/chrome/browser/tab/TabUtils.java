@@ -382,6 +382,15 @@ public class TabUtils {
                 || MediaCaptureDevicesDispatcherAndroid.isCapturingScreen(webContents);
     }
 
+    /** Pauses media for a tab. */
+    public static void pauseMedia(Tab tab) {
+        WebContents webContents = tab.getWebContents();
+        if (webContents != null) {
+            webContents.suspendAllMediaPlayers();
+            webContents.setAudioMuted(true);
+        }
+    }
+
     private static int getThumbnailHeightDiff(Context context) {
         final int tabGridCardMargin = (int) TabUiThemeProvider.getTabGridCardMargin(context);
         final int thumbnailMargin =

@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -365,11 +366,7 @@ public class CustomTabMinimizationManager
 
         tab.stopLoading();
         tab.hide(TabHidingType.ACTIVITY_HIDDEN);
-        var webContents = tab.getWebContents();
-        if (webContents != null) {
-            webContents.suspendAllMediaPlayers();
-            webContents.setAudioMuted(true);
-        }
+        TabUtils.pauseMedia(tab);
     }
 
     private void updateTabForMaximization(Tab tab) {
