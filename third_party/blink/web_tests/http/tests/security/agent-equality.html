@@ -13,7 +13,11 @@
 function runTestCase(filename,testFunction,description) {
   promise_test(t => new Promise(resolve => {
     let iframe = document.createElement('iframe');
-    t.add_cleanup(async () => iframe.remove());
+    t.add_cleanup(async () => {
+      iframe.remove();
+      await new Promise(requestAnimationFrame);
+      await new Promise(requestAnimationFrame);
+    });
     iframe.src = 'http://127.0.0.1:8000/security/resources/' + filename;
 
     window.addEventListener('message', evt => {
