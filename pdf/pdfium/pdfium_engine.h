@@ -21,7 +21,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -38,6 +37,7 @@
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_print.h"
 #include "pdf/pdfium/pdfium_range.h"
+#include "pdf/region_data.h"
 #include "printing/mojom/print.mojom-forward.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
@@ -643,16 +643,6 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
     int char_index = -1;
     int form_type = FPDF_FORMFIELD_UNKNOWN;
     PDFiumPage::LinkTarget target;
-  };
-
-  struct RegionData {
-    RegionData(base::span<uint8_t> buffer, size_t stride);
-    RegionData(RegionData&&) noexcept;
-    RegionData& operator=(RegionData&&) noexcept;
-    ~RegionData();
-
-    base::raw_span<uint8_t> buffer;  // Never empty.
-    size_t stride;
   };
 
   friend class FormFillerTest;

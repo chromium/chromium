@@ -59,6 +59,7 @@
 #include "pdf/pdfium/pdfium_permissions.h"
 #include "pdf/pdfium/pdfium_text_fragment_finder.h"
 #include "pdf/pdfium/pdfium_unsupported_features.h"
+#include "pdf/region_data.h"
 #include "printing/mojom/print.mojom-shared.h"
 #include "printing/units.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -3672,16 +3673,6 @@ bool PDFiumEngine::MouseDownState::Matches(
   return true;
 }
 
-PDFiumEngine::RegionData::RegionData(base::span<uint8_t> buffer, size_t stride)
-    : buffer(buffer), stride(stride) {}
-
-PDFiumEngine::RegionData::RegionData(RegionData&&) noexcept = default;
-
-PDFiumEngine::RegionData& PDFiumEngine::RegionData::operator=(
-    RegionData&&) noexcept = default;
-
-PDFiumEngine::RegionData::~RegionData() = default;
-
 void PDFiumEngine::DeviceToPage(int page_index,
                                 const gfx::PointF& device_point,
                                 double* page_x,
@@ -3786,9 +3777,8 @@ void PDFiumEngine::DrawHighlightOnPage(
   }
 }
 
-std::optional<PDFiumEngine::RegionData> PDFiumEngine::GetRegion(
-    const gfx::Point& location,
-    SkBitmap& image_data) const {
+std::optional<RegionData> PDFiumEngine::GetRegion(const gfx::Point& location,
+                                                  SkBitmap& image_data) const {
   if (image_data.isNull()) {
     DCHECK(plugin_size().IsEmpty());
     return std::nullopt;
@@ -3809,7 +3799,7 @@ std::optional<PDFiumEngine::RegionData> PDFiumEngine::GetRegion(
     base::span<uint8_t> buffer_span(buffer, image_data.height() * stride);
     size_t x_offset = location.x() + page_offset_.x();
     size_t offset = location.y() * stride + x_offset * 4;
-    return PDFiumEngine::RegionData(buffer_span.subspan(offset), stride);
+    return RegionData(buffer_span.subspan(offset), stride);
   });
 }
 
