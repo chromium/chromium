@@ -37,7 +37,6 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,9 +57,10 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
@@ -100,14 +100,11 @@ public class ChromeTabModalPresenterTest {
         }
     }
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, true);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
+    private WebPageStation mPage;
     private ChromeTabbedActivity mActivity;
     private ModalDialogManager mManager;
     private ChromeTabModalPresenter mTabModalPresenter;
@@ -117,7 +114,8 @@ public class ChromeTabModalPresenterTest {
 
     @Before
     public void setUp() {
-        mActivity = sActivityTestRule.getActivity();
+        mPage = mActivityTestRule.startOnBlankPage();
+        mActivity = mPage.getActivity();
         mOmnibox = new OmniboxTestUtils(mActivity);
         mManager = ThreadUtils.runOnUiThreadBlocking(mActivity::getModalDialogManager);
         mTestObserver = new TestObserver();
@@ -327,7 +325,7 @@ public class ChromeTabModalPresenterTest {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
         PropertyModel dialog2 = createDialog(mActivity, mManager, "2", null);
         PropertyModel dialog3 = createDialog(mActivity, mManager, "3", null);
-        sActivityTestRule.loadUrlInNewTab("about:blank");
+        mActivityTestRule.loadUrlInNewTab("about:blank");
 
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
         checkPendingSize(mManager, ModalDialogType.APP, 0);
@@ -382,7 +380,7 @@ public class ChromeTabModalPresenterTest {
         PropertyModel dialog2 = createDialog(mActivity, mManager, "2", null);
 
         // Open a new tab and make sure that the current tab is at index 0.
-        sActivityTestRule.loadUrlInNewTab("about:blank");
+        mActivityTestRule.loadUrlInNewTab("about:blank");
         ChromeTabUtils.switchTabInCurrentTabModel(mActivity, 0);
 
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
@@ -517,7 +515,7 @@ public class ChromeTabModalPresenterTest {
         int callCount = mTestObserver.onDialogDismissedCallback.getCallCount();
 
         // Open a new tab and make sure that the current tab is at index 0.
-        sActivityTestRule.loadUrlInNewTab("about:blank");
+        mActivityTestRule.loadUrlInNewTab("about:blank");
         ChromeTabUtils.switchTabInCurrentTabModel(mActivity, 0);
 
         // Show a tab modal dialog and then switch tab.
@@ -557,7 +555,7 @@ public class ChromeTabModalPresenterTest {
         EmbeddedTestServer server =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
-        sActivityTestRule.loadUrl(server.getURL("/chrome/test/data/android/simple.html"));
+        mActivityTestRule.loadUrl(server.getURL("/chrome/test/data/android/simple.html"));
         mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
 
         mExpectedDismissalCause = null;
