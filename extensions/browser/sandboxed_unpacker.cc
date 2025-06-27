@@ -85,7 +85,7 @@ base::FilePath NormalizeFilePath(const base::FilePath& path) {
 }
 
 // Work horse for FindWritableTempLocation. Creates a temp file in the folder
-// tries to normalize the path.
+// and tries to normalize the path.
 bool VerifyWritableTempLocation(base::FilePath* temp_dir) {
   if (temp_dir->empty()) {
     return false;
@@ -97,18 +97,10 @@ bool VerifyWritableTempLocation(base::FilePath* temp_dir) {
     return false;
   }
 
-  // NormalizeFilePath requires a non-empty file, so write some data.
-  // If you change the exit points of this function please make sure all
-  // exit points delete this temp file!
-  if (!base::WriteFile(temp_file, ".")) {
-    base::DeleteFile(temp_file);
-    return false;
-  }
-
-  *temp_dir = NormalizeFilePath(temp_file).DirName();
   // Clean up the temp file.
   base::DeleteFile(temp_file);
 
+  *temp_dir = NormalizeFilePath(*temp_dir);
   return true;
 }
 
@@ -133,9 +125,9 @@ bool FindWritableTempLocation(const base::FilePath& extensions_dir,
   if (VerifyWritableTempLocation(temp_dir)) {
     return true;
   }
-  // Neither paths is link free chances are good installation will fail.
-  LOG(ERROR) << "Both the %TEMP% folder and the profile seem to be on "
-             << "remote drives or read-only. Installation can not complete!";
+  // Neither path is writable, installation will fail.
+  LOG(ERROR) << "Both the %TEMP% folder and the profile seem to be read-only. "
+                "Installation can not complete!";
   return false;
 }
 
