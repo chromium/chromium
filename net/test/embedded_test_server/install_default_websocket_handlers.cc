@@ -14,6 +14,7 @@
 #include "net/test/embedded_test_server/websocket_close_observer_handler.h"
 #include "net/test/embedded_test_server/websocket_echo_handler.h"
 #include "net/test/embedded_test_server/websocket_echo_request_headers_handler.h"
+#include "net/test/embedded_test_server/websocket_set_hsts_handler.h"
 #include "net/test/embedded_test_server/websocket_split_packet_close_handler.h"
 #include "net/test/test_data_directory.h"
 #include "url/url_constants.h"
@@ -49,6 +50,7 @@ void InstallDefaultWebSocketHandlers(EmbeddedTestServer* server,
       server, "/echo-request-headers");
   RegisterWebSocketHandler<WebSocketSplitPacketCloseHandler>(
       server, "/close-with-split-packet");
+  RegisterWebSocketHandler<WebSocketSetHstsHandler>(server, "/set-hsts");
 }
 
 GURL ToWebSocketUrl(const GURL& url) {

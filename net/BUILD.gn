@@ -2189,6 +2189,8 @@ static_library("test_support") {
     "test/embedded_test_server/websocket_handler.h",
     "test/embedded_test_server/websocket_message_assembler.cc",
     "test/embedded_test_server/websocket_message_assembler.h",
+    "test/embedded_test_server/websocket_set_hsts_handler.cc",
+    "test/embedded_test_server/websocket_set_hsts_handler.h",
     "test/embedded_test_server/websocket_split_packet_close_handler.cc",
     "test/embedded_test_server/websocket_split_packet_close_handler.h",
     "test/event_waiter.h",

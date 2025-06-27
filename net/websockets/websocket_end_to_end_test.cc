@@ -65,12 +65,14 @@
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/storage_access_api/status.h"
+#include "net/test/embedded_test_server/create_websocket_handler.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/embedded_test_server/register_basic_auth_handler.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/websocket_connection.h"
+#include "net/test/embedded_test_server/websocket_handler.h"
 #include "net/test/ssl_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
@@ -99,7 +101,7 @@ using test_server::BasicHttpResponse;
 using test_server::HttpRequest;
 using test_server::HttpResponse;
 
-static constexpr char kEchoServer[] = "echo-with-no-extension";
+static constexpr char kEchoServer[] = "/echo-with-no-extension";
 
 // Simplify changing URL schemes.
 GURL ReplaceUrlScheme(const GURL& in_url, std::string_view scheme) {
@@ -512,12 +514,14 @@ TEST_F(WebSocketEndToEndTest, WebSocketEchoHandlerTest) {
 // Test for issue crbug.com/433695 "Unencrypted WebSocket connection via
 // authenticated proxy times out".
 TEST_F(WebSocketEndToEndTest, HttpsProxyUnauthedFails) {
-  EmbeddedTestServer proxy_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
-  SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
-                              GetWebSocketTestDataDirectory());
-  ASSERT_TRUE(ws_server.StartInBackground());
-  ASSERT_TRUE(ws_server.BlockUntilStarted());
+  // Set up WebSocket server. Should not actually be used, beyond providing a
+  // URL that is blocked by the proxy requesting authentication.
+  EmbeddedTestServer ws_server(EmbeddedTestServer::Type::TYPE_HTTP);
+  test_server::InstallDefaultWebSocketHandlers(
+      &ws_server, /*serve_websocket_test_data=*/true);
+  ASSERT_TRUE(ws_server.Start());
 
+  EmbeddedTestServer proxy_server(EmbeddedTestServer::Type::TYPE_HTTP);
   proxy_server.EnableConnectProxy({ws_server.host_port_pair()});
   RegisterProxyBasicAuthHandler(proxy_server, "user", "pass");
   ASSERT_TRUE(proxy_server.Start());
@@ -536,17 +540,20 @@ TEST_F(WebSocketEndToEndTest, HttpsProxyUnauthedFails) {
   context_builder_->set_proxy_resolution_service(
       std::move(proxy_resolution_service));
 
-  EXPECT_FALSE(ConnectAndWait(ws_server.GetURL(kEchoServer)));
+  EXPECT_FALSE(
+      ConnectAndWait(test_server::GetWebSocketURL(ws_server, kEchoServer)));
   EXPECT_EQ("Proxy authentication failed", event_interface_->failure_message());
 }
 
 TEST_F(WebSocketEndToEndTest, HttpsWssProxyUnauthedFails) {
-  EmbeddedTestServer proxy_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
-  SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS,
-                               GetWebSocketTestDataDirectory());
-  ASSERT_TRUE(wss_server.StartInBackground());
-  ASSERT_TRUE(wss_server.BlockUntilStarted());
+  // Set up WebSocket server. Should not actually be used, beyond providing a
+  // URL that is blocked by the proxy requesting authentication.
+  EmbeddedTestServer wss_server(EmbeddedTestServer::Type::TYPE_HTTPS);
+  test_server::InstallDefaultWebSocketHandlers(
+      &wss_server, /*serve_websocket_test_data=*/true);
+  ASSERT_TRUE(wss_server.Start());
 
+  EmbeddedTestServer proxy_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
   proxy_server.EnableConnectProxy({wss_server.host_port_pair()});
   RegisterProxyBasicAuthHandler(proxy_server, "user", "pass");
   ASSERT_TRUE(proxy_server.Start());
@@ -564,19 +571,20 @@ TEST_F(WebSocketEndToEndTest, HttpsWssProxyUnauthedFails) {
   ASSERT_TRUE(proxy_resolution_service);
   context_builder_->set_proxy_resolution_service(
       std::move(proxy_resolution_service));
-  EXPECT_FALSE(ConnectAndWait(wss_server.GetURL(kEchoServer)));
+  EXPECT_FALSE(
+      ConnectAndWait(test_server::GetWebSocketURL(wss_server, kEchoServer)));
   EXPECT_EQ("Proxy authentication failed", event_interface_->failure_message());
 }
 
 // Regression test for crbug.com/426736 "WebSocket connections not using
 // configured system HTTPS Proxy".
 TEST_F(WebSocketEndToEndTest, HttpsProxyUsed) {
-  EmbeddedTestServer proxy_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
-  SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
-                              GetWebSocketTestDataDirectory());
-  ASSERT_TRUE(ws_server.StartInBackground());
-  ASSERT_TRUE(ws_server.BlockUntilStarted());
+  EmbeddedTestServer ws_server(EmbeddedTestServer::Type::TYPE_HTTP);
+  test_server::InstallDefaultWebSocketHandlers(
+      &ws_server, /*serve_websocket_test_data=*/true);
+  ASSERT_TRUE(ws_server.Start());
 
+  EmbeddedTestServer proxy_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
   proxy_server.EnableConnectProxy({ws_server.host_port_pair()});
 
   ASSERT_TRUE(proxy_server.Start());
@@ -595,7 +603,7 @@ TEST_F(WebSocketEndToEndTest, HttpsProxyUsed) {
       std::move(proxy_resolution_service));
   InitialiseContext();
 
-  GURL ws_url = ws_server.GetURL(kEchoServer);
+  GURL ws_url = test_server::GetWebSocketURL(ws_server, kEchoServer);
   EXPECT_TRUE(ConnectAndWait(ws_url));
   const TestProxyDelegateWithProxyInfo::ResolvedProxyInfo& info =
       proxy_delegate_->resolved_proxy_info();
@@ -633,22 +641,22 @@ TEST_F(WebSocketEndToEndTest, ProxyPacUsed) {
     GTEST_SKIP() << "Test not supported on this platform";
   }
 
-  EmbeddedTestServer proxy_pac_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
-  EmbeddedTestServer proxy_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
-  SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
-                              GetWebSocketTestDataDirectory());
-  proxy_pac_server.RegisterRequestHandler(base::BindRepeating(ProxyPacHandler));
+  EmbeddedTestServer ws_server(EmbeddedTestServer::Type::TYPE_HTTP);
+  test_server::InstallDefaultWebSocketHandlers(
+      &ws_server, /*serve_websocket_test_data=*/true);
+  ASSERT_TRUE(ws_server.Start());
 
+  EmbeddedTestServer proxy_pac_server(EmbeddedTestServer::Type::TYPE_HTTP);
+  proxy_pac_server.RegisterRequestHandler(base::BindRepeating(ProxyPacHandler));
   ASSERT_TRUE(proxy_pac_server.Start());
-  ASSERT_TRUE(ws_server.StartInBackground());
-  ASSERT_TRUE(ws_server.BlockUntilStarted());
 
   // Use a name other than localhost, since localhost implicitly bypasses the
   // use of proxy.pac.
-  HostPortPair fake_ws_host_port_pair("stealth-localhost",
-                                      ws_server.host_port_pair().port());
+  GURL ws_url =
+      test_server::GetWebSocketURL(ws_server, "stealth-localhost", kEchoServer);
 
-  proxy_server.EnableConnectProxy({fake_ws_host_port_pair});
+  EmbeddedTestServer proxy_server(EmbeddedTestServer::Type::TYPE_HTTP);
+  proxy_server.EnableConnectProxy({HostPortPair::FromURL(ws_url)});
   ASSERT_TRUE(proxy_server.Start());
 
   ProxyConfig proxy_config =
@@ -666,8 +674,6 @@ TEST_F(WebSocketEndToEndTest, ProxyPacUsed) {
       std::move(proxy_resolution_service));
   InitialiseContext();
 
-  GURL ws_url(base::StrCat(
-      {"ws://", fake_ws_host_port_pair.ToString(), "/", kEchoServer}));
   EXPECT_TRUE(ConnectAndWait(ws_url));
   const auto& info = proxy_delegate_->resolved_proxy_info();
   EXPECT_EQ(ws_url, info.url);
@@ -678,12 +684,13 @@ TEST_F(WebSocketEndToEndTest, ProxyPacUsed) {
 // This is a regression test for crbug.com/408061 Crash in
 // net::WebSocketBasicHandshakeStream::Upgrade.
 TEST_F(WebSocketEndToEndTest, TruncatedResponse) {
-  SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
-                              GetWebSocketTestDataDirectory());
+  EmbeddedTestServer ws_server(EmbeddedTestServer::Type::TYPE_HTTP);
+  test_server::InstallDefaultWebSocketHandlers(
+      &ws_server, /*serve_websocket_test_data=*/true);
   ASSERT_TRUE(ws_server.Start());
   InitialiseContext();
 
-  GURL ws_url = ws_server.GetURL("truncated-headers");
+  GURL ws_url = test_server::GetWebSocketURL(ws_server, "/truncated-headers");
   EXPECT_FALSE(ConnectAndWait(ws_url));
 }
 
@@ -694,18 +701,18 @@ TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocket) {
   // upgraded, so disable the feature for this test.
   features.InitAndDisableFeature(features::kHstsTopLevelNavigationsOnly);
 
-  EmbeddedTestServer https_server(net::EmbeddedTestServer::Type::TYPE_HTTPS);
+  EmbeddedTestServer https_server(EmbeddedTestServer::Type::TYPE_HTTPS);
   std::string test_server_hostname = "a.test";
   https_server.SetCertHostnames({test_server_hostname});
   https_server.ServeFilesFromSourceDirectory("net/data/url_request_unittest");
-
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_TEST_NAMES);
-  SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS, ssl_options,
-                               GetWebSocketTestDataDirectory());
-
   ASSERT_TRUE(https_server.Start());
+
+  EmbeddedTestServer wss_server(EmbeddedTestServer::Type::TYPE_HTTPS);
+  wss_server.SetCertHostnames({test_server_hostname});
+  test_server::InstallDefaultWebSocketHandlers(
+      &wss_server, /*serve_websocket_test_data=*/true);
   ASSERT_TRUE(wss_server.Start());
+
   InitialiseContext();
 
   // Set HSTS via https:
@@ -720,8 +727,10 @@ TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocket) {
 
   // Check HSTS with ws:
   // Change the scheme from wss: to ws: to verify that it is switched back.
-  GURL ws_url = ReplaceUrlScheme(
-      wss_server.GetURL(test_server_hostname, kEchoServer), "ws");
+  GURL ws_url =
+      ReplaceUrlScheme(test_server::GetWebSocketURL(
+                           wss_server, test_server_hostname, kEchoServer),
+                       "ws");
   EXPECT_TRUE(ConnectAndWait(ws_url));
 }
 
@@ -752,8 +761,7 @@ TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocketNotApplied) {
   EXPECT_EQ(OK, delegate.request_status());
 
   // Check that the ws connection was not upgraded.
-  std::string relative_url = base::StrCat({"/", kEchoServer});
-  GURL ws_url = net::test_server::GetWebSocketURL(ws_server, relative_url);
+  GURL ws_url = net::test_server::GetWebSocketURL(ws_server, kEchoServer);
   EXPECT_TRUE(ConnectAndWait(ws_url));
 }
 
@@ -762,16 +770,18 @@ TEST_F(WebSocketEndToEndTest, HstsWebSocketToHttps) {
   std::string test_server_hostname = "a.test";
   https_server.SetCertHostnames({test_server_hostname});
   https_server.ServeFilesFromSourceDirectory("net/data/url_request_unittest");
-
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_TEST_NAMES);
-  SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS, ssl_options,
-                               GetWebSocketTestDataDirectory());
   ASSERT_TRUE(https_server.Start());
+
+  EmbeddedTestServer wss_server(EmbeddedTestServer::Type::TYPE_HTTPS);
+  wss_server.SetCertHostnames({test_server_hostname});
+  test_server::InstallDefaultWebSocketHandlers(
+      &wss_server, /*serve_websocket_test_data=*/true);
   ASSERT_TRUE(wss_server.Start());
+
   InitialiseContext();
   // Set HSTS via wss:
-  GURL wss_url = wss_server.GetURL(test_server_hostname, "set-hsts");
+  GURL wss_url = test_server::GetWebSocketURL(wss_server, test_server_hostname,
+                                              "/set-hsts");
   EXPECT_TRUE(ConnectAndWait(wss_url));
 
   // Verify via http:
@@ -797,14 +807,16 @@ TEST_F(WebSocketEndToEndTest, HstsWebSocketToWebSocket) {
   features.InitAndDisableFeature(features::kHstsTopLevelNavigationsOnly);
 
   std::string test_server_hostname = "a.test";
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_TEST_NAMES);
-  SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS, ssl_options,
-                               GetWebSocketTestDataDirectory());
+  EmbeddedTestServer wss_server(EmbeddedTestServer::Type::TYPE_HTTPS);
+  wss_server.SetCertHostnames({test_server_hostname});
+  test_server::InstallDefaultWebSocketHandlers(
+      &wss_server, /*serve_websocket_test_data=*/true);
   ASSERT_TRUE(wss_server.Start());
+
   InitialiseContext();
   // Set HSTS via wss:
-  GURL wss_url = wss_server.GetURL(test_server_hostname, "set-hsts");
+  GURL wss_url = test_server::GetWebSocketURL(wss_server, test_server_hostname,
+                                              "/set-hsts");
   EXPECT_TRUE(ConnectAndWait(wss_url));
 
   // Verify via ws:
@@ -813,18 +825,51 @@ TEST_F(WebSocketEndToEndTest, HstsWebSocketToWebSocket) {
   EXPECT_TRUE(ConnectAndWait(ws_url));
 }
 
+// WebSocketHandler that sends HTTP response headers with trailing whitespace.
+class WebSocketTrailingWhitespaceHandler
+    : public test_server::WebSocketHandler {
+ public:
+  explicit WebSocketTrailingWhitespaceHandler(
+      scoped_refptr<test_server::WebSocketConnection> connection)
+      : test_server::WebSocketHandler(std::move(connection)) {}
+
+  void OnHandshake(const test_server::HttpRequest& request) override {
+    CHECK(connection());
+    connection()->SetResponseHeader("Sec-WebSocket-Protocol", "sip    ");
+  }
+};
+
 // Regression test for crbug.com/180504 "WebSocket handshake fails when HTTP
 // headers have trailing LWS".
 TEST_F(WebSocketEndToEndTest, TrailingWhitespace) {
-  SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
-                              GetWebSocketTestDataDirectory());
+  const std::string kPath = "/trailing-whitespace";
+  EmbeddedTestServer ws_server(EmbeddedTestServer::Type::TYPE_HTTP);
+  test_server::RegisterWebSocketHandler<WebSocketTrailingWhitespaceHandler>(
+      &ws_server, kPath);
   ASSERT_TRUE(ws_server.Start());
 
-  GURL ws_url = ws_server.GetURL("trailing-whitespace");
+  GURL ws_url = test_server::GetWebSocketURL(ws_server, kPath);
   sub_protocols_.push_back("sip");
   EXPECT_TRUE(ConnectAndWait(ws_url));
   EXPECT_EQ("sip", event_interface_->selected_subprotocol());
 }
+
+// WebSocketHandler that sends HTTP response headers with a continuation.
+class WebSocketHeaderContinuationHandler
+    : public test_server::WebSocketHandler {
+ public:
+  explicit WebSocketHeaderContinuationHandler(
+      scoped_refptr<test_server::WebSocketConnection> connection)
+      : test_server::WebSocketHandler(std::move(connection)) {}
+
+  void OnHandshake(const test_server::HttpRequest& request) override {
+    CHECK(connection());
+    // Response headers are added blindly, so this results in a continuation.
+    connection()->SetResponseHeader("Sec-WebSocket-Extensions",
+                                    "permessage-deflate;\r\n"
+                                    "  server_max_window_bits=10");
+  }
+};
 
 // This is a regression test for crbug.com/169448 "WebSockets should support
 // header continuations"
@@ -832,11 +877,13 @@ TEST_F(WebSocketEndToEndTest, TrailingWhitespace) {
 // support for continuation headers is removed from Chrome, then this test will
 // break and should be removed.
 TEST_F(WebSocketEndToEndTest, HeaderContinuations) {
-  SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
-                              GetWebSocketTestDataDirectory());
+  const std::string kPath = "/header-continuation";
+  EmbeddedTestServer ws_server(EmbeddedTestServer::Type::TYPE_HTTP);
+  test_server::RegisterWebSocketHandler<WebSocketHeaderContinuationHandler>(
+      &ws_server, kPath);
   ASSERT_TRUE(ws_server.Start());
 
-  GURL ws_url = ws_server.GetURL("header-continuation");
+  GURL ws_url = test_server::GetWebSocketURL(ws_server, kPath);
 
   EXPECT_TRUE(ConnectAndWait(ws_url));
   EXPECT_EQ("permessage-deflate; server_max_window_bits=10",
@@ -846,15 +893,16 @@ TEST_F(WebSocketEndToEndTest, HeaderContinuations) {
 // Test that ws->wss scheme upgrade is supported on receiving a DNS HTTPS
 // record.
 TEST_F(WebSocketEndToEndTest, DnsSchemeUpgradeSupported) {
-  SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS,
-                               SpawnedTestServer::SSLOptions(base::FilePath(
-                                   FILE_PATH_LITERAL("test_names.pem"))),
-                               GetWebSocketTestDataDirectory());
+  const std::string kTestServerHostname = "a.test";
+
+  EmbeddedTestServer wss_server(EmbeddedTestServer::Type::TYPE_HTTPS);
+  wss_server.SetCertHostnames({kTestServerHostname});
+  test_server::InstallDefaultWebSocketHandlers(
+      &wss_server, /*serve_websocket_test_data=*/true);
   ASSERT_TRUE(wss_server.Start());
 
-  GURL wss_url("wss://a.test:" +
-               base::NumberToString(wss_server.host_port_pair().port()) + "/" +
-               kEchoServer);
+  GURL wss_url = test_server::GetWebSocketURL(wss_server, kTestServerHostname,
+                                              kEchoServer);
   GURL::Replacements replacements;
   replacements.SetSchemeStr(url::kWsScheme);
   GURL ws_url = wss_url.ReplaceComponents(replacements);
@@ -883,21 +931,23 @@ TEST_F(WebSocketEndToEndTest, HostResolverEndpointResult) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kUseDnsHttpsSvcb);
 
-  SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS,
-                               SpawnedTestServer::SSLOptions(base::FilePath(
-                                   FILE_PATH_LITERAL("test_names.pem"))),
-                               GetWebSocketTestDataDirectory());
+  const std::string kTestServerHostname = "a.test";
+
+  EmbeddedTestServer wss_server(EmbeddedTestServer::Type::TYPE_HTTPS);
+  wss_server.SetCertHostnames({kTestServerHostname});
+  test_server::InstallDefaultWebSocketHandlers(
+      &wss_server, /*serve_websocket_test_data=*/true);
   ASSERT_TRUE(wss_server.Start());
 
-  uint16_t port = wss_server.host_port_pair().port();
-  GURL wss_url("wss://a.test:" + base::NumberToString(port) + "/" +
-               kEchoServer);
+  uint16_t port = wss_server.port();
+  GURL wss_url = test_server::GetWebSocketURL(wss_server, kTestServerHostname,
+                                              kEchoServer);
 
   auto host_resolver = std::make_unique<MockHostResolver>();
   MockHostResolverBase::RuleResolver::RuleKey resolve_key;
   // The DNS query itself is made with the https scheme rather than wss.
   resolve_key.scheme = url::kHttpsScheme;
-  resolve_key.hostname_pattern = "a.test";
+  resolve_key.hostname_pattern = kTestServerHostname;
   resolve_key.port = port;
   HostResolverEndpointResult result;
   result.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), port)};
