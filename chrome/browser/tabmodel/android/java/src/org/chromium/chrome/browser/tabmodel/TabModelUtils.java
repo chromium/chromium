@@ -141,15 +141,15 @@ public class TabModelUtils {
      * Returns the most recently visited Tab in the specified TabList that is not {@code tabId}.
      *
      * @param model The {@link TabModel} to act on.
-     * @param tabIdToSkip The ID of the {@link Tab} to skip or {@link Tab.INVALID_TAB_ID}.
+     * @param tabsToSkip The {@link Tab}s to skip or an empty list.
      * @return the most recently visited Tab or null if none can be found.
      */
-    public static @Nullable Tab getMostRecentTab(TabList model, int tabIdToSkip) {
+    public static @Nullable Tab getMostRecentTab(TabList model, List<Tab> tabsToSkip) {
         @Nullable Tab mostRecentTab = null;
         long mostRecentTabTime = 0;
         for (int i = 0; i < model.getCount(); i++) {
             final Tab tab = model.getTabAtChecked(i);
-            if (tab.getId() == tabIdToSkip || tab.isClosing()) continue;
+            if (tab.isClosing() || tabsToSkip.contains(tab)) continue;
 
             final long timestamp = tab.getTimestampMillis();
             if (timestamp != Tab.INVALID_TIMESTAMP && mostRecentTabTime < timestamp) {

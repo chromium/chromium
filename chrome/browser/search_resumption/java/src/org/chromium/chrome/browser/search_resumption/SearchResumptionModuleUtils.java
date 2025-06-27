@@ -33,6 +33,7 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -117,7 +118,8 @@ public class SearchResumptionModuleUtils {
             int moduleContainerStubId) {
         if (!shouldShowSearchResumptionModule(profile)) return null;
 
-        Tab tabToTrack = TabModelUtils.getMostRecentTab(tabModel, currentTab.getId());
+        Tab tabToTrack =
+                TabModelUtils.getMostRecentTab(tabModel, Collections.singletonList(currentTab));
         if (tabToTrack == null) {
             recordModuleNotShownReason(ModuleNotShownReason.NO_TAB_TO_TRACK);
             return null;

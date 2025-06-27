@@ -437,7 +437,8 @@ public class TabModelImpl extends TabModelJniBridge {
         Tab parentTab = findTabInAllTabModels(tabToClose.getParentId());
         Tab nextMostRecentTab = null;
         if (uponExit) {
-            nextMostRecentTab = TabModelUtils.getMostRecentTab(this, id);
+            nextMostRecentTab =
+                    TabModelUtils.getMostRecentTab(this, Collections.singletonList(tabToClose));
         }
 
         // Determine which tab to select next according to these rules:
