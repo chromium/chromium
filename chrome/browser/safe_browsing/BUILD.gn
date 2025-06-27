@@ -169,8 +169,6 @@ static_library("safe_browsing") {
       "download_protection/file_analyzer.h",
       "download_protection/file_system_access_metadata.cc",
       "download_protection/file_system_access_metadata.h",
-      "download_protection/ppapi_download_request.cc",
-      "download_protection/ppapi_download_request.h",
       "external_app_redirect_checking.cc",
       "external_app_redirect_checking.h",
       "network_context_service.cc",

@@ -84,7 +84,6 @@ bool IsBinaryDownloadForCurrentOS(
       download_type == ClientDownloadRequest::RAR_COMPRESSED_ARCHIVE ||
       download_type == ClientDownloadRequest::INVALID_RAR ||
       download_type == ClientDownloadRequest::ARCHIVE ||
-      download_type == ClientDownloadRequest::PPAPI_SAVE_REQUEST ||
       download_type == ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_EXECUTABLE ||
       download_type == ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_ARCHIVE ||
       download_type == ClientDownloadRequest::INVALID_SEVEN_ZIP) {

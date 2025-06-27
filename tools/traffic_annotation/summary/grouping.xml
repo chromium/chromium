@@ -438,7 +438,6 @@ after discussions on the right group.
       <annotation id="safe_browsing_hashprefix_realtime_lookup_ohttp"/>
       <annotation id="sct_auditing"/>
       <annotation id="sct_auditing_hashdance"/>
-      <annotation id="ppapi_download_request"/>
       <annotation id="tailored_security_service"/>
     </sender>
   </group>

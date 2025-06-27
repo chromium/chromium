@@ -157,13 +157,6 @@ using FileSystemAccessWriteRequestCallbackList =
 using FileSystemAccessWriteRequestCallback =
     FileSystemAccessWriteRequestCallbackList::CallbackType;
 
-// Callbacks run on the main thread when a PPAPI ClientDownloadRequest has been
-// formed for a download.
-using PPAPIDownloadRequestCallbackList =
-    base::RepeatingCallbackList<void(const ClientDownloadRequest*)>;
-using PPAPIDownloadRequestCallback =
-    PPAPIDownloadRequestCallbackList::CallbackType;
-
 // Types used for the BarrierCallback mechanism in
 // CheckClientDownloadRequestBase::StartModificationsFromDelegate():
 

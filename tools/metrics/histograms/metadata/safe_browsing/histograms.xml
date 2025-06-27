@@ -88,8 +88,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".PasswordEventAttribution" summary=""/>
   <variant name=".PhishingInterstitialAttribution"
       summary="Phishing interstitial referrer attribution."/>
-  <variant name=".PPAPIDownloadAttribution"
-      summary="PPAPI download referrer attribution."/>
   <variant name=".UwsInterstitialAttribution"
       summary="UwS interstitial referrer attribution."/>
 </variants>

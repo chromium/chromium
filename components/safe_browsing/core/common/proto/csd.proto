@@ -768,9 +768,9 @@ message ClientDownloadRequest {
     // The document URL for a PPAPI plugin instance that initiated the download.
     // This is the document.url for the container element for the plugin
     // instance.
-    PPAPI_DOCUMENT = 4;
+    PPAPI_DOCUMENT = 4 [deprecated = true];
     // The plugin URL for a PPAPI plugin instance that initiated the download.
-    PPAPI_PLUGIN = 5;
+    PPAPI_PLUGIN = 5 [deprecated = true];
   }
 
   message Resource {
@@ -869,7 +869,7 @@ message ClientDownloadRequest {
     MAC_ARCHIVE_FAILED_PARSING = 8;
     // A download request initiated via PPAPI. Typically the requestor is
     // a Flash applet.
-    PPAPI_SAVE_REQUEST = 9;
+    PPAPI_SAVE_REQUEST = 9 [deprecated = true];
     // A file we don't support, but we've decided to sample and send
     // a light-ping.
     SAMPLED_UNSUPPORTED_FILE = 10;
@@ -993,7 +993,7 @@ message ClientDownloadRequest {
   // PPAPI_SAVE_REQUEST type messages may have more than one suggested filetype.
   // Each element in this collection indicates an alternate extension including
   // the leading extension separator.
-  repeated string alternate_extensions = 35;
+  repeated string alternate_extensions = 35 [deprecated = true];
 
   // If we can find the complete referrer chain, this field will contains URLs
   // transitions from landing referrer to event in reverse chronological

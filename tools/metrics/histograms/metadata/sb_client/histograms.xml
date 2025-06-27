@@ -238,16 +238,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.PPAPIDownloadRequest.NetworkResult"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-06-13">
-  <owner>chlily@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the net error or HTTP response code after sending PPAPI download
-    request.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.SavePackageFileCount" units="files"
     expires_after="2023-03-19">
   <owner>domfc@chromium.org</owner>

@@ -64,7 +64,6 @@ class CheckClientDownloadRequestBase;
 class CheckFileSystemAccessWriteRequest;
 class ClientDownloadRequest;
 class DownloadRequestMaker;
-class PPAPIDownloadRequest;
 
 #if !BUILDFLAG(IS_ANDROID)
 class DownloadFeedbackService;
@@ -145,14 +144,6 @@ class DownloadProtectionService {
   virtual bool IsSupportedDownload(download::DownloadItem& item,
                                    const base::FilePath& target_path) const;
 
-  virtual void CheckPPAPIDownloadRequest(
-      const GURL& requestor_url,
-      content::RenderFrameHost* initiating_frame,
-      const base::FilePath& default_file_path,
-      const std::vector<base::FilePath::StringType>& alternate_extensions,
-      Profile* profile,
-      CheckDownloadCallback callback);
-
   // If download protection is enabled for `item`, checks whether the given File
   // System Access write operation is likely to be malicious or not. The result
   // of the check is delivered asynchronously via the given callback, or the
@@ -203,11 +194,6 @@ class DownloadProtectionService {
   // has been formed.
   base::CallbackListSubscription RegisterFileSystemAccessWriteRequestCallback(
       const FileSystemAccessWriteRequestCallback& callback);
-
-  // Registers a callback that will be run when a PPAPI ClientDownloadRequest
-  // has been formed.
-  base::CallbackListSubscription RegisterPPAPIDownloadRequestCallback(
-      const PPAPIDownloadRequestCallback& callback);
 
   double allowlist_sample_rate() const;
 
@@ -296,7 +282,6 @@ class DownloadProtectionService {
       download::DownloadItem* item = nullptr);
 
  private:
-  friend class PPAPIDownloadRequest;
   friend class DownloadUrlSBClient;
   template <bool UseMockDbManager>
   friend class DownloadProtectionServiceTestBase;
@@ -312,10 +297,6 @@ class DownloadProtectionService {
 
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceMockTimeTest,
                            TestDownloadRequestTimeout);
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
-                           PPAPIDownloadRequest_InvalidResponse);
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
-                           PPAPIDownloadRequest_Timeout);
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
                            VerifyReferrerChainWithEmptyNavigationHistory);
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
@@ -368,22 +349,6 @@ class DownloadProtectionService {
   virtual void RequestFinished(DeepScanningRequest* request);
 #endif
 
-  void PPAPIDownloadCheckRequestFinished(PPAPIDownloadRequest* request);
-
-  // Identify referrer chain of the PPAPI download based on the frame URL where
-  // the download is initiated. Then add referrer chain info to
-  // ClientDownloadRequest proto. This function also records UMA stats of
-  // download attribution result.
-  void AddReferrerChainToPPAPIClientDownloadRequest(
-      content::WebContents* web_contents,
-      const GURL& initiating_frame_url,
-      const content::GlobalRenderFrameHostId&
-          initiating_outermost_main_frame_id,
-      const GURL& initiating_main_frame_url,
-      SessionID tab_id,
-      bool has_user_gesture,
-      ClientDownloadRequest* out_request);
-
   void OnDangerousDownloadOpened(download::DownloadItem* item,
                                  Profile* profile);
 
@@ -420,10 +385,6 @@ class DownloadProtectionService {
                      std::unique_ptr<CheckClientDownloadRequestBase>>>
       context_download_requests_;
 
-  // Set of pending server requests for PPAPI mediated downloads.
-  base::flat_map<PPAPIDownloadRequest*, std::unique_ptr<PPAPIDownloadRequest>>
-      ppapi_download_requests_;
-
 #if !BUILDFLAG(IS_ANDROID)
   // Set of pending server requests for deep scanning.
   base::flat_map<DeepScanningRequest*, std::unique_ptr<DeepScanningRequest>>
@@ -450,10 +411,6 @@ class DownloadProtectionService {
   // FileSystemAccessWriteRequest has been formed.
   FileSystemAccessWriteRequestCallbackList
       file_system_access_write_request_callbacks_;
-
-  // A list of callbacks to be run on the main thread when a
-  // PPAPIDownloadRequest has been formed.
-  PPAPIDownloadRequestCallbackList ppapi_download_request_callbacks_;
 
   // List of 8-byte hashes that are blocklisted manually by flag.
   // Normally empty.
