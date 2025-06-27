@@ -139,13 +139,13 @@
         _animationName = @"tab_groups";
         break;
       case BestFeaturesItemType::kPriceTrackingAndInsights:
-        _animationName = @"PriceTracking";
+        _animationName = @"price_tracking";
         break;
       case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
         _animationName = @"CPE_promo_animation_edu_autofill";
         break;
       case BestFeaturesItemType::kSharePasswordsWithFamily:
-        _animationName = @"PasswordSharing";
+        _animationName = @"password_sharing";
         break;
     }
   }
