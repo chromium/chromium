@@ -6,6 +6,7 @@
 
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,14 +42,31 @@ ContentAnalysisDialogDelegate::ContentAnalysisDialogDelegate(
     content::WebContents::Getter web_contents_getter,
     bool is_cloud,
     safe_browsing::DeepScanAccessPoint access_point,
-    int files_count)
-    : delegate_base_(delegate),
+    int files_count,
+    FinalContentAnalysisResult final_result)
+    : final_result_(final_result),
+      delegate_base_(delegate),
       web_contents_getter_(web_contents_getter),
       is_cloud_(is_cloud),
       access_point_(access_point),
-      files_count_(files_count) {}
+      files_count_(files_count) {
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
-ContentAnalysisDialogDelegate::~ContentAnalysisDialogDelegate() = default;
+  SetupButtons();
+
+  if (is_warning() && bypass_requires_justification()) {
+    bypass_justification_text_length_->SetEnabledColor(
+        bypass_justification_text_length_->GetColorProvider()->GetColor(
+            ui::kColorAlertHighSeverity));
+  }
+}
+
+ContentAnalysisDialogDelegate::~ContentAnalysisDialogDelegate() {
+  if (bypass_justification_) {
+    bypass_justification_->SetController(nullptr);
+  }
+}
 
 std::u16string ContentAnalysisDialogDelegate::GetWindowTitle() const {
   return std::u16string();
@@ -56,14 +74,6 @@ std::u16string ContentAnalysisDialogDelegate::GetWindowTitle() const {
 
 bool ContentAnalysisDialogDelegate::ShouldShowCloseButton() const {
   return false;
-}
-
-views::Widget* ContentAnalysisDialogDelegate::GetWidget() {
-  return contents_view_->GetWidget();
-}
-
-const views::Widget* ContentAnalysisDialogDelegate::GetWidget() const {
-  return contents_view_->GetWidget();
 }
 
 ui::mojom::ModalType ContentAnalysisDialogDelegate::GetModalType() const {
@@ -269,6 +279,29 @@ void ContentAnalysisDialogDelegate::UpdateDialogAppearance() {
   contents_view_->InvalidateLayout();
 }
 
+void ContentAnalysisDialogDelegate::Shutdown() {
+  contents_view_ = nullptr;
+  image_ = nullptr;
+  side_icon_image_ = nullptr;
+  side_icon_spinner_ = nullptr;
+  message_ = nullptr;
+  learn_more_link_ = nullptr;
+  justification_text_label_ = nullptr;
+  bypass_justification_ = nullptr;
+  bypass_justification_text_length_ = nullptr;
+  contents_layout_ = nullptr;
+  bounds_animator_.reset();
+  delegate_base_ = nullptr;
+}
+
+std::optional<std::u16string>
+ContentAnalysisDialogDelegate::GetJustification() {
+  if (delegate_base_->BypassRequiresJustification() && bypass_justification_) {
+    return std::u16string(bypass_justification_->GetText());
+  }
+  return std::nullopt;
+}
+
 void ContentAnalysisDialogDelegate::SetupButtons() {
   if (is_warning()) {
     // Include the Ok and Cancel buttons if there is a bypassable warning.
@@ -305,12 +338,12 @@ void ContentAnalysisDialogDelegate::SetupButtons() {
 }
 
 std::u16string ContentAnalysisDialogDelegate::GetCancelButtonText() const {
-  int text_id;
   auto overriden_text = delegate_base_->OverrideCancelButtonText();
   if (overriden_text) {
     return overriden_text.value();
   }
 
+  int text_id;
   switch (dialog_state_) {
     case State::SUCCESS:
       NOTREACHED();
@@ -441,6 +474,53 @@ bool ContentAnalysisDialogDelegate::has_custom_message_ranges() const {
 
 bool ContentAnalysisDialogDelegate::bypass_requires_justification() const {
   return delegate_base_->BypassRequiresJustification();
+}
+
+bool ContentAnalysisDialogDelegate::is_cloud() const {
+  return is_cloud_;
+}
+
+FinalContentAnalysisResult ContentAnalysisDialogDelegate::final_result() const {
+  return final_result_;
+}
+
+base::WeakPtr<ContentAnalysisDialogDelegate>
+ContentAnalysisDialogDelegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+views::ImageView* ContentAnalysisDialogDelegate::GetTopImageForTesting() const {
+  return image_;
+}
+
+views::Throbber* ContentAnalysisDialogDelegate::GetSideIconSpinnerForTesting()
+    const {
+  return side_icon_spinner_;
+}
+
+views::StyledLabel* ContentAnalysisDialogDelegate::GetMessageForTesting()
+    const {
+  return message_;
+}
+
+views::Link* ContentAnalysisDialogDelegate::GetLearnMoreLinkForTesting() const {
+  return learn_more_link_;
+}
+
+views::Label*
+ContentAnalysisDialogDelegate::GetBypassJustificationLabelForTesting() const {
+  return justification_text_label_;
+}
+
+views::Textarea*
+ContentAnalysisDialogDelegate::GetBypassJustificationTextareaForTesting()
+    const {
+  return bypass_justification_;
+}
+
+views::Label*
+ContentAnalysisDialogDelegate::GetJustificationTextLengthForTesting() const {
+  return bypass_justification_text_length_;
 }
 
 void ContentAnalysisDialogDelegate::UpdateViews() {

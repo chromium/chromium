@@ -364,7 +364,7 @@ class ContentAnalysisDelegateBrowserTestBase
             identity_test_environment_->identity_manager());
   }
 
-  void DestructorCalled(ContentAnalysisDialogController* dialog) override {
+  void DestructorCalled(ContentAnalysisDialogDelegate* dialog) override {
     // The test is over once the views are destroyed.
     CallQuitClosure();
   }
@@ -2041,22 +2041,22 @@ class ContentAnalysisDelegateUnauthorizedBrowserTest
   // The dialog should appear on blocking scans for both paste and files upload,
   // because CBUS retries authorizarion check first and then update the scan
   // result.
-  void ConstructorCalled(ContentAnalysisDialogController* dialog,
+  void ConstructorCalled(ContentAnalysisDialogDelegate* dialog,
                          base::TimeTicks timestamp) override {
     ASSERT_TRUE(blocking_scan());
   }
 
-  void ViewsFirstShown(ContentAnalysisDialogController* dialog,
+  void ViewsFirstShown(ContentAnalysisDialogDelegate* dialog,
                        base::TimeTicks timestamp) override {
     ASSERT_TRUE(blocking_scan());
   }
 
-  void DialogUpdated(ContentAnalysisDialogController* dialog,
+  void DialogUpdated(ContentAnalysisDialogDelegate* dialog,
                      FinalContentAnalysisResult result) override {
     ASSERT_TRUE(blocking_scan());
   }
 
-  void DestructorCalled(ContentAnalysisDialogController* dialog) override {
+  void DestructorCalled(ContentAnalysisDialogDelegate* dialog) override {
     ASSERT_TRUE(blocking_scan());
     CallQuitClosure();
   }
