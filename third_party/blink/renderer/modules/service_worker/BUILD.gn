@@ -66,6 +66,8 @@ blink_modules_sources("service_worker") {
     "wait_until_observer.h",
     "web_service_worker_fetch_context_impl.cc",
     "web_service_worker_fetch_context_impl.h",
+    "worker_navigator_service_worker.cc",
+    "worker_navigator_service_worker.h",
   ]
 
   public_deps = [ "//third_party/blink/renderer/platform" ]
