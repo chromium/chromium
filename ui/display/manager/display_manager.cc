@@ -511,9 +511,8 @@ bool DisplayManager::InitFromCommandLine() {
     info_list.back().set_from_native_platform(true);
     auto bounds_in_native = info_list.back().bounds_in_native();
     if (bounds_in_native.origin().IsOrigin()) {
-      gfx::Rect bounds(bounds_in_native.size());
-      bounds.set_x(next_x);
-      info_list.back().SetBounds(bounds);
+      bounds_in_native.set_x(next_x);
+      info_list.back().SetBounds(bounds_in_native);
     }
     next_x = bounds_in_native.right();
   }

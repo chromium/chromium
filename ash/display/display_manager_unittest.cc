@@ -3809,6 +3809,24 @@ TEST_F(DisplayManagerTest, DontRegisterBadConfig) {
       list, builder.Build());
 }
 
+namespace {
+
+class DisplayManagerHostBoundsFlagTest : public DisplayManagerTest {
+ public:
+  void SetUp() override {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(::switches::kHostWindowBounds,
+                                    "1000x800,1000x800,1000x800");
+    DisplayManagerTest::SetUp();
+  }
+};
+
+}  // namespace
+
+TEST_F(DisplayManagerHostBoundsFlagTest, Basic) {
+  EXPECT_EQ(3, display::Screen::GetScreen()->GetNumDisplays());
+}
+
 class ScreenShutdownTest : public AshTestBase {
  public:
   ScreenShutdownTest() = default;
