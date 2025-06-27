@@ -366,12 +366,20 @@ TEST_F(VideoFrameStructTraitsTest, TrackingTokenVideoFrame) {
 }
 
 TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrame) {
+  auto si_size = gfx::Size(100, 100);
+  gpu::SharedImageMetadata metadata;
+  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.size = si_size;
+  metadata.color_space = gfx::ColorSpace::CreateSRGB();
+  metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+  metadata.alpha_type = kOpaque_SkAlphaType;
+  metadata.usage = gpu::SharedImageUsageSet();
   scoped_refptr<gpu::ClientSharedImage> shared_image =
-      gpu::ClientSharedImage::CreateForTesting();
+      gpu::ClientSharedImage::CreateForTesting(metadata);
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
-      VideoFrame::ReleaseMailboxCB(), gfx::Size(100, 100),
-      gfx::Rect(10, 10, 80, 80), gfx::Size(200, 100), base::Seconds(100));
+      VideoFrame::ReleaseMailboxCB(), si_size, gfx::Rect(10, 10, 80, 80),
+      gfx::Size(200, 100), base::Seconds(100));
 
   ASSERT_TRUE(RoundTrip(&frame));
   ASSERT_TRUE(frame);

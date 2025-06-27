@@ -226,6 +226,7 @@ class VideoResourceUpdaterTest : public testing::Test {
 
     gpu::SharedImageMetadata metadata;
     metadata.format = si_format;
+    metadata.size = size;
     metadata.color_space = gfx::ColorSpace::CreateSRGB();
     metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
     metadata.alpha_type = kOpaque_SkAlphaType;

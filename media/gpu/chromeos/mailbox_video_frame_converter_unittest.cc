@@ -330,8 +330,10 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
     const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
+    auto shared_image_size =
+        needs_detiling ? kCodedSize : gfx::Size(kVisibleRect.size());
     auto shared_image = test_sii_->CreateSharedImage(
-        {viz::MultiPlaneFormat::kNV12, kCodedSize, gfx::ColorSpace(),
+        {viz::MultiPlaneFormat::kNV12, shared_image_size, gfx::ColorSpace(),
          gpu::SharedImageUsageSet(si_usage),
          "MailboxVideoFrameConverterWithUnwrappedFramesTest"},
         gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
@@ -361,10 +363,18 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
                           shared_image_format,
                           needs_detiling ? kCodedSize : kVisibleRect.size()),
                       /*buffer_handle=*/Matcher<gfx::GpuMemoryBufferHandle>(_)))
-          .WillOnce([&mailboxes_seen_by_gpu_delegate, i](
+          .WillOnce([&mailboxes_seen_by_gpu_delegate, i, shared_image_size](
                         const gpu::SharedImageInfo& si_info,
                         gfx::GpuMemoryBufferHandle buffer_handle) {
-            auto shared_image = gpu::ClientSharedImage::CreateForTesting();
+            gpu::SharedImageMetadata metadata;
+            metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+            metadata.size = shared_image_size;
+            metadata.color_space = gfx::ColorSpace::CreateSRGB();
+            metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+            metadata.alpha_type = kOpaque_SkAlphaType;
+            metadata.usage = gpu::SharedImageUsageSet();
+            auto shared_image =
+                gpu::ClientSharedImage::CreateForTesting(metadata);
             mailboxes_seen_by_gpu_delegate[i] = shared_image->mailbox();
             return shared_image;
           });

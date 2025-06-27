@@ -606,6 +606,12 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateSoftwareForTesting() {
 
 // static
 scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
+    const SharedImageMetadata& metadata) {
+  return CreateForTesting(metadata, GL_TEXTURE_2D);  // IN-TEST
+}
+
+// static
+scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
     viz::SharedImageFormat format,
     uint32_t texture_target) {
   SharedImageMetadata metadata;

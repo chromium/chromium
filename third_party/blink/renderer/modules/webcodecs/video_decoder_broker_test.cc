@@ -61,8 +61,15 @@ class FakeGpuVideoDecoder : public media::FakeVideoDecoder {
 
   scoped_refptr<media::VideoFrame> MakeVideoFrame(
       const media::DecoderBuffer& buffer) override {
+    gpu::SharedImageMetadata metadata;
+    metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+    metadata.size = current_config_.coded_size();
+    metadata.color_space = gfx::ColorSpace::CreateSRGB();
+    metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+    metadata.alpha_type = kOpaque_SkAlphaType;
+    metadata.usage = gpu::SharedImageUsageSet();
     scoped_refptr<gpu::ClientSharedImage> shared_image =
-        gpu::ClientSharedImage::CreateForTesting();
+        gpu::ClientSharedImage::CreateForTesting(metadata);
     scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapSharedImage(
         media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
         media::VideoFrame::ReleaseMailboxCB(), current_config_.coded_size(),

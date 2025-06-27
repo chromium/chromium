@@ -209,6 +209,8 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   static scoped_refptr<ClientSharedImage> CreateForTesting(
       SharedImageUsageSet usage);
   static scoped_refptr<ClientSharedImage> CreateForTesting(
+      const SharedImageMetadata& metadata);
+  static scoped_refptr<ClientSharedImage> CreateForTesting(
       const SharedImageMetadata& metadata,
       uint32_t texture_target);
 

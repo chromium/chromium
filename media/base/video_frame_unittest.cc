@@ -648,14 +648,22 @@ TEST(VideoFrame, TextureNoLongerNeededCallbackIsCalled) {
                                    gpu::CommandBufferId::FromUnsafeValue(1), 1);
 
   {
+    auto si_size = gfx::Size(10, 10);
+    gpu::SharedImageMetadata metadata;
+    metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+    metadata.size = si_size;
+    metadata.color_space = gfx::ColorSpace::CreateSRGB();
+    metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+    metadata.alpha_type = kOpaque_SkAlphaType;
+    metadata.usage = gpu::SharedImageUsageSet();
     scoped_refptr<gpu::ClientSharedImage> shared_image =
-        gpu::ClientSharedImage::CreateForTesting();
+        gpu::ClientSharedImage::CreateForTesting(metadata);
     scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
         PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
         base::BindOnce(&TextureCallback, &called_sync_token),
-        gfx::Size(10, 10),   // coded_size
-        gfx::Rect(10, 10),   // visible_rect
-        gfx::Size(10, 10),   // natural_size
+        si_size,             // coded_size
+        gfx::Rect(si_size),  // visible_rect
+        si_size,             // natural_size
         base::TimeDelta());  // timestamp
     EXPECT_EQ(PIXEL_FORMAT_ARGB, frame->format());
     EXPECT_EQ(VideoFrame::STORAGE_OPAQUE, frame->storage_type());
@@ -675,8 +683,16 @@ TEST(VideoFrame,
       gpu::CommandBufferNamespace::GPU_IO;
   const gpu::CommandBufferId kCommandBufferId =
       gpu::CommandBufferId::FromUnsafeValue(0x123);
+  auto si_size = gfx::Size(10, 10);
+  gpu::SharedImageMetadata metadata;
+  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.size = si_size;
+  metadata.color_space = gfx::ColorSpace::CreateSRGB();
+  metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+  metadata.alpha_type = kOpaque_SkAlphaType;
+  metadata.usage = gpu::SharedImageUsageSet();
   scoped_refptr<gpu::ClientSharedImage> shared_image =
-      gpu::ClientSharedImage::CreateForTesting();
+      gpu::ClientSharedImage::CreateForTesting(metadata);
 
   gpu::SyncToken sync_token(kNamespace, kCommandBufferId, 7);
   sync_token.SetVerifyFlush();
@@ -689,9 +705,9 @@ TEST(VideoFrame,
     scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
         PIXEL_FORMAT_I420, shared_image, sync_token,
         base::BindOnce(&TextureCallback, &called_sync_token),
-        gfx::Size(10, 10),   // coded_size
-        gfx::Rect(10, 10),   // visible_rect
-        gfx::Size(10, 10),   // natural_size
+        si_size,             // coded_size
+        gfx::Rect(si_size),  // visible_rect
+        si_size,             // natural_size
         base::TimeDelta());  // timestamp
 
     EXPECT_EQ(VideoFrame::STORAGE_OPAQUE, frame->storage_type());

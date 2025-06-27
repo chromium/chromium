@@ -140,8 +140,15 @@ class MockVideoDecoder : public VideoDecoder {
         // Simulate the case where outputs are only returned when key arrives.
         waiting_cb_.Run(WaitingReason::kNoDecryptionKey);
       } else {
+        gpu::SharedImageMetadata metadata;
+        metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+        metadata.size = config_.coded_size();
+        metadata.color_space = gfx::ColorSpace::CreateSRGB();
+        metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+        metadata.alpha_type = kOpaque_SkAlphaType;
+        metadata.usage = gpu::SharedImageUsageSet();
         scoped_refptr<gpu::ClientSharedImage> shared_image =
-            gpu::ClientSharedImage::CreateForTesting();
+            gpu::ClientSharedImage::CreateForTesting(metadata);
         scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
             PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
             GetReleaseMailboxCB(), config_.coded_size(), config_.visible_rect(),

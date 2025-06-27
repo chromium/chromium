@@ -132,7 +132,14 @@ class VideoFrameFactoryImplTest : public testing::Test {
   SharedImageVideoProvider::ImageRecord MakeImageRecord(
       bool* release_cb_called_flag = nullptr) {
     SharedImageVideoProvider::ImageRecord record;
-    record.shared_image = gpu::ClientSharedImage::CreateForTesting();
+    gpu::SharedImageMetadata metadata;
+    metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+    metadata.size = video_frame_params_.coded_size;
+    metadata.color_space = gfx::ColorSpace::CreateSRGB();
+    metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+    metadata.alpha_type = kOpaque_SkAlphaType;
+    metadata.usage = gpu::SharedImageUsageSet();
+    record.shared_image = gpu::ClientSharedImage::CreateForTesting(metadata);
     if (release_cb_called_flag)
       *release_cb_called_flag = false;
     record.release_cb = base::BindOnce(

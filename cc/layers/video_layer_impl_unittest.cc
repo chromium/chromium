@@ -378,14 +378,22 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
   LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
+  auto si_size = gfx::Size(10, 10);
+  gpu::SharedImageMetadata metadata;
+  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.size = si_size;
+  metadata.color_space = gfx::ColorSpace::CreateSRGB();
+  metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+  metadata.alpha_type = kOpaque_SkAlphaType;
+  metadata.usage = gpu::SharedImageUsageSet();
   scoped_refptr<gpu::ClientSharedImage> shared_image =
-      gpu::ClientSharedImage::CreateForTesting();
+      gpu::ClientSharedImage::CreateForTesting(metadata);
 
   scoped_refptr<media::VideoFrame> video_frame =
       media::VideoFrame::WrapSharedImage(media::PIXEL_FORMAT_I420, shared_image,
                                          gpu::SyncToken(), base::DoNothing(),
-                                         gfx::Size(10, 10), gfx::Rect(10, 10),
-                                         gfx::Size(10, 10), base::TimeDelta());
+                                         si_size, gfx::Rect(si_size), si_size,
+                                         base::TimeDelta());
   ASSERT_TRUE(video_frame);
   video_frame->metadata().allow_overlay = true;
   FakeVideoFrameProvider provider;
@@ -417,15 +425,22 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
   LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
+  auto si_size = gfx::Size(10, 10);
+  gpu::SharedImageMetadata metadata;
+  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.size = si_size;
+  metadata.color_space = gfx::ColorSpace::CreateSRGB();
+  metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+  metadata.alpha_type = kOpaque_SkAlphaType;
+  metadata.usage = gpu::SharedImageUsageSet();
   scoped_refptr<gpu::ClientSharedImage> shared_image =
-      gpu::ClientSharedImage::CreateForTesting();
+      gpu::ClientSharedImage::CreateForTesting(metadata);
 
-  gfx::Size resource_size = gfx::Size(10, 10);
   scoped_refptr<media::VideoFrame> video_frame =
       media::VideoFrame::WrapSharedImage(media::PIXEL_FORMAT_ARGB, shared_image,
                                          gpu::SyncToken(), base::DoNothing(),
-                                         resource_size, gfx::Rect(10, 10),
-                                         resource_size, base::TimeDelta());
+                                         si_size, gfx::Rect(si_size), si_size,
+                                         base::TimeDelta());
   ASSERT_TRUE(video_frame);
   video_frame->metadata().allow_overlay = true;
   FakeVideoFrameProvider provider;

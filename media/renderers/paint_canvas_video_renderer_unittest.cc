@@ -957,9 +957,15 @@ TEST_F(PaintCanvasVideoRendererTest, ContextLost) {
   gfx::Size size(kWidth, kHeight);
   // We try copying the contents of the source VideoFrame *into* the
   // cached SI over the raster interface.
+  gpu::SharedImageMetadata metadata;
+  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.size = size;
+  metadata.color_space = gfx::ColorSpace::CreateSRGB();
+  metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+  metadata.alpha_type = kOpaque_SkAlphaType;
+  metadata.usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ;
   scoped_refptr<gpu::ClientSharedImage> shared_image =
-      gpu::ClientSharedImage::CreateForTesting(
-          gpu::SHARED_IMAGE_USAGE_RASTER_READ);
+      gpu::ClientSharedImage::CreateForTesting(metadata);
   auto video_frame = VideoFrame::WrapSharedImage(
       PIXEL_FORMAT_NV12, shared_image, gpu::SyncToken(),
       base::BindOnce(MailboxHoldersReleased), size, gfx::Rect(size), size,
