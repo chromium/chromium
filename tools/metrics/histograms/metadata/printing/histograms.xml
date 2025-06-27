@@ -481,19 +481,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Printing.PrintBackend.DriversRequiringElevatedPrivilegeEncountered"
-    enum="BooleanFound" expires_after="2023-05-14">
-  <owner>awscreen@chromium.org</owner>
-  <owner>thestig@chromium.org</owner>
-  <summary>
-    Records if any printer driver operations were found to fail because of
-    access-denied errors when used in a sandboxed utility process. This can
-    occur from queries for setting up print preview as well as when printing a
-    document to a destination.
-  </summary>
-</histogram>
-
 <histogram name="Printing.PrintDuration.LocalPrinter.Success" units="ms"
     expires_after="2025-08-14">
   <owner>awscreen@chromium.org</owner>

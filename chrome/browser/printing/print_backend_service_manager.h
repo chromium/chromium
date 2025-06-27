@@ -711,10 +711,6 @@ class PrintBackendServiceManager {
   RemoteSavedCancelCallbacks sandboxed_saved_cancel_callbacks_;
   RemoteSavedCancelCallbacks unsandboxed_saved_cancel_callbacks_;
 
-  // Gets set to false once there has been at least one attempt to print using
-  // a sandboxed PrintBackend service.  Used for metrics reporting.
-  bool first_sandboxed_print_ = true;
-
   // Set of printer drivers which require elevated permissions to operate.
   // It is expected that most print drivers will succeed with the preconfigured
   // sandbox permissions.  Should any drivers be discovered to require more than

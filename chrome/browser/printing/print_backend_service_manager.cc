@@ -18,7 +18,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -59,13 +58,6 @@
 namespace printing {
 
 namespace {
-
-// Histogram name for capturing if any printer drivers were encountered that
-// required fallback to workaround an access-denied error.  Determining if this
-// happens in the wild would be the impetus to pursue further efforts to
-// identify and possibly better rectify such cases.
-constexpr char kPrintBackendRequiresElevatedPrivilegeHistogramName[] =
-    "Printing.PrintBackend.DriversRequiringElevatedPrivilegeEncountered";
 
 // For fetching remote IDs when there is no printer name.
 constexpr char kEmptyPrinterName[] = "";
@@ -632,12 +624,7 @@ void PrintBackendServiceManager::
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   VLOG(1) << "Destination '" << printer_name
           << "' requires elevated privileges.";
-  if (drivers_requiring_elevated_privilege_.emplace(printer_name).second &&
-      drivers_requiring_elevated_privilege_.size() == 1) {
-    // First time we've detected a problem for any driver.
-    base::UmaHistogramBoolean(
-        kPrintBackendRequiresElevatedPrivilegeHistogramName, /*sample=*/true);
-  }
+  drivers_requiring_elevated_privilege_.emplace(printer_name);
 }
 
 void PrintBackendServiceManager::SetServiceForTesting(
@@ -869,16 +856,6 @@ PrintBackendServiceManager::GetService(const RemoteId& remote_id,
   }
 
   if (sandboxed) {
-    // On the first print that will try to use sandboxed service, make note that
-    // so far no drivers have been discovered to require fallback beyond any
-    // predetermined known cases.
-    if (first_sandboxed_print_) {
-      first_sandboxed_print_ = false;
-      base::UmaHistogramBoolean(
-          kPrintBackendRequiresElevatedPrivilegeHistogramName,
-          /*sample=*/false);
-    }
-
     return GetServiceFromBundle(remote_id, client_type, /*sandboxed=*/true,
                                 sandboxed_remotes_bundles_);
   }
