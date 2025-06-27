@@ -1585,11 +1585,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     NSString* previousString = self.historyCoordinator.searchTerms;
     [weakSelf.historyCoordinator stop];
     weakSelf.historyCoordinator = nil;
-    [self setActiveMode:TabGridMode::kSearch];
-    // When setting TabGridMode to kSearch, the string in the search bar
-    // is initialized to an empty string, so we override with the previous
-    // string
-    [self.baseViewController.topToolbar setSearchBarText:previousString];
+    // Only if current page is TabGridPageRegularTabs, restore TabGridMode to
+    // kSearch to keep the tab search filter is still active, as we set
+    // TabGridMode to kNormal before opening history search. For other pages,
+    // there is no need to restore kSearch mode.
+    if (weakSelf.baseViewController.currentPage == TabGridPageRegularTabs) {
+      [weakSelf setActiveMode:TabGridMode::kSearch];
+      // When setting TabGridMode to kSearch, the string in the search bar
+      // is initialized to an empty string, so we override with the previous
+      // string
+      [weakSelf.baseViewController.topToolbar setSearchBarText:previousString];
+    }
   }];
 }
 
