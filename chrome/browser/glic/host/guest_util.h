@@ -14,8 +14,14 @@ class WebContents;
 
 namespace glic {
 
+// Returns the URL/origin from where the guest web client will be loaded from.
 GURL GetGuestURL();
 url::Origin GetGuestOrigin();
+
+// Returns an updated guest URL that includes a language parameter, set to the
+// browser's UI language. If the parameter is already present, its current value
+// will not be changed.
+GURL GetLocalizedGuestURL(const GURL& guest_url);
 
 // Returns true if `web_contents` contains the Glic WebUI application.
 bool IsGlicWebUI(const content::WebContents* web_contents);

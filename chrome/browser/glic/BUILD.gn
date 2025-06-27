@@ -226,6 +226,7 @@ source_set("unit_tests") {
     "host/context/glic_screenshot_capturer_unittest.cc",
     "host/context/glic_tab_data_unittest.cc",
     "host/glic_cookie_synchronizer_unittest.cc",
+    "host/guest_util_unittest.cc",
     "widget/local_hotkey_manager_unittest.cc",
   ]
   deps = [

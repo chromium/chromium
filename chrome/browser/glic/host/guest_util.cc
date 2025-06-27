@@ -47,22 +47,29 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
 GURL GetGuestURL() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   bool has_glic_guest_url = command_line->HasSwitch(::switches::kGlicGuestURL);
-  GURL base_url =
+  GURL url =
       GURL(has_glic_guest_url
                ? command_line->GetSwitchValueASCII(::switches::kGlicGuestURL)
                : features::kGlicGuestURL.Get());
-  if (base_url.is_empty()) {
+  if (url.is_empty()) {
     LOG(ERROR) << "No glic guest url";
+    return GURL();
   }
-  std::string locale = g_browser_process->GetApplicationLocale();
-  language::ToTranslateLanguageSynonym(&locale);
-  GURL localized_url =
-      net::AppendOrReplaceQueryParameter(base_url, "hl", locale);
-  return localized_url;
+  return GetLocalizedGuestURL(url);
 }
 
 url::Origin GetGuestOrigin() {
   return url::Origin::Create(GetGuestURL());
+}
+
+GURL GetLocalizedGuestURL(const GURL& guest_url) {
+  std::string unused_output;
+  if (net::GetValueForKeyInQuery(guest_url, "hl", &unused_output)) {
+    return guest_url;
+  }
+  std::string locale = g_browser_process->GetApplicationLocale();
+  language::ToTranslateLanguageSynonym(&locale);
+  return net::AppendQueryParameter(guest_url, "hl", locale);
 }
 
 bool IsGlicWebUI(const content::WebContents* web_contents) {

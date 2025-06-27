@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/browser_ui/theme_util.h"
 #include "chrome/browser/glic/glic_hotkey.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -28,15 +29,15 @@ GURL GetFreURL(Profile* profile) {
   // Use the corresponding command line argument as the URL, if available.
   auto* command_line = base::CommandLine::ForCurrentProcess();
   bool has_glic_fre_url = command_line->HasSwitch(::switches::kGlicFreURL);
-  GURL base_url =
+  GURL url =
       GURL(has_glic_fre_url
                ? command_line->GetSwitchValueASCII(::switches::kGlicFreURL)
                : features::kGlicFreURL.Get());
-  if (base_url.is_empty()) {
+  if (url.is_empty()) {
     LOG(ERROR) << "No glic fre url";
+    return GURL();
   }
 
-  GURL fre_url = base_url;
   // Add the hotkey configuration to the URL as a query parameter.
   std::string hotkey_param_value;
 #if !BUILDFLAG(IS_MAC)
@@ -46,19 +47,16 @@ GURL GetFreURL(Profile* profile) {
 #endif
 
   if (!hotkey_param_value.empty()) {
-    fre_url = net::AppendOrReplaceQueryParameter(fre_url, "hotkey",
-                                                 hotkey_param_value);
+    url = net::AppendOrReplaceQueryParameter(url, "hotkey", hotkey_param_value);
   }
 
   // Add the current Chrome theme to the URL as a query parameter.
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile);
   std::string theme_value = UseDarkMode(theme_service) ? "dark" : "light";
-  fre_url = net::AppendOrReplaceQueryParameter(fre_url, "theme", theme_value);
+  url = net::AppendOrReplaceQueryParameter(url, "theme", theme_value);
 
   // Localize to Chrome UI language.
-  std::string locale = g_browser_process->GetApplicationLocale();
-  language::ToTranslateLanguageSynonym(&locale);
-  return net::AppendOrReplaceQueryParameter(fre_url, "hl", locale);
+  return GetLocalizedGuestURL(url);
 }
 
 content::StoragePartitionConfig GetFreStoragePartitionConfig(
