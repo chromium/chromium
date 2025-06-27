@@ -844,7 +844,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 params.updateShowOnToolbar(false);
             } else if (!params.showOnToolbar()) {
                 mBottombarButtons.add(params);
-            } else if (mToolbarButtons.size() < getMaxCustomToolbarItems()) {
+            } else if (canAddMoreToolbarItems()) {
                 mToolbarButtons.add(params);
             } else {
                 Log.w(TAG, "Only %d items are allowed in the toolbar", getMaxCustomToolbarItems());
@@ -857,6 +857,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             mCustomButtonParams.add(params);
             mGoogleBottomBarButtons.add(params);
         }
+    }
+
+    private boolean canAddMoreToolbarItems() {
+        return mToolbarButtons.size() < getMaxCustomToolbarItems();
     }
 
     /**
@@ -930,7 +934,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     private void addShareOption(Intent intent, Context context) {
         if (mShareState == CustomTabsIntent.SHARE_STATE_DEFAULT) {
-            if (mToolbarButtons.isEmpty()) {
+            if (mToolbarButtons.isEmpty()
+                    || (isCpaOnlyOpenInBrowserDefault() && canAddMoreToolbarItems())) {
                 mToolbarButtons.add(
                         CustomButtonParamsImpl.createShareButton(
                                 context, getColorProvider().getToolbarColor()));
@@ -938,7 +943,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 mShowShareItemInMenu = true;
             }
         } else if (mShareState == CustomTabsIntent.SHARE_STATE_ON) {
-            if (mToolbarButtons.isEmpty() || isCpaOnlyOpenInBrowserDefault()) {
+            if (mToolbarButtons.isEmpty()
+                    || (isCpaOnlyOpenInBrowserDefault() && canAddMoreToolbarItems())) {
                 mToolbarButtons.add(
                         CustomButtonParamsImpl.createShareButton(
                                 context, getColorProvider().getToolbarColor()));
@@ -982,7 +988,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
 
         if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_ON) {
-            if (mToolbarButtons.isEmpty() || isCpaOnlyOpenInBrowserDefault()) {
+            if (mToolbarButtons.isEmpty()
+                    || (isCpaOnlyOpenInBrowserDefault() && canAddMoreToolbarItems())) {
                 mToolbarButtons.add(
                         CustomButtonParamsImpl.createOpenInBrowserButton(
                                 context, getColorProvider().getToolbarColor()));
