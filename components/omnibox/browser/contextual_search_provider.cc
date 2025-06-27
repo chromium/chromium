@@ -94,7 +94,7 @@ bool IsLensEntrypointAvailable(const AutocompleteInput& input,
           omnibox::IsSearchResultsPage(input.current_page_classification())) &&
          (input.current_url().SchemeIsHTTPOrHTTPS() ||
           input.current_url().SchemeIs(url::kFileScheme)) &&
-         input.IsZeroSuggest() && client->IsLensEnabled();
+         client->IsLensEnabled();
 }
 
 // Whether the feature param is enabled for the current page context.
@@ -126,7 +126,8 @@ void ContextualSearchProvider::Start(
   // Note, the dedicated entrypoint match is not added if the toolbelt with
   // lens.
   if (omnibox_feature_configs::ContextualSearch::Get().show_open_lens_action &&
-      !toolbelted_with_lens && IsLensEntrypointAvailable(input, client())) {
+      !toolbelted_with_lens && input.IsZeroSuggest() &&
+      IsLensEntrypointAvailable(input, client())) {
     AddLensEntrypointMatch(input);
   }
 
