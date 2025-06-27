@@ -6,15 +6,19 @@
 #define COMPONENTS_OMNIBOX_BROWSER_CONTEXTUAL_SEARCH_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/base_search_provider.h"
+#include "components/omnibox/browser/search_suggestion_parser.h"
 
 class AutocompleteProviderClient;
 class AutocompleteProviderListener;
+class TemplateURL;
 
 namespace network {
 class SimpleURLLoader;
@@ -89,8 +93,7 @@ class ContextualSearchProvider : public BaseSearchProvider {
   // The `input_starter_pack_engine` may be nullptr and its value can affect the
   // actions included on the toolbelt. Returns true if toolbelt with the lens
   // action is added; false otherwise.
-  bool MaybeAddToolbeltMatch(const AutocompleteInput& input,
-                             const TemplateURL* input_starter_pack_engine);
+  bool MaybeAddToolbeltMatch(const AutocompleteInput& input);
 
   // Gets the '@page' starter pack engine using `input_keyword_`.
   const TemplateURL* GetKeywordTemplateURL() const;
