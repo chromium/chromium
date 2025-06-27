@@ -1164,8 +1164,7 @@ TEST_F(RegistrationTest, ContinueFalse) {
       callback.outcome();
   ASSERT_FALSE(out_params.has_value());
   const SessionError& error = out_params.error();
-  EXPECT_EQ(error.session_id, "session_id");
-  EXPECT_EQ(error.site, net::SchemefulSite(server_.base_url()));
+  EXPECT_EQ(error.type, SessionError::ErrorType::kServerRequestedTermination);
 }
 
 TEST_F(RegistrationTest, RetriesOnKeyFailure) {
@@ -1352,8 +1351,6 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedChallenge) {
   ASSERT_FALSE(out_params.has_value());
   const SessionError& session_error = out_params.error();
   EXPECT_EQ(session_error.type, SessionError::ErrorType::kTooManyChallenges);
-  EXPECT_EQ(session_error.site, net::SchemefulSite(server_.base_url()));
-  EXPECT_EQ(session_error.session_id, kSessionIdentifier);
 }
 
 TEST_F(RegistrationTest, RefreshWithNewSessionIdFails) {
@@ -1379,8 +1376,6 @@ TEST_F(RegistrationTest, RefreshWithNewSessionIdFails) {
   ASSERT_FALSE(out_params.has_value());
   const SessionError& session_error = out_params.error();
   EXPECT_EQ(session_error.type, SessionError::ErrorType::kMismatchedSessionId);
-  EXPECT_EQ(session_error.site, net::SchemefulSite(server_.base_url()));
-  EXPECT_EQ(session_error.session_id, "old_session_id");
 }
 
 class RegistrationTokenHelperTest : public testing::Test {

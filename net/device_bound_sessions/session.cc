@@ -86,16 +86,13 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
     const SessionParams& params) {
   if (!params.fetcher_url.is_valid()) {
     return base::unexpected(
-        SessionError{SessionError::ErrorType::kInvalidFetcherUrl,
-                     net::SchemefulSite(), /*session_id=*/std::nullopt});
+        SessionError{SessionError::ErrorType::kInvalidFetcherUrl});
   } else if (params.refresh_url.empty()) {
     return base::unexpected(
-        SessionError{SessionError::ErrorType::kInvalidRefreshUrl,
-                     net::SchemefulSite(), /*session_id=*/std::nullopt});
+        SessionError{SessionError::ErrorType::kInvalidRefreshUrl});
   } else if (params.session_id.empty()) {
     return base::unexpected(
-        SessionError{SessionError::ErrorType::kInvalidSessionId,
-                     net::SchemefulSite(), /*session_id=*/std::nullopt});
+        SessionError{SessionError::ErrorType::kInvalidSessionId});
   }
 
   // If there is an origin in the scope, verify it is valid. Default to the
@@ -106,16 +103,14 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
   url::Origin scope_origin = url::Origin::Create(scope_origin_as_url);
   if (scope_origin.opaque()) {
     return base::unexpected(
-        SessionError{SessionError::ErrorType::kInvalidScopeOrigin,
-                     net::SchemefulSite(), /*session_id=*/std::nullopt});
+        SessionError{SessionError::ErrorType::kInvalidScopeOrigin});
   }
 
   // Check if the scope-origin is samesite with fetcher URL.
   if (net::SchemefulSite(scope_origin_as_url) !=
       net::SchemefulSite(params.fetcher_url)) {
     return base::unexpected(
-        SessionError{SessionError::ErrorType::kScopeOriginSameSiteMismatch,
-                     net::SchemefulSite(), /*session_id=*/std::nullopt});
+        SessionError{SessionError::ErrorType::kScopeOriginSameSiteMismatch});
   }
 
   // The refresh endpoint can be a full URL (samesite with request origin)
@@ -132,16 +127,14 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
   if (!candidate_refresh_endpoint.is_valid() ||
       !IsSecure(candidate_refresh_endpoint)) {
     return base::unexpected(
-        SessionError{SessionError::ErrorType::kInvalidRefreshUrl,
-                     net::SchemefulSite(), /*session_id=*/std::nullopt});
+        SessionError{SessionError::ErrorType::kInvalidRefreshUrl});
   }
 
   // Check if the refresh URL is same-site with the fetcher URL.
   if (net::SchemefulSite(candidate_refresh_endpoint) !=
       net::SchemefulSite(params.fetcher_url)) {
     return base::unexpected(
-        SessionError{SessionError::ErrorType::kRefreshUrlSameSiteMismatch,
-                     net::SchemefulSite(), /*session_id=*/std::nullopt});
+        SessionError{SessionError::ErrorType::kRefreshUrlSameSiteMismatch});
   }
 
   std::unique_ptr<Session> session(new Session(

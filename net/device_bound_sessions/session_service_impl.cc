@@ -523,20 +523,9 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
     OnAccessCallback on_access_callback,
     base::expected<SessionParams, SessionError> params_or_error) {
   if (!params_or_error.has_value()) {
-    // There was a failure attempting to register. This registration
-    // request could be used to clean up an existing session if the
-    // server returned `"continue": false` in the JSON. In that case, we
-    // need to delete the session. In all other cases, we failed to
-    // create a new session, so there's nothing to clean up.
-    const SessionError& error = params_or_error.error();
-    if (error.type == SessionError::ErrorType::kServerRequestedTermination &&
-        error.session_id.has_value()) {
-      Session::Id session_id(*error.session_id);
-      DeleteSessionAndNotify(DeletionReason::kServerRequested,
-                             SessionKey{error.site, std::move(session_id)},
-                             on_access_callback);
-    }
-    return error.type;
+    // We failed to create a new session, so there's nothing to clean
+    // up.
+    return params_or_error.error().type;
   }
 
   const SessionParams& params = *params_or_error;
@@ -592,10 +581,7 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     UnblockDeferredRequests(session_key, RefreshResult::kRefreshed);
   } else if (const SessionError& error = params_or_error.error();
              error.IsFatal()) {
-    Session::Id session_to_terminate =
-        error.session_id ? Session::Id(*error.session_id) : session_key.id;
-    DeleteSessionAndNotify(DeletionReason::kRefreshFatalError,
-                           SessionKey{error.site, session_to_terminate},
+    DeleteSessionAndNotify(DeletionReason::kRefreshFatalError, session_key,
                            on_access_callback);
     UnblockDeferredRequests(session_key, RefreshResult::kFatalError);
   } else {

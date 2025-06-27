@@ -40,7 +40,7 @@ class NET_EXPORT SessionService {
     kInitializedService,  // Service is now initialized, refresh may still be
                           // needed.
     kUnreachable,         // Refresh endpoint was unreachable.
-    kServerError,         // Refresh endpoint eserved a transient error.
+    kServerError,         // Refresh endpoint served a transient error.
     kQuotaExceeded,       // Refresh quota exceeded.
     kFatalError,          // Refresh failed and session was terminated. No
                           // further refresh needed.

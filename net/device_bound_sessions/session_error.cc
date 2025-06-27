@@ -6,10 +6,7 @@
 
 namespace net::device_bound_sessions {
 
-SessionError::SessionError(SessionError::ErrorType type,
-                           net::SchemefulSite site,
-                           std::optional<std::string> session_id)
-    : type(type), site(std::move(site)), session_id(std::move(session_id)) {}
+SessionError::SessionError(SessionError::ErrorType type) : type(type) {}
 
 SessionError::~SessionError() = default;
 

@@ -32,10 +32,6 @@ class NET_EXPORT RegistrationRequestParam {
       RegistrationFetcherParam&& fetcher_param);
   static RegistrationRequestParam CreateForRefresh(const Session& session);
 
-  const GURL& registration_endpoint() const { return registration_endpoint_; }
-  const std::optional<std::string>& session_identifier() const {
-    return session_identifier_;
-  }
   const std::optional<std::string>& challenge() const { return challenge_; }
   const std::optional<std::string>& authorization() const {
     return authorization_;

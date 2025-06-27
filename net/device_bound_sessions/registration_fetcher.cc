@@ -261,9 +261,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
         AttemptChallengeSigning();
         return;
       } else {
-        RunCallbackAndDeleteSelf(base::unexpected(SessionError{
-            SessionError::ErrorType::kTooManyChallenges,
-            net::SchemefulSite(fetcher_endpoint_), session_identifier_}));
+        RunCallbackAndDeleteSelf(base::unexpected(
+            SessionError{SessionError::ErrorType::kTooManyChallenges}));
         return;
       }
     }
@@ -296,10 +295,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
         AttemptChallengeSigning();
         return;
       } else {
-        RunCallbackAndDeleteSelf(base::unexpected(SessionError{
-            SessionError::ErrorType::kSigningError,
-            net::SchemefulSite(url::Origin::Create(fetcher_endpoint_)),
-            session_identifier_}));
+        RunCallbackAndDeleteSelf(base::unexpected(
+            SessionError{SessionError::ErrorType::kSigningError}));
         return;
       }
     }
@@ -335,10 +332,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   void OnChallengeNeeded(
       std::optional<std::vector<SessionChallengeParam>> challenge_params) {
     if (!challenge_params || challenge_params->empty()) {
-      RunCallbackAndDeleteSelf(base::unexpected(SessionError{
-          SessionError::ErrorType::kInvalidChallenge,
-          net::SchemefulSite(url::Origin::Create(fetcher_endpoint_)),
-          session_identifier_}));
+      RunCallbackAndDeleteSelf(base::unexpected(
+          SessionError{SessionError::ErrorType::kInvalidChallenge}));
       return;
     }
 
@@ -350,10 +345,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 
   void OnResponseCompleted(SessionError::ErrorType error_on_no_data) {
     if (data_received_.empty()) {
-      RunCallbackAndDeleteSelf(base::unexpected(SessionError{
-          error_on_no_data,
-          net::SchemefulSite(url::Origin::Create(fetcher_endpoint_)),
-          session_identifier_}));
+      RunCallbackAndDeleteSelf(
+          base::unexpected(SessionError{error_on_no_data}));
       return;
     }
 
@@ -480,10 +473,8 @@ void RegistrationFetcher::StartFetchWithExistingKey(
   }
 
   if (!key_id.has_value()) {
-    std::move(callback).Run(base::unexpected(
-        SessionError{SessionError::ErrorType::kKeyError,
-                     net::SchemefulSite(request_params.registration_endpoint()),
-                     request_params.session_identifier()}));
+    std::move(callback).Run(
+        base::unexpected(SessionError{SessionError::ErrorType::kKeyError}));
     return;
   }
 

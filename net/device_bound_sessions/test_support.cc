@@ -351,9 +351,8 @@ ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithFailure(
     std::string_view refresh_url_string) {
   return ScopedTestRegistrationFetcher(base::BindRepeating(
       [](SessionError::ErrorType error_type, const GURL& refresh_url) {
-        return base::expected<SessionParams, SessionError>(base::unexpected(
-            SessionError{error_type, net::SchemefulSite(refresh_url),
-                         /*session_id=*/std::nullopt}));
+        return base::expected<SessionParams, SessionError>(
+            base::unexpected(SessionError{error_type}));
       },
       error_type, GURL(refresh_url_string)));
 }
@@ -367,8 +366,7 @@ ScopedTestRegistrationFetcher::CreateWithTermination(
       [](const std::string& session_id, const std::string& refresh_url_string) {
         return base::expected<SessionParams, SessionError>(
             base::unexpected(SessionError{
-                SessionError::ErrorType::kServerRequestedTermination,
-                net::SchemefulSite(GURL(refresh_url_string)), session_id}));
+                SessionError::ErrorType::kServerRequestedTermination}));
       },
       std::string(session_id), std::string(refresh_url_string)));
 }
