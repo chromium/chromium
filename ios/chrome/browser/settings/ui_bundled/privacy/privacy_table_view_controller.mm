@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -110,10 +111,13 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 }  // namespace
 
 @interface PrivacyTableViewController () <BooleanObserver,
+                                          BrowserObserving,
                                           PrefObserverDelegate,
                                           PopoverLabelViewControllerDelegate,
                                           SyncObserverModelBridge> {
   raw_ptr<ProfileIOS> _profile;  // weak
+
+  std::unique_ptr<BrowserObserverBridge> _browserObserverBridge;
 
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
@@ -176,6 +180,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   if (self) {
     _reauthModule = reauthModule;
     _profile = browser->GetProfile();
+    _browserObserverBridge =
+        std::make_unique<BrowserObserverBridge>(browser, self);
     self.title = l10n_util::GetNSString(IDS_IOS_SETTINGS_PRIVACY_TITLE);
 
     PrefService* prefService = _profile->GetPrefs();
@@ -235,6 +241,42 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   if (!parent) {
     [self.presentationDelegate privacyTableViewControllerWasRemoved:self];
   }
+}
+
+#pragma mark - Public
+
+- (void)disconnect {
+  // Stop observable prefs.
+  [_incognitoReauthPref stop];
+  _incognitoReauthPref.observer = nil;
+  _incognitoReauthPref = nil;
+
+  if (IsIOSSoftLockEnabled()) {
+    [_incognitoSoftLockPref stop];
+    _incognitoSoftLockPref.observer = nil;
+    _incognitoSoftLockPref = nil;
+  }
+
+  [_HTTPSOnlyModePref stop];
+  _HTTPSOnlyModePref.observer = nil;
+  _HTTPSOnlyModePref = nil;
+  [_incognitoInterstitialPref stop];
+  _incognitoInterstitialPref.observer = nil;
+  _incognitoInterstitialPref = nil;
+
+  // Remove pref changes registrations.
+  _prefChangeRegistrar.RemoveAll();
+  _localStateChangeRegistrar.Reset();
+
+  // Remove observer bridges.
+  _prefObserverBridge.reset();
+  _browserObserverBridge.reset();
+
+  // Remove sync observer.
+  _syncObserver.reset();
+
+  // Clear C++ ivars.
+  _profile = nullptr;
 }
 
 #pragma mark - LegacyChromeTableViewController
@@ -531,36 +573,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 - (void)settingsWillBeDismissed {
   DCHECK(!_settingsAreDismissed);
 
-  // Stop observable prefs.
-  [_incognitoReauthPref stop];
-  _incognitoReauthPref.observer = nil;
-  _incognitoReauthPref = nil;
-
-  if (IsIOSSoftLockEnabled()) {
-    [_incognitoSoftLockPref stop];
-    _incognitoSoftLockPref.observer = nil;
-    _incognitoSoftLockPref = nil;
-  }
-
-  [_HTTPSOnlyModePref stop];
-  _HTTPSOnlyModePref.observer = nil;
-  _HTTPSOnlyModePref = nil;
-  [_incognitoInterstitialPref stop];
-  _incognitoInterstitialPref.observer = nil;
-  _incognitoInterstitialPref = nil;
-
-  // Remove pref changes registrations.
-  _prefChangeRegistrar.RemoveAll();
-  _localStateChangeRegistrar.Reset();
-
-  // Remove observer bridges.
-  _prefObserverBridge.reset();
-
-  // Remove sync observer.
-  _syncObserver.reset();
-
-  // Clear C++ ivars.
-  _profile = nullptr;
+  [self disconnect];
 
   _settingsAreDismissed = YES;
 }
@@ -743,6 +756,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
 - (void)onSyncStateChanged {
   [self updatePrivacyFooterItem];
+}
+
+#pragma mark - BrowserObserving
+
+- (void)browserDestroyed:(Browser*)browser {
+  [self disconnect];
 }
 
 #pragma mark - Private

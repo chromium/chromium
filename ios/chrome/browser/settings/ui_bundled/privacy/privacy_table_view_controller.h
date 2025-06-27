@@ -44,6 +44,9 @@ extern NSString* const kPrivacyTableViewId;
 // Handler used to navigate inside the privacy.
 @property(nonatomic, weak) id<PrivacyNavigationCommands> handler;
 
+// Stop observing any C++ objects.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PRIVACY_PRIVACY_TABLE_VIEW_CONTROLLER_H_

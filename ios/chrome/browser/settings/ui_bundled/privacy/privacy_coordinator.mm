@@ -67,7 +67,10 @@
 
 @end
 
-@implementation PrivacyCoordinator
+@implementation PrivacyCoordinator {
+  // Verifies that `stop` is always called before dealloc.
+  BOOL _stopped;
+}
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -110,13 +113,21 @@
 }
 
 - (void)stop {
+  _stopped = YES;
   [self.clearBrowsingDataCoordinator stop];
   self.clearBrowsingDataCoordinator = nil;
   [self stopLockdownModeCoordinator];
   [self stopSafeBrowsingCoordinator];
   [self stopIncognitoLockCoordinator];
 
+  [self.viewController disconnect];
   self.viewController = nil;
+}
+
+- (void)dealloc {
+  // TODO(crbug.com/427791272): If stop is always called before dealloc, then
+  // do all C++ cleanup in stop.
+  CHECK(_stopped, base::NotFatalUntil::M150);
 }
 
 #pragma mark - PrivacyTableViewControllerPresentationDelegate
