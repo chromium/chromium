@@ -902,6 +902,7 @@ id<GREYMatcher> SafetyCheckTableViewMatcher() {
 id<GREYMatcher> AlertAction(NSString* title) {
   return grey_allOf(
       grey_accessibilityID([title stringByAppendingString:@"AlertAction"]),
+      grey_kindOfClassName(@"_UIAlertControllerActionView"),
       grey_interactable(), nil);
 }
 

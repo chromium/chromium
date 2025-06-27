@@ -156,8 +156,8 @@ id<GREYMatcher> DismissWarningButton() {
 // Matcher for the "Dismiss" button of the confirmation dialog found in a
 // compromised password's details page when trying to dismiss the warning.
 id<GREYMatcher> DismissWarningConfirmationDialogButton() {
-  return ButtonWithAccessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_DISMISS_WARNING_DIALOG_DISMISS_BUTTON));
+  return chrome_test_util::AlertItemWithAccessibilityLabelId(
+      IDS_IOS_DISMISS_WARNING_DIALOG_DISMISS_BUTTON);
 }
 
 // Matcher for the "Restore Warning" button found in a muted compromised

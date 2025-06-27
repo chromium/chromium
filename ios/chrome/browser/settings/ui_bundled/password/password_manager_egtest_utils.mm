@@ -74,9 +74,8 @@ NSString* GetDetailTextForPasswordCheckUIState(PasswordCheckUIState state,
 }
 
 id<GREYMatcher> DeletePasswordConfirmationButton() {
-  return grey_allOf(ButtonWithAccessibilityLabel(
-                        l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE)),
-                    grey_interactable(), nullptr);
+  return chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+      IDS_IOS_DELETE_ACTION_TITLE);
 }
 
 }  // anonymous namespace
@@ -119,9 +118,8 @@ id<GREYMatcher> EditDoneButton() {
 }
 
 id<GREYMatcher> EditPasswordConfirmationButton() {
-  return grey_allOf(ButtonWithAccessibilityLabel(
-                        l10n_util::GetNSString(IDS_IOS_CONFIRM_PASSWORD_EDIT)),
-                    grey_interactable(), nullptr);
+  return chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+      IDS_IOS_CONFIRM_PASSWORD_EDIT);
 }
 
 id<GREYMatcher> UsernameTextfieldForUsernameAndSites(NSString* username,
