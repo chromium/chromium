@@ -124,12 +124,13 @@ void ContextualSearchProvider::Start(
   // Note, the dedicated entrypoint match is not added if the toolbelt is
   // included because the toolbelt will already have an action to serve as the
   // Lens entrypoint.
-  if (!starter_pack_engine && !toolbelted &&
-      IsLensEntrypointAvailable(input, client())) {
+  if (omnibox_feature_configs::ContextualSearch::Get().show_open_lens_action &&
+      !toolbelted && IsLensEntrypointAvailable(input, client())) {
     AddLensEntrypointMatch(input);
   }
 
-  if (!starter_pack_engine || client()->IsOffTheRecord()) {
+  if (!omnibox_feature_configs::ContextualSearch::Get().starter_pack_page ||
+      !starter_pack_engine || client()->IsOffTheRecord()) {
     return;
   }
 
@@ -446,10 +447,12 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
   auto check_and_add = [&]<typename T>(int starter_pack_id) {
     const TemplateURL* turl =
         turl_service->FindStarterPackTemplateURL(starter_pack_id);
-    if (!turl)
+    if (!turl) {
       return;
-    if (turl->is_active() != TemplateURLData::ActiveStatus::kTrue)
+    }
+    if (turl->is_active() != TemplateURLData::ActiveStatus::kTrue) {
       return;
+    }
     match.actions.push_back(base::MakeRefCounted<T>());
   };
 

@@ -13,6 +13,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -27,6 +28,7 @@ class ContextualSearchProviderTest : public testing::Test,
       delete;
 
   void SetUp() override {
+    contextual_search_config_.Get().show_open_lens_action = true;
     client_ = std::make_unique<MockAutocompleteProviderClient>();
     provider_ = new ContextualSearchProvider(client_.get(), this);
   }
@@ -36,6 +38,9 @@ class ContextualSearchProviderTest : public testing::Test,
   void OnProviderUpdate(bool updated_matches,
                         const AutocompleteProvider* provider) override {}
 
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      contextual_search_config_;
   std::unique_ptr<MockAutocompleteProviderClient> client_;
   scoped_refptr<ContextualSearchProvider> provider_;
 };
