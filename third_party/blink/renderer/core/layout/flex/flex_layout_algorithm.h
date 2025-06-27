@@ -102,6 +102,15 @@ class CORE_EXPORT FlexLayoutAlgorithm
       wtf_size_t flex_line_idx,
       LogicalOffset offset);
 
+  // Computes and updates the row adjustment for the line at `flex_line_idx` to
+  // account for gap suppression in a row-based flex container during
+  // fragmentation. When a row does not fit in the current fragmentainer, this
+  // function calculates the gap that would otherwise appear at the top of the
+  // next fragmentainer.
+  void UpdateOffsetAdjustmentForSuppressedRowGap(
+      wtf_size_t flex_line_idx,
+      FlexLineVector* flex_lines) const;
+
   StyleContentAlignmentData ResolvedJustifyContent() const;
 
   ItemPosition ResolvedAlignSelf(const ComputedStyle& child_style,

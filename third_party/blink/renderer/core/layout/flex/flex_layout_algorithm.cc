@@ -2980,6 +2980,11 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
               flex_item->block_node, row_container_separation,
               is_first_for_row);
           if (row_break_status == BreakStatus::kBrokeBefore) {
+            // If a gap overlaps a break, or is the last content before a break,
+            // suppress it.
+            UpdateOffsetAdjustmentForSuppressedRowGap(flex_line_idx,
+                                                      flex_lines);
+
             ConsumeRemainingFragmentainerSpace(offset_in_stitched_container,
                                                &flex_line);
             if (broke_before_row) {
@@ -3271,6 +3276,41 @@ LayoutResult::EStatus FlexLayoutAlgorithm::PropagateFlexItemInfo(
               ComputeScrollbarsForNonAnonymous(flex_item.block_node));
   }
   return status;
+}
+
+void FlexLayoutAlgorithm::UpdateOffsetAdjustmentForSuppressedRowGap(
+    wtf_size_t flex_line_idx,
+    FlexLineVector* flex_lines) const {
+  CHECK(!is_column_);
+  // Return early if this is the first row or there are no row gaps specified
+  // since there will be no gaps to suppress.
+  if (flex_line_idx == 0 || gap_between_lines_ == LayoutUnit()) {
+    return;
+  }
+
+  bool is_forced_break =
+      To<BlockBreakToken>(container_builder_.LastChildBreakToken())
+          ->IsForcedBreak();
+
+  // Here, the current row could not fit in this fragmentainer, so we want to
+  // suppress the gap that would appear at the start of the subsequent
+  // fragmentainer. We'll factor this gap into the flex line's item
+  // offset adjustment, allowing it to be applied during layout in the
+  // subsequent fragmentainer.
+  if (is_forced_break) {
+    // For a forced break, the entire row gap is deferred to the next
+    // fragmentainer, so we subtract the full gap from the item offset
+    // adjustment.
+    (*flex_lines)[flex_line_idx].item_offset_adjustment -= gap_between_lines_;
+  } else {
+    // If the break isn't forced, part of the row gap may have already been
+    // consumed in this fragmentainer. We only suppress the unconsumed portion.
+    CHECK_GE(gap_between_lines_,
+             FragmentainerSpaceAvailable(intrinsic_block_size_));
+    (*flex_lines)[flex_line_idx].item_offset_adjustment -=
+        (gap_between_lines_ -
+         FragmentainerSpaceAvailable(intrinsic_block_size_));
+  }
 }
 
 MinMaxSizesResult
