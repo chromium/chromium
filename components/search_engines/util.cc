@@ -30,6 +30,7 @@
 #include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "net/base/url_util.h"
 
 namespace {
 
@@ -572,4 +573,21 @@ TemplateURLService::OwnedTemplateURLVector::iterator FindTemplateURL(
     TemplateURLService::OwnedTemplateURLVector* urls,
     const TemplateURL* url) {
   return std::ranges::find(*urls, url, &std::unique_ptr<TemplateURL>::get);
+}
+
+GURL GetUrlForAim(TemplateURLService* turl_service,
+                  const std::string& aim_entrypoint,
+                  const std::u16string& query_text) {
+  const TemplateURLRef& url_ref =
+      turl_service->GetDefaultSearchProvider()->url_ref();
+  TemplateURLRef::SearchTermsArgs search_term_args =
+      TemplateURLRef::SearchTermsArgs(query_text);
+  GURL result_url = GURL(url_ref.ReplaceSearchTerms(
+      search_term_args, turl_service->search_terms_data()));
+  // This param triggers AI mode as opposed to traditional search.
+  result_url = net::AppendOrReplaceQueryParameter(result_url, "udm", "50");
+  result_url =
+      net::AppendOrReplaceQueryParameter(result_url, "aep", aim_entrypoint);
+
+  return result_url;
 }

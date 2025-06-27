@@ -7,10 +7,12 @@
 
 #include "url/gurl.h"
 
+class TemplateURLService;
+
 // Whether the top of feed sync promo has met the criteria to be shown.
 bool ShouldShowTopOfFeedSyncPromo();
 
-// Retrieves the URL for the MIA web page.
-GURL GetURLForMIA();
+// Retrieves the URL for the AIM web page.
+GURL GetUrlForAim(TemplateURLService* turl_service);
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_UTILS_H_

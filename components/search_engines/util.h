@@ -212,4 +212,11 @@ TemplateURLService::OwnedTemplateURLVector::iterator FindTemplateURL(
     TemplateURLService::OwnedTemplateURLVector* urls,
     const TemplateURL* url);
 
+// Retrieves the URL for the AIM web page.
+// `aim_entrypoint` (aep) is required as it identifies the source of the
+// request.
+GURL GetUrlForAim(TemplateURLService* turl_service,
+                  const std::string& aim_entrypoint,
+                  const std::u16string& query_text = std::u16string());
+
 #endif  // COMPONENTS_SEARCH_ENGINES_UTIL_H_

@@ -213,7 +213,6 @@ source_set("ntp_internal") {
     ":feature_flags",
     ":logo",
     ":ui_bundled",
-    ":utils",
     "//base",
     "//components/image_fetcher/core",
     "//components/prefs",
@@ -446,9 +445,8 @@ source_set("utils") {
   ]
   deps = [
     ":feature_flags",
-    "//components/google/core/common",
+    "//components/search_engines",
     "//ios/chrome/browser/first_run/ui_bundled:utils",
-    "//net",
   ]
   public_deps = [ "//base" ]
 }

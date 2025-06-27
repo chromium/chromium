@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_container_view.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
