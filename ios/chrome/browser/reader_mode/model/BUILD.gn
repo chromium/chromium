@@ -102,6 +102,7 @@ source_set("test_support") {
     "//components/dom_distiller/core",
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/test:test_support",
     "//ios/web/js_messaging:java_script_feature_manager_header",
     "//ios/web/public/js_messaging",

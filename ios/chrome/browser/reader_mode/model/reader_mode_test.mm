@@ -8,14 +8,17 @@
 
 #import "base/strings/utf_string_conversions.h"
 #import "components/dom_distiller/core/extraction_utils.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/web_state.h"
 #import "third_party/dom_distiller_js/dom_distiller.pb.h"
 #import "third_party/dom_distiller_js/dom_distiller_json_converter.h"
 
@@ -34,7 +37,21 @@ std::unique_ptr<web::FakeWebState> ReaderModeTest::CreateWebState() {
   std::unique_ptr<web::FakeWebState> web_state =
       std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
+
+  // Attach tab helpers
+  ReaderModeTabHelper::CreateForWebState(
+      web_state.get(), DistillerServiceFactory::GetForProfile(profile()));
+  SnapshotTabHelper::CreateForWebState(web_state.get());
+
   return web_state;
+}
+
+void ReaderModeTest::EnableReaderMode(web::WebState* web_state) {
+  ReaderModeTabHelper::FromWebState(web_state)->SetActive(true);
+}
+
+void ReaderModeTest::DisableReaderMode(web::WebState* web_state) {
+  ReaderModeTabHelper::FromWebState(web_state)->SetActive(false);
 }
 
 void ReaderModeTest::LoadWebpage(web::FakeWebState* web_state,

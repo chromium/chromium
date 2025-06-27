@@ -7,11 +7,9 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -51,11 +49,6 @@ class ReaderModeTabHelperTest : public ReaderModeTest {
     ReaderModeTest::SetUp();
 
     web_state_ = CreateWebState();
-
-    // Configure the web state resources.
-    SnapshotTabHelper::CreateForWebState(web_state());
-    ReaderModeTabHelper::CreateForWebState(
-        web_state(), DistillerServiceFactory::GetForProfile(profile()));
 
     ukm::InitializeSourceUrlRecorderForWebState(web_state());
   }

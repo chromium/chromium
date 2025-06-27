@@ -27,6 +27,10 @@ class ReaderModeTest : public PlatformTest {
   // Creates a fake web state for use in Reader Mode functions.
   std::unique_ptr<web::FakeWebState> CreateWebState();
 
+  // Controls for displaying Reading Mode UI on the fake web state.
+  void EnableReaderMode(web::WebState* web_state);
+  void DisableReaderMode(web::WebState* web_state);
+
   // Loads the web page with fake HTML content and commits the URL.
   void LoadWebpage(web::FakeWebState* web_state, const GURL& url);
 
