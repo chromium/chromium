@@ -1770,28 +1770,24 @@ void ListBoxSelectType::UpdateSelectedState(HTMLOptionElement* clicked_option,
   // dispatching change events during mouseup, or after autoscroll finishes.
   SaveLastSelection();
 
+  active_selection_state_ = true;
+
   if (!select_->is_multiple_)
     mode = SelectionMode::kDeselectOthers;
 
   // Keep track of whether an active selection (like during drag selection),
   // should select or deselect.
-  active_selection_state_ =
-      !(clicked_option->Selected() && mode == SelectionMode::kNotChangeOthers);
+  if (clicked_option->Selected() && mode == SelectionMode::kNotChangeOthers) {
+    active_selection_state_ = false;
+    clicked_option->SetSelectedState(false);
+    clicked_option->SetDirty(true);
+  }
 
   // If we're not in any special multiple selection mode, then deselect all
-  // other items, excluding the clicked OPTION. If no option was clicked,
-  // then this will deselect all items in the list.
-  if (mode == SelectionMode::kDeselectOthers) {
-    bool did_deselect_others =
-        select_->DeselectItemsWithoutValidation(clicked_option);
-    // In a multi-select, if nothing else could be deselected,
-    // deselect the (already selected) clicked option instead.
-    if (select_->is_multiple_ && !did_deselect_others &&
-        clicked_option->Selected() &&
-        RuntimeEnabledFeatures::MultiSelectDeselectWhenOnlyOptionEnabled()) {
-      active_selection_state_ = false;
-    }
-  }
+  // other items, excluding the clicked OPTION. If no option was clicked, then
+  // this will deselect all items in the list.
+  if (mode == SelectionMode::kDeselectOthers)
+    select_->DeselectItemsWithoutValidation(clicked_option);
 
   // If the anchor hasn't been set, and we're doing kDeselectOthers or kRange,
   // then initialize the anchor to the first selected OPTION.
@@ -1800,7 +1796,7 @@ void ListBoxSelectType::UpdateSelectedState(HTMLOptionElement* clicked_option,
 
   // Set the selection state of the clicked OPTION.
   if (!clicked_option->IsDisabledFormControl()) {
-    clicked_option->SetSelectedState(active_selection_state_);
+    clicked_option->SetSelectedState(true);
     clicked_option->SetDirty(true);
   }
 

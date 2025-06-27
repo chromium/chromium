@@ -3203,10 +3203,6 @@
       status: "stable",
     },
     {
-      name: "MultiSelectDeselectWhenOnlyOption",
-      status: "test",
-    },
-    {
       name: "NavigateEventCanTransition",
     },
     {
