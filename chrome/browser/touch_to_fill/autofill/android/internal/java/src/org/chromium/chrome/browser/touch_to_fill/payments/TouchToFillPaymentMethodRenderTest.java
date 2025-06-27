@@ -36,6 +36,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -714,6 +715,7 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/428186413")
     public void testShowsAllLoyaltyCardsScreen() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
