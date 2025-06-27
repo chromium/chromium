@@ -89,6 +89,11 @@ GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args) {
   switch (args.flow) {
     // Default behavior.
     case Flow::NONE:
+      if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
+        // If History Sync Opt-in is enabled, use a customized sign-in screen
+        // that does NOT mention history sync benefits.
+        url = net::AppendQueryParameter(url, "flow", "history_opt_in");
+      }
       break;
     case Flow::PROMO:
       url = net::AppendQueryParameter(url, "flow", "promo");

@@ -1141,7 +1141,7 @@
       You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
     </message>
     <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_ACCEPT_BUTTON" desc="">
-      Yes, I 'm in
+      Yes, I'm in
     </message>
     <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_REJECT_BUTTON" desc="">
       No thanks
