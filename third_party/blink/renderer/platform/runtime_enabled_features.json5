@@ -1922,12 +1922,6 @@
       name: "DocumentWrite",
     },
     {
-      // This is a flag for performance improvements that shipped in M134,
-      // for use as a kill-switch and for other finch measurement in Q2 2025.
-      name: "DOMInsertionFaster",
-      status: "stable",
-    },
-    {
       name: "DOMPartsAPI",
       status: "experimental",
       implied_by: ["DOMPartsAPIMinimal"],
