@@ -24,7 +24,7 @@ const CGFloat kMainStackHorizontalInset = 20.0;
 const CGFloat kMainStackSpacing = 8.0;
 
 // Icons size.
-const CGFloat kIconSize = 16.0;
+const CGFloat kIconSize = 24.0;
 const CGFloat kWhiteInnerSize = 32.0;
 
 // Corner radius of icons.
@@ -109,7 +109,7 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
   UIView* wrapperContainer = [[UIView alloc] init];
   wrapperContainer.translatesAutoresizingMaskIntoConstraints = NO;
   UIView* separator = [[UIView alloc] init];
-  separator.backgroundColor = [UIColor colorNamed:kGrey500Color];
+  separator.backgroundColor = [UIColor colorNamed:kGrey200Color];
   separator.translatesAutoresizingMaskIntoConstraints = NO;
   [wrapperContainer addSubview:separator];
   [NSLayoutConstraint activateConstraints:@[

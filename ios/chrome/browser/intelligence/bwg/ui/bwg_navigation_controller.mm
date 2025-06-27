@@ -111,7 +111,7 @@ const CGFloat kLogoStackViewHeight = 62.0;
                             resolver:resolver];
   self.sheetPresentationController.detents = @[ detent ];
 
-  self.modalInPresentation = NO;
+  self.modalInPresentation = YES;
   self.modalPresentationStyle = UIModalPresentationPageSheet;
   self.sheetPresentationController.selectedDetentIdentifier =
       kBWGPromoConsentFullDetentIdentifier;
